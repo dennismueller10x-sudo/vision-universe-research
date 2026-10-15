@@ -112,6 +112,6 @@ export async function runMethodV3(args){
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- try{const s=await runMethodV3(parseArgs(process.argv.slice(2)));process.stdout.write(JSON.stringify({methodId:s.methodId,verdict:s.verdict,results:s.results.map(r=>({costMode:r.costMode,status:r.status,errorCode:r.errorCode??null,reconciliationDifference:r.bookTrace?.absoluteDifference??null}))})+'\n');}
+ try{const s=await runMethodV3(parseArgs(process.argv.slice(2)));process.stdout.write(JSON.stringify({methodId:s.methodId,verdict:s.verdict,results:s.results.map(r=>({costMode:r.costMode,status:r.status,errorCode:r.errorCode??null,reconciliationDifference:r.bookTrace?.absoluteDifference??null,review:r.numericReview?.status??null,failedReviewChecks:r.numericReview?.books?.flatMap(b=>b.failedHardChecks.map(c=>b.book+':'+c))??null}))})+'\n');}
  catch(e){process.stderr.write(JSON.stringify({phase:'V3_METHOD_OPERATIONAL_FAILURE',code:/^[A-Z0-9_]+$/.test(e.message)?e.message:'PRIVATE_IO_ERROR'})+'\n');process.exitCode=1;}
 }

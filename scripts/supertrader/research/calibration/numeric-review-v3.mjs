@@ -41,10 +41,18 @@ export function reviewBook({key,book,metrics,data,protocol,costMode,formationDat
  add('R3_EQUITY_NONNEGATIVE_EXPOSURE_WITHIN_0_1',true,book.curve.length,bad);
 
  // R4 execution prices come from that day's open (next-session-open convention, slippage only in costed mode)
- let checked=0,badPrice=0,badTerminal=0,missingBar=0;
+ let checked=0,badPrice=0,badTerminal=0,missingBar=0,quarantineFills=0,badQuarantine=0;
  for(const f of book.fills){
   const s=byId.get(f.id),b=s?exactBar(s.bars,f.date):null;
-  if(!b){missingBar++;continue;}
+  if(!b){
+   // A data-quarantine terminal has no source bar on its date: the engine liquidates at the frozen last close.
+   if(f.reason==='TERMINAL_SCENARIO'&&s?.terminal?.kind==='DATA_QUARANTINE'&&s.terminal.date===f.date&&finite(s.terminal.lastClose)){
+    quarantineFills++;const ratio=f.price/(s.terminal.lastClose*(1-slip));
+    if(!(close(ratio,1,1e-9,1e-9)||close(ratio,0.7,1e-9,1e-9)||close(ratio,0,1e-9,1e-9)))badQuarantine++;
+    continue;
+   }
+   missingBar++;continue;
+  }
   checked++;
   if(f.reason==='TERMINAL_SCENARIO'){
    const ratio=f.price/(b.close*(1-slip));
@@ -55,7 +63,8 @@ export function reviewBook({key,book,metrics,data,protocol,costMode,formationDat
   }
  }
  add('R4_FILL_PRICES_EQUAL_SESSION_OPEN_PLUS_SLIPPAGE',true,checked,badPrice+missingBar);
- add('R4b_TERMINAL_FILL_PRICE_IS_LAST_CLOSE_TIMES_SCENARIO_FACTOR',true,book.fills.filter(f=>f.reason==='TERMINAL_SCENARIO').length,badTerminal);
+ add('R4b_TERMINAL_FILL_PRICE_IS_LAST_CLOSE_TIMES_SCENARIO_FACTOR',true,book.fills.filter(f=>f.reason==='TERMINAL_SCENARIO').length-quarantineFills,badTerminal);
+ add('R4c_QUARANTINE_TERMINAL_FILL_PRICE_IS_FROZEN_LAST_CLOSE_TIMES_SCENARIO_FACTOR',true,quarantineFills,badQuarantine);
 
  // R5 no look-ahead: every non-terminal fill happens on the first session AFTER a formation date
  const next=new Set();for(const f of formationDates){let lo=0,hi=cal.length;while(lo<hi){const m=(lo+hi)>>1;if(cal[m]<=f)lo=m+1;else hi=m;}if(lo<cal.length)next.add(cal[lo]);}

@@ -223,7 +223,10 @@ jobs:
           set -euo pipefail
           node $CAL/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
           COMPLETION="$CAL/CALIBRATION-V3-COMPLETION-${FREEZE_ID}.json"
+          set +e
           node $CAL/build-completion-v3.mjs --freeze "$FREEZE" --summaries "$RUNNER_TEMP/summaries" --reference-parsed /workspace/private/reference/reference-parsed.json --out "$COMPLETION"
+          RC=$?
+          set -e
           cp "$RUNNER_TEMP"/summaries/CALIBRATION-V3-*-RESULT-*.json "$CAL/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -233,6 +236,8 @@ jobs:
           echo "completion_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "completion_file=$COMPLETION" >> "$GITHUB_OUTPUT"
           echo "completion_sha=$(sha256sum "$COMPLETION" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          # public evidence is committed even when the completion is incomplete; only then the job fails (tournament stays blocked)
+          exit "$RC"
       - name: Remove private plaintext
         if: always()
         run: rm -rf /workspace/private
