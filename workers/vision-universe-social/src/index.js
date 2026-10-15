@@ -56,17 +56,18 @@ import {
   mediaInsights, MEDIA_INSIGHT_CALLS,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION,
-  hashtagId, hashtagMedia, profileDetails, listMedia
+  hashtagId, hashtagMedia, profileDetails, listMedia, createReelContainer
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
          readClaim, claimPublish, settleClaim,
-         readQueue, writeQueue,
+         readQueue, writeQueue, putReelItem,
          listDecisions, markDecisionConsumed
 } from "./store.js";
 import { redact, redactText, fingerprint, contentHash } from "./redact.js";
 import { successPage, errorPage, disconnectedPage, indexPage, htmlResponse } from "./pages.js";
 import { routeApproval } from "./approval.js";
+import { measureVideo, pruefeVideo, httpsOhneZugang, REEL_CAPTION_MAX } from "./reel.js";
 import { finalerText, MAX_HASHTAGS } from "./public-text.js";
 
 /* Ein Admin-Schluessel unter dieser Laenge wird abgelehnt. Der Worker hat
@@ -732,7 +733,286 @@ async function carouselContainer(ctx, record, imageUrls, caption) {
     accessToken: record.pageAccessToken, childIds: kinder, caption });
 }
 
+
+/* =====================================================================
+   REELS — VORBEREITEN UND VEROEFFENTLICHEN
+
+   Ein Reel wird NIEMALS ohne Freigabe gesendet, auch nicht bei gesetztem
+   VU_SOCIAL_AUTOPUBLISH: dieser Pfad verlangt `approval` mit dem Abdruck des
+   Owners und rechnet ihn aus dem nach, was gesendet wuerde.
+
+   Ablauf (jeder Schritt bricht VOR der Veroeffentlichung ab):
+     prepare   POST /social/reel/prepare       Admin: Video messen, Karte in die Schlange
+     freigabe  Owner im Approval Center        sieht das Video, gibt frei
+     publish   Freigabe -> publishReelCore     Anspruch, Video erneut pruefen, Container,
+                                               Status abwarten, erst bei FINISHED freigeben
+
+   Dauert die Verarbeitung laenger als ein Aufruf (VU_REEL_POLL_TRIES x
+   VU_SOCIAL_POLL_WAIT_MS), antwortet der Worker 202 PROCESSING; derselbe Aufruf
+   setzt den vorhandenen Container fort. Es entsteht nie ein zweiter Beitrag.
+   ===================================================================== */
+const REEL_RETRYABLE = new Set(["networkError", "providerOutage"]);
+
+function reelIdAus(contentId) {
+  return "cand_reel_" + String(contentId).toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+}
+
+function zahlEnv(wert, fallback) {
+  const n = Number(wert);
+  return Number.isFinite(n) && n >= 0 ? n : fallback;
+}
+
+async function handleReelPrepare(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+
+  let body = {};
+  try { body = await request.json(); } catch (err) { body = {}; }
+  const contentId = String((body && body.contentId) || "").trim();
+  const videoUrl = String((body && body.videoUrl) || "").trim();
+  const caption = String(body && body.caption !== undefined && body.caption !== null ? body.caption : "");
+  const shareToFeed = body && body.shareToFeed === false ? false : true;
+
+  if (!contentId || !/^[A-Za-z0-9_.:-]{3,80}$/.test(contentId)) {
+    return json({ error: "contentIdInvalid", prepared: false,
+      message: "contentId: 3-80 Zeichen aus A-Z a-z 0-9 _ . : -" }, 400);
+  }
+  if (!httpsOhneZugang(videoUrl)) {
+    return json({ error: "videoUrlInvalid", prepared: false,
+      message: "videoUrl muss eine https-Adresse ohne Zugangsdaten sein." }, 400);
+  }
+  if (caption.length > REEL_CAPTION_MAX) {
+    return json({ error: "captionTooLong", prepared: false,
+      message: "Die Caption hat " + caption.length + " Zeichen; Instagram erlaubt " + REEL_CAPTION_MAX + "." }, 400);
+  }
+  if ((caption.match(/#/g) || []).length > 30) {
+    return json({ error: "tooManyHashtags", prepared: false, message: "Instagram erlaubt hoechstens 30 Hashtags." }, 400);
+  }
+  if (!env.VU_SOCIAL_KV) return json({ error: "noStorage", prepared: false }, 503);
+
+  const claim = await readClaim(env, contentId);
+  if (claim && claim.state === "PUBLISHED") {
+    return json({ error: "alreadyPublished", prepared: false, mediaId: claim.mediaId,
+      message: "Dieses Inhaltsobjekt wurde bereits veroeffentlicht." }, 409);
+  }
+
+  const ctx = graphContext(env);
+  const messung = await measureVideo(videoUrl, ctx.fetchImpl, { maxBytes: zahlEnv(env.VU_REEL_MAX_BYTES, undefined) });
+  if (!messung.ok) {
+    return json({ error: messung.reason, message: messung.message, prepared: false }, 400);
+  }
+
+  const abdruck = await contentHash({ contentId, videoUrl, caption });
+  const jetzt = new Date().toISOString();
+  const item = {
+    candidateId: reelIdAus(contentId),
+    version: 1, state: "AWAITING_OWNER", createdAt: jetzt,
+    payload: { kind: "REEL", contentId, imageUrl: null, videoUrl, caption, shareToFeed },
+    contentHash: abdruck,
+    carousel: null,
+    text: { captionBase: null, hashtags: [], hashtagSatz: null },
+    asset: {
+      zustand: "ASSET_PUBLICLY_REACHABLE", grund: null, erreichbar: true, url: videoUrl,
+      sha256: messung.partialSha256, sizeBytes: messung.sizeBytes, contentType: messung.contentType,
+      fingerprintKind: "partial-64k-head-tail-size",
+      satz: "Das Video ist abrufbar (" + messung.contentType + ", " +
+        (messung.sizeBytes / 1048576).toFixed(1) + " MB). Der Abdruck deckt Anfang, Ende und Groesse.",
+      gemessenAm: jetzt
+    },
+    anzeige: { thema: null, hook: null, familie: null, familieBasis: null, kernfrage: null, format: null,
+      bildform: null, storyRichtung: null, hookStrategie: null, visualStrategie: null, modus: null,
+      modusGrund: null, geplanteStundeUtc: null, zeitGrund: null, strategieVersion: null },
+    guete: null,
+    warum: { thema: null, einstieg: null, visual: null }
+  };
+  await putReelItem(env, item);
+
+  return json({
+    prepared: true, published: false, candidateId: item.candidateId, contentId,
+    contentHash: abdruck, sizeBytes: messung.sizeBytes, contentType: messung.contentType,
+    approvalUrl: String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "") + "/approval/" + item.candidateId,
+    message: "Das Reel liegt im Approval Center zur Freigabe. Es wurde NICHTS veroeffentlicht."
+  }, 201);
+}
+
+/* Rein lesend: Stand eines Reels (Anspruch und Karte), ohne Token und ohne Meta-Aufruf. */
+async function handleReelStatus(request, url, env) {
+  const gate = requireAdmin(request, url, env);
+  if (!gate.ok) return gate.response;
+  const contentId = String(url.searchParams.get("contentId") || "").trim();
+  if (!contentId) return json({ error: "contentIdRequired" }, 400);
+  if (!env.VU_SOCIAL_KV) return json({ error: "noStorage" }, 503);
+  const claim = await readClaim(env, contentId);
+  const reels = (await readQueue(env) || { items: [] }).items.filter((i) => i.payload && i.payload.kind === "REEL" && i.payload.contentId === contentId);
+  const karte = reels[0] || null;
+  return json({
+    contentId,
+    prepared: Boolean(karte),
+    candidateId: karte ? karte.candidateId : null,
+    approvalPath: karte ? "/approval/" + karte.candidateId : null,
+    claim: claim ? {
+      state: claim.state, stage: claim.stage || null, containerId: claim.containerId || null,
+      mediaId: claim.mediaId || null, permalink: claim.permalink || null, via: claim.via || null,
+      uncertain: claim.uncertain === true, error: claim.error || null,
+      claimedAt: claim.claimedAt || null, settledAt: claim.settledAt || null
+    } : null,
+    note: "Nur gelesen. Es wurde nichts veroeffentlicht und nichts veraendert."
+  });
+}
+
+async function publishReelCore(body, env) {
+  const contentId = String((body && body.contentId) || "").trim();
+  const videoUrl = String((body && body.videoUrl) || "").trim();
+  const caption = String(body && body.caption !== undefined && body.caption !== null ? body.caption : "");
+  const shareToFeed = body && body.shareToFeed === false ? false : true;
+  const approval = (body && body.approval && typeof body.approval === "object") ? body.approval : null;
+
+  /* 1. Ohne Freigabe nie. Der Autopublish-Schalter ersetzt sie bei einem Reel nicht. */
+  if (!approval) {
+    return json({ error: "reelNeedsApproval", published: false,
+      message: "Ein Reel wird nur mit Freigabe des Owners veroeffentlicht. Der Autopublish-Schalter gilt dafuer nicht." }, 403);
+  }
+  const gewuenscht = String(approval.contentHash || "").trim().toLowerCase();
+  if (!gewuenscht) {
+    return json({ error: "approvalWithoutHash", published: false,
+      message: "Eine Freigabe ohne Inhaltsabdruck gibt nichts frei." }, 400);
+  }
+  if (!contentId) return json({ error: "contentIdRequired", published: false }, 400);
+  if (!httpsOhneZugang(videoUrl)) {
+    return json({ error: "videoUrlInvalid", published: false, message: "videoUrl muss https sein." }, 400);
+  }
+  if (caption.length > REEL_CAPTION_MAX) {
+    return json({ error: "captionTooLong", published: false }, 400);
+  }
+  const tatsaechlich = await contentHash({ contentId, videoUrl, caption });
+  if (tatsaechlich !== gewuenscht) {
+    return json({ error: "approvalMismatch", published: false, expectedHash: gewuenscht, actualHash: tatsaechlich,
+      message: "Der freigegebene Inhalt und der zu sendende Inhalt sind nicht derselbe. Es wurde nichts veroeffentlicht." }, 409);
+  }
+  const genehmigung = {
+    candidateId: approval.candidateId ? String(approval.candidateId) : null,
+    approvedBy: approval.approvedBy ? String(approval.approvedBy) : null,
+    approvedAt: approval.approvedAt ? String(approval.approvedAt) : null,
+    contentHash: tatsaechlich
+  };
+
+  const record = await readConnection(env);
+  if (!record) {
+    return json({ error: "notConnected", published: false, message: "Es besteht keine Verbindung." }, 409);
+  }
+  const erlaubt = allowedTargets(env);
+  if (!isAllowedTarget({ instagramAccountId: record.instagramAccountId, instagramUsername: record.instagramUsername }, erlaubt)) {
+    return json({ error: "targetNotAllowed", published: false, allowed: erlaubt.beschreibung,
+      message: "Das gespeicherte Konto steht nicht (mehr) auf der Ziel-Allowlist." }, 403);
+  }
+
+  /* 2. Der Anspruch - dieselbe Idempotenz wie bei Bild und Carousel. */
+  const beginn = new Date().toISOString();
+  const angemeldet = await claimPublish(env, contentId, { now: beginn, approval: genehmigung, via: "APPROVAL" });
+  if (!angemeldet.ok && angemeldet.reason === "noStorage") {
+    return json({ error: "noStorage", message: angemeldet.message, published: false }, 503);
+  }
+
+  let containerId = null;
+  if (!angemeldet.ok) {
+    const c = angemeldet.claim;
+    if (c.state === "PUBLISHED") {
+      return json({ published: true, idempotent: true, contentId, mediaType: "REELS", via: c.via || null,
+        approval: c.approval || null, mediaId: c.mediaId, permalink: c.permalink,
+        message: "Dieses Reel wurde bereits veroeffentlicht. Es entstand kein zweites." }, 200);
+    }
+    /* FORTSETZEN: nur wenn der Anspruch genau dieses Reel in der Verarbeitung haelt. */
+    if (c.state === "IN_FLIGHT" && c.stage === "reelProcessing" && c.containerId && c.reelHash === tatsaechlich) {
+      containerId = c.containerId;
+    } else if (c.state === "IN_FLIGHT") {
+      return json({ error: "claimInFlight", published: false, contentId, claim: c,
+        message: "Fuer dieses Inhaltsobjekt laeuft (oder lief) bereits ein Versuch. Ob dabei ein Beitrag entstanden ist, " +
+          "weiss niemand ohne nachzusehen - deshalb wird hier NICHT erneut veroeffentlicht." }, 409);
+    } else {
+      return json({ error: "claimFailedEarlier", published: false, contentId, claim: c,
+        message: "Ein frueherer Versuch ist gescheitert. Eine Wiederholung braucht eine neue Entscheidung." }, 409);
+    }
+  }
+
+  const ctx = graphContext(env);
+  const warteMs = zahlEnv(env.VU_SOCIAL_POLL_WAIT_MS, 3000);
+
+  /* 3. Video erneut pruefen und Container anlegen (nur beim ersten Durchlauf). */
+  if (!containerId) {
+    const erwartet = (body && body.assetVideo) || (approval && approval.assetVideo) || {};
+    const video = await pruefeVideo(videoUrl, ctx.fetchImpl,
+      { sha256: erwartet.sha256, sizeBytes: erwartet.sizeBytes }, { maxBytes: zahlEnv(env.VU_REEL_MAX_BYTES, undefined) });
+    if (!video.ok) {
+      await settleClaim(env, contentId, { state: "FAILED", stage: "videoCheck",
+        error: { reason: video.reason, message: video.message }, now: beginn });
+      return json({ error: video.reason, message: video.message, stage: "videoCheck", published: false, contentId,
+        expectedSha256: video.expectedSha256 || null, actualSha256: video.actualSha256 || null }, 400);
+    }
+
+    let container = null;
+    for (let versuch = 0; versuch < 3; versuch += 1) {
+      container = await createReelContainer(ctx, { instagramAccountId: record.instagramAccountId,
+        accessToken: record.pageAccessToken, videoUrl, caption, shareToFeed });
+      if (container.ok || !REEL_RETRYABLE.has(container.reason)) break;
+      if (warteMs) await sleep(warteMs);
+    }
+    if (!container.ok) {
+      const fehler = metaFehlerdaten(container, env);
+      await settleClaim(env, contentId, { state: "FAILED", stage: "createContainer", error: fehler, now: beginn });
+      return json({ error: container.reason, stage: "createContainer", meta: fehler, published: false, contentId }, 502);
+    }
+    containerId = container.data.containerId;
+    await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "reelProcessing", containerId,
+      reelHash: tatsaechlich, now: beginn });
+  }
+
+  /* 4. Verarbeitung abwarten - begrenzt. Fehler beim Abfragen sind kein Abbruchgrund. */
+  const versuche = Math.max(1, zahlEnv(env.VU_REEL_POLL_TRIES, 8));
+  let zustand = null;
+  for (let i = 0; i < versuche; i += 1) {
+    const st = await mediaContainerStatus(ctx, { containerId, accessToken: record.pageAccessToken });
+    zustand = st.ok ? st.data : null;
+    if (zustand && (zustand.statusCode === "FINISHED" || zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) break;
+    if (i < versuche - 1 && warteMs) await sleep(warteMs);
+  }
+  if (zustand && (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) {
+    const grund = redactText(String(zustand.status || zustand.statusCode)).slice(0, 300);
+    await settleClaim(env, contentId, { state: "FAILED", stage: "containerStatus",
+      error: { reason: "containerNotReady", status: zustand.statusCode, detail: grund }, now: beginn });
+    return json({ error: "containerNotReady", stage: "containerStatus", status: zustand.statusCode, detail: grund,
+      published: false, contentId,
+      message: "Meta hat das Video abgelehnt oder die Verarbeitung ist abgelaufen. Es wurde nichts veroeffentlicht." }, 502);
+  }
+  if (!zustand || zustand.statusCode !== "FINISHED") {
+    return json({ published: false, processing: true, state: "PROCESSING", contentId, containerId,
+      status: zustand ? zustand.statusCode : null,
+      message: "Meta verarbeitet das Video noch. Derselbe Aufruf setzt die Verarbeitung fort; es entsteht kein zweiter Beitrag." }, 202);
+  }
+
+  /* 5. Freigabe bei Meta. Ab hier ist das Reel oeffentlich; ein Fehler ist OFFEN, nicht gescheitert. */
+  const freigabe = await publishMediaContainer(ctx, { instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken, containerId });
+  if (!freigabe.ok) {
+    const fehler = metaFehlerdaten(freigabe, env);
+    await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "publish", error: fehler, uncertain: true, now: beginn });
+    return json({ error: freigabe.reason, stage: "publish", meta: fehler, published: false, uncertain: true, contentId,
+      message: "Die Freigabe schlug fehl. Ob ein Reel entstanden ist, ist NICHT sicher - vor einem zweiten Versuch im Konto nachsehen." }, 502);
+  }
+  const geprueft = await verifyMedia(ctx, { mediaId: freigabe.data.mediaId, accessToken: record.pageAccessToken });
+  const claim = await settleClaim(env, contentId, { state: "PUBLISHED", stage: "verify", mediaId: freigabe.data.mediaId,
+    permalink: geprueft.ok ? geprueft.data.permalink : null, verified: geprueft.ok, now: beginn });
+
+  return json({
+    published: true, idempotent: false, contentId, mediaType: "REELS", via: "APPROVAL", approval: genehmigung,
+    mediaId: freigabe.data.mediaId, permalink: claim.permalink, containerId,
+    timestamp: geprueft.ok ? geprueft.data.timestamp : null, account: record.instagramUsername, verified: geprueft.ok
+  }, geprueft.ok ? 200 : 207);
+}
+
 async function publishCore(body, env) {
+  /* REELS laufen ueber einen eigenen Pfad (publishReelCore): Video-Verarbeitung dauert Minuten und
+     braucht einen fortsetzbaren Anspruch. Bild und Carousel bleiben unveraendert. */
+  if (body && (body.videoUrl || body.mediaType === "REELS")) return await publishReelCore(body, env);
   const contentId = String((body && body.contentId) || "").trim();
   const imageUrl = String((body && body.imageUrl) || "").trim();
   const caption = String(body && body.caption === undefined ? "" : body.caption);
@@ -2431,6 +2711,14 @@ export default {
           }, 405);
         }
         return await handlePublish(request, url, env);
+      }
+      if (path === "/social/reel/prepare") {
+        if (request.method !== "POST") return json({ error: "methodNotAllowed", prepared: false }, 405);
+        return await handleReelPrepare(request, url, env);
+      }
+      if (path === "/social/reel/status") {
+        if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);
+        return await handleReelStatus(request, url, env);
       }
       if (path === "/social/meta/profile") {
         if (request.method !== "GET") return json({ error: "methodNotAllowed" }, 405);

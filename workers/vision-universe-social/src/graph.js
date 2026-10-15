@@ -784,6 +784,25 @@ export async function createMediaContainer(ctx, { instagramAccountId, accessToke
 }
 
 /**
+ * REELS: ein Container mit media_type=REELS und einer oeffentlichen https-Videoadresse.
+ * Meta holt und verarbeitet das Video asynchron - der Container ist erst bei
+ * status_code FINISHED freigabefaehig (siehe mediaContainerStatus). Bis dahin ist
+ * nichts oeffentlich, und ein Container ohne Freigabe verfaellt.
+ */
+export async function createReelContainer(ctx, { instagramAccountId, accessToken, videoUrl, caption, shareToFeed }) {
+  const params = { media_type: "REELS", video_url: String(videoUrl),
+    share_to_feed: shareToFeed === false ? "false" : "true" };
+  if (caption) params.caption = String(caption);
+  const result = await graph(ctx, `${instagramAccountId}/media`, params, accessToken, { method: "POST" });
+  if (!result.ok) return result;
+  if (!result.data || !result.data.id) {
+    return fail("containerNotCreated",
+      "Die Plattform hat keinen Reel-Container geliefert. Es wurde nichts veroeffentlicht.");
+  }
+  return ok({ containerId: String(result.data.id) });
+}
+
+/**
  * CAROUSEL (Owner-Auftrag "WORK OWNS THE POST", 29.09.): erst je Slide
  * ein Kind-Container (is_carousel_item, ohne Caption), dann ein
  * CAROUSEL-Container mit den Kindern und der Caption. Freigegeben wird

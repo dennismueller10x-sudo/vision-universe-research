@@ -574,6 +574,12 @@ const BETRIEB = {
     text: "Es wurde nichts veroeffentlicht. Der Versuch ist festgehalten und kann " +
       "wiederholt werden, sobald die Ursache behoben ist."
   },
+  REEL_PROCESSING: {
+    titel: "Instagram verarbeitet das Video noch.",
+    text: "Deine Freigabe steht. Das Reel ist noch nicht veroeffentlicht - Instagram braucht fuer " +
+      "die Verarbeitung etwas laenger. Mit \"Verarbeitung pruefen\" geht es am selben Container " +
+      "weiter; es entsteht kein zweites Reel."
+  },
   PUBLISH_UNCERTAIN: {
     titel: "Unklar, ob der Beitrag entstanden ist.",
     text: "Die Freigabe bei Instagram ist fehlgeschlagen, nachdem der Beitrag " +
@@ -618,20 +624,25 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
 
   /* 2. Der Speicher. Der Abdruck der gespeicherten Sendung, frisch
      gerechnet. */
+  /* REEL: die Videoadresse gehoert in den Abdruck; bei Bild und Carousel ist sie leer
+     und aendert den Abdruck nicht. */
+  const istReel = eintrag.payload && eintrag.payload.kind === "REEL";
+  const adresse = istReel ? eintrag.payload.videoUrl : eintrag.payload.imageUrl;
   const nachgerechnet = await contentHash({
     contentId: eintrag.payload.contentId,
-    imageUrl: eintrag.payload.imageUrl,
+    imageUrl: eintrag.payload.imageUrl || "",
     imageUrls: eintrag.payload.imageUrls,
+    videoUrl: istReel ? eintrag.payload.videoUrl : undefined,
     caption: eintrag.payload.caption
   });
   if (nachgerechnet !== eintrag.contentHash) {
     return { ok: false, zustand: "PAYLOAD_TAMPERED", eintrag };
   }
 
-  if (!eintrag.payload.contentId || !eintrag.payload.imageUrl) {
+  if (!eintrag.payload.contentId || !adresse) {
     return { ok: false, zustand: "NOT_PUBLISHABLE", eintrag };
   }
-  if (!/^https:\/\//.test(String(eintrag.payload.imageUrl))) {
+  if (!/^https:\/\//.test(String(adresse))) {
     return { ok: false, zustand: "ASSET_NOT_REACHABLE", eintrag };
   }
 
@@ -662,7 +673,7 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
      veroeffentlicht wuerde, gilt es fuer ein anderes Bild - und die
      Vorschau waere nicht die Sendung. Ein Urteil ohne Adresse gilt
      fuer gar nichts. */
-  if (!bild.url || bild.url !== eintrag.payload.imageUrl) {
+  if (!bild.url || bild.url !== adresse) {
     return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
   }
   if (bild.zustand !== "ASSET_PUBLICLY_REACHABLE") {
@@ -690,6 +701,10 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
      pruefbar - und was nicht pruefbar ist, wird nicht freigegeben.
      Ablehnen bleibt moeglich. */
   if (!bild.sha256) {
+    return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
+  }
+  /* REEL: Teilabdruck UND Dateigroesse - beides reist mit der Freigabe. */
+  if (istReel && !(Number(bild.sizeBytes) > 0)) {
     return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
   }
 
@@ -722,6 +737,7 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
 function zustandAus(antwort) {
   if (!antwort || typeof antwort !== "object") return "META_PUBLISH_FAILED";
   if (antwort.uncertain) return "PUBLISH_UNCERTAIN";
+  if (antwort.processing) return "REEL_PROCESSING";
   /* Der Bildcheck scheitert aus zwei verschiedenen Gruenden, und sie
      sagen dem Owner Verschiedenes: das Bild fehlt, oder das Bild ist
      ein anderes geworden. Beides unter "nicht erreichbar" zu fuehren
@@ -732,6 +748,11 @@ function zustandAus(antwort) {
       return "ASSET_CHANGED_SINCE_APPROVAL";
     }
     return "ASSET_NOT_REACHABLE";
+  }
+  /* REEL: das Video wurde vor dem Senden erneut gemessen. */
+  if (antwort.stage === "videoCheck") {
+    return (antwort.error === "videoFingerprintMismatch" || antwort.error === "videoSizeChanged")
+      ? "ASSET_CHANGED_SINCE_APPROVAL" : "ASSET_NOT_REACHABLE";
   }
   if (antwort.error === "imageNotReachable" || antwort.error === "imageNotAnImage") {
     return "ASSET_NOT_REACHABLE";
@@ -792,7 +813,9 @@ async function handleApprove(candidateId, request, env) {
 sich von hier aus nicht zurueckholen.</p>
 
 <figure>
-  <img src="${escape(i.payload.imageUrl)}" alt="" width="1080" height="1350">
+  ${i.payload.kind === "REEL"
+    ? `<video src="${escape(i.payload.videoUrl)}" controls preload="metadata" playsinline width="360"></video>`
+    : `<img src="${escape(i.payload.imageUrl)}" alt="" width="1080" height="1350">`}
 </figure>
 <p class="caption">${escape(i.payload.caption === null || i.payload.caption === undefined
   ? "" : i.payload.caption)}</p>
@@ -821,7 +844,13 @@ async function handlePublishDecision(candidateId, request, env, options) {
   const schlange = env.VU_SOCIAL_KV ? await readQueue(env) : null;
 
   const schon = await readDecision(env, candidateId);
-  if (schon) {
+  /* REEL IN VERARBEITUNG: die Freigabe steht, nur der Versand wartet auf Instagram. Genau
+     dann - und nur dann - setzt ein weiterer Druck fort. Der Worker verlangt dafuer
+     denselben Abdruck und denselben Container; ein zweites Reel kann daraus nicht entstehen. */
+  const fortsetzen = Boolean(schon) && schon.decision === "APPROVED" && !schon.published &&
+    schon.lastError === "REEL_PROCESSING" && /^cand_reel_/.test(candidateId) &&
+    formular.fingerprint && formular.fingerprint === schon.contentHash;
+  if (schon && !fortsetzen) {
     /* §9: der zweite Druck erzeugt keinen zweiten Beitrag. Er zeigt,
        was beim ersten herauskam. */
     return entscheidungsSeite(schon);
@@ -839,17 +868,19 @@ async function handlePublishDecision(candidateId, request, env, options) {
   const i = befund.eintrag;
   const jetzt = new Date().toISOString();
 
-  const eingetragen = await recordDecision(env, {
-    candidateId,
-    contentHash: i.contentHash,
-    decision: "APPROVED",
-    decidedAt: jetzt,
-    decidedBy: "owner"
-  });
-  if (!eingetragen.ok && eingetragen.reason === "alreadyDecided") {
-    return entscheidungsSeite(eingetragen.decision);
+  if (!fortsetzen) {
+    const eingetragen = await recordDecision(env, {
+      candidateId,
+      contentHash: i.contentHash,
+      decision: "APPROVED",
+      decidedAt: jetzt,
+      decidedBy: "owner"
+    });
+    if (!eingetragen.ok && eingetragen.reason === "alreadyDecided") {
+      return entscheidungsSeite(eingetragen.decision);
+    }
+    if (!eingetragen.ok) return betriebsSeite("NOT_PUBLISHABLE", candidateId);
   }
-  if (!eingetragen.ok) return betriebsSeite("NOT_PUBLISHABLE", candidateId);
 
   /* ---------------------------------------------------------------
      DER BESTEHENDE WEG
@@ -859,9 +890,15 @@ async function handlePublishDecision(candidateId, request, env, options) {
      aus dem, was TATSAECHLICH gesendet wird. Das ist die Pruefung,
      die zaehlt.
      --------------------------------------------------------------- */
+  const istReel = i.payload.kind === "REEL";
   const antwort = await options.publish({
     contentId: i.payload.contentId,
-    imageUrl: i.payload.imageUrl,
+    imageUrl: istReel ? undefined : i.payload.imageUrl,
+    /* REEL: Video, Teilabdruck und Groesse. publishCore leitet auf publishReelCore. */
+    mediaType: istReel ? "REELS" : undefined,
+    videoUrl: istReel ? i.payload.videoUrl : undefined,
+    shareToFeed: istReel ? i.payload.shareToFeed !== false : undefined,
+    assetVideo: istReel ? { sha256: i.asset && i.asset.sha256, sizeBytes: i.asset && i.asset.sizeBytes } : undefined,
     /* Carousel: alle Slides, im Abdruck enthalten; Einzelbild: fehlt. */
     imageUrls: Array.isArray(i.payload.imageUrls) && i.payload.imageUrls.length > 1
       ? i.payload.imageUrls : undefined,
@@ -900,6 +937,10 @@ async function handlePublishDecision(candidateId, request, env, options) {
 
   const zustand = zustandAus(ergebnis);
   await settleDecision(env, candidateId, { published: false, lastError: zustand });
+  if (zustand === "REEL_PROCESSING") {
+    return entscheidungsSeite({ candidateId, decision: "APPROVED", published: false,
+      lastError: zustand, contentHash: i.contentHash });
+  }
   return betriebsSeite(zustand, candidateId);
 }
 
@@ -1007,6 +1048,16 @@ ${link}
      der Versand nicht. Die beiden zu vermengen hiesse, dem Owner eine
      Veroeffentlichung zu melden, die es nicht gibt. */
   const b = BETRIEB[d.lastError] || BETRIEB.META_PUBLISH_FAILED;
+  if (d.lastError === "REEL_PROCESSING" && /^cand_reel_/.test(String(d.candidateId || "")) && d.contentHash) {
+    return approvalResponse("Reel wird verarbeitet", `
+<h1>${escape(b.titel)}</h1>
+<p class="leise">${escape(b.text)}</p>
+<form method="POST" action="/approval/${escape(d.candidateId)}/publish">
+  <input type="hidden" name="fingerprint" value="${escape(d.contentHash)}">
+  <button type="submit">Verarbeitung pruefen</button>
+</form>
+<p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`, 202);
+  }
   return approvalResponse("Freigegeben, nicht gesendet", `
 <h1>${escape(b.titel)}</h1>
 <p class="leise">Deine Freigabe steht und bleibt stehen. Nur der Versand ist
@@ -1019,7 +1070,7 @@ nicht gelungen.</p>
 function betriebsSeite(zustand, candidateId) {
   const b = BETRIEB[zustand] || BETRIEB.META_PUBLISH_FAILED;
   const status = zustand === "STALE_CANDIDATE" || zustand === "PAYLOAD_TAMPERED"
-    || zustand === "QUALITY_GATE_FAILED" ? 409 : 502;
+    || zustand === "QUALITY_GATE_FAILED" ? 409 : (zustand === "REEL_PROCESSING" ? 202 : 502);
   return approvalResponse("Nicht gesendet", `
 <h1>${escape(b.titel)}</h1>
 <p class="leise">${escape(b.text)}</p>

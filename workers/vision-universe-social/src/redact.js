@@ -137,6 +137,9 @@ export async function contentHash(spec) {
   if (spec && Array.isArray(spec.imageUrls) && spec.imageUrls.length > 1) {
     o.imageUrls = spec.imageUrls.map((u) => String(u));
   }
+  /* REEL: die Videoadresse ist oeffentlich und gehoert in den Abdruck. Nur wenn
+     vorhanden - Bild und Carousel behalten exakt ihre bisherige Form. */
+  if (spec && spec.videoUrl) o.videoUrl = String(spec.videoUrl);
   o.caption = String(spec && spec.caption !== undefined && spec.caption !== null
     ? spec.caption : "");
   const kanonisch = JSON.stringify(o);

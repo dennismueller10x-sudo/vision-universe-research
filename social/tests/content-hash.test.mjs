@@ -34,7 +34,10 @@ const BEISPIELE = [
      sich zwei Implementierungen unterscheiden koennten. */
   { contentId: "pkg_e", imageUrl: "https://x.invalid/e.jpg",
     caption: "Große Überprüfung — \"zitiert\"\nZeile zwei\t\u{1F4C8}" },
-  { contentId: "pkg_f", imageUrl: "https://x.invalid/f.jpg?a=1&b=2#frag", caption: "a\\b/c" }
+  { contentId: "pkg_f", imageUrl: "https://x.invalid/f.jpg?a=1&b=2#frag", caption: "a\\b/c" },
+  /* REEL: die Videoadresse gehoert in den Abdruck; ein leeres Feld aendert ihn nicht. */
+  { contentId: "reel_g", videoUrl: "https://x.invalid/g.mp4", caption: "Reel-Text \u{1F680}" },
+  { contentId: "pkg_h", imageUrl: "https://x.invalid/h.jpg", videoUrl: "", caption: "leer" }
 ];
 
 test("CH1 · Der Abdruck ist stabil", () => {
@@ -102,4 +105,13 @@ test("CH8 · Zahlen und Objekte werden zu Text, nicht zu Fehlern", () => {
      Abdruck ergeben als dieselbe Kennung als Text. */
   assert.equal(Repo.contentHash({ contentId: 123, imageUrl: "b", caption: "c" }),
                Repo.contentHash({ contentId: "123", imageUrl: "b", caption: "c" }));
+});
+
+test("CH-R · Ein Reel hat einen eigenen Abdruck; die Videoadresse zaehlt, ein leeres Feld nicht", async () => {
+  const a = { contentId: "r", videoUrl: "https://x.invalid/1.mp4", caption: "t" };
+  const b = { contentId: "r", videoUrl: "https://x.invalid/2.mp4", caption: "t" };
+  assert.notEqual(Repo.contentHash(a), Repo.contentHash(b));
+  assert.equal(Repo.contentHash({ contentId: "p", imageUrl: "https://x.invalid/p.jpg", caption: "t" }),
+    Repo.contentHash({ contentId: "p", imageUrl: "https://x.invalid/p.jpg", videoUrl: "", caption: "t" }));
+  assert.equal(Repo.contentHash(a), await workerHash(a));
 });
