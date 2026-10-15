@@ -3,27 +3,32 @@ import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {tmpdir} from 'node:os';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {verifyPropagation,PropagationError,CAUSE,referenceDataSha256} from './propagation-proof.mjs';
 import {attachDiagnostics,collectFailure,redactor} from './browser-diagnostics.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
-const out=process.env.RUNNER_TEMP+'/live-off',origin='https://research.visionuniverse.de';mkdirSync(out,{recursive:true});
+const out=(process.env.RUNNER_TEMP||tmpdir())+'/live-off',origin='https://research.visionuniverse.de';mkdirSync(out,{recursive:true});
 /* Erwarteter Commit: der Job checkt den gebauten Commit aus (needs.package.outputs.source_sha). Nur im Pages-Release-Lauf
    aus HEAD abgeleitet; sonst nur Konsistenzpruefung. */
 const headSha=()=>{try{return execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();}catch{return null;}};
 const expectedSha=process.env.EXPECTED_PRODUCTION_SHA||(process.env.GITHUB_WORKFLOW==='Quant 2.0 Production Pages'?headSha():null);
 const dataRef=referenceDataSha256(fileURLToPath(new URL('../../discover/data/stocks/US_REAL/AAPL.json',import.meta.url)),expectedSha),dataSha=()=>dataRef.sha256;
+/* Platzhalter-Index des Checkouts (company-intelligence/data/index.json, state DISABLED): nur eine zweite Moeglichkeit neben
+   state==='DISABLED'. Fehlt die Datei, entfaellt nur dieser Hash-Vergleich (kein Fehlalarm). */
+const indexRef=referenceDataSha256(fileURLToPath(new URL('../../company-intelligence/data/index.json',import.meta.url)),expectedSha);
 const secrets=(()=>{try{const pw=process.env.RESEARCH_ACCESS_PASSWORD;return [pw,...Object.values(accessStateFor(pw)||{})].filter(v=>typeof v==='string'&&v.length>=8);}catch{return [];}})();
 const redact=redactor(secrets),writeReport=report=>writeFileSync(out+'/report.json',redact(JSON.stringify(report,null,2))+'\n');
-const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
-const propagation=await verifyPropagation({origin,expectedSha,expectedDataSha256:dataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)}))});
+const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',referenceIndex:indexRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
+const propagation=await verifyPropagation({origin,expectedSha,ci:'OFF',expectedIndexSha256:indexRef.sha256,expectedDataSha256:dataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)}))});
 if(propagation.status!=='PROPAGATED'){
  // Klare Ursache statt eines spaeteren Timeouts: der Release ist nicht (vollstaendig) ausgeliefert. Fail-closed.
  writeReport({status:'FAIL',cause:CAUSE,origin,gate:'CLOSED',propagation:brief(propagation)});
  throw new PropagationError(propagation);
 }
-const index=await(await fetch(origin+'/company-intelligence/data/index.json?off-proof='+Date.now(),{cache:'no-store'})).json();assert.equal(index.state,'DISABLED');
+/* index.json state DISABLED, rollout stage 0 und 404 fuer delivery/refresh sind Teil des Beweises (ci:'OFF'); die frueher
+   ungeschuetzte Einzelzeile assert.equal(index.state,'DISABLED') ausserhalb von try/catch ist dort aufgegangen. */
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']}),state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD),cases=[];
 let activePage=null,active=null;
 try{for(const product of ['discover','quant'])for(const width of [390,430,768,1440]){

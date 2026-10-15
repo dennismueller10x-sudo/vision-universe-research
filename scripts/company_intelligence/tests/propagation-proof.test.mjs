@@ -21,7 +21,7 @@ function release(commit, {drift = {}} = {}) {
  const contentBytes = Buffer.from(content), v = sha256(contentBytes).slice(0, 16);
  const dataBytes = Buffer.from(JSON.stringify({symbol: 'AAPL', commit}));
  const map = new Map([
-  ['/release-id.json', Buffer.from(JSON.stringify({schema: 'vu-release-id-1', commit, products: {quant: 'q', discover: discoverId}}))],
+  ['/release-id.json', Buffer.from(JSON.stringify({schema: 'vu-release-id-1', commit, products: {discover: discoverId}}))],
   ['/release-delivery.json', Buffer.from(JSON.stringify({sourceCommit: commit}))],
   ['/discover/', Buffer.from('<html><script data-content="/__research/content/discover/index.html?v=' + v + '"></script></html>')],
   ['/__research/content/discover/index.html', contentBytes],

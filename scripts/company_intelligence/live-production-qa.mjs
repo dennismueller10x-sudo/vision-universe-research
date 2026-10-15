@@ -6,7 +6,6 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
-const {manifest:reviewed,delivery:runtimeDelivery}=await runtimeCandidate();
 import {assertConsumerResponses} from './browser-delivery-proof.mjs';
 import {verifyPropagation,evaluateRelease,PropagationError,CAUSE,DEFAULTS,referenceDataSha256} from './propagation-proof.mjs';
 import {attachDiagnostics,collectFailure,bounded,redactor} from './browser-diagnostics.mjs';
@@ -33,6 +32,9 @@ const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal
 const fetchJSON=async path=>{const r=await get(path);assert(r.ok,path+' '+r.status);return r.json();};
 let release=null,delivery=null,browser=null,assetEntries=[],activePage=null,active=null;const cases=[];
 try{
+ /* Erwartetes Manifest erst NACH dem Propagationsbeweis laden: ein Abruf davor brach bei gemischtem Stand ungeschuetzt ab
+    (kein Bericht, keine Ursache). Fehler hier sind echte Fehler nach bewiesener Propagation (Bericht + Rollback-Pfad). */
+ const {manifest:reviewed}=await runtimeCandidate();
  release=await fetchJSON('/release-delivery.json');
  if(expectedSha)assert.equal(release.sourceCommit,expectedSha,'WRONG_PRODUCTION_COMMIT');
  delivery=await fetchJSON('/company-intelligence-delivery.json');assert.equal(delivery.generation,reviewed.generation);assert.equal(delivery.issuers,reviewed.scope==='PER_ISSUER_ELIGIBILITY'?Object.keys(reviewed.eligibility).length:45);assert.equal(delivery.cohortStocks,reviewed.tickers.length);
@@ -69,7 +71,7 @@ try{
 try{
  const done=await evaluateRelease({
   budget,
-  prove:o=>verifyPropagation({origin,expectedSha,expectedDataSha256:localDataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)})),...o}),
+  prove:o=>verifyPropagation({origin,expectedSha,ci:'ON',expectedDataSha256:localDataSha(),log:a=>console.error('propagation',JSON.stringify({n:a.n,atMs:a.atMs,ok:a.ok,observed:a.observed,failed:(a.failed||[]).map(c=>c.name+':'+c.cause)})),...o}),
   runBrowser:phase
  });
  if(done.retried)console.log('::warning title=Live-QA erst im zweiten Versuch bestanden::'+redact(String(done.previousFailure?.message||'').replace(/[\r\n%]+/g,' ').slice(0,300))+' | Grund: '+(done.previousFailure?.decision?.reason||'?')+' | Kennung: '+(done.propagation?.fingerprint||'?'));
