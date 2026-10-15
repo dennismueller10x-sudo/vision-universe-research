@@ -57,6 +57,19 @@ test('Feste private Fehlerphasen zeigen Cache- und Providerfehler ohne Rohdaten;
     const publicResponse=await f.handler(f.request(),f.env);assert.equal(publicResponse.status,503);assert.equal((await publicResponse.json()).diagnostic,undefined);
   }
 });
+test('Private Statusprüfung zeigt Mitgliedschaft und Sperre ausschließlich als Flags ohne Kontakt-/Ereignisrohdaten',async()=>{
+  const token='a'.repeat(43),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  for(const options of [{existing:{email:'synthetic-private@example.test',listIds:[4],emailBlacklisted:true,attributes:{VU_EMAIL_CONSENT:'subscribed'}}},{events:[{event:'delivered',email:'synthetic-private@example.test',messageId:'private-event-id'}]},{events:[{event:'unexpected-personalized-text',email:'synthetic-private@example.test'}]}]){
+    const f=fixture(options);Object.assign(f.env,{NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+    const original=f.request(undefined,{}, {Authorization:'Bearer '+token});
+    const response=await f.handler(new Request(origin+'/api/newsletter/test-diagnostics',original),f.env);
+    assert.equal(response.status,409);const raw=await response.text(),value=JSON.parse(raw).diagnostic;
+    assert.doesNotMatch(raw,/synthetic-private|private-event-id|unexpected-personalized-text/);
+    if(options.existing){assert.equal(value.member4,true);assert.equal(value.marketing_blocked,true);assert.equal(value.consent_subscribed,true);}
+    else assert.equal(value.latest_event,options.events[0].event==='delivered'?'delivered':'other');
+    assert.equal(f.sends().length,0);assert.ok([...f.stored.keys()].every(k=>k.includes('/diagnostic/')));
+  }
+});
 test('Privater Hauptdomain-Test benötigt Freigabe, geheimes Zugangsmerkmal und gültige Frist',async()=>{
   const token='a'.repeat(43);
   const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))].map(v=>v.toString(16).padStart(2,'0')).join('');
