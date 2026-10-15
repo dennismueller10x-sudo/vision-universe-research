@@ -1,0 +1,151 @@
+{
+  "schema": "supertrader-v4-1-manual-review-contract-1.0.0",
+  "appliesTo": [
+    "DARVAS_LATER_QA",
+    "WEINSTEIN_STAGE2_INVESTOR",
+    "WEINSTEIN_STAGE2_TRADER",
+    "MINERVINI_SEPA_VCP",
+    "KULLAMAGI_COMMON_BREAKOUT",
+    "KULLAMAGI_EPISODIC_PIVOT",
+    "KULLAMAGI_PARABOLIC_SHORT",
+    "MORALES_KACHER_POCKET_PIVOT",
+    "MORALES_KACHER_BUYABLE_GAP_UP"
+  ],
+  "pipeline": [
+    "MACHINE_SCREEN",
+    "RANKING",
+    "MANUAL_OR_AI_REVIEW",
+    "FINAL_CANDIDATE"
+  ],
+  "candidateRecord": {
+    "status": "MANUAL_REVIEW_REQUIRED",
+    "fields": [
+      "methodId",
+      "securityId (private)",
+      "asOf",
+      "buyDeclarationAllowed=false",
+      "machineScreenEvidence[] (V4.1 rule id, #709 rule id, value)",
+      "openQuestions[] (#709 rule ids left to judgment)",
+      "dataNotAvailableToMachine[]",
+      "reviewer",
+      "decision (ACCEPT_AS_CANDIDATE | REJECT | DEFER)",
+      "decisionReasons[] (#709 rule or case ids)",
+      "reviewedAt"
+    ]
+  },
+  "hardRules": [
+    "a machine screen may create MANUAL_REVIEW_REQUIRED records, never BUY",
+    "a decision without #709 rule or case ids as reasons is invalid",
+    "AI review output is a proposal and keeps status MANUAL_REVIEW_REQUIRED until a human decision",
+    "manual decisions are logged forward only; they are never back-filled into a historical backtest",
+    "DO_NOT_HARDEN_PREFERENCE rules are never turned into machine gates"
+  ],
+  "openQuestionsByComponent": {
+    "DARVAS_LATER_QA": [
+      {
+        "psr709": [
+          "DAR-Q12",
+          "DAR-Q14"
+        ],
+        "question": "techno-fundamental selection: industry growth expectation and strongest stocks of the industry"
+      },
+      {
+        "psr709": [
+          "DAR-Q10"
+        ],
+        "question": "volume relative to the stock's own history (no general minimum)"
+      },
+      {
+        "psr709": [
+          "DAR-Q13"
+        ],
+        "question": "market trend and representatives of relevant industries"
+      },
+      {
+        "psr709": [
+          "DAR-C1",
+          "DAR-C3",
+          "DAR-C6"
+        ],
+        "question": "personal exceptions (pilot buys, adds below the pilot price, test stops) are not generalized; sizing is the reviewer's decision"
+      }
+    ],
+    "MORALES_KACHER_POCKET_PIVOT": [
+      {
+        "psr709": [
+          "MOKAPP-001",
+          "MOKAPP-006",
+          "MOKAPP-008",
+          "MOKAPP-009"
+        ],
+        "question": "constructive base; no multi-month downtrend, no V-shape after a hard break, no wedging"
+      },
+      {
+        "psr709": [
+          "MOKAPP-002"
+        ],
+        "question": "strong fundamentals or a convincing theme"
+      },
+      {
+        "psr709": [
+          "MOKAPP-004",
+          "MOKAPP-007",
+          "MOKAPP-010"
+        ],
+        "question": "position relative to the 10DMA and the critical moving average; not extended"
+      },
+      {
+        "psr709": [
+          "MOKA12-001"
+        ],
+        "question": "early base pivot or continuation / add-on pivot"
+      }
+    ],
+    "MORALES_KACHER_BUYABLE_GAP_UP": [
+      {
+        "psr709": [
+          "MOKA12-003"
+        ],
+        "question": "strong leadership or fundamental theme"
+      },
+      {
+        "psr709": [
+          "MOKA12-006"
+        ],
+        "question": "uptrend or constructive consolidation before the gap"
+      },
+      {
+        "psr709": [
+          "MOKA24-MEGA"
+        ],
+        "question": "if volume is below 1.5x: is the megacap exception applicable?"
+      }
+    ]
+  },
+  "judgmentWithoutComponent": {
+    "WEINSTEIN_STAGE2_INVESTOR": [
+      "stage on the weekly chart and breakout over resistance (WEIN-BUY1)",
+      "half at breakout, half on a constructive pullback (WEIN-BUY2)",
+      "stop below a significant correction low, no fixed percentage (WEIN-STOP2)",
+      "slight MA undercut with rising MA and intact low is not a forced sale (WEIN-TRAIL4)"
+    ],
+    "WEINSTEIN_STAGE2_TRADER": [
+      "continuation buy near a rising 30-week MA (WEIN-TR-CONT)",
+      "full position on continuation breakouts (WEIN-TR-CONT-SIZE)",
+      "stop below the next relevant reaction low (WEIN-TR-STOP)"
+    ],
+    "MINERVINI_SEPA_VCP": [
+      "manual relative priority of the remaining names (MIN-PROCESS-04)",
+      "simple separate screens, not many AND criteria (MIN-PROCESS-15)",
+      "contraction count and halving are typical, not limits (MIN-VCP-02, MIN-VCP-03)"
+    ],
+    "KULLAMAGI_COMMON_BREAKOUT": [
+      "setup quality (KK-005..009 preferences)",
+      "daily breakout allowed (KK-011); low-of-day stop with distance <= ADR: reject a wide LoD, never replace it (KK-012)",
+      "partial sale after 3-5 days and trailing 10/20DMA are preferences (KK-013, KK-014)"
+    ],
+    "KULLAMAGI_EPISODIC_PIVOT": [
+      "catalyst type and surprise (KK-015, KK-038, KK-040)"
+    ]
+  }
+}
