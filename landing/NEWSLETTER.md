@@ -1,5 +1,17 @@
 # Vision-Universe-Newsletter: eigene Oberfläche, Brevo-DOI-API
 
+## Aktuelle Korrektur: Brevo muss die Vorlage als DOI erkennen
+
+Der echte Betreiber-Versuch scheiterte trotz erfolgreicher Leseprüfungen am DOI-Aufruf mit **HTTP 400 / invalid_parameter / „An active DOI template does not exist“**. „Aktiv“ und ein vorhandener `{{ params.DOIurl }}`-Link allein waren kein hinreichender Kompatibilitätsnachweis. Der offizielle einzelne Vorlagenabruf enthält zusätzlich `doiTemplate`; dieses Merkmal fehlte in den bisherigen Prüfungen.
+
+[Korrekturlauf 38776076686](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38776076686): Ausschließlich die eigene Vorlage **8** wurde nach vollständigem Namens-/Inhalts-/Betreffabgleich mit `PUT /smtp/templates/8` auf **Tag `optin`** gesetzt (HTTP 204). Rücklesen bestätigt **`doiTemplate: false → true`**, aktiv, gleicher Inhalt, Betreff, Absender und sonstige Felder. Vorlagen 1–4 und komplette Bestandsobjekte der Listen 4/5/6 bleiben unverändert; Zählwerte **134/0/2**, null E-Mails. Ein fehlender historischer Kontakt wird nicht automatisch wieder importiert.
+
+Runtime, Audit und Diagnose verlangen nun ausdrücklich `doiTemplate:true` und Tag `optin`. Setup legt neue DOI-Vorlagen bereits damit an. Die alte Reservierung wurde für eine nachweislich ungültige DOI-Konfiguration angelegt (HTTP 400, keine Mail-Ereignisse). Die erste providerseitig gültige Konfiguration hat einen eigenen Reservierungs-Namensraum; der globale Ereignisabgleich bleibt auf Vorlage 8 gebunden und verhindert erneuten Versand bereits erfasster Anfragen. Bestätigte HTTP-400-Ablehnungen bleiben zehn Minuten markiert und erzeugen weder eine falsche Bestätigungsseite noch einen automatischen Wiederholungsversuch. Unklare Ausgänge bleiben weiterhin 24 Stunden reserviert.
+
+Nur eine neue, von Brevo mit HTTP 201 angenommene Anfrage erhält im privaten Betreiber-Test den nicht personenbezogenen Antwortheader `X-VU-DOI-Accepted:1`. Wiederholungen erhalten diesen Beleg nicht. Die eigene Bestätigungsseite nach HTTP 202 bleibt ein Postfachhinweis; sie beweist keinen Mail-Eingang oder DOI-Klick. Die öffentliche Anmeldung bleibt geschlossen.
+
+Zusätzliche manuelle Operator-Modi: `doi-template-fix` darf ausschließlich den Tag der eindeutig zugeordneten eigenen Vorlage 8 ändern; keine allgemeinen Vorlagenupdates oder Kontaktänderungen. `doi-diagnose` benötigt die ausdrückliche kontrollierte Testautorisierung und nutzt genau einen fest gebundenen Betreiber-Datensatz aus dem bereits vorhandenen privaten Übergabe-Secret. Kein öffentlicher Empfängerparameter, keine neue private Dateiübergabe, keine neuen Secrets, kein Artefakt, keine automatische Wiederholung. Bestandskontakte, Sperren, vorherige Mail-Ereignisse oder unklare Antworten stoppen den Aufruf. Ausgegeben werden nur feste Codes/Flags und eng geprüfte unpersonalisierte Fehlermeldungen. Der normale Audit bleibt versandfrei.
+
 Das vorhandene Formular auf www.visionuniverse.de bleibt vollständig im Vision-Universe-Design. Es sendet per same-origin POST an **/api/newsletter/subscribe**. Ein schlanker Advanced-Mode-Worker im bestehenden Pages-Projekt **vision-universe** übernimmt Prüfung und Brevo-Aufruf. Kein Brevo-Formular, Iframe, CAPTCHA-Embed, D1 oder eigene Abmeldedatenbank. Schriften/Assets bleiben lokal.
 
 ## Belegter Zugriff und Einrichtung

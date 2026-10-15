@@ -78,9 +78,9 @@ test('Privater Hauptdomain-Test benötigt Freigabe, geheimes Zugangsmerkmal und 
     const f=controlled();Object.assign(f.env,patch);assert.equal((await f.handler(f.request(undefined,{},authorization?{Authorization:authorization}:{}),f.env)).status,503);assert.equal(f.calls.length,0);
   }
   const f=controlled();const req=(email)=>f.request(email,{}, {Authorization:'Bearer '+token});
-  assert.equal((await f.handler(req('new@example.test'),f.env)).status,202);assert.equal(f.sends().length,1);
+  const accepted=await f.handler(req('new@example.test'),f.env);assert.equal(accepted.status,202);assert.equal(accepted.headers.get('X-VU-DOI-Accepted'),'1');assert.equal(f.sends().length,1);
   assert.equal((await f.handler(req('other@example.test'),f.env)).status,503);assert.equal(f.sends().length,1);
-  assert.equal((await f.handler(req('new@example.test'),f.env)).status,202);assert.equal(f.sends().length,1);
+  const repeated=await f.handler(req('new@example.test'),f.env);assert.equal(repeated.status,202);assert.equal(repeated.headers.get('X-VU-DOI-Accepted'),null);assert.equal(f.sends().length,1);
   f.advance(7200001);assert.equal((await f.handler(req('new@example.test'),f.env)).status,503);assert.equal(f.sends().length,1);
 });
 test('Origin, Eingaben, Consentversion, Größe und Honeypot begrenzen den Endpoint',async()=>{
@@ -138,6 +138,15 @@ test('Parallele Wiederholung und unklarer Provider-Ausgang bleiben lokal reservi
     f.advance(601000);assert.equal((await f.handler(f.request(),f.env)).status,202);assert.equal(f.sends().length,1);
     for(const r of results)assert.doesNotMatch(await r.text(),/synthetic-api-key|new\+qa@example|personal details/);
   }
+});
+test('Bestätigte DOI-Ablehnung erzeugt keine falsche Erfolgsmeldung und wird nicht sofort wiederholt',async()=>{
+  const options={sendStatus:400},f=fixture(options);
+  for(let i=0;i<2;i++){
+    const response=await f.handler(f.request(),f.env);assert.equal(response.status,502);assert.match((await response.json()).message,/konnte nicht gesendet werden/);assert.equal(response.headers.get('X-VU-DOI-Accepted'),null);
+  }
+  assert.equal(f.sends().length,1);
+  // Only a later, separately initiated request can retry a known rejection.
+  f.advance(601000);options.sendStatus=201;assert.equal((await f.handler(f.request(),f.env)).status,202);assert.equal(f.sends().length,2);
 });
 test('Ratenfenster, Budget, unklare Bestandsabfrage und falsche Vorlage stoppen Versand',async()=>{
   const f=fixture();for(let i=0;i<3;i++)await f.handler(f.request('n'+i+'@example.test'),f.env);
