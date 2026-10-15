@@ -1,0 +1,204 @@
+{
+  "schema": "supertrader-v4-calibration-spec-1.0.0",
+  "generation": "CALIBRATION_V4",
+  "postHoc": true,
+  "registeredBeforeV4Measurement": true,
+  "question": "Can VU measure a simple stock strategy correctly? (not: does a trader method work)",
+  "v3Relationship": "V3 freezes, verdicts and results are historical evidence and are not changed; V4 is a new post-hoc generation with its own freeze",
+  "referenceValuesSeenBeforeMeasurement": "The oracle files were downloaded and parsed on 2026-10-15 to verify format and hashes; three reference means were printed once after the tolerances were fixed in code. No VU construction result existed at that time.",
+  "oracleClassification": {
+    "EW_MARKET": "MATCHED_UNIVERSE_APPROXIMATION",
+    "MOM_12_2_EW_DECILES": "MATCHED_UNIVERSE_APPROXIMATION",
+    "VAR_60D_EW_QUINTILES": "MATCHED_UNIVERSE_APPROXIMATION",
+    "CAL_JT1993_6_6": "DIRECTIONAL_REPLICATION (no public series; not measured in V4)",
+    "CAL_GH2004_52WH": "INTERNAL_CONTROL_ONLY (no public series; not measured in V4)",
+    "EXACT_REFERENCE_REPLICATION": "not attempted: requires the CRSP panel"
+  },
+  "constructions": {
+    "schema": "supertrader-v4-oracle-constructions-1.0.0",
+    "registeredBeforeV4Measurement": true,
+    "window": {
+      "fromMonth": "2018-01",
+      "toMonth": "2026-08",
+      "reason": "FROZEN_V3_REFERENCE_OVERLAP_WINDOW; FRENCH_FILES_END_2026_08"
+    },
+    "universe": {
+      "instrumentType": "EQUITY_COMMON",
+      "exchanges": [
+        "NYSE",
+        "NASDAQ",
+        "NYSE MKT",
+        "NYSE AMERICAN",
+        "AMEX"
+      ],
+      "breakpointExchange": "NYSE",
+      "minimumBreakpointNames": 100,
+      "priceFloor": null,
+      "reason": "FRENCH/CRSP SHARE CODES 10-11 ON NYSE/AMEX/NASDAQ WITH NYSE BREAKPOINTS; NO PRICE FLOOR IN THE ORACLE"
+    },
+    "constructions": {
+      "EW_MARKET": {
+        "oracle": "FRENCH_ME_EW_FIRM_COUNT_WEIGHTED",
+        "eligibility": "BAR_AT_FORMATION_AND_AT_LAST_JUNE_MONTH_END (French size portfolios are formed each June)"
+      },
+      "MOM_12_2_EW_DECILES": {
+        "oracle": "FRENCH_10_PORTFOLIOS_PRIOR_12_2_EW",
+        "signal": "TR(end of month m-2) / TR(end of month m-13) - 1",
+        "buckets": 10
+      },
+      "VAR_60D_EW_QUINTILES": {
+        "oracle": "FRENCH_PORTFOLIOS_FORMED_ON_VAR_EW",
+        "signal": "variance of daily total returns over the 60 sessions ending at F, at least 20 returns",
+        "buckets": 5
+      }
+    },
+    "percentileMethod": "LINEAR_INTERPOLATION_TYPE7",
+    "bucketRule": "FIRST_BUCKET_K_WITH_VALUE_LE_BREAKPOINT_K; TOP_BUCKET_OTHERWISE",
+    "returnBasis": "MONTHLY_CLOSE_TO_CLOSE_TOTAL_RETURN_INDEX; NO_COSTS",
+    "terminalPolicy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+    "deviations": [
+      "UNIVERSE: Tiingo observed listings (active and delisted store), not the CRSP population; listing generations dropped by the canonical core are absent",
+      "EXCHANGE: current/listing exchange from the listing id, not CRSP historical exchange codes",
+      "SHARE_CLASS: VU instrument class EQUITY_COMMON approximates CRSP share codes 10/11",
+      "DELISTING: unknown proceeds use the frozen protocol scenario (-30 %) instead of CRSP delisting returns",
+      "MARKET_EQUITY: no PIT shares, so the EW market eligibility uses a bar at the June month-end instead of positive June ME"
+    ]
+  },
+  "measurementPolicy": {
+    "id": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+    "version": "1.0.0",
+    "registeredBeforeV4Measurement": true,
+    "staleCarryMaxSessions": 5,
+    "staleCarryReason": "ONE_TRADING_WEEK; NOT_DERIVED_FROM_ANY_RESULT",
+    "zeroVolumeUnchangedCloseCountsAsStale": true,
+    "cases": {
+      "MISSING_ONE_SESSION": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_MULTIPLE_SESSIONS_UP_TO_LIMIT": "CARRY_LAST_CLOSE_FLAGGED_STALE",
+      "MISSING_BEYOND_LIMIT_NO_TERMINAL": "SETTLE_SECURITY_UNAVAILABLE_AT_LAST_CLOSE_TIMES_DATA_EVENT_FACTOR_ON_SESSION_LIMIT_PLUS_ONE",
+      "SUSPENDED": "NOT_DISTINGUISHABLE_FROM_MISSING_IN_SOURCE; SAME_AS_MISSING",
+      "DELISTED_UNKNOWN_CLASS": "FROZEN_PROTOCOL_ECONOMIC_SCENARIO (baseline -30 %, sensitivities last price and distress zero)",
+      "ACQUISITION_OFFICIAL_CLASS": "LAST_OBSERVED_PRICE_AS_CASH_PROCEEDS (frozen protocol)",
+      "DATA_QUARANTINE": "TERMINAL_ON_FIRST_SESSION_ON_OR_AFTER_MAX(FROM,OBSERVED_AT); DATA_EVENT_FACTOR",
+      "STALE_PRICING": "ZERO_VOLUME_UNCHANGED_CLOSE_DOES_NOT_RESET_THE_STALE_COUNTER",
+      "SECURITY_UNAVAILABLE": "SAME_AS_MISSING_BEYOND_LIMIT"
+    },
+    "dataEventScenarios": {
+      "baseline": "LAST_VALID_CLOSE",
+      "sensitivity": [
+        "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+        "ZERO_PROCEEDS"
+      ]
+    },
+    "economicScenarios": {
+      "baseline": "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+      "sensitivity": [
+        "LAST_OBSERVED_PRICE",
+        "DISTRESS_ZERO_OTHER_MINUS_30"
+      ]
+    },
+    "ordersOnlyOnRealSourceBars": true,
+    "syntheticBarsSettlementOnly": true
+  },
+  "accounting": {
+    "dustValueLimit": 0.01,
+    "dustBookValueCap": 1,
+    "minimumOrderValue": 0.000001,
+    "reconciliationAbsoluteFloor": 0.000001,
+    "reconciliationFlowUlps": 64
+  },
+  "priceSanity": {
+    "threshold": 1000000,
+    "splitConsistencyBand": 2,
+    "unitJumpRatio": 50,
+    "genuineRawNominalFloor": 100000,
+    "classes": [
+      "GENUINE_HIGH_NOMINAL_PRICE",
+      "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS",
+      "SPLIT_ARTIFACT",
+      "UNIT_ISSUE",
+      "CURRENCY_ISSUE",
+      "STALE_OR_UNADJUSTED",
+      "TICKER_IDENTITY",
+      "SOURCE_ERROR"
+    ],
+    "treatment": "classify, quarantine only proven defects, sensitivity without all affected"
+  },
+  "comparisonMetrics": [
+    "direction",
+    "monthly correlation",
+    "mean return",
+    "annualized return",
+    "volatility",
+    "max drawdown",
+    "rank spread (high-minus-low)",
+    "holding count (informational)",
+    "turnover (VU only, oracle unavailable)",
+    "exposure (structural)",
+    "rebalance dates (month-end both)"
+  ],
+  "tolerances": {
+    "external": {
+      "schema": "supertrader-v4-oracle-tolerances-1.0.0",
+      "registeredBeforeV4Measurement": true,
+      "minimumValidMonthShare": 0.95,
+      "correlation": {
+        "market": 0.95,
+        "bucket": 0.9,
+        "spread": 0.6
+      },
+      "meanDifference": {
+        "floor": 0.0025,
+        "standardErrors": 2,
+        "note": "floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation"
+      },
+      "volatilityRelative": 0.25,
+      "maxDrawdownAbsolute": 0.05,
+      "directionFloor": 0.0025,
+      "holdingCount": "INFORMATIONAL_UNIVERSE_DIFFERS",
+      "turnover": "UNAVAILABLE_FROM_ORACLE_VU_INFORMATIONAL",
+      "exposure": "STRUCTURAL_FULLY_INVESTED_BOTH_SIDES",
+      "rebalanceDates": "MONTH_END_BOTH_SIDES_EXACT"
+    },
+    "internal": {
+      "perMonthAbsolute": 0.0005,
+      "requiredMonthShare": 0.99,
+      "meanAbsolute": 0.0001,
+      "reason": "book credits dividends as cash while the TR index reinvests them on the ex-date; the difference is second order (yield x intra-month return)"
+    },
+    "noPostResultChange": true
+  },
+  "books": {
+    "CLOSE": "internal two-path oracle (formation close fill adapter, zero cost)",
+    "NEXT_OPEN": "frozen tournament convention, informational execution effect"
+  },
+  "review": [
+    "reconciliation (gross-flow tolerance)",
+    "R8b dividends recomputed",
+    "dust value cap",
+    "curve finite/non-negative",
+    "ending position freshness",
+    "A7 truncation + independent scorer (first, last, every 9th month)",
+    "off-calendar census"
+  ],
+  "sensitivities": [
+    "EXCLUDE_ALL_ADJUSTED_LEVEL_ABOVE_1E6",
+    "DATA_EVENTS_MINUS_30_PERCENT",
+    "ECONOMIC_LAST_OBSERVED_PRICE",
+    "ECONOMIC_DISTRESS_ZERO"
+  ],
+  "certification": {
+    "levels": [
+      "CERTIFIED",
+      "PARTIALLY_CERTIFIED",
+      "INTERNALLY_RECONCILED",
+      "NOT_CERTIFIED"
+    ],
+    "expectedOracles": [
+      "EW_MARKET",
+      "MOM_12_2_EW_DECILES",
+      "VAR_60D_EW_QUINTILES"
+    ],
+    "rules": "completion-v4.mjs certifyV4 (PASS is never CERTIFIED)"
+  },
+  "performanceRunGate": "Only after V4 certification CERTIFIED or PARTIALLY_CERTIFIED with the EW control externally passed; only IMPLEMENT_NOW methods; separate performance freeze before measurement; old VU adaptations stay separate (A/B)"
+}

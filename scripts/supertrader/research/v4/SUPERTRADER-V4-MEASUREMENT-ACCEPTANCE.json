@@ -1,0 +1,165 @@
+{
+  "schema": "supertrader-v4-measurement-acceptance-1.0.0",
+  "generation": "V4",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-measurement-acceptance-v4",
+  "primarySourceReconstructionArtifact": "NOT_IN_REPOSITORY_OWNER_ATTESTED_SUMMARY_ONLY",
+  "calibrationSummary": null,
+  "components": {
+    "TR_ARITHMETIC_AND_CORPORATE_ACTIONS": {
+      "externalSlice": "EW_MARKET"
+    },
+    "TERMINALS_AND_MISSING_BARS": {
+      "externalSlice": "EW_MARKET"
+    },
+    "CROSS_SECTIONAL_RANKING": {
+      "externalSlice": [
+        "MOM_12_2_EW_DECILES",
+        "VAR_60D_EW_QUINTILES"
+      ]
+    },
+    "NEXT_OPEN_EXECUTION_BOOK": {
+      "externalSlice": null,
+      "internal": "V4 NEXT_OPEN book reconciliation + R8b + review"
+    },
+    "STOP_TRIGGER_FILLS_ON_DAILY_BARS": {
+      "externalSlice": null,
+      "internal": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+    },
+    "WEEKLY_AGGREGATION": {
+      "externalSlice": null,
+      "internal": "not built in V4"
+    },
+    "INTRADAY_EXECUTION": {
+      "externalSlice": null,
+      "internal": null
+    },
+    "SHORT_BORROW_LEDGER": {
+      "externalSlice": null,
+      "internal": null
+    },
+    "FUTURES_ROLL_LEDGER": {
+      "externalSlice": null,
+      "internal": null
+    }
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "TERMINALS_AND_MISSING_BARS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "TERMINALS_AND_MISSING_BARS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "WEEKLY_AGGREGATION",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "WEEKLY_AGGREGATION",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "CROSS_SECTIONAL_RANKING",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "CROSS_SECTIONAL_RANKING",
+        "INTRADAY_EXECUTION"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "INTRADAY_EXECUTION"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "INTRADAY_EXECUTION",
+        "SHORT_BORROW_LEDGER"
+      ]
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS"
+      ]
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "STOP_TRIGGER_FILLS_ON_DAILY_BARS"
+      ]
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "verdict": "MEASUREMENT_PENDING_V4_CALIBRATION",
+      "components": [
+        "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+        "CROSS_SECTIONAL_RANKING"
+      ]
+    }
+  ]
+}

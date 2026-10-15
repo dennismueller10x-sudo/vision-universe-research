@@ -1,0 +1,70 @@
+{
+  "schema": "supertrader-v4-oracle-manifest-1.0.0",
+  "generation": "CALIBRATION_V4",
+  "registeredAt": "2026-10-15",
+  "registeredBeforeV4Measurement": true,
+  "window": { "from": "2018-01", "to": "2026-08" },
+  "expectedMonths": 104,
+  "rights": {
+    "publicAccess": "AVAILABLE",
+    "copyrightRetained": true,
+    "redistributionLicense": "NOT_ESTABLISHED",
+    "repositoryPolicy": "URLS, HASHES, METHOD DESCRIPTIONS AND DERIVED PASS/FAIL CLASSIFICATIONS ONLY; RAW VALUES STAY PRIVATE"
+  },
+  "sources": [
+    {
+      "id": "FRENCH_ME",
+      "oracleFor": ["EW_MARKET"],
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_ME_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "lastModifiedHeader": "Fri, 25 Sep 2026 21:54:55 GMT",
+      "crspVintage": "202608",
+      "archiveSha256": "f6c4c440b4c6f26f1f01365e84ccae5338ae52e65057034d2ef3d3c0c1843020",
+      "memberName": "Portfolios_Formed_on_ME.csv",
+      "memberSha256": "686eaba65743b4dff261ddc2e8a16743668cce3c4e0bdab43a78268a883180c0",
+      "memberBytes": 943165,
+      "sections": ["Average Equal Weighted Returns -- Monthly", "Number of Firms in Portfolios"],
+      "derivation": "EW market = sum over the ten size deciles of (number of firms x equal-weighted decile return) / total firms",
+      "sourceDefinition": "CRSP NYSE/AMEX/NASDAQ common shares (share codes 10/11) with positive market equity, size portfolios formed at the end of June, NYSE breakpoints"
+    },
+    {
+      "id": "FRENCH_MOM10",
+      "oracleFor": ["MOM_12_2_EW_DECILES"],
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "lastModifiedHeader": "Fri, 25 Sep 2026 21:55:47 GMT",
+      "crspVintage": "202608",
+      "archiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "memberName": "10_Portfolios_Prior_12_2.csv",
+      "memberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+      "memberBytes": 484135,
+      "sections": ["Average Equal Weighted Returns -- Monthly", "Number of Firms in Portfolios"],
+      "sourceDefinition": "monthly deciles on prior return from month -12 to -2, NYSE breakpoints; same archive hash as the frozen V3 reference plan",
+      "sameBytesAsV3ReferencePlan": true
+    },
+    {
+      "id": "FRENCH_VAR",
+      "oracleFor": ["VAR_60D_EW_QUINTILES"],
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "lastModifiedHeader": "Fri, 25 Sep 2026 21:54:52 GMT",
+      "crspVintage": "202608",
+      "archiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "memberName": "Portfolios_Formed_on_VAR.csv",
+      "memberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+      "memberBytes": 584013,
+      "sections": ["Equal Weighted Returns -- Monthly", "Number of Firms in Portfolios"],
+      "sourceDefinition": "monthly quintiles on total-return variance over 60 days up to formation month-end (at least 20 returns), NYSE breakpoints incl. utilities and financials; same archive hash as the frozen V3 reference plan",
+      "sameBytesAsV3ReferencePlan": true
+    }
+  ],
+  "notAvailable": [
+    { "strategy": "52_WEEK_HIGH (George/Hwang 2004)", "reason": "no official portfolio series published by the authors or a data library; paper tables cover 1963-2001 only", "classification": "DIRECTIONAL_REPLICATION_AT_MOST_INTERNAL_CONTROL_ONLY" },
+    { "strategy": "JT 6/6 overlapping cohorts (Jegadeesh/Titman 1993)", "reason": "no public monthly series for the 6/6 overlapping construction; the French 12-2 deciles are a different (matched) estimand", "classification": "DIRECTIONAL_REPLICATION" },
+    { "strategy": "Blitz/van Vliet 2007 low-volatility deciles", "reason": "no public monthly series; the French VAR quintiles are the matched public estimand", "classification": "DIRECTIONAL_REPLICATION" }
+  ],
+  "rejectedSources": [
+    "SEO or blog factor pages (not institutional)",
+    "ETF prices as factor oracles (fees, sampling, index rules not matched)"
+  ]
+}

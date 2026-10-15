@@ -1,0 +1,481 @@
+{
+  "schema": "supertrader-v4-data-acceptance-1.0.0",
+  "generation": "V4",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-measurement-acceptance-v4",
+  "primarySourceReconstructionArtifact": "NOT_IN_REPOSITORY_OWNER_ATTESTED_SUMMARY_ONLY",
+  "categories": {
+    "price": {
+      "status": "DATA_ACCEPTED",
+      "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+    },
+    "volume": {
+      "status": "DATA_ACCEPTED",
+      "basis": "canonical daily volume (split-adjusted and raw)"
+    },
+    "intraday": {
+      "status": "DATA_PARTIAL",
+      "basis": "IEX 1-minute bars fetched live per trigger day only (intraday-prefetch.mjs); no historical intraday panel -> historical backtests BLOCKED"
+    },
+    "fundamentals": {
+      "status": "DATA_PARTIAL",
+      "basis": "SEC EDGAR first-filing EPS/revenue/shares (legacy derivation, partial annual-fact certification); margins, balance sheet, cash flow history missing"
+    },
+    "estimates": {
+      "status": "DATA_BLOCKED",
+      "basis": "no analyst estimate history"
+    },
+    "surprises": {
+      "status": "DATA_BLOCKED",
+      "basis": "no consensus, therefore no earnings/sales surprise"
+    },
+    "guidance": {
+      "status": "DATA_BLOCKED",
+      "basis": "no guidance history"
+    },
+    "industry": {
+      "status": "DATA_PARTIAL",
+      "basis": "current classification only, not point-in-time"
+    },
+    "institutional": {
+      "status": "DATA_BLOCKED",
+      "basis": "no 13F/sponsorship panel"
+    },
+    "float": {
+      "status": "DATA_PARTIAL",
+      "basis": "SEC shares outstanding (not free float), not certified PIT"
+    },
+    "shortInterest": {
+      "status": "DATA_BLOCKED",
+      "basis": "none"
+    },
+    "borrow": {
+      "status": "DATA_BLOCKED",
+      "basis": "no locate/borrow fee/hard-to-borrow history"
+    },
+    "futures": {
+      "status": "DATA_BLOCKED",
+      "basis": "no futures chains, contract values, rolls"
+    },
+    "options": {
+      "status": "DATA_BLOCKED",
+      "basis": "none"
+    },
+    "catalystsNews": {
+      "status": "DATA_BLOCKED",
+      "basis": "no point-in-time news/catalyst feed"
+    }
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": {
+        "scope": "ORIGINAL_FUTURES_REPLICATION",
+        "status": "DATA_BLOCKED",
+        "missing": [
+          "futures",
+          "borrow"
+        ]
+      }
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": {
+        "scope": "ORIGINAL_FUTURES_REPLICATION",
+        "status": "DATA_BLOCKED",
+        "missing": [
+          "futures",
+          "borrow"
+        ]
+      }
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time",
+          "layer": "MANUAL_REVIEW_ONLY"
+        }
+      ],
+      "historicalManualLayerBacktest": "DATA_BLOCKED_OR_PARTIAL",
+      "originalScope": null
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time",
+          "layer": "MANUAL_REVIEW_ONLY"
+        }
+      ],
+      "historicalManualLayerBacktest": "DATA_BLOCKED_OR_PARTIAL",
+      "originalScope": null
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [
+        {
+          "category": "fundamentals",
+          "status": "DATA_PARTIAL",
+          "basis": "SEC EDGAR first-filing EPS/revenue/shares (legacy derivation, partial annual-fact certification); margins, balance sheet, cash flow history missing",
+          "layer": "MANUAL_REVIEW_ONLY"
+        },
+        {
+          "category": "estimates",
+          "status": "DATA_BLOCKED",
+          "basis": "no analyst estimate history",
+          "layer": "MANUAL_REVIEW_ONLY"
+        },
+        {
+          "category": "surprises",
+          "status": "DATA_BLOCKED",
+          "basis": "no consensus, therefore no earnings/sales surprise",
+          "layer": "MANUAL_REVIEW_ONLY"
+        },
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time",
+          "layer": "MANUAL_REVIEW_ONLY"
+        },
+        {
+          "category": "institutional",
+          "status": "DATA_BLOCKED",
+          "basis": "no 13F/sponsorship panel",
+          "layer": "MANUAL_REVIEW_ONLY"
+        },
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed",
+          "layer": "MANUAL_REVIEW_ONLY"
+        }
+      ],
+      "historicalManualLayerBacktest": "DATA_BLOCKED_OR_PARTIAL",
+      "originalScope": null
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed",
+          "layer": "MANUAL_REVIEW_ONLY"
+        }
+      ],
+      "historicalManualLayerBacktest": "DATA_BLOCKED_OR_PARTIAL",
+      "originalScope": null
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [
+        {
+          "category": "intraday",
+          "status": "DATA_PARTIAL",
+          "basis": "IEX 1-minute bars fetched live per trigger day only (intraday-prefetch.mjs); no historical intraday panel -> historical backtests BLOCKED",
+          "layer": "MANUAL_REVIEW_ONLY"
+        }
+      ],
+      "historicalManualLayerBacktest": "DATA_BLOCKED_OR_PARTIAL",
+      "originalScope": null
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "verdict": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        },
+        {
+          "category": "intraday",
+          "status": "DATA_PARTIAL",
+          "basis": "IEX 1-minute bars fetched live per trigger day only (intraday-prefetch.mjs); no historical intraday panel -> historical backtests BLOCKED"
+        },
+        {
+          "category": "surprises",
+          "status": "DATA_BLOCKED",
+          "basis": "no consensus, therefore no earnings/sales surprise"
+        },
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed"
+        },
+        {
+          "category": "estimates",
+          "status": "DATA_BLOCKED",
+          "basis": "no analyst estimate history"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "verdict": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        },
+        {
+          "category": "intraday",
+          "status": "DATA_PARTIAL",
+          "basis": "IEX 1-minute bars fetched live per trigger day only (intraday-prefetch.mjs); no historical intraday panel -> historical backtests BLOCKED"
+        },
+        {
+          "category": "borrow",
+          "status": "DATA_BLOCKED",
+          "basis": "no locate/borrow fee/hard-to-borrow history"
+        },
+        {
+          "category": "shortInterest",
+          "status": "DATA_BLOCKED",
+          "basis": "none"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "verdict": "DATA_PARTIAL",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        },
+        {
+          "category": "fundamentals",
+          "status": "DATA_PARTIAL",
+          "basis": "SEC EDGAR first-filing EPS/revenue/shares (legacy derivation, partial annual-fact certification); margins, balance sheet, cash flow history missing"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "verdict": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        },
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "verdict": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "verdict": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily OHLC (Tiingo active + delisted store), split/dividend total-return core; external calibration in V4"
+        },
+        {
+          "category": "volume",
+          "status": "DATA_ACCEPTED",
+          "basis": "canonical daily volume (split-adjusted and raw)"
+        },
+        {
+          "category": "fundamentals",
+          "status": "DATA_PARTIAL",
+          "basis": "SEC EDGAR first-filing EPS/revenue/shares (legacy derivation, partial annual-fact certification); margins, balance sheet, cash flow history missing"
+        },
+        {
+          "category": "estimates",
+          "status": "DATA_BLOCKED",
+          "basis": "no analyst estimate history"
+        },
+        {
+          "category": "institutional",
+          "status": "DATA_BLOCKED",
+          "basis": "no 13F/sponsorship panel"
+        },
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time"
+        }
+      ],
+      "manualLayerCategories": [],
+      "historicalManualLayerBacktest": "AVAILABLE",
+      "originalScope": null
+    }
+  ]
+}

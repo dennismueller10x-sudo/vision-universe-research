@@ -1,0 +1,180 @@
+name: Supertrader V4 calibration (post-hoc; freeze pushed before measurement; private plaintext never uploaded)
+# Research workflow of the V4 source/measurement acceptance track. It runs only on its own research branch
+# with the commit tag [supertrader-v4:calibrate] (or manually). Phase 1 runs the V4 test suite, captures the
+# canonical dataset and the hash-pinned French Data Library oracles, builds the V4 freeze and pushes it.
+# Phase 2 checks out exactly that freeze commit, re-captures, verifies content and pinning, measures, and
+# commits the public summary (verdicts, flags, counts, hashes). Private series are sealed to owner/session keys.
+on:
+  push:
+    branches:
+      - 'research/supertrader-source-measurement-acceptance-v4'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-v4-calibration-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  V4: scripts/supertrader/research/v4
+  CAL: scripts/supertrader/research/calibration
+jobs:
+  freeze:
+    if: contains(github.event.head_commit.message, '[supertrader-v4:calibrate]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    outputs:
+      freeze_commit: ${{ steps.commit.outputs.freeze_commit }}
+      freeze_file: ${{ steps.commit.outputs.freeze_file }}
+      observed_at: ${{ steps.clock.outputs.observed_at }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-v4-calibration.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freeze only the commit that triggered the run
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: V4 test suite must pass before the freeze
+        run: node --test scripts/supertrader/tests/v4-*.test.mjs
+      - name: Fixed observation time
+        id: clock
+        run: echo "observed_at=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" >> "$GITHUB_OUTPUT"
+      - name: Capture canonical dataset and pinned oracles (no measurement)
+        env:
+          V3_OBSERVED_AT: ${{ steps.clock.outputs.observed_at }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node $V4/capture-oracle-v4.mjs --out /workspace/private/oracle --public-out "$RUNNER_TEMP/pub/oracle.json"
+      - name: Build, commit and push the V4 freeze before any measurement
+        id: commit
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          FREEZE="$V4/SUPERTRADER-V4-FREEZE.json"
+          node $V4/freeze-v4.mjs build --capture-receipt "$RUNNER_TEMP/pub/capture.json" --oracle-receipt "$RUNNER_TEMP/pub/oracle.json" --out "$FREEZE.new"
+          mv "$FREEZE.new" "$FREEZE"
+          cp "$RUNNER_TEMP/pub/capture.json" "$V4/SUPERTRADER-V4-CAPTURE-RECEIPT.json"
+          cp "$RUNNER_TEMP/pub/oracle.json" "$V4/SUPERTRADER-V4-ORACLE-CAPTURE-RECEIPT.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FREEZE" "$V4/SUPERTRADER-V4-CAPTURE-RECEIPT.json" "$V4/SUPERTRADER-V4-ORACLE-CAPTURE-RECEIPT.json"
+          git commit -m "Supertrader V4: freeze before measurement (capture and oracle receipts, no performance)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+          node $V4/freeze-v4.mjs verify --freeze "$FREEZE" --pinned
+          echo "freeze_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "freeze_file=$FREEZE" >> "$GITHUB_OUTPUT"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  measure:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.freeze.outputs.freeze_commit }}
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-v4-calibration.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Re-capture, verify content and pinning, then measure
+        env:
+          V3_OBSERVED_AT: ${{ needs.freeze.outputs.observed_at }}
+          FREEZE: ${{ needs.freeze.outputs.freeze_file }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node $V4/freeze-v4.mjs verify --freeze "$FREEZE" --pinned
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node $V4/capture-oracle-v4.mjs --out /workspace/private/oracle --public-out "$RUNNER_TEMP/pub/oracle.json"
+          node --expose-gc $V4/run-calibration-v4.mjs --freeze "$FREEZE" --input-dir /workspace/private/canonical --oracle-parsed /workspace/private/oracle/oracle-parsed.json --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/SUPERTRADER-V4-CALIBRATION-SUMMARY.json"
+      - name: Sealed results (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v4-sealed-calibration
+          path: /workspace/private/results/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Commit the public summary
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/pub/SUPERTRADER-V4-CALIBRATION-SUMMARY.json" "$V4/SUPERTRADER-V4-CALIBRATION-SUMMARY.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$V4/SUPERTRADER-V4-CALIBRATION-SUMMARY.json"
+          git commit -m "Supertrader V4: calibration public summary (verdicts, flags, counts, hashes)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
