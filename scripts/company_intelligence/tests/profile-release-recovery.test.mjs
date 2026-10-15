@@ -119,3 +119,12 @@ test('open gate: a gate closed in parallel is not reopened by the failure path',
  await assert.rejects(finishProfileRecovery(w.driver,w.context,w.report));
  assert(w.objects.get(w.gateKey).equals(closed));assert(!w.writes.includes(w.gateKey));assert(w.objects.get(activationKey()).equals(w.activationBytes));
 });
+test('open gate: gate bytes changed after the activation write fail with RECOVERY_GATE_CHANGED, restore activation, never put the gate',async()=>{
+ const w=openWorld();const closed=Buffer.from(JSON.stringify({...JSON.parse(w.gateBytes),state:'DISABLED'}));const get=w.driver.get;let flipped=false;
+ w.driver.get=async k=>{const b=await get(k);if(k===activationKey()&&!flipped&&JSON.parse(b).state==='AVAILABLE'){flipped=true;w.objects.set(w.gateKey,closed);}return b;};
+ await assert.rejects(finishProfileRecovery(w.driver,w.context,w.report),/RECOVERY_GATE_CHANGED/);
+ assert(flipped,'the change must happen after the activation write');
+ assert(!w.writes.includes(w.gateKey),'no put on gate.json');
+ assert(w.objects.get(w.gateKey).equals(closed),'the concurrently closed gate stays closed');
+ assert(w.objects.get(activationKey()).equals(w.activationBytes),'activation pointer reset');
+});

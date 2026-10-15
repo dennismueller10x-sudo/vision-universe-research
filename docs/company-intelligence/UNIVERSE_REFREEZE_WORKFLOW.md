@@ -1,6 +1,6 @@
 # Re-Freeze per Workflow (`mode=refreeze`)
 
-Setzt auf PR #694 auf (`universe-release.mjs refreeze`, `frozen-refreeze.mjs`); der Befehl existiert erst nach dessen Merge. Dieses Dokument beschreibt nur die Auslösung in `.github/workflows/company-intelligence-universe-release.yml`.
+Baut auf `universe-release.mjs refreeze` und `frozen-refreeze.mjs` (PR #694, gemergt) auf. Dieses Dokument beschreibt nur die Auslösung in `.github/workflows/company-intelligence-universe-release.yml`.
 
 ## Eingaben
 
@@ -20,8 +20,15 @@ Auswertung: `status` ist `REFROZEN` oder `ALREADY_CURRENT`, und `privateStateMod
 
 Der Schritt „Fail closed to immutable 46 scope“ ist für `refreeze` ausgenommen (`inputs.mode != 'refreeze'`). Ein Fehlschlag von `refreeze` löst weder `restore46` noch einen Pages-Dispatch aus und fasst Gate, Aktivierung und Produktion nicht an. Das Rollback-Namespace-Verhalten bei Teilfehlern (Zeiger byte-genau zurück) liegt im Befehl selbst (#694).
 
+## Voraussetzungen (zeitunabhängig)
+
+- `refreeze` braucht eine ausgelieferte `company-intelligence-delivery.json`, die dem Legacy-GOOD entspricht (Gate offen, 46 Titel / 45 Emittenten), und ein Legacy-GOOD mit neuerem `generatedAt` als der bestehende Freeze. Ist das Gate geschlossen oder das GOOD zurückgerollt, schlägt der Befehl fail-closed fehl; das ist erwünscht.
+- `ALREADY_CURRENT` schreibt nichts und verlängert den Verfall (`manifest.generatedAt` + 7 Tage, `CONSUMER_EXPIRED`) nicht.
+- `refreeze` funktioniert auch nach Ablauf des alten Freeze. `rollback`, `restore46`, `recover_full_scope` und das Öffnen des Gates (`setProductionGate('AVAILABLE')` liest das aktive GOOD zurück) scheitern bei abgelaufenem aktivem GOOD bis dahin mit `CONSUMER_EXPIRED`.
+
 ## Betrieb
 
 - Concurrency unverändert (`company-intelligence-continuous-production`, kein Abbruch laufender Läufe), Berechtigungen unverändert (`contents: read`, `actions: write`).
 - Der eingefrorene Rollback verfällt sieben Tage nach `generatedAt`; Re-Freeze alle 3 bis 5 Tage, solange das Universum nicht aktiv ist. Ein Zeitplan ist bewusst nicht Teil dieser Änderung (Eigentümerentscheidung).
+- Der Test liest den Workflow-Text strukturell (ohne YAML-Parser, kein PyYAML im `validate`-Job) und hat Wächter-Assertions, dass die erwarteten Schritte gefunden wurden.
 - Tests: `scripts/company_intelligence/tests/universe-release-workflow.test.mjs` (Bedingungen je Modus, keine `inputs.*` in `run:`, Mutationen).

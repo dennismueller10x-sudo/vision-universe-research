@@ -1,11 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 const path=fileURLToPath(new URL('../../../.github/workflows/company-intelligence-universe-release.yml',import.meta.url));
-const yamlToJson=text=>JSON.parse(execFileSync('python3',['-I','-c','import sys,json,yaml;print(json.dumps(yaml.safe_load(sys.stdin.read())))'],{input:text,encoding:'utf8'}));
-const load=text=>yamlToJson(text??readFileSync(path,'utf8'));
+// Dependency-free structural reader for this workflow's YAML subset (no PyYAML in the validate job).
+const KEY='        ';
+function scalar(block,key){const m=block.match(new RegExp('^'+KEY+key+': ?(.*)$','m'));return m?m[1].trim().replace(/^'(.*)'$/,'$1'):undefined;}
+function nested(block,key){
+ const lines=block.split('\n'),i=lines.findIndex(l=>l===KEY+key+':');if(i<0)return undefined;
+ const out={};for(const l of lines.slice(i+1)){if(!/^ {10}\S/.test(l))break;const m=l.match(/^ {10}([\w-]+): ?(.*)$/);if(m)out[m[1]]=m[2].trim().replace(/^'(.*)'$/,'$1');}
+ return out;
+}
+function runText(block){
+ const lines=block.split('\n'),i=lines.findIndex(l=>l.startsWith(KEY+'run:'));if(i<0)return undefined;
+ const first=lines[i].slice((KEY+'run:').length).trim();if(first!=='|')return first;
+ const out=[];for(const l of lines.slice(i+1)){if(l.trim()!==''&&!/^ {10}/.test(l))break;out.push(l);}return out.join('\n');
+}
+function load(text){
+ const t=text??readFileSync(path,'utf8'),at=t.indexOf('\n    steps:\n');assert.ok(at>0,'steps block not found');
+ const stepsText=t.slice(at+'\n    steps:\n'.length);
+ const steps=stepsText.split(/^ {6}- /m).slice(1).map(b=>{const block=KEY+b;return {block,name:scalar(block,'name'),uses:scalar(block,'uses'),id:scalar(block,'id'),if:scalar(block,'if'),env:nested(block,'env')??{},with:nested(block,'with')??{},run:runText(block)};});
+ assert.ok(steps.length>=14,'expected the workflow steps, found '+steps.length);
+ const head=t.slice(0,at),inputsText=head.slice(head.indexOf('    inputs:'),head.indexOf('\npermissions:'));
+ const input=n=>{const m=inputsText.match(new RegExp('\n      '+n+':\n((?: {8}.*\n?)+)'));assert.ok(m,'input '+n+' not found');return m[1];};
+ const optionsM=input('mode').match(/options: \[(.*)\]/);assert.ok(optionsM,'mode options not found');
+ return {text:t,steps,mode:{options:optionsM[1].split(',').map(x=>x.trim()),default:input('mode').match(/default: (.*)/)[1].trim()},
+  required:n=>input(n).match(/required: (true|false)/)?.[1],
+  permissions:head.slice(head.indexOf('\npermissions:'),head.indexOf('\nconcurrency:')).trim().split('\n').slice(1).map(x=>x.trim()),
+  concurrency:head.slice(head.indexOf('\nconcurrency:'),head.indexOf('\njobs:')).trim().split('\n').slice(1).map(x=>x.trim()),
+  jobIf:head.match(/^ {4}if: (.*)$/m)?.[1].trim(),timeout:head.match(/timeout-minutes: (\d+)/)?.[1]};
+}
 // Minimal evaluator for the expression subset the workflow uses.
 function condition(expr,{mode,failed=false,activation='success'}){
  if(expr===undefined)return true;
@@ -13,28 +37,26 @@ function condition(expr,{mode,failed=false,activation='success'}){
   .replace(/github\.ref\b/g,'REF').replace(/failure\(\)/g,'FAILED').replace(/cancelled\(\)/g,'false').replace(/always\(\)/g,'true');
  return Boolean(new Function('MODE','ACTIVATION','FAILED','REF',`return (${js});`)(mode,activation,failed,'refs/heads/main'));
 }
-const stepsFor=(doc,mode)=>doc.jobs.release.steps.filter(s=>condition(s.if,{mode})).map(s=>s.name||s.uses);
-const find=(doc,part)=>doc.jobs.release.steps.find(s=>(s.name||'').includes(part));
+const stepsFor=(doc,mode)=>doc.steps.filter(s=>condition(s.if,{mode})).map(s=>s.name||s.uses);
+const find=(doc,part)=>doc.steps.find(s=>(s.name||'').includes(part));
 const doc=load();
-const triggers=doc.on??doc.true;
 test('workflow YAML parses and keeps the main-only job, permissions and concurrency',()=>{
- assert.deepEqual(doc.permissions,{contents:'read',actions:'write'});
- assert.deepEqual(doc.concurrency,{group:'company-intelligence-continuous-production','cancel-in-progress':false});
- assert.equal(doc.jobs.release.if,"github.ref == 'refs/heads/main'");
- assert.equal(doc.jobs.release['timeout-minutes'],120);
+ assert.deepEqual(doc.permissions,['contents: read','actions: write']);
+ assert.deepEqual(doc.concurrency,['group: company-intelligence-continuous-production','cancel-in-progress: false']);
+ assert.equal(doc.jobIf,"github.ref == 'refs/heads/main'");
+ assert.equal(doc.timeout,'120');
 });
 test('mode options add refreeze; scaling_run is optional in the form but mandatory for activate',()=>{
- const inputs=triggers.workflow_dispatch.inputs;
- assert.deepEqual(inputs.mode.options,['activate','rollback','health','refreeze']);
- assert.equal(inputs.mode.default,'activate');
- assert.equal(inputs.scaling_run.required,false);
+ assert.deepEqual(doc.mode.options,['activate','rollback','health','refreeze']);
+ assert.equal(doc.mode.default,'activate');
+ assert.equal(doc.required('scaling_run'),'false');
  const guard=find(doc,'Require a scaling run for activate');
  assert.equal(condition(guard.if,{mode:'activate'}),true);
  for(const m of ['rollback','health','refreeze'])assert.equal(condition(guard.if,{mode:m}),false);
  assert.equal(guard.env.SCALE_RUN,'${{ inputs.scaling_run }}');
  assert.match(guard.run,/\^\[0-9\]\+\$/);assert.match(guard.run,/exit 1/);
  // The guard runs before the first expensive step.
- const names=doc.jobs.release.steps.map(s=>s.name||s.uses);
+ const names=doc.steps.map(s=>s.name||s.uses);
  assert.ok(names.indexOf(guard.name)<names.indexOf(find(doc,'Browser and policy contracts').name));
 });
 test('activate, rollback and health keep their step sets',()=>{
@@ -48,7 +70,7 @@ test('refreeze runs checkout, node, the command, its evaluation and the artifact
  const run=stepsFor(doc,'refreeze');
  assert.ok(!run.some(n=>/Browser|playwright|scale receipt|Deploy existing Pages|production broad sample|Fail closed|Preserve 46|Current private|rollback acceptance/i.test(n)),run.join('|'));
  assert.deepEqual(run.filter(n=>n!=='actions/setup-python@v5'),['actions/checkout@v4','actions/setup-node@v4','Re-freeze immutable 46 rollback onto current legacy GOOD','Require untouched gate, activation and universe GOOD after refreeze','actions/upload-artifact@v4']);
- const [first,second]=doc.jobs.release.steps.filter(s=>s.uses==='actions/checkout@v4');
+ const [first,second]=doc.steps.filter(s=>s.uses==='actions/checkout@v4');
  assert.equal(first.with.ref,'${{ github.ref }}');
  assert.equal(first.with['fetch-depth'],"${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}");
  assert.equal(condition(second.if,{mode:'refreeze'}),false);
@@ -62,7 +84,7 @@ test('a refreeze failure never triggers restore46 or Pages dispatch, other modes
  assert.equal(condition(f.if,ctx('rollback')),true);
  assert.equal(condition(f.if,ctx('health')),false);
  assert.match(f.if,/inputs\.mode != 'refreeze'/);
- const refreezeSteps=doc.jobs.release.steps.filter(s=>/refreeze/i.test(s.name||''));
+ const refreezeSteps=doc.steps.filter(s=>/refreeze/i.test(s.name||''));
  for(const s of refreezeSteps)assert.doesNotMatch(s.run||'',/rollback --temporary|pages-release|gh workflow run|restore46/);
 });
 test('refreeze result is evaluated strictly and the command only sees inputs through env',()=>{
@@ -71,13 +93,15 @@ test('refreeze result is evaluated strictly and the command only sees inputs thr
  assert.match(cmd.run,/universe-release\.mjs refreeze --temporary/);
  assert.match(cmd.run,/--expect-generation "\$EXPECT_GENERATION"/);
  assert.match(cmd.run,/set -euo pipefail/);
+ assert.match(cmd.run,/\^\[0-9a-f\]\{24\}\$/);assert.match(cmd.run,/extra=\(--expect-generation/);
+ assert.ok(!cmd.run.includes('inputs.'));
  const ev=find(doc,'Require untouched gate');
  for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified'])assert.ok(ev.run.includes(k));
  assert.match(ev.run,/REFROZEN/);assert.match(ev.run,/ALREADY_CURRENT/);assert.match(ev.run,/strictEqual\(r\[k\],false/);
- assert.equal(triggers.workflow_dispatch.inputs.expect_generation.required,false);
+ assert.equal(doc.required('expect_generation'),'false');
 });
 test('ADR-005: no inputs expression inside any run text',()=>{
- for(const s of doc.jobs.release.steps)if(s.run)assert.doesNotMatch(s.run,/\$\{\{\s*(github\.event\.)?inputs\./,s.name);
+ for(const s of doc.steps)if(s.run)assert.doesNotMatch(s.run,/\$\{\{\s*(github\.event\.)?inputs\./,s.name);
  assert.doesNotMatch(readFileSync(path,'utf8'),/run:[^\n]*\$\{\{\s*inputs\./);
 });
 // Mutations: the structural checks must notice each regression.
@@ -98,5 +122,13 @@ test('mutation: Pages wait or browser suite reaching refreeze is detected',()=>{
 });
 test('mutation: inputs in a run block is detected',()=>{
  const m=mutate('node scripts/company_intelligence/universe-release.mjs refreeze --temporary','echo ${{ inputs.expect_generation }} && node scripts/company_intelligence/universe-release.mjs refreeze --temporary');
- assert.ok(m.jobs.release.steps.some(s=>/\$\{\{\s*inputs\./.test(s.run||'')));
+ assert.ok(m.steps.some(s=>/\$\{\{\s*inputs\./.test(s.run||'')));
+});
+test('mutation: dropping the expect_generation env wiring is detected',()=>{
+ const m=mutate('          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n','          EXPECT_GENERATION: ""\n');
+ assert.notEqual(find(m,'Re-freeze immutable 46').env.EXPECT_GENERATION,'${{ inputs.expect_generation }}');
+});
+test('mutation: a weakened refreeze evaluation is detected',()=>{
+ const m=mutate("assert.strictEqual(r[k],false","assert.ok(r[k]!==true");
+ assert.doesNotMatch(find(m,'Require untouched gate').run,/strictEqual\(r\[k\],false/);
 });
