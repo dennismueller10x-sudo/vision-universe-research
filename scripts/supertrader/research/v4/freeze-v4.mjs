@@ -38,6 +38,7 @@ export const ENTRY_POINTS_V4 = [
 export const CONTRACT_FILES_V4 = [
   `${V4}/SUPERTRADER-V4-ORACLE-MANIFEST.json`,
   `${V4}/SUPERTRADER-V4-CALIBRATION-SPEC.json`,
+  `${V4}/SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json`,
   'scripts/supertrader/research/tournament/protocol.json',
   'scripts/supertrader/research/calibration/protocol.json',
   '.github/workflows/supertrader-v4-calibration.yml',
@@ -111,7 +112,7 @@ export function hashFilesV4(files, root = ROOT) {
 }
 export function testSuiteFiles(root = ROOT) {
   const dir = path.join(root, 'scripts/supertrader/tests');
-  return fs.readdirSync(dir).filter((f) => /^v4-.*\.test\.mjs$/.test(f)).map((f) => `scripts/supertrader/tests/${f}`).sort();
+  return fs.readdirSync(dir).filter((f) => /^v4-.*\.mjs$/.test(f)).map((f) => `scripts/supertrader/tests/${f}`).sort();
 }
 
 /** Canonical JSON (sorted keys) so the id does not depend on key insertion order. */
@@ -121,6 +122,18 @@ export function canonicalJson(v) {
   return JSON.stringify(v);
 }
 export function freezeIdOf(frozen) { return 'V4-' + sha(Buffer.from(canonicalJson(frozen))).slice(0, 16); }
+
+const V3_SEVERITY = { blocker: 'BLOCKER', major: 'MAJOR', minor: 'MINOR', informational: 'MINOR' };
+const RANK = { BLOCKER: 4, MAJOR: 3, MODERATE: 2, MINOR: 1, NON_ISSUE: 0, ALREADY_FIXED: 0 };
+/** V4.1 (review R1): open findings are derived once and frozen; a severity below the V3 severity needs a written reason. */
+export function frozenOpenFindings(root = ROOT) {
+  const f = JSON.parse(fs.readFileSync(path.join(root, V4, 'SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json'), 'utf8'));
+  return f.findings.filter((x) => ['V3', 'V4'].includes(x.source)).map((x) => {
+    const v3 = V3_SEVERITY[x.v3Severity];
+    if (v3 && RANK[x.severity] < RANK[v3]) demand(typeof x.downgradeReason === 'string' && x.downgradeReason.length > 20, 'SEVERITY_DOWNGRADE_WITHOUT_REASON:' + x.id);
+    return { id: x.id, severity: x.severity, status: /^(CLOSED|ALREADY_FIXED)/.test(x.statusBeforeV4Measurement) ? 'CLOSED' : 'OPEN' };
+  });
+}
 
 export function buildFreezeV4({ root = ROOT, captureReceipt, oracleReceipt, now = new Date().toISOString(), runId = null, codeCommit = null }) {
   demand(captureReceipt?.status === 'V3_CANONICAL_CAPTURE_VERIFIED_IN_RUNNER' && captureReceipt.contentBinding?.schema, 'CAPTURE_RECEIPT_NOT_VERIFIED');
@@ -142,6 +155,7 @@ export function buildFreezeV4({ root = ROOT, captureReceipt, oracleReceipt, now 
     costs: { calibration: 'ZERO (oracle returns are gross)', tournamentProtocol: 'scripts/supertrader/research/tournament/protocol.json (unchanged)' },
     portfolio: CONSTRUCTION_CONTRACT_V4.constructions,
     oracleParsedSha256: oracleReceipt.parsedSha256,
+    openFindings: frozenOpenFindings(root),
     calibrationOracle: oracleReceipt.sources.map(({ id, url, archiveSha256, memberName, memberSha256 }) => ({ id, url, archiveSha256, memberName, memberSha256 })),
     tolerances: { external: ORACLE_TOLERANCES_V4, internal: INTERNAL_RECONCILIATION_TOLERANCE_V4 },
     contracts: hashFilesV4(CONTRACT_FILES_V4, root),

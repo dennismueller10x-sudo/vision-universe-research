@@ -22,7 +22,7 @@ import * as Listing from '../../validation/lib.mjs';
 import { verifyFreezeV4, verifyFreezePinned } from './freeze-v4.mjs';
 import { applyCausalTerminals } from './measurement/measurement-policy-v4.mjs';
 import { priceSanityCensus, applyPriceSanityQuarantine, exchangeOf } from './measurement/price-sanity-v4.mjs';
-import { buildConstructions, sessionCalendar, membershipTurnover } from './oracle/constructions-v4.mjs';
+import { buildConstructions, sessionCalendar, membershipTurnover, oracleUniverseMember } from './oracle/constructions-v4.mjs';
 import { compareEwMarket, compareBuckets, compareInternal } from './oracle/compare-v4.mjs';
 import { runEqualWeightBook } from './oracle/book-v4.mjs';
 import { recomputeDividends, offCalendarCensus, dustCheck, curveCheck, truncationReview, assembleReview } from './review/review-v4.mjs';
@@ -73,10 +73,12 @@ function seal(dir, name, bytes) {
 
 /** Pure core (also used by the synthetic end-to-end test). */
 export function calibrateV4(rawPrepared, oracle, { openFindings = [] } = {}) {
-  const terminals = applyCausalTerminals(rawPrepared);
-  const census = priceSanityCensus(terminals.data.securities);
-  const sanitized = applyPriceSanityQuarantine(terminals.data, census);
-  const data = sanitized.data;
+  // V4.1 (review R7b): the price-sanity quarantine runs first, then causal terminals are rebuilt for every quarantine
+  const census = priceSanityCensus(rawPrepared.securities);
+  const sanitized = applyPriceSanityQuarantine(rawPrepared, census);
+  const terminals = applyCausalTerminals(sanitized.data);
+  const data = terminals.data;
+  const keepDefects = applyCausalTerminals(rawPrepared).data;
   const calendar = sessionCalendar(data);
   const offCalendar = offCalendarCensus(data);
   const baseline = buildConstructions(data, {});
@@ -85,11 +87,12 @@ export function calibrateV4(rawPrepared, oracle, { openFindings = [] } = {}) {
   const openBook = runEqualWeightBook(data, baseline.months, { mode: 'NEXT_OPEN' });
   const internal = compareInternal(closeBook.monthly, new Map(baseline.months.map((m) => [m.month, m.EW_MARKET.ret])));
   const executionEffect = compareInternal(openBook.monthly, new Map(baseline.months.map((m) => [m.month, m.EW_MARKET.ret])));
-  const truncation = truncationReview(data, baseline.months, calendar, exchangeOf);
+  const truncation = truncationReview(data, baseline.months, calendar, exchangeOf, (s) => oracleUniverseMember(s));
   const review = assembleReview([bookReview('EW_CLOSE', closeBook, data), bookReview('EW_NEXT_OPEN', openBook, data), { book: 'CONSTRUCTIONS', checks: [truncation, offCalendar] }], ['EW_CLOSE', 'EW_NEXT_OPEN', 'CONSTRUCTIONS']);
   const affected = new Set(census.privateRows.map((r) => r.id));
   const variants = [
     { id: 'EXCLUDE_ALL_ADJUSTED_LEVEL_ABOVE_1E6', data: { ...data, securities: data.securities.filter((s) => !affected.has(s.id)) }, opts: {} },
+    { id: 'KEEP_PRICE_SANITY_DEFECTS_WITH_POST_DEFECT_PATH', data: keepDefects, opts: {} },
     { id: 'DATA_EVENTS_MINUS_30_PERCENT', data, opts: { dataEventScenario: 'UNKNOWN_PROCEEDS_MINUS_30_PERCENT' } },
     { id: 'ECONOMIC_LAST_OBSERVED_PRICE', data, opts: { scenario: 'LAST_OBSERVED_PRICE' } },
     { id: 'ECONOMIC_DISTRESS_ZERO', data, opts: { scenario: 'DISTRESS_ZERO_OTHER_MINUS_30' } },
@@ -116,8 +119,9 @@ export async function runCalibrationV4(args) {
   const sourceMetadataSha = sha(fs.readFileSync(path.join(inputDir, 'data-certification-inputs.json')));
   const raw = await loadCanonicalData(inputDir, { sourceProvenanceOverlay: true, expectedSourceMetadataSha256: sourceMetadataSha });
   const prepared = prepareRerunData(raw, baseProtocol).data;
-  const findings = JSON.parse(fs.readFileSync(path.join(HERE, 'SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json'), 'utf8'));
-  const openFindings = findings.findings.filter((f) => f.source === 'V3' || f.source === 'V4').map((f) => ({ id: f.id, severity: f.severity, status: /^(CLOSED|ALREADY_FIXED)/.test(f.statusBeforeV4Measurement) ? 'CLOSED' : 'OPEN' }));
+  // V4.1 (review R1): certification uses the open-findings array frozen inside the freeze, never the mutable file
+  const openFindings = freeze.openFindings;
+  demand(Array.isArray(openFindings) && openFindings.length > 0, 'FROZEN_OPEN_FINDINGS_REQUIRED');
   const r = calibrateV4(prepared, oracle, { openFindings });
   const summary = {
     schema: 'supertrader-v4-calibration-public-summary-1.0.0', generation: 'CALIBRATION_V4', postHoc: true,

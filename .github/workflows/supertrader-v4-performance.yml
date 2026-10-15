@@ -1,0 +1,155 @@
+name: Supertrader V4 performance (gated by the V4 calibration; performance freeze pushed before measurement)
+# Runs only with the commit tag [supertrader-v4:perform] (or manually) on its research branch. Phase 1 verifies
+# that the committed V4 calibration summary opens the performance gate, builds the performance freeze and pushes
+# it. Phase 2 measures one method per job at exactly that commit (source-faithful Turtle S1/S2 and the old VU
+# adaptation as A/B), seals exact metrics and commits public directions/classifications only.
+on:
+  push:
+    branches:
+      - 'research/supertrader-source-measurement-acceptance-v4'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-v4-performance-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  V4: scripts/supertrader/research/v4
+  CAL: scripts/supertrader/research/calibration
+jobs:
+  freeze:
+    if: contains(github.event.head_commit.message, '[supertrader-v4:perform]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      freeze_commit: ${{ steps.commit.outputs.freeze_commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 50
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-v4-performance.yml
+            /.github/workflows/supertrader-v4-calibration.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freeze only the commit that triggered the run
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
+      - name: V4 test suite must pass before the freeze
+        run: node --test scripts/supertrader/tests/v4-*.test.mjs
+      - name: Gate, build, commit and push the performance freeze before any measurement
+        id: commit
+        env:
+          BRANCH: ${{ github.ref_name }}
+          TRIGGER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node -e "import('./$V4/run-performance-v4.mjs').then(m=>{const g=m.performanceGate(JSON.parse(require('fs').readFileSync('$V4/SUPERTRADER-V4-CALIBRATION-SUMMARY.json','utf8')));console.log(JSON.stringify(g));if(!g.open)process.exit(3);})"
+          node $V4/freeze-performance-v4.mjs build --calibration-freeze "$V4/SUPERTRADER-V4-FREEZE.json" --calibration-summary "$V4/SUPERTRADER-V4-CALIBRATION-SUMMARY.json" --out "$V4/SUPERTRADER-V4-PERFORMANCE-FREEZE.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$V4/SUPERTRADER-V4-PERFORMANCE-FREEZE.json"
+          git commit -m "Supertrader V4: performance freeze before measurement (no performance yet)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+          test "$(git rev-parse HEAD^)" = "$TRIGGER_SHA"
+          node $V4/freeze-performance-v4.mjs verify --freeze "$V4/SUPERTRADER-V4-PERFORMANCE-FREEZE.json" --pinned
+          echo "freeze_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  measure:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        method: [TURTLE_S1_SOURCE, TURTLE_S2_SOURCE, TURTLE_S2_EQUITY_DAILY_OLD_VU]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.freeze.outputs.freeze_commit }}
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-v4-performance.yml
+            /.github/workflows/supertrader-v4-calibration.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Re-capture, verify, measure one method
+        env:
+          METHOD: ${{ matrix.method }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node $V4/freeze-performance-v4.mjs verify --freeze "$V4/SUPERTRADER-V4-PERFORMANCE-FREEZE.json" --pinned
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node --expose-gc $V4/run-performance-v4.mjs --perf-freeze "$V4/SUPERTRADER-V4-PERFORMANCE-FREEZE.json" --calibration-summary "$V4/SUPERTRADER-V4-CALIBRATION-SUMMARY.json" --input-dir /workspace/private/canonical --out /workspace/private/results --method "$METHOD" --public-out "$RUNNER_TEMP/pub/SUPERTRADER-V4-PERFORMANCE-$METHOD-SUMMARY.json"
+      - name: Sealed results (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v4-sealed-performance-${{ matrix.method }}
+          path: /workspace/private/results/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Commit the public summary
+        env:
+          BRANCH: ${{ github.ref_name }}
+          METHOD: ${{ matrix.method }}
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/pub/SUPERTRADER-V4-PERFORMANCE-$METHOD-SUMMARY.json" "$V4/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$V4/SUPERTRADER-V4-PERFORMANCE-$METHOD-SUMMARY.json"
+          git commit -m "Supertrader V4: performance public summary $METHOD (directions only)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private

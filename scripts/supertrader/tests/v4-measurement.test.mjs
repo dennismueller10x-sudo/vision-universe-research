@@ -167,7 +167,12 @@ test('comparison: identical series PASS; sign-flipped series FAIL on correlation
   assert.equal(c.verdict, 'FAIL');
   assert.ok(c.failedHardChecks.includes('CORRELATION') && c.failedHardChecks.includes('DIRECTION'));
   const sparse = new Map(months.slice(0, 50).map((m) => [m, ref.get(m)]));
-  assert.equal(compareSeries(sparse, ref, { kind: 'market', windowMonths: 104 }).verdict, 'INSUFFICIENT_REFERENCE_DATA');
+  // R10: a VU-side shortage is a VU failure; only a reference-side shortage is INSUFFICIENT_REFERENCE_DATA
+  assert.deepEqual(compareSeries(sparse, ref, { kind: 'market', windowMonths: 104 }).failedHardChecks, ['VU_COVERAGE']);
+  assert.equal(compareSeries(ref, sparse, { kind: 'market', windowMonths: 104 }).verdict, 'INSUFFICIENT_REFERENCE_DATA');
+  // R9: the mean-difference band is capped; a persistent 1 %/month gap fails although noise is large
+  const noisy = new Map([...ref].map(([m, v], i) => [m, v + 0.01 + (i % 2 ? 0.06 : -0.06)]));
+  assert.ok(compareSeries(noisy, ref, { kind: 'spread' }).failedHardChecks.includes('MEAN_DIFFERENCE'));
 });
 
 const synthetic = syntheticData();

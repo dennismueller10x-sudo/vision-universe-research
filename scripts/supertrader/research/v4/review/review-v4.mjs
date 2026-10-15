@@ -94,10 +94,26 @@ function nyseBreakpoints(values, n) {
  * the independent scorer on truncated data and compare bucket memberships exactly.
  * Sample: first, last and every 9th holding month (registered before measurement).
  */
-export function truncationReview(data, months, calendar, exchangeOf) {
+export function truncationReview(data, months, calendar, exchangeOf, universeMember = null) {
   const byId = new Map(data.securities.map((s) => [s.id, s]));
   const sample = months.filter((_, i) => i === 0 || i === months.length - 1 || i % 9 === 0);
   const rows = [];
+  // V4.1 (review R13): the EW eligible set itself is rebuilt from data truncated at F (bar exactly at F with a valid
+  // total-return index, a bar at the last June month-end, no terminal on or before F) and compared as a set.
+  const lastOfMonth = new Map(); for (const d of calendar) lastOfMonth.set(d.slice(0, 7), d);
+  for (const m of universeMember ? sample : []) {
+    const F = m.formation, y = Number(m.month.slice(0, 4)), june = lastOfMonth.get(`${Number(m.month.slice(5, 7)) >= 7 ? y : y - 1}-06`);
+    const expected = new Set();
+    for (const s of data.securities) {
+      if (!universeMember(s) || (s.terminal && s.terminal.date <= F)) continue;
+      const t = s.bars.filter((b) => b.date <= F), atF = t.at(-1);
+      if (!atF || atF.date !== F || !(atF.totalReturnIndex > 0) || !june || !t.some((b) => b.date === june)) continue;
+      expected.add(s.id);
+    }
+    const actual = new Set(m.EW_MARKET.privateMembership ?? []);
+    const missing = [...expected].filter((id) => !actual.has(id)).length, extra = [...actual].filter((id) => !expected.has(id)).length;
+    rows.push({ month: m.month, key: 'EW_MARKET_ELIGIBLE_SET', members: actual.size, missingIndependentScore: missing, bucketMismatches: extra });
+  }
   for (const m of sample) {
     for (const [key, n, score] of [
       ['MOM_12_2_EW_DECILES', 10, (s) => independentMomentum(s.bars, m.month, m.formation)],

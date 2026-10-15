@@ -4,6 +4,7 @@
  *  CERTIFIED              EW control AND at least two economically distinct factor families (momentum, variance)
  *                         pass their external oracle; internal two-path reconciliation and the independent review
  *                         pass; no open BLOCKER/MAJOR V4 finding; the price-sanity sensitivity does not flip a verdict.
+ *  (V4.1) an EW verdict flip under any pre-registered sensitivity caps the level at INTERNALLY_RECONCILED.
  *  PARTIALLY_CERTIFIED    EW control passes externally, internal/review pass, but at least one factor oracle fails
  *                         or is insufficient, or a MAJOR finding stays open, or a sensitivity flips a factor verdict.
  *  INTERNALLY_RECONCILED  internal two-path reconciliation and review pass, but the EW control cannot be assessed
@@ -38,11 +39,14 @@ export function certifyV4({ internal, review, oracles, sensitivities = [], openF
     for (const k of ['MOM_12_2_EW_DECILES', 'VAR_60D_EW_QUINTILES']) if (oracles[k].verdict !== 'PASS') reasons.push(`${k}_${oracles[k].verdict}`);
     if (majors.length && level === 'CERTIFIED') { level = 'PARTIALLY_CERTIFIED'; reasons.push('OPEN_MAJOR_FINDINGS'); }
     if (flips.length && level === 'CERTIFIED') { level = 'PARTIALLY_CERTIFIED'; reasons.push('SENSITIVITY_FLIPS_A_VERDICT'); }
-    if (flips.some((s) => s.verdicts.EW_MARKET && s.verdicts.EW_MARKET !== oracles.EW_MARKET.verdict)) reasons.push('EW_VERDICT_SENSITIVE:' + flips.map((s) => s.id).join(','));
+    // V4.1 (review R8): if any pre-registered sensitivity flips the EW control, the external validation of the
+    // measurement base is not robust: cap at INTERNALLY_RECONCILED (closes the performance gate)
+    const ewFlips = flips.filter((s) => s.verdicts.EW_MARKET && s.verdicts.EW_MARKET !== oracles.EW_MARKET.verdict);
+    if (ewFlips.length) { level = 'INTERNALLY_RECONCILED'; reasons.push('EW_VERDICT_SENSITIVE:' + ewFlips.map((s) => s.id).join(',')); }
   }
   return {
     schema: 'supertrader-v4-certification-1.0.0', level, reasons,
-    externallyValidatedSlices: [...(oracles.EW_MARKET.verdict === 'PASS' ? ['EW_MARKET'] : []), ...factorPass],
+    externallyValidatedSlices: level === 'NOT_CERTIFIED' || level === 'INTERNALLY_RECONCILED' ? [] : [...(oracles.EW_MARKET.verdict === 'PASS' ? ['EW_MARKET'] : []), ...factorPass],
     internalOnlySlices: ['EXECUTION_NEXT_OPEN_BOOK', 'COSTS', 'STOP_TRIGGER_FILLS', 'JT_6_6_OVERLAPPING_COHORTS', 'GH_52_WEEK_HIGH'],
     passIsNotCertified: true,
     openFindings: { blockers: blockers.map((f) => f.id), majors: majors.map((f) => f.id) },

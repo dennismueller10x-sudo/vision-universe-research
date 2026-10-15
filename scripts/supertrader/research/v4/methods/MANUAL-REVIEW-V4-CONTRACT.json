@@ -1,0 +1,67 @@
+{
+  "schema": "supertrader-v4-manual-review-contract-1.0.0",
+  "appliesTo": [
+    "WEINSTEIN_STAGE2_INVESTOR",
+    "WEINSTEIN_STAGE2_TRADER",
+    "MINERVINI_SEPA_VCP",
+    "MINERVINI_POWER_PLAY",
+    "KULLAMAGI_COMMON_BREAKOUT",
+    "KULLAMAGI_EPISODIC_PIVOT",
+    "KULLAMAGI_PARABOLIC_SHORT",
+    "MORALES_KACHER_POCKET_PIVOT",
+    "MORALES_KACHER_BUYABLE_GAP_UP",
+    "ONEIL_CAN_SLIM"
+  ],
+  "pipeline": [
+    "MACHINE_SCREEN",
+    "RANKING",
+    "MANUAL_OR_AI_REVIEW",
+    "FINAL_CANDIDATE"
+  ],
+  "candidateRecord": {
+    "status": "MANUAL_REVIEW_REQUIRED",
+    "fields": [
+      "methodId",
+      "securityId (private)",
+      "asOf",
+      "machineScreenEvidence[] (rule id, value, source id)",
+      "rankingEvidence",
+      "openQuestions[] (what the source leaves to judgment)",
+      "dataNotAvailableToMachine[]",
+      "reviewer",
+      "decision (ACCEPT_AS_CANDIDATE | REJECT | DEFER)",
+      "decisionReasons[] (source ids)",
+      "reviewedAt"
+    ]
+  },
+  "hardRules": [
+    "a machine screen may create MANUAL_REVIEW_REQUIRED records, never BUY",
+    "a decision without source-id reasons is invalid",
+    "AI review output is a proposal and keeps status MANUAL_REVIEW_REQUIRED until a human decision",
+    "manual decisions are logged forward only; they are never back-filled into a historical backtest"
+  ],
+  "perMethodJudgment": {
+    "MINERVINI_SEPA_VCP": [
+      "relative priority among Trend-Template passers (OSR-MIN-01)",
+      "fundamental thesis and its price confirmation (OSR-MIN-06)",
+      "turnaround family vs growth family (OSR-MIN-02)",
+      "VCP shape as typical form, not hard limits (OSR-MIN-04)"
+    ],
+    "MINERVINI_POWER_PLAY": [
+      "exception characteristics (OSR-MIN-03)",
+      "pivot selection"
+    ],
+    "WEINSTEIN_STAGE2_INVESTOR": [
+      "stage identification on the weekly chart",
+      "resistance and support levels for stops (OSR-WEI-01/02)",
+      "group strength"
+    ],
+    "WEINSTEIN_STAGE2_TRADER": [
+      "trader-path entry and tighter support stop (separate from investor path)"
+    ],
+    "KULLAMAGI_COMMON_BREAKOUT": [
+      "orderly base quality (higher lows, tightening)",
+      "opening-range-high entry and low-of-day stop on intraday data (OSR-KK-01: no ADR clamp substitute)"
+    ]
+  }
+}

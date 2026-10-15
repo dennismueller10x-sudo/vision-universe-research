@@ -1,0 +1,312 @@
+{
+  "schema": "supertrader-v4-method-spec-1.0.0",
+  "version": "turtle-source-v4-1.1.0",
+  "methods": [
+    "TURTLE_S1_SOURCE",
+    "TURTLE_S2_SOURCE"
+  ],
+  "eligibility": "IMPLEMENT_NOW (conditional on the V4 calibration gate)",
+  "scope": {
+    "implemented": "VU_EQUITY_ADAPTATION (long-only source translation)",
+    "notImplemented": "ORIGINAL_FUTURES_REPLICATION (DATA_BLOCKED: futures chains, contract values, rolls, correlation groups, shorting)"
+  },
+  "sourceIds": [
+    "TUR-E-CONS-01",
+    "TUR-E-LEV-01",
+    "TUR-E-NOTIONAL-01",
+    "TUR-E-PYR-01",
+    "TUR-E-RANK-01",
+    "TUR-E-SHORT-01",
+    "TUR-F-ADD-01",
+    "TUR-F-BO-01",
+    "TUR-F-CONS-01",
+    "TUR-F-EXIT-S1",
+    "TUR-F-EXIT-S2",
+    "TUR-F-FAILSAFE-55",
+    "TUR-F-FUND-01",
+    "TUR-F-LIM-01",
+    "TUR-F-LS-01",
+    "TUR-F-MKT-01",
+    "TUR-F-N-01",
+    "TUR-F-NOTIONAL-01",
+    "TUR-F-ORD-01",
+    "TUR-F-RANK-01",
+    "TUR-F-REGIME-01",
+    "TUR-F-S1-ENTRY",
+    "TUR-F-S1-FILTER",
+    "TUR-F-S2-ENTRY",
+    "TUR-F-SIM-01",
+    "TUR-F-STOP-2N",
+    "TUR-F-STOP-ADD",
+    "TUR-F-UNIT-01",
+    "TUR-F-UNIT-02"
+  ],
+  "sourceContract": "scripts/supertrader/fidelity/canonical/turtle.json",
+  "exactRules": [
+    {
+      "ruleId": "T4-N",
+      "sourceIds": [
+        "TUR-F-N-01"
+      ],
+      "rule": "TR = max(H-L, H-PDC, PDC-L); N = (19*PDN + TR)/20, seeded with the 20-day mean TR"
+    },
+    {
+      "ruleId": "T4-S1-ENTRY",
+      "sourceIds": [
+        "TUR-F-S1-ENTRY",
+        "TUR-F-BO-01"
+      ],
+      "rule": "buy one unit when price exceeds the prior 20-day high by one tick, intraday at the breakout, at the open on a gap"
+    },
+    {
+      "ruleId": "T4-S1-FILTER",
+      "sourceIds": [
+        "TUR-F-S1-FILTER",
+        "TUR-E-SHORT-01"
+      ],
+      "rule": "skip an S1 breakout if the last breakout (taken or not, long or short) was not a losing breakout; losing = price moved 2N against it before a profitable 10-day exit",
+      "interpretation": "LITERAL: a 10-day exit at a loss without a prior 2N adverse move is not a losing breakout (counted NON_LOSER). Path-consistent intrabar order (the level nearer to the open is hit first). An unresolved (open) previous breakout counts as not losing (source silent; conservative, fewer entries). A stop inside the hypothetical breakout bar does not resolve it (conservative for the filter; counted)"
+    },
+    {
+      "ruleId": "T4-FAILSAFE",
+      "sourceIds": [
+        "TUR-F-FAILSAFE-55"
+      ],
+      "rule": "if an S1 breakout was skipped, enter at the 55-day breakout",
+      "interpretation": "exit of failsafe positions follows S1 (source silent; labelled interpretation, R15 TUR-F-FAILSAFE-55)"
+    },
+    {
+      "ruleId": "T4-S2-ENTRY",
+      "sourceIds": [
+        "TUR-F-S2-ENTRY"
+      ],
+      "rule": "buy one unit one tick above the 55-day high; no filter"
+    },
+    {
+      "ruleId": "T4-UNIT",
+      "sourceIds": [
+        "TUR-F-UNIT-01",
+        "TUR-F-UNIT-02"
+      ],
+      "rule": "unit = 1 % of the notional account / N (dollar volatility per share = N)"
+    },
+    {
+      "ruleId": "T4-NOTIONAL",
+      "sourceIds": [
+        "TUR-F-NOTIONAL-01",
+        "TUR-E-NOTIONAL-01"
+      ],
+      "rule": "notional account = equity at the first session of the year; each loss of 10 % of the current notional cuts it by 20 % (1M -> 0.8M -> 0.64M; thresholds 10 %, 18 %, 24.4 % ... of the year start); the cut holds until the year start is regained; at a 50 % yearly loss no new units (TUR-E-NOTIONAL-01)"
+    },
+    {
+      "ruleId": "T4-ADD",
+      "sourceIds": [
+        "TUR-F-ADD-01",
+        "TUR-E-PYR-01"
+      ],
+      "rule": "add one unit every 1/2 N above the previous unit fill, up to 4 units, several per day possible",
+      "interpretation": "N for add spacing and stops = N at the initial entry (worked example in the source keeps N constant)"
+    },
+    {
+      "ruleId": "T4-STOP",
+      "sourceIds": [
+        "TUR-F-STOP-2N",
+        "TUR-F-STOP-ADD"
+      ],
+      "rule": "stop 2N below the last unit fill; adds raise the stop of all units to 2N below the newest unit"
+    },
+    {
+      "ruleId": "T4-EXIT-S1",
+      "sourceIds": [
+        "TUR-F-EXIT-S1"
+      ],
+      "rule": "exit all units when price trades below the prior 10-day low"
+    },
+    {
+      "ruleId": "T4-EXIT-S2",
+      "sourceIds": [
+        "TUR-F-EXIT-S2"
+      ],
+      "rule": "exit all units when price trades below the prior 20-day low"
+    },
+    {
+      "ruleId": "T4-LIMIT",
+      "sourceIds": [
+        "TUR-F-LIM-01"
+      ],
+      "rule": "at most 4 units per market and 12 units per direction"
+    },
+    {
+      "ruleId": "T4-RANK",
+      "sourceIds": [
+        "TUR-F-RANK-01",
+        "TUR-F-SIM-01",
+        "TUR-E-RANK-01"
+      ],
+      "rule": "simultaneous signals: buy the strongest first; strength = (close - close 3 months ago) / N"
+    },
+    {
+      "ruleId": "T4-CONSISTENCY",
+      "sourceIds": [
+        "TUR-F-CONS-01",
+        "TUR-E-CONS-01"
+      ],
+      "rule": "take every signal; no VU lifecycle (no proximity, expiry or cooldown)"
+    },
+    {
+      "ruleId": "T4-NO-REGIME",
+      "sourceIds": [
+        "TUR-F-REGIME-01",
+        "TUR-F-FUND-01"
+      ],
+      "rule": "no market-regime, index or fundamental filter"
+    }
+  ],
+  "modalStrength": "MANDATORY for every SOURCE rule (the source calls the system complete and mechanical; TUR-F-FUND-01, TUR-F-CONS-01)",
+  "parameters": {
+    "S1": {
+      "entry": 20,
+      "exit": 10,
+      "filter": true,
+      "failsafe": 55
+    },
+    "S2": {
+      "entry": 55,
+      "exit": 20,
+      "filter": false,
+      "failsafe": null
+    },
+    "filterBreakout": 20,
+    "filterExit": 10,
+    "nPeriod": 20,
+    "unitRiskFraction": 0.01,
+    "stopN": 2,
+    "addStepN": 0.5,
+    "maxUnitsPerMarket": 4,
+    "maxUnitsDirection": 12,
+    "rankLookback": 63,
+    "notionalLossStep": 0.1,
+    "notionalCutStep": 0.2,
+    "rawTick": 0.01
+  },
+  "requiredData": [
+    "daily OHLC (split-adjusted) with raw close/volume",
+    "dividends",
+    "terminals (V4 policy)"
+  ],
+  "entry": {
+    "S1": "20-day high + tick, filter, failsafe 55",
+    "S2": "55-day high + tick, no filter",
+    "fill": "max(open, trigger) on the trigger bar"
+  },
+  "exit": {
+    "S1": "prior 10-day low - tick",
+    "S2": "prior 20-day low - tick",
+    "fill": "min(open, level)"
+  },
+  "stop": "2N below the newest unit fill (market fill before costs); all units",
+  "positionSizing": "unit = 1 % of notional / N; adds every 1/2 N to 4 units",
+  "portfolioRules": {
+    "perMarket": 4,
+    "perDirection": 12,
+    "correlatedGroups": "NOT_APPLIED (DATA_PARTIAL industry PIT)",
+    "cash": "no leverage; REJECT_NO_CASH",
+    "ranking": "(close - close 63 sessions ago)/N, ties by id"
+  },
+  "regime": "none (TUR-F-REGIME-01)",
+  "manualLayer": "none (fully mechanical)",
+  "exceptions": [
+    "failsafe 55 after a skipped S1 breakout",
+    "gap fills at the open",
+    "fast-market multiple adds per day"
+  ],
+  "groundTruthCases": [
+    "TG-01",
+    "TG-02",
+    "TG-03",
+    "TG-04",
+    "TG-05",
+    "TG-06",
+    "TG-07",
+    "TG-08",
+    "TG-09",
+    "TG-10"
+  ],
+  "nonRules": [
+    "no market regime filter",
+    "no fundamental filter",
+    "no VU lifecycle (proximity, expiry, cooldown)",
+    "no ADR or channel-width filter",
+    "no weight cap",
+    "no 10 % per-position cap"
+  ],
+  "forbiddenVuAdditions": [
+    "alphabetical signal priority",
+    "next-open entry instead of the intraday breakout",
+    "closing-price breakout confirmation",
+    "single unit without adds",
+    "market light"
+  ],
+  "declaredDeviations": [
+    {
+      "ruleId": "T4-UNIT",
+      "kind": "SOURCE",
+      "note": "N updated daily (source: weekly sheet) - LOW deviation already declared in R15"
+    },
+    {
+      "ruleId": "T4-NOTIONAL",
+      "kind": "SOURCE",
+      "note": "year start = actual equity at first session (Dennis set it subjectively)"
+    },
+    {
+      "ruleId": "T4-LIMIT",
+      "kind": "SOURCE",
+      "note": "6/10-unit correlated-group limits not applied: no point-in-time industry data (DATA_PARTIAL); TUR-E-CORR-01"
+    },
+    {
+      "ruleId": "T4-RANK",
+      "kind": "SOURCE",
+      "note": "3 months = 63 sessions; ties by security id"
+    },
+    {
+      "ruleId": "T4-LONG-ONLY",
+      "kind": "TRANSLATION",
+      "note": "declared: net long beta; not the original risk profile"
+    },
+    {
+      "ruleId": "T4-NO-LEVERAGE",
+      "kind": "TRANSLATION",
+      "note": "with 1 %/N units only a few units fit; declared"
+    },
+    {
+      "ruleId": "T4-UNIVERSE",
+      "kind": "TRANSLATION",
+      "note": "equities instead of ~20 futures; universe numbers are the frozen protocol, not source numbers"
+    },
+    {
+      "ruleId": "T4-TICK",
+      "kind": "TRANSLATION",
+      "note": "one tick = 0.01 in raw price, converted to the split-adjusted basis"
+    },
+    {
+      "ruleId": "T4-INTRABAR",
+      "kind": "CONVENTION",
+      "note": "measurement convention for daily bars; not externally calibrated (MEASUREMENT_PARTIAL)"
+    },
+    {
+      "ruleId": "T4-COSTS",
+      "kind": "CONVENTION",
+      "note": "frozen protocol costs: 10 bp slippage and 1 bp commission per side; gross variant reported separately"
+    },
+    {
+      "ruleId": "T4-TERMINALS",
+      "kind": "CONVENTION",
+      "note": "V4 measurement policy: stale limit, data events at last valid close, economic delisting scenarios; no entry on or after the terminal date"
+    },
+    {
+      "ruleId": "T4-LEDGER",
+      "kind": "CONVENTION",
+      "note": "every fill, fee and dividend is written to a ledger that an independent replay (review/turtle-replay-v4.mjs) re-values daily; the run fails if the replay differs"
+    }
+  ]
+}

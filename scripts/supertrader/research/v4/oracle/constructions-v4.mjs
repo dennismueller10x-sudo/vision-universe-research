@@ -81,19 +81,32 @@ function monthEndBar(s, month, ends) {
 export function holdingReturn(s, F, E, calendarIndex, { scenario = 'UNKNOWN_PROCEEDS_MINUS_30_PERCENT', dataEventScenario, policy = MEASUREMENT_POLICY_V4 } = {}) {
   const fi = indexAt(s.bars, F); if (fi < 0 || !validTR(s.bars[fi])) return null;
   const start = s.bars[fi], term = s.terminal && s.terminal.date > F && s.terminal.date <= E ? s.terminal : null;
-  const li = indexAtOrBefore(s.bars, term ? term.date : E), last = s.bars[li];
-  if (!validTR(last)) return null;
-  let category, factor = 1;
-  if (term) {
+  // V4.1 (review R14): same stale rule as the book. Walk the bars of (F, E]; a run of more than the stale limit
+  // sessions without a fresh bar (missing, or zero volume with an unchanged close) settles the holding at the
+  // last fresh bar, exactly where the book's stale tracker settles it.
+  const K = policy.staleCarryMaxSessions, endIdx = calendarIndex.get(E);
+  let lastFresh = fi, k = fi + 1, gapSettleSession = null;
+  for (; k < s.bars.length && s.bars[k].date <= E; k++) {
+    const b = s.bars[k], fresh = validTR(b) && !(b.volume === 0 && b.close === s.bars[k - 1].close);
+    if (calendarIndex.get(b.date) - calendarIndex.get(s.bars[lastFresh].date) - 1 > K) { gapSettleSession = calendarIndex.get(s.bars[lastFresh].date) + K + 1; break; }
+    if (fresh) lastFresh = k;
+  }
+  if (gapSettleSession === null && endIdx - calendarIndex.get(s.bars[lastFresh].date) > K) gapSettleSession = calendarIndex.get(s.bars[lastFresh].date) + K + 1;
+  const termIdx = term ? calendarIndex.get(term.date) : null;
+  let category, factor = 1, last;
+  if (term && (gapSettleSession === null || termIdx <= gapSettleSession)) {
+    const li = indexAtOrBefore(s.bars, term.date); last = s.bars[li];
     const distress = last.rawClose < 1 || (li >= 60 && last.close / s.bars[li - 60].close - 1 <= -0.5);
     factor = terminalFactorV4(term, scenario, { distress, ...(dataEventScenario ? { dataEventScenario } : {}) });
     category = 'TERMINAL_' + term.kind;
+  } else if (gapSettleSession !== null) {
+    last = s.bars[lastFresh]; category = 'UNAVAILABLE_BEYOND_LIMIT';
+    factor = terminalFactorV4({ kind: 'SECURITY_UNAVAILABLE' }, scenario, dataEventScenario ? { dataEventScenario } : {});
   } else {
-    const gap = calendarIndex.get(E) - calendarIndex.get(last.date);
-    if (gap === 0) category = 'FRESH';
-    else if (gap <= policy.staleCarryMaxSessions) category = 'STALE_WITHIN_LIMIT';
-    else { category = 'UNAVAILABLE_BEYOND_LIMIT'; factor = terminalFactorV4({ kind: 'SECURITY_UNAVAILABLE' }, scenario, dataEventScenario ? { dataEventScenario } : {}); }
+    const li = indexAtOrBefore(s.bars, E); last = s.bars[li];
+    category = last.date === E ? 'FRESH' : 'STALE_WITHIN_LIMIT';
   }
+  if (!validTR(last)) return null;
   return { ret: (last.totalReturnIndex / start.totalReturnIndex) * factor - 1, category };
 }
 

@@ -149,8 +149,19 @@
       "meanDifference": {
         "floor": 0.0025,
         "standardErrors": 2,
-        "note": "floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation"
+        "absoluteCap": {
+          "market": 0.005,
+          "bucket": 0.005,
+          "spread": 0.0075
+        },
+        "note": "floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation; V4.1 (review R9): the SE allowance can never exceed the absolute cap, so worse tracking cannot buy a wider band"
       },
+      "trackingErrorAnnualizedCap": {
+        "market": 0.08,
+        "bucket": 0.12,
+        "spread": 0.2
+      },
+      "minimumVuCoverageOfReferenceMonths": 0.95,
       "volatilityRelative": 0.25,
       "maxDrawdownAbsolute": 0.05,
       "directionFloor": 0.0025,

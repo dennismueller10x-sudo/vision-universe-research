@@ -27,7 +27,7 @@ export function syntheticData({ n = 220, seed = 7, from = '2015-01-02', to = '20
     const ex = k % 2 ? 'NASDAQ' : 'NYSE', ticker = `T${String(k).padStart(3, '0')}`;
     const vol = 0.005 + 0.03 * (k % 10) / 10, drift = 0.0006 * ((k % 7) - 3) / 3;
     const bars = makeBars(calendar, prng(seed + 100 + k), { start: 20 + k, vol, drift, market });
-    securities.push({ id: `tiingo:${ex}:${ticker}:2014-01-02`, ticker, listing: { id: `tiingo:${ex}:${ticker}:2014-01-02`, startDate: '2014-01-02', endDate: null, active: true, reusedLater: false, instrumentType: 'EQUITY_COMMON' }, bars, terminal: null, dataQuarantine: null });
+    securities.push({ id: `tiingo:${ex}:${ticker}:2014-01-02`, ticker, listing: { id: `tiingo:${ex}:${ticker}:2014-01-02`, startDate: '2014-01-02', endDate: null, active: true, reusedLater: false, instrumentType: 'EQUITY_COMMON' }, bars, terminal: null, dataQuarantine: null, fundamentals: [] });
   }
   return { calendar: calendar.filter((d) => d >= '2018-01-02'), benchmark, spyBars: benchmark.bars, securities, coverage: {}, fingerprint: 'synthetic' };
 }

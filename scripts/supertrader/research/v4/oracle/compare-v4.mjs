@@ -8,7 +8,9 @@ export const ORACLE_TOLERANCES_V4 = Object.freeze({
   registeredBeforeV4Measurement: true,
   minimumValidMonthShare: 0.95,
   correlation: { market: 0.95, bucket: 0.9, spread: 0.6 },
-  meanDifference: { floor: 0.0025, standardErrors: 2, note: 'floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation' },
+  meanDifference: { floor: 0.0025, standardErrors: 2, absoluteCap: { market: 0.005, bucket: 0.005, spread: 0.0075 }, note: 'floor = frozen V3 protocol monthly default; 2 SE of the monthly difference series covers sampling noise of a matched-universe approximation; V4.1 (review R9): the SE allowance can never exceed the absolute cap, so worse tracking cannot buy a wider band' },
+  trackingErrorAnnualizedCap: { market: 0.08, bucket: 0.12, spread: 0.2 },
+  minimumVuCoverageOfReferenceMonths: 0.95,
   volatilityRelative: 0.25,
   maxDrawdownAbsolute: 0.05,
   directionFloor: 0.0025,
@@ -31,11 +33,14 @@ const direction = (x, floor) => (Math.abs(x) < floor ? 'FLAT' : x > 0 ? 'POSITIV
 
 /** Statistics of one aligned pair. `kind`: market | bucket | spread. */
 export function compareSeries(vu, ref, { kind, tol = ORACLE_TOLERANCES_V4, windowMonths }) {
-  const months = [...ref.keys()].filter((m) => Number.isFinite(ref.get(m)) && Number.isFinite(vu.get(m))).sort();
+  const refMonths = [...ref.keys()].filter((m) => Number.isFinite(ref.get(m)));
+  const months = refMonths.filter((m) => Number.isFinite(vu.get(m))).sort();
   const total = windowMonths ?? new Set([...vu.keys(), ...ref.keys()]).size;
-  const coverage = total ? months.length / total : 0;
-  const base = { kind, validMonths: months.length, windowMonths: total, coverage };
-  if (coverage < tol.minimumValidMonthShare || months.length < 24) return { ...base, verdict: 'INSUFFICIENT_REFERENCE_DATA', checks: [] };
+  const referenceCoverage = total ? refMonths.length / total : 0, vuCoverage = refMonths.length ? months.length / refMonths.length : 0;
+  const base = { kind, validMonths: months.length, windowMonths: total, coverage: total ? months.length / total : 0, referenceCoverage, vuCoverage };
+  // V4.1 (review R10): a reference shortage is INSUFFICIENT_REFERENCE_DATA; a VU shortage is a VU failure
+  if (referenceCoverage < tol.minimumValidMonthShare || refMonths.length < 24) return { ...base, verdict: 'INSUFFICIENT_REFERENCE_DATA', checks: [] };
+  if (vuCoverage < tol.minimumVuCoverageOfReferenceMonths) return { ...base, verdict: 'FAIL', failedHardChecks: ['VU_COVERAGE'], checks: [{ id: 'VU_COVERAGE', hard: true, pass: false, value: vuCoverage, threshold: tol.minimumVuCoverageOfReferenceMonths }] };
   const a = months.map((m) => vu.get(m)), b = months.map((m) => ref.get(m)), d = a.map((x, i) => x - b[i]);
   const stats = {
     correlation: correlation(a, b), meanVu: mean(a), meanRef: mean(b), meanDiff: mean(d), diffStdErr: sd(d) / Math.sqrt(d.length),
@@ -43,10 +48,12 @@ export function compareSeries(vu, ref, { kind, tol = ORACLE_TOLERANCES_V4, windo
     maxDrawdownVu: maxDrawdown(a), maxDrawdownRef: maxDrawdown(b),
   };
   stats.directionVu = direction(stats.meanVu, tol.directionFloor); stats.directionRef = direction(stats.meanRef, tol.directionFloor);
-  const meanTol = Math.max(tol.meanDifference.floor, tol.meanDifference.standardErrors * stats.diffStdErr);
+  const meanTol = Math.min(tol.meanDifference.absoluteCap[kind], Math.max(tol.meanDifference.floor, tol.meanDifference.standardErrors * stats.diffStdErr));
+  stats.trackingErrorAnnualized = sd(d) * Math.sqrt(12); stats.realizedMeanTolerance = meanTol;
   const checks = [
     { id: 'CORRELATION', hard: true, pass: stats.correlation >= tol.correlation[kind], value: stats.correlation, threshold: tol.correlation[kind] },
     { id: 'MEAN_DIFFERENCE', hard: true, pass: Math.abs(stats.meanDiff) <= meanTol, value: stats.meanDiff, threshold: meanTol },
+    { id: 'TRACKING_ERROR', hard: true, pass: stats.trackingErrorAnnualized <= tol.trackingErrorAnnualizedCap[kind], value: stats.trackingErrorAnnualized, threshold: tol.trackingErrorAnnualizedCap[kind] },
     { id: 'VOLATILITY_RELATIVE', hard: kind !== 'spread', pass: Math.abs(stats.volVu / stats.volRef - 1) <= tol.volatilityRelative, value: stats.volVu / stats.volRef - 1, threshold: tol.volatilityRelative },
     { id: 'MAX_DRAWDOWN', hard: kind !== 'spread', pass: Math.abs(stats.maxDrawdownVu - stats.maxDrawdownRef) <= tol.maxDrawdownAbsolute, value: stats.maxDrawdownVu - stats.maxDrawdownRef, threshold: tol.maxDrawdownAbsolute },
     { id: 'DIRECTION', hard: stats.directionRef !== 'FLAT', pass: stats.directionRef === 'FLAT' || stats.directionVu === stats.directionRef, value: stats.directionVu, threshold: stats.directionRef },
