@@ -1,0 +1,2798 @@
+{
+  "schema": "supertrader-v4-1-golden-cases-1.0.0",
+  "rule": "golden cases are behaviour tests, never a performance sample; #709 chart and personal cases are not broker-verified and carry unadjusted printed prices",
+  "definitions": [
+    {
+      "id": "TG-01",
+      "kind": "CONFIRMED_BUY",
+      "system": "S1",
+      "case": "first S1 breakout with no prior breakout",
+      "expected": "BUY at prior 20-day high + tick (open below trigger)",
+      "why": "T4-S1-ENTRY; filter has no previous breakout",
+      "test": "GOLDEN confirmed buy (first S1 breakout, no prior breakout)",
+      "methods": [
+        "TURTLE_S1_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-02",
+      "kind": "CONFIRMED_BUY",
+      "system": "S1",
+      "case": "S1 breakout after a losing breakout (2N against first)",
+      "expected": "BUY",
+      "why": "T4-S1-FILTER: previous breakout was a loser",
+      "test": "GOLDEN confirmed buy after a losing breakout",
+      "methods": [
+        "TURTLE_S1_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-03",
+      "kind": "CONFIRMED_REJECT",
+      "system": "S1",
+      "case": "S1 breakout after a profitable 10-day exit",
+      "expected": "SKIP (counted)",
+      "why": "T4-S1-FILTER",
+      "test": "GOLDEN reject: S1 breakout after a winning breakout is skipped",
+      "methods": [
+        "TURTLE_S1_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-04",
+      "kind": "CONFIRMED_EXCEPTION",
+      "system": "S1",
+      "case": "skipped S1 breakout that is also a 55-day breakout",
+      "expected": "BUY as FAILSAFE_55",
+      "why": "T4-FAILSAFE",
+      "test": "GOLDEN exception: skipped S1 breakout that is also a 55-day breakout",
+      "methods": [
+        "TURTLE_S1_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-05",
+      "shared": true,
+      "kind": "CONFIRMED_EXCEPTION",
+      "system": "S1",
+      "case": "gap open above the trigger",
+      "expected": "fill at the open",
+      "why": "T4-S1-ENTRY (TUR-F-BO-01)",
+      "test": "GOLDEN exception (gap)",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-06",
+      "kind": "EDUCATIONAL_PATTERN",
+      "system": "S1",
+      "case": "winning hypothetical SHORT breakout followed by a long breakout",
+      "expected": "long breakout skipped although VU trades long only",
+      "why": "T4-S1-FILTER + T4-LONG-ONLY (TUR-E-SHORT-01)",
+      "test": "GOLDEN educational: a short 20-day breakout counts in the S1 filter",
+      "methods": [
+        "TURTLE_S1_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-07",
+      "shared": true,
+      "kind": "AMBIGUOUS_CASE",
+      "system": "S1",
+      "case": "entry bar whose low is below the 2N stop",
+      "expected": "stopped on the entry bar (pessimistic declared convention)",
+      "why": "T4-INTRABAR (daily bars cannot order intrabar events)",
+      "test": "GOLDEN ambiguous (resolved by the declared convention)",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-08",
+      "shared": true,
+      "kind": "CONFIRMED_BUY",
+      "system": "S1",
+      "case": "trend after entry in 1/2 N steps",
+      "expected": "3 adds -> 4 units; stops raised",
+      "why": "T4-ADD, T4-STOP",
+      "test": "GOLDEN pyramid",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-09",
+      "kind": "CONFIRMED_BUY",
+      "system": "S2",
+      "case": "55-day breakout after a winning S2 trade",
+      "expected": "BUY (no filter)",
+      "why": "T4-S2-ENTRY",
+      "test": "GOLDEN S2: no filter",
+      "methods": [
+        "TURTLE_S2_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TG-10",
+      "shared": true,
+      "kind": "CONFIRMED_REJECT",
+      "system": "S1",
+      "case": "unit cost above available cash",
+      "expected": "REJECT_NO_CASH, no leverage",
+      "why": "T4-NO-LEVERAGE",
+      "test": "no cash -> REJECT_NO_CASH",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs"
+    },
+    {
+      "id": "TS-HO2002",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE_WORKED_EXAMPLE",
+      "psr709Case": "TUR-HO2002",
+      "psr709Rules": [
+        "TUR-UNIT",
+        "TUR-DOLLAR"
+      ],
+      "expected": "N 0.0141, notional 1,000,000, 42,000 $/point -> 16 contracts",
+      "file": "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs"
+    },
+    {
+      "id": "TS-GOLD",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE_WORKED_EXAMPLE",
+      "psr709Case": "TUR-GOLD",
+      "psr709Rules": [
+        "TUR-ADD"
+      ],
+      "expected": "first fill 310, N 2.50 -> adds at 311.25, 312.50, 313.75 (also reproduced by the frozen engine)",
+      "file": "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs"
+    },
+    {
+      "id": "TS-CRUDE-NORMAL",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE_WORKED_EXAMPLE",
+      "psr709Case": "TUR-CRUDE",
+      "psr709Rules": [
+        "TUR-STOP",
+        "TUR-STOPADD"
+      ],
+      "expected": "fills 28.30/28.90/29.50/30.10, N 1.20 -> all four stops 27.70",
+      "file": "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs"
+    },
+    {
+      "id": "TS-CRUDE-GAP",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE_WORKED_EXAMPLE",
+      "psr709Case": "TUR-CRUDE",
+      "psr709Rules": [
+        "TUR-STOPADD",
+        "TUR-STOPGAP"
+      ],
+      "expected": "fourth fill gapped to 30.80 -> stops 27.70, 27.70, 27.70, 28.40",
+      "file": "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs"
+    },
+    {
+      "id": "TS-V41-F1",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "KNOWN_DEVIATION",
+      "psr709Case": "TUR-CRUDE",
+      "psr709Rules": [
+        "TUR-STOPGAP"
+      ],
+      "expected": "frozen V4 engine after a gapped add: one stop for all units at 2N below the gapped fill (documents V41-F1; must flip when the engine is fixed)",
+      "file": "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs"
+    },
+    {
+      "id": "DG-01",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "DAR-Q1"
+      ],
+      "expected": "top confirmed on the third session that neither touches nor exceeds the new high",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-02",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "DAR-Q1"
+      ],
+      "expected": "a touch of the candidate top restarts the count",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-03",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "DAR-Q2"
+      ],
+      "expected": "bottom only after the top, reverse three-day confirmation",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-04",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "DAR-Q2"
+      ],
+      "psr709Gap": "VU-DAR missing rule",
+      "expected": "a re-touch of the bottom restarts the count",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-05",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_BUY_CANDIDATE",
+      "psr709Rules": [
+        "DAR-Q4",
+        "DAR-Q3"
+      ],
+      "psr709Case": "DAR-ARLAN",
+      "expected": "breakout on the day the high crosses top + fraction; fill = max(open, trigger); no three-day wait after the breakout; MANUAL_REVIEW_REQUIRED, never BUY",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-06",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_EXCEPTION",
+      "psr709Rules": [
+        "DAR-Q4"
+      ],
+      "expected": "gap open above the trigger fills at the open",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-07",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "DAR-Q11"
+      ],
+      "expected": "a low below the completed bottom before a breakout dissolves the box",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-08",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "DAR-Q5",
+        "DAR-Q6",
+        "DAR-Q7",
+        "DAR-Q8"
+      ],
+      "expected": "initial stop a fraction below the broken top; raised below the next box bottom; never lowered",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-09",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "AMBIGUOUS_CASE",
+      "psr709Rules": [
+        "DAR-Q9"
+      ],
+      "expected": "all-time high only within the available history -> ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED for review",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "DG-10",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "AMBIGUOUS_CASE",
+      "psr709Rules": [
+        "DAR-Q2"
+      ],
+      "psr709Gap": "VU-DAR UNRESOLVED start of the bottom search",
+      "expected": "both bottom-search starts are supported and can give different bottoms",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-01",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "CONFIRMED_BUY_CANDIDATE",
+      "psr709Rules": [
+        "MOKAPP-003"
+      ],
+      "expected": "up-day volume above the largest down-day volume of the prior ten sessions -> MANUAL_REVIEW_REQUIRED",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-02",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "MOKAPP-003"
+      ],
+      "expected": "equal volume is not greater",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-03",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "MOKAPP-003"
+      ],
+      "expected": "a down day with large volume is not a pocket pivot",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-04",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "AMBIGUOUS_CASE",
+      "psr709Rules": [
+        "MOKAPP-003"
+      ],
+      "expected": "no down day in the window -> NO_DOWN_DAY_IN_WINDOW, no candidate",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-05",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "MOKAPP-003"
+      ],
+      "expected": "a down day 11 sessions back does not count",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "PPG-06",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "EDUCATIONAL_PATTERN",
+      "psr709Rules": [
+        "MOKAPP-004",
+        "MOKAPP-010"
+      ],
+      "expected": "extension from the 10DMA is evidence and an open question, never a rejection",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "BGG-01",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONFIRMED_BUY_CANDIDATE",
+      "psr709Rules": [
+        "MOKA12-004",
+        "MOKA24-VOL"
+      ],
+      "expected": "gap >= 0.75 x ATR40 and volume >= 1.5x -> GAP_AND_STANDARD_VOLUME, MANUAL_REVIEW_REQUIRED",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "BGG-02",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONFIRMED_REJECT",
+      "psr709Rules": [
+        "MOKA12-004"
+      ],
+      "expected": "gap just below 0.75 x ATR40 -> no record",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "BGG-03",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONFIRMED_EXCEPTION",
+      "psr709Rules": [
+        "MOKA24-MEGA"
+      ],
+      "psr709Case": "MOKA24-MCD",
+      "expected": "volume +47.09 % (1.4709x) -> VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW, not rejected",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "BGG-04",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "MOKA24-VOL",
+        "MOKA12-005"
+      ],
+      "expected": "150 % of the average = 1.5x exactly meets the standard (2024 wording; the 2012 wording is not used)",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    },
+    {
+      "id": "BGG-05",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONFIRMED_PATTERN",
+      "psr709Rules": [
+        "MOKA12-007"
+      ],
+      "expected": "gap-day low reported as sell guide",
+      "file": "scripts/supertrader/tests/v41-components-golden.test.mjs"
+    }
+  ],
+  "methods": {
+    "TURTLE_S1_SOURCE": {
+      "status": "EXECUTABLE",
+      "executable": [
+        "TG-01",
+        "TG-02",
+        "TG-03",
+        "TG-04",
+        "TG-05",
+        "TG-06",
+        "TG-07",
+        "TG-08",
+        "TG-10",
+        "TS-HO2002",
+        "TS-GOLD",
+        "TS-CRUDE-NORMAL",
+        "TS-CRUDE-GAP",
+        "TS-V41-F1"
+      ],
+      "psr709Catalogue": [
+        {
+          "caseId": "TUR-HO2002",
+          "setup": "Unit sizing",
+          "action": "CALCULATION_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF8–9; printed14–15",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "TUR-GOLD",
+          "setup": "four-unit pyramid",
+          "action": "NUMERIC_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF14; printed20",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "TUR-CRUDE",
+          "setup": "normal vs gap vs whipsaw stop",
+          "action": "NUMERIC_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF16–18; printed22–24",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "TURTLE_S2_SOURCE": {
+      "status": "EXECUTABLE",
+      "executable": [
+        "TG-05",
+        "TG-07",
+        "TG-08",
+        "TG-09",
+        "TG-10",
+        "TS-HO2002",
+        "TS-GOLD",
+        "TS-CRUDE-NORMAL",
+        "TS-CRUDE-GAP",
+        "TS-V41-F1"
+      ],
+      "psr709Catalogue": [
+        {
+          "caseId": "TUR-HO2002",
+          "setup": "Unit sizing",
+          "action": "CALCULATION_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF8–9; printed14–15",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "TUR-GOLD",
+          "setup": "four-unit pyramid",
+          "action": "NUMERIC_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF14; printed20",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "TUR-CRUDE",
+          "setup": "normal vs gap vs whipsaw stop",
+          "action": "NUMERIC_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-TUR PDF16–18; printed22–24",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "DARVAS_LATER_QA": {
+      "status": "EXECUTABLE",
+      "executable": [
+        "DG-01",
+        "DG-02",
+        "DG-03",
+        "DG-04",
+        "DG-05",
+        "DG-06",
+        "DG-07",
+        "DG-08",
+        "DG-09",
+        "DG-10"
+      ],
+      "psr709Catalogue": [
+        {
+          "caseId": "DAR-PIT",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 62; printed 50",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LOUIS",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_CHASE",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 66; printed 54",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-ALS",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 67; printed 55",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-DRESSER",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 67; printed 55",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-COOPER",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 67; printed 55",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-NAA",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_HOLD_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 67; printed 55",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LOR1",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_STOP_OUT",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 99; printed 87",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LOR2",
+          "setup": "original developmental / box / exceptions",
+          "action": "REENTRY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 100; printed 88",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORADD1",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 101; printed 89",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORADD2",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 101; printed 89",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORADD3",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 101; printed 89",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LOREXIT",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 107; printed 95",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-DINERS1",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 104; printed 92",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-DINERS2",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 104; printed 92",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-DINERSEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 105; printed 93",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-BRUCE",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_AND_ADDS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 107; printed 95",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-BRUCEEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL_BLOCKS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 110; printed 98",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-MOLY",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 111; printed 99",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-HAVEG1",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 112; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORLOSS1",
+          "setup": "original developmental / box / exceptions",
+          "action": "REENTRY_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 112; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORLOSS2",
+          "setup": "original developmental / box / exceptions",
+          "action": "REENTRY_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 112; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LORLOSS3",
+          "setup": "original developmental / box / exceptions",
+          "action": "REENTRY_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 112; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-UNIV1",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 113; printed 101",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-UNIV2",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 114; printed 102",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-UNIV3",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 114; printed 102",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-UNIVEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 135; printed 123",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-THIO1",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 116; printed 104",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-THIO2",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 116; printed 104",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-THIOEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 137; printed 125",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-TX1",
+          "setup": "original developmental / box / exceptions",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 135; printed 123",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-TX2",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 135; printed 123",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-TX3",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 136; printed 124",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-ZP",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-BP",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-FP",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LP",
+          "setup": "original developmental / box / exceptions",
+          "action": "PILOT_BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-BEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL_STOP",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-LEX",
+          "setup": "original developmental / box / exceptions",
+          "action": "SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-ZADD",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 138; printed 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-FADD",
+          "setup": "original developmental / box / exceptions",
+          "action": "ADD",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 139; printed 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-1",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 125",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-2",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 125",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-3",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-4",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-5",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-6",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-7",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-8",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 126",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-9",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-10",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-11",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-12",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-13",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-CRISIS-14",
+          "setup": "abandoned method",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF 127",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-ARLAN",
+          "setup": "box clarification",
+          "action": "CORRECT_READER_INTERPRETATION",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B06 PDF 194–196",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-1",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-2",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-3",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-4",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-5",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-6",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-7",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_WIN",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF133; printed121",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-8",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF134; printed122",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-9",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF134; printed122",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-10",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF134; printed122",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-POSTCRISIS-11",
+          "setup": "post-crisis short-term transactions",
+          "action": "BUY_SELL_LOSS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF134; printed122",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-01",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF20;printed8",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-02",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF22;printed10",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-03",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF22;printed10",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-04",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF24;printed12",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-05",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF24;printed12",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-06",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF24;printed12",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-07",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF25;printed13",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-08",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "OWNED",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF23;printed11",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-09",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "OWNED",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF23;printed11",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-10",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "OWNED",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF23;printed11",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-11",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF35;printed23",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-12",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF35;printed23",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-13",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF35;printed23",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-14",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-15",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-16",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-17",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-18",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-19",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-20",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF36;printed24",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-21",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF37;printed25",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-22",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF37;printed25",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-23",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF37;printed25",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-24",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF37;printed25",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-25",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF40;printed28",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-26",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF41;printed29",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-27",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF41;printed29",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-28",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF41;printed29",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-29",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF41;printed29",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-30",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF42;printed30",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-31",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF42;printed30",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-32",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF42;printed30",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-33",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF42;printed30",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-34",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF44;printed32",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-35",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF45;printed33",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-36",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF53;printed41",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "DAR-EARLY-37",
+          "setup": "Earlygambler/fundamentalbeforeboxmethod",
+          "action": "BUY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B06 PDF55;printed43",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "WEINSTEIN_STAGE2_INVESTOR": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "WEIN-ED-BS",
+          "setup": "Stage 1 to 2",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 47; printed 33",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-IP",
+          "setup": "Stage 2",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 49; printed 35",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-ICH",
+          "setup": "Stage 3 to 4",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 51; printed 37",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-MXF",
+          "setup": "breakout/pullback",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 74; printed 60",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-SFY",
+          "setup": "continuation",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 76; printed 62",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-AEG",
+          "setup": "breakout",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 113; printed 99",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-PN",
+          "setup": "overhead resistance",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 114; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-GT",
+          "setup": "volume confirmation",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 119; printed 105",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-TXI",
+          "setup": "failed volume",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 120; printed 106",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-MRK",
+          "setup": "investor trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 203; printed 189",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-WMT",
+          "setup": "whipsaw and re-entry",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 204; printed 190",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-X",
+          "setup": "percentage stop failure",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 196; printed 182",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-RLM",
+          "setup": "trader trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 210; printed 196",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-BOM",
+          "setup": "squeeze rejection",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 238; printed 224",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-HSN",
+          "setup": "squeeze rejection",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 239; printed 225",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-JOL",
+          "setup": "low-volume breakdown",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 251; printed 237",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-BLAIR",
+          "setup": "short trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 266; printed 252",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-DOW",
+          "setup": "short trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 267; printed 253",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-NSM",
+          "setup": "counter-market hedge",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 245; printed 231",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-DRV",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION_THEN_STOP",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 150; printed 136",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-TDM",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 151; printed 137",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-TXN",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 151; printed 137",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-GeneralMedical",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 244; printed 230",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-COLE",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 248; printed 234",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-Teleprompter",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 258; printed 244",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "WEINSTEIN_STAGE2_TRADER": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "WEIN-ED-BS",
+          "setup": "Stage 1 to 2",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 47; printed 33",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-IP",
+          "setup": "Stage 2",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 49; printed 35",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-ICH",
+          "setup": "Stage 3 to 4",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 51; printed 37",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-MXF",
+          "setup": "breakout/pullback",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 74; printed 60",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-SFY",
+          "setup": "continuation",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 76; printed 62",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-AEG",
+          "setup": "breakout",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 113; printed 99",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-PN",
+          "setup": "overhead resistance",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 114; printed 100",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-GT",
+          "setup": "volume confirmation",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 119; printed 105",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-TXI",
+          "setup": "failed volume",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 120; printed 106",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-MRK",
+          "setup": "investor trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 203; printed 189",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-WMT",
+          "setup": "whipsaw and re-entry",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 204; printed 190",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-X",
+          "setup": "percentage stop failure",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 196; printed 182",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-RLM",
+          "setup": "trader trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 210; printed 196",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-BOM",
+          "setup": "squeeze rejection",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 238; printed 224",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-HSN",
+          "setup": "squeeze rejection",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 239; printed 225",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-JOL",
+          "setup": "low-volume breakdown",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 251; printed 237",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-BLAIR",
+          "setup": "short trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 266; printed 252",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-DOW",
+          "setup": "short trailing stop",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 267; printed 253",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-ED-NSM",
+          "setup": "counter-market hedge",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B09 PDF 245; printed 231",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-DRV",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION_THEN_STOP",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 150; printed 136",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-TDM",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 151; printed 137",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-TXN",
+          "setup": "Stage Analysis",
+          "action": "BUY_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 151; printed 137",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-GeneralMedical",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 244; printed 230",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-COLE",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 248; printed 234",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "WEIN-PTR-Teleprompter",
+          "setup": "Stage Analysis",
+          "action": "SHORT_RECOMMENDATION",
+          "category": "WATCHLIST",
+          "source": "B09 PDF 258; printed 244",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MINERVINI_SEPA_VCP": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "MIN-AAPL04",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 245",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-FSII95",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 265",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-VIVO07",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 270",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-CRUS10",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 305",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-BBY97",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 343",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-WIRE",
+          "setup": "SEPA inventory / margins",
+          "action": "SELECT_CANDIDATE",
+          "category": "WATCHLIST",
+          "source": "B12 PDF 211–212",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-MIK",
+          "setup": "VCP",
+          "action": "BUY_AND_EARLY_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B07 PDF 78",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-TWTR",
+          "setup": "base",
+          "action": "BUILD_AND_SELL",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B07 PDF 78–79",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-AA",
+          "setup": "cyclical",
+          "action": "BUY_AND_STOP_OUT",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B07 PDF 72",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-CAB1",
+          "setup": "earnings gap",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_PROBABLE",
+          "source": "B07 PDF 67",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-CAB2",
+          "setup": "earnings gap",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_PROBABLE",
+          "source": "B07 PDF 67",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-REJECT-FHC",
+          "setup": null,
+          "action": "CONSIDERED_DID_NOT_BUY",
+          "category": "REJECTED_SETUP",
+          "source": "B07 PDF 30",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-URBN",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 170",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-CSCO",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-HD",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MSFT",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-GMCR",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 179",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-APOL",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 202",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-RST",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 208",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-EDU",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 302",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MELI",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 304",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-ARNA",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 344",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MNST",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 218",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MGA",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 282",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-QSII",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 342",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MINERVINI_POWER_PLAY": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "MIN-AAPL04",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 245",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-FSII95",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 265",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-VIVO07",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 270",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-CRUS10",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 305",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-BBY97",
+          "setup": "VCP / constructive base",
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B12 PDF 343",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-WIRE",
+          "setup": "SEPA inventory / margins",
+          "action": "SELECT_CANDIDATE",
+          "category": "WATCHLIST",
+          "source": "B12 PDF 211–212",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-URBN",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 170",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-CSCO",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-HD",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MSFT",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 178",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-GMCR",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 179",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-APOL",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 202",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-RST",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 208",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-EDU",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 302",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MELI",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 304",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-ARNA",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 344",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MNST",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 218",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-MGA",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 282",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MIN-EDU-QSII",
+          "setup": "historical illustration",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B12 PDF 342",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_COMMON_BREAKOUT": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "KK-B10",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B11",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B12",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B13",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B14",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B15",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B16",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B17",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B18",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B19",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_EPISODIC_PIVOT": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "KK-B05",
+          "setup": "EpisodicPivot",
+          "action": "STOP_OUT",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "W-KKEP recentexamples",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B10",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B11",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B12",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B13",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B14",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B15",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B16",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B17",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B18",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B19",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_PARABOLIC_SHORT": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "KK-B01",
+          "setup": "ParabolicShort",
+          "action": "MULTIPLE_SHORT_ENTRIES_EXITS",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "W-KKLOSS body",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B10",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B11",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B12",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B13",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B14",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B15",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B16",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B17",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B18",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "KK-B19",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-KK3 annotated setup chart",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MORALES_KACHER_POCKET_PIVOT": {
+      "status": "EXECUTABLE",
+      "executable": [
+        "PPG-01",
+        "PPG-02",
+        "PPG-03",
+        "PPG-04",
+        "PPG-05",
+        "PPG-06"
+      ],
+      "psr709Catalogue": [
+        {
+          "caseId": "MOKA-EX-1",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF9",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-2",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF10",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-3",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF15",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-4",
+          "setup": "BottomFishingPocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF27",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-5",
+          "setup": "BottomFishingPocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF28",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-6",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF37",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-7",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF38",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-8",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF41",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-9",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF42",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-10",
+          "setup": "FailedBuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF46",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-11",
+          "setup": "FailedBuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF47",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MORALES_KACHER_BUYABLE_GAP_UP": {
+      "status": "EXECUTABLE",
+      "executable": [
+        "BGG-01",
+        "BGG-02",
+        "BGG-03",
+        "BGG-04",
+        "BGG-05"
+      ],
+      "psr709Catalogue": [
+        {
+          "caseId": "MOKA-EX-1",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF9",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-2",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF10",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-3",
+          "setup": "PocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF15",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-4",
+          "setup": "BottomFishingPocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF27",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-5",
+          "setup": "BottomFishingPocketPivot",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF28",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-6",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF37",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-7",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF38",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-8",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF41",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-9",
+          "setup": "BuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF42",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-10",
+          "setup": "FailedBuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF46",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA-EX-11",
+          "setup": "FailedBuyableGapUp",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKA12 PDF47",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MOKA24-MCD",
+          "setup": "BuyableGapUp",
+          "action": "ACCEPT_BELOW_STANDARD_VOLUME",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MOKAV24 MCDparagraph",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "RASCHKE_HOLY_GRAIL": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "RAS-SOY-FLOOD",
+          "setup": "3-10buydivergence",
+          "action": "BUY_HOLD_LONGER",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "W-RAS04 PDF2;ownquote",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "RAS-GRAIL-2003-12-19",
+          "setup": "HolyGrail",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-RAS04 PDF3",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "RAS-GRAIL-2003-12-23",
+          "setup": "HolyGrail",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-RAS04 PDF4",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "RAS-GRAIL-2004-01-02",
+          "setup": "HolyGrail",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-RAS04 PDF4",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    },
+    "ONEIL_CAN_SLIM": {
+      "status": "CATALOGUE_ONLY",
+      "executable": [],
+      "psr709Catalogue": [
+        {
+          "caseId": "ONEIL-FIRST",
+          "setup": null,
+          "action": "BUY",
+          "category": "PERSONAL_TRADE_CONFIRMED",
+          "source": "B04 PDF12",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-EX-SeaContainers",
+          "setup": "CupHandle",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B04 PDF70",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-EX-BethlehemSteel",
+          "setup": "HTF",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B04 PDF99",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-EX-AmericanChainCable",
+          "setup": "HTF",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B04 PDF100",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-EX-HomeDepot",
+          "setup": null,
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B04 PDF29",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-EX-Google",
+          "setup": "HTF",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "B04 PDF98",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "ONEIL-FIDELITY",
+          "setup": null,
+          "action": "PRESENT_RECOMMENDATION_TO_FIDELITY",
+          "category": "WATCHLIST",
+          "source": "B04 PDF72",
+          "confidence": "MEDIUM"
+        },
+        {
+          "caseId": "MSI-TATA",
+          "setup": "Latebasefailure",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MSI-BASE namedexample",
+          "confidence": "HIGH"
+        },
+        {
+          "caseId": "MSI-JUBILANT",
+          "setup": "Stage7success",
+          "action": "CHART_EXAMPLE",
+          "category": "EDUCATIONAL_EXAMPLE",
+          "source": "W-MSI-BASE namedexception",
+          "confidence": "HIGH"
+        }
+      ],
+      "useAsPerformanceSample": false
+    }
+  }
+}

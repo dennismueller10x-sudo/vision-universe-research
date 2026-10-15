@@ -1,0 +1,1858 @@
+{
+  "schema": "supertrader-v4-1-source-code-traceability-1.0.0",
+  "sourceEvidence": {
+    "pullRequest": 709,
+    "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+    "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12"
+  },
+  "note": "Turtle: frozen V4 engine rules re-traced to #709 ids (R15 ids kept). Darvas / Pocket Pivot / BGU: V4.1 machine-screen components, which emit MANUAL_REVIEW_REQUIRED and never BUY. Numbers outside SOURCE rules are INTERPRETATION or CONVENTION and are listed.",
+  "turtle": [
+    {
+      "ruleId": "T4-N",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all systems",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-TR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 7; printed 13"
+        },
+        {
+          "ruleId": "TUR-N",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 7; printed 13"
+        }
+      ],
+      "r15": [
+        "TUR-F-N-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#turtleN",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: N recursion and seed"
+      ]
+    },
+    {
+      "ruleId": "T4-S1-ENTRY",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S1",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-S1ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-INTRADAY",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 12; printed 18"
+        },
+        {
+          "ruleId": "TUR-GAP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 12; printed 18"
+        }
+      ],
+      "r15": [
+        "TUR-F-S1-ENTRY",
+        "TUR-F-BO-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger/fillAbove",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S1 buy after losing breakout",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden gap fill at open"
+      ]
+    },
+    {
+      "ruleId": "T4-S1-FILTER",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S1",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": "an unresolved hypothetical breakout counts as not losing (#709 VU-TUR lists this as a VU formalization, not a false rule)",
+      "psr709": [
+        {
+          "ruleId": "TUR-S1SKIP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-S1LOSER",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-S1DIR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        }
+      ],
+      "r15": [
+        "TUR-F-S1-FILTER",
+        "TUR-E-SHORT-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createBreakoutTracker",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden skip after winning breakout",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden short breakout counts in filter",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: filter path order"
+      ]
+    },
+    {
+      "ruleId": "T4-FAILSAFE",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S1",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-FAILSAFE",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        }
+      ],
+      "r15": [
+        "TUR-F-FAILSAFE-55"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden failsafe 55"
+      ]
+    },
+    {
+      "ruleId": "T4-S2-ENTRY",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S2",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-S2ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-S2NOSKIP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-INTRADAY",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 12; printed 18"
+        },
+        {
+          "ruleId": "TUR-GAP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 12; printed 18"
+        }
+      ],
+      "r15": [
+        "TUR-F-S2-ENTRY"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S2 buy without filter"
+      ]
+    },
+    {
+      "ruleId": "T4-UNIT",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "TRANSLATION",
+      "note": "fractional shares instead of floor (V41-F2); N updated daily instead of weekly sheets (TUR-WEEKLY CONTEXTUAL)",
+      "psr709": [
+        {
+          "ruleId": "TUR-UNIT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 8; printed 14"
+        },
+        {
+          "ruleId": "TUR-DOLLAR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 7; printed 13"
+        },
+        {
+          "ruleId": "TUR-WEEKLY",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 9; printed 15"
+        }
+      ],
+      "r15": [
+        "TUR-F-UNIT-01",
+        "TUR-F-UNIT-02"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#unitShares",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: unit size",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-HO2002"
+      ]
+    },
+    {
+      "ruleId": "T4-NOTIONAL",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-NOTIONAL",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 11; printed 17"
+        },
+        {
+          "ruleId": "TUR-DRAWDOWN",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 11; printed 17"
+        }
+      ],
+      "r15": [
+        "TUR-F-NOTIONAL-01",
+        "TUR-E-NOTIONAL-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createNotionalAccount",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: notional cuts compound with hysteresis"
+      ]
+    },
+    {
+      "ruleId": "T4-ADD",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-ADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-ADDFAST",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 14; printed 20"
+        }
+      ],
+      "r15": [
+        "TUR-F-ADD-01",
+        "TUR-E-PYR-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processAdds",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden pyramid to 4 units",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-GOLD"
+      ]
+    },
+    {
+      "ruleId": "T4-STOP",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "DEVIATION_V41_F1",
+      "note": "frozen engine: all units 2N below the newest fill; #709: earlier units +1/2 N per add, different unit stops after gaps",
+      "psr709": [
+        {
+          "ruleId": "TUR-STOP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 16; printed 22"
+        },
+        {
+          "ruleId": "TUR-STOPADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 16; printed 22"
+        },
+        {
+          "ruleId": "TUR-STOPGAP",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 17; printed 23"
+        }
+      ],
+      "r15": [
+        "TUR-F-STOP-2N",
+        "TUR-F-STOP-ADD"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden stop raised by adds",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden stop exit",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-CRUDE-NORMAL",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-CRUDE-GAP",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-V41-F1"
+      ]
+    },
+    {
+      "ruleId": "T4-EXIT-S1",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S1 and failsafe",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-S1EX",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 20; printed 26"
+        }
+      ],
+      "r15": [
+        "TUR-F-EXIT-S1"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden 10-day exit"
+      ]
+    },
+    {
+      "ruleId": "T4-EXIT-S2",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "S2",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-S2EX",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 20; printed 26"
+        }
+      ],
+      "r15": [
+        "TUR-F-EXIT-S2"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S2 exit"
+      ]
+    },
+    {
+      "ruleId": "T4-LIMIT",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "PARTIAL",
+      "note": "TUR-LIMIT6 / TUR-LIMIT10 need correlation groups (industry PIT DATA_PARTIAL)",
+      "psr709": [
+        {
+          "ruleId": "TUR-LIMIT4",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 10; printed 16"
+        },
+        {
+          "ruleId": "TUR-LIMIT12",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 10; printed 16"
+        }
+      ],
+      "r15": [
+        "TUR-F-LIM-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#canAddUnit",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: limit 12"
+      ]
+    },
+    {
+      "ruleId": "T4-RANK",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "DECLARED_CHOICE",
+      "note": "TUR-RANKVAR (OPTIONAL): no single mandatory formula; (C - C63) / N is one allowed normalisation",
+      "psr709": [
+        {
+          "ruleId": "TUR-RANK",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 23; printed 29"
+        },
+        {
+          "ruleId": "TUR-RANKVAR",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 23; printed 29"
+        }
+      ],
+      "r15": [
+        "TUR-F-RANK-01",
+        "TUR-F-SIM-01",
+        "TUR-E-RANK-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#rankCandidates",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: rank order"
+      ]
+    },
+    {
+      "ruleId": "T4-CONSISTENCY",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-SIGNAL-CONSISTENCY",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF14; printed20"
+        },
+        {
+          "ruleId": "TUR-CONSISTENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 5; printed 11"
+        }
+      ],
+      "r15": [
+        "TUR-F-CONS-01",
+        "TUR-E-CONS-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: gap breakout far from prior close is taken"
+      ]
+    },
+    {
+      "ruleId": "T4-NO-REGIME",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "SOURCE",
+      "status": "ABSENCE",
+      "note": "#709 records no regime or fundamental filter in the Turtle contexts",
+      "psr709": [],
+      "r15": [
+        "TUR-F-REGIME-01",
+        "TUR-F-FUND-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no regime input"
+      ]
+    },
+    {
+      "ruleId": "T4-LONG-ONLY",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "TRANSLATION",
+      "status": "TRANSLATION",
+      "note": "long-only equities; short breakouts still drive the S1 filter",
+      "psr709": [
+        {
+          "ruleId": "TUR-S1DIR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        }
+      ],
+      "r15": [
+        "TUR-F-LS-01",
+        "TUR-E-SHORT-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createBreakoutTracker",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden short breakout counts in filter"
+      ]
+    },
+    {
+      "ruleId": "T4-NO-LEVERAGE",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "TRANSLATION",
+      "status": "TRANSLATION",
+      "note": null,
+      "psr709": [],
+      "r15": [
+        "TUR-E-LEV-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#canAddUnit",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no cash rejection"
+      ]
+    },
+    {
+      "ruleId": "T4-UNIVERSE",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "TRANSLATION",
+      "status": "TRANSLATION",
+      "note": "liquid US futures -> frozen liquid US equity universe, applied consistently",
+      "psr709": [
+        {
+          "ruleId": "TUR-MARKETS",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 4; printed 10"
+        },
+        {
+          "ruleId": "TUR-CONSISTENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 5; printed 11"
+        }
+      ],
+      "r15": [
+        "TUR-F-MKT-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#eligibleYesterday",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: eligibility uses prior session"
+      ]
+    },
+    {
+      "ruleId": "T4-TICK",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "TRANSLATION",
+      "status": "MATCHES",
+      "note": null,
+      "psr709": [
+        {
+          "ruleId": "TUR-S1ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-S2ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        }
+      ],
+      "r15": [
+        "TUR-F-S1-ENTRY"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#tickAdjusted",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: tick conversion"
+      ]
+    },
+    {
+      "ruleId": "T4-INTRABAR",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "CONVENTION",
+      "status": "CONVENTION",
+      "note": null,
+      "psr709": [],
+      "r15": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits/processAdds",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden same-bar stop and add is pessimistic",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: raised stop re-checked on the add bar"
+      ]
+    },
+    {
+      "ruleId": "T4-COSTS",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "CONVENTION",
+      "status": "CONVENTION",
+      "note": "#709 TUR-LIMITORDER (PREFERENCE) and TUR-FAST (CONTEXTUAL) are execution judgment, not modelled",
+      "psr709": [],
+      "r15": [
+        "TUR-F-ORD-01"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#fillPrice",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: costs"
+      ]
+    },
+    {
+      "ruleId": "T4-TERMINALS",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "CONVENTION",
+      "status": "MEASUREMENT",
+      "note": null,
+      "psr709": [],
+      "r15": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#settleTerminal",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no entry on the terminal bar"
+      ]
+    },
+    {
+      "ruleId": "T4-LEDGER",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "scope": "all",
+      "kind": "CONVENTION",
+      "status": "MEASUREMENT",
+      "note": null,
+      "psr709": [],
+      "r15": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: ledger replay"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "ruleId": "D41-TOP",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "box top = a new high that is not touched or exceeded on the three following sessions; a touch (high equal to the candidate) or a higher high restarts the count",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q1",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-02"
+      ]
+    },
+    {
+      "ruleId": "D41-BOTTOM",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "box bottom only after the top is established; reverse three-day procedure: a low not touched or undercut on the three following sessions; a re-touch restarts the count (#709 VU-DAR missing rule)",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q2",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-10"
+      ]
+    },
+    {
+      "ruleId": "D41-NO-WAIT",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "the three days confirm boundaries; there is no waiting period after the breakout (DAR-ARLAN)",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q3",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-05"
+      ]
+    },
+    {
+      "ruleId": "D41-ENTRY",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "buy-stop a fraction above the completed box top, executed on the breakthrough; fill = max(open, trigger)",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q4",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 204; printed 192"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-05",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-06"
+      ]
+    },
+    {
+      "ruleId": "D41-STOP-INIT",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "initial stop a fraction below the broken box top; never inside the box",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q5",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 200; printed 188"
+        },
+        {
+          "ruleId": "DAR-Q7",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 205; printed 193"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#darvasStopPath",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-08"
+      ]
+    },
+    {
+      "ruleId": "D41-STOP-RAISE",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "when a new higher box has both boundaries, raise the stop to a fraction below its bottom (never lower it); the new bottom need not equal the old top",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q6",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 202; printed 190"
+        },
+        {
+          "ruleId": "DAR-Q8",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 209; printed 197"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#darvasStopPath",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-08"
+      ]
+    },
+    {
+      "ruleId": "D41-ATH",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "SOURCE",
+      "rule": "all-time high is required: evidence ALL_TIME_HIGH_IN_AVAILABLE_HISTORY; when the history does not reach the listing date the flag is unverifiable and goes to review",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q9",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 194; printed 182"
+        },
+        {
+          "ruleId": "DAR-Q12",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B06 PDF 206; printed 194"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#darvasScreen",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-09"
+      ]
+    },
+    {
+      "ruleId": "D41-FRACTION",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "CONVENTION",
+      "rule": "the source says \"a fraction\" and does not quantify it; VU convention = one raw cent (0.01 / split factor), the same tick as V4 Turtle; the reviewer may set another fraction per trade (DAR-C-THIO: no automatic same fraction for all trades)",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q4",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 204; printed 192"
+        },
+        {
+          "ruleId": "DAR-Q5",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 200; printed 188"
+        }
+      ],
+      "psr709Other": [
+        "DAR-C-THIO"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#fractionFor",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-05",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-06",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-08"
+      ]
+    },
+    {
+      "ruleId": "D41-BOTTOM-START",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "the bottom search starts on the first session after the top is confirmed (default) or after the top day; #709 VU-DAR records the start as UNRESOLVED, both are supported",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q2",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-10"
+      ]
+    },
+    {
+      "ruleId": "D41-TOP-EXCEEDED",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "a high above the confirmed top before the bottom is confirmed means no complete box yet: the top search restarts at that high",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q1",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        },
+        {
+          "ruleId": "DAR-Q2",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-02",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-10"
+      ]
+    },
+    {
+      "ruleId": "D41-BOX-FAIL",
+      "methods": [
+        "DARVAS_LATER_QA"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "a low below the completed box bottom before a breakout dissolves the box; the top search restarts",
+      "psr709": [
+        {
+          "ruleId": "DAR-Q11",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B06 PDF 204; printed 192"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/darvas-box-v4-1.mjs#createDarvasBoxMachine#step",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: DG-07"
+      ]
+    },
+    {
+      "ruleId": "PP41-VOLUME",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "SOURCE",
+      "rule": "volume of the candidate day > the highest down-day volume of the ten sessions before it (strictly greater)",
+      "psr709": [
+        {
+          "ruleId": "MOKAPP-003",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAPP rule3"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/pocket-pivot-v4-1.mjs#pocketPivotAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-02",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-05"
+      ]
+    },
+    {
+      "ruleId": "PP41-DOWN-DAY",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "a down day closes below the previous close; a window without a down day yields NO_DOWN_DAY_IN_WINDOW (no comparison, no candidate)",
+      "psr709": [
+        {
+          "ruleId": "MOKAPP-003",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAPP rule3"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/pocket-pivot-v4-1.mjs#pocketPivotAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-02",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-05"
+      ]
+    },
+    {
+      "ruleId": "PP41-UP-DAY",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "the candidate day itself closes above the previous close (a pivot is a buy point on strength); not stated numerically in #709",
+      "psr709": [
+        {
+          "ruleId": "MOKAPP-003",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAPP rule3"
+        },
+        {
+          "ruleId": "MOKAPP-005",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule5"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/pocket-pivot-v4-1.mjs#pocketPivotAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-02",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-03",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-04",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-05"
+      ]
+    },
+    {
+      "ruleId": "PP41-CONTEXT",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "CONTEXT_EVIDENCE_ONLY",
+      "rule": "distance to the 10/50/200-day averages is reported; base quality, trend, V-shape, wedging and extension are reviewer judgments",
+      "psr709": [
+        {
+          "ruleId": "MOKAPP-001",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule1"
+        },
+        {
+          "ruleId": "MOKAPP-002",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule2"
+        },
+        {
+          "ruleId": "MOKAPP-004",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule4/5"
+        },
+        {
+          "ruleId": "MOKAPP-006",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule6"
+        },
+        {
+          "ruleId": "MOKAPP-007",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule7"
+        },
+        {
+          "ruleId": "MOKAPP-008",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule8"
+        },
+        {
+          "ruleId": "MOKAPP-009",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule9"
+        },
+        {
+          "ruleId": "MOKAPP-010",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule10"
+        },
+        {
+          "ruleId": "MOKA12-001",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF3"
+        },
+        {
+          "ruleId": "MOKA12-002",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF29"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/pocket-pivot-v4-1.mjs#pocketPivotScreen",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: PPG-06"
+      ]
+    },
+    {
+      "ruleId": "PP41-EXIT",
+      "methods": [
+        "MORALES_KACHER_POCKET_PIVOT"
+      ],
+      "kind": "NOT_IMPLEMENTED",
+      "rule": "exit guides (10DMA after >= 7 weeks of respect, else 50DMA; violation semantics differ by version) are preferences; not part of the detector",
+      "psr709": [
+        {
+          "ruleId": "MOKA12-008",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF50"
+        },
+        {
+          "ruleId": "MOKA12-009",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF50"
+        }
+      ],
+      "psr709Other": [
+        "MOKA-C2"
+      ],
+      "code": null,
+      "tests": []
+    },
+    {
+      "ruleId": "BGU41-GAP",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "SOURCE",
+      "rule": "gap size >= 0.75 x ATR(40)",
+      "psr709": [
+        {
+          "ruleId": "MOKA12-004",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKA12 PDF35"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-02"
+      ]
+    },
+    {
+      "ruleId": "BGU41-GAP-MEASURE",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "gap = open - previous close; the full gap (low - previous high) is reported as evidence",
+      "psr709": [
+        {
+          "ruleId": "MOKA12-004",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKA12 PDF35"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-02"
+      ]
+    },
+    {
+      "ruleId": "BGU41-ATR",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "INTERPRETATION",
+      "rule": "ATR(40) = simple mean of the true range over the 40 sessions before the gap day (no same-day information)",
+      "psr709": [
+        {
+          "ruleId": "MOKA12-004",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKA12 PDF35"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#atrBefore",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-02"
+      ]
+    },
+    {
+      "ruleId": "BGU41-VOLUME",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "SOURCE",
+      "rule": "standard: gap-day volume >= 1.5 x average volume",
+      "psr709": [
+        {
+          "ruleId": "MOKA24-VOL",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAV24 MCDparagraph"
+        },
+        {
+          "ruleId": "MOKA12-005",
+          "modal": "UNKNOWN",
+          "confidence": "LOW",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF35"
+        }
+      ],
+      "psr709Other": [
+        "MOKA-C1"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-04"
+      ]
+    },
+    {
+      "ruleId": "BGU41-VOLUME-EXCEPTION",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "SOURCE_CONTEXTUAL",
+      "rule": "below the standard the record is not rejected: VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW (megacap exception is a reviewer decision)",
+      "psr709": [
+        {
+          "ruleId": "MOKA24-MEGA",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAV24 MCDparagraph"
+        }
+      ],
+      "psr709Other": [
+        "MOKA-C-MEGA"
+      ],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-03"
+      ]
+    },
+    {
+      "ruleId": "BGU41-VOLUME-WINDOW",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "CONVENTION",
+      "rule": "average volume over the 50 sessions before the gap day; #709 does not state the averaging window (SOURCE GAP); the ratio is reported for the reviewer",
+      "psr709": [],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": []
+    },
+    {
+      "ruleId": "BGU41-SELL-GUIDE",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "SOURCE_PREFERENCE",
+      "rule": "gap-day low reported as the risk reference; not enforced",
+      "psr709": [
+        {
+          "ruleId": "MOKA12-007",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKA12 PDF35"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#buyableGapUpScreen",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-05"
+      ]
+    },
+    {
+      "ruleId": "BGU41-INTRADAY",
+      "methods": [
+        "MORALES_KACHER_BUYABLE_GAP_UP"
+      ],
+      "kind": "SCOPE",
+      "rule": "daily variant: evaluated with the full-day volume after the close; intraday projected volume is not available (intraday history DATA_BLOCKED)",
+      "psr709": [
+        {
+          "ruleId": "MOKA24-VOL",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAV24 MCDparagraph"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/buyable-gap-up-v4-1.mjs#gapUpAt",
+      "tests": [
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-01",
+        "scripts/supertrader/tests/v41-components-golden.test.mjs: BGG-04"
+      ]
+    },
+    {
+      "ruleId": "T41-UNIT",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE",
+      "rule": "unit = floor(0.01 x notional / (N x dollars per point))",
+      "psr709": [
+        {
+          "ruleId": "TUR-UNIT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 8; printed 14"
+        },
+        {
+          "ruleId": "TUR-DOLLAR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 7; printed 13"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-unit-stops-v4-1.mjs#unitContracts",
+      "tests": [
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-HO2002"
+      ]
+    },
+    {
+      "ruleId": "T41-UNIT-EQUITY",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "TRANSLATION",
+      "rule": "equities: dollars per point = 1 per share; the V4 engine keeps fractional shares (floor not applied)",
+      "psr709": [
+        {
+          "ruleId": "TUR-UNIT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 8; printed 14"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#unitShares",
+      "tests": [
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-HO2002"
+      ]
+    },
+    {
+      "ruleId": "T41-ADD",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE",
+      "rule": "next unit 1/2 N above the previous ACTUAL fill, at most 4 units; several adds on one day are possible",
+      "psr709": [
+        {
+          "ruleId": "TUR-ADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19"
+        },
+        {
+          "ruleId": "TUR-ADDFAST",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 14; printed 20"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-unit-stops-v4-1.mjs#nextAddLevel",
+      "tests": [
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-GOLD"
+      ]
+    },
+    {
+      "ruleId": "T41-STOP",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE",
+      "rule": "each unit starts with a stop 2N below its own fill",
+      "psr709": [
+        {
+          "ruleId": "TUR-STOP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 16; printed 22"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-unit-stops-v4-1.mjs#unitStops",
+      "tests": [
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-CRUDE-NORMAL"
+      ]
+    },
+    {
+      "ruleId": "T41-STOPADD",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "SOURCE",
+      "rule": "every add raises the stops of all earlier units by 1/2 N; after a gapped add the units therefore carry different stops",
+      "psr709": [
+        {
+          "ruleId": "TUR-STOPADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 16; printed 22"
+        },
+        {
+          "ruleId": "TUR-STOPGAP",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 17; printed 23"
+        }
+      ],
+      "psr709Other": [],
+      "code": "scripts/supertrader/research/v4/methods/turtle-unit-stops-v4-1.mjs#unitStops",
+      "tests": [
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-CRUDE-NORMAL",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-CRUDE-GAP",
+        "scripts/supertrader/tests/v41-turtle-source-examples.test.mjs: TS-V41-F1"
+      ]
+    },
+    {
+      "ruleId": "T41-WHIPSAW",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "kind": "NOT_IMPLEMENTED",
+      "rule": "optional Whipsaw stop variant (1/2 N unit stop, re-entry) is a separate OPTIONAL variant, not the default",
+      "psr709": [
+        {
+          "ruleId": "TUR-WHIP",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-TUR PDF 17; printed 23"
+        },
+        {
+          "ruleId": "TUR-WHIPRE",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 17; printed 23"
+        },
+        {
+          "ruleId": "TUR-WHIPST",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 17; printed 23"
+        }
+      ],
+      "psr709Other": [],
+      "code": null,
+      "tests": []
+    }
+  ],
+  "uncoveredRules": [
+    {
+      "ruleId": "DAR-Q10",
+      "method": "DARVAS_LATER_QA",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "DAR-Q13",
+      "method": "DARVAS_LATER_QA",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "DAR-Q14",
+      "method": "DARVAS_LATER_QA",
+      "modal": "STRONG_PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "DAR-Q15",
+      "method": "DARVAS_LATER_QA",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "DAR-Q16",
+      "method": "DARVAS_LATER_QA",
+      "modal": "STRONG_PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "DAR-Q17",
+      "method": "DARVAS_LATER_QA",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "TUR-LIMIT6",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "HARD",
+      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+      "reason": "correlated-group limit needs point-in-time industry / correlation groups (DATA_PARTIAL)"
+    },
+    {
+      "ruleId": "TUR-LIMIT10",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "HARD",
+      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+      "reason": "loosely-correlated limit, same data gap"
+    },
+    {
+      "ruleId": "TUR-ALLOC",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "OPTIONAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "OPTIONAL capital split between S1 and S2; the systems are run separately"
+    },
+    {
+      "ruleId": "TUR-WHIP",
+      "method": "TURTLE_WHipsaw",
+      "modal": "OPTIONAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "OPTIONAL Whipsaw variant, not the default system"
+    },
+    {
+      "ruleId": "TUR-WHIPRE",
+      "method": "TURTLE_WHipsaw",
+      "modal": "HARD",
+      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+      "reason": "Whipsaw variant re-entry, not implemented"
+    },
+    {
+      "ruleId": "TUR-WHIPST",
+      "method": "TURTLE_WHipsaw",
+      "modal": "HARD",
+      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+      "reason": "Whipsaw variant stops, not implemented"
+    },
+    {
+      "ruleId": "TUR-NOORDER",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "CONTEXTUAL: protective price mandatory, broker stop order optional; the model always applies the protective price"
+    },
+    {
+      "ruleId": "TUR-LIMITORDER",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "PREFERENCE execution practice; costs are a convention"
+    },
+    {
+      "ruleId": "TUR-FAST",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "CONTEXTUAL execution judgment in fast markets"
+    },
+    {
+      "ruleId": "TUR-CONTRACT",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "STRONG_PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "futures contract month selection (ORIGINAL_FUTURES_REPLICATION, DATA_BLOCKED)"
+    },
+    {
+      "ruleId": "TUR-ROLL",
+      "method": "TURTLE_COMMON_ORIGINAL",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "futures roll (ORIGINAL_FUTURES_REPLICATION, DATA_BLOCKED)"
+    },
+    {
+      "ruleId": "MOKA12-003",
+      "method": "BuyableGapUp",
+      "modal": "PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKA12-006",
+      "method": "BuyableGapUp",
+      "modal": "STRONG_PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKA12-008",
+      "method": "PocketPivotExit",
+      "modal": "PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKA12-009",
+      "method": "PocketPivotExit",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-001",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-002",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-003",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-004",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-005",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "CONTEXTUAL",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    },
+    {
+      "ruleId": "MOKASTOP-006",
+      "method": "PocketPivot/BuyableGapUpExits",
+      "modal": "PREFERENCE",
+      "clearance": "DO_NOT_HARDEN_PREFERENCE",
+      "reason": "DO_NOT_HARDEN_PREFERENCE: reviewer judgment (open question in the manual review record)"
+    }
+  ],
+  "nonComponentMethods": "Weinstein, Minervini SEPA / Power Play, Kullamaegi (Breakout, EP, Parabolic Short), Holy Grail and CAN SLIM have no V4.1 code: they are MANUAL_LAYER_REQUIRED without a built screen, DATA_BLOCKED or RESEARCH_ONLY (see SUPERTRADER-V4-1-METHOD-ELIGIBILITY.json)"
+}

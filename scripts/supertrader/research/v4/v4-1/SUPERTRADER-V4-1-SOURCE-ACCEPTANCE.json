@@ -1,0 +1,1163 @@
+{
+  "schema": "supertrader-v4-1-source-acceptance-1.0.0",
+  "generation": "V4.1",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-acceptance-v4-1",
+  "sourceEvidence": {
+    "pullRequest": 709,
+    "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+    "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12",
+    "filesVerified": 20,
+    "mismatches": 0,
+    "finalReview": {
+      "status": "PASS_WITH_EXPLICIT_SOURCE_GAPS",
+      "openHighFindings": 0,
+      "openCriticalFindings": 0,
+      "limitation": "Independent source sampling and complete structural/reference checks; not a second word-by-word reading of all4232pages."
+    }
+  },
+  "measurementEvidence": {
+    "pullRequest": 705,
+    "freezeId": "V4-beae51ae1b07768b",
+    "runId": "38722939085",
+    "level": "NOT_CERTIFIED",
+    "openPostResultFindings": [
+      "V4-D1 BLOCKER",
+      "V4-D2 MAJOR"
+    ]
+  },
+  "replaces": "OSR-* owner-attested findings of #705 (SUPERTRADER-V4-SOURCE-ACCEPTANCE.json stays unchanged as historical evidence)",
+  "rule": {
+    "evidence": "#709 candidate evidence_rule_ids (TOP-IMPLEMENTATION-CANDIDATES) of the method; all rules of the mapped method contexts are reported",
+    "SOURCE_BLOCKED": "no #709 implementation candidate and #709 records a missing original source for the method (book partial / chapters missing)",
+    "SOURCE_PARTIAL": "an evidence rule needs original or explicit web corroboration before hardening (REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION), has LOW confidence or UNKNOWN modal strength, or is HARD without checked original wording; or #709 states that a core component is not disclosed",
+    "SOURCE_ACCEPTED": "every evidence rule is HARD, HIGH confidence, original wording checked and cleared for hard-coding with scope (SCOPE_AND_EXCEPTIONS_REQUIRED)",
+    "SOURCE_MANUAL_REQUIRED": "otherwise: the rules are verifiable, but central components are preferences, contextual or optional (DO_NOT_HARDEN_PREFERENCE)",
+    "manualLayer": "required when the verdict is not SOURCE_ACCEPTED or #709 marks the method context not_fully_reproducible"
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "scope": "VU_EQUITY_ADAPTATION (long-only, daily bars)",
+      "verdict": "SOURCE_ACCEPTED",
+      "candidate": "C01",
+      "candidateMethod": "System1 with complete core/skip",
+      "assessment": "Futures-chain data and full unit/correlation portfolio; equity adaptation separately named.",
+      "blockers": [],
+      "manualLayer": false,
+      "manualLayerBasis": [],
+      "evidence": [
+        {
+          "ruleId": "TUR-S1ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        },
+        {
+          "ruleId": "TUR-S1SKIP",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        },
+        {
+          "ruleId": "TUR-S1DIR",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        },
+        {
+          "ruleId": "TUR-ADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        }
+      ],
+      "hardenableRuleIds": [
+        "TUR-MARKETS",
+        "TUR-CONSISTENT",
+        "TUR-TR",
+        "TUR-N",
+        "TUR-DOLLAR",
+        "TUR-UNIT",
+        "TUR-LIMIT4",
+        "TUR-LIMIT6",
+        "TUR-LIMIT10",
+        "TUR-LIMIT12",
+        "TUR-NOTIONAL",
+        "TUR-DRAWDOWN",
+        "TUR-INTRADAY",
+        "TUR-GAP",
+        "TUR-S1ENT",
+        "TUR-S1SKIP",
+        "TUR-S1LOSER",
+        "TUR-S1DIR",
+        "TUR-FAILSAFE",
+        "TUR-ADD",
+        "TUR-STOP",
+        "TUR-STOPADD",
+        "TUR-WHIPRE",
+        "TUR-WHIPST",
+        "TUR-S1EX",
+        "TUR-RANK",
+        "TUR-SIGNAL-CONSISTENCY"
+      ],
+      "allRules": {
+        "total": 38,
+        "byModal": {
+          "HARD": 27,
+          "CONTEXTUAL": 6,
+          "OPTIONAL": 3,
+          "PREFERENCE": 1,
+          "STRONG_PREFERENCE": 1
+        },
+        "byClearance": {
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 27,
+          "DO_NOT_HARDEN_PREFERENCE": 11
+        },
+        "byConfidence": {
+          "HIGH": 38
+        },
+        "originalWordingChecked": 38
+      },
+      "reproducibility": {
+        "method": "TURTLE_SYSTEM1",
+        "reproducibility": "HIGH",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": false,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "LOW"
+      }
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "scope": "VU_EQUITY_ADAPTATION (long-only, daily bars)",
+      "verdict": "SOURCE_ACCEPTED",
+      "candidate": "C02",
+      "candidateMethod": "System2 55/20",
+      "assessment": "Independent S2; failsafe55 alone is not System2.",
+      "blockers": [],
+      "manualLayer": false,
+      "manualLayerBasis": [],
+      "evidence": [
+        {
+          "ruleId": "TUR-S2ENT",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        },
+        {
+          "ruleId": "TUR-S2EX",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 20; printed 26",
+          "hardenable": true
+        },
+        {
+          "ruleId": "TUR-ADD",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-TUR PDF 13; printed 19",
+          "hardenable": true
+        }
+      ],
+      "hardenableRuleIds": [
+        "TUR-MARKETS",
+        "TUR-CONSISTENT",
+        "TUR-TR",
+        "TUR-N",
+        "TUR-DOLLAR",
+        "TUR-UNIT",
+        "TUR-LIMIT4",
+        "TUR-LIMIT6",
+        "TUR-LIMIT10",
+        "TUR-LIMIT12",
+        "TUR-NOTIONAL",
+        "TUR-DRAWDOWN",
+        "TUR-INTRADAY",
+        "TUR-GAP",
+        "TUR-S2ENT",
+        "TUR-S2NOSKIP",
+        "TUR-ADD",
+        "TUR-STOP",
+        "TUR-STOPADD",
+        "TUR-WHIPRE",
+        "TUR-WHIPST",
+        "TUR-S2EX",
+        "TUR-RANK",
+        "TUR-SIGNAL-CONSISTENCY"
+      ],
+      "allRules": {
+        "total": 35,
+        "byModal": {
+          "HARD": 24,
+          "CONTEXTUAL": 6,
+          "OPTIONAL": 3,
+          "PREFERENCE": 1,
+          "STRONG_PREFERENCE": 1
+        },
+        "byClearance": {
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 24,
+          "DO_NOT_HARDEN_PREFERENCE": 11
+        },
+        "byConfidence": {
+          "HIGH": 35
+        },
+        "originalWordingChecked": 35
+      },
+      "reproducibility": {
+        "method": "TURTLE_SYSTEM2",
+        "reproducibility": "HIGH",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": false,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "LOW"
+      }
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "scope": "BOX_STATE_MACHINE screen (long side) + MANUAL selection and sizing",
+      "verdict": "SOURCE_ACCEPTED",
+      "candidate": "C03",
+      "candidateMethod": "Later Q&A box construction and stop method",
+      "assessment": "Box component highly precise; techno-fundamental selection and sizing remain discretionary.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "#709 DARVAS_LATER_QA not_fully_reproducible",
+        "C03: \"techno-fundamental selection and sizing remain discretionary\""
+      ],
+      "evidence": [
+        {
+          "ruleId": "DAR-Q1",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184",
+          "hardenable": true
+        },
+        {
+          "ruleId": "DAR-Q2",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 196; printed 184",
+          "hardenable": true
+        },
+        {
+          "ruleId": "DAR-Q4",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 204; printed 192",
+          "hardenable": true
+        },
+        {
+          "ruleId": "DAR-Q5",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 200; printed 188",
+          "hardenable": true
+        },
+        {
+          "ruleId": "DAR-Q6",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B06 PDF 202; printed 190",
+          "hardenable": true
+        }
+      ],
+      "hardenableRuleIds": [
+        "DAR-Q1",
+        "DAR-Q2",
+        "DAR-Q3",
+        "DAR-Q4",
+        "DAR-Q5",
+        "DAR-Q6",
+        "DAR-Q7",
+        "DAR-Q8",
+        "DAR-Q9"
+      ],
+      "allRules": {
+        "total": 17,
+        "byModal": {
+          "HARD": 9,
+          "CONTEXTUAL": 5,
+          "STRONG_PREFERENCE": 3
+        },
+        "byClearance": {
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 9,
+          "DO_NOT_HARDEN_PREFERENCE": 8
+        },
+        "byConfidence": {
+          "HIGH": 17
+        },
+        "originalWordingChecked": 17
+      },
+      "reproducibility": {
+        "method": "DARVAS_LATER_QA",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "scope": "WEEKLY_STAGE_ANALYSIS_INVESTOR_PATH",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C04",
+      "candidateMethod": "Stage2 investor",
+      "assessment": "Group/breadth data and support interpretation; keep explicit RS/MA exceptions.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 WEIN_STAGE_INVESTOR_1988 not_fully_reproducible",
+        "C04: \"support interpretation\""
+      ],
+      "evidence": [
+        {
+          "ruleId": "WEIN-BUY1",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 73; printed 59",
+          "hardenable": false
+        },
+        {
+          "ruleId": "WEIN-BUY2",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 73; printed 59",
+          "hardenable": false
+        },
+        {
+          "ruleId": "WEIN-STOP2",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "B09 PDF 196; printed 182",
+          "hardenable": true
+        },
+        {
+          "ruleId": "WEIN-TRAIL4",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 203; printed 189",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [
+        "WEIN-NO4",
+        "WEIN-NO3",
+        "WEIN-ORD",
+        "WEIN-MA",
+        "WEIN-MARKET",
+        "WEIN-GROUP",
+        "WEIN-OH",
+        "WEIN-VOL",
+        "WEIN-VOL5",
+        "WEIN-RSNO",
+        "WEIN-STOP1",
+        "WEIN-STOP2",
+        "WEIN-SELL4",
+        "WEIN-AVG"
+      ],
+      "allRules": {
+        "total": 56,
+        "byModal": {
+          "CONTEXTUAL": 23,
+          "HARD": 14,
+          "STRONG_PREFERENCE": 12,
+          "EXAMPLE_ONLY": 1,
+          "PREFERENCE": 4,
+          "OPTIONAL": 2
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 42,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 14
+        },
+        "byConfidence": {
+          "HIGH": 56
+        },
+        "originalWordingChecked": 56
+      },
+      "reproducibility": {
+        "method": "WEIN_STAGE_INVESTOR_1988",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "scope": "WEEKLY_STAGE_ANALYSIS_TRADER_PATH",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C05",
+      "candidateMethod": "Stage2 trader continuation",
+      "assessment": "Separate full-position continuation and tighter trader stop; no universal investor half-half.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 WEIN_STAGE_TRADER_1988 not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "WEIN-TR-CONT",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 75; printed 61",
+          "hardenable": false
+        },
+        {
+          "ruleId": "WEIN-TR-CONT-SIZE",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 77; printed 63",
+          "hardenable": false
+        },
+        {
+          "ruleId": "WEIN-TR-STOP",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B09 PDF 208; printed 194",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [],
+      "allRules": {
+        "total": 14,
+        "byModal": {
+          "STRONG_PREFERENCE": 4,
+          "PREFERENCE": 3,
+          "CONTEXTUAL": 7
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 14
+        },
+        "byConfidence": {
+          "HIGH": 14
+        },
+        "originalWordingChecked": 14
+      },
+      "reproducibility": {
+        "method": "WEIN_STAGE_TRADER_1988",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "scope": "MACHINE_SCREEN -> RANKING -> MANUAL REVIEW -> FINAL CANDIDATE",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C06",
+      "candidateMethod": "SEPA/VCP with manual ranking interface",
+      "assessment": "Build source-faithful screening plus explicit manual decision layer; no promise of fully automated Minervini.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 MIN_SEPA_GROWTH_2013 not_fully_reproducible",
+        "C06: \"explicit manual decision layer\""
+      ],
+      "evidence": [
+        {
+          "ruleId": "MIN-PROCESS-04",
+          "modal": "CONTEXTUAL",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 61",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-PROCESS-15",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 66",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-VCP-02",
+          "modal": "CONTEXTUAL",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 265",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-VCP-03",
+          "modal": "PREFERENCE",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 266",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [],
+      "allRules": {
+        "total": 89,
+        "byModal": {
+          "HARD": 12,
+          "CONTEXTUAL": 29,
+          "PREFERENCE": 25,
+          "STRONG_PREFERENCE": 21,
+          "OPTIONAL": 2
+        },
+        "byClearance": {
+          "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION": 12,
+          "DO_NOT_HARDEN_PREFERENCE": 77
+        },
+        "byConfidence": {
+          "MEDIUM": 89
+        },
+        "originalWordingChecked": 0
+      },
+      "reproducibility": {
+        "method": "MIN_SEPA_GROWTH_2013",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "MEDIUM",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": false,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "scope": "SEPARATE_EXCEPTION_FAMILY",
+      "verdict": "SOURCE_PARTIAL",
+      "candidate": "C07",
+      "candidateMethod": "Power Play family",
+      "assessment": "Separate fundamentals exception; do not make typical3–6weeks an absolute minimum.",
+      "blockers": [
+        "MIN-PP-02: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+        "MIN-PP-04: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+        "MIN-PP-05: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION"
+      ],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_PARTIAL",
+        "#709 MIN_POWER_PLAY not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "MIN-PP-01",
+          "modal": "CONTEXTUAL",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 341",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-PP-02",
+          "modal": "HARD",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+          "source": "B12 PDF 342",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-PP-03",
+          "modal": "CONTEXTUAL",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "B12 PDF 342",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-PP-04",
+          "modal": "HARD",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+          "source": "B12 PDF 342",
+          "hardenable": false
+        },
+        {
+          "ruleId": "MIN-PP-05",
+          "modal": "HARD",
+          "confidence": "MEDIUM",
+          "originalWordingChecked": false,
+          "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+          "source": "B12 PDF 342",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [],
+      "allRules": {
+        "total": 5,
+        "byModal": {
+          "CONTEXTUAL": 2,
+          "HARD": 3
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 2,
+          "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION": 3
+        },
+        "byConfidence": {
+          "MEDIUM": 5
+        },
+        "originalWordingChecked": 0
+      },
+      "reproducibility": {
+        "method": "MIN_POWER_PLAY",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "MEDIUM",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": false,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "scope": "DAILY_ALTERNATIVE (KK-011) with low-of-day stop and distance rejection (KK-012)",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C08",
+      "candidateMethod": "Common Breakout daily alternative / ORH branch",
+      "assessment": "Written daily alternative feasible; ORH requires intraday. Reject wide LoD distance rather than replacing LoD.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 Breakout not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "KK-010",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 HowtoTrade1",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-011",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 HowtoTrade1",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-012",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-KK3 HowtoTrade2",
+          "hardenable": true
+        },
+        {
+          "ruleId": "KK-013",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 HowtoTrade3",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-014",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 HowtoTrade3",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [
+        "KK-012"
+      ],
+      "allRules": {
+        "total": 10,
+        "byModal": {
+          "PREFERENCE": 4,
+          "STRONG_PREFERENCE": 2,
+          "CONTEXTUAL": 1,
+          "OPTIONAL": 2,
+          "HARD": 1
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 9,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 1
+        },
+        "byConfidence": {
+          "HIGH": 10
+        },
+        "originalWordingChecked": 10
+      },
+      "reproducibility": {
+        "method": "Breakout",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "scope": "SEPARATE_ENGINE",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C09",
+      "candidateMethod": "Episodic Pivot",
+      "assessment": "Timestamped catalysts,estimates,guidance and intraday volume; separate exit-choice uncertainty.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 Episodic Pivot not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "KK-015",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 EP description",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-034",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-KKEP HowtoBuy",
+          "hardenable": true
+        },
+        {
+          "ruleId": "KK-038",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KKEP Differenttypes",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-040",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KKEP earningsEP",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [
+        "KK-034"
+      ],
+      "allRules": {
+        "total": 12,
+        "byModal": {
+          "STRONG_PREFERENCE": 3,
+          "CONTEXTUAL": 4,
+          "PREFERENCE": 3,
+          "OPTIONAL": 1,
+          "HARD": 1
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 11,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 1
+        },
+        "byConfidence": {
+          "HIGH": 12
+        },
+        "originalWordingChecked": 12
+      },
+      "reproducibility": {
+        "method": "Episodic Pivot",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "MEDIUM",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "scope": "SEPARATE_ENGINE (short side)",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C10",
+      "candidateMethod": "Parabolic Short",
+      "assessment": "Intraday VWAP/ORL and borrow/locate history; risk constraints essential.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 Parabolic Short not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "KK-020",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 Parabolic shorts howto1",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-021",
+          "modal": "OPTIONAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 Parabolic shorts howto1",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-022",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 Parabolic shorts howto2",
+          "hardenable": false
+        },
+        {
+          "ruleId": "KK-023",
+          "modal": "PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-KK3 Parabolic shorts howto3",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [],
+      "allRules": {
+        "total": 7,
+        "byModal": {
+          "STRONG_PREFERENCE": 2,
+          "EXAMPLE_ONLY": 1,
+          "OPTIONAL": 2,
+          "CONTEXTUAL": 1,
+          "PREFERENCE": 1
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 7
+        },
+        "byConfidence": {
+          "HIGH": 7
+        },
+        "originalWordingChecked": 7
+      },
+      "reproducibility": {
+        "method": "Parabolic Short",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "MEDIUM",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "scope": "VOLUME_SIGNATURE detector + MANUAL chart/fundamental context",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C11",
+      "candidateMethod": "Pocket Pivot",
+      "assessment": "Precise down-volume comparison component; constructive chart context and exits retain discretion.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 PocketPivot not_fully_reproducible",
+        "C11: \"constructive chart context and exits retain discretion\""
+      ],
+      "evidence": [
+        {
+          "ruleId": "MOKAPP-003",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAPP rule3",
+          "hardenable": true
+        },
+        {
+          "ruleId": "MOKAPP-004",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAPP rule4/5",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [
+        "MOKAPP-003"
+      ],
+      "allRules": {
+        "total": 20,
+        "byModal": {
+          "STRONG_PREFERENCE": 4,
+          "PREFERENCE": 4,
+          "HARD": 1,
+          "CONTEXTUAL": 10,
+          "OPTIONAL": 1
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 19,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 1
+        },
+        "byConfidence": {
+          "HIGH": 20
+        },
+        "originalWordingChecked": 20
+      },
+      "reproducibility": {
+        "method": "PocketPivot",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "scope": "GAP/ATR40 detector (daily, at close) + MANUAL volume exception and context",
+      "verdict": "SOURCE_MANUAL_REQUIRED",
+      "candidate": "C12",
+      "candidateMethod": "Buyable Gap-Up",
+      "assessment": "Resolve era-specific standard volume wording; keep documented megacap exception and chart-low sellguide.",
+      "blockers": [],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 BuyableGapUp not_fully_reproducible",
+        "C12: \"keep documented megacap exception\""
+      ],
+      "evidence": [
+        {
+          "ruleId": "MOKA12-004",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKA12 PDF35",
+          "hardenable": true
+        },
+        {
+          "ruleId": "MOKA24-VOL",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-MOKAV24 MCDparagraph",
+          "hardenable": true
+        },
+        {
+          "ruleId": "MOKA24-MEGA",
+          "modal": "CONTEXTUAL",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-MOKAV24 MCDparagraph",
+          "hardenable": false
+        }
+      ],
+      "hardenableRuleIds": [
+        "MOKA12-004",
+        "MOKA24-VOL"
+      ],
+      "allRules": {
+        "total": 13,
+        "byModal": {
+          "PREFERENCE": 3,
+          "HARD": 2,
+          "UNKNOWN": 1,
+          "STRONG_PREFERENCE": 2,
+          "CONTEXTUAL": 5
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 11,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 2
+        },
+        "byConfidence": {
+          "HIGH": 12,
+          "LOW": 1
+        },
+        "originalWordingChecked": 13
+      },
+      "reproducibility": {
+        "method": "BuyableGapUp",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "scope": "DISCLOSED_SETUP_COMPONENT",
+      "verdict": "SOURCE_PARTIAL",
+      "candidate": "C13",
+      "candidateMethod": "Holy Grail disclosed setup component",
+      "assessment": "20EMA/ADX14>30 core; exact stop/order sequence not fully disclosed. Component study, not full personal replica.",
+      "blockers": [
+        "C13 assessment: \"exact stop/order sequence not fully disclosed\""
+      ],
+      "manualLayer": true,
+      "manualLayerBasis": [
+        "verdict SOURCE_PARTIAL",
+        "#709 HolyGrail2004 not_fully_reproducible"
+      ],
+      "evidence": [
+        {
+          "ruleId": "RAS04-001",
+          "modal": "STRONG_PREFERENCE",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "DO_NOT_HARDEN_PREFERENCE",
+          "source": "W-RAS04 PDF4;ownquote",
+          "hardenable": false
+        },
+        {
+          "ruleId": "RAS04-002",
+          "modal": "HARD",
+          "confidence": "HIGH",
+          "originalWordingChecked": true,
+          "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+          "source": "W-RAS04 PDF4;ownquote",
+          "hardenable": true
+        }
+      ],
+      "hardenableRuleIds": [
+        "RAS04-002",
+        "RAS04-004"
+      ],
+      "allRules": {
+        "total": 6,
+        "byModal": {
+          "STRONG_PREFERENCE": 1,
+          "HARD": 2,
+          "PREFERENCE": 2,
+          "CONTEXTUAL": 1
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 4,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 2
+        },
+        "byConfidence": {
+          "HIGH": 6
+        },
+        "originalWordingChecked": 6
+      },
+      "reproducibility": {
+        "method": "HolyGrail2004",
+        "reproducibility": "MEDIUM",
+        "disclosedComponent": "HIGH",
+        "notFullyReproducible": true,
+        "originalEnglishCheckedForAllRules": true,
+        "vuFeasibility": "MEDIUM"
+      }
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "scope": "OUT_OF_MAIN_SCOPE (no #709 candidate)",
+      "verdict": "SOURCE_BLOCKED",
+      "candidate": null,
+      "evidence": [],
+      "blockers": [
+        "GAP-B04: BOOK_PARTIAL - missing Remainder of chapter2 and chapters3–20; no original book CAN SLIM/selling/market chapters in this file",
+        "#709 reproducibility LOW for IBDoperationalization2013"
+      ],
+      "manualLayer": true,
+      "allRules": {
+        "total": 54,
+        "byModal": {
+          "STRONG_PREFERENCE": 17,
+          "PREFERENCE": 18,
+          "CONTEXTUAL": 13,
+          "HARD": 6
+        },
+        "byClearance": {
+          "DO_NOT_HARDEN_PREFERENCE": 48,
+          "SCOPE_AND_EXCEPTIONS_REQUIRED": 6
+        },
+        "byConfidence": {
+          "MEDIUM": 19,
+          "HIGH": 35
+        },
+        "originalWordingChecked": 35
+      },
+      "reproducibility": {
+        "method_id": "M-541a62385f",
+        "trader": "William O'Neil / IBD",
+        "method": "IBDoperationalization2013",
+        "method_kind": "METHOD_CONTEXT",
+        "reproducibility": "LOW",
+        "disclosed_component_reproducibility": "MEDIUM",
+        "full_personal_trading_replica": "REQUIRES_DISCRETION_AND_SCOPING",
+        "source_coverage": "MEDIUM",
+        "ground_truth_quality": "LOW",
+        "vu_feasibility": "LOW",
+        "original_english_checked_for_all_rules": true,
+        "not_fully_reproducible": true,
+        "personal_replication_status": "NOT_FULLY_REPRODUCIBLE",
+        "source_context_case_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,523 @@
+{
+  "schema": "supertrader-v4-1-final-matrix-1.0.0",
+  "generation": "V4.1",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-acceptance-v4-1",
+  "sourceEvidence": {
+    "pullRequest": 709,
+    "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+    "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12",
+    "filesVerified": 20,
+    "mismatches": 0,
+    "finalReview": {
+      "status": "PASS_WITH_EXPLICIT_SOURCE_GAPS",
+      "openHighFindings": 0,
+      "openCriticalFindings": 0,
+      "limitation": "Independent source sampling and complete structural/reference checks; not a second word-by-word reading of all4232pages."
+    }
+  },
+  "measurementEvidence": {
+    "pullRequest": 705,
+    "freezeId": "V4-beae51ae1b07768b",
+    "runId": "38722939085",
+    "level": "NOT_CERTIFIED",
+    "openPostResultFindings": [
+      "V4-D1 BLOCKER",
+      "V4-D2 MAJOR"
+    ]
+  },
+  "replaces": "OSR-* owner-attested findings of #705 (SUPERTRADER-V4-SOURCE-ACCEPTANCE.json stays unchanged as historical evidence)",
+  "columns": [
+    "source",
+    "data",
+    "measurement",
+    "eligibility"
+  ],
+  "matrix": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "candidate": "C01",
+      "scope": "VU_EQUITY_ADAPTATION (long-only, daily bars)",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "manualLayer": false,
+      "goldenCases": "EXECUTABLE",
+      "previous705": {
+        "source": "SOURCE_ACCEPTED",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "RESEARCH_ONLY",
+        "measurability": {
+          "class": "FULL_METHOD_AFTER_ENGINE_FINDINGS",
+          "requires": [
+            "V41-F1"
+          ],
+          "note": "code-only prerequisite, no data dependency"
+        }
+      }
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "candidate": "C02",
+      "scope": "VU_EQUITY_ADAPTATION (long-only, daily bars)",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "manualLayer": false,
+      "goldenCases": "EXECUTABLE",
+      "previous705": {
+        "source": "SOURCE_ACCEPTED",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "RESEARCH_ONLY",
+        "measurability": {
+          "class": "FULL_METHOD_AFTER_ENGINE_FINDINGS",
+          "requires": [
+            "V41-F1"
+          ],
+          "note": "code-only prerequisite, no data dependency"
+        }
+      }
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "candidate": "C03",
+      "scope": "BOX_STATE_MACHINE screen (long side) + MANUAL selection and sizing",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "EXECUTABLE",
+      "previous705": {
+        "source": "SOURCE_PARTIAL",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_PARTIAL",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+          "component": "methods/darvas-box-v4-1.mjs",
+          "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+        }
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "candidate": "C04",
+      "scope": "WEEKLY_STAGE_ANALYSIS_INVESTOR_PATH",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_MANUAL_REQUIRED",
+        "eligibility": "MANUAL_LAYER_REQUIRED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_BLOCKED",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "NO_MEASUREMENT_PATH: WEEKLY_AGGREGATION",
+            "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "candidate": "C05",
+      "scope": "WEEKLY_STAGE_ANALYSIS_TRADER_PATH",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_MANUAL_REQUIRED",
+        "eligibility": "MANUAL_LAYER_REQUIRED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_BLOCKED",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "NO_MEASUREMENT_PATH: WEEKLY_AGGREGATION",
+            "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+          ]
+        }
+      }
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "candidate": "C06",
+      "scope": "MACHINE_SCREEN -> RANKING -> MANUAL REVIEW -> FINAL CANDIDATE",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_MANUAL_REQUIRED",
+        "eligibility": "MANUAL_LAYER_REQUIRED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+          ]
+        }
+      }
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "candidate": "C07",
+      "scope": "SEPARATE_EXCEPTION_FAMILY",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_MANUAL_REQUIRED",
+        "eligibility": "MANUAL_LAYER_REQUIRED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "RESEARCH_ONLY",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "SOURCE_PARTIAL"
+          ]
+        }
+      }
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "candidate": "C08",
+      "scope": "DAILY_ALTERNATIVE (KK-011) with low-of-day stop and distance rejection (KK-012)",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_ACCEPTED",
+        "eligibility": "MANUAL_LAYER_REQUIRED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+          ]
+        }
+      }
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "candidate": "C09",
+      "scope": "SEPARATE_ENGINE",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_ACCEPTED",
+        "eligibility": "DATA_BLOCKED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_BLOCKED",
+        "measurement": "MEASUREMENT_BLOCKED",
+        "eligibility": "DATA_BLOCKED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "DATA_BLOCKED: intradayHistory, catalystsNews",
+            "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION"
+          ]
+        }
+      }
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "candidate": "C10",
+      "scope": "SEPARATE_ENGINE (short side)",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_ACCEPTED",
+        "eligibility": "DATA_BLOCKED"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_BLOCKED",
+        "measurement": "MEASUREMENT_BLOCKED",
+        "eligibility": "DATA_BLOCKED",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "DATA_BLOCKED: intradayHistory, shortInterest, borrow",
+            "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION, SHORT_BORROW_LEDGER"
+          ]
+        }
+      }
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "candidate": "C11",
+      "scope": "VOLUME_SIGNATURE detector + MANUAL chart/fundamental context",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "EXECUTABLE",
+      "previous705": {
+        "source": "SOURCE_PARTIAL",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+          "component": "methods/pocket-pivot-v4-1.mjs",
+          "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+        }
+      }
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "candidate": "C12",
+      "scope": "GAP/ATR40 detector (daily, at close) + MANUAL volume exception and context",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "manualLayer": true,
+      "goldenCases": "EXECUTABLE",
+      "previous705": {
+        "source": "SOURCE_PARTIAL",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_ACCEPTED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "MANUAL_LAYER_REQUIRED",
+        "measurability": {
+          "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+          "component": "methods/buyable-gap-up-v4-1.mjs",
+          "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+        }
+      }
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "candidate": "C13",
+      "scope": "DISCLOSED_SETUP_COMPONENT",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_PARTIAL",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_BLOCKED",
+        "measurement": "MEASUREMENT_BLOCKED",
+        "eligibility": "RESEARCH_ONLY",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "SOURCE_PARTIAL",
+            "DATA_BLOCKED: intradayHistory",
+            "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "candidate": null,
+      "scope": "OUT_OF_MAIN_SCOPE (no #709 candidate)",
+      "source": "SOURCE_BLOCKED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "manualLayer": true,
+      "goldenCases": "CATALOGUE_ONLY",
+      "previous705": {
+        "source": "SOURCE_PARTIAL",
+        "eligibility": "RESEARCH_ONLY"
+      },
+      "afterReverseSplitFix": {
+        "data": "DATA_BLOCKED",
+        "measurement": "MEASUREMENT_PARTIAL",
+        "eligibility": "RESEARCH_ONLY",
+        "measurability": {
+          "class": "NOT_IMMEDIATELY_MEASURABLE",
+          "reasons": [
+            "SOURCE_BLOCKED",
+            "DATA_BLOCKED: estimates, institutional"
+          ]
+        }
+      }
+    }
+  ],
+  "measurableImmediatelyAfterReverseSplitFix": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "class": "FULL_METHOD_AFTER_ENGINE_FINDINGS",
+      "requires": [
+        "V41-F1"
+      ],
+      "note": "code-only prerequisite, no data dependency"
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "class": "FULL_METHOD_AFTER_ENGINE_FINDINGS",
+      "requires": [
+        "V41-F1"
+      ],
+      "note": "code-only prerequisite, no data dependency"
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+      "component": "methods/darvas-box-v4-1.mjs",
+      "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+      "component": "methods/pocket-pivot-v4-1.mjs",
+      "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "class": "MACHINE_SCREEN_COMPONENT_ONLY",
+      "component": "methods/buyable-gap-up-v4-1.mjs",
+      "note": "signal-level measurement of the machine screen; manual decisions are logged forward only and never back-filled, so the full method is not historically measurable"
+    }
+  ],
+  "notMeasurableAfterFix": [
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "reasons": [
+        "NO_MEASUREMENT_PATH: WEEKLY_AGGREGATION",
+        "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "reasons": [
+        "NO_MEASUREMENT_PATH: WEEKLY_AGGREGATION",
+        "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+      ]
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "reasons": [
+        "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+      ]
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "reasons": [
+        "SOURCE_PARTIAL"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "reasons": [
+        "MANUAL_LAYER_REQUIRED and no V4.1 machine-screen component built"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "reasons": [
+        "DATA_BLOCKED: intradayHistory, catalystsNews",
+        "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION"
+      ]
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "reasons": [
+        "DATA_BLOCKED: intradayHistory, shortInterest, borrow",
+        "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION, SHORT_BORROW_LEDGER"
+      ]
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "reasons": [
+        "SOURCE_PARTIAL",
+        "DATA_BLOCKED: intradayHistory",
+        "NO_MEASUREMENT_PATH: INTRADAY_EXECUTION"
+      ]
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "reasons": [
+        "SOURCE_BLOCKED",
+        "DATA_BLOCKED: estimates, institutional"
+      ]
+    }
+  ],
+  "afterFixAssumption": {
+    "certification": {
+      "level": "PARTIALLY_CERTIFIED",
+      "externallyValidatedSlices": [
+        "EW_MARKET"
+      ]
+    },
+    "conditions": [
+      "V4-D1 closed by a Quant PR in the canonical core (quant/engines, protected path)",
+      "new capture and a re-run of the calibration with the unchanged pre-registered V4.1 tolerances",
+      "that run certifies at least the EW_MARKET slice (V4-D2 MAJOR may still prevent it)"
+    ],
+    "note": "hypothetical input; it is not a measurement and does not change any verdict of the current matrix"
+  },
+  "performanceRuns": 0,
+  "backtests": 0
+}

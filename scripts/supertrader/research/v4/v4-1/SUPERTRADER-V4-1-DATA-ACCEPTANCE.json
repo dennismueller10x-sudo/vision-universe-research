@@ -1,0 +1,811 @@
+{
+  "schema": "supertrader-v4-1-data-acceptance-1.0.0",
+  "generation": "V4.1",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-acceptance-v4-1",
+  "sourceEvidence": {
+    "pullRequest": 709,
+    "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+    "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12",
+    "filesVerified": 20,
+    "mismatches": 0,
+    "finalReview": {
+      "status": "PASS_WITH_EXPLICIT_SOURCE_GAPS",
+      "openHighFindings": 0,
+      "openCriticalFindings": 0,
+      "limitation": "Independent source sampling and complete structural/reference checks; not a second word-by-word reading of all4232pages."
+    }
+  },
+  "measurementEvidence": {
+    "pullRequest": 705,
+    "freezeId": "V4-beae51ae1b07768b",
+    "runId": "38722939085",
+    "level": "NOT_CERTIFIED",
+    "openPostResultFindings": [
+      "V4-D1 BLOCKER",
+      "V4-D2 MAJOR"
+    ]
+  },
+  "replaces": "OSR-* owner-attested findings of #705 (SUPERTRADER-V4-SOURCE-ACCEPTANCE.json stays unchanged as historical evidence)",
+  "categories": {
+    "price": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "basis": "canonical daily OHLC; V4-D1 (BLOCKER, open): undeclared reverse splits / mis-adjusted split months in the canonical core; #709 availability PARTIAL"
+    },
+    "volume": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "basis": "canonical daily volume; split adjustment shares the V4-D1 defect; #709 availability PARTIAL"
+    },
+    "priceFullHistory": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "an all-time high needs listing-to-date history; canonical histories start at the history store's first session and are not certified back to the listing for every security"
+    },
+    "intradayHistory": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no historical intraday panel (IEX bars only live per trigger day); #709 availability MISSING"
+    },
+    "fundamentals": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "SEC first-filing EPS/revenue/shares, partial certification; #709 PARTIAL"
+    },
+    "estimates": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no analyst estimate history; #709 MISSING"
+    },
+    "surprises": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no consensus history; #709 MISSING"
+    },
+    "guidance": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no guidance history; #709 MISSING"
+    },
+    "industry": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "current classification only, not point-in-time; #709 PARTIAL"
+    },
+    "institutional": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no 13F/sponsorship panel; #709 MISSING"
+    },
+    "marketBreadth": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "derivable from the canonical universe, not certified; #709 PARTIAL"
+    },
+    "marketRegime": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "index series available, regime definitions are method-specific; #709 PARTIAL"
+    },
+    "float": {
+      "now": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "basis": "SEC shares outstanding (not free float), not certified PIT; #709 PARTIAL"
+    },
+    "shortInterest": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "none; #709 MISSING"
+    },
+    "borrow": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no locate / borrow fee history"
+    },
+    "futures": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no futures chains, contract values, rolls"
+    },
+    "catalystsNews": {
+      "now": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "basis": "no point-in-time news / catalyst feed"
+    }
+  },
+  "fieldMap": {
+    "price": "price",
+    "volume": "volume",
+    "intraday": "intradayHistory",
+    "fundamentals": "fundamentals",
+    "estimates": "estimates",
+    "surprises": "surprises",
+    "guidance": "guidance",
+    "industry": "industry",
+    "institutional": "institutional",
+    "market_breadth": "marketBreadth",
+    "market_regime": "marketRegime",
+    "float": "float",
+    "shares": "float",
+    "short_interest": "shortInterest"
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "CONTEXT_NOT_USED",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "CONTEXT_NOT_USED",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "futures",
+          "layer": "ORIGINAL_SCOPE_ONLY",
+          "psr709": "ORIGINAL_FUTURES_REPLICATION",
+          "status": "DATA_BLOCKED"
+        }
+      ],
+      "originalScope": {
+        "scope": "ORIGINAL_FUTURES_REPLICATION",
+        "status": "DATA_BLOCKED",
+        "missing": [
+          "futures"
+        ]
+      }
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "CONTEXT_NOT_USED",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "CONTEXT_NOT_USED",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "futures",
+          "layer": "ORIGINAL_SCOPE_ONLY",
+          "psr709": "ORIGINAL_FUTURES_REPLICATION",
+          "status": "DATA_BLOCKED"
+        }
+      ],
+      "originalScope": {
+        "scope": "ORIGINAL_FUTURES_REPLICATION",
+        "status": "DATA_BLOCKED",
+        "missing": [
+          "futures"
+        ]
+      }
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_PARTIAL",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: REQUIRED_OR_CONTEXTUAL_BY_FAMILY (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "shortInterest",
+          "layer": "OUT_OF_SCOPE_SHORT_SIDE",
+          "psr709": "short_interest: REQUIRED_FOR_REALISTIC_EQUITY_SHORT_EXECUTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "priceFullHistory",
+          "layer": "MACHINE",
+          "psr709": "DAR-Q9",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "industry",
+          "layer": "MANUAL",
+          "psr709": "industry: REQUIRED_FOR_GROUP_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketBreadth",
+          "layer": "MANUAL",
+          "psr709": "market_breadth: REQUIRED_FOR_FULL_MARKET_CONTEXT (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "industry",
+          "layer": "MANUAL",
+          "psr709": "industry: REQUIRED_FOR_GROUP_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketBreadth",
+          "layer": "MANUAL",
+          "psr709": "market_breadth: REQUIRED_FOR_FULL_MARKET_CONTEXT (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "estimates",
+          "layer": "MANUAL",
+          "psr709": "estimates: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "surprises",
+          "layer": "MANUAL",
+          "psr709": "surprises: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "guidance",
+          "layer": "MANUAL",
+          "psr709": "guidance: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "industry",
+          "layer": "MANUAL",
+          "psr709": "industry: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "estimates",
+          "layer": "MANUAL",
+          "psr709": "estimates: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "surprises",
+          "layer": "MANUAL",
+          "psr709": "surprises: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "guidance",
+          "layer": "MANUAL",
+          "psr709": "guidance: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "industry",
+          "layer": "MANUAL",
+          "psr709": "industry: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "intradayHistory",
+          "layer": "ORIGINAL_SCOPE_ONLY",
+          "psr709": "intraday: OPTIONAL_FOR_EXPLICIT_DAILY_VARIANT; REQUIRED_FOR_ORH_REPLICA (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": {
+        "scope": "ORH_INTRADAY_REPLICA",
+        "status": "DATA_BLOCKED",
+        "missing": [
+          "intradayHistory"
+        ]
+      }
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "verdict": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "intradayHistory",
+          "layer": "MACHINE",
+          "psr709": "intraday: REQUIRED (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "estimates",
+          "layer": "MANUAL",
+          "psr709": "estimates: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "surprises",
+          "layer": "MANUAL",
+          "psr709": "surprises: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "guidance",
+          "layer": "MANUAL",
+          "psr709": "guidance: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "industry",
+          "layer": "MANUAL",
+          "psr709": "industry: CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "catalystsNews",
+          "layer": "MACHINE",
+          "psr709": "C09 assessment: Timestamped catalysts",
+          "status": "DATA_BLOCKED"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "verdict": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "intradayHistory",
+          "layer": "MACHINE",
+          "psr709": "intraday: REQUIRED (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "shortInterest",
+          "layer": "MACHINE",
+          "psr709": "short_interest: REQUIRED_FOR_REALISTIC_EQUITY_SHORT_EXECUTION (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "borrow",
+          "layer": "MACHINE",
+          "psr709": "C10 assessment: borrow/locate history",
+          "status": "DATA_BLOCKED"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: REQUIRED_OR_CONTEXTUAL_BY_FAMILY (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "verdict": "DATA_PARTIAL",
+      "afterReverseSplitFix": "DATA_ACCEPTED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MANUAL",
+          "psr709": "fundamentals: REQUIRED_OR_CONTEXTUAL_BY_FAMILY (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "verdict": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "price: REQUIRED (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "volume: REQUIRED_OR_CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "intradayHistory",
+          "layer": "MACHINE",
+          "psr709": "intraday: REQUIRED (MISSING)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "marketRegime",
+          "layer": "MANUAL",
+          "psr709": "market_regime: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "float",
+          "layer": "MANUAL",
+          "psr709": "shares: CONTEXTUAL (PARTIAL)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "verdict": "DATA_BLOCKED",
+      "afterReverseSplitFix": "DATA_BLOCKED",
+      "categories": [
+        {
+          "category": "price",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "volume",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "fundamentals",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_PARTIAL"
+        },
+        {
+          "category": "estimates",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "institutional",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "category": "industry",
+          "layer": "MACHINE",
+          "psr709": "method core (no #709 candidate)",
+          "status": "DATA_PARTIAL"
+        }
+      ],
+      "originalScope": null
+    }
+  ]
+}

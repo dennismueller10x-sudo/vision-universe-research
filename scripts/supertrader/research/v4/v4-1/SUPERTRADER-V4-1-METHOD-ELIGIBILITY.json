@@ -1,0 +1,735 @@
+{
+  "schema": "supertrader-v4-1-method-eligibility-1.0.0",
+  "generation": "V4.1",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-acceptance-v4-1",
+  "sourceEvidence": {
+    "pullRequest": 709,
+    "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+    "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12",
+    "filesVerified": 20,
+    "mismatches": 0,
+    "finalReview": {
+      "status": "PASS_WITH_EXPLICIT_SOURCE_GAPS",
+      "openHighFindings": 0,
+      "openCriticalFindings": 0,
+      "limitation": "Independent source sampling and complete structural/reference checks; not a second word-by-word reading of all4232pages."
+    }
+  },
+  "measurementEvidence": {
+    "pullRequest": 705,
+    "freezeId": "V4-beae51ae1b07768b",
+    "runId": "38722939085",
+    "level": "NOT_CERTIFIED",
+    "openPostResultFindings": [
+      "V4-D1 BLOCKER",
+      "V4-D2 MAJOR"
+    ]
+  },
+  "replaces": "OSR-* owner-attested findings of #705 (SUPERTRADER-V4-SOURCE-ACCEPTANCE.json stays unchanged as historical evidence)",
+  "rule": {
+    "IMPLEMENT_NOW": "SOURCE_ACCEPTED and every required data category DATA_ACCEPTED for the declared scope and MEASUREMENT_ACCEPTED, or MEASUREMENT_PARTIAL where the external base (TR arithmetic/corporate actions via EW) passed and every non-external component has deterministic golden tests; and no manual layer",
+    "MANUAL_LAYER_REQUIRED": "source requires discretion (SOURCE_MANUAL_REQUIRED or manual elements); machine screen may produce candidates, never BUY",
+    "DATA_BLOCKED": "a required data category is DATA_BLOCKED for the source-faithful scope",
+    "RESEARCH_ONLY": "source partial or blocked per SOURCE_RULE_V41 (#709 evidence), or measurement blocked, or an open engine source deviation",
+    "EDUCATIONAL_ONLY": "not reproducible and not a candidate for systematic research",
+    "claimReady": "requires MEASUREMENT_ACCEPTED (every component externally validated), adequate PIT, robust benchmark and no unresolved HIGH finding"
+  },
+  "engineFindings": [
+    {
+      "id": "V41-F1",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "blocks": "any Turtle performance run",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "title": "Frozen V4 Turtle engine moves all unit stops to 2N below the newest fill; #709 TUR-STOPADD/TUR-STOPGAP raise earlier units by 1/2 N per add, so after a gapped add the units carry different stops",
+      "evidence": "#709 TUR-CRUDE worked example (W-TUR printed pp. 22-23): fills 28.30/28.90/29.50/30.80, N 1.20 -> stops 27.70, 27.70, 27.70, 28.40; frozen V4 reading -> 28.40 for all four units (scripts/supertrader/tests/v41-turtle-source-examples.test.mjs)",
+      "notFixedHere": "turtle-source-v4.mjs is part of freeze V4-beae51ae1b07768b and a strategy change needs its own PR with a before/after comparison; methods/turtle-unit-stops-v4-1.mjs is the source-traced reference the next engine version must reproduce",
+      "sameBehaviourWhen": "every add fills exactly at its 1/2 N level (no gap)"
+    },
+    {
+      "id": "V41-F2",
+      "severity": "MINOR",
+      "status": "DECLARED",
+      "methods": [
+        "TURTLE_S1_SOURCE",
+        "TURTLE_S2_SOURCE"
+      ],
+      "title": "Equity translation keeps fractional shares; #709 TUR-UNIT floors to whole contracts",
+      "evidence": "TUR-HO2002: floor(0.01 x 1,000,000 / (0.0141 x 42,000)) = 16 contracts",
+      "notFixedHere": "declared TRANSLATION (T4-UNIT), not a deviation for equities"
+    }
+  ],
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reasons": [
+        "MEASUREMENT_BLOCKED (NOT_CERTIFIED)",
+        "V41-F1"
+      ],
+      "goldenCases": {
+        "status": "EXECUTABLE",
+        "executableCaseIds": [
+          "TG-01",
+          "TG-02",
+          "TG-03",
+          "TG-04",
+          "TG-05",
+          "TG-06",
+          "TG-07",
+          "TG-08",
+          "TG-10",
+          "TS-HO2002",
+          "TS-GOLD",
+          "TS-CRUDE-NORMAL",
+          "TS-CRUDE-GAP",
+          "TS-V41-F1"
+        ],
+        "psr709CaseCount": 3,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 3
+        },
+        "psr709CaseIds": [
+          "TUR-HO2002",
+          "TUR-GOLD",
+          "TUR-CRUDE"
+        ]
+      }
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reasons": [
+        "MEASUREMENT_BLOCKED (NOT_CERTIFIED)",
+        "V41-F1"
+      ],
+      "goldenCases": {
+        "status": "EXECUTABLE",
+        "executableCaseIds": [
+          "TG-05",
+          "TG-07",
+          "TG-08",
+          "TG-09",
+          "TG-10",
+          "TS-HO2002",
+          "TS-GOLD",
+          "TS-CRUDE-NORMAL",
+          "TS-CRUDE-GAP",
+          "TS-V41-F1"
+        ],
+        "psr709CaseCount": 3,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 3
+        },
+        "psr709CaseIds": [
+          "TUR-HO2002",
+          "TUR-GOLD",
+          "TUR-CRUDE"
+        ]
+      }
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "#709 DARVAS_LATER_QA not_fully_reproducible",
+        "C03: \"techno-fundamental selection and sizing remain discretionary\""
+      ],
+      "goldenCases": {
+        "status": "EXECUTABLE",
+        "executableCaseIds": [
+          "DG-01",
+          "DG-02",
+          "DG-03",
+          "DG-04",
+          "DG-05",
+          "DG-06",
+          "DG-07",
+          "DG-08",
+          "DG-09",
+          "DG-10"
+        ],
+        "psr709CaseCount": 103,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 102,
+          "EDUCATIONAL_EXAMPLE": 1
+        },
+        "psr709CaseIds": [
+          "DAR-PIT",
+          "DAR-LOUIS",
+          "DAR-ALS",
+          "DAR-DRESSER",
+          "DAR-COOPER",
+          "DAR-NAA",
+          "DAR-LOR1",
+          "DAR-LOR2",
+          "DAR-LORADD1",
+          "DAR-LORADD2",
+          "DAR-LORADD3",
+          "DAR-LOREXIT",
+          "DAR-DINERS1",
+          "DAR-DINERS2",
+          "DAR-DINERSEX",
+          "DAR-BRUCE",
+          "DAR-BRUCEEX",
+          "DAR-MOLY",
+          "DAR-HAVEG1",
+          "DAR-LORLOSS1",
+          "DAR-LORLOSS2",
+          "DAR-LORLOSS3",
+          "DAR-UNIV1",
+          "DAR-UNIV2",
+          "DAR-UNIV3",
+          "DAR-UNIVEX",
+          "DAR-THIO1",
+          "DAR-THIO2",
+          "DAR-THIOEX",
+          "DAR-TX1",
+          "DAR-TX2",
+          "DAR-TX3",
+          "DAR-ZP",
+          "DAR-BP",
+          "DAR-FP",
+          "DAR-LP",
+          "DAR-BEX",
+          "DAR-LEX",
+          "DAR-ZADD",
+          "DAR-FADD",
+          "DAR-CRISIS-1",
+          "DAR-CRISIS-2",
+          "DAR-CRISIS-3",
+          "DAR-CRISIS-4",
+          "DAR-CRISIS-5",
+          "DAR-CRISIS-6",
+          "DAR-CRISIS-7",
+          "DAR-CRISIS-8",
+          "DAR-CRISIS-9",
+          "DAR-CRISIS-10",
+          "DAR-CRISIS-11",
+          "DAR-CRISIS-12",
+          "DAR-CRISIS-13",
+          "DAR-CRISIS-14",
+          "DAR-ARLAN",
+          "DAR-POSTCRISIS-1",
+          "DAR-POSTCRISIS-2",
+          "DAR-POSTCRISIS-3",
+          "DAR-POSTCRISIS-4",
+          "DAR-POSTCRISIS-5",
+          "DAR-POSTCRISIS-6",
+          "DAR-POSTCRISIS-7",
+          "DAR-POSTCRISIS-8",
+          "DAR-POSTCRISIS-9",
+          "DAR-POSTCRISIS-10",
+          "DAR-POSTCRISIS-11",
+          "DAR-EARLY-01",
+          "DAR-EARLY-02",
+          "DAR-EARLY-03",
+          "DAR-EARLY-04",
+          "DAR-EARLY-05",
+          "DAR-EARLY-06",
+          "DAR-EARLY-07",
+          "DAR-EARLY-08",
+          "DAR-EARLY-09",
+          "DAR-EARLY-10",
+          "DAR-EARLY-11",
+          "DAR-EARLY-12",
+          "DAR-EARLY-13",
+          "DAR-EARLY-14",
+          "DAR-EARLY-15",
+          "DAR-EARLY-16",
+          "DAR-EARLY-17",
+          "DAR-EARLY-18",
+          "DAR-EARLY-19",
+          "DAR-EARLY-20",
+          "DAR-EARLY-21",
+          "DAR-EARLY-22",
+          "DAR-EARLY-23",
+          "DAR-EARLY-24",
+          "DAR-EARLY-25",
+          "DAR-EARLY-26",
+          "DAR-EARLY-27",
+          "DAR-EARLY-28",
+          "DAR-EARLY-29",
+          "DAR-EARLY-30",
+          "DAR-EARLY-31",
+          "DAR-EARLY-32",
+          "DAR-EARLY-33",
+          "DAR-EARLY-34",
+          "DAR-EARLY-35",
+          "DAR-EARLY-36",
+          "DAR-EARLY-37"
+        ]
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 WEIN_STAGE_INVESTOR_1988 not_fully_reproducible",
+        "C04: \"support interpretation\""
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 25,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 19,
+          "WATCHLIST": 6
+        },
+        "psr709CaseIds": [
+          "WEIN-ED-BS",
+          "WEIN-ED-IP",
+          "WEIN-ED-ICH",
+          "WEIN-ED-MXF",
+          "WEIN-ED-SFY",
+          "WEIN-ED-AEG",
+          "WEIN-ED-PN",
+          "WEIN-ED-GT",
+          "WEIN-ED-TXI",
+          "WEIN-ED-MRK",
+          "WEIN-ED-WMT",
+          "WEIN-ED-X",
+          "WEIN-ED-RLM",
+          "WEIN-ED-BOM",
+          "WEIN-ED-HSN",
+          "WEIN-ED-JOL",
+          "WEIN-ED-BLAIR",
+          "WEIN-ED-DOW",
+          "WEIN-ED-NSM",
+          "WEIN-PTR-DRV",
+          "WEIN-PTR-TDM",
+          "WEIN-PTR-TXN",
+          "WEIN-PTR-GeneralMedical",
+          "WEIN-PTR-COLE",
+          "WEIN-PTR-Teleprompter"
+        ]
+      }
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 WEIN_STAGE_TRADER_1988 not_fully_reproducible"
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 25,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 19,
+          "WATCHLIST": 6
+        },
+        "psr709CaseIds": [
+          "WEIN-ED-BS",
+          "WEIN-ED-IP",
+          "WEIN-ED-ICH",
+          "WEIN-ED-MXF",
+          "WEIN-ED-SFY",
+          "WEIN-ED-AEG",
+          "WEIN-ED-PN",
+          "WEIN-ED-GT",
+          "WEIN-ED-TXI",
+          "WEIN-ED-MRK",
+          "WEIN-ED-WMT",
+          "WEIN-ED-X",
+          "WEIN-ED-RLM",
+          "WEIN-ED-BOM",
+          "WEIN-ED-HSN",
+          "WEIN-ED-JOL",
+          "WEIN-ED-BLAIR",
+          "WEIN-ED-DOW",
+          "WEIN-ED-NSM",
+          "WEIN-PTR-DRV",
+          "WEIN-PTR-TDM",
+          "WEIN-PTR-TXN",
+          "WEIN-PTR-GeneralMedical",
+          "WEIN-PTR-COLE",
+          "WEIN-PTR-Teleprompter"
+        ]
+      }
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 MIN_SEPA_GROWTH_2013 not_fully_reproducible",
+        "C06: \"explicit manual decision layer\""
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 25,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 8,
+          "WATCHLIST": 1,
+          "PERSONAL_TRADE_PROBABLE": 2,
+          "REJECTED_SETUP": 1,
+          "EDUCATIONAL_EXAMPLE": 13
+        },
+        "psr709CaseIds": [
+          "MIN-AAPL04",
+          "MIN-FSII95",
+          "MIN-VIVO07",
+          "MIN-CRUS10",
+          "MIN-BBY97",
+          "MIN-WIRE",
+          "MIN-MIK",
+          "MIN-TWTR",
+          "MIN-AA",
+          "MIN-CAB1",
+          "MIN-CAB2",
+          "MIN-REJECT-FHC",
+          "MIN-EDU-URBN",
+          "MIN-EDU-CSCO",
+          "MIN-EDU-HD",
+          "MIN-EDU-MSFT",
+          "MIN-EDU-GMCR",
+          "MIN-EDU-APOL",
+          "MIN-EDU-RST",
+          "MIN-EDU-EDU",
+          "MIN-EDU-MELI",
+          "MIN-EDU-ARNA",
+          "MIN-EDU-MNST",
+          "MIN-EDU-MGA",
+          "MIN-EDU-QSII"
+        ]
+      }
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reasons": [
+        "SOURCE_PARTIAL (#709)",
+        "MIN-PP-02: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+        "MIN-PP-04: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+        "MIN-PP-05: HARD/MEDIUM/unchecked/REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION"
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 19,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 5,
+          "WATCHLIST": 1,
+          "EDUCATIONAL_EXAMPLE": 13
+        },
+        "psr709CaseIds": [
+          "MIN-AAPL04",
+          "MIN-FSII95",
+          "MIN-VIVO07",
+          "MIN-CRUS10",
+          "MIN-BBY97",
+          "MIN-WIRE",
+          "MIN-EDU-URBN",
+          "MIN-EDU-CSCO",
+          "MIN-EDU-HD",
+          "MIN-EDU-MSFT",
+          "MIN-EDU-GMCR",
+          "MIN-EDU-APOL",
+          "MIN-EDU-RST",
+          "MIN-EDU-EDU",
+          "MIN-EDU-MELI",
+          "MIN-EDU-ARNA",
+          "MIN-EDU-MNST",
+          "MIN-EDU-MGA",
+          "MIN-EDU-QSII"
+        ]
+      }
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 Breakout not_fully_reproducible"
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 10,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 10
+        },
+        "psr709CaseIds": [
+          "KK-B10",
+          "KK-B11",
+          "KK-B12",
+          "KK-B13",
+          "KK-B14",
+          "KK-B15",
+          "KK-B16",
+          "KK-B17",
+          "KK-B18",
+          "KK-B19"
+        ]
+      }
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "status": "DATA_BLOCKED",
+      "reasons": [
+        "intradayHistory",
+        "catalystsNews"
+      ],
+      "manualLayer": true,
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 11,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 1,
+          "EDUCATIONAL_EXAMPLE": 10
+        },
+        "psr709CaseIds": [
+          "KK-B05",
+          "KK-B10",
+          "KK-B11",
+          "KK-B12",
+          "KK-B13",
+          "KK-B14",
+          "KK-B15",
+          "KK-B16",
+          "KK-B17",
+          "KK-B18",
+          "KK-B19"
+        ]
+      }
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "status": "DATA_BLOCKED",
+      "reasons": [
+        "intradayHistory",
+        "shortInterest",
+        "borrow"
+      ],
+      "manualLayer": true,
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 11,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 1,
+          "EDUCATIONAL_EXAMPLE": 10
+        },
+        "psr709CaseIds": [
+          "KK-B01",
+          "KK-B10",
+          "KK-B11",
+          "KK-B12",
+          "KK-B13",
+          "KK-B14",
+          "KK-B15",
+          "KK-B16",
+          "KK-B17",
+          "KK-B18",
+          "KK-B19"
+        ]
+      }
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 PocketPivot not_fully_reproducible",
+        "C11: \"constructive chart context and exits retain discretion\""
+      ],
+      "goldenCases": {
+        "status": "EXECUTABLE",
+        "executableCaseIds": [
+          "PPG-01",
+          "PPG-02",
+          "PPG-03",
+          "PPG-04",
+          "PPG-05",
+          "PPG-06"
+        ],
+        "psr709CaseCount": 11,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 11
+        },
+        "psr709CaseIds": [
+          "MOKA-EX-1",
+          "MOKA-EX-2",
+          "MOKA-EX-3",
+          "MOKA-EX-4",
+          "MOKA-EX-5",
+          "MOKA-EX-6",
+          "MOKA-EX-7",
+          "MOKA-EX-8",
+          "MOKA-EX-9",
+          "MOKA-EX-10",
+          "MOKA-EX-11"
+        ]
+      }
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "reasons": [
+        "verdict SOURCE_MANUAL_REQUIRED",
+        "#709 BuyableGapUp not_fully_reproducible",
+        "C12: \"keep documented megacap exception\""
+      ],
+      "goldenCases": {
+        "status": "EXECUTABLE",
+        "executableCaseIds": [
+          "BGG-01",
+          "BGG-02",
+          "BGG-03",
+          "BGG-04",
+          "BGG-05"
+        ],
+        "psr709CaseCount": 12,
+        "psr709ByCategory": {
+          "EDUCATIONAL_EXAMPLE": 12
+        },
+        "psr709CaseIds": [
+          "MOKA-EX-1",
+          "MOKA-EX-2",
+          "MOKA-EX-3",
+          "MOKA-EX-4",
+          "MOKA-EX-5",
+          "MOKA-EX-6",
+          "MOKA-EX-7",
+          "MOKA-EX-8",
+          "MOKA-EX-9",
+          "MOKA-EX-10",
+          "MOKA-EX-11",
+          "MOKA24-MCD"
+        ]
+      }
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reasons": [
+        "SOURCE_PARTIAL (#709)",
+        "C13 assessment: \"exact stop/order sequence not fully disclosed\""
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 4,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 1,
+          "EDUCATIONAL_EXAMPLE": 3
+        },
+        "psr709CaseIds": [
+          "RAS-SOY-FLOOD",
+          "RAS-GRAIL-2003-12-19",
+          "RAS-GRAIL-2003-12-23",
+          "RAS-GRAIL-2004-01-02"
+        ]
+      }
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "source": "SOURCE_BLOCKED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reasons": [
+        "SOURCE_BLOCKED (#709)",
+        "GAP-B04: BOOK_PARTIAL - missing Remainder of chapter2 and chapters3–20; no original book CAN SLIM/selling/market chapters in this file",
+        "#709 reproducibility LOW for IBDoperationalization2013"
+      ],
+      "goldenCases": {
+        "status": "CATALOGUE_ONLY",
+        "executableCaseIds": [],
+        "psr709CaseCount": 9,
+        "psr709ByCategory": {
+          "PERSONAL_TRADE_CONFIRMED": 1,
+          "EDUCATIONAL_EXAMPLE": 7,
+          "WATCHLIST": 1
+        },
+        "psr709CaseIds": [
+          "ONEIL-FIRST",
+          "ONEIL-EX-SeaContainers",
+          "ONEIL-EX-BethlehemSteel",
+          "ONEIL-EX-AmericanChainCable",
+          "ONEIL-EX-HomeDepot",
+          "ONEIL-EX-Google",
+          "ONEIL-FIDELITY",
+          "MSI-TATA",
+          "MSI-JUBILANT"
+        ]
+      }
+    }
+  ]
+}
