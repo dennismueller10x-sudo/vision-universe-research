@@ -201,24 +201,73 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
   for (const key of ["earningsYield", "priceToFcf", "priceEarnings", "priceSales"]) {
     assert.ok(auswahl.includes(key), "die Auswahl der Bewertungsfamilie kennt '" + key + "' nicht");
   }
-  /* Verhalten dazu: über beide Wege trägt die Bewertungsfamilie mindestens
-     eine Kennzahl, die die Seite auch auswählt - und der gezeichnete Kasten
-     hat Zeilen. Ein Kasten ohne Zeile entsteht in KEINER Form: entweder
-     Kennzahlen oder ein Satz, warum keine. */
+  /* Verhalten dazu, datengetrieben statt an feste Titel gebunden.
+
+     Warum nicht mehr `["AAPL", "WBD"]`: WBD (Warner Bros. Discovery) wurde
+     uebernommen und ist ausgelistet; der Marktdaten-Lauf vom 15.10.2026
+     nimmt es nach `maxStaleTradingDays` (market-quality.js) aus dem
+     Faktorbestand. Die Familie `value` blieb, alle Kennzahlen stehen auf
+     SOURCE_MISSING, die Seite zeigt korrekt den erklaerenden Satz - der
+     alte Test kannte diesen Fall nicht und wurde rot. Ein Delisting ist ein
+     Marktereignis, kein Erzeugerfehler; der Test darf an keinem einzelnen
+     Titel haengen.
+
+     Was gleich bleibt (und jetzt fuer JEDEN geprueften Titel gilt): ein
+     gezeichneter Kennzahlenkasten hat Zeilen ODER einen erklaerenden Satz -
+     nie keines von beidem, nie einen leeren Zeilenbehaelter. Was dazukommt:
+     zur Laufzeit muss mindestens ein Titel des Panelwegs und einer des
+     breiten Wegs ECHTE Werte tragen und im Kasten stehen, damit der Test
+     nicht vakuoes gruen wird, wenn die Kandidaten wegfallen. */
   const AUSGEWAEHLT = ["earningsYield", "priceToFcf", "priceEarnings", "priceSales"];
-  for (const ticker of ["AAPL", "WBD"]) {
+  /* Sortiert und fest, nicht zufaellig. Panelweg: die Titel im Panel
+     (quant/data/sec/quant-factor-inputs.json). Breiter Weg: grosse, stabile
+     Titel ausserhalb des Panels. WBD bleibt als Beispiel fuer ein Delisting
+     dabei: je nach Datenstand echte Werte, nur der Satz oder nicht im Bestand. */
+  const KENNZAHLEN_KANDIDATEN = ["AAPL", "CSCO", "HD", "IBM", "JNJ", "KO", "MCD", "MSFT", "NVDA", "PEP", "PG", "WBD", "WMT", "XOM"].sort();
+  const PANELWEG = ["earningsYield", "priceToFcf"];
+  const BREITER_WEG = ["priceEarnings", "priceSales"];
+  const hatWert = (m) => m && m.state === "AVAILABLE" && Number.isFinite(m.value);
+  const kandidaten = KENNZAHLEN_KANDIDATEN.slice();
+  assert.ok(kandidaten.length > 0, "der Kandidatenbestand ist leer - dann prueft dieser Fall nichts");
+  const verschwunden = [], geprueftTitel = [], mitWert = { panel: [], breit: [] }, nurSatz = [];
+  for (const ticker of kandidaten) {
     const s = await api.getStockIntelligence(ticker);
-    const familie = (s.quant && s.quant.families || []).find((f) => f.id === "value");
-    if (!familie) continue;
-    const treffer = (familie.metrics || []).filter((m) => AUSGEWAEHLT.includes(m.metricId));
-    assert.ok(treffer.length > 0, ticker + ": die Bewertungsfamilie trägt keine Kennzahl der Auswahl");
+    const familie = s && s.state === "AVAILABLE" && s.quant && s.quant.state === "AVAILABLE"
+      ? (s.quant.families || []).find((f) => f.id === "value") : null;
+    if (!familie) { verschwunden.push(ticker); continue; } /* aus dem Bestand verschwunden (Delisting): kein Fehler, aber gezaehlt */
+    const metrics = familie.metrics || [];
+    const treffer = metrics.filter((m) => AUSGEWAEHLT.includes(m.metricId) && hatWert(m));
     const kasten = await zahlenAbschnitt(s);
-    assert.ok(kasten, ticker + ": die Seite zeichnet keinen Kennzahlenkasten");
+    assert.ok(kasten, ticker + ": die Seite zeichnet keinen Kennzahlenkasten und keinen Satz");
     const zeilen = knoten(kasten, (n) => /(^| )qx-stat( |$)/.test(n.className));
-    assert.ok(zeilen.length > 0, ticker + ": der Kennzahlenkasten hat keine einzige Zeile");
-    assert.ok(zeilen.some((z) => treffer.some((m) => z.textContent.includes(m.label))),
-      ticker + ": keine Bewertungskennzahl im Kasten");
+    const saetze = knoten(kasten, (n) => n.getAttribute && n.getAttribute("role") === "note");
+    const behaelter = knoten(kasten, (n) => /(^| )qx-stats( |$)/.test(n.className));
+    geprueftTitel.push(ticker);
+    if (behaelter.length) assert.ok(zeilen.length > 0, ticker + ": ein Zeilenbehaelter ohne eine einzige Zeile ist entstanden");
+    if (treffer.length > 0) {
+      /* Es gibt echte Bewertungswerte: der Kasten zeigt sie. */
+      assert.ok(zeilen.length > 0, ticker + ": der Kennzahlenkasten hat keine einzige Zeile");
+      assert.ok(zeilen.some((z) => treffer.some((m) => z.textContent.includes(m.label))),
+        ticker + ": keine Bewertungskennzahl im Kasten");
+      if (treffer.some((m) => PANELWEG.includes(m.metricId))) mitWert.panel.push(ticker);
+      if (treffer.some((m) => BREITER_WEG.includes(m.metricId))) mitWert.breit.push(ticker);
+    } else {
+      /* Familie da, aber keine einzige Bewertungszahl (Delisting, veraltete
+         Notierung): Zeilen anderer Familien oder der erklaerende Satz -
+         niemals ein leerer Kasten. */
+      assert.ok(zeilen.length > 0 || saetze.length > 0, ticker + ": weder Zeilen noch ein erklaerender Satz im Kasten");
+      if (zeilen.length === 0) {
+        assert.equal(behaelter.length, 0, ticker + ": ein leerer Kennzahlenkasten ist entstanden");
+        assert.match(saetze.map((n) => n.textContent).join(" "), /Keine Unternehmenszahlen/, ticker + ": der Satz nennt nicht, dass Zahlen fehlen");
+        nurSatz.push(ticker);
+      }
+    }
   }
+  const lage = "geprueft: [" + geprueftTitel.join(",") + "], verschwunden: [" + verschwunden.join(",") + "]";
+  assert.ok(geprueftTitel.length > 0, "kein einziger Kandidat ist im Bestand - der Kandidatenbestand ist leer. " + lage);
+  assert.ok(geprueftTitel.length >= 2, "nur " + geprueftTitel.length + " Titel geprueft, mindestens 2 verlangt. " + lage);
+  assert.ok(mitWert.panel.length >= 1, "kein Titel des Panelwegs (" + PANELWEG.join("/") + ") mit echtem Wert gefunden. " + lage);
+  assert.ok(mitWert.breit.length >= 1, "kein Titel des breiten Wegs (" + BREITER_WEG.join("/") + ") mit echtem Wert gefunden. " + lage);
   /* Und ohne eine einzige zeigbare Kennzahl steht ein Satz statt eines
      leeren Kastens. */
   const leer = await zahlenAbschnitt({ ticker: "LEER", state: "AVAILABLE", identityState: "AVAILABLE", name: "Leer AG",
