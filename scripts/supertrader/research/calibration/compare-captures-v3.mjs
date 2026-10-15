@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {computeContentBinding,normalizedInputs} from './capture-v3-inrunner.mjs';
 
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const ISO=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
@@ -47,7 +48,10 @@ export function compareCaptures(dirA,dirB){
   if(ma.parts[i].sha256===mb.parts[i].sha256)identical++;else differing++;
  }
  const rows=m=>[...m].map(([k,n])=>{const [pattern,cls]=k.split('|');return{pattern,class:cls,count:n};}).sort((x,y)=>y.count-x.count);
- return{schema:'supertrader-calibration-v3-capture-structural-diff-1.0.0',parts:ma.parts.length,partsByteIdentical:identical,partsByteDifferent:differing,securities,securitiesWithAnyDifference:securitiesDiffering,
+ const bA=computeContentBinding(dirA),bB=computeContentBinding(dirB);
+ const contentBindingEqual=Object.fromEntries(Object.keys(bA).map(k=>[k,JSON.stringify(bA[k])===JSON.stringify(bB[k])]));
+ const normalizedInputDifferences=rows(structuralDiff(normalizedInputs(read(path.join(dirA,'data-certification-inputs.json'))),normalizedInputs(read(path.join(dirB,'data-certification-inputs.json'))))).slice(0,40);
+ return{schema:'supertrader-calibration-v3-capture-structural-diff-1.0.0',contentBindingEqual,normalizedInputDifferences,parts:ma.parts.length,partsByteIdentical:identical,partsByteDifferent:differing,securities,securitiesWithAnyDifference:securitiesDiffering,
   partDifferences:rows(parts).slice(0,60),partDifferencePatterns:parts.size,manifestDifferences:rows(manifest).slice(0,40),sourceMetadataDifferences:rows(inputs).slice(0,60),valuesPublished:false};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

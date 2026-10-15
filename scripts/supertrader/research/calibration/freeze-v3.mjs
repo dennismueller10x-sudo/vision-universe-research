@@ -126,7 +126,7 @@ export function verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath})
 export function verifyContentAgainstFreeze(freeze,{inputDir,referenceParsedPath}){
  const get=role=>freeze.inputReceipts.find(r=>r.role===role);
  const frozen=get('CANONICAL_CONTENT_BINDING').binding,actual=computeContentBinding(inputDir);
- for(const k of Object.keys(frozen))demand(JSON.stringify(frozen[k])===JSON.stringify(actual[k]),'CONTENT_BINDING_MISMATCH:'+k.toUpperCase());
+ for(const k of Object.keys(frozen))demand(JSON.stringify(frozen[k])===JSON.stringify(actual[k]),'CONTENT_BINDING_MISMATCH_'+k.toUpperCase());
  demand(normalizedReference(fs.readFileSync(referenceParsedPath))===get('REFERENCE_PARSED_NORMALIZED').sha256,'FROZEN_REFERENCE_CONTENT_MISMATCH');
  return {contentBindingVerified:true,parts:actual.parts,securities:actual.securities};
 }
