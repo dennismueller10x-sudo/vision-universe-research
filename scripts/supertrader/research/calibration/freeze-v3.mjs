@@ -126,7 +126,8 @@ export function verifyInputsAgainstFreeze(freeze,{inputDir,referenceParsedPath})
 export function verifyContentAgainstFreeze(freeze,{inputDir,referenceParsedPath}){
  const get=role=>freeze.inputReceipts.find(r=>r.role===role);
  const frozen=get('CANONICAL_CONTENT_BINDING').binding,actual=computeContentBinding(inputDir);
- for(const k of Object.keys(frozen))demand(JSON.stringify(frozen[k])===JSON.stringify(actual[k]),'CONTENT_BINDING_MISMATCH_'+k.toUpperCase());
+ const differing=Object.keys(frozen).filter(k=>JSON.stringify(frozen[k])!==JSON.stringify(actual[k]));
+ demand(differing.length===0,'CONTENT_BINDING_MISMATCH_'+differing.map(k=>k.replace(/[^A-Za-z0-9]/g,'').toUpperCase()).join('_AND_'));
  demand(normalizedReference(fs.readFileSync(referenceParsedPath))===get('REFERENCE_PARSED_NORMALIZED').sha256,'FROZEN_REFERENCE_CONTENT_MISMATCH');
  return {contentBindingVerified:true,parts:actual.parts,securities:actual.securities};
 }
@@ -145,5 +146,5 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
    if(arg('--input-dir')){if(a.includes('--content'))process.stdout.write(JSON.stringify(verifyContentAgainstFreeze(freeze,{inputDir:arg('--input-dir'),referenceParsedPath:arg('--reference-parsed')}))+'\n');else verifyInputsAgainstFreeze(freeze,{inputDir:arg('--input-dir'),referenceParsedPath:arg('--reference-parsed')});}
    process.stdout.write(JSON.stringify({status:'V3_FREEZE_VERIFIED',freezeId:freeze.freezeId})+'\n');
   }else throw new Error('UNKNOWN_FREEZE_COMMAND');
- }catch(e){process.stderr.write(JSON.stringify({status:'V3_FREEZE_FAILED_CLOSED',code:/^[A-Z0-9_]+$/.test(e.message)?e.message:'FREEZE_FAILURE'})+'\n');process.exitCode=1;}
+ }catch(e){process.stderr.write(JSON.stringify({status:'V3_FREEZE_FAILED_CLOSED',code:/^[A-Z0-9_]+$/.test(e.message)?e.message:('FREEZE_FAILURE'+(/^[A-Z0-9_]+$/.test(e.code||'')?'_'+e.code:''))})+'\n');process.exitCode=1;}
 }
