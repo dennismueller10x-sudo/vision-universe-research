@@ -1,7 +1,7 @@
 {
   "schema": "vision-universe-calibration-v3-resume-state-1.0.0",
-  "updatedAt": "2026-10-14",
-  "status": "CANONICAL_AVAILABLE_CAUSE_PROVEN_EXECUTION_BLOCKED_BY_ENCRYPTED_INPUT_ACCESS",
+  "updatedAt": "2026-10-15",
+  "status": "FOUR_NUMERIC_METHODS_MEASURED_ON_ONE_V3_FREEZE_REVIEW_PENDING",
   "completedPhases": [
     "23_OF_23_V2_FREEZE_HASH_VERIFICATION",
     "ACTIONS_ARTIFACT_METADATA_INVENTORY",
@@ -22,10 +22,19 @@
     "CANONICAL_REJECTION_CATEGORY_ATTRIBUTED_TO_CORPORATE_ACTION_CONTRADICTION",
     "CANONICAL_REJECTION_DETAIL_RUN_VERIFIED",
     "CANONICAL_TWO_SPLIT_NOT_IN_RAW_PRICE_CAUSE_PROVEN",
-    "CANONICAL_RECEIPT_STRUCTURE_RECHECKED"
+    "CANONICAL_RECEIPT_STRUCTURE_RECHECKED",
+    "V3_IN_RUNNER_CAPTURE_VERIFIED",
+    "V3_FINAL_FREEZE_COMMITTED_BEFORE_MEASUREMENT",
+    "FOUR_NUMERIC_CALIBRATION_METHODS_MEASURED",
+    "52W_RECONCILIATION_CAUSE_ATTRIBUTED_AND_FIXED_ACCOUNTING_V3"
   ],
-  "currentPhase": "V3_FREEZE_AND_CALIBRATION_INPUT_ACCESS",
-  "completedCalibrationMethods": [],
+  "currentPhase": "INDEPENDENT_NUMERIC_REVIEW_THEN_TOURNAMENT",
+  "completedCalibrationMethods": [
+    "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+    "CAL_GH2004_52WH_30_6_NO_SKIP",
+    "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+    "CALIB_EQUAL_WEIGHT"
+  ],
   "pendingMethods": [
     "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
     "CAL_GH2004_52WH_30_6_NO_SKIP",
@@ -93,7 +102,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/verify-v3-durable-state.mjs",
-      "sha256": "e52f44dad95d785f080c2b7dff7a78c80f81720ed2f84bccddbb87817be14694"
+      "sha256": "40001d3360f589e5ff80ebb5db789eb5722abd470306aeeb28c7f931394c9a73"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-RECOVERY-INVENTORY.json",
@@ -147,7 +156,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
+      "sha256": "cea64c84d8586c74c72d4a52574cc5a3b6f702f9fe0c810d9a8ff1a73b5638e0"
     },
     {
       "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json",
@@ -155,7 +164,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
+      "sha256": "cea64c84d8586c74c72d4a52574cc5a3b6f702f9fe0c810d9a8ff1a73b5638e0"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json",
@@ -171,7 +180,7 @@
     },
     {
       "path": "scripts/supertrader/research/calibration/capture-reference-v3.mjs",
-      "sha256": "5f878e45c5c0202760d117a88e5ee0bf9b116996a621a9c33d914c18b5431223"
+      "sha256": "f51509cfbe1e334cb0e21bf32de9779542b6303dfba411cd4dc8d3c562ee7b70"
     },
     {
       "path": "scripts/supertrader/tests/calibration-reference-capture-v3.test.mjs",
@@ -199,7 +208,7 @@
     },
     {
       "path": "docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
-      "sha256": "bec40d4f0db7a38266d534225c63c67ad4905588aba4c546eea76e54911f69aa"
+      "sha256": "cea64c84d8586c74c72d4a52574cc5a3b6f702f9fe0c810d9a8ff1a73b5638e0"
     },
     {
       "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-CANONICAL-CAPTURE-SAFE-STATUS.json",
@@ -223,23 +232,26 @@
       "artifactId": 11897622647,
       "runId": 38570403846,
       "statusZipSha256": "902599d798056078bd6ac8aa167be8671776f8f18952d4dfec6702b4f7ea84cb"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3-38647054693.json",
+      "role": "ACTIVE_V3_FREEZE",
+      "sha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2"
+    },
+    {
+      "path": "scripts/supertrader/research/calibration/CALIBRATION-V3-CAPTURE-RECEIPT-38647054693.json",
+      "role": "V3_CAPTURE_RECEIPT_PUBLIC",
+      "sha256": "f21dae7fb4a14fd425de9072c30328287e008396b544463abca7bc0bbd0791cc"
     }
   ],
   "blockers": [
-    "Historical reference CSV inputs and source plan are absent; capture new versioned references before V3 freeze.",
-    "No proven numeric cause for prior 52W reconciliation error.",
-    "The scanner-safe parser change supersedes two V2 hash bindings; V3 freeze remains explicitly unfinalized pending source receipts.",
-    "Current 2026-10-12 scan is captured but review-pending and owner/session sealed; only anonymized availability counts are available.",
-    "V3 calibration runner/validator has not yet been created.",
-    "Capture diagnostic currently omits the symbolic loader reason and phase; safe allowlisted fields were added to data-inventory and a recapture is required.",
-    "Canonical capture is AVAILABLE and hash-bound: Actions run 38566792132, artifact 11895314451, safe manifest SHA256 34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713, 500 parts / 9,408 securities; canonical rejection cause proven separately by run 38570403846 as DATA_CONTRACT_CORPORATE_ACTION_CONFLICT (2 \u00d7 SPLIT_NOT_IN_RAW_PRICE).",
-    "The proposed local per-method runner patch was reverted because its V3 bindings and Actions-compatible private paths are not fully tested; current branch runner remains unchanged.",
-    "No recipient private key or authorized decrypt-capable Actions path is available to this executor; GitHub Actions secret-name listing returned 403 (names and values inaccessible). Public receipt graph validated (500 part receipts, 9,408 security-count sum, 1,000 sealed-file digests), but canonical plaintext bytes and source metadata cannot be rehashed here."
+    "Captures are not byte-reproducible across runs; every measurement run builds its own freeze. Any further phase that needs the data must run in the same job or re-capture and verify content-level equality.",
+    "Independent numeric review and calibration completion receipt are pending; tournament, current replay, consensus, adversarial review and owner delivery are pending."
   ],
-  "nextCommand": "Run the existing canonical plaintext receipt verifier inside an authorized recipient context for artifact 11895314451; verify 500 part files and data-certification-inputs.json hashes, then finalize the V3 freeze and run only the four pending numeric methods sequentially.",
+  "nextCommand": "See docs/SUPERTRADER_CALIBRATION_V3_AND_TOURNAMENT.md",
   "freshExecutorCanContinue": true,
   "fullCompletionFromCurrentArtifactsAlone": false,
-  "nextStep": "Await or provision an already-authorized recipient decryption mechanism. Never expose private values in repo or logs. Once available, decrypt inside a controlled ephemeral runner and validate every canonical plaintext receipt before measurement.",
+  "nextStep": "Establish content-level equality of captures (structural diff job), then independent numeric review, calibration completion, tournament rerun.",
   "durabilityVerification": {
     "status": "PASSED_METADATA_RECONSTRUCTION_ONLY",
     "testedBranchHead": "f5baa227",
@@ -274,5 +286,17 @@
     "parsedArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
     "independentReview": "PENDING"
   },
-  "exactNextStep": "Build BACKTEST-CALIBRATION-FREEZE-V3.json against the proven canonical capture (run 38566792132; 34bf957... manifest SHA; 500 parts; 9,408 securities) and frozen #643/#632 definitions. Include the two source corporate-action conflicts without changing strategy rules. Verify the final freeze before starting method checkpoints."
+  "exactNextStep": "Build BACKTEST-CALIBRATION-FREEZE-V3.json against the proven canonical capture (run 38566792132; 34bf957... manifest SHA; 500 parts; 9,408 securities) and frozen #643/#632 definitions. Include the two source corporate-action conflicts without changing strategy rules. Verify the final freeze before starting method checkpoints.",
+  "measuredMethods": [
+    "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+    "CAL_GH2004_52WH_30_6_NO_SKIP",
+    "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+    "CALIB_EQUAL_WEIGHT"
+  ],
+  "activeFreeze": {
+    "freezeId": "V3-f1caa83de2377df6",
+    "file": "BACKTEST-CALIBRATION-FREEZE-V3-38647054693.json",
+    "sha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
+    "runId": 38647054693
+  }
 }

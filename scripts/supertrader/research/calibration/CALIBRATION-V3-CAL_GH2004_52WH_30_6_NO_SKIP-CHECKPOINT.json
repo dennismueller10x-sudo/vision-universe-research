@@ -1,23 +1,27 @@
 {
   "schema": "vision-universe-calibration-v3-method-checkpoint-1.0.0",
   "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
-  "status": "NOT_STARTED_INPUTS_REQUIRED",
+  "status": "MEASURED_REVIEW_PENDING",
   "verdict": null,
   "inputs": {
-    "canonicalManifestSha256": null,
-    "canonicalSourceMetadataSha256": null,
-    "referenceArtifactSha256": null,
+    "canonicalManifestSha256": "01d9b559867f0fca6095f98431662f90ebb216f43e43b39f463cda2ba236970e",
+    "canonicalSourceMetadataSha256": "6f41ebd76d861dbae5adfc731284be76dda9138784f534d5bf0c704e60b2e219",
+    "referenceArtifactSha256": "60a0c64c2ffefdc3893e4099ea02b76503453fe700dd7ee9f1c7e5ef9108bbbb",
     "referenceParserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
     "referenceTestSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305"
   },
   "definitionHash": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
   "executionContractHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
   "dataContractHash": null,
-  "outputPath": null,
-  "outputSha256": null,
+  "outputPath": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-RESULT-38647054693.json",
+  "outputSha256": "d97c6fe2bd8b5fb5672db633eeadfac9d5453947669ceea0a971b2bdbf7692af",
   "reconciliationPath": null,
   "independentReviewPath": null,
-  "reviewStatus": "NOT_STARTED",
-  "failureReason": "Required freeze-bound canonical/reference inputs are not readable in current executor.",
-  "nextAction": "Persist an authenticated, durable canonical/reference source manifest and input receipts; then run this method and commit checkpoint immediately after independent review."
+  "reviewStatus": "INDEPENDENT_NUMERIC_REVIEW_PENDING",
+  "failureReason": null,
+  "nextAction": "Independent numeric review of the sealed construction, then calibration completion receipt; tournament only after that.",
+  "freezeId": "V3-f1caa83de2377df6",
+  "freezeFile": "BACKTEST-CALIBRATION-FREEZE-V3-38647054693.json",
+  "freezeFileSha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
+  "sealedResultArtifact": "supertrader-v3-sealed-results-38647054693 (GitHub Actions artifact; owner/session envelopes, performance numbers sealed)"
 }

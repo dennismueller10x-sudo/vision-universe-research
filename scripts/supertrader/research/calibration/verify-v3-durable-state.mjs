@@ -31,7 +31,9 @@ export function verifyV3DurableState(){
   demand(x.repackManifestSha256===receipt.manifestArtifact.repackManifestSha256,'PRIVATE_MANIFEST_BINDING_MISMATCH');
  }
  const checkpoints=methods.map(id=>read(`CALIBRATION-V3-${id}-CHECKPOINT.json`));
- demand(checkpoints.every((x,i)=>blocked.has(methods[i])?(x.status==='DATA_BLOCKED'&&x.verdict==='DATA_BLOCKED'&&methodSpecs[i].status==='BLOCKED_DATA'):(x.status==='NOT_STARTED_INPUTS_REQUIRED'&&x.verdict===null)),'CHECKPOINT_CLAIMS_MEASUREMENT');
+ const fileHash=f=>fs.existsSync(path.join(HERE,f))?sha(fs.readFileSync(path.join(HERE,f))):null;
+ const measuredOk=x=>x.status==='MEASURED_REVIEW_PENDING'&&x.verdict===null&&/^V3-[a-f0-9]{16}$/.test(x.freezeId??'')&&x.reviewStatus==='INDEPENDENT_NUMERIC_REVIEW_PENDING'&&/^[a-f0-9]{64}$/.test(x.outputSha256??'')&&fileHash(x.outputPath)===x.outputSha256&&fileHash(x.freezeFile)===x.freezeFileSha256;
+ demand(checkpoints.every((x,i)=>blocked.has(methods[i])?(x.status==='DATA_BLOCKED'&&x.verdict==='DATA_BLOCKED'&&methodSpecs[i].status==='BLOCKED_DATA'):((x.status==='NOT_STARTED_INPUTS_REQUIRED'&&x.verdict===null)||measuredOk(x))),'CHECKPOINT_CLAIMS_MEASUREMENT');
  demand(freeze.status==='NOT_FROZEN_MISSING_DURABLE_INPUT_RECEIPTS'&&freeze.frozenAt===null,'CANDIDATE_FREEZE_STATUS_INVALID');
  demand(resume.fullCompletionFromCurrentArtifactsAlone===false,'FALSE_COMPLETION_CLAIM');
  demand(resume.artifactRefs.some(x=>x.path?.endsWith('CALIBRATION-V3-PRIVATE-ARTIFACT-RECEIPTS.json')),'PRIVATE_RECEIPT_NOT_LINKED');

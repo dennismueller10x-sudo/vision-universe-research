@@ -1,39 +1,47 @@
 {
   "schema": "vision-universe-calibration-v3-results-1.0.0",
-  "status": "PARTIAL_METHODS_DATA_BLOCKED_AND_NUMERIC_CAPTURE_PENDING",
+  "status": "FOUR_NUMERIC_METHODS_MEASURED_REVIEW_PENDING_FOUR_DATA_BLOCKED",
   "overallVerdict": "NOT_CERTIFIED",
   "methods": [
     {
       "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
       "verdict": null,
       "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-CHECKPOINT.json"
+      "status": "MEASURED_REVIEW_PENDING",
+      "output": "CALIBRATION-V3-CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-RESULT-38647054693.json",
+      "checkpoint": "CALIBRATION-V3-CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-CHECKPOINT.json",
+      "outputSha256": "5a7a537508c773c5b19a801901ff54ce326c859d2c6da00271e110cd551f893b",
+      "freezeId": "V3-f1caa83de2377df6"
     },
     {
       "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
       "verdict": null,
       "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-CHECKPOINT.json"
+      "status": "MEASURED_REVIEW_PENDING",
+      "output": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-RESULT-38647054693.json",
+      "checkpoint": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-CHECKPOINT.json",
+      "outputSha256": "d97c6fe2bd8b5fb5672db633eeadfac9d5453947669ceea0a971b2bdbf7692af",
+      "freezeId": "V3-f1caa83de2377df6"
     },
     {
       "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
       "verdict": null,
       "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-CHECKPOINT.json"
+      "status": "MEASURED_REVIEW_PENDING",
+      "output": "CALIBRATION-V3-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-RESULT-38647054693.json",
+      "checkpoint": "CALIBRATION-V3-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-CHECKPOINT.json",
+      "outputSha256": "e610201c1ab5a38a7b056ba6cf467a2a9f709e10f6f43d5b9365e3c982943524",
+      "freezeId": "V3-f1caa83de2377df6"
     },
     {
       "methodId": "CALIB_EQUAL_WEIGHT",
       "verdict": null,
       "confidence": null,
-      "status": "BLOCKED_INPUTS_REQUIRED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-CALIB_EQUAL_WEIGHT-CHECKPOINT.json"
+      "status": "MEASURED_REVIEW_PENDING",
+      "output": "CALIBRATION-V3-CALIB_EQUAL_WEIGHT-RESULT-38647054693.json",
+      "checkpoint": "CALIBRATION-V3-CALIB_EQUAL_WEIGHT-CHECKPOINT.json",
+      "outputSha256": "e08966f0b6b3972cf845e02dcfa8d0597e8e88e9739a90a088046ad023e7a3d3",
+      "freezeId": "V3-f1caa83de2377df6"
     },
     {
       "methodId": "gross_profitability_novy_marx",
@@ -109,5 +117,9 @@
       ]
     }
   ],
-  "strategyDefinitionsChanged": false
+  "strategyDefinitionsChanged": false,
+  "freezeId": "V3-f1caa83de2377df6",
+  "freezeFile": "BACKTEST-CALIBRATION-FREEZE-V3-38647054693.json",
+  "freezeFileSha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
+  "measurementRunId": 38647054693
 }

@@ -1,6 +1,6 @@
 {
   "schema": "vision-universe-calibration-v3-discrepancies-1.0.0",
-  "status": "CAUSE_ATTRIBUTED_INFRASTRUCTURE_BOOKKEEPING_DEFECT_FIX_PENDING_REMEASURE",
+  "status": "RESOLVED_CONFIRMED_BY_REMEASUREMENT",
   "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
   "errorCode": "REFERENCE_BOOK_RECONCILIATION_FAILED",
   "attributionCategory": "ACCOUNTING_SHARE_DUST_DELETION_NOT_VALUE_AWARE",
@@ -23,5 +23,11 @@
     "status": "OPEN_NOT_FIXED_HERE",
     "note": "An adjusted close of ~2e11 per share is implausible. The canonical data contract does not bound the adjusted price level. Reported to data owners; no contract change in this PR (frozen data contract)."
   },
-  "nextStep": "New freeze + re-measure all four numeric methods in one run (tag supertrader-v3:measure)."
+  "nextStep": "New freeze + re-measure all four numeric methods in one run (tag supertrader-v3:measure).",
+  "confirmation": {
+    "runId": 38647054693,
+    "freezeId": "V3-f1caa83de2377df6",
+    "gh2004": "both cost modes reconcile (top 1.75e-10 / 1.40e-09, bottom 4.5e-07 / 4.9e-07); exactly one real dust write-off in the top leg",
+    "otherMethods": "JT1993, LowVol and Equal Weight reconcile with the same differences as before the ledger"
+  }
 }
