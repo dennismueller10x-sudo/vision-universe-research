@@ -957,23 +957,23 @@
       "cik": "0002101135",
       "name": "Illumination Acquisition Corp. I",
       "sic": "6770",
-      "rawFacts": 114,
-      "mappedFacts": 42,
-      "unmappedFacts": 66,
-      "calendarYears": 2,
+      "rawFacts": 189,
+      "mappedFacts": 83,
+      "unmappedFacts": 112,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
-      "fiscalYearEnd": "1231",
+      "fiscalYearEnd": "1130",
       "tickers": [
         "ILLU",
         "ILLUU",
         "ILLUW"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 3,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-11-30",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1012,14 +1012,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1039,17 +1039,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-11-30",
+          "lastAvailablePeriod": "2025-11-30",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2025-11-30",
+          "lastAvailablePeriod": "2025-11-30",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -1070,41 +1070,42 @@
         }
       },
       "quality": {
-        "HIGH": 10
+        "HIGH": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 10,
-        "resolvedValues": 10
+        "datableValues": 16,
+        "resolvedValues": 16
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 66,
+        "total": 112,
         "by_severity": {
-          "INFO": 66
+          "INFO": 112
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 66
+          "UNKNOWN_CONCEPT": 112
         }
       },
       "latestFiling": {
-        "accession": "0001206774-26-000355",
-        "filing_date": "2026-07-15",
+        "accession": "0001206774-26-000559",
+        "filing_date": "2026-10-14",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-10-14T04:33:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "33aa4d5278c637a85c094055186fe12b1a2c56f92bdac6b4e7c5634d0ca3300f",
+      "sourceDigest": "cb80505ad9325300e8c39b987ee836b1ebdc16439ca02888736f374802bebba8",
       "issuerId": "iss_cik_0002101135"
     }
   ]

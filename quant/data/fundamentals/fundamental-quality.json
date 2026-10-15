@@ -2,33 +2,33 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1878619,
+      "RESOLVED_VALUES": 1878671,
       "ISSUERS_WITH_VALUES": 5343
     },
     "byState": {
-      "VALID": 1708951,
-      "WARNING": 169668
+      "VALID": 1708993,
+      "WARNING": 169678
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49682628
+      "RAW_XBRL_FACTS_WITH_FINDING": 49684221
     },
     "byState": {
-      "AMBIGUOUS": 1334157,
-      "RESTATED": 313177,
+      "AMBIGUOUS": 1333919,
+      "RESTATED": 313180,
       "NON_COMPARABLE": 70522,
-      "MISSING": 47945110,
-      "WARNING": 19662
+      "MISSING": 47946931,
+      "WARNING": 19669
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47945110,
-      "CONCEPT_DISAGREEMENT": 1326167,
-      "RESTATEMENT_CONFLICT": 313177,
+      "UNKNOWN_CONCEPT": 47946931,
+      "CONCEPT_DISAGREEMENT": 1325929,
+      "RESTATEMENT_CONFLICT": 313180,
       "UNEXPECTED_DURATION": 54406,
       "PERIOD_MISMATCH": 14855,
-      "FISCAL_PERIOD_CONFLICT": 14829,
+      "FISCAL_PERIOD_CONFLICT": 14836,
       "FUTURE_DATA_LEAK": 7480,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2244,
@@ -89,13 +89,13 @@
     },
     {
       "metric": "stockholders_equity",
-      "MISSING_COUNT": 79,
-      "MISSING_RATE": 1.4786
+      "MISSING_COUNT": 78,
+      "MISSING_RATE": 1.4599
     },
     {
       "metric": "total_assets",
-      "MISSING_COUNT": 43,
-      "MISSING_RATE": 0.8048
+      "MISSING_COUNT": 42,
+      "MISSING_RATE": 0.7861
     }
   ],
   "highestMissingRate": {
@@ -114,5 +114,5 @@
       "mapping_version": "1.6.0"
     }
   },
-  "generatedAtUtc": "2026-10-14T12:00:18+00:00"
+  "generatedAtUtc": "2026-10-15T11:37:49+00:00"
 }

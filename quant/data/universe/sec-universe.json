@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-14T11:59:14.144Z",
+  "generated_at_utc": "2026-10-15T11:36:56.617Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5322,
+    "withDeliveredStockPage": 5323,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -23075,6 +23075,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "GIXI",
+      "name": "Gix Internet Ltd.",
+      "cik": "0001782265",
+      "instrumentId": "vu_ec52c8942d1f14",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "GJH",
       "name": "Strats Sm Trust For U S Cell Corp Sec Series 2004 6",
       "cik": "0001286405",
@@ -38407,6 +38418,22 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "NSAI",
+      "name": "NorthStrive Acquisition Corp I.",
+      "cik": "0002133719",
+      "instrumentId": "vu_be97319a0c30f5",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "NSAIR",
+        "NSAIU",
+        "NSAIW"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -57783,17 +57810,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "WBD",
-      "name": "Warner Bros. Discovery, Inc.",
-      "cik": "0001437107",
-      "instrumentId": "vu_028e67d0695377",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "WBI",
       "name": "WaterBridge Infrastructure LLC",
       "cik": "0002064947",
@@ -61441,17 +61457,6 @@
       "role": "universe"
     },
     {
-      "ticker": "GIXI",
-      "name": "Gix Internet Ltd.",
-      "cik": "0001782265",
-      "instrumentId": "vu_ec52c8942d1f14",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "GJO",
       "name": "Strats Sm Trust For Wal-Mart Stores, Inc. Securities, Series 2005-4",
       "cik": "0001340909",
@@ -61867,22 +61872,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "NSAI",
-      "name": "NorthStrive Acquisition Corp I.",
-      "cik": "0002133719",
-      "instrumentId": "vu_be97319a0c30f5",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "NSAIR",
-        "NSAIU",
-        "NSAIW"
-      ],
       "role": "universe"
     },
     {
@@ -62369,6 +62358,17 @@
       "alsoTickers": [
         "WALDW"
       ],
+      "role": "universe"
+    },
+    {
+      "ticker": "WBD",
+      "name": "Warner Bros. Discovery, Inc.",
+      "cik": "0001437107",
+      "instrumentId": "vu_028e67d0695377",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
