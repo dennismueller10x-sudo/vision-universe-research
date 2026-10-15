@@ -16,12 +16,14 @@ class Response:
     def __exit__(self,*args):pass
 
 class Provider:
-    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False,empty_baseline=False,resume=False,prior_campaign=False):
+    def __init__(self,existing=False,bad_draft=False,observe=False,ambiguous=False,empty_baseline=False,resume=False,prior_campaign=False,existing_test_list=False,foreign_test_contact=False,membership_delay=0,campaign_error=False):
         self.calls=[];self.existing=existing;self.bad_draft=bad_draft;self.doi=0;self.lookups=0;self.sent=False;self.draft=None
         self.resume=resume;self.prior_campaign=prior_campaign;self.observe=observe or resume;self.ambiguous=ambiguous;self.event_reads=0
         self.empty_baseline=empty_baseline
+        self.existing_test_list=existing_test_list;self.foreign_test_contact=foreign_test_contact;self.member_added=existing_test_list;self.membership_reads=0;self.membership_delay=membership_delay;self.campaign_error=campaign_error
         self.old={'id':1,'email':'old@example.test','listIds':[4],'emailBlacklisted':False}
         self.new={'id':2,'email':'new@example.test','listIds':[4],'emailBlacklisted':False,'attributes':{'VU_EMAIL_CONSENT':'subscribed'},'createdAt':'2026-10-15T18:18:00Z'}
+        if existing_test_list:self.new['listIds']=[4,7]
     def open(self,request,**kwargs):
         path=urllib.parse.urlsplit(request.full_url).path.removeprefix('/v3');method=request.get_method()
         body=json.loads(request.data) if request.data else None;self.calls.append((path,method,body))
@@ -49,16 +51,20 @@ class Provider:
         if path=='/senders':return Response(200,{'senders':[{'id':1,'active':True,'email':'info@visionuniverse.de'}]})
         if path=='/smtp/templates/8':return Response(200,{'id':8,'doiTemplate':True,'isActive':True,'tag':'optin','htmlContent':mail_source('newsletter-api-doi.html')})
         if path=='/contacts/lists' and method=='POST':return Response(201,{'id':7})
-        if path=='/contacts/lists' and method=='GET':return Response(200,{'lists':[]})
+        if path=='/contacts/lists' and method=='GET':return Response(200,{'lists':[{'id':7,'name':'VU | DOI-Abnahme | Betreiber Oktober 2026'}] if self.existing_test_list else []})
         if path=='/contacts/lists/7/contacts/add':
-            assert body=={'ids':[2]};return Response(201,{})
+            assert body=={'emails':['new@example.test']};self.member_added=True;return Response(201,{'contacts':{'success':['new@example.test']}})
         if path.endswith('/contacts'):
             n=int(path.split('/')[-2]);rows=[self.old]+([self.new] if self.doi>=2 or self.resume else []) if n==4 else [self.new] if n==7 else []
+            if n==7:
+                self.membership_reads+=1
+                rows=([self.old] if self.foreign_test_contact else [self.new]) if self.member_added and self.membership_reads>self.membership_delay else []
             return Response(200,{'contacts':rows})
         if path=='/contacts/lists/4':return Response(200,{'folderId':1})
         if path=='/contacts/lists/7':return Response(200,{'name':'VU | DOI-Abnahme | Betreiber Oktober 2026' if self.resume else 'VU | DOI-Abnahme | 123'})
         if path=='/emailCampaigns':
             if method=='GET':return Response(200,{'campaigns':[{'name':'VU | DOI-Abnahme | Betreiber Oktober 2026'}] if self.prior_campaign else []})
+            if self.campaign_error:raise operator.urllib.error.HTTPError(request.full_url,400,'Bad Request',{},io.BytesIO(json.dumps({'code':'invalid_parameter','message':'Email account is not activated'}).encode()))
             assert body['recipients']=={'listIds':[7]};self.draft={**body,'id':8,'status':'draft'};return Response(201,{'id':8})
         if path=='/emailCampaigns/8':return Response(200,{**self.draft,'recipients':{'listIds':[4]}} if self.bad_draft else self.draft)
         if path=='/emailCampaigns/8/sendNow':self.sent=True;return Response(204,{})
@@ -154,6 +160,24 @@ class Contract(unittest.TestCase):
         p=Provider(resume=True,prior_campaign=True)
         with self.assertRaises(ValueError):self.run_operator(p)
         self.assertTrue(all(method=='GET' for _,method,_ in p.calls))
+    def test_existing_owned_list_is_reused_without_duplicate_creation_or_membership_post(self):
+        p=Provider(resume=True,existing_test_list=True);self.run_operator(p)
+        self.assertTrue(p.sent)
+        self.assertFalse(any(method=='POST' and (path=='/contacts/lists' or path.endswith('/contacts/add')) for path,method,_ in p.calls))
+        self.assertEqual(sum(path.endswith('/sendNow') for path,_,_ in p.calls),1)
+    def test_existing_test_list_with_a_foreign_contact_blocks_all_writes(self):
+        p=Provider(resume=True,existing_test_list=True,foreign_test_contact=True)
+        with self.assertRaises(ValueError):self.run_operator(p)
+        self.assertTrue(all(method=='GET' for _,method,_ in p.calls))
+    def test_delayed_membership_is_read_again_without_repeating_the_addition(self):
+        p=Provider(resume=True,membership_delay=2)
+        with patch.object(operator.time,'sleep') as sleep:self.run_operator(p)
+        self.assertTrue(p.sent);sleep.assert_called_with(5)
+        self.assertEqual(sum(path.endswith('/contacts/add') for path,_,_ in p.calls),1)
+    def test_rejected_campaign_creation_never_calls_send(self):
+        p=Provider(resume=True,existing_test_list=True,campaign_error=True)
+        with self.assertRaises(ValueError):self.run_operator(p)
+        self.assertFalse(any(path.endswith('/sendNow') for path,_,_ in p.calls))
     def test_changed_doi_runtime_blocks_continuation(self):
         p=Provider(resume=True)
         with patch.object(operator,'ACCEPTED_RUNTIME_SHA','f'*64):

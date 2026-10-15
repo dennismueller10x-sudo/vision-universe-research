@@ -133,6 +133,17 @@ def run():
         elif status!=200:
             result.update({'brevo_code':hooks.get('brevo_code'),'error_category':hooks.get('error_category'),'safe_message':hooks.get('safe_webhook_message')})
     report['lists_before']={str(n):len(v) for n,v in before.items()}
+    if operation=='audit':
+        report['acceptance_inventory_readback']={}
+        for kind,path,field in [('lists','/contacts/lists?limit=50&offset=0','lists'),('campaigns','/emailCampaigns?type=classic&limit=50&offset=0','campaigns')]:
+            status,result=api(BREVO,path,key)
+            rows=result.get(field)
+            own=[v for v in rows if isinstance(v,dict) and v.get('name')=='VU | DOI-Abnahme | Betreiber Oktober 2026'] if isinstance(rows,list) else []
+            report['acceptance_inventory_readback'][kind]={'http':status,'empty_object':result=={},'array_present':isinstance(rows,list),'rows_returned':len(rows) if isinstance(rows,list) else None,'count':result.get('count') if type(result.get('count')) is int else None,'only_known_fields':set(result)<={field,'count'},'owner_test_matches':len(own)}
+            if kind=='lists' and len(own)==1 and type(own[0].get('id')) is int and own[0]['id'] not in (4,5,6):
+                own_status,own_members=api(BREVO,'/contacts/lists/'+str(own[0]['id'])+'/contacts?limit=2&offset=0',key)
+                members=own_members.get('contacts')
+                report['acceptance_inventory_readback'][kind]['owner_list_readback']={'http':own_status,'members_array':isinstance(members,list),'returned_members':len(members) if isinstance(members,list) else None,'empty_object':own_members=={}}
     report['native_template_4_uses_form_link']='{{ doubleoptin }}' in old[4].get('htmlContent','')
     domain=read('/senders/domains/visionuniverse.de');report['domain_flags']={n:domain.get(n) is True for n in ('verified','authenticated')}
     sender=[s['id'] for s in read('/senders').get('senders',[]) if s.get('active') is True and s.get('email','').endswith('@visionuniverse.de')];report['sender_ids']=sender

@@ -3,6 +3,7 @@ import base64,gzip,hashlib,io,json,os,time,urllib.parse,urllib.request,urllib.er
 from datetime import datetime,timezone
 from pathlib import Path
 from newsletter_mail import mail_source
+from newsletter_diagnostics import safe_error
 ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';API='https://api.brevo.com/v3'
 ACCEPTED_RUNTIME_SHA='7cdd63206784fad68e7e021ecf3f238e00a4110a985e8c172d0d9db549972173'
 
@@ -21,7 +22,7 @@ def utc_time(value):
     if stamp.tzinfo is None:raise ValueError('Provider timezone missing')
     return stamp.astimezone(timezone.utc)
 
-def verify_confirmed_owner(contact,email,events):
+def verify_confirmed_owner(contact,email,events,private_list_id=None):
     # Resume only the one genuinely new owner DOI accepted by the real form on
     # 15 October. Never make an imported customer eligible for this send path.
     start=utc_time('2026-10-15T17:54:37Z');request_end=utc_time('2026-10-15T17:57:00Z');confirmed_end=utc_time('2026-10-15T18:27:00Z')
@@ -31,7 +32,11 @@ def verify_confirmed_owner(contact,email,events):
     if len(messages)!=1 or not requests or any(not start<=utc_time(e.get('date',''))<=request_end for e in requests):raise ValueError('Actual initial DOI request not verified')
     # Confirmed list membership plus the DOI-only consent marker prove the
     # confirmation; optional individual click tracking is not a prerequisite.
-    if type(contact.get('id')) is not int or contact.get('email','').strip().lower()!=email or set(contact.get('listIds',[]))!={4} or contact.get('emailBlacklisted') is not False or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('Controlled confirmation mismatch')
+    allowed={4}
+    if private_list_id is not None:
+        if type(private_list_id) is not int or private_list_id in (4,5,6):raise ValueError('Unsafe private test list')
+        allowed.add(private_list_id)
+    if type(contact.get('id')) is not int or contact.get('email','').strip().lower()!=email or 4 not in contact.get('listIds',[]) or not set(contact.get('listIds',[]))<=allowed or contact.get('emailBlacklisted') is not False or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('Controlled confirmation mismatch')
     if not start<=utc_time(contact.get('createdAt',''))<=confirmed_end:raise ValueError('Only the newly created owner contact')
 
 def owner_wait_seconds():
@@ -62,7 +67,10 @@ def run():
         try:
             with urllib.request.build_opener(NoRedirect).open(req,timeout=40) as response:
                 raw=response.read();return response.status,json.loads(raw) if raw else {}
-        except urllib.error.HTTPError as error:error.close();return error.code,{}
+        except urllib.error.HTTPError as error:
+            try:value=json.loads(error.read(65536))
+            except Exception:value={}
+            error.close();return error.code,value
     def read(path):
         # Only GET reads may be retried. Never retry a mutation/send endpoint.
         for attempt in range(3):
@@ -73,6 +81,10 @@ def run():
             time.sleep(60)
     def mutation(path,method,body=None):
         code,value=request(API,path,method,body)
+        phase='test_delivery' if path.endswith('/sendNow') else 'test_campaign_creation' if path=='/emailCampaigns' else 'test_list_creation' if path=='/contacts/lists' else 'test_list_cleanup' if method=='DELETE' else 'test_list_membership'
+        result={'mutation_phase':phase,'http':code,'accepted':code in (200,201,204)}
+        if code not in (200,201,204):result.update(safe_error(value))
+        print(json.dumps(result),flush=True)
         if code not in (200,201,204):raise ValueError('Mutation outcome uncertain; never retry delivery')
         return value
     def records(n):
@@ -116,10 +128,24 @@ def run():
     if len(senders)!=1 or not domain.get('verified') or not domain.get('authenticated'):raise ValueError('Sender/domain unavailable')
     # Phase messages contain neither email nor personalized DOI/unsubscribe URL.
     if resume:
+        name='VU | DOI-Abnahme | Betreiber Oktober 2026';existing_test_list=None
+        for offset in range(0,10000,50):
+            lists=read('/contacts/lists?limit=50&offset='+str(offset)).get('lists')
+            if not isinstance(lists,list):raise ValueError('Prior test list inventory unavailable')
+            matches=[v for v in lists if v.get('name')==name]
+            if len(matches)>1 or matches and existing_test_list is not None:raise ValueError('Ambiguous private test lists')
+            if matches:
+                existing_test_list=matches[0].get('id')
+                if type(existing_test_list) is not int or existing_test_list in (4,5,6):raise ValueError('Unsafe private test list')
+            if len(lists)<50:break
+        else:raise ValueError('Test list inventory incomplete')
         contact_path='/contacts/'+urllib.parse.quote(email,safe='')
         code,c=request(API,contact_path)
         if code!=200:raise ValueError('Confirmed owner missing')
-        verify_confirmed_owner(c,email,baseline_events)
+        verify_confirmed_owner(c,email,baseline_events,existing_test_list)
+        if existing_test_list is not None:
+            rows=records(existing_test_list)
+            if rows and (len(rows)!=1 or rows[0].get('id')!=c['id']):raise ValueError('Foreign private test recipients')
         template=read('/smtp/templates/8')
         if template.get('id')!=8 or template.get('doiTemplate') is not True or template.get('isActive') is not True or template.get('tag')!='optin' or ''.join(template.get('htmlContent','').split())!=''.join(mail_source('newsletter-api-doi.html').split()):raise ValueError('Current DOI template differs from reviewed copy')
         if sum(v.get('id')==c['id'] and v.get('email','').strip().lower()==email for v in originals)!=1:raise ValueError('Private inventory ambiguous')
@@ -174,12 +200,6 @@ def run():
         # Stable purpose identity prevents a second delivery after an uncertain
         # send or runner failure. There is no delivery retry operation.
         for offset in range(0,10000,50):
-            lists=read('/contacts/lists?limit=50&offset='+str(offset)).get('lists')
-            if not isinstance(lists,list):raise ValueError('Prior test list inventory unavailable')
-            if any(v.get('name')==name for v in lists):raise ValueError('Prior owner test list exists; inspect before continuation')
-            if len(lists)<50:break
-        else:raise ValueError('Test list inventory incomplete')
-        for offset in range(0,10000,50):
             campaigns=read('/emailCampaigns?type=classic&limit=50&offset='+str(offset)).get('campaigns')
             if not isinstance(campaigns,list):raise ValueError('Prior test campaign inventory unavailable')
             if any(v.get('name')==name for v in campaigns):raise ValueError('Prior owner acceptance exists; never resend')
@@ -187,11 +207,22 @@ def run():
         else:raise ValueError('Test campaign inventory incomplete')
     folders=read('/contacts/lists/4').get('folderId')
     if type(folders) is not int:raise ValueError('Existing folder missing')
-    test_list=mutation('/contacts/lists','POST',{'name':name,'folderId':folders}).get('id')
+    test_list=existing_test_list if resume and existing_test_list is not None else mutation('/contacts/lists','POST',{'name':name,'folderId':folders}).get('id')
     if type(test_list) is not int or test_list in (4,5,6):raise ValueError('Unsafe test list')
-    mutation('/contacts/lists/'+str(test_list)+'/contacts/add','POST',{'ids':[contact['id']]})
     rows=records(test_list)
-    if len(rows)!=1 or rows[0]['id']!=contact['id'] or rows[0]['id'] in protected:raise ValueError('Unsafe test recipients')
+    if not rows:
+        added=mutation('/contacts/lists/'+str(test_list)+'/contacts/add','POST',{'emails':[email]})
+        failures=added.get('contacts',{}).get('failure',[])
+        if failures:raise ValueError('Test membership rejected')
+    # Brevo list membership is eventually consistent. Retry only reads; never
+    # repeat the membership mutation or any delivery call.
+    for attempt in range(7):
+        rows=records(test_list)
+        if rows:
+            if len(rows)!=1 or rows[0]['id']!=contact['id'] or rows[0]['id'] in protected:raise ValueError('Unsafe test recipients')
+            break
+        if attempt==6:raise ValueError('Test membership not visible; no delivery')
+        time.sleep(5)
     html=mail_source('newsletter-test-confirmed.html')
     if '{{ unsubscribe }}' not in html:raise ValueError('Native unsubscribe link missing')
     campaign=mutation('/emailCampaigns','POST',{'name':name,'type':'classic','sender':{'id':senders[0]},'subject':'Deine Testanmeldung ist bestätigt – kontrollierter Abmeldetest','htmlContent':html,'recipients':{'listIds':[test_list]},'inlineImageActivation':False}).get('id')
