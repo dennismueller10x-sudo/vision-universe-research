@@ -63,6 +63,7 @@ export function reviewBook({key,book,metrics,data,protocol,costMode,formationDat
   }
  }
  add('R4_FILL_PRICES_EQUAL_SESSION_OPEN_PLUS_SLIPPAGE',true,checked,badPrice+missingBar);
+ checks.push({id:'R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES',hard:false,status:'INFO',checked:missingBar,violations:badPrice});
  add('R4b_TERMINAL_FILL_PRICE_IS_LAST_CLOSE_TIMES_SCENARIO_FACTOR',true,book.fills.filter(f=>f.reason==='TERMINAL_SCENARIO').length-quarantineFills,badTerminal);
  add('R4c_QUARANTINE_TERMINAL_FILL_PRICE_IS_FROZEN_LAST_CLOSE_TIMES_SCENARIO_FACTOR',true,quarantineFills,badQuarantine);
 

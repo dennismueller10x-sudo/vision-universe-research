@@ -55,3 +55,17 @@ test('review fails a quarantine fill that is not priced at the frozen last close
  const metrics={top:portfolioMetrics(run.top.curve,{initialCapital:100000,turnover:run.top.turnover,trades:run.top.trades,executionCosts:run.top.executionCosts})};
  assert.ok(reviewConstruction({run,metrics,data:d,protocol:proto,costMode:'SOURCE_GROSS'}).books[0].failedHardChecks.includes('R4c_QUARANTINE_TERMINAL_FILL_PRICE_IS_FROZEN_LAST_CLOSE_TIMES_SCENARIO_FACTOR'));
 });
+
+test('no order fills on the synthetic last-close bar of a data-quarantine terminal that coincides with an execution session',()=>{
+ const hist=dates('2014-12-31','2018-03-30'),meas=hist.filter(d=>d>='2018-01-02'),proto={...protocol,window:{from:'2018-01-02',to:'2018-03-30'}};
+ const bars=(i,upto)=>hist.filter(d=>!upto||d<=upto).map((date,j)=>{const c=10+(i+1)*j/10000,o=c*(1+((i+j)%5-2)/1000);return{date,open:o,close:c,totalReturnIndex:c/10,rawClose:c,dividend:0};});
+ const when=meas.find((d,k)=>k>0&&d.slice(0,7)!==meas[k-1].slice(0,7)),prev=hist[hist.indexOf(when)-1];
+ const secs=Array.from({length:20},(_,i)=>({id:'S'+String(i).padStart(3,'0'),ticker:'SYN'+i,bars:bars(i)}));
+ secs[19].bars=bars(19,prev);secs[19].terminal={date:when,kind:'DATA_QUARANTINE',lastClose:secs[19].bars.at(-1).close};
+ const d={calendar:meas,benchmark:{bars:hist.map(date=>({date,open:10,close:10,totalReturnIndex:1}))},securities:secs};
+ const run=runReferencePortfolio(d,'CALIB_JT6_6_NO_SKIP',proto,{costMode:'SOURCE_GROSS'});
+ const onTerminal=[...run.top.fills,...run.bottom.fills].filter(f=>f.id===secs[19].id&&f.date===when);
+ assert.ok(onTerminal.every(f=>f.reason==='TERMINAL_SCENARIO'),'only the terminal settlement may use the synthetic bar');
+ const metrics=Object.fromEntries(['top','bottom'].map(k=>[k,portfolioMetrics(run[k].curve,{initialCapital:100000,turnover:run[k].turnover,trades:run[k].trades,executionCosts:run[k].executionCosts})]));
+ assert.equal(reviewConstruction({run,metrics,data:d,protocol:proto,costMode:'SOURCE_GROSS',methodId:'x'}).status,'PASS');
+});

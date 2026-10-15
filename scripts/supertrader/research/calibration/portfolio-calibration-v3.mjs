@@ -75,10 +75,11 @@ export function runReferencePortfolio(data,methodOrId,protocol,{costMode='SOURCE
  for(const date of warmstartDates){const result=evaluateReference(method,calibrationFormationContext(data,method,date,{riskFreeDaily}));formations.push({date,warmstart:true,status:result.status,eligibleCount:result.eligibleCount||0,bucketSize:result.bucketSize||0,rejections:result.rejections});if(!ok.has(result.status))return{methodId:method.id,status:'BLOCKED_WARMSTART',reason:result.reason,formations,sourceGradeCeiling:'PARTIAL',outcomesRun:false};cohorts.push(freezeCohort(result));}
  let pending={asOf:warmstartDates.at(-1),top:combineReferenceCohorts(cohorts,'top',cohortMonths),bottom:combineReferenceCohorts(cohorts,'bottom',cohortMonths),...(method.kind==='LOW_VOL'?{eligibleUniverse:combineReferenceCohorts(cohorts,'eligibleUniverse',cohortMonths)}:{})},previousMonthClose=warmstartDates.at(-1),previousEquity={top:cfg.initialCapital,bottom:cfg.initialCapital,eligibleUniverse:cfg.initialCapital};
  for(let di=0;di<data.calendar.length;di++){
-  const date=data.calendar[di],bars=barsOn(data,date),terminals=terminalRows(data,date);
+  const date=data.calendar[di],sourceBars=barsOn(data,date),bars=new Map(sourceBars),terminals=terminalRows(data,date);
+  // The synthetic last-close bar exists only to settle and mark a data-quarantine terminal; no order may fill on it.
   for(const t of terminals)if(t.kind==='DATA_QUARANTINE'&&!bars.has(t.id))bars.set(t.id,{date,open:t.lastClose,close:t.lastClose,rawClose:Infinity,dividend:0});
   for(const [leg,book]of Object.entries(books)){
-   creditDividends(book,bars);let turnover=0;if(pending)turnover=executeTargets(book,pending[leg],bars,date,cfg,{asOf:pending.asOf});
+   creditDividends(book,bars);let turnover=0;if(pending)turnover=executeTargets(book,pending[leg],sourceBars,date,cfg,{asOf:pending.asOf});
    const before=equityAt(book,bars),terminalTurn=settleTerminals(book,bars,terminals,date,cfg,scenario);if(before>0){turnover+=terminalTurn/before;book.turnover+=terminalTurn/before;}markClose(book,bars,date,turnover);if(onDayClose)onDayClose({leg,date,book,bars,terminals});
   }
   pending=null;
