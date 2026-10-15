@@ -10,7 +10,7 @@
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-const INSIGHT_BATCH = 8;   // Worker-Budget: 4 Graph-Aufrufe je Beitrag, 40 je Anfrage
+const INSIGHT_BATCH = 4;   // Worker-Budget: 4 Graph-Aufrufe je Beitrag, 40 je Anfrage; klein halten, damit eine Anfrage kurz bleibt
 const MAX_PAGES = 40;
 
 export function checkIdentity(profile, expect) {
@@ -23,13 +23,29 @@ export function checkIdentity(profile, expect) {
   return { ok: problems.length === 0, problems };
 }
 
-export function makeClient(base, key, fetchImpl = fetch) {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const describe = (e) => String(e && e.message) + (e && e.cause && e.cause.code ? " (" + e.cause.code + ")" : "");
+
+/* Netzfehler, 429 und 5xx werden wiederholt; 4xx nie (ein falscher Schluessel wird nicht wiederholt). */
+export function makeClient(base, key, fetchImpl = fetch, { retries = 3, waitMs = 2000, timeoutMs = 90000 } = {}) {
   const root = String(base).replace(/\/+$/, "");
   return async function get(path) {
-    const res = await fetchImpl(root + path, { headers: { authorization: "Bearer " + key } });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(`HTTP ${res.status} ${body.error || ""}`.trim());
-    return body;
+    let last = null;
+    for (let i = 0; i <= retries; i++) {
+      if (i > 0) await sleep(waitMs * i);
+      let res;
+      try {
+        res = await fetchImpl(root + path, { headers: { authorization: "Bearer " + key }, signal: AbortSignal.timeout(timeoutMs) });
+      } catch (e) {
+        last = new Error("Netzfehler: " + describe(e));
+        continue;
+      }
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 429 || res.status >= 500) { last = new Error(`HTTP ${res.status} ${body.error || ""}`.trim()); continue; }
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${body.error || ""}`.trim());
+      return body;
+    }
+    throw last;
   };
 }
 

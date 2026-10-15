@@ -36,3 +36,24 @@ test("ig-check · Fehler enthalten nie den Schluessel", async () => {
   const get = makeClient("https://x.invalid", "GEHEIMER-SCHLUESSEL", async () => ({ ok: false, status: 401, json: async () => ({ error: "unauthorized" }) }));
   await assert.rejects(get("/x"), (e) => !String(e.message).includes("GEHEIM") && /401/.test(e.message));
 });
+
+test("ig-check · Netzfehler und 5xx werden wiederholt, 4xx nicht", async () => {
+  let n = 0;
+  const flaky = async () => {
+    n++;
+    if (n === 1) { const e = new TypeError("fetch failed"); e.cause = { code: "ECONNRESET" }; throw e; }
+    if (n === 2) return { ok: false, status: 502, json: async () => ({}) };
+    return { ok: true, status: 200, json: async () => ({ ok: 1 }) };
+  };
+  const get = makeClient("https://x.invalid", "K", flaky, { waitMs: 0 });
+  assert.deepEqual(await get("/x"), { ok: 1 });
+  assert.equal(n, 3);
+
+  let m = 0;
+  const denied = makeClient("https://x.invalid", "K", async () => { m++; return { ok: false, status: 401, json: async () => ({}) }; }, { waitMs: 0 });
+  await assert.rejects(denied("/x"), /401/);
+  assert.equal(m, 1);
+
+  const down = makeClient("https://x.invalid", "K", async () => { const e = new TypeError("fetch failed"); e.cause = { code: "ETIMEDOUT" }; throw e; }, { retries: 1, waitMs: 0 });
+  await assert.rejects(down("/x"), /ETIMEDOUT/);
+});
