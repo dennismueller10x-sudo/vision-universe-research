@@ -635,12 +635,20 @@ Dispatch `verification=false` und der Caller `publish`. Der Refresh behaelt nur 
 
 Neu: `company-intelligence-refresh-watchdog.yml` (Cron `47 2-22/4 * * *`, eigene Gruppe
 `company-intelligence-watchdog-<ref>`, Rechte contents read, Job: actions write nur fuer `gh workflow run`).
-`refresh-watchdog.mjs` dispatcht `company-intelligence-refresh.yml` mit `verification=false` nur, wenn
+`refresh-watchdog.mjs` dispatcht `company-intelligence-refresh.yml` (`--ref main` fest, nur wenn der Wächter selbst
+auf `refs/heads/main` läuft) mit `verification=false` nur, wenn
 
-* kein Lauf von Refresh, profile-source oder universe-release in einem Status
-  queued/in_progress/waiting/pending/requested ist (sonst wuerde der Dispatch einen Wartenden verdraengen) und
-* der letzte erfolgreiche markierte Produktionslauf aelter als 4,5 h ist (Primaerslot ausgefallen) und
-  die 45-min-Fehlschlag-Wartezeit nicht greift.
+* kein Lauf von Refresh, profile-source, universe-release oder company-intelligence.yml (nur `workflow_dispatch`,
+  der Caller `continuous`/`publish`; PR-Läufe zählen nicht) in einem Status queued/in_progress/waiting/pending/requested
+  ist (sonst würde der Dispatch einen Wartenden verdrängen), und
+* im Fenster von 4,5 h auf main **kein** Refresh-Lauf begonnen hat, gleich welchen Status, welcher Conclusion und
+  welches Ereignisses (Schedule, Dispatch auch des Wächters, laufend, wartend, failure, cancelled, skipped, Caller).
+  "Slot ausgefallen" heißt: es existiert kein Lauf. Ein Fehlschlag ist kein Ausfall; Wiederholungen laufen über den
+  Primärslot (bei Dauerfehler 6 statt 12 Versuche pro Tag). Existiert im Fenster ein erfolgreicher Lauf ohne Marker,
+  dispatcht der Wächter nicht und gibt `::warning::` aus. Lauf-Aufrufer (`workflow_call`) liefern keine Frische, nur
+  die Busy-Prüfung deckt sie ab.
+
+Nach dem Dispatch wartet der Job 15 s und warnt (`::warning::`), wenn kein neuer Dispatch-Lauf sichtbar ist.
 
 Fail-safe-Richtung ist hier umgekehrt zum Gate: bei API-Fehler oder Unsicherheit wird nicht dispatcht und der
 Job schlaegt sichtbar fehl (der Primaerslot laeuft ohnehin). Der Dispatch uebergibt `financial=<Gate-Urteil>`,

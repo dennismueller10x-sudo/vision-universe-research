@@ -1,5 +1,6 @@
 name: Company Intelligence Refresh Watchdog
-# Zweiter, versetzter Ausloeser fuer ausgelassene GitHub-Cron-Slots des Refresh.
+# Zweiter, versetzter Ausloeser fuer ausgelassene GitHub-Cron-Slots des Refresh
+# (Slot ausgefallen = im Fenster von 4,5 h existiert auf main kein Refresh-Lauf).
 # Eigene Concurrency-Gruppe: er besetzt die Schreibergruppe des Refresh nie selbst und
 # dispatcht nur, wenn dort nichts laeuft oder wartet und der letzte Produktionslauf
 # veraltet ist. Dispatch -> Refresh mit verification=false (Produktion).
@@ -35,11 +36,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/company_intelligence/refresh-watchdog.mjs
-      - name: Dispatch production refresh only when stale and the group is idle
-        if: steps.watch.outputs.dispatch == 'true'
+      - name: Dispatch production refresh only when no run exists in the window and the group is idle
+        if: steps.watch.outputs.dispatch == 'true' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REF_NAME: ${{ github.ref_name }}
           FINANCIAL: ${{ steps.watch.outputs.financial }}
         run: |
-          gh workflow run company-intelligence-refresh.yml --ref "$REF_NAME" -f verification=false -f universe=false -f financial="$FINANCIAL"
+          gh workflow run company-intelligence-refresh.yml --ref main -f verification=false -f universe=false -f financial="$FINANCIAL"
+      - name: Verify the dispatched run is visible
+        if: steps.watch.outputs.dispatch == 'true' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          sleep 15
+          since=$(date -u -d '-3 minutes' +%Y-%m-%dT%H:%M:%SZ)
+          n=$(gh run list --workflow company-intelligence-refresh.yml --branch main --event workflow_dispatch --limit 10 --json createdAt --jq "[.[]|select(.createdAt>=\"$since\")]|length")
+          if [ "${n:-0}" -lt 1 ]; then echo "::warning::Watchdog dispatch is not visible as a run after 15 s"; fi

@@ -81,18 +81,20 @@ export function decide({event,now,runs,config={}}){
 }
 
 // API-Zugriff. fetchJson(path) -> geparstes JSON; wirft bei HTTP-/Parsefehlern.
-export async function collectRuns({fetchJson,repo,workflowFile,branch='main',limit=30,maxArtifactLookups=8}){
-  const list=await fetchJson(`/repos/${repo}/actions/workflows/${workflowFile}/runs?branch=${encodeURIComponent(branch)}&per_page=${limit}&exclude_pull_requests=true`);
+export async function collectRuns({fetchJson,repo,workflowFile,branch='main',limit=30,maxArtifactLookups=8,list:given}){
+  const list=given||await fetchJson(`/repos/${repo}/actions/workflows/${workflowFile}/runs?branch=${encodeURIComponent(branch)}&per_page=${limit}&exclude_pull_requests=true`);
   if(!list||!Array.isArray(list.workflow_runs))throw new Error('RUN_LIST_MALFORMED');
-  const runs=[];let lookups=0;let needProd=true,needFin=true;
+  const runs=[];let lookups=0,total=0;let needProd=true,needFin=true;
   const sorted=[...list.workflow_runs].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
   for(const r of sorted){
     if(r.status!=='completed')continue;
     const item={id:r.id,event:r.event,conclusion:r.conclusion,startedAt:r.run_started_at||r.created_at,completedAt:r.updated_at,marker:null};
-    if(r.conclusion==='success'&&(needProd||needFin)&&lookups<maxArtifactLookups){
-      lookups++;
+    if(r.conclusion==='success'&&(needProd||needFin)&&lookups<maxArtifactLookups&&total<limit){
+      lookups++;total++;
       const a=await fetchJson(`/repos/${repo}/actions/runs/${r.id}/artifacts?per_page=100`);
       if(!a||!Array.isArray(a.artifacts))throw new Error('ARTIFACT_LIST_MALFORMED');
+      // Von der Wache uebersprungene Laeufe (Erfolg ganz ohne Artefakte) zaehlen nicht gegen das Limit.
+      if(a.artifacts.length===0)lookups--;
       for(const art of a.artifacts){
         if(art.expired)continue;
         const m=parseMarker(art.name,r.id);if(m){item.marker=m;break;}
