@@ -1,0 +1,157 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-84caf2e84e560bec",
+  "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+  "methodId": "CALIB_EQUAL_WEIGHT",
+  "engineMethodId": "CALIB_EQUAL_WEIGHT",
+  "runnerNode": "v22.23.3",
+  "inputVerification": {
+    "contentBindingVerified": true,
+    "parts": 500,
+    "securities": 9408
+  },
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "PASS",
+        "reviewSha256": "54b2bf01bdff64e1f2fe727ec5694f2141aa0257856085909a88b83e99d4a7c3",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 73,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "d79086546932422235af88b63767fafe8d2277b4b443aa1a33277b74bd55f81a",
+      "plaintextBytes": 377496313,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "21a344830dc58ffe510eae20258d5fb4e842abdbda077beb2b958ac17b564ff0",
+          "bytes": 82189490
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.session.sealed.json",
+          "sha256": "1b5b99cce3e4517ed7becc9e0b0b9309d5c9725adf5856c7051c5c20ea754b61",
+          "bytes": 82189318
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.1175870895385742e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "PASS",
+        "reviewSha256": "ecaa6d93d3e6fcc43ef6ffdeed091b82d19d334a5d7b3999fa1b3be4040b9cca",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 73,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "c9eb8ce15653dcdfddcfda0de9881d51d965e86786fd607e5004fc75358cb9fc",
+      "plaintextBytes": 384659447,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "0d1dab53f060ffe04c5e2cb2cd53e6a6620991901b86447a067383018c0d280a",
+          "bytes": 86495894
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "04414099da8fa8c63ba64d29a5c6e1357ff4d06336ade0d8e12347f7c7ea3d54",
+          "bytes": 86495722
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 7.82310962677002e-8
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_NUMERIC_REVIEW_PASSED"
+}
