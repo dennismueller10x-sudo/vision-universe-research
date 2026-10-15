@@ -27,6 +27,7 @@ def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minute
     runs = 6 * 30
     lanes = math.ceil(unique_requests / (6 * 160))
     return {
+        # Nominal: Primaerslot 17 */4. Der Waechter dispatcht nur bei Ausfall (Luecken fuellen, nicht addieren).
         'assumptions': {'daysPerMonth': 30, 'runsPerDay': 6,
                         'runtimeMinutesPerRun': runtime_minutes,
                         'payloadsPerGeneration': payloads, 'consumerAssetsPerGeneration': assets,

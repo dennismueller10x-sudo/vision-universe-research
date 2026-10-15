@@ -22,9 +22,13 @@
        Regel nicht auf Skripte. Bei Datensparmodus oder 2G entfaellt das
        Vorladen; die Route laedt ihre Gruppe dann beim Oeffnen.
 
-   Reihenfolge: dynamisch eingefuegte Skripte mit async=false laufen in
-   Einfuegereihenfolge; gleiche Adressen (ohne Query) werden nur einmal
-   geladen, auch wenn zwei Gruppen sie nennen.
+   Reihenfolge und Wiederholung: Der Abruf der Skripte einer Gruppe laeuft parallel (<link rel=preload as=script>, gleiche Adresse
+   inkl. ?v=, daher kein zweiter Download); eingefuegt und ausgefuehrt werden die <script>-Knoten strikt nacheinander in
+   Gruppenreihenfolge. So kann ein voruebergehend ausgefallenes Skript (HTTP 5xx, Netzfehler) VOR seinen Nachfolgern
+   wiederholt werden, und scheitert es endgueltig, laeuft kein Nachfolger (diese halten Globale beim Laden fest, z. B.
+   detail.js: var Ranges = global.VUChartRanges). Die Gruppe meldet nie "geladen", wenn ein Skript nach seinen Nachfolgern
+   lief. Gleiche Adressen (ohne Query) werden nur einmal geladen, auch wenn zwei Gruppen sie nennen. Ohne
+   Vorladen-Unterstuetzung des Browsers werden die Skripte nacheinander abgerufen.
 
    DEPLOYMENT-WECHSEL MIT OFFENEM TAB
    Ein Tab, der vor einem Release geoeffnet wurde, hat das alte app.js im Speicher; die Gruppen kaemen aus dem neuen Release
@@ -95,19 +99,131 @@
     } catch (_) { /* ohne Speicher keine Schleife riskieren */ }
   }
 
-  function script(src) {
-    var key = src.split('?')[0];
-    if (src.indexOf('?') < 0 && stamp()) src += '?v=' + stamp();
-    if (scripts[key]) return scripts[key];
-    scripts[key] = new Promise(function (resolve, reject) {
+  /**
+   * Kontrollierte Wiederholung bei voruebergehenden Serverfehlern (z. B. kurzes Pages-503).
+   * Ein <script>/<link>-Tag meldet nur onerror, ohne Statuscode. Deshalb fragt der erste Fehler eine leichte Statusprobe
+   * (HEAD, cache:'no-store', Body wird nie gelesen) auf dieselbe Adresse ab:
+   *   5xx, 408, 429, Netzfehler/Zeitueberschreitung der Probe, oder Probe ok (Datei war nur kurz weg) -> erneut versuchen;
+   *   sonstige 4xx (404/403 ...) oder keine Probe moeglich (kein fetch)                                -> sofort Fehler.
+   * Grenzen je Skript: hoechstens `attempts` Versuche, Wartezeiten `delays` (+ Jitter), `budgetMs` als Obergrenze fuer die seit
+   * dem ersten Versuch verstrichene Zeit (inkl. Proben) vor einer weiteren Wiederholung. Schlimmster Fall bis zum endgueltigen
+   * Fehler: etwa budgetMs plus die Dauer der letzten Versuche. Im Normalfall (alles laedt) entsteht kein Zusatzrequest.
+   */
+  var RETRY = { attempts: 3, delays: [300, 900], jitter: 100, budgetMs: 3500, probeMs: 1500 };
+
+  /** Statusprobe: Promise<{retry:boolean, status:number}> (status 0 = Netzfehler/Zeitueberschreitung/keine Probe). */
+  function probe(src) {
+    if (typeof root.fetch !== 'function') return Promise.resolve({ retry: false, status: 0 });
+    return new Promise(function (resolve) {
+      var done = false, timer = null;
+      var ctl = typeof root.AbortController === 'function' ? new root.AbortController() : null;
+      function end(result) { if (done) return; done = true; if (timer) root.clearTimeout(timer); resolve(result); }
+      if (ctl) timer = root.setTimeout(function () { end({ retry: true, status: 0 }); try { ctl.abort(); } catch (_) { /* egal */ } }, RETRY.probeMs);
+      try {
+        root.fetch(src, { method: 'HEAD', cache: 'no-store', credentials: 'same-origin', signal: ctl ? ctl.signal : undefined })
+          .then(function (response) {
+            var status = Number(response && response.status) || 0;
+            end({ retry: status >= 500 || status === 408 || status === 429 || (status >= 200 && status < 400), status: status });
+          }, function () { end({ retry: true, status: 0 }); });
+      } catch (_) { end({ retry: true, status: 0 }); }
+    });
+  }
+
+  function pause(ms) { return new Promise(function (resolve) { root.setTimeout(resolve, ms); }); }
+
+  /**
+   * Adresse eines Wiederholungsversuchs: die Originaladresse plus `retry=<Versuch>`. WebKit (iOS) verwendet eine
+   * fehlgeschlagene Preload-Ressource fuer jede IDENTISCHE Adresse erneut, ohne neuen Abruf; eine geaenderte Adresse laedt
+   * frisch. Nur die Adresse des Abrufs aendert sich: Schluessel (`scripts`, `preloads`), Fehlermeldung
+   * (LAZY_SCRIPT_FAILED:<Originaladresse>), ?v=-Stempel und Statusprobe bleiben auf der Originaladresse. Statische Server und
+   * Pages ignorieren die Query; ein 503 wird nicht zwischengespeichert, es entsteht also kein fehlerhaftes Objekt unter der
+   * neuen Adresse. Bei Erfolg liegt die Datei im Browser-Cache evtl. zusaetzlich unter der Wiederholungsadresse (nur nach
+   * einem Ausfall, unkritisch).
+   */
+  function retryUrl(src, n) { return src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + n; }
+
+  /** Fuehrt `doAttempt(src, url)` aus und wiederholt es kontrolliert (siehe RETRY). `state` teilt Zeit und letzten Status je Adresse. */
+  function withRetry(src, state, doAttempt) {
+    function run(n) {
+      return doAttempt(src, n > 1 ? retryUrl(src, n) : src).catch(function (error) {
+        error.attempts = n;
+        error.status = state.last;
+        if (n >= RETRY.attempts) throw error;
+        return probe(src).then(function (result) {
+          state.last = error.status = result.status;
+          var wait = RETRY.delays[Math.min(n, RETRY.delays.length) - 1] + Math.floor(Math.random() * RETRY.jitter);
+          if (!result.retry || Date.now() - state.started + wait > RETRY.budgetMs) throw error;
+          if (root.console && root.console.warn) root.console.warn('Discover lazy retry', src, 'attempt ' + (n + 1) + '/' + RETRY.attempts, 'status ' + result.status);
+          return pause(wait).then(function () { return run(n + 1); });
+        });
+      });
+    }
+    return run(1);
+  }
+
+  /** Ein einzelner Ladeversuch: <script>-Knoten einfuegen; bei Fehler Knoten entfernen und ablehnen. */
+  function attempt(src, url) {
+    return new Promise(function (resolve, reject) {
       var node = doc().createElement('script');
-      node.src = src;
+      node.src = url || src;
       node.async = false;
       node.onload = function () { resolve(); };
-      node.onerror = function () { delete scripts[key]; if (node.remove) node.remove(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
+      node.onerror = function () { if (node.remove) node.remove(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
       doc().head.appendChild(node);
     });
+  }
+
+  /** Vorladen ohne Ausfuehrung (<link rel=preload as=script>, gleiche Adresse, same-origin: das spaetere <script> nutzt den Treffer). */
+  function preloadAttempt(src) {
+    return new Promise(function (resolve, reject) {
+      var link = doc().createElement('link');
+      function end() { if (link.remove) link.remove(); }
+      link.rel = 'preload';
+      link.as = 'script';
+      link.href = src;
+      link.onload = function () { end(); resolve(); };
+      link.onerror = function () { end(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
+      doc().head.appendChild(link);
+    });
+  }
+  var preloads = Object.create(null);   // Adresse ohne Query -> laufendes Vorladen (zwei Gruppen mit demselben Modul laden es einmal)
+  function preloaded(key, src) {
+    return preloads[key] || (preloads[key] = preloadAttempt(src).catch(function () {}).then(function () { delete preloads[key]; }));
+  }
+  function canPreload() {
+    try { var link = doc().createElement('link'); return !!(link.relList && link.relList.supports && link.relList.supports('preload')); } catch (_) { return false; }
+  }
+
+  function withStamp(src) { return src.indexOf('?') < 0 && stamp() ? src + '?v=' + stamp() : src; }
+  function fresh() { return { started: Date.now(), last: 0 }; }
+
+  function script(src) {
+    var key = src.split('?')[0];
+    src = withStamp(src);
+    if (scripts[key]) return scripts[key];
+    // Ein Eintrag je Adresse: gleichzeitige Aufrufer teilen sich Versuche und Ergebnis. Erst der endgueltige Fehler gibt ihn frei.
+    scripts[key] = withRetry(src, fresh(), attempt).catch(function (error) { delete scripts[key]; throw error; });
     return scripts[key];
+  }
+
+  /**
+   * Skripte einer Gruppe: Abruf parallel (Vorladen), Ausfuehrung strikt nacheinander in Gruppenreihenfolge. Faellt ein Skript
+   * aus, wird es VOR seinen Nachfolgern wiederholt; scheitert es endgueltig, laeuft kein Nachfolger. So meldet die Gruppe nie
+   * "geladen", waehrend ein Skript nach seinen Nachfolgern ausgefuehrt wurde (diese halten Globale beim Laden fest).
+   * Ohne Vorladen-Unterstuetzung werden die Skripte nacheinander abgerufen (langsamer, aber gleich korrekt).
+   */
+  function loadScripts(list) {
+    var preload = canPreload(), chain = Promise.resolve(), seen = Object.create(null);
+    list.forEach(function (raw) {
+      var key = raw.split('?')[0];
+      if (seen[key]) return;
+      seen[key] = true;
+      var src = withStamp(raw);
+      // Vorladen ist nur Beschleunigung: scheitert es, entscheidet der Ladeversuch des Skripts selbst (mit Statusprobe und Wiederholung).
+      var ready = preload && !scripts[key] ? preloaded(key, src) : Promise.resolve();
+      chain = chain.then(function () { return ready; }).then(function () { return script(raw); });
+    });
+    return chain;
   }
 
   /** Laedt eine Gruppe (einmal). Bei einem Fehler wird die Gruppe beim naechsten Aufruf erneut versucht. */
@@ -119,7 +235,7 @@
     if (groups[name]) return groups[name];
     // Die Templates stehen am Dokumentende: vor dem Ende des Parsens kann eine Gruppe unvollstaendig sein.
     groups[name] = parsed().then(function () { var g = guard(); return g ? g.beforeLoad() : undefined; })
-      .then(function () { return Promise.all(sources(name).map(script)); }).then(function () {})
+      .then(function () { return loadScripts(sources(name)); }).then(function () {})
       .catch(function (error) {
         delete groups[name];
         var g = guard();
@@ -224,5 +340,5 @@
     if (doc().readyState === 'complete') afterLoad(); else root.addEventListener('load', afterLoad, { once: true });
   }
 
-  return { stamp: stamp, ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
+  return { RETRY: RETRY, stamp: stamp, ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
 });

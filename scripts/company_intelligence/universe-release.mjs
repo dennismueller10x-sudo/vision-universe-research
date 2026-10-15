@@ -61,7 +61,7 @@ try{
   save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
  }else if(args[0]==='refreeze'){
   // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
-    const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
+  const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
   save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
  }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));

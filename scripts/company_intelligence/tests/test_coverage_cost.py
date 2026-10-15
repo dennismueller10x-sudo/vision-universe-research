@@ -68,8 +68,15 @@ class CoverageCostTests(unittest.TestCase):
         self.assertNotIn("cron: '43 * * * *'", workflow)
         self.assertNotIn('cron:', workflow)
         production=(root / '.github/workflows/company-intelligence-refresh.yml').read_text()
+        # Der Refresh behaelt nur den Primaerslot; weitere Schedule-Ankuenfte wuerden
+        # wartende Laeufe der Schreibergruppe verdraengen. Redundanz: Waechter-Workflow.
         self.assertEqual(production.count("cron: '17 */4 * * *'"),1)
         self.assertEqual(production.count('cron:'),1)
+        watchdog=(root / '.github/workflows/company-intelligence-refresh-watchdog.yml').read_text()
+        self.assertEqual(watchdog.count('cron:'),1)
+        self.assertNotIn('company-intelligence-continuous-',watchdog)
+        self.assertIn('scheduler-gate.mjs',production)
+        self.assertIn("needs.gate.outputs.run != 'false'",production)
         self.assertIn('company-intelligence-continuous-',production)
         self.assertIn('% 4', (root / 'scripts/company_intelligence/pilot.sh').read_text())
 

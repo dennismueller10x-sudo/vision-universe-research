@@ -575,3 +575,91 @@ of all 105 sources being due together or a complete queue/latency distribution.
 Public standard-Linux compute has no incremental minute charge; account-wide
 artifact/billing remains unverified. R2/paid-data cost assumptions above remain
 unchanged. There is no new cadence increase or per-visitor processing.
+
+## Ausgelassene Schedule-Laeufe und Finanz-Gate (14 October 2026)
+
+Reine Metadaten-Messung (GitHub Actions API, nur lesend), Fenster 10.10. 00:00 bis 14.10. 15:00 UTC,
+28 Cron-Slots je Workflow.
+
+| Workflow (Cron) | Soll-Slots | angelegt | ausgefallen | Verzug min / Median / max |
+|---|---|---|---|---|
+| Refresh `17 */4` | 28 | 16 | 12 | 36 / 145 / 239 min |
+| Health `57 */4` (eigene Concurrency-Gruppe, Lauf ca. 1 min) | 28 | 16 | 12 | 42 / 127 / 226 min |
+
+Muster: die Slots 00:17 und 08:17 fehlen an fast jedem Tag, 12:17, 16:17 und 20:17 kommen 1,5 bis 4 h
+spaet. Health und Refresh verlieren dieselben Slots. Repo-weit entstanden vom 13.10. 00:00 bis 14.10. 15:00
+nur 65 Schedule-Laeufe fuer 32 Cron-Workflows (z. B. `pages-release` `*/5` an Werktagen praktisch keine).
+
+Urteil, BELEGT: Ausfall und Verzug sind plattformweit (GitHub-Scheduler), nicht
+Concurrency-Verdraengung. (1) Der Health-Workflow hat eine eigene Gruppe und verliert dieselben Slots.
+(2) Fuer die fehlenden Slots existiert kein Lauf in irgendeinem Status; im Fenster gibt es keinen
+`cancelled` Schedule-Lauf des Refresh. Die `cancelled`-Laeufe (profile-source am 12.10., universe-release
+am 10.10.) sind Dispatch-gegen-Dispatch in derselben Gruppe, ein Refresh-Lauf wurde am Timeout (60 min)
+abgebrochen. HYPOTHESE, nicht belegt: Lastspitzen der Plattform bevorzugen bestimmte Stunden; die
+Minute :17 ist nicht ursaechlich (Health :57 verhaelt sich gleich).
+Unabhaengig davon scheiterten 8 von 17 Schedule-Laeufen seit 11.10. im Schritt "Restore, bounded
+refresh, fresh restore, validate and commit consumer"; das ist kein Scheduler-Thema.
+
+### Finanz-Gate (zustandsbasiert)
+
+Vorher: `--financial` nur bei UTC-Stunde % 8 == 0. Verspaetete Schedule-Laeufe trafen das selten
+(1 von 17 seit 10.10.). **Reale Verhaltensaenderung:** Finanzdaten werden jetzt etwa dreimal taeglich
+(alle 8 h) statt fast nie lokal neu projiziert. Jetzt entscheidet `scripts/company_intelligence/scheduler-gate.mjs`
+im Job `gate`: Finanz-Refresh laeuft, wenn der letzte erfolgreiche **Produktions**-Lauf mit Finanz-Refresh
+(Start) aelter als `financialHours` (8 h, `continuous-refresh.json`) minus 0,5 h Verzugstoleranz ist.
+`workflow_dispatch`/`workflow_call` behalten `--financial` (neuer optionaler Eingang `financial`, Default
+`true`; nur ein ausdrueckliches `false` schaltet ihn dort ab). Jede Unklarheit (API-Fehler, kaputte
+Antwort, ungueltige Konfiguration, Zeitstempel in der Zukunft, kein markierter Lauf, leere Gate-Ausgabe)
+ergibt Finanz-Refresh AN und Lauf AN. Der Zustand kommt ohne R2 aus den Actions-Metadaten
+(nur Laeufe auf `main`): ein erfolgreicher Lauf laedt ein Marker-Artefakt
+`ci-refresh-mode-<runId>-<production|verification>-<financial|plain>` hoch. Der Gesundheits-Artefaktname
+`company-intelligence-refresh-health-<runId>` bleibt unveraendert (das Scale-Receipt der Universe-Freigabe
+liest ihn). Bis zum ersten Lauf mit Marker laeuft jeder Schedule-Lauf mit Finanz-Refresh.
+
+Last: `--financial` selbst fuehrt `project_company(c)` ohne `fetch_sec` aus und liest nur lokale
+Quant-SEC-Rohdaten; es sendet keine Anfrage. `advance_financial_filing` (hoechstens 20 companyfacts-Abrufe
+je Lauf, nur bei ungesehenem 10-Q/10-K/20-F/40-F) laeuft pro Emittent, sobald dieser nicht uebersprungen
+wird (`continuous_refresh.py`, Schleife ab Zeile 229: `if not poll_sec and not financial: continue`). Ohne
+`--financial` wird ein Emittent bei erschoepftem SEC-Budget, SEC-Stoerung oder Cooldown uebersprungen und
+bekommt keinen Faktenabruf; mit `--financial` sind bis zu 20 Abrufe auch dann moeglich. Sie bleiben im geteilten
+SEC-Budget (110 Anfragen / 240 s, `BudgetExhausted` beendet sie), das unveraendert ist. Obergrenze der
+zusaetzlichen companyfacts-Abrufe 3 x 20 = 60 pro Tag, real nur so viele wie neue periodische Filings.
+Die Annahme `runsPerDay: 6` in `operating_cost.py` bleibt gueltig (Primaerslot, der Waechter fuellt nur Luecken).
+
+### Frische-Gate im Primaerslot und Waechter-Workflow
+
+Ein zusaetzlicher Cron im Refresh-Workflow wurde verworfen: Jeder Schedule-Lauf besetzt die Gruppe
+`company-intelligence-continuous-production` vor jedem Gate-Job. GitHub haelt nur einen wartenden Lauf; ein neuer
+verdraengt den alten (`cancelled`): betroffen waeren profile-source (03:47), universe-release,
+Dispatch `verification=false` und der Caller `publish`. Der Refresh behaelt nur den Primaerslot `17 */4`.
+
+Neu: `company-intelligence-refresh-watchdog.yml` (Cron `47 2-22/4 * * *`, eigene Gruppe
+`company-intelligence-watchdog-<ref>`, Rechte contents read, Job: actions write nur fuer `gh workflow run`).
+`refresh-watchdog.mjs` dispatcht `company-intelligence-refresh.yml` (`--ref main` fest, nur wenn der Wächter selbst
+auf `refs/heads/main` läuft) mit `verification=false` nur, wenn
+
+* kein Lauf von Refresh, profile-source, universe-release oder company-intelligence.yml (nur `workflow_dispatch`,
+  der Caller `continuous`/`publish`; PR-Läufe zählen nicht) in einem Status queued/in_progress/waiting/pending/requested
+  ist (sonst würde der Dispatch einen Wartenden verdrängen), und
+* im Fenster von 4,5 h auf main **kein** Refresh-Lauf begonnen hat, gleich welchen Status, welcher Conclusion und
+  welches Ereignisses (Schedule, Dispatch auch des Wächters, laufend, wartend, failure, cancelled, skipped, Caller).
+  "Slot ausgefallen" heißt: es existiert kein Lauf. Ein Fehlschlag ist kein Ausfall; Wiederholungen laufen über den
+  Primärslot (bei Dauerfehler 6 statt 12 Versuche pro Tag). Existiert im Fenster ein erfolgreicher Lauf ohne Marker,
+  dispatcht der Wächter nicht und gibt `::warning::` aus. Lauf-Aufrufer (`workflow_call`) liefern keine Frische, nur
+  die Busy-Prüfung deckt sie ab.
+
+Nach dem Dispatch wartet der Job 15 s und warnt (`::warning::`), wenn kein neuer Dispatch-Lauf sichtbar ist.
+
+Fail-safe-Richtung ist hier umgekehrt zum Gate: bei API-Fehler oder Unsicherheit wird nicht dispatcht und der
+Job schlaegt sichtbar fehl (der Primaerslot laeuft ohnehin). Der Dispatch uebergibt `financial=<Gate-Urteil>`,
+daher kostet ein Weckruf keinen unnoetigen Finanzlauf. Ausgangslage: im Normalbetrieb dispatcht der Waechter
+nichts (02:47 sieht den 00:17-Lauf, Alter rund 2 h).
+
+Der Gate-Job im Refresh bleibt, weil er (a) das Finanz-Gate fuer den Primaerslot liefert und (b) den
+Primaerslot beendet, wenn der Waechter kurz zuvor einen Lauf erfolgreich beendet hat (Alter unter 2,5 h,
+verhindert den Doppellauf). Er laeuft erst nach Erhalt der Gruppe und haelt sie nur etwa eine Minute.
+
+Verbleibendes Restrisiko: Der Primaerslot und ein Waechter-Dispatch koennen gleichzeitig eintreffen
+(einer laeuft, einer wartet; kein Dritter wird verdraengt). Ein Dispatch oder profile-source, der
+waehrend eines laufenden Produktionslaufs wartet, kann weiterhin vom naechsten Primaerslot verdraengt werden
+(das gilt schon vor diesem PR).

@@ -1,48 +1,57 @@
 {
- "generatedAt": "2026-10-14T09:42:05.267Z",
- "universe": 6111,
- "withLogo": 4142,
- "pct": 67.8,
- "downloaded": 410,
- "unchanged": 3713,
- "pending": [],
+ "generatedAt": "2026-10-15T09:21:27.573Z",
+ "universe": 6112,
+ "withLogo": 4139,
+ "pct": 67.7,
+ "downloaded": 406,
+ "unchanged": 3719,
+ "pending": [
+  "ADVB",
+  "LXEH",
+  "QCOM",
+  "STLD"
+ ],
  "bySource": {
-  "WIKIMEDIA_COMMONS": 1013,
-  "SEC_FILING": 422,
-  "WEBSITE": 2707
+  "WIKIMEDIA_COMMONS": 1010,
+  "WEBSITE": 2707,
+  "SEC_FILING": 422
  },
  "byVia": {
-  "CIK": 722,
-  "SEC_CIK": 416,
+  "CIK": 719,
   "TICKER": 258,
+  "WIKIDATA_CIK": 635,
+  "WIKIDATA_TICKER": 390,
   "SEC_10K": 1251,
   "NAME": 33,
-  "WIKIDATA_TICKER": 390,
-  "SEC_20F": 251,
-  "WIKIDATA_NAME": 138,
-  "WIKIDATA_CIK": 635,
   "KURATIERT": 9,
+  "WIKIDATA_NAME": 138,
+  "SEC_20F": 251,
   "SEC_40F": 25,
   "SEC_F1": 4,
   "SEC_10Q": 7,
   "SEC_8K": 1,
   "SEC_S1": 1,
-  "SEC_424B4": 1
+  "SEC_424B4": 1,
+  "SEC_CIK": 416
  },
  "indexCoverage": {
   "SP500": {
    "members": 495,
-   "withLogo": 492,
+   "withLogo": 490,
    "missing": [
     "ESS:WEB_KEIN_ICON",
     "FDXF:WEB_KEIN_ICON",
+    "QCOM:WARTET_AUF_SICHTPRUEFUNG",
+    "STLD:WARTET_AUF_SICHTPRUEFUNG",
     "WAT:WEB_KEIN_ICON"
    ]
   },
   "NDX": {
    "members": 100,
-   "withLogo": 100,
-   "missing": []
+   "withLogo": 99,
+   "missing": [
+    "QCOM:WARTET_AUF_SICHTPRUEFUNG"
+   ]
   },
   "DJIA": {
    "members": 30,
@@ -56,7 +65,7 @@
   }
  },
  "byLicense": {
-  "pd": 929,
+  "pd": 926,
   "cc-by-sa-4.0": 53,
   "cc-by-sa-3.0": 11,
   "cc0": 10,
@@ -66,12 +75,12 @@
   "apache-2.0": 1
  },
  "excluded": {
-  "KEINE_WEBSITE_BEKANNT": 1380,
-  "KEIN_WIKIDATA_LOGO": 2185,
-  "WEB_KEIN_ICON": 220,
-  "NAME_ODER_CIK_WIDERSPRICHT": 123,
-  "WEB_ICON_ZU_KLEIN": 160,
-  "WEB_KEIN_BILD": 147,
+  "KEINE_WEBSITE_BEKANNT": 1382,
+  "KEIN_WIKIDATA_LOGO": 2188,
+  "WEB_KEIN_ICON": 225,
+  "NAME_ODER_CIK_WIDERSPRICHT": 125,
+  "WEB_ICON_ZU_KLEIN": 155,
+  "WEB_KEIN_BILD": 146,
   "WEB_ICON_GENERISCH": 26,
   "MEHRERE_ITEMS": 20,
   "WEB_ICON_FORMAT": 4,
@@ -79,6 +88,6 @@
   "LIZENZ_NICHT_FREI": 5,
   "KEINE_DATEIINFO": 2,
   "URHEBER_FEHLT": 1,
-  "WARTET_AUF_SICHTPRUEFUNG": 8
+  "WARTET_AUF_SICHTPRUEFUNG": 4
  }
 }

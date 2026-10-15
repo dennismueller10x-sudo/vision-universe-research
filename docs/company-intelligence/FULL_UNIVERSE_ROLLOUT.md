@@ -126,7 +126,7 @@ The actual post-reconciliation production smoke artifact (Pages run **3807339467
 
 ## Vorbereitung der Aktivierung (Re-Freeze, technische Aktivierungsfähigkeit)
 
-Stand 2026-10-14: Das CI-Gate ist bewusst offen (`AVAILABLE`), ausgeliefert wird das Legacy-GOOD (46 Titel / 45 Emittenten, Generation `6bf18110811d2c0a41680286`, rückt mit jedem Legacy-Lauf weiter). Das Universum ist nicht aktiv. Dieser Abschnitt stellt nur die technische Fähigkeit wieder her; er aktiviert nichts und ändert Gate, `activation.json` und Universum-GOOD nicht.
+Voraussetzungen statt Momentaufnahme: Der Befehl `refreeze` ist nur sinnvoll, solange das Universum nicht aktiv ist und das Legacy-GOOD (46 Titel / 45 Emittenten) ausgeliefert wird. Der Gate-Zustand wechselt (auch durch Automatik, z. B. Schließen nach einem Live-QA-Fehler samt Rückrollen des GOOD); `refreeze` selbst erfordert ein offenes Gate mit ausgeliefertem Legacy-GOOD (siehe Bedingung 3). Dieser Abschnitt stellt nur die technische Fähigkeit wieder her; er aktiviert nichts und ändert Gate, `activation.json` und Universum-GOOD nicht.
 
 ### Warum `activate` heute scheitert
 
@@ -153,23 +153,23 @@ Setzt den eingefrorenen Rollback auf das aktuell verifizierte und ausgelieferte 
 |---|---|---|
 | `activate`: Freeze-Generation == Legacy-GOOD-Generation | gleich **oder** zertifizierter Re-Freeze (Marker + Archiv-Anker + SHA), identischer 46/45-Scope, höchstens 24 h (`REFREEZE_MAX_LAG_MS`) hinter dem Legacy-GOOD | Das Legacy-GOOD rückt zwischen Re-Freeze und `activate` (Audit dauert bis zu 2 h) zwangsläufig weiter. Ohne Toleranz wäre `activate` praktisch nie erfüllbar. Ein nicht zertifizierter Freeze mit anderer Generation scheitert unverändert mit dem alten Code. |
 | `activate`: Quittung `rollback.generation` = Legacy-Generation | = tatsächliche Freeze-Generation | Die Quittung muss belegen, was wirklich als Rollback liegt. |
-| Recovery: Gate muss `DISABLED` sein | `DISABLED` **oder** `AVAILABLE` mit Aktivierung `ROLLBACK_46` und verifiziertem Legacy-GOOD 46/45 | Bei geschlossenem Gate schützt das letzte Öffnen (`setProductionGate` liest alle Assets zurück). Bei offenem Gate ist der Aktivierungszeiger die Schwelle; deshalb läuft derselbe Voll-Readback **vor** dem Schreiben von `AVAILABLE`. Bei Fehler wird nur der Aktivierungszeiger byte-genau zurückgesetzt, das Gate wird von der Recovery auch im Fehlerfall nie geschrieben (ein parallel geschlossenes Gate darf nicht wieder geöffnet werden). |
+| Recovery: Gate muss `DISABLED` sein | `DISABLED` **oder** `AVAILABLE` mit Aktivierung `ROLLBACK_46` und verifiziertem Legacy-GOOD 46/45 | Bei geschlossenem Gate schützt das letzte Öffnen (`setProductionGate` liest alle Assets zurück). Das Legacy-46 wird in der Recovery nur auf Zeiger-/Inventarebene geprüft (`assertLegacyScope`), nicht per Voll-Readback. Bei offenem Gate ist der Aktivierungszeiger die Schwelle; deshalb läuft der Voll-Readback des **Universum-GOOD** (jedes Asset hashgeprüft, wie ihn `setProductionGate` beim Öffnen eines geschlossenen Gates macht) **vor** dem Schreiben von `AVAILABLE`. Bei Fehler wird nur der Aktivierungszeiger byte-genau zurückgesetzt, das Gate wird von der Recovery auch im Fehlerfall nie geschrieben (ein parallel geschlossenes Gate darf nicht wieder geöffnet werden). |
 | Recovery: `frozen.generation == receipt.rollback.generation` | gleich **oder** `receipt.rollback.generation ∈ refreeze.lineage` (letzter Eintrag = `previousGeneration`) und `sourceGeneration == generation` | Ein Re-Freeze stammt nachweisbar von dem Rollback ab, den die Quittung geprüft hat. |
 
 Nicht verändert: Provider-, Quant-, Ranking- und Datenqualitäts-Gates, `refresh-storage.mjs` (die Scale-Quittung bleibt gültig), `restore46`/`rollback`, das Verfallsdatum der Snapshots.
 
 ### Ablauf (nur mit ausdrücklicher Eigentümerfreigabe; nichts davon ist Teil dieses PR)
 
-1. Eigentümer gibt frei: Re-Freeze auf die dann aktuelle Legacy-Generation (`6bf18110…` oder neuer), Gate bleibt offen, kein Aktivierungsschritt.
-2. Vorab prüfen (lesend): `company-intelligence-delivery.json` zeigt Generation, 46 Titel, 45 Emittenten; `activation.json` ist `ROLLBACK_46`.
-3. Dispatch `company-intelligence-universe-release.yml` mit `mode=refreeze` **erst nach der Folge-Änderung am Workflow** (siehe unten). Eingaben: `mode=refreeze`, `scaling_run` ein beliebiger numerischer Platzhalter, solange das Feld Pflicht ist (wird für `refreeze` nicht gelesen).
-4. Ergebnis prüfen: `evidence/release.json` mit `status: REFROZEN`, `previousGeneration: 71dc0485476cfa74e59f7fc3`, vier `…Modified: false`; Gate und Auslieferung unverändert.
+1. Eigentümer gibt frei: Re-Freeze auf die dann aktuelle Legacy-Generation, Gate offen, kein Aktivierungsschritt.
+2. Vorab prüfen (lesend): `company-intelligence-delivery.json` zeigt Generation == Legacy-GOOD, 46 Titel, 45 Emittenten; `activation.json` ist `ROLLBACK_46` oder fehlt; das Legacy-GOOD hat ein neueres `generatedAt` als der bestehende Freeze.
+3. Dispatch `company-intelligence-universe-release.yml` mit `mode=refreeze` (Workflow-Auslösung ab PR #696). `scaling_run` bleibt leer, `expect_generation` optional (24 Hex). Details: `UNIVERSE_REFREEZE_WORKFLOW.md`.
+4. Ergebnis prüfen: `evidence/release.json` mit `status: REFROZEN` (oder `ALREADY_CURRENT`), vier `…Modified: false`; Gate und Auslieferung unverändert.
 5. Aktivierung weiterhin getrennt: neuer isolierter Skalierungslauf (`company-intelligence-refresh.yml`), danach `mode=activate` mit dessen Run-ID, möglichst innerhalb von 24 h nach dem Re-Freeze. Das ist eine eigene Eigentümerentscheidung.
-6. Spätestens vor dem 17.10. (Verfall des alten Freeze) ist ein Re-Freeze nötig, sonst scheitern `rollback` und `recover_full_scope` mit `CONSUMER_EXPIRED`; danach alle ≤ 6 Tage wiederholen, solange das Universum nicht aktiv ist.
+6. Verfall: Der Freeze verfällt sieben Tage nach `manifest.generatedAt` (`CONSUMER_EXPIRED`). **`ALREADY_CURRENT` verlängert den Verfall nicht**, es schreibt nichts. `refreeze` selbst funktioniert auch nach Ablauf des alten Freeze; `rollback`, `restore46`, `recover_full_scope` und das Öffnen des Gates (`setProductionGate('AVAILABLE')` liest das aktive GOOD per Download zurück) scheitern bis zu einem erfolgreichen Re-Freeze mit `CONSUMER_EXPIRED`, wenn das aktive GOOD abgelaufen ist. Deshalb vor Ablauf erneuern und danach regelmäßig wiederholen, solange das Universum nicht aktiv ist: empfohlen alle 3 bis 5 Tage, absolute Obergrenze 6 Tage (Verfall nach 7 Tagen).
 
-### Folge-Änderung (Workflow, nicht in diesem PR)
+### Workflow-Änderung (umgesetzt in PR #696)
 
-`company-intelligence-universe-release.yml`: `refreeze` zu `mode.options` hinzufügen, `scaling_run` auf `required: false`, den Schritt „Fail closed to immutable 46 scope“ für `refreeze` ausnehmen (`inputs.mode != 'refreeze'`), optional `--expect-generation` über `env:` weiterreichen. Ohne diese Änderung ist `refreeze` nicht auslösbar. Zusätzlich: bei offenem Gate führt der Fehlerschritt von `company-intelligence-profile-source.yml` (`production-release.mjs disable`) nach einem Live-QA-Fehler weiterhin zum Schließen des Gates (Agent-D-/Workflow-Thema).
+`company-intelligence-universe-release.yml`: `refreeze` in `mode.options`, `scaling_run` nur für `activate` Pflicht (Schritt prüft fail-closed), der Schritt „Fail closed to immutable 46 scope“ ist für `refreeze` ausgenommen, `expect_generation` läuft über `env:`. Offen bleibt (Agent-D-/Workflow-Thema): bei offenem Gate führt der Fehlerschritt von `company-intelligence-profile-source.yml` (`production-release.mjs disable`) nach einem Live-QA-Fehler weiterhin zum Schließen des Gates.
 
 ### SPERRE und Betriebsgrenzen
 
