@@ -7,8 +7,10 @@ Machine-readable: `scripts/supertrader/research/v4/` (`SUPERTRADER-V4-*.json`, `
 
 ## 0. Ground rules
 
-1. Specs come before code. Only `IMPLEMENT_NOW` methods are implemented (rule 32): Turtle System 1 and System 2,
-   as a long-only equity translation of the published rules.
+1. Specs come before code. Only methods that were `IMPLEMENT_NOW`-eligible before measurement were implemented
+   (rule 32): Turtle System 1 and System 2, as a long-only equity translation of the published rules, conditional
+   on the V4 calibration gate. **Outcome:** V4.1 calibration is `NOT_CERTIFIED`, so their eligibility is now
+   `RESEARCH_ONLY (MEASUREMENT_BLOCKED)`: code, spec and golden tests exist, no performance was measured.
 2. Every implemented rule has a rule id, a source id, a confidence, a code function and a test
    (`SUPERTRADER-V4-SOURCE-CODE-TRACEABILITY.json`). Numbers without a source id are marked `TRANSLATION` or
    `CONVENTION` and are listed as declared deviations.
@@ -30,7 +32,7 @@ but it cannot make a rule `SOURCE_ACCEPTED`, because no quote, page or finding i
 Darvas, Pocket Pivot, Buyable Gap-Up and Holy Grail stay `RESEARCH_ONLY` in this run, and why golden cases for all
 non-Turtle methods are `BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT`.
 
-## 2. Turtle System 1 / System 2 – `IMPLEMENT_NOW` (code: `methods/turtle-source-v4.mjs`)
+## 2. Turtle System 1 / System 2 – implemented, unmeasured (code: `methods/turtle-source-v4.mjs`)
 
 Scope: `VU_EQUITY_ADAPTATION` (long-only translation). `ORIGINAL_FUTURES_REPLICATION` is `DATA_BLOCKED`
 (no futures chains, contract values, rolls, correlation groups, shorting/borrow).
