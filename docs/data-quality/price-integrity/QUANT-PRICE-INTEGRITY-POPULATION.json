@@ -1,8 +1,8 @@
 {
   "schema": "quant-price-integrity-population-1.0.0",
   "stage": "BEFORE (canonical-total-return-1.0.0)",
-  "runId": "38760425332",
-  "codeCommit": "dbb9aba3918e29be9bae2b4b58850671f14ceb73",
+  "runId": "38766580165",
+  "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49",
   "capture": {
     "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
     "normalizedPartListSha256": "abf9d7212302a7fa90d31eecbd7a8f660f60f9bd8e724107020c730245b888f3",
@@ -34,67 +34,64 @@
   "known83": {
     "cases": 83,
     "byRootCause": {
-      "UNRESOLVED": 29,
-      "UNDECLARED_REVERSE_SPLIT": 17,
+      "UNRESOLVED": 32,
+      "UNDECLARED_REVERSE_SPLIT": 16,
       "PROVIDER_SPIKE": 4,
-      "CONFIRMED_SPLIT": 26,
-      "CURRENCY_OR_UNIT": 2,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 1,
-      "DECLARED_SPLIT_INCONSISTENT": 2,
-      "STALE_PRICE": 2
+      "GENUINE_PRICE_MOVE": 26,
+      "CURRENCY_OR_UNIT": 1,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "STALE_PRICE": 2,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
     },
     "byLocus": {
-      "UNKNOWN": 29,
-      "PROVIDER": 28,
+      "UNKNOWN": 32,
+      "PROVIDER": 25,
       "NONE": 26
     },
     "byConfidence": {
       "LOW": 35,
-      "MEDIUM": 7,
-      "HIGH": 41
+      "MEDIUM": 32,
+      "HIGH": 16
     },
     "byOutcome": {
-      "ACCEPT": 32,
-      "HOLD": 23,
-      "NORMALIZE": 26,
+      "ACCEPT": 59,
+      "HOLD": 22,
       "QUARANTINE": 2
     },
     "byDiagnosticClassAndCause": {
-      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 29,
-      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT": 17,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 32,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT": 16,
       "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE": 4,
-      "DECLARED_SPLIT_IN_MONTH|CONFIRMED_SPLIT": 26,
-      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT": 2,
-      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_FORWARD_SPLIT_POSSIBLE": 1,
-      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT": 2,
-      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE": 2
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE": 26,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT": 1,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT": 1,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE": 2,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_DATE_SHIFT": 1
     },
-    "newCoreHoldsByMonthEnd": 75,
+    "newCoreHoldsByMonthEnd": 40,
     "newCoreReasons": {
       "SPLIT_SUSPECTED_UNDECLARED": 32,
-      "SPLIT_SUSPECTED": 31,
-      "RECONSTRUCTED": 8,
-      "PRICE_SPIKE_REVERTED": 8,
-      "TRADING_GAP_UNVERIFIED": 4
+      "RECONSTRUCTED": 43,
+      "PRICE_SPIKE_REVERTED": 8
     }
   },
   "allExtremeMonths": {
     "cases": 2213,
     "byRootCause": {
-      "GENUINE_PRICE_MOVE": 2106,
-      "UNRESOLVED": 40,
-      "UNDECLARED_REVERSE_SPLIT": 26,
-      "PROVIDER_SPIKE": 5,
-      "CONFIRMED_SPLIT": 26,
-      "STALE_PRICE": 3,
-      "CURRENCY_OR_UNIT": 4,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 1,
-      "DECLARED_SPLIT_INCONSISTENT": 2
+      "GENUINE_PRICE_MOVE": 2115,
+      "UNRESOLVED": 43,
+      "UNDECLARED_REVERSE_SPLIT": 39,
+      "PROVIDER_SPIKE": 4,
+      "STALE_PRICE": 5,
+      "CURRENCY_OR_UNIT": 3,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 2,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
     },
     "byLocus": {
-      "NONE": 2132,
-      "UNKNOWN": 40,
-      "PROVIDER": 41
+      "NONE": 2115,
+      "UNKNOWN": 43,
+      "PROVIDER": 55
     }
   },
   "adjustedLevelGt1e6": {
@@ -109,12 +106,13 @@
       "DECLARED_SPLIT_INCONSISTENT": 3
     },
     "firstUndeclaredJumpCause": {
-      "NONE": 64,
+      "NONE": 63,
       "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 5,
       "DECLARED_SPLIT_DATE_SHIFT": 1,
-      "UNRESOLVED": 4
+      "UNRESOLVED": 4,
+      "STALE_PRICE": 1
     },
-    "newCoreHolds": 74
+    "newCoreHolds": 6
   },
   "dailyRawJumpCensus": {
     "total": 2566,
@@ -122,22 +120,24 @@
       "UP": 1311,
       "DOWN": 1255
     },
-    "coreSignature": 152,
-    "coreSpike": 98,
+    "coreSignature": 176,
+    "coreSpike": 137,
     "byCause": {
-      "GENUINE_PRICE_MOVE": 1354,
-      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 375,
-      "UNDECLARED_REVERSE_SPLIT": 170,
-      "UNRESOLVED": 360,
-      "CURRENCY_OR_UNIT": 67,
-      "PROVIDER_SPIKE": 93,
-      "STALE_PRICE": 142,
-      "DECLARED_SPLIT_DATE_SHIFT": 5
+      "GENUINE_PRICE_MOVE": 1433,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 380,
+      "UNDECLARED_REVERSE_SPLIT": 186,
+      "UNRESOLVED": 411,
+      "CURRENCY_OR_UNIT": 78,
+      "PROVIDER_SPIKE": 129,
+      "STALE_PRICE": 155,
+      "LISTING_CHANGE": 61,
+      "DECLARED_SPLIT_DATE_SHIFT": 6
     },
     "byLocus": {
-      "NONE": 1354,
-      "PROVIDER": 852,
-      "UNKNOWN": 360
+      "NONE": 1433,
+      "PROVIDER": 934,
+      "UNKNOWN": 411,
+      "IDENTITY_LISTING_MAPPING": 61
     }
   },
   "beforeCoverage": {
@@ -158,8 +158,14 @@
     "rejections": null
   },
   "rawSources": {
-    "CANONICAL_RAW_COLUMNS": 1877
+    "STORE": 1877
   },
-  "privateSha256": "14526808dc65655cfde6faee41ac6fe2cf737bb03f90973faf27c86f610bd7b8",
+  "rawReads": {
+    "ok": 1877,
+    "missing": 0,
+    "errors": 0,
+    "lastError": null
+  },
+  "privateSha256": "1b2ef3410cb73989e3e0d39a81844592553eeda1482e0e96abf60797b288a51f",
   "performanceCalculated": false
 }

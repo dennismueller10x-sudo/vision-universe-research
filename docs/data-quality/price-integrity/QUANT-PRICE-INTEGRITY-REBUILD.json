@@ -1,8 +1,8 @@
 {
   "schema": "quant-price-integrity-rebuild-1.0.0",
   "stage": "AFTER (canonical-total-return-1.1.0, corporate-action-contract-1.1.0)",
-  "runId": "38760425332",
-  "codeCommit": "dbb9aba3918e29be9bae2b4b58850671f14ceb73",
+  "runId": "38766580165",
+  "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49",
   "capture": {
     "dataFingerprint": "a96199a3fb26990d48328b4cb0c8bc7ae7fd2432a3b7f51154d277d82b922e0f",
     "normalizedPartListSha256": "62aff1defb3b4e96a85921dac31e96e245b2f98c71abb2f1cd3054d57badaba5",
@@ -72,11 +72,11 @@
       "NONE": 43
     },
     "stillExtremeByCause": {
-      "CONFIRMED_SPLIT": 22,
+      "GENUINE_PRICE_MOVE": 22,
       "UNRESOLVED": 17,
       "UNDECLARED_REVERSE_SPLIT": 2,
       "STALE_PRICE": 1,
-      "DECLARED_SPLIT_INCONSISTENT": 1
+      "DECLARED_SPLIT_DATE_SHIFT": 1
     }
   },
   "allExtremeFate": {
@@ -86,12 +86,12 @@
       "NEW_HOLD": 262
     },
     "stillExtremeByCause": {
-      "GENUINE_PRICE_MOVE": 1896,
-      "CONFIRMED_SPLIT": 22,
+      "GENUINE_PRICE_MOVE": 1913,
       "UNRESOLVED": 24,
-      "UNDECLARED_REVERSE_SPLIT": 7,
+      "UNDECLARED_REVERSE_SPLIT": 11,
       "STALE_PRICE": 1,
-      "DECLARED_SPLIT_INCONSISTENT": 1
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
     }
   },
   "newHolds": {
@@ -101,9 +101,12 @@
       "PRICE_SPIKE_REVERTED": 17
     },
     "byForensicCause": {
-      "NOT_EXPLAINED": 218
+      "UNDECLARED_REVERSE_SPLIT": 185,
+      "STALE_PRICE": 16,
+      "PROVIDER_SPIKE": 16,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
     },
-    "falsePositiveCandidates": 218
+    "falsePositiveCandidates": 115
   },
   "highLevel": {
     "total": 74,
@@ -117,7 +120,13 @@
       "after": 190
     }
   },
-  "privateSha256": "819ed9fdcb0e1ad695f47085b72a81ed549e83c9aa3b66c6d8cfa9221a6c6266",
+  "rawReads": {
+    "ok": 218,
+    "missing": 0,
+    "errors": 0,
+    "lastError": null
+  },
+  "privateSha256": "032ca1934f8e71c64a03151a464072102445d4eec04ac979c5e1449c8b6046a3",
   "performanceCalculated": false,
   "calibrationRun": false
 }
