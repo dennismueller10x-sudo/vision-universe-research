@@ -140,7 +140,12 @@ META_LOGIN_CONFIG_ID = "1555849235747979"
 # Deshalb entscheidet nicht der Dialog, welches Konto zulaessig ist,
 # sondern diese Liste. Ein Konto, das nicht daraufsteht, wird gar nicht
 # erst gespeichert und kann damit nie Publishing-Ziel werden.
-META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
+# Konto wurde umbenannt (@visionuniverse.aktienreports -> @app.visionuniverse).
+# Der Worker prueft beim Veroeffentlichen gegen den GESPEICHERTEN Handle; bis
+# die Verbindung einmal neu verifiziert ist, traegt der Datensatz noch den alten.
+# Deshalb uebergangsweise beide Handles. Die ID unten ist der eigentliche Anker
+# (unveraenderlich) - der alte Handle kann nach dem naechsten Verbinden raus.
+META_IG_ALLOWED_USERNAMES = "app.visionuniverse,visionuniverse.aktienreports"
 
 # Dasselbe ueber die numerische Konto-ID. Sie ist erst nach der ersten
 # erfolgreichen Aufloesung bekannt — dafuer laesst sie sich, anders als
@@ -148,7 +153,7 @@ META_IG_ALLOWED_USERNAMES = "visionuniverse.aktienreports"
 # eingetragen: dann haengt die Sperre nicht mehr an einem Namen.
 #
 # Sind beide gesetzt, muessen BEIDE passen.
-# META_IG_ACCOUNT_ID = ""
+META_IG_ACCOUNT_ID = "17841480148117405"   # Beleg: docs/VU_SOCIAL_E2E_NACHWEIS.md
 
 # -------------------------------------------------------------------------
 # SMOKE-TEST — genau EIN ausdruecklich ausgeloester Testbeitrag
