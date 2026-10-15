@@ -2,7 +2,7 @@
 export const CONSENT_VERSION='vu-newsletter-v1';
 export const CONSENT_TEXT='Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.';
 export const TEMPLATE_NAME='VU | Newsletter | DE | API Double Opt In | v1';
-export const TEMPLATE_TAG='vu-newsletter-api-doi-v1';
+export const TEMPLATE_TAG='optin';
 export const PENDING='Wenn eine neue Anmeldung möglich ist, erhältst du eine Bestätigungsmail. Bitte prüfe dein Postfach. Erst dein Klick bestätigt die neue Anmeldung.';
 const PUBLIC_ORIGIN='https://www.visionuniverse.de';
 const PREVIEW_ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';
@@ -12,6 +12,7 @@ const ACCESS_PATH='/api/newsletter/test-access';
 const DIAGNOSTIC_PATH='/api/newsletter/test-diagnostics';
 const BAD='Die Anmeldung konnte nicht verarbeitet werden. Bitte prüfe deine Eingaben und versuche es später erneut.';
 const UNKNOWN='Wir konnten die Anfrage nicht abschließend prüfen. Eine Anmeldung ist nicht bestätigt. Bitte prüfe dein Postfach; es erfolgt keine automatische Wiederholung.';
+const REJECTED='Die Bestätigungsmail konnte nicht gesendet werden. Deine Anmeldung ist nicht bestätigt. Bitte versuche es später erneut.';
 const CLOSED='Die Anmeldung ist noch nicht freigeschaltet. Deine E-Mail-Adresse wurde nicht zur Anmeldung übermittelt.';
 const TOO_MANY='Zu viele Anfragen. Bitte versuche es später erneut.';
 const TEST_EXISTING='Für diesen Betreiber-Test brauchst du eine neue, von dir kontrollierte Adresse, die bisher nicht in Brevo vorhanden ist. Der vorhandene Kontakt wurde nicht verändert und keine Bestätigungsmail angefordert.';
@@ -122,10 +123,14 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
       trace.stage='email_hmac';
       const emailHash=await digest('email:'+email,env.NEWSLETTER_RATE_KEY);
       return await exclusive('email:'+emailHash,async()=>{
-        const hold=new Request(url.origin+'/.newsletter-internal/email/'+emailHash);
+        // v1 slots were created while Brevo reported doiTemplate:false and
+        // rejected template 8 with HTTP 400 (zero mail events). This namespace
+        // starts the first provider-valid configuration; the global template-8
+        // event guard below still prevents duplicate delivery across POPs.
+        const hold=new Request(url.origin+'/.newsletter-internal/email/doi-valid-v1/'+emailHash);
         trace.stage='reservation_read';
-        const reserved=Boolean(await cache.match(hold));
-        if(reserved&&!diagnostic)return out(202,PENDING);
+        const priorHold=await cache.match(hold),reserved=Boolean(priorHold);
+        if(reserved&&!diagnostic)return (await priorHold.text())==='rejected:400'?out(502,REJECTED):out(202,PENDING);
         // Every existing contact, regardless of list/status, remains untouched.
         const contact=await checkedProvider('contact_lookup','/contacts/'+encodeURIComponent(email));
         // The authenticated owner test needs a genuinely new address. Public
@@ -172,7 +177,7 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         const templateResponse=await checkedProvider('template','/smtp/templates/'+id);
         if(templateResponse.status!==200)throw Error('Template unavailable');
         const template=await templateResponse.json();
-        if(template.name!==TEMPLATE_NAME||template.isActive!==true||template.tag!==TEMPLATE_TAG||!template.htmlContent?.includes('{{ params.DOIurl }}')||!template.htmlContent.includes(CONSENT_TEXT)||template.htmlContent.includes('{{ doubleoptin }}'))throw Error('Template incompatible');
+        if(template.name!==TEMPLATE_NAME||template.isActive!==true||template.doiTemplate!==true||template.tag!==TEMPLATE_TAG||!template.htmlContent?.includes('{{ params.DOIurl }}')||!template.htmlContent.includes(CONSENT_TEXT)||template.htmlContent.includes('{{ doubleoptin }}'))throw Error('Template incompatible');
         const budgetResponse=await checkedProvider('budget','/smtp/statistics/aggregatedReport?days=1&tag='+TEMPLATE_TAG);
         if(budgetResponse.status!==200)throw Error('Budget unavailable');
         const budget=await budgetResponse.json();
@@ -198,8 +203,14 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         if(secondCheck.status===200)return out(202,PENDING);
         if(secondCheck.status!==404)throw Error('Second lookup uncertain');
         const result=await checkedProvider('doi_request','/contacts/doubleOptinConfirmation',{email,includeListIds:[4],templateId:id,redirectionUrl:expected+'/newsletter/bestaetigt/',contactPixelTrackingConsent:false,attributes:{VU_EMAIL_CONSENT:'subscribed'}});
+        if(result.status===400){
+          // A confirmed rejection is not a successful or ambiguous delivery.
+          // Keep a short marker; no automatic resend and no false pending page.
+          await cache.put(hold,new Response('rejected:400',{headers:{'Cache-Control':'max-age=600'}}));
+          return out(502,REJECTED);
+        }
         if(result.status!==201)throw Error('Delivery outcome uncertain');
-        return out(202,PENDING);
+        return out(202,PENDING,controlled?{'X-VU-DOI-Accepted':'1'}:{});
       });
     }catch{
       if(diagnostic)return diagnosis(503);

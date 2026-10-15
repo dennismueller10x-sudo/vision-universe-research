@@ -5,10 +5,10 @@ on:
       newsletter_operation:
         description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
         type: choice
-        options: [audit, setup, controlled, observe, close, public, e2e]
+        options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose, doi-template-fix]
         default: audit
       authorize_controlled_test:
-        description: Nur observe/e2e – kontrollierte DOI- und administrative Testbestätigung erlauben
+        description: Nur observe/e2e/doi-diagnose – kontrollierte DOI- und administrative Testbestätigung erlauben
         type: boolean
         default: false
       privacy_document_sha256:
@@ -45,11 +45,11 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 16ce6e87bdf0cf9d7b2ec591d6b0875da78060c0
+          ref: e2ea0480f05a954d5465f94647cef1f59d773f94
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
-        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe'
+        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'doi-diagnose'
         env:
           NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
           NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
@@ -66,6 +66,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
         run: python3 landing/scripts/newsletter-server-admin.py
+      - name: Single authorized owner DOI diagnosis (no automatic retry)
+        if: inputs.newsletter_operation == 'doi-diagnose' && inputs.authorize_controlled_test
+        env:
+          NEWSLETTER_AUTHORIZE_CONTROLLED_TEST: 'true'
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_IMPORT_PAYLOAD: ${{ secrets.BREVO_IMPORT_PAYLOAD }}
+        run: python3 landing/scripts/newsletter-doi-diagnose.py
       - name: Explicit controlled DOI and unsubscribe test (never main-list delivery)
         if: inputs.newsletter_operation == 'e2e' && inputs.authorize_controlled_test && github.ref == 'refs/heads/feat/brevo-app-waitlist-doi'
         env:

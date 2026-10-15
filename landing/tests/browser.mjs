@@ -80,6 +80,10 @@ try{
   await page.route('**/api/newsletter/subscribe',route=>route.abort());
   await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').innerText(),'Rückmeldung beachten');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
+  const rejected=await browser.newPage();
+  await rejected.route('**/api/newsletter/subscribe',route=>route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({message:'Die Bestätigungsmail konnte nicht gesendet werden. Deine Anmeldung ist nicht bestätigt.'})}));
+  await rejected.goto(base+'/ready/');await rejected.locator('#email').fill('synthetic@example.test');await rejected.locator('#consent').check();await rejected.locator('button[type=submit]').click();
+  await rejected.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('konnte nicht gesendet werden'));assert.equal(await rejected.locator('button[type=submit]').innerText(),'Anmeldung fehlgeschlagen');assert.equal(new URL(rejected.url()).pathname,'/ready/');await rejected.close();
   for(const width of [1440,390,320]){
     const context=await browser.newContext({viewport:{width,height:844}});const page=await context.newPage();let posts=0;
     await page.route('**/api/newsletter/test-access',async route=>{
