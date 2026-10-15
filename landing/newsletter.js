@@ -35,11 +35,13 @@
     if(form.dataset.controlled!=='true')return;
     const match=location.hash.match(/^#vu-test=([A-Za-z0-9_-]{43})$/);
     if(match){
+      history.replaceState(null,'',location.pathname+location.search);
+      if(submitting)return;
       // An explicit revisit of the full private link can be a same-document
       // navigation in an iPhone webview. Reset only client terminal state;
       // access is checked again and no signup is sent without another tap.
-      finished=false;finishedLabel='Rückmeldung beachten';submitting=false;
-      testAccess=match[1];history.replaceState(null,'',location.pathname+location.search);
+      finished=false;finishedLabel='Rückmeldung beachten';
+      testAccess=match[1];
       void checkTest();
     }
   }
