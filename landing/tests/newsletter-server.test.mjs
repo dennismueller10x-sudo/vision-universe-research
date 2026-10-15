@@ -8,7 +8,7 @@ function fixture(options={}){
   const env={NEWSLETTER_STAGE:'production',NEWSLETTER_PUBLIC_ENABLED:'true',NEWSLETTER_PRIVACY_APPROVED:'true',NEWSLETTER_E2E_VERIFIED:'true',BREVO_API_KEY:'synthetic-api-key',NEWSLETTER_RATE_KEY:'a'.repeat(64),NEWSLETTER_DOI_TEMPLATE_ID:'5'};
   const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
   const handler=createHandler({cacheProvider:()=>{if(options.cacheFailure)throw Error('Secret cache details new+qa@example.test');return cache;},now:()=>clock,providerFetch:async(url,init)=>{
-    assert.equal(init.headers['api-key'],env.BREVO_API_KEY);assert.equal(init.redirect,'error');
+    assert.equal(init.headers['api-key'],env.BREVO_API_KEY);assert.equal(init.redirect,'manual');
     const path=new URL(url).pathname;calls.push({path,method:init.method,body:init.body&&JSON.parse(init.body)});
     if(path.startsWith('/v3/contacts/')&&path!=='/v3/contacts/attributes'&&init.method==='GET')return json(options.existing||{},options.lookupStatus||(options.existing?200:404));
     if(path==='/v3/smtp/blockedContacts')return json({contacts:options.blocked||[]});
@@ -55,6 +55,19 @@ test('Feste private Fehlerphasen zeigen Cache- und Providerfehler ohne Rohdaten;
     assert.equal(response.status,503);const text=await response.text();assert.deepEqual(JSON.parse(text).diagnostic,{stage,http});
     assert.doesNotMatch(text,/synthetic-api-key|Secret cache|new\+qa@example/);assert.equal(f.sends().length,0);
     const publicResponse=await f.handler(f.request(),f.env);assert.equal(publicResponse.status,503);assert.equal((await publicResponse.json()).diagnostic,undefined);
+  }
+});
+test('Private Statusprüfung zeigt Mitgliedschaft und Sperre ausschließlich als Flags ohne Kontakt-/Ereignisrohdaten',async()=>{
+  const token='a'.repeat(43),hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  for(const options of [{existing:{email:'synthetic-private@example.test',listIds:[4],emailBlacklisted:true,attributes:{VU_EMAIL_CONSENT:'subscribed'}}},{events:[{event:'delivered',email:'synthetic-private@example.test',messageId:'private-event-id'}]},{events:[{event:'unexpected-personalized-text',email:'synthetic-private@example.test'}]}]){
+    const f=fixture(options);Object.assign(f.env,{NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+    const original=f.request(undefined,{}, {Authorization:'Bearer '+token});
+    const response=await f.handler(new Request(origin+'/api/newsletter/test-diagnostics',original),f.env);
+    assert.equal(response.status,409);const raw=await response.text(),value=JSON.parse(raw).diagnostic;
+    assert.doesNotMatch(raw,/synthetic-private|private-event-id|unexpected-personalized-text/);
+    if(options.existing){assert.equal(value.member4,true);assert.equal(value.marketing_blocked,true);assert.equal(value.consent_subscribed,true);}
+    else assert.equal(value.latest_event,options.events[0].event==='delivered'?'delivered':'other');
+    assert.equal(f.sends().length,0);assert.ok([...f.stored.keys()].every(k=>k.includes('/diagnostic/')));
   }
 });
 test('Privater Hauptdomain-Test benötigt Freigabe, geheimes Zugangsmerkmal und gültige Frist',async()=>{
@@ -129,7 +142,7 @@ test('Parallele Wiederholung und unklarer Provider-Ausgang bleiben lokal reservi
 test('Ratenfenster, Budget, unklare Bestandsabfrage und falsche Vorlage stoppen Versand',async()=>{
   const f=fixture();for(let i=0;i<3;i++)await f.handler(f.request('n'+i+'@example.test'),f.env);
   assert.equal((await f.handler(f.request('four@example.test'),f.env)).status,429);assert.equal(f.sends().length,3);
-  for(const options of [{budget:50},{lookupStatus:403},{attributes:[]},{attributes:[{name:'VU_EMAIL_CONSENT',category:'normal',type:'boolean'}]},{template:{htmlContent:'{{ doubleoptin }}'}}]){
+  for(const options of [{budget:50},{lookupStatus:403},{lookupStatus:302},{lookupStatus:307},{attributes:[]},{attributes:[{name:'VU_EMAIL_CONSENT',category:'normal',type:'boolean'}]},{template:{htmlContent:'{{ doubleoptin }}'}}]){
     const g=fixture(options);assert.ok([429,503].includes((await g.handler(g.request(),g.env)).status));assert.equal(g.sends().length,0);
   }
   const g=fixture();g.env.NEWSLETTER_DOI_TEMPLATE_ID='4';assert.equal((await g.handler(g.request(),g.env)).status,503);assert.equal(g.sends().length,0);

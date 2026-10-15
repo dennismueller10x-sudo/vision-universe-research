@@ -9,7 +9,7 @@ import {build,root} from '../scripts/build.mjs';
 const output=resolve(root,'tests/output/private-browser');
 await build({output,config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'legal-drafts/newsletter-release-2026-10-14.html'}});
 const token='a'.repeat(43);
-let www,apex,expiresAt,allowed,accessCalls,posts;
+let www,apex,expiresAt,allowed,accessCalls,posts,sendStatus=503;
 const server=createServer(async(req,res)=>{
   assert.ok(!req.url.includes(token),'fragment must never reach HTTP');
   assert.ok(!(req.headers.referer||'').includes(token));
@@ -22,7 +22,7 @@ const server=createServer(async(req,res)=>{
   }
   if(pathname==='/api/newsletter/subscribe'){
     posts++;assert.equal(req.headers.authorization,'Bearer '+token);
-    res.writeHead(202,{'Content-Type':'application/json'});res.end(JSON.stringify({message:'Bitte prüfe dein Postfach.'}));return;
+    res.writeHead(sendStatus,{'Content-Type':'application/json'});res.end(JSON.stringify({message:sendStatus===202?'Bitte prüfe dein Postfach.':'Die Anfrage konnte nicht geprüft werden.'}));return;
   }
   const path=resolve(output,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
   try{res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.svg':'image/svg+xml','.png':'image/png'})[extname(path)]||'application/octet-stream'});res.end(await readFile(path));}catch{res.end();}
@@ -37,7 +37,7 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
     for(const inApp of [false,true]){
       const device=devices['iPhone 13'];
       const context=await browser.newContext({...device,userAgent:inApp?device.userAgent.replace(/ Version\/[^ ]+| Safari\/[^ ]+/g,''):device.userAgent});
-      expiresAt=Date.now()+60000;allowed=true;accessCalls=0;posts=0;
+      expiresAt=Date.now()+60000;allowed=true;accessCalls=0;posts=0;sendStatus=503;
       const page=await context.newPage();
       await page.goto(apex+'/#vu-test='+token);await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');
       assert.equal(page.url(),www+'/');assert.equal(await page.locator('#email').isDisabled(),false);
@@ -55,15 +55,17 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
       await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('abgelaufen'));assert.equal(await page.locator('#email').isDisabled(),true);
       expiresAt=Date.now()+60000;await page.goto(www+'/#vu-test='+token);await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');
       await page.locator('#email').fill('synthetic@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
-      await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);assert.ok(accessCalls>=7);
-      assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
+      await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('nicht geprüft'));assert.equal(posts,1);assert.ok(accessCalls>=7);assert.equal(new URL(page.url()).pathname,'/');
+      assert.equal(await page.locator('button[type=submit]').innerText(),'Rückmeldung beachten');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
       const bounds=await page.locator('#signup-status').boundingBox();assert.ok(bounds.y>=0&&bounds.y+bounds.height<=844,'result must be visible after a mobile tap');
-      // Reopening the original link in the same webview does not reload JS.
+      // An uncertain response stays on the form. Reopening the full private link
+      // in the same webview does not reload JS or send again.
       // It must rearm the button after validation, without resending anything.
       await page.evaluate(t=>location.hash='vu-test='+t,token);
       await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true'&&!document.querySelector('#newsletter-form button').disabled);
       assert.equal(posts,1);assert.equal(await page.locator('button[type=submit]').innerText(),'Newsletter abonnieren');
-      await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);
+      sendStatus=202;await page.locator('button[type=submit]').click();await page.waitForURL('**/newsletter/bestaetigen/');assert.equal(posts,2);assert.match(await page.locator('h1').innerText(),/Bitte bestätige deine E-Mail-Adresse/);
+      await page.goto(www+'/');assert.equal(await page.locator('#email').isDisabled(),true);
       assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);assert.equal(await context.cookies().then(c=>c.length),0);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);
       await context.close();

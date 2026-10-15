@@ -68,9 +68,9 @@ try{
     await page.locator('#email').fill('qa+new@example.test');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
     await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);
     await page.locator('#email-address-check').fill('');await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/offline/);await page.context().setOffline(false);
-    await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
+    await page.locator('button[type=submit]').click();await page.waitForURL('**/newsletter/bestaetigen/');assert.match(await page.locator('h1').innerText(),/Bitte bestätige deine E-Mail-Adresse/);
     assert.equal(posts.length,1);assert.deepEqual(posts[0],{method:'POST',data:{email:'qa+new@example.test',consent:true,consentVersion:'vu-newsletter-v1',honeypot:''}});
-    assert.equal(await page.locator('button[type=submit]').isDisabled(),true);assert.equal(new URL(page.url()).pathname,'/ready/');
+    assert.equal(new URL(page.url()).pathname,'/newsletter/bestaetigen/');
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
     const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>v.id),[]);
     await page.goto(base+'/ready/newsletter/bestaetigt/');assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.equal(await page.locator('main button,main input').count(),0);
@@ -93,10 +93,10 @@ try{
     await page.goto(base+'/controlled/');assert.equal(await page.locator('#email').isDisabled(),true);
     await page.goto(base+'/controlled/#vu-test='+ 'a'.repeat(43));await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(new URL(page.url()).hash,'');
     await page.locator('#email').fill('new-controlled@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
-    await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);assert.equal(posts,1);
+    await page.waitForURL('**/newsletter/bestaetigen/');assert.match(await page.locator('h1').innerText(),/Bitte bestätige deine E-Mail-Adresse/);assert.equal(posts,1);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
     assert.deepEqual((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.map(v=>v.id),[]);
-    await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.evaluate(()=>localStorage.length),0);await context.close();
+    await page.goto(base+'/controlled/');assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.evaluate(()=>localStorage.length),0);await context.close();
   }
   const nojs=await browser.newContext({javaScriptEnabled:false});const native=await nojs.newPage();
   await native.goto(base+'/blocked/');assert.equal(await native.locator('#email').isDisabled(),true);

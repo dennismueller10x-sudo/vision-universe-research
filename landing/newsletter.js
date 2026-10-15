@@ -75,6 +75,7 @@
       notice(data.message);
       finished=response.status===202||response.status>=500;
       finishedLabel=response.status===202?'Postfach prüfen':'Rückmeldung beachten';
+      if(response.status===202)location.assign('/newsletter/bestaetigen/');
     }catch{
       finished=true;finishedLabel='Rückmeldung beachten';notice('Wir haben keine verlässliche Rückmeldung erhalten. Eine Anmeldung ist nicht bestätigt. Bitte prüfe dein Postfach; es erfolgt keine automatische Wiederholung.');
     }finally{clearTimeout(timer);reset();}

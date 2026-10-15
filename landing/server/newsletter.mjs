@@ -39,7 +39,9 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
     return [...new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(value)))].map(v=>v.toString(16).padStart(2,'0')).join('');
   }
   async function provider(path,env,body){
-    const response=await providerFetch(API+path,{method:body?'POST':'GET',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json','User-Agent':'VisionUniverse-Brevo/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+    // workerd rejects redirect:'error' before making a request. Manual mode
+    // never follows Location; every caller requires its exact expected status.
+    const response=await providerFetch(API+path,{method:body?'POST':'GET',redirect:'manual',signal:AbortSignal.timeout(8000),headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json','User-Agent':'VisionUniverse-Brevo/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
     // Never surface provider bodies/errors to visitors or logs.
     return response;
   }
@@ -128,7 +130,15 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         const contact=await checkedProvider('contact_lookup','/contacts/'+encodeURIComponent(email));
         // The authenticated owner test needs a genuinely new address. Public
         // responses remain neutral and never disclose contact membership.
-        if(contact.status===200)return diagnostic?diagnosis(409,{existing:true,reserved}):out(controlled?409:202,controlled?TEST_EXISTING:PENDING);
+        if(contact.status===200){
+          if(diagnostic){
+            const value=await contact.json();
+            return diagnosis(409,{existing:true,reserved,member4:Array.isArray(value.listIds)?value.listIds.includes(4):null,
+              marketing_blocked:typeof value.emailBlacklisted==='boolean'?value.emailBlacklisted:null,
+              consent_subscribed:typeof value.attributes?.VU_EMAIL_CONSENT==='string'?value.attributes.VU_EMAIL_CONSENT==='subscribed':null});
+          }
+          return out(controlled?409:202,controlled?TEST_EXISTING:PENDING);
+        }
         if(contact.status!==404)throw Error('Lookup uncertain');
         // Respect transactional blocks even if no marketing profile remains.
         let suppressionComplete=false;
@@ -147,7 +157,11 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
         // Brevo omits its optional events field for an empty successful report.
         const eventRows=history&&typeof history==='object'&&!Array.isArray(history)&&Object.keys(history).length===0?[]:history?.events;
         if(!Array.isArray(eventRows))throw Error('Event shape');
-        if(eventRows.length)return diagnostic?diagnosis(409,{prior_event:true,reserved}):out(202,PENDING);
+        if(eventRows.length){
+          const event=eventRows[0]?.event;
+          const safeEvent=['request','requests','delivered','hardBounce','softBounce','blocked','deferred','error','invalidEmail','opened','click','spam','unsubscribed','proxy_open','unique_opened'].includes(event)?event:'other';
+          return diagnostic?diagnosis(409,{prior_event:true,reserved,latest_event:safeEvent}):out(202,PENDING);
+        }
         trace.stage='template_id';
         const id=Number(env.NEWSLETTER_DOI_TEMPLATE_ID);
         if(!Number.isInteger(id)||id<=4)throw Error('Wrong template');
