@@ -1,0 +1,208 @@
+{
+  "schema": "supertrader-v4-method-eligibility-1.0.0",
+  "generation": "V4",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-measurement-acceptance-v4",
+  "primarySourceReconstructionArtifact": "NOT_IN_REPOSITORY_OWNER_ATTESTED_SUMMARY_ONLY",
+  "rule": {
+    "IMPLEMENT_NOW": "SOURCE_ACCEPTED and every required data category DATA_ACCEPTED for the declared scope and MEASUREMENT_ACCEPTED, or MEASUREMENT_PARTIAL where the external base (TR arithmetic/corporate actions via EW) passed and every non-external component has deterministic golden tests; and no manual layer",
+    "MANUAL_LAYER_REQUIRED": "source requires discretion (SOURCE_MANUAL_REQUIRED or manual elements); machine screen may produce candidates, never BUY",
+    "DATA_BLOCKED": "a required data category is DATA_BLOCKED for the source-faithful scope",
+    "RESEARCH_ONLY": "source partial (not traceable to verifiable source ids) or measurement blocked",
+    "EDUCATIONAL_ONLY": "not reproducible and not a candidate for systematic research",
+    "claimReady": "requires MEASUREMENT_ACCEPTED (every component externally validated), adequate PIT, robust benchmark and no unresolved HIGH finding"
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "MEASUREMENT_BLOCKED"
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "MEASUREMENT_BLOCKED"
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "SOURCE_NOT_TRACEABLE_TO_VERIFIABLE_SOURCE_IDS"
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "manualLayerData": [
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time"
+        }
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "manualLayerData": [
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time"
+        }
+      ]
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "manualLayerData": [
+        {
+          "category": "fundamentals",
+          "status": "DATA_PARTIAL",
+          "basis": "SEC EDGAR first-filing EPS/revenue/shares (legacy derivation, partial annual-fact certification); margins, balance sheet, cash flow history missing"
+        },
+        {
+          "category": "estimates",
+          "status": "DATA_BLOCKED",
+          "basis": "no analyst estimate history"
+        },
+        {
+          "category": "surprises",
+          "status": "DATA_BLOCKED",
+          "basis": "no consensus, therefore no earnings/sales surprise"
+        },
+        {
+          "category": "industry",
+          "status": "DATA_PARTIAL",
+          "basis": "current classification only, not point-in-time"
+        },
+        {
+          "category": "institutional",
+          "status": "DATA_BLOCKED",
+          "basis": "no 13F/sponsorship panel"
+        },
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed"
+        }
+      ]
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "source": "SOURCE_MANUAL_REQUIRED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "manualLayerData": [
+        {
+          "category": "catalystsNews",
+          "status": "DATA_BLOCKED",
+          "basis": "no point-in-time news/catalyst feed"
+        }
+      ]
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "MANUAL_LAYER_REQUIRED",
+      "status": "MANUAL_LAYER_REQUIRED",
+      "machineScreenAllowed": true,
+      "buyDeclarationAllowed": false,
+      "manualLayerData": [
+        {
+          "category": "intraday",
+          "status": "DATA_PARTIAL",
+          "basis": "IEX 1-minute bars fetched live per trigger day only (intraday-prefetch.mjs); no historical intraday panel -> historical backtests BLOCKED"
+        }
+      ]
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "status": "DATA_BLOCKED",
+      "manualReview": true
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "source": "SOURCE_ACCEPTED",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "DATA_BLOCKED",
+      "status": "DATA_BLOCKED",
+      "manualReview": true
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_PARTIAL",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "SOURCE_NOT_TRACEABLE_TO_VERIFIABLE_SOURCE_IDS"
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "SOURCE_NOT_TRACEABLE_TO_VERIFIABLE_SOURCE_IDS"
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_ACCEPTED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "SOURCE_NOT_TRACEABLE_TO_VERIFIABLE_SOURCE_IDS"
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "source": "SOURCE_PARTIAL",
+      "data": "DATA_BLOCKED",
+      "measurement": "MEASUREMENT_BLOCKED",
+      "eligibility": "RESEARCH_ONLY",
+      "status": "RESEARCH_ONLY",
+      "reason": "SOURCE_NOT_TRACEABLE_TO_VERIFIABLE_SOURCE_IDS"
+    }
+  ]
+}

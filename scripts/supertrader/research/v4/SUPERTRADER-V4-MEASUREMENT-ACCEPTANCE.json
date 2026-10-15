@@ -1,0 +1,279 @@
+{
+  "schema": "supertrader-v4-measurement-acceptance-1.0.0",
+  "generation": "V4",
+  "postHoc": true,
+  "createdFor": "research/supertrader-source-measurement-acceptance-v4",
+  "primarySourceReconstructionArtifact": "NOT_IN_REPOSITORY_OWNER_ATTESTED_SUMMARY_ONLY",
+  "calibrationSummary": {
+    "freezeId": "V4-beae51ae1b07768b",
+    "runId": "38722939085",
+    "level": "NOT_CERTIFIED"
+  },
+  "components": {
+    "TR_ARITHMETIC_AND_CORPORATE_ACTIONS": {
+      "externalSlice": "EW_MARKET"
+    },
+    "TERMINALS_AND_MISSING_BARS": {
+      "externalSlice": "EW_MARKET"
+    },
+    "CROSS_SECTIONAL_RANKING": {
+      "externalSlice": [
+        "MOM_12_2_EW_DECILES",
+        "VAR_60D_EW_QUINTILES"
+      ]
+    },
+    "NEXT_OPEN_EXECUTION_BOOK": {
+      "externalSlice": null,
+      "internal": "V4 NEXT_OPEN book reconciliation + R8b + review"
+    },
+    "STOP_TRIGGER_FILLS_ON_DAILY_BARS": {
+      "externalSlice": null,
+      "internal": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+    },
+    "WEEKLY_AGGREGATION": {
+      "externalSlice": null,
+      "internal": "not built in V4"
+    },
+    "INTRADAY_EXECUTION": {
+      "externalSlice": null,
+      "internal": null
+    },
+    "SHORT_BORROW_LEDGER": {
+      "externalSlice": null,
+      "internal": null
+    },
+    "FUTURES_ROLL_LEDGER": {
+      "externalSlice": null,
+      "internal": null
+    }
+  },
+  "methods": [
+    {
+      "id": "TURTLE_S1_SOURCE",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "TERMINALS_AND_MISSING_BARS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "TURTLE_S2_SOURCE",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "TERMINALS_AND_MISSING_BARS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "DARVAS_LATER_QA",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_INVESTOR",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "WEEKLY_AGGREGATION",
+          "status": "INTERNAL_ONLY",
+          "basis": "not built in V4"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "WEINSTEIN_STAGE2_TRADER",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "WEEKLY_AGGREGATION",
+          "status": "INTERNAL_ONLY",
+          "basis": "not built in V4"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "MINERVINI_SEPA_VCP",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "CROSS_SECTIONAL_RANKING",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "MINERVINI_POWER_PLAY",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "KULLAMAGI_COMMON_BREAKOUT",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "CROSS_SECTIONAL_RANKING",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "INTRADAY_EXECUTION",
+          "status": "NO_MEASUREMENT_PATH"
+        }
+      ]
+    },
+    {
+      "id": "KULLAMAGI_EPISODIC_PIVOT",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "INTRADAY_EXECUTION",
+          "status": "NO_MEASUREMENT_PATH"
+        }
+      ]
+    },
+    {
+      "id": "KULLAMAGI_PARABOLIC_SHORT",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "INTRADAY_EXECUTION",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "SHORT_BORROW_LEDGER",
+          "status": "NO_MEASUREMENT_PATH"
+        }
+      ]
+    },
+    {
+      "id": "MORALES_KACHER_POCKET_PIVOT",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        }
+      ]
+    },
+    {
+      "id": "MORALES_KACHER_BUYABLE_GAP_UP",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "RASCHKE_HOLY_GRAIL",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "STOP_TRIGGER_FILLS_ON_DAILY_BARS",
+          "status": "INTERNAL_ONLY",
+          "basis": "method golden cases (fill = max(trigger, open) on the trigger bar)"
+        }
+      ]
+    },
+    {
+      "id": "ONEIL_CAN_SLIM",
+      "verdict": "MEASUREMENT_BLOCKED",
+      "components": [
+        {
+          "component": "TR_ARITHMETIC_AND_CORPORATE_ACTIONS",
+          "status": "NO_MEASUREMENT_PATH"
+        },
+        {
+          "component": "CROSS_SECTIONAL_RANKING",
+          "status": "NO_MEASUREMENT_PATH"
+        }
+      ]
+    }
+  ]
+}

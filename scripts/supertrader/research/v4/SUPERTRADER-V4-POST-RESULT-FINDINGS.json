@@ -1,0 +1,29 @@
+{
+  "schema": "supertrader-v4-post-result-findings-1.0.0",
+  "note": "Findings from the V4.1 result and its post-result diagnostic. Kept separate from the frozen findings contract (SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json is bound by freeze V4-beae51ae1b07768b and is not edited after measurement).",
+  "findings": [
+    {
+      "id": "V4-D1",
+      "source": "V4_RESULT",
+      "severity": "BLOCKER",
+      "status": "OPEN",
+      "title": "Canonical price data contains undeclared reverse splits / mis-adjusted split months that dominate equal-weighted returns",
+      "evidence": "diagnostic run 38724718674 on the same canonical price content as freeze V4-beae51ae1b07768b: max security-month return of order 1e4; 65 security-months > +1000 %; 55 security-months with an undeclared raw-price jump of at least 10x and 28 with a declared split inside the month; 99.9 % of the squared EW gap in 5 months; excluding the 83 data-signature security-months raises the EW correlation with the French oracle from 0.145 to 0.992 (diagnostic only); all 10 internally failing months contain such outliers",
+      "rootCause": "the canonical total-return core (quant/engines/canonical-total-return.js, splitFactors) does not detect undeclared corporate actions in all histories; the V4 price-sanity classifier only examined the 74 names above an adjusted level of 1e6",
+      "notFixedHere": "a fix would be a post-result rule change in this run; the correct place is the canonical core (quant/engines, protected path), which needs its own Quant PR and a new pre-registered calibration generation",
+      "proposedNextGeneration": "V4.2/V5: (1) Quant PR: causal detection of undeclared splits/unit changes in the canonical core for every history (jump at the event bar only, no lookahead), quarantine or repair from provider corporate-action evidence; (2) pre-register the unchanged V4.1 tolerances; (3) re-run calibration; diagnostic variants of this run are not evidence for certification",
+      "strategyImpact": "every method on this data inherits the defect; V3 tournament results (same canonical core) are affected in the same way",
+      "dataImpact": "about 1 % of the universe (83 security-months among roughly 490,000)"
+    },
+    {
+      "id": "V4-D2",
+      "source": "V4_RESULT",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "title": "VU EW universe is about 1.34x the CRSP size-portfolio population and its mean exceeds the oracle even after removing data-signature outliers",
+      "evidence": "holdingCountRatioMean 1.337; diagnostic mean-difference sign positive for the outlier-excluded and sub-dollar-excluded variants",
+      "rootCause": "likely inclusion of instruments CRSP does not classify as common shares (units, rights, SPAC shells, sub-dollar issues) under EQUITY_COMMON; not attributed further in this run",
+      "proposedNextGeneration": "share-class audit of EQUITY_COMMON against SEC/exchange evidence before the next calibration"
+    }
+  ]
+}

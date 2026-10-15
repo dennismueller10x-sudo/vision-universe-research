@@ -1,0 +1,71 @@
+{
+  "schema": "supertrader-v4-diagnostic-public-1.0.0",
+  "kind": "POST_RESULT_DIAGNOSTIC_NO_VERDICT_EFFECT",
+  "diagnosedFreezeId": "V4-beae51ae1b07768b",
+  "diagnosedRunId": 38722939085,
+  "runId": "38724718674",
+  "sameCanonicalPriceContentAsFreeze": true,
+  "extremeSecurityMonths": {
+    "gt100pct": 2200,
+    "gt1000pct": 65,
+    "ltMinus99pct": 13
+  },
+  "maxSecurityMonthReturnOrder": 4,
+  "outliersAbsRetGt100pctByClass": {
+    "UNEXPLAINED_PRICE_MOVE": 1352,
+    "SUB_DOLLAR_GENUINE_OR_UNVERIFIED": 765,
+    "UNDECLARED_RAW_JUMP_10X": 55,
+    "DECLARED_SPLIT_IN_MONTH": 28
+  },
+  "diagnosticVariants": {
+    "BASELINE": {
+      "correlationWithOracle": 0.145,
+      "meanMonthlyDifferenceSign": 1
+    },
+    "EXCLUDE_ABS_RET_GT_100PCT": {
+      "correlationWithOracle": 0.99,
+      "meanMonthlyDifferenceSign": -1
+    },
+    "EXCLUDE_ABS_RET_GT_300PCT": {
+      "correlationWithOracle": 0.993,
+      "meanMonthlyDifferenceSign": -1
+    },
+    "WINSORIZE_1_99": {
+      "correlationWithOracle": 0.994,
+      "meanMonthlyDifferenceSign": -1
+    },
+    "EXCLUDE_RAW_START_BELOW_1": {
+      "correlationWithOracle": 0.992,
+      "meanMonthlyDifferenceSign": 1
+    },
+    "EXCLUDE_OUTLIER_CLASS_DATA_SIGNATURE": {
+      "correlationWithOracle": 0.992,
+      "meanMonthlyDifferenceSign": 1
+    }
+  },
+  "ewGapConcentration": {
+    "monthsAbsDiffGt5pct": 4,
+    "top5MonthsShareOfSquaredGap": 0.999
+  },
+  "internalReconciliation": {
+    "failingMonths": 10,
+    "failingMonthsThatAlsoContainAbsRetGt100pct": 10,
+    "unexecutableHeld": 222,
+    "unavailableSettlements": 3504
+  },
+  "sealed": {
+    "plaintextSha256": "5d961cf7d881702231c0bdaed12fcda2b80174426d0f113323658c18ffd6911b",
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "SUPERTRADER-V4-DIAGNOSTIC-PRIVATE.owner.sealed.json",
+        "sha256": "9e6c0059f59e40275eace32d939114834da2dd8741757e40c088195d68c8d295"
+      },
+      {
+        "audience": "session",
+        "file": "SUPERTRADER-V4-DIAGNOSTIC-PRIVATE.session.sealed.json",
+        "sha256": "bd88d34856ad7827144e95fb6d7bdb690d3af2379e30ff2b3ab24aba96639cd5"
+      }
+    ]
+  }
+}

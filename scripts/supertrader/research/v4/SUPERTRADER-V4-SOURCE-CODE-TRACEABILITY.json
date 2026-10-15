@@ -1,0 +1,355 @@
+{
+  "schema": "supertrader-v4-source-code-traceability-1.0.0",
+  "note": "Only IMPLEMENT_NOW methods have implemented rules. Every number in TURTLE_PARAMS maps to a rule below; there are no source-less magic numbers outside rules marked TRANSLATION or CONVENTION.",
+  "rules": [
+    {
+      "ruleId": "T4-N",
+      "method": "all systems",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-N-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#turtleN",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: N recursion and seed"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-S1-ENTRY",
+      "method": "S1",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-S1-ENTRY",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-BO-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger/fillAbove",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S1 buy after losing breakout",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden gap fill at open"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-S1-FILTER",
+      "method": "S1",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-S1-FILTER",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-SHORT-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createBreakoutTracker",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden skip after winning breakout",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden short breakout counts in filter",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: filter path order"
+      ],
+      "exceptionScope": "LITERAL: a 10-day exit at a loss without a prior 2N adverse move is not a losing breakout (counted NON_LOSER). Path-consistent intrabar order (the level nearer to the open is hit first). An unresolved (open) previous breakout counts as not losing (source silent; conservative, fewer entries). A stop inside the hypothetical breakout bar does not resolve it (conservative for the filter; counted)"
+    },
+    {
+      "ruleId": "T4-FAILSAFE",
+      "method": "S1",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-FAILSAFE-55"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden failsafe 55"
+      ],
+      "exceptionScope": "exit of failsafe positions follows S1 (source silent; labelled interpretation, R15 TUR-F-FAILSAFE-55)"
+    },
+    {
+      "ruleId": "T4-S2-ENTRY",
+      "method": "S2",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-S2-ENTRY"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#entryTrigger",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S2 buy without filter"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-UNIT",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-UNIT-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-UNIT-02"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#unitShares",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: unit size"
+      ],
+      "exceptionScope": "N updated daily (source: weekly sheet) - LOW deviation already declared in R15"
+    },
+    {
+      "ruleId": "T4-NOTIONAL",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-NOTIONAL-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-NOTIONAL-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createNotionalAccount",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: notional cuts compound with hysteresis"
+      ],
+      "exceptionScope": "year start = actual equity at first session (Dennis set it subjectively)"
+    },
+    {
+      "ruleId": "T4-ADD",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-ADD-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-PYR-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processAdds",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden pyramid to 4 units"
+      ],
+      "exceptionScope": "N for add spacing and stops = N at the initial entry (worked example in the source keeps N constant)"
+    },
+    {
+      "ruleId": "T4-STOP",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-STOP-2N",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-STOP-ADD"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden stop raised by adds",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden stop exit"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-EXIT-S1",
+      "method": "S1 and failsafe",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-EXIT-S1"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden 10-day exit"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-EXIT-S2",
+      "method": "S2",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-EXIT-S2"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden S2 exit"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-LIMIT",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-LIM-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#canAddUnit",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: limit 12"
+      ],
+      "exceptionScope": "6/10-unit correlated-group limits not applied: no point-in-time industry data (DATA_PARTIAL); TUR-E-CORR-01"
+    },
+    {
+      "ruleId": "T4-RANK",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-RANK-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-SIM-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-RANK-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#rankCandidates",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: rank order"
+      ],
+      "exceptionScope": "3 months = 63 sessions; ties by security id"
+    },
+    {
+      "ruleId": "T4-CONSISTENCY",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-CONS-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-CONS-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: gap breakout far from prior close is taken"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-NO-REGIME",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-REGIME-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-FUND-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "SOURCE",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no regime input"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-LONG-ONLY",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-LS-01",
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-SHORT-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "TRANSLATION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#createBreakoutTracker",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden short breakout counts in filter"
+      ],
+      "exceptionScope": "declared: net long beta; not the original risk profile"
+    },
+    {
+      "ruleId": "T4-NO-LEVERAGE",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-E-LEV-01"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "TRANSLATION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#canAddUnit",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no cash rejection"
+      ],
+      "exceptionScope": "with 1 %/N units only a few units fit; declared"
+    },
+    {
+      "ruleId": "T4-UNIVERSE",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-MKT-01"
+      ],
+      "sourceConfidence": "MEDIUM",
+      "kind": "TRANSLATION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#eligibleYesterday",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: eligibility uses prior session"
+      ],
+      "exceptionScope": "equities instead of ~20 futures; universe numbers are the frozen protocol, not source numbers"
+    },
+    {
+      "ruleId": "T4-TICK",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-S1-ENTRY"
+      ],
+      "sourceConfidence": "HIGH",
+      "kind": "TRANSLATION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#tickAdjusted",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: tick conversion"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-INTRABAR",
+      "method": "all",
+      "sourceProvenance": [],
+      "sourceConfidence": "N/A",
+      "kind": "CONVENTION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#processExits/processAdds",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: golden same-bar stop and add is pessimistic",
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: raised stop re-checked on the add bar"
+      ],
+      "exceptionScope": "measurement convention for daily bars; not externally calibrated (MEASUREMENT_PARTIAL)"
+    },
+    {
+      "ruleId": "T4-COSTS",
+      "method": "all",
+      "sourceProvenance": [
+        "scripts/supertrader/fidelity/canonical/turtle.json#TUR-F-ORD-01"
+      ],
+      "sourceConfidence": "N/A",
+      "kind": "CONVENTION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#fillPrice",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: costs"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-TERMINALS",
+      "method": "all",
+      "sourceProvenance": [],
+      "sourceConfidence": "N/A",
+      "kind": "CONVENTION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#settleTerminal",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: no entry on the terminal bar"
+      ],
+      "exceptionScope": null
+    },
+    {
+      "ruleId": "T4-LEDGER",
+      "method": "all",
+      "sourceProvenance": [],
+      "sourceConfidence": "N/A",
+      "kind": "CONVENTION",
+      "codeFunction": "scripts/supertrader/research/v4/methods/turtle-source-v4.mjs#runTurtleSource",
+      "tests": [
+        "scripts/supertrader/tests/v4-turtle-golden.test.mjs: ledger replay"
+      ],
+      "exceptionScope": null
+    }
+  ],
+  "parameterMap": {
+    "S1.entry=20": "T4-S1-ENTRY",
+    "S1.exit=10": "T4-EXIT-S1",
+    "S1.failsafe=55": "T4-FAILSAFE",
+    "S2.entry=55": "T4-S2-ENTRY",
+    "S2.exit=20": "T4-EXIT-S2",
+    "filterBreakout=20/filterExit=10": "T4-S1-FILTER",
+    "nPeriod=20": "T4-N",
+    "unitRiskFraction=0.01": "T4-UNIT",
+    "stopN=2": "T4-STOP",
+    "addStepN=0.5": "T4-ADD",
+    "maxUnitsPerMarket=4/maxUnitsDirection=12": "T4-LIMIT",
+    "rankLookback=63": "T4-RANK (translation of 3 months)",
+    "notionalLossStep=0.10/notionalCutStep=0.20": "T4-NOTIONAL",
+    "rawTick=0.01": "T4-TICK"
+  },
+  "measurementInfrastructure": "scripts/supertrader/research/v4/measurement/* (A1-A14 closure, see SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json)"
+}

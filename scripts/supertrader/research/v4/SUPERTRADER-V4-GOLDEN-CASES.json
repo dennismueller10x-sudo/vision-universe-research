@@ -1,0 +1,296 @@
+{
+  "schema": "supertrader-v4-golden-cases-1.0.0",
+  "rule": "golden cases are behaviour tests, never a performance sample",
+  "methods": {
+    "TURTLE_S1_SOURCE": {
+      "status": "EXECUTABLE",
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs",
+      "cases": [
+        {
+          "id": "TG-01",
+          "kind": "CONFIRMED_BUY",
+          "system": "S1",
+          "case": "first S1 breakout with no prior breakout",
+          "expected": "BUY at prior 20-day high + tick (open below trigger)",
+          "why": "T4-S1-ENTRY; filter has no previous breakout",
+          "test": "GOLDEN confirmed buy (first S1 breakout, no prior breakout)"
+        },
+        {
+          "id": "TG-02",
+          "kind": "CONFIRMED_BUY",
+          "system": "S1",
+          "case": "S1 breakout after a losing breakout (2N against first)",
+          "expected": "BUY",
+          "why": "T4-S1-FILTER: previous breakout was a loser",
+          "test": "GOLDEN confirmed buy after a losing breakout"
+        },
+        {
+          "id": "TG-03",
+          "kind": "CONFIRMED_REJECT",
+          "system": "S1",
+          "case": "S1 breakout after a profitable 10-day exit",
+          "expected": "SKIP (counted)",
+          "why": "T4-S1-FILTER",
+          "test": "GOLDEN reject: S1 breakout after a winning breakout is skipped"
+        },
+        {
+          "id": "TG-04",
+          "kind": "CONFIRMED_EXCEPTION",
+          "system": "S1",
+          "case": "skipped S1 breakout that is also a 55-day breakout",
+          "expected": "BUY as FAILSAFE_55",
+          "why": "T4-FAILSAFE",
+          "test": "GOLDEN exception: skipped S1 breakout that is also a 55-day breakout"
+        },
+        {
+          "id": "TG-05",
+          "shared": true,
+          "kind": "CONFIRMED_EXCEPTION",
+          "system": "S1",
+          "case": "gap open above the trigger",
+          "expected": "fill at the open",
+          "why": "T4-S1-ENTRY (TUR-F-BO-01)",
+          "test": "GOLDEN exception (gap)"
+        },
+        {
+          "id": "TG-06",
+          "kind": "EDUCATIONAL_PATTERN",
+          "system": "S1",
+          "case": "winning hypothetical SHORT breakout followed by a long breakout",
+          "expected": "long breakout skipped although VU trades long only",
+          "why": "T4-S1-FILTER + T4-LONG-ONLY (TUR-E-SHORT-01)",
+          "test": "GOLDEN educational: a short 20-day breakout counts in the S1 filter"
+        },
+        {
+          "id": "TG-07",
+          "shared": true,
+          "kind": "AMBIGUOUS_CASE",
+          "system": "S1",
+          "case": "entry bar whose low is below the 2N stop",
+          "expected": "stopped on the entry bar (pessimistic declared convention)",
+          "why": "T4-INTRABAR (daily bars cannot order intrabar events)",
+          "test": "GOLDEN ambiguous (resolved by the declared convention)"
+        },
+        {
+          "id": "TG-08",
+          "shared": true,
+          "kind": "CONFIRMED_BUY",
+          "system": "S1",
+          "case": "trend after entry in 1/2 N steps",
+          "expected": "3 adds -> 4 units; stops raised",
+          "why": "T4-ADD, T4-STOP",
+          "test": "GOLDEN pyramid"
+        },
+        {
+          "id": "TG-10",
+          "shared": true,
+          "kind": "CONFIRMED_REJECT",
+          "system": "S1",
+          "case": "unit cost above available cash",
+          "expected": "REJECT_NO_CASH, no leverage",
+          "why": "T4-NO-LEVERAGE",
+          "test": "no cash -> REJECT_NO_CASH"
+        }
+      ]
+    },
+    "TURTLE_S2_SOURCE": {
+      "status": "EXECUTABLE",
+      "file": "scripts/supertrader/tests/v4-turtle-golden.test.mjs",
+      "cases": [
+        {
+          "id": "TG-05",
+          "shared": true,
+          "kind": "CONFIRMED_EXCEPTION",
+          "system": "S1",
+          "case": "gap open above the trigger",
+          "expected": "fill at the open",
+          "why": "T4-S1-ENTRY (TUR-F-BO-01)",
+          "test": "GOLDEN exception (gap)"
+        },
+        {
+          "id": "TG-07",
+          "shared": true,
+          "kind": "AMBIGUOUS_CASE",
+          "system": "S1",
+          "case": "entry bar whose low is below the 2N stop",
+          "expected": "stopped on the entry bar (pessimistic declared convention)",
+          "why": "T4-INTRABAR (daily bars cannot order intrabar events)",
+          "test": "GOLDEN ambiguous (resolved by the declared convention)"
+        },
+        {
+          "id": "TG-08",
+          "shared": true,
+          "kind": "CONFIRMED_BUY",
+          "system": "S1",
+          "case": "trend after entry in 1/2 N steps",
+          "expected": "3 adds -> 4 units; stops raised",
+          "why": "T4-ADD, T4-STOP",
+          "test": "GOLDEN pyramid"
+        },
+        {
+          "id": "TG-09",
+          "kind": "CONFIRMED_BUY",
+          "system": "S2",
+          "case": "55-day breakout after a winning S2 trade",
+          "expected": "BUY (no filter)",
+          "why": "T4-S2-ENTRY",
+          "test": "GOLDEN S2: no filter"
+        },
+        {
+          "id": "TG-10",
+          "shared": true,
+          "kind": "CONFIRMED_REJECT",
+          "system": "S1",
+          "case": "unit cost above available cash",
+          "expected": "REJECT_NO_CASH, no leverage",
+          "why": "T4-NO-LEVERAGE",
+          "test": "no cash -> REJECT_NO_CASH"
+        }
+      ]
+    },
+    "DARVAS_LATER_QA": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "WEINSTEIN_STAGE2_INVESTOR": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "WEINSTEIN_STAGE2_TRADER": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MINERVINI_SEPA_VCP": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MINERVINI_POWER_PLAY": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_COMMON_BREAKOUT": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_EPISODIC_PIVOT": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "KULLAMAGI_PARABOLIC_SHORT": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MORALES_KACHER_POCKET_PIVOT": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "MORALES_KACHER_BUYABLE_GAP_UP": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "RASCHKE_HOLY_GRAIL": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    },
+    "ONEIL_CAN_SLIM": {
+      "status": "BLOCKED_BEHAVIORAL_CASE_ARTIFACT_ABSENT",
+      "reason": "the 287 behavioral cases of the primary source reconstruction are not in the repository; golden cases for this method must be derived from them (inclusion, exclusion, exception, setup classification), not invented",
+      "requiredCaseKinds": [
+        "CONFIRMED_BUY",
+        "CONFIRMED_REJECT",
+        "CONFIRMED_EXCEPTION",
+        "EDUCATIONAL_PATTERN",
+        "AMBIGUOUS_CASE"
+      ],
+      "useAsPerformanceSample": false
+    }
+  }
+}

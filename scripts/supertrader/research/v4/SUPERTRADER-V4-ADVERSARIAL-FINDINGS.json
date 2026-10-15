@@ -1,0 +1,532 @@
+{
+  "schema": "supertrader-v4-adversarial-findings-1.0.0",
+  "generation": "CALIBRATION_V4",
+  "postHoc": true,
+  "inputReview": {
+    "file": "scripts/supertrader/research/calibration/CALIBRATION-V3-ADVERSARIAL-REVIEW.json",
+    "reviewedFreezeId": "V3-84caf2e84e560bec",
+    "findingsRead": 14,
+    "v3FilesChanged": false
+  },
+  "severityScale": [
+    "BLOCKER",
+    "MAJOR",
+    "MODERATE",
+    "MINOR",
+    "NON_ISSUE",
+    "ALREADY_FIXED"
+  ],
+  "statusMeaning": {
+    "CLOSED": "root cause fixed in V4 code that is bound by the V4 freeze, with a regression test that fails on the V3 behaviour",
+    "CLOSED_SCOPE_LIMITED": "fixed for the V4 calibration scope; the named residual scope stays explicitly excluded from claims",
+    "OPEN": "not fixed; caps certification as defined in completion-v4.mjs",
+    "ALREADY_FIXED": "fixed before V4 (V2/V3) and kept as a regression"
+  },
+  "findings": [
+    {
+      "id": "A1",
+      "source": "V3",
+      "v3Severity": "blocker",
+      "severity": "BLOCKER",
+      "title": "Reconciliation was presented as calibration (no independent direction/magnitude oracle)",
+      "description": "V3 PASS/PARTIAL verdicts rested on internal reconciliation and a same-author review; the stock-level source oracle had 0/105 valid months for JT, 52W and EW and 45/105 for LowVol.",
+      "reproduction": "CALIBRATION-V3-RESULTS.json sourceSpreadValidMonths; build-completion-v3.mjs control branch",
+      "rootCause": "(a) no external reference series for the constructions; (b) sourceMonthContributions marked a whole month DATA_GAP when any single holding lacked an end bar or was quarantined, so the oracle almost never produced a month; (c) completion did not require direction/magnitude evidence.",
+      "fix": "External oracle layer: Kenneth French Data Library EW market (firm-count weighted size deciles), 12-2 momentum EW deciles and 60-day variance EW quintiles, hash-pinned (SUPERTRADER-V4-ORACLE-MANIFEST.json); VU constructions mirroring each published definition (constructions-v4.mjs) with the explicit missing-bar policy so every eligible security has a return; pre-registered tolerances (compare-v4.mjs); certification levels that separate INTERNALLY_RECONCILED from (PARTIALLY_)CERTIFIED (completion-v4.mjs).",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A1: an EW control that fails its external oracle makes the measurement layer NOT_CERTIFIED",
+        "v4-measurement.test.mjs: A1: reconciliation alone is not calibration"
+      ],
+      "freezeImpact": "new V4 freeze binds oracle manifest, constructions, tolerances and completion rules",
+      "strategyImpact": "none (no strategy definition changed)",
+      "dataImpact": "public French files are read inside the runner; values stay private",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A2",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "LowVol direction conflict with the reference was not flagged",
+      "description": "V3 read the sign from 45 complete months of SOURCE_GROSS only; FRENCH_VAR direction was positive.",
+      "reproduction": "V3 LowVol result vs FRENCH_VAR (adversarial review A2)",
+      "rootCause": "direction was informational, not a hard check, and the valid-month fraction was not part of the verdict",
+      "fix": "DIRECTION is a hard check whenever the oracle mean exceeds the direction floor; minimum valid-month share 95 %; per-check flags published",
+      "regressionTest": [
+        "v4-measurement.test.mjs: comparison: identical series PASS; sign-flipped series FAIL on correlation and direction (A2)"
+      ],
+      "freezeImpact": "tolerances bound",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A3",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Split logic not bound by the freeze",
+      "description": "freeze-v3 followed literal imports only; return-series.js and canonical-total-return.js (loaded via require(path.join(root, ...))) were not hashed.",
+      "reproduction": "BACKTEST-CALIBRATION-FREEZE-V3-38685897684.json files list lacks quant/engines/return-series.js and canonical-total-return.js",
+      "rootCause": "regex closure ignored path.join requires",
+      "fix": "freeze-v4.mjs follows require(path.join(root|ROOT, '...')), fails closed on any unresolvable dynamic require, binds an explicit corporate-action/split policy section (files, functions, adjustment mode, raw/adjusted convention, exception codes, terminal/acquisition/cash-proceeds/delisting handling) and demands every runtime split file in the closure",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A3: the V4 freeze closure binds the split/total-return loaders",
+        "v4-measurement.test.mjs: A3: an unresolvable dynamic require is reported"
+      ],
+      "freezeImpact": "split/TR loaders now in the V4 code closure and corporateActions.fileHashes",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A4",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Positions without a bar held at the last close indefinitely",
+      "description": "No staleness limit; 52W diagnostics showed positions without bar on 2,175 of 2,198 days.",
+      "reproduction": "public 52W diagnostic positionsWithoutBar",
+      "rootCause": "accounting valued missing bars from lastMarks without any limit or settlement",
+      "fix": "measurement-policy-v4.mjs: stale carry for at most 5 sessions (one trading week, not result-derived), then SECURITY_UNAVAILABLE settlement at the last close (data-event factor 1, sensitivities -30 % and 0); zero-volume unchanged closes do not reset staleness; hard ending-position freshness check",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A4: a held position without a bar is settled after the stale limit"
+      ],
+      "freezeImpact": "policy bound",
+      "strategyImpact": "affects all holders of gapped securities identically for every method",
+      "dataImpact": "stale counts published",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A5",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Quarantine terminal booked before the information that revealed it; DQ received the 0.7 delisting factor",
+      "description": "terminal.date = quarantine.from although observedAt can be later; data quarantine treated as economic delisting.",
+      "reproduction": "tournament/data.mjs normalizeSegment: terminal date: quarantine.from",
+      "rootCause": "terminal construction ignored observedAt; terminal factor did not distinguish data events",
+      "fix": "causalQuarantineTerminal: first session on/after max(from, observedAt); data events settle at the last valid close (factor 1) with mandatory -30 %/0 sensitivities; economic delisting scenarios unchanged",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A5: data-quarantine terminal is booked on the first session on/after max(from, observedAt)",
+        "v4-measurement.test.mjs: A4/A5: data events settle at the last valid close"
+      ],
+      "freezeImpact": "policy bound",
+      "strategyImpact": "none",
+      "dataImpact": "terminal dates moved are counted",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A6",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "R8 dividends circular; calendar checks tautological; off-calendar bars dropped silently",
+      "description": "R8 took book.dividends as given (+500 passed); off-calendar bars with dividend/split fields were dropped.",
+      "reproduction": "numeric-review-v3.mjs R8",
+      "rootCause": "review reused the book's own aggregate",
+      "fix": "review-v4.mjs R8b recomputes dividends from the replayed fill ledger and source bars; off-calendar census is a hard check that fails if any off-calendar bar carries a dividend or split",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A6: dividends recomputed from the fill ledger match; an inflated booked dividend fails R8b"
+      ],
+      "freezeImpact": "review bound",
+      "strategyImpact": "none",
+      "dataImpact": "off-calendar counts published",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "residual": "V3 tournament books are not re-reviewed with R8b (V3 is historical evidence)"
+    },
+    {
+      "id": "A7",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Signal formation not reviewed (no truncation test, no independent scorer)",
+      "description": "formationDates came from the run under test.",
+      "reproduction": "numeric-review-v3.mjs",
+      "rootCause": "review checked books only",
+      "fix": "truncationReview: independent scorer on data truncated at the formation date for a pre-registered sample (first, last, every 9th month); any bucket membership mismatch fails",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A7: the independent truncated scorer detects a membership that used information after formation"
+      ],
+      "freezeImpact": "review bound",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "residual": "JT 6/6 and GH 52W V3 engines are not re-scored; they stay INTERNAL_CONTROL_ONLY / DIRECTIONAL"
+    },
+    {
+      "id": "A8",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Dust deletion not value-aware",
+      "description": "1e-10 share threshold hid 15.6 at a 2e11 price; the V3 ledger cancelled the gap by construction.",
+      "reproduction": "CALIBRATION-V3-DISCREPANCIES.json",
+      "rootCause": "share-count threshold",
+      "fix": "accounting-v4.mjs: residual written off only below 0.01 value; summed write-offs capped at 1.0 per book (fail closed); order floors value-aware",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A8 regression (V3 52W failure)",
+        "v4-measurement.test.mjs: A8: summed dust above the book cap fails closed"
+      ],
+      "freezeImpact": "accounting bound",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A9",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "74 securities with adjusted price level above 1e6 (INFO only)",
+      "description": "R10 census; 58 traded in the JT top book.",
+      "reproduction": "V3 R10 census",
+      "rootCause": "no classification; backward-cumulative split adjustment of serial reverse splitters produces extreme adjusted levels, and wrong provider split factors produce the same symptom",
+      "fix": "price-sanity-v4.mjs classifies each security (genuine high nominal, genuine serial reverse splits, split artifact, unit issue, currency, stale/unadjusted, ticker identity, source error) from raw-vs-declared-split consistency; only proven defects are quarantined from the first defective event; pre-registered sensitivity excludes all affected names; counts by class are published by the run",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A9: >1e6 levels are classified, not clamped; only proven defects are quarantined"
+      ],
+      "freezeImpact": "classifier bound",
+      "strategyImpact": "defective histories quarantined for all methods",
+      "dataImpact": "class counts public, identities sealed",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A10",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MAJOR",
+      "title": "Completion builder trusted self-reported status; duplicates last-wins; single generic reason",
+      "description": "referenceOk true for any COMPUTED/PARTIAL report.",
+      "reproduction": "build-completion-v3.mjs",
+      "rootCause": "missing structural validation",
+      "fix": "assembleReview rejects duplicate books and missing books, requires evaluated hard checks; certifyV4 requires each expected oracle exactly once with a valid verdict and splits reason codes",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A10: duplicate or missing reviewed books are rejected"
+      ],
+      "freezeImpact": "completion bound",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A11",
+      "source": "V3",
+      "v3Severity": "major",
+      "severity": "MODERATE",
+      "title": "Observed-only universe; drop reasons not public; no calibration sensitivity of the -30 % baseline",
+      "description": "9,410 of 15,564 listing generations; survivorship risk.",
+      "reproduction": "V3 capture receipts",
+      "rootCause": "data limitation (no independent population denominator) plus missing transparency",
+      "fix": "public universe tables (terminals by kind/year, instrument types, exchanges, canonical rejection reasons); the external EW oracle now measures the effect of the universe difference directly; -30 %, last-price and distress-zero sensitivities run against the oracle",
+      "regressionTest": [
+        "covered by run output schema (universe, sensitivities)"
+      ],
+      "freezeImpact": "none beyond run code",
+      "strategyImpact": "none",
+      "dataImpact": "count-only tables public",
+      "statusBeforeV4Measurement": "OPEN",
+      "downgradeReason": "MAJOR in V3 because the effect of the observed-only universe was unmeasured; V4 measures it directly against the external EW oracle and its sensitivities, so the open part is a quantified data limitation, not an unmeasured defect",
+      "residual": "the population itself remains observed-only (data limitation, not a code defect); classified MODERATE because the EW oracle quantifies its effect"
+    },
+    {
+      "id": "A12",
+      "source": "V3",
+      "v3Severity": "minor",
+      "severity": "MINOR",
+      "title": "Reconciliation tolerance scaled with final equity; published-close.js not reused (ADR-002)",
+      "description": "tolerance max(1e-6, actual*1e-10).",
+      "reproduction": "accounting-budget-v3.mjs reconcileBook",
+      "rootCause": "relative-to-equity tolerance",
+      "fix": "absolute floor plus a binary64 envelope of gross flows; published-close.js hash-bound and its non-use documented (calibration reads the canonical TR index derived from the same splitFactors)",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A12: reconciliation tolerance is gross-flow based"
+      ],
+      "freezeImpact": "accounting bound",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A13",
+      "source": "V3",
+      "v3Severity": "informational",
+      "severity": "MODERATE",
+      "title": "frozenBeforePerformance was a literal flag; createdAt in the freeze id; code changed after public summaries",
+      "description": "Freeze id changed every run; no external pinning.",
+      "reproduction": "freeze-v3.mjs",
+      "rootCause": "self-asserted flag",
+      "fix": "content-only freeze id (canonical JSON, createdAt/provenance excluded); the workflow commits and pushes the freeze before any measurement; the measuring job verifies the freeze commit is an ancestor of HEAD and the file equals the committed bytes",
+      "regressionTest": [
+        "v4-measurement.test.mjs: A13: freeze id is content-only"
+      ],
+      "freezeImpact": "pinning",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED"
+    },
+    {
+      "id": "A14",
+      "source": "V3",
+      "v3Severity": "informational",
+      "severity": "MINOR",
+      "title": "Low-grade quasi-identifiers in public V3 diagnostics",
+      "description": "one price level, one cost figure, one date, one dust value.",
+      "reproduction": "CALIBRATION-V3-DISCREPANCIES.json",
+      "rootCause": "diagnostic verbosity",
+      "fix": "V4 public outputs contain verdicts, flags, rounded correlations and counts only; V3 files are historical and unchanged",
+      "regressionTest": [
+        "V4 public summary schema"
+      ],
+      "freezeImpact": "none",
+      "strategyImpact": "none",
+      "dataImpact": "none",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "residual": "V3 public files keep their quasi-identifiers (not rewritten: V3 stays untouched)"
+    },
+    {
+      "id": "B1",
+      "source": "V2",
+      "severity": "ALREADY_FIXED",
+      "title": "binary64 cash/budget roundoff",
+      "fix": "accounting-budget-v2 budget proof, carried into v3 and v4",
+      "regressionTest": [
+        "calibration-budget-v2.test.mjs"
+      ],
+      "statusBeforeV4Measurement": "ALREADY_FIXED"
+    },
+    {
+      "id": "B2",
+      "source": "V3",
+      "severity": "ALREADY_FIXED",
+      "title": "synthetic DATA_QUARANTINE bar used for method orders",
+      "fix": "orders only on real source bars; synthetic bar settlement only (V3); V4 settles data events without any bar object reaching executeTargets",
+      "regressionTest": [
+        "v4-measurement.test.mjs: V3 regression kept: no order fills without a real source bar",
+        "calibration-v3-numeric-review.test.mjs (R4c)"
+      ],
+      "statusBeforeV4Measurement": "ALREADY_FIXED"
+    },
+    {
+      "id": "V4-R1",
+      "source": "V4",
+      "reviewSeverity": "HIGH",
+      "severity": "MAJOR",
+      "title": "findings file driving certification was not frozen",
+      "fix": "open findings derived once (frozenOpenFindings) and frozen inside the freeze; file added to CONTRACT_FILES_V4; severity below the V3 severity requires downgradeReason (A11 has one)",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R2",
+      "source": "V4",
+      "reviewSeverity": "HIGH",
+      "severity": "MAJOR",
+      "title": "Turtle notional account linear and stateless, contradicting the page-cited compounding example",
+      "fix": "createNotionalAccount: compounding cuts (10 %, 18 %, 24.4 % ...) with hysteresis until the year start is regained; 50 % yearly loss -> no new units; golden test corrected",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R3",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "S1-filter tracker checked the stop before a nearer 10-day exit; same-bar hypothetical stop counted as LOSER (anti-conservative); open breakout undeclared",
+      "fix": "path-consistent order (level nearer to the open first), hypothetical entry-bar stop not resolved (counted), open previous breakout = not losing (declared interpretation); also applied to real exits",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R4",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "raised stop not re-checked on the add bar",
+      "fix": "re-check bar low against the raised stop after same-bar adds (pessimistic), counted",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R5",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "entries possible on the terminal bar, then settled at data-event factor",
+      "fix": "entries blocked on or after the terminal date (counted)",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R6",
+      "source": "V4",
+      "reviewSeverity": "HIGH",
+      "severity": "MAJOR",
+      "title": "Turtle P&L runs on its own ledger outside the certified accounting; A/B mixes engines",
+      "fix": "independent ledger replay (review/turtle-replay-v4.mjs) is a hard check on every Turtle run; Turtle labelled MEASUREMENT_PARTIAL in eligibility, performance output and spec; A/B declared as method plus execution convention on identical data/universe/costs/terminals/metrics",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R7",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "price-sanity selection uses full-history max; quarantine ran after causal terminals",
+      "fix": "(b) quarantine now runs before causal terminals in calibration and performance; (a) bounded by the pre-registered sensitivity KEEP_PRICE_SANITY_DEFECTS_WITH_POST_DEFECT_PATH and EXCLUDE_ALL",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R8",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "an EW flip under a sensitivity only added a reason",
+      "fix": "EW flip caps the level at INTERNALLY_RECONCILED (performance gate closed)",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R9",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "mean-difference band widened with worse tracking",
+      "fix": "absolute caps on the mean-difference band and tracking-error caps per series kind; realised tolerance reported",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R10",
+      "source": "V4",
+      "reviewSeverity": "LOW",
+      "severity": "MINOR",
+      "title": "VU-side gaps reported as reference shortage",
+      "fix": "reference coverage and VU coverage separated; VU shortage = FAIL (VU_COVERAGE)",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R11",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "performance gate trusted a hand-editable calibration summary",
+      "fix": "performance freeze verifies freezeCommit = commit that wrote the freeze file, ancestry to the summary commit, and the workflow bot as summary author",
+      "statusBeforeV4Measurement": "CLOSED_SCOPE_LIMITED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R12",
+      "source": "V4",
+      "reviewSeverity": "LOW",
+      "severity": "MINOR",
+      "title": "freeze push could be rebased onto intervening commits",
+      "fix": "workflows fail unless HEAD^ equals the triggering commit after the push",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R13",
+      "source": "V4",
+      "reviewSeverity": "MEDIUM",
+      "severity": "MODERATE",
+      "title": "truncation review could not detect eligibility lookahead",
+      "fix": "EW eligible set rebuilt from data truncated at F and compared as a set",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R14",
+      "source": "V4",
+      "reviewSeverity": "LOW",
+      "severity": "MINOR",
+      "title": "book and arithmetic applied different stale rules for gaps that resume within the month",
+      "fix": "holdingReturn walks the bars of the month and settles at the last fresh bar exactly where the book does",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R15",
+      "source": "V4",
+      "reviewSeverity": "LOW",
+      "severity": "MINOR",
+      "title": "calibration freeze did not bind v4-fixtures.mjs",
+      "fix": "test-suite binding covers all v4-*.mjs",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R16",
+      "source": "V4",
+      "reviewSeverity": "INFO",
+      "severity": "NON_ISSUE",
+      "title": "exchange from listing id; June bar eligibility (declared deviations); parser and timing match French",
+      "fix": "none needed",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    },
+    {
+      "id": "V4-R17",
+      "source": "V4",
+      "reviewSeverity": "INFO",
+      "severity": "NON_ISSUE",
+      "title": "NON_LOSER double counted",
+      "fix": "counts separated",
+      "statusBeforeV4Measurement": "CLOSED",
+      "regressionTest": [
+        "scripts/supertrader/tests/v4-*.test.mjs"
+      ]
+    }
+  ],
+  "checklist": {
+    "splitLogicFreezeBound": "A3",
+    "positionWithoutBarNoHaircut": "A4",
+    "pricesAbove1e6": "A9",
+    "referenceOracleInsufficiency": "A1",
+    "missingExternalMonthlyReferences": "A1 (French EW/MOM/VAR oracles); 52W and JT 6/6 have no public monthly series",
+    "reconciliationVsCalibration": "A1 + completion-v4 levels",
+    "corporateActionBehavior": "A3 + A9 + EW oracle",
+    "staleValuationBehavior": "A4",
+    "terminalScenarios": "A5 + sensitivities",
+    "freezeCompleteness": "A3 + A13"
+  },
+  "v4IndependentReview": {
+    "reviewer": "independent read-only agent (not the code author), dimensions: source mismatch, modal hardening, translation risk, lookahead, survivorship, PIT, corporate actions, stale pricing, benchmark/oracle mismatch, hidden VU assumptions, parameter leakage, post-result tuning, freeze completeness",
+    "reviewedBeforeAnyResult": true,
+    "verdictBeforeFixes": "HIGH issues: R1, R2, R6"
+  }
+}

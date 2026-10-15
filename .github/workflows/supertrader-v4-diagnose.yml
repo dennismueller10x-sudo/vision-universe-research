@@ -1,0 +1,94 @@
+name: Supertrader V4 post-result diagnostic (no verdict effect; private evidence sealed)
+# Attributes the V4.1 calibration failure (run 38722939085). Runs only with [supertrader-v4:diagnose]. Never writes
+# a freeze or a verdict; commits a public diagnostic summary (counts, classes, diagnostic correlations).
+on:
+  push:
+    branches:
+      - 'research/supertrader-source-measurement-acceptance-v4'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-v4-diagnose-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  V4: scripts/supertrader/research/v4
+  CAL: scripts/supertrader/research/calibration
+jobs:
+  diagnose:
+    if: contains(github.event.head_commit.message, '[supertrader-v4:diagnose]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-v4-diagnose.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Capture canonical dataset and pinned oracles (no measurement)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture.json"
+          node $V4/capture-oracle-v4.mjs --out /workspace/private/oracle --public-out "$RUNNER_TEMP/pub/oracle.json"
+      - name: Diagnose (post-result, no verdict effect)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node --expose-gc $V4/diagnose-calibration-v4.mjs --freeze "$V4/SUPERTRADER-V4-FREEZE.json" --input-dir /workspace/private/canonical --oracle-parsed /workspace/private/oracle/oracle-parsed.json --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/SUPERTRADER-V4-DIAGNOSTIC-SUMMARY.json"
+      - name: Sealed results (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v4-sealed-diagnostic
+          path: /workspace/private/results/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Commit the public diagnostic summary
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/pub/SUPERTRADER-V4-DIAGNOSTIC-SUMMARY.json" "$V4/SUPERTRADER-V4-DIAGNOSTIC-SUMMARY.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$V4/SUPERTRADER-V4-DIAGNOSTIC-SUMMARY.json"
+          git commit -m "Supertrader V4.1: post-result diagnostic public summary (no verdict effect)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private

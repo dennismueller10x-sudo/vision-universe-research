@@ -1,0 +1,587 @@
+{
+  "schema": "supertrader-v4-calibration-public-summary-1.0.0",
+  "generation": "CALIBRATION_V4",
+  "postHoc": true,
+  "freezeId": "V4-beae51ae1b07768b",
+  "freezeFileSha256": "64faa6daac562cb8bfb24e55b1675dabe0ea7e2f214bd7932dee7a8c17ffbb90",
+  "freezeCommit": "af173006c63b9585caf1064bc47e405e2e2e197a",
+  "runId": "38722939085",
+  "inputVerification": {
+    "canonicalContentBinding": "MATCHES_FREEZE",
+    "oracleParsed": "MATCHES_FREEZE"
+  },
+  "universe": {
+    "securities": 9408,
+    "terminalsByKind": {
+      "DATA_QUARANTINE": 523,
+      "DELISTED": 3194
+    },
+    "terminalsByYear": {
+      "2015": 236,
+      "2016": 287,
+      "2017": 335,
+      "2018": 553,
+      "2019": 316,
+      "2020": 255,
+      "2021": 320,
+      "2022": 297,
+      "2023": 344,
+      "2024": 210,
+      "2025": 239,
+      "2026": 325
+    },
+    "instrumentTypes": {
+      "EQUITY_COMMON": 9331,
+      "ADR": 49,
+      "REIT": 28
+    },
+    "exchanges": {
+      "AMEX": 227,
+      "BATS": 75,
+      "NASDAQ": 5687,
+      "NYSE MKT": 102,
+      "NYSE": 3317
+    },
+    "canonicalCoverage": {
+      "inputSegments": 9410,
+      "usableSegments": 9408,
+      "rejectedByReason": {
+        "CORPORATE_ACTION_CONTRADICTED": 2
+      }
+    }
+  },
+  "causalTerminals": {
+    "policy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY",
+    "quarantinedSecurities": 523,
+    "terminalDatesMoved": 146
+  },
+  "priceSanity": {
+    "affected": 74,
+    "byClass": {
+      "GENUINE_HIGH_NOMINAL_PRICE": 0,
+      "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS": 71,
+      "SPLIT_ARTIFACT": 3,
+      "UNIT_ISSUE": 0,
+      "CURRENCY_ISSUE": 0,
+      "STALE_OR_UNADJUSTED": 0,
+      "TICKER_IDENTITY": 0,
+      "SOURCE_ERROR": 0
+    },
+    "defectQuarantined": 3,
+    "quarantineAudit": {
+      "quarantined": 3,
+      "removedInsufficientBars": 0
+    }
+  },
+  "offCalendar": {
+    "offCalendarBars": 0,
+    "securities": 0,
+    "withDividend": 0,
+    "withSplit": 0,
+    "status": "PASS"
+  },
+  "holdingCategories": {
+    "FRESH": 487827,
+    "UNAVAILABLE_BEYOND_LIMIT": 3376,
+    "STALE_WITHIN_LIMIT": 191,
+    "TERMINAL_DELISTED": 1920,
+    "TERMINAL_DATA_QUARANTINE": 48
+  },
+  "oracles": {
+    "EW_MARKET": {
+      "oracleId": "FRENCH_ME_EW_MARKET",
+      "verdict": "FAIL",
+      "validMonths": 104,
+      "correlation": 0.145,
+      "direction": {
+        "vu": "POSITIVE",
+        "oracle": "POSITIVE"
+      },
+      "checks": [
+        {
+          "id": "CORRELATION",
+          "hard": true,
+          "pass": false
+        },
+        {
+          "id": "MEAN_DIFFERENCE",
+          "hard": true,
+          "pass": false
+        },
+        {
+          "id": "TRACKING_ERROR",
+          "hard": true,
+          "pass": false
+        },
+        {
+          "id": "VOLATILITY_RELATIVE",
+          "hard": true,
+          "pass": false
+        },
+        {
+          "id": "MAX_DRAWDOWN",
+          "hard": true,
+          "pass": false
+        },
+        {
+          "id": "DIRECTION",
+          "hard": true,
+          "pass": true
+        }
+      ],
+      "holdingCountRatioMean": 1.337
+    },
+    "MOM_12_2_EW_DECILES": {
+      "oracleId": "FRENCH_MOM10_EW_DECILES",
+      "verdict": "FAIL",
+      "hardFailures": [
+        "LOW_LEG_FAIL",
+        "HIGH_LEG_FAIL",
+        "SPREAD_FAIL"
+      ],
+      "blockedFormations": 0,
+      "medianBucketCorrelation": 0.979,
+      "lowLeg": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": 0.027,
+        "direction": {
+          "vu": "POSITIVE",
+          "oracle": "FLAT"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "DIRECTION",
+            "hard": false,
+            "pass": true
+          }
+        ]
+      },
+      "highLeg": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": 0.982,
+        "direction": {
+          "vu": "POSITIVE",
+          "oracle": "POSITIVE"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": true
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": true
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": true,
+            "pass": true
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "DIRECTION",
+            "hard": true,
+            "pass": true
+          }
+        ]
+      },
+      "spread": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": 0.038,
+        "direction": {
+          "vu": "NEGATIVE",
+          "oracle": "POSITIVE"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": false,
+            "pass": false
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": false,
+            "pass": false
+          },
+          {
+            "id": "DIRECTION",
+            "hard": true,
+            "pass": false
+          }
+        ]
+      },
+      "bucketCorrelations": [
+        0.027,
+        0.982,
+        0.948,
+        0.984,
+        0.876,
+        0.069,
+        0.979,
+        0.987,
+        0.988,
+        0.982
+      ]
+    },
+    "VAR_60D_EW_QUINTILES": {
+      "oracleId": "FRENCH_VAR_EW_QUINTILES",
+      "verdict": "FAIL",
+      "hardFailures": [
+        "LOW_LEG_FAIL",
+        "HIGH_LEG_FAIL",
+        "SPREAD_FAIL"
+      ],
+      "blockedFormations": 0,
+      "medianBucketCorrelation": 0.994,
+      "lowLeg": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": 0.201,
+        "direction": {
+          "vu": "POSITIVE",
+          "oracle": "POSITIVE"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": true,
+            "pass": true
+          },
+          {
+            "id": "DIRECTION",
+            "hard": true,
+            "pass": true
+          }
+        ]
+      },
+      "highLeg": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": 0.048,
+        "direction": {
+          "vu": "POSITIVE",
+          "oracle": "POSITIVE"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "DIRECTION",
+            "hard": true,
+            "pass": true
+          }
+        ]
+      },
+      "spread": {
+        "verdict": "FAIL",
+        "validMonths": 104,
+        "correlation": -0.002,
+        "direction": {
+          "vu": "POSITIVE",
+          "oracle": "NEGATIVE"
+        },
+        "checks": [
+          {
+            "id": "CORRELATION",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "MEAN_DIFFERENCE",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "TRACKING_ERROR",
+            "hard": true,
+            "pass": false
+          },
+          {
+            "id": "VOLATILITY_RELATIVE",
+            "hard": false,
+            "pass": false
+          },
+          {
+            "id": "MAX_DRAWDOWN",
+            "hard": false,
+            "pass": false
+          },
+          {
+            "id": "DIRECTION",
+            "hard": true,
+            "pass": false
+          }
+        ]
+      },
+      "bucketCorrelations": [
+        0.201,
+        0.994,
+        0.994,
+        0.994,
+        0.048
+      ]
+    }
+  },
+  "internalReconciliation": {
+    "verdict": "FAIL",
+    "months": 104,
+    "withinShare": 0.9038461538461539,
+    "meanAbsoluteDifference": 0.001394700088134213,
+    "maxAbsoluteDifference": 0.07788071244603323,
+    "closeBookStats": {
+      "executionAdapter": "FORMATION_CLOSE_FILL_MEASUREMENT_ADAPTER",
+      "rebalances": 104,
+      "unavailableSettlements": 3504,
+      "terminalSettlements": 1967,
+      "unexecutableHeld": 222
+    },
+    "staleCounts": {
+      "staleSessionMarks": 74748,
+      "unavailableSettlements": 0,
+      "maxObservedStaleSessions": 6
+    }
+  },
+  "executionConventionEffect": {
+    "basis": "NEXT_OPEN_BOOK_VS_CLOSE_ARITHMETIC_INFORMATIONAL",
+    "withinShare": 0.4519230769230769,
+    "meanAbsoluteDifference": 0.02,
+    "openBookStats": {
+      "executionAdapter": "NEXT_SESSION_OPEN_REAL_BAR",
+      "rebalances": 104,
+      "unavailableSettlements": 3439,
+      "terminalSettlements": 1962,
+      "unexecutableHeld": 0
+    }
+  },
+  "review": {
+    "status": "PASS",
+    "missingBooks": [],
+    "books": [
+      {
+        "book": "EW_CLOSE",
+        "hardChecks": 5,
+        "failedHardChecks": []
+      },
+      {
+        "book": "EW_NEXT_OPEN",
+        "hardChecks": 5,
+        "failedHardChecks": []
+      },
+      {
+        "book": "CONSTRUCTIONS",
+        "hardChecks": 2,
+        "failedHardChecks": []
+      }
+    ],
+    "truncationSample": 39
+  },
+  "sensitivities": [
+    {
+      "id": "EXCLUDE_ALL_ADJUSTED_LEVEL_ABOVE_1E6",
+      "verdicts": {
+        "EW_MARKET": "FAIL",
+        "MOM_12_2_EW_DECILES": "FAIL",
+        "VAR_60D_EW_QUINTILES": "FAIL"
+      },
+      "correlations": {
+        "EW_MARKET": 0.143,
+        "MOM_12_2_EW_DECILES": 0.037,
+        "VAR_60D_EW_QUINTILES": -0.004
+      }
+    },
+    {
+      "id": "KEEP_PRICE_SANITY_DEFECTS_WITH_POST_DEFECT_PATH",
+      "verdicts": {
+        "EW_MARKET": "FAIL",
+        "MOM_12_2_EW_DECILES": "FAIL",
+        "VAR_60D_EW_QUINTILES": "FAIL"
+      },
+      "correlations": {
+        "EW_MARKET": 0.145,
+        "MOM_12_2_EW_DECILES": 0.038,
+        "VAR_60D_EW_QUINTILES": -0.002
+      }
+    },
+    {
+      "id": "DATA_EVENTS_MINUS_30_PERCENT",
+      "verdicts": {
+        "EW_MARKET": "FAIL",
+        "MOM_12_2_EW_DECILES": "FAIL",
+        "VAR_60D_EW_QUINTILES": "FAIL"
+      },
+      "correlations": {
+        "EW_MARKET": 0.141,
+        "MOM_12_2_EW_DECILES": 0.03,
+        "VAR_60D_EW_QUINTILES": -0.003
+      }
+    },
+    {
+      "id": "ECONOMIC_LAST_OBSERVED_PRICE",
+      "verdicts": {
+        "EW_MARKET": "FAIL",
+        "MOM_12_2_EW_DECILES": "FAIL",
+        "VAR_60D_EW_QUINTILES": "FAIL"
+      },
+      "correlations": {
+        "EW_MARKET": 0.145,
+        "MOM_12_2_EW_DECILES": 0.038,
+        "VAR_60D_EW_QUINTILES": -0.002
+      }
+    },
+    {
+      "id": "ECONOMIC_DISTRESS_ZERO",
+      "verdicts": {
+        "EW_MARKET": "FAIL",
+        "MOM_12_2_EW_DECILES": "FAIL",
+        "VAR_60D_EW_QUINTILES": "FAIL"
+      },
+      "correlations": {
+        "EW_MARKET": 0.145,
+        "MOM_12_2_EW_DECILES": 0.037,
+        "VAR_60D_EW_QUINTILES": -0.002
+      }
+    }
+  ],
+  "turnoverMembershipInformational": {
+    "EW_MARKET": 0.007,
+    "MOM_LOW": 0.198,
+    "MOM_HIGH": 0.255,
+    "VAR_LOW": 0.188,
+    "VAR_HIGH": 0.111
+  },
+  "certification": {
+    "schema": "supertrader-v4-certification-1.0.0",
+    "level": "NOT_CERTIFIED",
+    "reasons": [
+      "PROVEN_MEASUREMENT_DEFECT_INTERNAL_RECONCILIATION_FAILED",
+      "MEASUREMENT_LAYER_EW_CONTROL_FAILED"
+    ],
+    "externallyValidatedSlices": [],
+    "internalOnlySlices": [
+      "EXECUTION_NEXT_OPEN_BOOK",
+      "COSTS",
+      "STOP_TRIGGER_FILLS",
+      "JT_6_6_OVERLAPPING_COHORTS",
+      "GH_52_WEEK_HIGH"
+    ],
+    "passIsNotCertified": true,
+    "openFindings": {
+      "blockers": [],
+      "majors": []
+    },
+    "sensitivityFlips": []
+  },
+  "performanceNumbersPublished": false,
+  "sealed": {
+    "plaintextSha256": "59ad748074c2c751322d8a08dee4b893bd7a1622a99b189a5783004c39e0e978",
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "SUPERTRADER-V4-CALIBRATION-PRIVATE.owner.sealed.json",
+        "sha256": "48510b2b882565d546731d098597bbe811082bec954ed010105dc5482b697479"
+      },
+      {
+        "audience": "session",
+        "file": "SUPERTRADER-V4-CALIBRATION-PRIVATE.session.sealed.json",
+        "sha256": "23dc92d21530b1e1cdc54f2f5495f54b82350dc4e02f8004a08e3944c2f60c9d"
+      }
+    ]
+  }
+}
