@@ -14,7 +14,7 @@ GitHub Actions artifacts of run **38685897684** (freeze `V3-84caf2e84e560bec`, c
 | `v3-sealed-calibration-CAL_GH2004_52WH_30_6_NO_SKIP` | same | 2026-10-29 |
 | `v3-sealed-calibration-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS` | same | 2026-10-29 |
 | `v3-sealed-tournament-{cross_sectional_momentum, 52_week_high_effect, LOW_VOLATILITY, TURTLE_S2_EQUITY_DAILY, WEINSTEIN_STAGE_DAILY, KULLAMAGI_DAILY_ADAPTATION}` | summary, data-ready receipt, baseline and further sealed parts within a 0.9 GB budget per method | 2026-10-29 |
-| `v3-sealed-current-replay` (separate replay run, see its public summary) | private candidate lists of the diagnostic replay | 14 days after that run |
+| `v3-sealed-current-replay` (run 38703570432) | private candidate lists of the diagnostic replay | 2026-10-29 |
 
 **Download before the expiry date.** Public artifacts and all hash receipts (`CALIBRATION-V3-*`, `TOURNAMENT-V3-*`, `CURRENT-REPLAY-V3-*` in `scripts/supertrader/research/calibration/`) are committed and do not expire. Every public summary lists `plaintextSha256`, so a file you open can be checked against the committed hash.
 

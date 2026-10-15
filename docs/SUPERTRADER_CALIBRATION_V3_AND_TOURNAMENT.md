@@ -34,11 +34,11 @@ Run 38685897684: six frozen methods measured under the new freeze, baseline plus
 
 ## Current replay
 
-`run-current-replay-v3.mjs` + `supertrader-calibration-v3-replay.yml` (tag `[supertrader-v3:replay]`). The legacy runner cannot be used on this branch (`FROZEN_CODE_CHANGED`). The replay verifies the V3 freeze and completion, scans all frozen methods on the latest closed session, seals candidate lists and publishes counts only. Universe/eligibility inputs are the branch snapshot files, not `main` (hashes published).
+Run 38703570432 (`CURRENT-REPLAY-V3-SUMMARY-38703570432.json`): `run-current-replay-v3.mjs` + `supertrader-calibration-v3-replay.yml` (tag `[supertrader-v3:replay]`) verified the V3 freeze and completion, then scanned all ten registered methods on the latest closed session 2026-10-14 (legacy runner unusable here: `FROZEN_CODE_CHANGED`). Match counts: momentum 305, 52-week-high 889, low-volatility 278, Turtle 38, Weinstein 1, Kullamagi 1; four fundamental methods BLOCKED_DATA. Candidate lists exist only in the sealed envelope. Caveat: universe/eligibility inputs are the branch snapshot files, not `main` (hashes in the summary).
 
 ## Consensus
 
-Qualified consensus: empty by rule (no method is fullyQualified with a passed tournament review). Diagnostic consensus (research only, never a trading score) is computed by the replay and published as a count; ticker lists exist only in sealed envelopes.
+Qualified consensus: 0 (no method is fullyQualified with a passed tournament review; rule enforced in code). Diagnostic consensus (research only, never a trading score): 333 securities matched by at least two of the six frozen methods, count only; the list is sealed. The two are kept apart in the public summary.
 
 ## Tiering
 

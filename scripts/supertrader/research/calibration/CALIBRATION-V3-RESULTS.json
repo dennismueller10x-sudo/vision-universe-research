@@ -1,125 +1,77 @@
 {
-  "schema": "vision-universe-calibration-v3-results-1.0.0",
-  "status": "FOUR_NUMERIC_METHODS_MEASURED_REVIEW_PENDING_FOUR_DATA_BLOCKED",
-  "overallVerdict": "NOT_CERTIFIED",
-  "methods": [
-    {
-      "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
-      "verdict": null,
-      "confidence": null,
-      "status": "MEASURED_REVIEW_PENDING",
-      "output": "CALIBRATION-V3-CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-RESULT-38647054693.json",
-      "checkpoint": "CALIBRATION-V3-CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-CHECKPOINT.json",
-      "outputSha256": "5a7a537508c773c5b19a801901ff54ce326c859d2c6da00271e110cd551f893b",
-      "freezeId": "V3-f1caa83de2377df6"
-    },
-    {
-      "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
-      "verdict": null,
-      "confidence": null,
-      "status": "MEASURED_REVIEW_PENDING",
-      "output": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-RESULT-38647054693.json",
-      "checkpoint": "CALIBRATION-V3-CAL_GH2004_52WH_30_6_NO_SKIP-CHECKPOINT.json",
-      "outputSha256": "d97c6fe2bd8b5fb5672db633eeadfac9d5453947669ceea0a971b2bdbf7692af",
-      "freezeId": "V3-f1caa83de2377df6"
-    },
-    {
-      "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
-      "verdict": null,
-      "confidence": null,
-      "status": "MEASURED_REVIEW_PENDING",
-      "output": "CALIBRATION-V3-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-RESULT-38647054693.json",
-      "checkpoint": "CALIBRATION-V3-CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-CHECKPOINT.json",
-      "outputSha256": "e610201c1ab5a38a7b056ba6cf467a2a9f709e10f6f43d5b9365e3c982943524",
-      "freezeId": "V3-f1caa83de2377df6"
-    },
-    {
-      "methodId": "CALIB_EQUAL_WEIGHT",
-      "verdict": null,
-      "confidence": null,
-      "status": "MEASURED_REVIEW_PENDING",
-      "output": "CALIBRATION-V3-CALIB_EQUAL_WEIGHT-RESULT-38647054693.json",
-      "checkpoint": "CALIBRATION-V3-CALIB_EQUAL_WEIGHT-CHECKPOINT.json",
-      "outputSha256": "e08966f0b6b3972cf845e02dcfa8d0597e8e88e9739a90a088046ad023e7a3d3",
-      "freezeId": "V3-f1caa83de2377df6"
-    },
-    {
-      "methodId": "gross_profitability_novy_marx",
-      "verdict": "DATA_BLOCKED",
-      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
-      "status": "DATA_BLOCKED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-gross_profitability_novy_marx-CHECKPOINT.json",
-      "blockerRequirements": [
-        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
-        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
-        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
-        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
-        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
-        "HISTORICAL_ORIGINAL_SIC_AND_FINANCIAL_EXCLUSIONS",
-        "NYSE_GP_QUINTILE_BREAKPOINT_DENOMINATOR",
-        "SOURCE_EXACT_REVT_AND_COGS_SCOPE",
-        "SOURCE_FISCAL_YEAR_TO_JUNE_ALIGNMENT"
-      ]
-    },
-    {
-      "methodId": "piotroski_value_fscore",
-      "verdict": "DATA_BLOCKED",
-      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
-      "status": "DATA_BLOCKED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-piotroski_value_fscore-CHECKPOINT.json",
-      "blockerRequirements": [
-        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
-        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
-        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
-        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
-        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
-        "PRIOR_FISCAL_REPORT_YEAR_VALUE_CROSSSECTION",
-        "THREE_CERTIFIED_TRUE_ANNUAL_PERIODS_AND_FISCAL_LINKS",
-        "PRE_ASU_SOURCE_IB_AND_COMMON_EQUITY_ISSUANCE_COVERAGE",
-        "FISCAL_YEAR_END_ME_KNOWN_AT_ACTUAL_FORMATION",
-        "VALUEWEIGHTED_MARKET_SAME_CASE_HORIZON",
-        "PREDECLARED_TURN_DENOMINATOR_SOURCE_CONFLICT_RESOLUTION"
-      ]
-    },
-    {
-      "methodId": "value_plus_momentum",
-      "verdict": "DATA_BLOCKED",
-      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
-      "status": "DATA_BLOCKED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-value_plus_momentum-CHECKPOINT.json",
-      "blockerRequirements": [
-        "CERTIFIED_HISTORICAL_SECURITY_ISSUER_CLASS_LINK",
-        "SOURCE_UNIVERSE_DENOMINATOR_AND_EXCHANGE_HISTORY",
-        "CERTIFIED_FORMATION_AND_FISCAL_MARKET_EQUITY",
-        "COMPLETE_ANNUAL_AS_REPORTED_OPERANDS_AT_TRUE_KNOWLEDGE_CUTOFF",
-        "COMPLETE_CORPORATE_ACTION_AND_TERMINAL_RETURN_LINEAGE",
-        "SOURCE_FULL_MARKET_90PCT_ME_DENOMINATOR",
-        "SOURCE_PREFERRED_AND_BOOK_EQUITY_SCOPE",
-        "ACTUAL_HISTORICAL_EXCLUSION_TYPE_AND_US_COMMON_CLASS",
-        "SOURCE_SHORTABLE_FACTOR_PORTFOLIO_COST_FINANCING_IF_STOCK_FACTOR_SIMULATION"
-      ]
-    },
-    {
-      "methodId": "buyback_announcement_event",
-      "verdict": "DATA_BLOCKED",
-      "confidence": "HIGH_BLOCKER_CLASSIFICATION_ONLY",
-      "status": "DATA_BLOCKED",
-      "output": null,
-      "checkpoint": "CALIBRATION-V3-buyback_announcement_event-CHECKPOINT.json",
-      "blockerRequirements": [
-        "COMPLETE_AUTHENTIC_ORIGINAL_HISTORICAL_REPURCHASE_ANNOUNCEMENT_PANEL",
-        "ANNOUNCEMENT_FIRST_PUBLIC_UTC_AND_SECURITY_IDENTITY",
-        "SOURCE_ORIGINAL_PAPER_EVENT_MATCH_SAMPLE_HOLDING_BENCHMARK",
-        "CANCELLATIONS_AND_EVENT_DUPLICATE_RULES"
-      ]
-    }
-  ],
-  "strategyDefinitionsChanged": false,
-  "freezeId": "V3-f1caa83de2377df6",
-  "freezeFile": "BACKTEST-CALIBRATION-FREEZE-V3-38647054693.json",
-  "freezeFileSha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
-  "measurementRunId": 38647054693
+ "schema": "vision-universe-calibration-v3-results-1.0.0",
+ "status": "FOUR_NUMERIC_METHODS_COMPLETED_NUMERIC_REVIEW_PASSED_FOUR_DATA_BLOCKED_ADVERSARIAL_REVIEW_DONE",
+ "overallVerdict": "PARTIALLY_CERTIFIED",
+ "overallVerdictBasis": "mechanical application of the pre-registered definitions; see claimBoundary",
+ "claimBoundary": "CALIBRATION-V3-ADVERSARIAL-REVIEW.json: strict reading of the pre-registered PASS text would give NOT_CERTIFIED / INSUFFICIENT_REFERENCE_DATA because no independent direction/magnitude oracle was available for JT, 52W and EW; verdict not changed after results",
+ "freezeId": "V3-84caf2e84e560bec",
+ "freezeFile": "BACKTEST-CALIBRATION-FREEZE-V3-38685897684.json",
+ "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+ "measurementRunId": 38685897684,
+ "completion": "CALIBRATION-V3-COMPLETION-V3-84caf2e84e560bec.json",
+ "completionSha256": "8f4cc43afb557d11c5d9a08d9571963546250245d7f59f8a8d2d8463ca2b86ea",
+ "methods": [
+  {
+   "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 0
+  },
+  {
+   "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 0
+  },
+  {
+   "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 45
+  },
+  {
+   "methodId": "CALIB_EQUAL_WEIGHT",
+   "status": "COMPLETED",
+   "verdict": "PASS",
+   "reason": "ALL_MATERIAL_CONSTRUCTION_INVARIANTS_REPRODUCED_AND_REVIEWED"
+  },
+  {
+   "methodId": "gross_profitability_novy_marx",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "piotroski_value_fscore",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "value_plus_momentum",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "buyback_announcement_event",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  }
+ ],
+ "tournament": [
+  "TOURNAMENT-V3-52_week_high_effect-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-KULLAMAGI_DAILY_ADAPTATION-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-LOW_VOLATILITY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-TURTLE_S2_EQUITY_DAILY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-WEINSTEIN_STAGE_DAILY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-cross_sectional_momentum-SUMMARY-38685897684.json"
+ ],
+ "currentReplay": "CURRENT-REPLAY-V3-SUMMARY-38703570432.json",
+ "strategyDefinitionsChanged": false,
+ "performanceNumbersPublished": false
 }

@@ -20,7 +20,8 @@ export function verifyV3DurableState(){
  demand(inventory.pr643?.head==='cc9ecb5b677035338f034cd0f3c21a24b02c9fa2','PR643_HEAD_MISMATCH');
  demand(inventory.v3Branch?.base===inventory.pr643.head,'V3_BASE_NOT_PR643_HEAD');
  const blocked=new Set(resume.dataBlockedMethods||[]);
- demand(resume.pendingMethods.length+blocked.size===methods.length&&methods.every(id=>resume.pendingMethods.includes(id)!==blocked.has(id)),'PENDING_METHOD_SET_MISMATCH');
+ const finalState=/^V3_PIPELINE_COMPLETE/.test(resume.status);
+ demand(finalState?(resume.pendingMethods.length===0&&methods.every(id=>blocked.has(id)||resume.completedCalibrationMethods?.includes(id))):(resume.pendingMethods.length+blocked.size===methods.length&&methods.every(id=>resume.pendingMethods.includes(id)!==blocked.has(id))),'PENDING_METHOD_SET_MISMATCH');
  demand(receipt.inputBundles.length===116&&new Set(receipt.inputBundles.map(x=>x.artifactId)).size===116,'PRIVATE_BUNDLE_RECEIPTS_INCOMPLETE');
  demand(current.workflowRunId===receipt.runId&&current.artifactId===receipt.currentResultArtifact.artifactId,'CURRENT_CAPTURE_RECEIPT_MISMATCH');
  demand(current.safeStatus?.status==='CURRENT_SCANNED_REVIEW_PENDING'&&current.safeStatus.eligibleMethods===0&&current.safeStatus.finalReviewPending===true,'CURRENT_CAPTURE_NOT_DIAGNOSTIC_PENDING');
