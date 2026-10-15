@@ -1,0 +1,155 @@
+{
+  "schema": "supertrader-calibration-v3-completion-1.0.0",
+  "status": "CALIBRATION_INCOMPLETE",
+  "hardFailure": "REVIEW_FAILED:CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+  "freezeId": "V3-8e324a9cd75516cf",
+  "freezeFileSha256": "0efccbbea2977ff779edb3fb261d22e297e1041ae8428963d457c0a7417bc75b",
+  "protocolSha256": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+  "ruleBasis": "calibration/protocol.json calibrationVerdictDefinitions + overallVerdictDefinitions + paperEffectComparability (pre-registered)",
+  "overallVerdict": "NOT_CERTIFIED",
+  "overallReason": "NO_QUALIFYING_STOCK_CONSTRUCTION_PASS_OR_INCOMPLETE",
+  "referenceScreens": [
+    {
+      "id": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "status": "COMPLETED",
+      "verdict": "FAIL",
+      "reason": "CRITICAL_INFRASTRUCTURE_CHECK_FAILED"
+    },
+    {
+      "id": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "status": "COMPLETED",
+      "verdict": "FAIL",
+      "reason": "CRITICAL_INFRASTRUCTURE_CHECK_FAILED"
+    },
+    {
+      "id": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "status": "COMPLETED",
+      "verdict": "FAIL",
+      "reason": "CRITICAL_INFRASTRUCTURE_CHECK_FAILED"
+    },
+    {
+      "id": "CALIB_EQUAL_WEIGHT",
+      "status": "COMPLETED",
+      "verdict": "FAIL",
+      "reason": "CRITICAL_INFRASTRUCTURE_CHECK_FAILED"
+    },
+    {
+      "id": "gross_profitability_novy_marx",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "piotroski_value_fscore",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "value_plus_momentum",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "buyback_announcement_event",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    }
+  ],
+  "numericReviews": [
+    {
+      "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "costMode": "SOURCE_GROSS",
+      "status": "FAIL",
+      "reviewSha256": "0892fa62aaa5a78ab23f426c3a794207445becce803ec347b3aa9c6d05822826",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAIL",
+      "reviewSha256": "2a0db137c125fb82b8bc00f6ae1255c29c948d3084cb8ab44426cae1d9e4152d",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "costMode": "SOURCE_GROSS",
+      "status": "FAIL",
+      "reviewSha256": "31ad1b49df5e8774d224f5cb7f2394e90afce6d744d12f6e4c985600606c7c14",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAIL",
+      "reviewSha256": "662416c055eafef1ac9e60ad54382aaae31762025cd544bf717f3a25e30f3069",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "costMode": "SOURCE_GROSS",
+      "status": "FAIL",
+      "reviewSha256": "aafb462c24fd0f3ec1d4e01288c893d081f8d0308c665bbc5f6973801ea132b7",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAIL",
+      "reviewSha256": "a7ba5fa34e73df8bd3fae9098cc364c5c874ea12eb10e6077dcbc597d4cb0cdb",
+      "reconciled": true
+    },
+    {
+      "methodId": "CALIB_EQUAL_WEIGHT",
+      "costMode": "SOURCE_GROSS",
+      "status": "FAIL",
+      "reviewSha256": "eb8a04b55254579a0aff52c17744002d42b0da17a3da2092aa30036e214ece90",
+      "reconciled": true
+    },
+    {
+      "methodId": "CALIB_EQUAL_WEIGHT",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAIL",
+      "reviewSha256": "5af113b529a416452d62496ed20b86fc7c00f4d9cb5aeb776d4ba58ff6efeba4",
+      "reconciled": true
+    }
+  ],
+  "referenceArithmeticEvidence": [
+    {
+      "sourceId": "FRENCH_MOM10",
+      "kind": "MOMENTUM_EW",
+      "status": "COMPUTED",
+      "certificationCeiling": "ARITHMETIC_REFERENCE_PARITY",
+      "constructionVerdict": "NOT_A_STOCK_LEVEL_CONSTRUCTION_TEST",
+      "stockConstructionCertified": false,
+      "months": 104,
+      "missingMonthCount": 0,
+      "missingCellCount": 0,
+      "completeDecileCount": 10,
+      "fullDecileRiskShapeComplete": true,
+      "spreadMeanDirection": "POSITIVE",
+      "longLowerVolatilityDirection": "POSITIVE",
+      "longHigherZeroRFSharpeDirection": "POSITIVE"
+    },
+    {
+      "sourceId": "FRENCH_VAR",
+      "kind": "VARIANCE_EW",
+      "status": "COMPUTED",
+      "certificationCeiling": "ARITHMETIC_REFERENCE_PARITY",
+      "constructionVerdict": "NOT_A_STOCK_LEVEL_CONSTRUCTION_TEST",
+      "stockConstructionCertified": false,
+      "months": 104,
+      "missingMonthCount": 0,
+      "missingCellCount": 0,
+      "completeDecileCount": 10,
+      "fullDecileRiskShapeComplete": true,
+      "spreadMeanDirection": "POSITIVE",
+      "longLowerVolatilityDirection": "POSITIVE",
+      "longHigherZeroRFSharpeDirection": "POSITIVE"
+    }
+  ],
+  "reviewIndependence": "SEPARATE_CODE_PATH_SAME_AUTHOR; ADVERSARIAL_REVIEW_SEPARATE",
+  "performanceNumbersPublished": false
+}
