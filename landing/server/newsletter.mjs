@@ -39,7 +39,9 @@ export function createHandler({providerFetch=globalThis.fetch,cacheProvider=()=>
     return [...new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(value)))].map(v=>v.toString(16).padStart(2,'0')).join('');
   }
   async function provider(path,env,body){
-    const response=await providerFetch(API+path,{method:body?'POST':'GET',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json','User-Agent':'VisionUniverse-Brevo/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+    // workerd rejects redirect:'error' before making a request. Manual mode
+    // never follows Location; every caller requires its exact expected status.
+    const response=await providerFetch(API+path,{method:body?'POST':'GET',redirect:'manual',signal:AbortSignal.timeout(8000),headers:{'api-key':env.BREVO_API_KEY,'Accept':'application/json','User-Agent':'VisionUniverse-Brevo/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
     // Never surface provider bodies/errors to visitors or logs.
     return response;
   }
