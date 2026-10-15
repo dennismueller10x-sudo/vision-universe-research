@@ -58,6 +58,13 @@ class Provider:
         raise AssertionError('Unexpected endpoint or mutation')
 
 class MailContract(unittest.TestCase):
+    def test_observer_wait_can_match_access_expiry_but_never_extend_it(self):
+        with patch.object(operator.time,'time',return_value=1000):
+            for until,expected in [('',600),('8200000',7200),('1060000',60)]:
+                with patch.dict(os.environ,{'NEWSLETTER_OBSERVE_UNTIL':until}):self.assertEqual(operator.owner_wait_seconds(),expected)
+            for until in ('999999','8200001','invalid'):
+                with patch.dict(os.environ,{'NEWSLETTER_OBSERVE_UNTIL':until}):
+                    with self.assertRaises(ValueError):operator.owner_wait_seconds()
     def test_shared_browser_navigation_never_becomes_mail_content(self):
         for name in ('newsletter-api-doi.html','newsletter-test-confirmed.html'):
             html=mail_source(name)

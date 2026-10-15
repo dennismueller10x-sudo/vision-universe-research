@@ -4,9 +4,17 @@ from pathlib import Path
 from newsletter_mail import mail_source
 ORIGIN='https://feat-brevo-app-waitlist-doi.vision-universe.pages.dev';API='https://api.brevo.com/v3'
 
+def owner_wait_seconds():
+    until=os.environ.get('NEWSLETTER_OBSERVE_UNTIL','')
+    if not until:return 600
+    if not until.isdigit() or not time.time()*1000<int(until)<=time.time()*1000+7200000:
+        raise ValueError('Invalid private observation deadline')
+    return (int(until)-time.time()*1000)/1000
+
 def run():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('GITHUB_EVENT_NAME')!='workflow_dispatch' or os.environ.get('GITHUB_REF') not in ('refs/heads/feat/brevo-app-waitlist-doi','refs/heads/main') or os.environ.get('NEWSLETTER_AUTHORIZE_CONTROLLED_TEST')!='true':raise ValueError('Controlled test not authorized')
     observe=os.environ.get('NEWSLETTER_E2E_OPERATION')=='observe'
+    owner_wait=owner_wait_seconds() if observe else 600
     origin='https://www.visionuniverse.de' if observe else ORIGIN
     email=os.environ.get('BREVO_DOI_TEST_EMAIL','').strip().lower();key=os.environ.get('BREVO_API_KEY','')
     if not key or not observe and not email:raise ValueError('Private test address/key missing')
@@ -75,7 +83,7 @@ def run():
     if observe:
         print('Ready for private owner form submission on the main domain. Enter one new controlled address; wait for the pre-click check before using the DOI link.',flush=True)
         baseline_ids={(e.get('messageId'),e.get('event'),e.get('date'),e.get('email')) for e in baseline_events}
-        deadline=time.monotonic()+600
+        deadline=time.monotonic()+owner_wait
         while time.monotonic()<deadline:
             fresh=[e for e in events() if (e.get('messageId'),e.get('event'),e.get('date'),e.get('email')) not in baseline_ids]
             addresses={e.get('email','').strip().lower() for e in fresh if e.get('email')}
