@@ -93,6 +93,8 @@ def run():
         raise ValueError('Contact pagination incomplete')
     before={n:contacts(n) for n in (4,5,6)};old={n:read('/smtp/templates/'+str(n)) for n in (1,2,3,4)}
     account=read('/account')
+    relay=account.get('relay')
+    report['smtp_relay_enabled']=relay.get('enabled') if isinstance(relay,dict) and type(relay.get('enabled')) is bool else None
     report['free_plan']=any(p.get('type')=='free' for p in account.get('plan',[]))
     attribute_rows=read('/contacts/attributes').get('attributes',[])
     report['consent_attribute_compatible']=any(a.get('name')=='VU_EMAIL_CONSENT' and a.get('category')=='normal' and a.get('type')=='text' for a in attribute_rows)
