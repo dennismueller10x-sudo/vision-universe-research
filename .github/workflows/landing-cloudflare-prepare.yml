@@ -8,7 +8,7 @@ on:
         options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose, doi-template-fix]
         default: audit
       authorize_controlled_test:
-        description: Nur observe/e2e – kontrollierte DOI- und administrative Testbestätigung erlauben
+        description: Nur observe/e2e/doi-diagnose – kontrollierte DOI- und administrative Testbestätigung erlauben
         type: boolean
         default: false
       privacy_document_sha256:
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 8548659309b61c509d88338fe63945e755691c82
+          ref: e2ea0480f05a954d5465f94647cef1f59d773f94
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
