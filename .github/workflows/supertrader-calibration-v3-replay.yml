@@ -1,0 +1,91 @@
+name: Supertrader V3 current replay (diagnostic vs qualified; private lists sealed)
+on:
+  push:
+    branches:
+      - 'research/supertrader-calibration-v3-durable'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-v3-replay-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  CAL: scripts/supertrader/research/calibration
+  FREEZE_RUN: '38685897684'
+  FREEZE_ID: V3-84caf2e84e560bec
+jobs:
+  replay:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:replay]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /.github/workflows/supertrader-calibration-v3-pipeline.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Current replay under the V3 freeze (counts public, candidate lists sealed)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          FREEZE="$CAL/BACKTEST-CALIBRATION-FREEZE-V3-${FREEZE_RUN}.json"
+          COMPLETION="$CAL/CALIBRATION-V3-COMPLETION-${FREEZE_ID}.json"
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE"
+          node $CAL/run-current-replay-v3.mjs --freeze "$FREEZE" --completion "$COMPLETION" --completion-sha "$(sha256sum "$COMPLETION" | cut -d' ' -f1)" --tournament-summaries "$CAL" --out /workspace/private/replay --public-out "$RUNNER_TEMP/pub/CURRENT-REPLAY-V3-SUMMARY-${GITHUB_RUN_ID}.json"
+      - name: Sealed candidate lists (owner and session envelopes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-sealed-current-replay
+          path: /workspace/private/replay/*.sealed
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Commit the public replay summary
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          FILES=("$RUNNER_TEMP"/pub/CURRENT-REPLAY-V3-SUMMARY-*.json)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            cp "${FILES[@]}" "$CAL/"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$CAL"/CURRENT-REPLAY-V3-SUMMARY-*.json
+            git commit -m "Supertrader V3: current replay public summary (counts only; candidate lists sealed)"
+            scripts/ci/push-with-retry.sh "$BRANCH"
+          fi
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private

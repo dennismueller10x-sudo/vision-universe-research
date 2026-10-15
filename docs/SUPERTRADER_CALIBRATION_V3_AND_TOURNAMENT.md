@@ -6,7 +6,7 @@ PR #643 and its V2 code/contracts were read from persisted Git. All 23/23 V2 fre
 
 ## What was recomputed
 
-No numeric calibration was run. The canonical input is now present as a complete, hash-bound encrypted Actions artifact, but its plaintext cannot be read by this executor. Prior Momentum output bytes also remain unverifiable; V3 reproduction has not started.
+The canonical dataset was rebuilt inside GitHub Actions from the existing history store (user decision "Option 3"; the old encrypted capture is retained unchanged as historical evidence and none of its plaintext hashes is claimed). Every pipeline job re-captures and proves content equality with one committed freeze. Final run: 38685897684, freeze `V3-84caf2e84e560bec`. All four numeric calibration methods and all six tournament methods were measured and reconciled with accounting v3; the two momentum results from the earlier lineage were not reused because the accounting and execution-bar fixes change every book.
 
 ## Calibration reference sources
 
@@ -14,45 +14,43 @@ Frozen #643 source-census metadata supplies the official French Library URLs, pr
 
 ## 52W reconciliation result
 
-`CAUSE_UNRESOLVED_NO_FAILED_BOOK_CAPTURE`. No cause is claimed. The proven cash-rounding defect is not yet tied to this 52W failure.
+Resolved. Cause: the share-count dust deletion in `closeShares` dropped a residual position worth cost 15.6 at an implausible adjusted price level; reconciliation was correct to fail. Accounting v3 books the residual in a dust ledger (equity, cash, curve and trades bit-identical, tolerance unchanged). All four methods reconcile in run 38685897684. The price-level finding itself stays OPEN (R10 census: 74 securities above 1e6).
 
 ## Proven infrastructure fixes
 
-Binary64 budget/cash-rounding defect and isolated repair are proven/reviewed per persisted bug note. No evidence yet establishes material impact on previous numeric results.
+1. Dust write-off ledger (accounting v3). 2. Orders fill only on real source bars; the synthetic last-close bar of a data-quarantine terminal is settlement-only (run 38679035823 review failure R4, reproduced offline, fixed before any result was inspected; `calibration/superseded/RUN-38679035823.md`). 3. Review check R4c for the data-quarantine terminal fill.
 
 ## Calibration verdicts
 
-Gross Profitability, Piotroski, Value+Momentum and Buyback are assessed `DATA_BLOCKED` from their frozen method contracts, each with a method checkpoint. JT Momentum, 52W-High, Low Volatility and Equal Weight remain numerically pending canonical/reference inputs. No PASS/PARTIAL/FAIL verdict is asserted.
+Mechanical completion `V3-84caf2e84e560bec`: EW control PASS (declared control scope only); JT, 52W-High and Low-Volatility PARTIAL (original-study effect NOT_ASSESSED, original panel missing, NONCOMPARABLE); the four fundamental/event methods BLOCKED_DATA. Numeric review PASS for all four methods in both cost modes (separate code path, same author).
 
 ## Overall certification
 
-`NOT_CERTIFIED` until all possible methods are assessed against durable inputs and independently reviewed.
+Mechanical: `PARTIALLY_CERTIFIED`. **Claim boundary (adversarial review, `CALIBRATION-V3-ADVERSARIAL-REVIEW.json`):** the pre-registered PASS text requires audited direction/magnitude; the stock-level source oracle had 0 of 105 valid months for JT, 52W-High and EW (45 for Low-Volatility), so the control PASS rests on reconciliation plus a same-author review. Read strictly, the pre-registered text yields NOT_CERTIFIED / INSUFFICIENT_REFERENCE_DATA. The frozen verdict was not changed after results; amendments are listed as post-result proposals only. The construction mechanics reconcile; they are not validated against an independent magnitude/direction oracle.
 
 ## Tournament results
 
-Not rerun. No post-calibration results exist in this V3 branch.
+Run 38685897684: six frozen methods measured under the new freeze, baseline plus double-cost and terminal-sensitivity variants all reconcile (public summaries `TOURNAMENT-V3-*-SUMMARY-38685897684.json`, verdict `MEASURED_RECONCILED_REVIEW_PENDING`). Results are sealed to the owner and session keys; no performance numbers are public. No ranking or tier is assigned (post-calibration review pending).
 
 ## Current replay
 
-Not replayed. The existing 2026-10-12 capture is encrypted and not decryptable through the available executor path.
+`run-current-replay-v3.mjs` + `supertrader-calibration-v3-replay.yml` (tag `[supertrader-v3:replay]`). The legacy runner cannot be used on this branch (`FROZEN_CODE_CHANGED`). The replay verifies the V3 freeze and completion, scans all frozen methods on the latest closed session, seals candidate lists and publishes counts only. Universe/eligibility inputs are the branch snapshot files, not `main` (hashes published).
 
 ## Consensus
 
-No diagnostic or qualified consensus computed.
+Qualified consensus: empty by rule (no method is fullyQualified with a passed tournament review). Diagnostic consensus (research only, never a trading score) is computed by the replay and published as a count; ticker lists exist only in sealed envelopes.
 
 ## Tiering
 
-Not assigned; method evidence has not been refreshed.
+Not assigned. Adversarial findings A1, A4, A5, A6 and A9 must be resolved or accepted by the owner first.
 
 ## Claim readiness
 
-No methods are claim-ready from this V3 work.
+No method is claim-ready. Calibration supports: books reconcile, orders are next-open and bar-backed, review R1-R9 pass. It does not support: a magnitude/direction match to any published factor result.
 
 ## Remaining blockers
 
-Run 38555503225 produced an `AVAILABLE` canonical capture; run 38566792132 emitted and verified durable per-part receipts (manifest SHA256 `34bf957554e62edbb304d619442878601a65e700bc710697a4cca5c18b8ce713`; 500 parts; 9,408 usable securities). The 9,410 input segments include two rejected segments. Run 38570403846 independently proved both as `CORPORATE_ACTION_CONTRADICTED / SPLIT_NOT_IN_RAW_PRICE`: applying the source split factor made each source close movement farther from zero than the unadjusted movement; prefix validation then left fewer than two usable bars. This is a source corporate-action/price conflict under frozen arithmetic, not a proved runner defect. Private security identities remain unpublished. The separate 52W reference-book reconciliation remains open and is not explained by these exclusions.
-
-The canonical artifact `11895314451` is sealed for owner and session recipients; its ciphertext and all plaintext part digests are durably receipted. No recipient private key or decrypt-capable Actions path is available to this executor, so it cannot provide the verified plaintext source metadata and canonical files required by the numeric runner. V3 freeze remains a candidate (`NOT_FROZEN_MISSING_DURABLE_INPUT_RECEIPTS`); the pending numeric methods have not run. Tournament, current replay, independent reviews and owner delivery remain pending. Resume state records the exact prerequisite and next step.
+(1) Owner decision on post-result amendments A1-A10 (a new pre-registered freeze and rerun would be required; none was started because the user's instruction forbids changing the frozen contract). (2) Original CRSP/FTSE panels for effect comparability. (3) Sealed results expire (14 days): the owner must download them, see `docs/SUPERTRADER_V3_OWNER_DELIVERY.md`. (4) The branch carries stale `quant/data` and `discover/data` and fails two unrelated CI checks that were already red at the starting commit.
 
 ## Durability verification
 
