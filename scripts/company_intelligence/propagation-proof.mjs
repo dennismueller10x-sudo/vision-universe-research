@@ -74,6 +74,12 @@ export function headerEvidence(response) {
  return out;
 }
 
+/* Detail-Texte: das Muster `HTTP nnn` steht NUR fuer echte Fehlerstatus (4xx/5xx, failureOf). Nicht-Fehlerstatus (z. B. 200 an
+   einem Objekt, das 404 sein muesste) werden als `Status nnn` formuliert; nachgelagerte Klassifikatoren lesen `HTTP nnn` als
+   Auslieferungsfehler-Code (Vertragstest in propagation-proof-ci.test.mjs).
+   Zeitgrenze: der Request-Timeout ist min(requestTimeoutMs, max(1 s, Restzeit + 1 s)). Nach Ablauf der Obergrenze kann ein
+   laufender Durchlauf daher noch Requests mit je hoechstens 1 s absetzen (Schleifen brechen bei deadline + 1 s ab); die
+   Gesamtdauer ueberschreitet maxMs um wenige Sekunden, nicht um einen vollen Backoff. */
 async function read(ctx, path) {
  const url = ctx.origin + path + (path.includes('?') ? '&' : '?') + 'ci-proof=' + ctx.nonce();
  const timeout = Math.min(ctx.requestTimeoutMs, Math.max(1000, ctx.deadline - ctx.now() + 1000));
@@ -248,7 +254,8 @@ export function parseRollout(text) {
  return {
   stage: Number(m[1]), productionOff: m[3] === 'true' || m[3] === '!0',
   expectedGeneration: /expectedGeneration\s*:\s*["']([a-f0-9]{24})["']/.exec(src)?.[1] || null,
-  eligibilityNull: /\beligibility\s*:\s*null\b/.test(src),
+  // ausgeliefert (minifiziert): `eligibility:null`; Quellform: `const eligibility = null`
+  eligibilityNull: /\beligibility\s*:\s*null\b/.test(src) || /\bconst\s+eligibility\s*=\s*null\b/.test(src),
   cohortSize: cohort ? (cohort[1].match(/"[^"]+"|'[^']+'/g) || []).length : null
  };
 }
@@ -375,7 +382,7 @@ async function probeCiOff(ctx, {pass, fail, observed}) {
  for (const [name, path] of [['ci-delivery', CI.delivery], ['ci-refresh', CI.refresh]]) {
   const r = await read(ctx, path);
   if (r.status === 404) pass(name, r, '404 wie erwartet');
-  else if (r.ok) fail(name, 'MIXED', 'HTTP 200 statt 404 bei geschlossenem Gate (Objekt des offenen Gates noch ausgeliefert)', r);
+  else if (r.ok) fail(name, 'MIXED', 'Status 200 statt 404 bei geschlossenem Gate (Objekt des offenen Gates noch ausgeliefert)', r);
   else fail(name, ...Object.values(failureOf(r)), r);
  }
 }

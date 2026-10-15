@@ -262,6 +262,31 @@ test('Gate offen -> zu: jeder Fehlversuch (200 statt 404) wird wiederholt; erst 
  } finally { await s.close(); }
 });
 
+// ---------------- Vertrag: Detail-Wording ----------------
+test('Vertrag: `HTTP nnn` steht in Detail-Texten nur fuer echte Fehlerstatus (4xx/5xx), nie fuer 2xx/3xx', async () => {
+ const seen = [], collect = r => { for (const at of r.attempts) for (const f of at.failed || []) seen.push(f); };
+ const on = build(), off = build({mode: 'OFF'}), boot = build({legacy: true}), old = build({salt: 'alt'}), oldOff = build({commit: 'a'.repeat(40)});
+ const paths = [IDX, ROLL, DEL, REF, '/quant/', '/release-id.json', '/release-delivery.json', '/company-intelligence/data/' + on.lookupPath, '/company-intelligence/data/' + on.issuerPath];
+ const bodies = [404, 500, 503, HTML, 200, J({}), Buffer.from('')];
+ for (const [site, ci] of [[on, 'ON'], [off, 'OFF'], [boot, 'ON']]) {
+  const s = await server(site);
+  try {
+   for (const p of paths) for (const b of [...bodies, old.map.get(p), on.map.get(p), off.map.get(p)].filter(x => x !== undefined)) {
+    s.override.clear(); s.override.set(p, b); collect(await run(s, site, {ci}));
+   }
+  } finally { await s.close(); }
+ }
+ void oldOff;
+ const details = seen.map(f => ({name: f.name, cause: f.cause, detail: String(f.detail)}));
+ assert.ok(details.length > 60, 'genug Szenarien: ' + details.length);
+ assert.ok(details.some(d => d.cause === 'MIXED' && /Status 200 statt 404/.test(d.detail)), 'OFF: 200 statt 404 kommt vor');
+ for (const d of details) for (const m of d.detail.matchAll(/\bHTTP (\d{3})\b/g)) {
+  assert.ok(Number(m[1]) >= 400 && Number(m[1]) <= 599, 'HTTP ' + m[1] + ' in ' + d.name + '/' + d.cause + ': ' + d.detail);
+ }
+ const src = readFileSync(new URL('../propagation-proof.mjs', import.meta.url), 'utf8');
+ assert.doesNotMatch(src, /'HTTP [1-3]\d\d\b/, 'kein festes Wording HTTP 1xx-3xx im Quelltext');
+});
+
 // ---------------- OFF ----------------
 test('OFF: Platzhalter-Index, stage 0 productionOff, delivery/refresh 404 -> propagiert', async () => {
  const site = build({mode: 'OFF'}), s = await server(site);
@@ -413,6 +438,7 @@ test('parseRollout: minifiziert (ON/OFF), Quelltext, Eligibility-Objekt, Muell',
  const src = readFileSync(new URL('../../../company-intelligence/config/rollout.js', import.meta.url), 'utf8');
  const q = parseRollout(src); assert.equal(q.stage, 1); assert.equal(q.productionOff, false); assert.ok(q.expectedGeneration);
  const elig = parseRollout(off.replace('eligibility:null', 'eligibility:{AAPL:{}}'));
+ assert.equal(parseRollout(src).eligibilityNull, true, 'Quellform const eligibility = null');
  assert.equal(elig.eligibilityNull, false);
  assert.equal(parseRollout('<html>404</html>'), null); assert.equal(parseRollout(''), null); assert.equal(parseRollout(undefined), null);
 });
