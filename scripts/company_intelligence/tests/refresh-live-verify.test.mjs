@@ -3,7 +3,11 @@
  * abhaengigkeitsfreien Teilmengen-Parser (helpers/workflow-yaml.mjs) geprueft. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,mkdtempSync,existsSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {EventEmitter} from 'node:events';
+import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {verifyLive,decide,realQa,LIMITS} from '../refresh-live-verify.mjs';
 import {CLASSES} from '../classify-live-failure.mjs';
@@ -104,7 +108,8 @@ test('Propagation wird auch nach der Wartezeit nicht erreicht -> FAIL ohne weite
 
 test('Zeitbudget: verbraucht der erste Lauf das Gesamtbudget, gibt es keine Wiederholung', async () => {
  let t = T0;
- const h = harness({qa: [{ok: false, report: null}, {ok: true}], proofs: [OK('a'), NOT('MIXED'), OK('a')], clock: () => { const v = t; t += LIMITS.totalCapMs; return v; }});
+ const h = harness({qa: [{ok: false, report: null}, {ok: true}], proofs: [OK('a'), NOT('MIXED'), OK('a')], clock: () => t});
+ const q = h.log.qa; q.push = function (x) { t += LIMITS.totalCapMs; return Array.prototype.push.call(this, x); }; // erster Lauf verbraucht das Budget
  const r = await h.run();
  assert.equal(r.result, 'FAIL');assert.equal(r.reason, 'NO_TIME_BUDGET');assert.equal(h.log.qa.length, 1);assert.deepEqual(h.log.sleeps, []);
 });
@@ -124,17 +129,67 @@ test('Erfolg beim ersten Lauf: keine Gegenprobe, keine Pause', async () => {
  assert.equal(r.result, 'PASS');assert.equal(r.reason, 'PASSED');assert.equal(h.log.prove.length, 1);assert.deepEqual(h.log.sleeps, []);
 });
 
-test('realQa startet unveraendert refresh-qa --live, entfernt alten Bericht und liest den Fehlerbericht', async () => {
+test('realQa startet unveraendert refresh-qa --live in eigener Prozessgruppe und liest den Fehlerbericht', async () => {
  const calls = [];
- const spawn = (cmd, args, opts) => { calls.push({cmd, args, opts}); return {status: 1}; };
+ const spawn = (cmd, args, opts) => { calls.push({cmd, args, opts}); const c = new EventEmitter(); c.pid = 1; setImmediate(() => c.emit('close', 1, null)); return c; };
  const out = '/nonexistent/live-qa.json';
  const r = await realQa({out, env: {A: '1'}, spawn})({timeoutMs: 5000});
  assert.equal(r.ok, false);assert.equal(r.report, null);
  assert.deepEqual(calls[0].args, ['scripts/company_intelligence/refresh-qa.mjs', '--live', '--out', out]);
- assert.equal(calls[0].opts.timeout, 5000);
+ assert.equal(calls[0].opts.detached, true);
+ const ok = await realQa({out, spawn: () => { const c = new EventEmitter(); c.pid = 1; setImmediate(() => c.emit('close', 0, null)); return c; }})({timeoutMs: 5000});
+ assert.equal(ok.ok, true);
  const src = readFileSync(fileURLToPath(new URL('../refresh-live-verify.mjs', import.meta.url)), 'utf8');
  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
  assert.doesNotMatch(code, /rollback|production-release|\bgh\b|workflow run|refresh-run/, 'das Skript aendert keinen Zustand');
+});
+
+test('QA-Zeitlimit beendet die ganze Prozessgruppe: ein Enkelprozess schreibt nicht mehr in die --out-Datei', async () => {
+ const dir = mkdtempSync(join(tmpdir(), 'rlv-')), late = join(dir, 'late.json');
+ const grandchild = `require('fs').writeFileSync(${JSON.stringify(late)},'{"status":"FAIL"}')`;
+ const parent = `require('child_process').spawn(process.execPath,['-e',${JSON.stringify('setTimeout(()=>{' + grandchild + '},1500)')}],{stdio:'inherit'});setTimeout(()=>{},60000)`;
+ const started = Date.now();
+ const r = await realQa({out: join(dir, 'out.json'), command: [process.execPath, ['-e', parent]]})({timeoutMs: 400});
+ assert.equal(r.ok, false);assert.ok(Date.now() - started < 4000);
+ await new Promise(res => setTimeout(res, 2200));
+ assert.equal(existsSync(late), false, 'Enkelprozess lief nach dem Zeitlimit weiter');
+ rmSync(dir, {recursive: true, force: true});
+});
+
+test('Entrypoint: Ergebnis FAIL -> Exit 1 (ohne --out scheitert main ohne Netz)', () => {
+ const res = spawnSync(process.execPath, [fileURLToPath(new URL('../refresh-live-verify.mjs', import.meta.url))], {encoding: 'utf8', timeout: 20000});
+ assert.equal(res.status, 1);
+});
+
+test('decide: Grundstand fehlt oder nicht propagiert, Gegenprobe propagiert -> transient STATE_CHANGED_AFTER_FAILURE', () => {
+ for (const baseline of [null, NOT('MIXED')]) {
+  const d = decide({baseline, reproof: OK('b'), qaReport: null});
+  assert.equal(d.class, CLASSES.PROPAGATION);assert.equal(d.reason, 'STATE_CHANGED_AFTER_FAILURE');
+ }
+});
+
+test('Universe-Pfad: Bericht FAIL ohne error ist immer REAL (auch bei Mischstand der Gegenprobe)', () => {
+ assert.equal(decide({baseline: OK('a'), reproof: NOT('MIXED'), qaReport: {status: 'FAIL', mode: 'ACTUAL_PRODUCTION'}}).class, CLASSES.REAL);
+});
+
+test('Frist vom Jobstart: Worst Case (40 min Vorlauf) -> alle Laeufe, Pausen und Beweise enden vor Jobende minus Reserve', async () => {
+ const jobStart = T0, deadline = jobStart + LIMITS.jobTimeoutMs - LIMITS.reserveMs;
+ let t = jobStart + 40 * 60000;                         // 25 min Pipeline + 15 min Pages-Wait
+ const qaCalls = [];
+ const r = await verifyLive({
+  now: () => t, sleep: async ms => { t += ms; }, deadlineMs: deadline,
+  prove: async o => { t += 20000; return o?.once ? NOT('MIXED') : (t += o.maxMs, NOT('STALE')); },  // jeder Beweis kostet Zeit; Warten bis zur Obergrenze
+  qa: async a => { qaCalls.push(a); t += a.timeoutMs; return {ok: false, report: null}; }            // QA laeuft bis zu ihrem Zeitlimit
+ });
+ assert.equal(r.result, 'FAIL');
+ assert.ok(t <= deadline + 60000, 'Ende ' + Math.round((deadline - t) / 1000) + ' s vor Frist');   // Beweis-Request ueber die Frist: max. 1 Beweis (20 s) + Rundung
+ for (const a of qaCalls) assert.ok(a.timeoutMs <= LIMITS.qaTimeoutMs);
+ assert.ok(t - (jobStart + LIMITS.jobTimeoutMs) <= -LIMITS.reserveMs + 60000);
+ // schon abgelaufene Frist: gar kein QA-Lauf, sondern Fehler (Rollback)
+ t = deadline + 1;
+ const q2 = [];
+ const r2 = await verifyLive({now: () => t, deadlineMs: deadline, prove: async () => OK('a'), qa: async a => { q2.push(a); return {ok: true}; }});
+ assert.equal(r2.reason, 'NO_TIME_BUDGET');assert.equal(q2.length, 0);
 });
 
 /* --- Workflow-Vertrag --- */
@@ -150,6 +205,13 @@ test('Workflow: Deploy-Verify ruft die begrenzte Verifikation statt refresh-qa -
  assert.ok(slo >= 0 && slo < verify && verify < observe);
  assert.equal(deploy['continue-on-error'], undefined, 'Fehler der Verifikation muss den Schritt rot machen');
  assert.equal(deploy.if, 'inputs.verification != true');
+});
+
+test('Workflow: Jobstart wird vor allen langen Schritten festgehalten (Frist des Verify)', () => {
+ const rec = steps.find(s => /^Record job start/.test(s.name || ''));
+ assert.ok(rec && steps.indexOf(rec) < steps.indexOf(deploy));
+ assert.match(rec.run, /JOB_STARTED_AT=\$\(date \+%s\)" >> "\$GITHUB_ENV"/);
+ assert.ok(steps.indexOf(rec) <= 1, 'direkt nach dem Checkout');
 });
 
 test('Workflow: Rollback bleibt fail-closed und unveraendert (sofort bei Fehlschlag des Deploy-/Verify-Schritts)', () => {
@@ -171,9 +233,9 @@ test('Workflow: ADR-005 (Eingaben nur ueber env), Rechte, Timeout und Passwortsc
  assert.match(upload.with.path, /live-qa\.json\n/);
 });
 
-test('Obergrenzen sind fest und passen ins Jobbudget', () => {
+test('Obergrenzen sind fest und die Reserve fuer den Rollback ist Teil des Vertrags', () => {
  assert.ok(Object.isFrozen(LIMITS) && Object.isFrozen(LIMITS.backoffMs));
- assert.ok(LIMITS.maxRetries <= 2);
- const worst = LIMITS.qaTimeoutMs + LIMITS.totalCapMs;
- assert.ok(LIMITS.totalCapMs <= 15 * 60000 && worst <= 25 * 60000);
+ assert.ok(LIMITS.maxRetries <= 2 && LIMITS.totalCapMs <= 15 * 60000);
+ assert.equal(LIMITS.jobTimeoutMs, wf.jobs.refresh['timeout-minutes'] * 60000);
+ assert.ok(LIMITS.reserveMs >= 10 * 60000);
 });
