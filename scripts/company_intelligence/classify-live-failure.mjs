@@ -39,6 +39,11 @@ export function isDeliveryCause(cause) {
 }
 
 const BROWSER_STATUSES = [502, 503, 504, 429];
+/* Echte Lazy-Skripte (discover/index.html dx-lazy-*): Engines/UI von Discover und Quant, core, Company-Intelligence-Skripte, discover/detail.js.
+   Nicht dazu: app.js, CSS, JSON-Daten (/company-intelligence/data/**) - dort bleibt auch ein 503 REAL. */
+export const LAZY_SCRIPT_PATH = /^(?!.*\.\.)(?:\/(?:discover\/(?:engines|ui)|quant\/(?:engines|ui)|core|company-intelligence\/(?:api|config|ui))\/[A-Za-z0-9._\/-]+\.js|\/discover\/detail\.js)$/;
+const CHROMIUM_STATUS_LINES = [/^A bad HTTP response code \((\d{3})\) was received when fetching the script\.$/, /^Failed to load resource: the server responded with a status of (\d{3}) \([A-Za-z ]*\)$/];
+const NAMED_LINE = /^(?:A bad HTTP response code \((\d{3})\) was received when fetching the script\. )?LAZY_SCRIPT_FAILED:(\S+)$/;
 const pathOf = u => String(u ?? '').split('?')[0];
 
 /**
@@ -64,16 +69,21 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
   if (typeof url !== 'string' || !url.startsWith('/') || url.startsWith('//')) return no('BROWSER_HTTP_NOT_SAME_ORIGIN'); // safeUrl laesst nur fremde Ursprungs-Praefixe stehen
   if (!BROWSER_STATUSES.includes(h.status)) return no('BROWSER_HTTP_STATUS_' + String(h.status).replace(/\D/g, '').slice(0, 3));
   if (!/^text\/html/i.test(String(h.headers?.['content-type'] ?? ''))) return no('BROWSER_HTTP_NOT_HTML');
+  if (!LAZY_SCRIPT_PATH.test(pathOf(url))) return no('BROWSER_HTTP_NOT_LAZY_SCRIPT');
   statuses.add(h.status); paths.add(pathOf(url));
  }
  for (const f of d.failed) if (!paths.has(pathOf(f?.url))) return no('BROWSER_OTHER_FAILED_REQUEST');
  const lazy = new Set();
  for (const line of d.console) {
   const text = String(line);
-  const named = [...text.matchAll(/LAZY_SCRIPT_FAILED:(\S+)/g)].map(m => pathOf(m[1].replace(/[.,;)'"]+$/, '')));
-  for (const n of named) { if (!paths.has(n)) return no('BROWSER_LAZY_URL_MISMATCH'); lazy.add(n); }
-  if (named.length) continue;
-  const generic = /(?:status of|response code \()\s*(\d{3})/.exec(text);
+  const named = NAMED_LINE.exec(text);
+  if (named) {
+   if (named[1] && !statuses.has(Number(named[1]))) return no('BROWSER_CONSOLE_STATUS_MISMATCH');
+   const n = pathOf(named[2]);
+   if (!paths.has(n)) return no('BROWSER_LAZY_URL_MISMATCH');
+   lazy.add(n); continue;
+  }
+  const generic = CHROMIUM_STATUS_LINES.map(re => re.exec(text)).find(Boolean);
   if (!generic || !statuses.has(Number(generic[1]))) return no('BROWSER_CONSOLE_UNEXPLAINED');
  }
  if (!lazy.size) return no('BROWSER_NO_LAZY_FAILURE_NAMED');
@@ -81,6 +91,9 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
  const ps = report.pageState;
  if (!ps || typeof ps !== 'object' || !Array.isArray(ps.scriptResourcesSuspicious)) return no('BROWSER_PAGESTATE_MISSING');
  for (const r of ps.scriptResourcesSuspicious) if (!paths.has(pathOf(r?.n)) || !(BROWSER_STATUSES.includes(r.s) || r.s === 0)) return no('BROWSER_PAGESTATE_MISMATCH');
+ if (ps.accessGate === true) return no('BROWSER_ACCESS_GATE_PRESENT');
+ if (typeof ps.metaRelease !== 'string' || !ps.metaRelease) return no('BROWSER_META_RELEASE_MISSING');
+ if (Array.isArray(report.markers) && report.markers.some(m => m?.state === 'ERROR')) return no('BROWSER_MARKER_ERROR');
  const seen = report.propagation?.observed?.discoverId;
  if (ps.metaRelease && seen && ps.metaRelease !== seen) return no('BROWSER_SAW_OTHER_RELEASE');
  return {class: CLASSES.BROWSER, reason: 'LAZY_SCRIPT_HTTP_' + [...statuses].sort().join('_'), detail: [...lazy].join(',').slice(0, 120)};

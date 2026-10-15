@@ -46,7 +46,7 @@ function simulate(s){
    const c=classify({depsOutcome:ctx.steps.deps.outcome,qaOutcome:qa==='live'?ctx.steps.live.outcome:ctx.steps.gate_off.outcome,report:qa==='live'?s.reports?.live:s.reports?.off,expectedSha:s.expectedSha||null});
    outputs={class:c.class,reason:c.reason,qa};
   }
-  else if(step.id==='retry'){outputs={result:s.retry==='CRASH'?'':s.retry};if(s.retry==='CRASH')outcome='failure';}
+  else if(step.id==='retry'){outputs={result:s.retry==='CRASH'?'':s.retry==='PASS_THEN_CRASH'?'PASS':s.retry};if(s.retry==='CRASH'||s.retry==='PASS_THEN_CRASH')outcome='failure';}
   else if(step.id&&s.results?.[step.id])outcome=s.results[step.id];
   else if(step===handler)outcome=s.results?.handler||'success';
   else if(step===conclude)outcome=/\nexit 0\s*$/m.test(step.run)||!/\nexit [1-9]\d*\s*$/m.test(step.run)?'success':'failure'; // Ergebnis aus dem run-Text
@@ -143,7 +143,7 @@ test('Szenario: Auslieferung nicht propagiert, Wiederholung scheitert/uebersprun
 });
 
 const lazy503=()=>({status:'FAIL',cause:'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION',sourceCommit:'abc',propagation:{status:'PROPAGATED'},error:{name:'TimeoutError'},
- browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{scriptResourcesSuspicious:[]}});
+ browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{metaRelease:'rel1',accessGate:false,scriptResourcesSuspicious:[]}});
 
 test('Szenario: einzelnes 503 auf Lazy-Skript im Browser -> Wiederholung; PASS ohne Rollback, FAIL mit Rollback',()=>{
  /* classify bekommt im Test keinen erwarteten Commit -> REAL; daher Klassifikation direkt mit Commit pruefen und Ausgabe vorgeben */
@@ -186,8 +186,12 @@ test('Szenario OFF-Modus: kein Rollback, kein Dispatch; disable bei REAL oder ge
  /* transient: Retry PASS -> weder disable noch Rollback, Job gruen */
  let r=simulate({approved:off,results:{gate_off:'failure'},reports:{off:stale},retry:'PASS'});
  assert(r.ran.has('retry')&&!ranHandler(r)&&!ranStop(r)&&!r.ran.has(conclude.name));assert.equal(r.jobFailed,false);
+ assert(!r.ran.has(record.name),'Record nur bei aktivem Verbraucher');
  r=simulate({approved:off,results:{deps:'failure'},retry:'PASS'});
- assert(!ranHandler(r)&&!ranStop(r)&&!r.jobFailed);
+ assert(!ranHandler(r)&&!ranStop(r)&&!r.jobFailed&&!r.ran.has(record.name));
+ /* retry-Schritt stuerzt NACH geschriebenem PASS ab: Schrittfehler zaehlt (failure()), Gate wird geschlossen, Job rot */
+ r=simulate({approved:off,results:{gate_off:'failure'},reports:{off:stale},retry:'PASS_THEN_CRASH'});
+ assert(ranStop(r)&&!ranHandler(r)&&r.jobFailed);
  /* transient: Retry FAIL/SKIPPED/CRASH -> disable, kein Rollback, Job rot */
  for(const retry of ['FAIL','SKIPPED','CRASH']){
   for(const results of [{gate_off:'failure'},{deps:'failure'}]){
@@ -215,6 +219,11 @@ test('Szenario: approved scheitert (Modus unbekannt) -> bisheriger Pfad; mit Not
 test('Szenario: Notaus-Eingabe bei aktivem Verbraucher (unmoeglich) bleibt ohne Handler wie bisher',()=>{
  const r=simulate({inputsOff:true,approved:A(),results:{live:'failure'},reports:{live:browser}});
  assert(!ranHandler(r));assert.equal(r.jobFailed,true);
+});
+
+test('Szenario Aktiv-Modus: retry stuerzt nach geschriebenem PASS ab -> fail-closed Rollback',()=>{
+ const r=simulate({approved:A(),results:{live:'failure'},reports:{live:stale},retry:'PASS_THEN_CRASH'});
+ assert(ranHandler(r)&&r.jobFailed);
 });
 
 test('Szenario: Fehler nach bestandener QA (Record scheitert) bleibt fail-closed: Rollback',()=>{

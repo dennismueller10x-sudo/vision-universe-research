@@ -21,7 +21,7 @@ export const DEFAULTS = Object.freeze({
  proofMaxS: 480,        // propagation-proof.mjs DEFAULTS.maxMs (8 min)
  installS: 540,         // install-browser-deps.mjs: 8 min Zeitlimit + Anlauf
  qaS: Object.freeze({routine: 300, full: 900, off: 300}),
- handlerReserveS: 300,  // Rollback + OFF-Dispatch + Artefakt-Upload nach der Wiederholung
+ handlerReserveS: 360,  // Rollback + OFF-Dispatch + Artefakt-Upload nach der Wiederholung; started_at liegt nach Checkout/Setup
  pauseInfraS: 30,
  maxAttempts: Object.freeze({[CLASSES.PROPAGATION]: 1, [CLASSES.INFRA]: 2, [CLASSES.BROWSER]: 2}),
  pauseBrowserS: 30      // vor jeder Browser-Wiederholung: kurzes 5xx soll abklingen; frischer Browser je Versuch

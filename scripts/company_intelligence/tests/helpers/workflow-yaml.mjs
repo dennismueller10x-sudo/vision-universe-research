@@ -86,6 +86,7 @@ function parseFlow(text, line) {
   const raw = text.slice(i, j).trim(); i = j;
   if (/^[&*!]/.test(raw)) fail('Anker/Alias/Tag im Flow', line);
   if (/[\[\]{}]/.test(raw)) fail('Klammer im Flow-Plain-Skalar', line);
+  if (/:(?:\s|$)/.test(raw) && !stops.includes(':')) fail('Flow-Map in Flow-Liste ("[a: b]") nicht unterstuetzt', line);
   return {v: raw, quoted: false};
  };
  const value = () => {

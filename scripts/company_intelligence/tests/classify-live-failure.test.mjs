@@ -173,6 +173,21 @@ test('Browser: alles andere bleibt REAL',()=>{
   protocolRelative:r=>{r.browserDiagnostics.http[0].url='//evil.example/a.js';},
   causeOtherUrl:r=>{r.browserDiagnostics.console[0]='A bad HTTP response code (503). LAZY_SCRIPT_FAILED:/discover/engines/other.js';},
   causeTwoUrlsOneOther:r=>{r.browserDiagnostics.console.push('LAZY_SCRIPT_FAILED:/discover/engines/other.js');},
+  http503Json:r=>{const u='/company-intelligence/data/index.json';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503Css:r=>{const u='/discover/app.css';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503UiJson:r=>{const u='/discover/ui/x.json';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503EnginesCss:r=>{const u='/discover/engines/x.css';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503AppJs:r=>{const u='/discover/app.js';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503TraversalLike:r=>{const u='/discover/engines/../app.js';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  consoleTrailingText:r=>{r.browserDiagnostics.console[0]+=' und mehr';},
+  consoleTwoNamedOneLine:r=>{r.browserDiagnostics.console[0]+=' LAZY_SCRIPT_FAILED:/discover/engines/other.js';},
+  consoleForeignPrefix:r=>{r.browserDiagnostics.console[0]='Irgendetwas (503) LAZY_SCRIPT_FAILED:/discover/engines/narrative.js';},
+  consoleGenericLoose:r=>r.browserDiagnostics.console.push('Something with status of 503 happened'),
+  consolePrefixStatusMismatch:r=>{r.browserDiagnostics.console[0]='A bad HTTP response code (502) was received when fetching the script. LAZY_SCRIPT_FAILED:/discover/engines/narrative.js';},
+  accessGate:r=>{r.pageState.accessGate=true;},
+  metaNull:r=>{r.pageState.metaRelease=null;},
+  metaMissing:r=>{delete r.pageState.metaRelease;},
+  markerError:r=>{r.markers=[{state:'ERROR'}];},
   noLazyNamed:r=>{r.browserDiagnostics.console=['A bad HTTP response code (503) was received'];},
   consoleUnexplained:r=>r.browserDiagnostics.console.push('Uncaught ReferenceError: x is not defined'),
   consoleOtherStatus:r=>r.browserDiagnostics.console.push('Failed to load resource: the server responded with a status of 403 ()'),
@@ -200,6 +215,14 @@ test('Browser: alles andere bleibt REAL',()=>{
  for(const [name,f] of Object.entries(cases))assert.equal(cb(mut(f)).class,REAL,name);
  assert.equal(cb(fixture(),null).class,REAL,'ohne erwarteten Commit nicht pruefbar');
  assert.equal(cb(fixture(),'f'.repeat(40)).class,REAL);
+});
+
+test('Browser: echte Lazy-Skript-Pfade (Discover/Quant/core/Company-Intelligence-Skripte) bleiben transient',()=>{
+ for(const u of ['/discover/engines/narrative.js?v=42e21a50739d2345','/discover/ui/detail.js','/quant/engines/multi-asset/market-pulse.js','/quant/ui/charts.js','/core/chart-history.js','/company-intelligence/ui/stock-section.js','/discover/detail.js']){
+  const r=mut(x=>{x.browserDiagnostics.http[0].url=u;x.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;x.browserDiagnostics.failed=[];x.pageState.scriptResourcesSuspicious=[];});
+  assert.equal(cb(r).class,T_BROWSER,u);
+ }
+ assert.equal(cb(mut(x=>{x.browserDiagnostics.console=['Failed to load resource: the server responded with a status of 503 ()','A bad HTTP response code (503) was received when fetching the script.','LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'];})).class,T_BROWSER);
 });
 
 test('Browser: Generische Konsolenmeldung mit passendem Status ist erlaubt, mit anderem Status nicht',()=>{

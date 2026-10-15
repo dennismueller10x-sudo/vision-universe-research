@@ -118,7 +118,7 @@ test('realAttempt: Zeitlimit je Befehl = Rest bis Reserve, nach der Installation
 test('Browser-HTTP: bis zu 2 Wiederholungen mit Pause davor; erneutes 5xx -> weiter, danach FAIL',async()=>{
  const B=CLASSES.BROWSER,SHA='a'.repeat(40);
  const again={status:'FAIL',cause:'BROWSER_ASSERTION_AFTER_PROVEN_PROPAGATION',sourceCommit:SHA,propagation:{status:'PROPAGATED'},error:{name:'TimeoutError'},
-  browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{scriptResourcesSuspicious:[]}};
+  browserDiagnostics:{console:['LAZY_SCRIPT_FAILED:/discover/engines/narrative.js'],pageErrors:[],failed:[],http:[{url:'/discover/engines/narrative.js',status:503,headers:{'content-type':'text/html'}}],truncated:{}},pageState:{metaRelease:'rel1',accessGate:false,scriptResourcesSuspicious:[]}};
  const sleeps=[];
  let s=scripted({ok:false,report:again},{ok:false,report:again},{ok:true});
  let r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(300),sleep:async ms=>sleeps.push(ms),attempt:s.attempt});
@@ -139,4 +139,11 @@ test('Browser-HTTP: bis zu 2 Wiederholungen mit Pause davor; erneutes 5xx -> wei
  s=scripted({ok:true});
  r=await runRetries({cls:B,qa:'live',expectedSha:SHA,startedAtS:T0,now:clock(JOB_TIMEOUT_S-60),attempt:s.attempt});
  assert.equal(r.result,'SKIPPED');
+});
+
+test('Handler-Reserve 360 s (started_at liegt nach Checkout/Setup)',()=>{
+ assert.equal(DEFAULTS.handlerReserveS,360);
+ const need=needSeconds(P,{qa:'live',full:false})+360;
+ assert.equal(budget({nowS:T0+JOB_TIMEOUT_S-need,startedAtS:T0,cls:P,qa:'live',full:false}).ok,true);
+ assert.equal(budget({nowS:T0+JOB_TIMEOUT_S-need+1,startedAtS:T0,cls:P,qa:'live',full:false}).ok,false);
 });

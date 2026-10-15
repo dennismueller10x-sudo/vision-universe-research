@@ -155,6 +155,8 @@ test('Laut statt still: nicht unterstuetzte Konstrukte werfen YamlSubsetError',(
  loud('yes: 1\n',/mehrdeutiger Schluessel/);
  loud('a: "x" y\n',/unerwartet/);
  loud('a: [*x]\n',/Anker/);
+ loud('a: [b: c]\n',/Flow-Map in Flow-Liste/);
+ loud('a: [x, b: c]\n',/Flow-Map in Flow-Liste/);
 });
 
 test('Wirft auch bei falsch eingerueckter Folgezeile statt zu raten',()=>{
