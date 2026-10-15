@@ -2,6 +2,9 @@ name: Company Intelligence Continuous Production Refresh
 on:
   schedule:
     - cron: '17 */4 * * *'
+    # Weitere Schedule-Slots gehoeren NICHT hierher: jeder Schedule-Lauf besetzt die
+    # Schreibergruppe, ein neuer wartender verdraengt den alten. Redundanz liefert
+    # company-intelligence-refresh-watchdog.yml (eigene Gruppe, dispatcht nur bei Veraltung).
   workflow_dispatch:
     inputs:
       verification:
@@ -12,6 +15,10 @@ on:
         description: 'Isolated full-universe scaling verification; requires verification'
         type: boolean
         default: false
+      financial:
+        description: 'Financial projection; true (default) keeps every dispatch as before'
+        type: boolean
+        default: true
   workflow_call:
     inputs:
       verification:
@@ -20,6 +27,9 @@ on:
       universe:
         type: boolean
         default: false
+      financial:
+        type: boolean
+        default: true
 permissions:
   contents: read
   actions: write
@@ -27,8 +37,41 @@ concurrency:
   group: company-intelligence-continuous-${{ inputs.verification && 'verification' || 'production' }}
   cancel-in-progress: false
 jobs:
-  refresh:
+  gate:
+    # Frische-Wache und zustandsbasiertes Finanz-Gate. Nur GitHub-Actions-Metadaten
+    # (keine R2-Zugriffe, keine Provider). Laeuft nach Erhalt der Concurrency-Gruppe,
+    # sieht also den Stand NACH dem vorherigen Lauf. Fehler -> run=true, financial=true.
     if: vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+      financial: ${{ steps.gate.outputs.financial }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout: |
+            scripts/company_intelligence
+            company-intelligence/config
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freshness guard and financial gate
+        id: gate
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_FINANCIAL: ${{ inputs.financial }}
+        run: node scripts/company_intelligence/scheduler-gate.mjs
+  refresh:
+    needs: gate
+    # Ohne klares Gate-Urteil (Fehler, uebersprungen) laeuft der Refresh: nur ein
+    # ausdrueckliches run=false ueberspringt ihn.
+    if: ${{ !cancelled() && vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs.gate.outputs.run != 'false' }}
     runs-on: ubuntu-latest
     # Measured full pipeline is 25 min before Pages wait and live QA.
     # Source/request budgets remain fixed; publication and rollback need headroom.
@@ -75,6 +118,7 @@ jobs:
           NODE_PATH: /tmp/ci-refresh/node_modules
           VERIFICATION: ${{ inputs.verification }}
           UNIVERSE: ${{ inputs.universe }}
+          FINANCIAL: ${{ needs.gate.outputs.financial }}
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -85,8 +129,16 @@ jobs:
           options=()
           if [ "$VERIFICATION" = true ]; then options+=(--verification); fi
           if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe --source-audit); fi
-          if [ $((10#$(date -u +%H) % 8)) = 0 ] || [ "$GITHUB_EVENT_NAME" != schedule ]; then options+=(--financial); fi
+          # Finanz-Refresh zustandsbasiert (scheduler-gate.mjs): nur ein ausdrueckliches
+          # FINANCIAL=false (Schedule-Urteil oder Dispatch-Eingabe) schaltet ihn aus;
+          # jede Unklarheit (leere Ausgabe, Gate-Fehler) laesst ihn an.
+          if [ "$FINANCIAL" != false ]; then options+=(--financial); fi
           node scripts/company_intelligence/refresh-run.mjs --temporary "$RUNNER_TEMP/ci-refresh" --identity-root .accepted-identities "${options[@]}"
+      - name: Record financial refresh decision
+        if: ${{ !cancelled() }}
+        env:
+          FINANCIAL: ${{ needs.gate.outputs.financial }}
+        run: echo "FINANCIAL_REFRESH=$([ "$FINANCIAL" != false ] && echo on || echo off)" >> "$GITHUB_STEP_SUMMARY"
       - name: Deploy existing Pages pipeline and verify actual production generation
         id: deploy_live
         if: inputs.verification != true
@@ -136,4 +188,22 @@ jobs:
             ${{ runner.temp }}/ci-refresh/candidate-qa.json
             ${{ runner.temp }}/ci-refresh/candidate-qa.json-failure.png
             ${{ runner.temp }}/ci-refresh/live-qa.json
+          retention-days: 14
+      - name: Mark successful run (mode and financial state for the next freshness guard)
+        if: success()
+        env:
+          VERIFICATION: ${{ inputs.verification }}
+          FINANCIAL: ${{ needs.gate.outputs.financial }}
+        run: |
+          mode=production; if [ "$VERIFICATION" = true ]; then mode=verification; fi
+          fin=financial; if [ "$FINANCIAL" = false ]; then fin=plain; fi
+          echo "$mode $fin" > "$RUNNER_TEMP/ci-refresh-mode.txt"
+          echo "MARKER=ci-refresh-mode-${GITHUB_RUN_ID}-${mode}-${fin}" >> "$GITHUB_ENV"
+      - name: Upload run marker
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.MARKER }}
+          path: ${{ runner.temp }}/ci-refresh-mode.txt
           retention-days: 14
