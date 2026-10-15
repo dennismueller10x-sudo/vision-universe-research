@@ -87,19 +87,28 @@ function extremeMonths(P, data) {
 }
 
 /** Raw-store re-read for a set of securities (provider adjustedClose, raw open/volume). Read-only, metered. */
+const stats = { ok: 0, missing: 0, errors: 0, lastError: null };
 async function rawReader(maxReads) {
   const Store = require(path.join(ROOT, 'quant/engines/history-store.js')), Guard = require(path.join(ROOT, 'quant/engines/zero-cost-guard.js'));
   const { createS3DriverFromEnv } = await import(pathToFileURL(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')).href);
-  const driver = createS3DriverFromEnv(process.env), budget = Guard.createBudget({ classAOperations: 0, classBOperations: maxReads + 10 });
+  const driver = createS3DriverFromEnv(process.env), budget = Guard.createBudget({ classAOperations: 0, classBOperations: 3 * maxReads + 10 });
   const main = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US', budget }), pit = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
   const [u, v] = await Promise.all([main.readUsage(), pit.readUsage()]);
   const usage = Guard.applyUsage(u, { classAOperations: v.classAOperations, classBOperations: v.classBOperations });
-  if (Guard.evaluate({ usage, estimate: Guard.estimateOperations({ kind: 'VALIDATION_ANALYZE', objectReads: maxReads }), operation: 'VALIDATION_ANALYZE' }).verdict !== Guard.ALLOWED) throw new Error('ZERO_COST_GUARD_BLOCKED');
+  if (Guard.evaluate({ usage, estimate: Guard.estimateOperations({ kind: 'VALIDATION_ANALYZE', objectReads: 3 * maxReads }), operation: 'VALIDATION_ANALYZE' }).verdict !== Guard.ALLOWED) throw new Error('ZERO_COST_GUARD_BLOCKED');
   return async (security) => {
-    const key = security.priceSource?.sourceKey;
-    const store = key && key.startsWith(pit.seriesPrefix) ? pit : main;
-    const symbol = key ? store.tickerFromKey(key) : security.ticker;
-    try { const series = await store.getSeries(symbol); return series?.bars ?? null; } catch { return null; }
+    const key = security.priceSource?.sourceKey, l = security.listing || {};
+    const candidates = [];
+    if (key && (key.startsWith(pit.seriesPrefix) || key.startsWith(main.seriesPrefix))) {
+      const store = key.startsWith(pit.seriesPrefix) ? pit : main;
+      candidates.push([store, store.tickerFromKey(key.slice(store.seriesPrefix.length).replace(/\.json\.(zst|gz)$/, ''))]);
+    }
+    if (l.startDate) candidates.push([pit, `${security.ticker}@${l.startDate}`]);
+    candidates.push([main, security.ticker]);
+    for (const [store, symbol] of candidates) {
+      try { const series = await store.getSeries(symbol); if (series?.bars?.length) { stats.ok++; return series.bars; } } catch (e) { stats.errors++; stats.lastError = String(e?.message || e).slice(0, 80); }
+    }
+    stats.missing++; return null;
   };
 }
 
@@ -120,19 +129,33 @@ const window = (bars, i, k = 5) => bars.slice(Math.max(0, i - k), i + k + 1);
 const SEVERITY = ['TICKER_IDENTITY_MISMATCH', 'LISTING_CHANGE', 'DECLARED_SPLIT_DATE_SHIFT', 'DECLARED_SPLIT_INCONSISTENT', 'UNDECLARED_REVERSE_SPLIT', 'PROVIDER_SPIKE', 'CURRENCY_OR_UNIT', 'STALE_PRICE',
   'CORPORATE_ACTION_MISMATCH', 'UNDECLARED_FORWARD_SPLIT_POSSIBLE', 'UNRESOLVED', 'CONFIRMED_SPLIT', 'GENUINE_PRICE_MOVE'];
 
-/** Explains one security-month: every suspicious day in (F, E], the most severe cause wins. */
-function explainMonth(rb, F, E, ctx) {
+/**
+ * Explains one security-month by its dominant day: the session with the largest |log| contribution of the canonical
+ * total-return index inside (F, E]. That day is explained on the raw series; a declared split whose day still moves
+ * the TR index by >= 1.8x is a normalization mismatch (the index does not follow the declared action).
+ */
+function explainMonth(rb, F, E, ctx, canon) {
   const days = [];
-  for (let i = 1; i < rb.length; i++) {
-    const b = rb[i]; if (b.date <= F || b.date > E) continue;
-    const r = rb[i - 1].close > 0 && b.close > 0 ? b.close / rb[i - 1].close : null;
-    const declared = finite(b.splitFactor) && Math.abs(b.splitFactor - 1) > 1e-9;
-    if (!declared && !(r && Math.abs(Math.log(r)) >= Math.log(PI.FORENSIC.jumpMinRatio))) continue;
-    const x = PI.explainDay(rb, i, ctx); if (x) days.push({ i, date: b.date, ...x });
+  for (let i = 1; i < canon.length; i++) {
+    const b = canon[i]; if (b.date <= F || b.date > E) continue;
+    const a = canon[i - 1]; if (!(a.totalReturnIndex > 0 && b.totalReturnIndex > 0)) continue;
+    days.push({ date: b.date, contribution: Math.log(b.totalReturnIndex / a.totalReturnIndex), declared: finite(b.splitFactor) && Math.abs(b.splitFactor - 1) > 1e-9 });
   }
-  if (!days.length) return { cause: 'GENUINE_PRICE_MOVE', confidence: 'MEDIUM', locus: 'NONE', outcome: 'ACCEPT', reasonCode: 'GENUINE_MOVE_NO_DATA_SIGNATURE', days: [], note: 'no single-day raw jump >= 3x and no declared split in the month (gradual move)' };
-  days.sort((a, b) => SEVERITY.indexOf(a.cause) - SEVERITY.indexOf(b.cause));
-  return { ...days[0], days };
+  const total = days.reduce((x, d) => x + d.contribution, 0);
+  days.sort((x, y) => Math.abs(y.contribution) - Math.abs(x.contribution));
+  const top = days.slice(0, 3).map((d) => ({ date: d.date, trRatio: r4(Math.exp(d.contribution)), declaredSplit: d.declared }));
+  const dom = days[0];
+  const base = { monthLogReturn: r4(total), dominantDays: top, dominantShare: dom && total ? r4(dom.contribution / total) : null };
+  if (!dom || Math.abs(dom.contribution) < Math.log(2)) return { cause: 'GENUINE_PRICE_MOVE', confidence: 'MEDIUM', locus: 'NONE', outcome: 'ACCEPT', reasonCode: 'GENUINE_MOVE_NO_DATA_SIGNATURE', days: [], ...base, note: 'no single session moves the TR index by 2x or more (gradual move)' };
+  const i = rb.findIndex((b) => b.date === dom.date);
+  const x = i > 0 ? PI.explainDay(rb, i, ctx) : null;
+  if (!x) return { cause: 'UNRESOLVED', confidence: 'LOW', locus: 'UNKNOWN', outcome: 'ACCEPT', reasonCode: 'DISCONTINUITY_COUNTED_NOT_PROVEN', days: [], ...base, note: 'dominant day not in the raw series' };
+  if (x.cause === 'CONFIRMED_SPLIT' && Math.abs(dom.contribution) >= Math.log(1.8)) {
+    return { ...x, cause: 'CORPORATE_ACTION_MISMATCH', locus: 'VU_NORMALIZATION', confidence: 'MEDIUM', policyClass: 'CONFLICTING_SPLIT', outcome: 'QUARANTINE', reasonCode: 'CORPORATE_ACTION_CONTRADICTED',
+      expected: 'TR index continuous across the declared split', observed: 'TR index x' + r4(Math.exp(dom.contribution)) + ' on the split day', days: [{ i, date: dom.date }], ...base };
+  }
+  if (x.cause === 'CONFIRMED_SPLIT') return { ...x, cause: 'GENUINE_PRICE_MOVE', days: [{ i, date: dom.date }], ...base };
+  return { ...x, days: [{ i, date: dom.date }], ...base };
 }
 /** What the new core (1.1.0) decides on the raw series up to and including day `upTo`. */
 function coreDecision(rb, upTo) {
@@ -148,6 +171,7 @@ const caseRecord = (s, rb, x, extra) => ({
   rawOhlc: x.days?.length ? window(rb.bars, x.days[0].i).map((b) => ({ date: b.date, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume, splitFactor: b.splitFactor, dividend: b.dividend, providerAdjustedClose: b.adjustedClose })) : [],
   adjustedOhlc: x.days?.length ? window(s.bars, Math.max(0, s.bars.findIndex((b) => b.date === x.days[0].date))).map((b) => ({ date: b.date, open: b.open, high: b.high, low: b.low, close: b.close, splitAdjustmentFactor: b.splitAdjustmentFactor, totalReturnIndex: b.totalReturnIndex })) : [],
   corporateActionRecords: rb.bars.filter((b) => finite(b.splitFactor) && Math.abs(b.splitFactor - 1) > 1e-9).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
+  monthAttribution: x.monthLogReturn !== undefined ? { monthLogReturn: x.monthLogReturn, dominantDays: x.dominantDays, dominantShare: x.dominantShare, note: x.note ?? null } : null,
   secShares: ctxOfShares(s), ...extra });
 const ctxOfShares = (s) => sharesOf(s).slice(-12);
 
@@ -183,7 +207,7 @@ export async function populationCore(P, before, binding, sameAsV4, makeReader, o
     const rb = rawBarsFor(s, await read(s)); inc(rawSources, rb.source);
     const ctx = ctxOf(s);
     for (const c of casesById.get(id) ?? []) {
-      const x = explainMonth(rb.bars, c.F, c.E, ctx);
+      const x = explainMonth(rb.bars, c.F, c.E, ctx, s.bars);
       cases.push({ kind: 'EXTREME_SECURITY_MONTH', month: c.month, ret: r4(c.ret), diagnosticClass: c.diagnosticClass, in83: c.diagnosticClass === 'UNDECLARED_RAW_JUMP_10X' || c.diagnosticClass === 'DECLARED_SPLIT_IN_MONTH',
         newCoreAtMonthEnd: coreDecision(rb.bars, c.E), ...caseRecord(s, rb, x, {}) });
     }
@@ -221,7 +245,7 @@ export async function populationCore(P, before, binding, sameAsV4, makeReader, o
     adjustedLevelGt1e6: { securities: highCases.length, byV4SanityClass: tally(highCases, 'v4SanityClass'), byCause: tally(highCases, 'highLevelCause'), firstUndeclaredJumpCause: tally(highCases.map((h) => ({ c: h.firstUndeclaredJump?.cause ?? 'NONE' })), 'c'),
       newCoreHolds: highCases.filter((h) => h.newCoreFull && h.newCoreFull.state !== 'TOTAL_RETURN_RECONSTRUCTED').length },
     dailyRawJumpCensus: { ...daily, byCause: tally(dailyCases, 'cause'), byLocus: tally(dailyCases, 'locus') },
-    beforeCoverage: priv.beforeCoverage, rawSources: priv.rawSources, privateSha256: sha(fs.readFileSync(path.join(o.private, 'population.json'))), performanceCalculated: false };
+    beforeCoverage: priv.beforeCoverage, rawSources: priv.rawSources, rawReads: stats, privateSha256: sha(fs.readFileSync(path.join(o.private, 'population.json'))), performanceCalculated: false };
   fs.mkdirSync(path.dirname(path.resolve(o.public)), { recursive: true });
   fs.writeFileSync(o.public, JSON.stringify(pub, null, 2) + '\n');
   process.stdout.write(JSON.stringify({ stage: 'population', sameAsV4, extremes: ext.counts, byClass: ext.byClass, in83: in83.length, high: highCases.length }) + '\n');
@@ -278,7 +302,7 @@ export async function rebuildCore(P, after, binding, makeReader, o) {
     highLevel: { total: highFate.length, presentAfter: highFate.filter((h) => h.presentAfter).length, legitimatePresentAfter: highFate.filter((h) => ['LEGITIMATE_HIGH_NOMINAL_PRICE', 'ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS'].includes(h.cause) && h.presentAfter && !h.afterQuarantine).length,
       legitimateTotal: highFate.filter((h) => ['LEGITIMATE_HIGH_NOMINAL_PRICE', 'ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS'].includes(h.cause)).length, newlyQuarantined: highFate.filter((h) => h.afterQuarantine && newHoldReasons.has(h.afterQuarantine.reason)).length },
     corporateActionConsistency: { undeclared10xJumpsInsideCanonicalBars: { after: jumps(after.data.securities) } },
-    privateSha256: sha(fs.readFileSync(path.join(o.private, 'rebuild.json'))), performanceCalculated: false, calibrationRun: false };
+    rawReads: stats, privateSha256: sha(fs.readFileSync(path.join(o.private, 'rebuild.json'))), performanceCalculated: false, calibrationRun: false };
   fs.writeFileSync(o.public, JSON.stringify(pub, null, 2) + '\n');
   process.stdout.write(JSON.stringify({ stage: 'rebuild', newHolds: pub.newHolds, known83: pub.known83 }) + '\n');
 }
