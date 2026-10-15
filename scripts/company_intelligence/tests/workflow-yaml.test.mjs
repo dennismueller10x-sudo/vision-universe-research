@@ -54,7 +54,9 @@ l: https://example.org/x?y=1#z
 m: \${{ a == 'x' && b }}
 neg: -5
 ver: v1.2.3
-`),{a:35,b:3.1,c:true,d:false,e:null,f:null,g:null,h:'22',i:'tab\there',j:"it's",k:'a # b',l:'https://example.org/x?y=1#z',m:"${{ a == 'x' && b }}",neg:-5,ver:'v1.2.3'});
+sha: 02f3a71ac0a4749f78c6a6f0fbe00a0cb8401d20
+exp: 1e3x
+`),{a:35,b:3.1,c:true,d:false,e:null,f:null,g:null,h:'22',i:'tab\there',j:"it's",k:'a # b',l:'https://example.org/x?y=1#z',m:"${{ a == 'x' && b }}",neg:-5,ver:'v1.2.3',sha:'02f3a71ac0a4749f78c6a6f0fbe00a0cb8401d20',exp:'1e3x'});
 });
 
 test('Block-Skalare | und > mit Chomping, leere Zeilen, Heredoc-Einrueckung',()=>{
@@ -143,6 +145,8 @@ test('Laut statt still: nicht unterstuetzte Konstrukte werfen YamlSubsetError',(
  loud('a: 0123\n',/mehrdeutig/);
  loud('a: 1_000\n',/mehrdeutig/);
  loud('a: .inf\n',/mehrdeutig/);
+ loud('a: 0x1F\n',/mehrdeutig/);
+ loud('a: 0b101\n',/mehrdeutig/);
  loud('a: x: y\n',/Doppelpunkt/);
  loud('a:\n\tb: 1\n',/Tab/);
  loud('- - a\n',/verschachtelte/);

@@ -28,7 +28,7 @@ function resolvePlain(text, line, {key = false} = {}) {
  if (/^(?:y|n|yes|no|on|off)$/i.test(text)) fail('mehrdeutiger Plain-Wert ' + text + ' (quotieren)', line);
  if (/^[-+]?(?:0|[1-9][0-9]*)$/.test(text)) return Number(text);
  if (/^[-+]?(?:[0-9]+\.[0-9]*|\.[0-9]+)$/.test(text) && !/^[-+]?0[0-9]/.test(text)) return Number(text);
- if (/^[-+]?(?:0[0-9_]|0b|0x|0o)/i.test(text) || /^[-+]?[0-9][0-9_]*_[0-9_]*$/.test(text) || /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+(?:\.[0-9_]*)?$/.test(text)
+ if (/^[-+]?(?:0[0-9_]+|0b[01_]+|0x[0-9a-fA-F_]+|0o[0-7_]+)$/i.test(text) || /^[-+]?[0-9][0-9_]*_[0-9_]*$/.test(text) || /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+(?:\.[0-9_]*)?$/.test(text)
   || /^[-+]?(?:\.inf|\.nan)$/i.test(text) || /^[-+]?[0-9][0-9_]*(?:\.[0-9_]*)?[eE][-+]?[0-9]+$/.test(text) || /^\d{4}-\d\d?-\d\d?(?:$|[Tt ]\d)/.test(text)
   || /^[-+]?[0-9_]*\.[0-9_]*$/.test(text)) fail('mehrdeutiger Plain-Wert ' + text, line);
  return text;
