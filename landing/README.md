@@ -36,29 +36,15 @@ node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 
 Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
-## Brevo: Schnittstelle erhalten, Einrichtung ausschließlich in PR #544
+## Brevo: Newsletter mit eigener Oberfläche und offizieller DOI-API
 
-[PR #544](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/544) verwaltet Brevo separat. **Keine zusätzliche Liste, kein zusätzliches Formular, kein API-Aufruf, Import oder Versand durch diesen PR.** Wiederverwendet werden seine geplante Liste **`VU | App-Warteliste`** und das Textattribut **`VU_SOURCE`**. Die Landingpage sendet künftig die Quelle **`Coming-soon-Landingpage`**. IDs und Accountzustand sind noch live ungeprüft; Bestandskontakte werden nicht automatisch Wartelistenkontakte.
+Das E-Mail-Feld, die Einwilligung, der Button und Rückmeldungen bleiben im Vision-Universe-Design. Kein Brevo-Formular oder Iframe. Ein schlanker Cloudflare-Pages-Endpunkt prüft die Anfrage und ruft ausschließlich Brevos offizielle DOI-API mit **Liste 4 – VU | Newsletter** auf. Brevo übernimmt Mail, Linkbestätigung, Kontaktverwaltung und die spätere Standardabmeldung. Kein D1 und keine eigene Abmeldedatenbank.
 
-Die vorhandene Schnittstelle bleibt ein nativer HTTPS-POST an den einfachen Brevo-HTML-Formularexport, ohne Backend und privaten API-Schlüssel. Aktuell ist das Fieldset deaktiviert und es gibt keine Formularaktion, auch ohne JavaScript. Keine Adresse wird entgegengenommen oder gespeichert, keine erfolgreiche Anmeldung erfunden.
+Jeder vorhandene Kontakt wird übersprungen – auch Abmeldungen, Sperren, interne Empfänger und ungeklärte Bestandswerte. Die 135 Altobjekte werden nicht verändert; Listen 5/6 und 13 Nicht-Abonnenten bleiben unberührt. Keine normalen Kontaktanlagen oder Entsperrungen als DOI-Ersatz. Neue deutsche [API-DOI-Vorlage **8**](mail/newsletter-api-doi.html) mit **`{{ params.DOIurl }}`** wurde angelegt und zurückgelesen; die native Formularvorlage 4 mit `{{ doubleoptin }}` bleibt unverändert erhalten und wird nicht dafür benutzt. Setup und unabhängiger API-Leseaudit bestätigen verschlüsselte Pages-Secrets, geschlossene Freigaben und unveränderte Kontakte **135 / 0 / 2**; keine Mails versendet.
 
-Vom bestehenden Brevo-Prozess noch zu liefern:
+**Öffentlich geschlossen.** Drei Runtime-Gates und der Build-Gate verlangen echten DOI-/Marketing-Abmeldetest und Freigabe des konkreten Datenschutztextes. Der kontrollierte Hauptdomain-Test benötigt einen privaten zeitlich begrenzten Zugang und den konkret freigegebenen Datenschutz; du gibst deine neue kontrollierte Adresse selbst ein. Eine neue Adressübergabe per GitHub-Secret ist dafür nicht nötig. Schlüssel liegen nur in verschlüsselten Runtime-Secrets und werden weder vom Build gelesen noch an Browser/Logs ausgegeben. [Zugriffsbelege, tatsächlicher Stand, genau ein nötiger Kontoschritt und Testablauf](NEWSLETTER.md).
 
-1. Den tatsächlich eingerichteten einfachen Formular-Export und dessen vollständige `action`-URL `https://<anbieter>.sibforms.com/serve/<signierter-pfad>`. Eine Formular-ID allein genügt nicht. **Ein vorhandenes für diese App-Anmeldung geeignetes Formular verwenden; kein paralleles Formular anlegen.**
-2. Zuordnung zur aus PR #544 vorhandenen `VU | App-Warteliste`, `EMAIL`, anfangs leere verpflichtende Einwilligung `OPT_IN` und vom Formular akzeptiertes `VU_SOURCE`. Abweichende Export-Feldnamen konkret prüfen, statt zu raten. Der vorhandene Brevo-Honeypot `email_address_check` bleibt erhalten; ein accountseitig nötiges CAPTCHA nicht entfernen.
-3. Verifiziertes Double-Opt-in, deutsche DOI-Mail, Abmeldelink und tatsächliche Anbieterbestätigung: zunächst zur E-Mail-Bestätigung auffordern. Vor DOI keinen bestätigten Status setzen. Die Einwilligungsattribute aus PR #544 erst nach echtem Nachweis setzen; bestehende Abmeldungen/Sperren berücksichtigen. Keine automatische Übernahme von Shopify-Bestandskontakten.
-4. Neue kontrollierte Adresse live testen: Validierung/Einwilligung, Empfang der DOI-Mail, unbestätigter Status vor dem Klick, richtige Liste/Quelle nach dem Klick, erneute Anmeldung, Abmeldung, Anbieterfehler. Keine Testadressen oder DOI-Daten in Git, Logs oder Artefakten.
-5. Passende geprüfte Datenschutzhinweise für das tatsächlich freigegebene Hosting und Brevo bereitstellen. Der vorhandene Shopify-/Shopify-Email-Text genügt hierfür nicht; die Vorschau ist ausdrücklich vorläufig. Die vollständigen Original-Rechtstexte wurden am 12.10.2026 vom Owner bereitgestellt und [unverändert archiviert](legal-source/README.md). Für App/Web-App-Abos werden [gesonderte Entwürfe](legal-drafts/README.md) vorbereitet; der aktuelle Landing-Datenschutz beschreibt weiterhin den Coming-soon-Betrieb mit gesperrtem Newsletter.
-
-`newsletter.config.example.json` nach `newsletter.config.json` kopieren (ignoriert), die tatsächliche Formularaktion eintragen, `doubleOptInVerified` erst nach Live-Test und `privacyReviewed` erst mit passendem geprüftem Rechtstext setzen. `sourceAttribute` ist standardmäßig `VU_SOURCE`; `privacyHtmlPath` verweist auf ein vollständiges deutsches freigegebenes HTML-Dokument. Ein mit `data-policy-status="draft"` markierter Text wird abgelehnt.
-
-```sh
-node scripts/build.mjs --config=newsletter.config.json
-# Erst für die spätere freigegebene öffentliche Veröffentlichung:
-node scripts/build.mjs --config=newsletter.config.json --production
-```
-
-Alternativ **öffentliche** Build-Variablen: `BREVO_FORM_ACTION`, `BREVO_DOUBLE_OPT_IN_VERIFIED=true`, `BREVO_SOURCE_ATTRIBUTE=VU_SOURCE`, `LANDING_PRIVACY_REVIEWED=true`, `LANDING_PRIVACY_HTML_PATH`. Kein `BREVO_API_KEY` in dieser Anwendung. Unbekannte Konfigurationsfelder werden abgelehnt. Ohne freigegebene Datenschutzhinweise blockiert der Produktionsbuild; Vorbereitungsbuilds bleiben `noindex`.
+Missbrauchsschutz: gleiche Herkunft, Eingabe-/Größenprüfung, Honeypot, HMAC-Zähler und Reservierung im Edge-Cache, Brevo-Sperr-/Versandabgleich und anfängliches DOI-Budget. Die Cache-Sperren wirken pro Rechenzentrum und sind nicht global atomar; Brevo-Statistiken können verzögert sein. WAF-Regeln sind mit den vorhandenen Tokens nicht lesbar und werden nicht als eingerichtet behauptet. Keine zusätzliche WAF-/Turnstile-/D1-/Token-Einrichtung verlangt.
 
 ## Historische GitHub-Pages-Vorbereitung
 

@@ -12,7 +12,7 @@ import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
 import {approval} from './production-approval.mjs';
 import {preflight,prefixFor} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
-import {refreshConfig,frozenInventory,refreshApproved,freshness} from './refresh-approval.mjs';
+import {refreshConfig,frozenInventory,refreshApproved,freshness,runSLO,evaluateHealth} from './refresh-approval.mjs';
 import {goodState,goodView,downloadGood,prepareCandidate,commitGood,rollbackGood,goodKey} from './refresh-storage.mjs';
 import {activeGood,activeNamespace,universeActive,activationKey} from './refresh-storage.mjs';
 import {universeConfig} from './universe-approval.mjs';
@@ -176,7 +176,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  }
  const observed=await driver.get(prefixFor(consumerNamespace)+'observed.json').catch(()=>null);
  report.lastSuccessfulProductionPublication=observed?JSON.parse(observed).lastSuccessfulProductionPublication:null;
- report.refreshSLO=freshness(report.health?.lastSuccessfulRefresh);report.publicationSLO=freshness(report.lastSuccessfulProductionPublication);
+ Object.assign(report,runSLO(report));report.publicationSLO=freshness(report.lastSuccessfulProductionPublication);
  report.finishedAt=new Date().toISOString();report.durationSeconds=Math.round((Date.now()-start)/1000);save(join(root,'health.json'),report);
  if(process.env.GITHUB_STEP_SUMMARY){
   let sourceSummary='';
@@ -188,7 +188,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  return report;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=createS3DriverFromEnv();
+ const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=args[0]==='health'?null:createS3DriverFromEnv();
  try{
   if(args[0]==='rollback'){
    const ns=await activeNamespace(driver);const r=await rollbackGood(driver,ns);
@@ -196,20 +196,27 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    console.log(JSON.stringify(r));
   }
   else if(args[0]==='health'){
-   const ns=await activeNamespace(driver),good=await goodState(driver,ns),raw=await driver.get(prefixFor(ns)+'observed.json');
-   const observed=raw?JSON.parse(raw):{};
-   const production=await productionObservation(good,observed);
-   const status={schema:1,checkedAt:new Date().toISOString(),generation:good?.generation||null,
-    lastSuccessfulPrivateRefresh:good?.health.lastSuccessfulRefresh||null,
-    lastSuccessfulConsumerBuild:good?.health.lastSuccessfulConsumerBuild||null,
-    lastSuccessfulProductionPublication:production.state==='VERIFIED'?(observed.lastSuccessfulProductionPublication||null):null,
-    productionState:production.state,servedGeneration:production.servedGeneration};
-   status.refreshSLO=freshness(status.lastSuccessfulPrivateRefresh);status.buildSLO=freshness(status.lastSuccessfulConsumerBuild);status.publicationSLO=freshness(status.lastSuccessfulProductionPublication);
-   status.status=[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('CRITICAL')?'CRITICAL':[status.refreshSLO,status.buildSLO,status.publicationSLO].includes('WARNING')?'WARNING':'HEALTHY';
-   if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));
-   if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,JSON.stringify(status,null,2)+'\n');
-   if(status.status==='CRITICAL')process.exitCode=1;
-   if(status.status==='WARNING')console.log('::warning::Company Intelligence successful refresh/publication older than eight hours');
+   // Crash (exception) and SLO verdict are different results: CRITICAL -> exit 1,
+   // a crashed check -> exit 2 with `::error::health crashed`.
+   try{
+    const driver=createS3DriverFromEnv();
+    const ns=await activeNamespace(driver),good=await goodState(driver,ns),raw=await driver.get(prefixFor(ns)+'observed.json');
+    const observed=raw?JSON.parse(raw):{};
+    const gate={read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration};
+    const production=await productionObservation(good,observed,fetch,gate);
+    const status=evaluateHealth(good,observed,production);
+    if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));
+    if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,JSON.stringify(status,null,2)+'\n');
+    process.exitCode=status.exitCode;
+    if(status.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${status.refreshSLO}, build ${status.buildSLO}, publication ${status.publicationSLO}, production ${status.productionState}${status.productionReason?'/'+status.productionReason:''})`);
+    if(status.status==='WARNING')console.log('::warning::Company Intelligence successful refresh/publication older than eight hours');
+    if(status.status==='OFF')console.log('::notice::Company Intelligence production is deliberately OFF (gate DISABLED, delivery absent); refresh and build freshness are still within SLO');
+   }catch(error){
+    const code=/^[A-Z0-9_:-]+$/.test(error?.message||'')?error.message:(error?.code||error?.name||'UNKNOWN');
+    console.log(`::error::health crashed (${code}); no SLO verdict was produced`);
+    if(args.includes('--out'))try{save(arg('--out'),{schema:1,checkedAt:new Date().toISOString(),status:'CRASHED',exitCode:2,crashCode:String(code)});}catch{}
+    process.exitCode=2;
+   }
   }
   else if(args[0]==='observe'){
    const origin='https://research.visionuniverse.de',d=await(await fetch(origin+'/company-intelligence-delivery.json?observe='+Date.now())).json();
