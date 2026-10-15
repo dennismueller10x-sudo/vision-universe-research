@@ -32,7 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     # Measured full pipeline is 25 min before Pages wait and live QA.
     # Source/request budgets remain fixed; publication and rollback need headroom.
-    timeout-minutes: 60
+    # Publication proof waits up to 42 min (refresh-publication.mjs), bounded by the 50 min deploy_live step timeout.
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -87,8 +88,8 @@ jobs:
           if [ "$UNIVERSE" = true ] && [ "$VERIFICATION" = true ]; then options+=(--universe --source-audit); fi
           if [ $((10#$(date -u +%H) % 8)) = 0 ] || [ "$GITHUB_EVENT_NAME" != schedule ]; then options+=(--financial); fi
           node scripts/company_intelligence/refresh-run.mjs --temporary "$RUNNER_TEMP/ci-refresh" --identity-root .accepted-identities "${options[@]}"
-      # Only a cleanly read, valid production gate with state DISABLED skips live verification: with the gate
-      # closed there is no production to verify (delivery.json is not served) and no fail-closed action to take.
+      # Only a cleanly read, valid production gate with state DISABLED or STAGED skips live verification: with the
+      # gate closed there is no production to verify (delivery.json is not served) and no fail-closed action to take.
       # Any read failure keeps the strict VERIFY path (scripts/company_intelligence/refresh-publication.mjs).
       - name: Production gate decides whether this refresh can be verified live
         id: publication_plan
@@ -102,10 +103,12 @@ jobs:
         run: node scripts/company_intelligence/refresh-publication.mjs plan
       - name: Production gate closed; refreshed data stays private until an explicit enable
         if: inputs.verification != true && steps.publication_plan.outputs.mode == 'GATE_CLOSED'
-        run: echo "::notice::Company Intelligence production gate is DISABLED; the refreshed GOOD stays private and is verified live only after an explicit production_release=enable."
+        run: echo "::notice::Company Intelligence production gate is closed (DISABLED or STAGED); the refreshed GOOD stays private and is verified live only after an explicit production_release=enable."
       - name: Deploy existing Pages pipeline and verify actual production generation
         id: deploy_live
         if: inputs.verification != true && steps.publication_plan.outputs.mode == 'VERIFY'
+        # A step timeout is a step failure, so the fail-closed step below still runs (a job timeout would skip it).
+        timeout-minutes: 50
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_PATH: /tmp/ci-refresh/node_modules
@@ -119,7 +122,11 @@ jobs:
           gh workflow run pages-release.yml --ref main
           # delivery.json and refresh.json must both carry the new generation without interruption for a full
           # Fastly cache window (max-age=600, query not part of the cache key) before the live QA reads them.
-          node scripts/company_intelligence/refresh-publication.mjs await --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/publication.json"
+          # Exit 3: the gate was cleanly read as closed while waiting (e.g. fail-closed of a parallel Pages run);
+          # there is no production left to verify and a second rollback would be wrong.
+          rc=0;node scripts/company_intelligence/refresh-publication.mjs await --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/publication.json" || rc=$?
+          if [ "$rc" = 3 ]; then exit 0; fi
+          if [ "$rc" != 0 ]; then exit "$rc"; fi
           node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
           node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json"
       - name: Fail closed on actual production regression

@@ -11,27 +11,35 @@
       loeste Rollback und Abschaltung erneut aus.
 
    REGELN:
-   - publicationPlan: nur ein sauber gelesenes, gueltiges Gate mit state DISABLED ergibt GATE_CLOSED (keine Live-
-     Verifikation, kein Fail-closed: es gibt keine Produktion zu pruefen). Alles andere, auch Lesefehler, bleibt VERIFY.
+   - publicationPlan: nur ein sauber gelesenes, gueltiges Gate mit state DISABLED oder STAGED ergibt GATE_CLOSED
+     (stageProduction liefert dann kein delivery.json aus; keine Live-Verifikation, kein Fail-closed: es gibt keine
+     Produktion zu pruefen). AVAILABLE und jeder unklare Zustand (Lesefehler, fehlend, ungueltig) bleiben VERIFY.
    - awaitConsistentPublication: delivery.json UND refresh.json muessen die erwartete Generation tragen, und zwar
      ununterbrochen ueber ein volles Cache-Fenster (stableMs > max-age). Jede Abweichung startet das Fenster neu.
-     Nach maxMs: PRODUCTION_PUBLICATION_SLO_FAILED mit Beobachtungen (Generation, Status, Edge, age) als Beleg.
+     Zwei Fristen: bis zur ERSTEN Beobachtung der neuen Generation (Warteschlange + Build + Deploy) gilt
+     propagationMs; ab dieser ersten Beobachtung haben veraltete Edge-Kopien hoechstens cacheMs Restlaufzeit, danach
+     muss das Fenster stableMs halten (settleMs = cacheMs + stableMs + Reserve). Danach
+     PRODUCTION_PUBLICATION_SLO_FAILED mit Beobachtungen (Generation, Status, Edge, age) als Beleg.
+     Zeitmessung monoton (performance.now), Zeitspruenge der Wanduhr verkuerzen kein Fenster.
    Keine Pruefung wird gelockert: die anschliessende Live-QA (refresh-qa.mjs --live) laeuft unveraendert. */
 import {pathToFileURL} from 'node:url';
 import {readGateState} from './production-observation.mjs';
 
 export const PUBLICATION_DEFAULTS=Object.freeze({
  origin:'https://research.visionuniverse.de',
- maxMs:25*60000,        // harte Obergrenze; Job-Timeout 60 min
+ propagationMs:20*60000, // bis zur ersten Beobachtung: Warteschlange pages-production + Build (~10 min) + Deploy
+ cacheMs:600000,         // cache-control max-age=600 der Pages-Auslieferung
+ stableMs:630000,        // ununterbrochen konsistent: max-age plus 30 s Reserve
+ reserveMs:60000,
  intervalMs:10000,
- stableMs:630000,       // max-age=600 plus 30 s Reserve
  requestTimeoutMs:15000,
  keepObservations:60
 });
+export const CLOSED_GATE_STATES=Object.freeze(['DISABLED','STAGED']);
 
 export async function publicationPlan(gate){
  const g=await readGateState(gate).catch(()=>({gateState:null,gateReason:'GATE_READ_FAILED'}));
- return {mode:g.gateState==='DISABLED'?'GATE_CLOSED':'VERIFY',gateState:g.gateState,gateReason:g.gateReason};
+ return {mode:CLOSED_GATE_STATES.includes(g.gateState)?'GATE_CLOSED':'VERIFY',gateState:g.gateState,gateReason:g.gateReason};
 }
 
 async function readGeneration(ctx,path){
@@ -45,35 +53,45 @@ async function readGeneration(ctx,path){
 }
 
 export async function awaitConsistentPublication(expected,opts={}){
- const ctx={...PUBLICATION_DEFAULTS,fetch:globalThis.fetch,now:Date.now,sleep:ms=>new Promise(r=>setTimeout(r,ms)),...opts};
+ const ctx={...PUBLICATION_DEFAULTS,fetch:globalThis.fetch,now:()=>performance.now(),sleep:ms=>new Promise(r=>setTimeout(r,ms)),...opts};
  if(typeof expected!=='string'||!expected)throw Error('EXPECTED_GENERATION_REQUIRED');
- const start=ctx.now(),deadline=start+ctx.maxMs,observations=[];let since=null,mismatches=0,firstMismatch=null;
+ const start=ctx.now(),observations=[],settleMs=ctx.cacheMs+ctx.stableMs+ctx.reserveMs;
+ let since=null,firstSeen=null,mismatches=0,firstMismatch=null,lastMismatch=null;
+ const deadline=()=>firstSeen===null?start+ctx.propagationMs:firstSeen+settleMs;
+ const evidence=at=>({expected,elapsedMs:Math.round(at-start),firstSeenMs:firstSeen===null?null:Math.round(firstSeen-start),stableSinceMs:since===null?null:Math.round(since-start),mismatches,firstMismatch,lastMismatch,observations});
  for(;;){
   const delivery=await readGeneration(ctx,'/company-intelligence-delivery.json'),refresh=await readGeneration(ctx,'/company-intelligence-refresh.json');
   const at=ctx.now(),consistent=delivery.generation===expected&&refresh.generation===expected;
-  observations.push({atMs:at-start,consistent,delivery:delivery.generation,refresh:refresh.generation,deliveryStatus:delivery.status,refreshStatus:refresh.status,deliveryEdge:delivery.edge??null,refreshEdge:refresh.edge??null,deliveryAge:delivery.age??null,refreshAge:refresh.age??null});
-  if(!consistent){mismatches++;firstMismatch??=observations.at(-1);}
+  const o={atMs:Math.round(at-start),consistent,delivery:delivery.generation,refresh:refresh.generation,deliveryStatus:delivery.status,refreshStatus:refresh.status,deliveryEdge:delivery.edge??null,refreshEdge:refresh.edge??null,deliveryAge:delivery.age??null,refreshAge:refresh.age??null};
+  observations.push(o);
+  if(firstSeen===null&&(delivery.generation===expected||refresh.generation===expected))firstSeen=at;
+  if(!consistent){mismatches++;firstMismatch??=o;lastMismatch=o;}
   if(observations.length>ctx.keepObservations)observations.splice(0,observations.length-ctx.keepObservations);
   since=consistent?(since??at):null;
-  if(consistent&&at-since>=ctx.stableMs)return {status:'PUBLISHED',generation:expected,stableMs:at-since,elapsedMs:at-start,mismatches,firstMismatch,observations};
-  if(at>=deadline){const e=Error('PRODUCTION_PUBLICATION_SLO_FAILED');e.evidence={expected,elapsedMs:at-start,stableSinceMs:since===null?null:since-start,mismatches,firstMismatch,observations};throw e;}
-  await ctx.sleep(Math.max(0,Math.min(ctx.intervalMs,deadline-at)));
+  if(consistent&&at-since>=ctx.stableMs)return {status:'PUBLISHED',generation:expected,stableMs:Math.round(at-since),...evidence(at)};
+  if(at>=deadline()){const e=Error('PRODUCTION_PUBLICATION_SLO_FAILED');e.evidence=evidence(at);throw e;}
+  await ctx.sleep(Math.max(0,Math.min(ctx.intervalMs,deadline()-at)));
  }
 }
+
+/* Gate aus R2 lesen (gleicher Schluessel wie production-release.mjs). Fehler fuehren zu VERIFY. */
+export async function readPlanFromEnv(){
+ try{
+  const {createS3DriverFromEnv}=await import('../market/storage/s3-driver.mjs');
+  const {approval}=await import('./production-approval.mjs');
+  const {prefixFor}=await import('./public-delivery.mjs');
+  const driver=createS3DriverFromEnv();
+  return await publicationPlan({read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration});
+ }catch{return {mode:'VERIFY',gateState:null,gateReason:'GATE_READ_FAILED'};}
+}
+export const EXIT_GATE_CLOSED_DURING_VERIFICATION=3;
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const {readFileSync,writeFileSync}=await import('node:fs');
  const args=process.argv.slice(2),arg=k=>args.includes(k)?args[args.indexOf(k)+1]:null;
  if(args[0]==='plan'){
   // Lesefehler (fehlende Zugangsdaten, R2 nicht erreichbar) ergeben VERIFY: der bisherige strenge Pfad bleibt.
-  let plan={mode:'VERIFY',gateState:null,gateReason:'GATE_NOT_CHECKED'};
-  try{
-   const {createS3DriverFromEnv}=await import('../market/storage/s3-driver.mjs');
-   const {approval}=await import('./production-approval.mjs');
-   const {prefixFor}=await import('./public-delivery.mjs');
-   const driver=createS3DriverFromEnv();
-   plan=await publicationPlan({read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration});
-  }catch(error){plan.gateReason='GATE_READ_FAILED';}
+  const plan=await readPlanFromEnv();
   console.log(JSON.stringify(plan));
   if(process.env.GITHUB_OUTPUT)writeFileSync(process.env.GITHUB_OUTPUT,`mode=${plan.mode}\n`,{flag:'a'});
  }else if(args[0]==='await'){
@@ -81,11 +99,15 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
    const r=await awaitConsistentPublication(expected);
    if(out)writeFileSync(out,JSON.stringify(r,null,1)+'\n');
-   console.log(JSON.stringify({status:r.status,generation:r.generation,stableMs:r.stableMs,elapsedMs:r.elapsedMs,mismatches:r.mismatches}));
+   console.log(JSON.stringify({status:r.status,generation:r.generation,stableMs:r.stableMs,elapsedMs:r.elapsedMs,firstSeenMs:r.firstSeenMs,mismatches:r.mismatches}));
   }catch(error){
-   if(out)writeFileSync(out,JSON.stringify({status:'FAILED',error:error.message,...(error.evidence||{})},null,1)+'\n');
-   console.log('::error::'+error.message+(error.evidence?` (expected ${error.evidence.expected}, last ${JSON.stringify(error.evidence.observations.at(-1)||null)})`:''));
-   process.exitCode=1;
+   // Wurde das Gate waehrend des Wartens geschlossen (z. B. Fail-closed eines parallelen Pages-Laufs), gibt es keine
+   // Produktion mehr zu pruefen; ein zweiter Rollback waere falsch. Nur ein sauber gelesenes geschlossenes Gate zaehlt.
+   const plan=error.message==='PRODUCTION_PUBLICATION_SLO_FAILED'?await readPlanFromEnv():{mode:'VERIFY'};
+   const closed=plan.mode==='GATE_CLOSED';
+   if(out)writeFileSync(out,JSON.stringify({status:closed?'GATE_CLOSED_DURING_VERIFICATION':'FAILED',error:error.message,gate:plan,...(error.evidence||{})},null,1)+'\n');
+   if(closed){console.log(`::notice::Production gate became ${plan.gateState} while waiting; no live verification and no rollback.`);process.exitCode=EXIT_GATE_CLOSED_DURING_VERIFICATION;}
+   else{console.log('::error::'+error.message+(error.evidence?` (expected ${error.evidence.expected}, first seen ${error.evidence.firstSeenMs} ms, last mismatch ${JSON.stringify(error.evidence.lastMismatch)})`:''));process.exitCode=1;}
   }
  }else{console.error('usage: refresh-publication.mjs plan | await --health <health.json> [--out <file>]');process.exitCode=2;}
 }
