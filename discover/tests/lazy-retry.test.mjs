@@ -1,5 +1,10 @@
 /* Kontrollierte Wiederholung transienter Server-Fehler beim Nachladen von Skripten (discover/ui/lazy.js).
-   Fake-DOM, virtuelle Zeit, kein Netz. Browserlauf: scripts/discover/browser-qa.mjs (Discover Frontend CI). */
+   Fake-DOM, virtuelle Zeit, kein Netz. Das Fake bildet nach, was in Chromium gemessen wurde:
+   - <link rel=preload as=script>: ein erfolgreicher Treffer wird vom naechsten <script> derselben Adresse ohne Netz genutzt,
+     ein fehlgeschlagener Treffer laesst genau diesen naechsten Ladeversuch ohne Netz scheitern.
+   - <script async=false>: ein Fehler (onerror) hindert Nachfolger nicht an der Ausfuehrung - deshalb haengt lazy.js sie erst
+     nach dem Vorgaenger an. Das Fake meldet `overlap`, wenn ein Skript eingefuegt wird, waehrend ein anderes noch laedt.
+   Der Browserlauf (echtes Chromium, echte Gruppenlisten): scripts/discover/browser-qa.mjs (Discover Frontend CI). */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -10,13 +15,13 @@ import vm from 'node:vm';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const source = readFileSync(join(root, 'discover/ui/lazy.js'), 'utf8');
 
-/* statuses: Adresse -> Liste der Antworten je Versuch (200 = laedt, 'net' = Netzfehler, Zahl = HTTP-Status).
-   Die Probe (HEAD) liefert den Status des zuletzt fehlgeschlagenen Versuchs; 'net' -> fetch lehnt ab. */
+/* statuses: Adresse -> Antworten je Netzabruf (200 | HTTP-Status | 'net' | 'probe200' = Skriptfehler, Probe meldet 200).
+   options.groups: Name -> Skriptliste; options.exec: Adresse -> Funktion(context) bei Ausfuehrung;
+   options.preload=false: Browser ohne Vorladen; options.hangProbe: fetch antwortet nie; options.noFetch. */
 function world(statuses, options = {}) {
-  const appended = [], removed = [], probes = [], sleeps = [], warnings = [];
-  const attempts = {};
-  let clock = 0, pending = [], seq = 0;
-  const lastStatus = {};
+  const appended = [], removed = [], links = [], probes = [], sleeps = [], warnings = [], executed = [], requests = [];
+  const calls = {}, lastStatus = {}, preloaded = new Set(), failedPreload = new Set();
+  let clock = 0, pending = [], seq = 0, inflight = 0, overlap = false;
   const fakeTimeout = (fn, ms) => { const id = ++seq; pending.push({ id, fn, at: clock + (ms || 0) }); return id; };
   const fakeClear = id => { pending = pending.filter(t => t.id !== id); };
   const pump = () => new Promise(resolve => setImmediate(() => {
@@ -26,20 +31,50 @@ function world(statuses, options = {}) {
     if (next.at > clock) { sleeps.push(next.at - clock); clock = next.at; }
     next.fn(); resolve(true);
   }));
+  const network = url => {
+    requests.push(url);
+    const list = statuses[url.split('?')[0]] || [200];
+    const n = calls[url] = (calls[url] || 0) + 1;
+    return lastStatus[url] = list[Math.min(n, list.length) - 1];
+  };
+  let context;
   const document = {
     readyState: 'complete',
     head: { appendChild(node) {
+      if (node.rel === 'preload') {
+        links.push(node.href);
+        const outcome = network(node.href);
+        setImmediate(() => { if (outcome === 200) { preloaded.add(node.href); node.onload(); } else { failedPreload.add(node.href); node.onerror(); } });
+        return;
+      }
       appended.push(node.src);
-      const list = statuses[node.src.split('?')[0]] || [200];
-      const n = attempts[node.src] = (attempts[node.src] || 0) + 1;
-      const outcome = list[Math.min(n, list.length) - 1];
-      lastStatus[node.src] = outcome;
-      setImmediate(() => (outcome === 200 ? node.onload() : node.onerror()));
+      if (inflight > 0) overlap = true;
+      inflight++;
+      let outcome;
+      if (preloaded.delete(node.src)) outcome = 200;
+      else if (failedPreload.delete(node.src)) outcome = lastStatus[node.src];
+      else outcome = network(node.src);
+      setImmediate(() => {
+        inflight--;
+        if (outcome === 200) {
+          executed.push(node.src.split('?')[0]);
+          const hook = options.exec && options.exec[node.src.split('?')[0]];
+          if (hook) hook(context);
+          node.onload();
+        } else node.onerror();
+      });
     } },
-    getElementById: id => /^dx-lazy-/.test(id) ? { content: { querySelectorAll: () => ((options.groups && options.groups[id.slice(8)]) || options.group || []).map(src => ({ getAttribute: () => src })) } } : null,
-    createElement: () => ({ remove() { removed.push(this.src); } }), addEventListener() {}
+    getElementById: id => {
+      const name = id.replace('dx-lazy-', '');
+      const list = options.groups ? options.groups[name] : (options.group || null);
+      return /^dx-lazy-/.test(id) && list ? { content: { querySelectorAll: () => list.map(src => ({ getAttribute: () => src })) } } : null;
+    },
+    createElement: tag => tag === 'link'
+      ? { relList: options.preload === false ? undefined : { supports: () => true }, remove() { removed.push('link:' + this.href); } }
+      : { remove() { removed.push('script:' + this.src); } },
+    addEventListener() {}
   };
-  const context = {
+  context = {
     document, location: { hash: '', reload() {} }, sessionStorage: { getItem: () => null, setItem() {} }, navigator: {},
     setTimeout: fakeTimeout, clearTimeout: fakeClear, module: { exports: {} }, addEventListener() {}, removeEventListener() {},
     Date: { now: () => clock }, Math: { random: () => options.random ?? 0, floor: Math.floor, min: Math.min },
@@ -49,151 +84,198 @@ function world(statuses, options = {}) {
     context.AbortController = class { constructor() { this.signal = {}; } abort() {} };
     context.fetch = (src, init) => {
       probes.push({ src, method: init.method, cache: init.cache });
+      if (options.hangProbe) return new Promise(() => {});
       const outcome = lastStatus[src];
       if (outcome === 'probe200') return Promise.resolve({ status: 200 });
       if (outcome === 'net') return Promise.reject(new TypeError('Failed to fetch'));
-      return Promise.resolve({ status: outcome, text() { throw new Error('Body darf nie gelesen werden'); }, json() { throw new Error('Body darf nie gelesen werden'); } });
+      return Promise.resolve({ status: outcome, text() { throw new Error('Body darf nie gelesen werden'); } });
     };
   }
   context.globalThis = context;
   vm.runInNewContext(source, context);
   const run = async promise => {
     let result;
-    const guarded = promise.then(v => (result = { ok: true, value: v }), e => (result = { ok: false, error: e }));
+    promise.then(v => (result = { ok: true, value: v }), e => (result = { ok: false, error: e }));
     while (!result) { await pump(); }
-    await guarded;
     return result;
   };
-  return { api: context.module.exports, appended, removed, probes, sleeps, warnings, run, clock: () => clock };
+  return { api: context.module.exports, appended, removed, links, probes, sleeps, warnings, executed, requests, context, run, clock: () => clock, overlap: () => overlap };
 }
 const U = '/discover/engines/narrative.js';
 const loadOne = w => w.api.load('g');
+const one = [U];
 
-test('503 beim ersten Versuch, dann ok: Erfolg nach 1 Wiederholung, 1 Probe, Knoten entfernt', async () => {
-  const w = world({ [U]: [503, 200] }, { group: [U] });
-  const r = await w.run(loadOne(w));
-  assert.equal(r.ok, true);
-  assert.equal(w.appended.length, 2);
-  assert.deepEqual(w.removed, [U]);
+test('503 beim ersten Abruf, dann ok: Erfolg, 1 Probe, Wiederholung nach 300 ms, Knoten entfernt', async () => {
+  const w = world({ [U]: [503, 200] }, { group: one });
+  assert.equal((await w.run(loadOne(w))).ok, true);
   assert.deepEqual(w.probes, [{ src: U, method: 'HEAD', cache: 'no-store' }]);
   assert.deepEqual(w.sleeps, [300]);
+  assert.deepEqual(w.executed, [U], 'ausgefuehrt genau einmal');
+  assert.ok(w.removed.includes('script:' + U), 'fehlgeschlagener Skriptknoten wird entfernt');
+  assert.ok(w.removed.includes('link:' + U), 'Vorlade-Knoten wird entfernt');
 });
 
-test('503 dreimal: genau 3 Versuche, 2 Proben, Fehler LAZY_SCRIPT_FAILED mit Originalursache, Gesamtdauer begrenzt', async () => {
-  const w = world({ [U]: [503] }, { group: [U], random: 0.999 });
+test('503 immer: genau 3 Ladeversuche, 2 Proben, LAZY_SCRIPT_FAILED mit Originalursache, Gesamtdauer begrenzt', async () => {
+  const w = world({ [U]: [503] }, { group: one, random: 0.999 });
   const r = await w.run(loadOne(w));
   assert.equal(r.ok, false);
   assert.match(r.error.message, /^LAZY_SCRIPT_FAILED:\/discover\/engines\/narrative\.js$/);
   assert.equal(r.error.attempts, 3);
   assert.equal(r.error.status, 503);
-  assert.equal(w.appended.length, 3);
   assert.equal(w.probes.length, 2);
-  assert.equal(w.removed.length, 3, 'kein Muell im DOM');
+  assert.equal(w.requests.length, 3, 'ein Abruf (Vorladen) + zwei Wiederholungen des Skripts');
   assert.deepEqual(w.sleeps, [399, 999]);
   assert.ok(w.clock() < 4000, 'Gesamtdauer ' + w.clock());
+  assert.deepEqual(w.executed, []);
 });
 
 test('nach endgueltigem Fehler gilt das Skript nicht als geladen: spaeterer Aufruf versucht erneut', async () => {
-  const w = world({ [U]: [503, 503, 503, 200] }, { group: [U] });
+  const w = world({ [U]: [503, 503, 503, 200] }, { group: one });
   assert.equal((await w.run(loadOne(w))).ok, false);
-  const again = await w.run(loadOne(w));
-  assert.equal(again.ok, true);
-  assert.equal(w.appended.length, 4);
+  assert.equal((await w.run(loadOne(w))).ok, true);
+  assert.deepEqual(w.executed, [U]);
 });
 
-test('404: sofort Fehler, genau 1 Versuch, 1 Probe, keine Wartezeit', async () => {
-  const w = world({ [U]: [404] }, { group: [U] });
-  const r = await w.run(loadOne(w));
-  assert.equal(r.ok, false);
-  assert.match(r.error.message, /LAZY_SCRIPT_FAILED:/);
-  assert.equal(r.error.status, 404);
-  assert.equal(w.appended.length, 1);
-  assert.equal(w.probes.length, 1);
-  assert.deepEqual(w.sleeps, []);
-});
-
-test('403 und 410 wiederholen ebenfalls nicht; 429 und 408 schon', async () => {
-  for (const status of [403, 410]) {
-    const w = world({ [U]: [status] }, { group: [U] });
-    assert.equal((await w.run(loadOne(w))).ok, false);
-    assert.equal(w.appended.length, 1, String(status));
+test('404/403/410: sofort Fehler, keine Wiederholung, keine Wartezeit; 429/408 werden wiederholt', async () => {
+  for (const status of [404, 403, 410]) {
+    const w = world({ [U]: [status] }, { group: one });
+    const r = await w.run(loadOne(w));
+    assert.equal(r.ok, false, String(status));
+    assert.match(r.error.message, /^LAZY_SCRIPT_FAILED:/);
+    assert.equal(r.error.attempts, 1);
+    assert.equal(r.error.status, status);
+    assert.equal(w.probes.length, 1);
+    assert.deepEqual(w.sleeps, []);
+    assert.equal(w.requests.length, 1, 'kein zweiter Abruf');
   }
   for (const status of [429, 408]) {
-    const w = world({ [U]: [status, 200] }, { group: [U] });
-    assert.equal((await w.run(loadOne(w))).ok, true);
-    assert.equal(w.appended.length, 2, String(status));
+    const w = world({ [U]: [status, 200] }, { group: one });
+    assert.equal((await w.run(loadOne(w))).ok, true, String(status));
   }
 });
 
-test('Netzfehler: begrenzte Wiederholung (3 Versuche), danach derselbe Fehler', async () => {
-  const w = world({ [U]: ['net'] }, { group: [U] });
+test('Netzfehler: begrenzte Wiederholung (3 Versuche), danach derselbe Fehler; ein spaeter Erfolg wird genutzt', async () => {
+  const w = world({ [U]: ['net'] }, { group: one });
   const r = await w.run(loadOne(w));
   assert.equal(r.ok, false);
   assert.match(r.error.message, /LAZY_SCRIPT_FAILED:/);
   assert.equal(r.error.status, 0);
-  assert.equal(w.appended.length, 3);
-  const ok = world({ [U]: ['net', 200] }, { group: [U] });
+  assert.equal(r.error.attempts, 3);
+  const ok = world({ [U]: ['net', 200] }, { group: one });
   assert.equal((await ok.run(loadOne(ok))).ok, true);
 });
 
-test('Skriptfehler, aber Probe meldet 200: Skript wird erneut geladen (begrenzt auf 3 Versuche)', async () => {
-  const w = world({ [U]: ['probe200', 200] }, { group: [U] });
+test('Skriptfehler, aber Probe meldet 200: erneut laden, begrenzt auf 3 Versuche', async () => {
+  const w = world({ [U]: ['probe200', 200] }, { group: one });
   assert.equal((await w.run(loadOne(w))).ok, true);
-  assert.equal(w.appended.length, 2);
-  const always = world({ [U]: ['probe200'] }, { group: [U] });
+  const always = world({ [U]: ['probe200'] }, { group: one });
   const r = await always.run(loadOne(always));
   assert.equal(r.ok, false);
-  assert.equal(always.appended.length, 3);
+  assert.equal(r.error.attempts, 3);
   assert.equal(r.error.status, 200);
 });
 
-test('kein fetch verfuegbar: bisheriges Verhalten - sofort Fehler, keine Wiederholung', async () => {
-  const w = world({ [U]: [503] }, { group: [U], noFetch: true });
+test('Budget: haengt die Statusprobe, endet die Wiederholung vor der Zeitgrenze (2 statt 3 Versuche)', async () => {
+  const w = world({ [U]: [503] }, { group: one, hangProbe: true });
   const r = await w.run(loadOne(w));
   assert.equal(r.ok, false);
-  assert.equal(w.appended.length, 1);
+  assert.equal(r.error.attempts, 2, 'der dritte Versuch wuerde das Budget sprengen');
+  assert.equal(r.error.status, 0);
+  assert.ok(w.clock() <= 3500, 'Dauer bis zum Fehler ' + w.clock());
+  assert.ok(w.clock() >= 3000, 'beide Proben liefen in ihre Zeitueberschreitung: ' + w.clock());
 });
 
-test('paralleler Aufruf derselben Adresse (auch waehrend der Wiederholung): ein Ladevorgang je Versuch', async () => {
-  const w = world({ [U]: [503, 200] }, { group: [U] });
-  const a = w.api.load('g');
-  const b = w.api.load('g');
-  const c = Promise.resolve().then(() => w.api.load('g'));
-  const r = await w.run(Promise.all([a, b, c]));
+test('kein fetch verfuegbar: bisheriges Verhalten - sofort Fehler, keine Wiederholung', async () => {
+  const w = world({ [U]: [503] }, { group: one, noFetch: true });
+  const r = await w.run(loadOne(w));
+  assert.equal(r.ok, false);
+  assert.equal(r.error.attempts, 1);
+});
+
+test('paralleler Aufruf derselben Gruppe (auch waehrend der Wiederholung): ein Ladevorgang', async () => {
+  const w = world({ [U]: [503, 200] }, { group: one });
+  const r = await w.run(Promise.all([w.api.load('g'), w.api.load('g'), Promise.resolve().then(() => w.api.load('g'))]));
   assert.equal(r.ok, true);
-  assert.equal(w.appended.length, 2, 'ein Ursprungsversuch + eine Wiederholung, nicht je Aufrufer');
+  assert.equal(w.requests.length, 2);
   assert.equal(w.probes.length, 1);
+  assert.deepEqual(w.executed, [U]);
 });
 
-test('Normalfall: Erfolg ohne Zusatzrequest, ohne Probe, ohne Wartezeit', async () => {
-  const w = world({}, { group: [U, '/a.js'] });
-  const r = await w.run(loadOne(w));
-  assert.equal(r.ok, true);
-  assert.deepEqual(w.appended, [U, '/a.js']);
-  assert.deepEqual(w.probes, []);
-  assert.deepEqual(w.sleeps, []);
-  assert.deepEqual(w.removed, []);
+test('Normalfall: jede Adresse genau einmal angefragt, Reihenfolge wie in der Gruppe, keine Probe, keine Wartezeit', async () => {
+  const group = ['/a.js', U, '/c.js', '/d.js'];
+  for (const preload of [true, false]) {
+    const w = world({}, { groups: { g: group }, preload });
+    assert.equal((await w.run(loadOne(w))).ok, true);
+    assert.deepEqual(w.requests, group, 'jede Adresse einmal (preload=' + preload + ')');
+    assert.deepEqual(w.executed, group);
+    assert.deepEqual(w.appended, group);
+    assert.deepEqual(w.probes, []);
+    assert.deepEqual(w.sleeps, []);
+    assert.equal(w.overlap(), false, 'Skripte werden nacheinander eingefuegt');
+    assert.deepEqual(w.links, preload ? group : [], 'Vorladen parallel fuer alle');
+  }
 });
 
-test('Gruppe: ein transient fehlgeschlagenes Skript blockiert die Gruppe nicht dauerhaft, die anderen laden nicht doppelt', async () => {
-  const w = world({ '/b.js': [503, 200] }, { group: ['/a.js', '/b.js', '/c.js'] });
+/* Der Befund des Reviews: detail.js haelt beim Laden global.VUChartRanges fest (var Ranges = global.VUChartRanges). */
+const capture = { '/ranges.js': ctx => { ctx.VUChartRanges = {}; }, '/detail.js': ctx => { ctx.captured = typeof ctx.VUChartRanges; } };
+const chain = ['/charts.js', '/other.js', '/ranges.js', '/mid.js', '/detail.js'];
+
+test('Gruppe, nicht-letztes Skript faellt voruebergehend aus: Wiederholung vor den Nachfolgern, Nachfolger sehen die Globale', async () => {
+  for (const preload of [true, false]) for (const failing of ['/charts.js', '/ranges.js', '/mid.js']) {
+    const w = world({ [failing]: [503, 200] }, { groups: { g: chain }, exec: capture, preload });
+    const r = await w.run(loadOne(w));
+    assert.equal(r.ok, true, failing);
+    assert.deepEqual(w.executed, chain, 'Reihenfolge unveraendert, jedes Skript genau einmal (' + failing + ', preload=' + preload + ')');
+    assert.equal(w.context.captured, 'object', 'detail.js lief nach ranges.js (' + failing + ')');
+    assert.equal(w.overlap(), false);
+  }
+});
+
+test('Gruppe, nicht-letztes Skript faellt dauerhaft aus: Fehler wie bisher, kein Nachfolger wird ausgefuehrt, Gruppe nicht "geladen"', async () => {
+  for (const status of [503, 404]) {
+    const w = world({ '/ranges.js': [status] }, { groups: { g: chain }, exec: capture });
+    const r = await w.run(loadOne(w));
+    assert.equal(r.ok, false);
+    assert.match(r.error.message, /^LAZY_SCRIPT_FAILED:\/ranges\.js$/);
+    assert.deepEqual(w.executed, ['/charts.js', '/other.js'], 'keine Teilausfuehrung der Nachfolger');
+    assert.equal(w.context.captured, undefined);
+    // spaeterer Aufruf (Server wieder da) laedt den Rest in der richtigen Reihenfolge
+    const again = world({ '/ranges.js': [status, 200] }, { groups: { g: chain }, exec: capture });
+    assert.equal((await again.run(loadOne(again))).ok, status === 503, 'nur bei 503 heilt schon der interne Versuch');
+  }
+});
+
+test('Fehler im Gruppenaufruf: Selbstheilung wie bisher (ohne Waechter laedt die Seite einmal neu)', async () => {
+  const w = world({ [U]: [404] }, { group: one });
+  let reloads = 0;
+  w.context.location.reload = () => { reloads++; };
+  w.context.sessionStorage.setItem = () => {};
   const r = await w.run(loadOne(w));
-  assert.equal(r.ok, true);
-  assert.deepEqual(w.appended.slice().sort(), ['/a.js', '/b.js', '/b.js', '/c.js']);
+  assert.equal(r.ok, false);
+  assert.equal(reloads, 1);
 });
 
 test('forRoute reicht den Fehler unveraendert an app.js weiter (route()-catch zeigt die Meldung)', async () => {
-  const w = world({ [U]: [503] }, { group: [U] });
+  const w = world({ [U]: [503] }, { group: one });
   const r = await w.run(w.api.forRoute(['s']));
   assert.equal(r.ok, false);
   assert.match(r.error.message, /^LAZY_SCRIPT_FAILED:/);
-  assert.equal(w.appended.length, 3);
+  assert.equal(r.error.attempts, 3);
 });
 
-test('zwei Gruppen mit demselben Skript (geteiltes Modul) laden es auch beim Wiederholen nur einmal', async () => {
+test('zwei Gruppen mit demselben Skript (geteiltes Modul): nur einmal angefragt und ausgefuehrt, auch beim Wiederholen', async () => {
   const w = world({ '/shared.js': [503, 200] }, { groups: { detail: ['/shared.js', '/d.js'], markets: ['/shared.js', '/m.js'] } });
   const r = await w.run(Promise.all([w.api.load('detail'), w.api.load('markets')]));
   assert.equal(r.ok, true);
-  assert.equal(w.appended.filter(src => src === '/shared.js').length, 2, 'ein Versuch + eine Wiederholung, nicht je Gruppe');
+  assert.equal(w.executed.filter(src => src === '/shared.js').length, 1);
+  assert.equal(w.requests.filter(src => src === '/shared.js').length, 2, 'Vorladen + eine Wiederholung');
   assert.equal(w.probes.length, 1);
+});
+
+test('?v=-Stempel: Vorladen und Skript nutzen dieselbe Adresse (sonst gaebe es zwei Downloads)', async () => {
+  const group = ['/discover/ui/detail.js?v=abc123', '/quant/x.js'];
+  const w = world({}, { groups: { detail: group, g: group } });
+  assert.equal((await w.run(w.api.load('detail'))).ok, true);
+  assert.deepEqual(w.links, ['/discover/ui/detail.js?v=abc123', '/quant/x.js?v=abc123']);
+  assert.deepEqual(w.appended, w.links);
 });
