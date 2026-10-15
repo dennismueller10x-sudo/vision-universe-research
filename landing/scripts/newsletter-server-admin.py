@@ -77,7 +77,11 @@ def run():
     report.update(release)
     def read(path):
         status,value=api(BREVO,path,key)
-        if status!=200:raise ValueError('Brevo read blocked')
+        if status!=200:
+            # Fixed resource categories only; never emit a path/query/address.
+            resource=next((name for prefix,name in [('/contacts/lists/','list_contacts'),('/smtp/templates','templates'),('/account','account'),('/contacts/attributes','attribute_schema'),('/senders','sender_domain'),('/smtp/blockedContacts','suppression'),('/smtp/statistics','statistics')] if path.startswith(prefix)),'other')
+            print(json.dumps({'required_brevo_read':resource,'http':status}),flush=True)
+            raise ValueError('Brevo read blocked')
         return value
     def contacts(n):
         result=[]
@@ -252,4 +256,8 @@ def run():
     return report
 if __name__=='__main__':
     try:print(json.dumps(run()))
-    except Exception:print('Scoped operator blocked; no raw responses, keys or personal data emitted.');raise SystemExit(1) from None
+    except Exception as error:
+        reasons={'Brevo read blocked':'required_read_failed','API template mismatch; no overwrite':'template_readback_mismatch','Duplicate API DOI template':'ambiguous_template','Protected data changed externally':'protected_snapshot_changed','Pages or consent setup unavailable':'pages_or_schema_missing','Pages readback mismatch':'pages_readback_mismatch'}
+        reason=reasons.get(str(error),'unclassified') if type(error) is ValueError else 'transport_or_response_failure'
+        print(json.dumps({'operator_failure':reason}),flush=True)
+        print('Scoped operator blocked; no raw responses, keys or personal data emitted.');raise SystemExit(1) from None
