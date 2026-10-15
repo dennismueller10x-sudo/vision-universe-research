@@ -68,7 +68,7 @@ try{
     await page.locator('#email').fill('qa+new@example.test');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#consent-error').innerText(),/stimme/);
     await page.locator('#consent').check();await page.locator('#email-address-check').fill('bot');await page.locator('button[type=submit]').click();assert.equal(posts.length,0);
     await page.locator('#email-address-check').fill('');await page.context().setOffline(true);await page.locator('button[type=submit]').click();assert.equal(posts.length,0);assert.match(await page.locator('#signup-status').innerText(),/offline/);await page.context().setOffline(false);
-    await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));
+    await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
     assert.equal(posts.length,1);assert.deepEqual(posts[0],{method:'POST',data:{email:'qa+new@example.test',consent:true,consentVersion:'vu-newsletter-v1',honeypot:''}});
     assert.equal(await page.locator('button[type=submit]').isDisabled(),true);assert.equal(new URL(page.url()).pathname,'/ready/');
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
@@ -79,7 +79,7 @@ try{
   const page=await browser.newPage();
   await page.route('**/api/newsletter/subscribe',route=>route.abort());
   await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
-  await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
+  await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('verlässliche Rückmeldung'));assert.equal(await page.locator('button[type=submit]').innerText(),'Rückmeldung beachten');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);await page.close();
   for(const width of [1440,390,320]){
     const context=await browser.newContext({viewport:{width,height:844}});const page=await context.newPage();let posts=0;
     await page.route('**/api/newsletter/test-access',async route=>{
@@ -93,7 +93,7 @@ try{
     await page.goto(base+'/controlled/');assert.equal(await page.locator('#email').isDisabled(),true);
     await page.goto(base+'/controlled/#vu-test='+ 'a'.repeat(43));await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(new URL(page.url()).hash,'');
     await page.locator('#email').fill('new-controlled@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
-    await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);
+    await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);assert.equal(posts,1);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
     assert.deepEqual((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.map(v=>v.id),[]);
     await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.evaluate(()=>localStorage.length),0);await context.close();

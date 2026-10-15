@@ -56,6 +56,8 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
       expiresAt=Date.now()+60000;await page.goto(www+'/#vu-test='+token);await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');
       await page.locator('#email').fill('synthetic@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
       await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('Postfach'));assert.equal(posts,1);assert.ok(accessCalls>=7);
+      assert.equal(await page.locator('button[type=submit]').innerText(),'Postfach prüfen');assert.equal(await page.locator('#signup-status').evaluate(e=>e===document.activeElement),true);
+      const bounds=await page.locator('#signup-status').boundingBox();assert.ok(bounds.y>=0&&bounds.y+bounds.height<=844,'result must be visible after a mobile tap');
       await page.reload();assert.equal(await page.locator('#email').isDisabled(),true);
       assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);assert.equal(await context.cookies().then(c=>c.length),0);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);

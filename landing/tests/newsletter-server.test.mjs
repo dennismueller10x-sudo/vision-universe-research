@@ -63,6 +63,14 @@ test('Testzugang wird vor Feldeingabe ohne Provider, Adresse oder Cache-Schreibz
   f.advance(7200000);const expired=await f.handler(request(),f.env);assert.equal(expired.status,503);assert.match((await expired.json()).message,/abgelaufen/);
   assert.equal(f.calls.length,0);assert.equal(f.stored.size,0);
 });
+test('Nur der authentifizierte Betreiber-Test erklärt vorhandene Kontakte ohne Neuaufnahme',async()=>{
+  const options={existing:{listIds:[4],emailBlacklisted:true}},f=fixture(options),token='a'.repeat(43);
+  const hash=Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))).toString('hex');
+  Object.assign(f.env,{NEWSLETTER_PUBLIC_ENABLED:'false',NEWSLETTER_E2E_VERIFIED:'false',NEWSLETTER_CONTROLLED_ENABLED:'true',NEWSLETTER_TEST_ACCESS_HASH:hash,NEWSLETTER_TEST_UNTIL:'7200000'});
+  const response=await f.handler(f.request(undefined,{}, {Authorization:'Bearer '+token}),f.env);
+  assert.equal(response.status,409);assert.match((await response.json()).message,/neue, von dir kontrollierte Adresse/);assert.equal(f.sends().length,0);
+  delete options.existing;assert.equal((await f.handler(f.request('genuinely-new@example.test',{}, {Authorization:'Bearer '+token}),f.env)).status,202);assert.equal(f.sends().length,1);
+});
 test('Jeder Bestandskontakt bleibt unverändert, einschließlich Abmeldung und interner Listen',async()=>{
   for(const contact of [{listIds:[4],attributes:{buyer:true}},{listIds:[6]},{emailBlacklisted:true},{listIds:[],attributes:{status:'unclear'}}]){
     const f=fixture({existing:contact});const result=await f.handler(f.request(),f.env);
