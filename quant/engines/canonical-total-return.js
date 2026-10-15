@@ -156,7 +156,7 @@
     splitRatios: [2, 3, 4, 5, 6, 7, 8, 10, 20, 1.5],
     shiftWindow: 3,
     maxUnexplainedDrift: 0.005,    // kumuliert, unter der Rauschschwelle
-    /* Nicht gemeldeter Reverse Split (1.1.0): uebliche Verhaeltnisse
+    /* Nicht gemeldeter Reverse Split (1.1.0, Verhaeltnisse ab 1.2.0 ab 5:1): uebliche Verhaeltnisse
        N:1, wie sie Emittenten ankuendigen. */
     undeclaredSplitRatios: [5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 100,
                             120, 125, 150, 200, 250, 300, 400, 500, 1000],
@@ -337,7 +337,7 @@
     /* 2. Gegenprobe gegen die Anbieterspalte. */
     var cc = crossCheck(bars, gross);
     if (cc.blocking) return unavailable(cc.blocking.reason, { date: cc.blocking.date, events: events, crossCheck: cc.summary });
-    /* 2b. Nicht gemeldeter Reverse Split und Fehlkurs (1.1.0) - nach der
+    /* 2b. Nicht gemeldeter Reverse Split und Fehlkurs (seit 1.1.0) - nach der
        Gegenprobe, damit ein Split, den der Anbieter kennt, als
        SPLIT_MISSING (unser Input fehlt) erscheint. Der frueheste Befund gilt. */
     for (i = 1; i < n; i++) {

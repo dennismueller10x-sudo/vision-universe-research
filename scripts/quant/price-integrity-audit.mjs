@@ -10,7 +10,7 @@
  *   2. re-reads the raw store series of every affected security (provider adjustedClose, open, volume) and explains
  *      each suspicious day with quant/engines/price-integrity.js (root cause, evidence, confidence, policy);
  *   3. writes the private case file and the public counts.
- * Stage `rebuild` (AFTER = canonical capture with core 1.1.0): same pipeline, before/after counts, every new HOLD
+ * Stage `rebuild` (AFTER = canonical capture with core 1.2.0): same pipeline, before/after counts, every new HOLD
  * explained (false-positive check), high-level names, corporate-action consistency, content binding of the dataset.
  * Stage `seal`: seals the private case file to the owner and session keys.
  *
@@ -157,7 +157,7 @@ function explainMonth(rb, F, E, ctx, canon) {
   if (x.cause === 'CONFIRMED_SPLIT') return { ...x, cause: 'GENUINE_PRICE_MOVE', days: [{ i, date: dom.date }], ...base };
   return { ...x, days: [{ i, date: dom.date }], ...base };
 }
-/** What the new core (1.1.0) decides on the raw series up to and including day `upTo`. */
+/** What the new core (1.2.0) decides on the raw series up to and including day `upTo`. */
 function coreDecision(rb, upTo) {
   const prefix = rb.filter((b) => b.date <= upTo);
   if (prefix.length < 2) return null;
