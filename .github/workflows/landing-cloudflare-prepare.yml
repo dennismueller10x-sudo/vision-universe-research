@@ -5,7 +5,7 @@ on:
       newsletter_operation:
         description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
         type: choice
-        options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose]
+        options: [audit, setup, controlled, observe, close, public, e2e, doi-diagnose, doi-template-fix]
         default: audit
       authorize_controlled_test:
         description: Nur observe/e2e – kontrollierte DOI- und administrative Testbestätigung erlauben
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: f716a7e3d019bb53ead58aff742edff30281fc01
+          ref: 8548659309b61c509d88338fe63945e755691c82
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
