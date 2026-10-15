@@ -78,6 +78,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Record job start (hard deadline for bounded live re-verification)
+        # Ueberschreitet ein Schritt das Job-Timeout, wird er cancelled statt failure und der Rollback liefe nicht.
+        # refresh-live-verify.mjs plant darum alle Wiederholungen gegen JOB_STARTED_AT + 60 min - 10 min Reserve.
+        run: echo "JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
@@ -163,7 +167,10 @@ jobs:
           }
           if(!served)throw Error('PRODUCTION_PUBLICATION_SLO_FAILED');
           NODE
-          node scripts/company_intelligence/refresh-qa.mjs --live --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
+          # Live-QA mit begrenzter, lesender Wiederholung NUR bei belegtem transientem Auslieferungsfehler (Mischstand, STALE, 5xx;
+          # Klassifikator und Propagationsbeweis aus Pages-Release). Echte Fehler und erschoepfte Obergrenze enden mit Exit 1:
+          # der Schritt "Fail closed" unten rollt dann wie bisher sofort zurueck.
+          node scripts/company_intelligence/refresh-live-verify.mjs --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
           node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json"
       - name: Fail closed on actual production regression
         if: failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true
@@ -188,6 +195,7 @@ jobs:
             ${{ runner.temp }}/ci-refresh/candidate-qa.json
             ${{ runner.temp }}/ci-refresh/candidate-qa.json-failure.png
             ${{ runner.temp }}/ci-refresh/live-qa.json
+            ${{ runner.temp }}/ci-refresh/live-qa.json.verify.json
           retention-days: 14
       - name: Mark successful run (mode and financial state for the next freshness guard)
         if: success()
