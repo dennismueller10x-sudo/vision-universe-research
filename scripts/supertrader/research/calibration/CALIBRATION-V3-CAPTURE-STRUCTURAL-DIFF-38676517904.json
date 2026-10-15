@@ -1,0 +1,94 @@
+{
+  "schema": "supertrader-calibration-v3-capture-structural-diff-1.0.0",
+  "contentBindingEqual": {
+    "schema": true,
+    "normalizedPartListSha256": true,
+    "normalizedManifestSha256": true,
+    "normalizedInputsSha256": true,
+    "dataFingerprint": true,
+    "sourceObjectSetSha256": true,
+    "readReceiptSetSha256": true,
+    "listingSourceSha256": true,
+    "parts": true,
+    "securities": true
+  },
+  "normalizedInputDifferences": [],
+  "parts": 500,
+  "partsByteIdentical": 0,
+  "partsByteDifferent": 500,
+  "securities": 9408,
+  "securitiesWithAnyDifference": 9408,
+  "partDifferences": [
+    {
+      "pattern": "$.priceSource.capturedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 9408
+    }
+  ],
+  "partDifferencePatterns": 1,
+  "manifestDifferences": [
+    {
+      "pattern": "$.parts[].sha256",
+      "class": "STRING_DIFFERS",
+      "count": 500
+    },
+    {
+      "pattern": "$.benchmark.priceSource.capturedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 1
+    }
+  ],
+  "sourceMetadataDifferences": [
+    {
+      "pattern": "$.readReceipts[].capturedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 9051
+    },
+    {
+      "pattern": "$.readReceipts[].sourceKey",
+      "class": "STRING_DIFFERS",
+      "count": 6731
+    },
+    {
+      "pattern": "$.readReceipts[].sha256",
+      "class": "STRING_DIFFERS",
+      "count": 6731
+    },
+    {
+      "pattern": "$.readReceipts[].bytes",
+      "class": "NUMBER_DIFFERS",
+      "count": 6729
+    },
+    {
+      "pattern": "$.sourceObjects[].retrievedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 9
+    },
+    {
+      "pattern": "$.sourceObjects[].key",
+      "class": "STRING_DIFFERS",
+      "count": 2
+    },
+    {
+      "pattern": "$.sourceObjects[].sha256",
+      "class": "STRING_DIFFERS",
+      "count": 2
+    },
+    {
+      "pattern": "$.sourceObjects[].bytes",
+      "class": "NUMBER_DIFFERS",
+      "count": 2
+    },
+    {
+      "pattern": "$.observedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 1
+    },
+    {
+      "pattern": "$.listingSource.observedAt",
+      "class": "ISO_TIMESTAMP_DIFFERS",
+      "count": 1
+    }
+  ],
+  "valuesPublished": false
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "vision-universe-calibration-v3-reference-source-plan-1.0.0",
+  "createdAt": "2026-10-14",
+  "sourceBasis": "Official Ken French Data Library archive snapshots captured in the frozen #643 source census; bytes must match declared hashes or recapture is rejected.",
+  "sources": [
+    {
+      "id": "FRENCH_MOM10",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/10_Portfolios_Prior_12_2_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "captureSourceCensusDate": "2026-10-13",
+      "expectedArchiveSha256": "dce836c412a4ce0a9c4bdb2d4f3a613672b6ffd10e434132e2a21bf9bb18f001",
+      "expectedArchiveBytes": 119089,
+      "archiveMember": "10_Portfolios_Prior_12_2.csv",
+      "expectedMemberSha256": "44f97a76c90f3c83077539191cf81be70ec0667449d4bee3d59929912dea972f",
+      "expectedMemberBytes": 484135,
+      "sourcePeriod": {
+        "from": "192701",
+        "to": "202608"
+      },
+      "copyrightRetained": true,
+      "redistributionLicense": "NOT_ESTABLISHED",
+      "publishSourceURLAndHashesOnly": true
+    },
+    {
+      "id": "FRENCH_VAR",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_VAR_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "captureSourceCensusDate": "2026-10-13",
+      "expectedArchiveSha256": "232fdeace7cbf84246a764aa38ed2756c1f04873023e37938f9d56dd05d565f0",
+      "expectedArchiveBytes": 147521,
+      "archiveMember": "Portfolios_Formed_on_VAR.csv",
+      "expectedMemberSha256": "9d0a8dac476b05a57e221c244ceb690a1051b9f96f42e36f6720131e266ae943",
+      "expectedMemberBytes": 584013,
+      "sourcePeriod": {
+        "from": "196307",
+        "to": "202608"
+      },
+      "copyrightRetained": true,
+      "redistributionLicense": "NOT_ESTABLISHED",
+      "publishSourceURLAndHashesOnly": true
+    },
+    {
+      "id": "FRENCH_DAILY_RF",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+      "sourceKind": "OFFICIAL_ACADEMIC_DATA_LIBRARY",
+      "captureSourceCensusDate": "2026-10-13",
+      "expectedArchiveSha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+      "expectedArchiveBytes": null,
+      "archiveMember": "F-F_Research_Data_Factors_daily.csv",
+      "expectedMemberSha256": "c2dc30c9e89eeea05a689c81fb426f4d76711270733b3731997615cbdff5b247",
+      "expectedMemberBytes": null,
+      "sourcePeriod": {
+        "from": "19260701",
+        "to": "20260831"
+      },
+      "copyrightRetained": true,
+      "redistributionLicense": "NOT_ESTABLISHED",
+      "publishSourceURLAndHashesOnly": true
+    }
+  ],
+  "parser": {
+    "path": "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs",
+    "sha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+    "version": "scanner-safe V3 source hash"
+  },
+  "parsedOutputContract": "Private data; preserve owner/session encrypted envelopes and safe receipt only.",
+  "noPostResultToleranceChanges": true,
+  "noSecurityIdentities": true
+}

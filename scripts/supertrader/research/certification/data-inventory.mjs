@@ -14,6 +14,35 @@ const Store=require('../../../../quant/engines/history-store.js');
 const Guard=require('../../../../quant/engines/zero-cost-guard.js');
 const Master=require('../../../../quant/engines/us-security-master.js');
 export const INVENTORY_VERSION='supertrader-private-data-inventory-1.0.0';
+const SAFE_CANONICAL_REASONS=new Set(['HISTORICAL_DATA_LOAD_FAILED','NO_USABLE_SECURITIES','PRIVATE_DATA_NOT_CONFIGURED','WINDOW_NOT_SUPPORTED','ZERO_COST_GUARD_BLOCKED']);
+const SAFE_CANONICAL_PHASES=new Set(['WINDOW_VALIDATION','PUBLIC_UNIVERSE_METADATA','SUPPORTED_TICKER_LIST','LISTING_BUILD','R2_SETUP','R2_USAGE_GUARD','R2_MANIFEST','R2_SEC_AND_BENCHMARK','MEMBER_CLASSIFICATION','R2_SERIES','SEGMENT_BUILD','CANONICAL_NORMALIZATION','INJECTED_PIT_LOADER','RAW_HISTORICAL_LOADER']);
+const SAFE_CANONICAL_ERROR_NAMES=new Set(['Error','TypeError','RangeError','SyntaxError','ReferenceError','URIError','AggregateError','AbortError','TimeoutError','NoSuchKey','AccessDenied']);
+const SAFE_CANONICAL_ERROR_CODES=new Set(['ENOENT','EACCES','ECONNRESET','ECONNREFUSED','ECONNABORTED','EPIPE','ETIMEDOUT','EAI_AGAIN','ENOTFOUND','ERR_INVALID_ARG_TYPE','ERR_STREAM_PREMATURE_CLOSE','NoSuchKey','AccessDenied','SlowDown','InvalidAccessKeyId','SignatureDoesNotMatch','RequestTimeout','ServiceUnavailable','InternalError']);
+const SAFE_CANONICAL_REJECTIONS=new Set(['INSUFFICIENT_BARS','OHLCV_INVALID','NON_EQUITY_OR_UNKNOWN_CLASS','IDENTITY_UNCERTAIN','NO_BARS','RAW_CLOSE_MISSING','SPLIT_FACTOR_FIELD_MISSING','DIVIDEND_FIELD_MISSING','CORPORATE_ACTION_CONTRADICTED','UNSORTED','STALE','LISTING_DISCONTINUITY','TRADING_GAP_UNVERIFIED','SPLIT_SUSPECTED','SPLIT_MISSING','DIVIDEND_MISSING']);
+const SAFE_CANONICAL_REJECTION_DETAILS=new Set(['NOT_NUMERIC','SPLIT_FACTOR_OUT_OF_RANGE','NEGATIVE_DIVIDEND','DIVIDEND_ABOVE_PRICE','SPLIT_NOT_IN_RAW_PRICE','EVENT_GROSS_OUT_OF_BAND','CUMULATIVE_DRIFT']);
+/** Public status may expose only allowlisted symbolic failure metadata, never private error text. */
+export function safeCanonicalDiagnostic(data){
+ const reason=SAFE_CANONICAL_REASONS.has(data?.reason)?data.reason:null;
+ const phase=SAFE_CANONICAL_PHASES.has(data?.privateDiagnostics?.phase)?data.privateDiagnostics.phase:null;
+ const errorName=SAFE_CANONICAL_ERROR_NAMES.has(data?.privateDiagnostics?.errorName)?data.privateDiagnostics.errorName:null;
+ const errorCode=SAFE_CANONICAL_ERROR_CODES.has(data?.privateDiagnostics?.code)?data.privateDiagnostics.code:null;
+ return reason?{reason,...(phase?{phase}:{}),...(errorName?{errorName}:{}),...(errorCode?{errorCode}:{})}:null;
+}
+export function safeCanonicalRejections(rejected={},details={}){
+ const reasons={},safeDetails={};let unknownReasonCount=0,unknownDetailCount=0;
+ for(const [reason,count] of Object.entries(rejected||{})){
+  if(!Number.isSafeInteger(count)||count<0)continue;
+  if(SAFE_CANONICAL_REJECTIONS.has(reason))reasons[reason]=count;else unknownReasonCount+=count;
+ }
+ for(const [reason,values] of Object.entries(details||{})){
+  if(!SAFE_CANONICAL_REJECTIONS.has(reason)||!values||typeof values!=='object')continue;
+  for(const [detail,count] of Object.entries(values)){
+   if(!Number.isSafeInteger(count)||count<0)continue;
+   if(SAFE_CANONICAL_REJECTION_DETAILS.has(detail))(safeDetails[reason]??={})[detail]=count;else unknownDetailCount+=count;
+  }
+ }
+ return {reasons,unknownReasonCount,details:safeDetails,unknownDetailCount};
+}
 const privateKeys=['_validation/manifest.json.gz','_validation/sec-pit-r13.json.gz','_validation/sec-delist-r13.json.gz'];
 const secKeys=['v1/sec/fundamentals/_manifest.json','v1/sec/fundamentals/_index.json.gz'];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -109,29 +138,31 @@ export async function collectDataInventory(options={}){
   availableOfficialResources:[{url:'https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip',role:'RAW_COMPANYFACTS_BULK_NO_HISTORICAL_SECURITY_ROSTER'},{url:'https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip',role:'FILINGS_AND_CURRENT_PROFILE_NOT_HISTORICAL_TICKER_VALIDITY'},{url:'https://www.sec.gov/files/company_tickers_exchange.json',role:'CURRENT_ISSUER_TICKER_SNAPSHOT_NOT_HISTORICAL_MAPPING'}],
   limits:['SEC_NORMALIZED_R2_FACTBOOKS_ARE_SOURCE_INPUTS_NOT_A_MIGRATED_CORE_CERTIFICATE','LEGACY_SHARES_DEI_SUM_AND_WADSO_FALLBACK_REQUIRE_REVALIDATION','SEC_SUBMISSIONS_FORMER_NAMES_DATES_DO_NOT_DATE_SECURITY_OR_EXCHANGE_MEMBERSHIP','CURRENT_INSTRUMENT_CLASS_NOT_RETROACTIVE_PIT_CLASS_PROOF'],performanceCalculated:false};
  const publicStatus={schema:INVENTORY_VERSION,status:manifest&&pit?'SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED':'PARTIAL_SOURCE_INPUTS',mode:options.canonical?'READ_ONLY_CANONICAL_INVENTORY':'READ_ONLY_COMPACT_INVENTORY',universeState:certification.state,counts:{providerSupportedListingRecords:sourceRows.supported,sourceRowsRejected:Object.values(sourceRows.rejected).reduce((s,n)=>s+n,0),observedListingGenerations:listings.length,legacyPitEntries:Object.keys(pit||{}).length,legacyDelistingEntries:Object.keys(delist||{}).length,secFundamentalIndexedIssuers:Object.keys(secIndex?.objects||{}).length,sourceObjectsAvailable:sourceObjects.filter(o=>o.status==='AVAILABLE').length,sourceObjectsMissing:sourceObjects.filter(o=>o.status==='MISSING').length,readOnlyGetCalls:budget.spent.classB,writeCalls:budget.spent.classA},sourceRights:'PRIVATE_OWNER_SESSION_ONLY',performanceCalculated:false};
- if(canonicalData){publicStatus.canonicalStatus=canonicalData.state;publicStatus.canonicalCounts={inputSegments:canonicalData.coverage?.inputSegments??0,usableSegments:canonicalData.coverage?.usableSegments??0};if(canonicalData.state==='BLOCKED')privateInput.canonicalPrivateDiagnostic=canonicalData.privateDiagnostics||{reason:canonicalData.reason};}
+ if(canonicalData){publicStatus.canonicalStatus=canonicalData.state;publicStatus.canonicalCounts={inputSegments:canonicalData.coverage?.inputSegments??0,usableSegments:canonicalData.coverage?.usableSegments??0};if(canonicalData.state==='AVAILABLE')publicStatus.canonicalRejections=safeCanonicalRejections(canonicalData.coverage?.rejected,canonicalData.coverage?.rejectionDetails);if(canonicalData.state==='BLOCKED'){publicStatus.canonicalDiagnostic=safeCanonicalDiagnostic(canonicalData);privateInput.canonicalPrivateDiagnostic=canonicalData.privateDiagnostics||{reason:canonicalData.reason};}}
  return {privateInput,publicStatus,canonicalData};
 }
-export function sealInventory(result,out,{ownerKey,sessionKey,canonicalChunkBytes=8*1024*1024}){
+export function sealInventory(result,out,{ownerKey,sessionKey,canonicalChunkBytes=8*1024*1024,statusOnly=false}){
  const dest=path.resolve(out);if(dest===root||dest.startsWith(root+path.sep))throw Error('PRIVATE_OUTPUT_OUTSIDE_REPO_REQUIRED');fs.mkdirSync(dest,{recursive:true,mode:0o700});fs.chmodSync(dest,0o700);
- const seal=(stem,bytes)=>{for(const [audience,key] of [['owner',ownerKey],['session',sessionKey]])fs.writeFileSync(path.join(dest,`${stem}.${audience}.sealed.json`),Listing.encryptForOwner(key,bytes),{mode:0o600});};
- seal('data-certification-inputs',Buffer.from(JSON.stringify(result.privateInput)));
+ const seal=(stem,bytes)=>{const files=[];for(const [audience,key] of [['owner',ownerKey],['session',sessionKey]]){const name=`${stem}.${audience}.sealed.json`,sealed=Listing.encryptForOwner(key,bytes);fs.writeFileSync(path.join(dest,name),sealed,{mode:0o600});files.push({name,sha256:hash(sealed),bytes:sealed.length});}return files;};
+ if(!statusOnly)seal('data-certification-inputs',Buffer.from(JSON.stringify(result.privateInput)));
  // Full canonical history can exceed V8's single-string ceiling. Preserve
  // every security/bar/fact in bounded encrypted parts; never truncate inputs.
- if(result.canonicalData?.state==='AVAILABLE'){
+ if(!statusOnly&&result.canonicalData?.state==='AVAILABLE'){
   if(!Number.isSafeInteger(canonicalChunkBytes)||canonicalChunkBytes<128||canonicalChunkBytes>64*1024*1024)throw Error('INVALID_CANONICAL_CHUNK_BYTES');
   const data=result.canonicalData,parts=[];let batch=[],batchBytes=0;
-  const flush=()=>{if(!batch.length)return;const stem=`canonical-dataset-part-${String(parts.length).padStart(4,'0')}`,bytes=Buffer.from('{"schema":"supertrader-private-canonical-dataset-part-1.0.0","securities":['+batch.join(',')+']}');seal(stem,bytes);parts.push({stem,sha256:hash(bytes),plaintextBytes:bytes.length,securities:batch.length});batch=[];batchBytes=0;};
+  const flush=()=>{if(!batch.length)return;const stem=`canonical-dataset-part-${String(parts.length).padStart(4,'0')}`,bytes=Buffer.from('{"schema":"supertrader-private-canonical-dataset-part-1.0.0","securities":['+batch.join(',')+']}'),sealedFiles=seal(stem,bytes);parts.push({stem,sha256:hash(bytes),plaintextBytes:bytes.length,securities:batch.length,sealedFiles});batch=[];batchBytes=0;};
   for(const security of data.securities){const encoded=JSON.stringify(security),bytes=Buffer.byteLength(encoded);if(bytes>64*1024*1024)throw Error('CANONICAL_SECURITY_OBJECT_TOO_LARGE');if(batch.length&&batchBytes+bytes>canonicalChunkBytes)flush();batch.push(encoded);batchBytes+=bytes+1;}
   flush();
-  seal('canonical-dataset-manifest',Buffer.from(JSON.stringify({schema:'supertrader-private-canonical-dataset-manifest-1.0.0',state:data.state,window:data.window,fingerprint:data.fingerprint,coverage:data.coverage,limitations:data.limitations,benchmark:data.benchmark,calendar:data.calendar,securities:data.securities.length,parts,barHistoryTruncated:false,canonicalCoreReused:true,performanceCalculated:false})));
+  const manifest=Buffer.from(JSON.stringify({schema:'supertrader-private-canonical-dataset-manifest-1.0.0',state:data.state,window:data.window,fingerprint:data.fingerprint,coverage:data.coverage,limitations:data.limitations,benchmark:data.benchmark,calendar:data.calendar,securities:data.securities.length,parts:parts.map(({stem,sha256,plaintextBytes,securities})=>({stem,sha256,plaintextBytes,securities})),barHistoryTruncated:false,canonicalCoreReused:true,performanceCalculated:false}));
+  const manifestSealedFiles=seal('canonical-dataset-manifest',manifest);
   result.publicStatus.canonicalSealedParts=parts.length;
+  result.publicStatus.canonicalArtifactReceipt={manifest:{schema:'supertrader-private-canonical-dataset-manifest-1.0.0',sha256:hash(manifest),plaintextBytes:manifest.length,sealedFiles:manifestSealedFiles},parts:parts.map(({stem,sha256,plaintextBytes,securities,sealedFiles})=>({stem,sha256,plaintextBytes,securities,sealedFiles}))};
  }
  fs.writeFileSync(path.join(dest,'data-certification-status.json'),JSON.stringify(result.publicStatus,null,2)+'\n',{mode:0o600});return result.publicStatus;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2),arg=flag=>args[args.indexOf(flag)+1],out=args.includes('--out')?arg('--out'):null;
  if(!out)throw Error('EXPLICIT_OUT_REQUIRED');
- try{const result=await collectDataInventory({canonical:args.includes('--canonical'),factDocLimit:args.includes('--fact-doc-limit')?Number(arg('--fact-doc-limit')):0});const status=sealInventory(result,out,{ownerKey:fs.readFileSync(path.join(root,'scripts/supertrader/validation/results-public-key.pem'),'utf8'),sessionKey:fs.readFileSync(path.join(root,'scripts/supertrader/research/tournament/session-public-key.pem'),'utf8')});console.log(JSON.stringify(status));}
+ try{const result=await collectDataInventory({canonical:args.includes('--canonical'),factDocLimit:args.includes('--fact-doc-limit')?Number(arg('--fact-doc-limit')):0});const status=sealInventory(result,out,{ownerKey:fs.readFileSync(path.join(root,'scripts/supertrader/validation/results-public-key.pem'),'utf8'),sessionKey:fs.readFileSync(path.join(root,'scripts/supertrader/research/tournament/session-public-key.pem'),'utf8'),statusOnly:args.includes('--status-only')});console.log(JSON.stringify(status));}
  catch(error){const status={schema:INVENTORY_VERSION,status:'INVENTORY_FAILED',errorType:error.name||'Error',performanceCalculated:false};const detail={schema:INVENTORY_VERSION,status,privateDiagnostic:{message:String(error.message),stack:error.stack||null}};const dest=path.resolve(out);if(dest===root||dest.startsWith(root+path.sep))throw Error('PRIVATE_OUTPUT_OUTSIDE_REPO_REQUIRED');fs.mkdirSync(dest,{recursive:true});for(const [a,p] of [['owner','scripts/supertrader/validation/results-public-key.pem'],['session','scripts/supertrader/research/tournament/session-public-key.pem']])fs.writeFileSync(path.join(dest,`data-certification-error.${a}.sealed.json`),Listing.encryptForOwner(fs.readFileSync(path.join(root,p),'utf8'),Buffer.from(JSON.stringify(detail))),{mode:0o600});fs.writeFileSync(path.join(dest,'data-certification-status.json'),JSON.stringify(status)+'\n',{mode:0o600});console.log(JSON.stringify(status));process.exitCode=2;}
 }

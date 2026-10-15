@@ -1,0 +1,114 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-7d1efccc4a3aa0a9",
+  "freezeFileSha256": "a28e350f5329b24ca6ee7e7218bec5bb23f1d3fa3ba2862f2c940d0168c97690",
+  "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+  "engineMethodId": "CALIB_JT6_6_NO_SKIP",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "cf15de1dc007befbbffc0eb1dddfdedb4790f1f0f3f7013f138bb3374f4a3347",
+      "plaintextBytes": 241311317,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "03e2fc6d8afc99a3829d40e83f21e0ddc546d3b3527c458bcf157a1b57fd1919",
+          "bytes": 53986742
+        },
+        {
+          "audience": "session",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SOURCE_GROSS.session.sealed.json",
+          "sha256": "722cd02a1226836331c984c6dbba17f81abf8746e76619d2819a9fff9b742a0b",
+          "bytes": 53986570
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 12287,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 9329,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 3.91155481338501e-8
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 0.00000762939453125
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "8dc1c916032311af337cb60910ac390b9f9ded76f4ca5f77139ff9b462d14da9",
+      "plaintextBytes": 244672163,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "3fe95fe1ff3245b769d8a8e6e773d7fa51c10e62425a2796e7c51b6ae681878f",
+          "bytes": 56216570
+        },
+        {
+          "audience": "session",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "3550f3e44fe79c7642ccb47b26e969a7ca9676a08d685e88cb621841b5cb1675",
+          "bytes": 56216398
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 12287,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 9329,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 2.9802322387695312e-8
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 0.00000286102294921875
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}

@@ -1,0 +1,168 @@
+{
+  "schema": "supertrader-calibration-v3-completion-1.0.0",
+  "status": "CALIBRATION_COMPLETE_NUMERIC_REVIEW_PASSED",
+  "hardFailure": null,
+  "freezeId": "V3-84caf2e84e560bec",
+  "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+  "protocolSha256": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+  "ruleBasis": "calibration/protocol.json calibrationVerdictDefinitions + overallVerdictDefinitions + paperEffectComparability (pre-registered)",
+  "overallVerdict": "PARTIALLY_CERTIFIED",
+  "overallReason": "ONE_EW_CONTROL_PASS_PLUS_REFERENCE_ARITHMETIC_EVIDENCE_REMAINING_SCREENS_PARTIAL_OR_BLOCKED; NOT_AN_ORIGINAL_PAPER_OR_POPULATION_CERTIFICATE",
+  "referenceScreens": [
+    {
+      "id": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "status": "COMPLETED",
+      "verdict": "PARTIAL",
+      "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+      "originalPaperEffect": "NOT_ASSESSED_MISSING_CRSP_OR_FTSE_ORIGINAL_PANEL",
+      "paperEffectComparability": "NONCOMPARABLE_NOT_INFRASTRUCTURE_FAIL",
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "id": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "status": "COMPLETED",
+      "verdict": "PARTIAL",
+      "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+      "originalPaperEffect": "NOT_ASSESSED_MISSING_CRSP_OR_FTSE_ORIGINAL_PANEL",
+      "paperEffectComparability": "NONCOMPARABLE_NOT_INFRASTRUCTURE_FAIL",
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "id": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "status": "COMPLETED",
+      "verdict": "PARTIAL",
+      "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+      "originalPaperEffect": "NOT_ASSESSED_MISSING_CRSP_OR_FTSE_ORIGINAL_PANEL",
+      "paperEffectComparability": "NONCOMPARABLE_NOT_INFRASTRUCTURE_FAIL",
+      "sourceSpreadDirection": "NEGATIVE",
+      "sourceSpreadValidMonths": 45
+    },
+    {
+      "id": "CALIB_EQUAL_WEIGHT",
+      "status": "COMPLETED",
+      "verdict": "PASS",
+      "scope": "EW_CONTROL_DECLARED_CONTROL_SCOPE_ONLY",
+      "reason": "ALL_MATERIAL_CONSTRUCTION_INVARIANTS_REPRODUCED_AND_REVIEWED"
+    },
+    {
+      "id": "gross_profitability_novy_marx",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "piotroski_value_fscore",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "value_plus_momentum",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    },
+    {
+      "id": "buyback_announcement_event",
+      "status": "BLOCKED_DATA",
+      "verdict": null,
+      "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+    }
+  ],
+  "numericReviews": [
+    {
+      "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "costMode": "SOURCE_GROSS",
+      "status": "PASS",
+      "reviewSha256": "3ec8dcaa444db0dd73156163b3f1c073243fd3fed5a5e94c6e97eff613e3d97e",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PASS",
+      "reviewSha256": "4298c1b4c0c08aa6e77992798b42af4c4ebbd09229be1b7badbea0c6a0e5852d",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "costMode": "SOURCE_GROSS",
+      "status": "PASS",
+      "reviewSha256": "3e10d2f08df56f1ec862a6f296163529209d0a6d35b9e95feeacdc4b23033e6a",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PASS",
+      "reviewSha256": "8ab37694ab5dfef7e70e6454e6691638cad81f00f81e0951b0678be17118b150",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "costMode": "SOURCE_GROSS",
+      "status": "PASS",
+      "reviewSha256": "8094e310bdf6c8afc1cc9573f264053a1ccf98387bbfa18491bb890ae5e4e835",
+      "reconciled": true
+    },
+    {
+      "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PASS",
+      "reviewSha256": "caee2fd35cbb57589f830f53f539d516ad6888c51708efcc8b55e176ba34551d",
+      "reconciled": true
+    },
+    {
+      "methodId": "CALIB_EQUAL_WEIGHT",
+      "costMode": "SOURCE_GROSS",
+      "status": "PASS",
+      "reviewSha256": "54b2bf01bdff64e1f2fe727ec5694f2141aa0257856085909a88b83e99d4a7c3",
+      "reconciled": true
+    },
+    {
+      "methodId": "CALIB_EQUAL_WEIGHT",
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PASS",
+      "reviewSha256": "ecaa6d93d3e6fcc43ef6ffdeed091b82d19d334a5d7b3999fa1b3be4040b9cca",
+      "reconciled": true
+    }
+  ],
+  "referenceArithmeticEvidence": [
+    {
+      "sourceId": "FRENCH_MOM10",
+      "kind": "MOMENTUM_EW",
+      "status": "COMPUTED",
+      "certificationCeiling": "ARITHMETIC_REFERENCE_PARITY",
+      "constructionVerdict": "NOT_A_STOCK_LEVEL_CONSTRUCTION_TEST",
+      "stockConstructionCertified": false,
+      "months": 104,
+      "missingMonthCount": 0,
+      "missingCellCount": 0,
+      "completeDecileCount": 10,
+      "fullDecileRiskShapeComplete": true,
+      "spreadMeanDirection": "POSITIVE",
+      "longLowerVolatilityDirection": "POSITIVE",
+      "longHigherZeroRFSharpeDirection": "POSITIVE"
+    },
+    {
+      "sourceId": "FRENCH_VAR",
+      "kind": "VARIANCE_EW",
+      "status": "COMPUTED",
+      "certificationCeiling": "ARITHMETIC_REFERENCE_PARITY",
+      "constructionVerdict": "NOT_A_STOCK_LEVEL_CONSTRUCTION_TEST",
+      "stockConstructionCertified": false,
+      "months": 104,
+      "missingMonthCount": 0,
+      "missingCellCount": 0,
+      "completeDecileCount": 10,
+      "fullDecileRiskShapeComplete": true,
+      "spreadMeanDirection": "POSITIVE",
+      "longLowerVolatilityDirection": "POSITIVE",
+      "longHigherZeroRFSharpeDirection": "POSITIVE"
+    }
+  ],
+  "reviewIndependence": "SEPARATE_CODE_PATH_SAME_AUTHOR; ADVERSARIAL_REVIEW_SEPARATE",
+  "performanceNumbersPublished": false
+}

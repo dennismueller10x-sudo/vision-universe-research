@@ -1,0 +1,149 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-8e324a9cd75516cf",
+  "freezeFileSha256": "0efccbbea2977ff779edb3fb261d22e297e1041ae8428963d457c0a7417bc75b",
+  "methodId": "CALIB_EQUAL_WEIGHT",
+  "engineMethodId": "CALIB_EQUAL_WEIGHT",
+  "runnerNode": "v22.23.3",
+  "inputVerification": {
+    "contentBindingVerified": true,
+    "parts": 500,
+    "securities": 9408
+  },
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "FAIL",
+        "reviewSha256": "eb8a04b55254579a0aff52c17744002d42b0da17a3da2092aa30036e214ece90",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "FAIL",
+            "hardChecks": 11,
+            "failedHardChecks": [
+              "R4_FILL_PRICES_EQUAL_SESSION_OPEN_PLUS_SLIPPAGE"
+            ],
+            "informational": [
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 73,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "02333bdc3f63a431a85071f40a0db52155df35c75e73c63d9066c498c4d20d53",
+      "plaintextBytes": 377494650,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "06389c01c519596c4d552d60579c4c768458d487ebf62542b154e160e7a0b79a",
+          "bytes": 82189850
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.session.sealed.json",
+          "sha256": "2198ea3043492754483a7ae65e8999de39c10a34b44eea75abe7df54ced26964",
+          "bytes": 82189678
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 7.82310962677002e-8
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "FAIL",
+        "reviewSha256": "5af113b529a416452d62496ed20b86fc7c00f4d9cb5aeb776d4ba58ff6efeba4",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "FAIL",
+            "hardChecks": 11,
+            "failedHardChecks": [
+              "R4_FILL_PRICES_EQUAL_SESSION_OPEN_PLUS_SLIPPAGE"
+            ],
+            "informational": [
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 73,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "9d09827094d8bffb2fd577f7c72397b0e15ee18ab2ee892ca2169667e6d83bf0",
+      "plaintextBytes": 384660252,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "84daa40f3acf5687c6625bd1350ee86ce22176b9a639dbaabcecf396f10dbc70",
+          "bytes": 86499230
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "3d41ac0aa846cb36aa18603167ced2d20387b66c7baa66b760101ddd078bdece",
+          "bytes": 86499058
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.7136335372924805e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_NUMERIC_REVIEW_FAILED"
+}

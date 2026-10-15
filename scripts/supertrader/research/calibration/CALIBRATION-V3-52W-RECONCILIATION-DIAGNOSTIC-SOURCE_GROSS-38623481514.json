@@ -1,0 +1,499 @@
+{
+  "schema": "supertrader-calibration-v3-reconciliation-diagnostic-1.0.0",
+  "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+  "engineMethodId": "CALIB_GH52WH",
+  "costMode": "SOURCE_GROSS",
+  "inputBasis": {
+    "manifestSha256": "ab36a623fa0483185471bdc9f76750424915f4c9d59220eb2889aaa658194d3d",
+    "sourceMetadataSha256": "3e241fcf93a6f20fb7a34670ad36fdc1cb09771f347bcb75c9676f7dcfc3c625"
+  },
+  "outcome": {
+    "reconciliation": "FAILED",
+    "errorCode": "REFERENCE_BOOK_RECONCILIATION_FAILED"
+  },
+  "gap": {
+    "top": {
+      "days": 2198,
+      "finalGap": -15.608203005220275,
+      "finalTolerance": 0.00004298495316514122,
+      "firstDayAboveTolerance": {
+        "date": "2021-04-01",
+        "gap": -15.608203005685937,
+        "events": {
+          "dividends": true,
+          "sells": 1449,
+          "buys": 1606,
+          "terminals": 3,
+          "quarantineTerminals": 0,
+          "newRejections": 75,
+          "positionsWithoutBar": 9,
+          "positionsWithStaleBar": 0
+        }
+      },
+      "daysWithGapChangeAbove1e6": 1,
+      "byEventClass": {
+        "dividendsCredited": {
+          "days": 2175,
+          "signedGapDeltaSum": -15.608203004754614,
+          "absGapDeltaSum": 15.608203916141065
+        },
+        "sells": {
+          "days": 1022,
+          "signedGapDeltaSum": -15.608203034717008,
+          "absGapDeltaSum": 15.608203449184657
+        },
+        "buys": {
+          "days": 105,
+          "signedGapDeltaSum": -15.608203010313446,
+          "absGapDeltaSum": 15.60820306718233
+        },
+        "newRejections": {
+          "days": 105,
+          "signedGapDeltaSum": -15.608203010313446,
+          "absGapDeltaSum": 15.60820306718233
+        },
+        "positionsWithoutBar": {
+          "days": 2175,
+          "signedGapDeltaSum": -15.608203004609095,
+          "absGapDeltaSum": 15.60820391762536
+        },
+        "positionsWithStaleBar": {
+          "days": 0,
+          "signedGapDeltaSum": 0,
+          "absGapDeltaSum": 0
+        },
+        "terminalOrQuarantine": {
+          "days": 1092,
+          "signedGapDeltaSum": -15.608203030657023,
+          "absGapDeltaSum": 15.608203460898949
+        },
+        "noEventDays": {
+          "days": 13,
+          "signedGapDeltaSum": -8.003553375601768e-10,
+          "absGapDeltaSum": 3.245077095925808e-9
+        }
+      },
+      "largestGapChanges": [
+        {
+          "date": "2021-04-01",
+          "delta": -15.608203006588155,
+          "sells": 1449,
+          "buys": 1606,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 1356,
+            "METHOD_EXIT": 90,
+            "TERMINAL_SCENARIO": 3
+          },
+          "dividendsCredited": true,
+          "terminals": 3,
+          "quarantineTerminals": 0,
+          "newRejections": 75,
+          "positionsDelta": 214,
+          "positionsWithoutBar": 9,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-02-20",
+          "delta": 3.026798367500305e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 15,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-08-03",
+          "delta": -3.026798367500305e-9,
+          "sells": 1350,
+          "buys": 1331,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 1234,
+            "METHOD_EXIT": 116
+          },
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 74,
+          "positionsDelta": 43,
+          "positionsWithoutBar": 1,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-09-23",
+          "delta": 2.9103830456733704e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 1,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-09-22",
+          "delta": -2.6775524020195007e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 1,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2024-10-16",
+          "delta": 2.444721758365631e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 15,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-03-10",
+          "delta": -2.3865140974521637e-9,
+          "sells": 1,
+          "buys": 0,
+          "sellReasons": {
+            "TERMINAL_SCENARIO": 1
+          },
+          "dividendsCredited": true,
+          "terminals": 1,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": -1,
+          "positionsWithoutBar": 11,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-09-04",
+          "delta": -2.270098775625229e-9,
+          "sells": 1,
+          "buys": 0,
+          "sellReasons": {
+            "TERMINAL_SCENARIO": 1
+          },
+          "dividendsCredited": true,
+          "terminals": 1,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": -1,
+          "positionsWithoutBar": 1,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2024-10-21",
+          "delta": -2.2118911147117615e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 14,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2024-03-01",
+          "delta": -2.153683453798294e-9,
+          "sells": 1106,
+          "buys": 1354,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 1023,
+            "METHOD_EXIT": 83
+          },
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 99,
+          "positionsDelta": 93,
+          "positionsWithoutBar": 13,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2024-11-27",
+          "delta": -2.153683453798294e-9,
+          "sells": 1,
+          "buys": 0,
+          "sellReasons": {
+            "TERMINAL_SCENARIO": 1
+          },
+          "dividendsCredited": true,
+          "terminals": 1,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": -1,
+          "positionsWithoutBar": 15,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2025-07-29",
+          "delta": -2.153683453798294e-9,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 1,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 29,
+          "positionsWithStaleBar": 0
+        }
+      ]
+    },
+    "bottom": {
+      "days": 2198,
+      "finalGap": 4.470348358154297e-7,
+      "finalTolerance": 0.004734486620532383,
+      "firstDayAboveTolerance": null,
+      "daysWithGapChangeAbove1e6": 0,
+      "byEventClass": {
+        "dividendsCredited": {
+          "days": 1966,
+          "signedGapDeltaSum": 8.534698281437159e-7,
+          "absGapDeltaSum": 0.00006020121509209275
+        },
+        "sells": {
+          "days": 688,
+          "signedGapDeltaSum": -5.784968379884958e-7,
+          "absGapDeltaSum": 0.000021897285478189588
+        },
+        "buys": {
+          "days": 105,
+          "signedGapDeltaSum": 6.203044904395938e-7,
+          "absGapDeltaSum": 0.000005651279934681952
+        },
+        "newRejections": {
+          "days": 105,
+          "signedGapDeltaSum": 6.203044904395938e-7,
+          "absGapDeltaSum": 0.000005651279934681952
+        },
+        "positionsWithoutBar": {
+          "days": 2119,
+          "signedGapDeltaSum": 3.7277641240507364e-7,
+          "absGapDeltaSum": 0.00006099585152696818
+        },
+        "positionsWithStaleBar": {
+          "days": 0,
+          "signedGapDeltaSum": 0,
+          "absGapDeltaSum": 0
+        },
+        "terminalOrQuarantine": {
+          "days": 754,
+          "signedGapDeltaSum": -9.476934792473912e-7,
+          "absGapDeltaSum": 0.000021504427422769368
+        },
+        "noEventDays": {
+          "days": 162,
+          "signedGapDeltaSum": -1.4668330550193787e-7,
+          "absGapDeltaSum": 0.000005937879905104637
+        }
+      },
+      "largestGapChanges": [
+        {
+          "date": "2026-06-25",
+          "delta": 3.501772880554199e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 0,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-07-01",
+          "delta": -3.2782554626464844e-7,
+          "sells": 869,
+          "buys": 1301,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 762,
+            "METHOD_EXIT": 106,
+            "TERMINAL_SCENARIO": 1
+          },
+          "dividendsCredited": true,
+          "terminals": 1,
+          "quarantineTerminals": 0,
+          "newRejections": 20,
+          "positionsDelta": -12,
+          "positionsWithoutBar": 0,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-06-22",
+          "delta": 3.203749656677246e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 0,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2025-12-01",
+          "delta": 2.7567148208618164e-7,
+          "sells": 1009,
+          "buys": 1197,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 946,
+            "METHOD_EXIT": 62,
+            "TERMINAL_SCENARIO": 1
+          },
+          "dividendsCredited": true,
+          "terminals": 1,
+          "quarantineTerminals": 0,
+          "newRejections": 74,
+          "positionsDelta": 35,
+          "positionsWithoutBar": 38,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2025-12-24",
+          "delta": 2.7567148208618164e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 47,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2025-11-26",
+          "delta": -2.682209014892578e-7,
+          "sells": 2,
+          "buys": 0,
+          "sellReasons": {
+            "TERMINAL_SCENARIO": 2
+          },
+          "dividendsCredited": true,
+          "terminals": 2,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": -2,
+          "positionsWithoutBar": 37,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-08-12",
+          "delta": 2.682209014892578e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 0,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-08-13",
+          "delta": -2.682209014892578e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 0,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-05-22",
+          "delta": 2.60770320892334e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 9,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2025-03-05",
+          "delta": -2.5331974029541016e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 18,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2026-04-16",
+          "delta": -2.5331974029541016e-7,
+          "sells": 0,
+          "buys": 0,
+          "sellReasons": {},
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 0,
+          "positionsDelta": 0,
+          "positionsWithoutBar": 10,
+          "positionsWithStaleBar": 0
+        },
+        {
+          "date": "2024-07-01",
+          "delta": -2.4959444999694824e-7,
+          "sells": 912,
+          "buys": 1194,
+          "sellReasons": {
+            "REBALANCE_OR_PARTIAL": 848,
+            "METHOD_EXIT": 64
+          },
+          "dividendsCredited": true,
+          "terminals": 0,
+          "quarantineTerminals": 0,
+          "newRejections": 40,
+          "positionsDelta": 4,
+          "positionsWithoutBar": 13,
+          "positionsWithStaleBar": 0
+        }
+      ]
+    }
+  },
+  "toleranceChanged": false,
+  "stateChanged": false,
+  "performanceNumbersPublished": false
+}

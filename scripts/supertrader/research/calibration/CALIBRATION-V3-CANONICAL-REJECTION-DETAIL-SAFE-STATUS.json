@@ -1,0 +1,37 @@
+{
+  "schema": "supertrader-private-data-inventory-1.0.0",
+  "status": "SOURCE_INPUTS_AVAILABLE_NOT_CERTIFIED",
+  "mode": "READ_ONLY_CANONICAL_INVENTORY",
+  "universeState": "OBSERVED_ONLY",
+  "counts": {
+    "providerSupportedListingRecords": 16557,
+    "sourceRowsRejected": 3,
+    "observedListingGenerations": 15563,
+    "legacyPitEntries": 7264,
+    "legacyDelistingEntries": 2265,
+    "secFundamentalIndexedIssuers": 5480,
+    "sourceObjectsAvailable": 9,
+    "sourceObjectsMissing": 0,
+    "readOnlyGetCalls": 9051,
+    "writeCalls": 0
+  },
+  "sourceRights": "PRIVATE_OWNER_SESSION_ONLY",
+  "performanceCalculated": false,
+  "canonicalStatus": "AVAILABLE",
+  "canonicalCounts": {
+    "inputSegments": 9410,
+    "usableSegments": 9408
+  },
+  "canonicalRejections": {
+    "reasons": {
+      "CORPORATE_ACTION_CONTRADICTED": 2
+    },
+    "unknownReasonCount": 0,
+    "details": {
+      "CORPORATE_ACTION_CONTRADICTED": {
+        "SPLIT_NOT_IN_RAW_PRICE": 2
+      }
+    },
+    "unknownDetailCount": 0
+  }
+}

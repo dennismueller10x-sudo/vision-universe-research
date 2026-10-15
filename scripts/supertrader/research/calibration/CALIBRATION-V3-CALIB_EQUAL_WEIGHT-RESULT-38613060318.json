@@ -1,0 +1,82 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-31b24ae03117c32c",
+  "freezeFileSha256": "c3c3ab1fe1595ace8b039e853d490ef6d8f88e13bdfe150d84821c3d351d9fc7",
+  "methodId": "CALIB_EQUAL_WEIGHT",
+  "engineMethodId": "CALIB_EQUAL_WEIGHT",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "513d8ef8e90871e3c60fcc7f36135c68e4e190a8f385e49aaf8a9210aa9185f4",
+      "plaintextBytes": 377491482,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "1cb0c056b0c22ed436204a33aa01049ce486ee5bbcf01de9e701e75f944bb4ba",
+          "bytes": 82188738
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.session.sealed.json",
+          "sha256": "4679690f469222b38905c25587e68dbb6ced787994c98523b435c3616480716d",
+          "bytes": 82188566
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 7.82310962677002e-8
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "3b8aa84280906c0dfc50a2b941e91f592afaa66acd0dca17bf2a0239bc56373d",
+      "plaintextBytes": 384656977,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "81562d2e69b85dc8ea258319777b8b76c9b49c3a1b0e9066dfab3835ac529c8d",
+          "bytes": 86498110
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "a70702341e48e5d41a010f7c350fd8ae9a1bb053443c9151855f18576522130a",
+          "bytes": 86497938
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.7136335372924805e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}

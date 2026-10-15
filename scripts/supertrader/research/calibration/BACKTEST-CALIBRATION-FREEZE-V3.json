@@ -1,0 +1,97 @@
+{
+  "schema": "supertrader-calibration-v3-premeasurement-freeze-1.0.0",
+  "status": "NOT_FROZEN_MISSING_DURABLE_INPUT_RECEIPTS",
+  "createdAt": "2026-10-14",
+  "basedOnHead": "cc9ecb5b677035338f034cd0f3c21a24b02c9fa2",
+  "parentFreezeSha256": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
+  "strategyDefinitionsChanged": false,
+  "postResultTuningAllowed": false,
+  "codeAndContractHashes": {
+    "calibrationProtocol": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "calibrationDefinitions": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "calibrationFreezeV1": "4aff8935e7564de492570a95f45ddf9a4f0c74f43ca83af16198deca12a4cea9",
+    "calibrationFreezeV2": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
+    "accountingBugNote": "84b5bc1d78b4e469698f49c98244db7b581b3d6678d2ef31a67ecdd3c1da7dc7",
+    "accountingFix": "248bacbb4d22e2955102aff83b1f9749623ee8270aa751b40476c145377ec655",
+    "accountingFixTest": "b0db96a92c08b1ed33dc7d9a312a302debd3000710c9a35bcfd4d8da46e9da6a",
+    "executionOpenGuardTest": "925b250e985305037176f396bc8251c869fd31e6bd887487ce09d93b3ad405d0",
+    "referenceArithmetic": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+    "referenceArithmeticTest": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
+    "calibrationRunner": "5a79c1e3a61ebd9bd389653c3e3de81b81be77e5c732cb4ab37c0739613de828",
+    "portfolioRunner": "15c4ffaff5b382c9b67930ecab7553fddd6df72725e3506ba16a2502168684c6",
+    "tournamentProtocol": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+    "methodFreezes": "f0fc0dd92f414c47a66a76b63fc113e04bd74b43fda2577f4f15e16ac6bd8090",
+    "infrastructureVersioningTest": "881bdc27b4254584be3e35c53243508073c5d98a232e493f734a3c29aaa4f8e0",
+    "durableStateVerifier": "e52f44dad95d785f080c2b7dff7a78c80f81720ed2f84bccddbb87817be14694",
+    "scopeGuard": "e74cee59559b91aeeb7d182d7c381385713fa5c98010006f2244ab93e4a380c2",
+    "sourceCaptureWorkflow": "5c20566d270de1b5aa02eff182ab04047a574a7f418db0614f0eb11b285bccb0",
+    "dataInventory": "9c9385edaadde071df6c1fb2ddb789f9940223b66f080542594dc6aba671734a",
+    "safeDiagnosticTest": "4e4d9d3ab8e05a4b574e1dbb88b456d33cecede477ce07c26cf4b86cdf985e46",
+    "referenceCaptureRunner": "5f878e45c5c0202760d117a88e5ee0bf9b116996a621a9c33d914c18b5431223",
+    "referenceCaptureTest": "f17d95b0d242dd3e17d113c50e1e44c2637976a0b2d7fe026314d72a9d7f1b0c"
+  },
+  "canonicalSourceManifestSha256": "d0d3a6485296ae76e0eb98758b8a41f8feaa7ee4b670a5c90608ed38f32470b9",
+  "referenceManifestSha256": "36422b5172a18295b4e9da4c5410a58bf53ce406f8be6e571ae488d735c95108",
+  "methodIds": [
+    "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+    "CAL_GH2004_52WH_30_6_NO_SKIP",
+    "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+    "CALIB_EQUAL_WEIGHT",
+    "gross_profitability_novy_marx",
+    "piotroski_value_fscore",
+    "value_plus_momentum",
+    "buyback_announcement_event"
+  ],
+  "tolerancePolicy": "INHERIT_FROZEN_PROTOCOL_NO_POST_RESULT_ADJUSTMENT",
+  "requiredBeforeFreeze": [
+    "canonical manifest exact bytes and per-part SHA256s",
+    "source provenance metadata exact bytes",
+    "parsed reference artifact",
+    "scanner-safe parser hash and passing focused tests",
+    "frozen universe/data/execution/cost/corporate-action contracts",
+    "V3 measurement runner and durable historical source-capture workflow must exist and pass preflight",
+    "V3 capture workflow must complete and its encrypted input manifest/artifact receipt must be verified",
+    "reference source plan SHA256: 20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+    "reference source bytes and parsed private artifact receipts"
+  ],
+  "frozenAt": null,
+  "premeasurementInfrastructureAmendments": [
+    {
+      "change": "scanner-safe local parser identifier rename token -> monthCell",
+      "logicChanged": false,
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "testSha256": "aecd366313d17726ead2a5e49c278bbe71fa2b4cb45bb05c5ea62181706f3305",
+      "focusedTestStatus": "22_PASSED"
+    }
+  ],
+  "dataContractHash": "41910853970aff1202c12b6f3460170a0efa9cb7227bbb93e1bf3e2a4acf0c2d",
+  "executionContractHash": "76ba26d90ae1c8a96c9c04c55681232d264e0dbaa59d48c5c23edd49a083b899",
+  "costModelHash": "2b53975eef785ab5fcaf898be6721854cfb13a07f995b02d735143fc19dacfbe",
+  "universeContractHash": "d2b0de1124cbf4b9a775421f9d5ffaeb0bf64962d802d1605832b8734d63b062",
+  "sourceMapHash": "54da1c0d801ea3a5ac00e0cb494e6031b9fc8f579cf3b7a1e98ac69c2e23bd58",
+  "corporateActionContract": {
+    "contract": "Frozen price engine handling recorded in source code; source completeness still unverified for historical panel.",
+    "codePaths": [
+      "scripts/supertrader/research/certification/market-equity.mjs",
+      "scripts/supertrader/research/tournament/protocol.json"
+    ],
+    "codeHashes": [
+      "568b070d3ef5e228c2a1c1fd619f9b2ff5382c56c4c401eedffeefff65bcc0e4",
+      "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247"
+    ]
+  },
+  "sourceManifestSha256": "d0d3a6485296ae76e0eb98758b8a41f8feaa7ee4b670a5c90608ed38f32470b9",
+  "currentCaptureSafeStatusSha256": "4b5575c27c6f0394ec26561ee5814f9880127d2d14209946797a1d0932b44215",
+  "referenceSourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+  "parsedReferenceArtifactSha256": "3216ad2d0ce2836911431f4f56f28286ddbf52ed608a81c2f346bde19e67fd2a",
+  "parsedReferenceCaptureReceipt": {
+    "artifactId": 11887784036,
+    "runId": 38554833188,
+    "artifactZipSha256": "388bc31ddaa765fa75ef04b11ba8bffaabcf370b8220dc31f059ab0b4bec9c9a",
+    "contentManifestSha256": "24bbe6f7ea70fc731e6c06a67b74f544c3fe089ca8f35a42ff3339c4079b9928",
+    "schemaHash": "e605d8dbb0648b6bc4b551e7577b198cee3582ad61d7c90498f688731be477b6",
+    "expiresAt": "2027-01-12T11:11:30Z",
+    "encrypted": true,
+    "independentReview": "PENDING"
+  }
+}

@@ -1,0 +1,77 @@
+{
+ "schema": "vision-universe-calibration-v3-results-1.0.0",
+ "status": "FOUR_NUMERIC_METHODS_COMPLETED_NUMERIC_REVIEW_PASSED_FOUR_DATA_BLOCKED_ADVERSARIAL_REVIEW_DONE",
+ "overallVerdict": "PARTIALLY_CERTIFIED",
+ "overallVerdictBasis": "mechanical application of the pre-registered definitions; see claimBoundary",
+ "claimBoundary": "CALIBRATION-V3-ADVERSARIAL-REVIEW.json: strict reading of the pre-registered PASS text would give NOT_CERTIFIED / INSUFFICIENT_REFERENCE_DATA because no independent direction/magnitude oracle was available for JT, 52W and EW; verdict not changed after results",
+ "freezeId": "V3-84caf2e84e560bec",
+ "freezeFile": "BACKTEST-CALIBRATION-FREEZE-V3-38685897684.json",
+ "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+ "measurementRunId": 38685897684,
+ "completion": "CALIBRATION-V3-COMPLETION-V3-84caf2e84e560bec.json",
+ "completionSha256": "8f4cc43afb557d11c5d9a08d9571963546250245d7f59f8a8d2d8463ca2b86ea",
+ "methods": [
+  {
+   "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 0
+  },
+  {
+   "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 0
+  },
+  {
+   "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+   "status": "COMPLETED",
+   "verdict": "PARTIAL",
+   "reason": "STOCK_CONSTRUCTION_MECHANICS_REVIEWED_ORIGINAL_STUDY_EFFECT_NOT_ASSESSED",
+   "sourceSpreadValidMonths": 45
+  },
+  {
+   "methodId": "CALIB_EQUAL_WEIGHT",
+   "status": "COMPLETED",
+   "verdict": "PASS",
+   "reason": "ALL_MATERIAL_CONSTRUCTION_INVARIANTS_REPRODUCED_AND_REVIEWED"
+  },
+  {
+   "methodId": "gross_profitability_novy_marx",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "piotroski_value_fscore",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "value_plus_momentum",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  },
+  {
+   "methodId": "buyback_announcement_event",
+   "status": "BLOCKED_DATA",
+   "verdict": null,
+   "reason": "FUNDAMENTAL_OR_EVENT_DATA_CONTRACT_NOT_MET"
+  }
+ ],
+ "tournament": [
+  "TOURNAMENT-V3-52_week_high_effect-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-KULLAMAGI_DAILY_ADAPTATION-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-LOW_VOLATILITY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-TURTLE_S2_EQUITY_DAILY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-WEINSTEIN_STAGE_DAILY-SUMMARY-38685897684.json",
+  "TOURNAMENT-V3-cross_sectional_momentum-SUMMARY-38685897684.json"
+ ],
+ "currentReplay": "CURRENT-REPLAY-V3-SUMMARY-38703570432.json",
+ "strategyDefinitionsChanged": false,
+ "performanceNumbersPublished": false
+}

@@ -1,12 +1,14 @@
 name: Supertrader data and execution certification (private)
 on:
   push:
-    branches: ['research/supertrader-data-execution-certification-*']
+    branches:
+      - 'research/supertrader-data-execution-certification-*'
+      - 'research/supertrader-calibration-v3-durable'
   workflow_dispatch:
     inputs:
       mode:
         type: choice
-        options: [probe, canonical, repack, current]
+        options: [probe, canonical, repack, current, reference]
         default: probe
       source_run:
         type: string
@@ -19,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   data-probe:
-    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || (github.event_name == 'workflow_dispatch' && (inputs.mode == 'probe' || inputs.mode == 'canonical'))
+    if: contains(github.event.head_commit.message, '[supertrader-certification:probe]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') || (github.event_name == 'workflow_dispatch' && (inputs.mode == 'probe' || inputs.mode == 'canonical'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -49,16 +51,21 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
-          CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || inputs.mode == 'canonical' }}
+          CERTIFICATION_CANONICAL: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical]') || contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') || inputs.mode == 'canonical' }}
+          CERTIFICATION_STATUS_ONLY: ${{ contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]') }}
         run: |
           set -euo pipefail
           if [ "$CERTIFICATION_CANONICAL" = "true" ]; then
-            node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical
+            if [ "$CERTIFICATION_STATUS_ONLY" = "true" ]; then
+              node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical --status-only
+            else
+              node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 4 --canonical
+            fi
           else
             node scripts/supertrader/research/certification/data-inventory.mjs --out "$RUNNER_TEMP/datacert" --fact-doc-limit 0
           fi
       - name: Preserve encrypted inventory and public statuses only
-        if: always()
+        if: always() && !contains(github.event.head_commit.message, '[supertrader-certification:canonical-diagnostic]')
         uses: actions/upload-artifact@v4
         with:
           name: supertrader-certification-probe-${{ github.run_id }}
@@ -66,7 +73,15 @@ jobs:
             ${{ runner.temp }}/datacert/*status.json
             ${{ runner.temp }}/datacert/*.sealed.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
+      - name: Preserve bounded public canonical diagnostic receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-certification-status-${{ github.run_id }}
+          path: ${{ runner.temp }}/datacert/*status.json
+          if-no-files-found: warn
+          retention-days: 90
   repack-existing-encrypted-inputs:
     if: contains(github.event.head_commit.message, '[supertrader-certification:repack]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'repack')
     runs-on: ubuntu-latest
@@ -93,7 +108,7 @@ jobs:
           path: |
             ${{ runner.temp }}/repacked/repack-status.json
             ${{ runner.temp }}/repacked/repack-manifest.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
       - name: Upload each bounded encrypted package with the official artifact client
         uses: actions/github-script@v7
@@ -120,6 +135,34 @@ jobs:
               if (uploaded.status !== 0) throw new Error('BOUNDED_ARTIFACT_UPLOAD_FAILED');
             }
             core.info(JSON.stringify({status: 'ENCRYPTED_BUNDLES_PRESERVED', bundles: manifest.bundles.length, providerReads: 0, performanceCalculated: false}));
+
+  calibration-reference-capture-v3:
+    if: contains(github.event.head_commit.message, '[supertrader-certification:reference]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'reference')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /quant/engines/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify frozen official source receipts and encrypt parsed reference
+        run: node scripts/supertrader/research/calibration/capture-reference-v3.mjs --out "$RUNNER_TEMP/calibration-v3-reference"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-calibration-v3-reference-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/calibration-v3-reference/*sealed.json
+            ${{ runner.temp }}/calibration-v3-reference/reference-safe-status.json
+          if-no-files-found: error
+          retention-days: 90
 
   current-rerun:
     if: contains(github.event.head_commit.message, '[supertrader-certification:current]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'current')
@@ -166,7 +209,7 @@ jobs:
           path: |
             ${{ runner.temp }}/current-v2/safe-status.json
             ${{ runner.temp }}/current-v2/*.sealed.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
 
       - name: Bound encrypted current source inputs without provider rereads
@@ -177,7 +220,7 @@ jobs:
           path: |
             ${{ runner.temp }}/current-input-bundles/repack-manifest.json
             ${{ runner.temp }}/current-input-bundles/repack-status.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
       - name: Upload each bounded encrypted current input package
         uses: actions/github-script@v7

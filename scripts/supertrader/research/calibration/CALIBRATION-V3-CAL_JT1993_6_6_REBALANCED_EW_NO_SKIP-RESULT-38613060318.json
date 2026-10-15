@@ -1,0 +1,90 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-31b24ae03117c32c",
+  "freezeFileSha256": "c3c3ab1fe1595ace8b039e853d490ef6d8f88e13bdfe150d84821c3d351d9fc7",
+  "methodId": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+  "engineMethodId": "CALIB_JT6_6_NO_SKIP",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "da715c1667d718869797435ebbf625dc9ed63df4aaa77d1991c7fb41e869a56e",
+      "plaintextBytes": 240295024,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "ed9bb35eeab68a778ec492770a60d9962ccf56f123fce94ae3ec7528f4a75bd0",
+          "bytes": 53971974
+        },
+        {
+          "audience": "session",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SOURCE_GROSS.session.sealed.json",
+          "sha256": "487d92e85c21f632376e086124a53106012fd47156bc06c383b37683614c9fd3",
+          "bytes": 53971802
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 3.91155481338501e-8
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 0.00000762939453125
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "5b2a7b3a920d9a5c6952b0321ea6432e7f65160268e5720c4b9f04eba9a9556a",
+      "plaintextBytes": 243655795,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "471192bcee956e1f7fd5c0713f8387fc6da7f7c31e2144b33441a515a586886c",
+          "bytes": 56202610
+        },
+        {
+          "audience": "session",
+          "name": "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "4f606b2f8d40d744de0f78b951f63f4582d586ed8885b692b81c8bb854439932",
+          "bytes": 56202438
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 2.9802322387695312e-8
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 0.00000286102294921875
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}

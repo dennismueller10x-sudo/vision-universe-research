@@ -1,0 +1,232 @@
+{
+  "schema": "supertrader-calibration-v3-final-freeze-1.0.0",
+  "status": "FROZEN_BEFORE_PERFORMANCE",
+  "frozenBeforePerformance": true,
+  "registeredBeforePerformance": true,
+  "strategyDefinitionsChanged": false,
+  "postResultTuningAllowed": false,
+  "createdAt": "2026-10-15T02:50:31.452Z",
+  "provenance": {
+    "workflowRunId": "38672211936",
+    "codeCommit": "f2e8816c976ee828b784fb9793f302021cf26502",
+    "runnerNode": "v22.23.3"
+  },
+  "inputBasis": "NEW_AUTHORIZED_CAPTURE_VERIFIED_IN_RUNNER; EARLIER_ENCRYPTED_500_PART_CAPTURE_IS_HISTORICAL_EVIDENCE_ONLY",
+  "inputReceipts": [
+    {
+      "role": "CANONICAL_MANIFEST_PLAINTEXT",
+      "sha256": "701d1c02afeb540e85841473d385cf46a91b099d31248d6c7a350fc3e0309b8d",
+      "bytes": 939539
+    },
+    {
+      "role": "CANONICAL_SOURCE_PROVENANCE_INPUTS",
+      "sha256": "99e339bb5af6bda500f8337409c4a4ff266ec2eb85a8761ae59819240669ef8e",
+      "bytes": 92590090
+    },
+    {
+      "role": "CANONICAL_PART_HASH_LIST",
+      "sha256": "a858c4002d8c85f4bdbb63c6600b274859db9d2f6f07ad6d986f8e7429250b02",
+      "parts": 500,
+      "securities": 9408
+    },
+    {
+      "role": "REFERENCE_PARSED_PLAINTEXT",
+      "sha256": "349397a476a9a1bf01f299860a1cd05c3f12003eeb93413a71adc7718c794889",
+      "bytes": 816202,
+      "sourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db"
+    },
+    {
+      "role": "REFERENCE_PARSED_NORMALIZED",
+      "sha256": "3dafc128919155588c61927a8bbf1a336bf7225f1db31c76a28628ab0acea82e",
+      "excludes": [
+        "createdAt"
+      ],
+      "sourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db"
+    },
+    {
+      "role": "CANONICAL_CONTENT_BINDING",
+      "sha256": "94b7c02eff26a23d863d8986aa296a1c3b6177fc7695de1f2222b8ccba5d9712",
+      "binding": {
+        "schema": "supertrader-calibration-v3-content-binding-1.0.0",
+        "normalizedPartListSha256": "548e9fc1bf2733a1ed8bb31f848a0cec175c7f32349b8dbaeb486fee4eb2bc14",
+        "normalizedManifestSha256": "305670a250a33033467be3feba83a06b14886c39ae8ca9122d791b98a4ee0bd5",
+        "normalizedInputsSha256": "a2dda76427f3b773084d8676ed8e6f7fceebdf84e7044dd1bb3e8895f71fe4c8",
+        "dataFingerprint": "f5f1fa9adc6f1bfd4036d8f008d41baf33c8dbb33174e62507bf09c64ac40386",
+        "sourceObjectSetSha256": "e3726bf0164af71dfc4c428d1551127408678beff2a62fafcc2712c683a16f42",
+        "readReceiptSetSha256": "32ccc0654308992225fe8c386f4c218d3a3affe4f8850c030dc01ca136ed957d",
+        "listingSourceSha256": "67f87cd5c13a8ddf3003c88ec83b30e580790cb693fae9b2a18236d6f5c6997e",
+        "parts": 500,
+        "securities": 9408
+      }
+    }
+  ],
+  "captureReceipt": {
+    "provenance": {
+      "capturedAt": "2026-10-15T02:40:39.000Z",
+      "workflowRunId": "38672211936",
+      "codeCommit": "f2e8816c976ee828b784fb9793f302021cf26502",
+      "timestampIsPartOfContentClaim": false
+    },
+    "counts": {
+      "inputSegments": 9410,
+      "usableSegments": 9408,
+      "parts": 500,
+      "verifiedSecurities": 9408,
+      "providerSupportedListingRecords": 16562,
+      "observedListingGenerations": 15564,
+      "readOnlyGetCalls": 9051,
+      "writeCalls": 0
+    },
+    "rejections": {
+      "reasons": {
+        "CORPORATE_ACTION_CONTRADICTED": 2
+      },
+      "unknownReasonCount": 0,
+      "details": {
+        "CORPORATE_ACTION_CONTRADICTED": {
+          "SPLIT_NOT_IN_RAW_PRICE": 2
+        }
+      },
+      "unknownDetailCount": 0
+    },
+    "contract": {
+      "dataInventorySha256": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+      "canonicalInputSha256": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+      "captureRunnerSha256": "1af858f9ca968673127b39f5d0783e1889fa2e1f6fe47ce15feb30f75f27e1ba",
+      "chunkBytes": 8388608,
+      "factDocLimit": 4
+    },
+    "manifestSha256": "701d1c02afeb540e85841473d385cf46a91b099d31248d6c7a350fc3e0309b8d",
+    "sourceMetadataSha256": "99e339bb5af6bda500f8337409c4a4ff266ec2eb85a8761ae59819240669ef8e",
+    "sourceObjectSetSha256": "e3726bf0164af71dfc4c428d1551127408678beff2a62fafcc2712c683a16f42",
+    "readReceiptSetSha256": "32ccc0654308992225fe8c386f4c218d3a3affe4f8850c030dc01ca136ed957d"
+  },
+  "contracts": {
+    "universe": {
+      "id": "US_PIT_2016_A",
+      "window": {
+        "warmupFrom": "2015-01-01",
+        "from": "2018-01-02",
+        "to": "2026-09-30"
+      },
+      "fileSha256": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247"
+    },
+    "execution": {
+      "timing": "NEXT_SESSION_OPEN",
+      "initialCapital": 100000,
+      "slippageBpsPerSide": 10,
+      "commissionBpsPerSide": 1,
+      "costSensitivityMultiplier": 2,
+      "cashReturn": 0,
+      "fractionalShares": true,
+      "shorting": false,
+      "leverage": false
+    },
+    "delisting": {
+      "baseline": "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+      "sensitivity": [
+        "LAST_OBSERVED_PRICE",
+        "DISTRESS_ZERO_OTHER_MINUS_30"
+      ],
+      "knownAcquisition": "LAST_OBSERVED_PRICE_ONLY_WHEN_OFFICIAL_CLASSIFICATION_PRESENT",
+      "terminalProceedsAreScenarios": true
+    },
+    "corporateAction": {
+      "rule": "UNCHANGED_FROZEN_LOADER_SPLIT_VALIDATION",
+      "files": {
+        "scripts/supertrader/research/certification/canonical-input.mjs": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+        "scripts/supertrader/research/certification/data-inventory.mjs": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+        "scripts/supertrader/research/tournament/data.mjs": "a9135c13e5ced199326cdaece3a3e5cf402417a9f2a938e88b63be1b269a41f8"
+      }
+    },
+    "cost": {
+      "slippageBpsPerSide": 10,
+      "commissionBpsPerSide": 1,
+      "costModes": [
+        "SOURCE_GROSS",
+        "SAME_TOURNAMENT_NET"
+      ]
+    },
+    "tolerance": {
+      "reconciliation": "max(1e-6, actual*1e-10) inherited from accounting-budget-v2; no post-result adjustment"
+    },
+    "referenceConstruction": {
+      "parsedSha256": "349397a476a9a1bf01f299860a1cd05c3f12003eeb93413a71adc7718c794889",
+      "parserSha256": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+      "sourcePlanSha256": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2"
+    }
+  },
+  "methods": {
+    "measurable": [
+      "CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP",
+      "CAL_GH2004_52WH_30_6_NO_SKIP",
+      "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+      "CALIB_EQUAL_WEIGHT"
+    ],
+    "dataBlocked": [
+      "gross_profitability_novy_marx",
+      "piotroski_value_fscore",
+      "value_plus_momentum",
+      "buyback_announcement_event"
+    ]
+  },
+  "files": {
+    ".github/workflows/supertrader-calibration-v3-pipeline.yml": "4225899dfc4d9847376412308d56b1565a593849236756fb6bffc8bb13acc0a7",
+    ".github/workflows/supertrader-calibration-v3.yml": "186c79a5e7ccce48bef545f54a4c35c76eda8a394f861381a479fac8dc637d75",
+    "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+    "quant/engines/bar-codec.js": "02b91f41932d239344ea43953a622bd6ceb3e5658cf79f3a0a258544b3716255",
+    "quant/engines/company-master.js": "f7bd29a8a22ce9f6c9dcd5717bed12a4faf36f7f760dc96aa76cae2437cb6cbf",
+    "quant/engines/hash.js": "c48ad5c3dc81aaf1fc88fc614db5d08e0a9fe7c56e9f4d3d4ed553b86896eefc",
+    "quant/engines/history-store.js": "755804a9939a1f19e586feea6694c6831c6bf4d8d693876ac2a23cca22522493",
+    "quant/engines/instrument-classification.js": "86fd46b650400a1763a77dd8e04e23ad8618ab38577af5b928bf25ba3bedf817",
+    "quant/engines/us-security-master.js": "cde6827d4112bb8f55bb818bd39322c580e25a6e721b3e3ddc9d05513fc287d9",
+    "quant/engines/zero-cost-guard.js": "3a3942e50d9605d9fd09127a5446371ebe77dfed09f64d32291cebcc0b26bac9",
+    "scripts/market/storage/s3-driver.mjs": "4ed3315cfd325c376b57067631b9b14c370e2aea8bd3690be14a4a4b2e17269a",
+    "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V2.json": "fbb725dd758f9dbad2d936db1fc84df757e3f87bfb72a75275ea85724bd02507",
+    "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-FREEZE-V3.json": "2029dadb2159cdbdce14c4d97610d5e98aac8f8876d6fa530a30fc0315fdfd98",
+    "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-METHODS.json": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "scripts/supertrader/research/calibration/CALIBRATION-V3-REFERENCE-SOURCE-PLAN.json": "20741303df6ef2ad2422eb964417f8c0637c52af0820bc0f2ed5d226843446a2",
+    "scripts/supertrader/research/calibration/accounting-budget-v2.mjs": "248bacbb4d22e2955102aff83b1f9749623ee8270aa751b40476c145377ec655",
+    "scripts/supertrader/research/calibration/accounting-budget-v3.mjs": "d7df83f8032c9d4a3f32e54f0d782cc6871ed08857cbbf4c7aa0e185651ca411",
+    "scripts/supertrader/research/calibration/build-completion-v3.mjs": "c6e3d33b62621117896c76d8e8c2eedf462e0215f59bd6f1c8a557647c28db33",
+    "scripts/supertrader/research/calibration/capture-reference-v3.mjs": "f51509cfbe1e334cb0e21bf32de9779542b6303dfba411cd4dc8d3c562ee7b70",
+    "scripts/supertrader/research/calibration/capture-v3-inrunner.mjs": "1af858f9ca968673127b39f5d0783e1889fa2e1f6fe47ce15feb30f75f27e1ba",
+    "scripts/supertrader/research/calibration/freeze-v3.mjs": "317f8f56bcab4cdfc1b152a3378fe2f6d2b14a1d62f0f3bff5dd667cba4052f5",
+    "scripts/supertrader/research/calibration/numeric-review-v3.mjs": "df538816e3913bc6ceed84fa4d74a80f33a8a1b04c12dcdb84c3d87dea511ffb",
+    "scripts/supertrader/research/calibration/portfolio-calibration-v2.mjs": "15c4ffaff5b382c9b67930ecab7553fddd6df72725e3506ba16a2502168684c6",
+    "scripts/supertrader/research/calibration/portfolio-calibration-v3.mjs": "9c23f7e0d815932bb320ff6f0a6d34f61e6722135085143145a234694f412932",
+    "scripts/supertrader/research/calibration/protocol.json": "ea8ba831f1849ef803a2c8abc6212207ede229fbcf01a8b43111815a66a570be",
+    "scripts/supertrader/research/calibration/reference-engines.mjs": "c6ffdafec698de14a8444670a8dfb0db712d7edd981ceb720a26327f5c54539f",
+    "scripts/supertrader/research/calibration/reference-return-arithmetic.mjs": "609991e004322e8cd1d3ed0f66a898616a17f0c15f779594197f61766178a9db",
+    "scripts/supertrader/research/calibration/run-calibration-v2.mjs": "5a79c1e3a61ebd9bd389653c3e3de81b81be77e5c732cb4ab37c0739613de828",
+    "scripts/supertrader/research/calibration/run-calibration-v3.mjs": "883bee691171fcbf30c8e6cfd485743df69c20fb4c713b7b7fd80c43fe3559a8",
+    "scripts/supertrader/research/calibration/run-post-calibration-v2.mjs": "b8445bf2c7ca34167894950833d99b10ba2d889966feae43b2590a792a5dbe4e",
+    "scripts/supertrader/research/calibration/run-post-calibration-v3.mjs": "a115a559fe54da196f72e156da83513618561206b00fd794b45cf9204acf53f2",
+    "scripts/supertrader/research/calibration/runner-certified-v2.mjs": "85ae9a2e3916f97b825e0ee8ace5e1d47e60b2ff48564f8d6b9c870b20476381",
+    "scripts/supertrader/research/calibration/runner-certified-v3.mjs": "c940adda0364320e4b9c37fa31cbc39a327b363825794b5748dcacb2c1fdc250",
+    "scripts/supertrader/research/calibration/seal-stream-v3.mjs": "4fb7fb316ae6c681f654ff3a980ad8b3fbaa30e9366b0bd204ee27b3366e65ab",
+    "scripts/supertrader/research/certification/canonical-input.mjs": "2c50e4508f609b1c6c8f734ecce46bdce4eef19d3d9c734db591def3ea212f71",
+    "scripts/supertrader/research/certification/data-inventory.mjs": "bde1265a539a2d88828981e3ad8c302eca174b6b6f4010b24bbcd202d8abb044",
+    "scripts/supertrader/research/certification/execution-audit-accounting.mjs": "919215c83df18dad85a0ffd7cb624126cf58b7e05efbc7bb5d06275c192fb996",
+    "scripts/supertrader/research/certification/execution-audit.mjs": "22610695cda1d5024d49425cdd4a332a439d6b8b61f2d437c8e5c6df089f246f",
+    "scripts/supertrader/research/certification/freeze-v2.mjs": "4f7136bb597f67f48d6be74245b74d53c6577715fc806d7debcf0a8341a7e06c",
+    "scripts/supertrader/research/certification/run-rerun.mjs": "fd213207451c52abf5243521a936df56071bd142a6b9b4da14d3239ac131b5b1",
+    "scripts/supertrader/research/certification/runner-v2.mjs": "9b2ae889295476d79c617d61c166d8293cbd468b0fe5eec03d1b3cde64644e67",
+    "scripts/supertrader/research/certification/universe-certification.mjs": "04bb41caf15fb70b7068ccab54df0146823b5be5b88e3a747e4af655314bcf8f",
+    "scripts/supertrader/research/tournament/accounting.mjs": "e2a8b535989254b7bc4cb8ce073aa6e114aa1ee236d5892f31255a6069fb833b",
+    "scripts/supertrader/research/tournament/data.mjs": "a9135c13e5ced199326cdaece3a3e5cf402417a9f2a938e88b63be1b269a41f8",
+    "scripts/supertrader/research/tournament/engines/academic.mjs": "a6ee043f7185c9a0c85c7dd74d657a3f2dfee70fc9124c7dc662e4bf23407bfb",
+    "scripts/supertrader/research/tournament/engines/fundamental.mjs": "e6d481fd18411cb321ea7033c927d3d8d121dcc0461d99c339f226b603e1b816",
+    "scripts/supertrader/research/tournament/engines/kullamagi.mjs": "c34fd277d61fc0fe7a731db402379594e01a98bbd7918d754c3cb99e1813a183",
+    "scripts/supertrader/research/tournament/engines/legendary.mjs": "600bdc4fdddcd1690057d1ddf0dc258b51b81321487decbfe719a2684543a6e5",
+    "scripts/supertrader/research/tournament/freeze.mjs": "a1dd42c4c5ba2afd27328f04e0f34803e154ce8a645f937d64476a32ec98dc25",
+    "scripts/supertrader/research/tournament/methods.mjs": "4517b2996d870cd4fc738d14e2f2f6ed4397b293a2a1b0fed6a1e819a6171f7c",
+    "scripts/supertrader/research/tournament/metrics.mjs": "655a5d89d6de204e65c30d37d0d45a8ece780d60447049dbbccd539ebc823ca5",
+    "scripts/supertrader/research/tournament/protocol.json": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+    "scripts/supertrader/research/tournament/runner.mjs": "5fe0bfb65ac9d2fea54348ad98e162e7b9036c892a5346eb41b6e257a74ac9ed",
+    "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c"
+  },
+  "freezeId": "V3-07d18b411c5cc209"
+}

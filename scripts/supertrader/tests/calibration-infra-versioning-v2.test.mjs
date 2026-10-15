@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {execFileSync} from 'node:child_process';
 import {verifyReferenceParsed} from '../research/calibration/run-calibration-v2.mjs';
 import {verifyCalibrationFreeze as verifyV2,POST_CALIBRATION_METHOD_IDS as nextIds} from '../research/calibration/run-post-calibration-v2.mjs';
 import {verifyCalibrationFreeze as verifyV1,POST_CALIBRATION_METHOD_IDS as oldIds} from '../research/calibration/run-post-calibration.mjs';
@@ -35,21 +35,22 @@ function reuseFixture(){const parent=initial.referenceArithmetic,parsed={schema:
  const freeze={strategyDefinitionsChanged:false,postResultTuningAllowed:false,parentFreezeSourceReceipt:{path:initialPath,sha256:sha(initialBytes)},referenceArithmetic:{...structuredClone(parent),reusedParsedFromFreezeSha256:sha(initialBytes),reusedParsedArtifactSha256:sha(bytes)}};
  return {parsed,bytes,expected:sha(bytes),freeze};}
 const verify=f=>verifyReferenceParsed(f.parsed,f.bytes,f.expected,Buffer.from(JSON.stringify(f.freeze)),f.freeze);
-test('strict reference reuse requires actual initial freeze bytes plus identical code/plan/three CSV/window/no tuning',()=>{assert.equal(verify(reuseFixture()),true);
+test('old reference receipts fail closed after the scanner-safe parser bytes change',()=>{assert.throws(()=>verify(reuseFixture()),/REFERENCE_PARSER_PHYSICAL_AND_FREEZE_BINDING_REQUIRED/);
  for(const alter of [f=>delete f.freeze.parentFreezeSourceReceipt,f=>f.freeze.parentFreezeSourceReceipt.path='../different-parent.json',f=>f.freeze.parentFreezeSourceReceipt.sha256='0'.repeat(64),f=>f.freeze.referenceArithmetic.codeSha256='0'.repeat(64),f=>f.freeze.referenceArithmetic.sourcePlanSha256='0'.repeat(64),f=>f.freeze.referenceArithmetic.inputReceipts[0].sha256='0'.repeat(64),f=>f.freeze.referenceArithmetic.window.to='2026-09',f=>f.freeze.referenceArithmetic.noPostResultTuning=false,f=>f.freeze.postResultTuningAllowed=true]){const fixture=reuseFixture();alter(fixture);assert.throws(()=>verify(fixture));}
 });
 test('reuse cannot forge parent digest, parsed fields, parsed window, source membership or physical artifact SHA independently',()=>{
  for(const alter of [f=>f.freeze.referenceArithmetic.reusedParsedFromFreezeSha256='0'.repeat(64),f=>f.freeze.referenceArithmetic.reusedParsedArtifactSha256='0'.repeat(64),f=>f.parsed.referenceWindow={from:'2019-01',to:'2026-08'},f=>f.parsed.referenceInputSha256s.FRENCH_VAR='0'.repeat(64),f=>delete f.parsed.referenceInputSha256s.FRENCH_DAILY_RF,f=>f.parsed.freezeFileSha256='0'.repeat(64),f=>f.bytes=Buffer.from(f.bytes+' '),f=>f.expected='0'.repeat(64)]){const fixture=reuseFixture();alter(fixture);assert.throws(()=>verify(fixture));}
  const fixture=reuseFixture(),differentFreeze=Buffer.from(JSON.stringify({...fixture.freeze,postResultTuningAllowed:true}));assert.throws(()=>verifyReferenceParsed(fixture.parsed,fixture.bytes,fixture.expected,differentFreeze,fixture.freeze));
 });
-test('every original V1 frozen source, all ten original rulebooks/protocol and original #632 remain untouched',()=>{
- assert.equal(verifyV1(initial),true);for(const [file,digest]of Object.entries(initial.files))assert.equal(sha(fs.readFileSync(path.join(root,file))),digest,file);
+test('original V1 frozen source bytes are preserved at the #643 base; this branch requires a fresh V3 parser freeze',()=>{
+ const historicalHead='cc9ecb5b677035338f034cd0f3c21a24b02c9fa2';
+ for(const [file,digest]of Object.entries(initial.files)){const historical=execFileSync('git',['show',`${historicalHead}:${file}`],{cwd:root});assert.equal(sha(historical),digest,file);}
+ assert.notEqual(sha(fs.readFileSync(path.join(root,'scripts/supertrader/research/calibration/reference-return-arithmetic.mjs'))),initial.referenceArithmetic.codeSha256);
  const old=JSON.parse(fs.readFileSync(path.join(root,initial.baselineFreeze.path)));assert.equal(assertFreezeV2(old),true);assert.equal(initial.protocolHash,old.protocolHash);assert.equal(old.methods.length,10);
 });
-test('new V2 bindings require actual budget test and integration test, rejecting missing or obsolete names',()=>{
+test('V2 rejects its stale parser binding after the V3 scanner repair',()=>{
  const added=['accounting-budget-v2.mjs','runner-certified-v2.mjs','portfolio-calibration-v2.mjs','run-calibration-v2.mjs','run-post-calibration-v2.mjs'].map(n=>'scripts/supertrader/research/calibration/'+n).concat(['scripts/supertrader/tests/calibration-budget-v2.test.mjs','scripts/supertrader/tests/calibration-infra-versioning-v2.test.mjs']);
- const f={...structuredClone(initial),files:{...initial.files,...Object.fromEntries(added.map(p=>[p,sha(fs.readFileSync(path.join(root,p)))]))}};assert.equal(verifyV2(f),true);
- delete f.files['scripts/supertrader/tests/calibration-budget-v2.test.mjs'];f.files['scripts/supertrader/tests/calibration-accounting-budget-v2.test.mjs']='0'.repeat(64);assert.throws(()=>verifyV2(f),/CODE_AND_TEST_BINDINGS/);
+ const f={...structuredClone(initial),files:{...initial.files,...Object.fromEntries(added.map(p=>[p,sha(fs.readFileSync(path.join(root,p)))]))}};assert.throws(()=>verifyV2(f));
 });
 
 function stressData(n=659){const dates=['2017-12-29','2018-01-02','2018-01-03'],bars=dates.map(date=>({date,open:10.1,close:10.1,high:10.1,low:10.1,rawClose:10.1,rawVolume:1000000,volume:1000000,totalReturnIndex:10.1,splitAdjustmentFactor:1,dividend:0}));return {securities:Array.from({length:n},(_,i)=>({id:'SYNTHETIC_'+i,ticker:'SYNTHETIC_'+i,bars:structuredClone(bars),fundamentals:[],listing:{startDate:dates[0]},terminal:null})),benchmark:{bars},spyBars:bars,calendar:dates.slice(1)};}

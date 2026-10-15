@@ -1,0 +1,114 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-f1caa83de2377df6",
+  "freezeFileSha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
+  "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+  "engineMethodId": "CALIB_GH52WH",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "cdd01190aa4d08523301a277a1d5c6d64207c514a236cbe973112460398b2d4d",
+      "plaintextBytes": 595185788,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "4c620bd395dd31118592f0ab34824ba0efeff15c7ea750a8e54bcb791c4c73c0",
+          "bytes": 130515578
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.session.sealed.json",
+          "sha256": "5996bc2f820dc42248ff9fb4233a91dc6eff2a02d174cc38b090273e4ee85d65",
+          "bytes": 130515406
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 1,
+          "totalMarkValue": 19.57009091974473,
+          "largestMarkValue": 19.57009091974473
+        },
+        "bottom": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.7462298274040222e-10
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 4.470348358154297e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "b7cec1acee3dff6e5e7193bdbf97455ce87ac2f188c52eb4a57ebf5a9b339769",
+      "plaintextBytes": 602219830,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "d1fe5b783fadd70cc737a6ec6eb27eb225ce638085e34f7de9af09753d03e961",
+          "bytes": 134885214
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "aad596fac6ab1f46fb240b8b6a8903b6b84234375c751290bc9e679e92998a7b",
+          "bytes": 134885042
+        }
+      ],
+      "formations": {
+        "total": 111,
+        "ready": 0,
+        "partial": 111,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 1,
+          "totalMarkValue": 19.391681685281004,
+          "largestMarkValue": 19.391681685281004
+        },
+        "bottom": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.3969838619232178e-9
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 4.917383193969727e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}

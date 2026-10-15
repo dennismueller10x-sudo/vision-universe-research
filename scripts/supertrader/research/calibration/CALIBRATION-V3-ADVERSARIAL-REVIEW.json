@@ -1,0 +1,154 @@
+{
+ "schema": "supertrader-calibration-v3-adversarial-review-1.0.0",
+ "reviewedFreezeId": "V3-84caf2e84e560bec",
+ "reviewer": "independent subagent (read-only, no private data) - NOT the code author's review path",
+ "dimensions": [
+  "survivorship",
+  "lookahead",
+  "corporate-actions",
+  "execution-timestamps",
+  "benchmark-mismatch",
+  "cash-accounting"
+ ],
+ "findings": [
+  {
+   "id": "A1",
+   "severity": "blocker",
+   "dimension": "claim-integrity",
+   "finding": "PASS/PARTIAL verdicts have no independent direction/magnitude oracle: source-oracle months valid are 0/105 for JT, GH and EW, 45/105 for LowVol; completion never requires direction; EW control PASS rests on reconciliation + same-author review only. Protocol PASS text demands audited direction/magnitude.",
+   "myVerification": "VERIFIED_BY_ME (public result files: sourceSpreadValidMonths; build-completion-v3.mjs control branch)",
+   "numericReviewCatches": "not caught by review",
+   "proposedFix": "Amend verdict rules (post-result amendment, must be labelled as such) or downgrade; strict reading of the pre-registered text gives NOT_CERTIFIED / INSUFFICIENT_REFERENCE_DATA"
+  },
+  {
+   "id": "A2",
+   "severity": "major",
+   "dimension": "survivorship",
+   "finding": "LowVol NEGATIVE source-spread direction comes from the 45 months with complete data; FRENCH_VAR reference is POSITIVE; conflict not flagged; sign read from SOURCE_GROSS only.",
+   "myVerification": "CODE_READ",
+   "numericReviewCatches": "not caught",
+   "proposedFix": "Direction conflict with reference forces PARTIAL with reason; publish valid-month fraction and exclusions by reason"
+  },
+  {
+   "id": "A3",
+   "severity": "major",
+   "dimension": "freeze",
+   "finding": "Freeze import closure follows only literal imports; return-series.js, canonical-total-return.js, published-close.js (loaded via require(path.join(...))) are not hashed, so 'UNCHANGED_FROZEN_LOADER_SPLIT_VALIDATION' does not bind the split code.",
+   "myVerification": "VERIFIED_BY_ME (freeze files list)",
+   "numericReviewCatches": "not caught",
+   "proposedFix": "Add those files to CONTRACT_FILES; test that every require(path.join(...)) target is in freeze.files"
+  },
+  {
+   "id": "A4",
+   "severity": "major",
+   "dimension": "survivorship",
+   "finding": "A position without a bar is held at its last close indefinitely (no haircut, no staleness limit); active listings whose data ends early get no terminal; 52W diagnostics show positions without bar on 2175 of 2198 days.",
+   "myVerification": "VERIFIED_BY_ME (public 52W diagnostic: positionsWithoutBar days=2175)",
+   "numericReviewCatches": "not caught (R8 re-marks at the same last close)",
+   "proposedFix": "Hard check that every ending position has a bar within K sessions or a terminal; publish stale-hold counts"
+  },
+  {
+   "id": "A5",
+   "severity": "major",
+   "dimension": "lookahead",
+   "finding": "Quarantine terminal date uses the quarantine 'from' date, which can precede the observation date; names are removed from ranking from 'from' with information that arrived later; data-quality quarantine receives the 0.7 delisting factor.",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "not caught (R6 only checks fill date equals terminal date)",
+   "proposedFix": "terminal.date = max(from, observedAt) or next session; mutation test"
+  },
+  {
+   "id": "A6",
+   "severity": "major",
+   "dimension": "cash/dividends",
+   "finding": "R8 takes book.dividends as given (circular); R2/R9 calendar and benchmark checks are tautologies because the calendar is the SPY dates; off-calendar security bars are dropped with their dividend/split fields and not published.",
+   "myVerification": "VERIFIED_BY_ME (numeric-review-v3.mjs R8 uses book.dividends)",
+   "numericReviewCatches": "not caught (reviewer experiment: +500 dividends passed)",
+   "proposedFix": "R8b recompute dividends from replayed holdings; gate and publish off-calendar counts"
+  },
+  {
+   "id": "A7",
+   "severity": "major",
+   "dimension": "review-coverage",
+   "finding": "Signal formation not reviewed: formationDates come from the run under test; no recomputation of scores/ranks/cohort weights and no truncation (lookahead) test.",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "not caught",
+   "proposedFix": "Truncation test and an independent scorer for JT/GH/LowVol"
+  },
+  {
+   "id": "A8",
+   "severity": "major",
+   "dimension": "accounting",
+   "finding": "Dust ledger cancels the reconciliation gap by construction for deleted residuals; threshold is 1e-10 shares not value-aware; reviewer experiment hid 10 dollars at an absurd price.",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "not caught (R10 is INFO)",
+   "proposedFix": "Hard cap on summed dust mark value; dollar threshold"
+  },
+  {
+   "id": "A9",
+   "severity": "major",
+   "dimension": "data-quality",
+   "finding": "R10 (adjusted price level over 1e6) is INFO only; 74 securities affected, 58 traded in the JT top book; the data finding stays OPEN while protocol demands no unresolved general critical bug.",
+   "myVerification": "VERIFIED_BY_ME (public R10 census)",
+   "numericReviewCatches": "by design not gated",
+   "proposedFix": "Pre-registered sensitivity run with and without these names; openFindings input to completion"
+  },
+  {
+   "id": "A10",
+   "severity": "major",
+   "dimension": "verdict-logic",
+   "finding": "build-completion-v3.mjs: referenceOk true for any COMPUTED/PARTIAL report with no parity check; trusts self-reported review status; no hardChecks/book-list check; duplicate summaries last-wins; single generic NOT_CERTIFIED reason.",
+   "myVerification": "CODE_READ",
+   "numericReviewCatches": "not caught",
+   "proposedFix": "Require 11 hard checks per expected book, reject duplicates, split reason codes"
+  },
+  {
+   "id": "A11",
+   "severity": "major",
+   "dimension": "survivorship",
+   "finding": "Universe is observed-only (9,410 of 15,564 listing generations); drop reasons not public; calibration has no price/liquidity floor unlike the tournament universe; -30% baseline without calibration sensitivity.",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "n/a",
+   "proposedFix": "Publish count-only tables by terminal kind/year/drop reason"
+  },
+  {
+   "id": "A12",
+   "severity": "minor",
+   "dimension": "accounting",
+   "finding": "Reconciliation tolerance scales with final equity; guardedNumericCash can mint up to the proven bound; calibration does not reuse published-close.js (ADR-002 deviation).",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "n/a",
+   "proposedFix": "Absolute tolerance or gross-flow basis"
+  },
+  {
+   "id": "A13",
+   "severity": "informational",
+   "dimension": "freeze-process",
+   "finding": "frozenBeforePerformance is a literal flag set by the measuring runner; createdAt is hashed so each run has a new freezeId; execution/review code changed after earlier public summaries were visible (infrastructure-only per evidence, not machine-verifiable).",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "n/a",
+   "proposedFix": "External timestamp/commit pinning of the freeze before measurement"
+  },
+  {
+   "id": "A14",
+   "severity": "informational",
+   "dimension": "public-leak",
+   "finding": "No tickers, security ids or performance fields found in calibration/*.json; low-grade quasi-identifiers exist (one price level, one cost figure, one date, one dust value in discrepancy/diagnostic records).",
+   "myVerification": "CODE_READ_BY_REVIEWER",
+   "numericReviewCatches": "n/a",
+   "proposedFix": "Coarsen those figures"
+  }
+ ],
+ "noBlockingDefectFound": [
+  "fill pricing and costs (synthetic-bar fix complete)",
+  "cash never negative (R3 bound; leverage throws)",
+  "split factors applied cumulatively backward; two canonical rejections fail closed"
+ ],
+ "claimBoundary": {
+  "mechanicalCompletionVerdict": "PARTIALLY_CERTIFIED",
+  "strictReadingOfPreRegisteredText": "NOT_CERTIFIED with reason INSUFFICIENT_REFERENCE_DATA (PASS requires audited direction/magnitude which the oracle could not provide; arithmetic-only evidence cannot lift a control)",
+  "effectiveStatement": "construction mechanics reconcile and pass a same-author separate-path review; they are NOT validated against an independent stock-level magnitude/direction oracle",
+  "verdictNotChangedAfterResults": true
+ },
+ "postResultAmendmentsNotApplied": true,
+ "performanceNumbersPublished": false
+}

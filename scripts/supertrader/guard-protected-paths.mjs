@@ -11,6 +11,7 @@ import { execFileSync } from 'node:child_process';
 const ALLOWED = [
   /^supertrader\//,
   /^scripts\/supertrader\//,
+  /^docs\/CALIBRATION_V3_RECOVERY_INVENTORY\.md$/,
   /^docs\/SUPERTRADER_[A-Z0-9_]+\.md$/,
   /^\.github\/workflows\/supertrader-[a-z0-9-]+\.yml$/,
 ];

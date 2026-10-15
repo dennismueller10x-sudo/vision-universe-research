@@ -1,0 +1,124 @@
+{
+  "schema": "supertrader-tournament-v3-method-public-summary-1.0.0",
+  "methodId": "LOW_VOLATILITY",
+  "freezeId": "V3-84caf2e84e560bec",
+  "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+  "completionSha256": "8f4cc43afb557d11c5d9a08d9571963546250245d7f59f8a8d2d8463ca2b86ea",
+  "runnerNode": "v22.23.3",
+  "reconciliation": {
+    "baseline": true,
+    "variants": [
+      {
+        "costMultiplier": 2,
+        "scenario": "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+        "pass": true
+      },
+      {
+        "costMultiplier": 1,
+        "scenario": "LAST_OBSERVED_PRICE",
+        "pass": true
+      },
+      {
+        "costMultiplier": 1,
+        "scenario": "DISTRESS_ZERO_OTHER_MINUS_30",
+        "pass": true
+      }
+    ]
+  },
+  "dustWriteOffs": {
+    "count": 0,
+    "netBookedCost": 0
+  },
+  "qualification": {
+    "tierCeiling": "C",
+    "confidence": "LOW",
+    "fullyQualified": false,
+    "status": "RESEARCH_ONLY_REVIEW_PENDING"
+  },
+  "ranking": {
+    "score": null,
+    "tier": null,
+    "status": "DEFERRED_POST_CALIBRATION_REVIEW"
+  },
+  "sealedArtifacts": [
+    {
+      "name": "baseline-raw.private.json",
+      "plaintextSha256": "7c513561e71bbe89c043803c33feef09614bfd08832c0aab3b1936203e9204f1",
+      "plaintextBytes": 45817165,
+      "sealedSha256": "6ae30d2b9296bd569061b442a79c8d9e060f1cc411146dfcc4081f69af470c58",
+      "sealedBytes": 4991192,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "data-ready.private.json",
+      "plaintextSha256": "5641f703b0d57f8e9800862eb34dde22c2d9fd1f089dacb0b02e8e6f9ec6aba6",
+      "plaintextBytes": 4175,
+      "sealedSha256": "52027b24dbe0cbc55fed71f52d1734b2d726e4eb5ec2eb71dab42ea33b50abe1",
+      "sealedBytes": 3560,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "double_cost-raw.private.json",
+      "plaintextSha256": "b261bc7f87ec08a2bf37baee76808c090306ca6b2c98b0fc0adaf06058eb43d8",
+      "plaintextBytes": 45463614,
+      "sealedSha256": "031d72b5869c257aece7cd6fe9b896570654dd78a1b50aea1aebae9740cc44d1",
+      "sealedBytes": 4922113,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "overlap-input.private.json",
+      "plaintextSha256": "225c44d34e9448d2a23d69f39bcb92f220e14fd3edd4988fec7274c756e47757",
+      "plaintextBytes": 1778380,
+      "sealedSha256": "2b60e70b240afe3d671d9be83e04adcb3a522e7dc40c7c056d57126dd0f0f77a",
+      "sealedBytes": 173669,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "summary.private.json",
+      "plaintextSha256": "06d491ae88d79596a7978dab849691ba59f31fea17df695e2ae719d4797c13cd",
+      "plaintextBytes": 365540,
+      "sealedSha256": "1dea769490f63707a661e8e3f1f046d4580b72f4f270eb87ec3281296c51e9c8",
+      "sealedBytes": 83433,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "terminal_1-raw.private.json",
+      "plaintextSha256": "6d02f82e8595f16cf5c7aa62cd85d0992b7f1fc8561d14237b327361213f9e21",
+      "plaintextBytes": 45457006,
+      "sealedSha256": "591321e2b96c043e465bda8ac869c5ac2f901e7c754776eae657995efc43b33b",
+      "sealedBytes": 4919542,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    },
+    {
+      "name": "terminal_2-raw.private.json",
+      "plaintextSha256": "a40fb77bbf7c601049dbcb7231b0f4bc3ad9cc5bb8890f969339d250e10f18b5",
+      "plaintextBytes": 45482848,
+      "sealedSha256": "26bcd10d5ede42d4147603b20765c3d55cf160f79928094dd9cb7d266bd63a2f",
+      "sealedBytes": 4926023,
+      "audiences": [
+        "owner",
+        "session"
+      ]
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_RECONCILED_REVIEW_PENDING"
+}

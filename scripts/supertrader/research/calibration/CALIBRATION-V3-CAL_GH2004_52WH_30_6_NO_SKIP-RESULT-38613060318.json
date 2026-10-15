@@ -1,0 +1,82 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-31b24ae03117c32c",
+  "freezeFileSha256": "c3c3ab1fe1595ace8b039e853d490ef6d8f88e13bdfe150d84821c3d351d9fc7",
+  "methodId": "CAL_GH2004_52WH_30_6_NO_SKIP",
+  "engineMethodId": "CALIB_GH52WH",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "FAILED_CLOSED",
+      "errorCode": "REFERENCE_BOOK_RECONCILIATION_FAILED",
+      "bookTrace": {
+        "leg": "top",
+        "pass": false,
+        "absoluteDifference": 15.608203005220275,
+        "tolerance": 0.00004298495316514122,
+        "relativeDifference": 0.000036310852649428496,
+        "tradeCount": 123094,
+        "fillCount": 266549,
+        "openPositions": 2555,
+        "receivableCount": 0,
+        "curveLength": 2198,
+        "lastCurveDate": "2026-09-30",
+        "cashPrecisionCorrections": 0,
+        "rejections": 8667,
+        "corporateActionAuditEntries": 0
+      },
+      "sealedFailure": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.failure.owner.sealed.json",
+          "sha256": "e17681fcaae89965379807210c4fc871fbebb2500de2f16aaee8b45575ab731a",
+          "bytes": 1782
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SOURCE_GROSS.failure.session.sealed.json",
+          "sha256": "a07d30a0263378846b48a70b9d088179fdc31453b6b0b8b1370f8e63b51d09b2",
+          "bytes": 1610
+        }
+      ]
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "FAILED_CLOSED",
+      "errorCode": "REFERENCE_BOOK_RECONCILIATION_FAILED",
+      "bookTrace": {
+        "leg": "top",
+        "pass": false,
+        "absoluteDifference": 15.483017469930928,
+        "tolerance": 0.00004199792110332631,
+        "relativeDifference": 0.000036866152093191695,
+        "tradeCount": 122860,
+        "fillCount": 265845,
+        "openPositions": 2555,
+        "receivableCount": 0,
+        "curveLength": 2198,
+        "lastCurveDate": "2026-09-30",
+        "cashPrecisionCorrections": 1,
+        "rejections": 8667,
+        "corporateActionAuditEntries": 0
+      },
+      "sealedFailure": [
+        {
+          "audience": "owner",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.failure.owner.sealed.json",
+          "sha256": "01096c0ebdec281bbb7af256c123e9d7f2df1a66b2c1607a461c480db0d1beee",
+          "bytes": 1786
+        },
+        {
+          "audience": "session",
+          "name": "CAL_GH2004_52WH_30_6_NO_SKIP-SAME_TOURNAMENT_NET.failure.session.sealed.json",
+          "sha256": "ec895036f07faf6465b164eac0a7173413e07a9f2ab8c57792efaf8b16c15e9b",
+          "bytes": 1614
+        }
+      ]
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "FAILED_CLOSED_CAUSE_RECORDED"
+}

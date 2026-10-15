@@ -1,0 +1,313 @@
+name: Supertrader calibration V3 (in-runner capture, private plaintext never uploaded)
+on:
+  push:
+    branches:
+      - 'research/supertrader-calibration-v3-durable'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [capture, measure, diagnose, compare]
+        default: capture
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-calibration-v3-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:capture]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'capture')
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture canonical dataset in the runner; verify before any performance
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out "$RUNNER_TEMP/v3-canonical" --public-out "$RUNNER_TEMP/v3-public/capture-receipt.json"
+      - name: Preserve public capture receipt only (counts, hashes, codes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-v3-capture-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/v3-public/capture-receipt.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/v3-canonical"
+
+  measure:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:measure]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'measure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Phase A - capture and verify canonical dataset in the runner
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json"
+      - name: Phase A - official reference sources against pre-registered hashes
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/research/calibration/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+      - name: Phase B - build and commit the V3 freeze before any measurement
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          CAL=scripts/supertrader/research/calibration
+          FREEZE="$CAL/BACKTEST-CALIBRATION-FREEZE-V3-${GITHUB_RUN_ID}.json"
+          echo "FREEZE=$FREEZE" >> "$GITHUB_ENV"
+          node $CAL/freeze-v3.mjs build --capture-receipt "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --out "$FREEZE"
+          cp "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-RECEIPT.json" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FREEZE" "$CAL/CALIBRATION-V3-CAPTURE-RECEIPT-${GITHUB_RUN_ID}.json"
+          git commit -m "Supertrader V3: final pre-measurement freeze and capture receipt (no performance yet)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
+          node $CAL/freeze-v3.mjs verify --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json
+      - name: Phase C - numeric calibration methods, one process per method
+        env:
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -uo pipefail
+          CAL=scripts/supertrader/research/calibration
+          FAIL=0
+          for M in CAL_JT1993_6_6_REBALANCED_EW_NO_SKIP CAL_GH2004_52WH_30_6_NO_SKIP CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS CALIB_EQUAL_WEIGHT; do
+            node --expose-gc $CAL/run-calibration-v3.mjs --freeze "$FREEZE" --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --method "$M" --out /workspace/private/results --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-$M-RESULT-${GITHUB_RUN_ID}.json" || FAIL=1
+          done
+          exit $FAIL
+      - name: Persist public method summaries (status, counts, hashes, codes)
+        if: always()
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          CAL=scripts/supertrader/research/calibration
+          shopt -s nullglob
+          FILES=("$RUNNER_TEMP"/pub/CALIBRATION-V3-*-RESULT-*.json)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            cp "${FILES[@]}" "$CAL/"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$CAL"/CALIBRATION-V3-*-RESULT-*.json
+            git commit -m "Supertrader V3: public calibration method summaries (counts, hashes, codes)"
+            scripts/ci/push-with-retry.sh "$BRANCH"
+          fi
+      - name: Preserve sealed (owner and session envelope) results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-v3-sealed-results-${{ github.run_id }}
+          path: |
+            /workspace/private/results/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  diagnose:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:diagnose]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'diagnose')
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Capture and verify canonical dataset in the runner (diagnostic basis, not a measurement)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/canonical --public-out "$RUNNER_TEMP/pub/capture-receipt.json"
+          node scripts/supertrader/research/calibration/capture-reference-v3.mjs --out /workspace/private/reference-sealed --plaintext-parsed-out /workspace/private/reference/reference-parsed.json
+      - name: Reconciliation diagnostic (unchanged construction, no tolerance change)
+        env:
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -uo pipefail
+          CAL=scripts/supertrader/research/calibration
+          for CM in SOURCE_GROSS SAME_TOURNAMENT_NET; do
+            node --expose-gc $CAL/diagnose-reconciliation-v3.mjs --input-dir /workspace/private/canonical --reference-parsed /workspace/private/reference/reference-parsed.json --method CAL_GH2004_52WH_30_6_NO_SKIP --cost-mode "$CM" --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-${CM}-${GITHUB_RUN_ID}.json" || true
+          done
+      - name: Persist public diagnostic (dates, counts, magnitudes)
+        if: always()
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          CAL=scripts/supertrader/research/calibration
+          shopt -s nullglob
+          FILES=("$RUNNER_TEMP"/pub/CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-*.json)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            cp "${FILES[@]}" "$CAL/"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$CAL"/CALIBRATION-V3-52W-RECONCILIATION-DIAGNOSTIC-*.json
+            git commit -m "Supertrader V3: 52W reconciliation diagnostic (public: dates, counts, magnitudes)"
+            scripts/ci/push-with-retry.sh "$BRANCH"
+          fi
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  compare:
+    if: contains(github.event.head_commit.message, '[supertrader-v3:compare]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'compare')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            /scripts/market/storage/
+            /scripts/ci/
+            /.github/workflows/supertrader-calibration-v3.yml
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repository
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+      - name: Two captures of the same source, then a structural diff (no values published)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          CAL=scripts/supertrader/research/calibration
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/capture-a --public-out "$RUNNER_TEMP/pub/a.json"
+          node $CAL/capture-v3-inrunner.mjs --out /workspace/private/capture-b --public-out "$RUNNER_TEMP/pub/b.json"
+          node $CAL/compare-captures-v3.mjs --a /workspace/private/capture-a --b /workspace/private/capture-b --public-out "$RUNNER_TEMP/pub/CALIBRATION-V3-CAPTURE-STRUCTURAL-DIFF-${GITHUB_RUN_ID}.json"
+      - name: Persist the public structural diff
+        if: always()
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          CAL=scripts/supertrader/research/calibration
+          shopt -s nullglob
+          FILES=("$RUNNER_TEMP"/pub/CALIBRATION-V3-CAPTURE-STRUCTURAL-DIFF-*.json)
+          if [ "${#FILES[@]}" -gt 0 ]; then
+            cp "${FILES[@]}" "$CAL/"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$CAL"/CALIBRATION-V3-CAPTURE-STRUCTURAL-DIFF-*.json
+            git commit -m "Supertrader V3: structural diff of two captures (patterns and counts only)"
+            scripts/ci/push-with-retry.sh "$BRANCH"
+          fi
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private

@@ -1,0 +1,39 @@
+{
+  "schema": "vision-universe-calibration-v3-method-checkpoint-1.0.0",
+  "methodId": "buyback_announcement_event",
+  "status": "DATA_BLOCKED",
+  "verdict": "DATA_BLOCKED",
+  "inputs": {
+    "canonicalManifestSha256": null,
+    "canonicalSourceMetadataSha256": null,
+    "referenceArtifactSha256": null,
+    "referenceParserSha256": null,
+    "referenceTestSha256": null,
+    "methodDefinitionFileSha256": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14"
+  },
+  "definitionHash": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+  "executionContractHash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "dataContractHash": "41910853970aff1202c12b6f3460170a0efa9cb7227bbb93e1bf3e2a4acf0c2d",
+  "outputPath": null,
+  "outputSha256": null,
+  "reconciliationPath": null,
+  "independentReviewPath": null,
+  "reviewStatus": "INDEPENDENT_REVIEW_PENDING",
+  "failureReason": "Frozen method registration is BLOCKED_DATA; required point-in-time data/source contract is absent. No proxy or numeric reconstruction was run.",
+  "nextAction": "Keep DATA_BLOCKED; reassess only after every listed original-data requirement is certified.",
+  "confidence": "HIGH",
+  "confidenceScope": "DATA_CONTRACT_AVAILABILITY_ONLY",
+  "blockerEvidence": {
+    "methodDefinitionPath": "scripts/supertrader/research/calibration/BACKTEST-CALIBRATION-METHODS.json",
+    "methodDefinitionFileSha256": "df516dcedbd75aa67f5df540f0debf080a6970702fa0269228874a594d71ed14",
+    "registeredStatus": "BLOCKED_DATA",
+    "blockingRequirements": [
+      "COMPLETE_AUTHENTIC_ORIGINAL_HISTORICAL_REPURCHASE_ANNOUNCEMENT_PANEL",
+      "ANNOUNCEMENT_FIRST_PUBLIC_UTC_AND_SECURITY_IDENTITY",
+      "SOURCE_ORIGINAL_PAPER_EVENT_MATCH_SAMPLE_HOLDING_BENCHMARK",
+      "CANCELLATIONS_AND_EVENT_DUPLICATE_RULES"
+    ],
+    "numericRunPerformed": false,
+    "strategyDefinitionChanged": false
+  }
+}

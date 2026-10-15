@@ -1,0 +1,277 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-84caf2e84e560bec",
+  "freezeFileSha256": "53a85c2cf470225dceb3d9fb9d5d00f1a3a4e5d18bbbd99662c9fa02f5165500",
+  "methodId": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS",
+  "engineMethodId": "CALIB_LOW_VOL",
+  "runnerNode": "v22.23.3",
+  "inputVerification": {
+    "contentBindingVerified": true,
+    "parts": 500,
+    "securities": 9408
+  },
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "PASS",
+        "reviewSha256": "8094e310bdf6c8afc1cc9573f264053a1ccf98387bbfa18491bb890ae5e4e835",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "PASS",
+                "checked": 9408,
+                "violations": 0,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          },
+          {
+            "book": "bottom",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 68,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          },
+          {
+            "book": "eligibleUniverse",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 68,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "76b9ad74ae68a74677cbb6e9449d9472dee4cc31760af0748cff0c9616f8e6b7",
+      "plaintextBytes": 350518469,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "e04cdbfbbfd8731d9c5ee9a511f0b10c35674fa70548366eefdfffe11187da11",
+          "bytes": 82361430
+        },
+        {
+          "audience": "session",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SOURCE_GROSS.session.sealed.json",
+          "sha256": "a947e37461b37e2188f67d1afc36f1483d9925b63f60db293b95fe90d82d584c",
+          "bytes": 82361258
+        }
+      ],
+      "formations": {
+        "total": 104,
+        "ready": 0,
+        "partial": 104,
+        "other": 0
+      },
+      "months": 103,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "eligibleUniverse": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 8.440110832452774e-10
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 2.3096799850463867e-7
+        },
+        "eligibleUniverse": {
+          "pass": true,
+          "absoluteDifference": 1.257285475730896e-8
+        }
+      },
+      "sourceSpreadDirection": "NEGATIVE",
+      "sourceSpreadValidMonths": 45
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "numericReview": {
+        "status": "PASS",
+        "reviewSha256": "caee2fd35cbb57589f830f53f539d516ad6888c51708efcc8b55e176ba34551d",
+        "independence": "SEPARATE_CODE_PATH_NO_ACCOUNTING_OR_METRICS_IMPORTS; SAME_AUTHOR_SEE_ADVERSARIAL_REVIEW",
+        "books": [
+          {
+            "book": "top",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "PASS",
+                "checked": 9408,
+                "violations": 0,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          },
+          {
+            "book": "bottom",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 68,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          },
+          {
+            "book": "eligibleUniverse",
+            "status": "PASS",
+            "hardChecks": 11,
+            "failedHardChecks": [],
+            "informational": [
+              {
+                "id": "R4d_DIAGNOSTIC_SPLIT_CHECKED_IS_FILLS_WITHOUT_SOURCE_BAR_VIOLATIONS_IS_PRICE_MISMATCHES",
+                "status": "INFO",
+                "checked": 0,
+                "violations": 0
+              },
+              {
+                "id": "R10_DATA_QUALITY_CENSUS_IMPLAUSIBLE_PRICE_LEVEL_OVER_1E6",
+                "status": "INFO",
+                "checked": 9408,
+                "violations": 68,
+                "securitiesAboveThreshold": 74
+              }
+            ]
+          }
+        ]
+      },
+      "plaintextSha256": "b5ac6751f2c2afc504dfcfb1327b9d5a4e7edd480bfacf4e2ade8756a8b55fdc",
+      "plaintextBytes": 357588715,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "c1ca574ef98ff9e6aa1e2e0e65a986e68120bd1a6c62abaedb4caa806abe8e1c",
+          "bytes": 86625846
+        },
+        {
+          "audience": "session",
+          "name": "CAL_BLITZVANVLIET2007_US_LOWVOL_LOG_EXCESS-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "29b262a84db592177b834867f08451b7a202d08e994ab77b2cf890b0266865c7",
+          "bytes": 86625674
+        }
+      ],
+      "formations": {
+        "total": 104,
+        "ready": 0,
+        "partial": 104,
+        "other": 0
+      },
+      "months": 103,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "bottom": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        },
+        "eligibleUniverse": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 2.0372681319713593e-10
+        },
+        "bottom": {
+          "pass": true,
+          "absoluteDifference": 1.4528632164001465e-7
+        },
+        "eligibleUniverse": {
+          "pass": true,
+          "absoluteDifference": 1.210719347000122e-8
+        }
+      },
+      "sourceSpreadDirection": "NEGATIVE",
+      "sourceSpreadValidMonths": 45
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_NUMERIC_REVIEW_PASSED"
+}

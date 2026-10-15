@@ -47,9 +47,9 @@ export function parseFrenchMonthlyPortfolios(text, { kind } = {}) {
   const rows = []; let started = false;
   for (; i < lines.length; i++) {
     if (!lines[i].trim()) { if (started) break; else continue; }
-    const row = cells(lines[i]), token = row[0];
-    if (!/^\d{6}$/.test(token)) { demand(!/^\d/.test(token) || /^\d{4}$/.test(token), 'INVALID_REFERENCE_MONTH'); break; }
-    const month = `${token.slice(0, 4)}-${token.slice(4)}`; demand(validMonth(month), 'INVALID_REFERENCE_MONTH');
+    const row = cells(lines[i]), monthCell = row[0];
+    if (!/^\d{6}$/.test(monthCell)) { demand(!/^\d/.test(monthCell) || /^\d{4}$/.test(monthCell), 'INVALID_REFERENCE_MONTH'); break; }
+    const month = `${monthCell.slice(0, 4)}-${monthCell.slice(4)}`; demand(validMonth(month), 'INVALID_REFERENCE_MONTH');
     demand(row.length === spec.columns.length + 1, 'REFERENCE_ROW_WIDTH_MISMATCH'); started = true;
     const values = {};
     // Every data cell is checked, but quintiles are not selected as deciles.

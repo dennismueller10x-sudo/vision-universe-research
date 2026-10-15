@@ -1,0 +1,96 @@
+{
+  "schema": "supertrader-calibration-v3-method-public-summary-1.0.0",
+  "freezeId": "V3-f1caa83de2377df6",
+  "freezeFileSha256": "6f90e49231890a5f2866a6575082de970f8bf9f600775c22f9e5f9cfdde930e2",
+  "methodId": "CALIB_EQUAL_WEIGHT",
+  "engineMethodId": "CALIB_EQUAL_WEIGHT",
+  "runnerNode": "v22.23.3",
+  "results": [
+    {
+      "costMode": "SOURCE_GROSS",
+      "status": "PARTIAL",
+      "plaintextSha256": "4e8a05cc8a66e36fef281f61386f741303089cd9eae54aed0c98665aed7795e6",
+      "plaintextBytes": 377492734,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.owner.sealed.json",
+          "sha256": "3d667b274404b63ecd73358e7efc83d92460c9112968e799a627d4ceb383212a",
+          "bytes": 82188870
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SOURCE_GROSS.session.sealed.json",
+          "sha256": "987f3b4be2487d2d1fe807c47c9e4e6c26eb30e37100974c540095e4fb6f3c57",
+          "bytes": 82188698
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 7.82310962677002e-8
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    },
+    {
+      "costMode": "SAME_TOURNAMENT_NET",
+      "status": "PARTIAL",
+      "plaintextSha256": "dba0edc0c79f3d01eaefe394862267723ac918fc72ecb1d80c3432b5ec389833",
+      "plaintextBytes": 384658329,
+      "sealed": [
+        {
+          "audience": "owner",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.owner.sealed.json",
+          "sha256": "5f0f16c4c70c57b752967ed01983598fa81b0335096036f9ce559ea48c3ed089",
+          "bytes": 86498246
+        },
+        {
+          "audience": "session",
+          "name": "CALIB_EQUAL_WEIGHT-SAME_TOURNAMENT_NET.session.sealed.json",
+          "sha256": "1929dc740741d44f4a80d4ed4d8942768ab3e7b6ecbceca37dbe93c3576d3f60",
+          "bytes": 86498074
+        }
+      ],
+      "formations": {
+        "total": 106,
+        "ready": 106,
+        "partial": 0,
+        "other": 0
+      },
+      "months": 105,
+      "dustWriteOffs": {
+        "top": {
+          "count": 0,
+          "totalMarkValue": 0,
+          "largestMarkValue": 0
+        }
+      },
+      "reconciliation": {
+        "top": {
+          "pass": true,
+          "absoluteDifference": 1.7136335372924805e-7
+        }
+      },
+      "sourceSpreadDirection": "UNAVAILABLE",
+      "sourceSpreadValidMonths": 0
+    }
+  ],
+  "performanceNumbersPublished": false,
+  "verdict": "MEASURED_REVIEW_PENDING"
+}
