@@ -131,10 +131,21 @@
 
   function pause(ms) { return new Promise(function (resolve) { root.setTimeout(resolve, ms); }); }
 
-  /** Fuehrt `doAttempt(src)` aus und wiederholt es kontrolliert (siehe RETRY). `state` teilt Zeit und letzten Status je Adresse. */
+  /**
+   * Adresse eines Wiederholungsversuchs: die Originaladresse plus `retry=<Versuch>`. WebKit (iOS) verwendet eine
+   * fehlgeschlagene Preload-Ressource fuer jede IDENTISCHE Adresse erneut, ohne neuen Abruf; eine geaenderte Adresse laedt
+   * frisch. Nur die Adresse des Abrufs aendert sich: Schluessel (`scripts`, `preloads`), Fehlermeldung
+   * (LAZY_SCRIPT_FAILED:<Originaladresse>), ?v=-Stempel und Statusprobe bleiben auf der Originaladresse. Statische Server und
+   * Pages ignorieren die Query; ein 503 wird nicht zwischengespeichert, es entsteht also kein fehlerhaftes Objekt unter der
+   * neuen Adresse. Bei Erfolg liegt die Datei im Browser-Cache evtl. zusaetzlich unter der Wiederholungsadresse (nur nach
+   * einem Ausfall, unkritisch).
+   */
+  function retryUrl(src, n) { return src + (src.indexOf('?') < 0 ? '?' : '&') + 'retry=' + n; }
+
+  /** Fuehrt `doAttempt(src, url)` aus und wiederholt es kontrolliert (siehe RETRY). `state` teilt Zeit und letzten Status je Adresse. */
   function withRetry(src, state, doAttempt) {
     function run(n) {
-      return doAttempt(src).catch(function (error) {
+      return doAttempt(src, n > 1 ? retryUrl(src, n) : src).catch(function (error) {
         error.attempts = n;
         error.status = state.last;
         if (n >= RETRY.attempts) throw error;
@@ -151,10 +162,10 @@
   }
 
   /** Ein einzelner Ladeversuch: <script>-Knoten einfuegen; bei Fehler Knoten entfernen und ablehnen. */
-  function attempt(src) {
+  function attempt(src, url) {
     return new Promise(function (resolve, reject) {
       var node = doc().createElement('script');
-      node.src = src;
+      node.src = url || src;
       node.async = false;
       node.onload = function () { resolve(); };
       node.onerror = function () { if (node.remove) node.remove(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
