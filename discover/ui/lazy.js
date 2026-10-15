@@ -95,18 +95,70 @@
     } catch (_) { /* ohne Speicher keine Schleife riskieren */ }
   }
 
-  function script(src) {
-    var key = src.split('?')[0];
-    if (src.indexOf('?') < 0 && stamp()) src += '?v=' + stamp();
-    if (scripts[key]) return scripts[key];
-    scripts[key] = new Promise(function (resolve, reject) {
+  /**
+   * Kontrollierte Wiederholung bei voruebergehenden Serverfehlern (z. B. kurzes Pages-503).
+   * Ein <script>-Tag meldet nur onerror, ohne Statuscode. Deshalb fragt der erste Fehler eine leichte Statusprobe
+   * (HEAD, cache:'no-store', Body wird nie gelesen) auf dieselbe Adresse ab:
+   *   5xx, 408, 429, Netzfehler/Zeitueberschreitung der Probe, oder Probe ok (Skript war nur kurz weg) -> erneut laden;
+   *   sonstige 4xx (404/403 ...) oder keine Probe moeglich (kein fetch)                                  -> sofort Fehler.
+   * Grenzen: hoechstens `attempts` Versuche, Wartezeiten `delays` (+ Jitter), Gesamtbudget `budgetMs` (ohne Ladezeit der
+   * Versuche selbst). Im Normalfall (Skript laedt) entsteht kein Zusatzrequest.
+   */
+  var RETRY = { attempts: 3, delays: [300, 900], jitter: 100, budgetMs: 3500, probeMs: 1500 };
+
+  /** Ein einzelner Ladeversuch: <script>-Knoten einfuegen; bei Fehler Knoten entfernen und ablehnen. */
+  function attempt(src) {
+    return new Promise(function (resolve, reject) {
       var node = doc().createElement('script');
       node.src = src;
       node.async = false;
       node.onload = function () { resolve(); };
-      node.onerror = function () { delete scripts[key]; if (node.remove) node.remove(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
+      node.onerror = function () { if (node.remove) node.remove(); reject(new Error('LAZY_SCRIPT_FAILED:' + src)); };
       doc().head.appendChild(node);
     });
+  }
+
+  /** Statusprobe: Promise<{retry:boolean, status:number}> (status 0 = Netzfehler/Zeitueberschreitung/keine Probe). */
+  function probe(src) {
+    if (typeof root.fetch !== 'function') return Promise.resolve({ retry: false, status: 0 });
+    return new Promise(function (resolve) {
+      var done = false, timer = null;
+      var ctl = typeof root.AbortController === 'function' ? new root.AbortController() : null;
+      function end(result) { if (done) return; done = true; if (timer) root.clearTimeout(timer); resolve(result); }
+      if (ctl) timer = root.setTimeout(function () { end({ retry: true, status: 0 }); try { ctl.abort(); } catch (_) { /* egal */ } }, RETRY.probeMs);
+      try {
+        root.fetch(src, { method: 'HEAD', cache: 'no-store', credentials: 'same-origin', signal: ctl ? ctl.signal : undefined })
+          .then(function (response) {
+            var status = Number(response && response.status) || 0;
+            end({ retry: status >= 500 || status === 408 || status === 429 || (status >= 200 && status < 400), status: status });
+          }, function () { end({ retry: true, status: 0 }); });
+      } catch (_) { end({ retry: true, status: 0 }); }
+    });
+  }
+
+  function pause(ms) { return new Promise(function (resolve) { root.setTimeout(resolve, ms); }); }
+
+  function script(src) {
+    var key = src.split('?')[0];
+    if (src.indexOf('?') < 0 && stamp()) src += '?v=' + stamp();
+    if (scripts[key]) return scripts[key];
+    var started = Date.now(), last = 0;
+    function run(n) {
+      return attempt(src).catch(function (error) {
+        error.attempts = n;
+        error.status = last;
+        if (n >= RETRY.attempts) throw error;
+        return probe(src).then(function (result) {
+          last = error.status = result.status;
+          var wait = RETRY.delays[Math.min(n, RETRY.delays.length) - 1] + Math.floor(Math.random() * RETRY.jitter);
+          if (!result.retry || Date.now() - started + wait > RETRY.budgetMs) throw error;
+          if (root.console && root.console.warn) root.console.warn('Discover lazy retry', src, 'attempt ' + (n + 1) + '/' + RETRY.attempts, 'status ' + result.status);
+          return pause(wait).then(function () { return run(n + 1); });
+        });
+      });
+    }
+    // Ein Eintrag je Adresse: gleichzeitige Aufrufer teilen sich Versuche und Ergebnis. Erst der endgueltige Fehler gibt ihn frei.
+    scripts[key] = run(1).catch(function (error) { delete scripts[key]; throw error; });
     return scripts[key];
   }
 
@@ -224,5 +276,5 @@
     if (doc().readyState === 'complete') afterLoad(); else root.addEventListener('load', afterLoad, { once: true });
   }
 
-  return { stamp: stamp, ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
+  return { RETRY: RETRY, stamp: stamp, ROUTES: ROUTES, WARM: WARM, load: load, forRoute: forRoute, warm: warm, settled: settled, image: image, onHome: onHome, routeOf: routeOf, watch: watch, sources: sources };
 });
