@@ -39,7 +39,7 @@ export const LIMITS = Object.freeze({
  qaTimeoutMs: 600000,                // Zeitlimit je QA-Lauf
  minQaMs: 180000,                    // darunter lohnt keine Wiederholung
  totalCapMs: 900000,                 // Gesamtbudget ab Skriptstart (erster Lauf, Beweise, Pausen, Wiederholungen)
- jobTimeoutMs: 3600000,              // timeout-minutes des Jobs refresh
+ jobTimeoutMs: 6000000,              // timeout-minutes des Jobs refresh (100 min; Begruendung im Workflow und in refresh-dispatch-wait.mjs)
  reserveMs: 600000                   // Reserve fuer Rollback, OFF-Dispatch und Upload. Ueberschreitet der Schritt das Job-Timeout, wird er
                                      // `cancelled` statt `failure`: dann liefe der Rollback NICHT (fail-open). Darum harte Frist vom Jobstart.
 });

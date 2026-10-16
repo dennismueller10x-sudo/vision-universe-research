@@ -509,6 +509,8 @@ jobs:
           (failure() ||
           ((steps.deps.outcome == 'failure' || steps.live.outcome == 'failure') && steps.retry.outputs.result != 'PASS'))))
         env:
+          APPROVED_OUTCOME: ${{ steps.approved.outcome }}
+          APPROVED_ENABLED: ${{ steps.approved.outputs.enabled }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -517,7 +519,14 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           gate_failure=0
-          node scripts/company_intelligence/refresh-run.mjs rollback || gate_failure=$?
+          # Rollback nur, wenn dieser Job die Generation selbst veroeffentlicht hat UND das Gate nachweislich noch AVAILABLE ist
+          # (pages-rollback-decision.mjs). Nach PRODUCTION_GATE_CHANGED_AFTER_PACKAGE oder bei bereits geschlossenem Gate nur disable
+          # + OFF-Dispatch: ein zweiter Rollback zerstoerte am 15.10.2026 den Legacy-GOOD-Zeiger.
+          if node scripts/company_intelligence/pages-rollback-decision.mjs; then
+            node scripts/company_intelligence/refresh-run.mjs rollback || gate_failure=$?
+          else
+            echo "::notice::Gate not AVAILABLE or generation not published by this job; disable only, no rollback."
+          fi
           node scripts/company_intelligence/production-release.mjs disable || gate_failure=$?
           # Emergency delivery must still close both products if R2 is unreachable.
           gh workflow run pages-release.yml --ref main -f company_intelligence_off=true

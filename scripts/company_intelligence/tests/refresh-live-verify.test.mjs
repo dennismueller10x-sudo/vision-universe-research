@@ -201,7 +201,7 @@ test('Workflow: Deploy-Verify ruft die begrenzte Verifikation statt refresh-qa -
  assert.ok(deploy && rollback);
  assert.match(deploy.run, /node scripts\/company_intelligence\/refresh-live-verify\.mjs --out "\$RUNNER_TEMP\/ci-refresh\/live-qa\.json"/);
  assert.doesNotMatch(deploy.run, /refresh-qa\.mjs/, 'keine ungeschuetzte Einmal-QA mehr');
- const verify = deploy.run.indexOf('refresh-live-verify.mjs'), observe = deploy.run.indexOf('refresh-run.mjs observe'), slo = deploy.run.indexOf('PRODUCTION_PUBLICATION_SLO_FAILED');
+ const verify = deploy.run.indexOf('refresh-live-verify.mjs'), observe = deploy.run.indexOf('refresh-run.mjs observe'), slo = deploy.run.indexOf('refresh-dispatch-wait.mjs'); // Dispatch und Warten auf die Auslieferung (frueher inline, SLO-Fehler jetzt im Skript)
  assert.ok(slo >= 0 && slo < verify && verify < observe);
  assert.equal(deploy['continue-on-error'], undefined, 'Fehler der Verifikation muss den Schritt rot machen');
  assert.equal(deploy.if, 'inputs.verification != true');
@@ -227,7 +227,7 @@ test('Workflow: ADR-005 (Eingaben nur ueber env), Rechte, Timeout und Passwortsc
  assert.equal(deploy.env.RESEARCH_ACCESS_PASSWORD, '${{ secrets.RESEARCH_ACCESS_PASSWORD }}');
  assert.equal(deploy.env.NODE_PATH, '/tmp/ci-refresh/node_modules');
  assert.deepEqual(wf.permissions, {contents: 'read', actions: 'write'});
- assert.equal(wf.jobs.refresh['timeout-minutes'], 60);
+ assert.equal(wf.jobs.refresh['timeout-minutes'], 100); // 60 -> 100: Wartefrist fuer serielle Pages-Laeufe (refresh-dispatch-wait.test.mjs rechnet nach)
  const upload = steps.find(s => String(s.uses).startsWith('actions/upload-artifact') && /health/.test(String(s.with?.name)));
  assert.match(upload.with.path, /live-qa\.json\.verify\.json/);
  assert.match(upload.with.path, /live-qa\.json\n/);
