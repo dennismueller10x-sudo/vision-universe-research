@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-validation-1.0.0",
  "methodVersion": "market-pulse-1.0.0",
  "environmentVersion": "market-environment-1.0.0",
- "generatedAt": "2026-09-30T03:56:29.255Z",
+ "generatedAt": "2026-10-16T11:54:06.429Z",
  "status": "NOT_CERTIFIED",
  "purpose": "Interne Prüfung, ob sich die Folgephasen je Einordnungsstufe unterscheiden. Keine Renditeaussage, keine Prognose, keine Produktanzeige.",
  "method": {
@@ -35,19 +35,19 @@
     "breadth": "nicht rekonstruierbar – Stufe 4 kommt nicht vor"
    },
    "from": "2001-06-08",
-   "to": "2026-09-29",
+   "to": "2026-10-15",
    "frequencies": {
-    "days": 6364,
+    "days": 6376,
     "environment": {
-     "Vorsichtig": 22.2,
-     "Defensiv": 13.7,
-     "Selektiv": 18.4,
-     "Konstruktiv": 45.7
+     "Vorsichtig": 22.3,
+     "Defensiv": 13.6,
+     "Selektiv": 18.5,
+     "Konstruktiv": 45.6
     },
     "trend": {
-     "MIXED": 28.7,
+     "MIXED": 28.8,
      "NEGATIVE": 16.7,
-     "POSITIVE": 54.6
+     "POSITIVE": 54.5
     },
     "momentum": {
      "MIXED": 21,
@@ -57,7 +57,7 @@
     "risk": {
      "ELEVATED": 14.8,
      "HIGH": 13.6,
-     "NORMAL": 71.5
+     "NORMAL": 71.6
     },
     "breadth": {
      "UNKNOWN": 100
@@ -67,17 +67,17 @@
     "byHorizon": {
      "21": {
       "all": {
-       "days": 6342,
-       "independent": 302,
+       "days": 6354,
+       "independent": 303,
        "meanReturn": 0.72,
        "medianReturn": 1.31,
        "positiveShare": 64.3,
-       "positiveShareIndependent": 65.2,
+       "positiveShareIndependent": 65,
        "positiveCI95": [
-        59.7,
-        70.4
+        59.5,
+        70.2
        ],
-       "meanWorst": -2.9,
+       "meanWorst": -2.89,
        "drawdownShare": 4.8,
        "drawdownShareIndependent": 4,
        "drawdownCI95": [
@@ -110,11 +110,11 @@
        {
         "level": 1,
         "label": "Vorsichtig",
-        "days": 1409,
+        "days": 1411,
         "independent": 68,
         "meanReturn": 0.64,
         "medianReturn": 1.6,
-        "positiveShare": 62.8,
+        "positiveShare": 62.9,
         "positiveShareIndependent": 61.8,
         "positiveCI95": [
          49.9,
@@ -131,11 +131,11 @@
        {
         "level": 2,
         "label": "Selektiv",
-        "days": 1161,
+        "days": 1167,
         "independent": 55,
         "meanReturn": 1.37,
         "medianReturn": 1.99,
-        "positiveShare": 69.3,
+        "positiveShare": 69.4,
         "positiveShareIndependent": 69.1,
         "positiveCI95": [
          56,
@@ -152,15 +152,15 @@
        {
         "level": 3,
         "label": "Konstruktiv",
-        "days": 2902,
-        "independent": 134,
-        "meanReturn": 0.39,
+        "days": 2906,
+        "independent": 135,
+        "meanReturn": 0.4,
         "medianReturn": 0.92,
         "positiveShare": 63.7,
-        "positiveShareIndependent": 67.2,
+        "positiveShareIndependent": 66.7,
         "positiveCI95": [
-         58.8,
-         74.5
+         58.4,
+         74.1
         ],
         "meanWorst": -2.21,
         "drawdownShare": 1.2,
@@ -179,22 +179,22 @@
      },
      "63": {
       "all": {
-       "days": 6300,
-       "independent": 100,
+       "days": 6312,
+       "independent": 101,
        "meanReturn": 2.17,
        "medianReturn": 3.31,
        "positiveShare": 69.2,
-       "positiveShareIndependent": 71,
+       "positiveShareIndependent": 71.3,
        "positiveCI95": [
-        61.5,
-        79
+        61.8,
+        79.2
        ],
-       "meanWorst": -5.26,
+       "meanWorst": -5.25,
        "drawdownShare": 15.8,
-       "drawdownShareIndependent": 16,
+       "drawdownShareIndependent": 15.8,
        "drawdownCI95": [
-        10.1,
-        24.4
+        10,
+        24.2
        ]
       },
       "levels": [
@@ -264,22 +264,22 @@
        {
         "level": 3,
         "label": "Konstruktiv",
-        "days": 2869,
-        "independent": 45,
+        "days": 2881,
+        "independent": 46,
         "meanReturn": 1.65,
-        "medianReturn": 2.66,
-        "positiveShare": 69.1,
-        "positiveShareIndependent": 71.1,
+        "medianReturn": 2.67,
+        "positiveShare": 69.2,
+        "positiveShareIndependent": 71.7,
         "positiveCI95": [
-         56.6,
-         82.3
+         57.5,
+         82.7
         ],
         "meanWorst": -4.2,
         "drawdownShare": 6.9,
-        "drawdownShareIndependent": 6.7,
+        "drawdownShareIndependent": 6.5,
         "drawdownCI95": [
-         2.3,
-         17.9
+         2.2,
+         17.5
         ]
        },
        {
@@ -291,18 +291,18 @@
      },
      "126": {
       "all": {
-       "days": 6237,
+       "days": 6249,
        "independent": 50,
-       "meanReturn": 4.47,
-       "medianReturn": 5.85,
+       "meanReturn": 4.49,
+       "medianReturn": 5.87,
        "positiveShare": 73.6,
        "positiveShareIndependent": 76,
        "positiveCI95": [
         62.6,
         85.7
        ],
-       "meanWorst": -7.28,
-       "drawdownShare": 25.1,
+       "meanWorst": -7.27,
+       "drawdownShare": 25,
        "drawdownShareIndependent": 20,
        "drawdownCI95": [
         11.2,
@@ -313,18 +313,18 @@
        {
         "level": 0,
         "label": "Defensiv",
-        "days": 864,
+        "days": 870,
         "independent": 5,
-        "meanReturn": 5.05,
-        "medianReturn": 5.2,
-        "positiveShare": 63.4,
+        "meanReturn": 5.13,
+        "medianReturn": 5.34,
+        "positiveShare": 63.7,
         "positiveShareIndependent": 80,
         "positiveCI95": [
          37.6,
          96.4
         ],
-        "meanWorst": -10.95,
-        "drawdownShare": 44.1,
+        "meanWorst": -10.87,
+        "drawdownShare": 43.8,
         "drawdownShareIndependent": 40,
         "drawdownCI95": [
          11.8,
@@ -355,18 +355,18 @@
        {
         "level": 2,
         "label": "Selektiv",
-        "days": 1146,
+        "days": 1152,
         "independent": 5,
-        "meanReturn": 5.95,
-        "medianReturn": 6.98,
-        "positiveShare": 83,
+        "meanReturn": 5.98,
+        "medianReturn": 7.02,
+        "positiveShare": 83.1,
         "positiveShareIndependent": 80,
         "positiveCI95": [
          37.6,
          96.4
         ],
-        "meanWorst": -5.59,
-        "drawdownShare": 18,
+        "meanWorst": -5.56,
+        "drawdownShare": 17.9,
         "drawdownShareIndependent": 40,
         "drawdownCI95": [
          11.8,
@@ -413,10 +413,10 @@
        "low": 11,
        "lowN": 113,
        "high": 1,
-       "highN": 134,
+       "highN": 135,
        "lowShare": 9.7,
        "highShare": 0.7,
-       "p": 0.0011,
+       "p": 0.001,
        "significantAfterBH": true
       },
       {
@@ -425,10 +425,10 @@
        "low": 69,
        "lowN": 113,
        "high": 90,
-       "highN": 134,
+       "highN": 135,
        "lowShare": 61.1,
-       "highShare": 67.2,
-       "p": 0.3184,
+       "highShare": 66.7,
+       "p": 0.3594,
        "significantAfterBH": false
       },
       {
@@ -437,10 +437,10 @@
        "low": 11,
        "lowN": 37,
        "high": 3,
-       "highN": 45,
+       "highN": 46,
        "lowShare": 29.7,
-       "highShare": 6.7,
-       "p": 0.0057,
+       "highShare": 6.5,
+       "p": 0.005,
        "significantAfterBH": true
       },
       {
@@ -448,11 +448,11 @@
        "metric": "positive Rendite",
        "low": 25,
        "lowN": 37,
-       "high": 32,
-       "highN": 45,
+       "high": 33,
+       "highN": 46,
        "lowShare": 67.6,
-       "highShare": 71.1,
-       "p": 0.7287,
+       "highShare": 71.7,
+       "p": 0.6805,
        "significantAfterBH": false
       },
       {
@@ -720,22 +720,22 @@
       "to": "2099-12-31",
       "horizon": 63,
       "all": {
-       "days": 1630,
-       "independent": 25,
+       "days": 1642,
+       "independent": 26,
        "meanReturn": 3.91,
-       "medianReturn": 4.83,
-       "positiveShare": 75.6,
-       "positiveShareIndependent": 80,
+       "medianReturn": 4.8,
+       "positiveShare": 75.8,
+       "positiveShareIndependent": 80.8,
        "positiveCI95": [
-        60.9,
-        91.1
+        62.1,
+        91.5
        ],
-       "meanWorst": -5.04,
-       "drawdownShare": 14.3,
-       "drawdownShareIndependent": 12,
+       "meanWorst": -5.03,
+       "drawdownShare": 14.2,
+       "drawdownShareIndependent": 11.5,
        "drawdownCI95": [
-        4.2,
-        30
+        4,
+        29
        ]
       },
       "levels": [
@@ -805,22 +805,22 @@
        {
         "level": 3,
         "label": "Konstruktiv",
-        "days": 810,
-        "independent": 10,
+        "days": 822,
+        "independent": 11,
         "meanReturn": 2.78,
-        "medianReturn": 4.14,
-        "positiveShare": 77.2,
-        "positiveShareIndependent": 90,
+        "medianReturn": 4.1,
+        "positiveShare": 77.5,
+        "positiveShareIndependent": 90.9,
         "positiveCI95": [
-         59.6,
-         98.2
+         62.3,
+         98.4
         ],
-        "meanWorst": -4.68,
-        "drawdownShare": 8.5,
+        "meanWorst": -4.65,
+        "drawdownShare": 8.4,
         "drawdownShareIndependent": 0,
         "drawdownCI95": [
          0,
-         27.8
+         25.9
         ]
        },
        {
@@ -850,36 +850,36 @@
     {
      "rule": "Investiert bei Stufe ≥ 1, sonst Bargeld ohne Zins; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
      "strategy": {
-      "cagr": 6.311,
-      "volatility": 13.405,
+      "cagr": 6.341,
+      "volatility": 13.397,
       "maxDrawdown": -39.844,
-      "sharpe": 0.471,
-      "years": 25.3
+      "sharpe": 0.473,
+      "years": 25.34
      },
      "buyAndHold": {
-      "cagr": 7.381,
+      "cagr": 7.41,
       "maxDrawdown": -56.474
      },
      "investedShare": 86.3,
      "from": "2001-06-11",
-     "to": "2026-09-29"
+     "to": "2026-10-15"
     },
     {
      "rule": "Investiert bei Stufe ≥ 2, sonst Bargeld ohne Zins; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
      "strategy": {
-      "cagr": 4.074,
-      "volatility": 9.766,
+      "cagr": 4.022,
+      "volatility": 9.76,
       "maxDrawdown": -20.103,
-      "sharpe": 0.417,
-      "years": 25.3
+      "sharpe": 0.412,
+      "years": 25.34
      },
      "buyAndHold": {
-      "cagr": 7.381,
+      "cagr": 7.41,
       "maxDrawdown": -56.474
      },
      "investedShare": 64.1,
      "from": "2001-06-11",
-     "to": "2026-09-29"
+     "to": "2026-10-15"
     }
    ]
   },
@@ -889,7 +889,7 @@
    "data": {
     "source": "Kenneth R. French Data Library (Tuck School of Business, Dartmouth): F-F_Research_Data_Factors_daily, 6_Portfolios_2x3_daily, 49_Industry_Portfolios_daily (wertgewichtet)",
     "citation": "Fama, E. F. und French, K. R.; Daten: Kenneth R. French Data Library, https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
-    "retrievedAt": "2026-09-28T09:47:20.232Z",
+    "retrievedAt": "2026-10-16T11:53:37.204Z",
     "roles": {
      "SPY": "MARKET – US-Gesamtmarkt (Mkt-RF + RF, alle Aktien an NYSE, AMEX, NASDAQ, wertgewichtet)",
      "QQQ": "BIG_LOBM – große Werte mit niedrigem Buchwert/Marktwert (Wachstum), Näherung für einen wachstumslastigen Large-Cap-Index",
@@ -5955,12 +5955,12 @@
         "drawdownShareIndependent": 0
        },
        "conditionNotMet": {
-        "days": 2494,
-        "independent": 40,
+        "days": 2506,
+        "independent": 41,
         "meanReturn": 1.4,
-        "drawdownShareIndependent": 7.5
+        "drawdownShareIndependent": 7.3
        },
-       "p": 0.5262,
+       "p": 0.5316,
        "significantAfterBH": false
       }
      ]
@@ -6038,12 +6038,12 @@
         "drawdownShareIndependent": 0
        },
        "conditionNotMet": {
-        "days": 2573,
-        "independent": 41,
-        "meanReturn": 1.43,
-        "drawdownShareIndependent": 7.3
+        "days": 2585,
+        "independent": 42,
+        "meanReturn": 1.44,
+        "drawdownShareIndependent": 7.1
        },
-       "p": 0.5755,
+       "p": 0.5804,
        "significantAfterBH": false
       }
      ]
@@ -6120,12 +6120,12 @@
         "drawdownShareIndependent": 0
        },
        "conditionNotMet": {
-        "days": 2334,
-        "independent": 36,
-        "meanReturn": 1.28,
-        "drawdownShareIndependent": 8.3
+        "days": 2346,
+        "independent": 37,
+        "meanReturn": 1.29,
+        "drawdownShareIndependent": 8.1
        },
-       "p": 0.37,
+       "p": 0.3769,
        "significantAfterBH": false
       }
      ]
