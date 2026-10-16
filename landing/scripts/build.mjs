@@ -1,6 +1,7 @@
 import {readFile, writeFile, mkdir, cp, rm, readdir} from 'node:fs/promises';
 import {resolve, dirname, relative, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -59,6 +60,12 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+  // Returning browsers must not combine new preview markup with old cached
+  // controls/styles. Each changed file gets a new, deterministic asset URL.
+  for(const [asset,attribute] of [['styles.css','href'],['assets/home/discover-swipe.js','src']]){
+    const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+    html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
+  }
   await writeFile(resolve(output,'index.html'),html);
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
   // Pages handles apex -> www in custom-domain settings, not _redirects.

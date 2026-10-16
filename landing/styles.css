@@ -32,8 +32,8 @@ button,input{font:inherit}
 .discover-preview{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
 .discover-preview .app-h{padding-bottom:2px}
 .discover-intro{padding:0 16px 10px;color:#bfc5cd;font-size:11px}
-.discover-preview .deck{height:270px;margin-top:0}
-.discover-preview .card{overflow-y:auto;overflow-x:hidden}
+.discover-preview .deck{height:270px;margin-top:0;touch-action:pan-y pinch-zoom}
+.discover-preview .card{overflow-y:auto;overflow-x:hidden;touch-action:pan-y pinch-zoom}
 .discover-preview .cbadge{color:#c8f531;background:rgba(200,245,49,.1)}
 .discover-card-art{flex:1;min-height:64px;display:grid;place-items:center;padding:12px}
 .discover-card-art .hud{width:72px;height:72px}
