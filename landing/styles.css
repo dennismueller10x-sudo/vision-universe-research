@@ -23,6 +23,31 @@ button,input{font:inherit}
 .module-home-desktop{padding:6px 0 0}
 .module-home-desktop .module-heading{max-width:none;font-size:24px}
 .module-home-desktop .module-launch-grid{margin-top:24px;gap:24px 8px}
+/* Original Research deck/card design inside the unchanged Hero phone shell. */
+.discover-preview[hidden],.stage .module-home[hidden]{display:none}
+.stage .phone:has(.discover-preview){z-index:4}
+.stage .orbit{z-index:1}
+.stage .screen:has(.discover-preview){display:flex;flex-direction:column}
+.stage .screen:has(.discover-preview)>.app-status,.stage .screen:has(.discover-preview)>.app-top{flex-shrink:0}
+.discover-preview{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
+.discover-preview .app-h{padding-bottom:2px}
+.discover-intro{padding:0 16px 10px;color:#bfc5cd;font-size:11px}
+.discover-preview .deck{height:270px;margin-top:0}
+.discover-preview .card{overflow-y:auto;overflow-x:hidden}
+.discover-preview .cbadge{color:#c8f531;background:rgba(200,245,49,.1)}
+.discover-card-art{flex:1;min-height:64px;display:grid;place-items:center;padding:12px}
+.discover-card-art .hud{width:72px;height:72px}
+.discover-card-art svg{width:48px;height:48px}
+.discover-preview .card-meta{margin-top:auto;flex-wrap:wrap;gap:4px}
+.discover-preview .deck-actions{margin:24px 20px 0}
+.discover-preview .deck-btn{width:54px;height:54px}
+.discover-preview .deck-hint{color:#bfc5cd;font-size:9px}
+.discover-tray{display:flex;align-items:center;gap:8px;padding:4px 14px 0}
+.discover-feedback{flex:1;font-size:10px;line-height:1.4;color:var(--screen-ink)}
+.discover-reset{flex:none;border:0;background:none;color:var(--screen-ink);font-size:11px;text-decoration:underline;min-height:54px;padding:6px 4px;cursor:pointer}
+.discover-preview .cname,.discover-preview .cwhat,.discover-feedback{overflow-wrap:anywhere}
+.discover-disclaimer{font-size:10px;line-height:1.4;text-align:center;color:#bfc5cd;padding:0 16px 8px}
+@media(prefers-reduced-motion:reduce){.discover-preview .card,.discover-preview .stamp,.discover-preview .deck-btn{transition:none}}
 .newsletter{padding:16px 0 24px;scroll-margin-top:76px}
 .nl-box{gap:28px}
 .nl-form{display:block;min-width:0}

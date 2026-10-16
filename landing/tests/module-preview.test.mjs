@@ -15,6 +15,8 @@ test('Geräteansichten und erneute Research-Übernahme bleiben ohne Finanzdaten'
     assert.doesNotMatch(html,/NVIDIA|NVDA|chart-nvda|data-count|Jahreshoch|12 Geschäftsjahre/);
     assert.equal((html.match(/class="module-launch-grid"/g)||[]).length,2);
     assert.equal((html.match(/class="module-heading"/g)||[]).length,2);
+    assert.match(html,/aria-label="Discover-Swipe-Vorschau"/); // Survives snapshot regeneration.
+    assert.doesNotMatch(html,/class="card-px"|class="cspark"|Rang #[0-9]/);
     for(const [icon,label] of modules){
       assert.ok(html.includes(`href="#h-${icon}"`),`Original-Icon: ${icon}`);
       assert.ok(html.includes(`>${label}</span>`),`Modulname: ${label}`);
