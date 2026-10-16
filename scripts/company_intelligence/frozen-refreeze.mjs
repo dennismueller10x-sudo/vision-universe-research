@@ -23,6 +23,8 @@ const sorted=a=>[...a].sort();
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const hex24=/^[a-f0-9]{24}$/;
 export const refreezeArchiveKey=generation=>prefixFor(universeConfig.rollbackNamespace)+`refreeze/${generation}.json`;
+/* Archive of a superseded freeze pointer; shared with the read-only auto-refreeze guard so both sides agree byte for byte. */
+export const refreezeArchiveBytes=(old,oldBytes)=>Buffer.from(JSON.stringify({schema:1,kind:'ROLLBACK_FREEZE_ARCHIVE',generation:old.generation,payloadNamespace:old.payloadNamespace,pointerSha256:sha(oldBytes),pointer:oldBytes.toString('utf8')}));
 const issuerIds=good=>sorted(Object.keys(good.manifest.assets).filter(p=>p!=='index.json'&&!p.includes('/lookup/')).map(p=>p.split('/').at(-1).replace(/\.json$/,'')));
 /* Exactly the reviewed legacy cohort: 46 listings, 45 issuers, not the universe. */
 export function assertLegacyScope(good,code){
@@ -103,7 +105,7 @@ export async function refreezeRollback(driver,{temporary,fetchDelivery,expectGen
  writeFileSync(join(source,'manifest.json'),JSON.stringify(current.manifest)+'\n');
  // 6. Keep the old freeze as immutable evidence (pointer bytes + hash) before it is replaced.
  const archiveKey=refreezeArchiveKey(old.generation);
- const archive=Buffer.from(JSON.stringify({schema:1,kind:'ROLLBACK_FREEZE_ARCHIVE',generation:old.generation,payloadNamespace:old.payloadNamespace,pointerSha256:sha(oldBytes),pointer:oldBytes.toString('utf8')}));
+ const archive=refreezeArchiveBytes(old,oldBytes);
  // Keyed by the superseded pointer only: an aborted run followed by a newer legacy GOOD writes the identical archive on retry.
  const existingArchive=await bytesOf(driver,archiveKey);
  assert(!existingArchive||existingArchive.equals(archive),'REFREEZE_ARCHIVE_COLLISION');

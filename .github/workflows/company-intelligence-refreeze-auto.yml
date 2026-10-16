@@ -1,0 +1,62 @@
+name: Company Intelligence Auto Refreeze
+# Haelt den eingefrorenen 46er-Rollback frisch (Verfall 7 Tage nach generatedAt).
+# Alle vier Tage (Tag 1,5,9,...,29 des Monats, 05:23 UTC): maximal 4 Tage Abstand.
+# Vorabpruefung rein lesend und fail-closed; einzige schreibende Aktion ist
+# `universe-release.mjs refreeze`. Gate, Aktivierung, Pages und Produktion bleiben unberuehrt.
+on:
+  schedule:
+    - cron: '23 5 */4 * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+# Gleiche Gruppe wie Refresh und Universe-Release: nie parallel zu einem schreibenden Lauf.
+concurrency:
+  group: company-intelligence-continuous-production
+  cancel-in-progress: false
+jobs:
+  refreeze:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+      VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+      VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+      VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+      VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preflight, read-only and fail-closed
+        id: guard
+        run: node scripts/company_intelligence/refreeze-auto-guard.mjs preflight --out "$RUNNER_TEMP/refreeze-auto/preflight.json"
+      - name: Re-freeze immutable 46 rollback onto the verified legacy GOOD
+        id: refreeze
+        if: steps.guard.outputs.decision == 'REFREEZE'
+        env:
+          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECT_GENERATION" =~ ^[0-9a-f]{24}$ ]] || { echo "::error::checked generation must be 24 lowercase hex characters"; exit 1; }
+          node scripts/company_intelligence/universe-release.mjs refreeze --temporary "$RUNNER_TEMP/universe-release" --expect-generation "$EXPECT_GENERATION"
+      - name: Postcheck result, protected flags, archive and new freeze validity
+        id: postcheck
+        if: always() && steps.refreeze.outcome != 'skipped' && steps.guard.outputs.decision == 'REFREEZE'
+        env:
+          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}
+        run: |
+          node scripts/company_intelligence/refreeze-auto-guard.mjs verify --release "$RUNNER_TEMP/universe-release/evidence/release.json" --preflight "$RUNNER_TEMP/refreeze-auto/preflight.json" --expect-generation "$EXPECT_GENERATION" --out "$RUNNER_TEMP/refreeze-auto/postcheck.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: refreeze-auto-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/refreeze-auto/
+            ${{ runner.temp }}/universe-release/evidence/release.json
+          if-no-files-found: ignore
+          retention-days: 30
