@@ -47,7 +47,17 @@ export async function checkDiscoverSwipe(page) {
   await page.waitForTimeout(1700); // Research auto-swipes; this preview must not.
   assert.equal(await front().getAttribute('data-symbol'),'AMD');await count(0);
   await page.locator('[data-preview-swipe=right]').click();await waitFor('AAPL');await count(1);
-  await page.locator('[data-preview-swipe=left]').click();await waitFor('MSFT');await count(1);
+  await page.locator('[data-preview-swipe=left]').click();
+  try { await waitFor('MSFT'); }
+  catch(error) {
+    console.log(JSON.stringify(await root.evaluate(e=>({swipeDiagnostic:true,
+      busy:e.querySelector('.deck').getAttribute('aria-busy'),
+      front:e.querySelector('.card[aria-hidden="false"]')?.dataset.symbol,
+      controls:[...e.querySelectorAll('[data-preview-swipe]')].map(b=>({direction:b.dataset.previewSwipe,disabled:b.disabled})),
+      scrollTop:e.scrollTop}))));
+    throw error;
+  }
+  await count(1);
   await page.locator('#discover-deck').focus();
   await page.keyboard.press('ArrowRight');await waitFor('AMD');await count(2);
   await page.keyboard.press('ArrowRight');await waitFor('AAPL');await count(2); // Same company twice.

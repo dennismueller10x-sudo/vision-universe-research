@@ -77,9 +77,8 @@
   // Research's decorative Hero tilt must not move controls under the pointer.
   preview.addEventListener('pointerenter',()=>{preview.closest('.stage').style.transform='';});
   preview.addEventListener('mousemove',event=>event.stopPropagation());
-  preview.addEventListener('click', event => {
-    const button = event.target.closest('[data-preview-swipe]');
-    if (button) move(button.dataset.previewSwipe === 'right' ? 1 : -1);
+  preview.querySelectorAll('[data-preview-swipe]').forEach(button=>{
+    button.addEventListener('click',()=>move(button.dataset.previewSwipe === 'right' ? 1 : -1));
   });
   preview.addEventListener('keydown', event => {
     if (!['ArrowLeft','ArrowRight'].includes(event.key) || event.altKey || event.ctrlKey || event.metaKey) return;
