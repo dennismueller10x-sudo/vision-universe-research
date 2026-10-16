@@ -14,7 +14,8 @@ import {approval} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
 import {refreezeRollback} from '../frozen-refreeze.mjs';
 import {publish} from '../public-delivery.mjs';
-import {guardWrites,restoreLegacyGood,withLegacyMissingDiagnosis,goodPointerState,classifyPointer,assertRestoreWindow,RESTORE_MIN_REMAINING_MS} from '../legacy-restore.mjs';
+import {guardWrites,restoreLegacyGood,withLegacyMissingDiagnosis,goodPointerState,classifyPointer,assertRestoreWindow,RESTORE_MIN_REMAINING_MS,frozenComparisonBaseline} from '../legacy-restore.mjs';
+import {validateChanges} from '../refresh-run.mjs';
 import {setProductionGate} from '../production-release.mjs';
 const HERE=dirname(fileURLToPath(import.meta.url));
 function driver(){const objects=new Map(),puts=[];return {objects,puts,get:async k=>objects.get(k)||null,put:async(k,v)=>{puts.push(k);objects.set(k,Buffer.from(v));}};}
@@ -484,4 +485,65 @@ test('Mutation: ohne Schreib-Guard wuerde ein Put ausserhalb des Legacy-Praefix 
  const m=await mutant("if(!String(key).startsWith(allowedPrefix)||forbidden.includes(key)){","if(false){");
  const d=driver(),g=m.guardWrites(d,{allowedPrefix:'x',forbidden:[],violations:[]});
  await g.put(goodKey(ROLLBACK),Buffer.from('x'));assert.equal(d.puts.length,1,'Mutant erkannt');
+});
+
+/* Refresh-Laeufe 38821265125/38851040733: Legacy-Zeiger LEGACY_FALLBACK, feste Baseline abgelaufen -> jeder Lauf
+   scheiterte mit CONSUMER_EXPIRED. Der Refresh vergleicht dann gegen den verifizierten Freeze (rein lesend). */
+const baseline=(w,extra={})=>frozenComparisonBaseline(w.d,{output:join(w.fresh(),'old'),...extra});
+test('Frozen-Baseline: LEGACY_FALLBACK und ABSENT liefern den verifizierten Freeze als Vergleich, ohne einen einzigen Schreibzugriff',async()=>{
+ for(const pointer of ['LEGACY_FALLBACK','ABSENT']){
+  const w=await world();try{
+   if(pointer==='ABSENT')w.d.objects.delete(goodKey(LEGACY));
+   const before=new Map([...w.d.objects].map(([k,v])=>[k,Buffer.from(v)])),output=join(w.fresh(),'old');
+   const r=await frozenComparisonBaseline(w.d,{output});
+   assert.equal(r.generation,w.expect);assert.equal(r.namespace,ROLLBACK);assert.equal(r.pointerBefore,pointer);assert.equal(r.freezeMarker,'ORIGINAL');
+   assert.equal(r.validUntil,new Date(Date.parse(w.frozen.m.generatedAt)+7*24*H).toISOString());
+   assert.equal(w.d.puts.length,0,'rein lesend');assert(sameMap(w.d.objects,before),'kein Objekt veraendert');
+   for(const [path,meta] of Object.entries(w.frozen.m.assets)){const b=readFileSync(join(output,path));assert.equal(createHash('sha256').update(b).digest('hex'),meta.sha256,path);}
+   // Die Basis traegt die echte Generationsregression: ein neuer Kandidat wird gegen sie geprueft ...
+   const next=w.mk(0x9002,0);assert.equal(validateChanges(next.root,output).status,'PASS');
+   // ... und ein verschlechterter Kandidat (Profil nicht mehr deutsch) wird gegen sie abgewiesen.
+   const cid=Object.keys(frozenInventory)[0],file=join(next.root,`snapshots/${next.m.generation}/${cid}.json`),p=JSON.parse(readFileSync(file));
+   p.companyProfile.language='en';writeFileSync(file,JSON.stringify(p));
+   assert.throws(()=>validateChanges(next.root,output),/REFRESH_PROFILE_REGRESSION/);
+  }finally{w.done();}
+ }
+});
+test('Frozen-Baseline: abgelaufener oder fast abgelaufener Freeze ist ein Fehler (FROZEN_BASELINE_EXPIRED), nie ein Rueckfall',async()=>{
+ for(const age of [7*24*H+60000,8*24*H,7*24*H-5*60000]){
+  const w=await world({frozenAge:age});try{
+   await assert.rejects(baseline(w),/FROZEN_BASELINE_EXPIRED/,String(age));assert.equal(w.d.puts.length,0);
+  }finally{w.done();}
+ }
+ const w=await world({frozenAge:7*24*H-2*H});try{assert.equal((await baseline(w)).generation,w.expect);}finally{w.done();}
+});
+test('Frozen-Baseline: vorhandenes oder defektes Legacy-GOOD wird nie durch den Freeze ersetzt',async()=>{
+ const w=await world();try{
+  await run(w);await assert.rejects(baseline(w),/FROZEN_BASELINE_POINTER_STATE_GOOD/);
+  w.d.objects.set(goodKey(LEGACY),Buffer.from('{not json'));await assert.rejects(baseline(w),/FROZEN_BASELINE_POINTER_STATE_INVALID/);
+ }finally{w.done();}
+});
+test('Frozen-Baseline: Hash-Abweichung, Scope, Vorgaenger, fehlender Freeze, aktives Universum und Marker brechen ab',async()=>{
+ const w=await world();try{
+  const pointer=JSON.parse(w.d.objects.get(goodKey(ROLLBACK)));
+  const assetKey=[...w.d.objects.keys()].find(k=>k.startsWith(prefixFor(pointer.payloadNamespace))&&k.includes('slot-')&&k.endsWith('index.json'));
+  const original=w.d.objects.get(assetKey);w.d.objects.set(assetKey,Buffer.from(original.toString().replace('AVAILABLE','AVAILABLX')));
+  await assert.rejects(baseline(w),/CONSUMER_INTEGRITY_FAILED/);w.d.objects.set(assetKey,original);
+  const set=g=>w.d.objects.set(goodKey(ROLLBACK),Buffer.from(JSON.stringify(g)));
+  set({...pointer,manifest:{...pointer.manifest,tickers:pointer.manifest.tickers.slice(1)}});await assert.rejects(baseline(w),/INVALID_REFRESH_GOOD_POINTER|FROZEN_BASELINE_SCOPE_INVALID/);
+  set({...pointer,previous:{generation:'1'.repeat(24)}});await assert.rejects(baseline(w),/FROZEN_BASELINE_PREVIOUS_UNEXPECTED/);
+  set({...pointer,refreeze:{schema:1}});await assert.rejects(baseline(w),/LEGACY_RESTORE_MARKER_INVALID/);
+  w.d.objects.delete(goodKey(ROLLBACK));await assert.rejects(baseline(w),/FROZEN_BASELINE_REQUIRED/);set(pointer);
+  w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',approvalId:universeConfig.approvalId})));
+  await assert.rejects(baseline(w),/FROZEN_BASELINE_REFUSED_UNIVERSE_ACTIVE_OR_INVALID_ACTIVATION/);
+  assert.equal(w.d.puts.length,0);
+ }finally{w.done();}
+});
+test('Refresh-Vertrag: Freeze-Vergleich nur nach LEGACY_GOOD_MISSING_RESTORE_REQUIRED, nie im Verifikationslauf, nie die abgelaufene Baseline',()=>{
+ const src=readFileSync(join(HERE,'../refresh-run.mjs'),'utf8');
+ const branch=src.slice(src.indexOf('report.legacyGoodState=await goodPointerState'),src.indexOf("stage='POLL_BUILD'"));
+ assert.match(branch,/withLegacyMissingDiagnosis\(driver,consumerNamespace,\(\)=>download\(driver,\{namespace:approval\.namespace,output:old\}\)\)/);
+ assert.match(branch,/if\(verification\|\|error\?\.message!=='LEGACY_GOOD_MISSING_RESTORE_REQUIRED'\)throw error;/);
+ assert.ok(branch.indexOf('rmSync(old')<branch.indexOf('frozenComparisonBaseline(driver,{output:old})'),'Vergleich aus leerem Verzeichnis');
+ assert.doesNotMatch(branch,/commitGood|restoreLegacyGood|setProductionGate|\.put\(/,'der Freeze wird nur gelesen');
 });

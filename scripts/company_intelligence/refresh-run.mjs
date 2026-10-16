@@ -1,7 +1,7 @@
 import {productionObservation} from './production-observation.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
-import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync,rmSync} from 'node:fs';
 import {join,resolve,dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -18,7 +18,7 @@ import {activeGood,activeNamespace,universeActive,activationKey} from './refresh
 import {universeConfig} from './universe-approval.mjs';
 import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
-import {goodPointerState,withLegacyMissingDiagnosis} from './legacy-restore.mjs';
+import {goodPointerState,withLegacyMissingDiagnosis,frozenComparisonBaseline} from './legacy-restore.mjs';
 const json=p=>JSON.parse(readFileSync(p));const save=(p,v)=>writeFileSync(p,JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const {load}=createRequire(import.meta.url)('../../company-intelligence/api/contract.js');
@@ -95,7 +95,15 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   else{
    // Kein Legacy-GOOD: Sichtbarmachen statt stillem Rueckfall auf die abgelaufene Baseline (Heilung: universe-release restore-legacy).
    if(!verification)report.legacyGoodState=await goodPointerState(driver,consumerNamespace);
-   await withLegacyMissingDiagnosis(driver,consumerNamespace,()=>download(driver,{namespace:approval.namespace,output:old}));
+   try{await withLegacyMissingDiagnosis(driver,consumerNamespace,()=>download(driver,{namespace:approval.namespace,output:old}));}
+   catch(error){
+    // Feste Baseline abgelaufen und Legacy-GOOD fehlt: Vergleich gegen den verifizierten Freeze (nur lesend, eigene
+    // Pruefungen, eigenes Ablaufdatum). Unpruefbar oder abgelaufen -> eigener Fehlercode, nie die abgelaufene Baseline.
+    if(verification||error?.message!=='LEGACY_GOOD_MISSING_RESTORE_REQUIRED')throw error;
+    rmSync(old,{recursive:true,force:true});
+    const baseline=await frozenComparisonBaseline(driver,{output:old});
+    report.comparisonNamespace=baseline.namespace;report.comparisonGeneration=baseline.generation;report.comparisonValidUntil=baseline.validUntil;
+   }
   }
   if(universe&&sourceAudit){
    stage='SOURCE_REGISTRY_BEFORE';
@@ -188,7 +196,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(report.sourceRegistryBefore){const b=report.sourceRegistryBefore;sourceSummary+=`\nSource registry before (aggregate): ${JSON.stringify({asOf:b.asOf,rows:b.sourceRegistryRows,active:b.activeSourceRows,approved:b.activeApprovedSources,pollable:b.provenPollableSources,due:b.dueSources,statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,scheduler:b.scheduler})}\n`;}
   if(report.sourceRegistryAudit){const a=report.sourceRegistryAudit;sourceSummary+=`\nSource registry after (aggregate): ${JSON.stringify({asOf:a.asOf,rows:a.sourceRegistryRows,active:a.activeSourceRows,approved:a.activeApprovedSources,pollable:a.provenPollableSources,due:a.dueSources,statusCounts:a.statusCounts,sourceAgeHours:a.sourceAgeHours,requestAndLatency:a.requestAndLatency,providers:a.byProviderFamily,marketCapBuckets:a.sourceRowsByMarketCapBucket,issuerRegions:a.sourceRowsByIssuerRegion,mandatory:a.mandatoryCases,currentRefresh:a.currentRefresh})}\n`;}
   if(report.sourceOnboarding)sourceSummary+=`\nSource discovery (aggregate): ${JSON.stringify(report.sourceOnboarding)}\n`;
-  writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\n${report.legacyGoodState&&report.legacyGoodState!=='GOOD'?`Legacy GOOD: ${report.legacyGoodState} (Heilung: universe-release restore-legacy)\n`:''}Sources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n${sourceSummary}`);
+  writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\n${report.legacyGoodState&&report.legacyGoodState!=='GOOD'?(report.comparisonGeneration&&report.comparisonNamespace===universeConfig.rollbackNamespace?`Legacy GOOD vor dem Lauf: ${report.legacyGoodState}; Vergleich gegen den verifizierten Freeze ${report.comparisonGeneration} (gueltig bis ${report.comparisonValidUntil})\n`:`Legacy GOOD: ${report.legacyGoodState} (Heilung: universe-release restore-legacy)\n`):''}Sources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n${sourceSummary}`);
  }
  return report;
 }
