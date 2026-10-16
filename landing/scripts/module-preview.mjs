@@ -15,7 +15,7 @@ export function presentationSymbols(source){
 }
 
 export function timelessHero(hero){
-  // Preserve original device shells, dimensions, motion and the existing orbit.
+  // Preserve original device markup; landing CSS owns composition and geometry.
   const browser=`<div class="browser" aria-hidden="true"><div class="browser-bar"><i></i><i></i><i></i><span>Vision Universe · Modulvorschau</span></div><div class="desk"><div class="desk-side"><b>Module</b><span class="on">Übersicht</span><span>Discover</span><span>Quant</span><span>Technik</span><span>Fundamental</span></div><div class="desk-main">${home(true)}</div></div></div>`;
   const phone=`<div class="phone"><div class="screen"><div class="app-status" aria-hidden="true"><span>9:41</span><span>●●● ▮</span></div><div class="app-top" aria-hidden="true"><img src="./assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>${home()}${discoverPreview()}</div></div>`;
   const start=hero.indexOf('<div class="stage"');

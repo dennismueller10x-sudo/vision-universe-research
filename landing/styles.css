@@ -1,5 +1,5 @@
-/* Research owns branding, typography, Hero, devices and media queries.
-   Only short-page composition, form states and accessibility differ. */
+/* Original Research assets remain in assets/home/home.css.
+   These owned landing rules compose the concept, signup and footer. */
 html,body{overflow-x:visible}
 button,input{font:inherit}
 :focus-visible{outline:3px solid var(--lime);outline-offset:4px}
@@ -35,9 +35,9 @@ button,input{font:inherit}
 .discover-preview .deck{height:270px;margin-top:0;touch-action:pan-y pinch-zoom}
 .discover-preview .card{overflow-y:auto;overflow-x:hidden;touch-action:pan-y pinch-zoom}
 .discover-preview .cbadge{color:#c8f531;background:rgba(200,245,49,.1)}
-.discover-card-art{flex:1;min-height:64px;display:grid;place-items:center;padding:12px}
-.discover-card-art .hud{width:72px;height:72px}
-.discover-card-art svg{width:48px;height:48px}
+.discover-card-art{flex:1;min-height:56px;display:grid;place-items:center;padding:6px}
+.discover-card-art .hud{width:56px;height:56px}
+.discover-card-art svg{width:34px;height:34px}
 .discover-preview .card-meta{margin-top:auto;flex-wrap:wrap;gap:4px}
 .discover-preview .deck-actions{margin:24px 20px 0}
 .discover-preview .deck-btn{width:54px;height:54px}
@@ -46,7 +46,7 @@ button,input{font:inherit}
 .discover-feedback{flex:1;font-size:10px;line-height:1.4;color:var(--screen-ink)}
 .discover-reset{flex:none;border:0;background:none;color:var(--screen-ink);font-size:11px;text-decoration:underline;min-height:54px;padding:6px 4px;cursor:pointer}
 .discover-preview .cname,.discover-preview .cwhat,.discover-feedback{overflow-wrap:anywhere}
-.discover-disclaimer{font-size:10px;line-height:1.4;text-align:center;color:#bfc5cd;padding:0 16px 8px}
+.discover-disclaimer{font-size:10px;line-height:1.4;text-align:center;color:#bfc5cd;padding:0 16px 4px}
 @media(prefers-reduced-motion:reduce){.discover-preview .card,.discover-preview .stamp,.discover-preview .deck-btn{transition:none}}
 .newsletter{padding:16px 0 24px;scroll-margin-top:76px}
 .nl-box{gap:28px}
@@ -75,3 +75,111 @@ input:disabled{opacity:.65}
 @media(max-width:520px){.form-row{grid-template-columns:1fr}.nl-form .btn{width:100%}.preview-caption{max-width:none}}
 @media(max-width:520px){.newsletter{padding-block:12px}.nl-box{padding:12px;gap:14px}}
 @media(prefers-reduced-motion:reduce){.skip-link{transition:none}}
+
+/* Landing design review: original Research assets, independent composition. */
+:root{--bg:#080a0c;--bg-soft:#0d1013;--bg-card:#121619;--ink:#f4f5f1;--ink-2:#bac0c5;--muted:#9aa2aa;--line:rgba(255,255,255,.1);--line-2:rgba(255,255,255,.16);--lime-ink:#c8f531;color-scheme:dark}
+body{background:radial-gradient(ellipse at 85% 8%,rgba(200,245,49,.045),transparent 42%),var(--bg)}
+.shell{width:min(1240px,calc(100% - 80px))}
+.lp-head{position:sticky;background:rgba(8,10,12,.92);border-bottom:1px solid var(--line);padding:20px 0;backdrop-filter:blur(16px)}
+.lp-head.scrolled{background:rgba(8,10,12,.96)}
+.lp-logo{width:238px}
+.lp-logo img{filter:invert(1) brightness(1.08)}
+.lp-cta{min-height:44px;font-size:13px;padding-inline:20px;background:transparent;color:var(--ink);border-color:var(--line-2);box-shadow:none}
+.btn-app{box-shadow:none;font-weight:750}
+.btn-app:hover{box-shadow:0 8px 28px -16px rgba(200,245,49,.5)}
+.hero{background:transparent;padding:64px 0 24px;overflow:clip}
+.hero::before{opacity:.35}
+.hero-fx{opacity:.2}
+.hero-grid{grid-template-columns:.95fr 1.05fr;gap:32px;min-height:540px}
+.hero-badge{background:transparent;padding:0;border:0;gap:12px;color:var(--muted);font-size:11px;font-weight:500}
+.hero-badge b{padding:0;background:transparent;color:var(--lime);font-size:10px;letter-spacing:.12em}
+.hero-badge b::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-right:8px;vertical-align:middle}
+.hero h1{font-size:clamp(42px,4.6vw,64px);font-weight:750;line-height:1.04;letter-spacing:-.055em;max-width:10ch;margin-top:24px}
+.hero h1 em{padding:0;text-shadow:none;color:var(--lime)}
+.claim-second{display:block}
+.hero .lead{font-size:17px;line-height:1.65;max-width:43ch;margin-top:24px;color:var(--ink-2)}
+.hero-cta{margin-top:28px}
+.hero .btn-xl{font-size:15px;min-height:54px;padding-inline:26px}
+/* Compact, fully visible original-icon fallback when JavaScript is disabled. */
+.phone .module-home{padding:16px 14px}
+.phone .module-heading{font-size:26px;max-width:none}
+.phone .module-launch-grid{gap:18px 8px;margin-top:22px}
+.phone .module-tile .hud{--s:42px}
+.phone .module-tile>span:last-child{min-height:22px}
+/* An actual desktop silhouette, behind the interactive iPhone concept. */
+.stage{height:540px;transform:none!important;perspective:1200px;isolation:isolate}
+.stage::before{content:"";position:absolute;left:8%;right:-3%;bottom:20px;height:160px;background:radial-gradient(ellipse,rgba(200,245,49,.08),transparent 65%);filter:blur(18px);z-index:-1}
+.stage .browser{display:block;top:38px;left:-48px;right:auto;width:100%;max-width:580px;border-radius:16px;overflow:visible;transform:rotateY(-9deg) rotateX(3deg);background:#171c20;border:6px solid #242a2e;box-shadow:0 30px 70px -30px #000,0 0 0 1px #444c52}
+.browser-bar{border-radius:9px 9px 0 0;background:#121619;height:30px}
+.browser-bar i{width:6px;height:6px;background:#42494e}
+.browser-bar span{background:transparent;font-size:9px;color:#9aa2aa}
+.stage .browser::before{content:"";position:absolute;top:100%;left:42%;width:17%;height:66px;background:linear-gradient(90deg,#171b1e,#343b40 48%,#14181b);clip-path:polygon(15% 0,85% 0,100% 100%,0 100%)}
+.stage .browser::after{content:"";position:absolute;top:calc(100% + 60px);left:30%;width:42%;height:8px;border-radius:50% 50% 3px 3px;background:linear-gradient(90deg,#171c20,#42494f,#171c20);box-shadow:0 12px 20px #000}
+.stage .desk{grid-template-columns:90px minmax(0,1fr);min-height:320px;border-radius:0 0 10px 10px;background:linear-gradient(135deg,#11171b,#0b0f12)}
+.desk-side{width:90px;padding:20px 10px;font-size:9px}
+.desk-main{padding:20px 24px}
+.module-home-desktop{max-width:260px}
+.module-home-desktop .module-heading{font-size:23px;font-weight:700}
+.module-home-desktop .module-launch-grid{gap:20px 8px;margin-top:24px}
+.module-tile{color:#c3c9cd}
+.module-tile .hud{box-shadow:inset 0 0 16px rgba(200,245,49,.04);background:#151d18}
+.module-tile .hud::before{animation:none;opacity:.4}
+.module-tile .hud svg{filter:none}
+.stage .phone{left:auto;right:-12px;top:36px;width:300px;height:580px;transform:rotate(3deg) scale(.86);transform-origin:top right;background:linear-gradient(135deg,#596167,#242a2e 30%,#111619 80%,#60666a);box-shadow:0 26px 45px -12px #000,inset 0 0 0 1px #697177}
+.stage .phone .screen{background:#0b1013}
+.stage .orbit,.hero .float-card{display:none}
+.stage .app-top{padding-block:5px 2px}
+.stage .app-top img{width:125px}
+.discover-preview .deck{height:250px}
+.discover-preview .deck-actions{margin-top:18px}
+.discover-preview .deck-btn{width:56px;height:56px}
+.discover-preview .card{background:linear-gradient(140deg,#1b2528,#101619);border-color:#303b3d;box-shadow:0 10px 30px -15px #000}
+.discover-card-art .hud{box-shadow:inset 0 0 20px rgba(200,245,49,.06),0 0 25px -14px rgba(200,245,49,.4)}
+.discover-preview .stamp{font-size:28px}
+.discover-preview .cname{font-size:18px;line-height:1.12}
+.discover-preview .cwhat{font-size:10px}
+.discover-preview .card-meta{font-size:9px;padding-top:6px}
+.discover-preview .app-h b{font-size:13px}
+.discover-tray{padding-top:0}
+.discover-reset{min-height:56px}
+.preview-caption{display:flex;justify-content:flex-end;align-items:center;gap:10px;font-size:11px;color:var(--muted);margin-top:4px}
+.preview-caption>span{border:1px solid var(--line-2);padding:3px 8px;border-radius:5px;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#c5cbd0}
+.newsletter{padding:20px 0 36px;scroll-margin-top:90px}
+.nl-box{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;padding:36px 40px;border:1px solid #2c362a;border-radius:24px;background:radial-gradient(ellipse at 0 0,rgba(200,245,49,.055),transparent 65%),#0d1215;box-shadow:none}
+.nl-copy .h2{font-size:clamp(26px,2.4vw,34px);font-weight:700;letter-spacing:-.04em;line-height:1.12;margin-top:12px}
+.nl-copy .lead{font-size:15px;line-height:1.6;margin-top:14px;max-width:39ch}
+.nl-copy .kicker{font-size:10px;letter-spacing:.16em}
+.nl-field input{background:#080c0f;border:1px solid #343d42;border-radius:12px;color:var(--ink);padding:16px;font-size:14px;min-height:54px}
+.nl-field input::placeholder{color:#a5aeb6;opacity:1}
+.nl-form .btn{border-radius:12px;padding-inline:18px;font-size:13px;min-height:54px}
+.consent{font-size:12.5px;line-height:1.65;margin-top:14px;color:#bac2c9}
+.consent input{width:18px;height:18px}
+.form-status{font-size:12px;color:#a9b3bb;line-height:1.6}
+.footer{padding:20px 0;background:#080a0c;border-top:1px solid var(--line)}
+.footer .disclaimer{color:#a3adb4;font-size:11px}
+.footer :focus-visible{outline-color:var(--lime)}
+@media(max-width:1100px) and (min-width:761px){.shell{width:calc(100% - 48px)}.hero-grid{gap:24px;grid-template-columns:1fr 1fr}.hero h1{font-size:52px}.stage .phone{right:-12px}.desk-side{display:none}.nl-box{gap:28px;padding:28px}.form-row{grid-template-columns:1fr}.hero-badge{flex-wrap:wrap}}
+/* On phones the signup comes before the concept: no long mockup detour. */
+@media(max-width:760px){
+ .shell{width:calc(100% - 40px)}
+ .lp-head{padding:14px 0}.lp-logo{width:190px}.lp-cta{padding-inline:12px;font-size:11px;min-height:40px}.lp-cta svg{display:none}
+ main{display:flex;flex-direction:column}
+ .hero,.hero-grid{display:contents}.hero::before,.hero-fx{display:none}
+ .hero-copy{order:1;width:calc(100% - 40px);margin:28px auto 24px}
+ .hero-badge{font-size:10px;gap:8px}.hero-badge b{font-size:9px}
+ .hero h1{font-size:clamp(39px,10.6vw,60px);max-width:12ch;margin-top:18px;line-height:1.06;letter-spacing:-.05em}
+ .hero .lead{font-size:14px;line-height:1.65;max-width:40ch;margin-top:18px}
+ .hero-cta{margin-top:20px}.hero-cta .btn{flex:0 1 auto;min-height:48px;font-size:13px;padding-inline:22px}
+ .newsletter{order:2;padding:0 0 24px;scroll-margin-top:78px}
+ .nl-box{grid-template-columns:1fr;gap:20px;padding:24px;border-radius:20px}
+ .nl-copy .h2{font-size:27px;max-width:21ch}.nl-copy .lead{font-size:14px;margin-top:10px}
+ .form-row{grid-template-columns:1fr}.nl-form .btn{width:100%;font-size:14px}
+ .consent{font-size:12.5px}.form-status{font-size:12px}
+ .stage{order:3;width:calc(100% - 40px);max-width:600px;margin:8px auto 0;height:500px}
+ .stage .browser{top:36px;right:auto;left:0;width:90%;transform:rotateY(-8deg);border-width:4px}
+ .stage .desk{grid-template-columns:minmax(0,1fr);min-height:260px}.desk-side{display:none}.desk-main{padding:18px 12px}.module-home-desktop .module-heading{font-size:20px}.module-home-desktop .module-launch-grid{gap:14px 4px}.module-tile{font-size:8px}.module-tile .hud{--s:36px}.module-tile>span:last-child{min-height:20px}
+ .stage .phone{top:10px;right:0;left:auto;transform:rotate(2deg) scale(.84);transform-origin:top right;height:580px}
+ .preview-caption{order:4;justify-content:center;flex-wrap:wrap;margin:0 auto 28px;gap:6px;font-size:10px}
+ .footer{padding:14px 0}.footer .disclaimer{gap:6px;flex-direction:column;align-items:flex-start}.footer nav{gap:24px}
+}
+@media(max-width:380px){.lp-logo{width:155px}.lp-cta{font-size:10px;padding-inline:10px}.hero-badge{flex-wrap:wrap}.nl-box{padding:20px}.stage .phone{right:-4px}.hero h1{font-size:38px}}

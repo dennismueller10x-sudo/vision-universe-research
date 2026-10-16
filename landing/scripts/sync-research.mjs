@@ -29,13 +29,13 @@ await writeFile(resolve(root,'reference/index.html'),`<!doctype html><html lang=
 // Replace only the owned Hero/symbol snapshot; all newsletter configuration stays intact.
 let landing=await readFile(resolve(root,'index.html'),'utf8');
 const adapted=timelessHero(local(hero).replaceAll('../assets/','./assets/'))
-  .replace(/<span class="hero-badge">[\s\S]*?<\/span>/,'<span class="hero-badge"><b>App</b> bald verfügbar</span>')
-  .replace(/<h1>[\s\S]*?<\/h1>/,'<h1 id="hero-title">Investieren mit <em>Weitblick.</em> Bald in einer&nbsp;App.</h1>')
-  .replace(/<p class="lead">[\s\S]*?<\/p>/,'<p class="lead">Vision Universe bündelt Aktienresearch in einer App. Bald verfügbar.</p>')
-  .replace(/<div class="hero-cta">[\s\S]*?<\/div>/,'<div class="hero-cta"><a class="btn btn-app btn-xl" href="#newsletter">Zum App-Start informiert werden <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>')
+  .replace(/<span class="hero-badge">[\s\S]*?<\/span>/,'<span class="hero-badge"><b>Vision Universe</b> App in Entwicklung</span>')
+  .replace(/<h1>[\s\S]*?<\/h1>/,'<h1 id="hero-title">Investieren mit <em>Weitblick.</em> <span class="claim-second">Alles in einer App.</span></h1>')
+  .replace(/<p class="lead">[\s\S]*?<\/p>/,'<p class="lead">Aktien entdecken. Zusammenhänge verstehen. Vision Universe bringt deine Research-Werkzeuge an einen Ort. Die App entsteht gerade.</p>')
+  .replace(/<div class="hero-cta">[\s\S]*?<\/div>/,'<div class="hero-cta"><a class="btn btn-app btn-xl" href="#newsletter">Newsletter abonnieren <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>')
   .replace(/\s*<ul class="hero-checks">[\s\S]*?<\/ul>/,'')
   .replace('<section class="hero" id="hero">','<section class="hero" id="hero" aria-labelledby="hero-title">')
-  .replace(/\n<\/section>$/,'\n  <p class="shell preview-caption">Modulvorschau · App bald verfügbar.</p>\n</section>');
+  .replace(/\n<\/section>$/,'\n  <p class="shell preview-caption"><span>Konzeptansicht</span> Ein Ausblick auf unsere Produktwelt.</p>\n</section>');
 landing=landing.replace(/<!-- RESEARCH-SYMBOLS:START -->[\s\S]*?<!-- RESEARCH-SYMBOLS:END -->/,`<!-- RESEARCH-SYMBOLS:START -->\n${presentationSymbols(symbols)}\n<!-- RESEARCH-SYMBOLS:END -->`)
  .replace(/<!-- RESEARCH-HERO:START -->[\s\S]*?<!-- RESEARCH-HERO:END -->/,`<!-- RESEARCH-HERO:START -->\n${adapted}\n<!-- RESEARCH-HERO:END -->`);
 await writeFile(resolve(root,'index.html'),landing);

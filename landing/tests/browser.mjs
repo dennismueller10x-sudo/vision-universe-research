@@ -76,6 +76,22 @@ try{
     await page.goto(base+'/ready/newsletter/bestaetigt/');assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.equal(await page.locator('main button,main input').count(),0);
     await context.close();
   }
+  // Keep the pending and rejected states readable without a real provider call.
+  await mkdir(resolve(screenshots,'redesign'),{recursive:true});
+  for(const [name,width] of [['desktop',1440],['iphone',390]]){
+    const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'});const pending=await context.newPage();let release;
+    const response=new Promise(r=>{release=r});
+    await pending.route('**/api/newsletter/subscribe',async route=>{await response;await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({message:'Die Bestätigungsmail konnte nicht gesendet werden. Deine Anmeldung ist nicht bestätigt.'})});});
+    await pending.goto(base+'/ready/');await pending.locator('#email').fill('synthetic@example.test');await pending.locator('#consent').check();await pending.locator('button[type=submit]').click();
+    await pending.waitForFunction(()=>document.querySelector('#newsletter-form').getAttribute('aria-busy')==='true');
+    assert.equal(await pending.locator('button[type=submit]').isDisabled(),true);assert.equal(await pending.locator('button[type=submit]').innerText(),'Wird geprüft …');
+    await pending.locator('#newsletter').scrollIntoViewIfNeeded();
+    await pending.screenshot({path:resolve(screenshots,'redesign','state-pending-'+name+'.png')});
+    release();await pending.waitForFunction(()=>document.querySelector('button[type=submit]').textContent==='Anmeldung fehlgeschlagen');
+    assert.equal(await pending.locator('#newsletter-form').getAttribute('aria-busy'),null);
+    await pending.screenshot({path:resolve(screenshots,'redesign','state-error-'+name+'.png')});
+    assert.equal(await pending.evaluate(()=>document.documentElement.scrollWidth),width);await context.close();
+  }
   const page=await browser.newPage();
   await page.route('**/api/newsletter/subscribe',route=>route.abort());
   await page.goto(base+'/ready/');await page.locator('#email').fill('qa@example.test');await page.locator('#consent').check();await page.locator('button[type=submit]').click();
