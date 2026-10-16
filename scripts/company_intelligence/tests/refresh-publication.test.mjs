@@ -33,9 +33,9 @@ const wf=loadYamlFile(fileURLToPath(new URL('../../../.github/workflows/company-
 const steps=wf.jobs.refresh.steps,deploy=steps.find(s=>s.id==='deploy_live');
 
 test('workflow: a cleanly read closed gate ends deploy_live before any dispatch, live check or rollback trigger',()=>{
- const run=deploy.run,check=run.indexOf('refresh-publication.mjs closed'),dispatch=run.indexOf('gh workflow run pages-release.yml');
+ const run=deploy.run,check=run.indexOf('refresh-publication.mjs closed'),dispatch=run.indexOf('refresh-dispatch-wait.mjs');
  assert.ok(check>=0,'Gate-Pruefung fehlt');
- assert.ok(check<dispatch&&dispatch<run.indexOf("throw Error('PRODUCTION_PUBLICATION_SLO_FAILED')"),'Gate-Pruefung vor Dispatch und SLO-Warten');
+ assert.ok(dispatch>0&&check<dispatch&&dispatch<run.indexOf('refresh-live-verify.mjs'),'Gate-Pruefung vor Dispatch/Warten (refresh-dispatch-wait.mjs) und Live-Verifikation');
  assert.match(run,/if node scripts\/company_intelligence\/refresh-publication\.mjs closed; then\n[^\n]*\n\s*exit 0\n\s*fi\n/,'nur der GATE_CLOSED-Zweig endet erfolgreich');
  assert.equal((run.match(/exit 0/g)||[]).length,1);
  for(const k of ['VU_HISTORY_S3_ENDPOINT','VU_HISTORY_S3_BUCKET','VU_HISTORY_S3_REGION','VU_HISTORY_S3_ACCESS_KEY_ID','VU_HISTORY_S3_SECRET_ACCESS_KEY'])

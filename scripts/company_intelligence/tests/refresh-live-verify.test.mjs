@@ -201,7 +201,7 @@ test('Workflow: Deploy-Verify ruft die begrenzte Verifikation statt refresh-qa -
  assert.ok(deploy && rollback);
  assert.match(deploy.run, /node scripts\/company_intelligence\/refresh-live-verify\.mjs --out "\$RUNNER_TEMP\/ci-refresh\/live-qa\.json"/);
  assert.doesNotMatch(deploy.run, /refresh-qa\.mjs/, 'keine ungeschuetzte Einmal-QA mehr');
- const verify = deploy.run.indexOf('refresh-live-verify.mjs'), observe = deploy.run.indexOf('refresh-run.mjs observe'), slo = deploy.run.indexOf('PRODUCTION_PUBLICATION_SLO_FAILED');
+ const verify = deploy.run.indexOf('refresh-live-verify.mjs'), observe = deploy.run.indexOf('refresh-run.mjs observe'), slo = deploy.run.indexOf('refresh-dispatch-wait.mjs'); // Dispatch und Warten auf die Auslieferung (frueher inline, SLO-Fehler jetzt im Skript)
  assert.ok(slo >= 0 && slo < verify && verify < observe);
  assert.equal(deploy['continue-on-error'], undefined, 'Fehler der Verifikation muss den Schritt rot machen');
  assert.equal(deploy.if, 'inputs.verification != true');
@@ -217,7 +217,10 @@ test('Workflow: Jobstart wird vor allen langen Schritten festgehalten (Frist des
 test('Workflow: Rollback bleibt fail-closed und unveraendert (sofort bei Fehlschlag des Deploy-/Verify-Schritts)', () => {
  assert.equal(rollback.if, "failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true");
  assert.ok(steps.indexOf(rollback) > steps.indexOf(deploy));
- assert.match(rollback.run, /refresh-run\.mjs rollback \|\| true/);
+ // Rollback jetzt nur bei noch AVAILABLE-Gate (kein Doppel-Rollback nach dem Pages-Handler) und mit CAS-Argument; disable/OFF-Dispatch unveraendert
+ assert.match(rollback.run, /if node scripts\/company_intelligence\/pages-rollback-decision\.mjs --refresh; then/);
+ assert.match(rollback.run, /refresh-run\.mjs rollback "\$\{args\[@\]\}" \|\| true/);
+ assert.match(rollback.run, /--expect-generation "\$gen"/);
  assert.match(rollback.run, /production-release\.mjs disable \|\| true/);
  assert.match(rollback.run, /gh workflow run pages-release\.yml --ref main -f company_intelligence_off=true/);
 });
@@ -227,7 +230,7 @@ test('Workflow: ADR-005 (Eingaben nur ueber env), Rechte, Timeout und Passwortsc
  assert.equal(deploy.env.RESEARCH_ACCESS_PASSWORD, '${{ secrets.RESEARCH_ACCESS_PASSWORD }}');
  assert.equal(deploy.env.NODE_PATH, '/tmp/ci-refresh/node_modules');
  assert.deepEqual(wf.permissions, {contents: 'read', actions: 'write'});
- assert.equal(wf.jobs.refresh['timeout-minutes'], 60);
+ assert.equal(wf.jobs.refresh['timeout-minutes'], 100); // 60 -> 100: Wartefrist fuer serielle Pages-Laeufe (refresh-dispatch-wait.test.mjs rechnet nach)
  const upload = steps.find(s => String(s.uses).startsWith('actions/upload-artifact') && /health/.test(String(s.with?.name)));
  assert.match(upload.with.path, /live-qa\.json\.verify\.json/);
  assert.match(upload.with.path, /live-qa\.json\n/);
