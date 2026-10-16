@@ -430,8 +430,12 @@ if (!args["no-web"] && !DRY) {
     }
     console.log("4/5  Website-Icons fuer Titel ohne Commons-Logo oder mit breitem Schriftzug …");
     /* Ein breiter Schriftzug (NVIDIA 5:1) wird im Quadrat winzig. Hat die
-       Website ein quadratisches Symbol, geht das vor. */
-    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2 && c.via !== "KURATIERT").map(([s]) => s));
+       Website ein quadratisches Symbol, geht das vor - aber nur, solange der
+       Schriftzug noch nicht gesichtet ist. Ein freigegebenes Logo bleibt: Die
+       breite Kachel zeigt es in voller Breite, und ein Tausch nahm es bis zur
+       naechsten Sichtpruefung vom Netz (QCOM bekam so das React-Icon der Website). */
+    const gesichtet = readJson(join(root, "discover", "config", "logo-reviewed.json"), { symbols: {} }).symbols || {};
+    const breit = new Set(Object.entries(credits).filter(([s, c]) => c.ratio && c.ratio > 2.2 && c.via !== "KURATIERT" && gesichtet[s] !== c.sha1).map(([s]) => s));
     const ohne = universe.filter((r) => !files[r.symbol] || breit.has(r.symbol)).slice(0, LIMIT);
     console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
