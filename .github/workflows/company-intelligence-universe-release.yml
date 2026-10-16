@@ -4,14 +4,14 @@ on:
     inputs:
       mode:
         type: choice
-        options: [activate, rollback, health, refreeze]
+        options: [activate, rollback, health, refreeze, restore-legacy]
         default: activate
       scaling_run:
         description: 'Successful isolated full-universe refresh run ID (required for activate, unused otherwise)'
         type: string
         required: false
       expect_generation:
-        description: 'Optional refreeze guard: exact current legacy GOOD generation'
+        description: 'refreeze: optional guard (exact current legacy GOOD generation). restore-legacy: REQUIRED, exact generation of the frozen rollback to restore as legacy GOOD'
         type: string
         required: false
 permissions:
@@ -48,11 +48,20 @@ jobs:
             echo "::error::scaling_run (numeric run ID) is required for mode=activate"
             exit 1
           fi
+      - name: Require expect_generation for restore-legacy (fail closed)
+        if: inputs.mode == 'restore-legacy'
+        env:
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          if ! [[ "$EXPECT_GENERATION" =~ ^[0-9a-f]{24}$ ]]; then
+            echo "::error::expect_generation (24 lowercase hex characters) is required for mode=restore-legacy"
+            exit 1
+          fi
       - uses: actions/checkout@v4
         with:
-          fetch-depth: ${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}
+          fetch-depth: ${{ (inputs.mode == 'health' || inputs.mode == 'refreeze' || inputs.mode == 'restore-legacy') && 1 || 0 }}
       - uses: actions/checkout@v4
-        if: inputs.mode != 'health' && inputs.mode != 'refreeze'
+        if: inputs.mode != 'health' && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-identities
@@ -67,7 +76,7 @@ jobs:
         with:
           node-version: '22'
       - name: Browser and policy contracts
-        if: inputs.mode != 'health' && inputs.mode != 'refreeze'
+        if: inputs.mode != 'health' && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         run: |
           node --test scripts/company_intelligence/tests/*.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_universe_*.py'
@@ -100,7 +109,7 @@ jobs:
           node scripts/company_intelligence/universe-browser-qa.mjs --consumer "$RUNNER_TEMP/universe-release/first/consumer" --sample "$RUNNER_TEMP/universe-release/evidence/sample.json" --out "$RUNNER_TEMP/universe-release/evidence/browser.json"
       - name: Preserve 46 rollback, verify full R2 consumer and activate eligible gate
         id: activation
-        if: inputs.mode != 'refreeze'
+        if: inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         env:
           RELEASE_MODE: ${{ inputs.mode }}
         run: node scripts/company_intelligence/universe-release.mjs "$RELEASE_MODE" --temporary "$RUNNER_TEMP/universe-release" --scaling "$RUNNER_TEMP/scale-receipt/health.json"
@@ -128,9 +137,31 @@ jobs:
           for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified'])assert.strictEqual(r[k],false,'REFREEZE_PROTECTED_STATE_FLAG_NOT_FALSE:'+k);
           console.log(JSON.stringify({status:r.status,generation:r.generation,previousGeneration:r.previousGeneration}));
           NODE
+      - name: Restore legacy GOOD pointer from the verified frozen rollback
+        id: restore_legacy
+        if: inputs.mode == 'restore-legacy'
+        env:
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          set -euo pipefail
+          node scripts/company_intelligence/universe-release.mjs restore-legacy --temporary "$RUNNER_TEMP/universe-release" --expect-generation "$EXPECT_GENERATION"
+      - name: Require untouched gate, activation, universe GOOD and rollback after restore-legacy
+        if: inputs.mode == 'restore-legacy'
+        env:
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          const r=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/universe-release/evidence/release.json'));
+          assert(['RESTORED','ALREADY_PRESENT'].includes(r.status),'RESTORE_LEGACY_STATUS_UNEXPECTED');
+          if(r.status==='RESTORED')assert.equal(r.generation,process.env.EXPECT_GENERATION,'RESTORE_LEGACY_GENERATION_UNEXPECTED');
+          for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified','rollbackModified'])assert.strictEqual(r[k],false,'RESTORE_LEGACY_PROTECTED_STATE_FLAG_NOT_FALSE:'+k);
+          console.log(JSON.stringify({status:r.status,generation:r.generation,validUntil:r.validUntil||null}));
+          NODE
       - name: Deploy existing Pages and wait for exact consumer generation
         id: deployment
-        if: inputs.mode != 'refreeze'
+        if: inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         run: |
           gh workflow run pages-release.yml --ref main
           node --input-type=module <<'NODE'
@@ -178,7 +209,7 @@ jobs:
           assert.equal(health.generation,release.generation);assert.equal(health.productionState,'VERIFIED');assert.equal(health.status,'HEALTHY');
           NODE
       - name: Fail closed to immutable 46 scope on material production failure
-        if: (failure() || cancelled()) && inputs.mode != 'health' && inputs.mode != 'refreeze' && steps.activation.outcome == 'success'
+        if: (failure() || cancelled()) && inputs.mode != 'health' && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy' && steps.activation.outcome == 'success'
         run: |
           recovery_status=0
           node scripts/company_intelligence/universe-release.mjs rollback --temporary "$RUNNER_TEMP/universe-recovery" || recovery_status=$?

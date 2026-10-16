@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance,advance_financial_filing
+from collections import Counter
+from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance,advance_financial_filing,refresh_completeness,progress_health,commit_refresh_stamp,was_known_failing,MAX_KNOWN_FAILING_SHARE,MIN_FRESH_SAMPLE,MIN_FRESH_SUCCESS_RATIO
 from company_intelligence.transport import PublicHTTP,SourceError
 from company_intelligence.pipeline import Pipeline
 from company_intelligence.store import Store
@@ -137,3 +138,126 @@ class ContinuousRefreshTests(unittest.TestCase):
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/reports','type':'IR_MATERIALS','format':'Q4_REPORTS'}
             with patch.object(PublicHTTP,'get',return_value={'body':b'<html>unavailable</html>'}):
                 with self.assertRaisesRegex(SourceError,'PARSE_INVALID_JSON'):http.get(http.current_source['url'])
+
+class GlobalRefreshStampTests(unittest.TestCase):
+    OLD='2026-10-09T04:00:00Z'; NOW_='2026-10-09T12:00:00Z'
+    def verdict(self,fresh,known=0,eligible=None,**kw):
+        fresh=Counter(fresh); ok=sum(v for k,v in fresh.items() if k in ('SUCCESS','NO_CHANGE'))
+        args=dict(network=True,fresh_outcomes=fresh,known_failing=['k']*known,eligible_total=eligible if eligible is not None else max(sum(fresh.values())+known,1)*20,
+                  known_total=known,source_checked=sum(fresh.values()),source_success=ok,successes=ok or 1,
+                  deferred=0,sec_exhausted=False,sec_checked=0,sec_success=0,sec_aborted=False,fact_outcomes=Counter())
+        args.update(kw); return refresh_completeness(**args)
+    def do_run(self,store,fresh,prior,**kw):
+        complete,reasons=self.verdict(fresh,**kw)
+        health=progress_health(prior,self.NOW_,Counter({'IR_FEED':fresh.get('SUCCESS',0)}),0,False,complete,reasons)
+        store.set_state('continuousRefresh',health)
+        return commit_refresh_stamp(store,health,self.NOW_,complete),complete
+    def test_partial_failure_keeps_stamp_but_saves_progress(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                prior={'lastSuccessfulRefresh':self.OLD,'lastSuccessfulNewsRefresh':self.OLD}
+                _,complete=self.do_run(store,{'SUCCESS':1,'TEMPORARY_FAILURE':1},prior)
+                self.assertFalse(complete);saved=store.state('continuousRefresh',{})
+                self.assertEqual(saved['lastSuccessfulRefresh'],self.OLD);self.assertEqual(saved['lastSuccessfulNewsRefresh'],self.NOW_)
+                self.assertEqual(saved['lastAttempt'],self.NOW_);self.assertFalse(saved['lastRefreshComplete'])
+                self.assertTrue(saved['incompleteReasons'][0].startswith('SOURCE_FAILURE_RATE:1/2'))
+            finally:store.close()
+    def test_all_ok_updates_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                _,complete=self.do_run(store,{'SUCCESS':2,'NO_CHANGE':1},{'lastSuccessfulRefresh':self.OLD})
+                self.assertTrue(complete);self.assertEqual(store.state('continuousRefresh',{})['lastSuccessfulRefresh'],self.NOW_)
+                again,_=self.do_run(store,{'SUCCESS':2,'NO_CHANGE':1},store.state('continuousRefresh',{}))
+                self.assertEqual(again['lastSuccessfulRefresh'],self.NOW_);self.assertEqual(again['incompleteReasons'],[])
+            finally:store.close()
+    def test_old_state_without_new_fields_and_without_stamp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                self.do_run(store,{'SUCCESS':1,'RATE_LIMITED':1},{'lastAttempt':self.OLD})
+                self.assertNotIn('lastSuccessfulRefresh',store.state('continuousRefresh',{}))
+                health,_=self.do_run(store,{'SUCCESS':1},{'lastAttempt':self.OLD})
+                self.assertEqual(health['lastSuccessfulRefresh'],self.NOW_)
+            finally:store.close()
+    def test_real_world_failure_rates_advance_the_stamp(self):
+        # Dokumentierter Prod-Lauf: 30 faellige IR-Quellen, 16 NO_CHANGE, 12 SUCCESS, 2 TEMPORARY_FAILURE.
+        self.assertTrue(self.verdict({'NO_CHANGE':16,'SUCCESS':12,'TEMPORARY_FAILURE':2})[0])
+        # Universum: 174 von 5384, davon die meisten schon im Cooldown (hier alle bekannt) -> nicht blockierend.
+        complete,reasons=self.verdict({'SUCCESS':5000,'NO_CHANGE':210},known=174,eligible=5384)
+        self.assertTrue(complete);self.assertIn('KNOWN_FAILING_SOURCES:174',reasons)
+        # Auch frisch 174 von 5384 (3,2 %) bleibt ueber der Quote.
+        self.assertTrue(self.verdict({'SUCCESS':5210,'TEMPORARY_FAILURE':174})[0])
+    def test_systemic_failures_keep_the_stamp(self):
+        self.assertFalse(self.verdict({'SUCCESS':15,'TEMPORARY_FAILURE':15})[0],'50 % frisch')
+        self.assertFalse(self.verdict({'TEMPORARY_FAILURE':30})[0],'alle fehlgeschlagen')
+        self.assertFalse(self.verdict({'SUCCESS':30},deferred=1)[0],'Anfragebudget')
+        self.assertFalse(self.verdict({'SUCCESS':30},sec_exhausted=True)[0],'SEC-Budget')
+        self.assertFalse(self.verdict({'SUCCESS':30},sec_aborted=True,sec_checked=100,sec_success=96)[0],'SEC-Abbruch')
+        self.assertFalse(self.verdict({'SUCCESS':30},sec_checked=10,sec_success=5)[0],'SEC-Quote')
+        self.assertTrue(self.verdict({'SUCCESS':30},sec_checked=100,sec_success=98)[0],'vereinzelte SEC-Fehler')
+        self.assertFalse(self.verdict({'SUCCESS':30},sec_checked=3,sec_success=2)[0],'SEC unter Mindeststichprobe: alles muss gelingen')
+        self.assertFalse(self.verdict({'SUCCESS':30},fact_outcomes=Counter({'TEMPORARY_FAILURE':1}))[0])
+        self.assertTrue(self.verdict({'SUCCESS':30},fact_outcomes=Counter({'FACTS_NOT_YET_AVAILABLE':2}))[0])
+        self.assertFalse(self.verdict({},network=False)[0]);self.assertFalse(self.verdict({},successes=0)[0])
+    def test_known_failing_sources_do_not_block_but_are_reported(self):
+        complete,reasons=self.verdict({'SUCCESS':10},known=500)
+        self.assertTrue(complete);self.assertEqual(reasons,['KNOWN_FAILING_SOURCES:500'])
+        self.assertTrue(was_known_failing({'failureCount':2},{}));self.assertTrue(was_known_failing({},{'health':'blocked'}))
+        self.assertTrue(was_known_failing({},{'health':'temporarily_failed'}));self.assertFalse(was_known_failing({'failureCount':0},{'health':'healthy'}))
+    def test_ratio_and_minimum_sample_boundaries(self):
+        n=MIN_FRESH_SAMPLE
+        self.assertEqual((n,MIN_FRESH_SUCCESS_RATIO),(5,0.8))
+        self.assertTrue(self.verdict({'SUCCESS':4,'TEMPORARY_FAILURE':1})[0],'genau 0,8 bei genau 5 geprueften')
+        self.assertFalse(self.verdict({'SUCCESS':3,'TEMPORARY_FAILURE':1})[0],'4 geprueft (<5): jede muss gelingen')
+        self.assertFalse(self.verdict({'SUCCESS':3,'TEMPORARY_FAILURE':2})[0],'0,6 < 0,8')
+        self.assertTrue(self.verdict({'SUCCESS':79,'TEMPORARY_FAILURE':21})[0]==False,'0,79 < 0,8')
+        self.assertTrue(self.verdict({'SUCCESS':80,'TEMPORARY_FAILURE':20})[0],'0,80 genau')
+        self.assertTrue(self.verdict({'SUCCESS':3,'ROBOTS_BLOCKED':1,'SOURCE_REMOVED':1,'AUTH_REQUIRED':1})[0],'Policy-terminal ausgenommen')
+        self.assertFalse(self.verdict({'SUCCESS':3,'HTTP_403_UNCLASSIFIED':1})[0],'frischer 403 zaehlt als Fehler')
+    def test_creeping_total_outage_is_blocked_even_with_sec_successes(self):
+        # Lauf N+1: alle Quellen im Cooldown (nicht faellig), nur SEC liefert Erfolge.
+        complete,reasons=self.verdict({},known=300,eligible=300,successes=20,sec_checked=20,sec_success=20)
+        self.assertFalse(complete);self.assertIn('NO_SUCCESSFUL_SOURCE',reasons);self.assertIn('KNOWN_FAILING_SHARE_TOO_HIGH:300/300',reasons)
+        # Auch ohne Share-Verletzung: bekannte Fehler, nichts geprueft, nur SEC -> Quellenseite lebt nicht.
+        complete,reasons=self.verdict({},known=10,eligible=1000,successes=20,sec_checked=20,sec_success=20)
+        self.assertFalse(complete);self.assertIn('NO_SUCCESSFUL_SOURCE',reasons)
+        # Geprueft, aber kein Quellenerfolg, SEC erfolgreich -> blockiert.
+        self.assertFalse(self.verdict({'TEMPORARY_FAILURE':2},successes=20,sec_checked=20,sec_success=20)[0])
+    def test_pure_sec_run_without_sources_in_scope_is_possible(self):
+        # Randfall: Konfiguration ohne Quellen (oder nichts faellig, nichts bekannt fehlerhaft).
+        self.assertTrue(self.verdict({},eligible=0,successes=20,sec_checked=20,sec_success=20)[0])
+        self.assertTrue(self.verdict({},eligible=40,successes=20,sec_checked=20,sec_success=20)[0],'nichts faellig, nichts bekannt fehlerhaft')
+        self.assertFalse(self.verdict({},eligible=0,successes=0)[0])
+    def test_known_failing_share_threshold(self):
+        self.assertEqual(MAX_KNOWN_FAILING_SHARE,0.5)
+        self.assertTrue(self.verdict({'SUCCESS':10},known=500,eligible=1000)[0],'genau 50 %')
+        complete,reasons=self.verdict({'SUCCESS':10},known=600,eligible=1000)
+        self.assertFalse(complete);self.assertIn('KNOWN_FAILING_SHARE_TOO_HIGH:600/1000',reasons)
+        self.assertTrue(self.verdict({'SUCCESS':5000},known=174,eligible=5384)[0],'3,2 % bleibt vollstaendig')
+    def test_fresh_failures_below_threshold_are_reported_informatively(self):
+        complete,reasons=self.verdict({'SUCCESS':28,'TEMPORARY_FAILURE':2})
+        self.assertTrue(complete);self.assertIn('SOURCE_FAILURE_RATE_INFO:2/30',reasons)
+        self.assertFalse([r for r in reasons if r.startswith('SOURCE_FAILURE_RATE:')])
+        self.assertEqual(self.verdict({'SUCCESS':30})[1],[])
+    def test_cooldown_sources_counted_before_queue_selection(self):
+        import inspect,company_intelligence.continuous_refresh as m
+        src=inspect.getsource(m.refresh)
+        self.assertLess(src.index('known_total=sum(was_known_failing'),src.index('source_queue(sources'))
+    def test_stamp_commit_is_wired_after_all_consistency_checks(self):
+        # Struktur der echten Verdrahtung in refresh(): Stempel erst nach Export, Consumer-Kandidat,
+        # Inventar und Profilpruefung, vor der Integritaetsberechnung; Fortschritt setzt ihn nie.
+        import inspect,company_intelligence.continuous_refresh as m
+        src=inspect.getsource(m.refresh); commit=src.index('commit_refresh_stamp(store')
+        for marker in ('store.export(','FULL_PRIVATE_UNIVERSE_SHRINK','generate(store,companies,consumer','module.prepare(','GERMAN_PROFILE_REGRESSION','inventory[cid]=','NON_COHORT_PRIVATE_CONTENT_CHANGED'):
+            self.assertIn(marker,src,marker);self.assertLess(src.index(marker),commit,marker)
+        self.assertLess(commit,src.index("proof={name:database_proof"));self.assertLess(commit,src.index("atomic_json(state/'latest-run.json'"))
+        self.assertEqual(src.count('commit_refresh_stamp('),1)
+        self.assertNotIn("'lastSuccessfulRefresh'",inspect.getsource(m.progress_health))
+        self.assertNotIn("lastSuccessfulRefresh",src.replace('commit_refresh_stamp',''),'refresh() setzt den Stempel nicht selbst')
+    def test_progress_never_sets_stamp_even_when_complete(self):
+        h=progress_health({'lastSuccessfulRefresh':self.OLD},self.NOW_,Counter(),0,False,True,[])
+        self.assertEqual(h['lastSuccessfulRefresh'],self.OLD)
+        self.assertEqual(commit_refresh_stamp(type('S',(),{'set_state':lambda *a:None})(),dict(h),self.NOW_,False)['lastSuccessfulRefresh'],self.OLD)
+

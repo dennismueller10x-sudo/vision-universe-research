@@ -43,7 +43,7 @@ export function runSLO(report,now=Date.now()){
 }
 /* Standalone read-only health verdict. Exit-code contract (see CONTINUOUS_REFRESH.md):
    CRITICAL -> 1; WARNING/OFF/HEALTHY -> 0; a crash of the check itself -> 2. */
-export function evaluateHealth(good,observed,production,now=Date.now()){
+export function evaluateHealth(good,observed,production,now=Date.now(),pointerState=null){
  const h=good?.health||{},off=production.state==='GATE_CLOSED';
  const goodRefresh=h.lastSuccessfulRefresh||null,build=h.lastSuccessfulConsumerBuild||null;
  const delivery=production.state==='VERIFIED'?(observed?.lastSuccessfulProductionPublication||null):null;
@@ -60,6 +60,8 @@ export function evaluateHealth(good,observed,production,now=Date.now()){
   gateState:production.gateState||null,gateReason:production.gateReason||null,
   failureStage:h.failureStage||null,failureCode:h.failureCode||null,
   failureSource:h.failureStage||h.failureCode?'GOOD_HEALTH':'NOT_RECORDED_IN_GOOD_HEALTH'};
+ // Nur zusaetzliche Felder, keine Schwellen: ohne GOOD-Zeiger (LEGACY_FALLBACK) ist die Ursache sonst nur "generation=null".
+ if(pointerState){s.goodState=pointerState;s.goodStateReason=pointerState==='GOOD'?null:pointerState==='LEGACY_FALLBACK'?'NO_LEGACY_GOOD_RESTORE_REQUIRED':'GOOD_POINTER_'+pointerState;}
  s.refreshSLO=freshness(goodRefresh,now);s.buildSLO=freshness(build,now);
  s.publicationSLO=off?'OFF':freshness(delivery,now);
  const all=[s.refreshSLO,s.buildSLO,s.publicationSLO];

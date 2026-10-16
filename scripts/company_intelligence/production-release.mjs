@@ -13,6 +13,7 @@ import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {safePublicRefresh,refreshConfig} from './refresh-approval.mjs';
 import {universeConfig} from './universe-approval.mjs';
 import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mjs';
+import {withLegacyMissingDiagnosis} from './legacy-restore.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
  const result=await publish(driver,{namespace:approval.namespace,directory});
@@ -34,9 +35,12 @@ export async function setProductionGate(driver,state){
    finally{rmSync(output,{recursive:true,force:true});}
    if(await activeNamespace(driver)!==namespace||JSON.stringify(await goodState(driver,namespace))!==JSON.stringify(good))throw Error('PRODUCTION_GOOD_CHANGED_DURING_GATE_READBACK');
   }else{
-   const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
-   if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
-   for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+   // Ohne Legacy-GOOD haengt die Freigabe an der festen 7-Tage-Baseline; ist sie abgelaufen, ist die Ursache der fehlende Zeiger.
+   await withLegacyMissingDiagnosis(driver,namespace,async()=>{
+    const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
+    if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
+    for(const asset of Object.keys(JSON.parse(raw).assets))await readAsset(driver,{namespace:approval.namespace,asset});
+   });
   }
  }
  const key=prefixFor(approval.namespace)+'gate.json',bytes=Buffer.from(JSON.stringify({schema:1,state,generation:approval.consumerGeneration,approvalId:approval.approvalId,changedAt:new Date().toISOString()}));
