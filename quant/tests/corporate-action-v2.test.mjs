@@ -224,11 +224,11 @@ test('V12: genuine high nominal price and genuine large moves are not held (no p
   assert.equal(PV.build(mv, { identity: CONFIRMED }).state, 'FULL_VALID');
 });
 
-test('V13: an undated retrospective SEC statement with two candidate days is ambiguous and does nothing', () => {
+test('V13: an undated retrospective SEC statement never normalizes (its date would come from the price)', () => {
   let raw = undeclaredReverse(series(300), 150, 10);
   raw = raw.map((b, j) => j >= 220 ? { ...b, close: b.close * 6, open: b.open * 6, adjustedClose: b.adjustedClose * 6 } : b);
   const c = PV.build(raw, { identity: CONFIRMED, secEvents: [ev({ ratio: 0.1, marketDate: null, effectiveDate: null, visibleAt: raw[260].date, confidence: 'MEDIUM' })] });
-  assert.equal(c.evidence.find((e) => e.reason === 'SEC_EVENT_UNDATED_AMBIGUOUS')?.class, 'UNKNOWN');
+  assert.equal(c.evidence.find((e) => e.reason === 'SEC_EVENT_UNDATED_NOT_NORMALIZED')?.class, 'UNKNOWN');
   assert.equal(c.normalized, 0);
 });
 
@@ -254,9 +254,9 @@ test('V15: an unverified identity yields no valid bars at all (no partial series
 const DP = await import('../../scripts/quant/lib/daily-prices.mjs');
 const payload = (bars) => ({ ticker: 'TEST', provider: 'tiingo', bars: bars.map((b) => ({ ...b, adjClose: b.adjustedClose, divCash: b.dividend })) });
 
-test('C1: daily-prices keeps the valid prefix (NaN after trValidUntil) instead of dropping the whole series', () => {
+test('C1: daily-prices fromBarsPartial keeps the valid prefix (NaN after trValidUntil) instead of dropping the whole series', () => {
   const raw = undeclaredReverse(series(400), 300, 20);
-  const d = DP.fromBars(payload(raw), { identity: CONFIRMED });
+  const d = DP.fromBarsPartial(payload(raw), { identity: CONFIRMED });
   assert.equal(d.trVerdict.confirmed, false, 'the whole-series verdict is unchanged');
   assert.equal(d.totalReturn, true); assert.equal(d.trCoverage, 'PREFIX');
   assert.equal(d.trValidUntil, raw[299].date);
@@ -265,16 +265,16 @@ test('C1: daily-prices keeps the valid prefix (NaN after trValidUntil) instead o
 });
 
 test('C2: daily-prices: fully valid series unchanged; benchmark role and missing identity stay whole-series', () => {
-  const ok = DP.fromBars(payload(series(200)), { identity: CONFIRMED });
+  const ok = DP.fromBarsPartial(payload(series(200)), { identity: CONFIRMED });
   assert.equal(ok.trCoverage, 'FULL'); assert.equal(ok.trVerdict.confirmed, true);
   const raw = undeclaredReverse(series(400), 300, 20);
-  assert.equal(DP.fromBars(payload(raw), { identity: CONFIRMED, role: 'BENCHMARK_REFERENCE' }).tr, null);
-  assert.equal(DP.fromBars(payload(raw), {}).tr, null);
+  assert.equal(DP.fromBarsPartial(payload(raw), { identity: CONFIRMED, role: 'BENCHMARK_REFERENCE' }).tr, null);
+  assert.equal(DP.fromBarsPartial(payload(raw), {}).tr, null);
 });
 
 test('C3: daily-prices with SEC evidence normalizes the confirmed split (full coverage)', () => {
   const raw = undeclaredReverse(series(400), 300, 20);
-  const d = DP.fromBars(payload(raw), { identity: CONFIRMED, secEvents: [ev({ marketDate: raw[300].date, visibleAt: raw[298].date })] });
+  const d = DP.fromBarsPartial(payload(raw), { identity: CONFIRMED, secEvents: [ev({ marketDate: raw[300].date, visibleAt: raw[298].date })] });
   assert.equal(d.trCoverage, 'FULL');
   assert.ok(Math.abs(d.tr[300] / d.tr[299] - raw[300].close / 20 / raw[299].close) < 1e-9);
 });
@@ -286,4 +286,72 @@ test('SEC E8: number words are matched whole ("one for sixty" is 1:60), share-co
   assert.ok(Math.abs(b[0].ratio - 1 / 35) < 1e-12);
   const c = SEC.filingEvents('A 1-for-1,000 reverse stock split became effective on May 2, 2012.', { form: '8-K', filedDate: '2012-05-02' })[0];
   assert.ok(Math.abs(c.ratio - 1 / 1000) < 1e-12);
+});
+
+test('C4: fromBars (used by every study today) is unchanged; a stale series gets no partial total return (review F14)', () => {
+  const raw = undeclaredReverse(series(400), 300, 20);
+  const d = DP.fromBars(payload(raw), { identity: CONFIRMED });
+  assert.equal(d.tr, null); assert.equal(d.totalReturn, false);
+  const st = series(400).map((b, j) => (j === 50 ? { ...b, dividend: null } : b));
+  const p = DP.fromBarsPartial(payload(st), { identity: CONFIRMED, asOf: '2020-01-01', maxStaleDays: 10 });
+  assert.equal(p.tr, null); assert.equal(p.trVerdict.stale, true);
+});
+
+/* ---------------- review findings (adversarial review F03-F16), fixed before any audit result ---------------- */
+
+test('R-F03: direction comes from the ratio phrase, not from "consolidated financial statements" or "reverse merger"', () => {
+  const a = SEC.filingEvents('The consolidated financial statements give retroactive effect to the 3-for-1 stock split effected on May 3, 2021.', { form: '10-Q', filedDate: '2021-08-01' })[0];
+  assert.equal(a.direction, 'FORWARD'); assert.equal(a.ratio, 3);
+  const b = SEC.filingEvents('Following the reverse merger, the Company effected a 2-for-1 stock split on May 3, 2021.', { form: '8-K', filedDate: '2021-05-04' })[0];
+  assert.equal(b.ratio, 2);
+});
+
+test('R-F06: range words only near the ratio; "minimum bid price" does not turn an effective split into a range', () => {
+  const e = SEC.filingEvents('The Company effected a one-for-ten (1-for-10) reverse stock split on May 3, 2021 to regain compliance with the Nasdaq minimum bid price requirement.', { form: '8-K', filedDate: '2021-05-03' })[0];
+  assert.equal(e.stage, 'EFFECTIVE'); assert.ok(Math.abs(e.ratio - 0.1) < 1e-12);
+});
+
+test('R-F11: "today" resolves to the filing day; after-close effectiveness is not a market date; record dates are no event dates', () => {
+  const a = SEC.filingEvents('The 1-for-20 reverse stock split became effective and the shares begin trading on a split-adjusted basis today.', { form: '8-K', filedDate: '2023-03-06' })[0];
+  assert.equal(a.marketDate, '2023-03-06');
+  const b = SEC.filingEvents('The 1-for-8 reverse stock split became effective at 5:00 p.m. Eastern Time on May 3, 2021.', { form: '8-K', filedDate: '2021-05-03' })[0];
+  assert.equal(b.marketDate, null); assert.equal(b.timing, 'POST_CLOSE'); assert.equal(b.effectiveDate, '2021-05-03');
+  const c = SEC.extractStatements('The 2-for-1 stock split will be paid to holders of record date May 20, 2022.')[0];
+  assert.equal(c ? c.effectiveDate : null, null);
+});
+
+test('R-F10: as-of views use only filings strictly before the as-of day, field by field', () => {
+  const m = SEC.mergeEvents([
+    ...SEC.filingEvents('On April 1, 2021, we effected a 1-for-10 reverse stock split.', { form: '10-Q', filedDate: '2021-05-10' }),
+    ...SEC.filingEvents('The 1-for-10 reverse stock split became effective and the shares began trading on a split-adjusted basis on April 5, 2021.', { form: '8-K', filedDate: '2021-08-01' })
+  ]);
+  assert.equal(m.length, 1);
+  assert.equal(SEC.eventAsOf(m[0], '2021-05-10'), null, 'not visible on its own filing day');
+  const v = SEC.eventAsOf(m[0], '2021-06-01');
+  assert.equal(v.marketDate, null, 'the 8-K market date filed later is not known yet');
+  assert.equal(SEC.eventAsOf(m[0], '2021-09-01').marketDate, '2021-04-05');
+});
+
+test('R-F04: small ratios need corroboration; a genuine +61 % day is not normalized by an SEC 1-for-2 event', () => {
+  const base = series(300), i = 200;
+  const raw = base.map((b, j) => (j >= i ? { ...b, close: b.close * 1.61, open: b.open * 1.61, adjustedClose: b.adjustedClose * 1.61, volume: j === i ? b.volume * 6 : b.volume } : b));
+  const c = PV.build(raw, { identity: CONFIRMED, secEvents: [ev({ ratio: 0.5, marketDate: raw[i].date, visibleAt: raw[i - 3].date })] });
+  assert.equal(c.normalized, 0);
+  assert.equal(c.evidence[0].reason, 'SEC_EVENT_SMALL_RATIO_UNCORROBORATED');
+  /* a real 1-for-2 with the share volume halving is normalized */
+  const rs = undeclaredReverse(base, i, 2);
+  assert.equal(PV.build(rs, { identity: CONFIRMED, secEvents: [ev({ ratio: 0.5, marketDate: rs[i].date, visibleAt: rs[i - 3].date })] }).normalized, 1);
+});
+
+test('R-F05: an event known only from periodic reports never normalizes', () => {
+  const raw = undeclaredReverse(series(300), 200, 20);
+  const e = ev({ marketDate: raw[200].date, visibleAt: raw[240].date, observations: [{ stage: 'EFFECTIVE', marketDate: raw[200].date, effectiveDate: null, visibleAt: raw[240].date, form: '10-Q', confidence: 'MEDIUM' }] });
+  const c = PV.build(raw, { identity: CONFIRMED, secEvents: [e] });
+  assert.equal(c.normalized, 0); assert.equal(c.hold.from, raw[200].date);
+});
+
+test('R-F09: ticker match needs an exchange/symbol context', () => {
+  const p = SEC.tickerPattern('A');
+  assert.equal(p.test('holders of Series A Preferred Stock'), false);
+  assert.equal(p.test('(NYSE: A) announced'), true);
 });

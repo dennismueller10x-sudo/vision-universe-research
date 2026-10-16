@@ -28,12 +28,15 @@
    01.06.2024 beruehrt eine Sicht zum 31.12.2022 nicht.
 
    STICHTAGSSICHT (PIT)
-     build(bars, {asOf}) rechnet nur mit Kerzen <= asOf und SEC-Belegen mit
-     visibleAt <= asOf. Ein Backtest zum Stichtag t benutzt diese Sicht -
-     oder die Endsicht, beschraenkt auf Tage <= validUntil, solange
-     observedAt jeder Ungueltigkeit nach t liegt (gleiches Ergebnis fuer
-     alle Tage vor dem Defekt: Renditen sind Verhaeltnisse, eine spaetere
-     Normalisierung aendert sie nicht).
+     build(bars, {asOf}) rechnet nur mit Kerzen <= asOf und SEC-Einreichungen
+     STRIKT vor asOf (je Einreichung eigene Felder, sec-corporate-actions.js
+     eventAsOf: ein spaeter eingereichtes Datum gilt nicht rueckwirkend).
+     Ein Backtest zum Stichtag t benutzt diese Sicht. Die Endsicht stimmt mit
+     ihr fuer alle Tage vor dem ersten Befund ueberein, AUSSER an Tagen, die
+     erst eine spaetere SEC-Einreichung normalisiert (pitHistory: PIT_REVISION
+     bzw. HOLD mit resumeFrom) - dort aendert die Normalisierung die
+     Tagesrendite des Ereignistags. Wer die Endsicht nimmt, nimmt diese
+     Revision in Kauf; sie ist je Ereignis ausgewiesen.
      pitHistory() zeigt, wo sich die Sicht spaeter aendert: eine Sperre, die
      ein spaeter eingereichter SEC-Beleg aufloest (HOLD mit resumeFrom),
      oder ein Sprung, den erst die SEC-Einreichung als Split ausweist
@@ -42,8 +45,9 @@
    QUELLE DER ENTSCHEIDUNGEN
      Corporate Actions: corporate-action-validation.js (SEC + Anbieter)
      Rekonstruktion und Sperrgruende: canonical-total-return.js (unveraendert)
-     Splitfaktoren: return-series.js#splitFactors (ADR-002) - hier keine
-     eigene Ableitung.
+     Splitfaktoren: ein bestaetigtes SEC-Ereignis wird als splitFactor-Eingang
+     in die unveraenderte Rekonstruktion gegeben; hier keine eigene
+     Faktorkette (ADR-002).
    ========================================================================= */
 (function (global) {
   "use strict";

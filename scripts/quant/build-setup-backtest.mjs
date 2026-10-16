@@ -130,7 +130,7 @@ function dailyOf(securityId, workDir, opts = {}) {
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
   const d = workingStoreFromBars(JSON.parse(readFileSync(file, "utf8")), opts);
-  return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, trCoverage: d.trCoverage || null, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
+  return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
 }
 
 function main() {
@@ -139,7 +139,7 @@ function main() {
   const files = existsSync(REPLAY) ? readdirSync(REPLAY).filter((f) => f.endsWith(".json.gz")).sort() : [];
   const loaded = files.map((f) => JSON.parse(gunzipSync(readFileSync(join(REPLAY, f))).toString("utf8")));
   const replays = [], withoutPrices = [];
-  for (const r of loaded) { const d = dailyOf(r.securityId, workDir); if (d) { r.daily = d; r.totalReturn = d.trVerdict.confirmed ? "AVAILABLE" : d.totalReturn ? "VALID_PREFIX" : "UNAVAILABLE"; replays.push(r); } else withoutPrices.push(r.ticker); }
+  for (const r of loaded) { const d = dailyOf(r.securityId, workDir); if (d) { r.daily = d; r.totalReturn = d.totalReturn ? "AVAILABLE" : "UNAVAILABLE"; replays.push(r); } else withoutPrices.push(r.ticker); }
   const F = SB.frictionFactor();
   const certification = (JSON.parse(readFileSync(join(ROOT, "quant/methodology/setup-state-v1.json"), "utf8")).requirements || {}).backtestCertification || "NOT_CERTIFIED";
 
@@ -192,13 +192,9 @@ function main() {
     const idx = new Map(spyDaily.rows.map(([d], i) => [d, i]));
     spyRet = (d0, d1) => { const a = idx.get(d0), b = idx.get(d1); return a !== undefined && b !== undefined ? (spyDaily.rows[b][3] / spyDaily.rows[a][3]) * F - 1 : null; };
   }
-  /* Teilreihen (canonical-price-validity-2.0.0): ein gueltiger Praefix rechnet bis trValidUntil mit
-     (NaN danach; SB.outcome und der Pfad werten nur gueltige Tage). Heraus faellt nur, wer gar keine
-     gueltige Gesamtrendite hat. Die 95-%-Regel oben zaehlt weiter nur vollstaendige Reihen. */
-  trQuality.validPrefix = replays.filter((r) => r.totalReturn === "VALID_PREFIX").length;
   if (allTR && trConfirmed.length < replays.length) {
-    trQuality.excluded = replays.filter((r) => r.totalReturn === "UNAVAILABLE").map((r) => ({ ticker: r.ticker, reason: r.daily.trVerdict.reason }));
-    replays.splice(0, replays.length, ...replays.filter((r) => r.totalReturn !== "UNAVAILABLE"));
+    trQuality.excluded = replays.filter((r) => r.totalReturn !== "AVAILABLE").map((r) => ({ ticker: r.ticker, reason: r.daily.trVerdict.reason }));
+    replays.splice(0, replays.length, ...trConfirmed);
   }
 
   const studies = TYPES.map((type) => {
@@ -246,8 +242,7 @@ function main() {
           const x = contractExit(obs, j, (dd) => dayIdx.get(dd), sa, e, MAX_HOLD);
           if (x.at < daily.length && tr[x.at] > 0 && tr[e] > 0) trades[x.kind].push({ ret: (tr[x.at] / tr[e]) * F - 1, days: x.at - e });
         }
-        /* Teilreihen (canonical-price-validity-2.0.0): ein Pfad nur, wenn jeder Tag einen gueltigen Wert traegt. */
-        if (e + 126 < daily.length) { let ok = tr[e] > 0; for (let k = 1; ok && k <= 126; k++) ok = tr[e + k] > 0; if (ok) for (let k = 0; k <= 126; k++) path[k].push(tr[e + k] / tr[e] - 1); }
+        if (e + 126 < daily.length) for (let k = 0; k <= 126; k++) path[k].push(tr[e + k] / tr[e] - 1);
       }
     }
 

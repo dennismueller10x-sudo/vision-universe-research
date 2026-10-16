@@ -16,6 +16,10 @@
  *
  * SEC fair access: declared User-Agent, <= 8 requests/s. Public SEC data (public domain, 17 CFR 200.80).
  *
+ * Periodic reports are read only for issuers with a held price discontinuity or a >= 10x move (candidate-driven, so
+ * absence of evidence there is not evidence of absence); their statements never normalize on their own
+ * (corporate-action-validation.js requires a dated current report).
+ *
  * Usage: node sec-collect.mjs --ciks ciks.json --out events.json [--periodic-ciks p.json] [--from 2001-01] [--to 2026-10]
  *        [--max-docs N] [--cache DIR]
  */
@@ -37,7 +41,7 @@ const PHRASES = ['"stock split"', '"reverse split"', '"share consolidation"', '"
 export const COLLECTOR_VERSION = 'sec-corporate-action-collector-1.0.0';
 
 const stats = { requests: 0, errors: 0, retries: 0, eftsQueries: 0, eftsHits: 0, universeHits: 0, filings: 0, documents: 0, documentErrors: 0, truncatedWindows: 0,
-  proxyHits: 0, periodicFilings: 0 };
+  proxyHits: 0, periodicFilings: 0, incompleteWindows: [], documentsSkippedByCap: 0 };
 let last = 0;
 async function throttle() { const wait = Math.max(0, last + 130 - Date.now()); if (wait) await new Promise((r) => setTimeout(r, wait)); last = Date.now(); }
 async function get(url, { json = false } = {}) {
@@ -46,7 +50,8 @@ async function get(url, { json = false } = {}) {
     try {
       const res = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Encoding': 'gzip, deflate' } });
       if (res.status === 404) return null;
-      if (res.status === 429 || res.status >= 500) { stats.retries++; await new Promise((r) => setTimeout(r, 2000 * (a + 1))); continue; }
+      /* SEC antwortet auf zu viele Anfragen mit 403 (nicht 429): wie 429 mit Pause wiederholen (Review F13) */
+      if (res.status === 403 || res.status === 429 || res.status >= 500) { stats.retries++; await new Promise((r) => setTimeout(r, 5000 * (a + 1))); continue; }
       if (!res.ok) { stats.errors++; return null; }
       return json ? await res.json() : await res.text();
     } catch { stats.retries++; await new Promise((r) => setTimeout(r, 1500 * (a + 1))); }
@@ -69,7 +74,7 @@ async function allHits(q, forms, start, end, extra = {}) {
   for (let from = 0; from < 10000; from += 100) {
     const d = await efts({ q, forms, dateRange: 'custom', startdt: start, enddt: end, from: String(from), ...extra });
     stats.eftsQueries++;
-    if (!d || !d.hits) break;
+    if (!d || !d.hits) { stats.incompleteWindows.push(`${q}|${forms}|${start}|${from}`); break; }
     const hits = d.hits.hits || [];
     out.push(...hits);
     const total = d.hits.total?.value ?? 0;
@@ -91,7 +96,7 @@ async function main() {
   /* cik -> candidate dates; per date at most two periodic reports filed within 200 days after it, at most eight per CIK */
   const periodic = new Map(Object.entries(args['periodic-ciks'] ? JSON.parse(fs.readFileSync(args['periodic-ciks'], 'utf8')) : {}));
   const from = args.from || '2001-01', to = args.to || new Date().toISOString().slice(0, 7);
-  const maxDocs = Number(args['max-docs'] || 60000);
+  const maxDocs = Number(args['max-docs'] || 90000);
   const inWindow = (cik, d) => { const c = ciks.get(cik); return !!c && c.windows.some(([a, b]) => d >= addDays(a, -400) && d <= (b ? addDays(b, 30) : '9999-12-31')); };
   /* 1. current reports, event-first */
   const filings = new Map(); // adsh -> {cik, form, items, filedDate, files:Set}
@@ -114,7 +119,7 @@ async function main() {
   const perCik = new Map(); let docs = 0;
   const add = (cik, evs) => { const l = perCik.get(cik) || []; l.push(...evs); perCik.set(cik, l); };
   for (const [adsh, f] of [...filings.entries()].sort((a, b) => a[1].filedDate.localeCompare(b[1].filedDate))) {
-    if (docs >= maxDocs) break;
+    if (docs >= maxDocs) { stats.documentsSkippedByCap++; continue; }
     let text = '';
     for (const file of [...f.files].sort()) {
       if (!/\.(htm|html|txt)$/i.test(file)) continue;
@@ -170,6 +175,9 @@ async function main() {
     const prox = [...(proxies.get(cik) || new Map()).values()].sort((a, b) => a.filedDate.localeCompare(b.filedDate));
     out[cik] = { events: merged, proxies: prox };
   }
+  /* Vollstaendigkeit: jede fehlende Suchseite, jedes nicht lesbare Dokument und jede Kappung wird ausgewiesen;
+     die Bereitschaft verlangt complete = true. */
+  stats.complete = stats.incompleteWindows.length === 0 && stats.documentErrors === 0 && stats.documentsSkippedByCap === 0 && stats.errors === 0;
   const body = { schema: 'sec-corporate-action-events-1.0.0', collector: COLLECTOR_VERSION, extractor: SEC.VERSION, from, to, phrases: PHRASES, currentForms: CURRENT_FORMS,
     proxyForms: PROXY_FORMS, periodicForms: PERIODIC_FORMS, userAgentDeclared: true, stats, ciks: out };
   fs.mkdirSync(path.dirname(args.out), { recursive: true });

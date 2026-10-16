@@ -150,12 +150,41 @@ async function scan(o) {
 
 /* ------------------------------------------------------------------ evaluate */
 const rank = (id) => sha(PROTOCOL.selection.seed + '|' + id);
-function secLabelWindow(secRow, date) {
-  if (!secRow) return { statements: 0 };
-  const lo = addDays(date, -365), hi = addDays(date, 365);
-  const ev = (secRow.events || []).filter((e) => { const d = e.marketDate || e.effectiveDate || e.visibleAt; return d >= lo && d <= hi; });
+const EDGAR_FROM = '2001-06-01';
+const PRICE_HOLD_CLASSES = new Set(['PRICE_DISCONTINUITY_NO_CA_EVIDENCE', 'PROBABLE_CORPORATE_ACTION', 'CONFLICTING_CORPORATE_ACTION']);
+/** SEC shares outstanding across a date, both reports within 200 days of it (independent of price and of the 8-K text). */
+function sharesAcross(shares, d) {
+  const rows = (shares || []).filter((s) => finite(s.value) && s.value > 0).map((s) => ({ at: String(s.periodEnd || s.availableAt).slice(0, 10), value: s.value })).sort((a, b) => (a.at < b.at ? -1 : 1));
+  let before = null, after = null;
+  for (const x of rows) { if (x.at < d) before = x; else if (!after) after = x; }
+  if (!before || !after || before.at < addDays(d, -200) || after.at > addDays(d, 200)) return null;
+  return after.value / before.value;
+}
+function sharesLabel(sr, q) {
+  if (sr === null || !finite(sr)) return 'NONE';
+  if (Math.abs(Math.log(sr)) < Math.log(1.25)) return 'NO_SPLIT';
+  return finite(q) && CAV.explains(1 / sr, q) ? 'CONFIRMS' : 'OTHER_CHANGE';
+}
+/** SEC statements (any stage) near a date whose ratio explains the raw move r. */
+function secNear(secRow, d, r) {
+  if (!secRow) return { any365: 0, matching: 0 };
+  const lo = addDays(d, -365), hi = addDays(d, 365);
+  const ev = (secRow.events || []).filter((e) => { const x = e.marketDate || e.effectiveDate || e.visibleAt; return x >= lo && x <= hi; });
   const px = (secRow.proxies || []).filter((p) => p.filedDate >= lo && p.filedDate <= hi);
-  return { statements: ev.length + px.length, effective: ev.filter((e) => e.stage === 'EFFECTIVE').length };
+  const matching = ev.filter((e) => { const x = e.marketDate || e.effectiveDate; const near = x ? Math.abs(Date.parse(x) - Date.parse(d)) <= 15 * 864e5 : Math.abs(Date.parse(e.visibleAt) - Date.parse(d)) <= 120 * 864e5; return near && finite(r) && CAV.explains(r, e.ratio); }).length;
+  return { any365: ev.length + px.length, matching };
+}
+/** Independent label of one intervention (protocol 2.0.0). */
+function labelIntervention(it, u, secRow, bars) {
+  if (!u.cik || it.date < EDGAR_FROM) return 'UNLABELED';
+  const i = bars.findIndex((b) => b.date >= it.date), r = i > 0 && bars[i - 1].close > 0 ? bars[i].close / bars[i - 1].close : null;
+  const q = finite(it.ratio) ? it.ratio : (finite(r) && r > 0 ? 1 / r : null);
+  const sl = sharesLabel(sharesAcross(u.shares, it.date), q), sec = secNear(secRow, it.date, r);
+  it.shares = sl; it.secMatching = sec.matching; it.secAny365 = sec.any365;
+  if (it.kind === 'NORMALIZE') return sl === 'CONFIRMS' ? 'TRUE_POSITIVE' : sl === 'NO_SPLIT' ? 'FALSE_POSITIVE' : 'UNLABELED';
+  if (sec.matching > 0 || sl === 'CONFIRMS') return 'TRUE_POSITIVE';
+  if (sl === 'NO_SPLIT' && sec.any365 === 0) return 'FALSE_POSITIVE';
+  return 'UNLABELED';
 }
 
 async function evaluate(o) {
@@ -166,10 +195,9 @@ async function evaluate(o) {
   if (CTR10.VERSION !== 'canonical-total-return-1.0.0') throw new Error('BASE_CORE_NOT_1_0_0');
   const extremeById = new Map(); for (const c of pop.extreme) { if (!extremeById.has(c.id)) extremeById.set(c.id, []); extremeById.get(c.id).push(c); }
   const highIds = new Set(pop.highIds);
-  /* in-sample exclusion (pre-registered) */
+  /* in-sample exclusion for the control categories (pre-registered) */
   const inSample = new Set([...extremeById.keys(), ...highIds]);
   scanRows.forEach((r) => { if (!r.missing && r.pref12 && (r.pref12.reason === 'SPLIT_SUSPECTED_UNDECLARED' || r.pref12.reason === 'PRICE_SPIKE_REVERTED')) inSample.add(U[r.i].id); });
-  /* control categories (pre-registered definitions) */
   const eligible = scanRows.filter((r) => !r.missing && !inSample.has(U[r.i].id));
   const sdSorted = eligible.filter((r) => r.f.medianClose >= 1 && r.f.n >= 250).map((r) => r.f.sd).sort((a, b) => a - b);
   const sdCut = sdSorted.length ? sdSorted[Math.floor(sdSorted.length * 0.9)] : Infinity;
@@ -188,34 +216,24 @@ async function evaluate(o) {
     BANKRUPTCY_DISTRESS: (r) => U[r.i].delisted && U[r.i].delistClass === 'DEREGISTRATION_WITH_DISTRESS',
     SYMBOL_CHANGE: (r) => symbolChange(r.i)
   };
-  const control = {}; const controlIdx = new Map();
+  const control = {}, controlIdx = new Map();
   for (const [k, fn] of Object.entries(CAT)) {
     const pool = eligible.filter(fn).sort((a, b) => (rank(U[a.i].id) < rank(U[b.i].id) ? -1 : 1));
     control[k] = { pool: pool.length, members: pool.slice(0, PROTOCOL.selection.perCategory).map((r) => r.i) };
     control[k].members.forEach((i) => { if (!controlIdx.has(i)) controlIdx.set(i, []); controlIdx.get(i).push(k); });
   }
-  const rsEvents = [];
-  eligible.forEach((r) => {
-    const u = U[r.i], row = u.cik && secByCik[u.cik]; if (!row) return;
-    for (const e of row.events || []) {
-      const an = e.marketDate || e.effectiveDate; if (e.stage !== 'EFFECTIVE' || !(e.ratio <= 0.5) || !an) continue;
-      if (an < u.firstBar || an > (u.listing.endDate || '9999-12-31')) continue;
-      rsEvents.push({ i: r.i, key: u.id + '|' + an + '|' + e.ratio, anchor: an, ratio: e.ratio, provenanceHash: e.provenanceHash });
-    }
-  });
-  rsEvents.sort((a, b) => (rank(a.key) < rank(b.key) ? -1 : 1));
-  const rsSample = rsEvents.slice(0, PROTOCOL.selection.eventsPerEventCategory);
-  const rsByI = new Map(); rsSample.forEach((e) => { if (!rsByI.has(e.i)) rsByI.set(e.i, []); rsByI.get(e.i).push(e); });
 
-  /* main loop */
   const M = { segments: 0, bars: 0, validBars: { main_1_0_0_wholeSeries: 0, pr721_1_2_0_wholeSeries: 0, v4_1_2_0_prefix: 0, v2_withoutSec: 0, v2: 0 },
-    histories: { wholeSeriesRejected_1_2_0: 0, ofThoseRetainedAsPrefix_v2: 0, retainedBarsFromRejectedHistories_v2: 0, wholeSeriesRejected_1_0_0: 0, ofThoseRetainedAsPrefix_v2_vs_main: 0 },
+    histories: { wholeSeriesRejected_1_2_0: 0, ofThoseRetainedAsPrefix_v2: 0, retainedBarsFromRejectedHistories_v2: 0, wholeSeriesRejected_1_0_0: 0, ofThoseRetainedAsPrefix_v2_vs_main: 0, retainedBarsFromRejectedHistories_v2_vs_main: 0 },
     v2States: {}, holdsByEvidenceClass: {}, holdsByReason: {}, quarantineByReason: {}, evidenceByClass: {}, evidenceByReason: {}, normalizedEvents: 0, normalizedSegments: 0, invalidBars: 0,
-    newlyHeldBars_v2_vs_main: 0, unresolved10xInsideValid: { UP: 0, DOWN: 0, total: 0, secExplainedAndNormalized: 0 },
-    providerAgreement: { secEffectiveMatchedToProviderFactor: 0, secEffectiveConflictingProviderFactor: 0, secEffectiveNormalizedProviderMissing: 0, secEffectiveNotObserved: 0, secEffectiveOutsideSeries: 0, secEffectiveAmbiguousOrWeak: 0 },
-    pit: { holdsChecked: 0, leakage: 0, prefixReturnMismatch: 0, revisionsHold: 0, revisionsUnadjusted: 0, invalidRangesObservedNextSession: 0 },
+    barsNewlyHeld_v2_vs_main: 0, unresolved10xInsideValid: { UP: 0, DOWN: 0, total: 0, normalizedBySec: 0 },
+    providerAgreement: { secEffectiveMatchedToProviderFactor: 0, secEffectiveConflictingProviderFactor: 0, secEffectiveNormalizedProviderMissing: 0, secEffectiveNotObserved: 0, secEffectiveOutsideSeries: 0, secEffectiveUndatedOrPeriodicOnly: 0, secEffectiveSmallRatioUncorroborated: 0 },
+    extractorVsProvider: { providerSplitsSince2002WithCik: 0, foundDated: 0, foundUndated: 0, missed: 0 },
+    pit: { segmentsChecked: 0, viewsChecked: 0, barsAfterAsOf: 0, holdObservedAfterAsOf: 0, evidenceVisibleNotBeforeAsOf: 0, returnMismatchOutsideRevisions: 0, revisionsHold: 0, revisionsUnadjusted: 0, invalidRangesObservedNextSession: 0 },
     secCoverage: { segmentsWithCik: 0, segmentsWithSecEvents: 0, segmentsWithEffectiveEvents: 0 } };
-  const privCases = [], privHigh = [], privControl = [], privHolds = [];
+  const holdLabels = { TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, UNLABELED: 0, byClass: {} }, normLabels = { TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, UNLABELED: 0, sharesNone: 0 };
+  const fnEvents = { total: 0, evaluable: 0, handled: 0, held: 0, falseNegatives: 0, inSample: { evaluable: 0, falseNegatives: 0 }, outOfSample: { evaluable: 0, falseNegatives: 0 }, forwardReported: 0 };
+  const privCases = [], privHigh = [], privControl = [], privHolds = [], privFn = [];
   for (const r of scanRows) {
     if (r.missing) continue;
     const u = U[r.i], bars = JSON.parse(zlib.gunzipSync(fs.readFileSync(rawFile(o, r.i))).toString('utf8'));
@@ -225,7 +243,6 @@ async function evaluate(o) {
     if (secEvents.length) M.secCoverage.segmentsWithSecEvents++;
     if (secEvents.some((e) => e.stage === 'EFFECTIVE')) M.secCoverage.segmentsWithEffectiveEvents++;
     const opts = { identity: CONFIRMED, delisted: u.delisted, secEvents, shares: u.shares, cik: u.cik, cikBasis: u.cikStatus };
-    /* without SEC events the v2 view equals the scan view, except that share counts can reclassify a hold */
     const v2 = secEvents.length || (r.v0.hold && u.shares.length) ? PV.build(bars, opts) : null;
     const c2 = v2 ? compact(v2) : r.v0;
     const c10 = CTR10.reconstruct(bars, { identity: CONFIRMED, delisted: u.delisted });
@@ -235,8 +252,8 @@ async function evaluate(o) {
     M.validBars.v2_withoutSec += r.v0.validBars;
     M.validBars.v2 += c2.validBars;
     if (!r.whole12) { M.histories.wholeSeriesRejected_1_2_0++; if (c2.validBars > 0) { M.histories.ofThoseRetainedAsPrefix_v2++; M.histories.retainedBarsFromRejectedHistories_v2 += c2.validBars; } }
-    if (!c10.reconstructed) { M.histories.wholeSeriesRejected_1_0_0++; if (c2.validBars > 0) M.histories.ofThoseRetainedAsPrefix_v2_vs_main++; }
-    if (c10.reconstructed) M.newlyHeldBars_v2_vs_main += Math.max(0, bars.length - c2.validBars - c2.invalid.length);
+    if (!c10.reconstructed) { M.histories.wholeSeriesRejected_1_0_0++; if (c2.validBars > 0) { M.histories.ofThoseRetainedAsPrefix_v2_vs_main++; M.histories.retainedBarsFromRejectedHistories_v2_vs_main += c2.validBars; } }
+    if (c10.reconstructed) M.barsNewlyHeld_v2_vs_main += Math.max(0, bars.length - c2.validBars - c2.invalid.length);
     inc(M.v2States, c2.state);
     if (c2.hold) { inc(c2.hold.state === 'HOLD' ? M.holdsByReason : M.quarantineByReason, c2.hold.reason); if (c2.hold.evidenceClass) inc(M.holdsByEvidenceClass, c2.hold.evidenceClass); }
     M.invalidBars += c2.invalid.length;
@@ -249,37 +266,84 @@ async function evaluate(o) {
       else if (e.reason === 'SEC_EFFECTIVE_AND_PRICE_CONCORDANT_PROVIDER_MISSING') M.providerAgreement.secEffectiveNormalizedProviderMissing++;
       else if (e.reason === 'SEC_EVENT_NOT_OBSERVED_IN_PRICE') M.providerAgreement.secEffectiveNotObserved++;
       else if (/OUTSIDE_SERIES|AFTER_LAST_BAR/.test(e.reason)) M.providerAgreement.secEffectiveOutsideSeries++;
-      else if (/UNDATED/.test(e.reason)) M.providerAgreement.secEffectiveAmbiguousOrWeak++;
+      else if (/UNDATED|PERIODIC_ONLY/.test(e.reason)) M.providerAgreement.secEffectiveUndatedOrPeriodicOnly++;
+      else if (/SMALL_RATIO/.test(e.reason)) M.providerAgreement.secEffectiveSmallRatioUncorroborated++;
     }
     M.normalizedEvents += norm; if (norm) M.normalizedSegments++;
+    /* extractor recall against the independent provider factor (another vendor's record of the same event) */
+    if (u.cik) for (const ps of r.f.providerSplits) {
+      if (ps.date < '2002-01-01' || Math.abs(Math.log(ps.factor)) < Math.log(1.5)) continue;
+      M.extractorVsProvider.providerSplitsSince2002WithCik++;
+      const same = secEvents.filter((e) => e.stage === 'EFFECTIVE' && Math.abs(Math.log(e.ratio) - Math.log(ps.factor)) <= Math.log(1.01));
+      if (same.some((e) => { const x = e.marketDate || e.effectiveDate; return x && Math.abs(Date.parse(x) - Date.parse(ps.date)) <= 7 * 864e5; })) M.extractorVsProvider.foundDated++;
+      else if (same.some((e) => !(e.marketDate || e.effectiveDate) && Math.abs(Date.parse(e.visibleAt) - Date.parse(ps.date)) <= 400 * 864e5)) M.extractorVsProvider.foundUndated++;
+      else M.extractorVsProvider.missed++;
+    }
     /* unresolved >= 10x overnight moves inside the v2 valid range (no provider event, not normalized) */
     const normDates = new Set(c2.evidence.filter((e) => e.outcome === 'NORMALIZE').map((e) => e.eventDate));
     for (const j of r.f.jumps10) {
       if (!c2.validUntil || j.date > c2.validUntil || j.date <= c2.validFrom || c2.invalid.some((x) => x.from === j.date)) continue;
-      if (normDates.has(j.date)) { M.unresolved10xInsideValid.secExplainedAndNormalized++; continue; }
+      if (normDates.has(j.date)) { M.unresolved10xInsideValid.normalizedBySec++; continue; }
       M.unresolved10xInsideValid[j.dir]++; M.unresolved10xInsideValid.total++;
     }
-    /* PIT leakage checks on real data: the view one session before a hold is observed must not contain it, and its returns equal the final view */
-    if (v2 && (v2.hold || v2.invalidRanges.length || norm)) {
-      if (v2.hold && M.pit.holdsChecked < 400) {
-        const before = bars.filter((b) => b.date < v2.hold.observedAt);
-        if (before.length >= 2) {
-          M.pit.holdsChecked++;
-          const view = PV.build(bars, { ...opts, asOf: before[before.length - 1].date });
-          if (view.hold && view.hold.from === v2.hold.from && view.hold.observedAt === v2.hold.observedAt) M.pit.leakage++;
-          const a = PV.alignTr(v2, view.dates);
-          for (let k = 1; k < view.dates.length; k++) {
-            if (!(a[k] > 0 && a[k - 1] > 0 && view.tr[k] > 0 && view.tr[k - 1] > 0)) continue;
-            if (Math.abs((a[k] / a[k - 1]) / (view.tr[k] / view.tr[k - 1]) - 1) > 1e-9) { M.pit.prefixReturnMismatch++; break; }
-          }
+    /* PIT consistency on real data: as-of views around every hold, normalization and invalid bar */
+    if (v2 && (v2.hold || v2.invalidRanges.length || norm) && M.pit.segmentsChecked < 600) {
+      M.pit.segmentsChecked++;
+      const hist = PV.pitHistory(bars, opts, v2);
+      for (const h of hist) { if (h.state === 'HOLD') M.pit.revisionsHold++; else if (h.state === 'PIT_REVISION') M.pit.revisionsUnadjusted++; else if (h.state === 'INVALID_RANGE' && h.observedAt > h.from) M.pit.invalidRangesObservedNextSession++; }
+      const dates = bars.map((b) => b.date), prevOf = (d) => { const k = dates.findIndex((x) => x >= d); return k > 0 ? dates[k - 1] : null; };
+      const asOfs = new Set();
+      if (v2.hold) [prevOf(v2.hold.from), v2.hold.from, v2.hold.observedAt].forEach((d) => d && asOfs.add(d));
+      for (const e of v2.evidence) if (e.outcome === 'NORMALIZE' && e.eventDate) [prevOf(e.eventDate), e.eventDate, e.visibleAt, e.observedAt].forEach((d) => d && d >= dates[1] && asOfs.add(d));
+      for (const x of v2.invalidRanges) [x.from, x.observedAt].forEach((d) => d && asOfs.add(d));
+      /* a later SEC filing legitimately revises the event-day return (pitHistory); nothing else may differ */
+      const revised = (d, asOf) => hist.some((h) => (h.state === 'HOLD' || h.state === 'PIT_REVISION') && d === h.from && asOf <= h.until);
+      const fin = PV.alignTr(v2, dates);
+      for (const asOf of asOfs) {
+        const view = PV.build(bars, { ...opts, asOf }); M.pit.viewsChecked++;
+        if (view.last && view.last > asOf) M.pit.barsAfterAsOf++;
+        if (view.hold && view.hold.observedAt > asOf) M.pit.holdObservedAfterAsOf++;
+        if (view.evidence.some((e) => e.outcome === 'NORMALIZE' && e.visibleAt && e.visibleAt >= asOf)) M.pit.evidenceVisibleNotBeforeAsOf++;
+        const vt = PV.alignTr(view, dates);
+        for (let k = 1; k < dates.length && dates[k] <= asOf; k++) {
+          if (!(vt[k] > 0 && vt[k - 1] > 0 && fin[k] > 0 && fin[k - 1] > 0)) continue;
+          if (Math.abs((vt[k] / vt[k - 1]) / (fin[k] / fin[k - 1]) - 1) > 1e-9 && !revised(dates[k], asOf)) { M.pit.returnMismatchOutsideRevisions++; break; }
         }
       }
-      for (const h of PV.pitHistory(bars, opts, v2)) {
-        if (h.state === 'HOLD') M.pit.revisionsHold++; else if (h.state === 'PIT_REVISION') M.pit.revisionsUnadjusted++;
-        else if (h.state === 'INVALID_RANGE' && h.observedAt > h.from) M.pit.invalidRangesObservedNextSession++;
-      }
     }
-    if (c2.hold) privHolds.push({ segmentId: u.id, ticker: u.ticker, cik: u.cik, hold: c2.hold, v0Hold: r.v0.hold });
+    /* independent labels for every price-based hold and every normalization (whole universe) */
+    const interventions = [];
+    if (c2.hold && PRICE_HOLD_CLASSES.has(c2.hold.evidenceClass)) { const he = c2.evidence.find((e) => e.eventDate === c2.hold.from && PRICE_HOLD_CLASSES.has(e.class)); interventions.push({ kind: 'HOLD', date: c2.hold.from, class: c2.hold.evidenceClass, ratio: he ? he.ratio : null }); }
+    for (const e of c2.evidence) if (e.outcome === 'NORMALIZE') interventions.push({ kind: 'NORMALIZE', date: e.eventDate, class: e.class, ratio: e.ratio });
+    for (const it of interventions) {
+      it.label = labelIntervention(it, u, secRow, bars);
+      if (it.kind === 'HOLD') { holdLabels[it.label]++; inc(holdLabels.byClass, it.class + ':' + it.label); }
+      else { normLabels[it.label]++; if (it.shares === 'NONE') normLabels.sharesNone++; }
+    }
+    if (c2.hold) privHolds.push({ segmentId: u.id, ticker: u.ticker, cik: u.cik, hold: c2.hold, v0Hold: r.v0.hold, labels: interventions });
+    /* false negatives: share-count events (SEC XBRL, independent of price and of the 8-K text), whole universe */
+    const sh = (u.shares || []).filter((s) => finite(s.value) && s.value > 0).map((s) => ({ at: String(s.periodEnd || s.availableAt).slice(0, 10), value: s.value })).sort((a, b) => (a.at < b.at ? -1 : 1));
+    for (let k = 1; k < sh.length; k++) {
+      const a = sh[k - 1], b = sh[k], sr = b.value / a.value;
+      if (b.at <= a.at || b.at > addDays(a.at, 200) || a.at < bars[0].date || b.at > bars[bars.length - 1].date) continue;
+      if (sr >= 3) { fnEvents.forwardReported++; continue; }
+      if (sr > 1 / 3) continue;
+      fnEvents.total++;
+      const ins = inSample.has(u.id);
+      const win = bars.map((x, idx) => idx).filter((idx) => idx > 0 && bars[idx].date > a.at && bars[idx].date <= b.at);
+      if (!win.length) continue;
+      const heldIn = c2.hold && c2.hold.from > a.at && c2.hold.from <= b.at;
+      const trA = v2 ? PV.alignTr(v2, bars.map((x) => x.date)) : null;
+      let fn = false;
+      if (c2.validUntil) {
+        const fin = trA || PV.alignTr(PV.build(bars, opts), bars.map((x) => x.date));
+        for (const idx of win) { if (bars[idx].date > c2.validUntil) break; const g = fin[idx] / fin[idx - 1]; if (g > 0 && Math.log(g) >= Math.abs(Math.log(sr)) / 2) { fn = true; break; } }
+      }
+      const status = fn ? 'FALSE_NEGATIVE' : heldIn ? 'HELD' : 'HANDLED';
+      fnEvents.evaluable++; if (fn) fnEvents.falseNegatives++; else if (heldIn) fnEvents.held++; else fnEvents.handled++;
+      const grp = ins ? fnEvents.inSample : fnEvents.outOfSample; grp.evaluable++; if (fn) grp.falseNegatives++;
+      privFn.push({ segmentId: u.id, from: a.at, to: b.at, sharesRatio: r4(sr), status, inSample: ins });
+    }
     /* regression rows (private) */
     const cases = extremeById.get(u.id) || [];
     if (cases.length || highIds.has(u.id)) {
@@ -294,77 +358,65 @@ async function evaluate(o) {
         privCases.push({ key: `${u.id}|${c.month}`, in83: c.in83, v4Class: c.cls, v4Ret: c.ret, v2: { inValidRange: !!inValid, ret: r4(ret), stillExtreme: ret !== null && (ret > 1 || ret < -0.99), normalizedInMonth, heldBy } });
       }
       if (highIds.has(u.id)) privHigh.push({ segmentId: u.id, v2: { state: vv.state, validFrom: vv.validFrom, validUntil: vv.validUntil, hold: vv.hold ? { from: vv.hold.from, reason: vv.hold.reason, evidenceClass: vv.hold.evidenceClass } : null,
-        normalized: vv.evidence.filter((e) => e.outcome === 'NORMALIZE').map((e) => ({ eventDate: e.eventDate, ratio: e.ratio, class: e.class })), invalidRanges: vv.invalidRanges.map((x) => x.from) } });
+        normalized: vv.evidence.filter((e) => e.outcome === 'NORMALIZE').map((e) => ({ eventDate: e.eventDate, ratio: e.ratio, class: e.class })), invalidRanges: vv.invalidRanges.map((x) => x.from),
+        declaredSplits: r.f.providerSplits } });
     }
-    /* control set */
-    const cats = controlIdx.get(r.i), rsev = rsByI.get(r.i);
-    if (cats || rsev) {
-      const vv = v2 || PV.build(bars, opts);
-      const out = { segmentId: u.id, cik: u.cik, categories: cats || [], interventions: [], fn: [] };
-      const interventions = [];
-      if (vv.hold && ['PRICE_DISCONTINUITY_NO_CA_EVIDENCE', 'PROBABLE_CORPORATE_ACTION', 'CONFLICTING_CORPORATE_ACTION'].includes(vv.hold.evidenceClass)) interventions.push({ kind: 'HOLD', date: vv.hold.from, class: vv.hold.evidenceClass });
-      for (const e of vv.evidence) if (e.outcome === 'NORMALIZE') interventions.push({ kind: 'NORMALIZE', date: e.eventDate, class: e.class });
-      for (const it of interventions) {
-        const lab = secLabelWindow(secRow, it.date);
-        const sh = CAV.sharesAround(u.shares, it.date, null);
-        const supports = sh && (sh.ratio <= 1 / 1.5 || sh.ratio >= 1.5);
-        it.label = !u.cik ? 'UNLABELED' : lab.statements > 0 || supports ? 'TRUE_POSITIVE' : 'FALSE_POSITIVE';
-        out.interventions.push(it);
-      }
-      for (const ev of rsev || []) {
-        const ai = vv.dates.findIndex((d) => d >= ev.anchor);
-        if (!vv.validUntil || ev.anchor > addDays(vv.validUntil, 5) || ai < 0) { out.fn.push({ anchor: ev.anchor, status: vv.hold && vv.hold.from <= addDays(ev.anchor, 5) ? 'HELD' : 'OUTSIDE_VALID_RANGE' }); continue; }
-        let worst = 0;
-        for (let k = Math.max(1, ai - 2); k <= Math.min(vv.dates.length - 1, ai + 3); k++) { const g = Math.log(vv.tr[k] / vv.tr[k - 1]); if (Math.abs(g) > Math.abs(worst)) worst = g; }
-        out.fn.push({ anchor: ev.anchor, ratio: ev.ratio, worstLogGross: r4(worst), status: Math.abs(worst) > Math.abs(Math.log(ev.ratio)) / 2 ? 'FALSE_NEGATIVE' : 'HANDLED' });
-      }
-      privControl.push(out);
-    }
+    /* control categories */
+    const cats = controlIdx.get(r.i);
+    if (cats) privControl.push({ segmentId: u.id, cik: u.cik, bars: bars.length, categories: cats, interventions: interventions.map((x) => ({ ...x })) });
     if (M.segments % 1000 === 0) process.stdout.write(`[evaluate] ${M.segments}\n`);
   }
-  /* control tallies */
-  const ctl = { protocol: 'CONTROL-SET-PROTOCOL-V2.json', protocolSha256: sha(fs.readFileSync(path.join(ROOT, 'docs/data-quality/corporate-action-v2/CONTROL-SET-PROTOCOL-V2.json'))), inSampleExcluded: inSample.size, eligible: eligible.length, volatileSdCut: sdCut, categories: {} };
-  let pooledFp = 0, pooledN = 0;
+  /* tallies (protocol 2.0.0) */
+  const P = PROTOCOL.acceptance;
+  const ctl = { protocol: 'CONTROL-SET-PROTOCOL-V2.json', protocolVersion: PROTOCOL.version, protocolSha256: sha(fs.readFileSync(path.join(ROOT, 'docs/data-quality/corporate-action-v2/CONTROL-SET-PROTOCOL-V2.json'))),
+    inSampleExcluded: inSample.size, eligible: eligible.length, volatileSdCut: sdCut, categories: {} };
   for (const k of Object.keys(CAT)) {
     const rows = privControl.filter((x) => x.categories.includes(k));
-    const labelled = rows.filter((x) => x.cik);
-    const fpSeg = labelled.filter((x) => x.interventions.some((i) => i.label === 'FALSE_POSITIVE')).length;
-    const tpSeg = rows.filter((x) => x.interventions.some((i) => i.label === 'TRUE_POSITIVE')).length;
-    ctl.categories[k] = { pool: control[k].pool, sampled: rows.length, labelled: labelled.length, unlabeled: rows.length - labelled.length, segmentsWithIntervention: rows.filter((x) => x.interventions.length).length,
-      falsePositiveSegments: fpSeg, truePositiveSegments: tpSeg, falsePositiveRate: labelled.length ? r4(fpSeg / labelled.length) : null, wilson95: wilson(fpSeg, labelled.length),
-      interventionsByClass: rows.flatMap((x) => x.interventions).reduce((a, i) => inc(a, i.kind + ':' + i.class), {}) };
-    pooledFp += fpSeg; pooledN += labelled.length;
+    const labelled = rows.filter((x) => x.cik), all = rows.flatMap((x) => x.interventions);
+    const fpSeg = rows.filter((x) => x.interventions.some((i) => i.label === 'FALSE_POSITIVE')).length;
+    ctl.categories[k] = { pool: control[k].pool, sampled: rows.length, withCik: labelled.length, bars: rows.reduce((a, x) => a + x.bars, 0),
+      segmentsWithIntervention: rows.filter((x) => x.interventions.length).length, interventions: all.length,
+      labels: all.reduce((a, i) => inc(a, i.kind + ':' + i.label), {}),
+      falsePositiveSegments: fpSeg, falsePositiveRate: labelled.length ? r4(fpSeg / labelled.length) : null, wilson95: wilson(fpSeg, labelled.length),
+      interventionsPer10kBars: rows.length ? r4(all.length / (rows.reduce((a, x) => a + x.bars, 0) / 1e4)) : null };
   }
-  const uniq = new Map(); privControl.filter((x) => x.categories.length).forEach((x) => uniq.set(x.segmentId, x));
+  const uniq = new Map(); privControl.forEach((x) => uniq.set(x.segmentId, x));
   const uLab = [...uniq.values()].filter((x) => x.cik), uFp = uLab.filter((x) => x.interventions.some((i) => i.label === 'FALSE_POSITIVE')).length;
-  ctl.pooled = { distinctSegments: uniq.size, labelled: uLab.length, falsePositiveSegments: uFp, falsePositiveRate: uLab.length ? r4(uFp / uLab.length) : null, wilson95: wilson(uFp, uLab.length) };
-  const fnRows = privControl.flatMap((x) => x.fn);
-  const fnN = fnRows.filter((x) => x.status === 'FALSE_NEGATIVE' || x.status === 'HANDLED').length, fnK = fnRows.filter((x) => x.status === 'FALSE_NEGATIVE').length;
-  ctl.reverseSplitConfirmed = { pool: rsEvents.length, sampled: rsSample.length, evaluable: fnN, handled: fnN - fnK, falseNegatives: fnK, held: fnRows.filter((x) => x.status === 'HELD').length,
-    outsideValidRange: fnRows.filter((x) => x.status === 'OUTSIDE_VALID_RANGE').length, falseNegativeRate: fnN ? r4(fnK / fnN) : null, wilson95: wilson(fnK, fnN) };
-  const acc = PROTOCOL.acceptance;
-  const perCatOk = Object.values(ctl.categories).every((c) => c.falsePositiveRate === null || c.falsePositiveRate <= 0.05);
-  ctl.acceptance = { falsePositiveRatePooled: { value: ctl.pooled.falsePositiveRate, threshold: 0.02, pass: ctl.pooled.falsePositiveRate !== null && ctl.pooled.falsePositiveRate <= 0.02 },
-    falsePositiveRatePerCategory: { threshold: 0.05, pass: perCatOk }, falseNegativeRate: { value: ctl.reverseSplitConfirmed.falseNegativeRate, threshold: 0.05, pass: ctl.reverseSplitConfirmed.falseNegativeRate !== null && ctl.reverseSplitConfirmed.falseNegativeRate <= 0.05 },
-    protocolText: acc };
-  ctl.acceptance.pass = ctl.acceptance.falsePositiveRatePooled.pass && ctl.acceptance.falsePositiveRatePerCategory.pass && ctl.acceptance.falseNegativeRate.pass;
+  ctl.pooled = { distinctSegments: uniq.size, withCik: uLab.length, falsePositiveSegments: uFp, falsePositiveRate: uLab.length ? r4(uFp / uLab.length) : null, wilson95: wilson(uFp, uLab.length) };
+  const hl = holdLabels.TRUE_POSITIVE + holdLabels.FALSE_POSITIVE, nl = normLabels.TRUE_POSITIVE + normLabels.FALSE_POSITIVE;
+  ctl.holdPrecision = { ...holdLabels, labelled: hl, precision: hl ? r4(holdLabels.TRUE_POSITIVE / hl) : null, wilson95FalseShare: wilson(holdLabels.FALSE_POSITIVE, hl) };
+  ctl.normalizePrecision = { ...normLabels, labelled: nl, falseShare: nl ? r4(normLabels.FALSE_POSITIVE / nl) : null, wilson95FalseShare: wilson(normLabels.FALSE_POSITIVE, nl) };
+  ctl.falseNegatives = { ...fnEvents, falseNegativeRate: fnEvents.evaluable ? r4(fnEvents.falseNegatives / fnEvents.evaluable) : null, wilson95: wilson(fnEvents.falseNegatives, fnEvents.evaluable),
+    heldShare: fnEvents.evaluable ? r4(fnEvents.held / fnEvents.evaluable) : null };
+  ctl.secCollection = { complete: secAll.stats?.complete === true, incompleteWindows: (secAll.stats?.incompleteWindows || []).length, documentErrors: secAll.stats?.documentErrors ?? null, documentsSkippedByCap: secAll.stats?.documentsSkippedByCap ?? null };
+  ctl.pit = M.pit;
+  const pitClean = M.pit.barsAfterAsOf === 0 && M.pit.holdObservedAfterAsOf === 0 && M.pit.evidenceVisibleNotBeforeAsOf === 0 && M.pit.returnMismatchOutsideRevisions === 0;
+  const perCatOk = Object.values(ctl.categories).every((c) => c.falsePositiveRate === null || c.falsePositiveRate <= P.falsePositiveRatePerCategory);
+  ctl.acceptance = {
+    secCollectionComplete: { pass: ctl.secCollection.complete },
+    controlFalsePositiveRatePooled: { value: ctl.pooled.falsePositiveRate, threshold: P.falsePositiveRatePooled, pass: ctl.pooled.falsePositiveRate !== null && ctl.pooled.falsePositiveRate <= P.falsePositiveRatePooled },
+    controlFalsePositiveRatePerCategory: { threshold: P.falsePositiveRatePerCategory, pass: perCatOk },
+    holdPrecision: { value: ctl.holdPrecision.precision, threshold: P.holdPrecisionMin, pass: ctl.holdPrecision.precision !== null && ctl.holdPrecision.precision >= P.holdPrecisionMin },
+    normalizeFalseShare: { value: ctl.normalizePrecision.falseShare, threshold: P.normalizeFalseShareMax, pass: ctl.normalizePrecision.falseShare !== null && ctl.normalizePrecision.falseShare <= P.normalizeFalseShareMax },
+    falseNegativeRate: { value: ctl.falseNegatives.falseNegativeRate, threshold: P.falseNegativeRateMax, pass: ctl.falseNegatives.falseNegativeRate !== null && ctl.falseNegatives.falseNegativeRate <= P.falseNegativeRateMax },
+    pitConsistency: { pass: pitClean, views: M.pit.viewsChecked } };
+  ctl.acceptance.pass = Object.values(ctl.acceptance).every((x) => x.pass === true);
 
-  /* regression tallies (public, counts only; labels are joined offline against the sealed V4 case file) */
   const reg = (rows) => ({ total: rows.length, inValidRange: rows.filter((x) => x.v2.inValidRange).length, stillExtreme: rows.filter((x) => x.v2.stillExtreme).length,
     held: rows.filter((x) => x.v2.heldBy).length, normalizedInMonth: rows.filter((x) => x.v2.normalizedInMonth.length).length });
-  const pubAudit = { schema: 'corporate-action-v2-audit-1.0.0', ...runMeta(), versions: versions(), capture: { dataFingerprint: binding.dataFingerprint, securities: binding.securities },
-    sec: { collector: secAll.collector, extractor: secAll.extractor, from: secAll.from, to: secAll.to, stats: secAll.stats, ciksWithEvents: Object.keys(secByCik).length,
+  const pubAudit = { schema: 'corporate-action-v2-audit-1.1.0', ...runMeta(), versions: versions(), capture: { dataFingerprint: binding.dataFingerprint, securities: binding.securities },
+    sec: { collector: secAll.collector, extractor: secAll.extractor, from: secAll.from, to: secAll.to, stats: { ...secAll.stats, incompleteWindows: (secAll.stats?.incompleteWindows || []).length }, ciksWithEvents: Object.keys(secByCik).length,
       events: Object.values(secByCik).reduce((a, r) => a + (r.events || []).length, 0), effectiveEvents: Object.values(secByCik).reduce((a, r) => a + (r.events || []).filter((e) => e.stage === 'EFFECTIVE').length, 0),
       eventsByStage: Object.values(secByCik).flatMap((r) => r.events || []).reduce((a, e) => inc(a, e.stage), {}), eventsByConfidence: Object.values(secByCik).flatMap((r) => r.events || []).reduce((a, e) => inc(a, e.confidence), {}),
       sha256: sha(fs.readFileSync(o.sec)) },
     impact: M, regression: { extremeAll: reg(privCases), known83: reg(privCases.filter((x) => x.in83)), highLevel: { total: privHigh.length, fullValid: privHigh.filter((h) => h.v2.state === 'FULL_VALID').length,
       validPrefix: privHigh.filter((h) => h.v2.state === 'VALID_PREFIX').length, withNormalization: privHigh.filter((h) => h.v2.normalized.length).length } },
     performanceCalculated: false, calibrationRun: false };
-  const pubControl = { schema: 'corporate-action-v2-control-results-1.0.0', ...runMeta(), versions: versions(), ...ctl, performanceCalculated: false, calibrationRun: false };
+  const pubControl = { schema: 'corporate-action-v2-control-results-2.0.0', ...runMeta(), versions: versions(), ...ctl, performanceCalculated: false, calibrationRun: false };
   writeJson(path.join(o['public-dir'], 'CORPORATE-ACTION-V2-AUDIT.json'), pubAudit, true);
   writeJson(path.join(o['public-dir'], 'INDEPENDENT-DATA-CONTROL-SET-V2.results.json'), pubControl, true);
-  writeJson(path.join(o.private, 'evaluate.json'), { cases: privCases, high: privHigh, control: privControl, holds: privHolds, sec: secByCik, controlMembers: control, rsSample });
-  process.stdout.write(JSON.stringify({ impact: { validBars: M.validBars, histories: M.histories, holdsByEvidenceClass: M.holdsByEvidenceClass }, control: ctl.acceptance }) + '\n');
+  writeJson(path.join(o.private, 'evaluate.json'), { cases: privCases, high: privHigh, control: privControl, holds: privHolds, fn: privFn, sec: secByCik, controlMembers: control });
+  process.stdout.write(JSON.stringify({ impact: { validBars: M.validBars, histories: M.histories, holdsByEvidenceClass: M.holdsByEvidenceClass }, acceptance: ctl.acceptance }) + '\n');
 }
 
 /* ------------------------------------------------------------------ seal */
@@ -387,4 +439,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (!run) throw new Error('STAGE_REQUIRED');
   run(o).catch((e) => { process.stderr.write(JSON.stringify({ phase: 'CORPORATE_ACTION_V2_AUDIT', stage: o.stage, code: /^[A-Z0-9_:]+$/.test(e.message) ? e.message : 'PRIVATE_RUN_FAILURE', hint: /^[A-Za-z0-9 ,.:'()_\-/]{1,160}$/.test(e.message) ? e.message : null, stack: (e.stack || '').split('\n').slice(1, 6).map((l) => l.replace(/\(.*\/(scripts|quant)\//, '($1/')).join(' | ') }) + '\n'); process.exitCode = 1; });
 }
-export { features, compact, secLabelWindow };
+export { features, compact, sharesAcross, sharesLabel, labelIntervention };

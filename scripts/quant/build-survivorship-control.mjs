@@ -147,7 +147,7 @@ async function delistedInventory(survivorLastKeys) {
         const val = (x, j) => { const v = wk.get(x); return v && v[j] > 0 ? +v[j].toPrecision(7) : null; };
         listings.push({ id: k ? id + "#" + k : id, ticker, cls: e.cls || null, status: e.status, first: seg[0].date, last: last.date,
           segmentEnd: k < segs.length - 1, lastKey: `${last.date}|${last.close}|${last.volume}`,
-          tr: d.trVerdict.confirmed ? "TOTAL_RETURN_CONFIRMED" : d.trVerdict.coverage === "PREFIX" ? "TOTAL_RETURN_VALID_PREFIX" : "TOTAL_RETURN_REJECTED_" + d.trVerdict.reason, trBucket: d.trVerdict.bucket,
+          tr: d.trVerdict.confirmed ? "TOTAL_RETURN_CONFIRMED" : "TOTAL_RETURN_REJECTED_" + d.trVerdict.reason, trBucket: d.trVerdict.bucket,
           w0: keys[0], c: keys.map((x) => val(x, 0)), t: d.tr ? keys.map((x) => val(x, 1)) : null });
       });
       if (read % 500 === 0) log(`gelesen ${read}`);

@@ -107,7 +107,7 @@ function spyTotalReturnCheck(tr, priced) {
 const TR_STALE_DAYS = 10;
 let trRejected = [], ctrSummary = null, spyProviderTR = null, spyCtr = null;
 if (WORK) {
-  let legacy = 0, provider = 0, usable = 0, listingCuts = 0, validPrefix = 0;
+  let legacy = 0, provider = 0, usable = 0, listingCuts = 0;
   const results = [], rejectedIds = [];
   for (const T of titles) {
     const f = join(WORK, "tiingo", "daily", T.securityId + ".json");
@@ -121,19 +121,15 @@ if (WORK) {
       T.tr = d.totalReturn ? weeklyFromDaily(d.dates, d.tr, IDX, W) : null;
       T.ptr = d.providerTr ? weeklyFromDaily(d.dates, d.providerTr, IDX, W) : null;
       results.push(d.ctr);
-      /* Abgelehnt heisst weiter: die GANZE Reihe ist nicht rekonstruiert. Ein gueltiger Praefix
-         (canonical-price-validity-2.0.0) rechnet bis trValidUntil mit, danach NaN. */
-      if (!d.trVerdict.confirmed) rejectedIds.push([T.securityId, d.trVerdict.reason, d.trVerdict.lastGap || null]);
-      if (!d.trVerdict.confirmed && d.totalReturn) validPrefix++;
+      if (!d.totalReturn) rejectedIds.push([T.securityId, d.trVerdict.reason, d.trVerdict.lastGap || null]);
     } catch (e) { T.tr = null; T.ptr = null; results.push({ reconstructed: false, reason: "READ_FAILED", bucket: "REJECTED_OTHER" }); rejectedIds.push([T.securityId, "READ_FAILED", null]); }
-    /* Die 95-%-Regel zaehlt unveraendert nur vollstaendig rekonstruierte Titel. */
-    if (T.tr && results.at(-1)?.reconstructed) usable++;
+    if (T.tr) usable++;
   }
   ctrSummary = CTR.summarize(results);
   trCoverage = { titles: titles.length, withTotalReturn: usable, share: SB.round(usable / titles.length, 3), contract: CTR.VERSION, corporateActionContract: CTR.CORPORATE_ACTION_CONTRACT,
     basis: TR_BASIS, TOTAL_RETURN_CONFIRMED_BEFORE: provider, TOTAL_RETURN_RECONSTRUCTED: ctrSummary.TOTAL_RETURN_RECONSTRUCTED, TOTAL_RETURN_CONFIRMED_AFTER: usable,
     REJECTED_DIVIDEND_GAP: ctrSummary.REJECTED_DIVIDEND_GAP, REJECTED_SPLIT_GAP: ctrSummary.REJECTED_SPLIT_GAP, REJECTED_IDENTITY: ctrSummary.REJECTED_IDENTITY, REJECTED_OTHER: ctrSummary.REJECTED_OTHER,
-    reasons: ctrSummary.reasons, TOTAL_RETURN_VALID_PREFIX: validPrefix, validityContract: "canonical-price-validity-2.0.0", listingSegmentCuts: listingCuts, legacyAdjustedColumnPresent: legacy, beforeContract: MarketQuality.TR_CONTRACT_VERSION, minimumShare: 0.95 };
+    reasons: ctrSummary.reasons, listingSegmentCuts: listingCuts, legacyAdjustedColumnPresent: legacy, beforeContract: MarketQuality.TR_CONTRACT_VERSION, minimumShare: 0.95 };
   trRejected = rejectedIds.sort((a, b) => a[0].localeCompare(b[0]));
   /* SPY: dieselbe Engine, Rolle BENCHMARK_REFERENCE. */
   const spyFile = join(WORK, "tiingo", "daily", BENCHMARK.securityId + ".json");
@@ -177,7 +173,7 @@ if (DELISTED_FILE && existsSync(DELISTED_FILE)) {
     }
     let first = 0; while (first < W && !(c[first] > 0)) first++;
     let last = W - 1; while (last >= 0 && !(c[last] > 0)) last--;
-    delisted.push({ securityId: l.id, ticker: l.ticker, c, tr, trOk: l.tr === "TOTAL_RETURN_CONFIRMED" || l.tr === "TOTAL_RETURN_VALID_PREFIX", first, last, delisted: true });
+    delisted.push({ securityId: l.id, ticker: l.ticker, c, tr, trOk: l.tr === "TOTAL_RETURN_CONFIRMED", first, last, delisted: true });
   }
   delistedMeta = { file: "runner-privat", version: b.version, asOf: b.asOf, listings: (b.listings || []).length, offAxis };
   console.log("delisted listings", delisted.length, "off-axis", offAxis, secs());

@@ -2,7 +2,11 @@
   "schema": "canonical-price-validity-contract-2.0.0",
   "contract": "canonical-price-validity-2.0.0",
   "engine": "quant/engines/canonical-price-validity.js",
-  "dependsOn": { "totalReturn": "canonical-total-return-1.2.0 (unchanged; whole-series reconstruct and its reasons)", "corporateActions": "corporate-action-contract-2.0.0", "splitFactors": "return-series.js#splitFactors (ADR-002)" },
+  "dependsOn": {
+    "totalReturn": "canonical-total-return-1.2.0 (unchanged; whole-series reconstruct and its reasons)",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "splitFactors": "return-series.js#splitFactors (ADR-002)"
+  },
   "perSeriesFields": {
     "rawPrice": "input bars: open/high/low/close/volume as delivered (unadjusted)",
     "adjustedPrice": "provider adjustedClose: cross-check only, never a source",
@@ -13,7 +17,7 @@
     "quarantineHoldReason": "hold.reason (core reason or CORPORATE_ACTION_CONFLICT) and hold.evidenceClass",
     "provenance": "evidence.provenanceHash, sources (accession, form, filedDate), contract versions",
     "sourceTimestamps": "SEC stageVisibleAt per stage, evidence.visibleAt, hold.observedAt",
-    "pitVisibility": "build(bars, {asOf}) uses bars <= asOf and evidence visible <= asOf; pitHistory() lists HOLD->resume and PIT_REVISION transitions"
+    "pitVisibility": "build(bars, {asOf}) uses bars <= asOf and SEC observations filed strictly before asOf (field by field); pitHistory() lists HOLD->resume and PIT_REVISION transitions; the final view differs from an as-of view only in the event-day return of a later-filed SEC normalization"
   },
   "states": {
     "FULL_VALID": "every bar valid",
@@ -32,7 +36,8 @@
     "A consumer may use a bar at date t only if isValidOn(contract, t).",
     "Returns are ratios of valid bars; never chain across a HOLD/QUARANTINE boundary.",
     "Point-in-time decisions (eligibility, exclusion, settlement) key on observedAt, never on hold.from; a backtest at t < observedAt treats the security as available (its bars <= t are valid in the final view and identical in the as-of view).",
-    "Benchmarks keep whole-series semantics (role BENCHMARK_REFERENCE)."
+    "Benchmarks keep whole-series semantics (role BENCHMARK_REFERENCE).",
+    "Consumers obtain partial series through scripts/quant/lib/daily-prices.mjs#fromBarsPartial (opt-in); fromBars keeps the whole-series semantics."
   ],
-  "tests": "quant/tests/corporate-action-v2.test.mjs (V1-V15 validity/PIT/evidence, E1-E8 SEC extraction, C1-C3 daily-prices consumer)"
+  "tests": "quant/tests/corporate-action-v2.test.mjs (V1-V15 validity/PIT/evidence, E1-E8 SEC extraction, R-F03..R-F10 review regressions, C1-C4 daily-prices consumer)"
 }

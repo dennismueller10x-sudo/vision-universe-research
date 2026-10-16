@@ -154,11 +154,10 @@ function signalFixture(t, { spyCut = 0, spyGap = false, spyMissingDividend = fal
 test("total return on both sides: the study switches to TOTAL_RETURN and publishes the before/after comparison", (t) => {
   const s = signalFixture(t);
   assert.equal(s.returnType, "TOTAL_RETURN");
-  /* 60: der eingeschmuggelte SPY zaehlt nicht als Titel. ref_AGX traegt 1995 einen nicht
-     gemeldeten Reverse Split (exakt 25x ueber Nacht): seit corporate-action-contract-1.2.0 ist die
-     Reihe ab dort gesperrt; seit canonical-price-validity-2.0.0 (R8) rechnet der gueltige Praefix
-     davor weiter mit (vorher 59 Titel, ganze Reihe verworfen). */
-  assert.equal(s.source.titles, 60, "der eingeschmuggelte SPY zaehlt nicht als Titel");
+  /* 59: der eingeschmuggelte SPY zaehlt nicht als Titel; ref_AGX faellt seit
+     corporate-action-contract-1.2.0 wegen eines nicht gemeldeten Reverse Splits
+     (1995, exakt 25x ueber Nacht) aus der Gesamtrendite heraus. */
+  assert.equal(s.source.titles, 59, "der eingeschmuggelte SPY zaehlt nicht als Titel");
   assert.equal(s.source.spyTotalReturn.state, "PASS");
   assert.match(s.source.benchmark, /BENCHMARK_REFERENCE/);
   assert.equal(SB.studyViolations(s).length, 0, JSON.stringify(SB.studyViolations(s)));
