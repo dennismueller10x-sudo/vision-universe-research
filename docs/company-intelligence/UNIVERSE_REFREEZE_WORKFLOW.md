@@ -47,25 +47,39 @@ Zustand: `continuous-discover-top46-v1/good.json` ist `LEGACY_FALLBACK` (oder fe
 | `expect_generation` | **Pflicht**, 24 Hex-Zeichen: exakte Generation des eingefrorenen Rollbacks, die wiederhergestellt werden soll (steht in `eligible-rollback-top46-v1/good.json`, z. B. aus dem Refreeze-Lauf-Artefakt) |
 | `scaling_run` | nicht nötig |
 
-Schritte: Guard für `expect_generation` (bricht vor dem Checkout ab), Checkout (Tiefe 1), Node-/Python-Setup, `restore-legacy`, strikte Auswertung, Artefakt-Upload (`evidence/release.json`). Übersprungen: Identitäts-Checkout, Browser-Suite, Scale-Receipt, Audit, Aktivierung, Pages-Dispatch samt Wait, Live-QA und der Fail-closed-Schritt (`restore46`). Concurrency, Berechtigungen und Timeout unverändert. Auswertung: `status` ist `RESTORED` (Generation == `expect_generation`) oder `ALREADY_PRESENT`; `privateStateModified`, `activationModified`, `gateModified`, `universeGoodModified`, `rollbackModified` sind exakt `false`.
+Schritte: Guard für `expect_generation` (bricht vor dem Checkout ab), Checkout (Tiefe 1), Node-/Python-Setup, `restore-legacy`, strikte Auswertung, Artefakt-Upload (`evidence/release.json`). Übersprungen: Identitäts-Checkout, Browser-Suite, Scale-Receipt, Audit, Aktivierung, Pages-Dispatch samt Wait, Live-QA und der Fail-closed-Schritt (`restore46`). Concurrency, Berechtigungen und Timeout unverändert. Auswertung: `status` ist `RESTORED` (Generation == `expect_generation`) oder `ALREADY_PRESENT`; `privateStateModified`, `activationModified`, `gateModified`, `universeGoodModified`, `rollbackModified` sind exakt `false`. Die Flags sind **berechnet**: Vergleich der SHA-256 von `activation.json`, `gate.json`, Universe-`good.json`, Rollback-`good.json` und privatem `index.json` vor und nach der Aktion (im Evidence unter `protectedState.before/after`). Zusätzlich bricht der Befehl bei jeder Abweichung ab und baut den Zeiger zurück. Ein vorhandenes, aber abgelaufenes Legacy-GOOD ergibt `PRESENT_BUT_EXPIRED` (Exit 1), nie `ALREADY_PRESENT`.
 
 ### Verifikation vor dem Schreiben (jede Verletzung bricht ohne Schreiben ab)
 
-1. `expect_generation` vorhanden und 24 Hex; Legacy-Zeiger ist `LEGACY_FALLBACK` oder fehlt. Ein gültiges Legacy-GOOD ergibt `ALREADY_PRESENT` ohne Schreibzugriff, ein defekter Zeiger wird nie überschrieben.
+1. `expect_generation` vorhanden und 24 Hex; Legacy-Zeiger ist `LEGACY_FALLBACK` oder fehlt. Ein gültiges Legacy-GOOD (Zeiger gültig, `generatedAt` im 7-Tage-Fenster) ergibt `ALREADY_PRESENT` ohne Schreibzugriff, ein abgelaufenes `PRESENT_BUT_EXPIRED` (Exit 1, ebenfalls ohne Schreibzugriff), ein defekter Zeiger wird nie überschrieben.
 2. Aktivierung fehlt oder ist `ROLLBACK_46` (Universum nicht live).
 3. Frozen-Zeiger vorhanden und gültig (`goodState`), `previous == null`, Generation == `expect_generation`, Scope exakt 46 Titel / 45 Emittenten / 45 Inventar-Einträge (`assertLegacyScope`).
 4. `manifest.generatedAt` nicht in der Zukunft und mindestens 15 Minuten vor dem 7-Tage-Verfall (`LEGACY_RESTORE_FROZEN_EXPIRED`). Der Zeitstempel wird nie verändert oder verlängert; das wiederhergestellte GOOD erbt den Verfall des Freeze.
 5. Marker/Archiv: ein Freeze ohne `refreeze`-Marker ist der ursprüngliche; mit Marker müssen `sourceAssetsSha256`, `lineage`, `archiveKey` und das Archiv (`pointerSha256`) stimmen.
 6. Download aus leerem Verzeichnis: Downloader prüft jedes Asset per SHA-256; zusätzlich Prüfung jeder Datei auf Platte gegen das Manifest, `index.json`-Generation, `preflight`.
 
-### Schreiben und Nachlesen
+### Schreiben und Nachlesen (Slotwahl)
 
-Nutzdaten kommen in einen noch von keinem Zeiger referenzierten Legacy-Slot (`-a`/`-b`; ein Slot mit identischer Generation wird wiederverwendet, sonst der leere oder älteste). Danach ändert sich der Zeiger genau einmal per CAS (`commitGood` mit `expectedGood=null`, vorher Hash-Lesen aller Assets, Nachlesen). Erneute Zeigerprüfung unmittelbar vor dem Schreiben. Verify: Zeiger neu lesen (Generation, Manifest, `previous == null`, Scope), frischer Download aus leerem Verzeichnis, Gate/Aktivierung/Universe-GOOD/Frozen-Zeiger byte-gleich. Scheitert ein Schritt nach dem Zeigerschreiben, wird der vorherige Zeiger (`LEGACY_FALLBACK`) byte-genau zurückgeschrieben. Gate wird nie geöffnet.
+Jeder Put läuft durch einen Laufzeit-Guard: nur Schlüssel unter dem Legacy-Präfix, nie Aktivierung, Gate, Universe-GOOD, Rollback-Zeiger oder privater Stand; ein Verstoß bricht vor dem Schreiben ab (`LEGACY_RESTORE_WRITE_OUTSIDE_LEGACY_NAMESPACE`).
+
+1. **Exakter Slot (bevorzugt).** Hält ein Legacy-Namespace (`-a`/`-b`, `manifest.json` oder `previous.json`) die eingefrorene Generation bereits exakt (Manifest bis auf `slot`/`contentCounts` gleich, Zertifikat vorhanden, jedes Asset im Slot per SHA-256 intakt), wird nichts kopiert: genau ein Put, der Zeiger (mit dem gespeicherten Manifest samt `slot`). Beide Namespaces bleiben byte-gleich, es entsteht kein zweiter Satz. Evidence: `slot.mode=EXACT_SLOT`.
+2. **Sonst Neuschreiben** (`slot.mode=WRITTEN`). `publish` blendet dabei das Namespace-Manifest aus und schreibt immer nach `slot-0`; die Schutzprüfungen von `publish` (`STALE_PUBLICATION_REFUSED` u. a.) greifen in diesem Pfad nicht. Gewählt wird der leere Namespace, sonst der mit den wenigsten Daten in `slot-0`, bei Gleichstand der mit dem älteren Manifest. **Ausdrückliche Grenze:** liegen dort Daten einer anderen (nicht mehr referenzierten) Generation in `slot-0`, werden sie überschrieben. Das steht im Evidence unter `overwrittenUnreferencedData` (`namespace`, `slot`, `generation`); die Bytes des ersetzten Namespace-`manifest.json` werden vorher byte-genau unter `<Legacy-Präfix>restore-legacy/…` archiviert (`archivedManifests`). Der andere Namespace wird nie geschrieben. Deshalb vorher die Beweise sichern (siehe Prüfliste).
+
+Danach ändert sich der Zeiger genau einmal per CAS (`commitGood`, `expectedGood=null`, vorher Hash-Lesen aller Assets, Nachlesen), mit erneuter Zeigerprüfung unmittelbar davor. Verify: Zeiger neu lesen (Generation, Manifest, `previous == null`, Scope), frischer Download aus leerem Verzeichnis, Snapshot der geschützten Schlüssel unverändert. Scheitert ein Schritt nach dem Zeigerwrite, wird der vorherige Zeiger (`LEGACY_FALLBACK`) byte-genau zurückgeschrieben. Das Gate wird nie geöffnet. Idempotenz: ein zweiter Aufruf schreibt nichts (`ALREADY_PRESENT`, solange das GOOD gültig ist).
+
+### Vorab-Prüfliste (vor dem Dispatch, nur lesen)
+
+1. Beweise sichern: `good.json`, `manifest.json` und `previous.json` beider Legacy-Namespaces (`continuous-discover-top46-v1`, `-a`, `-b`) sowie `eligible-rollback-top46-v1/good.json` lokal ablegen.
+2. `eligible-rollback-top46-v1/good.json` lesen: Generation (24 Hex = `expect_generation`), `previous` ist `null`, `manifest.generatedAt` mindestens 15 Minuten vor dem 7-Tage-Verfall, 46 Titel / 45 Emittenten, bei `refreeze`-Marker Archiv unter `refreeze/<alteGeneration>.json` vorhanden.
+3. Legacy-`good.json` ist exakt `LEGACY_FALLBACK` oder fehlt; `activation.json` fehlt oder ist `ROLLBACK_46`; Gate ist `DISABLED`.
+4. Keine laufenden oder wartenden Läufe in der Concurrency-Gruppe `company-intelligence-continuous-production`.
 
 ### Danach (manuell, getrennte Schritte)
 
-1. `health` bzw. ein Refresh-Lauf: `goodState` ist wieder `GOOD`; der Refresh-Restore lädt das wiederhergestellte GOOD als Vergleichsbasis.
-2. Gate-Öffnung und Pages-Deploy sind eigene, bewusste Schritte; `restore-legacy` löst keinen aus. Hinweis: das wiederhergestellte GOOD ist höchstens so alt wie der Freeze und verfällt zum gleichen Zeitpunkt (`validUntil` im Evidence-JSON); der nächste erfolgreiche Refresh ersetzt es.
+1. `release.json` im Artefakt: `status=RESTORED`, alle fünf Flags `false`, `slot`/`overwrittenUnreferencedData` ansehen.
+2. `refresh-run.mjs health`: `goodState` ist `GOOD`. Das wiederhergestellte GOOD erbt `health.lastSuccessfulRefresh` des Freeze; Health zeigt daher WARNING/CRITICAL bis zum nächsten erfolgreichen Refresh (erwartet, keine Schwellenänderung).
+3. Refresh-Lauf **vor** dem Freeze-Verfall (`validUntil`): der Refresh-Restore lädt das wiederhergestellte GOOD als Vergleichsbasis, der nächste erfolgreiche Lauf ersetzt es.
+4. Gate-Öffnung und Pages-Deploy sind eigene, bewusste Schritte; `restore-legacy` löst keinen aus.
 
 ### Diagnose statt `CONSUMER_EXPIRED`
 

@@ -15,7 +15,8 @@ import {existsSync,mkdirSync,readdirSync,readFileSync,writeFileSync} from 'node:
 import {join} from 'node:path';
 import {prefixFor,preflight} from './public-delivery.mjs';
 import {goodKey,goodState,downloadGood,commitGood,activationKey} from './refresh-storage.mjs';
-import {refreshConfig} from './refresh-approval.mjs';
+import {refreshConfig,refreshApproved} from './refresh-approval.mjs';
+import {prefixFor as privatePrefix} from './sync-state.mjs';
 import {universeConfig} from './universe-approval.mjs';
 import {approval} from './production-approval.mjs';
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
@@ -52,7 +53,7 @@ export async function withLegacyMissingDiagnosis(driver,namespace,fn){
   throw error;
  }
 }
-const protectedKeys=()=>({activation:activationKey(),gate:prefixFor(approval.namespace)+'gate.json',universeGood:goodKey(universeConfig.consumerNamespace),rollback:goodKey(universeConfig.rollbackNamespace)});
+const protectedKeys=()=>({activation:activationKey(),gate:prefixFor(approval.namespace)+'gate.json',universeGood:goodKey(universeConfig.consumerNamespace),rollback:goodKey(universeConfig.rollbackNamespace),privateState:privatePrefix(refreshConfig.stateNamespace)+'index.json'});
 async function snapshot(driver){
  const out={};for(const [name,key] of Object.entries(protectedKeys())){const b=await bytesOf(driver,key);out[name]=b&&sha(b);}return out;
 }
@@ -77,29 +78,75 @@ export function assertRestoreWindow(generatedAt,now){
  assert(now-t<=7*DAY-RESTORE_MIN_REMAINING_MS,'LEGACY_RESTORE_FROZEN_EXPIRED');
  return new Date(t+7*DAY).toISOString();
 }
-/* Zielslot: ein Slot, der schon genau diese Generation haelt (idempotent), sonst der leere bzw. aelteste.
-   So wird nie ein nicht verwandter juengerer Stand ueberschrieben, wenn der aeltere Slot genuegt. */
-async function pickPayload(driver,namespace,generation){
- const info=[];
- for(const n of [namespace+'-a',namespace+'-b']){
-  let m=null;try{const raw=await driver.get(prefixFor(n)+'manifest.json');m=raw?JSON.parse(raw):null;}catch{m=null;}
-  info.push({n,generation:m?.generation||null,at:Number.isFinite(Date.parse(m?.generatedAt))?Date.parse(m.generatedAt):0});
- }
- const exact=info.find(i=>i.generation===generation);if(exact)return exact.n;
- return [...info].sort((x,y)=>x.at-y.at||(x.n<y.n?-1:1))[0].n;
+/* Laufzeit-Guard: waehrend der Wiederherstellung darf nur im Legacy-Praefix geschrieben werden, nie auf
+   einen geschuetzten Schluessel (Aktivierung, Gate, Universe-GOOD, Rollback, privater Stand). Der Verstoss
+   wird vor dem Schreiben abgebrochen; Lesezugriffe laufen unveraendert ueber den echten Treiber. */
+export function guardWrites(driver,{allowedPrefix,forbidden,violations=[]}){
+ return new Proxy(driver,{get(target,property){
+  if(property==='put')return async(key,value)=>{
+   if(!String(key).startsWith(allowedPrefix)||forbidden.includes(key)){violations.push(String(key));throw Error('LEGACY_RESTORE_WRITE_OUTSIDE_LEGACY_NAMESPACE');}
+   return target.put(key,value);
+  };
+  const v=target[property];return typeof v==='function'?v.bind(target):v;
+ }});
 }
-const FLAGS={privateStateModified:false,activationModified:false,gateModified:false,universeGoodModified:false,rollbackModified:false};
-export async function restoreLegacyGood(driver,{temporary,expectGeneration=null,now=Date.now}={}){
+const strip=({slot,contentCounts,...rest})=>rest;
+function deepSame(a,b){try{assert.deepStrictEqual(a,b);return true;}catch{return false;}}
+async function readManifest(driver,key){
+ const raw=await bytesOf(driver,key);if(!raw)return {raw:null,manifest:null};
+ try{return {raw,manifest:JSON.parse(raw)};}catch{return {raw,manifest:null};}
+}
+/* Exakter Slot: ein Legacy-Namespace (manifest.json ODER previous.json), der die eingefrorene Generation bereits
+   byte-genau haelt (Manifest bis auf slot/contentCounts gleich, Zertifikat vorhanden, jedes Asset im Slot per
+   SHA-256 intakt). Dann ist keine Datenkopie noetig: nur der Zeiger wird geschrieben. */
+async function findExactSlot(driver,namespace,frozen){
+ for(const n of [namespace+'-a',namespace+'-b'])for(const file of ['manifest.json','previous.json']){
+  const {manifest:m}=await readManifest(driver,prefixFor(n)+file);
+  if(!m||m.generation!==frozen.generation||![0,1].includes(m.slot??0))continue;
+  if(!deepSame(strip(m),strip(frozen.manifest))||!refreshApproved(m))continue;
+  const prefix=prefixFor(n);let intact=true;
+  for(const [path,meta] of Object.entries(m.assets)){
+   const b=await driver.get(prefix+`slot-${m.slot||0}/`+(path==='index.json'?path:path.split('/').slice(2).join('/')));
+   if(!b||b.length!==meta.bytes||sha(b)!==meta.sha256){intact=false;break;}
+  }
+  if(intact)return {namespace:n,slot:m.slot||0,manifest:m,source:file};
+ }
+ return null;
+}
+/* Kein exakter Slot: publish() blendet das Namespace-Manifest aus und schreibt immer nach slot-0. Gewaehlt wird der
+   Namespace mit den wenigsten Daten in slot-0 (leer zuerst, dann der mit aelterem Manifest). Was dort an Daten einer
+   anderen (unreferenzierten) Generation liegt, wird im Evidence-JSON ausgewiesen; die Bytes des ersetzten
+   Namespace-manifest.json werden vorher im Legacy-Praefix archiviert. */
+async function planFreshWrite(driver,namespace,generation){
+ const plans=[];
+ for(const n of [namespace+'-a',namespace+'-b']){
+  const cur=await readManifest(driver,prefixFor(n)+'manifest.json'),prev=await readManifest(driver,prefixFor(n)+'previous.json');
+  const holders=[cur,prev].filter(x=>x.manifest&&(x.manifest.slot||0)===0&&x.manifest.generation!==generation).map(x=>x.manifest.generation);
+  plans.push({namespace:n,holders:[...new Set(holders)],currentRaw:cur.raw,at:Number.isFinite(Date.parse(cur.manifest?.generatedAt))?Date.parse(cur.manifest.generatedAt):0});
+ }
+ return plans.sort((x,y)=>x.holders.length-y.holders.length||x.at-y.at||(x.namespace<y.namespace?-1:1))[0];
+}
+/* Die Flags sind berechnet, nicht konstant: Vergleich der geschuetzten Schluessel vor und nach der Aktion. */
+function computedFlags(before,after){
+ const map={privateStateModified:'privateState',activationModified:'activation',gateModified:'gate',universeGoodModified:'universeGood',rollbackModified:'rollback'};
+ return {...Object.fromEntries(Object.entries(map).map(([flag,key])=>[flag,before[key]!==after[key]])),protectedState:{before,after}};
+}
+export async function restoreLegacyGood(rawDriver,{temporary,expectGeneration=null,now=Date.now}={}){
  const legacy=refreshConfig.consumerNamespace,rollback=universeConfig.rollbackNamespace;
  // Erwartung ist Pflicht und explizit: genau die Generation, die der Operator im Freeze erwartet.
  assert(hex24.test(expectGeneration||''),'LEGACY_RESTORE_EXPECT_GENERATION_REQUIRED');
+ const violations=[],legacyPrefix=prefixFor(legacy).slice(0,-1);
+ // Ab hier gehen alle Schreibzugriffe durch den Guard (nur Legacy-Praefix, nie geschuetzte Schluessel).
+ const driver=guardWrites(rawDriver,{allowedPrefix:legacyPrefix,forbidden:Object.values(protectedKeys()),violations});
  const before=await snapshot(driver);
  // 1. Nur wirklich fehlendes Legacy-GOOD wird repariert; ein vorhandenes, gueltiges bleibt unberuehrt.
  const legacyBytes=await bytesOf(driver,goodKey(legacy)),pointerState=classifyPointer(legacyBytes);
  if(pointerState==='GOOD'||pointerState==='INVALID'){
   const present=await goodState(driver,legacy);   // wirft INVALID_REFRESH_GOOD_POINTER bei defektem Zeiger: nie ueberschreiben
   assert(present,'LEGACY_RESTORE_POINTER_STATE_UNEXPECTED');
-  return {status:'ALREADY_PRESENT',generation:present.generation,stockCount:present.manifest.tickers.length,...FLAGS};
+  // Vorhanden heisst nicht brauchbar: ein abgelaufenes GOOD ist kein Erfolg (CONSUMER_EXPIRED in jedem Download).
+  const t=Date.parse(present.manifest.generatedAt),ok=Number.isFinite(t)&&t<=now()+300000&&now()-t<=7*DAY;
+  return {status:ok?'ALREADY_PRESENT':'PRESENT_BUT_EXPIRED',generation:present.generation,generatedAt:present.manifest.generatedAt,validUntil:Number.isFinite(t)?new Date(t+7*DAY).toISOString():null,stockCount:present.manifest.tickers.length,...computedFlags(before,await snapshot(driver))};
  }
  // 2. Universum darf nicht (teilweise) live sein: nur die geschlossene ROLLBACK_46-Welt wird repariert.
  const activation=await bytesOf(driver,activationKey());
@@ -128,25 +175,42 @@ export async function restoreLegacyGood(driver,{temporary,expectGeneration=null,
  // Der Downloader kopiert nur oeffentliche Assets; das Zertifikat wird ausschliesslich privat wieder angehaengt.
  writeFileSync(join(directory,'manifest.json'),JSON.stringify(frozen.manifest)+'\n');
  preflight(directory,frozen.manifest);
- // 5. Nutzdaten in einen von keinem Zeiger referenzierten Legacy-Slot; der Zeiger bewegt sich erst danach.
- const target=await pickPayload(driver,legacy,frozen.generation);
- const candidate=await prepareFrozenRollback(driver,{namespace:legacy,directory,good:{payloadNamespace:target===legacy+'-a'?legacy+'-b':legacy+'-a'},frozen});
- assert(candidate.payloadNamespace===target&&candidate.manifest.generation===frozen.generation,'LEGACY_RESTORE_CANDIDATE_MISMATCH');
+ // 5. Nutzdaten: bevorzugt der Slot, der die Generation bereits exakt haelt (keine Kopie, nur Zeiger), sonst Neuschreiben.
+ let target,manifest,reuse,overwrites=[],archived=[];
+ const exact=await findExactSlot(driver,legacy,frozen);
+ if(exact){target=exact.namespace;manifest=exact.manifest;reuse={mode:'EXACT_SLOT',namespace:target,slot:exact.slot,source:exact.source};}
+ else{
+  const plan=await planFreshWrite(driver,legacy,frozen.generation);target=plan.namespace;
+  // Bytes des Namespace-manifest.json, das publish() ersetzt, bleiben als Beleg im Legacy-Praefix erhalten.
+  if(plan.currentRaw){
+   const key=prefixFor(legacy)+`restore-legacy/${target.slice(legacy.length+1)}-manifest-${sha(plan.currentRaw).slice(0,16)}.json`;
+   const prior=await bytesOf(driver,key);
+   if(!prior){await driver.put(key,plan.currentRaw);const back=await bytesOf(driver,key);assert(back&&back.equals(plan.currentRaw),'LEGACY_RESTORE_ARCHIVE_WRITE_FAILED');}
+   archived.push(key);
+  }
+  overwrites=plan.holders.map(generation=>({namespace:target,slot:0,generation}));
+  const candidate=await prepareFrozenRollback(driver,{namespace:legacy,directory,good:{payloadNamespace:target===legacy+'-a'?legacy+'-b':legacy+'-a'},frozen});
+  assert(candidate.payloadNamespace===target&&candidate.manifest.generation===frozen.generation,'LEGACY_RESTORE_CANDIDATE_MISMATCH');
+  manifest=candidate.manifest;reuse={mode:'WRITTEN',namespace:target,slot:candidate.manifest.slot||0};
+ }
  // Zwischen Lesen und Schreiben darf sich weder Legacy-Zeiger noch Freeze bewegt haben.
  const legacyAgain=await bytesOf(driver,goodKey(legacy)),frozenAgain=await bytesOf(driver,goodKey(rollback));
  assert((legacyBytes===null?legacyAgain===null:legacyAgain&&legacyAgain.equals(legacyBytes))&&frozenAgain&&frozenAgain.equals(frozenBytes),'LEGACY_RESTORE_CONCURRENT_POINTER_CHANGE');
  // 6. CAS: expectedGood=null. commitGood liest jedes Asset per Hash, schreibt den Zeiger, liest nach und stellt bei Teilfehler selbst zurueck.
- const next=await commitGood(driver,{namespace:legacy,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health:frozen.health,inventory:frozen.inventory,expectedGood:null});
+ const next=await commitGood(driver,{namespace:legacy,payloadNamespace:target,manifest,health:frozen.health,inventory:frozen.inventory,expectedGood:null});
  const nextBytes=Buffer.from(JSON.stringify(next));
  // 7. Nachlesen/Verify aus leerem Verzeichnis; bei jeder Abweichung den vorherigen Zustand byte-genau zurueck.
+ let after;
  try{
-  const after=await goodState(driver,legacy);
-  assert(after&&after.generation===frozen.generation&&after.previous===null&&after.payloadNamespace===target&&same(after.manifest,candidate.manifest),'LEGACY_RESTORE_POINTER_VERIFY_FAILED');
-  assertLegacyScope(after,'LEGACY_RESTORE_RESULT_SCOPE_INVALID');
+  const good=await goodState(driver,legacy);
+  assert(good&&good.generation===frozen.generation&&good.previous===null&&good.payloadNamespace===target&&same(good.manifest,manifest),'LEGACY_RESTORE_POINTER_VERIFY_FAILED');
+  assertLegacyScope(good,'LEGACY_RESTORE_RESULT_SCOPE_INVALID');
   const readback=join(temporary,'restore-legacy-readback');emptyDirectory(readback);
   const r=await downloadGood(driver,{namespace:legacy,output:readback});
   assert(r&&r.generation===frozen.generation&&r.files===assets.length&&same(r.good.manifest.assets,frozen.manifest.assets),'LEGACY_RESTORE_READBACK_HASH_MISMATCH');
-  assert.deepEqual(await snapshot(driver),before,'LEGACY_RESTORE_PROTECTED_STATE_CHANGED');
+  after=await snapshot(driver);
+  assert.deepEqual(after,before,'LEGACY_RESTORE_PROTECTED_STATE_CHANGED');
+  assert.equal(violations.length,0,'LEGACY_RESTORE_WRITE_OUTSIDE_LEGACY_NAMESPACE');
  }catch(error){
   const current=await bytesOf(driver,goodKey(legacy));
   if(current&&current.equals(nextBytes)){
@@ -155,5 +219,6 @@ export async function restoreLegacyGood(driver,{temporary,expectGeneration=null,
   }
   throw error;
  }
- return {status:'RESTORED',generation:frozen.generation,payloadNamespace:target,pointerBefore:pointerState,freezeMarker:marker,validUntil,stockCount:46,issuerCount:45,...FLAGS};
+ return {status:'RESTORED',generation:frozen.generation,payloadNamespace:target,pointerBefore:pointerState,freezeMarker:marker,validUntil,stockCount:46,issuerCount:45,
+  slot:reuse,overwrittenUnreferencedData:overwrites,archivedManifests:archived,...computedFlags(before,after)};
 }

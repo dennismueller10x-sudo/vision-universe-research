@@ -68,6 +68,7 @@ try{
   // Setzt den Legacy-good.json-Zeiger (LEGACY_FALLBACK/fehlt) aus dem verifizierten eingefrorenen Rollback neu; oeffnet das Gate nie, fasst Aktivierung, Universe-GOOD und privaten Stand nicht an.
   const result=await restoreLegacyGood(driver,{temporary,expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
   save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,payloadNamespace:result.payloadNamespace}));
+  if(!['RESTORED','ALREADY_PRESENT'].includes(result.status))process.exitCode=1;   // z. B. PRESENT_BUT_EXPIRED: kein Erfolg
  }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));
  }else{

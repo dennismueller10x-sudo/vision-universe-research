@@ -13,7 +13,8 @@ import {universeConfig} from '../universe-approval.mjs';
 import {approval} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
 import {refreezeRollback} from '../frozen-refreeze.mjs';
-import {restoreLegacyGood,withLegacyMissingDiagnosis,goodPointerState,classifyPointer,assertRestoreWindow,RESTORE_MIN_REMAINING_MS} from '../legacy-restore.mjs';
+import {publish} from '../public-delivery.mjs';
+import {guardWrites,restoreLegacyGood,withLegacyMissingDiagnosis,goodPointerState,classifyPointer,assertRestoreWindow,RESTORE_MIN_REMAINING_MS} from '../legacy-restore.mjs';
 import {setProductionGate} from '../production-release.mjs';
 const HERE=dirname(fileURLToPath(import.meta.url));
 function driver(){const objects=new Map(),puts=[];return {objects,puts,get:async k=>objects.get(k)||null,put:async(k,v)=>{puts.push(k);objects.set(k,Buffer.from(v));}};}
@@ -36,11 +37,15 @@ function fixture(n,generatedAt){
 async function advance(d,namespace,f){const good=await goodState(d,namespace),r=await prepareCandidate(d,{namespace,directory:f.root,good});return commitGood(d,{namespace,payloadNamespace:r.payloadNamespace,manifest:r.manifest,health:{marker:f.m.generation},inventory:frozenInventory,expectedGood:good});}
 /* Realer Zustand nach dem Doppel-Rollback: Legacy-Zeiger LEGACY_FALLBACK, Payload-Slots liegen weiter,
    eingefrorener Rollback (a7b3dee3-Rolle) 2 Tage alt, Universum ROLLBACK_46, Gate offen. */
-async function world({frozenAge=48*H}={}){
+async function world({frozenAge=48*H,layout='unrelated'}={}){
  const now=Date.now(),dirs=[],d=driver();
  const mk=(n,age)=>{const f=fixture(n,new Date(now-age).toISOString());dirs.push(f.root);return f;};
  const frozen=mk(0xa7b3,frozenAge),older=mk(0x1001,60*H),newest=mk(0x8f1f,2*H);
- await advance(d,ROLLBACK,frozen);await advance(d,LEGACY,older);await advance(d,LEGACY,newest);
+ await advance(d,ROLLBACK,frozen);
+ // unrelated: a7b3 liegt nicht im Legacy; a-first/b-first: a7b3 und 8f1f liegen in den beiden Legacy-Namespaces (beide Reihenfolgen).
+ if(layout==='unrelated'){await advance(d,LEGACY,older);await advance(d,LEGACY,newest);}
+ else if(layout==='a7b3-in-a'){await advance(d,LEGACY,frozen);await advance(d,LEGACY,newest);}
+ else if(layout==='a7b3-in-b'){await advance(d,LEGACY,newest);await advance(d,LEGACY,frozen);}
  d.objects.set(goodKey(LEGACY),FALLBACK);   // das, was der Doppel-Rollback hinterlaesst
  d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'ROLLBACK_46',approvalId:universeConfig.approvalId,generation:'f'.repeat(24)})));
  d.objects.set(gateKey,Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',generation:approval.consumerGeneration,approvalId:approval.approvalId})));
@@ -195,28 +200,124 @@ test('Marker-Freeze (refreeze) wird mit Archiv geprueft; fehlendes oder verfaels
  }finally{w.done();}
 });
 
-test('Slotwahl: Slot mit identischer Generation wird wiederverwendet, sonst der aelteste; nie beide ueberschrieben',async()=>{
- // Legacy-Historie: -a hat a7b3-aehnliche Generation? Hier: vorab denselben Freeze in -b ablegen.
- const w=await world();try{
-  const f=await goodState(w.d,ROLLBACK);
-  const pre=await prepareCandidate(w.d,{namespace:LEGACY,directory:fixtureDirOf(w,f),good:{payloadNamespace:LEGACY+'-a'}});
-  assert.equal(pre.payloadNamespace,LEGACY+'-b');
-  const newerBefore=w.d.objects.get(prefixFor(LEGACY+'-a')+'manifest.json');
+const nsObjects=(d,ns)=>new Map([...d.objects].filter(([k])=>k.startsWith(prefixFor(ns))));
+const sameMap=(a,b)=>a.size===b.size&&[...a].every(([k,v])=>b.has(k)&&b.get(k).equals(v));
+
+test('exakter Slot (beide Reihenfolgen): keine Datenkopie, nur der Zeiger; der andere Namespace bleibt byte-gleich',async()=>{
+ for(const [layout,exactNs,otherNs] of [['a7b3-in-a',LEGACY+'-a',LEGACY+'-b'],['a7b3-in-b',LEGACY+'-b',LEGACY+'-a']]){
+  const w=await world({layout});try{
+   w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;
+   const exactBefore=nsObjects(w.d,exactNs),otherBefore=nsObjects(w.d,otherNs);
+   assert((JSON.parse(otherBefore.get(prefixFor(otherNs)+'manifest.json')).generation)===w.newest.m.generation,'8f1f liegt im anderen Namespace');
+   const r=await run(w);
+   assert.equal(r.status,'RESTORED');assert.equal(r.payloadNamespace,exactNs);assert.equal(r.slot.mode,'EXACT_SLOT');
+   assert.deepEqual(r.overwrittenUnreferencedData,[]);assert.deepEqual(r.archivedManifests,[]);
+   assert.deepEqual(w.d.puts,[goodKey(LEGACY)],layout+': genau ein Put, der Zeiger');
+   assert(sameMap(nsObjects(w.d,exactNs),exactBefore),'exakter Namespace byte-unveraendert (kein zweiter Satz)');
+   assert(sameMap(nsObjects(w.d,otherNs),otherBefore),'8f1f-Namespace byte-unveraendert');
+   const good=await goodState(w.d,LEGACY);assert.equal(good.generation,w.expect);assert.equal(good.payloadNamespace,exactNs);
+   assert.equal((await downloadGood(w.d,{namespace:LEGACY,output:w.fresh()})).generation,w.expect);
+  }finally{w.done();}
+ }
+});
+
+test('exakter Slot in slot-1 oder in previous.json: Daten der aelteren Generation in slot-0 bleiben unberuehrt',async()=>{
+ // (1) a7b3 liegt in slot-1 von -a (aeltere Generation in slot-0 = previous.json), 8f1f in -b.
+ let w=await world({layout:'unrelated'});try{
+  const ns=LEGACY+'-a',other=LEGACY+'-b';
+  for(const k of [...w.d.objects.keys()])if(k.startsWith(prefixFor(ns)))w.d.objects.delete(k);
+  await publish(w.d,{namespace:ns,directory:w.older.root});
+  await publish(w.d,{namespace:ns,directory:w.frozen.root});
+  assert.equal(JSON.parse(w.d.objects.get(prefixFor(ns)+'manifest.json')).slot,1);
   w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;
+  const nsBefore=nsObjects(w.d,ns),otherBefore=nsObjects(w.d,other);
   const r=await run(w);
-  assert.equal(r.payloadNamespace,LEGACY+'-b');
-  assert(w.d.objects.get(prefixFor(LEGACY+'-a')+'manifest.json').equals(newerBefore),'der andere Slot bleibt unveraendert');
-  assert(!w.d.puts.some(k=>k.startsWith(prefixFor(LEGACY+'-a'))));
+  assert.equal(r.slot.mode,'EXACT_SLOT');assert.equal(r.slot.slot,1);assert.equal(r.payloadNamespace,ns);
+  assert.deepEqual(w.d.puts,[goodKey(LEGACY)]);assert(sameMap(nsObjects(w.d,ns),nsBefore));assert(sameMap(nsObjects(w.d,other),otherBefore));
+  assert.equal((await downloadGood(w.d,{namespace:LEGACY,output:w.fresh()})).generation,w.expect);
+ }finally{w.done();}
+ // (2) a7b3 ist nur noch previous.json von -a (8f1f wurde danach in -a publiziert, slot-1).
+ w=await world({layout:'unrelated'});try{
+  const ns=LEGACY+'-a';
+  for(const k of [...w.d.objects.keys()])if(k.startsWith(prefixFor(ns)))w.d.objects.delete(k);
+  await publish(w.d,{namespace:ns,directory:w.frozen.root});await publish(w.d,{namespace:ns,directory:w.newest.root});
+  assert.equal(JSON.parse(w.d.objects.get(prefixFor(ns)+'previous.json')).generation,w.expect);
+  w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;const before=nsObjects(w.d,ns);
+  const r=await run(w);assert.equal(r.slot.source,'previous.json');assert.deepEqual(w.d.puts,[goodKey(LEGACY)]);assert(sameMap(nsObjects(w.d,ns),before));
  }finally{w.done();}
 });
-function fixtureDirOf(w,frozen){   // Verzeichnis mit den Frozen-Bytes (Manifest inkl. Zertifikat) fuer die Slot-Vorbelegung
- const x=mkdtempSync(join(tmpdir(),'legacy-restore-pre-'));
- for(const p of Object.keys(frozen.manifest.assets)){
-  const prefix=prefixFor(frozen.payloadNamespace),key=prefix+`slot-${frozen.manifest.slot||0}/`+(p==='index.json'?p:p.split('/').slice(2).join('/'));
-  mkdirSync(join(x,p,'..'),{recursive:true});writeFileSync(join(x,p),w.d.objects.get(key));
- }
- writeFileSync(join(x,'manifest.json'),JSON.stringify(frozen.manifest));return x;
-}
+
+test('beschaedigter oder abweichender Slot gilt nicht als exakt: es wird neu geschrieben, der Beleg im anderen Namespace bleibt',async()=>{
+ const w=await world({layout:'a7b3-in-a'});try{
+  const a=LEGACY+'-a',b=LEGACY+'-b';
+  const key=[...w.d.objects.keys()].find(k=>k.startsWith(prefixFor(a))&&k.includes('/slot-')&&k.endsWith('index.json'));
+  w.d.objects.set(key,Buffer.from('{"corrupt":1}'));w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;
+  const bBefore=nsObjects(w.d,b);
+  const r=await run(w);
+  assert.equal(r.slot.mode,'WRITTEN');assert(sameMap(nsObjects(w.d,b),bBefore),'8f1f-Namespace unveraendert');
+ }finally{w.done();}
+});
+
+test('kein exakter Slot: nur ein Namespace wird beschrieben, ueberschriebene Daten und archivierte Manifest-Bytes stehen im Evidence',async()=>{
+ const w=await world({layout:'unrelated'});try{
+  w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;
+  const a=LEGACY+'-a',b=LEGACY+'-b',aBefore=nsObjects(w.d,a),bBefore=nsObjects(w.d,b);
+  const aManifest=w.d.objects.get(prefixFor(a)+'manifest.json');
+  const r=await run(w);
+  // older (1001, ls -a) ist der aelteste; 8f1f in -b bleibt komplett erhalten
+  assert.equal(r.slot.mode,'WRITTEN');assert.equal(r.payloadNamespace,a);
+  assert(sameMap(nsObjects(w.d,b),bBefore),'der juengere Namespace bleibt byte-gleich');
+  assert.deepEqual(r.overwrittenUnreferencedData,[{namespace:a,slot:0,generation:w.older.m.generation}]);
+  assert.equal(r.archivedManifests.length,1);
+  assert(w.d.objects.get(r.archivedManifests[0]).equals(aManifest),'ersetzte Manifest-Bytes byte-genau archiviert');
+  assert(w.d.puts.every(k=>k.startsWith(LEGACY_PREFIX)));
+  assert.notDeepEqual([...nsObjects(w.d,a).keys()].length,0);void aBefore;
+ }finally{w.done();}
+ // leerer Namespace zuerst: nichts geht verloren
+ const w2=await world({layout:'unrelated'});try{
+  for(const k of [...w2.d.objects.keys()])if(k.startsWith(prefixFor(LEGACY+'-b')))w2.d.objects.delete(k);
+  w2.d.objects.set(goodKey(LEGACY),FALLBACK);
+  const aBefore=nsObjects(w2.d,LEGACY+'-a'),r=await run(w2);
+  assert.equal(r.payloadNamespace,LEGACY+'-b');assert.deepEqual(r.overwrittenUnreferencedData,[]);assert.deepEqual(r.archivedManifests,[]);
+  assert(sameMap(nsObjects(w2.d,LEGACY+'-a'),aBefore));
+ }finally{w2.done();}
+});
+
+test('Schreib-Guard: Puts ausserhalb des Legacy-Praefix oder auf geschuetzte Schluessel werden vor dem Schreiben abgebrochen',async()=>{
+ const d=driver(),violations=[],prefix=prefixFor(LEGACY).slice(0,-1);
+ const forbidden=[activationKey(),gateKey,goodKey(universeConfig.consumerNamespace),goodKey(ROLLBACK)];
+ const g=guardWrites(d,{allowedPrefix:prefix,forbidden,violations});
+ await g.put(goodKey(LEGACY),Buffer.from('x'));assert.equal(d.puts.length,1);
+ for(const k of [goodKey(ROLLBACK),activationKey(),gateKey,goodKey(universeConfig.consumerNamespace),prefixFor(ROLLBACK)+'slot-0/index.json','v1/private/index.json'])
+  await assert.rejects(g.put(k,Buffer.from('x')),/LEGACY_RESTORE_WRITE_OUTSIDE_LEGACY_NAMESPACE/);
+ assert.equal(d.puts.length,1);assert.equal(violations.length,6);assert.equal((await g.get(goodKey(LEGACY))).toString(),'x');
+});
+
+test('berechnete Flags: ein Fremdschreiber auf Gate/Aktivierung waehrend des Laufs wird als Abweichung erkannt, nicht als false gemeldet',async()=>{
+ const w=await world();try{
+  const r=await run(w);
+  for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified','rollbackModified'])assert.strictEqual(r[k],false,k);
+  assert.deepEqual(r.protectedState.before,r.protectedState.after);assert(r.protectedState.before.gate&&r.protectedState.before.activation&&r.protectedState.before.universeGood&&r.protectedState.before.rollback);
+ }finally{w.done();}
+ const w2=await world();try{   // private Indexdatei als Teil des Snapshots
+  const key=(await import('../sync-state.mjs')).prefixFor(refreshConfig.stateNamespace)+'index.json';
+  w2.d.objects.set(key,Buffer.from('{"sha256":"x"}'));
+  const put=w2.d.put;w2.d.put=async(k,v)=>{await put(k,v);if(k===goodKey(LEGACY))w2.d.objects.set(key,Buffer.from('{"sha256":"changed"}'));};
+  await assert.rejects(run(w2),/LEGACY_RESTORE_PROTECTED_STATE_CHANGED/);assert(w2.d.objects.get(goodKey(LEGACY)).equals(FALLBACK));
+ }finally{w2.done();}
+});
+
+test('ALREADY_PRESENT prueft das Fenster: abgelaufenes oder zukuenftiges vorhandenes GOOD ist PRESENT_BUT_EXPIRED, kein Erfolg',async()=>{
+ const w=await world();try{
+  await run(w);   // gueltiges GOOD vorhanden
+  const ok=await run(w);assert.equal(ok.status,'ALREADY_PRESENT');assert(ok.validUntil);
+  const future=Date.now()+8*24*H;
+  const expired=await restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect,now:()=>future});
+  assert.equal(expired.status,'PRESENT_BUT_EXPIRED');assert.equal(expired.generation,w.expect);
+  assert.equal(expired.gateModified,false);
+  assert.equal((await restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect,now:()=>Date.now()-30*24*H})).status,'PRESENT_BUT_EXPIRED');   // generatedAt in der Zukunft
+ }finally{w.done();}
+});
 
 test('Teilfehler: Fehler beim Hochladen oder beim Zeigerschreiben hinterlaesst keinen Teilzustand',async()=>{
  // (a) Upload der Nutzdaten schlaegt fehl: Zeiger unberuehrt.
@@ -361,4 +462,26 @@ test('Mutation: ohne Rueckbau bliebe nach fehlgeschlagenem Verify ein Teilzustan
   await assert.rejects(m.restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect}),/LEGACY_RESTORE_PROTECTED_STATE_CHANGED/);
   assert(!w.d.objects.get(goodKey(LEGACY)).equals(FALLBACK),'Mutant erkannt: Zeiger blieb stehen');
  }finally{w.done();}
+});
+
+test('Mutation: ohne Fensterpruefung meldete ein abgelaufenes vorhandenes GOOD faelschlich ALREADY_PRESENT',async()=>{
+ const m=await mutant("ok?'ALREADY_PRESENT':'PRESENT_BUT_EXPIRED'","'ALREADY_PRESENT'");
+ const w=await world();try{
+  await run(w);const future=Date.now()+8*24*H;
+  assert.equal((await restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect,now:()=>future})).status,'PRESENT_BUT_EXPIRED');
+  assert.equal((await m.restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect,now:()=>future})).status,'ALREADY_PRESENT','Mutant erkannt');
+ }finally{w.done();}
+});
+test('Mutation: ohne exakte Slot-Wiederverwendung entstuende ein zweiter Satz',async()=>{
+ const m=await mutant("const exact=await findExactSlot(driver,legacy,frozen);","const exact=null;");
+ const w=await world({layout:'a7b3-in-a'});try{
+  w.d.objects.set(goodKey(LEGACY),FALLBACK);w.d.puts.length=0;
+  await m.restoreLegacyGood(w.d,{temporary:w.fresh(),expectGeneration:w.expect});
+  assert(w.d.puts.length>1,'Mutant erkannt: schreibt Daten statt nur den Zeiger');
+ }finally{w.done();}
+});
+test('Mutation: ohne Schreib-Guard wuerde ein Put ausserhalb des Legacy-Praefix durchgehen',async()=>{
+ const m=await mutant("if(!String(key).startsWith(allowedPrefix)||forbidden.includes(key)){","if(false){");
+ const d=driver(),g=m.guardWrites(d,{allowedPrefix:'x',forbidden:[],violations:[]});
+ await g.put(goodKey(ROLLBACK),Buffer.from('x'));assert.equal(d.puts.length,1,'Mutant erkannt');
 });
