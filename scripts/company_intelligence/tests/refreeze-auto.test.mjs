@@ -408,3 +408,22 @@ test('Mutationstest Guard: wird eine Pruefung entfernt, entscheidet derselbe Feh
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test('LEGACY_FALLBACK / kein GOOD (Doppel-Rollback): Gate DISABLED, delivery 404 -> BLOCKED mit LEGACY_GOOD_MISSING und GATE_CLOSED, laut, nichts geschrieben',async()=>{
+ const w=await world({freezeAge:140*H});try{
+  w.d.objects.set(goodKey(LEGACY),Buffer.from(JSON.stringify({schema:1,state:'LEGACY_FALLBACK'})));
+  w.d.objects.set(gateKey,Buffer.from(JSON.stringify({schema:1,state:'DISABLED',generation:approval.consumerGeneration,approvalId:approval.approvalId})));
+  delete w.routes['/company-intelligence-delivery.json'];
+  w.routes['/company-intelligence/data/index.json'].body={schema:'vu-company-intelligence-1.0.0',state:'DISABLED',companies:{},tickers:{}};
+  const v=await w.preflight();
+  assert.equal(v.decision,'BLOCKED');assert.equal(v.generation,null);
+  assert.ok(v.causes.includes('LEGACY_GOOD_MISSING')&&v.causes.includes('GATE_CLOSED'),v.causes.join());
+  assert.equal(byId(v,'health').detail.includes('GATE_CLOSED'),true);
+  assert.equal(v.urgent,true);assert.ok(v.freeze.hoursToExpiry<48);
+  assert.ok(annotations(v).every(a=>a.startsWith('::error::')));assert.match(renderSummary(v),/LEGACY_GOOD_MISSING/);
+  assert.equal(w.d.puts.length,0);
+  // Auch bei offen wirkendem Gate bleibt fehlendes GOOD ein Block (kein Re-Freeze auf Basis von Live-Daten allein).
+  w.d.objects.set(gateKey,Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',generation:approval.consumerGeneration,approvalId:approval.approvalId})));
+  const v2=await w.preflight();assert.equal(v2.decision,'BLOCKED');assert.ok(v2.causes.includes('LEGACY_GOOD_MISSING'));
+ }finally{w.done();}
+});

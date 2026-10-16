@@ -87,13 +87,15 @@ function checkGateOpen(s){
  else if(!['PREVIEW','AVAILABLE'].includes(i.state))f.push('INDEX_STATE_INVALID');
  const r=s.rollout.status===200?parseRollout(s.rollout.text):null;
  if(!r)f.push('ROLLOUT_UNREADABLE');else if(r.productionOff||r.stage!==1)f.push('ROLLOUT_PRODUCTION_OFF');
- if(!s.gate.ok||s.gate.value.gateState!=='AVAILABLE')f.push('GATE_NOT_AVAILABLE:'+(s.gate.ok?s.gate.value.gateState||s.gate.value.gateReason:s.gate.error));
+ if(s.gate.ok&&s.gate.value.gateState==='DISABLED')f.push('GATE_CLOSED');
+ else if(!s.gate.ok||s.gate.value.gateState!=='AVAILABLE')f.push('GATE_NOT_AVAILABLE:'+(s.gate.ok?s.gate.value.gateState||s.gate.value.gateReason:s.gate.error));
  return check('gate-open','CI verfuegbar, Gate offen',f,'delivery 200 PASS, index.json '+i?.state+', rollout.js nicht productionOff, R2-Gate AVAILABLE');
 }
 /* (2) Letzter Refresh erfolgreich und frisch (vorhandene Health-Schwelle, nicht lockerer). */
 function checkRefreshFresh(s,now){
  const f=[];let age=null;
- if(!s.legacy.ok)f.push('LEGACY_GOOD_UNUSABLE:'+s.legacy.error);
+ // Auch LEGACY_FALLBACK (goodState liefert null, z. B. nach Doppel-Rollback) endet hier mit klarer Ursache.
+ if(!s.legacy.ok)f.push(s.legacy.error==='LEGACY_GOOD_MISSING'?'LEGACY_GOOD_MISSING':'LEGACY_GOOD_UNUSABLE:'+s.legacy.error);
  else{
   const last=s.legacy.value.health?.lastSuccessfulRefresh,t=Date.parse(last);
   if(!Number.isFinite(t))f.push('LAST_REFRESH_MISSING');
@@ -104,7 +106,8 @@ function checkRefreshFresh(s,now){
 /* (3) Health HEALTHY, Datenqualitaet gesund: Neuberechnung mit den vorhandenen Funktionen. */
 function checkHealth(s){
  const f=[];let h=null;
- if(!s.health||!s.health.ok)f.push('HEALTH_NOT_COMPUTABLE:'+(s.health?.error||s.production.error||'NO_GOOD'));
+ if(!s.legacy.ok&&s.production.ok&&s.production.value.state==='GATE_CLOSED')f.push('GATE_CLOSED');
+ else if(!s.health||!s.health.ok)f.push('HEALTH_NOT_COMPUTABLE:'+(s.health?.error||s.production.error||'NO_GOOD'));
  else{
   h=s.health.value;
   if(h.status!=='HEALTHY')f.push('HEALTH_'+h.status);
@@ -193,7 +196,7 @@ export async function evaluatePreflight({driver,fetchImpl=fetch,now=Date.now()})
   checks.push({id:'freeze-needed',title:'Freeze-Verfall heilbar',status:'FAIL',code:'FREEZE_EXPIRING_NOT_HEALABLE',detail:'FREEZE_EXPIRING_NOT_HEALABLE: '+reason+', Restlaufzeit '+hours(remaining)+' h'});
   decision='BLOCKED';reason='FREEZE_EXPIRING_NOT_HEALABLE';
  }
- return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'preflight',decision,reason,urgent:decision==='BLOCKED'&&urgent,checkedAt:iso(now),
+ return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'preflight',decision,reason,causes:[...new Set(checks.filter(c=>c.status==='FAIL').flatMap(c=>c.detail.split('; ').map(x=>x.split(':')[0])))],urgent:decision==='BLOCKED'&&urgent,checkedAt:iso(now),
   generation:legacy?.generation||null,writes:'NONE',
   legacy:legacy&&{generation:legacy.generation,generatedAt:legacy.manifest.generatedAt,goodDataAgeHours:hours(now-Date.parse(legacy.health?.lastSuccessfulRefresh))},
   freeze:frozen&&{generation:frozen.generation,generatedAt:frozen.manifest.generatedAt,pointerSha256:sha(s.frozen.value.bytes),expiresAt:iso(expiresMs),hoursToExpiry:hours(remaining),expired:remaining<=0,

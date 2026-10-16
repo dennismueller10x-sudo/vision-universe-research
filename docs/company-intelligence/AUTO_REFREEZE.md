@@ -42,6 +42,10 @@ Ein bereits abgelaufener Freeze blockiert nicht: `refreeze` funktioniert auch da
 - **`GITHUB_STEP_SUMMARY`:** Entscheidung, Freeze-Verfall, Tabelle mit Ergebnis und Ursache je Prüfung.
 - Bei `BLOCKED` und Absturz wird nichts geschrieben; der Re-Freeze-Schritt läuft nicht.
 
+## Sonderfall LEGACY_FALLBACK (kein GOOD)
+
+Ist der Legacy-GOOD-Zeiger auf `LEGACY_FALLBACK` gesetzt (z. B. Doppel-Rollback am 2026-10-15; `goodState` liefert null, Health: Generation null, Gate DISABLED, `GATE_CLOSED`, delivery.json 404), endet der Preflight mit `BLOCKED` und den Ursachen `LEGACY_GOOD_MISSING` und `GATE_CLOSED` (Feld `causes` im Verdikt). Es wird nicht eingefroren (`refreeze` würde an `assertLegacyScope` ohnehin scheitern). Läuft der Freeze in weniger als 48 h ab, ist die Meldung `::error::`.
+
 ## Betrieb
 
 - Rechte `contents: read`, kein `actions: write`. Secrets (R2) wie im Universe-Release-Workflow, nur auf Job-Ebene.
