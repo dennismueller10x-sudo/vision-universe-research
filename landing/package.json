@@ -12,7 +12,8 @@
     "test:browser": "node tests/browser.mjs",
     "test:design": "node scripts/compare-research.mjs",
     "sync:research": "node scripts/sync-research.mjs",
-    "test:private": "node tests/private-access.browser.mjs"
+    "test:private": "node tests/private-access.browser.mjs",
+    "test:public": "node tests/public-signup.browser.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",
