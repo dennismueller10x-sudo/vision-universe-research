@@ -6,7 +6,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
-import {checkDiscoverSwipe} from './discover-swipe-checks.mjs';
+import {checkDiscoverSwipe,checkTouchSwipe} from './discover-swipe-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -60,6 +60,7 @@ try{
       for(const selector of ['[data-preview-swipe=left]','[data-preview-swipe=right]','[data-preview-reset]']){
         const box=await returning.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44);
       }
+      if(name==='Chromium'){await checkTouchSwipe(returning);console.log('Chromium: trusted touchscreen right/left swipe and vertical scroll without accidental save verified.');}
       assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
       await cached.close();
       for(const javaScriptEnabled of [true,false]){

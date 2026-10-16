@@ -1,5 +1,35 @@
 import assert from 'node:assert/strict';
 
+// Trusted touchscreen events: a scrollable card is itself a touch-action
+// boundary. Mouse-only drag tests cannot catch the browser taking this over.
+export async function checkTouchSwipe(page) {
+  const cdp=await page.context().newCDPSession(page);
+  const front=()=>page.locator('#discover-deck .card[aria-hidden="false"]');
+  const swipe=async(dx,dy)=>{
+    await front().scrollIntoViewIfNeeded();
+    const box=await front().boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+    for(let i=1;i<=8;i++){
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/8,y:y+dy*i/8}]});
+      await page.waitForTimeout(18);
+    }
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  };
+  try {
+    await swipe(110,2);
+    await page.waitForFunction(()=>document.querySelector('#discover-deck .card[aria-hidden="false"]').dataset.symbol==='AAPL');
+    assert.match(await page.locator('[data-preview-feedback]').innerText(),/1 in dieser Vorschau gemerkt/);
+    await swipe(3,-110);
+    assert.equal(await front().getAttribute('data-symbol'),'AAPL');
+    assert.match(await page.locator('[data-preview-feedback]').innerText(),/1 in dieser Vorschau gemerkt/);
+    await swipe(-110,2);
+    await page.waitForFunction(()=>document.querySelector('#discover-deck .card[aria-hidden="false"]').dataset.symbol==='MSFT');
+    assert.match(await page.locator('[data-preview-feedback]').innerText(),/1 in dieser Vorschau gemerkt/);
+    await page.locator('[data-preview-reset]').click();
+    assert.equal(await front().getAttribute('data-symbol'),'AMD');
+  }finally{await cdp.detach();}
+}
+
 // Real browser interactions, no provider traffic or test contacts.
 export async function checkDiscoverSwipe(page) {
   const root=page.locator('.discover-preview');
