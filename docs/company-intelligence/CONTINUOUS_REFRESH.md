@@ -186,7 +186,15 @@ und meldete `CRITICAL` trotz publizierter Daten):
    (`ROBOTS_BLOCKED`, `AUTH_REQUIRED`, `SOURCE_REMOVED`) sind ebenfalls ausgenommen.
 3. Frisch fällige Quellen und SEC-Emittenten: Erfolgsquote `(SUCCESS+NO_CHANGE)/geprüft`
    mindestens `MIN_FRESH_SUCCESS_RATIO` (0,8) bei mindestens `MIN_FRESH_SAMPLE` (5)
-   geprüften Einheiten; bei weniger muss jede gelingen.
+   geprüften Einheiten; bei weniger muss jede gelingen. Fehler unterhalb der Schwelle
+   werden informativ als `SOURCE_FAILURE_RATE_INFO` ausgewiesen.
+4. Quellenseite muss leben (gegen schleichenden Totalausfall): Gibt es fällige oder bekannt
+   fehlerhafte Quellen, braucht der Lauf mindestens einen Quellenerfolg (`SUCCESS`/`NO_CHANGE`);
+   SEC-Erfolge allein setzen den Stempel dann nicht. Außerdem blockiert ein Anteil bekannter
+   Dauerfehler an allen aktiven, nicht dauerhaft blockierten Quellen (inkl. Cooldown-Quellen,
+   vor der Queue-Auswahl gezählt) über `MAX_KNOWN_FAILING_SHARE` (0,5). 174/5.384 (3,2 %)
+   bleibt vollständig. Randfall: ohne fällige und ohne bekannt fehlerhafte Quellen (Scope ohne
+   Quellen) kann ein reiner SEC-Lauf den Stempel setzen.
 
 Grenzen: Dauerhaft fehlschlagende Quellen halten den Stempel nicht an, bleiben aber
 sichtbar. Sie sollten repariert oder als blockiert klassifiziert werden. Der
@@ -195,6 +203,10 @@ Emittentenpfad läuft unabhängig weiter. Bei Teilerfolg bleiben Fortschrittsfel
 (Lane-Stempel, `lastAttempt`, je Quelle `refreshSource:*`) erhalten. Schwellen 8 h / 12 h
 und Zeitstempel bleiben unverändert. `source_onboarding.py` setzt den globalen Stempel
 nicht mehr (nur den News-Lane-Stempel).
+
+Python-Tests lokal: `PYTHONPATH=scripts python3 -m unittest discover -s scripts/company_intelligence/tests`
+(die CI in `company-intelligence.yml` ruft sie ohne `PYTHONPATH` auf; die Testmodule ergänzen den
+Pfad selbst, `quant.sec` braucht `scripts/` und `quant/config`).
 
 ## Configuration and rollback
 

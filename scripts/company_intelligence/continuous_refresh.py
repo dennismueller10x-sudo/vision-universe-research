@@ -133,6 +133,10 @@ class CheckedHTTP(PublicHTTP):
 # ausgenommen; bei frisch faelligen Quellen entscheidet eine Erfolgsquote.
 MIN_FRESH_SUCCESS_RATIO=0.8   # (SUCCESS+NO_CHANGE) / geprueft, nur frisch faellige Quellen
 MIN_FRESH_SAMPLE=5            # darunter muss jede frisch faellige Quelle erfolgreich sein
+# Anteil bekannter Dauerfehler an allen aktiven, nicht dauerhaft blockierten Quellen. Darueber
+# lebt die Quellenseite nicht mehr (schleichender Totalausfall: Lauf N faellt aus, Lauf N+1 sieht
+# nur noch Cooldown-Quellen). 174/5384 (3,2 %) bleibt weit darunter.
+MAX_KNOWN_FAILING_SHARE=0.5
 # Bewusst als blockiert/entfernt gefuehrt (robots.txt, Auth, entfernte URL): dauerhaft, pro Quelle
 # health=blocked und im Bericht unter sourceOutcomes; zaehlen nicht in Nenner und Blockade.
 POLICY_TERMINAL_OUTCOMES=frozenset({'ROBOTS_BLOCKED','AUTH_REQUIRED','SOURCE_REMOVED'})
@@ -150,7 +154,7 @@ def ratio_ok(ok,failed):
     if checked<MIN_FRESH_SAMPLE: return False
     return ok/checked>=MIN_FRESH_SUCCESS_RATIO
 
-def refresh_completeness(*,network,fresh_outcomes,known_failing,successes,deferred,sec_exhausted,sec_checked,sec_success,sec_aborted,fact_outcomes):
+def refresh_completeness(*,network,fresh_outcomes,known_failing,eligible_total,known_total,source_checked,source_success,successes,deferred,sec_exhausted,sec_checked,sec_success,sec_aborted,fact_outcomes):
     """Fachlich vollstaendiger Refresh? Liefert (vollstaendig, Gruende).
 
     Blockiert immer (systemisch): Offline-Lauf, kein einziger Erfolg, Abbruch durch
@@ -163,7 +167,16 @@ def refresh_completeness(*,network,fresh_outcomes,known_failing,successes,deferr
     """
     reasons=[]
     if not network: reasons.append('OFFLINE_RUN')
-    elif not successes: reasons.append('NO_SUCCESSFUL_SOURCE')
+    elif source_checked or known_total:
+        # Es gibt faellige oder bekannt fehlerhafte Quellen: die Quellenseite muss selbst leben.
+        # SEC-Erfolge allein duerfen den Stempel dann nicht setzen.
+        if not source_success: reasons.append('NO_SUCCESSFUL_SOURCE')
+    elif not successes:
+        # Randfall: keine faelligen und keine bekannt fehlerhaften Quellen (z. B. Scope ohne Quellen
+        # oder alles noch nicht faellig) -> nur SEC-Erfolge koennen den Lauf tragen.
+        reasons.append('NO_SUCCESSFUL_SOURCE')
+    if eligible_total and known_total/eligible_total>MAX_KNOWN_FAILING_SHARE:
+        reasons.append(f'KNOWN_FAILING_SHARE_TOO_HIGH:{known_total}/{eligible_total}')
     ok=sum(v for k,v in fresh_outcomes.items() if k in SUCCESS_OUTCOMES)
     failed=sum(v for k,v in fresh_outcomes.items() if k not in SUCCESS_OUTCOMES and k not in POLICY_TERMINAL_OUTCOMES)
     if not ratio_ok(ok,failed):
@@ -175,7 +188,8 @@ def refresh_completeness(*,network,fresh_outcomes,known_failing,successes,deferr
     if not ratio_ok(sec_success,max(0,sec_checked-sec_success)): reasons.append(f'SEC_FAILURE_RATE:{sec_checked-sec_success}/{sec_checked}')
     if fact_outcomes.get('TEMPORARY_FAILURE'): reasons.append('FINANCIAL_FACTS_TEMPORARY_FAILURE')
     blocking=list(reasons)
-    if known_failing: reasons.append(f'KNOWN_FAILING_SOURCES:{len(known_failing)}')
+    if failed and 'SOURCE_FAILURE_RATE' not in ''.join(reasons): reasons.append(f'SOURCE_FAILURE_RATE_INFO:{failed}/{ok+failed}')
+    if known_total or known_failing: reasons.append(f'KNOWN_FAILING_SOURCES:{max(known_total,len(known_failing))}')
     return not blocking,reasons
 
 def progress_health(prior,now,lane_success,sec_success,financial,complete,reasons):
@@ -228,6 +242,11 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         all_sources=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         sources=[s for s in all_sources if s.get('companyId') in selected]
         eligible=[s for s in sources if s.get('active') and first_party(s,s['companyId']) and not publisher(s['url'])]
+        # Gesamtbild der Quellenseite VOR jeder Queue-Auswahl: auch Cooldown-Quellen (nicht faellig)
+        # zaehlen; dauerhaft blockierte Klassen (ROBOTS_BLOCKED, AUTH_REQUIRED, SOURCE_REMOVED) nicht.
+        pool=[(s,store.state('refreshSource:'+s['sourceId'],{})) for s in eligible]
+        pool=[(s,o) for s,o in pool if o.get('status') not in POLICY_TERMINAL_OUTCOMES]
+        eligible_total=len(pool); known_total=sum(was_known_failing(s,o) for s,o in pool)
         # Oldest successes first prevents repeatedly spending the whole budget on
         # rich issuers. News precedes slower documents; no global publisher feeds.
         eligible.sort(key=lambda s:(s['type']=='IR_MATERIALS',s.get('lastSuccess') or '',s['sourceId']))
@@ -339,7 +358,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 if outcome=='SUCCESS':financial_updates+=1;updated.add(cid)
                 if outcome=='BUDGET_DEFERRED':sec_exhausted=True
         successes=outcomes['SUCCESS']+outcomes['NO_CHANGE']+sec_success
-        complete,incomplete_reasons=refresh_completeness(network=network,fresh_outcomes=fresh_outcomes,known_failing=known_failing,successes=successes,
+        complete,incomplete_reasons=refresh_completeness(network=network,fresh_outcomes=fresh_outcomes,known_failing=known_failing,eligible_total=eligible_total,known_total=known_total,
+            source_checked=checked,source_success=outcomes['SUCCESS']+outcomes['NO_CHANGE'],successes=successes,
             deferred=deferred,sec_exhausted=sec_exhausted,sec_checked=sec_checked,sec_success=sec_success,sec_aborted=sec_aborted,fact_outcomes=fact_outcomes)
         health=progress_health(prior,now,lane_success,sec_success,financial,complete,incomplete_reasons)
         # Fortschritt/Cooldowns sofort sichern; der globale Stempel folgt erst am Ende.
@@ -374,7 +394,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
         report={'schema':1,'scope':'PER_ISSUER_ELIGIBILITY' if universe else 'CONTROLLED_COHORT','status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
                 'consumerGeneration':prepared['generation'],'privateCompanies':exported['exportedCompanies'],'sourcesEligible':len(eligible),'sourcesChecked':checked,
-                'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'freshSourceOutcomes':dict(fresh_outcomes),'knownFailingSources':len(known_failing),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
+                'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'freshSourceOutcomes':dict(fresh_outcomes),'knownFailingSources':known_total,'eligibleSources':eligible_total,'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
                 'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,'profileImport':profile_import,'sourceUrlReview':source_url_review,
