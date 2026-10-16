@@ -229,11 +229,11 @@ async function evaluate(o) {
     barsNewlyHeld_v2_vs_main: 0, unresolved10xInsideValid: { UP: 0, DOWN: 0, total: 0, normalizedBySec: 0 },
     providerAgreement: { secEffectiveMatchedToProviderFactor: 0, secEffectiveConflictingProviderFactor: 0, secEffectiveNormalizedProviderMissing: 0, secEffectiveNotObserved: 0, secEffectiveOutsideSeries: 0, secEffectiveUndatedOrPeriodicOnly: 0, secEffectiveSmallRatioUncorroborated: 0 },
     extractorVsProvider: { providerSplitsSince2002WithCik: 0, foundDated: 0, foundUndated: 0, missed: 0 },
-    pit: { segmentsChecked: 0, viewsChecked: 0, barsAfterAsOf: 0, holdObservedAfterAsOf: 0, evidenceVisibleNotBeforeAsOf: 0, returnMismatchOutsideRevisions: 0, revisionsHold: 0, revisionsUnadjusted: 0, invalidRangesObservedNextSession: 0 },
+    pit: { mismatchKinds: {}, segmentsChecked: 0, viewsChecked: 0, barsAfterAsOf: 0, holdObservedAfterAsOf: 0, evidenceVisibleNotBeforeAsOf: 0, returnMismatchOutsideRevisions: 0, revisionsHold: 0, revisionsUnadjusted: 0, invalidRangesObservedNextSession: 0 },
     secCoverage: { segmentsWithCik: 0, segmentsWithSecEvents: 0, segmentsWithEffectiveEvents: 0 } };
   const holdLabels = { TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, UNLABELED: 0, byClass: {} }, normLabels = { TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, UNLABELED: 0, sharesNone: 0 };
   const fnEvents = { total: 0, evaluable: 0, handled: 0, held: 0, falseNegatives: 0, inSample: { evaluable: 0, falseNegatives: 0 }, outOfSample: { evaluable: 0, falseNegatives: 0 }, forwardReported: 0 };
-  const privCases = [], privHigh = [], privControl = [], privHolds = [], privFn = [];
+  const privCases = [], privHigh = [], privControl = [], privHolds = [], privFn = [], privPit = [];
   for (const r of scanRows) {
     if (r.missing) continue;
     const u = U[r.i], bars = JSON.parse(zlib.gunzipSync(fs.readFileSync(rawFile(o, r.i))).toString('utf8'));
@@ -307,7 +307,17 @@ async function evaluate(o) {
         const vt = PV.alignTr(view, dates);
         for (let k = 1; k < dates.length && dates[k] <= asOf; k++) {
           if (!(vt[k] > 0 && vt[k - 1] > 0 && fin[k] > 0 && fin[k - 1] > 0)) continue;
-          if (Math.abs((vt[k] / vt[k - 1]) / (fin[k] / fin[k - 1]) - 1) > 1e-9 && !revised(dates[k], asOf)) { M.pit.returnMismatchOutsideRevisions++; break; }
+          if (Math.abs((vt[k] / vt[k - 1]) / (fin[k] / fin[k - 1]) - 1) > 1e-9 && !revised(dates[k], asOf)) {
+            M.pit.returnMismatchOutsideRevisions++;
+            /* diagnostic only (no rule depends on it): what differs between the as-of view and the final view */
+            const nearNorm = v2.evidence.find((e) => e.outcome === 'NORMALIZE' && e.eventDate && Math.abs(Date.parse(e.eventDate) - Date.parse(dates[k])) <= 7 * 864e5);
+            const viewNorm = view.evidence.find((e) => e.outcome === 'NORMALIZE' && e.eventDate && Math.abs(Date.parse(e.eventDate) - Date.parse(dates[k])) <= 7 * 864e5);
+            const nearInv = v2.invalidRanges.find((x) => Math.abs(Date.parse(x.from) - Date.parse(dates[k])) <= 7 * 864e5);
+            const kind = nearNorm && viewNorm && nearNorm.eventDate !== viewNorm.eventDate ? 'NORMALIZATION_DAY_MOVES_WITH_LATER_BARS' : nearNorm && !viewNorm ? 'NORMALIZATION_NOT_YET_IN_VIEW' : nearInv ? 'NEAR_INVALID_RANGE' : 'OTHER';
+            inc(M.pit.mismatchKinds, kind);
+            privPit.push({ segmentId: u.id, date: dates[k], asOf, kind, finalRet: r4(fin[k] / fin[k - 1]), viewRet: r4(vt[k] / vt[k - 1]), finalEvent: nearNorm ? { eventDate: nearNorm.eventDate, visibleAt: nearNorm.visibleAt, observedAt: nearNorm.observedAt } : null, viewEvent: viewNorm ? { eventDate: viewNorm.eventDate, visibleAt: viewNorm.visibleAt } : null });
+            break;
+          }
         }
       }
     }
@@ -415,7 +425,7 @@ async function evaluate(o) {
   const pubControl = { schema: 'corporate-action-v2-control-results-2.0.0', ...runMeta(), versions: versions(), ...ctl, performanceCalculated: false, calibrationRun: false };
   writeJson(path.join(o['public-dir'], 'CORPORATE-ACTION-V2-AUDIT.json'), pubAudit, true);
   writeJson(path.join(o['public-dir'], 'INDEPENDENT-DATA-CONTROL-SET-V2.results.json'), pubControl, true);
-  writeJson(path.join(o.private, 'evaluate.json'), { cases: privCases, high: privHigh, control: privControl, holds: privHolds, fn: privFn, sec: secByCik, controlMembers: control });
+  writeJson(path.join(o.private, 'evaluate.json'), { cases: privCases, high: privHigh, control: privControl, holds: privHolds, fn: privFn, pit: privPit, sec: secByCik, controlMembers: control });
   process.stdout.write(JSON.stringify({ impact: { validBars: M.validBars, histories: M.histories, holdsByEvidenceClass: M.holdsByEvidenceClass }, acceptance: ctl.acceptance }) + '\n');
 }
 

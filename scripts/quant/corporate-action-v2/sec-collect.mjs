@@ -43,7 +43,7 @@ export const COLLECTOR_VERSION = 'sec-corporate-action-collector-1.0.0';
 const stats = { requests: 0, errors: 0, retries: 0, eftsQueries: 0, eftsHits: 0, universeHits: 0, filings: 0, documents: 0, documentErrors: 0, truncatedWindows: 0,
   proxyHits: 0, periodicFilings: 0, incompleteWindows: [], documentsSkippedByCap: 0 };
 let last = 0;
-async function throttle() { const wait = Math.max(0, last + 130 - Date.now()); if (wait) await new Promise((r) => setTimeout(r, wait)); last = Date.now(); }
+async function throttle() { const wait = Math.max(0, last + 115 - Date.now()); /* <= 8.7 requests/s, under the SEC fair-access limit of 10/s */ if (wait) await new Promise((r) => setTimeout(r, wait)); last = Date.now(); }
 async function get(url, { json = false } = {}) {
   for (let a = 0; a < 5; a++) {
     await throttle(); stats.requests++;
@@ -118,21 +118,29 @@ async function main() {
   /* 2. documents -> events */
   const perCik = new Map(); let docs = 0;
   const add = (cik, evs) => { const l = perCik.get(cik) || []; l.push(...evs); perCik.set(cik, l); };
-  for (const [adsh, f] of [...filings.entries()].sort((a, b) => a[1].filedDate.localeCompare(b[1].filedDate))) {
-    if (docs >= maxDocs) { stats.documentsSkippedByCap++; continue; }
-    let text = '';
-    for (const file of [...f.files].sort()) {
-      if (!/\.(htm|html|txt)$/i.test(file)) continue;
-      const raw = await get(docUrl(f.cik, adsh, file)); docs++; stats.documents++;
-      if (raw === null) { stats.documentErrors++; continue; }
-      text += ' ' + SEC.textOf(raw);
+  /* up to four filings in flight; the shared throttle keeps the request rate under the SEC limit */
+  const queue = [...filings.entries()].sort((a, b) => a[1].filedDate.localeCompare(b[1].filedDate) || a[0].localeCompare(b[0]));
+  let next = 0;
+  const worker = async () => {
+    while (next < queue.length) {
+      const [adsh, f] = queue[next++];
+      if (docs >= maxDocs) { stats.documentsSkippedByCap++; continue; }
+      let text = '';
+      for (const file of [...f.files].sort()) {
+        if (!/\.(htm|html|txt)$/i.test(file)) continue;
+        docs++;
+        const raw = await get(docUrl(f.cik, adsh, file)); stats.documents++;
+        if (raw === null) { stats.documentErrors++; continue; }
+        text += ' ' + SEC.textOf(raw);
+      }
+      if (!text.trim()) continue;
+      const tickers = ciks.get(f.cik).tickers || [];
+      const evs = SEC.filingEvents(text, { form: f.form, items: f.items, accession: adsh, cik: f.cik, filedDate: f.filedDate, ticker: tickers[0] || null });
+      if (tickers.length > 1) evs.forEach((e) => { e.tickerMentioned = tickers.some((t) => { const p = SEC.tickerPattern(t); return !!p && p.test(text); }); });
+      add(f.cik, evs);
     }
-    if (!text.trim()) continue;
-    const tickers = ciks.get(f.cik).tickers || [];
-    const evs = SEC.filingEvents(text, { form: f.form, items: f.items, accession: adsh, cik: f.cik, filedDate: f.filedDate, ticker: tickers[0] || null });
-    if (tickers.length > 1) evs.forEach((e) => { e.tickerMentioned = tickers.some((t) => new RegExp('(?:^|[^A-Z])' + t.replace(/[^A-Z.]/g, '') + '(?![A-Z])').test(text)); });
-    add(f.cik, evs);
-  }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
   /* 3a. proxies: ANNOUNCED context, metadata only (no ratio) */
   const proxies = new Map();
   for (const [y, m] of months(from, to)) {
@@ -171,7 +179,9 @@ async function main() {
   }
   const out = {};
   for (const cik of new Set([...perCik.keys(), ...proxies.keys()])) {
-    const merged = SEC.mergeEvents(perCik.get(cik) || []);
+    /* deterministic input order regardless of fetch completion order */
+    const list = (perCik.get(cik) || []).slice().sort((x, y) => String(x.visibleAt).localeCompare(String(y.visibleAt)) || String(x.source?.accession).localeCompare(String(y.source?.accession)) || (x.ratio || 0) - (y.ratio || 0));
+    const merged = SEC.mergeEvents(list);
     const prox = [...(proxies.get(cik) || new Map()).values()].sort((a, b) => a.filedDate.localeCompare(b.filedDate));
     out[cik] = { events: merged, proxies: prox };
   }

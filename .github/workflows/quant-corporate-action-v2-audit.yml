@@ -106,7 +106,7 @@ jobs:
         run: |
           set -euo pipefail
           node fix/scripts/quant/corporate-action-v2/sec-collect.mjs --ciks /workspace/private/ca/ciks.json --periodic-ciks /workspace/private/ca/periodic-ciks.json \
-            --out /workspace/private/ca/sec-events.json --from 2001-01 --max-docs 45000
+            --out /workspace/private/ca/sec-events.json --from 2001-01 --max-docs 250000
       - name: Evaluate (impact, PIT checks, control set, regression rows)
         env:
           NODE_OPTIONS: --max-old-space-size=13000
