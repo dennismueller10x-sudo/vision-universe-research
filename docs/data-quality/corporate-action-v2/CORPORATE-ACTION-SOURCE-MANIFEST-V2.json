@@ -10,7 +10,7 @@
       "priority": 1,
       "status": "INTEGRATED_PRIMARY",
       "what": "EDGAR full-text search (efts.sec.gov/LATEST/search-index) for split language in 8-K/6-K (incl. amendments) plus the filing documents from www.sec.gov/Archives (main document and EX-99 press releases); extracted by quant/engines/sec-corporate-actions.js",
-      "coverage": "SEC registrants (US domestic issuers; foreign private issuers via 6-K), filings from 2001 (full-text search horizon). Not covered: non-reporting OTC issuers, events before 2001, issuers without a linked CIK.",
+      "coverage": "SEC registrants (US domestic issuers; foreign private issuers via 6-K), filings from 2001 (full-text search horizon). Not covered: non-reporting OTC issuers, events before 2001, issuers without a linked CIK. Effective coverage in this audit: the captured price universe starts 2015-01-02 and the collector keeps a filing only from 400 days before a listing's first bar, so the queried 2001-2012 windows return search hits but no in-universe filings (observed identically in runs 38889245815 and 38957800888).",
       "pitSuitability": "YES: every event carries the filing date of the document that establishes each stage (stageVisibleAt.ANNOUNCED/APPROVED/EFFECTIVE). A stage is used for an as-of date only when filed on or before it.",
       "splitSupport": "forward and reverse splits, share consolidations; stock dividends only when worded as a split",
       "effectiveDate": "explicit effective date/time and the first split-adjusted trading session when stated (8-K Item 3.03/5.03 typically states both); undated retrospective statements are kept with confidence MEDIUM and need the ticker in the filing and a unique price match",

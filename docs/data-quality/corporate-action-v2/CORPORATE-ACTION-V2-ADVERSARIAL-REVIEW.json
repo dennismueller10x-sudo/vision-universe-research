@@ -147,6 +147,21 @@
         "workflow meets ADR-005"
       ],
       "consequence": "audit run 38885412883 cancelled during the capture step (no result existed); control protocol 1.0.0 withdrawn and replaced by 2.0.0 before any result"
+    },
+    {
+      "round": "1b",
+      "reviewer": "audit-internal PIT check (run 38957800888, pre-registered consistency test)",
+      "scope": "canonical-price-validity-2.0.0 on real data",
+      "findings": [
+        {
+          "id": "F19",
+          "severity": "HIGH",
+          "area": "PIT: observedAt of SEC normalizations too early; revisions not disclosed",
+          "evidence": "6 as-of views (5 events) lacked a normalization that the final view applies, at or after the evidence's observedAt (stage filing date); pitHistory skipped visibleAt == eventDate and used visibleAt as 'until'. No bars, holds or evidence after asOf.",
+          "status": "FIXED_AFTER_RUN_TIMESTAMP_ONLY",
+          "resolution": "canonical-price-validity-2.1.0: observedAt = first session whose as-of view contains the normalization (observedAtStage kept); pitHistory discloses every normalization with observedAt > eventDate (until = session before observedAt, resumeFrom = observedAt). No detection rule, threshold or valid bar changes. Tests R-F19, R-F19b fail on 2.0.0 and pass on 2.1.0. Re-measured by the next audit run."
+        }
+      ]
     }
   ]
 }

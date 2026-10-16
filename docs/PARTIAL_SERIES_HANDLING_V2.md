@@ -1,4 +1,4 @@
-# Partial series handling v2 (canonical-price-validity-2.0.0)
+# Partial series handling v2 (canonical-price-validity-2.1.0)
 
 This document describes how one data defect no longer deletes a title's entire history (review R8), and how point-in-time safety is guaranteed.
 
@@ -37,6 +37,7 @@ Example (test V8):
   - Price signature: the event day itself.
   - Spike: the following day (R7). On the spike day the bar still counts as valid, because nobody can know it is wrong yet.
   - Conflict with an SEC filing: the filing date.
+  - SEC normalization (since 2.1.0, review F19): the first session whose as-of view contains the normalization. It can be later than the filing date, because the trading date may come from a later 8-K, a ratio under 3:1 needs a later SEC share count, and the price window needs the bars after the anchor. Audit run 38957800888 found six such views (5 events) where the old stage-only timestamp was too early. `pitHistory()` now discloses every earlier view.
 - **As-of view.** `build(bars, {asOf})` computes using only bars ≤ asOf and SEC stages with a filing date ≤ asOf.
   - Tests V9, V14 and R-F10: a defect starting 2024-06-03 does not touch a view as of 2022-12-30. A share count or SEC filing is used only when it was filed strictly before the as-of day, and each field (for example the trading date from a later 8-K) only from the filing that supplied it.
   - Returns of all bars before the defect are identical in both views. Returns are ratios; a later normalization does not change them.

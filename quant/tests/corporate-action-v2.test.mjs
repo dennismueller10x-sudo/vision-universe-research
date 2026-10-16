@@ -355,3 +355,33 @@ test('R-F09: ticker match needs an exchange/symbol context', () => {
   assert.equal(p.test('holders of Series A Preferred Stock'), false);
   assert.equal(p.test('(NYSE: A) announced'), true);
 });
+
+test('R-F19: observedAt of a normalization is the first as-of view that contains it; pitHistory discloses every earlier view', () => {
+  /* 1:2.5 reverse split with an 8-K before the event, but share volume rises (inconclusive): a small ratio needs the SEC share count,
+     which is filed 40 sessions after the event. The final view normalizes; views before that filing cannot. */
+  const base = series(300), i = 200, k = 2.5;
+  const raw = base.map((b, j) => j < i ? b : { ...b, open: b.open * k, high: b.high * k, low: b.low * k, close: b.close * k, adjustedClose: b.adjustedClose * k, volume: j <= i + 3 ? b.volume * 3 : b.volume });
+  const shares = [{ periodEnd: raw[150].date, availableAt: raw[160].date, value: 10e6 }, { periodEnd: raw[230].date, availableAt: raw[240].date, value: 4e6 }];
+  const opts = { identity: CONFIRMED, shares, secEvents: [ev({ ratio: 1 / k, marketDate: raw[i].date, visibleAt: raw[i - 3].date })] };
+  const fin = PV.build(raw, opts);
+  const e = fin.evidence.find((x) => x.outcome === 'NORMALIZE');
+  assert.ok(e, 'final view normalizes with the share count');
+  assert.equal(e.observedAtStage, raw[i].date, 'the stage timestamp alone would claim the event day');
+  assert.equal(e.observedAt, raw[241].date, 'first session whose view sees the share count (filed strictly before asOf)');
+  assert.equal(e.observedAtBasis, 'FIRST_AS_OF_VIEW_WITH_NORMALIZATION');
+  for (const j of [i, 220, 240]) assert.ok(!PV.build(raw, { ...opts, asOf: raw[j].date }).evidence.some((x) => x.outcome === 'NORMALIZE'), `no normalization as of ${j}`);
+  assert.ok(PV.build(raw, { ...opts, asOf: raw[241].date }).evidence.some((x) => x.outcome === 'NORMALIZE'));
+  const h = PV.pitHistory(raw, opts, fin).find((x) => x.from === raw[i].date);
+  assert.ok(h, 'revision disclosed although the 8-K was filed before the event');
+  assert.equal(h.until, raw[240].date); assert.equal(h.resumeFrom, raw[241].date);
+});
+
+test('R-F19b: a filing on the event day itself is a disclosed revision (visibleAt == eventDate)', () => {
+  const raw = undeclaredReverse(series(300), 200, 20);
+  const opts = { identity: CONFIRMED, secEvents: [ev({ marketDate: raw[200].date, visibleAt: raw[200].date })] };
+  const fin = PV.build(raw, opts);
+  const e = fin.evidence.find((x) => x.outcome === 'NORMALIZE');
+  assert.equal(e.observedAt, raw[201].date);
+  const h = PV.pitHistory(raw, opts, fin).find((x) => x.from === raw[200].date);
+  assert.ok(h); assert.equal(h.until, raw[200].date); assert.equal(h.resumeFrom, raw[201].date);
+});

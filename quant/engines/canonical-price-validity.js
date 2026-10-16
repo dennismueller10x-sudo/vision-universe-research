@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE — canonical-price-validity.js   (canonical-price-validity-2.0.0)
+   VISION UNIVERSE — canonical-price-validity.js   (canonical-price-validity-2.1.0)
 
    KANONISCHER SERIENVERTRAG MIT GUELTIGKEITSINTERVALLEN (Partial Series)
 
@@ -55,7 +55,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var CTR = isNode ? require("./canonical-total-return.js") : global.VUCanonicalTotalReturn;
   var CAV = isNode ? require("./corporate-action-validation.js") : global.VUCorporateActionValidation;
-  var VERSION = "canonical-price-validity-2.0.0";
+  var VERSION = "canonical-price-validity-2.1.0";
 
   var STATE_OF_REASON = {
     CORPORATE_ACTION_CONFLICT: "HOLD",
@@ -68,6 +68,7 @@
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function day(d) { return String(d).slice(0, 10); }
+  function addDays(d, n) { return new Date(Date.parse(day(d) + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10); }
 
   /**
    * Erster Tag, ab dem der Kern die Reihe nicht mehr rekonstruiert, und der
@@ -129,6 +130,37 @@
    * @param {object} opts    {identity, delisted, role, secEvents, shares, cik, cikBasis, asOf}
    */
   function build(rawBars, opts) {
+    var c = buildView(rawBars, opts);
+    resolveObservedAt(rawBars, opts || {}, c);
+    return c;
+  }
+  /**
+   * observedAt einer Normalisierung = erster Handelstag, dessen Stichtagssicht
+   * sie enthaelt (Review F19). Die Normalisierung kann auf Angaben beruhen, die
+   * erst nach dem Ereignistag vorliegen (Datum aus einem spaeteren 8-K,
+   * Aktienzahl fuer kleine Verhaeltnisse, Kerzen im Fenster nach dem Anker);
+   * der Einreichungstag der Stufe allein unterschaetzt den Tag. Aendert keine
+   * Entscheidung, nur den Zeitstempel.
+   */
+  function resolveObservedAt(rawBars, opts, c) {
+    var norm = (c.evidence || []).filter(function (e) { return e.outcome === "NORMALIZE" && e.eventDate; });
+    if (!norm.length) return;
+    var asOf = c.asOf, days = (Array.isArray(rawBars) ? rawBars : []).map(function (b) { return day(b.date); })
+      .filter(function (d) { return !asOf || d <= asOf; }).sort();
+    norm.forEach(function (e) {
+      e.observedAtStage = e.observedAt || null;
+      for (var k = 0; k < days.length; k++) {
+        if (days[k] < e.eventDate || (k > 0 && days[k] === days[k - 1])) continue;
+        var view = buildView(rawBars, Object.assign({}, opts, { asOf: days[k] }));
+        if (view.evidence.some(function (x) { return x.outcome === "NORMALIZE" && x.eventDate === e.eventDate && x.ratio === e.ratio; })) {
+          e.observedAt = days[k]; e.observedAtBasis = "FIRST_AS_OF_VIEW_WITH_NORMALIZATION"; return;
+        }
+      }
+      /* innerhalb der Reihe nie in einer Stichtagssicht: nur revidierte Historie */
+      e.observedAt = days.length ? addDays(days[days.length - 1], 1) : null; e.observedAtBasis = "AFTER_LAST_BAR";
+    });
+  }
+  function buildView(rawBars, opts) {
     opts = opts || {};
     var asOf = opts.asOf ? day(opts.asOf) : null;
     var bars = (Array.isArray(rawBars) ? rawBars : []).filter(function (b) { return b && (!asOf || day(b.date) <= asOf); })
@@ -206,10 +238,12 @@
   function pitHistory(rawBars, opts, finalContract) {
     var fin = finalContract || build(rawBars, opts), out = [];
     fin.evidence.forEach(function (e) {
-      if (e.outcome !== "NORMALIZE" || !e.visibleAt || !e.eventDate || e.visibleAt <= e.eventDate) return;
-      var view = build(rawBars, Object.assign({}, opts, { asOf: e.eventDate }));
+      /* jede Normalisierung, die eine Stichtagssicht am Ereignistag noch nicht enthaelt (F19) */
+      if (e.outcome !== "NORMALIZE" || !e.eventDate || !e.observedAt || e.observedAt <= e.eventDate) return;
+      var view = buildView(rawBars, Object.assign({}, opts, { asOf: e.eventDate }));
       var held = view.hold && view.hold.from === e.eventDate;
-      out.push({ state: held ? "HOLD" : "PIT_REVISION", from: e.eventDate, until: e.visibleAt, resumeFrom: nextDate(rawBars, e.visibleAt),
+      out.push({ state: held ? "HOLD" : "PIT_REVISION", from: e.eventDate, until: prevDate(rawBars.map(function (b) { return { date: day(b.date) }; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; }), e.observedAt),
+        resumeFrom: e.observedAt,
         reason: held ? view.hold.reason : "UNADJUSTED_JUMP_UNTIL_SEC_FILING", resolvedBy: e.provenanceHash, evidenceClass: e.class });
     });
     fin.invalidRanges.forEach(function (x) { out.push({ state: "INVALID_RANGE", from: x.from, to: x.to, observedAt: x.observedAt, reason: x.reason }); });

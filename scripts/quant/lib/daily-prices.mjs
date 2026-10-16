@@ -37,7 +37,7 @@ const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity
    Listing-Identitaet gibt es keine (IDENTITY_UNCERTAIN). opts.role
    BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik.
 
-   TEILREIHEN (canonical-price-validity-2.0.0, Review R8) - NUR auf Anforderung
+   TEILREIHEN (canonical-price-validity-2.1.0, Review R8) - NUR auf Anforderung
    fromBarsPartial(payload, opts): lehnt die Rekonstruktion die Reihe ab einem
    bestimmten Tag ab (Sperre, Datenwiderspruch, Luecke), bleiben die gueltigen
    Kerzen davor erhalten: tr traegt Werte bis trValidUntil und NaN danach (und an

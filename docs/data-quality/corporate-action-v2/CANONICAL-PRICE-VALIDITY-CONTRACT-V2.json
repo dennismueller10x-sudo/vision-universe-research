@@ -1,6 +1,6 @@
 {
   "schema": "canonical-price-validity-contract-2.0.0",
-  "contract": "canonical-price-validity-2.0.0",
+  "contract": "canonical-price-validity-2.1.0",
   "engine": "quant/engines/canonical-price-validity.js",
   "dependsOn": {
     "totalReturn": "canonical-total-return-1.2.0 (unchanged; whole-series reconstruct and its reasons)",
@@ -16,7 +16,7 @@
     "validityIntervals": "intervals[]: VALID {from,to}, INVALID_RANGE {from,to,observedAt,resumeFrom,reason}, HOLD / QUARANTINE {from,observedAt,reason,detail,evidenceClass,outcome}, TERMINAL {from,kind OPEN|DELISTED} or listing break",
     "quarantineHoldReason": "hold.reason (core reason or CORPORATE_ACTION_CONFLICT) and hold.evidenceClass",
     "provenance": "evidence.provenanceHash, sources (accession, form, filedDate), contract versions",
-    "sourceTimestamps": "SEC stageVisibleAt per stage, evidence.visibleAt, hold.observedAt",
+    "sourceTimestamps": "SEC stageVisibleAt per stage, evidence.visibleAt, hold.observedAt; for a normalization evidence.observedAt = first session whose as-of view contains it (observedAtBasis FIRST_AS_OF_VIEW_WITH_NORMALIZATION, since 2.1.0; the stage-only timestamp is kept as observedAtStage), pitHistory discloses every earlier view as PIT_REVISION or HOLD with until/resumeFrom",
     "pitVisibility": "build(bars, {asOf}) uses bars <= asOf and SEC observations filed strictly before asOf (field by field); pitHistory() lists HOLD->resume and PIT_REVISION transitions; the final view differs from an as-of view only in the event-day return of a later-filed SEC normalization"
   },
   "states": {
