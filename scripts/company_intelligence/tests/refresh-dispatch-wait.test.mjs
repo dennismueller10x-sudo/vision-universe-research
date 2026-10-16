@@ -21,7 +21,7 @@ const runPlan=(...steps)=>steps.map(([m,s,c=''])=>[m*MIN,s,c]);
  *  plans: je Dispatch (n-ter) der Plan des entstehenden Laufs oder null (Lauf erscheint nie)
  *  deliveredAtMin: Minute ab T0, ab der die Generation ausgeliefert ist (null = nie)
  */
-function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin=-25,limits,dispatchFails=0,extraKnown=[]}){
+function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin=-25,limits,dispatchFails=0,extraKnown=[],jobs=null}){
  let t=T0,genCalls=0;const log={dispatch:[],cancel:[],list:0},runs=[...extraKnown];
  const gh={
   dispatch:async()=>{
@@ -35,7 +35,9 @@ function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin
    
    return {databaseId:r.databaseId,createdAt:r.createdAt,status:cur[1],conclusion:cur[2]};
   }).filter(Boolean);},
-  cancel:async id=>{log.cancel.push(id);}
+  cancel:async id=>{log.cancel.push(id);},
+  // jobs: optional (n-ter eigener Lauf -> Jobliste oder Funktion, die wirft); ohne jobs fehlt die Methode wie bisher
+  ...(jobs?{jobs:async id=>{log.jobs=(log.jobs||0)+1;const n=Number(id)-1000-dispatchFails,v=jobs[n];if(typeof v==='function')return v();return v??[];}}:{})
  };
  const deadlines=mod.planDeadlines({jobStartMs:T0+jobStartMin*MIN,nowMs:T0,limits:limits||mod.LIMITS});
  const run=()=>mod.waitForDelivery({expected:EXPECTED,gh,generation:async()=>{genCalls++;return (deliveredAfterCalls!==null?genCalls>deliveredAfterCalls:deliveredAtMin!==null&&t>=T0+deliveredAtMin*MIN)?EXPECTED:'gen-old';},
@@ -218,12 +220,12 @@ test('Workflow: Rollback-Schritt unveraendert fail-closed; Rechte, ADR-005 und B
  const rec=steps.find(s=>/^Record job start/.test(s.name||''));assert.ok(steps.indexOf(rec)<steps.indexOf(deploy));
 });
 
-test('Skript: kein Rollback, kein Gate, kein R2; gh nur dispatch/list/cancel auf pages-release.yml',()=>{
+test('Skript: kein Rollback, kein Gate, kein R2; gh nur dispatch/list/cancel und lesend run view (Jobliste)',()=>{
  const code=readFileSync(here('../refresh-dispatch-wait.mjs'),'utf8').replace(/\/\*[\s\S]*?\*\//,'');
  assert.doesNotMatch(code,/refresh-run|production-release|s3-driver|VU_HISTORY|rollback\(/i);
  assert.doesNotMatch(code,/\$\{\{/);
  const ghCalls=[...code.matchAll(/run\('gh',\[([^\]]*)\]/g)].map(m=>m[1].split(',')[0]+m[1].split(',')[1]);
- assert.deepEqual(ghCalls.sort(),["'run''cancel'","'run''list'","'workflow''run'"]);
+ assert.deepEqual(ghCalls.sort(),["'run''cancel'","'run''list'","'run''view'","'workflow''run'"]);
 });
 
 test('CLI: ohne --health bzw. ohne erwartete Generation scheitert fail-closed (kein Dispatch)',async()=>{
@@ -241,7 +243,8 @@ async function load(mutate){
 }
 const mutants={
  'Re-Dispatch-Obergrenze entfernt':s=>s.replace('maxRedispatch:2','maxRedispatch:99'),
- 'echter Fehler wird wiederholt statt sofort beendet':s=>s.replace("if(j.verdict==='FAILED')return","if(false)return"),
+ 'echter Fehler wird wiederholt statt sofort beendet':s=>s.replace("if(j.verdict==='FAILED'){","if(false){"),
+ 'Vor-Deploy-Ausnahme gilt fuer jeden Fehler (auch nach dem Deploy)':s=>s.replace("export function preDeployFailure(run,jobs){","export function preDeployFailure(run,jobs){return true;"),
  'Re-Dispatch auch bei bereits ausgelieferter Generation':s=>s.replace("if(await served())return 'SERVED';\n","")
   ,
  'cancelled gilt nicht als verdraengt':s=>s.replace("const SUPERSEDED=new Set(['cancelled','skipped'])","const SUPERSEDED=new Set([])"),
@@ -268,3 +271,59 @@ for(const [name,mutate] of Object.entries(mutants)){
   assert.ok(failed>0,'Mutant ueberlebt: '+name);
  });
 }
+
+/* Vor-Deploy-Fehler (Pages-Lauf 38798770814, 15.10. 20:10:51: Pin-Schritt `terminated`, deploy nie gelaufen). */
+const PRE=[{name:'package',status:'completed',conclusion:'failure'},{name:'deploy',status:'completed',conclusion:'skipped'},{name:'company-intelligence-live',status:'completed',conclusion:'skipped'}];
+const failedRun=runPlan([0,'queued'],[1,'in_progress'],[4,'completed','failure']),okRun=runPlan([0,'queued'],[1,'in_progress'],[6,'completed','success']);
+test('preDeployFailure: nur package failure ohne jeden Deploy-Versuch; jede andere oder unklare Jobliste ist ein echter Fehler',()=>{
+ const f={conclusion:'failure'};
+ assert.equal(real.preDeployFailure(f,PRE),true);
+ assert.equal(real.preDeployFailure(f,[PRE[0]]),true,'Folgejobs noch nicht angelegt');
+ assert.equal(real.preDeployFailure({conclusion:'timed_out'},PRE),false);
+ assert.equal(real.preDeployFailure(f,[PRE[0],{...PRE[1],conclusion:'failure'}]),false,'Deploy gescheitert');
+ assert.equal(real.preDeployFailure(f,[PRE[0],{...PRE[1],conclusion:'success'},{...PRE[2],conclusion:'failure'}]),false,'ausgeliefert, Live-QA gescheitert');
+ assert.equal(real.preDeployFailure(f,[PRE[0],{...PRE[1],status:'in_progress',conclusion:null}]),false);
+ assert.equal(real.preDeployFailure(f,[{...PRE[0],conclusion:'success'},PRE[1]]),false);
+ assert.equal(real.preDeployFailure(f,[]),false);assert.equal(real.preDeployFailure(f,null),false);assert.equal(real.preDeployFailure(f,[PRE[0],PRE[0]]),false);
+});
+test('eigener Lauf scheitert vor dem Deploy: Re-Dispatch statt Rollback, Auslieferung durch den naechsten Lauf',async()=>{
+ const s=sim(real,{plans:[failedRun,okRun],jobs:[PRE],deliveredAtMin:12});const r=await s.run();
+ assert.equal(r.served,true);assert.equal(r.reason,'DELIVERED');assert.equal(s.log.dispatch.length,2);
+ assert.ok(r.log.some(e=>e.event==='redispatch'&&e.reason==='RUN_FAILED_BEFORE_DEPLOY'));
+});
+test('Vor-Deploy-Fehler wiederholt: nach der Obergrenze sofort PAGES_RUN_FAILED, nicht erst nach der Wartefrist',async()=>{
+ const s=sim(real,{plans:[failedRun,failedRun,failedRun,failedRun],jobs:[PRE,PRE,PRE,PRE]});const r=await s.run();
+ assert.equal(r.served,false);assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,3,'1 + hoechstens 2');
+ assert.ok(s.clock()<s.deadlines.waitDeadlineMs,'deterministischer Fehler endet vor der Frist');
+});
+test('Fehler nach dem Deploy, unlesbare oder fehlende Jobliste: weiterhin sofort echter Fehler ohne Wiederholung',async()=>{
+ for(const jobs of [[[PRE[0],{...PRE[1],conclusion:'success'},{...PRE[2],conclusion:'failure'}]],[()=>{throw Error('gh');}],null]){
+  const s=sim(real,{plans:[failedRun,okRun],jobs,deliveredAtMin:12});const r=await s.run();
+  assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,1);
+ }
+});
+test('Replay Refresh-Lauf 37 (15.10.): Dispatch 19:59:27, verdraengt 20:02:47, fremde Auslieferung 20:17:45 (+CDN) -> ausgeliefert statt Rollback',async()=>{
+ // Jobstart 19:54:51 = 4,6 min vor dem Dispatch; die alte feste 15-min-Frist endete 20:14:34 (Minute 15,1).
+ for(const cdnMin of [0,10]){
+  const cancelled=runPlan([0,'queued'],[3.33,'completed','cancelled']);
+  const s=sim(real,{plans:[cancelled,cancelled,cancelled],jobStartMin:-4.6,deliveredAtMin:18.3+cdnMin});const r=await s.run();
+  assert.equal(r.served,true,String(cdnMin));assert.equal(r.reason,'DELIVERED');assert.ok(s.clock()-T0>15.1*MIN,'nach der alten Frist ausgeliefert');
+  assert.ok(s.clock()<s.deadlines.waitDeadlineMs);assert.deepEqual(s.log.cancel,[]);
+ }
+ // Dieselbe Kette, aber der Re-Dispatch landet im Pin-Abbruch wie 38798770814: kein sofortiger Rollback mehr.
+ const s=sim(real,{plans:[runPlan([0,'queued'],[3.33,'completed','cancelled']),failedRun,okRun],jobs:[[],PRE],jobStartMin:-4.6,deliveredAtMin:18.3});
+ const r=await s.run();assert.equal(r.served,true);assert.equal(r.reason,'DELIVERED');
+});
+// Auch gegen die Mutanten: Vor-Deploy-Fehler mit Re-Dispatch, Obergrenze und Fehler nach dem Deploy.
+scenarios.preDeployRedispatchDelivers=async mod=>{
+ const s=sim(mod,{plans:[failedRun,okRun],jobs:[PRE],deliveredAtMin:12});const r=await s.run();
+ assert.equal(r.reason,'DELIVERED');assert.equal(s.log.dispatch.length,2);
+};
+scenarios.preDeployCapThenImmediateFailure=async mod=>{
+ const s=sim(mod,{plans:[failedRun,failedRun,failedRun,failedRun],jobs:[PRE,PRE,PRE,PRE]});const r=await s.run();
+ assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,3);assert.ok(s.clock()<s.deadlines.waitDeadlineMs);
+};
+scenarios.postDeployFailureImmediate=async mod=>{
+ const s=sim(mod,{plans:[failedRun,okRun],jobs:[[PRE[0],{...PRE[1],conclusion:'success'},{...PRE[2],conclusion:'failure'}]],deliveredAtMin:12});const r=await s.run();
+ assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,1);
+};
