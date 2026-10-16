@@ -5,7 +5,7 @@ on:
       newsletter_operation:
         description: Newsletter-Operator; Standard audit bleibt lesend und versandfrei
         type: choice
-        options: [audit, setup, controlled, observe, finish-test, close, public, e2e, doi-diagnose, doi-template-fix, doi-copy-update]
+        options: [audit, unsubscribe-audit, setup, controlled, observe, finish-test, close, public, e2e, doi-diagnose, doi-template-fix, doi-copy-update]
         default: audit
       authorize_controlled_test:
         description: Nur observe/finish-test/e2e/doi-diagnose – kontrollierte Testmails erlauben
@@ -45,11 +45,11 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: d9e68be2d33d93d8f013287365bb9669073cbe2a
+          ref: 2f818f1457ad56e5521e39379d6f419917be6879
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
-        if: inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'finish-test' && inputs.newsletter_operation != 'doi-diagnose'
+        if: inputs.newsletter_operation != 'unsubscribe-audit' && inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'finish-test' && inputs.newsletter_operation != 'doi-diagnose'
         env:
           NEWSLETTER_OPERATOR_OPERATION: ${{ inputs.newsletter_operation }}
           NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
@@ -66,6 +66,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
         run: python3 landing/scripts/newsletter-server-admin.py
+      - name: Read completed owner unsubscribe (GET only, no mail)
+        if: inputs.newsletter_operation == 'unsubscribe-audit'
+        env:
+          NEWSLETTER_OPERATOR_OPERATION: unsubscribe-audit
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_IMPORT_PAYLOAD: ${{ secrets.BREVO_IMPORT_PAYLOAD }}
+        run: python3 landing/scripts/newsletter-unsubscribe-audit.py
       - name: Single authorized owner DOI diagnosis (no automatic retry)
         if: inputs.newsletter_operation == 'doi-diagnose' && inputs.authorize_controlled_test
         env:
