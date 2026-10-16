@@ -462,7 +462,7 @@ test("R22 · Fortsetzen verlangt den Abdruck der Freigabe", async () => {
   assert.equal(containerAnlegen(g).length, 1);
 });
 
-test("R23 · /social/reel/status zeigt Karte und Anspruch, ohne Token, ohne Meta-Aufruf", async () => {
+test("R23 · /social/reel/status zeigt Karte, Anspruch und Containerstatus, ohne Token, ohne Schreibzugriff", async () => {
   const { env, g } = await aufbau({ statuses: ["IN_PROGRESS"], tries: 1 });
   const { prep, item } = await vorbereitet(env);
   assert.equal((await worker.fetch(request("/social/reel/status?contentId=" + INHALT), env)).status, 401);
@@ -475,8 +475,35 @@ test("R23 · /social/reel/status zeigt Karte und Anspruch, ohne Token, ohne Meta
   assert.equal(nach.claim.state, "IN_FLIGHT");
   assert.equal(nach.claim.stage, "reelProcessing");
   assert.equal(nach.claim.containerId, "container_r1");
-  assert.equal(g.aufrufe.length, n, "kein Meta-Aufruf");
+  const neu = g.aufrufe.slice(n);
+  assert.equal(neu.length, 1, "genau ein lesender Meta-Aufruf");
+  assert.equal(neu[0].pfad, "container_r1");
+  assert.equal(neu[0].methode, "GET");
+  assert.equal(nach.containerMeta.statusCode, "IN_PROGRESS");
+  assert.equal(nach.claim.reelHashSet, true);
+  assert.equal(freigaben(g), 0);
   assert.ok(!JSON.stringify(nach).includes(PAGE_TOKEN));
+});
+
+test("R25 · Status: Entscheidung, Containerfehler und fehlende Verbindung werden lesbar gemeldet", async () => {
+  const { env, g } = await aufbau({ statuses: ["ERROR"], tries: 1 });
+  const { prep, item } = await vorbereitet(env);
+  const cookie = await sitzung(env);
+  await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash });
+  const s = await (await worker.fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json();
+  assert.equal(s.decision.decision, "APPROVED");
+  assert.equal(s.decision.published, false);
+  assert.ok(s.decision.lastError, "ein Betriebszustand ist festgehalten");
+  assert.equal(s.claim.state, "FAILED");
+  assert.equal(s.containerMeta.statusCode, "ERROR");
+  assert.match(s.containerMeta.status, /codec/);
+  assert.equal(freigaben(g), 0);
+  assert.ok(!JSON.stringify(s).includes(PAGE_TOKEN));
+
+  /* Ohne Verbindung: keine Ausnahme, ein klarer Hinweis. */
+  await env.VU_SOCIAL_KV.delete("meta:connection:v1");
+  const k = await (await worker.fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json();
+  assert.equal(k.containerMeta.error, "notConnected");
 });
 
 test("R24 · prepare warnt bei signierten (ablaufenden) Videoadressen", async () => {

@@ -60,7 +60,7 @@ import {
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
-         readClaim, claimPublish, settleClaim,
+         readClaim, claimPublish, settleClaim, readDecision,
          readQueue, writeQueue, putReelItem,
          listDecisions, markDecisionConsumed
 } from "./store.js";
@@ -856,17 +856,41 @@ async function handleReelStatus(request, url, env) {
   const claim = await readClaim(env, contentId);
   const reels = (await readQueue(env) || { items: [] }).items.filter((i) => i.payload && i.payload.kind === "REEL" && i.payload.contentId === contentId);
   const karte = reels[0] || null;
+  const entscheidung = await readDecision(env, karte ? karte.candidateId : reelIdAus(contentId));
+
+  /* Metas Stand zum Container: nur gelesen (GET status_code,status). Er beantwortet, ob Meta das Video
+     angenommen, verarbeitet oder schon veroeffentlicht hat - unabhaengig davon, was unser Anspruch weiss. */
+  let containerMeta = null;
+  if (claim && claim.containerId) {
+    const record = await readConnection(env);
+    if (!record) {
+      containerMeta = { error: "notConnected" };
+    } else {
+      const st = await mediaContainerStatus(graphContext(env), { containerId: claim.containerId, accessToken: record.pageAccessToken });
+      containerMeta = st.ok
+        ? { statusCode: st.data.statusCode,
+            status: st.data.status ? redactText(st.data.status, [env.META_APP_SECRET, env.VU_SOCIAL_ADMIN_KEY]).slice(0, 200) : null }
+        : { error: metaFehlerdaten(st, env) };
+    }
+  }
   return json({
     contentId,
     prepared: Boolean(karte),
     candidateId: karte ? karte.candidateId : null,
     approvalPath: karte ? "/approval/" + karte.candidateId : null,
+    decision: entscheidung ? {
+      decision: entscheidung.decision, published: entscheidung.published === true,
+      lastError: entscheidung.lastError || null, decidedAt: entscheidung.decidedAt || null,
+      mediaId: entscheidung.mediaId || null, permalink: entscheidung.permalink || null
+    } : null,
     claim: claim ? {
       state: claim.state, stage: claim.stage || null, containerId: claim.containerId || null,
       mediaId: claim.mediaId || null, permalink: claim.permalink || null, via: claim.via || null,
       uncertain: claim.uncertain === true, error: claim.error || null,
+      attempts: claim.attempts || null, reelHashSet: Boolean(claim.reelHash),
       claimedAt: claim.claimedAt || null, settledAt: claim.settledAt || null
     } : null,
+    containerMeta,
     note: "Nur gelesen. Es wurde nichts veroeffentlicht und nichts veraendert."
   });
 }
