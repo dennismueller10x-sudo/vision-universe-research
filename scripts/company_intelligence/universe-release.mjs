@@ -16,6 +16,7 @@ import {prepareFrozenRollback} from './frozen-rollback.mjs';
 import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
 import {ensureRollbackFreeze,refreezeRollback,fetchLiveDelivery} from './frozen-refreeze.mjs';
+import {restoreLegacyGood} from './legacy-restore.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
 const out=join(temporary,'evidence','release.json');mkdirSync(join(temporary,'evidence'),{recursive:true});
@@ -63,6 +64,11 @@ try{
   // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
   const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
   save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
+ }else if(args[0]==='restore-legacy'){
+  // Setzt den Legacy-good.json-Zeiger (LEGACY_FALLBACK/fehlt) aus dem verifizierten eingefrorenen Rollback neu; oeffnet das Gate nie, fasst Aktivierung, Universe-GOOD und privaten Stand nicht an.
+  const result=await restoreLegacyGood(driver,{temporary,expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
+  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,payloadNamespace:result.payloadNamespace}));
+  if(!['RESTORED','ALREADY_PRESENT'].includes(result.status))process.exitCode=1;   // z. B. PRESENT_BUT_EXPIRED: kein Erfolg
  }else if(args[0]==='rollback'){
   const rollback=await restore46();save({status:'ROLLED_BACK',...rollback,privateStateModified:false});console.log(JSON.stringify({status:'ROLLED_BACK',generation:rollback.generation}));
  }else{

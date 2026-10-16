@@ -50,7 +50,7 @@ test('workflow YAML parses and keeps the main-only job, permissions and concurre
  assert.equal(doc.timeout,'120');
 });
 test('mode options add refreeze; scaling_run is optional in the form but mandatory for activate',()=>{
- assert.deepEqual(doc.mode.options,['activate','rollback','health','refreeze']);
+ assert.deepEqual(doc.mode.options,['activate','rollback','health','refreeze','restore-legacy']);
  assert.equal(doc.mode.default,'activate');
  assert.equal(doc.required('scaling_run'),'false');
  const guard=find(doc,'Require a scaling run for activate');
@@ -76,7 +76,7 @@ test('refreeze runs checkout, node, the command, its evaluation and the artifact
  const [first,second]=doc.steps.filter(s=>s.uses==='actions/checkout@v4');
  assert.equal(first.with.ref,undefined,'first checkout must stay exactly as on main (no ref override)');
  assert.ok(!/^ {10}ref:/m.test(first.block));
- assert.equal(first.with['fetch-depth'],"${{ (inputs.mode == 'health' || inputs.mode == 'refreeze') && 1 || 0 }}");
+ assert.equal(first.with['fetch-depth'],"${{ (inputs.mode == 'health' || inputs.mode == 'refreeze' || inputs.mode == 'restore-legacy') && 1 || 0 }}");
  assert.equal(condition(second.if,{mode:'refreeze'}),false);
 });
 test('a refreeze failure never triggers restore46 or Pages dispatch, other modes keep the recovery',()=>{
@@ -111,7 +111,7 @@ test('ADR-005: no inputs expression inside any run text',()=>{
 // Mutations: the structural checks must notice each regression.
 const mutate=(from,to)=>{const t=readFileSync(path,'utf8');assert.ok(t.includes(from),from);return load(t.replace(from,to));};
 test('mutation: fail-closed step reaching refreeze is detected',()=>{
- const m=mutate(" && inputs.mode != 'refreeze' && steps.activation.outcome"," && steps.activation.outcome");
+ const m=mutate(" && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy' && steps.activation.outcome"," && inputs.mode != 'restore-legacy' && steps.activation.outcome");
  assert.equal(condition(find(m,'Fail closed to immutable 46').if,{mode:'refreeze',failed:true,activation:'success'}),true);
 });
 test('mutation: scaling_run no longer mandatory for activate is detected',()=>{
@@ -119,9 +119,9 @@ test('mutation: scaling_run no longer mandatory for activate is detected',()=>{
  assert.equal(condition(find(m,'Require a scaling run').if,{mode:'activate'}),false);
 });
 test('mutation: Pages wait or browser suite reaching refreeze is detected',()=>{
- const m=mutate("        id: deployment\n        if: inputs.mode != 'refreeze'\n","        id: deployment\n");
+ const m=mutate("        id: deployment\n        if: inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'\n","        id: deployment\n        if: inputs.mode != 'restore-legacy'\n");
  assert.ok(stepsFor(m,'refreeze').includes('Deploy existing Pages and wait for exact consumer generation'));
- const b=mutate("if: inputs.mode != 'health' && inputs.mode != 'refreeze'\n        run: |\n          node --test","if: inputs.mode != 'health'\n        run: |\n          node --test");
+ const b=mutate("if: inputs.mode != 'health' && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'\n        run: |\n          node --test","if: inputs.mode != 'health' && inputs.mode != 'restore-legacy'\n        run: |\n          node --test");
  assert.ok(stepsFor(b,'refreeze').includes('Browser and policy contracts'));
 });
 test('mutation: inputs in a run block is detected',()=>{
@@ -129,7 +129,7 @@ test('mutation: inputs in a run block is detected',()=>{
  assert.ok(m.steps.some(s=>/\$\{\{\s*inputs\./.test(s.run||'')));
 });
 test('mutation: dropping the expect_generation env wiring is detected',()=>{
- const m=mutate('          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n','          EXPECT_GENERATION: ""\n');
+ const m=mutate('          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          set -euo pipefail\n          extra=(','          EXPECT_GENERATION: ""\n        run: |\n          set -euo pipefail\n          extra=(');
  assert.notEqual(find(m,'Re-freeze immutable 46').env.EXPECT_GENERATION,'${{ inputs.expect_generation }}');
 });
 test('mutation: a weakened refreeze evaluation is detected',()=>{
@@ -176,4 +176,66 @@ test('mutation: restoring the ref override on the first checkout is detected',()
  const m=mutate('        with:\n          fetch-depth','        with:\n          ref: ${{ github.ref }}\n          fetch-depth');
  const [first]=m.steps.filter(s=>s.uses==='actions/checkout@v4');
  assert.equal(first.with.ref,'${{ github.ref }}');
+});
+
+// ---- restore-legacy: Heilpfad fuer "kein Legacy-GOOD" ----
+test('restore-legacy runs only guard, checkout, setup, the command, its evaluation and the artifact',()=>{
+ const run=stepsFor(doc,'restore-legacy');
+ assert.deepEqual(run.filter(n=>n!=='actions/setup-python@v5'),['Require expect_generation for restore-legacy (fail closed)','actions/checkout@v4','actions/setup-node@v4','Restore legacy GOOD pointer from the verified frozen rollback','Require untouched gate, activation, universe GOOD and rollback after restore-legacy','actions/upload-artifact@v4']);
+ assert.ok(!run.some(n=>/Browser|scale receipt|Deploy existing Pages|production broad sample|Fail closed to immutable|Preserve 46|Current private|rollback acceptance|identities/i.test(n)),run.join('|'));
+ // other modes never see the new steps
+ for(const m of ['activate','rollback','health','refreeze'])assert.ok(!stepsFor(doc,m).some(n=>/restore-legacy|Restore legacy GOOD/.test(n)),m);
+});
+test('restore-legacy never opens the gate, never dispatches Pages and never triggers restore46 on failure',()=>{
+ const f=find(doc,'Fail closed to immutable 46');
+ for(const activation of ['success','skipped'])assert.equal(condition(f.if,{mode:'restore-legacy',failed:true,activation}),false);
+ for(const s of doc.steps.filter(x=>/restore.legacy/i.test(x.name||'')))assert.doesNotMatch(s.run||'',/rollback --temporary|pages-release|gh workflow run|restore46|production-release|enable/);
+ assert.equal(condition(find(doc,'Deploy existing Pages').if,{mode:'restore-legacy'}),false);
+});
+test('restore-legacy requires an exact expect_generation and only sees inputs through env',()=>{
+ const guard=find(doc,'Require expect_generation for restore-legacy'),cmd=find(doc,'Restore legacy GOOD pointer');
+ assert.equal(guard.env.EXPECT_GENERATION,'${{ inputs.expect_generation }}');assert.equal(cmd.env.EXPECT_GENERATION,'${{ inputs.expect_generation }}');
+ assert.match(guard.run,/\^\[0-9a-f\]\{24\}\$/);assert.match(guard.run,/exit 1/);
+ assert.match(cmd.run,/universe-release\.mjs restore-legacy --temporary/);assert.match(cmd.run,/--expect-generation "\$EXPECT_GENERATION"/);assert.match(cmd.run,/set -euo pipefail/);
+ assert.ok(!cmd.run.includes('inputs.'));
+ const names=doc.steps.map(s=>s.name||s.uses);assert.ok(names.indexOf(guard.name)<names.indexOf('actions/checkout@v4'));
+ for(const m of ['activate','rollback','health','refreeze'])assert.equal(condition(guard.if,{mode:m}),false);
+});
+const restoreFlags=()=>({...flags(),rollbackModified:false});
+const restored=status=>({status,generation:'a'.repeat(24),...restoreFlags()});
+function evaluateRestore(doc,release,expect='a'.repeat(24)){
+ const ev=find(doc,'Require untouched gate, activation, universe GOOD and rollback'),m=ev.run.match(/<<'NODE'\n([\s\S]*?)\n\s*NODE\s*$/);
+ assert.ok(m,'evaluation heredoc not found');
+ const code=m[1].split('\n').map(l=>l.replace(/^ {10}/,'')).join('\n'),dir=mkdtempSync(join(tmpdir(),'restore-eval-'));
+ try{
+  mkdirSync(join(dir,'universe-release','evidence'),{recursive:true});
+  if(release!==undefined)writeFileSync(join(dir,'universe-release','evidence','release.json'),typeof release==='string'?release:JSON.stringify(release));
+  return spawnSync(process.execPath,['--input-type=module','-e',code],{env:{...process.env,RUNNER_TEMP:dir,EXPECT_GENERATION:expect},encoding:'utf8'}).status;
+ }finally{rmSync(dir,{recursive:true,force:true});}
+}
+test('the restore-legacy evaluation passes only RESTORED/ALREADY_PRESENT with five exact false flags (executed)',()=>{
+ assert.equal(evaluateRestore(doc,restored('RESTORED')),0);
+ assert.equal(evaluateRestore(doc,restored('ALREADY_PRESENT')),0);
+ for(const k of Object.keys(restoreFlags())){
+  assert.notEqual(evaluateRestore(doc,{...restored('RESTORED'),[k]:true}),0,k);
+  assert.notEqual(evaluateRestore(doc,{...restored('RESTORED'),[k]:'false'}),0,k+' string');
+  const missing=restored('RESTORED');delete missing[k];assert.notEqual(evaluateRestore(doc,missing),0,k+' missing');
+ }
+ assert.notEqual(evaluateRestore(doc,restored('REFROZEN')),0);
+ assert.notEqual(evaluateRestore(doc,restored('RESTORED'),'b'.repeat(24)),0,'restored generation must equal the expectation');
+ assert.notEqual(evaluateRestore(doc,undefined),0);
+});
+test('mutation: loosened restore-legacy evaluation is caught by execution',()=>{
+ const t=readFileSync(path,'utf8');
+ const loose=load(t.replace("assert.strictEqual(r[k],false,'RESTORE_LEGACY_PROTECTED_STATE_FLAG_NOT_FALSE:'+k)","assert.ok(!r[k])"));
+ const missing=restored('RESTORED');delete missing.gateModified;
+ assert.equal(evaluateRestore(loose,missing),0);assert.notEqual(evaluateRestore(doc,missing),0);
+ const status=load(t.replace("['RESTORED','ALREADY_PRESENT'].includes(r.status)","true"));
+ assert.equal(evaluateRestore(status,restored('ROLLED_BACK')),0);
+});
+test('mutation: restore-legacy reaching the Pages wait or the guard being dropped is detected',()=>{
+ const m=mutate("        id: deployment\n        if: inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'\n","        id: deployment\n        if: inputs.mode != 'refreeze'\n");
+ assert.ok(stepsFor(m,'restore-legacy').includes('Deploy existing Pages and wait for exact consumer generation'));
+ const g=mutate("        if: inputs.mode == 'restore-legacy'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !","        if: inputs.mode == 'never'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !");
+ assert.equal(condition(find(g,'Require expect_generation for restore-legacy').if,{mode:'restore-legacy'}),false);
 });

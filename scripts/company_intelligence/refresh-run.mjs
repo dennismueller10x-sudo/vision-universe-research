@@ -18,6 +18,7 @@ import {activeGood,activeNamespace,universeActive,activationKey} from './refresh
 import {universeConfig} from './universe-approval.mjs';
 import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
+import {goodPointerState,withLegacyMissingDiagnosis} from './legacy-restore.mjs';
 const json=p=>JSON.parse(readFileSync(p));const save=(p,v)=>writeFileSync(p,JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const {load}=createRequire(import.meta.url)('../../company-intelligence/api/contract.js');
@@ -91,7 +92,11 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   const prior=json(join(state,'latest-run.json'));report.restoredGeneration=prior.sourceGeneration||prior.export?.generation||refreshConfig.baselineGeneration;
   if(good){await downloadGood(driver,{namespace:consumerNamespace,output:old});if(universe)save(join(old,'manifest.json'),good.manifest);}
   else if(universe){const comparisonNamespace=await activeNamespace(driver);const baseline=await downloadGood(driver,{namespace:comparisonNamespace,output:old});if(!baseline)throw Error('PREVIOUS_VERIFIED_GOOD_REQUIRED');save(join(old,'manifest.json'),baseline.good.manifest);report.comparisonNamespace=comparisonNamespace;report.comparisonGeneration=baseline.good.generation;}
-  else await download(driver,{namespace:approval.namespace,output:old});
+  else{
+   // Kein Legacy-GOOD: Sichtbarmachen statt stillem Rueckfall auf die abgelaufene Baseline (Heilung: universe-release restore-legacy).
+   if(!verification)report.legacyGoodState=await goodPointerState(driver,consumerNamespace);
+   await withLegacyMissingDiagnosis(driver,consumerNamespace,()=>download(driver,{namespace:approval.namespace,output:old}));
+  }
   if(universe&&sourceAudit){
    stage='SOURCE_REGISTRY_BEFORE';
    const auditBeforePath=join(root,'source-registry-before.json');
@@ -183,7 +188,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(report.sourceRegistryBefore){const b=report.sourceRegistryBefore;sourceSummary+=`\nSource registry before (aggregate): ${JSON.stringify({asOf:b.asOf,rows:b.sourceRegistryRows,active:b.activeSourceRows,approved:b.activeApprovedSources,pollable:b.provenPollableSources,due:b.dueSources,statusCounts:b.statusCounts,sourceAgeHours:b.sourceAgeHours,scheduler:b.scheduler})}\n`;}
   if(report.sourceRegistryAudit){const a=report.sourceRegistryAudit;sourceSummary+=`\nSource registry after (aggregate): ${JSON.stringify({asOf:a.asOf,rows:a.sourceRegistryRows,active:a.activeSourceRows,approved:a.activeApprovedSources,pollable:a.provenPollableSources,due:a.dueSources,statusCounts:a.statusCounts,sourceAgeHours:a.sourceAgeHours,requestAndLatency:a.requestAndLatency,providers:a.byProviderFamily,marketCapBuckets:a.sourceRowsByMarketCapBucket,issuerRegions:a.sourceRowsByIssuerRegion,mandatory:a.mandatoryCases,currentRefresh:a.currentRefresh})}\n`;}
   if(report.sourceOnboarding)sourceSummary+=`\nSource discovery (aggregate): ${JSON.stringify(report.sourceOnboarding)}\n`;
-  writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\nSources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n${sourceSummary}`);
+  writeFileSync(process.env.GITHUB_STEP_SUMMARY,`Company Intelligence: ${report.status}\n\nStage: ${report.failureStage||'COMPLETE'}\nGeneration: ${report.consumerGeneration||'last-good retained'}\nLast good retained on failure: ${report.retainedLastGood}\n${report.legacyGoodState&&report.legacyGoodState!=='GOOD'?`Legacy GOOD: ${report.legacyGoodState} (Heilung: universe-release restore-legacy)\n`:''}Sources: ${report.sourcesChecked||0}; requests: ${(report.publicRequests||0)+(report.secRequests||0)}\n${sourceSummary}`);
  }
  return report;
 }
@@ -225,11 +230,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const observed=raw?JSON.parse(raw):{};
     const gate={read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration};
     const production=await productionObservation(good,observed,fetch,gate);
-    const status=evaluateHealth(good,observed,production);
+    const status=evaluateHealth(good,observed,production,Date.now(),await goodPointerState(driver,ns));
     if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));
     if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,JSON.stringify(status,null,2)+'\n');
     process.exitCode=status.exitCode;
-    if(status.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${status.refreshSLO}, build ${status.buildSLO}, publication ${status.publicationSLO}, production ${status.productionState}${status.productionReason?'/'+status.productionReason:''})`);
+    if(status.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${status.refreshSLO}, build ${status.buildSLO}, publication ${status.publicationSLO}, production ${status.productionState}${status.productionReason?'/'+status.productionReason:''}${status.goodState&&status.goodState!=='GOOD'?', goodState '+status.goodState:''})`);
     if(status.status==='WARNING')console.log('::warning::Company Intelligence successful refresh/publication older than eight hours');
     if(status.status==='OFF')console.log('::notice::Company Intelligence production is deliberately OFF (gate DISABLED, delivery absent); refresh and build freshness are still within SLO');
    }catch(error){
