@@ -1077,7 +1077,7 @@ async function publishReelCore(body, env) {
    Eine Anfrage vom Telefon, die so lange offen bleibt, geht verloren - Seite verlassen, Funkloch,
    gesperrter Bildschirm. Deshalb tut die Anfrage nur den kurzen Teil (Video pruefen, EINEN Container
    anlegen, Anspruch festhalten) und traegt das Reel in die Liste der wartenden ein. Den Rest macht der
-   Cron-Lauf (scheduled, jede Minute) aus dem gespeicherten Anspruch: Status bei Meta lesen, nach FINISHED
+   Cron-Lauf (scheduled, alle fuenf Minuten) aus dem gespeicherten Anspruch: Status bei Meta lesen, nach FINISHED
    einmal freigeben, abgleichen, Entscheidung nachtragen.
 
    Was dabei nie passiert:
@@ -2989,7 +2989,7 @@ export default {
     }
   },
 
-  /* Cron-Lauf (wrangler.toml, jede Minute): setzt wartende, freigegebene Reels fort. Beruehrt nichts anderes
+  /* Cron-Lauf (wrangler.toml, alle fuenf Minuten): setzt wartende, freigegebene Reels fort. Beruehrt nichts anderes
      und wirft nie - ein Fehler hier darf weder Bild noch Carousel noch die Routen beeintraechtigen. */
   async scheduled(event, env, ctx) {
     const lauf = verarbeiteWartendeReels(env).catch(() => null);
@@ -3003,6 +3003,7 @@ export const __internals = {
   configProblems, redirectUri, requireAdmin, extractAdminKey, routeApproval,
   pruefeProjektion, handleQueueIngest, QUEUE_VERSION, QUEUE_SOURCE, QUEUE_MAX_BYTES,
   publishCore, handleDecisions,
+  REEL_WINDOW_MIN_DEFAULT, REEL_PUBLISH_MAX, REEL_PUBLISH_GAP_MS,
   /* Fuer den kanonischen Regressionsfall vom 21.09.: der Nachweis
      fuehrt DIESE Funktionen vor, nicht eine Nachbildung von ihnen.
      Ein Vertrag, der gegen eine zweite Implementierung geprueft wird,
