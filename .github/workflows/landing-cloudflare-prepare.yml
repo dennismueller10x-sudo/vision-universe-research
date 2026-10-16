@@ -24,7 +24,7 @@ on:
         type: string
         default: ''
       verified_test_run_id:
-        description: public – erfolgreicher observe-Lauf mit unveränderter Operator-Quellversion
+        description: public – erfolgreicher DOI-/Abmeldenachweis mit unveränderter Operator-Quellversion
         type: string
         default: ''
       inbox_verified:
@@ -48,6 +48,20 @@ jobs:
           ref: c9451771bef578d256fa602604efffc099ae08cc
           persist-credentials: false
           sparse-checkout: landing
+      - name: Read publication source for the specifically approved public policy
+        if: inputs.newsletter_operation == 'public' && github.ref == 'refs/heads/main'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: .newsletter-public-source
+          sparse-checkout: landing
+      - name: Verify unchanged tested flow and load exact approved public policy
+        if: inputs.newsletter_operation == 'public' && github.ref == 'refs/heads/main'
+        env:
+          NEWSLETTER_OPERATOR_OPERATION: public
+          NEWSLETTER_OPERATOR_PRIVACY_SHA256: ${{ inputs.privacy_document_sha256 }}
+        run: python3 .newsletter-public-source/landing/scripts/newsletter_release.py
       - name: Private audit or closed setup (no contact writes or emails)
         if: inputs.newsletter_operation != 'unsubscribe-audit' && inputs.newsletter_operation != 'e2e' && inputs.newsletter_operation != 'observe' && inputs.newsletter_operation != 'finish-test' && inputs.newsletter_operation != 'doi-diagnose'
         env:

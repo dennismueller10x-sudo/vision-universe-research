@@ -1,5 +1,39 @@
 # Vision-Universe-Newsletter: eigene Oberfläche, Brevo-DOI-API
 
+## Öffentliche Veröffentlichung: gezielter Abschluss vom 16.10.2026
+
+Der Betreiber beauftragt die allgemeine Anmeldung ohne Testlink und bestätigt die fertige deutsche Standard-Abmeldeseite. Die bereits erfolgreich durchgespielte Anmeldung, DOI-Mail, Bestätigung und Abmeldung werden weiterverwendet. [Main-Nachweis 38884963614](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38884963614) bestätigt die echte neue DOI-Anmeldung, die native nutzerseitige Abmeldung der eigenen Ein-Kontakt-Testkampagne und die Marketing-Sperre. Kein neuer Postfachtest ohne konkrete relevante Änderung; kein Versand an Bestand oder interne Testliste.
+
+### Gesicherte Kontowerte und verbleibende Angaben
+
+| Punkt | Tatsächlicher Stand |
+| --- | --- |
+| Tracking | Betreiber berichtet die Einstellung **Zustimmung pro Kontakt = Nein**. Damit ist die Einwilligungsfunktion deaktiviert und werden Kontakte grundsätzlich getrackt. Dies bedeutet ausdrücklich **nicht** deaktiviertes Tracking. |
+| Aufbewahrung | **Alle Absender** laut Betreiber; Monatszahl und gespeicherte E-Mail-Vorschauen weiterhin unbestätigt. |
+| Webhooks | Die gezeigte leere Ansicht betrifft **eingehende** Webhooks. Ausgehende Ereignisempfänger sind damit nicht abschließend geprüft. |
+| Deutsche Abmeldung | Vom Betreiber als fertig bestätigt. Kein API-Editor oder eigenständiger erneuter Versandtest behauptet. |
+| API-/Pages-Audit | [38888693144](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38888693144): Listen 4/5/6 **135/0/2**, Bestandsobjekte unverändert, Domain bestätigt/authentifiziert, null Mails und null Kontaktänderungen, öffentliche Gates geschlossen. |
+
+Gesammelt beim Betreiber angefragt, mit direkten Einstellungslinks:
+
+1. [Pixel-Tracking-Einwilligung](https://app.brevo.com/contact/settings/pixel-tracking-consent): Funktion **Ja**, unbekannte Zustimmung tracken **Nein** speichern und beide Werte bestätigen. Der vorhandene DOI-Aufruf bleibt unverändert mit `contactPixelTrackingConsent:false`. Laut offizieller DOI-API anonymisiert dieser Wert bei aktiver Funktion die Öffnungs-/Klickereignisse für Summenstatistiken; ohne aktive Funktion wird er ignoriert. Eine vollständige Abschaltung sämtlicher technischer Messung wird **nicht** versprochen. Brevo legt bei Aktivierung separate Tracking-Merkmale auch für Bestandskontakte als unbekannt an; keine Newsletter-Einwilligung, Listenaufnahme oder Sperre daraus ableiten oder ändern.
+2. [Aufbewahrungsregeln](https://app-smtp.sendinblue.com/retention-logs): gespeicherte Monatszahl und Vorschau-Einstellung für **Alle Absender** ablesen; keine rückwirkende Löschung auslösen.
+3. [Webhooks](https://app.brevo.com/app-store/webhooks): Register **Ausgehende Webhooks**, sämtliche Seiten/Filter prüfen; falls nicht leer, ausschließlich aktive Empfängerdienste und Ereignisarten privat nennen. Keine vollständigen URLs oder Zugangsdaten anfordern.
+
+Die API-Antworten bestätigen diese offenen Kontowerte nicht zuverlässig. Aus `400/document_not_found` wird keine erfolgreiche vollständige Webhook-Inventur abgeleitet. Die Bestands-/Tracking-Einstellung wird nicht still geändert. Nach Bestätigung dieser Angaben entsteht **eine** endgültige öffentliche Datenschutzfassung zur ausdrücklichen Textfreigabe; bis dahin bleibt die konkret freigegebene Fassung mit Umfang `controlled` unverändert.
+
+### Veröffentlichungsweg ohne erneute Testmail
+
+Der bestehende Operator bleibt auf den tatsächlich abgenommenen Quellcommit `c9451771bef578d256fa602604efffc099ae08cc` gebunden. Ein zusätzlicher Checkout lädt ausschließlich bei manuellem **public** auf **main** den Veröffentlichungsstand des auslösenden Main-Commits. `newsletter_release.py` vergleicht 13 unveränderte Dateien für Anmeldeoberfläche, serverseitige DOI-Anfrage, Mailinhalt und Bestätigungsseiten bytegenau mit dem getesteten Stand. Eine relevante Änderung blockiert die Wiederverwendung der Abnahme.
+
+Nur die konkrete Datenschutzdatei wird anschließend im Operator-Checkout ersetzt: exakte freigegebene SHA256, ein vollständiges deutsches Dokument mit `data-policy-status="approved"` und `data-newsletter-release-scope="public"`, keine offenen Platzhalter. Kein Austausch von Funktionscode, keine neue Brevo-Vorlage, keine Änderung an Liste 4/5/6 oder Abmeldesperren. Der Operator prüft weiterhin den erfolgreichen echten Main-Abnahmelauf derselben Operator-Version und die private Betreiber-Postfachbestätigung. Eine kontrollierte Testfreigabe kann nicht durch Live-Flags zur öffentlichen Freigabe werden.
+
+Nach endgültiger Textfreigabe: den Rechtstext regulär im PR übernehmen, relevante Checks bestehen lassen, mergen und den bestehenden Workflow manuell mit `newsletter_operation=public`, Dokument-SHA256, `verified_test_run_id=38884963614` und bestätigter Betreiber-Abnahme ausführen. Der bereits eingerichtete Operator setzt ausschließlich im bestehenden Pages-Projekt die Produktionsfreigaben und stößt den vorhandenen Main-Git-Build an. Kein privater Zugangscode und keine zusätzliche Freigabe zum Versand eines Newsletters.
+
+`npm run test:public` prüft rein synthetisch Chromium/WebKit, mobiles Formular ohne Testlink, JavaScript- und native Formularübermittlung, genau eine Anfrage und die deutsche Postfach-Hinweisseite. Keine echte Adresse oder Brevo-Verbindung. `check-public-newsletter.mjs` prüft nach Veröffentlichung Apex→www, Desktop/Mobil, freigegebene Felder ohne privaten Zugriff, die tatsächlich ausgelieferte freigegebene Datenschutzfassung und den offenen Server-Eingang. Die Serverprobe sendet ausschließlich `{}` und muss Eingabevalidierung HTTP 400 statt geschlossener Gates HTTP 503 erreichen; sie kann keine Adresse anmelden und keine Mail auslösen. Cloudflares bereits vorhandene Mailto-Verschleierung wird beim Vergleich des sichtbaren Rechtstextes und seiner Linkziele berücksichtigt. Kein personenbezogenes Diagnoseartefakt.
+
+Quellen: [Brevo DOI-API](https://developers.brevo.com/reference/create-doi-contact), [Tracking-Einwilligungsfunktion](https://help.brevo.com/hc/en-us/articles/37114679474706-About-email-tracking-pixels-and-the-CNIL-recommendation-in-Brevo), [ausgehende Webhooks](https://help.brevo.com/hc/de/articles/27824932835474-Erstellung-von-ausgehenden-Webhooks-um-Echtzeitdaten-von-Brevo-an-eine-externe-App-zu-versenden).
+
 ## Abmeldung und öffentliche Freigabe am 16.10.2026
 
 Der Betreiber hat am 16. Oktober den nativen Abmeldelink benutzt und die englische Erfolgsseite sowie den optionalen Brevo-Fragebogen privat bestätigt. Der [Abnahmelauf 38791371881](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38791371881) hatte genau eine administrative Testmail angenommen (HTTP 204), lief jedoch nach zwei Stunden ohne damalige Abmeldung aus. Der fehlgeschlagene Lauf bleibt fehlgeschlagen; kein automatischer Neuversand, keine erneute DOI-Anfrage und keine Entsperrung.

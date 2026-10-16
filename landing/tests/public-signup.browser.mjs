@@ -1,0 +1,62 @@
+// Entirely synthetic. No Brevo traffic, real contacts or email delivery.
+import {chromium,webkit} from 'playwright';
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
+import {resolve,extname,sep} from 'node:path';
+import {build,root} from '../scripts/build.mjs';
+
+const output=resolve(root,'tests/output/public-browser');
+const policy='tests/output/public-browser-policy.html';
+await mkdir(resolve(root,'tests/output'),{recursive:true});
+await writeFile(resolve(root,policy),'<!doctype html><html lang="de" data-policy-status="approved" data-newsletter-release-scope="public"><head><title>Nur synthetischer Datenschutz</title></head><body>Testfixture.</body></html>');
+await build({output,production:true,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:policy}});
+let origin,posts=0,accessCalls=0;
+const server=createServer(async(req,res)=>{
+  const pathname=new URL(req.url,origin).pathname;
+  if(pathname==='/api/newsletter/test-access'){
+    accessCalls++;res.writeHead(503);res.end();return;
+  }
+  if(pathname==='/api/newsletter/subscribe'){
+    assert.equal(req.method,'POST');assert.equal(req.headers.authorization,undefined);
+    let body='';for await(const chunk of req)body+=chunk;
+    const form=req.headers['content-type'].startsWith('application/x-www-form-urlencoded');
+    const data=form?Object.fromEntries(new URLSearchParams(body)):JSON.parse(body);
+    assert.equal(data[form?'EMAIL':'email'],'synthetic-public@example.test');
+    assert.equal(data[form?'OPT_IN':'consent'],form?'1':true);
+    posts++;res.writeHead(form?303:202,form?{Location:'/newsletter/bestaetigen/'}:{'Content-Type':'application/json'});
+    res.end(form?'':JSON.stringify({message:'Bitte bestätige deine E-Mail-Adresse.'}));return;
+  }
+  const path=resolve(output,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
+  if(!path.startsWith(output+sep)){res.writeHead(404);res.end();return;}
+  try{res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.png':'image/png','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream'});res.end(await readFile(path));}
+  catch{res.writeHead(404);res.end();}
+});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));origin='http://127.0.0.1:'+server.address().port;
+try{
+  for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
+    const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});
+    try{
+      for(const javaScriptEnabled of [true,false]){
+        const context=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled});
+        await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
+        const page=await context.newPage(),before=posts;
+        await page.goto(origin+'/');
+        assert.equal(await page.locator('#email').isDisabled(),false);
+        assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);
+        await page.locator('#email').fill('synthetic-public@example.test');
+        await page.locator('#consent').check();
+        await page.locator('button[type=submit]').click();
+        await page.waitForURL('**/newsletter/bestaetigen/');
+        assert.match(await page.locator('h1').innerText(),/Bitte bestätige deine E-Mail-Adresse/);
+        assert.equal(posts,before+1);assert.equal(accessCalls,0);
+        assert.equal(new URL(page.url()).hash,'');
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);
+        if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
+        await context.close();
+      }
+      console.log(name+': public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+    }finally{await browser.close();}
+  }
+}finally{await new Promise(r=>server.close(r));}
