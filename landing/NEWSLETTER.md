@@ -1,5 +1,34 @@
 # Vision-Universe-Newsletter: eigene Oberfläche, Brevo-DOI-API
 
+## Abmeldung und öffentliche Freigabe am 16.10.2026
+
+Der Betreiber hat am 16. Oktober den nativen Abmeldelink benutzt und die englische Erfolgsseite sowie den optionalen Brevo-Fragebogen privat bestätigt. Der [Abnahmelauf 38791371881](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38791371881) hatte genau eine administrative Testmail angenommen (HTTP 204), lief jedoch nach zwei Stunden ohne damalige Abmeldung aus. Der fehlgeschlagene Lauf bleibt fehlgeschlagen; kein automatischer Neuversand, keine erneute DOI-Anfrage und keine Entsperrung.
+
+`unsubscribe-audit` ist eine neue ausschließlich lesende, manuell auslösbare Prüfung. Sie liest den durch unveränderte Payload-Prüfsumme gebundenen Betreiber privat, prüft die ursprüngliche DOI-Mail und das neue Kontaktprofil, die gespeicherte Marketing-Sperre und die nutzerseitige Abmeldung für genau die tatsächlich versandte eigene Ein-Kontakt-Kampagne. Fremde Mitglieder, abweichende Kampagnen oder fehlende Sperren stoppen. Es gibt keine Schreib- oder Versandaufrufe, keine Kontaktdaten in Logs oder Artefakten. Ein grüner Leseabgleich ersetzt noch nicht den versionsgebundenen öffentlichen Freigabeablauf.
+
+[Audit 38882810748](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38882810748): Listen **135/0/2**, Domain bestätigt und authentifiziert, Absender 1 aktiv, Free-Tarif; bestehende Kontaktobjekte und Vorlagen unverändert. Die eigene temporäre Abnahmeliste enthält einen Kontakt; genau eine Abnahmekampagne ist vorhanden. Die allgemeine Anmeldung ist geschlossen. Tracking und Aufbewahrung sind weiterhin nicht über die verfügbaren API-Antworten bestätigt; Webhook-Abfragen liefern HTTP 400 / `document_not_found`, keinen verlässlich belegten vollständigen Empfängerabgleich.
+
+### Einmalige deutsche Brevo-Abmeldeseite
+
+Die englische Seite stammt von Brevo, nicht aus dem Landingpage-Build. Brevos öffentliche API bietet `unsubscriptionPageId` für Kampagnen, aber keinen dokumentierten Editor zur Erstellung oder Übersetzung der gehosteten Abmeldeseite. Mit dem vorhandenen API-Schlüssel besteht keine angemeldete Betreiber-Sitzung in diesem Editor. Es wird weder eine eigene Abmeldelogik noch ein kostenpflichtiger Tarif benötigt.
+
+1. Brevo: Konto → **Einstellungen → Kampagnen → Abmeldeseiten → Personalisieren**. Die bereits verwendete **Standard-Abmeldeseite** bearbeiten; keine neue parallele Seite nötig. Ohne explizite `unsubscriptionPageId` verwenden Kampagnen diese Standardseite.
+2. Titel, Hinweis, Button sowie **Erfolgs- und Fehlermeldungen** auf Deutsch setzen. Erfolg: **„Du bist abgemeldet. Du erhältst keine weiteren Vision-Universe-Newsletter.“** Fehler: **„Deine Abmeldung konnte nicht verarbeitet werden. Bitte versuche es erneut.“** Optionaler Dank: **„Danke für deine Rückmeldung.“** Den funktionalen Platzhalter `{EMAIL}` erhalten.
+3. In den Einstellungen der **Abmeldeumfrage die Sprache Deutsch** auswählen. Die Beantwortung ist optional und keine Voraussetzung für die Abmeldung. Keine zusätzliche Abmeldemail einrichten.
+4. Mobile Vorschau prüfen und mit **Fertig** speichern. Keine bereits abgemeldete Adresse erneut anmelden, keine weitere Mail nur zum Übersetzen versenden. Erst nach tatsächlicher Speicherung die Umstellung als erledigt melden.
+
+[Brevos offizielle Anleitung](https://help.brevo.com/hc/de/articles/208772629-Eine-Abmeldeseite-zum-Einf%C3%BCgen-in-Ihre-E-Mail-Kampagnen-personalisieren) erläutert Standardseite, übersetzbare Meldungen und Umfragesprache. Ein eigener statischer Bestätigungstext allein würde die gehostete Abmeldung nicht übersetzen. Eine künftig separat erstellte deutsche Seite muss vor Versand explizit über ihre echte `unsubscriptionPageId` zugeordnet werden; nicht auf den deutschen Mailtext als Sprachnachweis vertrauen.
+
+### Tatsächlich offene Datenschutzwerte
+
+Die bisher freigegebene konkrete Fassung bleibt **nur für den kontrollierten Betreiber-Test** freigegeben und unverändert. Der Wunsch zur Veröffentlichung ersetzt keine noch unbekannten Kontowerte:
+
+- [Kontakte → Pixel-Tracking-Einwilligung](https://app.brevo.com/contact/settings/pixel-tracking-consent): Funktion aktiviert? Tracking bei Status „Unbekannt“? Das vom Endpunkt gesetzte `contactPixelTrackingConsent:false` belegt ohne aktive Kontofunktion keine deaktivierte Messung. Die Funktion nicht unbesehen einschalten: Laut Brevo betrifft die Umstellung auch vorhandene Kontakte.
+- [Transaktions-E-Mails → Aufbewahrungsregeln](https://app-smtp.sendinblue.com/retention-logs): tatsächliche Protokollfrist, betroffene Absender und Speicherung von Mailvorschauen. Keine Löschung oder pauschale Frist behaupten.
+- Einstellungen → Webhooks: tatsächlich konfigurierte Empfängerdienste für Marketing und Transaktions-E-Mails. Nur Dienstnamen privat melden; keine vollständigen URLs oder Zugangsdaten.
+
+Diese Werte erfordern die Betreiber-Oberfläche, weil die verfügbaren API-Lesewege sie nicht verlässlich liefern. Nach Klärung werden die konkreten Aussagen in einer endgültigen öffentlichen Datenschutzfassung vorgelegt. Keine Firmenangaben, pauschalen EU-Speicherorte oder individuellen Vertragsabschlüsse hinzuerfinden. Die Anbieterbedingungen und die davon getrennten technischen Providerprotokolle bleiben als solche bezeichnet. Die allgemeine Freischaltung benötigt die endgültige konkrete Datenschutzfreigabe und den tatsächlichen versionsgebundenen Abnahmenachweis; keine Gates abschwächen.
+
 ## Betreiber-Abnahme und Bereinigung vom 15.10.2026
 
 Der Betreiber bestätigt Mail-Eingang und erfolgreichen DOI-Klick. Der anschließende private API-Leseabgleich bestätigt die neue Mitgliedschaft in Liste 4, `VU_EMAIL_CONSENT=subscribed`, noch keine Marketing-Sperre. [Audit 38785700208](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38785700208): Listen 4/5/6 **135/0/2**, Domain bestätigt/authentifiziert, Free-Tarif; vollständige Bestandsobjekte unverändert. Die 135 sind der aktuelle Gesamtbestand einschließlich des neu bestätigten Betreiber-Testkontakts; dieser Audit ist kein weiterer Import.
