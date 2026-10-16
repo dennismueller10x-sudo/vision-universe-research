@@ -208,7 +208,7 @@ test("HC12 · Jede benutzte Umgebungsvariable gibt es wirklich", async () => {
     "META_IG_ALLOWED_USERNAMES", "VU_SOCIAL_SMOKE_IMAGE_URL",
     "VU_SOCIAL_SMOKE_CAPTION", "VU_SOCIAL_AUTOPUBLISH", "GLOBAL_AUTOPUBLISH",
     "VU_SOCIAL_SUBREQUEST_BUDGET", "VU_SOCIAL_BUILD",
-    "VU_REEL_MAX_BYTES", "VU_REEL_POLL_TRIES", "VU_SOCIAL_POLL_WAIT_MS"
+    "VU_REEL_MAX_BYTES", "VU_REEL_POLL_TRIES", "VU_SOCIAL_POLL_WAIT_MS", "VU_REEL_WINDOW_MIN"
   ]);
 
   const unbekannt = [...benutzt].filter((n) =>

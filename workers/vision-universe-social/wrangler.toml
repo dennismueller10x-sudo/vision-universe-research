@@ -228,3 +228,9 @@ id = "582accaa66bf471a833b3813a6d2a45b"
 #
 # Pruefen, welche gesetzt sind (zeigt Namen, keine Werte):
 #     npx wrangler secret list
+
+# Hintergrundverarbeitung freigegebener Reels: jede Minute lesen, ob ein Container bei Meta fertig ist, und
+# ihn dann genau einmal freigeben. Ohne wartende Reels kostet ein Lauf eine KV-Leseoperation (Free-Plan:
+# Cron-Trigger sind enthalten). Veroeffentlicht wird nur, was der Owner im Approval Center freigegeben hat.
+[triggers]
+crons = ["* * * * *"]

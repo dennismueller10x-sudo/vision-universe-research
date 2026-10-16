@@ -60,7 +60,8 @@ import {
 } from "./graph.js";
 import { deriveCapabilities, assessConnection } from "./capabilities.js";
 import { readConnection, writeConnection, deleteConnection, readPublic, updateHealth, readSmokeLog, appendSmokeLog,
-         readClaim, claimPublish, settleClaim, readDecision,
+         readClaim, claimPublish, settleClaim, readDecision, settleDecision,
+         readPendingReels, addPendingReel, removePendingReel,
          readQueue, writeQueue, putReelItem,
          listDecisions, markDecisionConsumed
 } from "./store.js";
@@ -890,9 +891,11 @@ async function handleReelStatus(request, url, env) {
       mediaId: claim.mediaId || null, permalink: claim.permalink || null, via: claim.via || null,
       uncertain: claim.uncertain === true, error: claim.error || null,
       attempts: claim.attempts || null, reelHashSet: Boolean(claim.reelHash),
+      publishAttempts: claim.publishAttempts || 0, publishAttemptAt: claim.publishAttemptAt || null,
       claimedAt: claim.claimedAt || null, settledAt: claim.settledAt || null
     } : null,
     containerMeta,
+    background: { waiting: (await readPendingReels(env)).some((e) => e.contentId === contentId) },
     note: "Nur gelesen. Es wurde nichts veroeffentlicht und nichts veraendert."
   });
 }
@@ -969,6 +972,7 @@ async function publishReelCore(body, env) {
       }
       containerId = c.containerId;
       await settleClaim(env, contentId, { leaseUntil: new Date(Date.now() + REEL_LEASE_MS).toISOString(), now: beginn });
+      await addPendingReel(env, contentId, beginn);
     } else if (c.state === "IN_FLIGHT") {
       return json({ error: "claimInFlight", published: false, contentId, claim: c,
         message: "Fuer dieses Inhaltsobjekt laeuft (oder lief) bereits ein Versuch. Ob dabei ein Beitrag entstanden ist, " +
@@ -1009,10 +1013,13 @@ async function publishReelCore(body, env) {
     containerId = container.data.containerId;
     await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "reelProcessing", containerId,
       reelHash: tatsaechlich, leaseUntil: new Date(Date.now() + REEL_LEASE_MS).toISOString(), now: beginn });
+    /* Ab hier laeuft die Verarbeitung auch ohne diese Anfrage weiter: der Cron-Lauf (scheduled) findet das Reel
+       ueber diese Liste. Die Anfrage selbst wartet nur kurz - bricht sie ab, geht nichts verloren. */
+    await addPendingReel(env, contentId, beginn);
   }
 
   /* 4. Verarbeitung abwarten - begrenzt. Fehler beim Abfragen sind kein Abbruchgrund. */
-  const versuche = Math.max(1, zahlEnv(env.VU_REEL_POLL_TRIES, 8));
+  const versuche = Math.max(1, zahlEnv(env.VU_REEL_POLL_TRIES, 2));
   let zustand = null;
   for (let i = 0; i < versuche; i += 1) {
     const st = await mediaContainerStatus(ctx, { containerId, accessToken: record.pageAccessToken });
@@ -1026,6 +1033,7 @@ async function publishReelCore(body, env) {
     const grund = redactText(String(zustand.status || zustand.statusCode)).slice(0, 300);
     await settleClaim(env, contentId, { state: "FAILED", stage: "containerStatus",
       error: { reason: "containerNotReady", status: zustand.statusCode, detail: grund }, now: beginn });
+    await removePendingReel(env, contentId);
     return json({ error: "containerNotReady", stage: "containerStatus", status: zustand.statusCode, detail: grund,
       published: false, contentId,
       message: "Meta hat das Video abgelehnt oder die Verarbeitung ist abgelaufen. Es wurde nichts veroeffentlicht." }, 502);
@@ -1036,24 +1044,202 @@ async function publishReelCore(body, env) {
       message: "Meta verarbeitet das Video noch. Derselbe Aufruf setzt die Verarbeitung fort; es entsteht kein zweiter Beitrag." }, 202);
   }
 
-  /* 5. Freigabe bei Meta. Ab hier ist das Reel oeffentlich; ein Fehler ist OFFEN, nicht gescheitert. */
+  /* 5. Freigabe bei Meta - derselbe Schritt wie im Hintergrundlauf (Sperre, Vorab-Marker, Abgleich). */
+  const v = await reelVeroeffentlichen(env, ctx, record, contentId, containerId);
+  if (v.art === "BUSY") {
+    return json({ published: false, processing: true, busy: true, state: "PROCESSING", contentId, containerId, status: "FINISHED",
+      message: "Die Veroeffentlichung dieses Reels laeuft gerade (Hintergrundlauf). Es entsteht kein zweiter Beitrag." }, 202);
+  }
+  if (v.art === "ZU_OFT") {
+    return json({ error: "publishAttemptsExhausted", stage: "reelPublishing", published: false, uncertain: true, contentId,
+      message: "Die Freigabe bei Meta wurde mehrfach versucht. Ob ein Reel entstanden ist, ist NICHT sicher - im Konto nachsehen." }, 502);
+  }
+  if (v.art === "FEHLER") {
+    return json({ error: v.freigabe.reason, stage: "publish", meta: v.fehler, published: false, uncertain: true, contentId,
+      message: "Die Freigabe schlug fehl. Ob ein Reel entstanden ist, ist NICHT sicher - der Hintergrundlauf gleicht das mit Meta ab, " +
+        "bevor er es erneut versucht." }, 502);
+  }
+  await removePendingReel(env, contentId);
+  const claim = v.claim;
+  const geprueft = v.geprueft;
+  return json({
+    published: true, idempotent: Boolean(v.schon), contentId, mediaType: "REELS", via: "APPROVAL", approval: genehmigung,
+    mediaId: claim.mediaId, permalink: claim.permalink, containerId,
+    timestamp: geprueft && geprueft.ok ? geprueft.data.timestamp : null, account: record.instagramUsername,
+    verified: Boolean(geprueft && geprueft.ok)
+  }, (geprueft ? geprueft.ok : claim.verified) ? 200 : 207);
+}
+
+/* =====================================================================
+   REELS IM HINTERGRUND
+
+   Warum es das gibt: das Veroeffentlichen eines Reels dauert Minuten (Meta verarbeitet das Video).
+   Eine Anfrage vom Telefon, die so lange offen bleibt, geht verloren - Seite verlassen, Funkloch,
+   gesperrter Bildschirm. Deshalb tut die Anfrage nur den kurzen Teil (Video pruefen, EINEN Container
+   anlegen, Anspruch festhalten) und traegt das Reel in die Liste der wartenden ein. Den Rest macht der
+   Cron-Lauf (scheduled, jede Minute) aus dem gespeicherten Anspruch: Status bei Meta lesen, nach FINISHED
+   einmal freigeben, abgleichen, Entscheidung nachtragen.
+
+   Was dabei nie passiert:
+     - ein zweiter Container (der Hintergrundlauf legt keinen an; es gibt nur den im Anspruch),
+     - eine Freigabe ohne Owner-Freigabe (der Anspruch entsteht nur ueber die Freigabe im Approval Center),
+     - ein blindes Wiederholen: vor jedem weiteren media_publish wird der Containerstatus bei Meta gelesen;
+       steht er auf PUBLISHED, wird das Medium im Konto gesucht, statt noch einmal zu senden.
+   Die Grenzen sind fest: 45 Minuten Fenster, hoechstens 3 Freigabe-Versuche mit mindestens 90 s Abstand.
+   ===================================================================== */
+
+const REEL_WINDOW_MIN_DEFAULT = 45;
+const REEL_PUBLISH_MAX = 3;
+const REEL_PUBLISH_GAP_MS = 90_000;
+const REEL_CRON_MAX = 3;
+
+/**
+ * Die Freigabe bei Meta (media_publish) - der EINZIGE Ort, der sie aufruft.
+ * Vorher wird festgehalten, dass der Aufruf stattfindet (uncertain, Zaehler, Zeit, Sperre): bricht der
+ * Worker mittendrin ab, steht der Zustand als OFFEN da und wird abgeglichen statt wiederholt.
+ */
+async function reelVeroeffentlichen(env, ctx, record, contentId, containerId) {
+  const jetzt = Date.now();
+  const c = await readClaim(env, contentId);
+  if (c && c.state === "PUBLISHED") return { art: "PUBLISHED", claim: c, schon: true, geprueft: null };
+  if (c && c.publishLeaseUntil && Date.parse(c.publishLeaseUntil) > jetzt) return { art: "BUSY" };
+  const bisher = (c && c.publishAttempts) || 0;
+  if (bisher >= REEL_PUBLISH_MAX) return { art: "ZU_OFT", versuche: bisher };
+  const iso = new Date(jetzt).toISOString();
+  await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "reelPublishing", uncertain: true,
+    publishAttempts: bisher + 1, publishAttemptAt: iso, publishLeaseUntil: new Date(jetzt + REEL_PUBLISH_GAP_MS).toISOString(), now: iso });
+
   const freigabe = await publishMediaContainer(ctx, { instagramAccountId: record.instagramAccountId,
     accessToken: record.pageAccessToken, containerId });
   if (!freigabe.ok) {
     const fehler = metaFehlerdaten(freigabe, env);
-    await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "publish", error: fehler, uncertain: true, now: beginn });
-    return json({ error: freigabe.reason, stage: "publish", meta: fehler, published: false, uncertain: true, contentId,
-      message: "Die Freigabe schlug fehl. Ob ein Reel entstanden ist, ist NICHT sicher - vor einem zweiten Versuch im Konto nachsehen." }, 502);
+    await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "reelPublishing", error: fehler, uncertain: true,
+      publishLeaseUntil: null, now: iso });
+    return { art: "FEHLER", freigabe, fehler };
   }
   const geprueft = await verifyMedia(ctx, { mediaId: freigabe.data.mediaId, accessToken: record.pageAccessToken });
   const claim = await settleClaim(env, contentId, { state: "PUBLISHED", stage: "verify", mediaId: freigabe.data.mediaId,
-    permalink: geprueft.ok ? geprueft.data.permalink : null, verified: geprueft.ok, now: beginn });
+    permalink: geprueft.ok ? geprueft.data.permalink : null, verified: geprueft.ok, uncertain: false, error: null,
+    publishLeaseUntil: null, now: iso });
+  return { art: "PUBLISHED", claim, geprueft };
+}
 
-  return json({
-    published: true, idempotent: false, contentId, mediaType: "REELS", via: "APPROVAL", approval: genehmigung,
-    mediaId: freigabe.data.mediaId, permalink: claim.permalink, containerId,
-    timestamp: geprueft.ok ? geprueft.data.timestamp : null, account: record.instagramUsername, verified: geprueft.ok
-  }, geprueft.ok ? 200 : 207);
+async function reelEntscheidungVeroeffentlicht(env, candidateId, claim) {
+  const d = await readDecision(env, candidateId);
+  if (!d || d.published) return;
+  await settleDecision(env, candidateId, { published: true, mediaId: claim.mediaId || null, permalink: claim.permalink || null,
+    publishedAt: new Date().toISOString(), lastError: null });
+}
+
+async function reelEntscheidungZustand(env, candidateId, zustand) {
+  const d = await readDecision(env, candidateId);
+  if (!d || d.published || d.lastError === zustand) return;
+  await settleDecision(env, candidateId, { published: false, lastError: zustand });
+}
+
+/** Meta sagt PUBLISHED: das Medium im Konto suchen, statt noch einmal zu senden. */
+async function reelAbgleichen(env, ctx, record, claim, candidateId) {
+  const liste = await listMedia(ctx, { instagramAccountId: record.instagramAccountId, pageAccessToken: record.pageAccessToken, limit: 10 });
+  const seit = (Date.parse(claim.claimedAt) || Date.now()) - 120_000;
+  const schlange = await readQueue(env);
+  const karte = schlange && schlange.items.find((i) => i.candidateId === candidateId);
+  const caption = karte && karte.payload ? String(karte.payload.caption || "") : null;
+  const treffer = liste.ok && liste.data && Array.isArray(liste.data.data)
+    ? liste.data.data.filter((m) => (m.media_product_type === "REELS" || m.media_type === "VIDEO") && Date.parse(m.timestamp) >= seit &&
+        (caption === null || String(m.caption || "") === caption))
+    : [];
+  if (treffer.length === 1) {
+    const m = treffer[0];
+    const gesetzt = await settleClaim(env, claim.contentId, { state: "PUBLISHED", stage: "reconciled", mediaId: String(m.id),
+      permalink: m.permalink || null, verified: true, uncertain: false, error: null, publishLeaseUntil: null });
+    await reelEntscheidungVeroeffentlicht(env, candidateId, gesetzt);
+    return { ergebnis: "ABGEGLICHEN_VEROEFFENTLICHT", entfernen: true };
+  }
+  await settleClaim(env, claim.contentId, { uncertain: true, stage: "reconciled",
+    error: { reason: treffer.length ? "reconcileAmbiguous" : "reconcileNoMedia",
+      message: "Meta meldet den Container als PUBLISHED, das Medium ist im Konto nicht eindeutig zu finden." } });
+  await reelEntscheidungZustand(env, candidateId, "PUBLISH_UNCERTAIN");
+  return { ergebnis: "ABGLEICH_OFFEN", entfernen: true };
+}
+
+/** Ein Schritt fuer EIN wartendes Reel. Gibt zurueck, ob es von der Liste genommen werden kann. */
+async function reelHintergrundSchritt(env, contentId) {
+  const jetzt = Date.now();
+  const claim = await readClaim(env, contentId);
+  if (!claim) return { ergebnis: "KEIN_ANSPRUCH", entfernen: true };
+  const candidateId = (claim.approval && claim.approval.candidateId) || reelIdAus(contentId);
+
+  if (claim.state === "PUBLISHED") {
+    await reelEntscheidungVeroeffentlicht(env, candidateId, claim);
+    return { ergebnis: "SCHON_VEROEFFENTLICHT", entfernen: true };
+  }
+  if (claim.state !== "IN_FLIGHT" || !claim.containerId) {
+    if (claim.state === "FAILED") await reelEntscheidungZustand(env, candidateId, "META_PUBLISH_FAILED");
+    return { ergebnis: "ENDZUSTAND", entfernen: true };
+  }
+  const fenster = zahlEnv(env.VU_REEL_WINDOW_MIN, REEL_WINDOW_MIN_DEFAULT) * 60_000;
+  if (jetzt - (Date.parse(claim.claimedAt) || jetzt) > fenster) {
+    await reelEntscheidungZustand(env, candidateId, claim.uncertain ? "PUBLISH_UNCERTAIN" : "REEL_PROCESSING");
+    return { ergebnis: "FENSTER_ABGELAUFEN", entfernen: true };
+  }
+  if (claim.publishLeaseUntil && Date.parse(claim.publishLeaseUntil) > jetzt) return { ergebnis: "BESETZT" };
+  if (claim.publishAttemptAt && jetzt - Date.parse(claim.publishAttemptAt) < REEL_PUBLISH_GAP_MS) return { ergebnis: "ABSTAND" };
+
+  const record = await readConnection(env);
+  if (!record) return { ergebnis: "NICHT_VERBUNDEN" };
+  if (!isAllowedTarget({ instagramAccountId: record.instagramAccountId, instagramUsername: record.instagramUsername }, allowedTargets(env))) {
+    await reelEntscheidungZustand(env, candidateId, "NOT_PUBLISHABLE");
+    return { ergebnis: "ZIEL_NICHT_ERLAUBT", entfernen: true };
+  }
+
+  const ctx = graphContext(env);
+  const st = await mediaContainerStatus(ctx, { containerId: claim.containerId, accessToken: record.pageAccessToken });
+  if (!st.ok) {
+    if (st.metaCode === 190 || st.metaType === "OAuthException") {
+      await reelEntscheidungZustand(env, candidateId, "AUTH_EXPIRED");
+      return { ergebnis: "AUTH_ABGELAUFEN", entfernen: true };
+    }
+    return { ergebnis: "STATUS_FEHLER" };      // vorubergehend: naechster Lauf, solange das Fenster offen ist
+  }
+  const code = st.data.statusCode;
+  if (code === "ERROR" || code === "EXPIRED") {
+    await settleClaim(env, contentId, { state: "FAILED", stage: "containerStatus", publishLeaseUntil: null,
+      error: { reason: "containerNotReady", status: code, detail: redactText(String(st.data.status || code)).slice(0, 300) } });
+    await reelEntscheidungZustand(env, candidateId, "META_PUBLISH_FAILED");
+    return { ergebnis: "CONTAINER_ABGELEHNT", entfernen: true };
+  }
+  if (code === "PUBLISHED") return await reelAbgleichen(env, ctx, record, claim, candidateId);
+  if (code !== "FINISHED") return { ergebnis: "IN_ARBEIT" };
+
+  const v = await reelVeroeffentlichen(env, ctx, record, contentId, claim.containerId);
+  if (v.art === "PUBLISHED") {
+    await reelEntscheidungVeroeffentlicht(env, candidateId, v.claim);
+    return { ergebnis: "VEROEFFENTLICHT", entfernen: true };
+  }
+  if (v.art === "BUSY") return { ergebnis: "BESETZT" };
+  if (v.art === "ZU_OFT") {
+    await reelEntscheidungZustand(env, candidateId, "PUBLISH_UNCERTAIN");
+    return { ergebnis: "VERSUCHE_ERSCHOEPFT", entfernen: true };
+  }
+  return { ergebnis: "VERSUCH_FEHLGESCHLAGEN" };   // bleibt wartend: der naechste Lauf gleicht zuerst ab
+}
+
+/** Der Cron-Lauf. Im Leerlauf kostet er eine KV-Leseoperation und beruehrt nichts anderes. */
+async function verarbeiteWartendeReels(env) {
+  if (!env.VU_SOCIAL_KV) return { geprueft: 0 };
+  const liste = await readPendingReels(env);
+  if (!liste.length) return { geprueft: 0 };
+  const ergebnisse = [];
+  for (const eintrag of liste.slice(0, REEL_CRON_MAX)) {
+    let r;
+    try { r = await reelHintergrundSchritt(env, eintrag.contentId); }
+    catch (err) { r = { ergebnis: "AUSNAHME" }; }
+    ergebnisse.push({ contentId: eintrag.contentId, ergebnis: r.ergebnis });
+    if (r.entfernen) { try { await removePendingReel(env, eintrag.contentId); } catch (err) { /* naechster Lauf */ } }
+  }
+  /* Nur Kennungen und Ergebnisnamen - nie Token, Adressen oder Texte. */
+  console.log(JSON.stringify({ reelHintergrund: ergebnisse }));
+  return { geprueft: ergebnisse.length, ergebnisse };
 }
 
 async function publishCore(body, env) {
@@ -2801,6 +2987,14 @@ export default {
           [env && env.META_APP_SECRET, env && env.VU_SOCIAL_ADMIN_KEY])
       }, 500);
     }
+  },
+
+  /* Cron-Lauf (wrangler.toml, jede Minute): setzt wartende, freigegebene Reels fort. Beruehrt nichts anderes
+     und wirft nie - ein Fehler hier darf weder Bild noch Carousel noch die Routen beeintraechtigen. */
+  async scheduled(event, env, ctx) {
+    const lauf = verarbeiteWartendeReels(env).catch(() => null);
+    if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(lauf);
+    return await lauf;
   }
 };
 

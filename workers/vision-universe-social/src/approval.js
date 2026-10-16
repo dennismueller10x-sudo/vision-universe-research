@@ -577,8 +577,9 @@ const BETRIEB = {
   REEL_PROCESSING: {
     titel: "Instagram verarbeitet das Video noch.",
     text: "Deine Freigabe steht. Das Reel ist noch nicht veroeffentlicht - Instagram braucht fuer " +
-      "die Verarbeitung etwas laenger. Mit \"Verarbeitung pruefen\" geht es am selben Container " +
-      "weiter; es entsteht kein zweites Reel."
+      "die Verarbeitung etwas laenger. Sie laeuft im Hintergrund weiter und das Reel geht danach " +
+      "automatisch hinaus; du kannst diese Seite schliessen. Mit \"Verarbeitung pruefen\" siehst " +
+      "du den Stand; es entsteht kein zweites Reel."
   },
   PUBLISH_UNCERTAIN: {
     titel: "Unklar, ob der Beitrag entstanden ist.",
@@ -738,6 +739,11 @@ function zustandAus(antwort) {
   if (!antwort || typeof antwort !== "object") return "META_PUBLISH_FAILED";
   if (antwort.uncertain) return "PUBLISH_UNCERTAIN";
   if (antwort.processing) return "REEL_PROCESSING";
+  /* Reel: ein Aufruf laeuft schon oder die Freigabe bei Meta wird gerade abgeglichen. Das ist Hintergrundarbeit,
+     kein Fehler - und keine Aussage darueber, dass Instagram etwas abgelehnt haette. */
+  if (antwort.error === "claimInFlight" && antwort.claim && /^reel/.test(String(antwort.claim.stage || ""))) {
+    return "REEL_PROCESSING";
+  }
   /* Der Bildcheck scheitert aus zwei verschiedenen Gruenden, und sie
      sagen dem Owner Verschiedenes: das Bild fehlt, oder das Bild ist
      ein anderes geworden. Beides unter "nicht erreichbar" zu fuehren
