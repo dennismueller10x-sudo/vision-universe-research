@@ -4,23 +4,37 @@
 
 Der Betreiber beauftragt die allgemeine Anmeldung ohne Testlink und bestätigt die fertige deutsche Standard-Abmeldeseite. Die bereits erfolgreich durchgespielte Anmeldung, DOI-Mail, Bestätigung und Abmeldung werden weiterverwendet. [Main-Nachweis 38884963614](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38884963614) bestätigt die echte neue DOI-Anmeldung, die native nutzerseitige Abmeldung der eigenen Ein-Kontakt-Testkampagne und die Marketing-Sperre. Kein neuer Postfachtest ohne konkrete relevante Änderung; kein Versand an Bestand oder interne Testliste.
 
-### Gesicherte Kontowerte und verbleibende Angaben
+### Öffentlicher Datenschutz freigegeben: Veröffentlichung vorbereitet
+
+Der Betreiber hat die vollständige [Datenschutzfassung auf Commit 7824f85ae](https://github.com/dennismueller10x-sudo/vision-universe-research/blob/7824f85ae4811d6943a70b496d970766f8baa541/landing/legal-drafts/newsletter-public-2026-10-16.txt) ausdrücklich mit **Ja** für die öffentliche Anmeldung freigegeben. Der sichtbare Text bleibt exakt unverändert; ausschließlich das HTML-Freigabemetadatum wurde von `draft` auf `approved` gesetzt. Umfang ist `public`. Dieselbe vollständige Fassung wurde in den bestehenden Produktionspfad übernommen. Freigegebener HTML-SHA256: **`31993a2a4840de69f7ce7402428dc6698bdd39c60858b3e6f143e6e7c0862f7b`**.
+
+Belegte Einstellungen: Tracking **Ja / unbekannte Zustimmung Nein**, **Alle Absender**, Monats-Zahlenfeld leer, ausgehende Webhooks leer, **keine sichtbare Mailvorschau-Auswahl**. Der Text verspricht weder eine feste oder unbegrenzte Aufbewahrung, automatische Löschung noch aktivierte/deaktivierte Vorschauenspeicherung. Zwecke und Speicherkriterien sind genannt; keine weitere Kontoumstellung oder Angabe erforderlich.
+
+Die öffentliche Veröffentlichung ist autorisiert und technisch vorbereitet, aber noch nicht als ausgeführt bestätigt. Nach relevanten PR-Prüfungen und regulärem Merge wird der vorhandene **public**-Operator mit dieser exakten Dokumentprüfsumme und dem echten Main-Abnahmenachweis **38898072858** ausgeführt. Anschließend Hauptdomain und Formular ohne Testlink versandfrei prüfen. Keine neue DOI-/Abmeldetestmail, kein Newsletter an den Bestand und keine Kontaktänderung. Alle 13 tatsächlich abgenommenen Funktionsdateien bleiben unverändert. Den tatsächlichen Live-Status erst nach unabhängiger Prüfung melden.
+
+### Belegte Kontowerte
 
 | Punkt | Tatsächlicher Stand |
 | --- | --- |
-| Tracking | Betreiber berichtet die Einstellung **Zustimmung pro Kontakt = Nein**. Damit ist die Einwilligungsfunktion deaktiviert und werden Kontakte grundsätzlich getrackt. Dies bedeutet ausdrücklich **nicht** deaktiviertes Tracking. |
-| Aufbewahrung | **Alle Absender** laut Betreiber; Monatszahl und gespeicherte E-Mail-Vorschauen weiterhin unbestätigt. |
-| Webhooks | Die gezeigte leere Ansicht betrifft **eingehende** Webhooks. Ausgehende Ereignisempfänger sind damit nicht abschließend geprüft. |
-| Deutsche Abmeldung | Vom Betreiber als fertig bestätigt. Kein API-Editor oder eigenständiger erneuter Versandtest behauptet. |
-| API-/Pages-Audit | [38888693144](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38888693144): Listen 4/5/6 **135/0/2**, Bestandsobjekte unverändert, Domain bestätigt/authentifiziert, null Mails und null Kontaktänderungen, öffentliche Gates geschlossen. |
+| Tracking | Betreiberbestätigung: Einwilligungsfunktion **Ja**, unbekannte Zustimmung tracken **Nein**, gespeichert. DOI-Aufruf unverändert `contactPixelTrackingConsent:false`; anonymisierte Summenstatistiken und funktionale Bestätigung/Abmeldung werden unterschieden. Keine vollständige Abschaltung technischer Messung zugesichert. |
+| Protokoll-Aufbewahrung | **Alle Absender**, Monats-Zahlenfeld leer. Keine gespeicherte Frist, unbegrenzte Aufbewahrung oder automatische Löschung daraus abgeleitet. Zwecke und Speicherkriterien im Text. |
+| Mailvorschauen | Laut Betreiber **keine Auswahl sichtbar**. Weder aktiviert noch deaktiviert als geprüft behauptet; mögliche vollständige Inhalte einschließlich Bestätigungslink und fehlende bestätigte automatische Löschung transparent beschrieben. |
+| Ausgehende Webhooks | Ansicht laut Betreiber leer; keine zusätzlichen Ereignisempfänger darüber eingerichtet. |
+| Deutsche Abmeldung | Vom Betreiber als fertig bestätigt. Kein neuer Versandtest. |
+| API-/Pages-Audit | [38897372072](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38897372072): Listen **135/0/2**, Bestandsobjekte unverändert, Domain bestätigt/authentifiziert, null Mails/Kontakt-Schreibzugriffe, öffentliche Gates geschlossen. |
+| Abnahme nach Tracking-Änderung | [38898072858](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38898072858): tatsächliche ursprüngliche DOI-Anmeldung, native Betreiber-Abmeldung und Marketing-Sperre rein lesend bestätigt, kein erneuter Versand und keine Kontaktänderung. |
 
-Gesammelt beim Betreiber angefragt, mit direkten Einstellungslinks:
+Die Kontoeinstellungen sind als Betreiberbestätigung dokumentiert; API-Antworten liefern sie nicht zuverlässig. Insbesondere wird aus `400/document_not_found` keine erfolgreiche Webhook-Inventur abgeleitet. Keine Kontoumstellung erforderlich oder vorgenommen; bestehende Einwilligungen, Listen und Sperren bleiben unberührt.
 
-1. [Pixel-Tracking-Einwilligung](https://app.brevo.com/contact/settings/pixel-tracking-consent): Funktion **Ja**, unbekannte Zustimmung tracken **Nein** speichern und beide Werte bestätigen. Der vorhandene DOI-Aufruf bleibt unverändert mit `contactPixelTrackingConsent:false`. Laut offizieller DOI-API anonymisiert dieser Wert bei aktiver Funktion die Öffnungs-/Klickereignisse für Summenstatistiken; ohne aktive Funktion wird er ignoriert. Eine vollständige Abschaltung sämtlicher technischer Messung wird **nicht** versprochen. Brevo legt bei Aktivierung separate Tracking-Merkmale auch für Bestandskontakte als unbekannt an; keine Newsletter-Einwilligung, Listenaufnahme oder Sperre daraus ableiten oder ändern.
-2. [Aufbewahrungsregeln](https://app-smtp.sendinblue.com/retention-logs): gespeicherte Monatszahl und Vorschau-Einstellung für **Alle Absender** ablesen; keine rückwirkende Löschung auslösen.
-3. [Webhooks](https://app.brevo.com/app-store/webhooks): Register **Ausgehende Webhooks**, sämtliche Seiten/Filter prüfen; falls nicht leer, ausschließlich aktive Empfängerdienste und Ereignisarten privat nennen. Keine vollständigen URLs oder Zugangsdaten anfordern.
+### Aktueller Abschlussstand nach gespeicherter Tracking-Änderung
 
-Die API-Antworten bestätigen diese offenen Kontowerte nicht zuverlässig. Aus `400/document_not_found` wird keine erfolgreiche vollständige Webhook-Inventur abgeleitet. Die Bestands-/Tracking-Einstellung wird nicht still geändert. Nach Bestätigung dieser Angaben entsteht **eine** endgültige öffentliche Datenschutzfassung zur ausdrücklichen Textfreigabe; bis dahin bleibt die konkret freigegebene Fassung mit Umfang `controlled` unverändert.
+[Rein lesender Audit 38897372072](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38897372072) ist erfolgreich: Listen **135/0/2**, vollständige Bestandsobjekte innerhalb des Audits unverändert, Domain bestätigt und authentifiziert, öffentliche Gates geschlossen, null Mails und null Kontakt-Schreibaufrufe. Die API liefert die Tracking-Schalter weiterhin nicht verlässlich; die beiden gespeicherten Werte werden ausdrücklich als Betreiberbestätigung geführt. Das API-Feld zur Sichtbarkeit des Systemattributs ist kein Gegenbeweis zu dieser Bestätigung.
+
+Die 13 abgenommenen Funktionsdateien sind gegenüber dem Operator-Quellcommit unverändert. Die existierende Main-Abnahme einschließlich echter Marketing-Abmeldung wird wiederverwendet. Keine neue DOI- oder Newsletter-Mail und keine Änderung am Formular, API-Aufruf, Absender, Domain oder Kontaktbestand.
+
+Die [vorbereitete öffentliche Fassung](legal-drafts/newsletter-public-2026-10-16.txt) beschreibt die neue Tracking-Konfiguration, anonymisierte Summenstatistiken und die davon getrennte funktionale Bestätigung/Abmeldung. Der private Testzugang wird für den öffentlichen Datenfluss entfernt. Die vollständige Fassung ist ausdrücklich für die öffentliche Anmeldung freigegeben und bytegleich im bestehenden Produktionspfad übernommen. Der ursprüngliche kontrollierte Freigabestand bleibt in der Git-Historie erhalten; er wird nicht als öffentliche Freigabe umgedeutet. Nicht freigegebene Fassungen werden weiterhin abgewiesen.
+
+Die ausdrücklich gewünschte endgültige öffentliche Textfreigabe liegt jetzt vor. Die beauftragte Veröffentlichung benötigt keinen weiteren Mailtest bei unverändertem Ablauf; tatsächliche Aktivierung und Live-Prüfung stehen noch aus.
 
 ### Veröffentlichungsweg ohne erneute Testmail
 
@@ -28,7 +42,7 @@ Der bestehende Operator bleibt auf den tatsächlich abgenommenen Quellcommit `c9
 
 Nur die konkrete Datenschutzdatei wird anschließend im Operator-Checkout ersetzt: exakte freigegebene SHA256, ein vollständiges deutsches Dokument mit `data-policy-status="approved"` und `data-newsletter-release-scope="public"`, keine offenen Platzhalter. Kein Austausch von Funktionscode, keine neue Brevo-Vorlage, keine Änderung an Liste 4/5/6 oder Abmeldesperren. Der Operator prüft weiterhin den erfolgreichen echten Main-Abnahmelauf derselben Operator-Version und die private Betreiber-Postfachbestätigung. Eine kontrollierte Testfreigabe kann nicht durch Live-Flags zur öffentlichen Freigabe werden.
 
-Nach endgültiger Textfreigabe: den Rechtstext regulär im PR übernehmen, relevante Checks bestehen lassen, mergen und den bestehenden Workflow manuell mit `newsletter_operation=public`, Dokument-SHA256, `verified_test_run_id=38884963614` und bestätigter Betreiber-Abnahme ausführen. Der bereits eingerichtete Operator setzt ausschließlich im bestehenden Pages-Projekt die Produktionsfreigaben und stößt den vorhandenen Main-Git-Build an. Kein privater Zugangscode und keine zusätzliche Freigabe zum Versand eines Newsletters.
+Nach endgültiger Textfreigabe: den Rechtstext regulär im PR übernehmen, relevante Checks bestehen lassen, mergen und den bestehenden Workflow manuell mit `newsletter_operation=public`, Dokument-SHA256, `verified_test_run_id=38898072858` und bestätigter Betreiber-Abnahme ausführen. Der bereits eingerichtete Operator setzt ausschließlich im bestehenden Pages-Projekt die Produktionsfreigaben und stößt den vorhandenen Main-Git-Build an. Kein privater Zugangscode und keine zusätzliche Freigabe zum Versand eines Newsletters.
 
 `npm run test:public` prüft rein synthetisch Chromium/WebKit, mobiles Formular ohne Testlink, JavaScript- und native Formularübermittlung, genau eine Anfrage und die deutsche Postfach-Hinweisseite. Keine echte Adresse oder Brevo-Verbindung. `check-public-newsletter.mjs` prüft nach Veröffentlichung Apex→www, Desktop/Mobil, freigegebene Felder ohne privaten Zugriff, die tatsächlich ausgelieferte freigegebene Datenschutzfassung und den offenen Server-Eingang. Die Serverprobe sendet ausschließlich `{}` und muss Eingabevalidierung HTTP 400 statt geschlossener Gates HTTP 503 erreichen; sie kann keine Adresse anmelden und keine Mail auslösen. Cloudflares bereits vorhandene Mailto-Verschleierung wird beim Vergleich des sichtbaren Rechtstextes und seiner Linkziele berücksichtigt. Kein personenbezogenes Diagnoseartefakt.
 
@@ -53,7 +67,9 @@ Die englische Seite stammt von Brevo, nicht aus dem Landingpage-Build. Brevos ö
 
 [Brevos offizielle Anleitung](https://help.brevo.com/hc/de/articles/208772629-Eine-Abmeldeseite-zum-Einf%C3%BCgen-in-Ihre-E-Mail-Kampagnen-personalisieren) erläutert Standardseite, übersetzbare Meldungen und Umfragesprache. Ein eigener statischer Bestätigungstext allein würde die gehostete Abmeldung nicht übersetzen. Eine künftig separat erstellte deutsche Seite muss vor Versand explizit über ihre echte `unsubscriptionPageId` zugeordnet werden; nicht auf den deutschen Mailtext als Sprachnachweis vertrauen.
 
-### Tatsächlich offene Datenschutzwerte
+### Historie: damals offene Datenschutzwerte
+
+**Dieser historische Zwischenstand ist durch die oben dokumentierten Betreiberangaben und die vollständige Fassung zur Textfreigabe überholt. Keine erneute Angabe dieser Werte nötig.**
 
 Die bisher freigegebene konkrete Fassung bleibt **nur für den kontrollierten Betreiber-Test** freigegeben und unverändert. Der Wunsch zur Veröffentlichung ersetzt keine noch unbekannten Kontowerte:
 
