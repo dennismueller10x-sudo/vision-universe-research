@@ -13,9 +13,17 @@ const policy='tests/output/public-browser-policy.html';
 await mkdir(resolve(root,'tests/output'),{recursive:true});
 await writeFile(resolve(root,policy),'<!doctype html><html lang="de" data-policy-status="approved" data-newsletter-release-scope="public"><head><title>Nur synthetischer Datenschutz</title></head><body>Testfixture.</body></html>');
 await build({output,production:true,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:policy}});
-let origin,posts=0,accessCalls=0;
+let origin,posts=0,accessCalls=0,previousStyleReads=0;
 const server=createServer(async(req,res)=>{
-  const pathname=new URL(req.url,origin).pathname;
+  const requestUrl=new URL(req.url,origin),pathname=requestUrl.pathname;
+  if(pathname==='/previous.html'){
+    res.writeHead(200,{'Content-Type':'text/html'});
+    res.end('<!doctype html><html><head><link rel="stylesheet" href="/styles.css"></head><body>Previous deployment</body></html>');return;
+  }
+  if(pathname==='/styles.css'&&!requestUrl.search){
+    previousStyleReads++;res.writeHead(200,{'Content-Type':'text/css','Cache-Control':'public, max-age=31536000'});
+    res.end('body { --previous-landing-styles: loaded; }');return;
+  }
   if(pathname==='/api/newsletter/test-access'){
     accessCalls++;res.writeHead(503);res.end();return;
   }
@@ -39,6 +47,21 @@ try{
   for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
     const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});
     try{
+      // No request routing here: Playwright routes disable the HTTP cache.
+      // Reproduce a visitor who cached styles before the new module shipped.
+      const cached=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+      const returning=await cached.newPage(),beforeStyles=previousStyleReads,beforePosts=posts;
+      await returning.goto(origin+'/previous.html',{waitUntil:'networkidle'});
+      assert.equal(previousStyleReads,beforeStyles+1);
+      assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'loaded');
+      await returning.goto(origin+'/',{waitUntil:'networkidle'});
+      assert.equal(previousStyleReads,beforeStyles+1,'Old URL must not be requested again');
+      assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'','New markup must not reuse cached old styles');
+      for(const selector of ['[data-preview-swipe=left]','[data-preview-swipe=right]','[data-preview-reset]']){
+        const box=await returning.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44);
+      }
+      assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
+      await cached.close();
       for(const javaScriptEnabled of [true,false]){
         const context=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled});
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
@@ -63,7 +86,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': Discover swipe/cancel/keyboard/unique-memory/reset verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': returning mobile visitor with cached old styles verified; Discover swipe/cancel/keyboard/unique-memory/reset verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
