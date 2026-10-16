@@ -77,7 +77,20 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
         run: node scripts/company_intelligence/privacy.mjs
+      - name: Read-only production baseline before any mutation
+        id: baseline
+        if: inputs.publish
+        continue-on-error: true
+        env:
+          REPORT_ROOT: ${{ runner.temp }}/ci-profile-source
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/failure-gate-decision.mjs baseline
       - name: Full private restore, bounded upgrade, eligibility, fresh R2 restore and consumer readback
+        id: run
         env:
           NODE_PATH: /tmp/ci-profile-source/node_modules
           PUBLISH: ${{ inputs.publish }}
@@ -96,8 +109,32 @@ jobs:
           if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
           if [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--sources --source-limit 100); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
-      - name: Existing Pages deployment and real consumer verification
-        id: live
+      # Der fruehere Sammelschritt "live" ist in vier Schritte geteilt, damit der Fehlerpfad (failure-gate-decision.mjs) zwischen
+      # Dispatch-/Auslieferungsfehlern und einer roten Live-QA der eigenen Veroeffentlichung unterscheiden kann.
+      - name: Dispatch existing Pages deployment
+        id: dispatch
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run pages-release.yml --ref main
+      - name: Wait until the new generation is served
+        id: served
+        if: inputs.publish
+        env:
+          NODE_PATH: /tmp/ci-profile-source/node_modules
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-profile-source/health.json')).consumerGeneration;
+          const deadline=Date.now()+30*60000;let served=false;
+          while(Date.now()<deadline){
+            try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)});const d=await r.json();if(d.status==='PASS'&&d.generation===expected){served=true;break;}}catch{}
+            await new Promise(r=>setTimeout(r,10000));
+          }
+          if(!served)throw Error('PROFILE_SOURCE_GENERATION_NOT_SERVED');
+          NODE
+      - name: Real consumer verification of the own publication
+        id: liveqa
         if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -109,30 +146,52 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
-          gh workflow run pages-release.yml --ref main
-          node --input-type=module <<'NODE'
-          import {readFileSync} from 'node:fs';
-          const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-profile-source/health.json')).consumerGeneration;
-          const deadline=Date.now()+30*60000;let served=false;
-          while(Date.now()<deadline){
-            try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)});const d=await r.json();if(d.status==='PASS'&&d.generation===expected){served=true;break;}}catch{}
-            await new Promise(r=>setTimeout(r,10000));
-          }
-          if(!served)throw Error('PROFILE_SOURCE_GENERATION_NOT_SERVED');
-          NODE
           node scripts/company_intelligence/refresh-qa.mjs --live --delta "$RUNNER_TEMP/ci-profile-source/delta-qa.json" --out "$RUNNER_TEMP/ci-profile-source/live-qa.json"
           node scripts/company_intelligence/universe-browser-qa.mjs --live --consumer "$RUNNER_TEMP/ci-profile-source/consumer" --sample "$RUNNER_TEMP/ci-profile-source/profile-sample.json" --out "$RUNNER_TEMP/ci-profile-source/profile-live-browser-qa.json"
-          node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-profile-source/health.json"
-      - name: Fail closed on a material production regression
-        if: failure() && steps.live.outcome == 'failure' && inputs.publish
+      - name: Record observed production generation
+        id: observe
+        if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_PATH: /tmp/ci-profile-source/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-profile-source/health.json"
+      - name: Decide whether a failure may touch the production gate
+        id: decide
+        if: always() && inputs.publish && (failure() || cancelled())
+        env:
+          PUBLISH: ${{ inputs.publish }}
+          RECOVER_FULL_SCOPE: ${{ inputs.recover_full_scope }}
+          REPORT_ROOT: ${{ runner.temp }}/ci-profile-source
+          OUTCOME_RUN: ${{ steps.run.outcome }}
+          OUTCOME_DISPATCH: ${{ steps.dispatch.outcome }}
+          OUTCOME_SERVED: ${{ steps.served.outcome }}
+          OUTCOME_LIVEQA: ${{ steps.liveqa.outcome }}
+          OUTCOME_OBSERVE: ${{ steps.observe.outcome }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/company_intelligence/failure-gate-decision.mjs decide
+      - name: Fail closed on a material production regression
+        if: always() && (steps.decide.outputs.decision == 'CLOSE_GATE' || (steps.decide.outcome == 'failure' && steps.run.outcome == 'success'))
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ROLLBACK: ${{ steps.decide.outputs.rollback }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
-          node scripts/company_intelligence/refresh-run.mjs rollback || true
+          # Rollback nur, wenn der GOOD-Zeiger noch die Generation dieses Laufs traegt (Entscheidung); sonst nur Gate zu und OFF-Pages.
+          if [ "$ROLLBACK" != false ]; then node scripts/company_intelligence/refresh-run.mjs rollback || true; fi
           node scripts/company_intelligence/production-release.mjs disable || true
           gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
       - name: Public-safe aggregate acceptance only
