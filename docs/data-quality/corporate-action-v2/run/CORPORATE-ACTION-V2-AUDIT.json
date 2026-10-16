@@ -1,0 +1,210 @@
+{
+  "schema": "corporate-action-v2-audit-1.1.0",
+  "runId": "38957800888",
+  "codeCommit": "d6eb7cf879bc112bb95d2c82d5b3f1543afbe9ea",
+  "versions": {
+    "validity": "canonical-price-validity-2.0.0",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "validation": "corporate-action-validation-2.1.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "coreCorporateActions": "corporate-action-contract-1.2.0"
+  },
+  "capture": {
+    "dataFingerprint": "aea4317939b91fc2198a6f7becac2e1ce2271d3f0835d55558e24cbc85eebaae",
+    "securities": 9407
+  },
+  "sec": {
+    "collector": "sec-corporate-action-collector-1.0.0",
+    "extractor": "sec-corporate-actions-1.1.0",
+    "from": "2001-01",
+    "to": "2026-10",
+    "stats": {
+      "requests": 74551,
+      "errors": 12,
+      "retries": 106,
+      "eftsQueries": 4076,
+      "eftsHits": 284508,
+      "universeHits": 82040,
+      "filings": 45750,
+      "documents": 70381,
+      "documentErrors": 13,
+      "truncatedWindows": 0,
+      "proxyHits": 14576,
+      "periodicFilings": 160,
+      "incompleteWindows": 0,
+      "documentsSkippedByCap": 0,
+      "parts": [
+        {
+          "file": "part-a.json",
+          "from": "2001-01",
+          "to": "2012-12",
+          "phases": [
+            "current",
+            "proxies"
+          ]
+        },
+        {
+          "file": "part-b.json",
+          "from": "2013-01",
+          "to": "2019-12",
+          "phases": [
+            "current",
+            "proxies"
+          ]
+        },
+        {
+          "file": "part-c.json",
+          "from": "2020-01",
+          "to": "2026-10",
+          "phases": [
+            "current",
+            "proxies"
+          ]
+        }
+      ],
+      "complete": false
+    },
+    "ciksWithEvents": 6058,
+    "events": 4281,
+    "effectiveEvents": 3299,
+    "eventsByStage": {
+      "EFFECTIVE": 3299,
+      "MENTION": 465,
+      "ANNOUNCED": 95,
+      "APPROVED": 422
+    },
+    "eventsByConfidence": {
+      "MEDIUM": 510,
+      "LOW": 1749,
+      "HIGH": 2022
+    },
+    "sha256": "07238f2fb009bceb220166fac1b684d291c8017390691ba1dce7c3c9c83194f9"
+  },
+  "impact": {
+    "segments": 9407,
+    "bars": 14836902,
+    "validBars": {
+      "main_1_0_0_wholeSeries": 14589430,
+      "pr721_1_2_0_wholeSeries": 14406082,
+      "v4_1_2_0_prefix": 14590269,
+      "v2_withoutSec": 14609775,
+      "v2": 14596272
+    },
+    "histories": {
+      "wholeSeriesRejected_1_2_0": 311,
+      "ofThoseRetainedAsPrefix_v2": 306,
+      "retainedBarsFromRejectedHistories_v2": 221428,
+      "wholeSeriesRejected_1_0_0": 169,
+      "ofThoseRetainedAsPrefix_v2_vs_main": 169,
+      "retainedBarsFromRejectedHistories_v2_vs_main": 119662
+    },
+    "v2States": {
+      "FULL_VALID": 9073,
+      "VALID_PREFIX": 315,
+      "VALID_WITH_INVALID_BARS": 14,
+      "NO_VALID_BARS": 5
+    },
+    "holdsByEvidenceClass": {
+      "CONFLICTING_CORPORATE_ACTION": 52,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 92,
+      "PROBABLE_CORPORATE_ACTION": 18
+    },
+    "holdsByReason": {
+      "CORPORATE_ACTION_CONFLICT": 35,
+      "SPLIT_SUSPECTED_UNDECLARED": 127
+    },
+    "quarantineByReason": {
+      "CORPORATE_ACTION_CONTRADICTED": 77,
+      "LISTING_DISCONTINUITY": 66,
+      "DIVIDEND_MISSING": 15
+    },
+    "evidenceByClass": {
+      "UNKNOWN": 1879,
+      "CONFIRMED_REVERSE_SPLIT": 1865,
+      "CONFLICTING_CORPORATE_ACTION": 57,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 92,
+      "CONFIRMED_SPLIT": 151,
+      "PROBABLE_CORPORATE_ACTION": 18
+    },
+    "evidenceByReason": {
+      "SEC_EVENT_OUTSIDE_SERIES": 603,
+      "PROVIDER_FACTOR_MATCHES_SEC": 1976,
+      "SEC_EVENT_UNDATED_NOT_NORMALIZED": 903,
+      "SEC_EVENT_NOT_OBSERVED_IN_PRICE": 314,
+      "PROVIDER_FACTOR_DIFFERS_FROM_SEC": 40,
+      "SEC_EVENT_PERIODIC_ONLY_NOT_NORMALIZED": 52,
+      "SEC_EFFECTIVE_AND_PRICE_CONCORDANT_PROVIDER_MISSING": 40,
+      "SPLIT_SUSPECTED_UNDECLARED": 127,
+      "SEC_EVENT_AFTER_LAST_BAR": 7
+    },
+    "normalizedEvents": 40,
+    "normalizedSegments": 40,
+    "invalidBars": 52,
+    "barsNewlyHeld_v2_vs_main": 112771,
+    "unresolved10xInsideValid": {
+      "UP": 123,
+      "DOWN": 149,
+      "total": 272,
+      "normalizedBySec": 10
+    },
+    "providerAgreement": {
+      "secEffectiveMatchedToProviderFactor": 1976,
+      "secEffectiveConflictingProviderFactor": 40,
+      "secEffectiveNormalizedProviderMissing": 40,
+      "secEffectiveNotObserved": 314,
+      "secEffectiveOutsideSeries": 610,
+      "secEffectiveUndatedOrPeriodicOnly": 955,
+      "secEffectiveSmallRatioUncorroborated": 0
+    },
+    "extractorVsProvider": {
+      "providerSplitsSince2002WithCik": 2732,
+      "foundDated": 1999,
+      "foundUndated": 211,
+      "missed": 522
+    },
+    "pit": {
+      "mismatchKinds": {
+        "NORMALIZATION_NOT_YET_IN_VIEW": 6
+      },
+      "segmentsChecked": 248,
+      "viewsChecked": 599,
+      "barsAfterAsOf": 0,
+      "holdObservedAfterAsOf": 0,
+      "evidenceVisibleNotBeforeAsOf": 0,
+      "returnMismatchOutsideRevisions": 6,
+      "revisionsHold": 2,
+      "revisionsUnadjusted": 11,
+      "invalidRangesObservedNextSession": 26
+    },
+    "secCoverage": {
+      "segmentsWithCik": 7352,
+      "segmentsWithSecEvents": 2255,
+      "segmentsWithEffectiveEvents": 2028
+    }
+  },
+  "regression": {
+    "extremeAll": {
+      "total": 2213,
+      "inValidRange": 2093,
+      "stillExtreme": 2087,
+      "held": 115,
+      "normalizedInMonth": 5
+    },
+    "known83": {
+      "total": 83,
+      "inValidRange": 49,
+      "stillExtreme": 45,
+      "held": 34,
+      "normalizedInMonth": 3
+    },
+    "highLevel": {
+      "total": 74,
+      "fullValid": 67,
+      "validPrefix": 7,
+      "withNormalization": 3
+    }
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}
