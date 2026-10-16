@@ -12,6 +12,9 @@
    gescheitert (z. B. PRODUCTION_GATE_CHANGED_AFTER_PACKAGE), nichts veroeffentlicht, Gate unlesbar oder jeder Absturz.
    In beiden Faellen laufen danach wie bisher `production-release.mjs disable` (idempotent) und der OFF-Dispatch.
 
+   Variante `--refresh` (Refresh-Workflow): nur die Gate-Pruefung, ohne Freigabe-Schritt. Bei Lesefehlern wird das Gate 2-3 Mal gelesen.
+   Nicht erfasst (bewusst): `approved` scheitert aus anderem Grund als GATE_CHANGED, obwohl das Artefakt schon ausgeliefert ist -> nur disable.
+
    CLI: gibt die Entscheidung als JSON aus und endet mit Exit 0 nur bei ROLLBACK, sonst 1 (auch bei Absturz: dann DISABLE_ONLY).
    Eingaben nur ueber Umgebungsvariablen APPROVED_OUTCOME und APPROVED_ENABLED (ADR-005). */
 import {pathToFileURL} from 'node:url';
@@ -27,21 +30,46 @@ export function pagesRollbackDecision({approvedOutcome,approvedEnabled,gate}){
  return {decision:'DISABLE_ONLY',reason:'GATE_STATE_UNKNOWN_'+String(gate?.gateReason||'UNREADABLE')};
 }
 
-export async function decisionFromEnv(env=process.env,readGate=null){
+/** Rollback im Refresh-Workflow (Schritt "Fail closed on actual production regression"): nur wenn das Gate nachweislich noch AVAILABLE ist.
+    Hat der Pages-Handler schon zurueckgerollt und das Gate geschlossen (DISABLED), entfaellt der zweite Rollback. */
+export function refreshRollbackDecision({gate}){
+ const state=gate?.gateState??null;
+ if(state==='AVAILABLE')return {decision:'ROLLBACK',reason:'GATE_AVAILABLE'};
+ if(state==='DISABLED'||state==='STAGED')return {decision:'DISABLE_ONLY',reason:'GATE_ALREADY_'+state};
+ return {decision:'DISABLE_ONLY',reason:'GATE_STATE_UNKNOWN_'+String(gate?.gateReason||'UNREADABLE')};
+}
+
+/** Gate lesen; nur ein Lesefehler (GATE_READ_FAILED) wird kurz wiederholt (2-3 Versuche), ein klarer Zustand oder ungueltiges Gate nie. */
+export async function readGateWithRetry(read,{attempts=3,backoffMs=[1000,3000],sleep=ms=>new Promise(r=>setTimeout(r,ms))}={}){
+ let g;
+ for(let n=1;n<=attempts;n++){
+  g=await read();
+  if(g?.gateState||g?.gateReason!=='GATE_READ_FAILED')return {...g,attempts:n};
+  if(n<attempts)await sleep(backoffMs[Math.min(n-1,backoffMs.length-1)]);
+ }
+ return {...g,attempts};
+}
+
+export const UNREADABLE_WARNING='Gate nach mehreren Versuchen unlesbar: nur disable, kein Rollback (fail-closed). Der GOOD-Zeiger kann der Produktion vorauslaufen und muss geprueft werden.';
+
+export async function decisionFromEnv(env=process.env,readGate=null,{mode='pages',sleep}={}){
  try{
-  const gate=readGate?await readGate():await (async()=>{
+  const read=readGate||(async()=>{
    const {createS3DriverFromEnv}=await import('../market/storage/s3-driver.mjs');
    const {approval}=await import('./production-approval.mjs');
    const {prefixFor}=await import('./public-delivery.mjs');
    const driver=createS3DriverFromEnv();
    return readGateState({read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration});
-  })();
-  return pagesRollbackDecision({approvedOutcome:env.APPROVED_OUTCOME,approvedEnabled:env.APPROVED_ENABLED,gate});
- }catch{return {decision:'DISABLE_ONLY',reason:'DECISION_FAILED'};}
+  });
+  const gate=await readGateWithRetry(read,{sleep});
+  const d=mode==='refresh'?refreshRollbackDecision({gate}):pagesRollbackDecision({approvedOutcome:env.APPROVED_OUTCOME,approvedEnabled:env.APPROVED_ENABLED,gate});
+  return gate.gateReason==='GATE_READ_FAILED'&&!gate.gateState?{...d,warning:UNREADABLE_WARNING}:d;
+ }catch{return {decision:'DISABLE_ONLY',reason:'DECISION_FAILED',warning:UNREADABLE_WARNING};}
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- const d=await decisionFromEnv();
+ const d=await decisionFromEnv(process.env,null,{mode:process.argv.includes('--refresh')?'refresh':'pages'});
  console.log(JSON.stringify(d));
+ if(d.warning)console.log('::warning title=Gate unlesbar::'+d.warning);
  process.exitCode=d.decision==='ROLLBACK'?0:1;
 }

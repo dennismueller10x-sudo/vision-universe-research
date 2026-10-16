@@ -663,3 +663,37 @@ Verbleibendes Restrisiko: Der Primaerslot und ein Waechter-Dispatch koennen glei
 (einer laeuft, einer wartet; kein Dritter wird verdraengt). Ein Dispatch oder profile-source, der
 waehrend eines laufenden Produktionslaufs wartet, kann weiterhin vom naechsten Primaerslot verdraengt werden
 (das gilt schon vor diesem PR).
+
+## Pages-Auslieferung des Refresh und Rollback-Entscheidungen (PR I, nach dem Vorfall 15.10.2026 20:14-20:18Z)
+
+Hinweis zu oben: Das Job-Timeout des Refresh betrug damals 60 min; es ist jetzt **100 min** (25 min Pipeline + 50 min Wartefrist
+auf die Pages-Auslieferung + 15 min Live-QA-Budget + 10 min Reserve fuer Rollback, disable, OFF-Dispatch, Upload). Alle Fristen
+rechnen ab `JOB_STARTED_AT`; Quelle der Konstanten ist `refresh-live-verify.mjs` (`LIMITS`) und `refresh-dispatch-wait.mjs`.
+
+**Auslieferung (`refresh-dispatch-wait.mjs`).** Der Refresh dispatcht `pages-release.yml` und verfolgt den eigenen Lauf. Wird er
+verdraengt (`cancelled`/`skipped`) oder erscheint er binnen 3 min nicht, folgt ein Re-Dispatch, hoechstens 2 Mal und nur solange die
+erwartete Generation nicht ausgeliefert ist. Nach der Obergrenze wird nicht aufgegeben: es wird weiter nur gelesen (kein Dispatch),
+bis die Wartefrist ablaeuft, denn die workflow_run-Pages-Laeufe der Datenjobs liefern die Generation selbst aus (im Vorfall 3,5 min
+nach der alten Frist). Ein echter Fehler des eigenen Pages-Laufs (`failure`, `timed_out`) beendet sofort (Rollback wie bisher).
+
+**Ehrliche Rechnung.** 50 min Wartefrist sind rund 8 warme Pages-Laeufe (6 min) oder rund 4 kalte (13 min, siehe
+`FULL_UNIVERSE_ROLLOUT.md`) hintereinander. Eine tiefere Warteschlange scheitert weiterhin, dann Rollback nach der Frist.
+
+**Grenzen.**
+- "Eigener Lauf" = neuer `workflow_dispatch`-Lauf von `pages-release.yml` auf `main` seit dem ersten Dispatch. Ein fremder Dispatch
+  im selben Fenster (manuell, Re-Freeze #731, profile-source) kann so als eigen zaehlen; entscheidend bleibt die ausgelieferte Generation.
+- Jeder (Re-)Dispatch belegt den einen Wartesteckplatz der Gruppe `pages-production` (cancel-in-progress false) und kann dort einen
+  wartenden fremden Lauf verdraengen (Re-Freeze, profile-source). Das ist Eigenschaft der Gruppe; begrenzt auf hoechstens 3 Dispatches.
+- Am Fristende wird nur ein eigener, noch nicht gestarteter Lauf abgebrochen (Status direkt davor neu gelesen), nie `in_progress`.
+- Ein spaet in der Laufliste erscheinender frueherer Dispatch bleibt ein eigener Lauf und wird verfolgt.
+
+**Rollback-Entscheidungen (`pages-rollback-decision.mjs`).**
+- Pages-Handler: Rollback nur, wenn `approved` erfolgreich war, `enabled == 'true'` und das Gate (R2, 2-3 Lesungen bei Lesefehler)
+  AVAILABLE ist; der Rollback bekommt `--expect-generation <GOOD-Generation>` (im Schritt `approved` aus dem GOOD-Zeiger gelesen, nicht die
+  Gate-Generation). Sonst nur `production-release disable` und OFF-Dispatch.
+- Refresh-Workflow (`--refresh`): Der Rollback-Schritt rollt nur zurueck, wenn das Gate noch AVAILABLE ist; hat der Pages-Handler
+  bereits zurueckgerollt und geschlossen, entfaellt der zweite Rollback. Argument `--expect-generation` aus `health.json`.
+- Bleibt das Gate unlesbar, gibt es nur disable (fail-closed) und eine Warnung: der GOOD-Zeiger kann dann der Produktion vorauslaufen.
+- Bewusste Folge: Scheitert `approved` aus einem anderen Grund als `PRODUCTION_GATE_CHANGED_AFTER_PACKAGE`, obwohl das Artefakt schon
+  ausgeliefert ist, erfolgt nur disable und OFF-Dispatch, kein Rollback.
+- `--expect-generation` wertet `refresh-run.mjs rollback` erst mit PR #726 (CAS in `rollbackGood`) aus; bis dahin wird es ignoriert.

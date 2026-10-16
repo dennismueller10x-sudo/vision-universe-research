@@ -217,7 +217,10 @@ test('Workflow: Jobstart wird vor allen langen Schritten festgehalten (Frist des
 test('Workflow: Rollback bleibt fail-closed und unveraendert (sofort bei Fehlschlag des Deploy-/Verify-Schritts)', () => {
  assert.equal(rollback.if, "failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true");
  assert.ok(steps.indexOf(rollback) > steps.indexOf(deploy));
- assert.match(rollback.run, /refresh-run\.mjs rollback \|\| true/);
+ // Rollback jetzt nur bei noch AVAILABLE-Gate (kein Doppel-Rollback nach dem Pages-Handler) und mit CAS-Argument; disable/OFF-Dispatch unveraendert
+ assert.match(rollback.run, /if node scripts\/company_intelligence\/pages-rollback-decision\.mjs --refresh; then/);
+ assert.match(rollback.run, /refresh-run\.mjs rollback "\$\{args\[@\]\}" \|\| true/);
+ assert.match(rollback.run, /--expect-generation "\$gen"/);
  assert.match(rollback.run, /production-release\.mjs disable \|\| true/);
  assert.match(rollback.run, /gh workflow run pages-release\.yml --ref main -f company_intelligence_off=true/);
 });

@@ -31,7 +31,7 @@ function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin
    if(plan)runs.push({databaseId:1000+n,createdAt:new Date(t+2000).toISOString(),dispatchedAt:t,plan});
   },
   listRuns:async()=>{log.list++;return runs.map(r=>{
-   if(!r.plan)return r;let cur=r.plan[0];for(const s of r.plan)if(t-r.dispatchedAt>=s[0])cur=s;
+   if(!r.plan)return r;if(t-r.dispatchedAt<(r.plan.hiddenMin||0)*MIN)return null;let cur=r.plan[0];for(const s of r.plan)if(t-r.dispatchedAt>=s[0])cur=s;
    
    return {databaseId:r.databaseId,createdAt:r.createdAt,status:cur[1],conclusion:cur[2]};
   }).filter(Boolean);},
@@ -52,8 +52,13 @@ const scenarios={
  },
  async redispatchCapAtTwo(mod){
   const c=runPlan([0,'completed','cancelled']);
-  const s=sim(mod,{plans:[c,c,c,c,c]});const r=await s.run();
-  assert.equal(r.served,false);assert.equal(r.reason,'REDISPATCH_LIMIT_REACHED');assert.equal(s.log.dispatch.length,3,'1 Dispatch + hoechstens 2 Wiederholungen');
+  // Limit erreicht, Generation kommt spaeter (durch einen anderen Pages-Lauf): Erfolg ohne weiteren Dispatch, kein Rollback
+  const late=sim(mod,{plans:[c,c,c,c,c],deliveredAtMin:30});const rl=await late.run();
+  assert.equal(rl.served,true);assert.equal(rl.reason,'DELIVERED');assert.equal(late.log.dispatch.length,3,'1 Dispatch + hoechstens 2 Wiederholungen');
+  // Limit erreicht und nie ausgeliefert: Ende erst NACH der Wartefrist, ohne weiteren Dispatch
+  const never=sim(mod,{plans:[c,c,c,c,c]});const r=await never.run();
+  assert.equal(r.served,false);assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(r.capped,true);assert.equal(never.log.dispatch.length,3);
+  assert.ok(never.clock()>=never.deadlines.waitDeadlineMs,'nicht vor Fristende aufgeben');
  },
  async realFailureStopsImmediately(mod){
   for(const conclusion of ['failure','timed_out','startup_failure']){
@@ -64,7 +69,7 @@ const scenarios={
  },
  async neverAppearedIsRedispatchedThenCapped(mod){
   const s=sim(mod,{plans:[null,null,null,null]});const r=await s.run();
-  assert.equal(r.reason,'REDISPATCH_LIMIT_REACHED');assert.equal(s.log.dispatch.length,3);
+  assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(r.lastReason,'RUN_NEVER_APPEARED');assert.equal(s.log.dispatch.length,3);
   assert.ok(s.log.dispatch[1]-s.log.dispatch[0]>=mod.LIMITS.appearMs,'erst nach der Erscheinungsfrist');
  },
  async noRedispatchWhenAlreadyDelivered(mod){
@@ -98,12 +103,29 @@ const scenarios={
  },
  async successButNotVisibleFailsAfterSettle(mod){
   const s=sim(mod,{plans:[runPlan([0,'completed','success'])]});const r=await s.run();
-  assert.equal(r.reason,'DELIVERY_NOT_VISIBLE_AFTER_SUCCESS');assert.equal(s.log.dispatch.length,1);
+  assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(s.log.dispatch.length,1);assert.ok(s.clock()>=s.deadlines.waitDeadlineMs,'erst nach der Wartefrist');
  },
  async failedDispatchConsumesAttempt(mod){
   const s=sim(mod,{plans:[runPlan([0,'queued'],[1,'completed','success'])],deliveredAtMin:3,dispatchFails:1});const r=await s.run();
   assert.equal(r.served,true);assert.equal(s.log.dispatch.length,2);
-  const bad=sim(mod,{plans:[],dispatchFails:9});assert.equal((await bad.run()).reason,'REDISPATCH_LIMIT_REACHED');assert.equal(bad.log.dispatch.length,3);
+  const bad=sim(mod,{plans:[],dispatchFails:9});assert.equal((await bad.run()).reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(bad.log.dispatch.length,3);
+ },
+ async cancelRechecksStatusBeforeCancelling(mod){
+  // Beim Listen am Fristende queued, beim Neu-Lesen unmittelbar vor `gh run cancel` schon in_progress: nie abbrechen
+  let t=T0,afterDeadlineCalls=0,dispatched=false;const cancels=[];
+  const deadlines=mod.planDeadlines({jobStartMs:T0-25*MIN,nowMs:T0,limits:mod.LIMITS});
+  const gh={dispatch:async()=>{dispatched=true;},cancel:async id=>{cancels.push(id);},listRuns:async()=>{
+   if(!dispatched)return [];
+   if(t>=deadlines.waitDeadlineMs)afterDeadlineCalls++;
+   return [{databaseId:56,createdAt:new Date(T0+2000).toISOString(),status:afterDeadlineCalls>=2?'in_progress':'queued',conclusion:''}];}};
+  const r=await mod.waitForDelivery({expected:EXPECTED,gh,generation:async()=>'gen-old',now:()=>t,sleep:async ms=>{t+=ms;},limits:mod.LIMITS,deadlines});
+  assert.equal(r.served,false);assert.deepEqual(cancels,[],'in_progress wird nie abgebrochen');
+ },
+ async lateAppearingFirstDispatchIsStillTracked(mod){
+  // Dispatch #1 erscheint erst nach 4 min (nach dem Re-Dispatch #2 bei 3 min); er ist ein eigener Lauf und verhindert weitere Dispatches
+  const late=Object.assign(runPlan([0,'queued'],[2,'in_progress'],[5,'completed','success']),{hiddenMin:4});
+  const s=sim(mod,{plans:[late,null,null],deliveredAtMin:9.5});const r=await s.run();
+  assert.equal(r.served,true);assert.equal(s.log.dispatch.length,2,'kein dritter Dispatch, solange der spaete Lauf #1 aktiv ist');
  },
  async foreignOldRunsAreNotOwn(mod){
   // ein bereits vorhandener Lauf (Vorher-Menge, innerhalb der Uhrenabweichung) darf weder Re-Dispatch noch Fehler ausloesen
@@ -224,10 +246,13 @@ const mutants={
   ,
  'cancelled gilt nicht als verdraengt':s=>s.replace("const SUPERSEDED=new Set(['cancelled','skipped'])","const SUPERSEDED=new Set([])"),
  'Rollback schon vor Fristende (Frist ignoriert)':s=>s.replace('if(t>=deadlines.waitDeadlineMs){','if(t>=deadlines.waitDeadlineMs-3600000+0*1&&true){'),
- 'wartender eigener Lauf bleibt nach Fristende bestehen':s=>s.replace("try{await gh.cancel(r.databaseId);","try{"),
+ 'wartender eigener Lauf bleibt nach Fristende bestehen':s=>s.replace("try{await gh.cancel(id);","try{"),
  'laufender Lauf wird ohne Grace sofort aufgegeben':s=>s.replace("if((j.verdict==='ACTIVE'||settling)&&t<deadlines.hardDeadlineMs)","if(false)"),
  'alte 15-min-Wartefrist':s=>s.replace('waitDeadlineMs:verifyDeadlineMs-limits.verifyCapMs','waitDeadlineMs:jobStartMs+15*60000'),
  'Vorher-Menge ignoriert (fremde alte Laeufe zaehlen als eigen)':s=>s.replace('!known.has(String(r.databaseId))&&',''),
+ 'Obergrenze gibt sofort auf statt bis zur Wartefrist zu lesen':s=>s.replace("capped=true;lastReason=reason;note('redispatch-limit-reached',{reason});","return finish(result(false,'REDISPATCH_LIMIT_REACHED'));"),
+ 'Vorher-Menge je Dispatch neu gebildet (spaeter Lauf #1 geht verloren)':s=>s.replace('if(known===null){','if(true){'),
+ 'kein Status-Recheck vor dem Abbruch':s=>s.replace("if(!r||!PENDING.has(r.status)){note('cancel-skipped',{id,status:r?.status??'unknown'});return;}",""),
  'Erscheinungsfrist wird ignoriert':s=>s.replace("t-dispatchedAt>=limits.appearMs","t-dispatchedAt>=0")
 };
 for(const [name,mutate] of Object.entries(mutants)){

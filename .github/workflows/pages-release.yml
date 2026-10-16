@@ -428,8 +428,15 @@ jobs:
           const packagedEnabled=process.env.PACKAGED_CI_ENABLED==='true';
           let gate=null;
           if(packagedEnabled){
-            const bytes=await createS3DriverFromEnv().get(prefixFor(approval.namespace)+'gate.json');
+            const driver=createS3DriverFromEnv();
+            const bytes=await driver.get(prefixFor(approval.namespace)+'gate.json');
             gate=bytes?JSON.parse(bytes):null;
+            // GOOD-Generation (nicht die Gate-Generation approval.consumerGeneration) fuer den CAS des Handler-Rollbacks.
+            try{
+              const {activeGood}=await import('./scripts/company_intelligence/refresh-storage.mjs');
+              const good=await activeGood(driver);
+              if(good?.generation)appendFileSync(process.env.GITHUB_OUTPUT,`good_generation=${good.generation}\n`);
+            }catch{}
           }
           const mode=deploymentMode({packagedEnabled,emergencyOff:process.env.EMERGENCY_OFF==='true',fullAcceptance:process.env.FULL_ACCEPTANCE==='true',gate});
           appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${mode!=='OFF'}\nmode=${mode}\n`);
@@ -511,6 +518,7 @@ jobs:
         env:
           APPROVED_OUTCOME: ${{ steps.approved.outcome }}
           APPROVED_ENABLED: ${{ steps.approved.outputs.enabled }}
+          GOOD_GENERATION: ${{ steps.approved.outputs.good_generation }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -523,7 +531,10 @@ jobs:
           # (pages-rollback-decision.mjs). Nach PRODUCTION_GATE_CHANGED_AFTER_PACKAGE oder bei bereits geschlossenem Gate nur disable
           # + OFF-Dispatch: ein zweiter Rollback zerstoerte am 15.10.2026 den Legacy-GOOD-Zeiger.
           if node scripts/company_intelligence/pages-rollback-decision.mjs; then
-            node scripts/company_intelligence/refresh-run.mjs rollback || gate_failure=$?
+            # Rollback nur gegen die GOOD-Generation, die dieser Job veroeffentlicht hat (CAS in refresh-run, PR #726; vorher ignoriert).
+            args=()
+            if [ -n "$GOOD_GENERATION" ]; then args+=(--expect-generation "$GOOD_GENERATION"); else echo "::warning::GOOD generation unknown; rollback without compare-and-swap."; fi
+            node scripts/company_intelligence/refresh-run.mjs rollback "${args[@]}" || gate_failure=$?
           else
             echo "::notice::Gate not AVAILABLE or generation not published by this job; disable only, no rollback."
           fi

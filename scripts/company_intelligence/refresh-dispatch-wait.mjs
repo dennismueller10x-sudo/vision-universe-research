@@ -14,7 +14,9 @@
  *     - `cancelled`/`skipped` (verdraengt) oder nach APPEAR_MS nie erschienen: Re-Dispatch, hoechstens `maxRedispatch` (2) Mal und nur,
  *       wenn die erwartete Generation noch nicht ausgeliefert ist (unmittelbar davor erneut geprueft).
  *     - `failure`/`timed_out`/`startup_failure`/...: ECHTER Fehler, sofort Ende mit Exit 1 (Rollback wie bisher, keine Wiederholung).
- *     - `success`, Generation aber nicht sichtbar: bis SETTLE_MS (CDN) weiter lesen, dann Ende mit Exit 1.
+ *     - `success`, Generation aber nicht sichtbar: weiter lesen (CDN); die Frist entscheidet.
+ *     Obergrenze erreicht: kein weiterer Dispatch, aber weiter nur lesen bis zur Wartefrist (andere Pages-Laeufe liefern evtl. aus).
+ *     Nach einem eigenen `success` ohne sichtbare Generation ebenfalls bis zur Wartefrist weiter lesen.
  *  3. Frist (waitDeadline, siehe planDeadlines): Rollback darf erst danach folgen. Laeuft ein eigener Lauf noch (in_progress), wird bis
  *     zur harten Frist weiter gewartet (er liefert evtl. gerade aus); ein noch nicht gestarteter (queued/pending) eigener Lauf wird
  *     abgebrochen, damit er nicht NACH dem Rollback mit altem Stand ausliefert. Ein laufender Lauf wird nie abgebrochen.
@@ -22,7 +24,13 @@
  * FRIST-RECHNUNG (alles ab Jobstart `JOB_STARTED_AT`, siehe planDeadlines/guaranteedWaitMs):
  *   Job-Timeout 100 min - Reserve 10 min (Rollback, disable, OFF-Dispatch, Upload; Teil von refresh-live-verify) = Frist der Live-QA t=90.
  *   Wartefrist endet 15 min (Gesamtbudget der Live-QA) davor, t=75. Der Refresh selbst braucht gemessen 25 min.
- *   Garantiertes Warten = 100 - 10 - 15 - 25 = 50 min >= 40 min (siehe Test), also sieben und mehr serielle Pages-Laeufe zu 5-6 min.
+ *   Garantiertes Warten = 100 - 10 - 15 - 25 = 50 min. EHRLICH: das sind rund 8 warme (6 min) oder rund 4 kalte Pages-Laeufe (13 min,
+ *   FULL_UNIVERSE_ROLLOUT.md) hintereinander. Eine laengere Warteschlange scheitert weiterhin (dann Rollback nach der Frist).
+ * GRENZEN (dokumentiert in CONTINUOUS_REFRESH.md): "eigener Lauf" = neuer workflow_dispatch-Lauf auf main seit dem ersten Dispatch; ein
+ *   fremder Dispatch (manuell, Re-Freeze, profile-source) kann so als eigen zaehlen. Jeder (Re-)Dispatch belegt den einen Wartesteckplatz
+ *   der Gruppe pages-production und verdraengt dort einen wartenden fremden Lauf (z. B. Re-Freeze #731, profile-source); das ist
+ *   Eigenschaft der Gruppe (cancel-in-progress false, ein Pending) und bei maximal 3 Dispatches begrenzt. Am Fristende wird nur ein
+ *   eigener, noch nicht gestarteter Lauf abgebrochen, nie ein laufender und nie ein fremder.
  *
  * Das Skript fuehrt weder Rollback noch Gate-Aenderung aus. Exit 0 = ausgeliefert, Exit 1 = nicht ausgeliefert (der Workflow rollt
  * danach wie bisher zurueck). gh und Auslieferungs-Abfrage sind injizierbar (testbar ohne Netz und ohne Workflow-Lauf).
@@ -46,7 +54,7 @@ export const LIMITS=Object.freeze({
  verifyCapMs:VERIFY_LIMITS.totalCapMs,    // Gesamtbudget der Live-Verifikation nach der Auslieferung
  minVerifyMs:300000,              // darunter lohnt auch eine Grace-Verlaengerung nicht (hartes Ende der Wartezeit)
  pipelineMaxMs:25*60000,          // gemessene Dauer des Refresh vor dem Pages-Schritt (Kommentar im Workflow)
- minWaitMs:40*60000,              // garantiertes Warten ab Pipelineende (serielle Pages-Laeufe zu je 5-6 min)
+ minWaitMs:40*60000,              // Mindestwartezeit ab Pipelineende (Untergrenze im Test; tatsaechlich 50 min = ~8 warme oder ~4 kalte Pages-Laeufe zu 6 bzw. 13 min)
  skewMs:60000                     // Uhrenabweichung Runner/GitHub bei createdAt
 });
 
@@ -92,22 +100,32 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
  const log=[],note=(event,extra={})=>log.push({at:now(),event,...extra});
  const served=async()=>{try{return (await generation())===expected;}catch{return false;}};
  const list=async()=>{try{return await gh.listRuns();}catch{return null;}};
- let redispatches=0,known=new Set(),dispatchedAt=0,dispatchFailed=false,successSeenAt=null,cancelledNotice=false;
+ let redispatches=0,known=null,firstAt=0,dispatchedAt=0,dispatchFailed=false,successSeenAt=null,graceNoted=false,capped=false,lastReason=null;
+ const handled=new Set(); // verdraengte Laeufe frueherer Dispatches: nicht erneut beurteilen
 
- /* Dispatch samt Vorher-Menge. Ein fehlgeschlagener Dispatch verbraucht einen Versuch (kein stilles Weitermachen). */
+ /* Dispatch. Die Vorher-Menge wird NUR vor dem ersten Dispatch gebildet: so bleibt auch ein spaet erscheinender Lauf eines frueheren
+    Dispatches (z. B. #1 taucht erst nach dem Re-Dispatch in der Liste auf) ein eigener Lauf und wird verfolgt/abgebrochen.
+    Ein fehlgeschlagener Dispatch verbraucht einen Versuch (kein stilles Weitermachen). */
  const dispatch=async()=>{
-  const before=await list();known=new Set((before||[]).map(r=>String(r.databaseId)));
+  if(known===null){const before=await list();known=new Set((before||[]).map(r=>String(r.databaseId)));firstAt=now();}
   dispatchedAt=now();dispatchFailed=false;
   try{await gh.dispatch();note('dispatch',{n:redispatches+1});}catch{dispatchFailed=true;note('dispatch-failed',{n:redispatches+1});}
   successSeenAt=null;
  };
  const finish=(res)=>({...res,dispatches:redispatches+1,log});
- const supersede=async(reason)=>{ // Re-Dispatch nur mit Rest-Budget und nur wenn die Generation noch nicht ausgeliefert ist
+ const own=runs=>ownRuns(runs,{known,sinceMs:firstAt,skewMs:limits.skewMs}).filter(r=>!handled.has(String(r.databaseId)));
+ const supersede=async(reason,ownNow)=>{ // Re-Dispatch nur mit Rest-Budget und nur wenn die Generation noch nicht ausgeliefert ist
   if(await served())return 'SERVED';
   if(redispatches>=limits.maxRedispatch)return 'LIMIT';
   redispatches++;note('redispatch',{reason,n:redispatches});
-  /* Verdraengte Laeufe der Vorgaenger nicht erneut als "eigen" werten: Vorher-Menge wird in dispatch() neu gebildet. */
+  for(const r of ownNow)if(r.status==='completed')handled.add(String(r.databaseId));
   await dispatch();return 'DONE';
+ };
+ /* Abbruch eines noch nicht gestarteten eigenen Laufs: Status unmittelbar davor neu lesen (er kann inzwischen gestartet sein); nie in_progress. */
+ const cancelIfStillPending=async id=>{
+  const fresh=await list();const r=(fresh||[]).find(x=>String(x.databaseId)===String(id));
+  if(!r||!PENDING.has(r.status)){note('cancel-skipped',{id,status:r?.status??'unknown'});return;}
+  try{await gh.cancel(id);note('cancel-pending',{id});}catch{note('cancel-failed',{id});}
  };
 
  await dispatch();
@@ -115,26 +133,29 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
   if(await served())return finish(result(true,'DELIVERED'));
   const t=now();
   const runs=await list();
-  const j=runs?judge(ownRuns(runs,{known,sinceMs:dispatchedAt,skewMs:limits.skewMs})):{verdict:'UNKNOWN'};
+  const ownNow=runs?own(runs):[];
+  const j=runs?judge(ownNow):{verdict:'UNKNOWN'};
   if(j.verdict==='SUCCESS')successSeenAt??=t;
   if(t>=deadlines.waitDeadlineMs){
    /* Frist abgelaufen. Rollback erst, wenn kein eigener Lauf mehr laeuft (und ein gerade erfolgreicher seine Auslieferung zeigen konnte). */
    const settling=j.verdict==='SUCCESS'&&t-successSeenAt<limits.settleMs;
-   if((j.verdict==='ACTIVE'||settling)&&t<deadlines.hardDeadlineMs){if(!cancelledNotice){cancelledNotice=true;note('grace-active-run');}await sleep(limits.pollMs);continue;}
-   if(j.verdict==='PENDING_ONLY'||(j.verdict==='ACTIVE')){
-    for(const r of j.active.filter(r=>PENDING.has(r.status))){try{await gh.cancel(r.databaseId);note('cancel-pending',{id:r.databaseId});}catch{note('cancel-failed',{id:r.databaseId});}}
-    return finish(result(false,j.verdict==='ACTIVE'?'RUN_STILL_ACTIVE_AT_HARD_DEADLINE':'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict}));
+   if((j.verdict==='ACTIVE'||settling)&&t<deadlines.hardDeadlineMs){if(!graceNoted){graceNoted=true;note('grace-active-run');}await sleep(limits.pollMs);continue;}
+   if(j.verdict==='PENDING_ONLY'||j.verdict==='ACTIVE'){
+    for(const r of j.active.filter(r=>PENDING.has(r.status)))await cancelIfStillPending(r.databaseId);
+    return finish(result(false,j.verdict==='ACTIVE'?'RUN_STILL_ACTIVE_AT_HARD_DEADLINE':'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
    }
-   return finish(result(false,'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict}));
+   return finish(result(false,'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
   }
   if(j.verdict==='FAILED')return finish(result(false,'PAGES_RUN_FAILED',{conclusion:j.conclusion})); // echter Fehler: sofort
-  if(j.verdict==='SUCCESS'){
-   if(t-successSeenAt>=limits.settleMs)return finish(result(false,'DELIVERY_NOT_VISIBLE_AFTER_SUCCESS'));
-  }else if(j.verdict==='SUPERSEDED'||dispatchFailed||(j.verdict==='NONE'&&t-dispatchedAt>=limits.appearMs)){
+  if(!capped&&j.verdict!=='SUCCESS'&&(j.verdict==='SUPERSEDED'||dispatchFailed||(j.verdict==='NONE'&&t-dispatchedAt>=limits.appearMs))){
    const reason=dispatchFailed?'DISPATCH_FAILED':j.verdict==='SUPERSEDED'?'RUN_CANCELLED':'RUN_NEVER_APPEARED';
-   const s=await supersede(reason);
+   const s=await supersede(reason,ownNow);
    if(s==='SERVED')return finish(result(true,'DELIVERED'));
-   if(s==='LIMIT')return finish(result(false,'REDISPATCH_LIMIT_REACHED',{lastReason:reason}));
+   if(s==='LIMIT'){
+    /* Obergrenze erreicht: KEIN weiterer Dispatch, aber weiter lesen bis zur Wartefrist. Im Vorfall verdraengten die workflow_run-Laeufe
+       jeden Dispatch, lieferten die Generation aber selbst aus (3,5 min nach der alten Frist). */
+    capped=true;lastReason=reason;note('redispatch-limit-reached',{reason});
+   }
    continue;
   }
   await sleep(limits.pollMs);
