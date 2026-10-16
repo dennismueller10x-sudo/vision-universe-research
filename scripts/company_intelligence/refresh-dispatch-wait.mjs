@@ -14,6 +14,11 @@
  *     - `cancelled`/`skipped` (verdraengt) oder nach APPEAR_MS nie erschienen: Re-Dispatch, hoechstens `maxRedispatch` (2) Mal und nur,
  *       wenn die erwartete Generation noch nicht ausgeliefert ist (unmittelbar davor erneut geprueft).
  *     - `failure`/`timed_out`/`startup_failure`/...: ECHTER Fehler, sofort Ende mit Exit 1 (Rollback wie bisher, keine Wiederholung).
+ *       Einzige Ausnahme (preDeployFailure): der eigene Lauf scheiterte nachweislich VOR dem Deploy (Job `package` failure, `deploy` und
+ *       `company-intelligence-live` nie gelaufen), Produktion also unveraendert. Dann wie ein verdraengter Lauf: Re-Dispatch innerhalb
+ *       derselben Obergrenze; ist sie erschoepft oder die Jobliste unlesbar, bleibt es der sofortige echte Fehler (kein Warten bis zur Frist).
+ *       Anlass: Pages-Lauf 38798770814 starb am 15.10. 20:10:51 im Pin-Schritt (`terminated`); als eigener Lauf haette er den Refresh mit
+ *       guten Daten sofort zurueckrollen lassen.
  *     - `success`, Generation aber nicht sichtbar: weiter lesen (CDN); die Frist entscheidet.
  *     Obergrenze erreicht: kein weiterer Dispatch, aber weiter nur lesen bis zur Wartefrist (andere Pages-Laeufe liefern evtl. aus).
  *     Nach einem eigenen `success` ohne sichtbare Generation ebenfalls bis zur Wartefrist weiter lesen.
@@ -85,15 +90,26 @@ export function judge(own){
  const done=own.filter(r=>r.status==='completed');
  if(done.some(r=>r.conclusion==='success'))return {verdict:'SUCCESS'};
  const failed=done.filter(r=>!SUPERSEDED.has(r.conclusion));
- if(failed.length)return {verdict:'FAILED',conclusion:failed[0].conclusion||'unknown'};
+ if(failed.length)return {verdict:'FAILED',conclusion:failed[0].conclusion||'unknown',run:failed[0]};
  return {verdict:done.length?'SUPERSEDED':'NONE'};
 }
 
 const result=(served,reason,extra={})=>({served,reason,...extra});
 
+/* Gescheitert, bevor irgendetwas ausgeliefert wurde: Lauf-Ergebnis failure, Job `package` failure, alle uebrigen Jobs (deploy,
+   company-intelligence-live) fehlen oder sind skipped. Jede andere oder unklare Jobliste ist KEIN Vor-Deploy-Fehler. Rein. */
+export const PRE_DEPLOY_JOB='package';
+export function preDeployFailure(run,jobs){
+ if(run?.conclusion!=='failure'||!Array.isArray(jobs)||!jobs.length)return false;
+ const pkg=jobs.filter(j=>j?.name===PRE_DEPLOY_JOB);
+ if(pkg.length!==1||pkg[0].status!=='completed'||pkg[0].conclusion!=='failure')return false;
+ return jobs.every(j=>j?.name===PRE_DEPLOY_JOB||(j?.status==='completed'&&j.conclusion==='skipped'));
+}
+
 /**
  * Kern ohne Prozess-/Netzzugriff.
- *  gh: {dispatch():Promise, listRuns():Promise<Array<{databaseId,status,conclusion,createdAt}>>, cancel(id):Promise}
+ *  gh: {dispatch():Promise, listRuns():Promise<Array<{databaseId,status,conclusion,createdAt}>>, cancel(id):Promise,
+ *       jobs?(id):Promise<Array<{name,status,conclusion}>>}  (fehlt jobs oder wirft es: jeder Fehlschlag bleibt ein echter Fehler)
  *  generation(): Promise<string|null>  ausgelieferte Generation (null = unbekannt)
  */
 export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines}){
@@ -146,7 +162,16 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
    }
    return finish(result(false,'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
   }
-  if(j.verdict==='FAILED')return finish(result(false,'PAGES_RUN_FAILED',{conclusion:j.conclusion})); // echter Fehler: sofort
+  if(j.verdict==='FAILED'){
+   // Vor-Deploy-Fehler des eigenen Laufs (Produktion unveraendert): Re-Dispatch innerhalb der Obergrenze; sonst echter Fehler, sofort.
+   let jobs=null;if(!capped&&redispatches<limits.maxRedispatch&&typeof gh.jobs==='function'){try{jobs=await gh.jobs(j.run.databaseId);}catch{jobs=null;}}
+   if(jobs&&preDeployFailure(j.run,jobs)){
+    const s=await supersede('RUN_FAILED_BEFORE_DEPLOY',ownNow);
+    if(s==='SERVED')return finish(result(true,'DELIVERED'));
+    if(s==='DONE')continue;
+   }
+   return finish(result(false,'PAGES_RUN_FAILED',{conclusion:j.conclusion})); // echter Fehler: sofort
+  }
   if(!capped&&j.verdict!=='SUCCESS'&&(j.verdict==='SUPERSEDED'||dispatchFailed||(j.verdict==='NONE'&&t-dispatchedAt>=limits.appearMs))){
    const reason=dispatchFailed?'DISPATCH_FAILED':j.verdict==='SUPERSEDED'?'RUN_CANCELLED':'RUN_NEVER_APPEARED';
    const s=await supersede(reason,ownNow);
@@ -169,7 +194,8 @@ export function realGh(env=process.env){
  return {
   dispatch:()=>run('gh',['workflow','run',WORKFLOW,'--ref','main'],env),
   listRuns:async()=>JSON.parse(await run('gh',['run','list','--workflow',WORKFLOW,'--event','workflow_dispatch','--branch','main','--limit','30','--json','databaseId,status,conclusion,createdAt'],env)),
-  cancel:id=>run('gh',['run','cancel',String(id)],env)
+  cancel:id=>run('gh',['run','cancel',String(id)],env),
+  jobs:async id=>JSON.parse(await run('gh',['run','view',String(id),'--json','jobs'],env)).jobs.map(({name,status,conclusion})=>({name,status,conclusion}))
  };
 }
 
