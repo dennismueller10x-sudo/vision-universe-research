@@ -35,6 +35,9 @@ def verify(read, email):
     contact = read(path)
     events = pages('/smtp/statistics/events?templateId=8&startDate=2026-10-15&endDate=2026-10-16', 'events', 100)
     owner.verify_confirmed_owner(contact, email, events, list_id, blocked=True)
+    template = read('/smtp/templates/8')
+    if template.get('id') != 8 or template.get('isActive') is not True or template.get('doiTemplate') is not True or template.get('tag') != 'optin' or ''.join(template.get('htmlContent', '').split()) != ''.join(owner.mail_source('newsletter-api-doi.html').split()):
+        raise ValueError('Tested DOI content changed')
     members = pages(f'/contacts/lists/{list_id}/contacts', 'contacts')
     if len(members) != 1 or members[0].get('id') != contact['id']:
         raise ValueError('Foreign private recipient')

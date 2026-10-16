@@ -12,10 +12,10 @@ unsubscribe_spec=importlib.util.spec_from_file_location('unsubscribe',Path(__fil
 unsubscribe=importlib.util.module_from_spec(unsubscribe_spec);unsubscribe_spec.loader.exec_module(unsubscribe)
 
 class LateUnsubscribe(unittest.TestCase):
-    def fixture(self,blocked=True,campaign_id=12,foreign=False,includes=None):
+    def fixture(self,blocked=True,campaign_id=12,foreign=False,includes=None,changed_template=False):
         p=Provider(resume=True,existing_test_list=True)
         contact={**p.new,'emailBlacklisted':blocked}
-        values={'/contacts/lists':{'lists':[{'id':7,'name':unsubscribe.NAME}]},
+        values={'/smtp/templates/8':{'id':8,'isActive':True,'doiTemplate':True,'tag':'optin','htmlContent':'changed' if changed_template else mail_source('newsletter-api-doi.html')},'/contacts/lists':{'lists':[{'id':7,'name':unsubscribe.NAME}]},
                 '/contacts/new%40example.test':contact,
                 '/smtp/statistics/events':{'events':[{'messageId':'synthetic-message-1','email':'new@example.test','event':'requests','date':'2026-10-15T17:55:00Z'}]},
                 '/contacts/lists/7/contacts':{'contacts':[p.old if foreign else contact]},
@@ -38,7 +38,7 @@ class LateUnsubscribe(unittest.TestCase):
         self.assertFalse(any('/send' in p or '/doubleOptin' in p or '/add' in p for p in calls))
         self.assertNotIn('example',json.dumps(result))
     def test_late_native_unsubscribe_rejects_unblocked_foreign_campaign_or_audience(self):
-        for kwargs in ({'blocked':False},{'campaign_id':99},{'foreign':True},{'includes':[{'id':4}]}):
+        for kwargs in ({'blocked':False},{'campaign_id':99},{'foreign':True},{'includes':[{'id':4}]},{'changed_template':True}):
             read,_=self.fixture(**kwargs)
             with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):unsubscribe.verify(read,'new@example.test')
     def test_read_operator_requires_trusted_manual_dispatch_before_network(self):
@@ -268,7 +268,7 @@ class ReleaseContract(unittest.TestCase):
         with self.assertRaises(ValueError):self.check('controlled',{**env,'NEWSLETTER_OPERATOR_PRIVACY_SHA256':hashlib.sha256(self.file.read_bytes()).hexdigest()})
     def test_public_mode_requires_actual_observer_step_and_private_inbox_confirmation(self):
         env={'NEWSLETTER_OPERATOR_PRIVACY_SHA256':self.digest,'NEWSLETTER_OPERATOR_TEST_RUN_ID':'123','NEWSLETTER_OPERATOR_INBOX_VERIFIED':'true','GH_TOKEN':'synthetic'}
-        for step_name,inbox,source,valid in [('Observe owner signup and verify Brevo unsubscribe','true','f'*40,True),('Finish verified owner confirmation and native unsubscribe','true','f'*40,True),('Private audit or closed setup','true','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','false','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','true','a'*40,False)]:
+        for step_name,inbox,source,valid in [('Verify completed owner unsubscribe without sending','true','f'*40,True),('Verify completed owner unsubscribe without sending','false','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','true','f'*40,True),('Finish verified owner confirmation and native unsubscribe','true','f'*40,True),('Private audit or closed setup','true','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','false','f'*40,False),('Observe owner signup and verify Brevo unsubscribe','true','a'*40,False)]:
             def github(req,**kwargs):
                 path=urllib.parse.urlsplit(req.full_url).path
                 if path.endswith('/jobs'):return Response(200,{'jobs':[{'conclusion':'success','steps':[{'name':step_name,'conclusion':'success'}]}]})
