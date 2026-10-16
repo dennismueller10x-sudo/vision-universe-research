@@ -167,9 +167,19 @@ Lauf ist `CRITICAL` mit `failureCode` und `runSucceeded:false`. Vorher bewertete
 Report einen Zeitstempel, den die Engine im selben Lauf auf "jetzt" setzt, und war bei
 `PIPELINE_FAILURE` trotzdem `HEALTHY`.
 
-Bekannte Grenze: `continuous_refresh.py` setzt `lastSuccessfulRefresh` schon bei
-einer einzigen erfolgreichen Quelle. Eine strengere Definition ("alle Pflichtspuren")
-gehört in die Python-Engine und ist hier nicht geändert.
+Globaler Stempel `lastSuccessfulRefresh`: `continuous_refresh.py` setzt ihn nur noch nach
+einem fachlich vollständigen Lauf (`refresh_completeness`) und erst am Ende, nachdem Export,
+Consumer-Kandidat und Inventar konsistent sind; der GOOD-Zeiger übernimmt ihn danach
+unverändert. Vollständig heißt: Netzlauf, mindestens ein Erfolg, keine Quelle mit
+temporärem/unklarem Fehler (`TEMPORARY_FAILURE`, `RATE_LIMITED`, `ROBOTS_TEMPORARY_FAILURE`,
+`PARSE_FAILURE`, `HTTP_403_UNCLASSIFIED`), kein Abbruch durch Anfragebudget, keine SEC-Fehler,
+kein temporärer Fehler bei den Finanzfakten. Dauerhaft blockierte Quellen (`ROBOTS_BLOCKED`,
+`AUTH_REQUIRED`, `SOURCE_REMOVED`) sperren ihn nicht. Nicht fällige Quellen zählen nicht
+als Fehler. Bei Teilerfolg bleiben Fortschrittsfelder (Lane-Stempel, `lastAttempt`, je Quelle
+`refreshSource:*`) erhalten, der globale Stempel bleibt alt; `lastRefreshComplete` und
+`incompleteReasons` im Health nennen den Grund. Schwellen 8 h / 12 h und Zeitstempel
+bleiben unverändert (ein unvollständiger Lauf lässt das Alter schlicht weiterlaufen).
+`source_onboarding.py` setzt den globalen Stempel nicht mehr.
 
 ## Configuration and rollback
 

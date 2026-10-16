@@ -148,6 +148,15 @@ test('run SLO on success still judges the freshness of what was published (never
   assert.equal(runSLO(okReport({health:{lastSuccessfulRefresh:new Date(now-h*H).toISOString()}}),now).refreshSLO,want);
  assert.equal(runSLO(okReport({health:{}})).refreshSLO,'CRITICAL');
 });
+test('unvollstaendiger Lauf: zusaetzliche Health-Felder aendern Schwellen und Alter nicht (Stempel bleibt alt)',()=>{
+ const extra={lastRefreshComplete:false,incompleteReasons:['SOURCE_NOT_SUCCESSFUL:TEMPORARY_FAILURE']};
+ for(const [h,want] of [[7.9,'HEALTHY'],[8.1,'WARNING'],[12.1,'CRITICAL']])
+  assert.equal(runSLO(okReport({health:{lastSuccessfulRefresh:ago(h),...extra}}),NOW).refreshSLO,want);
+ const s=evaluateHealth(good(9,1,extra),observed(1),{state:'VERIFIED'},NOW);
+ assert.equal(s.lastSuccessfulGoodRefresh,ago(9));assert.equal(s.goodDataAgeHours,9);
+ // Alter GOOD-Zustand ohne die neuen Felder bleibt lesbar.
+ assert.equal(evaluateHealth(good(9),observed(1),{state:'VERIFIED'},NOW).goodDataAgeHours,9);
+});
 test('runRefresh report is wired to runSLO, not to the bare timestamp freshness',()=>{
  const src=readFileSync(fileURLToPath(new URL('../refresh-run.mjs',import.meta.url)),'utf8');
  assert.match(src,/Object\.assign\(report,runSLO\(report\)\)/);

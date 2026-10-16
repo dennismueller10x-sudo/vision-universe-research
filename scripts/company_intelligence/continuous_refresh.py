@@ -125,6 +125,57 @@ class CheckedHTTP(PublicHTTP):
                 except ValueError as e: raise SourceError('PARSE_INVALID_JSON') from e
         return response
 
+# Quellenausgaenge, die laut Richtlinie bewusst als "blockiert/entfernt" gefuehrt werden
+# (robots.txt, Auth, entfernte URL). Sie sind dauerhaft, werden pro Quelle als
+# health=blocked gespeichert und stehen unter sourceOutcomes im Bericht; sie
+# blockieren den globalen Stempel nicht, sonst wuerde eine einzige dauerhaft
+# gesperrte Quelle den Refresh-SLO fuer immer auf CRITICAL halten.
+POLICY_TERMINAL_OUTCOMES=frozenset({'ROBOTS_BLOCKED','AUTH_REQUIRED','SOURCE_REMOVED'})
+SUCCESS_OUTCOMES=frozenset({'SUCCESS','NO_CHANGE'})
+
+def refresh_completeness(*,network,outcomes,successes,deferred,sec_exhausted,sec_failures,fact_outcomes):
+    """Fachlich vollstaendiger Refresh? Liefert (vollstaendig, Gruende).
+
+    Vollstaendig heisst: Netzlauf, mindestens ein Erfolg, keine Quelle mit
+    temporaerem/unklarem Fehler (alles ausser Erfolg und POLICY_TERMINAL_OUTCOMES),
+    kein Abbruch durch Anfragebudget, keine SEC-Fehler und kein temporaerer
+    Fehler beim Fortschreiben der Finanzfakten. Nicht faellige Quellen (Cooldown
+    oder Intervall) zaehlen nicht als Fehler.
+    """
+    reasons=[]
+    if not network: reasons.append('OFFLINE_RUN')
+    elif not successes: reasons.append('NO_SUCCESSFUL_SOURCE')
+    bad=sorted(k for k,v in outcomes.items() if v and k not in SUCCESS_OUTCOMES and k not in POLICY_TERMINAL_OUTCOMES)
+    if bad: reasons.append('SOURCE_NOT_SUCCESSFUL:'+','.join(bad))
+    if deferred: reasons.append('REQUEST_BUDGET_EXHAUSTED')
+    if sec_exhausted: reasons.append('SEC_BUDGET_EXHAUSTED')
+    if sec_failures: reasons.append('SEC_FAILURES')
+    if fact_outcomes.get('TEMPORARY_FAILURE'): reasons.append('FINANCIAL_FACTS_TEMPORARY_FAILURE')
+    return not reasons,reasons
+
+def progress_health(prior,now,lane_success,sec_success,financial,complete,reasons):
+    """Fortschrittsfelder (Lane-Stempel, Versuch) immer; den globalen Stempel
+    `lastSuccessfulRefresh` bewusst NICHT. Den setzt `commit_refresh_stamp`
+    erst am Ende des Laufs. Alte Zustandsdateien ohne die neuen Felder bleiben lesbar."""
+    health={**prior,'lastAttempt':now,
+            'lastSuccessfulNewsRefresh':now if lane_success['IR_FEED'] else prior.get('lastSuccessfulNewsRefresh'),
+            'lastSuccessfulSecRefresh':now if sec_success else prior.get('lastSuccessfulSecRefresh'),
+            'lastRefreshComplete':complete,'incompleteReasons':reasons}
+    if lane_success['IR_EVENTS']: health['lastSuccessfulEventRefresh']=now
+    if lane_success['IR_MATERIALS']: health['lastSuccessfulMaterialRefresh']=now
+    if financial:
+        health['lastFinancialAttempt']=now
+        health['lastSuccessfulFinancialProjection']=now
+    return health
+
+def commit_refresh_stamp(store,health,now,complete):
+    """Setzt `lastSuccessfulRefresh` nur bei vollstaendigem Lauf und erst, nachdem
+    Export, Consumer-Kandidat und Inventar konsistent sind. Bei unvollstaendigem
+    Lauf bleibt der bisherige Wert (auch ein fehlender) unveraendert."""
+    if complete: health['lastSuccessfulRefresh']=now
+    store.set_state('continuousRefresh',health)
+    return health
+
 def refresh(state,identity_root,consumer,evidence,now=None,network=True,financial=False,http=None,universe=False):
     state,consumer=Path(state),Path(consumer); config=settings()
     universe_config=json.loads((ROOT/'company-intelligence/config/universe-rollout.json').read_text())
@@ -260,14 +311,10 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 if outcome=='SUCCESS':financial_updates+=1;updated.add(cid)
                 if outcome=='BUDGET_DEFERRED':sec_exhausted=True
         successes=outcomes['SUCCESS']+outcomes['NO_CHANGE']+sec_success
-        health={**prior,'lastAttempt':now,'lastSuccessfulRefresh':now if successes else prior.get('lastSuccessfulRefresh'),
-                'lastSuccessfulNewsRefresh':now if lane_success['IR_FEED'] else prior.get('lastSuccessfulNewsRefresh'),
-                'lastSuccessfulSecRefresh':now if sec_success else prior.get('lastSuccessfulSecRefresh')}
-        if lane_success['IR_EVENTS']: health['lastSuccessfulEventRefresh']=now
-        if lane_success['IR_MATERIALS']: health['lastSuccessfulMaterialRefresh']=now
-        if financial:
-            health['lastFinancialAttempt']=now
-            health['lastSuccessfulFinancialProjection']=now
+        complete,incomplete_reasons=refresh_completeness(network=network,outcomes=outcomes,successes=successes,deferred=deferred,
+            sec_exhausted=sec_exhausted,sec_failures=sec.run['secFailures'],fact_outcomes=fact_outcomes)
+        health=progress_health(prior,now,lane_success,sec_success,financial,complete,incomplete_reasons)
+        # Fortschritt/Cooldowns sofort sichern; der globale Stempel folgt erst am Ende.
         store.set_state('continuousRefresh',health)
         if outside_proof(store.db,cids)!=before: raise ValueError('NON_COHORT_PRIVATE_CONTENT_CHANGED')
         from company_intelligence.reviewed_profiles import flag_reviews
@@ -294,6 +341,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 inventory[cid]={'tickers':json.loads((ROOT/'docs/company-intelligence/full-data-release-candidate.json').read_text())['inventory'][cid]['tickers'],
                                 'germanProfile':german,'financials':value['latestFinancials']['state'],'staleFinancials':value['latestFinancials'].get('stale',False),'news':len(value['news'])}
             if profiles!=45: raise ValueError('GERMAN_PROFILE_REGRESSION')
+        # Erst jetzt (Export, Consumer-Kandidat, Inventar und Profile konsistent) den globalen Stempel setzen.
+        health=commit_refresh_stamp(store,health,now,complete)
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
         report={'schema':1,'scope':'PER_ISSUER_ELIGIBILITY' if universe else 'CONTROLLED_COHORT','status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
                 'consumerGeneration':prepared['generation'],'privateCompanies':exported['exportedCompanies'],'sourcesEligible':len(eligible),'sourcesChecked':checked,

@@ -202,7 +202,9 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 raise ValueError('SOURCE_ONBOARDING_IMPLEMENTATION_ERROR') from error
         if succeeded:
             prior = store.state('continuousRefresh', {})
-            store.set_state('continuousRefresh', {**prior, 'lastSuccessfulRefresh': stamp, 'lastSuccessfulNewsRefresh': stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')})
+            # Der globale Stempel `lastSuccessfulRefresh` gehoert allein dem vollstaendigen
+            # Refresh (continuous_refresh.py); eine Teilmenge Quellen darf ihn nicht setzen.
+            store.set_state('continuousRefresh', {**prior, 'lastSuccessfulNewsRefresh': stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')})
         result = {'schema': 1, 'runId': run_id, 'candidateIssuers': len(inventory), 'attemptedIssuers': len(selected), 'requests': http.requests,
                   'sourcePollingSuccesses': succeeded, 'newRegisteredSources': imported, 'newProvenSources': 0, 'outcomes': dict(outcomes), 'sourcePolicy': reviewed['sourceUsagePolicy'],
                   'privateOperationalRowsIncluded': False, 'universeDiscovery': False}

@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance,advance_financial_filing
+from collections import Counter
+from company_intelligence.continuous_refresh import CheckedHTTP,source_result,advance,advance_financial_filing,refresh_completeness,progress_health,commit_refresh_stamp
 from company_intelligence.transport import PublicHTTP,SourceError
 from company_intelligence.pipeline import Pipeline
 from company_intelligence.store import Store
@@ -137,3 +138,69 @@ class ContinuousRefreshTests(unittest.TestCase):
             http=CheckedHTTP(Path(tmp));http.current_source={'url':'https://example.com/reports','type':'IR_MATERIALS','format':'Q4_REPORTS'}
             with patch.object(PublicHTTP,'get',return_value={'body':b'<html>unavailable</html>'}):
                 with self.assertRaisesRegex(SourceError,'PARSE_INVALID_JSON'):http.get(http.current_source['url'])
+
+class GlobalRefreshStampTests(unittest.TestCase):
+    OLD='2026-10-09T04:00:00Z'; NOW_='2026-10-09T12:00:00Z'
+    def verdict(self,outcomes,**kw):
+        args=dict(network=True,outcomes=Counter(outcomes),successes=sum(v for k,v in outcomes.items() if k in ('SUCCESS','NO_CHANGE')),deferred=0,sec_exhausted=False,sec_failures=0,fact_outcomes=Counter())
+        args.update(kw); return refresh_completeness(**args)
+    def do_run(self,store,outcomes,prior,**kw):
+        complete,reasons=self.verdict(outcomes,**kw)
+        lanes=Counter({'IR_FEED':outcomes.get('SUCCESS',0)})
+        health=progress_health(prior,self.NOW_,lanes,0,False,complete,reasons)
+        store.set_state('continuousRefresh',health)
+        return commit_refresh_stamp(store,health,self.NOW_,complete),complete
+    def test_one_source_ok_one_failed_keeps_global_stamp_but_saves_progress(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                prior={'lastSuccessfulRefresh':self.OLD,'lastSuccessfulNewsRefresh':self.OLD}
+                health,complete=self.do_run(store,{'SUCCESS':1,'TEMPORARY_FAILURE':1},prior)
+                self.assertFalse(complete);saved=store.state('continuousRefresh',{})
+                self.assertEqual(saved['lastSuccessfulRefresh'],self.OLD)
+                self.assertEqual(saved['lastSuccessfulNewsRefresh'],self.NOW_)
+                self.assertEqual(saved['lastAttempt'],self.NOW_);self.assertFalse(saved['lastRefreshComplete'])
+                self.assertIn('SOURCE_NOT_SUCCESSFUL:TEMPORARY_FAILURE',saved['incompleteReasons'])
+            finally:store.close()
+    def test_all_sources_ok_updates_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                health,complete=self.do_run(store,{'SUCCESS':2,'NO_CHANGE':1},{'lastSuccessfulRefresh':self.OLD})
+                self.assertTrue(complete);self.assertEqual(store.state('continuousRefresh',{})['lastSuccessfulRefresh'],self.NOW_)
+                again,_=self.do_run(store,{'SUCCESS':2,'NO_CHANGE':1},store.state('continuousRefresh',{}))
+                self.assertEqual(again['lastSuccessfulRefresh'],self.NOW_);self.assertEqual(again['incompleteReasons'],[])
+            finally:store.close()
+    def test_failure_before_final_commit_leaves_stamp_unchanged(self):
+        # Export-/Consumer-/GOOD-Vorbereitung scheitert nach dem Fortschritt: commit_refresh_stamp wird nie erreicht.
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                prior={'lastSuccessfulRefresh':self.OLD};complete,reasons=self.verdict({'SUCCESS':3})
+                store.set_state('continuousRefresh',progress_health(prior,self.NOW_,Counter({'IR_FEED':3}),0,False,complete,reasons))
+                self.assertEqual(store.state('continuousRefresh',{})['lastSuccessfulRefresh'],self.OLD)
+                with self.assertRaises(ValueError):
+                    raise ValueError('GERMAN_PROFILE_REGRESSION')
+                self.assertEqual(store.state('continuousRefresh',{})['lastSuccessfulRefresh'],self.OLD)
+            finally:store.close()
+    def test_old_state_without_new_fields_and_without_stamp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            try:
+                health,_=self.do_run(store,{'SUCCESS':1,'RATE_LIMITED':1},{'lastAttempt':self.OLD})
+                self.assertNotIn('lastSuccessfulRefresh',store.state('continuousRefresh',{}))
+                health,_=self.do_run(store,{'SUCCESS':1},{'lastAttempt':self.OLD})
+                self.assertEqual(health['lastSuccessfulRefresh'],self.NOW_)
+            finally:store.close()
+    def test_completeness_rules(self):
+        self.assertTrue(self.verdict({'SUCCESS':1,'ROBOTS_BLOCKED':1,'SOURCE_REMOVED':1})[0],'bewusst blockierte Quellen sperren den Stempel nicht')
+        for bad in ('TEMPORARY_FAILURE','RATE_LIMITED','ROBOTS_TEMPORARY_FAILURE','PARSE_FAILURE','HTTP_403_UNCLASSIFIED'):
+            self.assertFalse(self.verdict({'SUCCESS':1,bad:1})[0],bad)
+        self.assertFalse(self.verdict({'SUCCESS':1},deferred=1)[0])
+        self.assertFalse(self.verdict({'SUCCESS':1},sec_exhausted=True)[0])
+        self.assertFalse(self.verdict({'SUCCESS':1},sec_failures=1)[0])
+        self.assertFalse(self.verdict({'SUCCESS':1},fact_outcomes=Counter({'TEMPORARY_FAILURE':1}))[0])
+        self.assertTrue(self.verdict({'SUCCESS':1},fact_outcomes=Counter({'FACTS_NOT_YET_AVAILABLE':2,'NO_CHANGE':1}))[0])
+        self.assertFalse(self.verdict({},network=False)[0]);self.assertFalse(self.verdict({})[0])
+        self.assertTrue(self.verdict({},successes=2)[0],'reiner SEC-Erfolg ohne faellige Quelle')
+
