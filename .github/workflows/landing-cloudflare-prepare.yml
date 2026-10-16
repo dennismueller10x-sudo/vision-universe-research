@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 2f818f1457ad56e5521e39379d6f419917be6879
+          ref: c9451771bef578d256fa602604efffc099ae08cc
           persist-credentials: false
           sparse-checkout: landing
       - name: Private audit or closed setup (no contact writes or emails)
@@ -66,7 +66,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
         run: python3 landing/scripts/newsletter-server-admin.py
-      - name: Read completed owner unsubscribe (GET only, no mail)
+      - name: Verify completed owner unsubscribe without sending
         if: inputs.newsletter_operation == 'unsubscribe-audit'
         env:
           NEWSLETTER_OPERATOR_OPERATION: unsubscribe-audit
