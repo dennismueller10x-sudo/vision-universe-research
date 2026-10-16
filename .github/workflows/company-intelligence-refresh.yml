@@ -100,7 +100,7 @@ jobs:
           node-version: '22'
       - name: Scope, policy and failure-safety contracts
         run: |
-          node --test scripts/company_intelligence/tests/continuous-refresh.test.mjs
+          node --test scripts/company_intelligence/tests/continuous-refresh.test.mjs scripts/company_intelligence/tests/refresh-publication.test.mjs
           python3 -m unittest discover -s scripts/company_intelligence/tests -p 'test_continuous_refresh.py'
       - name: Existing browser runtime; no AI dependency
         run: |
@@ -156,6 +156,13 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
+          # Geschlossenes Gate (DISABLED/STAGED, sauber aus R2 gelesen): stageProduction liefert kein delivery.json aus, die
+          # Live-Pruefung endete sonst deterministisch in PRODUCTION_PUBLICATION_SLO_FAILED samt erneutem Rollback (Lauf 38652800358).
+          # Jeder andere Ausgang (AVAILABLE, Lesefehler, Absturz) laesst den strengen Pfad unten unveraendert laufen.
+          if node scripts/company_intelligence/refresh-publication.mjs closed; then
+            echo "::notice::Production gate closed; refresh stays private, no live verification and no rollback."
+            exit 0
+          fi
           gh workflow run pages-release.yml --ref main
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
