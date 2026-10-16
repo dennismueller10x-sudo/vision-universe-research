@@ -847,9 +847,7 @@ async function handlePublishDecision(candidateId, request, env, options) {
   /* REEL IN VERARBEITUNG: die Freigabe steht, nur der Versand wartet auf Instagram. Genau
      dann - und nur dann - setzt ein weiterer Druck fort. Der Worker verlangt dafuer
      denselben Abdruck und denselben Container; ein zweites Reel kann daraus nicht entstehen. */
-  const fortsetzen = Boolean(schon) && schon.decision === "APPROVED" && !schon.published &&
-    schon.lastError === "REEL_PROCESSING" && /^cand_reel_/.test(candidateId) &&
-    formular.fingerprint && formular.fingerprint === schon.contentHash;
+  const fortsetzen = reelOffen(schon) && formular.fingerprint && formular.fingerprint === schon.contentHash;
   if (schon && !fortsetzen) {
     /* §9: der zweite Druck erzeugt keinen zweiten Beitrag. Er zeigt,
        was beim ersten herauskam. */
@@ -1013,6 +1011,20 @@ function escape(value) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+/**
+ * Ein freigegebenes Reel, dessen Versand noch nicht abgeschlossen ist und sich fortsetzen laesst.
+ *
+ * `lastError` ist dann entweder REEL_PROCESSING (die Anfrage ist sauber mit "Meta verarbeitet noch" zu
+ * Ende gegangen) oder LEER: die Anfrage ist abgebrochen, bevor sie ein Ergebnis eintragen konnte
+ * (Telefon getrennt, Seite verlassen). In beiden Faellen steht der Container bei Meta im Anspruch, und
+ * ein weiterer Druck setzt dort fort. Ein anderer Fehlerzustand (z. B. Allowlist, Verbindung) gehoert
+ * nicht dazu.
+ */
+function reelOffen(d) {
+  return Boolean(d) && d.decision === "APPROVED" && !d.published && /^cand_reel_/.test(String(d.candidateId || "")) &&
+    Boolean(d.contentHash) && (!d.lastError || d.lastError === "REEL_PROCESSING");
+}
+
 /** Die Ergebnisseite einer Entscheidung. */
 function entscheidungsSeite(d) {
   if (d.decision === "REJECTED") {
@@ -1047,8 +1059,8 @@ ${link}
   /* Freigegeben, aber nicht hinausgegangen. Die Entscheidung steht;
      der Versand nicht. Die beiden zu vermengen hiesse, dem Owner eine
      Veroeffentlichung zu melden, die es nicht gibt. */
-  const b = BETRIEB[d.lastError] || BETRIEB.META_PUBLISH_FAILED;
-  if (d.lastError === "REEL_PROCESSING" && /^cand_reel_/.test(String(d.candidateId || "")) && d.contentHash) {
+  if (reelOffen(d)) {
+    const b = BETRIEB.REEL_PROCESSING;
     return approvalResponse("Reel wird verarbeitet", `
 <h1>${escape(b.titel)}</h1>
 <p class="leise">${escape(b.text)}</p>
@@ -1058,6 +1070,7 @@ ${link}
 </form>
 <p><a class="zurueck" href="/approval">Zurueck zur Uebersicht</a></p>`, 202);
   }
+  const b = BETRIEB[d.lastError] || BETRIEB.META_PUBLISH_FAILED;
   return approvalResponse("Freigegeben, nicht gesendet", `
 <h1>${escape(b.titel)}</h1>
 <p class="leise">Deine Freigabe steht und bleibt stehen. Nur der Versand ist
