@@ -6,6 +6,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
+import {checkDiscoverSwipe} from './discover-swipe-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -43,6 +44,12 @@ try{
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
+        if(javaScriptEnabled)await checkDiscoverSwipe(page);
+        else {
+          assert.equal(await page.locator('.discover-preview').isVisible(),false);
+          assert.equal(await page.locator('.stage .phone .module-home').isVisible(),true);
+        }
+        assert.equal(posts,before); // Swiping never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
         assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);
         await page.locator('#email').fill('synthetic-public@example.test');
@@ -56,7 +63,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': Discover swipe/cancel/keyboard/unique-memory/reset verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
