@@ -34,7 +34,7 @@ def release_prerequisites(operation):
             with urllib.request.build_opener(NoRedirect).open(req,timeout=30) as response:return json.loads(response.read())
         run=github('/actions/runs/'+run_id);jobs=github('/actions/runs/'+run_id+'/jobs')['jobs']
         if run.get('event')!='workflow_dispatch' or run.get('conclusion')!='success' or run.get('head_branch')!='main' or run.get('path')!='.github/workflows/landing-cloudflare-prepare.yml':raise ValueError('Wrong acceptance run')
-        accepted_steps=('Observe owner signup and verify Brevo unsubscribe','Finish verified owner confirmation and native unsubscribe')
+        accepted_steps=('Verify completed owner unsubscribe without sending','Observe owner signup and verify Brevo unsubscribe','Finish verified owner confirmation and native unsubscribe')
         if not any(j.get('conclusion')=='success' and any(s.get('name') in accepted_steps and s.get('conclusion')=='success' for s in j.get('steps',[])) for j in jobs):raise ValueError('No successful actual acceptance step')
         source=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
         workflow=github('/contents/.github/workflows/landing-cloudflare-prepare.yml?ref='+run['head_sha'])
