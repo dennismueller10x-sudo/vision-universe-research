@@ -13,7 +13,9 @@ import {prefixFor} from '../public-delivery.mjs';
 import {runtimeCandidate} from '../runtime-candidate.mjs';
 import {prepareFrozenRollback} from '../frozen-rollback.mjs';
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,v)=>objects.set(k,Buffer.from(v))};}
-function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
+// Fixture times are relative to one fixed test clock so the 7-day consumer window never expires them.
+const BASE=Date.now(),ago=h=>new Date(BASE-h*3600000).toISOString();
+function fixture(n,generatedAt=ago(1)){
  const root=mkdtempSync(join(tmpdir(),'refresh-contract-')),generation=n.toString(16).padStart(24,'0'),schema='vu-company-intelligence-1.0.0';
  const values={},index={schema,state:'AVAILABLE',generation,generatedAt,companies:{},tickers:{}};
  for(const [companyId,v] of Object.entries(frozenInventory)){
@@ -28,7 +30,7 @@ function fixture(n,generatedAt='2026-10-09T12:00:00Z'){
 }
 async function advance(d,namespace,f){const good=await goodState(d,namespace),r=await prepareCandidate(d,{namespace,directory:f.root,good});return commitGood(d,{namespace,payloadNamespace:r.payloadNamespace,manifest:r.manifest,health:{},inventory:frozenInventory,expectedGood:good});}
 test('explicit frozen rollback survives a newer previous slot without weakening normal publication',async()=>{
- const d=driver(),ns='frozen-recovery',a=fixture(101,'2026-10-09T10:00:00Z'),b=fixture(102,'2026-10-09T11:00:00Z'),c=fixture(103,'2026-10-09T12:00:00Z');
+ const d=driver(),ns='frozen-recovery',a=fixture(101,ago(3)),b=fixture(102,ago(2)),c=fixture(103,ago(1));
  try{
   const frozen=await advance(d,'immutable-frozen',a);
   await advance(d,ns,b);await advance(d,ns,c);const good=await goodState(d,ns),before=await d.get(goodKey(ns));
