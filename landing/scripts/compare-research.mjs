@@ -63,6 +63,7 @@ try{
     assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
     await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>!document.querySelector('.lp-head').classList.contains('scrolled'));
     assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(await page.locator('#consent').isChecked(),false);
+    assert.ok(await page.locator('#email').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)>=16),'Email input avoids automatic Safari focus zoom');
     assert.equal(await page.locator('[name=CONSENT_VERSION]').getAttribute('value'),'vu-newsletter-v1');
     for(const selector of ['.deck-btn','[data-preview-reset]'])for(const box of await page.locator(selector).evaluateAll(es=>es.map(e=>e.getBoundingClientRect().toJSON())))assert.ok(box.width>=44&&box.height>=44,'Swipe controls retain 44px touch targets');
     if(['desktop','iphone'].includes(name))await page.screenshot({path:resolve(review,'after-'+name+'.png'),fullPage:true});
