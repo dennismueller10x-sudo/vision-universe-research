@@ -8,6 +8,43 @@ spec=importlib.util.spec_from_file_location('operator',Path(__file__).resolve().
 operator=importlib.util.module_from_spec(spec);spec.loader.exec_module(operator)
 admin_spec=importlib.util.spec_from_file_location('admin',Path(__file__).resolve().parents[1]/'scripts/newsletter-server-admin.py')
 admin=importlib.util.module_from_spec(admin_spec);admin_spec.loader.exec_module(admin)
+unsubscribe_spec=importlib.util.spec_from_file_location('unsubscribe',Path(__file__).resolve().parents[1]/'scripts/newsletter-unsubscribe-audit.py')
+unsubscribe=importlib.util.module_from_spec(unsubscribe_spec);unsubscribe_spec.loader.exec_module(unsubscribe)
+
+class LateUnsubscribe(unittest.TestCase):
+    def fixture(self,blocked=True,campaign_id=12,foreign=False,includes=None):
+        p=Provider(resume=True,existing_test_list=True)
+        contact={**p.new,'emailBlacklisted':blocked}
+        values={'/contacts/lists':{'lists':[{'id':7,'name':unsubscribe.NAME}]},
+                '/contacts/new%40example.test':contact,
+                '/smtp/statistics/events':{'events':[{'messageId':'synthetic-message-1','email':'new@example.test','event':'requests','date':'2026-10-15T17:55:00Z'}]},
+                '/contacts/lists/7/contacts':{'contacts':[p.old if foreign else contact]},
+                '/emailCampaigns':{'campaigns':[{'id':12,'name':unsubscribe.NAME}]},
+                '/emailCampaigns/12':{'name':unsubscribe.NAME,'status':'sent','recipients':{'lists':[{'id':7}] if includes is None else includes}},
+                '/contacts/new%40example.test/campaignStats':{'unsubscriptions':{'userUnsubscription':[{'campaignId':campaign_id}]}},
+                '/contacts/lists/4/contacts':{'contacts':[p.old,contact]},
+                '/contacts/lists/5/contacts':{'contacts':[]},'/contacts/lists/6/contacts':{'contacts':[]}}
+        calls=[]
+        def read(path):
+            calls.append(path)
+            return values[urllib.parse.urlsplit(path).path]
+        return read,calls
+    def test_late_native_unsubscribe_requires_real_campaign_and_block_without_resend(self):
+        read,calls=self.fixture()
+        result=unsubscribe.verify(read,'new@example.test')
+        self.assertTrue(result['marketing_unsubscribe_verified'])
+        self.assertEqual(result['emails_sent'],0)
+        self.assertEqual(result['contact_write_calls'],0)
+        self.assertFalse(any('/send' in p or '/doubleOptin' in p or '/add' in p for p in calls))
+        self.assertNotIn('example',json.dumps(result))
+    def test_late_native_unsubscribe_rejects_unblocked_foreign_campaign_or_audience(self):
+        for kwargs in ({'blocked':False},{'campaign_id':99},{'foreign':True},{'includes':[{'id':4}]}):
+            read,_=self.fixture(**kwargs)
+            with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):unsubscribe.verify(read,'new@example.test')
+    def test_read_operator_requires_trusted_manual_dispatch_before_network(self):
+        with patch.dict(os.environ,{},clear=True),patch.object(unsubscribe.admin,'api') as api:
+            with self.assertRaises(ValueError):unsubscribe.run()
+            api.assert_not_called()
 
 class Response:
     def __init__(self,status,value):self.status=status;self.value=value

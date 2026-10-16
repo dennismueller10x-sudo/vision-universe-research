@@ -22,7 +22,7 @@ def utc_time(value):
     if stamp.tzinfo is None:raise ValueError('Provider timezone missing')
     return stamp.astimezone(timezone.utc)
 
-def verify_confirmed_owner(contact,email,events,private_list_id=None):
+def verify_confirmed_owner(contact,email,events,private_list_id=None,*,blocked=False):
     # Resume only the one genuinely new owner DOI accepted by the real form on
     # 15 October. Never make an imported customer eligible for this send path.
     start=utc_time('2026-10-15T17:54:37Z');request_end=utc_time('2026-10-15T17:57:00Z');confirmed_end=utc_time('2026-10-15T18:27:00Z')
@@ -36,7 +36,7 @@ def verify_confirmed_owner(contact,email,events,private_list_id=None):
     if private_list_id is not None:
         if type(private_list_id) is not int or private_list_id in (4,5,6):raise ValueError('Unsafe private test list')
         allowed.add(private_list_id)
-    if type(contact.get('id')) is not int or contact.get('email','').strip().lower()!=email or 4 not in contact.get('listIds',[]) or not set(contact.get('listIds',[]))<=allowed or contact.get('emailBlacklisted') is not False or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('Controlled confirmation mismatch')
+    if type(contact.get('id')) is not int or contact.get('email','').strip().lower()!=email or 4 not in contact.get('listIds',[]) or not set(contact.get('listIds',[]))<=allowed or contact.get('emailBlacklisted') is not blocked or contact.get('attributes',{}).get('VU_EMAIL_CONSENT')!='subscribed':raise ValueError('Controlled confirmation mismatch')
     if not start<=utc_time(contact.get('createdAt',''))<=confirmed_end:raise ValueError('Only the newly created owner contact')
 
 def owner_wait_seconds():
