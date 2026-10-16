@@ -1,7 +1,7 @@
 import {productionObservation} from './production-observation.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
-import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync,rmSync} from 'node:fs';
 import {join,resolve,dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -18,7 +18,7 @@ import {activeGood,activeNamespace,universeActive,activationKey} from './refresh
 import {universeConfig} from './universe-approval.mjs';
 import {universeContracts} from './universe-contract.mjs';
 import {universeChanges} from './universe-regression.mjs';
-import {goodPointerState,withLegacyMissingDiagnosis} from './legacy-restore.mjs';
+import {goodPointerState,withLegacyMissingDiagnosis,frozenComparisonBaseline} from './legacy-restore.mjs';
 const json=p=>JSON.parse(readFileSync(p));const save=(p,v)=>writeFileSync(p,JSON.stringify(v,null,2)+'\n');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const {load}=createRequire(import.meta.url)('../../company-intelligence/api/contract.js');
@@ -95,7 +95,15 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   else{
    // Kein Legacy-GOOD: Sichtbarmachen statt stillem Rueckfall auf die abgelaufene Baseline (Heilung: universe-release restore-legacy).
    if(!verification)report.legacyGoodState=await goodPointerState(driver,consumerNamespace);
-   await withLegacyMissingDiagnosis(driver,consumerNamespace,()=>download(driver,{namespace:approval.namespace,output:old}));
+   try{await withLegacyMissingDiagnosis(driver,consumerNamespace,()=>download(driver,{namespace:approval.namespace,output:old}));}
+   catch(error){
+    // Feste Baseline abgelaufen und Legacy-GOOD fehlt: Vergleich gegen den verifizierten Freeze (nur lesend, eigene
+    // Pruefungen, eigenes Ablaufdatum). Unpruefbar oder abgelaufen -> eigener Fehlercode, nie die abgelaufene Baseline.
+    if(verification||error?.message!=='LEGACY_GOOD_MISSING_RESTORE_REQUIRED')throw error;
+    rmSync(old,{recursive:true,force:true});
+    const baseline=await frozenComparisonBaseline(driver,{output:old});
+    report.comparisonNamespace=baseline.namespace;report.comparisonGeneration=baseline.generation;report.comparisonValidUntil=baseline.validUntil;
+   }
   }
   if(universe&&sourceAudit){
    stage='SOURCE_REGISTRY_BEFORE';

@@ -131,6 +131,41 @@ function computedFlags(before,after){
  const map={privateStateModified:'privateState',activationModified:'activation',gateModified:'gate',universeGoodModified:'universeGood',rollbackModified:'rollback'};
  return {...Object.fromEntries(Object.entries(map).map(([flag,key])=>[flag,before[key]!==after[key]])),protectedState:{before,after}};
 }
+/* Vergleichsbasis des Refresh, wenn das Legacy-GOOD fehlt (LEGACY_FALLBACK oder ABSENT) und die feste Baseline
+   (approval.namespace) abgelaufen ist (Refresh-Laeufe 38821265125 und 38851040733: CONSUMER_EXPIRED bei jedem Lauf,
+   kein Weg heraus ohne manuellen restore-legacy). Quelle ist derselbe eingefrorene, streng verifizierte Rollback wie
+   bei restoreLegacyGood, mit denselben Pruefungen: Universum nicht aktiv, Scope 46/45, kein Vorgaenger, Freeze-Marker,
+   Gueltigkeitsfenster mit Reserve (kein Verlaengern), Hash-Readback jedes Assets.
+   Rein lesend: kein Zeiger, kein Gate, keine Nutzdaten werden geschrieben. Die Basis dient nur dem Vergleich
+   (validateChanges); der neue Kandidat durchlaeuft alle Pruefungen des Refresh unveraendert.
+   INVALID/UNREADABLE wird nie still ersetzt; ein abgelaufener oder unpruefbarer Freeze ist ein Fehler, nie ein Rueckfall. */
+export async function frozenComparisonBaseline(driver,{output,now=Date.now}={}){
+ const legacy=refreshConfig.consumerNamespace,rollback=universeConfig.rollbackNamespace;
+ const pointer=await goodPointerState(driver,legacy);
+ assert(pointer==='LEGACY_FALLBACK'||pointer==='ABSENT','FROZEN_BASELINE_POINTER_STATE_'+pointer);
+ const activation=await bytesOf(driver,activationKey());
+ if(activation){let p=null;try{p=JSON.parse(activation);}catch{p=null;}assert(p&&p.schema===1&&p.approvalId===universeConfig.approvalId&&p.state==='ROLLBACK_46','FROZEN_BASELINE_REFUSED_UNIVERSE_ACTIVE_OR_INVALID_ACTIVATION');}
+ const frozen=await goodState(driver,rollback);
+ assert(frozen,'FROZEN_BASELINE_REQUIRED');
+ assertLegacyScope(frozen,'FROZEN_BASELINE_SCOPE_INVALID');
+ assert(frozen.previous==null,'FROZEN_BASELINE_PREVIOUS_UNEXPECTED');
+ let validUntil;
+ try{validUntil=assertRestoreWindow(frozen.manifest.generatedAt,now());}
+ catch(error){throw Error(error?.message==='LEGACY_RESTORE_FROZEN_EXPIRED'?'FROZEN_BASELINE_EXPIRED':'FROZEN_BASELINE_GENERATED_AT_INVALID');}
+ const marker=await verifyFreezeMarker(driver,frozen);
+ emptyDirectory(output);mkdirSync(output,{recursive:true});
+ const dl=await downloadGood(driver,{namespace:rollback,output});
+ assert(dl&&dl.generation===frozen.generation&&same(dl.good.manifest,frozen.manifest),'FROZEN_BASELINE_READBACK_FAILED');
+ const assets=Object.entries(frozen.manifest.assets);
+ assert.equal(dl.files,assets.length,'FROZEN_BASELINE_FILE_COUNT_MISMATCH');
+ for(const [path,meta] of assets){
+  const file=join(output,path);assert(existsSync(file),'FROZEN_BASELINE_ASSET_MISSING');
+  const b=readFileSync(file);assert(b.length===meta.bytes&&sha(b)===meta.sha256,'FROZEN_BASELINE_HASH_MISMATCH');
+ }
+ const index=JSON.parse(readFileSync(join(output,'index.json')));
+ assert(index.generation===frozen.generation,'FROZEN_BASELINE_INDEX_MISMATCH');
+ return {namespace:rollback,generation:frozen.generation,generatedAt:frozen.manifest.generatedAt,validUntil,freezeMarker:marker,pointerBefore:pointer};
+}
 export async function restoreLegacyGood(rawDriver,{temporary,expectGeneration=null,now=Date.now}={}){
  const legacy=refreshConfig.consumerNamespace,rollback=universeConfig.rollbackNamespace;
  // Erwartung ist Pflicht und explizit: genau die Generation, die der Operator im Freeze erwartet.
