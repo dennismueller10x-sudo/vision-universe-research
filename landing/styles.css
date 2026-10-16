@@ -184,3 +184,34 @@ body{background:radial-gradient(ellipse at 85% 8%,rgba(200,245,49,.045),transpar
  .footer{padding:14px 0}.footer .disclaimer{gap:6px;flex-direction:column;align-items:flex-start}.footer nav{gap:24px}
 }
 @media(max-width:380px){.lp-logo,.lp-head.scrolled .lp-logo{width:155px}.lp-cta{font-size:10px;padding-inline:10px}.hero-badge{flex-wrap:wrap}.nl-box{padding:20px}.stage .phone{right:-4px}.hero h1{font-size:38px}}
+
+/* Review correction: two independent previews, never layered. */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 258px;gap:24px;align-items:center;height:auto;min-height:540px;perspective:none}
+.stage::before{display:none}
+.stage .browser{position:relative;left:auto;right:auto;top:auto;max-width:none;width:100%;transform:none;border-width:4px;margin-bottom:60px}
+.stage .desk{grid-template-columns:minmax(0,1fr);min-height:300px}
+.stage .desk-side{display:none}
+.stage .desk-main{padding:20px 12px}
+.module-home-desktop{max-width:none}
+.module-home-desktop .module-heading{font-size:22px}
+.module-home-desktop .module-launch-grid{gap:18px 6px}
+.module-home-desktop .module-tile{font-size:9px}
+.module-home-desktop .hud{--s:40px}
+.device-swipe{position:relative;width:258px;height:500px;justify-self:center}
+.stage .phone{left:0;right:auto;top:0;transform:scale(.86);transform-origin:top left}
+.preview-caption{justify-content:center;margin-top:12px}
+@media(min-width:761px) and (max-width:1100px){.hero-grid{grid-template-columns:1fr;gap:32px}.hero h1{font-size:52px;max-width:18ch}.stage{width:min(100%,720px);margin-inline:auto}.stage .module-home-desktop .module-tile{font-size:10px}}
+
+@media(max-width:760px){
+ .stage{order:2;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;width:calc(100% - 40px);max-width:420px;margin:0 auto;height:auto;min-height:0}
+ .stage .browser{left:auto;right:auto;top:auto;width:100%;margin-bottom:48px;transform:none}
+ .stage .browser::before{height:48px}.stage .browser::after{top:calc(100% + 44px)}
+ .stage .desk{min-height:240px}.stage .desk-main{padding:16px}
+ .stage .module-home-desktop .module-heading{font-size:22px}
+ .stage .module-home-desktop .module-launch-grid{gap:14px 8px;margin-top:20px}
+ .stage .module-home-desktop .module-tile{font-size:10px}
+ .stage .module-home-desktop .hud{--s:36px}
+ .stage .phone{left:0;right:auto;top:0;transform:scale(.86)}
+ .preview-caption{order:3;margin:12px auto 24px}
+ .newsletter{order:4;padding-bottom:24px}
+}

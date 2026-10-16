@@ -53,11 +53,14 @@ try{
     assert.equal(await page.locator('.footer').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(8, 10, 12)');
     assert.equal(await page.locator('.stage .browser').isVisible(),true,'Desktop concept remains visible on phones');
     assert.equal(await page.locator('.preview-caption>span').textContent(),'Konzeptansicht');
-    const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,cta:document.querySelector('.hero-cta').getBoundingClientRect().toJSON(),form:document.querySelector('#newsletter').getBoundingClientRect().toJSON(),stage:document.querySelector('.stage').getBoundingClientRect().toJSON()}));
-    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.height<=budget,`${name}: compact page budget (${metrics.height})`);
+    const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,cta:document.querySelector('.hero-cta').getBoundingClientRect().toJSON(),form:document.querySelector('#newsletter').getBoundingClientRect().toJSON(),stage:document.querySelector('.stage').getBoundingClientRect().toJSON(),overview:document.querySelector('.stage .browser').getBoundingClientRect().toJSON(),phone:document.querySelector('.stage .phone').getBoundingClientRect().toJSON(),extraPreviewHeight:innerWidth<=760?document.querySelector('.stage .browser').getBoundingClientRect().height+parseFloat(getComputedStyle(document.querySelector('.stage .browser')).marginBottom)+parseFloat(getComputedStyle(document.querySelector('.stage')).rowGap):0}));
+    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.extraPreviewHeight<=430,'Only the separately requested overview adds mobile height');assert.ok(metrics.height-metrics.extraPreviewHeight<=budget,`${name}: original page budget plus separate overview (${metrics.height})`);
     assert.ok(metrics.cta.top>0&&metrics.cta.bottom<height,`${name}: CTA in first viewport`);
-    if(width<=760)assert.ok(metrics.form.bottom<=metrics.stage.top,'Mobile signup precedes mockup');
-    else assert.ok(metrics.stage.left>metrics.cta.right,'Desktop mockup beside claim');
+    assert.ok(metrics.overview.right<=metrics.phone.left||metrics.phone.right<=metrics.overview.left||metrics.overview.bottom<=metrics.phone.top||metrics.phone.bottom<=metrics.overview.top,'Both previews are visible without overlap');
+    assert.ok(metrics.form.top>=metrics.stage.bottom,'Newsletter follows both previews');
+    if(width<=760)assert.ok(metrics.overview.bottom<metrics.phone.top,'Mobile order: overview, swipe, newsletter');
+    else if(width>1100)assert.ok(metrics.stage.left>metrics.cta.right,'Desktop previews beside claim');
+    else assert.ok(metrics.stage.top>=metrics.cta.bottom,'Tablet previews follow hero');
     const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
     await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
     assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
@@ -82,7 +85,7 @@ try{
     }
     if(['desktop','iphone'].includes(name)){await page.goto(base+'/before/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:resolve(review,'before-'+name+'.png'),fullPage:true});}
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.equal(posts,0);
-    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,ctaInFirstViewport:true,mobileFormFirst:width<=760,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
+    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,ctaInFirstViewport:true,newsletterAfterPreviews:true,previewOverlap:false,extraPreviewHeight:Math.ceil(metrics.extraPreviewHeight),legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
   }
   await writeFile(resolve(review,'checks.json'),JSON.stringify({baseline,reference:provenance.commit,scope:'Local public-mode rendering, approved unchanged privacy document, no credentials or live endpoints; legal copy/links compared with immutable baseline.',results},null,2)+'\n');
   console.log(JSON.stringify(results,null,2));

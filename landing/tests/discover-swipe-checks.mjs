@@ -33,6 +33,10 @@ export async function checkTouchSwipe(page) {
 // Real browser interactions, no provider traffic or test contacts.
 export async function checkDiscoverSwipe(page) {
   const root=page.locator('.discover-preview');
+  const overview=await page.locator('.stage .browser').boundingBox(),phone=await page.locator('.stage .phone').boundingBox();
+  assert.ok(overview.x+overview.width<=phone.x||phone.x+phone.width<=overview.x||overview.y+overview.height<=phone.y||phone.y+phone.height<=overview.y,'Overview and swipe preview never cover each other');
+  const newsletter=await page.locator('#newsletter').boundingBox();
+  assert.ok(newsletter.y>=Math.max(overview.y+overview.height,phone.y+phone.height),'Newsletter follows both previews');
   assert.equal(await root.isVisible(),true);
   const fit=await root.evaluate(e=>({scrollHeight:e.scrollHeight,height:e.clientHeight}));
   assert.ok(fit.scrollHeight<=fit.height+1,'Preview instructions and controls fit the phone without nested scrolling');

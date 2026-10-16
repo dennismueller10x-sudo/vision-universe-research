@@ -29,8 +29,10 @@ try{
     const page=await context.newPage();
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
-    const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    assert.ok(m.height<=limit,`${name} height ${m.height}>${limit}`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,extraPreviewHeight:innerWidth<=760?document.querySelector('.stage .browser').getBoundingClientRect().height+parseFloat(getComputedStyle(document.querySelector('.stage .browser')).marginBottom)+parseFloat(getComputedStyle(document.querySelector('.stage')).rowGap):0}));
+    // Owner requested a separately visible overview before swipe and signup.
+    // Preserve the original content budget, adding only this bounded panel.
+    assert.ok(m.extraPreviewHeight<=430,'Separate overview has a bounded mobile height');assert.ok(m.height-m.extraPreviewHeight<=limit,`${name} original page budget plus separate overview (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
