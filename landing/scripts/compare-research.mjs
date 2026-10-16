@@ -58,6 +58,10 @@ try{
     assert.ok(metrics.cta.top>0&&metrics.cta.bottom<height,`${name}: CTA in first viewport`);
     if(width<=760)assert.ok(metrics.form.bottom<=metrics.stage.top,'Mobile signup precedes mockup');
     else assert.ok(metrics.stage.left>metrics.cta.right,'Desktop mockup beside claim');
+    const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
+    await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
+    assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
+    await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>!document.querySelector('.lp-head').classList.contains('scrolled'));
     assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(await page.locator('#consent').isChecked(),false);
     assert.equal(await page.locator('[name=CONSENT_VERSION]').getAttribute('value'),'vu-newsletter-v1');
     for(const selector of ['.deck-btn','[data-preview-reset]'])for(const box of await page.locator(selector).evaluateAll(es=>es.map(e=>e.getBoundingClientRect().toJSON())))assert.ok(box.width>=44&&box.height>=44,'Swipe controls retain 44px touch targets');

@@ -81,7 +81,8 @@ input:disabled{opacity:.65}
 body{background:radial-gradient(ellipse at 85% 8%,rgba(200,245,49,.045),transparent 42%),var(--bg)}
 .shell{width:min(1240px,calc(100% - 80px))}
 .lp-head{position:sticky;background:rgba(8,10,12,.92);border-bottom:1px solid var(--line);padding:20px 0;backdrop-filter:blur(16px)}
-.lp-head.scrolled{background:rgba(8,10,12,.96)}
+.lp-head.scrolled{padding:20px 0;background:rgba(8,10,12,.96)}
+.lp-head.scrolled .lp-logo{width:238px}
 .lp-logo{width:238px}
 .lp-logo img{filter:invert(1) brightness(1.08)}
 .lp-cta{min-height:44px;font-size:13px;padding-inline:20px;background:transparent;color:var(--ink);border-color:var(--line-2);box-shadow:none}
@@ -162,7 +163,7 @@ body{background:radial-gradient(ellipse at 85% 8%,rgba(200,245,49,.045),transpar
 /* On phones the signup comes before the concept: no long mockup detour. */
 @media(max-width:760px){
  .shell{width:calc(100% - 40px)}
- .lp-head{padding:14px 0}.lp-logo{width:190px}.lp-cta{padding-inline:12px;font-size:11px;min-height:40px}.lp-cta svg{display:none}
+ .lp-head,.lp-head.scrolled{padding:14px 0}.lp-logo,.lp-head.scrolled .lp-logo{width:190px}.lp-cta{padding-inline:12px;font-size:11px;min-height:40px}.lp-cta svg{display:none}
  main{display:flex;flex-direction:column}
  .hero,.hero-grid{display:contents}.hero::before,.hero-fx{display:none}
  .hero-copy{order:1;width:calc(100% - 40px);margin:28px auto 24px}
@@ -182,4 +183,4 @@ body{background:radial-gradient(ellipse at 85% 8%,rgba(200,245,49,.045),transpar
  .preview-caption{order:4;justify-content:center;flex-wrap:wrap;margin:0 auto 28px;gap:6px;font-size:10px}
  .footer{padding:14px 0}.footer .disclaimer{gap:6px;flex-direction:column;align-items:flex-start}.footer nav{gap:24px}
 }
-@media(max-width:380px){.lp-logo{width:155px}.lp-cta{font-size:10px;padding-inline:10px}.hero-badge{flex-wrap:wrap}.nl-box{padding:20px}.stage .phone{right:-4px}.hero h1{font-size:38px}}
+@media(max-width:380px){.lp-logo,.lp-head.scrolled .lp-logo{width:155px}.lp-cta{font-size:10px;padding-inline:10px}.hero-badge{flex-wrap:wrap}.nl-box{padding:20px}.stage .phone{right:-4px}.hero h1{font-size:38px}}
