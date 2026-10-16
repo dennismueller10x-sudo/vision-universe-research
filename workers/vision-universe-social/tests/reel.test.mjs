@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import worker from "../src/index.js";
 import { createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY, verbinde, PUBLISH_IG_ID } from "./harness.mjs";
 import { contentHash } from "../src/redact.js";
-import { claimKey, readClaim, readQueue, writeQueue } from "../src/store.js";
+import { claimKey, readClaim, readQueue, writeQueue, readDecision, settleDecision, settleClaim } from "../src/store.js";
 
 const KEY = "?key=" + encodeURIComponent(TEST_ADMIN_KEY);
 const IG = PUBLISH_IG_ID;
@@ -512,4 +512,66 @@ test("R24 · prepare warnt bei signierten (ablaufenden) Videoadressen", async ()
   assert.deepEqual(a.warnings, ["VIDEO_URL_MAY_EXPIRE"]);
   const b = await (await vorbereiten(env, { contentId: INHALT + "_b" })).json();
   assert.deepEqual(b.warnings, []);
+});
+
+test("R26 · Abgebrochene Anfrage (kein lastError): Karte und weiterer Druck setzen fort, nie 'nicht angenommen'", async () => {
+  const { env, g } = await aufbau({ statuses: ["IN_PROGRESS", "FINISHED"], tries: 1 });
+  const { prep, item } = await vorbereitet(env);
+  const cookie = await sitzung(env);
+  assert.equal((await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash })).status, 202);
+
+  /* Die Anfrage ging verloren, bevor sie ein Ergebnis eintragen konnte: Entscheidung ohne lastError, Anspruch beim Container. */
+  await settleDecision(env, prep.candidateId, { published: false, lastError: null });
+  assert.equal((await readDecision(env, prep.candidateId)).lastError, null);
+
+  const karte = await worker.fetch(request(`/approval/${prep.candidateId}`, { headers: { cookie } }), env);
+  const html = await karte.text();
+  assert.doesNotMatch(html, /nicht angenommen/);
+  assert.match(html, /Verarbeitung pruefen/);
+  assert.equal(freigaben(g), 0);
+
+  const fertig = await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash });
+  assert.equal(fertig.status, 200, (await fertig.clone().text()).slice(0, 300));
+  assert.equal(containerAnlegen(g).length, 1, "derselbe Container");
+  assert.equal(freigaben(g), 1, "genau eine Freigabe bei Meta");
+  const nochmal = await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash });
+  assert.equal(freigaben(g), 1, "danach nie wieder");
+  assert.ok([200, 409].includes(nochmal.status));
+});
+
+test("R27 · Ein Fehlerzustand ausser REEL_PROCESSING setzt nicht fort", async () => {
+  const { env, g } = await aufbau({ statuses: ["IN_PROGRESS"], tries: 1 });
+  const { prep, item } = await vorbereitet(env);
+  const cookie = await sitzung(env);
+  await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash });
+  await settleDecision(env, prep.candidateId, { published: false, lastError: "AUTH_EXPIRED" });
+  const n = g.aufrufe.length;
+  const wieder = await tun(env, cookie, `/approval/${prep.candidateId}/publish`, { fingerprint: item.contentHash });
+  assert.equal(wieder.status, 502);
+  assert.equal(g.aufrufe.length, n, "kein Meta-Aufruf");
+  assert.equal(freigaben(g), 0);
+});
+
+test("R28 · Eine laufende Pruefung sperrt gleichzeitiges Fortsetzen; die Sperre faellt am Ende und von selbst", async () => {
+  const { env, g } = await aufbau({ statuses: ["IN_PROGRESS", "FINISHED"], tries: 1 });
+  const { prep, item } = await vorbereitet(env);
+  assert.equal((await publish(env, prep, item)).status, 202);
+  assert.equal((await readClaim(env, INHALT)).leaseUntil, null, "nach einem sauberen Ende ist die Sperre frei");
+
+  /* Ein anderer Aufruf laeuft gerade: die Sperre steht in der Zukunft. */
+  await settleClaim(env, INHALT, { leaseUntil: new Date(Date.now() + 30_000).toISOString() });
+  const n = g.aufrufe.length;
+  const besetzt = await publish(env, prep, item);
+  const b = await besetzt.json();
+  assert.equal(besetzt.status, 202);
+  assert.equal(b.busy, true);
+  assert.equal(g.aufrufe.length, n, "keine Meta-Aufrufe waehrend die Sperre steht");
+  assert.equal(freigaben(g), 0);
+
+  /* Abgelaufen (der andere Aufruf ist abgebrochen): es geht weiter, genau einmal. */
+  await settleClaim(env, INHALT, { leaseUntil: new Date(Date.now() - 1000).toISOString() });
+  const fertig = await publish(env, prep, item);
+  assert.equal(fertig.status, 200, (await fertig.clone().text()).slice(0, 300));
+  assert.equal(freigaben(g), 1);
+  assert.equal(containerAnlegen(g).length, 1);
 });

@@ -752,6 +752,8 @@ async function carouselContainer(ctx, record, imageUrls, caption) {
    setzt den vorhandenen Container fort. Es entsteht nie ein zweiter Beitrag.
    ===================================================================== */
 const REEL_RETRYABLE = new Set(["networkError", "providerOutage"]);
+/* So lange gilt die Sperre eines laufenden Aufrufs (8 Pruefungen a ~3 s plus Netz bleiben darunter). */
+const REEL_LEASE_MS = 60000;
 
 function reelIdAus(contentId) {
   return "cand_reel_" + String(contentId).toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
@@ -958,7 +960,15 @@ async function publishReelCore(body, env) {
     }
     /* FORTSETZEN: nur wenn der Anspruch genau dieses Reel in der Verarbeitung haelt. */
     if (c.state === "IN_FLIGHT" && c.stage === "reelProcessing" && c.containerId && c.reelHash === tatsaechlich) {
+      /* Laeuft gerade ein anderer Aufruf fuer diesen Container, wartet dieser: zwei gleichzeitige Pruefungen
+         duerften nie beide bis media_publish kommen. Die Sperre verfaellt von selbst (bricht ein Aufruf ab). */
+      if (c.leaseUntil && Date.parse(c.leaseUntil) > Date.now()) {
+        return json({ published: false, processing: true, busy: true, state: "PROCESSING", contentId,
+          containerId: c.containerId, status: null,
+          message: "Ein anderer Aufruf prueft dieses Reel gerade. Gleich noch einmal pruefen; es entsteht kein zweiter Beitrag." }, 202);
+      }
       containerId = c.containerId;
+      await settleClaim(env, contentId, { leaseUntil: new Date(Date.now() + REEL_LEASE_MS).toISOString(), now: beginn });
     } else if (c.state === "IN_FLIGHT") {
       return json({ error: "claimInFlight", published: false, contentId, claim: c,
         message: "Fuer dieses Inhaltsobjekt laeuft (oder lief) bereits ein Versuch. Ob dabei ein Beitrag entstanden ist, " +
@@ -998,7 +1008,7 @@ async function publishReelCore(body, env) {
     }
     containerId = container.data.containerId;
     await settleClaim(env, contentId, { state: "IN_FLIGHT", stage: "reelProcessing", containerId,
-      reelHash: tatsaechlich, now: beginn });
+      reelHash: tatsaechlich, leaseUntil: new Date(Date.now() + REEL_LEASE_MS).toISOString(), now: beginn });
   }
 
   /* 4. Verarbeitung abwarten - begrenzt. Fehler beim Abfragen sind kein Abbruchgrund. */
@@ -1010,6 +1020,8 @@ async function publishReelCore(body, env) {
     if (zustand && (zustand.statusCode === "FINISHED" || zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) break;
     if (i < versuche - 1 && warteMs) await sleep(warteMs);
   }
+  /* Die Pruefung ist zu Ende: die Sperre faellt, damit der naechste Druck sofort fortsetzen kann. */
+  await settleClaim(env, contentId, { leaseUntil: null, now: beginn });
   if (zustand && (zustand.statusCode === "ERROR" || zustand.statusCode === "EXPIRED")) {
     const grund = redactText(String(zustand.status || zustand.statusCode)).slice(0, 300);
     await settleClaim(env, contentId, { state: "FAILED", stage: "containerStatus",
