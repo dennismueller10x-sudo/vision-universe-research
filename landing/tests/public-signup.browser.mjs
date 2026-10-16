@@ -39,7 +39,7 @@ const server=createServer(async(req,res)=>{
   }
   const path=resolve(output,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
   if(!path.startsWith(output+sep)){res.writeHead(404);res.end();return;}
-  try{res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.png':'image/png','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream'});res.end(await readFile(path));}
+  try{const content=await readFile(path);res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.png':'image/png','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream'});res.end(content);}
   catch{res.writeHead(404);res.end();}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));origin='http://127.0.0.1:'+server.address().port;
