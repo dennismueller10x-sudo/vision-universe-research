@@ -18,6 +18,7 @@ const Canonical = require(join(ROOT, "quant/engines/technical/canonical-bars.js"
 const MarketQuality = require(join(ROOT, "quant/engines/market-quality.js"));
 const CanonicalTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
 const SurvivorshipControl = require(join(ROOT, "quant/engines/survivorship-control.js"));
+const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity.js"));
 
 /* Gesamtrendite ist ab canonical-total-return-1.0.0 (Owner-Entscheidung
    03.10.2026) eine EIGENE Rekonstruktion aus Rohkurs, Splitfaktor und
@@ -34,7 +35,21 @@ const SurvivorshipControl = require(join(ROOT, "quant/engines/survivorship-contr
 
    opts.identity ist Pflicht fuer eine Gesamtrendite: ohne bestaetigte
    Listing-Identitaet gibt es keine (IDENTITY_UNCERTAIN). opts.role
-   BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik. */
+   BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik.
+
+   TEILREIHEN (canonical-price-validity-2.0.0, Review R8)
+   Lehnt die Rekonstruktion die Reihe ab einem bestimmten Tag ab (Sperre,
+   Datenwiderspruch, Luecke), bleiben die gueltigen Kerzen DAVOR erhalten:
+   tr traegt dann Werte bis trValidUntil und NaN danach (und an einzelnen
+   ungueltigen Kerzen) - trCoverage "PREFIX". Ganz ohne Gesamtrendite bleibt
+   es bei fehlender Identitaet, veralteter Reihe (STALE) und fuer die Rolle
+   BENCHMARK_REFERENCE (ein Vergleichsmassstab muss vollstaendig sein).
+   trVerdict.confirmed bleibt die Aussage "ganze Reihe rekonstruiert";
+   totalReturn heisst "Gesamtrendite fuer einen gueltigen Zeitraum".
+   Verbraucher lesen NaN als "kein Wert" (signal-backtest.js outcome/
+   firstTouch, weekly-total-return.mjs) - nie als Kurs. opts.secEvents /
+   opts.shares geben unabhaengige Corporate-Action-Belege mit (SEC). */
+const WHOLE_SERIES_ONLY = new Set(["IDENTITY_UNCERTAIN", "NO_BARS", "STALE"]);
 export const TR_BASIS = "CANONICAL_TOTAL_RETURN";
 export function fromBars(payload, opts = {}) {
   const bars = payload.bars || [];
@@ -55,10 +70,23 @@ export function fromBars(payload, opts = {}) {
   const sorted = bars.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
   const ctr = CanonicalTR.reconstruct(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, asOf: opts.asOf, maxStaleDays: opts.maxStaleDays });
   const { tr: ctrSeries, priceReturnIndex, ...ctrInfo } = ctr;
+  const dates = sorted.map((b) => b.date);
+  let tr = ctr.reconstructed ? Float64Array.from(ctrSeries) : null, trCoverage = ctr.reconstructed ? "FULL" : null, validity = null;
+  const useValidity = opts.role !== "BENCHMARK_REFERENCE" && (Array.isArray(opts.secEvents) || (!ctr.reconstructed && !WHOLE_SERIES_ONLY.has(ctr.reason)));
+  if (useValidity) {
+    validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares });
+    if (validity.validUntil) {
+      tr = PriceValidity.alignTr(validity, dates);
+      trCoverage = validity.state === "FULL_VALID" ? "FULL" : validity.state === "VALID_PREFIX" ? "PREFIX" : "FULL_WITH_INVALID_BARS";
+    } else { tr = null; trCoverage = null; }
+  }
   const trVerdict = { confirmed: ctr.reconstructed, state: ctr.state, reason: ctr.reason, bucket: ctr.bucket, contract: ctr.contract,
-    lastGap: ctr.date || (ctr.firstGap && ctr.firstGap.to) || null };
-  return { dates: sorted.map((b) => b.date), close: Float64Array.from(SA.close), high: Float64Array.from(SA.high),
-    tr: ctr.reconstructed ? Float64Array.from(ctrSeries) : null, totalReturn: ctr.reconstructed, trBasis: ctr.reconstructed ? TR_BASIS : null,
+    lastGap: ctr.date || (ctr.firstGap && ctr.firstGap.to) || null,
+    coverage: trCoverage, validUntil: validity ? validity.validUntil : ctr.reconstructed ? ctr.last : null,
+    hold: validity && validity.hold ? { from: validity.hold.from, observedAt: validity.hold.observedAt, reason: validity.hold.reason, evidenceClass: validity.hold.evidenceClass } : null,
+    validityContract: validity ? validity.contract : null };
+  return { dates, close: Float64Array.from(SA.close), high: Float64Array.from(SA.high),
+    tr, totalReturn: tr !== null, trBasis: tr !== null ? TR_BASIS : null, trCoverage, trValidUntil: trVerdict.validUntil,
     trVerdict, ctr: ctrInfo,
     providerTr: providerOk ? Float64Array.from(PTR.close) : null, providerVerdict, legacyTotalReturn };
 }

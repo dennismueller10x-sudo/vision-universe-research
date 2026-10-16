@@ -1,0 +1,45 @@
+{
+  "schema": "corporate-action-v2-control-protocol-1.0.0",
+  "status": "PRE_REGISTERED",
+  "preRegisteredBefore": "first Actions run of scripts/quant/corporate-action-v2/audit-v2.mjs; fixed before any v2 result on real data was seen",
+  "purpose": "Independent false-positive / false-negative control for the canonical corporate-action contract 2.0.0 (review R1/R13). Not drawn from the known V4 population.",
+  "selection": {
+    "universe": "all segments of the canonical capture that reproduces freeze V4-beae51ae1b07768b (same source objects)",
+    "excludedAsInSample": [
+      "every segment with a security-month in the V4 extreme population (all 2213 extreme security-months, of which the 83 diagnostic cases are a subset)",
+      "every segment among the 74 adjusted-level > 1e6 securities",
+      "every segment on which canonical-total-return-1.2.0 places a SPLIT_SUSPECTED_UNDECLARED or PRICE_SPIKE_REVERTED hold (the population on which 1.1.0 -> 1.2.0 was revised)"
+    ],
+    "ordering": "ascending sha256(seed + '|' + segmentId)",
+    "seed": "vu-corporate-action-v2-control-2026-10-16",
+    "perCategory": 150,
+    "eventsPerEventCategory": 300
+  },
+  "categories": {
+    "NORMAL": "any eligible segment with >= 250 bars",
+    "VOLATILE": "top decile of the standard deviation of daily raw log returns (days without a provider event), median raw close >= 1",
+    "HIGH_BETA_MOVE": "at least one session with raw close/close >= 1.5 or <= 1/1.5 and no provider event that day",
+    "PENNY": "median raw close < 1.00",
+    "HIGH_NOMINAL": "maximum raw (unadjusted) close >= 1000",
+    "FORWARD_SPLIT": "at least one provider splitFactor >= 1.5",
+    "STALE": "at least 10 consecutive sessions with an identical raw close",
+    "MERGER": "delisted segment with delisting class ACQUISITION or MERGER_FORM (R15 SEC classification)",
+    "BANKRUPTCY_DISTRESS": "delisted segment with delisting class DEREGISTRATION_WITH_DISTRESS",
+    "SYMBOL_CHANGE": "segment whose issuer CIK has another segment with a different ticker starting within 30 days after this segment ends",
+    "REVERSE_SPLIT_CONFIRMED": "event category: SEC EFFECTIVE reverse split (newPerOld <= 1/2) of an eligible segment's CIK whose anchor date lies inside the segment; label = the SEC filing, independent of the price signature"
+  },
+  "labels": {
+    "intervention": "a v2 HOLD/QUARANTINE whose evidence class is PRICE_DISCONTINUITY_NO_CA_EVIDENCE, PROBABLE_CORPORATE_ACTION or CONFLICTING_CORPORATE_ACTION, or a v2 NORMALIZE",
+    "TRUE_POSITIVE": "an SEC split statement of any stage (8-K/6-K event or reverse-split proxy) for the segment's CIK dated within 365 days of the intervention date, or SEC shares outstanding that change by a factor of at least 1.5 (either direction) between the last report before and the first report on or after the intervention date",
+    "FALSE_POSITIVE": "segment has an issuer CIK, no SEC split statement of any stage within 365 days, and SEC shares outstanding do not change by a factor of 1.5 across the date",
+    "UNLABELED": "segment without issuer CIK (counted, not in the FP denominator)",
+    "FALSE_NEGATIVE": "REVERSE_SPLIT_CONFIRMED event whose session lies inside the v2 valid range and whose canonical gross total return on that session still carries the split: |ln g| > |ln q| / 2"
+  },
+  "acceptance": {
+    "falsePositiveRatePooled": "<= 0.02 of labelled control segments (all categories except REVERSE_SPLIT_CONFIRMED)",
+    "falsePositiveRatePerCategory": "<= 0.05",
+    "falseNegativeRate": "<= 0.05 of REVERSE_SPLIT_CONFIRMED events",
+    "intervals": "Wilson 95 % reported with every rate; acceptance on the point estimate",
+    "noTuning": "no threshold, window or tolerance of sec-corporate-actions.js, corporate-action-validation.js, canonical-price-validity.js or canonical-total-return.js is changed after this run; a failed acceptance is reported as NOT_READY"
+  }
+}

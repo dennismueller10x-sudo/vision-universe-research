@@ -1,0 +1,133 @@
+{
+  "schema": "corporate-action-source-manifest-2.0.0",
+  "contract": "corporate-action-contract-2.0.0",
+  "assessedOn": "2026-10-16",
+  "principle": "A corporate action may normalize a canonical price series only if a source independent of the price provider confirms it as effective, with a ratio and a date that the price series shows. Price alone never repairs (HOLD_FROM_EVENT_DATE). Retail web pages are never a primary source.",
+  "priorityOrder": ["SEC_EDGAR_FILINGS", "ISSUER_FILED_PRESS_RELEASES", "EXCHANGE_NOTICES", "PROVIDER_CORPORATE_ACTIONS", "OTHER_MACHINE_READABLE"],
+  "sources": [
+    {
+      "id": "SEC_EDGAR_FULL_TEXT_CURRENT_REPORTS",
+      "priority": 1,
+      "status": "INTEGRATED_PRIMARY",
+      "what": "EDGAR full-text search (efts.sec.gov/LATEST/search-index) for split language in 8-K/6-K (incl. amendments) plus the filing documents from www.sec.gov/Archives (main document and EX-99 press releases); extracted by quant/engines/sec-corporate-actions.js",
+      "coverage": "SEC registrants (US domestic issuers; foreign private issuers via 6-K), filings from 2001 (full-text search horizon). Not covered: non-reporting OTC issuers, events before 2001, issuers without a linked CIK.",
+      "pitSuitability": "YES: every event carries the filing date of the document that establishes each stage (stageVisibleAt.ANNOUNCED/APPROVED/EFFECTIVE). A stage is used for an as-of date only when filed on or before it.",
+      "splitSupport": "forward and reverse splits, share consolidations; stock dividends only when worded as a split",
+      "effectiveDate": "explicit effective date/time and the first split-adjusted trading session when stated (8-K Item 3.03/5.03 typically states both); undated retrospective statements are kept with confidence MEDIUM and need the ticker in the filing and a unique price match",
+      "ratio": "exact ratio required (1-for-N, N:1, every N shares into one, number words); ranges and maxima are never a ratio",
+      "identity": "CIK; linked to a listing through the capture's issuer CIK (legacy, UNVERIFIED status recorded) and confirmed per event by price concordance on the stated session, ticker mention recorded",
+      "latency": "8-K within four business days of the event, usually before the effective date; 10-Q/10-K up to a quarter later (PIT_REVISION recorded)",
+      "licensing": "public SEC data, public domain; commercial use permitted; SEC fair-access policy (declared User-Agent, <= 10 requests/s) respected",
+      "access": "HTTP JSON API (search, 100 hits per page, 10,000 per query window) and document archive; no key",
+      "failureModes": [
+        "text extraction errors (boilerplate, exhibits restating old events, several ratios in one document) -> range/ambiguity rules, provenance hash per sentence",
+        "CIK-to-listing confusion (holding company, share classes, reused tickers) -> price concordance required for CONFIRMED",
+        "effective date vs first trading session (after-close effectiveness) -> window of 2 sessions before and 3 after the stated session",
+        "issuer announces and then abandons a split -> only EFFECTIVE wording confirms",
+        "search outages / rate limiting -> retries, counted in collector stats"
+      ]
+    },
+    {
+      "id": "SEC_EDGAR_FULL_TEXT_PERIODIC_REPORTS",
+      "priority": 1,
+      "status": "INTEGRATED_SUPPORTING",
+      "what": "10-Q/10-K/20-F statements such as 'On March 3, 2020, we effected a 1-for-25 reverse stock split', only for issuers with a held price discontinuity or a >= 10x overnight move (at most two reports per candidate date, eight per issuer)",
+      "coverage": "SEC registrants from 2001",
+      "pitSuitability": "YES, visible from the report's filing date; when that is after the event, the PIT history shows a HOLD (or an unadjusted jump) until the filing (resumeFrom)",
+      "splitSupport": "forward and reverse",
+      "effectiveDate": "often stated; otherwise undated (MEDIUM, unique price match and ticker mention required)",
+      "ratio": "exact",
+      "identity": "as above",
+      "latency": "up to one quarter",
+      "licensing": "public domain",
+      "access": "as above, filtered by CIK",
+      "failureModes": ["candidate-driven selection (price discontinuities) decides which reports are read: absence of evidence is not evidence of absence"]
+    },
+    {
+      "id": "SEC_PROXY_STATEMENTS",
+      "priority": 1,
+      "status": "INTEGRATED_CONTEXT",
+      "what": "DEF 14A/PRE 14A/DEF 14C/PRE 14C hits for 'reverse stock split' (metadata only)",
+      "pitSuitability": "YES (filing date)",
+      "splitSupport": "proposals only (ANNOUNCED); never confirms an event",
+      "effectiveDate": "none",
+      "ratio": "usually a range",
+      "licensing": "public domain",
+      "failureModes": ["most proposals give a range; many are never effected"]
+    },
+    {
+      "id": "SEC_XBRL_SHARES_OUTSTANDING",
+      "priority": 1,
+      "status": "INTEGRATED_SUPPORTING",
+      "what": "dei/us-gaap shares outstanding already in the canonical capture (fundamentals.shares_outstanding with availableAt)",
+      "coverage": "XBRL filers from about 2009/2011",
+      "pitSuitability": "YES (availableAt)",
+      "splitSupport": "indirect: a k-fold change of the share count supports or contradicts a price-only split signature; never confirms alone (issuance and buybacks move it too)",
+      "effectiveDate": "none (period end of the report)",
+      "ratio": "implied only",
+      "licensing": "public domain",
+      "failureModes": ["dilution in distressed issuers mimics a forward split; stale cover-page values"]
+    },
+    {
+      "id": "SEC_XBRL_STOCK_SPLIT_RATIO_ELEMENT",
+      "priority": 1,
+      "status": "EVALUATED_NOT_INTEGRATED",
+      "what": "us-gaap:StockholdersEquityNoteStockSplitConversionRatio1 (frames API)",
+      "coverage": "sparse (51 filers tagged it for CY2023)",
+      "pitSuitability": "filing date yes",
+      "effectiveDate": "none (reporting period only)",
+      "reason": "ratio without an event date; adds little over the text of the same 10-Q/10-K"
+    },
+    {
+      "id": "ISSUER_IR_PRESS_RELEASES",
+      "priority": 2,
+      "status": "INTEGRATED_VIA_SEC_EX99",
+      "what": "issuer press releases are used only as filed with the SEC (EX-99 to 8-K/6-K); issuer web sites are not crawled",
+      "reason": "web pages are not point-in-time, can change after the fact and are not machine-readable at scale"
+    },
+    {
+      "id": "FINRA_OTC_DAILY_LIST",
+      "priority": 3,
+      "status": "EVALUATED_NOT_INTEGRATED",
+      "what": "api.finra.org otcMarket/otcDailyList: daily corporate-action records with reverseSplitRate/forwardSplitRate, exDate, old/new symbol, dailyListDatetime",
+      "coverage": "OTC equity securities (FINRA-quoted); history in the public dataset observed from 2018",
+      "pitSuitability": "YES (dailyListDatetime)",
+      "splitSupport": "forward and reverse, symbol changes",
+      "effectiveDate": "exDate",
+      "ratio": "explicit",
+      "identity": "symbol + security description, no CIK",
+      "licensing": "FINRA data terms for API datasets need review before redistribution or commercial use; not integrated until reviewed",
+      "access": "public GET reachable; filtered queries need the documented POST interface (credentialed for some datasets)",
+      "reason": "licence review open; would close the OTC gap of the SEC source (non-reporting issuers)"
+    },
+    {
+      "id": "NASDAQ_NYSE_EXCHANGE_NOTICES",
+      "priority": 3,
+      "status": "EVALUATED_NOT_INTEGRATED",
+      "what": "Nasdaq Daily List, NYSE corporate-action notices",
+      "reason": "subscription/redistribution terms; no free historical bulk archive (Nasdaq Daily List archive not publicly reachable)"
+    },
+    {
+      "id": "TIINGO_SPLIT_FACTOR_AND_ADJUSTED_CLOSE",
+      "priority": 4,
+      "status": "INTEGRATED_EXISTING",
+      "what": "provider splitFactor per bar and adjustedClose (cross-check) - the existing canonical input",
+      "independence": "NOT independent of the price series (same vendor); it is the field whose gaps caused V4-D1",
+      "pitSuitability": "no publication timestamps (revised in place)",
+      "licensing": "existing commercial Tiingo licence",
+      "failureModes": ["undeclared reverse splits with adjustedClose moving with the raw price (V4-D1)", "factor on the wrong day", "inconsistent factor (V4-D2 SPLIT_ARTIFACT)"]
+    },
+    {
+      "id": "TIINGO_CORPORATE_ACTIONS_ENDPOINT",
+      "priority": 4,
+      "status": "EVALUATED_NOT_INTEGRATED",
+      "reason": "same vendor as the price series (not independent); requires a token not available to this research run"
+    },
+    {
+      "id": "COMMERCIAL_REFERENCE_DATA (e.g. Polygon/Massive, EODHD, Refinitiv, S&P)",
+      "priority": 5,
+      "status": "NOT_EVALUATED_LICENCE_REQUIRED",
+      "reason": "paid licences outside this research run; retail web pages are excluded as primary sources by policy"
+    }
+  ]
+}

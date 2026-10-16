@@ -1,0 +1,38 @@
+{
+  "schema": "canonical-price-validity-contract-2.0.0",
+  "contract": "canonical-price-validity-2.0.0",
+  "engine": "quant/engines/canonical-price-validity.js",
+  "dependsOn": { "totalReturn": "canonical-total-return-1.2.0 (unchanged; whole-series reconstruct and its reasons)", "corporateActions": "corporate-action-contract-2.0.0", "splitFactors": "return-series.js#splitFactors (ADR-002)" },
+  "perSeriesFields": {
+    "rawPrice": "input bars: open/high/low/close/volume as delivered (unadjusted)",
+    "adjustedPrice": "provider adjustedClose: cross-check only, never a source",
+    "corporateActionEvidence": "evidence[] records of corporate-action-validation.js",
+    "eventEffectiveDate": "evidence.eventDate (session observed) and secEvent.effectiveDate/marketDate (stated)",
+    "eventConfidence": "evidence.confidence (HIGH/MEDIUM/LOW) and class",
+    "validityIntervals": "intervals[]: VALID {from,to}, INVALID_RANGE {from,to,observedAt,resumeFrom,reason}, HOLD / QUARANTINE {from,observedAt,reason,detail,evidenceClass,outcome}, TERMINAL {from,kind OPEN|DELISTED} or listing break",
+    "quarantineHoldReason": "hold.reason (core reason or CORPORATE_ACTION_CONFLICT) and hold.evidenceClass",
+    "provenance": "evidence.provenanceHash, sources (accession, form, filedDate), contract versions",
+    "sourceTimestamps": "SEC stageVisibleAt per stage, evidence.visibleAt, hold.observedAt",
+    "pitVisibility": "build(bars, {asOf}) uses bars <= asOf and evidence visible <= asOf; pitHistory() lists HOLD->resume and PIT_REVISION transitions"
+  },
+  "states": {
+    "FULL_VALID": "every bar valid",
+    "VALID_WITH_INVALID_BARS": "valid with single invalidated bars (reverted provider spikes); the series resumes after each",
+    "VALID_PREFIX": "valid until validUntil, HOLD/QUARANTINE/TERMINAL afterwards",
+    "NO_VALID_BARS": "identity unconfirmed or fewer than two valid bars"
+  },
+  "semantics": {
+    "VALID_UNTIL": "validUntil = last bar of the reconstructable prefix; the total-return index over [validFrom, validUntil] is the core reconstruction of exactly these bars",
+    "HOLD_FROM": "hold.from = first bar not canonical; hold.observedAt = first day this was knowable from bars and filings up to that day",
+    "RESUME_FROM": "INVALID_RANGE.resumeFrom (spike) and pitHistory().resumeFrom (a later SEC filing confirms the event)",
+    "INVALID_RANGE": "bars without a valid price; returns skip them (ratio of the valid bars around)",
+    "TERMINAL": "listing discontinuity (> 365 days) or series end (OPEN / DELISTED); proceeds after delisting are not estimated"
+  },
+  "consumerRules": [
+    "A consumer may use a bar at date t only if isValidOn(contract, t).",
+    "Returns are ratios of valid bars; never chain across a HOLD/QUARANTINE boundary.",
+    "Point-in-time decisions (eligibility, exclusion, settlement) key on observedAt, never on hold.from; a backtest at t < observedAt treats the security as available (its bars <= t are valid in the final view and identical in the as-of view).",
+    "Benchmarks keep whole-series semantics (role BENCHMARK_REFERENCE)."
+  ],
+  "tests": "quant/tests/corporate-action-v2.test.mjs (V1-V15 validity/PIT/evidence, E1-E8 SEC extraction, C1-C3 daily-prices consumer)"
+}

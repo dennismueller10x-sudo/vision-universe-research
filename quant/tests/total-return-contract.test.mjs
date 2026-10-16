@@ -70,11 +70,17 @@ test("one engine: the shared loader, the setup study and the benchmark refresh r
   assert.equal(d.ctr.crossCheck.state, "CONFLICT_CANONICAL_WINS");
   const ex = d.dates.indexOf("2024-01-21");
   assert.ok(Math.abs(d.tr[ex] / d.tr[ex - 1] - 1 - 1 / 100) < 1e-12, "Ex-Tag: Kurs unveraendert, Ausschuettung 1 auf 100 reinvestiert");
-  /* Anbieter kennt eine Ausschuettung, unser Feld nicht: fail closed. */
+  /* Anbieter kennt eine Ausschuettung, unser Feld nicht: ab diesem Tag fail closed. Die
+     Kerzen davor bleiben gueltig (canonical-price-validity-2.0.0, Review R8): tr bis
+     trValidUntil, danach NaN; das Urteil ueber die ganze Reihe bleibt "nicht rekonstruiert". */
   const missing = series(); missing[20].dividend = 0;
   const m = fromBars({ ticker: "X", bars: missing }, ID);
-  assert.equal(m.totalReturn, false); assert.equal(m.tr, null); assert.equal(m.trVerdict.reason, "DIVIDEND_MISSING");
+  assert.equal(m.trVerdict.confirmed, false); assert.equal(m.trVerdict.reason, "DIVIDEND_MISSING");
   assert.equal(m.trVerdict.bucket, "REJECTED_DIVIDEND_GAP");
+  assert.equal(m.trCoverage, "PREFIX"); assert.equal(m.totalReturn, true);
+  const at = m.dates.indexOf(missing[20].date);
+  assert.equal(m.trValidUntil, missing[19].date);
+  assert.ok(m.tr[at - 1] > 0 && Number.isNaN(m.tr[at]) && Number.isNaN(m.tr[m.tr.length - 1]));
   /* Ohne bestaetigte Identitaet keine Gesamtrendite. */
   assert.equal(fromBars({ ticker: "X", bars: series() }).trVerdict.reason, "IDENTITY_UNCERTAIN");
   const ok = fromBars({ ticker: "X", bars: series() }, ID);
@@ -87,7 +93,8 @@ test("one engine: the shared loader, the setup study and the benchmark refresh r
   assert.match(read("scripts/quant/lib/daily-prices.mjs"), /CanonicalTR\.reconstruct/);
   assert.equal((read("quant/engines/canonical-total-return.js").match(/function reconstruct\(/g) || []).length, 1);
   /* Die Anbieterspalte ist nirgends Quelle der Gesamtrendite: tr kommt nur aus der Rekonstruktion. */
-  assert.match(read("scripts/quant/lib/daily-prices.mjs"), /tr: ctr\.reconstructed \? Float64Array\.from\(ctrSeries\) : null/);
+  assert.match(read("scripts/quant/lib/daily-prices.mjs"), /let tr = ctr\.reconstructed \? Float64Array\.from\(ctrSeries\) : null/);
+  assert.match(read("scripts/quant/lib/daily-prices.mjs"), /tr = PriceValidity\.alignTr\(validity, dates\)/, "Teilreihe nur aus dem Gueltigkeitsvertrag");
 });
 
 test("repair: counts by reason and accepts a refetch only when raw closes agree", () => {
@@ -150,7 +157,7 @@ function signalFixture(t, gapped) {
   return { study: JSON.parse(readFileSync(out, "utf8")), quality: JSON.parse(readFileSync(join(dir, "total-return-quality-v1.json"), "utf8")) };
 }
 
-test("signal study: titles without a complete corporate-action record drop out of a pure total-return study and are counted", (t) => {
+test("signal study: titles without a complete corporate-action record keep only their valid prefix in a pure total-return study and are counted", (t) => {
   const { study, quality } = signalFixture(t, 2);
   const c = study.source.totalReturnCoverage;
   assert.equal(study.returnType, "TOTAL_RETURN");
@@ -168,7 +175,10 @@ test("signal study: titles without a complete corporate-action record drop out o
   assert.equal(c.REJECTED_DIVIDEND_GAP, 2);
   assert.equal(c.REJECTED_SPLIT_GAP, 1);
   assert.equal(c.REJECTED_IDENTITY + c.REJECTED_OTHER, 0);
-  assert.equal(study.source.titles, 57, "die beiden Titel und der Split-Fall rechnen nicht als Gesamtrendite mit");
+  /* canonical-price-validity-2.0.0 (R8): die drei abgelehnten Reihen rechnen mit ihrem gueltigen
+     Praefix weiter (vorher 57 Titel, ganze Reihe verworfen). */
+  assert.equal(c.TOTAL_RETURN_VALID_PREFIX, 3);
+  assert.equal(study.source.titles, 60, "die beiden Titel und der Split-Fall rechnen bis zum Befund mit");
   assert.equal(quality.rejected.rows.length, 3);
   assert.deepEqual(quality.rejected.rows.map((r) => r[1]).sort(), ["DIVIDEND_MISSING", "DIVIDEND_MISSING", "SPLIT_SUSPECTED_UNDECLARED"]);
   assert.equal(quality.contract, "canonical-total-return-1.2.0");
