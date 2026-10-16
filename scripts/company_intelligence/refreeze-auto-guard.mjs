@@ -28,8 +28,11 @@ import {assertLegacyScope,refreezeArchiveKey,refreezeArchiveBytes} from './froze
 export const HOUR=3600000;
 /* Der eingefrorene Rollback verfaellt sieben Tage nach manifest.generatedAt (CONSUMER_EXPIRED). */
 export const FREEZE_LIFETIME_MS=7*24*HOUR;
+/* Takt des Zeitplans (hoechstens 2 Tage Abstand). Der Scheduler laesst Slots aus und ein verdraengter Lauf bleibt
+   ohne Alarm; die Eskalationsschwelle ist deshalb Takt + 1 Tag Reserve (= 3 Tage), nicht mehr 48 h. */
+export const CADENCE_MS=48*HOUR;
 /* Unterhalb dieser Restlaufzeit ist jeder Fehlschlag dringend (::error::, nicht nur ::warning::). */
-export const URGENT_MS=48*HOUR;
+export const URGENT_MS=CADENCE_MS+24*HOUR;
 export const LIVE_ORIGIN='https://research.visionuniverse.de';
 const hex24=/^[a-f0-9]{24}$/;
 const sha=b=>createHash('sha256').update(b).digest('hex');
@@ -47,6 +50,12 @@ async function liveObject(fetchImpl,path,now){
   const text=await r.text();let json=null;try{json=JSON.parse(text);}catch{}
   return {ok:Boolean(r.ok),status:r.status,text,json};
  }catch(error){return {ok:false,status:null,text:'',json:null,error:error?.name==='TimeoutError'||error?.name==='AbortError'?'TIMEOUT':'FETCH_FAILED'};}
+}
+const PROTECTED=()=>({gate:prefixFor(approval.namespace)+'gate.json',activation:activationKey(),universeGood:goodKey(universeConfig.consumerNamespace)});
+/* SHA-256 der drei geschuetzten Zeiger (null = nicht vorhanden): unabhaengig von den Selbstauskunft-Flags des Re-Freeze. */
+async function protectedHashes(driver){
+ const out={};for(const [name,key] of Object.entries(PROTECTED())){const b=await attempt(()=>driver.get(key));out[name]=b.ok?(b.value?sha(Buffer.from(b.value)):null):'UNREADABLE';}
+ return out;
 }
 const check=(id,title,failures,detail)=>({id,title,status:failures.length?'FAIL':'PASS',code:failures.length?failures[0].split(':')[0]:null,detail:failures.length?failures.join('; '):detail});
 
@@ -196,7 +205,8 @@ export async function evaluatePreflight({driver,fetchImpl=fetch,now=Date.now()})
   checks.push({id:'freeze-needed',title:'Freeze-Verfall heilbar',status:'FAIL',code:'FREEZE_EXPIRING_NOT_HEALABLE',detail:'FREEZE_EXPIRING_NOT_HEALABLE: '+reason+', Restlaufzeit '+hours(remaining)+' h'});
   decision='BLOCKED';reason='FREEZE_EXPIRING_NOT_HEALABLE';
  }
- return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'preflight',decision,reason,causes:[...new Set(checks.filter(c=>c.status==='FAIL').flatMap(c=>c.detail.split('; ').map(x=>x.split(':')[0])))],urgent:decision==='BLOCKED'&&urgent,checkedAt:iso(now),
+ const protectedState=await protectedHashes(ro);
+ return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'preflight',decision,reason,protectedState,causes:[...new Set(checks.filter(c=>c.status==='FAIL').flatMap(c=>c.detail.split('; ').map(x=>x.split(':')[0])))],urgent:decision==='BLOCKED'&&urgent,checkedAt:iso(now),
   generation:legacy?.generation||null,writes:'NONE',
   legacy:legacy&&{generation:legacy.generation,generatedAt:legacy.manifest.generatedAt,goodDataAgeHours:hours(now-Date.parse(legacy.health?.lastSuccessfulRefresh))},
   freeze:frozen&&{generation:frozen.generation,generatedAt:frozen.manifest.generatedAt,pointerSha256:sha(s.frozen.value.bytes),expiresAt:iso(expiresMs),hoursToExpiry:hours(remaining),expired:remaining<=0,
@@ -251,6 +261,12 @@ export async function evaluatePostcheck({driver,release,expectGeneration,preflig
   }else a.push('ROLLBACK_POINTER_UNREADABLE');
   add('archive','Archiv des alten Rollbacks vorhanden',a,'Archiv zum vorherigen Zeiger vorhanden und hash-konsistent');
  }
+ {
+  const base=preflight?.protectedState,now_=await protectedHashes(ro),f=[];
+  if(!base)f.push('NO_PREFLIGHT_BASELINE');
+  else for(const k of Object.keys(now_))if(base[k]==='UNREADABLE'||now_[k]==='UNREADABLE'||base[k]!==now_[k])f.push('PROTECTED_STATE_CHANGED:'+k);
+  add('protected-state','Gate, Aktivierung und Universe-GOOD byte-identisch (SHA-256 gegen Preflight)',f,'gate.json, activation.json, Universe-GOOD-Zeiger unveraendert');
+ }
  const failed=checks.some(c=>c.status==='FAIL');
  return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'postcheck',decision:failed?'FAILED':'VERIFIED',reason:failed?'POSTCHECK_FAILED':(release.status),urgent:failed,checkedAt:iso(now),generation:expectGeneration||null,checks};
 }
@@ -260,12 +276,12 @@ export function renderSummary(v){
  const head=v.phase==='preflight'?'Vorabpruefung':'Nachpruefung';
  const lines=[`## Company Intelligence Auto-Re-Freeze: ${head}`,'',`Entscheidung: **${v.decision}** (${v.reason})`,`Generation: ${v.generation||'unbekannt'}`];
  if(v.freeze)lines.push(`Aktueller Freeze: ${v.freeze.generation}, gueltig bis ${v.freeze.expiresAt}, Restlaufzeit ${v.freeze.hoursToExpiry} h${v.freeze.expired?' (ABGELAUFEN, heilbar per Re-Freeze)':''}`);
- if(v.urgent)lines.push('','**DRINGEND:** Freeze-Verfall in weniger als 48 h oder nicht bestimmbar.');
+ if(v.urgent)lines.push('','**DRINGEND:** Freeze-Verfall in weniger als 72 h oder nicht bestimmbar.');
  lines.push('','| Pruefung | Ergebnis | Ursache / Beleg |','|---|---|---|');
  for(const c of v.checks)lines.push(`| ${c.title} | ${icon[c.status]||c.status} | ${String(c.detail||'').replace(/\|/g,'/')} |`);
  return lines.join('\n')+'\n';
 }
-/* Annotationen: bei Verfall < 48 h ::error::, sonst ::warning:: (der Job ist in beiden Faellen rot). */
+/* Annotationen: bei Verfall < 72 h ::error::, sonst ::warning:: (der Job ist in beiden Faellen rot). */
 export function annotations(v){
  const out=[];
  for(const c of v.checks.filter(x=>x.status==='FAIL'))out.push(`::${v.urgent?'error':'warning'}::Auto-Re-Freeze ${c.id}: ${c.detail}`);

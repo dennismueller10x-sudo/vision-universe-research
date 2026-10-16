@@ -1,11 +1,11 @@
 name: Company Intelligence Auto Refreeze
 # Haelt den eingefrorenen 46er-Rollback frisch (Verfall 7 Tage nach generatedAt).
-# Alle vier Tage (Tag 1,5,9,...,29 des Monats, 05:23 UTC): maximal 4 Tage Abstand.
+# Alle zwei Tage (Tag 1,3,5,...,31 des Monats, 05:23 UTC): maximal 2 Tage Abstand.
 # Vorabpruefung rein lesend und fail-closed; einzige schreibende Aktion ist
 # `universe-release.mjs refreeze`. Gate, Aktivierung, Pages und Produktion bleiben unberuehrt.
 on:
   schedule:
-    - cron: '23 5 */4 * *'
+    - cron: '23 5 */2 * *'
   workflow_dispatch:
 permissions:
   contents: read

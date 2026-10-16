@@ -14,7 +14,7 @@ import {universeConfig} from '../universe-approval.mjs';
 import {approval} from '../production-approval.mjs';
 import {prefixFor} from '../public-delivery.mjs';
 import {refreezeRollback,refreezeArchiveKey} from '../frozen-refreeze.mjs';
-import {evaluatePreflight,evaluatePostcheck,readOnly,annotations,renderSummary,URGENT_MS,FREEZE_LIFETIME_MS} from '../refreeze-auto-guard.mjs';
+import {evaluatePreflight,evaluatePostcheck,readOnly,annotations,renderSummary,URGENT_MS,CADENCE_MS,FREEZE_LIFETIME_MS} from '../refreeze-auto-guard.mjs';
 import {loadYamlFile} from './helpers/workflow-yaml.mjs';
 
 const GUARD_PATH=fileURLToPath(new URL('../refreeze-auto-guard.mjs',import.meta.url));
@@ -41,7 +41,7 @@ async function advance(d,namespace,f,health={marker:f.m.generation}){const good=
 /* Gesunde Lage am Tag 4 nach dem Freeze: Freeze 96 h alt, Legacy-GOOD 1 h alt, Gate offen, Universum nicht live. */
 /* Fixtures veralteter Staende duerfen nicht an der Veroeffentlichungsgrenze (7 Tage) scheitern: Uhr nur beim Bauen zurueckstellen. */
 async function withClock(offsetMs,fn){const real=Date.now;Date.now=()=>real()-offsetMs;try{return await fn();}finally{Date.now=real;}}
-async function world({freezeAge=96*H,refreshAge=1*H,publicationAge=0.5*H,legacyGeneratedAge=1*H,legacyOldAge=Math.min(freezeAge-6*H,30*H)}={}){
+async function world({freezeAge=80*H,refreshAge=1*H,publicationAge=0.5*H,legacyGeneratedAge=1*H,legacyOldAge=Math.min(freezeAge-6*H,30*H)}={}){
  const now=Date.now(),dirs=[],d=driver();
  const mk=(n,age)=>{const f=fixture(n,new Date(now-age).toISOString());dirs.push(f.root);return f;};
  const frozen=mk(0x71dc,freezeAge),legacyOld=mk(0x1001,legacyOldAge),current=mk(0x6bf1,legacyGeneratedAge);
@@ -83,19 +83,19 @@ test('gesunder Re-Freeze: alle sechs Pruefungen bestehen, Preflight schreibt nic
   assert.deepEqual(v.checks.map(c=>c.id),ids);assert.deepEqual(failedIds(v),[]);
   assert.equal(w.d.puts.length,0,'Preflight schreibt nichts');
   assert.equal(v.freeze.expired,false);assert.equal(v.urgent,false);
-  assert.ok(v.freeze.hoursToExpiry>60&&v.freeze.hoursToExpiry<80,'96 h alt, 168 h Laufzeit: '+v.freeze.hoursToExpiry);
+  assert.ok(v.freeze.hoursToExpiry>80&&v.freeze.hoursToExpiry<96,'80 h alt, 168 h Laufzeit: '+v.freeze.hoursToExpiry);
   const release=await w.refreeze({expectGeneration:v.generation});
   assert.equal(release.status,'REFROZEN');
   const post=await evaluatePostcheck({driver:w.d,release,expectGeneration:v.generation,preflight:v});
   assert.equal(post.decision,'VERIFIED',JSON.stringify(post.checks.filter(c=>c.status==='FAIL')));
-  assert.deepEqual(post.checks.map(c=>c.id),['result','flags','generation','new-freeze','archive']);
+  assert.deepEqual(post.checks.map(c=>c.id),['result','flags','generation','new-freeze','archive','protected-state']);
   const frozen=await goodState(w.d,ROLLBACK);
   assert.ok(Date.parse(frozen.manifest.generatedAt)+FREEZE_LIFETIME_MS>Date.now(),'neuer Freeze in der Zukunft gueltig');
   assert.match(renderSummary(v),/REFREEZE/);assert.deepEqual(annotations(v),[]);
  }finally{w.done();}
 });
 
-test('veraltete Daten: Refresh aelter als 12 h oder Health nicht HEALTHY -> BLOCKED, keine Freigabe, Warnung (Freeze 72 h Rest)',async()=>{
+test('veraltete Daten: Refresh aelter als 12 h oder Health nicht HEALTHY -> BLOCKED, keine Freigabe, Warnung (Freeze 88 h Rest, ueber der 72-h-Schwelle)',async()=>{
  for(const [age,expected] of [[13*H,['refresh-fresh','health']],[10*H,['health']]]){
   const w=await world({refreshAge:age});try{
    const v=await w.preflight();
@@ -106,10 +106,10 @@ test('veraltete Daten: Refresh aelter als 12 h oder Health nicht HEALTHY -> BLOC
  }
 });
 
-test('veraltete Daten bei Freeze-Verfall in < 48 h: dringend, ::error::, kein Re-Freeze',async()=>{
+test('veraltete Daten bei Freeze-Verfall in < 72 h: unter 72 h dringend, ::error::, kein Re-Freeze',async()=>{
  const w=await world({freezeAge:140*H,refreshAge:14*H});try{
   const v=await w.preflight();
-  assert.equal(v.decision,'BLOCKED');assert.equal(v.urgent,true);assert.ok(v.freeze.hoursToExpiry<48);
+  assert.equal(v.decision,'BLOCKED');assert.equal(v.urgent,true);assert.ok(v.freeze.hoursToExpiry<72);
   assert.ok(annotations(v).every(a=>a.startsWith('::error::')),annotations(v).join('\n'));
   assert.match(renderSummary(v),/DRINGEND/);assert.equal(w.d.puts.length,0);
  }finally{w.done();}
@@ -342,17 +342,17 @@ function nextRuns(cron,from,count){
  }
  return out;
 }
-test('Zeitplan: Minuten-Jitter nicht auf :00/:30, Abstand hoechstens 4 Tage, erster Lauf nach 2026-10-16 ist 2026-10-17 05:23 UTC',()=>{
+test('Zeitplan (Tag-des-Monats-Raster, Monatswechsel): Minuten-Jitter nicht auf :00/:30, Abstand hoechstens 2 Tage, erster Lauf nach 2026-10-16 ist 2026-10-17 05:23 UTC',()=>{
  const cron=loadText(raw()).on.schedule[0].cron;
- assert.equal(cron,'23 5 */4 * *');
+ assert.equal(cron,'23 5 */2 * *');
  const [mi]=cron.split(' ');assert.ok(!['0','30'].includes(mi));
  const runs=nextRuns(cron,new Date('2026-10-16T09:33:00Z'),3);
- assert.deepEqual(runs.map(r=>r.toISOString()),['2026-10-17T05:23:00.000Z','2026-10-21T05:23:00.000Z','2026-10-25T05:23:00.000Z']);
+ assert.deepEqual(runs.map(r=>r.toISOString()),['2026-10-17T05:23:00.000Z','2026-10-19T05:23:00.000Z','2026-10-21T05:23:00.000Z']);
  // Jahreslauf: groesster Abstand zwischen zwei Laeufen (Monatswechsel inklusive) bleibt unter der 6-Tage-Obergrenze.
- const year=nextRuns(cron,new Date('2026-01-01T00:00:00Z'),95);let max=0;
+ const year=nextRuns(cron,new Date('2026-01-01T00:00:00Z'),190);let max=0;
  for(let i=1;i<year.length;i++)max=Math.max(max,(year[i]-year[i-1])/86400000);
- assert.ok(max<=4,'groesster Abstand '+max+' Tage');
- assert.ok(URGENT_MS===48*H);
+ assert.ok(max<=2,'groesster Abstand '+max+' Tage');
+ assert.equal(CADENCE_MS,48*H);assert.equal(URGENT_MS,72*H,'Schwelle = Takt + 1 Tag Reserve');
 });
 
 /* ---------- Mutationstests ---------- */
@@ -426,4 +426,40 @@ test('LEGACY_FALLBACK / kein GOOD (Doppel-Rollback): Gate DISABLED, delivery 404
   w.d.objects.set(gateKey,Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',generation:approval.consumerGeneration,approvalId:approval.approvalId})));
   const v2=await w.preflight();assert.equal(v2.decision,'BLOCKED');assert.ok(v2.causes.includes('LEGACY_GOOD_MISSING'));
  }finally{w.done();}
+});
+
+test('Postcheck vergleicht Gate, Aktivierung und Universe-GOOD selbststaendig per SHA-256 (nicht nur Flags)',async()=>{
+ const w=await world();try{
+  const v=await w.preflight();
+  assert.deepEqual(Object.keys(v.protectedState),['gate','activation','universeGood']);assert.ok(Object.values(v.protectedState).every(h=>/^[a-f0-9]{64}$/.test(h)));
+  const release=await w.refreeze({expectGeneration:v.generation});
+  assert.equal((await evaluatePostcheck({driver:w.d,release,expectGeneration:v.generation,preflight:v})).decision,'VERIFIED');
+  for(const [key,name] of [[gateKey,'gate'],[activationKey(),'activation'],[goodKey(universeConfig.consumerNamespace),'universeGood']]){
+   const saved=w.d.objects.get(key);w.d.objects.set(key,Buffer.concat([saved,Buffer.from(' ')]));
+   const post=await evaluatePostcheck({driver:w.d,release,expectGeneration:v.generation,preflight:v});
+   assert.equal(post.decision,'FAILED',name);assert.match(byId(post,'protected-state').detail,new RegExp('PROTECTED_STATE_CHANGED:'+name));
+   w.d.objects.set(key,saved);
+  }
+  const {protectedState,...noBase}=v;
+  assert.match(byId(await evaluatePostcheck({driver:w.d,release,expectGeneration:v.generation,preflight:noBase}),'protected-state').detail,/NO_PREFLIGHT_BASELINE/);
+ }finally{w.done();}
+});
+
+test('Live-Routen Tabelle: HTML+200, 404, Fetch-Exception, leerer Body, null, [] -> immer BLOCKED, nie Absturz, nichts geschrieben',async()=>{
+ const routes=['/company-intelligence-delivery.json','/company-intelligence/data/index.json','/company-intelligence/config/rollout.js','/company-intelligence-refresh.json'];
+ const bad={'HTML+200':{body:'<!doctype html><html><body>Passwort</body></html>'},'404':{status:404,body:'nf'},'Fetch-Exception':{throws:true},'leerer Body':{body:''},'null':{body:'null'},'[]':{body:'[]'}};
+ for(const route of routes)for(const [name,response] of Object.entries(bad)){
+  const w=await world();try{
+   const saved=w.routes[route];w.routes[route]=response;
+   const v=await w.preflight();
+   assert.equal(v.decision,'BLOCKED',route+' '+name);assert.ok(v.causes.length>0,route+' '+name);
+   assert.equal(w.d.puts.length,0);
+   w.routes[route]=saved;assert.equal((await w.preflight()).decision,'REFREEZE','Gegenprobe '+route);
+  }finally{w.done();}
+ }
+});
+
+test('Eskalationsschwelle abgeleitet aus dem Takt: 58 h Rest ist bereits dringend (alt: erst unter 48 h), 88 h noch Warnung',async()=>{
+ const a=await world({freezeAge:110*H,refreshAge:14*H});try{const v=await a.preflight();assert.equal(v.urgent,true);assert.ok(v.freeze.hoursToExpiry>48&&v.freeze.hoursToExpiry<72);}finally{a.done();}
+ const b=await world({freezeAge:80*H,refreshAge:14*H});try{const v=await b.preflight();assert.equal(v.urgent,false);}finally{b.done();}
 });
