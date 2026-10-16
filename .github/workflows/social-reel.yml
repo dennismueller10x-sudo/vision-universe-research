@@ -1,0 +1,67 @@
+# Reel fuer die Freigabe vorbereiten oder Status lesen (veroeffentlicht NICHTS).
+#
+# prepare: misst das Video (nur Range-Abrufe) und legt eine Karte im Approval Center an. Veroeffentlicht
+#          wird ausschliesslich dort, durch den Owner, nach ausdruecklicher Freigabe.
+# status:  liest den Stand zu einer contentId.
+#
+# Der Admin-Schluessel kommt nur ueber env: und wird nie ausgegeben. Eingaben gehen nur ueber env: in
+# den Shell-Text (ADR-005). Es gibt bewusst keinen publish-Befehl.
+name: Social Reel vorbereiten
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'prepare = Karte anlegen, status = Stand lesen'
+        type: choice
+        options: [prepare, status]
+        default: prepare
+      content_id:
+        description: 'Eindeutige Kennung, z. B. reel_2026_10_16_test (3-80 Zeichen: A-Z a-z 0-9 . _ : -)'
+        type: string
+        required: true
+      video_url:
+        description: 'Direkte https-Adresse der MP4/MOV-Datei (nur bei prepare)'
+        type: string
+        required: false
+        default: ''
+      caption:
+        description: 'Bildtext (nur bei prepare, max. 2200 Zeichen)'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: social-reel-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  VU_SOCIAL_WORKER_URL: https://social.visionuniverse.de
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reel ${{ inputs.action }}
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+          ACTION: ${{ inputs.action }}
+          CONTENT_ID: ${{ inputs.content_id }}
+          VIDEO_URL: ${{ inputs.video_url }}
+          CAPTION: ${{ inputs.caption }}
+        run: |
+          set -euo pipefail
+          if [ "$ACTION" = "prepare" ]; then
+            node scripts/social/ig-reel.mjs prepare --content-id "$CONTENT_ID" --video-url "$VIDEO_URL" --caption "$CAPTION"
+          else
+            node scripts/social/ig-reel.mjs status --content-id "$CONTENT_ID"
+          fi
