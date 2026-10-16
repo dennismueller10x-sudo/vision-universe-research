@@ -78,6 +78,13 @@ def candidate_inventory(companies, store, sources, reviewed):
     rows.sort(key=lambda r: (r['companyId'] not in MANDATORY, r['companyId'] not in rechecks, r['kind'] != 'MISSING_PROVEN_SOURCE', r['companyId']))
     return rows
 
+def record_onboarding_progress(store, stamp):
+    """Nur der News-Lane-Stempel. Der globale `lastSuccessfulRefresh` gehoert allein dem
+    vollstaendigen Refresh (continuous_refresh.py); eine Teilmenge Quellen darf ihn nicht setzen."""
+    prior = store.state('continuousRefresh', {})
+    news = stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')
+    store.set_state('continuousRefresh', {**prior, 'lastSuccessfulNewsRefresh': news})
+
 def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, now=None):
     state, out = Path(state), Path(out)
     if not (state / 'state.sqlite').is_file() or not (state / 'latest-run.json').is_file():
@@ -201,10 +208,7 @@ def onboard(state, out, run_id, limit=16, request_budget=200, max_seconds=600, n
                 # Programming errors cannot masquerade as upstream outages.
                 raise ValueError('SOURCE_ONBOARDING_IMPLEMENTATION_ERROR') from error
         if succeeded:
-            prior = store.state('continuousRefresh', {})
-            # Der globale Stempel `lastSuccessfulRefresh` gehoert allein dem vollstaendigen
-            # Refresh (continuous_refresh.py); eine Teilmenge Quellen darf ihn nicht setzen.
-            store.set_state('continuousRefresh', {**prior, 'lastSuccessfulNewsRefresh': stamp if any(s.get('type') == 'IR_FEED' and s.get('lastSuccess') == stamp for s in store.sources()) else prior.get('lastSuccessfulNewsRefresh')})
+            record_onboarding_progress(store, stamp)
         result = {'schema': 1, 'runId': run_id, 'candidateIssuers': len(inventory), 'attemptedIssuers': len(selected), 'requests': http.requests,
                   'sourcePollingSuccesses': succeeded, 'newRegisteredSources': imported, 'newProvenSources': 0, 'outcomes': dict(outcomes), 'sourcePolicy': reviewed['sourceUsagePolicy'],
                   'privateOperationalRowsIncluded': False, 'universeDiscovery': False}

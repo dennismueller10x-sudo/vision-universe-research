@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from company_intelligence.source_onboarding import candidate_inventory, proven, onboard, safe_failure_detail, registered_repair_sources, ownership_company
+from company_intelligence.source_onboarding import record_onboarding_progress, candidate_inventory, proven, onboard, safe_failure_detail, registered_repair_sources, ownership_company
 from company_intelligence.store import Store
 from company_intelligence.top46_content import matching_resolver
 
@@ -85,4 +85,24 @@ class SourceOnboardingTests(unittest.TestCase):
             (root / 'latest-run.json').write_text(json.dumps({'privateCompanies': 1}))
             with self.assertRaisesRegex(ValueError, 'FULL_PRIVATE_UNIVERSE_REQUIRED'):
                 onboard(root, root / 'report.json', 'test')
+class OnboardingGlobalStampTests(unittest.TestCase):
+    def test_onboarding_sets_news_lane_but_never_global_stamp(self):
+        import inspect, company_intelligence.source_onboarding as module
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory) / 'state.sqlite')
+            try:
+                store.source({**SOURCE, 'lastSuccess': '2026-10-09T12:00:00Z'})
+                store.set_state('continuousRefresh', {'lastSuccessfulRefresh': '2026-10-09T04:00:00Z', 'lastSuccessfulNewsRefresh': '2026-10-09T04:00:00Z'})
+                record_onboarding_progress(store, '2026-10-09T12:00:00Z')
+                state = store.state('continuousRefresh', {})
+                self.assertEqual(state['lastSuccessfulRefresh'], '2026-10-09T04:00:00Z')
+                self.assertEqual(state['lastSuccessfulNewsRefresh'], '2026-10-09T12:00:00Z')
+                store.set_state('continuousRefresh', {})
+                record_onboarding_progress(store, '2026-10-09T12:00:00Z')
+                self.assertNotIn('lastSuccessfulRefresh', store.state('continuousRefresh', {}))
+            finally:
+                store.close()
+        self.assertNotIn("'lastSuccessfulRefresh'", inspect.getsource(module))
+        self.assertIn('record_onboarding_progress(store, stamp)', inspect.getsource(module.onboard))
+
 if __name__ == '__main__': unittest.main()

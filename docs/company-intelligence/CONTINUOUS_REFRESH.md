@@ -169,17 +169,32 @@ Report einen Zeitstempel, den die Engine im selben Lauf auf "jetzt" setzt, und w
 
 Globaler Stempel `lastSuccessfulRefresh`: `continuous_refresh.py` setzt ihn nur noch nach
 einem fachlich vollständigen Lauf (`refresh_completeness`) und erst am Ende, nachdem Export,
-Consumer-Kandidat und Inventar konsistent sind; der GOOD-Zeiger übernimmt ihn danach
-unverändert. Vollständig heißt: Netzlauf, mindestens ein Erfolg, keine Quelle mit
-temporärem/unklarem Fehler (`TEMPORARY_FAILURE`, `RATE_LIMITED`, `ROBOTS_TEMPORARY_FAILURE`,
-`PARSE_FAILURE`, `HTTP_403_UNCLASSIFIED`), kein Abbruch durch Anfragebudget, keine SEC-Fehler,
-kein temporärer Fehler bei den Finanzfakten. Dauerhaft blockierte Quellen (`ROBOTS_BLOCKED`,
-`AUTH_REQUIRED`, `SOURCE_REMOVED`) sperren ihn nicht. Nicht fällige Quellen zählen nicht
-als Fehler. Bei Teilerfolg bleiben Fortschrittsfelder (Lane-Stempel, `lastAttempt`, je Quelle
-`refreshSource:*`) erhalten, der globale Stempel bleibt alt; `lastRefreshComplete` und
-`incompleteReasons` im Health nennen den Grund. Schwellen 8 h / 12 h und Zeitstempel
-bleiben unverändert (ein unvollständiger Lauf lässt das Alter schlicht weiterlaufen).
-`source_onboarding.py` setzt den globalen Stempel nicht mehr.
+Consumer-Kandidat, Inventar und Profilprüfung konsistent sind (`commit_refresh_stamp`); der
+GOOD-Zeiger übernimmt ihn danach unverändert. Produktentscheidung zur Definition von
+"vollständig" (Begründung: der echte Betrieb hat immer einzelne Quellenausfälle, z. B. 2 von
+30 fälligen Quellen im dokumentierten Prod-Lauf, 174 von ~5.384 im Universum, 91x
+`ROBOTS_UNAVAILABLE:HTTP_403`; ein Null-Fehler-Kriterium hielte den Stempel dauerhaft an
+und meldete `CRITICAL` trotz publizierter Daten):
+
+1. Systemische Fehler blockieren immer: Offline-Lauf, kein einziger Erfolg, Abbruch durch
+   Anfragebudget (öffentlich oder SEC), SEC-Abbruch nach 4 Fehlern in Folge, temporärer
+   Fehler bei den Finanzfakten.
+2. Bekannte Dauerfehler blockieren nicht: Quellen, die schon vor dem Lauf im Cooldown
+   (`failureCount>0`) oder `health` `blocked`/`temporarily_failed` waren, zählen weder im
+   Nenner noch als Blockade, werden aber als `KNOWN_FAILING_SOURCES:n` in `incompleteReasons`
+   und als `knownFailingSources` im Bericht ausgewiesen. Bewusst blockierte Ausgänge
+   (`ROBOTS_BLOCKED`, `AUTH_REQUIRED`, `SOURCE_REMOVED`) sind ebenfalls ausgenommen.
+3. Frisch fällige Quellen und SEC-Emittenten: Erfolgsquote `(SUCCESS+NO_CHANGE)/geprüft`
+   mindestens `MIN_FRESH_SUCCESS_RATIO` (0,8) bei mindestens `MIN_FRESH_SAMPLE` (5)
+   geprüften Einheiten; bei weniger muss jede gelingen.
+
+Grenzen: Dauerhaft fehlschlagende Quellen halten den Stempel nicht an, bleiben aber
+sichtbar. Sie sollten repariert oder als blockiert klassifiziert werden. Der
+SEC-Hinweis-Feed (`poll_sec_hints`) ist kein Kriterium: er beschleunigt nur, der
+Emittentenpfad läuft unabhängig weiter. Bei Teilerfolg bleiben Fortschrittsfelder
+(Lane-Stempel, `lastAttempt`, je Quelle `refreshSource:*`) erhalten. Schwellen 8 h / 12 h
+und Zeitstempel bleiben unverändert. `source_onboarding.py` setzt den globalen Stempel
+nicht mehr (nur den News-Lane-Stempel).
 
 ## Configuration and rollback
 

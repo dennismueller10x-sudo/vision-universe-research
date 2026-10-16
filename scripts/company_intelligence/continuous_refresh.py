@@ -125,33 +125,58 @@ class CheckedHTTP(PublicHTTP):
                 except ValueError as e: raise SourceError('PARSE_INVALID_JSON') from e
         return response
 
-# Quellenausgaenge, die laut Richtlinie bewusst als "blockiert/entfernt" gefuehrt werden
-# (robots.txt, Auth, entfernte URL). Sie sind dauerhaft, werden pro Quelle als
-# health=blocked gespeichert und stehen unter sourceOutcomes im Bericht; sie
-# blockieren den globalen Stempel nicht, sonst wuerde eine einzige dauerhaft
-# gesperrte Quelle den Refresh-SLO fuer immer auf CRITICAL halten.
+# Definition "fachlich vollstaendiger Refresh" (Produktentscheidung, siehe CONTINUOUS_REFRESH.md).
+# Der echte Betrieb hat immer einzelne Quellen-Ausfaelle (z. B. 2 von 30 faelligen Quellen,
+# ~174 von ~5.384 im Universum, 91x ROBOTS_UNAVAILABLE:HTTP_403). Ein Null-Fehler-Kriterium
+# hielte den Stempel dauerhaft an und meldete CRITICAL trotz publizierter Daten.
+# Deshalb: systemische Fehler blockieren immer; bekannte Dauerfehler werden ausgewiesen, aber
+# ausgenommen; bei frisch faelligen Quellen entscheidet eine Erfolgsquote.
+MIN_FRESH_SUCCESS_RATIO=0.8   # (SUCCESS+NO_CHANGE) / geprueft, nur frisch faellige Quellen
+MIN_FRESH_SAMPLE=5            # darunter muss jede frisch faellige Quelle erfolgreich sein
+# Bewusst als blockiert/entfernt gefuehrt (robots.txt, Auth, entfernte URL): dauerhaft, pro Quelle
+# health=blocked und im Bericht unter sourceOutcomes; zaehlen nicht in Nenner und Blockade.
 POLICY_TERMINAL_OUTCOMES=frozenset({'ROBOTS_BLOCKED','AUTH_REQUIRED','SOURCE_REMOVED'})
 SUCCESS_OUTCOMES=frozenset({'SUCCESS','NO_CHANGE'})
+KNOWN_FAILING_HEALTH=frozenset({'blocked','temporarily_failed'})
 
-def refresh_completeness(*,network,outcomes,successes,deferred,sec_exhausted,sec_failures,fact_outcomes):
+def was_known_failing(source,old_state):
+    """Quelle war schon VOR diesem Lauf im Cooldown/Backoff oder als blockiert/temporaer gestoert markiert."""
+    return bool(source.get('failureCount')) or (old_state or {}).get('health') in KNOWN_FAILING_HEALTH
+
+def ratio_ok(ok,failed):
+    """Quote-Regel fuer frisch faellige Einheiten (Quellen bzw. SEC-Emittenten)."""
+    checked=ok+failed
+    if not failed: return True
+    if checked<MIN_FRESH_SAMPLE: return False
+    return ok/checked>=MIN_FRESH_SUCCESS_RATIO
+
+def refresh_completeness(*,network,fresh_outcomes,known_failing,successes,deferred,sec_exhausted,sec_checked,sec_success,sec_aborted,fact_outcomes):
     """Fachlich vollstaendiger Refresh? Liefert (vollstaendig, Gruende).
 
-    Vollstaendig heisst: Netzlauf, mindestens ein Erfolg, keine Quelle mit
-    temporaerem/unklarem Fehler (alles ausser Erfolg und POLICY_TERMINAL_OUTCOMES),
-    kein Abbruch durch Anfragebudget, keine SEC-Fehler und kein temporaerer
-    Fehler beim Fortschreiben der Finanzfakten. Nicht faellige Quellen (Cooldown
-    oder Intervall) zaehlen nicht als Fehler.
+    Blockiert immer (systemisch): Offline-Lauf, kein einziger Erfolg, Abbruch durch
+    Anfragebudget (oeffentlich/SEC), SEC-Abbruch nach 4 Fehlern in Folge, temporaerer
+    Fehler bei den Finanzfakten. Frisch faellige Quellen und SEC-Emittenten:
+    Quote >= MIN_FRESH_SUCCESS_RATIO bei >= MIN_FRESH_SAMPLE, darunter muss alles
+    gelingen. `known_failing` (Liste) steht nur als Information im Grund
+    `KNOWN_FAILING_SOURCES:n` und blockiert nicht. Der SEC-Hinweis-Feed
+    (poll_sec_hints) ist nur ein Beschleuniger; der Emittentenpfad laeuft weiter, daher kein Kriterium.
     """
     reasons=[]
     if not network: reasons.append('OFFLINE_RUN')
     elif not successes: reasons.append('NO_SUCCESSFUL_SOURCE')
-    bad=sorted(k for k,v in outcomes.items() if v and k not in SUCCESS_OUTCOMES and k not in POLICY_TERMINAL_OUTCOMES)
-    if bad: reasons.append('SOURCE_NOT_SUCCESSFUL:'+','.join(bad))
+    ok=sum(v for k,v in fresh_outcomes.items() if k in SUCCESS_OUTCOMES)
+    failed=sum(v for k,v in fresh_outcomes.items() if k not in SUCCESS_OUTCOMES and k not in POLICY_TERMINAL_OUTCOMES)
+    if not ratio_ok(ok,failed):
+        bad=sorted(k for k,v in fresh_outcomes.items() if v and k not in SUCCESS_OUTCOMES and k not in POLICY_TERMINAL_OUTCOMES)
+        reasons.append(f'SOURCE_FAILURE_RATE:{failed}/{ok+failed}:'+','.join(bad))
     if deferred: reasons.append('REQUEST_BUDGET_EXHAUSTED')
     if sec_exhausted: reasons.append('SEC_BUDGET_EXHAUSTED')
-    if sec_failures: reasons.append('SEC_FAILURES')
+    if sec_aborted: reasons.append('SEC_ABORTED_CONSECUTIVE_FAILURES')
+    if not ratio_ok(sec_success,max(0,sec_checked-sec_success)): reasons.append(f'SEC_FAILURE_RATE:{sec_checked-sec_success}/{sec_checked}')
     if fact_outcomes.get('TEMPORARY_FAILURE'): reasons.append('FINANCIAL_FACTS_TEMPORARY_FAILURE')
-    return not reasons,reasons
+    blocking=list(reasons)
+    if known_failing: reasons.append(f'KNOWN_FAILING_SOURCES:{len(known_failing)}')
+    return not blocking,reasons
 
 def progress_health(prior,now,lane_success,sec_success,financial,complete,reasons):
     """Fortschrittsfelder (Lane-Stempel, Versuch) immer; den globalen Stempel
@@ -199,7 +224,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         prior_news=store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]
         prior_events=store.db.execute('SELECT count(*) FROM events').fetchone()[0]
         http=http or CheckedHTTP(state/'http',budget=config['publicRequestBudget'],max_seconds=config['publicMaxSeconds'])
-        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); lane_success=Counter(); checked=0; deferred=0; updated=set(profile_import['updatedIssuerIds'])|set(source_url_review['updatedIssuerIds'])
+        pipeline=Pipeline(ROOT,companies,store,http,now); outcomes=Counter(); fresh_outcomes=Counter(); known_failing=[]; lane_success=Counter(); checked=0; deferred=0; updated=set(profile_import['updatedIssuerIds'])|set(source_url_review['updatedIssuerIds'])
         all_sources=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM sources')]
         sources=[s for s in all_sources if s.get('companyId') in selected]
         eligible=[s for s in sources if s.get('active') and first_party(s,s['companyId']) and not publisher(s['url'])]
@@ -222,6 +247,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             http.last_response=None; http.unchanged_body=False
             prior_new=pipeline.run['new']; request_start=http.requests; stats_before=dict(http.stats); source_started=time.monotonic()
             old_ir=deepcopy(store.state('ir:'+s['companyId'],{}))
+            known=was_known_failing(s,old)
             try: pipeline.ingest_source({**s,'intervalHours':hours})
             except BudgetExhausted: deferred+=1; break
             current_source=next(x for x in store.sources() if x['sourceId']==s['sourceId'])
@@ -233,6 +259,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
             unchanged=http.unchanged_body or (http.last_body_sha is not None and http.last_body_sha==old.get('bodySha256'))
             outcome=source_result(current_source,now,unchanged=unchanged)
             checked+=1; outcomes[outcome]+=1
+            if known and outcome not in SUCCESS_OUTCOMES: known_failing.append(s['sourceId'])
+            elif not known: fresh_outcomes[outcome]+=1
             if outcome in ('SUCCESS','NO_CHANGE'):
                 lane_success[s['type']]+=1
                 unchanged_count=old.get('unchangedChecks',0)+1 if unchanged else 0
@@ -270,7 +298,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         # even during a regulator outage. No history fetch or universe stream.
         sec_http=PublicHTTP(state/'http',budget=1,max_seconds=config['secMaxSeconds'])
         sec=Pipeline(ROOT,companies,store,sec_http,now); sec_checked=0; sec_success=0; consecutive=0; financial_updates=0; fact_outcomes=Counter();fact_attempts=0
-        sec_exhausted=False
+        sec_exhausted=False; sec_aborted=False
         ordered=sorted(selected.items(),key=lambda pair:store.state('financialRefresh:'+pair[0],{}).get('lastAttempt') or '')
         sec_schedule={};sec_feed={}
         if universe:
@@ -293,7 +321,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                         store.set_state('universeSecCheck:'+cid,{'lastAttempt':now,'lastSuccess':now if not failed else store.state('universeSecCheck:'+cid,{}).get('lastSuccess')})
                         if not failed:
                             pending=store.state('universeSecPending',{});pending.pop(cid,None);store.set_state('universeSecPending',pending)
-                    consecutive=consecutive+1 if failed else 0; sec_success+=not failed
+                    consecutive=consecutive+1 if failed else 0; sec_success+=not failed; sec_aborted=sec_aborted or consecutive>=4
             # Local SEC consumer financial projection remains independent of a
             # submission outage/cooldown; it never downloads companyfacts here.
             if financial: sec.project_company(c)
@@ -311,8 +339,8 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 if outcome=='SUCCESS':financial_updates+=1;updated.add(cid)
                 if outcome=='BUDGET_DEFERRED':sec_exhausted=True
         successes=outcomes['SUCCESS']+outcomes['NO_CHANGE']+sec_success
-        complete,incomplete_reasons=refresh_completeness(network=network,outcomes=outcomes,successes=successes,deferred=deferred,
-            sec_exhausted=sec_exhausted,sec_failures=sec.run['secFailures'],fact_outcomes=fact_outcomes)
+        complete,incomplete_reasons=refresh_completeness(network=network,fresh_outcomes=fresh_outcomes,known_failing=known_failing,successes=successes,
+            deferred=deferred,sec_exhausted=sec_exhausted,sec_checked=sec_checked,sec_success=sec_success,sec_aborted=sec_aborted,fact_outcomes=fact_outcomes)
         health=progress_health(prior,now,lane_success,sec_success,financial,complete,incomplete_reasons)
         # Fortschritt/Cooldowns sofort sichern; der globale Stempel folgt erst am Ende.
         store.set_state('continuousRefresh',health)
@@ -346,7 +374,7 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
         report={'schema':1,'scope':'PER_ISSUER_ELIGIBILITY' if universe else 'CONTROLLED_COHORT','status':'SUCCESS' if successes or not network else 'PIPELINE_FAILURE','asOf':now,'sourceGeneration':exported['generation'],
                 'consumerGeneration':prepared['generation'],'privateCompanies':exported['exportedCompanies'],'sourcesEligible':len(eligible),'sourcesChecked':checked,
-                'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
+                'scheduler':scheduler,'secScheduler':sec_schedule,'secSharedFeed':sec_feed,'sourceOutcomes':dict(outcomes),'freshSourceOutcomes':dict(fresh_outcomes),'knownFailingSources':len(known_failing),'sourceLaneSuccess':dict(lane_success),'sourcesDeferredByBudget':max(0,len(eligible)-checked) if universe else deferred,'unsupportedInactiveSources':sum(not s.get('active') and first_party(s,s['companyId']) for s in sources),
                 'secIssuersChecked':sec_checked,'secSuccess':sec_success,'secFailures':sec.run['secFailures'],'newsAdded':store.db.execute("SELECT count(*) FROM items WHERE json_extract(payload,'$.eventType')='NEWS'").fetchone()[0]-prior_news,
                 'eventsAdded':store.db.execute('SELECT count(*) FROM events').fetchone()[0]-prior_events,'financialUpdates':financial_updates,'updatedIssuers':len(updated),
                 'financialFactOutcomes':dict(fact_outcomes),'financialFactAttempts':fact_attempts,'profileImport':profile_import,'sourceUrlReview':source_url_review,
