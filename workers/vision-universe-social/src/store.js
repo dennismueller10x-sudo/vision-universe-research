@@ -290,6 +290,48 @@ export async function settleClaim(env, contentId, patch) {
 export { CLAIM_PREFIX, CLAIM_STATES, claimKey };
 
 /* =========================================================================
+   WARTENDE REELS
+
+   Eine kleine Liste in EINEM Schluessel: der Hintergrundlauf (Cron) liest im Leerlauf genau
+   diese eine Stelle. Ein KV-`list` waere teurer (Free: 1.000 pro Tag) als dieses `get`
+   (Free: 100.000 pro Tag). Die Liste ist ein Hinweis, keine Wahrheit: die Wahrheit steht im
+   Anspruch (claim:...). Fehlt ein Eintrag, bleibt das Reel ueber "Verarbeitung pruefen"
+   fortsetzbar; ein ueberfluessiger Eintrag wird beim naechsten Lauf entfernt.
+   ========================================================================= */
+
+const REEL_PENDING_KEY = "reel:pending:v1";
+const REEL_PENDING_MAX = 20;
+
+export async function readPendingReels(env) {
+  if (!env.VU_SOCIAL_KV) return [];
+  const raw = await env.VU_SOCIAL_KV.get(REEL_PENDING_KEY);
+  if (!raw) return [];
+  try {
+    const liste = JSON.parse(raw);
+    return Array.isArray(liste) ? liste.filter((e) => e && typeof e.contentId === "string") : [];
+  } catch (err) { return []; }
+}
+
+export async function addPendingReel(env, contentId, sinceIso) {
+  if (!env.VU_SOCIAL_KV) return;
+  const liste = await readPendingReels(env);
+  if (liste.some((e) => e.contentId === String(contentId))) return;
+  liste.push({ contentId: String(contentId), since: sinceIso || new Date().toISOString() });
+  await env.VU_SOCIAL_KV.put(REEL_PENDING_KEY, JSON.stringify(liste.slice(-REEL_PENDING_MAX)),
+    { expirationTtl: 3 * 24 * 3600 });
+}
+
+export async function removePendingReel(env, contentId) {
+  if (!env.VU_SOCIAL_KV) return;
+  const liste = await readPendingReels(env);
+  const rest = liste.filter((e) => e.contentId !== String(contentId));
+  if (rest.length === liste.length) return;
+  if (rest.length === 0) { await env.VU_SOCIAL_KV.delete(REEL_PENDING_KEY); return; }
+  await env.VU_SOCIAL_KV.put(REEL_PENDING_KEY, JSON.stringify(rest), { expirationTtl: 3 * 24 * 3600 });
+}
+
+
+/* =========================================================================
    DIE PROJIZIERTE WARTESCHLANGE
 
    -------------------------------------------------------------------------
