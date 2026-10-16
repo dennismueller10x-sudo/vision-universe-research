@@ -75,10 +75,39 @@ export async function commitGood(driver,{namespace,payloadNamespace,manifest,hea
  }
  return next;
 }
-export async function rollbackGood(driver,namespace=refreshConfig.consumerNamespace){
- const good=await goodState(driver,namespace);if(!good)return {status:'LEGACY_FALLBACK'};
- const next=good.previous?{schema:1,state:'GOOD',...good.previous,previous:null}:{schema:1,state:'LEGACY_FALLBACK'};
- const bytes=Buffer.from(JSON.stringify(next));await driver.put(goodKey(namespace),bytes);
- if(!Buffer.from(await driver.get(goodKey(namespace))).equals(bytes))throw Error('ROLLBACK_READBACK_FAILED');
- return {status:'ROLLED_BACK',generation:next.generation||refreshConfig.baselineGeneration};
+/* Rollback mit Erwartungsgeneration (CAS-aehnlich) und Idempotenz.
+   Statuswerte (kein Schreiben ausser bei ROLLED_BACK):
+   - ROLLED_BACK          Zeiger stand auf der erwarteten Generation und zeigt jetzt auf den Vorgaenger.
+   - ALREADY_ROLLED_BACK  Zeiger wurde bereits von genau dieser Generation zurueckgerollt (Retry, zweiter Fehlerpfad).
+   - GENERATION_MISMATCH  Zeiger steht auf einer fremden Generation oder aenderte sich waehrend des Laufs: KEIN Schreiben.
+   - LEGACY_FALLBACK      Es gibt keinen GOOD-Zeiger (mehr): nichts zu tun.
+   Ohne expectGeneration gilt die aktuelle Generation als Erwartung; ein bereits zurueckgerollter Zeiger
+   (Marker rolledBackFrom, kein Vorgaenger) wird nicht weiter zurueckgeschoben.
+   Grenze: Der S3-Treiber kennt keine bedingten Writes (If-Match/ETag). Atomaritaet entsteht ausschliesslich durch die
+   Concurrency-Gruppe company-intelligence-continuous-production; hier gilt Lesen-Vergleichen-Schreiben mit erneutem
+   Lesen direkt vor dem Write und Nachlesen danach. Ein Restfenster zwischen letztem Lesen und Put bleibt. */
+export async function rollbackGood(driver,namespace=refreshConfig.consumerNamespace,{expectGeneration}={}){
+ const key=goodKey(namespace),raw=await driver.get(key),good=await goodState(driver,namespace);
+ if(!good)return {status:'LEGACY_FALLBACK'};
+ const expected=expectGeneration??good.generation;
+ if(good.generation!==expected){
+  if(good.rolledBackFrom?.generation===expected)return {status:'ALREADY_ROLLED_BACK',generation:good.generation,rolledBackFrom:expected};
+  return {status:'GENERATION_MISMATCH',expectedGeneration:expected,actualGeneration:good.generation};
+ }
+ if(expectGeneration===undefined&&good.rolledBackFrom&&!good.previous)return {status:'ALREADY_ROLLED_BACK',generation:good.generation,rolledBackFrom:good.rolledBackFrom.generation};
+ const next=good.previous?{schema:1,state:'GOOD',...good.previous,previous:null,rolledBackFrom:{generation:good.generation}}:{schema:1,state:'LEGACY_FALLBACK'};
+ const bytes=Buffer.from(JSON.stringify(next)),prior=Buffer.from(raw);
+ // Direkt vor dem Write erneut lesen: hat ein anderer Lauf den Zeiger bewegt, wird nichts geschrieben.
+ const again=await driver.get(key);
+ if(!again||!Buffer.from(again).equals(prior))return {status:'GENERATION_MISMATCH',expectedGeneration:expected,actualGeneration:'CHANGED_DURING_ROLLBACK'};
+ try{
+  await driver.put(key,bytes);
+  const back=await driver.get(key);if(!back||!Buffer.from(back).equals(bytes))throw Error('ROLLBACK_READBACK_FAILED');
+ }catch(error){
+  // Unbekannter Schreibstatus: den vorherigen Zeiger byte-genau wiederherstellen und pruefen.
+  await driver.put(key,prior);const back=await driver.get(key);
+  if(!back||!Buffer.from(back).equals(prior))throw Error('ROLLBACK_RECOVERY_FAILED');
+  throw error;
+ }
+ return {status:'ROLLED_BACK',generation:next.generation||refreshConfig.baselineGeneration,rolledBackFrom:good.generation};
 }
