@@ -23,18 +23,27 @@
  *                                                                         CLOSE_GATE PROBE_UNAVAILABLE_AFTER_OWN_MUTATION
  *  6 Gate seit Lauf-Beginn ohne legitime Oeffnung auf AVAILABLE           CLOSE_GATE GATE_OPENED_WITHOUT_LEGITIMACY
  *  7 Gate geschlossen (DISABLED/STAGED): nichts ausgeliefert              NO_ACTION  GATE_ALREADY_CLOSED_NOTHING_EXPOSED
- *  8 Gate offen, ausgelieferte Generation == eigene                       NO_ACTION  OWN_GENERATION_SERVED_HEALTHY
- *  9 Gate offen, Generation == Stand vor dem Lauf, GOOD plausibel         NO_ACTION  DELIVERY_NOT_YET_UPDATED
+ *  8 Gate offen, eigene Generation ausgeliefert, Live-QA success         NO_ACTION  OWN_GENERATION_SERVED_HEALTHY (z. B. nur observe rot)
+ *    Live-QA nicht success (failure ist Zeile 4; cancelled/skipped), Zeiger traegt noch unsere Generation
+ *                                                                         ROLLBACK_ONLY ... (Gate bleibt offen, kein Doppelschlag)
+ *  9 Gate offen, Generation == Stand vor dem Lauf, GOOD plausibel         NO_ACTION  DELIVERY_NOT_YET_UPDATED, ausser Zeiger ist unser und
+ *                                                                         Live-QA nicht success: ROLLBACK_ONLY DELIVERY_NOT_UPDATED_POINTER_ROLLED_BACK
+ *  7b Gate geschlossen, Zeiger unser, Live-QA nicht success               ROLLBACK_ONLY (Gate bleibt zu)
+ *  6b recover_full_scope (run success), Gate offen und vorher nicht offen, Live-QA nicht success
+ *                                                                         CLOSE_GATE RECOVERY_OPENED_GATE_WITHOUT_LIVE_QA
  * 10 Gate offen, alles andere (fremde/fehlende Generation)                CLOSE_GATE WRONG_GENERATION_SERVED
+ * ROLLBACK_ONLY haelt GOOD == Produktion. Im Universe-Namespace schreibt `refresh-run.mjs rollback` zusaetzlich die Aktivierung
+ * ROLLBACK_46 (Legacy-46 wird ausgeliefert, Gate bleibt offen); das ist der gewollte, verifizierte Rueckfall.
  * Zeile 5 begruendet: Nach einer eigenen Mutation kann ohne Probe weder "gesund" noch "falsch" belegt werden; ein Schliessen
  * ist umkehrbar (Gate AVAILABLE ist ein bewusster Schritt), ein ungeprueft ausgelieferter GOOD nicht. Ohne eigene Mutation
  * gibt es nichts zurueckzunehmen: dort nur Warnung. Ein Rollback des GOOD-Zeigers erfolgt nur, wenn er noch unsere Generation
- * traegt (nie ein fremdes GOOD zuruecknehmen). */
+ * traegt (nie ein fremdes GOOD zuruecknehmen); nur bei LESBARER Probe wird die Eigen-Generation geprueft, bei nicht lesbarer Probe
+ * und eigener Mutation bleibt es fail-closed (CLOSE_GATE, Rollback wie bisher versucht; `--expect-generation` schuetzt dann in refresh-run). */
 import {readFileSync,writeFileSync,appendFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
-export const DECISION=Object.freeze({NONE:'NO_ACTION',CLOSE:'CLOSE_GATE'});
+export const DECISION=Object.freeze({NONE:'NO_ACTION',ROLLBACK:'ROLLBACK_ONLY',CLOSE:'CLOSE_GATE'});
 export const MUTATION=Object.freeze({YES:'YES',NO:'NO',UNKNOWN:'UNKNOWN'});
 const CLOSED_GATES=['DISABLED','STAGED'];
 const FAILED=['failure','cancelled'];
@@ -69,13 +78,19 @@ export function decide({publish=false,recover=false,outcomes={},health=null,base
  const baseGate=baseline?.available===true?baseline.gateState:null;
  const legitimateOpening=recover&&outcomes.run==='success';
  if(probe.gateState==='AVAILABLE'&&baseGate&&CLOSED_GATES.includes(baseGate)&&!legitimateOpening)return out(DECISION.CLOSE,'GATE_OPENED_WITHOUT_LEGITIMACY',rollbackOk);
- if(CLOSED_GATES.includes(probe.gateState))return out(DECISION.NONE,'GATE_ALREADY_CLOSED_NOTHING_EXPOSED');
+ const liveOk=outcomes.liveqa==='success'; // Live-QA der eigenen Veroeffentlichung bestanden
+ const ours=!!expected&&probe.goodGeneration===expected; // Zeiger traegt noch die eigene, ungeprueft gebliebene Generation
+ // Das Gate wurde (moeglicherweise) von recover_full_scope selbst geoeffnet und die Live-QA fehlt: wie der alte Code schliessen.
+ if(probe.gateState==='AVAILABLE'&&recover&&outcomes.run==='success'&&baseGate!=='AVAILABLE'&&!liveOk)return out(DECISION.CLOSE,'RECOVERY_OPENED_GATE_WITHOUT_LIVE_QA',rollbackOk);
+ // Eigene Mutation ohne bestandene Live-QA: der GOOD-Zeiger darf nicht vor der Produktion herlaufen. Gate bleibt (kein Doppelschlag).
+ const unverified=(reason)=>ours?out(DECISION.ROLLBACK,reason,true):null;
+ if(CLOSED_GATES.includes(probe.gateState))return (!liveOk&&unverified('UNVERIFIED_OWN_POINTER_ROLLED_BACK_GATE_CLOSED'))||out(DECISION.NONE,'GATE_ALREADY_CLOSED_NOTHING_EXPOSED');
  // Ab hier: Gate AVAILABLE und die ausgelieferte Generation ist lesbar (FOUND) oder fehlt (ABSENT).
  const served=probe.served.status==='FOUND'?probe.served.generation:null;
- if(served&&expected&&served===expected)return out(DECISION.NONE,'OWN_GENERATION_SERVED_HEALTHY');
+ if(served&&expected&&served===expected)return (!liveOk&&unverified('OWN_GENERATION_SERVED_WITHOUT_LIVE_QA_POINTER_ROLLED_BACK'))||out(DECISION.NONE,'OWN_GENERATION_SERVED_HEALTHY');
  const before=baseline?.available===true&&baseline.served?.status==='FOUND'?baseline.served.generation:null;
  const goodPlausible=probe.goodGeneration===expected||(!!baseline?.goodGeneration&&probe.goodGeneration===baseline.goodGeneration);
- if(served&&before&&served===before&&goodPlausible)return out(DECISION.NONE,'DELIVERY_NOT_YET_UPDATED');
+ if(served&&before&&served===before&&goodPlausible)return (!liveOk&&unverified('DELIVERY_NOT_UPDATED_POINTER_ROLLED_BACK'))||out(DECISION.NONE,'DELIVERY_NOT_YET_UPDATED');
  return out(DECISION.CLOSE,'WRONG_GENERATION_SERVED',rollbackOk);
 }
 
@@ -135,9 +150,10 @@ export async function main(argv=process.argv.slice(2),env=process.env,{driverFac
  const line=`Fehlerpfad-Entscheidung: ${result.decision} (${safe(result.reason)}), eigene Mutation=${result.mutation}, run=${stage(outcomes.run)} dispatch=${stage(outcomes.dispatch)} served=${stage(outcomes.served)} liveqa=${stage(outcomes.liveqa)} observe=${stage(outcomes.observe)}`;
  console.log(line);
  if(result.decision===DECISION.NONE&&result.reason!=='NO_PRODUCTION_PUBLICATION'&&result.reason!=='NO_RELEVANT_STEP_FAILURE')console.log(`::warning::Company Intelligence Profil-/Quellen-Lauf fehlgeschlagen, Gate und GOOD bleiben unveraendert (${safe(result.reason)}); Produktionszustand pruefen.`);
+ if(result.decision===DECISION.ROLLBACK)console.log(`::warning::Company Intelligence: ungeprueften eigenen GOOD-Zeiger zurueckgerollt, Gate bleibt unveraendert (${safe(result.reason)}).`);
  if(result.decision===DECISION.CLOSE)console.log(`::error::Company Intelligence Gate wird geschlossen (${safe(result.reason)}).`);
  try{mkdirSync(root,{recursive:true});writeFileSync(join(root,'failure-gate-decision.json'),JSON.stringify({...result,outcomes})+'\n');}catch{/* optional */}
- if(env.GITHUB_OUTPUT)appendFileSync(env.GITHUB_OUTPUT,`decision=${result.decision}\nreason=${safe(result.reason)}\nrollback=${result.rollback===true}\n`);
+ if(env.GITHUB_OUTPUT)appendFileSync(env.GITHUB_OUTPUT,`decision=${result.decision}\nreason=${safe(result.reason)}\nrollback=${result.rollback===true}\ngeneration=${safe(health?.consumerGeneration)}\n`);
  if(env.GITHUB_STEP_SUMMARY){try{appendFileSync(env.GITHUB_STEP_SUMMARY,line+'\n');}catch{/* optional */}}
  return result;
 }

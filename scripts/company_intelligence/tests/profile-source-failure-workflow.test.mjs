@@ -39,6 +39,16 @@ function problems(workflow){
  if(!(i1>=0&&i2>i1&&i3>i2))add('Befehle rollback, disable, OFF-Dispatch fehlen oder Reihenfolge');
  if(!/if \[ "\$ROLLBACK" != false \]; then node scripts\/company_intelligence\/refresh-run\.mjs rollback/.test(r))add('Rollback nicht an die Entscheidung gebunden');
  if(close.env?.ROLLBACK!=='${{ steps.decide.outputs.rollback }}')add('ROLLBACK-Eingabe fehlt');
+ // Nur-Rollback-Schritt: kein disable/OFF-Dispatch, nur nach ROLLBACK_ONLY, mit Erwartungs-Generation
+ const rb=find(steps,'rollback');
+ if(!rb)add('Rollback-Schritt fehlt');
+ else{
+  if(!/steps\.decide\.outputs\.decision == 'ROLLBACK_ONLY'/.test(String(rb.if)))add('Rollback-Schritt haengt nicht an ROLLBACK_ONLY');
+  if(/disable|workflow run|GH_TOKEN/.test(rb.run+JSON.stringify(rb.env||{})))add('Rollback-Schritt darf Gate/Pages nicht anfassen');
+  if(!/rollback --expect-generation "\$EXPECT_GENERATION"/.test(rb.run)||rb.env?.EXPECT_GENERATION!=='${{ steps.decide.outputs.generation }}')add('Rollback ohne Erwartungs-Generation');
+  if(idx(steps,'decide')>steps.indexOf(rb)||steps.indexOf(rb)>steps.indexOf(close))add('Rollback-Schritt Reihenfolge');
+ }
+ if(!/--expect-generation "\$EXPECT_GENERATION"/.test(close.run))add('Schliess-Schritt: Rollback ohne Erwartungs-Generation');
  // Entscheidungsschritt: laeuft nur im Produktionsmodus nach Fehlern, nur Lesezugriff, alle Ergebnisse ueber env
  if(!/inputs\.publish/.test(String(decide.if))||!/always\(\)/.test(String(decide.if))||!/failure\(\)/.test(String(decide.if)))add('decide: Bedingung');
  for(const k of ['run','dispatch','served','liveqa','observe'])if(decide.env?.['OUTCOME_'+k.toUpperCase()]!==`\${{ steps.${k}.outcome }}`)add('decide: OUTCOME_'+k.toUpperCase());
@@ -85,6 +95,12 @@ test('Mutation: Entscheidungsschritt mit Schreibtoken oder ohne Ergebnis-env wir
 test('Mutation: ${{ inputs.* }} im run-Text oder always() an einem Live-Schritt wird erkannt',()=>{
  assert(mutate(s=>{find(s,'served').run+='\necho ${{ inputs.publish }}';}).length);
  assert(mutate(s=>{find(s,'liveqa').if='always() && inputs.publish';}).length);
+});
+test('Mutation: Nur-Rollback-Schritt schliesst das Gate / ohne Erwartungs-Generation / entfernt wird erkannt',()=>{
+ assert(mutate(s=>{find(s,'rollback').run+='\nnode scripts/company_intelligence/production-release.mjs disable';}).length);
+ assert(mutate(s=>{find(s,'rollback').run='node scripts/company_intelligence/refresh-run.mjs rollback';}).length);
+ assert(mutate(s=>{s.splice(idx(s,'rollback'),1);}).length);
+ assert(mutate(s=>{find(s,'rollback').if="always() && steps.decide.outputs.decision != 'NO_ACTION'";}).length);
 });
 test('Mutation: alter Sammelschritt live / falsche Reihenfolge wird erkannt',()=>{
  assert(mutate(s=>{s.splice(idx(s,'liveqa'),0,{id:'live',run:'true'});}).length);
@@ -164,11 +180,23 @@ test('Simulation: Fehler in frueheren Setup-Schritten (Tests, Browser-Runtime, P
   assert(!r.ran.has('run')&&!r.ran.has('baseline'));
  }
 });
-test('Simulation: Dispatch- bzw. Wartefehler bei gesunder, unveraendert ausgelieferter Produktion => kein disable',async()=>{
+test('Simulation: Szenario A/B (Dispatch-/Wartefehler, Gate offen, Vorgaenger ausgeliefert) => nur Rollback, Gate bleibt offen',async()=>{
  for(const failing of ['dispatch','served']){
   const r=await simulate({fail:{[failing]:'failure'},health:H(),baseline:B,probe:P()});
-  assert.equal(r.decision.decision,'NO_ACTION',failing);assert.equal(r.closeRan,false,failing);
+  assert.equal(r.decision.decision,'ROLLBACK_ONLY',failing);assert.equal(r.closeRan,false,failing);assert(r.ran.has('rollback'),failing);
+  assert.equal(r.decision.generation,'gen-new');
  }
+ // Szenario B: spaeter doch ausgeliefert, Live-QA abgebrochen
+ const b=await simulate({fail:{liveqa:'cancelled'},health:H(),baseline:B,probe:P({served:{status:'FOUND',generation:'gen-new'}})});
+ assert.equal(b.decision.decision,'ROLLBACK_ONLY');assert(b.ran.has('rollback'));assert.equal(b.closeRan,false);
+});
+test('Simulation: Szenario C (recover_full_scope oeffnet Gate, Dispatch-Fehler) => Gate schliessen, kein separater Rollback-Schritt',async()=>{
+ const r=await simulate({inputs:{recover_full_scope:true},fail:{dispatch:'failure'},health:H(),baseline:{...B,gateState:'DISABLED'},probe:P({served:{status:'FOUND',generation:'gen-new'}})});
+ assert.equal(r.decision.decision,'CLOSE_GATE');assert(r.closeRan);assert(!r.ran.has('rollback'));
+});
+test('Simulation: observe rot bei Live-QA success und eigener Generation => weder Rollback noch Schliessen',async()=>{
+ const r=await simulate({fail:{observe:'failure'},health:H(),baseline:B,probe:P({served:{status:'FOUND',generation:'gen-new'}})});
+ assert.equal(r.decision.decision,'NO_ACTION');assert(!r.ran.has('rollback'));assert.equal(r.closeRan,false);
 });
 test('Simulation: falsche Generation ausgeliefert => disable, Rollback, OFF-Dispatch',async()=>{
  const r=await simulate({fail:{served:'failure'},health:H(),baseline:B,probe:P({served:{status:'FOUND',generation:'gen-fremd'}})});
@@ -188,7 +216,7 @@ test('Simulation: Abbruch (cancelled) nach Veroeffentlichung wird ausgewertet, A
  const post=await simulate({fail:{served:'cancelled'},health:H(),baseline:B,probe:P({served:{status:'FOUND',generation:'gen-fremd'}})});
  assert(post.ran.has('decide'));assert(post.closeRan);
  const preOk=await simulate({fail:{run:'cancelled'},health:H({published:false}),baseline:B,probe:P()});
- assert.equal(preOk.decision.decision,'NO_ACTION','Abbruch im Lauf ohne Beleg: moegliche Mutation, Produktion aber nachweislich unveraendert');
+ assert.equal(preOk.decision.decision,'ROLLBACK_ONLY','Abbruch im Lauf ohne Beleg: moegliche Mutation, Zeiger traegt die Generation, Produktion unveraendert');
  assert.equal(preOk.closeRan,false);
  const preBad=await simulate({fail:{run:'cancelled'},health:H({published:false}),baseline:B,probe:P({served:{status:'FOUND',generation:'gen-fremd'}})});
  assert.equal(preBad.decision.decision,'CLOSE_GATE');

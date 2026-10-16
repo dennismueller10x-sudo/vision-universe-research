@@ -36,18 +36,39 @@ test('Live-QA-Fehler der eigenen Veroeffentlichung => CLOSE_GATE ohne Probe-Beda
  assert.deepEqual([r.decision,r.reason,r.rollback],[DECISION.CLOSE,'OWN_PUBLICATION_LIVE_QA_FAILED',true]);
  assert.equal(run({outcomes:{liveqa:'failure'},probe:probe({served:{status:'FOUND',generation:G}})}).decision,DECISION.CLOSE,'auch wenn die Generation stimmt');
 });
-test('Dispatch-/Wartefehler bei unveraendert ausgelieferter Vorgaenger-Generation => NO_ACTION, Gate bleibt offen',()=>{
+test('Szenario A/B: Dispatch-/Wartefehler nach eigener Mutation, Gate offen => ROLLBACK_ONLY, Gate bleibt offen',()=>{
  for(const failing of ['dispatch','served']){
   const r=run({outcomes:{[failing]:'failure',liveqa:'skipped',observe:'skipped'}});
-  assert.deepEqual([r.decision,r.reason],[DECISION.NONE,'DELIVERY_NOT_YET_UPDATED']);
+  assert.deepEqual([r.decision,r.reason,r.rollback],[DECISION.ROLLBACK,'DELIVERY_NOT_UPDATED_POINTER_ROLLED_BACK',true],failing);
  }
+ // Szenario B: Wartezeit abgelaufen, Deployment kam spaeter doch (eigene Generation ausgeliefert), Live-QA skipped bzw. cancelled
+ for(const liveqa of ['skipped','cancelled']){
+  const r=run({outcomes:{served:'failure',liveqa,observe:'skipped'},probe:probe({served:{status:'FOUND',generation:G}})});
+  assert.deepEqual([r.decision,r.reason],[DECISION.ROLLBACK,'OWN_GENERATION_SERVED_WITHOUT_LIVE_QA_POINTER_ROLLED_BACK'],liveqa);
+ }
+ // Zeiger traegt nicht (mehr) unsere Generation: nie ein fremdes GOOD zurueckrollen
+ const fremd=run({outcomes:{dispatch:'failure',liveqa:'skipped'},probe:probe({goodGeneration:OLD})});
+ assert.deepEqual([fremd.decision,fremd.reason,fremd.rollback],[DECISION.NONE,'DELIVERY_NOT_YET_UPDATED',false]);
 });
-test('Observe-Fehler bei ausgelieferter eigener Generation => NO_ACTION (Warnung)',()=>{
+test('Szenario C: recover_full_scope oeffnet das Gate selbst, Dispatch-/Wartefehler => CLOSE_GATE',()=>{
+ for(const failing of ['dispatch','served']){
+  const r=run({recover:true,outcomes:{[failing]:'failure',liveqa:'skipped',observe:'skipped'},baseline:baseline({gateState:'DISABLED'}),probe:probe({served:{status:'FOUND',generation:G}})});
+  assert.deepEqual([r.decision,r.reason],[DECISION.CLOSE,'RECOVERY_OPENED_GATE_WITHOUT_LIVE_QA'],failing);
+ }
+ // Gate war schon offen (Wiederherstellung hat es nicht geoeffnet): nur Zeiger zurueck
+ const offen=run({recover:true,outcomes:{dispatch:'failure',liveqa:'skipped'},baseline:baseline()});
+ assert.equal(offen.decision,DECISION.ROLLBACK);
+});
+test('Geschlossenes Gate, eigener ungeprueft gebliebener Zeiger => ROLLBACK_ONLY, Gate bleibt zu',()=>{
+ const r=run({outcomes:{served:'failure',liveqa:'skipped'},baseline:baseline({gateState:'DISABLED'}),probe:probe({gateState:'DISABLED',served:{status:'ABSENT',generation:null}})});
+ assert.deepEqual([r.decision,r.reason],[DECISION.ROLLBACK,'UNVERIFIED_OWN_POINTER_ROLLED_BACK_GATE_CLOSED']);
+});
+test('Observe-Fehler bei Live-QA success und ausgelieferter eigener Generation => NO_ACTION (Warnung), kein Rollback',()=>{
  const r=run({outcomes:{observe:'failure'},probe:probe({served:{status:'FOUND',generation:G}})});
  assert.deepEqual([r.decision,r.reason],[DECISION.NONE,'OWN_GENERATION_SERVED_HEALTHY']);
 });
-test('Geschlossenes Gate: nichts ausgeliefert => NO_ACTION; Vorgaenger ohne Beleg => fail-closed',()=>{
- for(const gateState of ['DISABLED','STAGED'])assert.equal(run({outcomes:{served:'failure'},probe:probe({gateState,served:{status:'ABSENT',generation:null}}),baseline:baseline({gateState})}).reason,'GATE_ALREADY_CLOSED_NOTHING_EXPOSED');
+test('Geschlossenes Gate: nichts ausgeliefert => NO_ACTION (Live-QA success); Vorgaenger ohne Beleg => fail-closed',()=>{
+ for(const gateState of ['DISABLED','STAGED'])assert.equal(run({outcomes:{served:'failure',liveqa:'success'},probe:probe({gateState,served:{status:'ABSENT',generation:null}}),baseline:baseline({gateState})}).reason,'GATE_ALREADY_CLOSED_NOTHING_EXPOSED');
  const noBaseline=run({outcomes:{served:'failure'},baseline:null});
  assert.equal(noBaseline.decision,DECISION.CLOSE,'ohne Basis laesst sich "unveraendert" nicht beweisen');
 });
@@ -110,9 +131,9 @@ test('main: Probe wirft nach eigener Mutation => fail-closed; Probe wirft ohne M
  const pre=await runMain({vars:{OUTCOME_RUN:'failure'}},{probe:async()=>{throw Error('R2 down');}});
  assert.match(pre.output,/decision=NO_ACTION/);rmSync(pre.dir,{recursive:true});
 });
-test('main: Dispatch-Fehler bei unveraenderter Auslieferung => NO_ACTION, Gate bleibt offen',async()=>{
+test('main: Dispatch-Fehler bei unveraenderter Auslieferung => ROLLBACK_ONLY, Gate bleibt offen',async()=>{
  const r=await runMain({health:health(),baseline:baseline(),vars:{OUTCOME_RUN:'success',OUTCOME_DISPATCH:'failure'}},{probe:async()=>probe()});
- assert.match(r.output,/decision=NO_ACTION\nreason=DELIVERY_NOT_YET_UPDATED/);rmSync(r.dir,{recursive:true});
+ assert.match(r.output,/decision=ROLLBACK_ONLY\nreason=DELIVERY_NOT_UPDATED_POINTER_ROLLED_BACK\nrollback=true\ngeneration=gen-new/);rmSync(r.dir,{recursive:true});
 });
 test('main baseline: schreibt baseline.json, auch wenn die Probe nicht verfuegbar ist',async()=>{
  const r=await runMain({mode:'baseline'},{probe:async()=>({available:false,reason:'GATE_MISSING'})});

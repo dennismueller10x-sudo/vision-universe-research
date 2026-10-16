@@ -180,18 +180,31 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/company_intelligence/failure-gate-decision.mjs decide
+      - name: Roll back the own unverified GOOD pointer; gate stays untouched
+        id: rollback
+        if: always() && steps.decide.outputs.decision == 'ROLLBACK_ONLY'
+        env:
+          EXPECT_GENERATION: ${{ steps.decide.outputs.generation }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          # Gate und Pages bleiben unberuehrt: Das Gate war legitim offen. Im Universe-Namespace setzt der Rollback zusaetzlich ROLLBACK_46.
+          node scripts/company_intelligence/refresh-run.mjs rollback --expect-generation "$EXPECT_GENERATION"
       - name: Fail closed on a material production regression
         if: always() && (steps.decide.outputs.decision == 'CLOSE_GATE' || (steps.decide.outcome == 'failure' && steps.run.outcome == 'success'))
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ROLLBACK: ${{ steps.decide.outputs.rollback }}
+          EXPECT_GENERATION: ${{ steps.decide.outputs.generation }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           # Rollback nur, wenn der GOOD-Zeiger noch die Generation dieses Laufs traegt (Entscheidung); sonst nur Gate zu und OFF-Pages.
-          if [ "$ROLLBACK" != false ]; then node scripts/company_intelligence/refresh-run.mjs rollback || true; fi
+          if [ "$ROLLBACK" != false ]; then node scripts/company_intelligence/refresh-run.mjs rollback --expect-generation "$EXPECT_GENERATION" || true; fi
           node scripts/company_intelligence/production-release.mjs disable || true
           gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
       - name: Public-safe aggregate acceptance only
