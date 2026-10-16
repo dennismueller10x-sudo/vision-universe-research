@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-15T11:34:33.131Z",
+ "generatedAt": "2026-10-16T11:22:13.774Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,14 +43,14 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4679,
+ "runtimeSec": 4627,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4379,
+   "ABSTAIN": 4378,
    "DATA_INVALID": 443,
-   "WITHHELD": 72,
+   "WITHHELD": 73,
    "NO_PROJECTION": 106,
    "AVAILABLE": 40
   },
@@ -124,30 +124,30 @@
     }
    },
    "candidates": {
-    "securities": 3744,
-    "entries": 13283,
+    "securities": 3743,
+    "entries": 13280,
     "perSecurity": {
      "1": 476,
      "2": 710,
-     "3": 685,
+     "3": 684,
      "4": 688,
      "5": 530,
      "6": 655
     },
     "direction": {
      "DOWN": 6824,
-     "UP": 6459
+     "UP": 6456
     },
     "type": {
-     "WAVE_C": 9895,
-     "WAVE_3": 2978,
+     "WAVE_C": 9893,
+     "WAVE_3": 2977,
      "WAVE_5": 410
     },
     "failedSet": {
      "G3+G4": 1929,
      "G3+G4+G5": 581,
-     "G2+G3+G4": 3092,
-     "G2+G3+G4+G5": 1455,
+     "G2+G3+G4": 3091,
+     "G2+G3+G4+G5": 1454,
      "G2+G3": 1510,
      "G3": 777,
      "G3+G5": 480,
@@ -158,7 +158,7 @@
      "G2+G4+G5": 511,
      "G4": 514,
      "G2": 197,
-     "G5": 113
+     "G5": 112
     }
    }
   },
@@ -177,37 +177,37 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-14",
+   "reference": "2026-10-15",
    "titles": 5035,
    "states": {
-    "FRESH": 7,
-    "DELAYED": 4956,
+    "FRESH": 5,
+    "DELAYED": 4957,
     "NON_TRADING": 20,
-    "STALE": 52
+    "STALE": 53
    },
    "reasons": {
-    "REFRESH_STOPPED": 4981,
+    "NO_NEWER_BARS": 4973,
     "SECURITY_INACTIVE": 20,
-    "NO_NEWER_BARS": 27
+    "REFRESH_STOPPED": 37
    },
    "reasonsKnown": 20,
-   "delayedWithNotice": 4956,
+   "delayedWithNotice": 4957,
    "affected": {
-    "titles": 72,
-    "primary": 63,
-    "alternative": 61,
+    "titles": 73,
+    "primary": 64,
+    "alternative": 62,
     "motiveAlternative": 0,
     "exploreHighlights": 6,
-    "exploreCandidates": 112,
+    "exploreCandidates": 115,
     "consumerVisibleProjections": 1
    },
    "ageBuckets": {
-    "0-3": 4979,
-    "11-20": 11,
-    "21-40": 28,
-    ">40": 3,
-    "6-10": 13,
-    "4-5": 1
+    "0-3": 7,
+    "4-5": 4972,
+    "11-20": 13,
+    "21-40": 23,
+    ">40": 8,
+    "6-10": 12
    },
    "withheldTitles": [
     "ADAMM",
@@ -220,11 +220,11 @@
     "ATAI",
     "AVB",
     "BTOG",
-    "CRNX",
     "CSAN",
+    "CRNX",
     "DBRG",
-    "DBRG-P-H",
     "DBRG-P-J",
+    "DBRG-P-H",
     "DBRG-P-I",
     "DOMO",
     "EFOR",
@@ -237,21 +237,21 @@
     "GOODN",
     "GWH",
     "HLX",
-    "IWFL",
     "IWML",
+    "IWFL",
     "JUPGF",
     "JPM-P-M",
+    "KREF-P-A",
     "LANDP",
     "LBRDA",
-    "KREF-P-A",
-    "LBRDP",
     "LBRDK",
+    "LBRDP",
     "LEG",
     "MAA-P-I",
-    "MDV-P-A",
     "MDV",
-    "MS-P-O",
+    "MDV-P-A",
     "MTUL",
+    "MS-P-O",
     "NCSM",
     "NLY-P-I",
     "NSTS",
@@ -261,11 +261,11 @@
     "QRVO",
     "QULL",
     "PSA-P-Q",
-    "RMAX",
     "RIV-P-A",
+    "RPT",
+    "RMAX",
     "SAT",
     "SEVN",
-    "RPT",
     "SCDL",
     "SF-P-B",
     "SNYR",
@@ -273,23 +273,24 @@
     "THRD",
     "TWO",
     "TWO-P-B",
-    "TWO-P-C",
     "TWO-P-A",
-    "WBS-P-F",
+    "TWO-P-C",
     "VRME",
-    "VTAK",
+    "WBS-P-F",
     "WBS",
+    "VTAK",
     "WALD",
+    "WBD",
     "WBS-P-G",
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0143,
+    "share": 0.0145,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 6,
+  "lifecycleEvents": 2,
   "tracked": 6988
  }
 }
