@@ -5,7 +5,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import worker from "../src/index.js";
+import { readFileSync } from "node:fs";
+import worker, { __internals } from "../src/index.js";
 import { createEnv, request, PAGE_TOKEN, TEST_ADMIN_KEY, verbinde, PUBLISH_IG_ID } from "./harness.mjs";
 import { readClaim, readQueue, readDecision, settleClaim, readPendingReels } from "../src/store.js";
 
@@ -343,4 +344,76 @@ test("B15 · Kein Token und kein Schluessel in Anspruch, Entscheidung oder Proto
     assert.ok(!t.includes(PAGE_TOKEN), "Page-Token");
     assert.ok(!t.includes(TEST_ADMIN_KEY), "Admin-Schluessel");
   }
+});
+
+/* ============================================================ TAKT: alle fuenf Minuten */
+
+const TAKT_MIN = (() => {
+  const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+  const m = toml.match(/^crons\s*=\s*\["([^"]+)"\]/m);
+  assert.ok(m, "ein Cron-Eintrag in wrangler.toml");
+  const n = m[1].match(/^\*\/(\d+) \* \* \* \*$/);
+  assert.ok(n, "Form */N * * * *, gefunden: " + m[1]);
+  return Number(n[1]);
+})();
+
+/** Ein Takt vergeht: alle Zeitstempel des Anspruchs liegen um TAKT_MIN Minuten weiter zurueck. */
+async function takt(env) {
+  const c = await readClaim(env, INHALT);
+  const zurueck = (iso) => iso ? new Date(Date.parse(iso) - TAKT_MIN * 60_000).toISOString() : iso;
+  await settleClaim(env, INHALT, { claimedAt: zurueck(c.claimedAt), publishAttemptAt: zurueck(c.publishAttemptAt),
+    publishLeaseUntil: c.publishLeaseUntil ? zurueck(c.publishLeaseUntil) : null });
+  return (await cron(env)).ergebnisse[0].ergebnis;
+}
+
+test("B16 · Der Takt passt zu Fenster, Abstand und Versuchen: genug Laeufe, begrenzte Wartezeit", () => {
+  const { REEL_WINDOW_MIN_DEFAULT, REEL_PUBLISH_MAX, REEL_PUBLISH_GAP_MS } = __internals;
+  assert.equal(TAKT_MIN, 5);
+  const laeufeImFenster = Math.floor(REEL_WINDOW_MIN_DEFAULT / TAKT_MIN);
+  assert.ok(laeufeImFenster >= REEL_PUBLISH_MAX + 2,
+    `im Fenster liegen ${laeufeImFenster} Laeufe, noetig sind mindestens ${REEL_PUBLISH_MAX + 2} (Verarbeitung + Versuche)`);
+  assert.ok(TAKT_MIN * 60_000 >= REEL_PUBLISH_GAP_MS, "der Takt haelt den Mindestabstand zwischen Versuchen von selbst ein");
+  assert.ok(TAKT_MIN <= 10, "hoechstens zehn Minuten bis zur Veroeffentlichung nach Metas Fertigmeldung");
+});
+
+test("B17 · Im Fuenf-Minuten-Takt: Verarbeitung dauert, ein Versuch scheitert, der zweite gelingt - im Fenster, am selben Container", async () => {
+  const { env, g } = await aufbau({ status: "IN_PROGRESS", publishFehler: 1 });
+  const { prep } = await freigegeben(env);
+  const ergebnisse = [];
+  ergebnisse.push(await takt(env));            // Lauf 1: Meta verarbeitet noch
+  ergebnisse.push(await takt(env));            // Lauf 2: noch
+  g.containerStatus = "FINISHED";
+  ergebnisse.push(await takt(env));            // Lauf 3: FINISHED -> Versuch 1 scheitert
+  ergebnisse.push(await takt(env));            // Lauf 4: Abgleich (FINISHED, nicht PUBLISHED) -> Versuch 2 gelingt
+  assert.deepEqual(ergebnisse, ["IN_ARBEIT", "IN_ARBEIT", "VERSUCH_FEHLGESCHLAGEN", "VEROEFFENTLICHT"]);
+  assert.equal(freigaben(g), 2);
+  assert.equal(containerAnlegen(g), 1);
+  assert.equal((await readDecision(env, prep.candidateId)).published, true);
+  assert.deepEqual(await readPendingReels(env), []);
+});
+
+test("B18 · Im Fuenf-Minuten-Takt: dauerhaft scheiternde Freigabe endet nach drei Versuchen weit vor dem Fensterende", async () => {
+  const { env, g } = await aufbau({ status: "FINISHED", publishFehler: 99 });
+  const { prep } = await freigegeben(env);     // Versuch 1 in der Anfrage
+  const ergebnisse = [];
+  for (let i = 0; i < 3; i += 1) ergebnisse.push(await takt(env));
+  assert.deepEqual(ergebnisse, ["VERSUCH_FEHLGESCHLAGEN", "VERSUCH_FEHLGESCHLAGEN", "VERSUCHE_ERSCHOEPFT"]);
+  assert.equal(freigaben(g), 3);
+  assert.equal((await readDecision(env, prep.candidateId)).lastError, "PUBLISH_UNCERTAIN");
+});
+
+test("B19 · Im Fuenf-Minuten-Takt: die 45-Minuten-Grenze greift hoechstens einen Takt nach dem Fenster", async () => {
+  const { env, g } = await aufbau({ status: "IN_PROGRESS" });
+  const { prep } = await freigegeben(env);
+  const ergebnisse = [];
+  for (let i = 0; i < 10; i += 1) {
+    const e = await takt(env);
+    ergebnisse.push(e);
+    if (e !== "IN_ARBEIT") break;
+  }
+  const letzte = ergebnisse.length;
+  assert.equal(ergebnisse[letzte - 1], "FENSTER_ABGELAUFEN");
+  assert.ok(letzte * TAKT_MIN >= 45 && letzte * TAKT_MIN <= 45 + TAKT_MIN, `Ende nach ${letzte * TAKT_MIN} min`);
+  assert.equal(freigaben(g), 0);
+  assert.equal((await readDecision(env, prep.candidateId)).lastError, "REEL_PROCESSING");
 });
