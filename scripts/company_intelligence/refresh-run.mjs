@@ -187,13 +187,34 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
  }
  return report;
 }
+/* Rollback-Kommando: wirkt nur auf die erwartete Generation (--expect-generation), sonst auf die aktive.
+   GENERATION_MISMATCH => Exit 1 ohne Schreiben; die Aufrufer schliessen danach trotzdem das Gate (disable + OFF-Dispatch). */
+export async function runRollback(driver,{expectGeneration}={}){
+ const active=await activeNamespace(driver);let ns=active;
+ if(expectGeneration!==undefined){
+  // Nach einem Universe-Rollback zeigt die aktive Namespace schon auf die alte Welt: die erwartete Generation dort suchen.
+  for(const c of new Set([active,universeConfig.consumerNamespace,refreshConfig.consumerNamespace])){
+   const g=await goodState(driver,c).catch(()=>null);
+   if(g&&(g.generation===expectGeneration||g.rolledBackFrom?.generation===expectGeneration)){ns=c;break;}
+  }
+ }
+ const result=await rollbackGood(driver,ns,{expectGeneration});
+ if(ns===universeConfig.consumerNamespace&&['ROLLED_BACK','ALREADY_ROLLED_BACK'].includes(result.status)){
+  const prior=await driver.get(activationKey()),state=prior?JSON.parse(prior).state:null;
+  // Bei ALREADY_ROLLED_BACK nur nachziehen, falls ein frueherer Lauf zwischen Zeiger und Aktivierung abbrach.
+  if(result.status==='ROLLED_BACK'||state!=='ROLLBACK_46'){
+   const bytes=Buffer.from(JSON.stringify({schema:1,state:'ROLLBACK_46',approvalId:universeConfig.approvalId,changedAt:new Date().toISOString()}));
+   await driver.put(activationKey(),bytes);if(!Buffer.from(await driver.get(activationKey())).equals(bytes))throw Error('UNIVERSE_ROLLBACK_READBACK_FAILED');
+  }
+ }
+ return {result,exitCode:result.status==='GENERATION_MISMATCH'?1:0};
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=args[0]==='health'?null:createS3DriverFromEnv();
  try{
   if(args[0]==='rollback'){
-   const ns=await activeNamespace(driver);const r=await rollbackGood(driver,ns);
-   if(ns===universeConfig.consumerNamespace){const bytes=Buffer.from(JSON.stringify({schema:1,state:'ROLLBACK_46',approvalId:universeConfig.approvalId,changedAt:new Date().toISOString()}));await driver.put(activationKey(),bytes);if(!Buffer.from(await driver.get(activationKey())).equals(bytes))throw Error('UNIVERSE_ROLLBACK_READBACK_FAILED');}
-   console.log(JSON.stringify(r));
+   const r=await runRollback(driver,{expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):undefined});
+   console.log(JSON.stringify(r.result));process.exitCode=r.exitCode;
   }
   else if(args[0]==='health'){
    // Crash (exception) and SLO verdict are different results: CRITICAL -> exit 1,

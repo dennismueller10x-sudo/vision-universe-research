@@ -192,6 +192,36 @@ live-QA failure first reverts GOOD and then applies the proven OFF gate. This
 prevents prolonged debugging on materially broken live pages. Retain failure
 health and immutable previous generations for diagnosis.
 
+### Rollback: idempotent und gegen konkurrierende Generationen geschuetzt
+
+`refresh-run.mjs rollback [--expect-generation <Generation>]` wirkt nur auf die
+Generation, die zurueckgerollt werden soll. Ergebnis als JSON (`status`):
+
+- `ROLLED_BACK`: der Zeiger stand auf der erwarteten Generation und zeigt jetzt auf den
+  Vorgaenger (Marker `rolledBackFrom.generation` im Zeiger). Exit 0.
+- `ALREADY_ROLLED_BACK`: genau diese Generation wurde schon zurueckgerollt (Retry, zweiter
+  Fehlerpfad). Kein Schreiben, Exit 0. Ohne `--expect-generation` gilt ein Zeiger mit Marker
+  und ohne Vorgaenger ebenso als erledigt und wird nicht weiter zurueckgeschoben.
+- `GENERATION_MISMATCH`: der Zeiger steht auf einer anderen Generation (ein anderer Lauf hat
+  weiterveroeffentlicht) oder aenderte sich waehrend des Rollbacks. Kein Schreiben, Exit 1.
+- `LEGACY_FALLBACK`: kein GOOD-Zeiger vorhanden, nichts zu tun.
+
+Fail-closed bleibt erhalten: Alle Aufrufer (Refresh, Profile-Source, Pages-Handler) lassen
+danach `production-release.mjs disable` und den OFF-Dispatch folgen; ein Mismatch bricht
+diese Kette nicht ab (`|| true` bzw. `gate_failure`), sondern macht den Rollback-Schritt
+sichtbar rot, ohne den Zeiger zu verfaelschen. Bei Universe-Rollback wird die Aktivierung
+`ROLLBACK_46` nur bei `ROLLED_BACK` geschrieben oder nachgezogen, falls ein frueherer Lauf
+dazwischen abbrach. Teilfehler (Put-Fehler, Nachlesen) stellen den vorherigen Zeiger
+byte-genau wieder her (`ROLLBACK_RECOVERY_FAILED`, falls auch das scheitert).
+
+Grenzen: Der S3-Treiber hat keine bedingten Writes (If-Match/ETag). Die Atomaritaet
+beruht auf der Concurrency-Gruppe `company-intelligence-continuous-production`; der
+Rollback liest, vergleicht, liest direkt vor dem Put erneut und prueft danach. Ein
+Restfenster zwischen letztem Lesen und Put bleibt. Die Workflows uebergeben noch keine
+Erwartungsgeneration; ohne Argument ist die aktuelle Generation die Erwartung. Nach einem
+Universe-Rollback verschiebt ein weiterer Aufruf ohne Argument die dann aktive alte
+Namespace (bisheriges Verhalten); mit `--expect-generation` ist auch das idempotent.
+
 ## Acceptance and cost evidence
 
 Authenticated isolated acceptance (not actual production publication):
