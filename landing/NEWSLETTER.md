@@ -8,19 +8,29 @@ Der Betreiber beauftragt die allgemeine Anmeldung ohne Testlink und bestätigt d
 
 | Punkt | Tatsächlicher Stand |
 | --- | --- |
-| Tracking | Betreiber berichtet die Einstellung **Zustimmung pro Kontakt = Nein**. Damit ist die Einwilligungsfunktion deaktiviert und werden Kontakte grundsätzlich getrackt. Dies bedeutet ausdrücklich **nicht** deaktiviertes Tracking. |
+| Tracking | **Erledigt durch neue Betreiberbestätigung:** Einwilligungsfunktion **Ja**, unbekannte Zustimmung tracken **Nein**, in Brevo gespeichert. Der DOI-Aufruf bleibt mit `contactPixelTrackingConsent:false` unverändert. Anonymisierung wird von vollständiger Abschaltung technischer Messung unterschieden; keine zusätzliche Tracking-Zustimmung erfunden. |
 | Aufbewahrung | **Alle Absender** laut Betreiber; Monatszahl und gespeicherte E-Mail-Vorschauen weiterhin unbestätigt. |
 | Webhooks | Die gezeigte leere Ansicht betrifft **eingehende** Webhooks. Ausgehende Ereignisempfänger sind damit nicht abschließend geprüft. |
 | Deutsche Abmeldung | Vom Betreiber als fertig bestätigt. Kein API-Editor oder eigenständiger erneuter Versandtest behauptet. |
 | API-/Pages-Audit | [38888693144](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38888693144): Listen 4/5/6 **135/0/2**, Bestandsobjekte unverändert, Domain bestätigt/authentifiziert, null Mails und null Kontaktänderungen, öffentliche Gates geschlossen. |
 
-Gesammelt beim Betreiber angefragt, mit direkten Einstellungslinks:
+Stand nach der neuen Betreiberbestätigung: Tracking ist geklärt. Nur Aufbewahrungsregel/Mailvorschauen und ausgehende Webhooks sind noch gesammelt angefragt. Direkte Einstellungslinks:
 
-1. [Pixel-Tracking-Einwilligung](https://app.brevo.com/contact/settings/pixel-tracking-consent): Funktion **Ja**, unbekannte Zustimmung tracken **Nein** speichern und beide Werte bestätigen. Der vorhandene DOI-Aufruf bleibt unverändert mit `contactPixelTrackingConsent:false`. Laut offizieller DOI-API anonymisiert dieser Wert bei aktiver Funktion die Öffnungs-/Klickereignisse für Summenstatistiken; ohne aktive Funktion wird er ignoriert. Eine vollständige Abschaltung sämtlicher technischer Messung wird **nicht** versprochen. Brevo legt bei Aktivierung separate Tracking-Merkmale auch für Bestandskontakte als unbekannt an; keine Newsletter-Einwilligung, Listenaufnahme oder Sperre daraus ableiten oder ändern.
+1. **Erledigt:** [Pixel-Tracking-Einwilligung](https://app.brevo.com/contact/settings/pixel-tracking-consent) laut Betreiber mit Funktion **Ja**, unbekannte Zustimmung tracken **Nein** gespeichert. Diese Änderung war ein Umsetzungsvorschlag, keine technische Versandvoraussetzung. Es wird keine weitere Kontoumstellung verlangt. Der vorhandene DOI-Aufruf bleibt unverändert mit `contactPixelTrackingConsent:false`. Laut offizieller DOI-API anonymisiert dieser Wert bei aktiver Funktion die Öffnungs-/Klickereignisse für Summenstatistiken; ohne aktive Funktion wird er ignoriert. Eine vollständige Abschaltung sämtlicher technischer Messung wird **nicht** versprochen. Brevo legt bei Aktivierung separate Tracking-Merkmale auch für Bestandskontakte als unbekannt an; keine Newsletter-Einwilligung, Listenaufnahme oder Sperre daraus ableiten oder ändern.
 2. [Aufbewahrungsregeln](https://app-smtp.sendinblue.com/retention-logs): gespeicherte Monatszahl und Vorschau-Einstellung für **Alle Absender** ablesen; keine rückwirkende Löschung auslösen.
 3. [Webhooks](https://app.brevo.com/app-store/webhooks): Register **Ausgehende Webhooks**, sämtliche Seiten/Filter prüfen; falls nicht leer, ausschließlich aktive Empfängerdienste und Ereignisarten privat nennen. Keine vollständigen URLs oder Zugangsdaten anfordern.
 
 Die API-Antworten bestätigen diese offenen Kontowerte nicht zuverlässig. Aus `400/document_not_found` wird keine erfolgreiche vollständige Webhook-Inventur abgeleitet. Die Bestands-/Tracking-Einstellung wird nicht still geändert. Nach Bestätigung dieser Angaben entsteht **eine** endgültige öffentliche Datenschutzfassung zur ausdrücklichen Textfreigabe; bis dahin bleibt die konkret freigegebene Fassung mit Umfang `controlled` unverändert.
+
+### Aktueller Abschlussstand nach gespeicherter Tracking-Änderung
+
+[Rein lesender Audit 38897372072](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38897372072) ist erfolgreich: Listen **135/0/2**, vollständige Bestandsobjekte innerhalb des Audits unverändert, Domain bestätigt und authentifiziert, öffentliche Gates geschlossen, null Mails und null Kontakt-Schreibaufrufe. Die API liefert die Tracking-Schalter weiterhin nicht verlässlich; die beiden gespeicherten Werte werden ausdrücklich als Betreiberbestätigung geführt. Das API-Feld zur Sichtbarkeit des Systemattributs ist kein Gegenbeweis zu dieser Bestätigung.
+
+Die 13 abgenommenen Funktionsdateien sind gegenüber dem Operator-Quellcommit unverändert. Die existierende Main-Abnahme einschließlich echter Marketing-Abmeldung wird wiederverwendet. Keine neue DOI- oder Newsletter-Mail und keine Änderung am Formular, API-Aufruf, Absender, Domain oder Kontaktbestand.
+
+Die [vorbereitete öffentliche Fassung](legal-drafts/newsletter-public-2026-10-16.txt) beschreibt die neue Tracking-Konfiguration, anonymisierte Summenstatistiken und die davon getrennte funktionale Bestätigung/Abmeldung. Der private Testzugang wird für den öffentlichen Datenfluss entfernt. Sie ist weiterhin **Entwurf** mit genau zwei offenen Kontopunkten (ausgehende Webhooks und Aufbewahrungsdauer/Mailvorschauen), keine endgültige Textfreigabe. Die [HTML-Fassung](legal-drafts/newsletter-public-2026-10-16.html) ist nicht als Produktionsdatenschutz konfiguriert. Die aktuell tatsächlich freigegebene kontrollierte Datei bleibt bytegenau unverändert. Der öffentliche Freigabewächter lehnt den unvollständigen Entwurf nachweislich ab.
+
+Nach Eingang der zwei Angaben werden ausschließlich die tatsächlichen Werte in die vollständige Fassung übernommen. Danach wird sie einmal zur ausdrücklich gewünschten endgültigen öffentlichen Textfreigabe vorgelegt. Keine Zustimmung für einen Text mit unbekannten Werten unterstellen und keinen bestehenden Freigabewächter umgehen. Die nachfolgende Veröffentlichung ist bereits beauftragt und benötigt keinen weiteren Mailtest bei unverändertem Ablauf.
 
 ### Veröffentlichungsweg ohne erneute Testmail
 
