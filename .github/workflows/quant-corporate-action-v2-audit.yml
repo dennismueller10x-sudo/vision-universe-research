@@ -17,7 +17,106 @@ env:
   BASE_COMMIT: 547d604d9596b0f4af4c13ac31bebce48b3948ec
   OUT: docs/data-quality/corporate-action-v2
 jobs:
+  sec:
+    # SEC/EDGAR evidence in three parallel parts (same rules; each part <= 3.3 requests/s, together under the SEC limit of 10/s)
+    if: contains(github.event.head_commit.message, '[corporate-action-v2:audit]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        part:
+          - { id: a, from: '2001-01', to: '2012-12' }
+          - { id: b, from: '2013-01', to: '2019-12' }
+          - { id: c, from: '2020-01', to: '' }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: fix
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/price-integrity-audit.mjs
+            /scripts/quant/price-integrity/
+            /scripts/quant/corporate-action-v2/
+            /scripts/market/storage/
+            /scripts/ci/
+            /docs/data-quality/
+            /.github/workflows/quant-corporate-action-v2-audit.yml
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub"
+          df -h / | tail -1
+      - name: Canonical capture (pinned #705 pipeline, unchanged core 1.0.0 = V4 freeze content)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          grep -q '"canonical-total-return-1.0.0"' base/quant/engines/canonical-total-return.js
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture.json"
+      - name: Prepare (universe, V4 population keys)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node fix/scripts/quant/corporate-action-v2/audit-v2.mjs --stage prepare --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/capture --private /workspace/private/ca --public "$RUNNER_TEMP/pub/CORPORATE-ACTION-V2-PREPARE.json"
+          rm -rf /workspace/private/capture
+      - name: SEC/EDGAR evidence part (current reports and proxies, public SEC data)
+        env:
+          SEC_USER_AGENT: VisionUniverse research info@visionuniverse.de
+          SEC_MIN_INTERVAL_MS: '300'
+          PART_FROM: ${{ matrix.part.from }}
+          PART_TO: ${{ matrix.part.to }}
+          PART_ID: ${{ matrix.part.id }}
+        run: |
+          set -euo pipefail
+          TO_ARG=()
+          if [ -n "$PART_TO" ]; then TO_ARG=(--to "$PART_TO"); fi
+          node fix/scripts/quant/corporate-action-v2/sec-collect.mjs --ciks /workspace/private/ca/ciks.json --phases current,proxies --from "$PART_FROM" "${TO_ARG[@]}" \
+            --max-docs 250000 --raw-out "$RUNNER_TEMP/sec/part-$PART_ID.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sec-part-${{ matrix.part.id }}
+          path: ${{ runner.temp }}/sec/part-${{ matrix.part.id }}.json
+          retention-days: 1
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
   audit:
+    needs: sec
     if: contains(github.event.head_commit.message, '[corporate-action-v2:audit]')
     runs-on: ubuntu-latest
     timeout-minutes: 355
@@ -100,13 +199,20 @@ jobs:
           set -euo pipefail
           node fix/scripts/quant/corporate-action-v2/audit-v2.mjs --stage scan --base-root "$GITHUB_WORKSPACE/base" --private /workspace/private/ca --public "$RUNNER_TEMP/pub/CORPORATE-ACTION-V2-SCAN.json"
           du -sh /workspace/private/ca
-      - name: SEC/EDGAR evidence (event-first full-text search, public SEC data)
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sec-part-*
+          path: ${{ runner.temp }}/sec
+          merge-multiple: true
+      - name: SEC/EDGAR evidence (periodic reports for candidate issuers; merge of the parts)
         env:
           SEC_USER_AGENT: VisionUniverse research info@visionuniverse.de
         run: |
           set -euo pipefail
+          ls "$RUNNER_TEMP/sec"
+          PARTS="$RUNNER_TEMP/sec/part-a.json,$RUNNER_TEMP/sec/part-b.json,$RUNNER_TEMP/sec/part-c.json"
           node fix/scripts/quant/corporate-action-v2/sec-collect.mjs --ciks /workspace/private/ca/ciks.json --periodic-ciks /workspace/private/ca/periodic-ciks.json \
-            --out /workspace/private/ca/sec-events.json --from 2001-01 --max-docs 250000
+            --phases periodic --merge-raw "$PARTS" --out /workspace/private/ca/sec-events.json --from 2001-01
       - name: Evaluate (impact, PIT checks, control set, regression rows)
         env:
           NODE_OPTIONS: --max-old-space-size=13000
