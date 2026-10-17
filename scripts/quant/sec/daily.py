@@ -30,7 +30,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from .http_client import SECHTTPError
-from .provider import AMENDMENT_FORMS, PERIODIC_FORMS, normalize_cik
+from .provider import AMENDMENT_FORMS, VALUE_FORMS, normalize_cik
 from .version import NORMALIZATION_LOGIC_VERSION, version_stamp
 
 LOGGER = logging.getLogger("vu.sec.daily")
@@ -41,7 +41,7 @@ STATE_PATH = DAILY_DIR / "state.json"
 STATE_VERSION = 1
 
 DAILY_INDEX_URL = "https://www.sec.gov/Archives/edgar/daily-index/{year}/QTR{quarter}/master.{ymd}.idx"
-WATCHED_FORMS = PERIODIC_FORMS
+WATCHED_FORMS = VALUE_FORMS   # 1.22.0: Uebergangsberichte (10-KT, 10-KT/A ...) tragen Werte (F-TTM-6)
 
 # Weiter als das schaut der Tagesindex nicht zurueck. Wer laenger als
 # 45 Tage nicht gelaufen ist, laesst die uebrigen Emittenten ueber die

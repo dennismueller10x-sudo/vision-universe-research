@@ -1,0 +1,36 @@
+{
+  "schema": "vu-fundamental-holdout-prereg-1.0.0",
+  "createdBefore": "jedem Core-Fix und jedem Abruf von Holdout-Daten (Commit vor Phase C)",
+  "purpose": "Ungesehene SEC-Fakten pruefen den korrigierten Fundamental-Layer. Kein Performance-Holdout.",
+  "sampleConstruction": {
+    "universe": "quant/data/sec/consumer/index.json (Emittenten mit Consumer-Bundle, Stand main 829b35bdce4)",
+    "exclusions": "alle 100 Entwicklungs-Emittenten (scripts/fundamentals-audit: issuers des Phase-B-Laufs) und deren CIKs",
+    "draw": "deterministisch: Sortierung nach SHA-256('vu-fundamental-holdout-1|' + CIK), die ersten 60 CIKs mit abrufbaren companyfacts",
+    "stratification": "Je gezogenem Emittent alle Quartale der Konzepte EPS_DILUTED, EPS_BASIC, REVENUE, NET_INCOME; Auswertung zusaetzlich nach Jahresgruppen (2009-2010, 2011-2014, 2015-2019, 2020-2026), Formular, Emittententyp (SIC-Gruppe aus submissions) und Groesse (Anzahl Fakten als Naeherung)",
+    "factSample": "mindestens 100 Emittent-Periode-Kennzahl-Kombinationen; erwartet mehrere tausend"
+  },
+  "groundTruthDefinition": "unveraendert scripts/fundamentals-audit/sec-ground-truth.mjs im Stand des Data-Freeze (Konzepte, known_from, derivable_from, Quartalsclusterung +-7 Tage)",
+  "handling": {
+    "ambiguousFacts": "GT-Qualitaet AMBIGUOUS_VALUES -> eigene Kategorie, nicht als VU-Fehler gezaehlt, berichtet",
+    "missingFacts": "GT ohne Wert -> nicht bewertet; VU-Wert ohne GT -> nicht bewertet (kein Beleg)",
+    "foreignIssuers": "IFRS/20-F/40-F werden mitgezaehlt und getrennt berichtet; fehlende Quartale bei Halbjahresberichterstattern sind keine Fehler, wenn die SEC keine Quartalsfakten hat",
+    "customTagsAndDimensions": "nicht in companyfacts -> nicht bewertbar, berichtet als Quellenluecke",
+    "acceptanceTime": "Sichtbarkeit am Annahmetag bzw. bis 4 Tage vor dem amtlichen Einreichungsdatum bei gleichem Einreichungsdatum = korrekt (MATCH)",
+    "otherPublicTag": "fruehere Sichtbarkeit ueber einen anderen, in derselben oeffentlichen Einreichung gemeldeten Tag = kein Lookahead, gezaehlt als CONCEPT_BREADTH"
+  },
+  "acceptanceGates": {
+    "pipeline": "P1 Quant-SEC-Kern nach Core-Fix (POLICY_ORIGINAL fuer Erstmeldung)",
+    "FALSE_AVAILABLE": "== 0 (kein Wert vor seiner Veroeffentlichung bzw. Ableitbarkeit) - harte Schwelle",
+    "PERIOD_MAPPING": "<= 0,5 % der bewerteten Fakten je Konzept",
+    "VALUE_ACCURACY": ">= 98 % je Konzept (Wert = Erstmeldung)",
+    "VISIBILITY_ACCURACY": ">= 98 % je Konzept (wenn Wert vorhanden: Erstmeldedatum korrekt)",
+    "CONCEPT_ACCURACY": "WRONG_CONCEPT <= 1 % je Konzept (NET_INCOME: berichtet, Schwelle 3 % wegen dokumentiertem, bewusst nicht repariertem E5)",
+    "COVERAGE_FALSE_MISSING": "<= 3 % je EPS-Konzept, <= 2 % fuer REVENUE und NET_INCOME",
+    "reportAlso": "dieselben Kennzahlen fuer P1 VOR dem Fix (gleicher Holdout), damit der Effekt des Fixes sichtbar ist"
+  },
+  "rules": [
+    "Schwellen, Stichprobe und Auswertung werden nach Oeffnung des Holdouts nicht veraendert.",
+    "Der Holdout wird erst nach dem Data-Freeze abgerufen und ausgewertet.",
+    "Faellt ein Gate, wird das berichtet; kein Nachbessern am Holdout."
+  ]
+}

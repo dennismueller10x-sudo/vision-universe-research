@@ -585,14 +585,14 @@ def cmd_gates(args):
 
 def _submissions_summary(provider, cik):
     """What a CIK actually contains, straight from the submissions endpoint."""
-    from quant.sec.provider import PERIODIC_FORMS
+    from quant.sec.provider import VALUE_FORMS
     try:
         submissions = provider.get_submissions(cik)
     except Exception as exc:  # noqa: BLE001 - a diagnostic must not abort
         return {"cik": cik, "error": str(exc)}
     profile = provider.get_company_profile(cik, submissions)
     filings = provider.get_filing_metadata(cik, submissions)
-    periodic = [row for row in filings if row["form"] in PERIODIC_FORMS]
+    periodic = [row for row in filings if row["form"] in VALUE_FORMS]
     reports = sorted(row["report_date"] for row in periodic if row.get("report_date"))
     forms = {}
     for row in periodic:

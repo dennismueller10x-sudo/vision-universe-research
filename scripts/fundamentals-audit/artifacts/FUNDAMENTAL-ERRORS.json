@@ -1,0 +1,325 @@
+{
+  "schema": "vu-fundamental-errors-1.0.0",
+  "phase": "B (vor jedem Fix)",
+  "auditedCommit": "829b35bdce4 (main)",
+  "sample": "98 Emittenten mit SEC-companyfacts, 18.317 Quartalsfakten (EPS verwaessert/unverwaessert, Umsatz, Nettoergebnis); Details: FUNDAMENTAL-GROUND-TRUTH.json, Einzelfaelle: FUNDAMENTAL-GROUND-TRUTH-MISMATCHES.json",
+  "separation": "PROBLEM A = Datenintegritaet (VU speichert falsch/zu spaet/gar nicht). PROBLEM B = Strategie-Interpretation (VU korrekt, Strategie erwartet andere Datenart). Diese Liste enthaelt nur PROBLEM A; B-Befunde stehen unter strategyNotData.",
+  "confirmed": [
+    {
+      "id": "E1",
+      "layer": "P1 Quant-SEC-Kern (quant/config/sec-metric-registry.json)",
+      "category": [
+        "WRONG_CONCEPT",
+        "MISSING_FACT",
+        "FILING_VISIBILITY"
+      ],
+      "summary": "eps_diluted und eps_basic kennen us-gaap:EarningsPerShareBasicAndDiluted nicht. Emittenten, die (meist bei Verlust) nur diesen Tag melden, haben keinen EPS bzw. erst mit einem spaeteren 10-K, der den Tag EarningsPerShareDiluted verwendet.",
+      "evidence": {
+        "TNDM Q1 2020": "SEC 10-Q 0001438133-20-000040 vom 2020-04-30: EarningsPerShareBasicAndDiluted -0.25; Quant sieht den Wert erst mit dem 10-K vom 2021-02-24 (EarningsPerShareDiluted)",
+        "affectedFacts": "EPS_DILUTED: 255 MISSING + 101 LATE (8,4 % der Fakten, 33 Emittenten), EPS_BASIC analog"
+      },
+      "rootCause": "Registry-Konzeptliste unvollstaendig; der Tag ist ein Standard-US-GAAP-Element mit Bedeutung 'unverwaessert = verwaessert'.",
+      "lookahead": false,
+      "severity": "HIGH",
+      "consumers": [
+        "Consumer-Bundle eps_diluted -> Discover KGV/EPS, Screener EPS/EPS-Wachstum, Company Intelligence EPS, Quant epsCagr3y"
+      ],
+      "correctExpectation": "EarningsPerShareBasicAndDiluted wird fuer eps_diluted UND eps_basic akzeptiert (nachrangig zu EarningsPerShareDiluted bzw. EarningsPerShareBasic in derselben Einreichung).",
+      "fixStatus": "FIXED_CORE",
+      "fix": "Registry 1.7.0: EarningsPerShareBasicAndDiluted in eps_diluted/eps_basic (Prioritaet 15)",
+      "commit": "5969a11a99a",
+      "test": "test_e1_eps_basic_and_diluted_tag_is_eps"
+    },
+    {
+      "id": "E2",
+      "layer": "P1 Quant-SEC-Kern (Registry-Prioritaet revenue)",
+      "category": [
+        "WRONG_CONCEPT"
+      ],
+      "summary": "Umsatz-Prioritaet stellt RevenueFromContractWithCustomer* (ASC 606, Teilbetrag) vor us-gaap:Revenues (Gesamtumsatz). Meldet eine Einreichung beides, waehlt Quant den Teilbetrag.",
+      "evidence": {
+        "AMT Q3 2019": "Revenues 1.953,6 Mio. vs. Quant 137,3 Mio. (-93 %)",
+        "BRK-B Q1 2018": "58,5 Mrd. vs. 41,5 Mrd. (-29 %)",
+        "affectedFacts": "132 Quartale bei 9 von 98 Emittenten (AMT, BRK-B, WMT, GE, DVA, UPST, MELI, ZGNX, PXD); max. Abweichung -100 % (ZGNX)"
+      },
+      "rootCause": "Prioritaetsreihenfolge der Registry; Revenues ist laut US-GAAP-Taxonomie der Gesamtumsatz, ASC-606-Vertragsumsatz kann Leasing-, Zins-, Versicherungs- oder sonstige Ertraege ausschliessen.",
+      "lookahead": false,
+      "severity": "HIGH",
+      "consumers": [
+        "Umsatz, Umsatzwachstum, Margen, KUV/EV-Sales in Discover, Screener, Company Intelligence, Quant (growth, value, profitability)"
+      ],
+      "correctExpectation": "Meldet dieselbe Einreichung Revenues, gilt Revenues; Vertragsumsatz nur, wenn Revenues in dieser Einreichung fehlt.",
+      "fixStatus": "FIXED_CORE_REVISED",
+      "fix": "Registry 1.7.0: Revenues Prioritaet 5; revidiert durch Registry 1.8.0 / Kern 1.13.0 (E2-R): Revenues gilt nur, wenn nicht kleiner als ein anderes Umsatzkonzept derselben Einreichung und Waehrung",
+      "commit": "5969a11a99a",
+      "test": "test_e2_total_revenue_beats_contract_revenue_in_same_filing",
+      "followUp": "E9 (Waehrungskonflikt) und E2-R (Revenues als Teilbetrag) wurden durch E2 sichtbar und sind behoben"
+    },
+    {
+      "id": "E3",
+      "layer": "P1 Quant-SEC-Kern (scripts/quant/sec/fiscal.py FiscalCalendar.from_raw_facts)",
+      "category": [
+        "PERIOD_MAPPING"
+      ],
+      "summary": "Das Geschaeftsjahr wird aus JEDER 12-Monats-Angabe eines 10-K gelernt. Eine einzelne Kalenderjahr-Angabe (DE: Steuersatz-Ueberleitung 2017-01-01..2017-12-31 im 10-K FY2018) erzeugt ein falsches Jahresende; Quartale werden danach falsch nummeriert (DE: April-Quartal als Q1, Q1-Abfrage liefert ab 2018-05-31 den April-Wert).",
+      "evidence": {
+        "DE FY2018": "Kalender-Jahresenden ... 2017-10-29, 2017-12-31 (falsch), 2018-10-28; quarter_index(2018-04-29) = 1",
+        "affectedFacts": "96 Fakten bei 10 Emittenten (DE, MU, KHC, GEN, DECK, ATI, ROIV, CPRT, XLNX, CERN) - Ursache je Emittent im Fix-Test zu bestaetigen"
+      },
+      "rootCause": "Jahresenden nicht auf das eigene Berichtsjahr der Einreichung (bzw. dessen Zyklus) beschraenkt.",
+      "lookahead": false,
+      "severity": "HIGH (systematische Periodenverschiebung)",
+      "consumers": [
+        "alle P1/P2-Quartalswerte dieser Emittenten (Quartale, TTM, YoY)"
+      ],
+      "correctExpectation": "Eine 12-Monats-Angabe eines Jahresberichts bestimmt ein Geschaeftsjahresende nur, wenn ihr Ende im Zyklus (Monat/Tag +-14 Tage) des eigenen Berichtsjahrendes dieser Einreichung liegt.",
+      "fixStatus": "FIXED_CORE",
+      "fix": "fiscal.py: Jahresenden nur aus Angaben im Zyklus des eigenen Berichtsjahres",
+      "commit": "5969a11a99a",
+      "test": "test_e3_fiscal_calendar_ignores_off_cycle_annual_disclosure"
+    },
+    {
+      "id": "E4",
+      "layer": "P1 Quant-SEC-Kern (scripts/quant/sec/periods.py quarter_grid)",
+      "category": [
+        "Q4_DERIVATION",
+        "YTD_QUARTER"
+      ],
+      "summary": "Je-Aktie-Groessen (EPS) werden wie additive Groessen aus Jahres- und Kumulwerten abgeleitet (Q4 = FY - 9M). EPS ist nicht additiv (wechselnde Aktienzahl).",
+      "evidence": {
+        "REPL Q4 FY2021": "SEC -0.42 (10-K 2021-05-20), Quant -0.41 (FY_MINUS_YTD)",
+        "affectedFacts": "15 abgeleitete EPS-Quartale, alle falsch oder verspaetet"
+      },
+      "lookahead": false,
+      "severity": "MEDIUM (selten, aber immer falsch)",
+      "consumers": [
+        "eps_diluted-Quartale und TTM-EPS im Consumer-Bundle"
+      ],
+      "correctExpectation": "EPS-Quartale nur wie gemeldet; nicht gemeldetes EPS-Quartal = fehlend (UNKNOWN), nicht abgeleitet.",
+      "fixStatus": "FIXED_CORE_WITH_CONSUMER_IMPACT",
+      "fix": "periods.py: Je-Aktie-Quartale nur wie gemeldet",
+      "commit": "5969a11a99a",
+      "test": "test_e4_per_share_quarters_are_not_derived_from_cumulative_values, test_e4_unreported_eps_quarter_stays_missing",
+      "additionalEvidence": "FY minus 9M gegen gemeldetes Q4-EPS (669 Paare, 72 Emittenten, Dev+Holdout): nur 48,9 % innerhalb Rundung; Median-Abweichung 0,27 %, p90 15,8 %, 80 Paare > 10 %, 10 Vorzeichenwechsel (Splits: AAPL 2020, Reverse-Splits)",
+      "consumerImpact": "Q4-EPS fehlt fuer Emittenten ohne gemeldetes Q4 -> Bundle-TTM-EPS entfaellt fuer die Mehrheit des Universums (siehe FUNDAMENTAL-IMPACT.json). Migrationsblocker M-B1."
+    },
+    {
+      "id": "E5",
+      "layer": "P1 Quant-SEC-Kern (Registry net_income-Fallbacks)",
+      "category": [
+        "WRONG_CONCEPT"
+      ],
+      "summary": "net_income akzeptiert ProfitLoss (inkl. Minderheiten) und NetIncomeLossAvailableToCommonStockholdersBasic als Ersatz. Fehlt NetIncomeLoss in einer Einreichung, mischt die Zeitreihe wirtschaftlich verschiedene Konzepte.",
+      "evidence": {
+        "PLD": "16 Quartale (u. a. Q1 2011: SEC NetIncomeLoss -40,2 Mio., Quant -46,6 Mio. 'available to common')",
+        "affectedFacts": "43 Quartale bei 14 Emittenten (REIT, Partnerships, Konzerne mit Minderheiten)"
+      },
+      "lookahead": false,
+      "severity": "MEDIUM",
+      "fixDecision": "NICHT automatisch reparieren (Abbruchbedingung 81: mehrere wirtschaftlich plausible Zuordnungen; ProfitLoss ist bei fehlenden Minderheiten identisch). Empfehlung: Fallback-Kennzeichen je Wert (Provenienz) statt stiller Mischung; Entscheidung im Migrationsplan.",
+      "fixStatus": "NOT_FIXED_BY_DECISION",
+      "reason": "Abbruchbedingung: Ersatzkonzept (ProfitLoss inkl. Minderheiten) ist keine eindeutige Zuordnung; Loesung ist ein Provenienz-Kennzeichen (Migrationsplan), kein Konzepttausch"
+    },
+    {
+      "id": "E6",
+      "layer": "P2 Consumer-Bundle (scripts/quant/sec/consumer.py, POLICY_AS_OF_LATEST zum Baudatum)",
+      "category": [
+        "FILING_VISIBILITY",
+        "RESTATEMENT"
+      ],
+      "summary": "Das Bundle haelt je Periode genau eine, die juengste Fassung; row.filed ist die Einreichung dieser Fassung (oft ein spaeterer Vergleichswert). Fuer aktuelle Anzeigen korrekt, fuer historische Point-in-Time-Nutzung verspaetet und restated.",
+      "evidence": {
+        "auditIssuers": "88 Bundles: Quartalszeilen mit spaeterem Datum als die Erstmeldung: EPS 236/476, Umsatz 303/616, Nettoergebnis 341/621; frueher datiert: 0"
+      },
+      "lookahead": false,
+      "severity": "MEDIUM (fuer PIT-Consumer: Pattern-Research-Overlay, Faktor-Evidenz-Historie); NONE fuer aktuelle Anzeigen",
+      "fixDecision": "Kein Datenfehler im engeren Sinn (dokumentierte Sicht 'as_of_latest'); Consumer-Vertrag: PIT-Consumer duerfen das Bundle nicht als as-known-Historie verwenden. Migration: eigene AS_REPORTED_AT_TIME-Sicht (Canonical-Revisionen existieren bereits fuer 5 Titel).",
+      "fixStatus": "NOT_FIXED_ARCHITECTURE",
+      "reason": "Sichtfrage (LATEST_RESTATED vs AS_REPORTED_AT_TIME), Vertrag C-PIT-1; Migrationsplan"
+    },
+    {
+      "id": "E7",
+      "layer": "P7 Supertrader-Validierung (scripts/supertrader/validation/sec-pit.mjs)",
+      "category": [
+        "TAG_SELECTION",
+        "Q4_DERIVATION",
+        "FILING_VISIBILITY"
+      ],
+      "summary": "(a) EPS: EIN Tag je Unternehmen (erster mit >= 4 Quartalen) -> Quartale unter anderen Tags fehlen; (b) Umsatz: Tag-Prioritaet je Periode statt Erstmeldung; (c) abgeleitetes Q4 traegt nur das FY-Einreichungsdatum, nicht das spaeteste der Komponenten -> LOOKAHEAD; (d) EarningsPerShareBasic als Ersatz fuer verwaesserten EPS (Konzeptmischung); (e) kein Formularfilter.",
+      "evidence": {
+        "a": "273 EPS-Quartale MISSING (6,4 %), 93 LATE",
+        "b": "187 Umsatzquartale LATE (z. B. TNDM 2017: SalesRevenueNet im 10-Q, Revenues erst in spaeteren Vergleichsspalten)",
+        "c": "AMD Q4 2012 Umsatz datiert 2013-02-21, Q1-Q3 2012 erst 2013-05-06..2013-10-30 in XBRL; ebenso WFC Q4 2017, SHOP Q4 2024 (3 Fakten)"
+      },
+      "lookahead": true,
+      "severity": "MEDIUM (nur Validierungsstore, Minervini 3.0.0 nicht live; Lookahead klein, aber vorhanden)",
+      "fixScope": "Eigener Supertrader-PR (Gate A); Store nur privat.",
+      "fixStatus": "NOT_FIXED_OTHER_PRODUCT",
+      "reason": "P7 gehoert Supertrader (Gate A): eigener PR noetig; Empfehlung Ersatz durch P1-Export"
+    },
+    {
+      "id": "E8",
+      "layer": "P9 Minervini-Research (Branch PR #471/#475: sec-facts.mjs seriesWithFallback)",
+      "category": [
+        "TAG_SELECTION"
+      ],
+      "summary": "Tag-Prioritaet je Periode statt Erstmeldung ueber Tags: EPS 87 LATE (2,0 %), Umsatz 187 LATE (4,0 %); kein Lookahead.",
+      "evidence": {
+        "TNDM Q1 2020": "SEC 2020-04-30, P9 2021-02-24"
+      },
+      "lookahead": false,
+      "severity": "MEDIUM (nur Research, nicht gemergt)",
+      "fixScope": "Eingefrorene Research-Artefakte werden NICHT rueckwirkend geaendert; Korrektur nur als dokumentierte neue Datenversion fuer einen Folgelauf.",
+      "fixStatus": "NOT_FIXED_OTHER_BRANCH",
+      "reason": "P9 lebt nur auf PR #471/#475 (eingefroren); keine Aenderung erlaubt"
+    },
+    {
+      "id": "E9",
+      "layer": "P1 Quant-SEC-Kern (scripts/quant/sec/normalize.py, Kandidatenwahl je Einreichung)",
+      "category": [
+        "WRONG_CONCEPT",
+        "UNIT_CURRENCY"
+      ],
+      "summary": "Die Kandidatenwahl je (Kennzahl, Periode, Einreichung) entscheidet nur nach Konzeptprioritaet; die Waehrung wird nicht beachtet. Ein Fremdwaehrungsbetrag kann den Abschlusswert in Berichtswaehrung verdraengen.",
+      "evidence": {
+        "CECO FY2025": "10-K 0001193125-26-085815: us-gaap:Revenues = 750.000.000 EUR (identisch in jeder Einreichung seit Q1 2024), RevenueFromContractWithCustomerExcludingAssessedTax = 774.381.000 USD; Kern 1.11.0 lieferte 750.000.000 als Umsatz",
+        "universeScan": "944 Zellen (Kennzahl x Einreichung x Periode) in 152 Emittenten, in denen ein Kandidat in Nicht-Berichtswaehrung vorne lag; v. a. Schulden/Cash bei Komfortuebersetzungen (CAD/USD, VND/USD, CNY/USD)"
+      },
+      "foundIn": "Phase D Consumer-Wirkungsanalyse (nach dem Holdout); in Dev- und Holdout-Stichprobe 0 betroffene Zeilen",
+      "whyGroundTruthDidNotSeeIt": "Die GT waehlt je Emittent die dominante Einheit; CECO war nicht in der Stichprobe. Vor E2 verdeckte die Prioritaet des Vertragsumsatzes den EUR-Fakt.",
+      "lookahead": false,
+      "severity": "MEDIUM (selten, dann grob falsch; Umsatz CECO -3 %, Schulden/Cash um Wechselkursfaktor)",
+      "consumers": [
+        "alle Bundle-Consumer der betroffenen Emittenten"
+      ],
+      "correctExpectation": "Innerhalb einer Einreichung gewinnt die Waehrung der Mehrzahl ihrer Geldbetraege; innerhalb einer Waehrung die Registry-Prioritaet.",
+      "fixStatus": "FIXED_CORE",
+      "fix": "normalize.py 1.12.0: Waehrung der Einreichung vor Prioritaet",
+      "commit": "7921d6d98e8",
+      "test": "test_e9_foreign_currency_fact_does_not_beat_reporting_currency_concept"
+    },
+    {
+      "id": "E2-R",
+      "layer": "P1 Quant-SEC-Kern (Registry 1.7.0 -> 1.8.0, normalize.py Kandidatenwahl)",
+      "category": [
+        "WRONG_CONCEPT"
+      ],
+      "summary": "Regression des E2-Fixes: \"Revenues zuerst\" setzt voraus, dass Revenues der Gesamtumsatz ist. Einige Einreicher taggen einen Teilbetrag oder 0 als us-gaap:Revenues.",
+      "evidence": {
+        "FLS": "Revenues = 0 in jedem 10-Q (z. B. Q2 2026, 0000030625-26-000020) neben RevenueFromContractWithCustomerExcludingAssessedTax 1.169.175.000",
+        "PESI": "10-K FY2025 (0001493152-26-012314): Revenues 642.000 neben Vertragsumsatz 61.674.000 -> abgeleitetes Q4 = -45,3 Mio.",
+        "VTSI": "10-K FY2025: Revenues 185.971 neben 22.402.188; 10-Q Q1 2026: Revenues 0 neben 7.160.247",
+        "weitere": "MGPI 2016 (318 -> 22 Mio.), ENS FY2017/2018 (2,37 Mrd. -> 142 Mio.) im Universums-Diff 1.10 -> 1.12",
+        "gegenbeispiel": "PENN 2016: Revenues 3,034 Mrd. (netto) < Vertragsumsatz 3,209 Mrd. (brutto) - hier ist der kleinere Wert der korrekte Nettoumsatz; mit E2-R gilt fuer solche Zellen wieder der Wert von main (mehrdeutig, offen)"
+      },
+      "foundIn": "Phase D, universumsweiter Consumer-Diff (Umsatz faellt bei 140 Emittenten, steigt bei 522)",
+      "whyGroundTruthDidNotSeeIt": "Die Ground Truth verwendet dieselbe Annahme (Revenues hat in derselben Einreichung Vorrang). Sie bestaetigte deshalb E2 per Konstruktion und konnte E2-R nicht sehen. Die GT bleibt unveraendert (Praeregistrierung); betroffene Fakten werden als GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING ausgewiesen.",
+      "lookahead": false,
+      "severity": "HIGH (falscher Umsatz bis -100 %, abgeleitete negative Quartale)",
+      "consumers": [
+        "Umsatz, Wachstum, Margen in Discover, Screener, Company Intelligence, Quant, Supertrader"
+      ],
+      "correctExpectation": "Revenues ist kein Gesamtumsatz dieser Einreichung, wenn er nicht positiv ist oder unter der Haelfte eines anderen positiven Umsatzkonzepts derselben Einreichung und Waehrung liegt; dann gilt die Reihenfolge von main. Ein Gesamtumsatz darf kleiner sein als der Vertragsumsatz, wenn ein Bestandteil negativ ist (UPST Q2 2022: 228,2 = 258,3 - 30,2 Mio.).",
+      "fixStatus": "FIXED_CORE",
+      "fix": "Registry 1.8.0 (Revenues aggregate) + normalize.py; Regel in 1.13.0 (jede Unterschreitung > 0,5 %) durch das Red Team widerlegt (UPST, PXD, FCX: Nettogesamtumsatz), in 1.15.0 auf \"nicht positiv oder < 50 %\" korrigiert",
+      "commit": "bc17e9f3ac7, 6d83e13efbf",
+      "test": "test_e2r_revenues_smaller_than_contract_revenue_is_not_the_total, test_e2r_revenues_total_still_beats_contract_subset, test_normalize_periods: test_the_highest_priority_concept_wins_inside_one_filing (wieder Erwartung von main), test_the_total_revenue_wins_over_a_smaller_contract_revenue, test_e2r_net_total_revenue_below_contract_revenue_is_kept (UPST), test_a_partial_revenues_tag_does_not_beat_the_contract_revenue",
+      "evidenceForThreshold": "Teilbetraege: FLS 0 %, PESI 1 %, VTSI ~1 %, GEN 4 %, VRRM 12 %, (AHR/GE ~46 %, mehrdeutig). Nettogesamtumsaetze: PXD 80 %, UPST 88 %, LNG ~90 %, PENN 94 %, FCX 98 %. Red-Team-Zaehlung im Bulk: 7.537 Zellen Revenues < anderes Konzept; 3.575 mit Anteil < 0,5 oder <= 0, 3.962 mit 0,5-0,995.",
+      "residualAmbiguity": "Anteile zwischen ca. 12 % und 50 % sind nicht durch Faelle belegt; Abschlusszeile aus dem Filing-XBRL (F9) loest das ohne Schwelle."
+    },
+    {
+      "id": "E10",
+      "layer": "P1 Quant-SEC-Kern (scripts/quant/sec/periods.py quarter_grid, De-Akkumulation)",
+      "category": [
+        "Q4_DERIVATION",
+        "YTD_QUARTER",
+        "WRONG_CONCEPT"
+      ],
+      "summary": "Q4 = FY - 9M und YTD-Differenzen zogen zwei verschiedene Konzepte voneinander ab, wenn der 10-K ein anderes Konzept waehlte als die 10-Qs. In main selten (gleiche Prioritaet in beiden), durch E2 (Revenues im 10-K, Vertragsumsatz in 10-Qs) haeufiger.",
+      "evidence": {
+        "NTRS Q4 2025": "10-K: Revenues 8.086,4 Mio. (Gesamtertrag); 10-Q 9M: Vertragsumsatz 3.710,4 Mio. -> \"Q4\" 4.376 Mio. bei Quartalen um 1,25 Mrd.",
+        "Gegenprobe": "scripts/fundamentals-audit/revenue-guarantee-check.mjs findet im Universum Q4-Zellen, die einen Konzeptwechsel zwischen 10-K und 10-Q aufnehmen (Q1-Q3 unveraendert, FY und Q4 um denselben Betrag geaendert)"
+      },
+      "foundIn": "Phase D, universumsweite Gegenprobe zu E2-R",
+      "whyGroundTruthDidNotSeeIt": "Die GT leitet Q4 nur innerhalb eines Tags ab und hat diesen Fehler daher nie; der Kern hatte keine solche Regel.",
+      "lookahead": false,
+      "severity": "HIGH (systematisch falsche Q4-Rekonstruktion bei Konzeptwechsel)",
+      "consumers": [
+        "Quartale, TTM, YoY in allen Bundle-Consumern"
+      ],
+      "correctExpectation": "Ein abgeleitetes Quartal entsteht aus Kumulwerten EINES Konzepts. Hat eine der beiden Einreichungen das Konzept der anderen ebenfalls gemeldet, wird darin abgeleitet (NTRS: 5.017,8 - 3.710,4 = 1.307,4 Mio.); ohne Beleg fuer einen Unterschied (NVDA FY2021: 10-K nur Vertragsumsatz, 10-Qs nur Revenues) wie in main.",
+      "fixStatus": "FIXED_CORE",
+      "fix": "periods.py: 1.14.0 verweigerte jede Ableitung ueber zwei Konzeptnamen und verlor dabei mehr korrekte als falsche Quartale (Red Team F2: 44 korrekt -> fehlend, 15 falsch -> fehlend). 1.15.0: Ableitung ueber das gemeinsame Konzept (ALT:-Flags derselben Einreichung).",
+      "commit": "dc826000049, 6d83e13efbf",
+      "test": "test_e10_derived_quarter_never_subtracts_two_concepts, test_e10_tag_switch_without_evidence_of_a_difference_still_derives (NVDA)",
+      "openRemainder": "Summen (TTM, Jahressumme aus Quartalen) pruefen die Konzeptgleichheit weiterhin nicht (Red Team F5, unveraendert gegenueber main); _combine benennt nur das Konzept der juengsten Eingabe."
+    }
+  ],
+  "notErrors": [
+    {
+      "case": "GDDY EPS 2017-2023",
+      "previousHypothesis": "Custom-XBRL-Tag",
+      "finding": "GoDaddy meldet EPS unter dem STANDARD-Tag us-gaap:EarningsPerShareDiluted, aber nur mit Dimension StatementClassOfStockAxis=CommonClassAMember (Filing 0001609711-20-000108). SEC-companyfacts enthaelt grundsaetzlich nur dimensionslose Fakten. Alle VU-Pipelines sehen daher nichts; korrektes Verhalten ist UNKNOWN (so geliefert). Kein VU-Tag-Fehler; Quellenluecke (Dimensionen) -> Migrationsplan."
+    },
+    {
+      "case": "Quant 'frueher als SEC' (EARLY)",
+      "finding": "Kein Lookahead: Annahmezeitpunkt (acceptanceDateTime) nach Handelsschluss bzw. am Freitagabend, amtliches Einreichungsdatum Folgetag; oder anderer oeffentlicher Tag derselben Einreichung; oder aus oeffentlichen Kumulwerten ableitbar. Quant FALSE_AVAILABLE = 0."
+    },
+    {
+      "case": "RICK/TNDM Minervini SEPA_STALE",
+      "finding": "Fuer den Research-Parser P9 echte Datenverspaetung (E8). Fuer die Kernschicht P1 nur bei EPS (E1)."
+    }
+  ],
+  "strategyNotData": [
+    {
+      "case": "Minervini MR-SEPA-10 (Basis <= 0)",
+      "finding": "Wo SEC-GAAP-EPS im Vorjahresquartal negativ ist und VU das korrekt abbildet, ist die Ablehnung kein Datenfehler, sondern STRATEGY_DEFINITION_MISMATCH (GAAP vs. bereinigt / Verlustunternehmen). Wird in Phase D je Fall belegt."
+    }
+  ],
+  "consumerLevelFindings": [
+    {
+      "id": "C1",
+      "consumer": "Discover/Screener (scripts/discover/build-discover-data.mjs currentShares)",
+      "finding": "Marktkapitalisierung aus juengster JAHRES-Aktienzahl, gemischt aus ausstehenden und gewichtet verwaesserten Aktien; Quartals-/TTM-Aktienzahl ignoriert (AAPL ~1,2 % zu hoch).",
+      "severity": "MEDIUM",
+      "scope": "Consumer-Logik (Discover-Modell) - nicht Teil des Core-Fixes; eigener Discover-PR."
+    },
+    {
+      "id": "C2",
+      "consumer": "Screener (build-universe.mjs)",
+      "finding": "Spalten mit Label TTM fallen still auf FY zurueck; EPS-Wachstum/CAGR ohne Split-Schutz.",
+      "severity": "LOW-MEDIUM",
+      "scope": "Screener-PR"
+    },
+    {
+      "id": "C3",
+      "consumer": "Company Intelligence",
+      "finding": "Historische Ergebnisereignisse zeigen restated statt damals berichteter Werte; Ausgabe korrekt als LATEST_KNOWN_RETROSPECTIVE/NOT_CERTIFIED gekennzeichnet, Eingangsvertrag 'as_of_latest' (Label-Widerspruch).",
+      "severity": "LOW",
+      "scope": "CI-PR"
+    },
+    {
+      "id": "C4",
+      "consumer": "Quant (Faktor-Evidenz, Pattern-Research)",
+      "finding": "Aktuelle SIC-/Peer-Zuordnung und aktuelle Aktienzahl fuer historische Zeitpunkte (Current-Value-Leakage); in quant-v2.json knownGates bereits als fehlend gefuehrt.",
+      "severity": "MEDIUM (Leakage, aber Composite nicht veroeffentlicht)",
+      "scope": "Quant-Methodik"
+    }
+  ],
+  "fixStatusUpdated": "2026-10-07 (Phase E): Kern 1.15.0, Registry 1.8.0, Data-Freeze v3",
+  "redTeam": {
+    "reviewer": "unabhaengiger Opus-Agent (Abschnitt 100)",
+    "findings": {
+      "F1 HIGH": "E2-R verwarf Nettogesamtumsatz -> behoben in 1.15.0 (Schwelle 50 %, UPST-Test)",
+      "F2 HIGH": "E10 verwarf korrekte Ableitungen -> behoben in 1.15.0 (gemeinsames Konzept, NVDA-Test)",
+      "F3 HIGH": "Holdout-Gates des ausgelieferten Codes nicht berichtet -> Bericht und Migrationsplan weisen die formal nicht bestandenen Gates des Endstands aus",
+      "F4 MEDIUM": "Fixtures veraltet -> mit Endstand neu gebaut",
+      "F5 MEDIUM": "Summen ueber gemischte Konzepte (TTM, Jahressumme) -> offen, unveraendert gegenueber main, Folge-PR F10",
+      "F6 MEDIUM": "Consumer-Matrix unvollstaendig -> neun Leser ergaenzt, Waehrungswechsel in units.* gezaehlt",
+      "F7 MEDIUM": "Screener beschriftet FY-EPS als TTM -> Migrationsblocker M-B1 verschaerft",
+      "F8 LOW": "CONCEPT_DISAGREEMENT im Bundle unsichtbar -> dokumentiert (F5 Provenienz je Zeile)",
+      "F9 LOW": "Gleichstand bei Waehrungsmehrheit; erfundene Folgelabels -> dokumentiert",
+      "F10 LOW": "veraltete Zahlen im Entwurf -> Bericht auf Endstand gebracht"
+    }
+  }
+}

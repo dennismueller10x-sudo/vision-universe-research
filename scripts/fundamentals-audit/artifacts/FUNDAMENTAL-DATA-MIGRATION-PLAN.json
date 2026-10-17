@@ -1,0 +1,205 @@
+{
+ "schema": "vu-fundamental-data-migration-plan-2.0.0",
+ "supersedes": "Plan 1.x (Kern 1.15.0) - Fassung unten unter previous",
+ "status": "BLOCKED",
+ "freeze": "FUNDAMENTAL-DATA-FREEZE-v4.json (Kern 1.19.0, Registry 1.9.0, Umsatzbelege 1.1.0)",
+ "mergeIsRollout": "Ein Merge nach main loest datenschreibende Workflows aus (sec-consumer-fundamentals, sec-fundamentals-daily, Discover/Screener-Builds). Deshalb kein Merge ohne die Blocker unten und ohne beobachteten manuellen Lauf.",
+ "blockers": [
+  {
+   "id": "M-B1",
+   "title": "FY-Werte unter TTM-Labels (Screener, Discover-Karte)",
+   "evidence": "FUNDAMENTAL-IMPACT-v4.json screenerEpsSemantics: mit unveraendertem Screener ~4.400 Geschaeftsjahres-EPS unter 'Gewinn je Aktie (TTM, verwaessert)'; Discover unternehmen.js umsatzTTM/gewinnTTM tragen FY-Werte bei basis FY; build-universe.mjs:225/226/246/247/258 TTM-Rueckfall auf annual",
+   "fix": "Screener-PR und Discover-PR (produkteigen): TTM-Felder nur aus eps.ttmDiluted/ttm.* (VERIFIED), sonst null; separates FY-Feld mit FY-Label; Filter 'EPS positiv' auf das gewaehlte Feld dokumentiert (2.544 -> 103 bei TTM, 4.504 Gesamt-EPS + 53 fortgefuehrt bei FY)",
+   "owner": "Screener / Discover"
+  },
+  {
+   "id": "M-B5",
+   "title": "Historische Quant-Leser auf der LATEST-Sicht (E6)",
+   "evidence": "FUNDAMENTAL-CONSUMER-VIEW-CONTRACTS.json: build-pattern-research-fundamentals.mjs (+ pit-fundamental-history.js) und build-pattern-match.mjs HARD_FAIL_HISTORICAL_LATEST",
+   "fix": "Quant-PR mit Vorher/Nachher: AS_REPORTED_AT_TIME-Quelle (Policy ORIGINAL/LATEST_KNOWN aus dem Kern je Stichtag) oder Studie als nicht-PIT kennzeichnen/zurueckziehen",
+   "owner": "Quant"
+  },
+  {
+   "id": "M-B2",
+   "title": "Rollout nur als beobachteter manueller Lauf",
+   "fix": "siehe steps"
+  },
+  {
+   "id": "M-B6",
+   "title": "Revenue-Belege als Erzeugerschritt",
+   "evidence": "Neue Einreichungen ohne Beleg ergeben bei Mehrdeutigkeit eine leere Umsatzzelle (by design)",
+   "fix": "build_revenue_evidence.py vor dem Consumer-Build im Workflow (SEC Fair Access) - Workflow-PR; bis dahin regelmaessiger manueller Lauf",
+   "owner": "Daten/CI"
+  }
+ ],
+ "notBlocking": [
+  "E7 Supertrader-PIT-Store (eigener Datenpfad; Branch claude/supertrader-sec-pit-q4, vor jeder neuen Minervini-v3-Validierungsrunde)",
+  "F5/F8/F9/E5/E11 Kern-Folge-PRs (FUNDAMENTAL-TRIAGE.json)",
+  "TTM-Holdout FAILED (gegen 1.16.0): Fehlschlaege bis auf F-TTM-1 Wahrheitskonstrukt/Sicht; 1.18/1.19 brauchen einen neuen ungesehenen Holdout, wenn ein formales Gate verlangt wird"
+ ],
+ "steps": [
+  "0 Voraussetzung: M-B1- und M-B5-PRs gemergt bzw. Consumer auf die neuen Felder (eps.*, ttmAbsent, views) umgestellt; CI gruen bis auf dokumentierte main-Fehler",
+  "1 Sicherung: Tag/Branch des aktuellen main; Kopie quant/data/sec/consumer (Bundles) und Factbook-Store (Version 1.10.0+registry-1.6.0) als Artefakt",
+  "2 Merge unmittelbar vor einem manuell ausgeloesten Lauf; automatische Schreibworkflows bis Schritt 5 beobachten",
+  "3 sec-consumer-fundamentals.yml (workflow_dispatch): Neubau aller Bundles mit 1.19.0; Diff gegen FUNDAMENTAL-IMPACT-v4.json (TTM-Abdeckung, Zellen, Bundles 5.072)",
+  "4 sec-fundamentals-daily (workflow_dispatch, alle CIKs/Backfill): Factbook-Store neu normalisieren (kein Emittent auf 1.10.0)",
+  "5 Quant-Rematerialisierung (build-factor-evidence u. a.): Rangvergleich gegen quantRankImpact (Spearman je Faktor, Bewegungen > 25 Punkte)",
+  "6 Consumer: Discover-, Screener-, CI-, Supertrader-Builds; Smoke-Tests: /status/, 5 Referenztitel (AAPL, BMI, FLS, CECO, AMT) gegen die Cross-Consumer-Fixtures; Screener-EPS-Feld nur VERIFIED",
+  "7 Abnahme: system-health.mjs, data-quality.mjs, diagnose.mjs fuer die Red-Team-Faelle (NEOG, VFC, HOV, CHDN)"
+ ],
+ "rollbackCriteria": [
+  "Bundles < 5.000 oder Build-Exit != 0",
+  "TTM-Abdeckung je Kennzahl weicht um mehr als 2 % von FUNDAMENTAL-IMPACT-v4.ttmCoverage ab",
+  "irgendein eps.ttmDiluted VERIFIED ohne vier gemeldete Quartale (Stichprobe 50) oder ein TTM-Label auf FY-Wert in einem Produkt",
+  "Quant: Spearman eines Faktors < 0,95 gegen den Vorlauf oder > 100 Bewegungen > 25 Punkte ausserhalb der in quantRankImpact gemessenen",
+  "Cross-Consumer-Test oder Fundamentals-Vertragstests rot nach dem Lauf"
+ ],
+ "rollback": "Revert des Merge-Commits, Wiederherstellung der gesicherten Bundles/Factbooks (Schritt 1), erneuter Consumer-Lauf; kein Hand-Edit generierter Artefakte (CLAUDE.md)",
+ "previous": {
+  "schema": "vu-fundamental-data-migration-plan-1.0.0",
+  "status": "PLAN_ONLY - keine Migration ausgefuehrt; Freigabe durch den Eigentuemer erforderlich",
+  "productionClassification": "READY_FOR_CONTROLLED_MIGRATION",
+  "classificationReason": "Kernfehler E1, E3, E3b, E4, E9, E10 und E2/E2-R belegt, behoben, failing-first getestet. Gegen die unveraenderte, praeregistrierte Ground Truth bleiben drei Holdout-Gates formal nicht bestanden (FALSE_AVAILABLE: Rumpfperiode, seit v1; Umsatz VALUE und WRONG_CONCEPT: Umsatz-Konzeptgrenze der GT selbst, siehe FUNDAMENTAL_DATA_INTEGRITY_AUDIT.md). E2-R und E10 wurden nach Oeffnung des Holdouts gefunden; dafuer ist der Holdout nicht blind. Der Rollout aendert Consumer-Bedeutungen (TTM-EPS) und muss deshalb kontrolliert und nach Entscheidung M-B1/M-B2/M-B4 erfolgen.",
+  "mergeIsRollout": {
+   "fact": "Die SEC-Workflows laufen nach Zeitplan von main: sec-fundamentals-daily.yml taeglich 06:15 UTC (normalisiert jeden beruehrten Emittenten mit 1.15.0 neu), sec-consumer-fundamentals.yml montags 07:30 UTC (baut alle Consumer-Bundles neu und committet sie). Discover/Screener/Supertrader uebernehmen die Bundles im naechsten eigenen Lauf.",
+   "consequence": "Ein Merge dieses PRs startet den Rollout automatisch binnen hoechstens 7 Tagen. Der Merge ist deshalb die Migrationsfreigabe und darf erst erfolgen, wenn die Blocker unten entschieden sind."
+  },
+  "blockers": [
+   {
+    "id": "M-B1",
+    "title": "TTM-EPS entfaellt (Folge von E4)",
+    "evidence": "FUNDAMENTAL-IMPACT.json: eps_diluted ttm.removed; Q4-EPS war FY minus 9M und im Bundle nicht als abgeleitet erkennbar (derived=0). FY minus 9M trifft das gemeldete Q4-EPS nur in 48,9 % der 669 pruefbaren Faelle (p90-Abweichung 15,8 %, 10 Vorzeichenwechsel).",
+    "consumerBehaviourWithoutDecision": {
+     "Discover KGV/Gewinn je Aktie": "faellt zurueck auf TTM-Nettogewinn / juengste Aktienzahl (Rueckfall existiert im Code)",
+     "Screener eps": "faellt zurueck auf das juengste Geschaeftsjahres-EPS, das Feld ist aber als TTM beschrieben (screener/engine/fields.js) -> fuer rund 3.200 Titel ein falsch beschrifteter Wert (Red Team F7)",
+     "Quant": "nicht betroffen (nutzt Jahres-EPS)",
+     "Company Intelligence": "nicht betroffen (summiert EPS schon heute nicht)",
+     "Supertrader": "nicht betroffen (liest kein EPS aus dem Bundle)"
+    },
+    "options": [
+     "A: akzeptieren - UNKNOWN statt Naeherung; Rueckfaelle der Consumer greifen (keine Codeaenderung)",
+     "B: Consumer-seitige TTM-EPS-Definition = Summe TTM-Nettogewinn / gewichtete verwaesserte Aktien, als DERIVED gekennzeichnet (eigener Consumer-PR je Produkt)",
+     "C: TTM-EPS nur, wenn das TTM-Fenster mit einem Geschaeftsjahresende zusammenfaellt (= FY-EPS), sonst UNKNOWN"
+    ],
+    "recommendation": "Vor dem Rollout: Entscheidung B oder C ODER mindestens ein Screener-PR (Produkt-eigener PR), der die Beschriftung an die tatsaechliche Basis koppelt. A allein (Rueckfaelle unveraendert) ist wegen der Fehlbeschriftung im Screener nicht ausreichend.",
+    "decisionRequired": true
+   },
+   {
+    "id": "M-B2",
+    "title": "Rollout-Zeitpunkt",
+    "action": "Merge nur unmittelbar vor einem manuell ausgeloesten, beobachteten Lauf: sec-consumer-fundamentals.yml (workflow_dispatch) -> Diff gegen FUNDAMENTAL-IMPACT.json pruefen -> erst dann Discover-/Screener-Lauf.",
+    "decisionRequired": true
+   },
+   {
+    "id": "M-B3",
+    "title": "Factbook-Store (R1) ohne Voll-Rebuild gemischt",
+    "action": "Nach dem Merge einmal sec-fundamentals-daily per workflow_dispatch fuer alle CIKs (bzw. Backfill) ausloesen, damit kein Emittent auf 1.10.0 stehen bleibt.",
+    "decisionRequired": false
+   },
+   {
+    "id": "M-B4",
+    "title": "Umsatz: verbleibende Konzept-Mehrdeutigkeit (E2-R)",
+    "evidence": "Revenues kleiner als der Vertragsumsatz: Teilbetrag (FLS, PESI, VTSI, GEN, VRRM; <= 12 %) oder Nettogesamtumsatz mit negativem Bestandteil (UPST belegt per ASC-606-Identitaet, PXD, FCX, PENN; 80-98 %). Zwischen ca. 12 % und 50 % liegt kein gepruefter Fall.",
+    "stateInThisPR": "Kern 1.15.0: Revenues gilt, ausser er ist nicht positiv oder < 50 % eines anderen Umsatzkonzepts derselben Einreichung; dann Wert von main. Widerspruch bleibt als CONCEPT_DISAGREEMENT in den Reconciliation-Berichten sichtbar (im Bundle nicht, F5).",
+    "options": [
+     "A: so ausrollen (empfohlen)",
+     "B: Folge-PR F9 abwarten (Abschlusszeile aus dem Presentation-Linkbase des Filing-XBRL)"
+    ],
+    "decisionRequired": true
+   }
+  ],
+  "steps": [
+   {
+    "step": 1,
+    "what": "Freigabe M-B1 und M-B2 durch den Eigentuemer",
+    "who": "Eigentuemer"
+   },
+   {
+    "step": 2,
+    "what": "Unmittelbar vor dem Merge: node scripts/fundamentals-audit/freeze.mjs --check, python3 -m unittest discover -s scripts/quant/tests, Branch auf main aktualisieren",
+    "who": "Agent/Entwickler"
+   },
+   {
+    "step": 3,
+    "what": "Merge",
+    "who": "Eigentuemer"
+   },
+   {
+    "step": 4,
+    "what": "sec-consumer-fundamentals.yml per workflow_dispatch; Bundle-Diff (scripts/fundamentals-audit/bundle-diff.mjs) gegen das vorherige main-Bundle; Abweichung zu FUNDAMENTAL-IMPACT.json pruefen",
+    "who": "Agent/Entwickler"
+   },
+   {
+    "step": 5,
+    "what": "sec-fundamentals-daily per workflow_dispatch (Voll-Rebuild R1)",
+    "who": "Agent/Entwickler"
+   },
+   {
+    "step": 6,
+    "what": "Discover-, Screener-, Supertrader-, Company-Intelligence-Laeufe ueber ihre Produzenten (nie von Hand); Gates muessen gruen bleiben",
+    "who": "Workflows"
+   },
+   {
+    "step": 7,
+    "what": "Stichprobe der Fallbeispiele (TNDM, AMT, DE, CERN, CECO, BRK-B, AAPL) auf /status/#/<TICKER> und Aktienseite",
+    "who": "Eigentuemer"
+   }
+  ],
+  "rollback": {
+   "how": "Revert des Merge-Commits auf main und erneuter Consumer-Lauf (workflow_dispatch). Vorherige Bundles bleiben in der Git-Historie; Factbooks im R2-Store werden durch den Versionsstempel beim naechsten Lauf wieder auf 1.10.0 normalisiert.",
+   "dataLoss": "keiner: kein Artefakt wird ausserhalb seines Produzenten veraendert, nichts wird geloescht"
+  },
+  "followUpPRs": [
+   {
+    "id": "F1",
+    "product": "Supertrader (Gate A)",
+    "what": "P7 sec-pit.mjs durch P1-Export (AS_REPORTED_AT_TIME) ersetzen oder E7 beheben (Q4-Lookahead, ein Tag je Unternehmen, Basic-Ersatz)"
+   },
+   {
+    "id": "F2",
+    "product": "Minervini-Research",
+    "what": "P9 nicht aendern (eingefroren); eine kuenftige Version liest P1-Export (export_sepa_fund.py) als neue Datenversion"
+   },
+   {
+    "id": "F3",
+    "product": "Quant-SEC-Kern",
+    "what": "E5: Provenienz-Kennzeichen fuer net_income-Ersatzkonzepte (ProfitLoss, AvailableToCommon) statt stiller Mischung"
+   },
+   {
+    "id": "F4",
+    "product": "Quant-SEC-Kern",
+    "what": "E6: Sicht AS_REPORTED_AT_TIME als eigenes Export-Artefakt fuer PIT-Consumer (Faktor-Evidenz-Historie, Pattern-Research); Vertrag C-PIT-1"
+   },
+   {
+    "id": "F5",
+    "product": "Quant-SEC-Kern",
+    "what": "Bundle-Zeilen tragen Transformation (AS_REPORTED / YTD_DIFF / FY_MINUS_YTD) und Konzept; heute bedeutet derived=1 nur 'Formel', nicht 'Periode abgeleitet'"
+   },
+   {
+    "id": "F6",
+    "product": "Quant-SEC-Kern",
+    "what": "6-K/40-F-Quartale (AEM) und dimensionale Fakten (GDDY Class A) nur ueber Filing-XBRL mit eindeutiger Zuordnung; sonst UNKNOWN"
+   },
+   {
+    "id": "F7",
+    "product": "Discover / Screener / CI / Quant",
+    "what": "Consumer-Befunde C1-C4 (FUNDAMENTAL-ERRORS.json consumerLevelFindings) je Produkt-PR"
+   },
+   {
+    "id": "F8",
+    "product": "Quant-Werkzeug",
+    "what": "cli.py consumer --out schreibt consumer_coverage.json trotzdem nach quant/data/sec/ (DATA_DIR); bei Testlaeufen wird ein committetes Artefakt ueberschrieben. Im Audit zweimal aufgetreten, jeweils per git checkout zurueckgesetzt."
+   },
+   {
+    "id": "F9",
+    "product": "Quant-SEC-Kern",
+    "what": "Umsatz-Abschlusszeile je Einreichung aus dem Presentation-Linkbase (Filing-XBRL) bestimmen statt aus Konzeptprioritaet; loest E2-R-Mehrdeutigkeit (Revenues < Vertragsumsatz) ohne Heuristik"
+   },
+   {
+    "id": "F10",
+    "product": "Quant-SEC-Kern",
+    "what": "Konzeptmenge in der Provenienz abgeleiteter Werte fuehren; TTM- und Jahressummen ueber gemischte Konzepte kennzeichnen oder verweigern (Red Team F5)"
+   }
+  ]
+ }
+}

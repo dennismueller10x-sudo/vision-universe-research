@@ -41,6 +41,28 @@ DIVISION_BY_ZERO = "DIVISION_BY_ZERO"
 # geraten und zerstoerte die Point-in-Time-Eigenschaft. Lieber keine
 # Zahl als eine falsche.
 MIXED_CURRENCY = "MIXED_CURRENCY"
+# Ein TTM ist die Summe von vier berichteten, lueckenlos aufeinanderfolgenden
+# Quartalen derselben Konzeptklasse auf derselben Aktienbasis. Sonst gibt es
+# kein TTM - und nie ersatzweise das Geschaeftsjahr.
+TTM_PERIODS_NOT_CONTIGUOUS = "TTM_PERIODS_NOT_CONTIGUOUS"
+# 1.20.0: ein Fensterquartal ist eine Rumpfperiode (kein NORMAL_QUARTER von 80-100
+# Tagen: SHORT_STUB < 80, LONG_STUB > 100) - etwa die 104-Tage-Nachfolgeperiode
+# nach einem Fresh Start (Denbury 2020) - und ergibt keine zwoelf Monate.
+TTM_STUB_PERIOD = "TTM_STUB_PERIOD"
+# 1.20.0: es gibt eine neuere sichtbare Periode als das Fensterende (auch eine, die
+# der Kalender nicht einordnen kann) - das Fenster ist nicht "trailing".
+TTM_WINDOW_NOT_CURRENT = "TTM_WINDOW_NOT_CURRENT"
+TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
+# 1.23.0 (M-2): a newer filing of the window contradicts an older filing of the
+# window on a period both report - the quarters stand on two reporting bases
+# (predecessor and successor after a reverse merger, Dawson Geophysical 2015).
+TTM_BASIS_MIXED = "TTM_BASIS_MIXED"
+TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
+# Ein Quartals-EPS, das zu Ergebnis und Aktienzahl desselben Quartals um eine
+# Groessenordnung nicht passt (Tagging-Fehler, Churchill Downs Q1 2020: -590000).
+TTM_EPS_INCONSISTENT = "TTM_EPS_INCONSISTENT"
+# Quartale in verschiedenen Einheiten/Waehrungen werden nicht summiert.
+TTM_UNIT_MISMATCH = "TTM_UNIT_MISMATCH"
 
 # --- quality / confidence states --------------------------------------------
 QUALITY_HIGH = "HIGH"
