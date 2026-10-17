@@ -1,0 +1,15 @@
+{
+  "schema": "corporate-action-v3-verdict-precommit-1.0.0",
+  "writtenBefore": "any decryption of a sealed v3 envelope by the authoring session (review P3-11)",
+  "basis": "public acceptance block of run 39007119068 (c6a1c85146d1e2b94e09f512ca80b5b5fc9553c9031ba4cfe99f9bc9ba73517c)",
+  "verdict": "NOT_READY",
+  "failingIndependentOfTheValidationVendor": [
+    "knownD2ValidRangeDefects: 10 of the 11 reproduced D2 defects remain inside valid canonical returns (threshold 0)",
+    "pitViolations: 2 SEC observations carry a filing date before their EDGAR acceptance day (universe-wide; 0 among the 146 observations behind decisions); truncation oracle 0 mismatches in 3,512 views, 0 observedAt too early",
+    "secCollectionComplete: 1 incomplete search window, 1 unreadable document after the retry pass",
+    "unresolvedConflictingHolds: 50 conflicting holds without an independent label = 2.19 % of segments with corporate-action evidence (threshold 0.5 %)",
+    "severeExtremeInsideValidWrong: 4 extreme moves inside valid returns that independent evidence calls an event (threshold 0)"
+  ],
+  "notMeasurableInRun39007119068": "every vendor-based label (validation vendor blocked on the runner); FP/FN are measured in a reuse run with vendor evidence and reported, but cannot change this verdict",
+  "decryptionAfterThis": "the sealed label request of the reuse run is decrypted to compute the vendor evidence (vendor-evidence.mjs); per-case results may then be inspected for diagnostics only; no decision rule, threshold or label rule of protocol 3.0.0 is changed"
+}
