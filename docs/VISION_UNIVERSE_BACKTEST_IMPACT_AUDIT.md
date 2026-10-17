@@ -102,17 +102,17 @@ Der Rangvergleich braucht absolute Werte aller sechs Methoden an einer Stelle. E
 
 Gleiche V4-Konstruktion (EW-Markt, Freeze V4-Pipeline) auf der heutigen Kopie. Die Baseline 0,145 und die Diagnose 0,992 sind exakt reproduziert.
 
-| Variante (EW-Korrelation mit French) | ausgeschlossene Security-Months | Korrelation | mittl. Differenz bp/Monat | Tracking Error p.a. |
-|---|---|---|---|---|
-| Baseline | 0 | 0,145 | 554 | 146,5 % |
-| ohne die 83 (Datensignatur) | 83 | 0,992 | 26 | 3,0 % |
-| ohne alle \|r\| > 100 % | 2.200 | 0,990 | −62 | 4,0 % |
-| ohne nur die 43 forensischen Defekte (#722) | 43 | 0,992 | 33 | 3,1 % |
-| ohne nur die 40 forensisch „echten“ | 40 | 0,145 | 548 | 146,6 % |
-| **ohne nur die 27 unabhängig bestätigten** | 27 | **0,146** | 523 | 146,6 % |
-| **ohne die 56 nicht unabhängig bestätigten** | 56 | **0,963** | 58 | 6,2 % |
-| ohne nur die 55 unerklärten Rohsprünge ≥ 10× | 55 | 0,992 | 28 | 3,0 % |
-| ohne nur die 28 Monate mit deklariertem Split | 28 | 0,144 | 553 | 146,6 % |
+| Variante (EW-Korrelation mit French) | ausgeschlossene Security-Months | Korrelation |
+|---|---|---|
+| Baseline | 0 | 0,145 |
+| ohne die 83 (Datensignatur) | 83 | 0,992 |
+| ohne alle \|r\| > 100 % | 2.200 | 0,990 |
+| ohne nur die 43 forensischen Defekte (#722) | 43 | 0,992 |
+| ohne nur die 40 forensisch „echten“ | 40 | 0,145 |
+| **ohne nur die 27 unabhängig bestätigten** | 27 | **0,146** |
+| **ohne die 56 nicht unabhängig bestätigten** | 56 | **0,963** |
+| ohne nur die 55 unerklärten Rohsprünge ≥ 10× | 55 | 0,992 |
+| ohne nur die 28 Monate mit deklariertem Split | 28 | 0,144 |
 
 Volle Konstruktion (EW, Momentum-Dezile, Varianz-Quintile):
 
@@ -126,7 +126,7 @@ Volle Konstruktion (EW, Momentum-Dezile, Varianz-Quintile):
 Lesart:
 - **Unabhängig bestätigte Korrekturen erklären praktisch nichts von der Kalibrierungslücke.** Nur 0,145 → 0,146.
 - **Die Lücke stammt aus einer Handvoll nicht bestätigter, aufwärts gerichteter Sprünge ≥ 10× bei Pennystocks.** Sie sind weder als Kapitalmaßnahme noch als echte Bewegung belegt. Sie zu sperren repariert EW, Momentum und Varianz zugleich, aber nur als Sensitivität und nicht als belegte Korrektur.
-- **Universumsunterschied bleibt.** VU hält im Mittel 1,337-mal so viele Titel wie French, also mehr Nebenwerte. Auch in der besten Variante bleiben 26–28 bp/Monat Differenz und 3 % Tracking Error; die Varianten D und Ausschluss-83 verfehlen damit weiter die vorab registrierten Toleranzen (FAIL). Der Rest ist Universum, Konstruktion (EW monatlich, Juni-Mitgliedschaft), Delisting-Annahmen und Kosten. Er ist nicht weiter trennbar, weil das CRSP-Universum nicht verfügbar ist.
+- **Universumsunterschied bleibt.** VU hält im Mittel 1,337-mal so viele Titel wie French, also mehr Nebenwerte. Auch in der besten Variante bleibt ein Niveauunterschied (Betrag nur versiegelt, Review IR-20); die Varianten D und Ausschluss-83 verfehlen damit weiter die vorab registrierten Toleranzen (FAIL). Der Rest ist Universum, Konstruktion (EW monatlich, Juni-Mitgliedschaft), Delisting-Annahmen und Kosten. Er ist nicht weiter trennbar, weil das CRSP-Universum nicht verfügbar ist.
 - **0,992 ist keine Zertifizierung und begründet keine Ausschlussregel.** Ebenso stark ist „ohne Rohstart < 1 $“ (0,992, #705-Diagnose), und Winsorisieren ergibt 0,994. Die Korrelation misst hier die Behandlung eines extremen Pennystock-Randes, nicht die Korrektheit einzelner Fälle.
 
 ## 7. Kausale Zerlegung (je Methode, CAGR-Punkte)

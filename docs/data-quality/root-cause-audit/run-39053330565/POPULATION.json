@@ -372,72 +372,54 @@
       "BASELINE": {
         "excludedSecurityMonths": 0,
         "correlation": 0.145,
-        "meanDiffBpPerMonth": 554,
-        "trackingErrorPp": 146.5,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_DATA_SIGNATURE": {
         "excludedSecurityMonths": 83,
         "correlation": 0.992,
-        "meanDiffBpPerMonth": 26,
-        "trackingErrorPp": 3,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_ALL_ABS_RET_GT_100PCT": {
         "excludedSecurityMonths": 2200,
         "correlation": 0.99,
-        "meanDiffBpPerMonth": -62,
-        "trackingErrorPp": 4,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.331
       },
       "EXCLUDE_83_FORENSIC_DEFECT_ONLY": {
         "excludedSecurityMonths": 43,
         "correlation": 0.992,
-        "meanDiffBpPerMonth": 33,
-        "trackingErrorPp": 3.1,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_FORENSIC_GENUINE_ONLY": {
         "excludedSecurityMonths": 40,
         "correlation": 0.145,
-        "meanDiffBpPerMonth": 548,
-        "trackingErrorPp": 146.6,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_INDEPENDENTLY_CONFIRMED_ONLY": {
         "excludedSecurityMonths": 27,
         "correlation": 0.146,
-        "meanDiffBpPerMonth": 523,
-        "trackingErrorPp": 146.6,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_NOT_INDEPENDENTLY_CONFIRMED": {
         "excludedSecurityMonths": 56,
         "correlation": 0.963,
-        "meanDiffBpPerMonth": 58,
-        "trackingErrorPp": 6.2,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_UNDECLARED_RAW_JUMP_10X_ONLY": {
         "excludedSecurityMonths": 55,
         "correlation": 0.992,
-        "meanDiffBpPerMonth": 28,
-        "trackingErrorPp": 3,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_DECLARED_SPLIT_IN_MONTH_ONLY": {
         "excludedSecurityMonths": 28,
         "correlation": 0.144,
-        "meanDiffBpPerMonth": 553,
-        "trackingErrorPp": 146.6,
         "verdict": "FAIL",
         "holdingCountRatioMean": 1.337
       }
@@ -446,8 +428,6 @@
       "V4_BASELINE": {
         "EW_MARKET": {
           "correlation": 0.145,
-          "meanDiffBpPerMonth": 554,
-          "trackingErrorPp": 146.5,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.337
         },
@@ -461,8 +441,6 @@
       "TOURNAMENT_DATA_NO_V4_SANITY": {
         "EW_MARKET": {
           "correlation": 0.145,
-          "meanDiffBpPerMonth": 554,
-          "trackingErrorPp": 146.5,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.337
         },
@@ -476,8 +454,6 @@
       "C_INDEPENDENT_CORRECTIONS": {
         "EW_MARKET": {
           "correlation": 0.146,
-          "meanDiffBpPerMonth": 523,
-          "trackingErrorPp": 146.7,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.335
         },
@@ -491,8 +467,6 @@
       "D_CUT_ALL_CENSUS_EVENTS": {
         "EW_MARKET": {
           "correlation": 0.992,
-          "meanDiffBpPerMonth": 28,
-          "trackingErrorPp": 3,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.324
         },
@@ -506,8 +480,6 @@
       "D_CUT_ALL_CENSUS_EVENTS_PLUS_V4_SANITY": {
         "EW_MARKET": {
           "correlation": 0.992,
-          "meanDiffBpPerMonth": 28,
-          "trackingErrorPp": 3,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.323
         },
@@ -521,8 +493,6 @@
       "E_WHOLE_SERIES_DROP": {
         "EW_MARKET": {
           "correlation": 0.146,
-          "meanDiffBpPerMonth": 542,
-          "trackingErrorPp": 150,
           "verdict": "FAIL",
           "holdingCountRatioMean": 1.314
         },
@@ -558,5 +528,13 @@
     "plaintextSha256": "ba259857c667c234729f6b45305730b2ccc03d7436653f78849a6a93e87aa22f",
     "sealedSha256": "e91064b10f6a6e7f00b6c2b93753f33df512d496b2fca4f1fd9f442474a6004e"
   },
-  "performanceCalculated": false
+  "performanceCalculated": false,
+  "redaction": {
+    "removed": [
+      "meanDiffBpPerMonth",
+      "trackingErrorPp"
+    ],
+    "reason": "Review IR-20: with the public French series these reveal the absolute mean return of the Tiingo-based EW portfolio; correlation and verdict kept.",
+    "fieldsRemoved": 30
+  }
 }
