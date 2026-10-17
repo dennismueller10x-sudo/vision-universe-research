@@ -1,0 +1,26 @@
+{
+  "schema": "corporate-action-v3-adversarial-review-1.0.0",
+  "rounds": [
+    {
+      "round": "P3",
+      "reviewer": "independent review agent (separate context, read-only), before any run",
+      "scope": "commit db8d9fbbe vs the v2 head 0d8e2755e",
+      "verdictOfReviewer": "do not run as pre-registered until P3-01..P3-05 are fixed (fixing after the run would be post-result tuning)",
+      "findings": [
+        { "id": "P3-01", "severity": "HIGH", "area": "false positives / downward semantics", "finding": "the conventional-ratio check was vacuous (list + 25 % tolerance covers every ratio 3..3000) and the event-day volume test classed real crashes on sqrt(R)..3R volume as FORWARD_SPLIT", "status": "FIXED_BEFORE_RUN", "resolution": "split signature = event-day mechanical volume AND share volume persistently scaled by R (1/R) over the next 10 sessions; GENUINE_MOVE = event-day share volume >= 3x; crash tests P3-01, P3-01b" },
+        { "id": "P3-02", "severity": "HIGH", "area": "label leakage (R2-03)", "finding": "hold labels could reuse the FINRA row or share count that created the hold", "status": "FIXED_BEFORE_RUN", "resolution": "labels blank every channel present in the decision's sources (labels.mjs excludedBy); counts in labelChannelsExcluded" },
+        { "id": "P3-03", "severity": "HIGH", "area": "label leakage, NORMALIZE", "finding": "FINRA as SECOND_SOURCE corroboration was reused as TP label; dependent TP evidence could override independent FP evidence", "status": "FIXED_BEFORE_RUN", "resolution": "FINRA blanked when it triggered or corroborated; vendor evaluated first" },
+        { "id": "P3-04", "severity": "HIGH", "area": "PIT, RESUME_FROM observedAt", "finding": "resume observedAt (second bar) could precede the observedAt of the hold that created the break", "status": "FIXED_BEFORE_RUN", "resolution": "observedAt = first as-of view containing the segment; test P3-04" },
+        { "id": "P3-05", "severity": "HIGH", "area": "blinded set selected with mechanism output", "finding": "segments flagged by the 1.2.0 core were excluded from the blinded set", "status": "FIXED_BEFORE_RUN", "resolution": "only the 83/74 V4 segments and the v2 members are excluded; core-flagged members reported as a stratum" },
+        { "id": "P3-06", "severity": "MEDIUM", "area": "PIT oracle partly self-referential (R2-02)", "finding": "the truncation comparison re-runs similar code; acceptance-time check universe-wide; skipped observedAt items silent", "status": "FIXED_BEFORE_RUN", "resolution": "comparison reported as consistency check; acceptance-time gate on decision observations; skipped items counted" },
+        { "id": "P3-07", "severity": "MEDIUM", "area": "FN definition", "finding": "OUTSIDE_VALID padded the denominator; FINRA/share events are engine inputs", "status": "FIXED_BEFORE_RUN", "resolution": "OUTSIDE_VALID not evaluable; gates on engine-independent (vendor) events" },
+        { "id": "P3-08", "severity": "MEDIUM", "area": "FINRA corrections", "finding": "a DC row moving the ex-date became a second event", "status": "FIXED_BEFORE_RUN", "resolution": "corrections and cancellations join the announced event; test P3-08" },
+        { "id": "P3-09", "severity": "MEDIUM", "area": "weak gates", "finding": "vacuous passes (FINRA parse, D2 empty, empty categories, engine-own UNRESOLVED, diluted FP denominator)", "status": "FIXED_BEFORE_RUN", "resolution": "gates tightened as listed in the protocol's preRunReview" },
+        { "id": "P3-10", "severity": "MEDIUM", "area": "RESUME_FROM may hide crash returns", "finding": "resumable semantic holds drop a real crash day while both sides stay usable", "status": "MITIGATED_REPORTED", "resolution": "resumed bars reported by the label of the break; segments must never be chained (contract and consumer matrix)" },
+        { "id": "P3-11", "severity": "LOW", "area": "result-driven rules / session key", "finding": "universe metrics are in-sample for rules motivated by v2 aggregates; the authoring session could decrypt per-case results", "status": "ADDRESSED", "resolution": "verdict pre-committed from public counts (VERDICT-PRECOMMIT.json) before any decryption; universe metrics labelled in-sample" },
+        { "id": "P3-12", "severity": "LOW", "area": "workflow / R2-09", "finding": "separate captures per collection job; SOURCES_DISAGREE observedAt", "status": "FIXED_BEFORE_RUN", "resolution": "one prepare job shares ciks.json; conflict visible when both sources are published" }
+      ]
+    }
+  ],
+  "openHighCritical": []
+}

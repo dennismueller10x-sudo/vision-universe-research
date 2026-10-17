@@ -18,7 +18,7 @@ import zlib from 'node:zlib';
 const args = (() => { const o = {}, a = process.argv.slice(2); for (let i = 0; i < a.length; i += 2) o[a[i].replace(/^--/, '')] = a[i + 1]; return o; })();
 export const COLLECTOR_VERSION = 'vendor-yahoo-chart-collector-1.0.0';
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
-const INTERVAL = Number(args['interval-ms'] || 700);
+const INTERVAL = Number(args['interval-ms'] || process.env.VENDOR_INTERVAL_MS || 700);
 export const stats = { symbols: 0, ok: 0, notFound: 0, empty: 0, errors: 0, retries: 0, blocked: 0, requests: 0, stoppedBlocked: false };
 let last = 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
