@@ -1,0 +1,34 @@
+{
+  "schema": "corporate-action-v3-sealed-1.0.0",
+  "encoding": "gzip(JSON)",
+  "plaintextSha256": "78f4266a6a358815841d1bd0f79fa175eaa68d5e04c64587efe82080e75ba682",
+  "plaintextBytes": 206406,
+  "envelopes": [
+    {
+      "audience": "owner",
+      "file": "CORPORATE-ACTION-V3-PRIVATE.owner.sealed.json",
+      "sha256": "bd34bd38b346947aa4468c83271b8dbb23c177713e6e3982b0ff7418d1dcae1e"
+    },
+    {
+      "audience": "session",
+      "file": "CORPORATE-ACTION-V3-PRIVATE.session.sealed.json",
+      "sha256": "c6febbeb76b7018062d8d0940835e36d417b2681f186fb1b06dd3c7c6ba0afc1"
+    }
+  ],
+  "labelRequest": {
+    "plaintextSha256": "a969a814108383fbd46d0dabf349529c75dc7d158e2d3f29c6f40092b32afaf7",
+    "plaintextBytes": 5501142,
+    "envelopes": [
+      {
+        "audience": "owner",
+        "file": "CORPORATE-ACTION-V3-LABEL-REQUEST.owner.sealed.json",
+        "sha256": "0282a541ed58f54021142fc76fa2b53664206feb23f9fc98185ab3779d00d98c"
+      },
+      {
+        "audience": "session",
+        "file": "CORPORATE-ACTION-V3-LABEL-REQUEST.session.sealed.json",
+        "sha256": "d9d916acded34df3ff08ab0340f75f067756724b8bf544bf432832dfe3753105"
+      }
+    ]
+  }
+}
