@@ -1,0 +1,608 @@
+{
+  "schema": "blinded-control-set-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "design": {
+    "seed": "vu-corporate-action-v3-blinded-2026-10-17",
+    "perCategory": 150,
+    "ordering": "ascending sha256(seed + '|' + segmentId)",
+    "excluded": [
+      "every segment with a V4 extreme security-month (2213, the 83 included) and every one of the 74 adjusted-level > 1e6 securities",
+      "every segment on which canonical-total-return-1.2.0 places SPLIT_SUSPECTED_UNDECLARED or PRICE_SPIKE_REVERTED (as protocol 2.0.0)",
+      "every member of the v2 control set (recomputed with the v2 seed and rules): seen data are not reused"
+    ],
+    "blinding": "categories and the independent event population are computed in stage select from raw price features, the second vendor, FINRA and SEC only, before any v3 contract is built; their sha256 is written to the public SELECT file before stage evaluate runs. The label module (labels.mjs) imports no engine of the core (test B1).",
+    "categories": {
+      "NORMAL": ">= 250 bars",
+      "VOLATILE": "top decile of the daily raw log-return standard deviation (no provider event days), median raw close >= 1",
+      "PENNY": "median raw close < 1.00",
+      "CONFIRMED_FORWARD_SPLIT": "an independent forward split >= 1.5 inside the segment: second vendor (identity CONFIRMED), FINRA, or an SEC effective statement",
+      "CONFIRMED_REVERSE_SPLIT": "an independent reverse split <= 1/1.5: second vendor, FINRA, SEC effective statement, or an SEC share-count drop <= 1/3 within 200 days",
+      "DOWNWARD_JUMP": "at least one overnight raw close ratio <= 1/3 without provider event",
+      "SYMBOL_CHANGE": "issuer CIK continues under another ticker within 30 days after the segment ends, or a FINRA symbol change / exchange-to-OTC change in the window",
+      "MERGER": "delisted, delisting class ACQUISITION or MERGER_FORM",
+      "DELISTING": "delisted (any class, distress included)",
+      "STALE": ">= 10 consecutive identical raw closes",
+      "HIGH_NOMINAL": "maximum raw close >= 1000"
+    }
+  },
+  "selection": {
+    "commitment": {
+      "membersSha256": "34ba70389e07753cf338c330384a4579920a0ba552ce662da62ee440d2bbcb09",
+      "independentEventsSha256": "669b32dd7497b4f4a9fc5432bfdca7edec6e57ef8a9d453489b7c964a6d6890c",
+      "writtenBefore": "stage evaluate"
+    },
+    "inSampleExcluded": 1425,
+    "v2ControlMembersExcluded": 905,
+    "eligible": 7077,
+    "coreFlaggedStratum": 56,
+    "distinctMembers": 997,
+    "categories": {
+      "NORMAL": {
+        "pool": 5751,
+        "sampled": 150
+      },
+      "VOLATILE": {
+        "pool": 559,
+        "sampled": 150
+      },
+      "PENNY": {
+        "pool": 291,
+        "sampled": 150
+      },
+      "CONFIRMED_FORWARD_SPLIT": {
+        "pool": 225,
+        "sampled": 150
+      },
+      "CONFIRMED_REVERSE_SPLIT": {
+        "pool": 870,
+        "sampled": 150
+      },
+      "DOWNWARD_JUMP": {
+        "pool": 303,
+        "sampled": 150
+      },
+      "SYMBOL_CHANGE": {
+        "pool": 163,
+        "sampled": 150
+      },
+      "MERGER": {
+        "pool": 1321,
+        "sampled": 150
+      },
+      "DELISTING": {
+        "pool": 2606,
+        "sampled": 150
+      },
+      "STALE": {
+        "pool": 1044,
+        "sampled": 150
+      },
+      "HIGH_NOMINAL": {
+        "pool": 1,
+        "sampled": 1
+      }
+    },
+    "vendorIdentity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "independentEvents": {
+      "SEC_SHARES_DROP": 636,
+      "VENDOR_SPLIT": 2263,
+      "FINRA_SPLIT": 128
+    }
+  },
+  "results": {
+    "protocol": "CORPORATE-ACTION-PROTOCOL-V3.json",
+    "seed": "vu-corporate-action-v3-blinded-2026-10-17",
+    "perCategory": 150,
+    "inSampleExcluded": 1425,
+    "v2MembersExcluded": 905,
+    "eligible": 7077,
+    "categories": {
+      "NORMAL": {
+        "pool": 5751,
+        "sampled": 150,
+        "labelable": 125,
+        "labelableShare": 0.8333,
+        "vendorConfirmed": 85,
+        "segmentsWithIntervention": 3,
+        "interventions": 3,
+        "labels": {
+          "HOLD:UNLABELED": 2,
+          "HOLD:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0298
+        ],
+        "falseNegatives": {
+          "events": 26,
+          "providerDeclared": 24,
+          "notInPrice": 2,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 24,
+            "NOT_IN_PRICE": 2
+          }
+        }
+      },
+      "VOLATILE": {
+        "pool": 559,
+        "sampled": 150,
+        "labelable": 130,
+        "labelableShare": 0.8667,
+        "vendorConfirmed": 83,
+        "segmentsWithIntervention": 19,
+        "interventions": 26,
+        "labels": {
+          "NORMALIZE:UNLABELED": 2,
+          "HOLD:TRUE_POSITIVE": 13,
+          "INVALID_RANGE:UNLABELED": 3,
+          "HOLD:UNLABELED": 6,
+          "NORMALIZE:FALSE_POSITIVE": 2
+        },
+        "falsePositiveSegments": 2,
+        "falsePositiveRate": 0.0154,
+        "wilson95": [
+          0.0042,
+          0.0544
+        ],
+        "falseNegatives": {
+          "events": 90,
+          "providerDeclared": 83,
+          "notInPrice": 7,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 83,
+            "NOT_IN_PRICE": 7
+          }
+        }
+      },
+      "PENNY": {
+        "pool": 291,
+        "sampled": 150,
+        "labelable": 111,
+        "labelableShare": 0.74,
+        "vendorConfirmed": 27,
+        "segmentsWithIntervention": 31,
+        "interventions": 56,
+        "labels": {
+          "HOLD:UNLABELED": 36,
+          "INVALID_RANGE:UNLABELED": 17,
+          "HOLD:TRUE_POSITIVE": 2,
+          "NORMALIZE:UNLABELED": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0335
+        ],
+        "falseNegatives": {
+          "events": 29,
+          "providerDeclared": 29,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 29
+          }
+        }
+      },
+      "CONFIRMED_FORWARD_SPLIT": {
+        "pool": 225,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 124,
+        "segmentsWithIntervention": 4,
+        "interventions": 4,
+        "labels": {
+          "HOLD:FALSE_POSITIVE": 1,
+          "NORMALIZE:UNLABELED": 1,
+          "INVALID_RANGE:FALSE_POSITIVE": 1,
+          "HOLD:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 2,
+        "falsePositiveRate": 0.0133,
+        "wilson95": [
+          0.0037,
+          0.0473
+        ],
+        "falseNegatives": {
+          "events": 137,
+          "providerDeclared": 121,
+          "notInPrice": 3,
+          "outsideValid": 0,
+          "evaluable": 13,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.2281
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 121,
+            "NOT_IN_PRICE": 3,
+            "HANDLED": 13
+          }
+        }
+      },
+      "CONFIRMED_REVERSE_SPLIT": {
+        "pool": 870,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 104,
+        "segmentsWithIntervention": 15,
+        "interventions": 23,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "HOLD:UNLABELED": 4,
+          "INVALID_RANGE:UNLABELED": 3,
+          "HOLD:TRUE_POSITIVE": 14,
+          "NORMALIZE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 1,
+        "falsePositiveRate": 0.0067,
+        "wilson95": [
+          0.0012,
+          0.0368
+        ],
+        "falseNegatives": {
+          "events": 119,
+          "providerDeclared": 111,
+          "notInPrice": 7,
+          "outsideValid": 0,
+          "evaluable": 1,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.7935
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 111,
+            "HANDLED": 1,
+            "NOT_IN_PRICE": 7
+          }
+        }
+      },
+      "DOWNWARD_JUMP": {
+        "pool": 303,
+        "sampled": 150,
+        "labelable": 115,
+        "labelableShare": 0.7667,
+        "vendorConfirmed": 51,
+        "segmentsWithIntervention": 48,
+        "interventions": 80,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "INVALID_RANGE:UNLABELED": 23,
+          "HOLD:UNLABELED": 40,
+          "HOLD:FALSE_POSITIVE": 3,
+          "HOLD:TRUE_POSITIVE": 12,
+          "INVALID_RANGE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 4,
+        "falsePositiveRate": 0.0348,
+        "wilson95": [
+          0.0136,
+          0.086
+        ],
+        "falseNegatives": {
+          "events": 65,
+          "providerDeclared": 60,
+          "notInPrice": 3,
+          "outsideValid": 0,
+          "evaluable": 2,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.6576
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 60,
+            "NOT_IN_PRICE": 3,
+            "HANDLED": 2
+          }
+        }
+      },
+      "SYMBOL_CHANGE": {
+        "pool": 163,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 43,
+        "segmentsWithIntervention": 27,
+        "interventions": 46,
+        "labels": {
+          "HOLD:UNLABELED": 22,
+          "INVALID_RANGE:UNLABELED": 7,
+          "HOLD:FALSE_POSITIVE": 1,
+          "NORMALIZE:UNLABELED": 3,
+          "NORMALIZE:FALSE_POSITIVE": 5,
+          "HOLD:TRUE_POSITIVE": 7,
+          "NORMALIZE:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 6,
+        "falsePositiveRate": 0.04,
+        "wilson95": [
+          0.0185,
+          0.0845
+        ],
+        "falseNegatives": {
+          "events": 41,
+          "providerDeclared": 35,
+          "notInPrice": 4,
+          "outsideValid": 0,
+          "evaluable": 2,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.6576
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 35,
+            "NOT_IN_PRICE": 4,
+            "HANDLED": 1,
+            "NORMALIZED": 1
+          }
+        }
+      },
+      "MERGER": {
+        "pool": 1321,
+        "sampled": 150,
+        "labelable": 143,
+        "labelableShare": 0.9533,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 0,
+        "interventions": 0,
+        "labels": {},
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0262
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      },
+      "DELISTING": {
+        "pool": 2606,
+        "sampled": 150,
+        "labelable": 94,
+        "labelableShare": 0.6267,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 1,
+        "interventions": 1,
+        "labels": {
+          "INVALID_RANGE:UNLABELED": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0393
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      },
+      "STALE": {
+        "pool": 1044,
+        "sampled": 150,
+        "labelable": 105,
+        "labelableShare": 0.7,
+        "vendorConfirmed": 32,
+        "segmentsWithIntervention": 18,
+        "interventions": 32,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "HOLD:UNLABELED": 13,
+          "INVALID_RANGE:UNLABELED": 7,
+          "HOLD:TRUE_POSITIVE": 10,
+          "NORMALIZE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 1,
+        "falsePositiveRate": 0.0095,
+        "wilson95": [
+          0.0017,
+          0.052
+        ],
+        "falseNegatives": {
+          "events": 26,
+          "providerDeclared": 20,
+          "notInPrice": 6,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 20,
+            "NOT_IN_PRICE": 6
+          }
+        }
+      },
+      "HIGH_NOMINAL": {
+        "pool": 1,
+        "sampled": 1,
+        "labelable": 1,
+        "labelableShare": 1,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 1,
+        "interventions": 5,
+        "labels": {
+          "HOLD:UNLABELED": 1,
+          "INVALID_RANGE:UNLABELED": 4
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.7935
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      }
+    },
+    "pooled": {
+      "interventions": {
+        "total": 128,
+        "truePositive": 19,
+        "falsePositive": 10,
+        "falseShare": 0.3448,
+        "wilson95": [
+          0.1994,
+          0.5266
+        ]
+      },
+      "distinctSegments": 997,
+      "labelable": 842,
+      "labelableShare": 0.8445,
+      "falsePositiveSegments": 10,
+      "falsePositiveRate": 0.0119,
+      "wilson95": [
+        0.0065,
+        0.0217
+      ],
+      "falseNegatives": {
+        "events": 330,
+        "providerDeclared": 300,
+        "notInPrice": 15,
+        "outsideValid": 0,
+        "evaluable": 15,
+        "falseNegatives": 0,
+        "rate": 0,
+        "wilson95": [
+          0,
+          0.2039
+        ],
+        "byStatus": {
+          "PROVIDER_DECLARED": 300,
+          "NOT_IN_PRICE": 15,
+          "HANDLED": 14,
+          "NORMALIZED": 1
+        }
+      }
+    }
+  },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
+  "measurementLimits": [
+    "labelable means a label channel exists for the segment, not that a decision was labelled: the pooled segment FP rate counts segments whose decisions are unlabelled (review R3-02); the per-labelled-intervention false share is the informative figure",
+    "MERGER and DELISTING: no vendor identity, FP 0 = NOT_MEASURED",
+    "HIGH_NOMINAL: pool of 1 eligible segment; the per-category gate is structurally unreachable on this universe"
+  ],
+  "acceptance": {
+    "blindedFalsePositiveRatePooled": {
+      "value": 0.0119,
+      "threshold": 0.02,
+      "pass": true
+    },
+    "blindedFalsePositiveRatePerCategory": {
+      "threshold": 0.05,
+      "minLabelable": 30,
+      "pass": false
+    },
+    "blindedInterventionFalseShare": {
+      "value": 0.3448,
+      "labelled": 29,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "blindedFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 15,
+      "threshold": 0.05,
+      "minEvaluable": 50,
+      "pass": false
+    },
+    "blindedLabelableShare": {
+      "value": 0.8445,
+      "threshold": 0.5,
+      "pass": true
+    }
+  },
+  "knownV4CasesUse": "excluded from the set; regression only (D2-REGRESSION-V3.json)"
+}

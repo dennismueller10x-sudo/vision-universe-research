@@ -1,0 +1,322 @@
+{
+  "schema": "course-only-hold-validation-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "definition": "a hold whose evidence is the price alone: evidence class PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source statement",
+  "falsePositives": {
+    "definition": "holds whose evidence is the price only (PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source)",
+    "total": 277,
+    "truePositive": 16,
+    "falsePositive": 21,
+    "unlabeled": 240,
+    "labelled": 37,
+    "labelledShare": 0.1336,
+    "falseShare": 0.5676,
+    "wilson95FalseShare": [
+      0.4091,
+      0.7133
+    ],
+    "worstCaseFalseShare": 0.9422,
+    "byReason": {
+      "LISTING_CHANGE_SEMANTIC:UNLABELED": 48,
+      "SPLIT_SUSPECTED_UNDECLARED:UNLABELED": 91,
+      "STALE_THEN_EXTREME_JUMP:UNLABELED": 36,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:FALSE_POSITIVE": 4,
+      "STALE_THEN_EXTREME_JUMP:FALSE_POSITIVE": 5,
+      "LISTING_CHANGE_SEMANTIC:FALSE_POSITIVE": 1,
+      "UNDECLARED_SPLIT_SIGNATURE:UNLABELED": 10,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:TRUE_POSITIVE": 5,
+      "STALE_THEN_EXTREME_JUMP:TRUE_POSITIVE": 4,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:UNLABELED": 44,
+      "CURRENCY_OR_UNIT_CHANGE:UNLABELED": 11,
+      "UNDECLARED_SPLIT_SIGNATURE:FALSE_POSITIVE": 8,
+      "SPLIT_SUSPECTED_UNDECLARED:TRUE_POSITIVE": 5,
+      "SPLIT_SUSPECTED_UNDECLARED:FALSE_POSITIVE": 3,
+      "CURRENCY_OR_UNIT_CHANGE:TRUE_POSITIVE": 1,
+      "UNDECLARED_SPLIT_SIGNATURE:TRUE_POSITIVE": 1
+    },
+    "byBasis": {
+      "NONE": 240,
+      "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 20,
+      "VENDOR_CONFIRMS_CONTINUOUS_MOVE": 1,
+      "VENDOR_SHOWS_NO_MOVE": 8,
+      "INDEPENDENT_EVENT": 2,
+      "VENDOR_SPLIT": 6
+    }
+  },
+  "allCorporateActionHolds": {
+    "total": 365,
+    "truePositive": 74,
+    "falsePositive": 29,
+    "unlabeled": 262,
+    "labelled": 103,
+    "labelledShare": 0.2822,
+    "falseShare": 0.2816,
+    "wilson95FalseShare": [
+      0.2038,
+      0.3751
+    ],
+    "worstCaseFalseShare": 0.7973,
+    "byFamily": {
+      "DISCONTINUITY_HOLD:TRUE_POSITIVE": 69,
+      "DISCONTINUITY_HOLD:UNLABELED": 167,
+      "DISCONTINUITY_HOLD:FALSE_POSITIVE": 23,
+      "SEMANTIC_TERMINAL:UNLABELED": 48,
+      "SEMANTIC_DATA_HOLD:UNLABELED": 47,
+      "SEMANTIC_DATA_HOLD:FALSE_POSITIVE": 5,
+      "SEMANTIC_TERMINAL:FALSE_POSITIVE": 1,
+      "SEMANTIC_DATA_HOLD:TRUE_POSITIVE": 5
+    }
+  },
+  "coreDataContractHoldsNotLabelled": 153,
+  "falseNegatives": {
+    "gatePopulation": "engine-independent events (second vendor) only; FINRA and share-count events are engine inputs and reported separately (review P3-07)",
+    "courseOnly": {
+      "events": 418,
+      "providerDeclared": 384,
+      "notInPrice": 8,
+      "outsideValid": 0,
+      "evaluable": 26,
+      "falseNegatives": 1,
+      "rate": 0.0385,
+      "wilson95": [
+        0.0068,
+        0.1889
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 384,
+        "NOT_IN_PRICE": 8,
+        "HANDLED": 18,
+        "HELD_OR_LINK": 7,
+        "FALSE_NEGATIVE": 1
+      }
+    },
+    "courseOnlyDownward": {
+      "events": 121,
+      "providerDeclared": 96,
+      "notInPrice": 5,
+      "outsideValid": 0,
+      "evaluable": 20,
+      "falseNegatives": 0,
+      "rate": 0,
+      "wilson95": [
+        0,
+        0.1611
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 96,
+        "NOT_IN_PRICE": 5,
+        "HANDLED": 18,
+        "HELD_OR_LINK": 2
+      }
+    },
+    "universe": {
+      "events": 2263,
+      "providerDeclared": 2183,
+      "notInPrice": 41,
+      "outsideValid": 0,
+      "evaluable": 39,
+      "falseNegatives": 4,
+      "rate": 0.1026,
+      "wilson95": [
+        0.0406,
+        0.2358
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 2183,
+        "NOT_IN_PRICE": 41,
+        "NORMALIZED": 4,
+        "HANDLED": 22,
+        "FALSE_NEGATIVE": 4,
+        "HELD_OR_LINK": 9
+      }
+    },
+    "sourceDependent": {
+      "events": 764,
+      "providerDeclared": 454,
+      "notInPrice": 278,
+      "outsideValid": 4,
+      "evaluable": 28,
+      "falseNegatives": 6,
+      "rate": 0.2143,
+      "wilson95": [
+        0.1021,
+        0.3954
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 454,
+        "NOT_IN_PRICE": 278,
+        "NORMALIZED": 18,
+        "HELD_OR_LINK": 4,
+        "FALSE_NEGATIVE": 6,
+        "OUTSIDE_VALID": 4
+      }
+    },
+    "bySource": {
+      "SEC_SHARES_DROP:PROVIDER_DECLARED": 377,
+      "SEC_SHARES_DROP:NOT_IN_PRICE": 245,
+      "VENDOR_SPLIT:PROVIDER_DECLARED": 2183,
+      "VENDOR_SPLIT:NOT_IN_PRICE": 41,
+      "FINRA_SPLIT:NOT_IN_PRICE": 33,
+      "SEC_SHARES_DROP:NORMALIZED": 3,
+      "SEC_SHARES_DROP:HELD_OR_LINK": 4,
+      "FINRA_SPLIT:PROVIDER_DECLARED": 77,
+      "VENDOR_SPLIT:NORMALIZED": 4,
+      "FINRA_SPLIT:NORMALIZED": 15,
+      "VENDOR_SPLIT:HANDLED": 22,
+      "VENDOR_SPLIT:FALSE_NEGATIVE": 4,
+      "VENDOR_SPLIT:HELD_OR_LINK": 9,
+      "SEC_SHARES_DROP:FALSE_NEGATIVE": 5,
+      "FINRA_SPLIT:FALSE_NEGATIVE": 1,
+      "FINRA_SPLIT:OUTSIDE_VALID": 2,
+      "SEC_SHARES_DROP:OUTSIDE_VALID": 2
+    }
+  },
+  "resumedBarsByBreakLabel": {
+    "CORPORATE_ACTION_CONFLICT:TRUE_POSITIVE": 23408,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:TRUE_POSITIVE": 4913,
+    "SPLIT_SUSPECTED_UNDECLARED:FALSE_POSITIVE": 7056,
+    "SPLIT_SUSPECTED_UNDECLARED:UNLABELED": 33117,
+    "SPLIT_SUSPECTED_UNDECLARED:TRUE_POSITIVE": 22215,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:FALSE_POSITIVE": 427,
+    "UNDECLARED_SPLIT_SIGNATURE:UNLABELED": 4781,
+    "UNDECLARED_SPLIT_SIGNATURE:FALSE_POSITIVE": 9657,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:UNLABELED": 8837,
+    "CURRENCY_OR_UNIT_CHANGE:UNLABELED": 490,
+    "CORPORATE_ACTION_CONFLICT:FALSE_POSITIVE": 2,
+    "CORPORATE_ACTION_CONFLICT:UNLABELED": 5538,
+    "CURRENCY_OR_UNIT_CHANGE:TRUE_POSITIVE": 2,
+    "UNDECLARED_SPLIT_SIGNATURE:TRUE_POSITIVE": 12
+  },
+  "noPostHocRule": "no hold rule was changed after any result; the rules are those of the pre-registered protocol (P3 changes were made before the first run)",
+  "acceptance": {
+    "courseOnlyHoldFalseShare": {
+      "value": 0.5676,
+      "labelledShare": 0.1336,
+      "threshold": 0.1,
+      "minLabelledShare": 0.5,
+      "pass": false
+    },
+    "courseOnlyFalseNegativeRate": {
+      "value": 0.0385,
+      "evaluable": 26,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "falseNegativeRateUniverse": {
+      "value": 0.1026,
+      "evaluable": 39,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "normalizeFalseShare": {
+      "value": 0.8182,
+      "labelled": 22,
+      "threshold": 0.05,
+      "pass": false
+    }
+  },
+  "normalizations": {
+    "total": 47,
+    "truePositive": 4,
+    "falsePositive": 18,
+    "unlabeled": 25,
+    "labelled": 22,
+    "labelledShare": 0.4681,
+    "falseShare": 0.8182,
+    "wilson95FalseShare": [
+      0.6148,
+      0.9269
+    ],
+    "worstCaseFalseShare": 0.9149,
+    "bySystemAndLabel": {
+      "SEC_EDGAR:UNLABELED": 14,
+      "SEC_EDGAR:TRUE_POSITIVE": 4,
+      "FINRA_OTC_DAILY_LIST:FALSE_POSITIVE": 4,
+      "SEC_EDGAR:FALSE_POSITIVE": 14,
+      "FINRA_OTC_DAILY_LIST:UNLABELED": 11
+    },
+    "byBasis": {
+      "NONE": 25,
+      "VENDOR_SPLIT_SAME_RATIO": 4,
+      "SEC_SHARES_NO_SPLIT": 6,
+      "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 12
+    }
+  },
+  "invalidRanges": {
+    "total": 102,
+    "truePositive": 3,
+    "falsePositive": 6,
+    "unlabeled": 93,
+    "labelled": 9,
+    "labelledShare": 0.0882,
+    "falseShare": 0.6667,
+    "wilson95FalseShare": [
+      0.3542,
+      0.8794
+    ],
+    "worstCaseFalseShare": 0.9706,
+    "byReason": {
+      "PRICE_SPIKE_REVERTED:UNLABELED": 67,
+      "BAD_TICK_REVERTED:UNLABELED": 26,
+      "BAD_TICK_REVERTED:FALSE_POSITIVE": 2,
+      "PRICE_SPIKE_REVERTED:FALSE_POSITIVE": 4,
+      "PRICE_SPIKE_REVERTED:TRUE_POSITIVE": 3
+    }
+  },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
+  "labelSensitivity": {
+    "note": "the FALSE_POSITIVE basis VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT means the second vendor shows the same raw move and no split; if both vendors miss a split (shared upstream), a true hold is counted as false (conservative, pre-registered)",
+    "normalizations": {
+      "falsePositiveByBasis": {
+        "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 12,
+        "SEC_SHARES_NO_SPLIT": 6
+      },
+      "truePositive": 4,
+      "withoutVendorMoveBasis": "6 FALSE_POSITIVE (SEC shares NO_SPLIT) vs 4 TRUE_POSITIVE (vendor split same ratio): 0.60, still failing"
+    },
+    "courseOnlyHolds": {
+      "falsePositiveByBasis": {
+        "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 20,
+        "VENDOR_CONFIRMS_CONTINUOUS_MOVE": 1
+      },
+      "truePositive": 16,
+      "withoutVendorMoveBasis": "NOT_MEASURABLE: the vendor-move basis is the only false-positive channel; removing it leaves no FP evidence at all (the TP channels VENDOR_SHOWS_NO_MOVE 8, VENDOR_SPLIT 6, INDEPENDENT_EVENT 2 remain). A false share of 0 would hold by construction and is not reported (review R3-03)."
+    },
+    "reading": "FP evidence is single-vendor and asymmetric: a hold or normalization is FALSE_POSITIVE when the second vendor shows the same raw move without a split; that cannot be told from a split both vendors missed (shared upstream). The pre-registered measurement fails either way; the true FP rate is bounded from above by these numbers only if the vendor never misses a split the provider also misses."
+  }
+}

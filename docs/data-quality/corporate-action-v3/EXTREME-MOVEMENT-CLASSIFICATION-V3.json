@@ -1,0 +1,117 @@
+{
+  "schema": "extreme-movement-classification-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "population": "the v2 >= 10x overnight moves without provider event inside the v2 valid range, neither normalized nor held (recomputed with the v2 engine on the same capture)",
+  "classes": {
+    "CONFIRMED_EVENT": "vendor split within 5 days that explains the move, FINRA split within 10 days that explains it, or SEC shares CONFIRMS (protocol 2.0.0 definition)",
+    "BAD_DATA": "vendor NO_MOVE and no vendor split within 5 days",
+    "LEGITIMATE_MOVE": "vendor SAME_MOVE, no vendor split within 15 days, no FINRA split within 10 days, SEC shares not CONFIRMS",
+    "UNRESOLVED": "none of these"
+  },
+  "newIndependentEvidence": [
+    "second vendor (engine-independent)",
+    "FINRA OTC Daily List",
+    "SEC share counts"
+  ],
+  "result": {
+    "total": 272,
+    "byDirection": {
+      "DOWN": 149,
+      "UP": 123
+    },
+    "byIndependent": {
+      "UNRESOLVED": 194,
+      "CONFIRMED_EVENT": 21,
+      "LEGITIMATE_MOVE": 53,
+      "BAD_DATA": 4
+    },
+    "byV3": {
+      "NOT_IN_VALID_RETURN": 167,
+      "STILL_IN_VALID_RETURN": 97,
+      "ADJUSTED": 8
+    },
+    "byIndependentAndV3": {
+      "UNRESOLVED|NOT_IN_VALID_RETURN": 139,
+      "CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 9,
+      "LEGITIMATE_MOVE|STILL_IN_VALID_RETURN": 38,
+      "UNRESOLVED|STILL_IN_VALID_RETURN": 54,
+      "LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 15,
+      "BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "CONFIRMED_EVENT|ADJUSTED": 7,
+      "CONFIRMED_EVENT|STILL_IN_VALID_RETURN": 5,
+      "UNRESOLVED|ADJUSTED": 1
+    }
+  },
+  "extremeInsideValidV3": {
+    "total": 107,
+    "contradictedByIndependentEvidence": 6,
+    "unexplained": 63
+  },
+  "semanticExtremeByCause": {
+    "DOWN:UNRESOLVED": 56,
+    "UP:UNRESOLVED": 109,
+    "UP:LISTING_CHANGE": 102,
+    "UP:GENUINE_MOVE": 71,
+    "UP:DATA_STALENESS": 91,
+    "DOWN:BAD_TICK": 105,
+    "DOWN:DATA_STALENESS": 80,
+    "DOWN:SPECIAL_DISTRIBUTION": 4,
+    "DOWN:LISTING_CHANGE": 74,
+    "UP:BAD_TICK": 61,
+    "DOWN:GENUINE_MOVE": 106,
+    "DOWN:FORWARD_SPLIT": 9,
+    "DOWN:CURRENCY_OR_UNIT": 19,
+    "UP:CURRENCY_OR_UNIT": 33,
+    "UP:REVERSE_SPLIT": 4
+  },
+  "noRuleFromDistribution": "no rule was derived from this distribution; the v3 rules were fixed before the first run",
+  "acceptance": {
+    "severeExtremeInsideValidWrong": {
+      "value": 6,
+      "of": 107,
+      "threshold": 0,
+      "pass": false
+    },
+    "severeExtremeInsideValidUnresolvedShare": {
+      "value": 0.5888,
+      "threshold": 0.1,
+      "pass": false
+    }
+  },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  }
+}

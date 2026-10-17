@@ -1,0 +1,137 @@
+{
+  "schema": "independent-pit-validation-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "method": "TRUNCATION ORACLE: for each sampled as-of day t the engine view build(bars, {asOf: t}) is compared with build(bars <= t, evidence truncated outside the engine by its own publication timestamp, no asOf). Any difference in segments, holds, invalid ranges, normalizations or a total-return ratio (1e-9) is a violation. Timestamps: every SEC observation is compared with its EDGAR acceptance time (data.sec.gov/submissions, a different SEC system than the full-text search that supplies visibleAt); an observation treated as public before its acceptance day (US/Eastern) is a violation. observedAt of every hold, normalization, invalid range and RESUME_FROM must appear in the oracle view of that day (else OBSERVED_AT_TOO_EARLY, a violation); appearing already one session earlier is reported as late (conservative, not a violation). Revisions at +1/+5/+20 sessions and lag distributions are disclosed (review R2-07).",
+  "independence": "independent of the engine's as-of filtering (inputs physically truncated) and of the EFTS extraction (acceptance times from the submissions index). The SEC remains the authority for its own publication time; FINRA has a single timestamp (dailyListDatetime), so FINRA timing is checked by truncation only (disclosed limit). The signature/tr comparison re-runs the truncation outside the engine and is reported as a consistency check; the independent parts are the acceptance-time comparison (decision observations) and the observedAt-in-oracle-view check (review P3-06).",
+  "sample": {
+    "seed": "vu-corporate-action-v3-pit-2026-10-17",
+    "maxSegments": 1500,
+    "segmentsChecked": 426,
+    "viewsCompared": 3512
+  },
+  "engineVsTruncationOracle": {
+    "mismatchKinds": {},
+    "barsAfterAsOf": 0,
+    "role": "consistency check (review P3-06)"
+  },
+  "observedAt": {
+    "checked": 898,
+    "tooEarly": 0,
+    "late": 0,
+    "skippedNotABarDate": 7,
+    "revisionsAfterObserved": 4,
+    "basis": {
+      "HOLD:FIRST_AS_OF_VIEW_WITH_HOLD": 512,
+      "HOLD:AFTER_LAST_BAR": 6,
+      "INVALID_RANGE:REVERT_BAR": 102,
+      "RESUME_FROM:FIRST_AS_OF_VIEW_WITH_SEGMENT": 237,
+      "NORMALIZE:FIRST_AS_OF_VIEW_WITH_NORMALIZATION": 47,
+      "RESUME_FROM:AFTER_LAST_BAR": 1
+    },
+    "lagSessions": {
+      "HOLD:0": 462,
+      "INVALID_RANGE:1": 81,
+      "INVALID_RANGE:2": 21,
+      "RESUME_FROM:1": 188,
+      "HOLD:30": 17,
+      "RESUME_FROM:30": 16,
+      "HOLD:1": 5,
+      "HOLD:9": 1,
+      "RESUME_FROM:9": 1,
+      "HOLD:10": 23,
+      "RESUME_FROM:10": 23,
+      "NORMALIZE:6": 4,
+      "NORMALIZE:0": 37,
+      "HOLD:4": 1,
+      "RESUME_FROM:4": 1,
+      "NORMALIZE:30": 3,
+      "HOLD:2": 1,
+      "HOLD:11": 3,
+      "RESUME_FROM:11": 3,
+      "NORMALIZE:15": 1,
+      "HOLD:7": 1,
+      "RESUME_FROM:7": 1,
+      "NORMALIZE:16": 1,
+      "HOLD:5": 1,
+      "RESUME_FROM:5": 1,
+      "HOLD:20": 1,
+      "HOLD:18": 1,
+      "RESUME_FROM:20": 1,
+      "RESUME_FROM:18": 1,
+      "HOLD:21": 1,
+      "RESUME_FROM:21": 1,
+      "NORMALIZE:1": 1,
+      "RESUME_FROM:2": 1
+    }
+  },
+  "edgarAcceptance": {
+    "universe": {
+      "observations": 9643,
+      "withAcceptance": 9643,
+      "filedBeforeAcceptanceDay": 2,
+      "lagDaysFiledMinusAccepted": {
+        "0": 9121,
+        "1": 414,
+        "2": 14,
+        "3": 76,
+        "4": 15,
+        "5": 1,
+        "-1": 2
+      }
+    },
+    "decisionObservations": {
+      "observations": 146,
+      "withAcceptance": 146,
+      "filedBeforeAcceptance": 0
+    }
+  },
+  "labelSourceVsValidationSource": {
+    "label": "SEC EFTS file_date (visibleAt) and FINRA dailyListDatetime",
+    "validation": "truncation outside the engine; EDGAR submissions acceptanceDateTime (different SEC system); FINRA: single timestamp, truncation only"
+  },
+  "acceptance": {
+    "pitViolations": {
+      "value": {
+        "barsAfterAsOf": 0,
+        "mismatches": 0,
+        "observedAtTooEarly": 0,
+        "filedBeforeAcceptance": 2,
+        "decisionFiledBeforeAcceptance": 0
+      },
+      "threshold": 0,
+      "pass": false,
+      "views": 3512,
+      "observedAtSkippedNotABarDate": 7
+    },
+    "pitTimestampCoverage": {
+      "value": 1,
+      "universe": 1,
+      "threshold": 0.95,
+      "pass": true
+    }
+  },
+  "verdict": "FAIL",
+  "gateDeviation": "the pitViolations gate counts the universe-wide filedBeforeAcceptance observations although review P3-06 restricted the acceptance-time gate to decision observations (0 of 146); conservative, disclosed (review R3-10)",
+  "finding": "2 SEC observations carry an EFTS filing date before their EDGAR acceptance day (US/Eastern). None is behind a decision, but an as-of view on the acceptance day could see them: the evidence model must take visibleAt = max(filing date, acceptance day) - a rule change for the next protocol, not applied here."
+}

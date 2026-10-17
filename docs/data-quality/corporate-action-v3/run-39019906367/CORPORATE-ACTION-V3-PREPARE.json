@@ -1,0 +1,39 @@
+{
+  "schema": "corporate-action-v3-prepare-1.0.0",
+  "runId": "39019906367",
+  "codeCommit": "6834e87e82b9cfc3eab86f1db4fc938cd66728d5",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "capture": {
+    "dataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "normalizedPartListSha256": "e24abf97685c341b527402bede1a6f78623bc5b03f5e02a1577467417a13c20a",
+    "securities": 9407,
+    "sameCanonicalContentAsV4Freeze": false
+  },
+  "population": {
+    "extremeSecurityMonths": 2213,
+    "in83": 83,
+    "highLevel": 74,
+    "highLevelByCause": {
+      "DECLARED_SPLIT_INCONSISTENT": 3,
+      "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": 60,
+      "UNDECLARED_JUMP_IN_HISTORY": 10,
+      "UNRESOLVED": 1
+    },
+    "counts": {
+      "gt100pct": 2200,
+      "gt1000pct": 65,
+      "ltMinus99pct": 13
+    }
+  },
+  "universe": {
+    "segments": 9407,
+    "withIssuerCik": 7352,
+    "distinctCiks": 6649,
+    "withName": 0,
+    "delisted": 3195
+  },
+  "regressionInputSha256": "ab6675611421a2c1521a0f2a212abf166b18eac9b9fd3ada1cc3e54aae2229a1",
+  "performanceCalculated": false,
+  "calibrationRun": false
+}

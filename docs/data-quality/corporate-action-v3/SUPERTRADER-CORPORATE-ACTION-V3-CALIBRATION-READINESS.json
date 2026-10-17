@@ -1,0 +1,328 @@
+{
+  "schema": "supertrader-corporate-action-v3-calibration-readiness-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "verdict": "NOT_READY",
+  "verdictPrecommitted": {
+    "file": "docs/data-quality/corporate-action-v3/VERDICT-PRECOMMIT.json",
+    "verdict": "NOT_READY",
+    "sha256": "c0c12978306d4aa0983e3031d02951694dc098e237ac02a4c128a0962b0afd51"
+  },
+  "readyConditions": {
+    "pitIndependentlyValidated": false,
+    "fpFnIndependentlyMeasured": false,
+    "downwardJumpsCovered": false,
+    "d2DefectsOutOfValidRange": false,
+    "secondIndependentSourceIntegrated": true,
+    "secondSourceScope": "FINRA OTC Daily List only: OTC securities and exchange<->OTC transitions; 602 of 9,407 segments have any FINRA row (review R3-08)",
+    "noHighCriticalOpen": false
+  },
+  "acceptance": {
+    "pitViolations": {
+      "value": {
+        "barsAfterAsOf": 0,
+        "mismatches": 0,
+        "observedAtTooEarly": 0,
+        "filedBeforeAcceptance": 2,
+        "decisionFiledBeforeAcceptance": 0
+      },
+      "threshold": 0,
+      "pass": false,
+      "views": 3512,
+      "observedAtSkippedNotABarDate": 7
+    },
+    "pitTimestampCoverage": {
+      "value": 1,
+      "universe": 1,
+      "threshold": 0.95,
+      "pass": true
+    },
+    "blindedFalsePositiveRatePooled": {
+      "value": 0.0119,
+      "threshold": 0.02,
+      "pass": true
+    },
+    "blindedFalsePositiveRatePerCategory": {
+      "threshold": 0.05,
+      "minLabelable": 30,
+      "pass": false
+    },
+    "blindedInterventionFalseShare": {
+      "value": 0.3448,
+      "labelled": 29,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "blindedFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 15,
+      "threshold": 0.05,
+      "minEvaluable": 50,
+      "pass": false
+    },
+    "falseNegativeRateUniverse": {
+      "value": 0.1026,
+      "evaluable": 39,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "courseOnlyHoldFalseShare": {
+      "value": 0.5676,
+      "labelledShare": 0.1336,
+      "threshold": 0.1,
+      "minLabelledShare": 0.5,
+      "pass": false
+    },
+    "courseOnlyFalseNegativeRate": {
+      "value": 0.0385,
+      "evaluable": 26,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "normalizeFalseShare": {
+      "value": 0.8182,
+      "labelled": 22,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "downwardFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 21,
+      "threshold": 0.1,
+      "minEvaluable": 20,
+      "pass": true
+    },
+    "downwardHoldFalseShare": {
+      "value": 0.5658,
+      "labelled": 76,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "knownD2ValidRangeDefects": {
+      "value": 10,
+      "known": 11,
+      "reproducesEleven": true,
+      "threshold": 0,
+      "pass": false
+    },
+    "severeExtremeInsideValidWrong": {
+      "value": 6,
+      "of": 107,
+      "threshold": 0,
+      "pass": false
+    },
+    "severeExtremeInsideValidUnresolvedShare": {
+      "value": 0.5888,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "unresolvedConflictingHolds": {
+      "value": 21,
+      "share": 0.0092,
+      "threshold": 0.005,
+      "pass": false
+    },
+    "independentLabelCoverage": {
+      "value": 0.2607,
+      "threshold": 0.5,
+      "pass": false
+    },
+    "blindedLabelableShare": {
+      "value": 0.8445,
+      "threshold": 0.5,
+      "pass": true
+    },
+    "secondSourceIntegrated": {
+      "value": {
+        "finraEffectiveSplitEventsJoined": 204,
+        "finraSplitEventsJoined": 209,
+        "finraRatioParseFailures": 291,
+        "finraNormalizations": 15,
+        "secondSourceCorroborations": 18
+      },
+      "pass": true
+    },
+    "secCollectionComplete": {
+      "value": {
+        "documentErrors": 1,
+        "incompleteWindows": 1,
+        "documents": 70395
+      },
+      "threshold": 0.001,
+      "pass": false
+    },
+    "pass": false
+  },
+  "failedCriteria": [
+    {
+      "criterion": "pitViolations",
+      "value": {
+        "barsAfterAsOf": 0,
+        "mismatches": 0,
+        "observedAtTooEarly": 0,
+        "filedBeforeAcceptance": 2,
+        "decisionFiledBeforeAcceptance": 0
+      },
+      "threshold": 0
+    },
+    {
+      "criterion": "blindedFalsePositiveRatePerCategory",
+      "value": null,
+      "threshold": 0.05,
+      "cause": "HIGH_NOMINAL has 1 labelable segment (pool of 1); every other category <= 0.05"
+    },
+    {
+      "criterion": "blindedInterventionFalseShare",
+      "value": 0.3448,
+      "threshold": 0.1
+    },
+    {
+      "criterion": "blindedFalseNegativeRate",
+      "value": 0,
+      "threshold": 0.05
+    },
+    {
+      "criterion": "falseNegativeRateUniverse",
+      "value": 0.1026,
+      "threshold": 0.05
+    },
+    {
+      "criterion": "courseOnlyHoldFalseShare",
+      "value": 0.5676,
+      "threshold": 0.1
+    },
+    {
+      "criterion": "courseOnlyFalseNegativeRate",
+      "value": 0.0385,
+      "threshold": 0.1
+    },
+    {
+      "criterion": "normalizeFalseShare",
+      "value": 0.8182,
+      "threshold": 0.05
+    },
+    {
+      "criterion": "downwardHoldFalseShare",
+      "value": 0.5658,
+      "threshold": 0.1
+    },
+    {
+      "criterion": "knownD2ValidRangeDefects",
+      "value": 10,
+      "threshold": 0
+    },
+    {
+      "criterion": "severeExtremeInsideValidWrong",
+      "value": 6,
+      "threshold": 0
+    },
+    {
+      "criterion": "severeExtremeInsideValidUnresolvedShare",
+      "value": 0.5888,
+      "threshold": 0.1
+    },
+    {
+      "criterion": "unresolvedConflictingHolds",
+      "value": 0.0092,
+      "count": 21,
+      "threshold": 0.005
+    },
+    {
+      "criterion": "independentLabelCoverage",
+      "value": 0.2607,
+      "threshold": 0.5
+    },
+    {
+      "criterion": "secCollectionComplete",
+      "value": {
+        "documentErrors": 1,
+        "incompleteWindows": 1,
+        "documents": 70395
+      },
+      "threshold": 0.001
+    }
+  ],
+  "openHighCritical": [
+    "R3-01 (vendor evidence binding / reproducibility)",
+    "R3-02 (blinded FP denominator)",
+    "R3-03 (FP label identifiability)"
+  ],
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
+  "intervals95": {
+    "blindedInterventionFalseShare": [
+      0.1994,
+      0.5266
+    ],
+    "blindedSegmentFalsePositiveRate": [
+      0.0065,
+      0.0217
+    ],
+    "falseNegativeUniverse": [
+      0.0406,
+      0.2358
+    ],
+    "downwardFalseNegative": [
+      0,
+      0.1546
+    ],
+    "courseOnlyHoldFalseShare": [
+      0.4091,
+      0.7133
+    ],
+    "normalizeFalseShare": [
+      0.6148,
+      0.9269
+    ]
+  },
+  "correctionsToThePrecommitment": "VERDICT-PRECOMMIT.json listed unresolvedConflictingHolds and severeExtremeInsideValidWrong as vendor-independent; both changed with the vendor labels (50 -> 21 holds, 4 -> 6 moves) and still fail (review R3-12)",
+  "consumerReadiness": {
+    "readsCanonicalCore": "only the four Quant studies (whole-series drop)",
+    "partialLoaderAdopters": 0,
+    "requiredMigrations": [
+      "QUANT (one PR per study)",
+      "SUPERTRADER (Gate A, pre-registered)",
+      "TECHNICAL (recommended)"
+    ],
+    "optional": [
+      "DISCOVER / SCREENER via the scripts/market publisher"
+    ],
+    "consumerReadyForCalibration": false,
+    "note": "Consumer readiness is not part of the protocol 3.0.0 READY criteria (item 12) but blocks any use of calibration-grade data until the consuming product has migrated."
+  },
+  "mayStartPreregisteredCalibration": false,
+  "noCalibrationNoPerformance": true
+}

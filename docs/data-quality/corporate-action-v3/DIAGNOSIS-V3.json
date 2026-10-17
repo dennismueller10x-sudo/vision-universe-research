@@ -1,0 +1,46 @@
+{
+  "d2": {
+    "source": "sealed per-case rows of run 39031465706, read after the verdict pre-commitment; counts only; no rule changed",
+    "knownD2": 11,
+    "inValidRange": 10,
+    "outOfValidRange": "1 (forensic cause UNRESOLVED, no defect day under the #722 definition)",
+    "declaredSplitInconsistent": {
+      "inValidRange": 2,
+      "residualRatios": "2.02 and 1/2.25 - below the 3:1 semantic candidate threshold and inside the core band 0.4..2.5, so neither layer acts"
+    },
+    "undeclaredJump10x": {
+      "inValidRange": 8,
+      "direction": "all DOWNWARD (-90 % to -97 %)",
+      "semanticCause": {
+        "GENUINE_MOVE": 8
+      },
+      "eventDayShareVolume": "114x to 30,609x the prior median",
+      "independentClass": {
+        "LEGITIMATE_MOVE": 4,
+        "CONFIRMED_EVENT": 1,
+        "UNRESOLVED": 3
+      },
+      "reading": "the second vendor shows 4 of these 8 moves identically without a split (genuine crashes or a split missed by both vendors), the SEC share count confirms one as a corporate action; the #722 label 'defect' is a forensic label, not an independent proof. Removing them from the valid range would need either an independent event source (they are exchange-listed, outside FINRA's OTC scope) or a rule that also holds genuine crashes - neither is in protocol 3.0.0."
+    }
+  },
+  "labelSensitivity": {
+    "note": "the FALSE_POSITIVE basis VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT means the second vendor shows the same raw move and no split; if both vendors miss a split (shared upstream), a true hold is counted as false (conservative, pre-registered)",
+    "normalizations": {
+      "falsePositiveByBasis": {
+        "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 12,
+        "SEC_SHARES_NO_SPLIT": 6
+      },
+      "truePositive": 4,
+      "withoutVendorMoveBasis": "6 FALSE_POSITIVE (SEC shares NO_SPLIT) vs 4 TRUE_POSITIVE (vendor split same ratio): 0.60, still failing"
+    },
+    "courseOnlyHolds": {
+      "falsePositiveByBasis": {
+        "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 20,
+        "VENDOR_CONFIRMS_CONTINUOUS_MOVE": 1
+      },
+      "truePositive": 16,
+      "withoutVendorMoveBasis": "NOT_MEASURABLE: the vendor-move basis is the only false-positive channel; removing it leaves no FP evidence at all (the TP channels VENDOR_SHOWS_NO_MOVE 8, VENDOR_SPLIT 6, INDEPENDENT_EVENT 2 remain). A false share of 0 would hold by construction and is not reported (review R3-03)."
+    },
+    "reading": "FP evidence is single-vendor and asymmetric: a hold or normalization is FALSE_POSITIVE when the second vendor shows the same raw move without a split; that cannot be told from a split both vendors missed (shared upstream). The pre-registered measurement fails either way; the true FP rate is bounded from above by these numbers only if the vendor never misses a split the provider also misses."
+  }
+}
