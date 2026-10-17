@@ -52,8 +52,8 @@
   var US_TICKER = /^[A-Z0-9][A-Z0-9-]{0,11}$/;
   /* Europa-Kuerzel aus dem Katalog: SAP.DE, MAERSK-B.CO. */
   var EU_TICKER = /^[A-Z0-9][A-Z0-9-]{0,15}\.[A-Z]{1,3}$/;
-  var EU_SECURITY_ID = /^ref_[A-Z0-9_]+_X[A-Z0-9]{3}$/;
-  var MIC = /^X[A-Z0-9]{3}$/;
+  /* ref_<SYM>_<SUFFIX>_<MIC>, MIC nach ISO 10383 (vier Zeichen). */
+  var EU_SECURITY_ID = /^ref_[A-Z0-9_]+_[A-Z0-9]{4}$/;
 
   /* Welche Produkte eine Region adressieren koennen. Europa hat heute nur Discover
      (Quant-Universum, Technik-Index und Supertrader-Seiten fuehren keine .DE/.PA-Listings). */
@@ -75,12 +75,10 @@
 
   /** US-Listing aus dem Kuerzel. extra: {name, companyId, instrumentId}. */
   function fromUs(ticker, extra) {
-    var raw = str(ticker).toUpperCase();
-    /* BRK.B -> BRK-B (Klassen-Buchstabe). SAP.DE ist ein europaeisches Listing und kein US-Kuerzel:
-       ein mehrbuchstabiger Punkt-Zusatz wird abgewiesen, nie still zu SAP-DE umgedeutet. */
-    if (/\.[A-Z0-9]{2,}$/.test(raw)) throw fail("INVALID_US_TICKER", raw);
-    var t = raw.replace(/\./g, "-");
-    if (!US_TICKER.test(t)) throw fail("INVALID_US_TICKER", raw);
+    /* Genau die Schreibweise der Daten (BRK-B). Kein Punkt: SAP.DE oder VOD.L sind europaeische Listings und
+       werden nie still zu einem US-Kuerzel umgedeutet; BRK.B fuehrt in Quant ins Leere (der Router sucht BRK.B). */
+    var t = str(ticker).toUpperCase();
+    if (!US_TICKER.test(t)) throw fail("INVALID_US_TICKER", t);
     var x = extra || {};
     /* Unternehmen nur ueber den Emittenten (iss_cik_<CIK>). Der Suchindex traegt fuer Listings ohne CIK die
        instrumentId als companyId - das belegt kein Unternehmen, also companyId null. */
@@ -144,7 +142,10 @@
   /** Adresse der Detailseite in einem Produkt, oder null, wenn das Produkt diese Region nicht adressiert
       (Fundamental: immer null, in Planung). */
   function href(ctx, product) {
-    if (!ctx || PRODUCTS.indexOf(product) < 0) throw fail("UNKNOWN_PRODUCT", str(product));
+    if (PRODUCTS.indexOf(product) < 0) throw fail("UNKNOWN_PRODUCT", str(product));
+    /* Auch ein von Hand gebautes Objekt erzeugt keine fremde Adresse (z. B. /supertrader/stock/../). */
+    var ok = ctx && (ctx.region === "US" ? US_TICKER.test(ctx.ticker || "") : ctx.region === "EUROPE" && EU_SECURITY_ID.test(ctx.securityId || ""));
+    if (!ok) throw fail("INVALID_CONTEXT");
     if ((ROUTABLE[ctx.region] || []).indexOf(product) < 0) return null;
     if (ctx.region === "EUROPE") return "/discover/#/s/EUROPE/" + enc(ctx.securityId);
     var t = enc(ctx.ticker);
@@ -167,10 +168,12 @@
   function parse(url) {
     var u = str(url).replace(/^https?:\/\/[^/]+/i, "");
     var hashAt = u.indexOf("#"), path = hashAt >= 0 ? u.slice(0, hashAt) : u, hash = hashAt >= 0 ? u.slice(hashAt + 1) : "";
-    path = path.replace(/\?.*$/, "");
+    path = path.replace(/\?.*$/, "").replace(/\/index\.html$/, "/");
     var q = hash.indexOf("?"), hpath = q >= 0 ? hash.slice(0, q) : hash, hquery = new URLSearchParams(q >= 0 ? hash.slice(q + 1) : "");
-    var parts = hpath.split("/").filter(Boolean).map(dec);
+    var rawParts = hpath.split("/").filter(Boolean), parts = rawParts.map(dec);
     if (parts.indexOf(null) >= 0) return null;
+    /* Quant leitet Altadressen mit allen Parametern weiter; elliott=1 und ansicht=profi oeffnen die Profi-Ansicht. */
+    var pro = hquery.get("elliott") === "1" || hquery.get("ansicht") === "profi";
     function us(product, t) { try { return { product: product, ctx: fromUs(t) }; } catch (e) { return null; } }
     if (path === "/discover/" && parts[0] === "s" && parts[2] && parts.length === 3) {
       if (parts[1] === "US_REAL") return us("discover", parts[2]);
@@ -178,13 +181,14 @@
       return null;
     }
     if (path === "/quant/" && parts[0] === "aktie" && parts[1]) {
-      if (parts.length === 2 || parts[2] === "zahlen") return us("quant", parts[1]);
-      if (parts[2] === "technik" || parts[2] === "chartbild") return us(hquery.get("elliott") === "1" ? "elliott" : "technik", parts[1]);
-      return null;
+      /* Wie quant/app/app.js#parse: technik/chartbild sind Altadressen des Chartbilds, alles andere die Aktienseite. */
+      if (parts[2] === "technik" || parts[2] === "chartbild") return us(pro ? "elliott" : "technik", parts[1]);
+      return us("quant", parts[1]);
     }
-    if (path === "/quant/" && parts[0] === "elliott" && parts[1] && parts.length === 2) return us("technik", parts[1]);
-    if (path === "/elliott/" && parts.length === 1) return us(hquery.get("ansicht") === "profi" ? "elliott" : "technik", parts[0]);
-    var st = /^\/supertrader\/stock\/([^/]+)\/(index\.html)?$/.exec(path);
+    if (path === "/quant/" && parts[0] === "elliott" && parts[1] && parts.length === 2) return us(pro ? "elliott" : "technik", parts[1]);
+    /* elliott/engine/home-model.js#parseHash: genau ein fuehrender Schraegstrich, keine Dekodierung. */
+    if (path === "/elliott/" && /^\/?[A-Za-z0-9.-]{1,12}\/*$/.test(hpath) && rawParts.length === 1) return us(pro ? "elliott" : "technik", rawParts[0]);
+    var st = /^\/supertrader\/stock\/([^/]+)\/$/.exec(path);
     if (st && !hash) { var s = dec(st[1]); return s ? us("supertrader", s) : null; }
     return null;
   }
@@ -192,12 +196,15 @@
   /* Verfuegbarkeits-Manifest (Release-Bau, Stufe 2.1 Teil 2):
        { schema: "vu-stock-availability-1", modules: { <product>: { <region>: [<Schluessel>, ...] } } }
      Schluessel: US = Kuerzel (BRK-B), EUROPE = securityId. Ein Modul oder eine Region, die im Manifest fehlt,
-     ist "unknown" - nicht "unavailable". */
+     ist "unknown" - nicht "unavailable". "unknown" behaelt die Adresse; der Navigator zeigt sie als unbestaetigt.
+     Das Manifest gilt als unveraenderlich (die Listen werden einmal zu Sets gecacht). */
   var SCHEMA = "vu-stock-availability-1";
   var setCache = typeof WeakMap === "function" ? new WeakMap() : null;
 
   function listHas(list, k) {
     if (!list) return null;
+    /* Map: nur ein ausdrueckliches true belegt; Set: Mitgliedschaft. */
+    if (typeof list.get === "function" && typeof list.has === "function" && !(list instanceof Set)) return list.get(k) === true;
     if (typeof list.has === "function") return list.has(k);
     if (!Array.isArray(list)) return null;
     if (!setCache) return list.indexOf(k) >= 0;

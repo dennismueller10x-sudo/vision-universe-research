@@ -37,10 +37,15 @@ test("Identitaet · SAP.DE ist nicht SAP, MRK.DE (Merck KGaA) ist nicht MRK (Mer
 
 test("Identitaet · US-securityId nur ueber core/identity.js, Klassen-Aktien mit Bindestrich", () => {
   assert.equal(SC.fromUs("BRK-B").securityId, Identity.securityIdForTicker("BRK-B"));
-  assert.equal(SC.fromUs("brk.b").ticker, "BRK-B");
-  assert.equal(SC.href(SC.fromUs("BRK.B"), "supertrader"), "/supertrader/stock/BRK-B/");
-  for (const bad of ["", "A B", "TOOLONGTICKER1", "SAP.DE", "MRK.DE", "../X", "<x>"]) assert.throws(() => SC.fromUs(bad), /INVALID_US_TICKER/, bad);
+  assert.equal(SC.fromUs("brk-b").ticker, "BRK-B");
+  assert.equal(SC.href(SC.fromUs("BRK-B"), "supertrader"), "/supertrader/stock/BRK-B/");
+  /* Punkt-Formen sind keine US-Kuerzel der Daten: nie still umdeuten (VOD.L waere sonst ref_VOD_L in US). */
+  for (const bad of ["", "A B", "TOOLONGTICKER1", "SAP.DE", "MRK.DE", "VOD.L", "BRK.B", "../X", "..", "<x>"]) assert.throws(() => SC.fromUs(bad), /INVALID_US_TICKER/, bad);
   assert.equal(SC.parse("/quant/#/aktie/SAP.DE"), null, "kein stilles SAP-DE");
+  assert.equal(SC.parse("/quant/#/aktie/BRK.B"), null, "der Quant-Router faende BRK.B nicht");
+  /* href prueft auch von Hand gebaute Objekte. */
+  assert.throws(() => SC.href({ region: "US", ticker: ".." }, "supertrader"), /INVALID_CONTEXT/);
+  assert.throws(() => SC.href({ region: "EUROPE", securityId: "x" }, "discover"), /INVALID_CONTEXT/);
   /* Ohne CIK kein Unternehmensnachweis. */
   assert.equal(SC.fromUs("XYZ", { companyId: "vu_03d5e12a142812" }).companyId, null);
   assert.equal(SC.fromUs("SAP", { companyId: "iss_cik_0001000184" }).companyId, "iss_cik_0001000184");
@@ -99,8 +104,13 @@ test("Adressen · genau die Formen, die die Produkt-Router lesen", () => {
   assert.equal(SC.parse("/quant/#/aktie/NVDA/technik?elliott=1").product, "elliott");
   assert.equal(SC.parse("/quant/#/aktie/NVDA/zahlen").product, "quant");
   assert.equal(SC.parse("/quant/#/elliott/NVDA").product, "technik");
+  assert.equal(SC.parse("/quant/#/elliott/NVDA?ansicht=profi").product, "elliott");
+  assert.equal(SC.parse("/quant/#/aktie/NVDA/technik?ansicht=profi").product, "elliott");
+  assert.equal(SC.parse("/quant/#/aktie/NVDA/irgendwas").product, "quant", "der Router zeigt die Aktienseite");
   assert.equal(SC.parse("/supertrader/stock/NVDA/index.html").product, "supertrader");
-  for (const bad of ["/discover/#/s/US_REAL/", "/discover/#/s/ASIA/X", "/discover/#/s/EUROPE/SAP.DE", "/quant/#/aktien", "/quant/#/aktie/%E0", "/elliott/#/?welle=3", "/supertrader/stock/", "/screener/", "", null]) {
+  assert.equal(SC.parse("/discover/index.html#/s/US_REAL/NVDA").product, "discover");
+  assert.equal(SC.parse("/elliott/#/NVDA/").product, "technik");
+  for (const bad of ["/discover/#/s/US_REAL/", "/discover/#/s/ASIA/X", "/discover/#/s/EUROPE/SAP.DE", "/quant/#/aktien", "/quant/#/aktie/%E0", "/elliott/#/?welle=3", "/elliott/#//NVDA", "/elliott/#/%4EVDA", "/supertrader/stock/", "/screener/", "", null]) {
     assert.equal(SC.parse(bad), null, String(bad));
   }
 });
@@ -137,6 +147,9 @@ test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unk
   assert.equal(e.quant.reason, "REGION_NOT_COVERED");
   /* Fremdes Schema zaehlt nicht als Nachweis. */
   assert.equal(SC.moduleState(nvda, "quant", { schema: "x", modules: manifest.modules }).state, "unknown");
+  /* Map: nur true belegt. */
+  const m = { schema: SC.SCHEMA, modules: { quant: { US: new Map([["NVDA", false]]) } } };
+  assert.equal(SC.moduleState(nvda, "quant", m).state, "unavailable");
   assert.throws(() => SC.href(nvda, "hedgefonds"), /UNKNOWN_PRODUCT/);
 });
 
