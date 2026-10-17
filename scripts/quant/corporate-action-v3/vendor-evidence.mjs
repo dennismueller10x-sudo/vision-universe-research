@@ -29,16 +29,19 @@ for (const r of Object.values(req.segments)) {
 }
 const stats = { symbols: bySym.size, fetched: 0, cached: 0, ok: 0, notFound: 0, other: 0, segments: 0, identity: {} };
 const cacheFile = (s) => path.join(args.cache, encodeURIComponent(s) + '.json');
+/* --cache-only 1: no new requests (the vendor blocks this host too after a burst); symbols not in the cache are reported as
+   NOT_COLLECTED_BLOCKED, never guessed */
 for (const [s, w] of [...bySym.entries()].sort()) {
   if (fs.existsSync(cacheFile(s))) { stats.cached++; continue; }
+  if (args['cache-only']) { stats.notCollected = (stats.notCollected || 0) + 1; continue; }
   const r = await fetchSymbol(s, w.from, w.to > today ? today : w.to);
   fs.writeFileSync(cacheFile(s), JSON.stringify({ t: s, ...r })); stats.fetched++;
   if (stats.fetched % 250 === 0) console.log('[vendor-evidence]', stats.fetched, '/', bySym.size);
 }
 const out = {};
 for (const [key, r] of Object.entries(req.segments)) {
-  const x = JSON.parse(fs.readFileSync(cacheFile(yahooSymbol(r.ticker)), 'utf8'));
-  if (x.status === 'OK') stats.ok++; else if (x.status === 'NOT_FOUND') stats.notFound++; else stats.other++;
+  const cf = cacheFile(yahooSymbol(r.ticker)), x = fs.existsSync(cf) ? JSON.parse(fs.readFileSync(cf, 'utf8')) : { status: 'NOT_COLLECTED_BLOCKED' };
+  if (x.status === 'OK') stats.ok++; else if (x.status === 'NOT_FOUND') stats.notFound++; else if (x.status === 'NOT_COLLECTED_BLOCKED') stats.segmentsNotCollected = (stats.segmentsNotCollected || 0) + 1; else stats.other++;
   const vv = x.status === 'OK' ? vendorView(decode(x)) : null;
   const ev = computeVendorEvidence(vv, { ...r, to: r.to || today });
   stats.segments++; stats.identity[ev.identity.state] = (stats.identity[ev.identity.state] || 0) + 1;
