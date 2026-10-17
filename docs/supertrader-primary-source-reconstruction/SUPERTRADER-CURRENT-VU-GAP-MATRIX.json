@@ -1,0 +1,418 @@
+{
+  "schema_version": "1.0.0",
+  "created_at_utc": "2026-10-13",
+  "repository_commit_audited": "8f96cbbaf0e18db50423e14008a3fa15b049aec0",
+  "research_scope": "SOURCE RECONSTRUCTION ONLY; no engines/backtests/live changes",
+  "provenance_order": [
+    "BOOK_PRIMARY",
+    "WEB_PRIMARY",
+    "PRIOR_VU_RESEARCH",
+    "SECONDARY",
+    "INFERENCE"
+  ],
+  "comparison_name": "CURRENT_VU_VS_RECONSTRUCTED_METHOD",
+  "read_only": true,
+  "gaps": [
+    {
+      "gap_id": "VU-MIN-LIVE",
+      "trader": "Mark Minervini",
+      "method": "SEPA/VCP",
+      "current_version": "2.0.0 live",
+      "scope": "SUBSTANTIAL_REDESIGN",
+      "matching_rules": [
+        "Trend-Template-Kern; Stop vor Entry; risikobasierte Stückzahl; technische Kontraktion"
+      ],
+      "missing_rules": [
+        "Manuelles relatives Ranking der zwölf Evidenzfelder",
+        "Earnings-Qualität, Überraschungen, Estimates, Guidance, Umsatz/Margen und Branchenvergleich",
+        "Turnaround/IPO/Cheat/Power-Play-Familien",
+        "Sell into Strength, Teilverkäufe und geplante Add-ons"
+      ],
+      "false_hard_rules": [
+        "Starres Volumen≥1.4x als Entry-Gate, zugleich fehlendes Volumen zugelassen",
+        "Jeder passende MA50-Schlussbruch mit Volumen erzwingt vollständigen Verkauf",
+        "3R immer Breakeven statt fast immer"
+      ],
+      "foreign_rules": [],
+      "vu_formalizations": [
+        "4%-Zigzag;65 Sitzungen;2 strikt abnehmende Kontraktionen;depth35/10;vol10/50<0.8",
+        "Signal-Lebenszyklus, eingefrorener RS-Rang, Next-open Entry",
+        "Letzte fünf Dollar-Resultate<0 halbieren Risiko",
+        "10 Positionen/25% Gewicht; kein Add-on"
+      ],
+      "obsolete_rules": [
+        "Frühere Behauptung, zunehmendes Volumen sei generell fremd",
+        "Frühere Behauptung kein MA50-Primärbeleg"
+      ],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/minervini.mjs:trendTemplate,vcp",
+        "scripts/supertrader/engine/strategies/minervini-v2.mjs:closeEntry,manage",
+        "scripts/supertrader/build.mjs:86,407"
+      ],
+      "evidence_rule_ids": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-15",
+        "MIN-VCP-02",
+        "MIN-VCP-03",
+        "MIN-VCP-04",
+        "MIN-MM-VOL-EX",
+        "MIN-MM-VOL-RET",
+        "MIN-RISK-05",
+        "MIN-TTC-TRAIL",
+        "MIN-MM-SELL-01"
+      ],
+      "source_ids": [
+        "B12",
+        "B07",
+        "B03",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "MEDIUM",
+      "severity": "HIGH",
+      "assessment": "Live ist eine technische VU-VCP-Approximation, kein vollständiges SEPA. Fehlende Fundamentals sind ein Fidelity-Gap; die falsche Research-AND-Version ist davon getrennt.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "SUBSTANTIAL_REDESIGN"
+    },
+    {
+      "gap_id": "VU-MIN-RESEARCH",
+      "trader": "Mark Minervini",
+      "method": "SEPA research gate",
+      "current_version": "3.0.0 research only",
+      "scope": "REBUILD_FUNDAMENTAL_SELECTION",
+      "matching_rules": [],
+      "missing_rules": [
+        "Core-Earnings-Bereinigung und Einmalpostenprüfung",
+        "Relative Priorität statt gleichzeitiger Pflicht",
+        "Turnarounds, fehlende Profitabilität in zugelassenen Familien"
+      ],
+      "false_hard_rules": [
+        "GAAP EPS YoY≥25%, Wachstum streng beschleunigend und Umsatzwachstum>0 zwingend UND",
+        "Fehlende Fundamentals oder nichtpositive Vorjahresbasis stets ablehnen"
+      ],
+      "foreign_rules": [],
+      "vu_formalizations": [
+        "First-filed EPS/Revenue Store deckt keine gesamte Earnings-Qualität"
+      ],
+      "obsolete_rules": [],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/minervini-v3.mjs:12–25",
+        "scripts/supertrader/engine/earnings.mjs:19–30"
+      ],
+      "evidence_rule_ids": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-15",
+        "MIN-EPS-02",
+        "MIN-EPS-07",
+        "MIN-QUALITY-01",
+        "MIN-TURN-01",
+        "MIN-PP-01",
+        "MIN-MM-FUND-EX"
+      ],
+      "source_ids": [
+        "B12",
+        "B07",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "MEDIUM",
+      "severity": "HIGH",
+      "assessment": "Der Datenbestand macht den GAAP25%-Filter technisch möglich, aber keine Originalregel. Diesen Forschungszweig nicht als bestätigte SEPA-Implementierung führen.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "REBUILD_FUNDAMENTAL_SELECTION"
+    },
+    {
+      "gap_id": "VU-WEIN",
+      "trader": "Stan Weinstein",
+      "method": "Stage investor and continuation",
+      "current_version": "4.0.0 live",
+      "scope": "REDESIGN_ENTRY_VARIANTS_AND_STOPS",
+      "matching_rules": [
+        "MA30/Stage-Grundgerüst",
+        "Intraday Buy-Stop"
+      ],
+      "missing_rules": [
+        "Mehrwöchige alternative Volumenexpansion",
+        "Halb/halb Investor-Entry versus voller Trader-Fortsetzungskauf",
+        "Support-basierte dynamische Stops und Stage-3-Anhebung",
+        "Gleiche Dollarbeträge und kontoabhängige5–6/10–20 Diversifikation",
+        "Original-Shortfamilie und Gruppenführerprüfung"
+      ],
+      "false_hard_rules": [
+        "Mansfield≤0 blockiert auch verbesserte negative RS",
+        "Jeder Wochenschluss unter MA30 führt zum Exit"
+      ],
+      "foreign_rules": [
+        "Allgemeines0.5%-KK-Risikomodell"
+      ],
+      "vu_formalizations": [
+        "Stage-Toleranz±0.5%;4Wochen-Slope",
+        "Basis10Wochen/±15%; Fortsetzung8Wochen/≤25%",
+        "Initialer Supportbuffer2%;20%Cap;10Positionen; Lifecycle undCooldown"
+      ],
+      "obsolete_rules": [
+        "Frühere keine Zahl zu Positionsgröße/Anzahl/Trader-Variante"
+      ],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/weinstein-v4.mjs",
+        "scripts/supertrader/engine/strategies/weinstein-v3.mjs:55",
+        "scripts/supertrader/engine/strategies/weinstein-v2.mjs:96"
+      ],
+      "evidence_rule_ids": [
+        "WEIN-RSZERO",
+        "WEIN-TRAIL4",
+        "WEIN-VOL2",
+        "WEIN-BUY1",
+        "WEIN-BUY2",
+        "WEIN-TR-CONT-SIZE",
+        "WEIN-STOP2",
+        "WEIN-DIVERS1",
+        "WEIN-DIVERS2"
+      ],
+      "source_ids": [
+        "B09",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "HIGH",
+      "severity": "HIGH",
+      "assessment": "Lokale Null- und MA-Exit-Korrekturen wären später klein; ein originalnahes Gesamtverfahren braucht getrennte Investor-/Trader-/Short-Pfade und Support-Stop-Management.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "REDESIGN_ENTRY_VARIANTS_AND_STOPS"
+    },
+    {
+      "gap_id": "VU-DAR",
+      "trader": "Nicolas Darvas",
+      "method": "Later Q&A boxes",
+      "current_version": "3.0.2 live",
+      "scope": "CORRECT_BOX_STATE_THEN_EXPAND_METHOD",
+      "matching_rules": [
+        "Obergrenze bleibt drei Tage unberührt",
+        "Vorab Buy-Stop und Stop direkt unter alter Oberkante",
+        "Neue höhere Boxböden als Stopguide"
+      ],
+      "missing_rules": [
+        "Erneute Berührung desselben Bodens muss Bestätigungszählung neu starten",
+        "Techno-fundamentale Auswahl, Pyramiding und Finanzierungskontext"
+      ],
+      "false_hard_rules": [],
+      "foreign_rules": [
+        "SPY>SMA200 aus TraderFox",
+        "0.5%-KK-Risiko"
+      ],
+      "vu_formalizations": [
+        "20-Tage-Hoch;3–25%Boxhöhe;RS80;90/95%Nähe52H;60TageFenster",
+        "Genau1% Initialstop;1/6 Positionscap;keineAdd-ons",
+        "Frühzeitiger Beginn der Bodensuche: Quelleninterpretation UNRESOLVED, kein bewiesener Verstoß"
+      ],
+      "obsolete_rules": [
+        "Drei-Tage-Regel als ausschließlich sekundär/Neo-Darvas geführt"
+      ],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/darvas.mjs:89–94",
+        "scripts/supertrader/engine/indicators.mjs:minIn",
+        "scripts/supertrader/engine/strategies/darvas-v3.mjs",
+        "scripts/supertrader/engine/strategies/darvas-v302.mjs"
+      ],
+      "evidence_rule_ids": [
+        "DAR-Q1",
+        "DAR-Q2",
+        "DAR-Q4",
+        "DAR-Q5",
+        "DAR-Q6",
+        "DAR-Q13",
+        "DAR-B8",
+        "DAR-B9"
+      ],
+      "source_ids": [
+        "B06",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "HIGH",
+      "severity": "HIGH",
+      "assessment": "Fehlender Touch-Reset am Boden ist eindeutig. Beginn der Beobachtung vor Deckelbestätigung allein beweist keinen Quellenverstoß; Bestätigung liegt bereits danach. TraderFox und VU-Trendfolge bleiben eigenständige Methoden.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "CORRECT_BOX_STATE_THEN_EXPAND_METHOD"
+    },
+    {
+      "gap_id": "VU-TUR",
+      "trader": "Original Turtles",
+      "method": "System1+failsafe equity adaptation",
+      "current_version": "2.0.2 live",
+      "scope": "REBUILD_OR_RENAME_EQUITY_ADAPTATION",
+      "matching_rules": [
+        "N-Rekursion und 1%-pro-N Unit",
+        "2N Stop entspricht korrekt2% Risiko je Unit",
+        "Notional-Konto sinkt20% je10% Verlust im gemeinsamen Portfolio-Code",
+        "20-Tage-Longbreakout,55-Failsafe und10-Tage-Exit"
+      ],
+      "missing_rules": [
+        "Short-Ausbrüche im richtungsunabhängigen hypothetischen Skip-Zustand",
+        "0.5N Add-ons bis4Units",
+        "6/10/12 korrelationsbezogene Unitlimits",
+        "Vollständiges System2 mit eigenem20-Tage-Exit",
+        "Futures-Kontraktwahl und Rolls"
+      ],
+      "false_hard_rules": [],
+      "foreign_rules": [],
+      "vu_formalizations": [
+        "Long-only Aktien;keinMargin;oneSignal verhindertAdds",
+        "Jährlicher Notional-Reset auf tatsächliches Equity ersetzt Dennis subjektive jährliche Festlegung",
+        "Hypothetischer noch offener Breakout als Gewinner angenommen",
+        "3%-Nähe/10TageExpiry/5TageCooldown;Preis10/Dollar20m/ADR1/Kanal2",
+        "Alphabetische Reihenfolge und Cash-Begrenzung ersetzen Stärke-/Heat-Regeln",
+        "Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel"
+      ],
+      "obsolete_rules": [
+        "200-Tage-Marktfilter ausv201 ist inv202 entfernt; nicht als aktueller Gap behaupten"
+      ],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/donchian-v2.mjs:breakoutState",
+        "scripts/supertrader/engine/strategies/donchian-v202.mjs",
+        "scripts/supertrader/model-portfolio.mjs",
+        "scripts/supertrader/validation/portfolio.mjs:55–71",
+        "scripts/supertrader/engine/simulator.mjs:28,152,261,277"
+      ],
+      "evidence_rule_ids": [
+        "TUR-S1DIR",
+        "TUR-S1SKIP",
+        "TUR-ADD",
+        "TUR-LIMIT6",
+        "TUR-LIMIT10",
+        "TUR-LIMIT12",
+        "TUR-NOTIONAL",
+        "TUR-S2EX",
+        "TUR-ROLL"
+      ],
+      "source_ids": [
+        "W-TUR",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "HIGH",
+      "severity": "HIGH",
+      "assessment": "Historisches Futures-Original verlangt andere Portfolio- und Ausführungsarchitektur. Bestehendes Aktienmodell kann eigenständig bestehen, darf nicht Original Turtle heißen.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "REBUILD_OR_RENAME_EQUITY_ADAPTATION"
+    },
+    {
+      "gap_id": "VU-KK",
+      "trader": "Kristjan Kullamägi",
+      "method": "Common Breakout",
+      "current_version": "3.2.0 live",
+      "scope": "CORRECT_STOP_SEMANTICS_AND_EXECUTION",
+      "matching_rules": [
+        "5-Bar-Trigger als deklariertes Tagesmodell",
+        "Teilverkauf1/3 nach3Sessions;anschließendBE",
+        "10DMA-Schlussbruch nachTeilverkauf;keinMA200Gate"
+      ],
+      "missing_rules": [
+        "LoD-Stop UND Distanzbegrenzung als zwei Bedingungen",
+        "Intraday ORH-Ausführung oder ausdrücklich getrennte Tagesvariante",
+        "Zeitpunktgerechte Kenntnis des bisherigen Tagestiefs",
+        "EP und Parabolic Short als eigene Familien",
+        "Konviktions-/Liquiditätssizing"
+      ],
+      "false_hard_rules": [
+        "ADR-Clamp hebt zu tiefes LoD hoch, statt unzulässige Stopdistanz abzulehnen"
+      ],
+      "foreign_rules": [],
+      "vu_formalizations": [
+        "Finales Tageslow im Intraday-Entry aus Tagesbalken",
+        "Feste1/3/3Tage/10DMA-Auswahl",
+        "25%Cap statt ursprünglicher30%Übernachtgrenze;0.5%fest stattRange",
+        "5TageglobalCooldown trotzlokal0;feste10Positionen"
+      ],
+      "obsolete_rules": [],
+      "code_locations": [
+        "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:57–62",
+        "scripts/supertrader/engine/strategies/kk-breakout-v31.mjs",
+        "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs",
+        "scripts/supertrader/engine/simulator.mjs"
+      ],
+      "evidence_rule_ids": [
+        "KK-012",
+        "KK-013",
+        "KK-014",
+        "KK-001",
+        "KK-025",
+        "KK-048",
+        "KK-015",
+        "KK-020"
+      ],
+      "source_ids": [
+        "W-KK3",
+        "W-KKFAQ",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "HIGH",
+      "severity": "HIGH",
+      "assessment": "Stop-Korrektur ist später lokal möglich. Echtes Intraday-Entry und Tagestief-Reihenfolge brauchen Daten und eine Ausführungsentscheidung; Tagesalternative ist öffentlich zulässig, aber muss klar benannt werden.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "CORRECT_STOP_SEMANTICS_AND_EXECUTION"
+    },
+    {
+      "gap_id": "VU-CAN",
+      "trader": "William O’Neil / IBD",
+      "method": "CAN SLIM partial checks",
+      "current_version": "partial; no signal engine",
+      "scope": "NEW_DESIGN_AFTER_SOURCE_AND_DATA_GAPS",
+      "matching_rules": [],
+      "missing_rules": [
+        "EPS statt Net Income;qualitativeN;I;echteM-Operationalisierung",
+        "Chartfamilien/Pivots;verkaufen/aufstocken;FTD/Distribution",
+        "O’Neil-Buchkapitel3–20 als Originalwortlaut"
+      ],
+      "false_hard_rules": [],
+      "foreign_rules": [],
+      "vu_formalizations": [
+        "C/A basieren auf Net Income;C25;A3JahreCAGR25 pluspositiveMonotonie",
+        "N=85%52H;L=VU-RS80;SAnzeige;I fehlt",
+        "M=SPY50/200+21TageSlope statt institutionellerFTD/Distribution"
+      ],
+      "obsolete_rules": [],
+      "code_locations": [
+        "scripts/supertrader/engine/partial/canslim.mjs"
+      ],
+      "evidence_rule_ids": [
+        "ONEIL-B-001",
+        "IBD13-001",
+        "IBD13-003"
+      ],
+      "source_ids": [
+        "B04",
+        "W-IBD20",
+        "VU-HEAD"
+      ],
+      "provenance": [
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "source_confidence": "MEDIUM",
+      "severity": "HIGH",
+      "assessment": "Teilprüfung ist als solche gekennzeichnet. Fehlende Gesamtengine kann nicht durch wenige Parameterkorrekturen zu originalem CAN SLIM werden. Spätere IBD-Regeln besitzen getrennte Provenance.",
+      "action_taken": "AUDIT_ONLY; no implementation change",
+      "rebuild_recommendation": "NEW_DESIGN_AFTER_SOURCE_AND_DATA_GAPS"
+    }
+  ]
+}

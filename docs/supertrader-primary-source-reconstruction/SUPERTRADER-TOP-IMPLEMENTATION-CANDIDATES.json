@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0.0",
+  "created_at_utc": "2026-10-13",
+  "repository_commit_audited": "8f96cbbaf0e18db50423e14008a3fa15b049aec0",
+  "research_scope": "SOURCE RECONSTRUCTION ONLY; no engines/backtests/live changes",
+  "provenance_order": [
+    "BOOK_PRIMARY",
+    "WEB_PRIMARY",
+    "PRIOR_VU_RESEARCH",
+    "SECONDARY",
+    "INFERENCE"
+  ],
+  "selection_policy": "13 justified family/component candidates; no profitability ranking, no authorization for implementation in this run.",
+  "candidates": [
+    {
+      "candidate_id": "C01",
+      "rank": 1,
+      "trader": "Original Turtles",
+      "method": "System1 with complete core/skip",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "LOW",
+      "data_availability": "MISSING_CRITICAL_INPUTS",
+      "product_relevance": "MEDIUM",
+      "evidence_rule_ids": [
+        "TUR-S1ENT",
+        "TUR-S1SKIP",
+        "TUR-S1DIR",
+        "TUR-ADD"
+      ],
+      "assessment": "Futures-chain data and full unit/correlation portfolio; equity adaptation separately named.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C02",
+      "rank": 2,
+      "trader": "Original Turtles",
+      "method": "System2 55/20",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "LOW",
+      "data_availability": "MISSING_CRITICAL_INPUTS",
+      "product_relevance": "MEDIUM",
+      "evidence_rule_ids": [
+        "TUR-S2ENT",
+        "TUR-S2EX",
+        "TUR-ADD"
+      ],
+      "assessment": "Independent S2; failsafe55 alone is not System2.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C03",
+      "rank": 3,
+      "trader": "Nicolas Darvas",
+      "method": "Later Q&A box construction and stop method",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "HIGH",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "DAR-Q1",
+        "DAR-Q2",
+        "DAR-Q4",
+        "DAR-Q5",
+        "DAR-Q6"
+      ],
+      "assessment": "Box component highly precise; techno-fundamental selection and sizing remain discretionary.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C04",
+      "rank": 4,
+      "trader": "Stan Weinstein",
+      "method": "Stage2 investor",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "WEIN-BUY1",
+        "WEIN-BUY2",
+        "WEIN-STOP2",
+        "WEIN-TRAIL4"
+      ],
+      "assessment": "Group/breadth data and support interpretation; keep explicit RS/MA exceptions.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C05",
+      "rank": 5,
+      "trader": "Stan Weinstein",
+      "method": "Stage2 trader continuation",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "WEIN-TR-CONT",
+        "WEIN-TR-CONT-SIZE",
+        "WEIN-TR-STOP"
+      ],
+      "assessment": "Separate full-position continuation and tighter trader stop; no universal investor half-half.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C06",
+      "rank": 6,
+      "trader": "Mark Minervini",
+      "method": "SEPA/VCP with manual ranking interface",
+      "source_coverage": "MEDIUM",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "MEDIUM",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-15",
+        "MIN-VCP-02",
+        "MIN-VCP-03"
+      ],
+      "assessment": "Build source-faithful screening plus explicit manual decision layer; no promise of fully automated Minervini.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C07",
+      "rank": 7,
+      "trader": "Mark Minervini",
+      "method": "Power Play family",
+      "source_coverage": "MEDIUM",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "MEDIUM",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "MIN-PP-01",
+        "MIN-PP-02",
+        "MIN-PP-03",
+        "MIN-PP-04",
+        "MIN-PP-05"
+      ],
+      "assessment": "Separate fundamentals exception; do not make typical3–6weeks an absolute minimum.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C08",
+      "rank": 8,
+      "trader": "Kristjan Kullamägi",
+      "method": "Common Breakout daily alternative / ORH branch",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "MEDIUM",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "KK-010",
+        "KK-011",
+        "KK-012",
+        "KK-013",
+        "KK-014"
+      ],
+      "assessment": "Written daily alternative feasible; ORH requires intraday. Reject wide LoD distance rather than replacing LoD.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C09",
+      "rank": 9,
+      "trader": "Kristjan Kullamägi",
+      "method": "Episodic Pivot",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "MEDIUM",
+      "vu_feasibility": "LOW",
+      "data_availability": "MISSING_CRITICAL_INPUTS",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "KK-015",
+        "KK-034",
+        "KK-038",
+        "KK-040"
+      ],
+      "assessment": "Timestamped catalysts,estimates,guidance and intraday volume; separate exit-choice uncertainty.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C10",
+      "rank": 10,
+      "trader": "Kristjan Kullamägi",
+      "method": "Parabolic Short",
+      "source_coverage": "MEDIUM",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "MEDIUM",
+      "vu_feasibility": "LOW",
+      "data_availability": "MISSING_CRITICAL_INPUTS",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "KK-020",
+        "KK-021",
+        "KK-022",
+        "KK-023"
+      ],
+      "assessment": "Intraday VWAP/ORL and borrow/locate history; risk constraints essential.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C11",
+      "rank": 11,
+      "trader": "Gil Morales / Chris Kacher",
+      "method": "Pocket Pivot",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "MOKAPP-003",
+        "MOKAPP-004"
+      ],
+      "assessment": "Precise down-volume comparison component; constructive chart context and exits retain discretion.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C12",
+      "rank": 12,
+      "trader": "Gil Morales / Chris Kacher",
+      "method": "Buyable Gap-Up",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "HIGH",
+      "evidence_rule_ids": [
+        "MOKA12-004",
+        "MOKA24-VOL",
+        "MOKA24-MEGA"
+      ],
+      "assessment": "Resolve era-specific standard volume wording; keep documented megacap exception and chart-low sellguide.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    },
+    {
+      "candidate_id": "C13",
+      "rank": 13,
+      "trader": "Linda Raschke",
+      "method": "Holy Grail disclosed setup component",
+      "source_coverage": "MEDIUM",
+      "reproducibility": "MEDIUM",
+      "behavioral_ground_truth": "LOW",
+      "vu_feasibility": "MEDIUM",
+      "data_availability": "PARTIAL",
+      "product_relevance": "MEDIUM",
+      "evidence_rule_ids": [
+        "RAS04-001",
+        "RAS04-002"
+      ],
+      "assessment": "20EMA/ADX14>30 core; exact stop/order sequence not fully disclosed. Component study, not full personal replica.",
+      "provenance": "INFERENCE",
+      "ready_for_backtest_now": false,
+      "next_phase": "Separate source acceptance, data contract, implementation specification and only then implementation/backtest."
+    }
+  ]
+}

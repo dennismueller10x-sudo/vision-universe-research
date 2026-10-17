@@ -1,0 +1,260 @@
+{
+  "schema_version": "1.0.0",
+  "created_at_utc": "2026-10-13",
+  "repository_commit_audited": "8f96cbbaf0e18db50423e14008a3fa15b049aec0",
+  "research_scope": "SOURCE RECONSTRUCTION ONLY; no engines/backtests/live changes",
+  "provenance_order": [
+    "BOOK_PRIMARY",
+    "WEB_PRIMARY",
+    "PRIOR_VU_RESEARCH",
+    "SECONDARY",
+    "INFERENCE"
+  ],
+  "findings": [
+    {
+      "topic": "GAAP EPS Hard Filter",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Frühere Kritik bestätigt: universelles GAAP 25%-Gate ist nicht SEPA. Livev 2 besitzt dieses Gate nicht;Researchv 3 schon.",
+      "rule_ids": [
+        "MIN-EPS-02",
+        "MIN-QUALITY-01",
+        "MIN-PROCESS-15"
+      ],
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Turnaround exceptions",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Separate 1–2 Quartals-Verbesserung und historische Spanne;kein normales 3 Quarter/GAAP-Priorpositive Gate.",
+      "rule_ids": [
+        "MIN-TURN-01",
+        "MIN-TURN-02",
+        "MIN-TURN-03"
+      ],
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "SEPA Fidelity",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Mechanischer Vorfilter, relatives Ranking,manuelle Einzelprüfung und Evidenzkonvergenz;rein technische VU-Engineunvollständig.",
+      "rule_ids": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-14",
+        "MIN-PROCESS-15"
+      ],
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "VCP Formalization",
+      "revalidation_status": "PARTIALLY_CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Volatilitätskontraktion real;4%-Zigzag/65 Sessions/strenge Monotonie VU-Festlegung.Flat/Darvas Familiennichtzwangsläufig Mehrfach VCP.",
+      "rule_ids": [
+        "MIN-VCP-02",
+        "MIN-VCP-03",
+        "MIN-VCP-04",
+        "MIN-VCP-05"
+      ],
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Base-Length measurement",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Tech Footprint beziehtsichaufgesamte Basis;Window 65 Sessionsundletzte Kontraktionslängenkeinuniverseller Ersatz.",
+      "rule_ids": [
+        "MIN-BASE-01",
+        "MIN-BASE-02",
+        "MIN-BASE-03",
+        "MIN-BASE-04"
+      ],
+      "source_ids": [
+        "B12"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Power Play",
+      "revalidation_status": "PARTIALLY_CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "100%<8 Wochen undfundamentale Ausnahme bestätigt;3–6 Wochenmeist,12 Tageerlaubt;nichteinzige Fundamentalausnahme.",
+      "rule_ids": [
+        "MIN-PP-01",
+        "MIN-PP-02",
+        "MIN-PP-03",
+        "MIN-PP-04",
+        "MIN-MM-FUND-EX"
+      ],
+      "source_ids": [
+        "B12",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Trend Template",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "8 Kriterien 2013 belegt;4–5 Monate Slopepräferiert;IBDRS 70 nicht VU-RS 70;IPOeigene Familie.",
+      "rule_ids": [
+        "MIN-TT-01",
+        "MIN-TT-03",
+        "MIN-TT-03P",
+        "MIN-TT-08",
+        "MIN-MM-IPO-01"
+      ],
+      "source_ids": [
+        "B12",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Start Exposure",
+      "revalidation_status": "CONTRADICTED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Frühere Annahmeeinesvorgegebenen 25–50% Startexposurewiderlegt:progressive Pilotphasebelegt,Prozentfolgennur Beispiele.",
+      "rule_ids": [
+        "MIN-RISK-02",
+        "MIN-RISK-03",
+        "MIN-W18-4"
+      ],
+      "source_ids": [
+        "B12",
+        "W-MIN18"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "topic": "Position Sizing",
+      "revalidation_status": "PARTIALLY_CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Risikobasierte Größeund 2015 max 25% belegt;typische Risikospannenantwortabhängig,weder 1.25% festnochalles 4 x 25% universell.",
+      "rule_ids": [
+        "MIN-MM-SIZE-01",
+        "MIN-MM-SIZE-03",
+        "MIN-MM-SIZE-04",
+        "MIN-TTC-SIZING"
+      ],
+      "source_ids": [
+        "B07",
+        "B03"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Sell into Strength",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Teilgewinnesituativund Restführungwichtig;MA 50 alskontextueller Gewinnstopbelegt;pauschaler MA 50+Vol Exitweiterhinungedeckt.",
+      "rule_ids": [
+        "MIN-MM-SELL-01",
+        "MIN-TTC-EARLY",
+        "MIN-TTC-FREEROLL"
+      ],
+      "source_ids": [
+        "B07",
+        "B03"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "topic": "Fundamentals vs Price Confirmation",
+      "revalidation_status": "CONFIRMED",
+      "comparison_target": "Earlier VU finding, not an assertion that every rule in this topic is hard",
+      "assessment": "Fundamentale Storyalleinreichtnicht;Chartbestätigungzwingender Prozessbestandteil. Keine Universalisierungnormaler Growth-Zahlenauf Biotech/PP/Turnaround.",
+      "rule_ids": [
+        "MIN-PROCESS-14",
+        "MIN-W18-5",
+        "MIN-MM-FUND-EX"
+      ],
+      "source_ids": [
+        "B12",
+        "W-MIN18",
+        "B07"
+      ],
+      "provenance": [
+        "BOOK_PRIMARY",
+        "WEB_PRIMARY",
+        "PRIOR_VU_RESEARCH",
+        "INFERENCE"
+      ],
+      "confidence": "MEDIUM"
+    }
+  ]
+}
