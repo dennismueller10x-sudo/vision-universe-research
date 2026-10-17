@@ -1,0 +1,67 @@
+{
+  "note": "static part of CORPORATE-ACTION-SOURCE-MANIFEST-V3.json (assembled with the measured coverage of the final run by build-v3-outputs.mjs)",
+  "priorityOrderRequested": ["EXCHANGE_LISTING_NOTICES", "FINRA_CORPORATE_ACTIONS", "ISSUER_IR_NOTICES", "SECOND_COMMERCIAL_PROVIDER"],
+  "sources": [
+    {
+      "id": "SEC_EDGAR_CURRENT_REPORTS",
+      "role": "CORE_EVIDENCE (unchanged from v2, extraction rules unchanged)",
+      "eventTypes": ["forward split", "reverse split", "share consolidation", "stock dividend >= 25 % worded as a split"],
+      "ratio": "exact ratio from the filing text (ranges never a ratio)",
+      "effectiveDate": "stated effective date / first split-adjusted session (8-K Item 3.03/5.03)",
+      "publicationDate": "EFTS file_date (visibleAt); EDGAR acceptance time from data.sec.gov/submissions for the PIT oracle",
+      "pitSuitability": "YES (per-observation filing date; acceptance-time check in protocol 3.0.0)",
+      "identity": "issuer CIK of the capture, price concordance on the stated session",
+      "failureModes": ["extraction errors and boilerplate", "CIK-to-listing confusion (holding companies, share classes)", "throttling (403) -> sequential retry pass", "events announced then abandoned (only EFFECTIVE wording counts)", "coverage starts with the full-text search (2001)"],
+      "licence": "public domain (17 CFR 200.80); SEC fair-access policy respected (declared User-Agent, <= 8.9 requests/s across four parts)"
+    },
+    {
+      "id": "FINRA_OTC_DAILY_LIST",
+      "role": "CORE_EVIDENCE (new in 3.0.0; second independent source, priority 2 of the request)",
+      "access": "https://api.finra.org/data/group/otcMarket/name/otcDailyList (FINRA Query API, public dataset, no credentials; POST with calendarDay ranges, 2,500 rows per page, record-total checked per window)",
+      "eventTypes": ["reverse split (reverseSplitRate)", "forward split (forwardSplitRate)", "reverse followed by forward split", "stock dividend (stockPercentage, >= 25 % treated as split-like)", "symbol / name / CUSIP change", "market-center change (exchange delisting to OTC, OTC to exchange listing)", "deletion, bankruptcy flag, merger/acquisition, liquidation, 12(j) revocation", "ADR ratio change", "cash dividends (not used)"],
+      "ratio": "'new:old' rates in the row (e.g. reverseSplitRate '1:10' -> 0.1 new per old)",
+      "effectiveDate": "exDate (first session on the adjusted basis)",
+      "publicationDate": "dailyListDatetime (time the Daily List row was published); corrections (DC) and cancellations (DD) count only from their own publication",
+      "pitSuitability": "YES for timing by its own timestamp; a single timestamp per row, so FINRA timing is checked by truncation only (no second clock)",
+      "identity": "symbol (old or new) inside the listing window +- 7 days and a non-contradicting security description (token match with the company name where known); no CIK",
+      "coverage": "OTC equity securities, rows from mid-2018 (one 2016 row). Exchange-listed securities appear only at the transition into or out of OTC trading; exchange-listed splits are not on the list.",
+      "failureModes": ["exchange-listed universe mostly outside FINRA's scope", "symbol reuse after years (window + name check)", "OTC temporary symbols with a fifth letter D after reverse splits (newSymbolCode) not matching the exchange ticker", "corrections that move the ex-date (grouped as one event, latest row wins)", "API row cap per response (paged, totals checked)"],
+      "licence": "FINRA public data via the Query API; terms permit retrieval; redistribution/commercial display not reviewed (LICENSE_REVIEW_REQUIRED, as in docs/VU_FREE_DATA_SOURCE_MAP.md for FINRA files). Used here only as evidence inside the canonical contract; no FINRA row is published."
+    },
+    {
+      "id": "SECOND_VENDOR_YAHOO_CHART",
+      "role": "VALIDATION_ONLY (labels, PIT-independent; never a core input)",
+      "access": "query2.finance.yahoo.com/v8/finance/chart (split events, split-adjusted daily closes); paced 0.65 s per symbol from the runner",
+      "eventTypes": ["forward and reverse splits (numerator/denominator)", "daily closes"],
+      "ratio": "numerator/denominator",
+      "effectiveDate": "split event date (ex-date)",
+      "publicationDate": "none (not point in time)",
+      "pitSuitability": "NO - therefore only a label/validation source",
+      "identity": "ticker; accepted only when vendor and provider daily raw returns agree within 1 % on >= 90 % of >= 60 common days",
+      "coverage": "currently listed symbols; delisted symbols mostly absent (survivor bias in the labels, measured per category)",
+      "failureModes": ["rate limiting / blocking of cloud IPs", "symbol reuse (identity check)", "shared upstream with the provider (a split missed by both looks like a genuine move -> counted as FALSE_POSITIVE of a hold, conservative)", "no history for delisted names"],
+      "licence": "no commercial licence; research reading only, nothing redistributed; per-ticker data stay in the runner and leave it only sealed"
+    },
+    {
+      "id": "SEC_XBRL_SHARES_OUTSTANDING",
+      "role": "VALIDATION (labels, as protocol 2.0.0) and core corroboration (blanked as label where it corroborated)",
+      "pitSuitability": "YES (availableAt)",
+      "licence": "public domain"
+    },
+    {
+      "id": "EDGAR_SUBMISSIONS_ACCEPTANCE_TIME",
+      "role": "PIT_ORACLE_TIMESTAMPS",
+      "access": "data.sec.gov/submissions/CIK##########.json (+ older files)",
+      "pitSuitability": "authoritative acceptance time (converted to US/Eastern day)",
+      "licence": "public domain"
+    }
+  ],
+  "consideredNotIntegrated": [
+    { "id": "NASDAQ_DAILY_LIST", "priority": 1, "reason": "exchange notice with history requires a Nasdaq Trader subscription; nasdaqtrader.com daily list paths return 404 without it" },
+    { "id": "NASDAQ_SPLITS_CALENDAR_API", "priority": 1, "reason": "api.nasdaq.com/api/calendar/splits returns only the current window (the date parameter is ignored); no history. Usable only as a forward-only collector for future PIT capture." },
+    { "id": "NYSE_CORPORATE_ACTION_NOTICES", "priority": 1, "reason": "no public machine-readable history found" },
+    { "id": "ISSUER_IR_PAGES", "priority": 3, "reason": "no bulk access; mass scraping of IR pages excluded (docs/VU_FREE_DATA_SOURCE_MAP.md); issuer press releases are already read when filed as 8-K EX-99" },
+    { "id": "FMP / FINNHUB / TWELVE_DATA", "priority": 4, "reason": "keys exist as repository secrets but free tiers (e.g. FMP 250 requests/day) cannot cover ~9,400 segments and the licence is LICENSE_UNKNOWN (docs/VU_FREE_DATA_SOURCE_MAP.md)" },
+    { "id": "TIINGO", "reason": "the provider under test, not independent" }
+  ]
+}

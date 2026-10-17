@@ -1,0 +1,119 @@
+{
+  "schema": "partial-series-consumer-readiness-3.0.0",
+  "contract": "canonical-price-validity-3.0.0",
+  "assessedOn": "2026-10-17",
+  "method": "static read-only audit of every product's price path at this branch (file:line evidence below); grep for callers of fromBarsPartial, canonical-price-validity, pitHistory, corporate-action-validation. Nothing was migrated (protocol 3.0.0 item 9: document only).",
+  "columns": {
+    "supportsPartialSeries": "keeps the valid prefix / segments instead of the whole series",
+    "dropsWholeSeries": "one failure anywhere removes the whole series",
+    "onCanonicalCore": "reads canonical-total-return / canonical-price-validity at all",
+    "pitSafe": "uses only information up to the decision date for corporate actions and validity",
+    "migrationRequired": "must adopt the contract before it may consume calibration-grade data"
+  },
+  "productionCallersOfTheContract": {
+    "fromBarsPartial": 0,
+    "canonicalPriceValidity": "only scripts/quant/lib/daily-prices.mjs (opt-in loader) and the audit harnesses",
+    "pitHistory": "audit harnesses only",
+    "note": "no product reads validUntil, holds, segments (RESUME_FROM), as-of views or pitHistory"
+  },
+  "consumers": [
+    {
+      "product": "QUANT",
+      "paths": [
+        "scripts/quant/lib/daily-prices.mjs#fromBars:66-87 (CanonicalTR.reconstruct with asOf/maxStaleDays; tr null unless reconstructed)",
+        "scripts/quant/build-signal-backtest.mjs:29,117,121,124 (title rejected without TR; switches to price below 95 % TR coverage :563)",
+        "scripts/quant/build-setup-backtest.mjs:29,128-142",
+        "scripts/quant/build-survivorship-control.mjs:34-36,56",
+        "scripts/quant/build-setup-outcomes.mjs:30,110,115 (dailyOf -> workingStoreFromBars -> fromBars; whole-study every() switch; allowPublicPriceOnly reads 1-year split-adjusted discover-series without any core check, daily-prices.mjs:146-152)",
+        "not on the core: quant/engines/market-factors.js:123,165 and quant/engines/backtest.js (provider adjustedClose), scripts/quant/replay-setup-history.mjs (per-cut split-adjusted)"
+      ],
+      "supportsPartialSeries": false,
+      "dropsWholeSeries": true,
+      "onCanonicalCore": "PARTIAL (the four studies yes; factors, legacy backtest, replay no)",
+      "pitSafe": "PARTIAL: reconstruct receives asOf, but inclusion is decided on the final full-history verdict (v2 review R8), the split-adjusted price path uses today's provider factors, and the setup-outcomes switch depends on full history",
+      "migrationRequired": true,
+      "migration": [
+        "replace fromBars/workingStoreFromBars/dailyOf by fromBarsPartial with asOf; gate firstTouch/contractExit/oppositeExit and the split-adjusted close path on trValidUntil",
+        "never chain segments: a RESUME_FROM segment has its own index base (isValidReturn/alignSegments)",
+        "one coverage enum (trCoverage === 'FULL') for switch rules, incl. build-setup-outcomes.mjs:115",
+        "pad delisted listings only when validUntil equals the last bar; report the censored share per study",
+        "factor builds: optional, a separate model change"
+      ],
+      "gate": "CLAUDE.md: model changes only in their own PR with before/after (one PR per study)",
+      "correctionToV2Matrix": "build-setup-outcomes is not partial-aware (it calls fromBars, not fromBarsPartial); the v2 entry saying its switch sees totalReturn=true for valid prefixes does not hold"
+    },
+    {
+      "product": "DISCOVER",
+      "paths": [
+        "scripts/discover/build-discover-data.mjs:287-291,499 (own splitAdjustedCloses on ReturnSeries.splitFactors = provider splitFactor)",
+        "scripts/market/publish-discover-series.mjs:57-61 and publish-long-series.mjs:37 -> quant/data/market/discover-series(-long), read at build-discover-data.mjs:84,511,1772,1782-1786",
+        "discover/engines/high52w.js (checks only priceSeriesType)"
+      ],
+      "supportsPartialSeries": false,
+      "dropsWholeSeries": false,
+      "onCanonicalCore": false,
+      "behaviourOnDefect": "an undeclared split or bad tick is published as a real price jump; 52-week high and returns inherit it",
+      "pitSafe": "NO for history (back-adjusted with the latest split factors); acceptable for a current-state display",
+      "migrationRequired": false,
+      "migration": ["optional: mask INVALID_RANGE and HOLD bars in the published series (scripts/market/publish-* and build-discover-data.mjs, in separate PRs)"],
+      "gate": "Discover 'verändert keine bestehende Engine' (no quant / scripts/market / scripts/technical in a Discover PR) and the Discover frontend budget if views change"
+    },
+    {
+      "product": "SCREENER",
+      "paths": [
+        "scripts/screener/build-universe.mjs:7,77-87,233-234 (RSI/MACD/SMA/YTD from the 1-year discover-series)",
+        "screener/engine/adapters.js:105-117 (client fetches the same files)"
+      ],
+      "supportsPartialSeries": false,
+      "dropsWholeSeries": false,
+      "onCanonicalCore": false,
+      "behaviourOnDefect": "inherits Discover's series including undeclared jumps; only non-positive closes are rejected (build-universe.mjs:81)",
+      "pitSafe": "NO for history; current-state screen, impact limited to the latest snapshot",
+      "migrationRequired": false,
+      "migration": ["none; a fix in the discover-series publisher flows through"],
+      "gate": "no dedicated gate; the publisher fix falls under the Discover separation"
+    },
+    {
+      "product": "SUPERTRADER",
+      "paths": [
+        "scripts/supertrader/build.mjs:4-12,123-141 (technical-signals-v1 daily OHLCV), :145-149 discover-series-long, :152,554 SPY, :456 rescaleSignal on level jumps",
+        "scripts/supertrader/validation/analyze.mjs:105-121,243, analyze-methods.mjs:301, validation/lib.mjs:242 splitSegments, audit-r14.mjs:254,299-301 (own splitFactor arithmetic on raw Tiingo bars)",
+        "V4 research data path firstCanonicalFailure is not present on this branch; only origin/research/supertrader-v4-data-fix (build-data-fix-v4.mjs:21-22) reads price-integrity/canonical-total-return"
+      ],
+      "supportsPartialSeries": "NO in production; V4 research: prefix with whole-tail termination (branch only)",
+      "dropsWholeSeries": "production: no (jumps pass through); V4 research: tail dropped",
+      "onCanonicalCore": false,
+      "pitSafe": "NO: production uses back-adjusted final split factors; V4 research has a one-session look-ahead on spike quarantine (from vs observedAt) and a level-conditioned sanity layer",
+      "migrationRequired": true,
+      "migration": [
+        "any new calibration reads canonical-price-validity-3.0.0 as-of views (eligibility and settlement gated on observedAt), invalidates only INVALID_RANGE bars, never chains RESUME_FROM segments, drops the level-conditioned sanity layer",
+        "production build: optional, the fix arrives through Technical's series"
+      ],
+      "gate": "Supertrader Gate A (scripts/supertrader/guard-protected-paths.mjs): only supertrader/**, scripts/supertrader/**, docs/SUPERTRADER_*.md, .github/workflows/supertrader-*.yml; pre-registered, own before/after"
+    },
+    {
+      "product": "TECHNICAL",
+      "paths": [
+        "scripts/technical/materialize-product-intelligence.mjs:27,44,105-112 (private tiingo/daily/<id>.json, actions from provider splitFactor/dividends, Canonical.fromPriceBars -> SPLIT_ADJUSTED; adjClose replaced :57-60; signal columns overwritten :81-86)",
+        "quant/engines/technical/canonical-bars.js:173; quant/engines/technical/* consume it; technical-signals-v1 also feeds Supertrader"
+      ],
+      "supportsPartialSeries": false,
+      "dropsWholeSeries": "on malformed bars yes (INVALID_HISTORY_BAR :91-97, INVALID_CANONICAL_SERIES :112); a well-formed undeclared split or bad tick passes as a price jump into SMA200/RS/Elliott (documented at :77-80)",
+      "onCanonicalCore": false,
+      "pitSafe": "PARTIAL: checks observedAt (:101-103) and computes the current state only, but on back-adjusted history with final split factors; historical signal replays are not PIT",
+      "migrationRequired": true,
+      "migration": ["recommended: build PriceValidity.build(bars, {asOf}) and mask INVALID_RANGE / truncate at HOLD instead of a whole-series throw or a silent jump (materialize-product-intelligence.mjs, canonical-bars.js); flows into Supertrader"],
+      "gate": "CLAUDE.md model-change rule (own PR with before/after); not bundled with Discover or Supertrader paths"
+    }
+  ],
+  "summary": {
+    "readsCanonicalCore": "only the four Quant studies (whole-series drop)",
+    "partialLoaderAdopters": 0,
+    "requiredMigrations": ["QUANT (one PR per study)", "SUPERTRADER (Gate A, pre-registered)", "TECHNICAL (recommended)"],
+    "optional": ["DISCOVER / SCREENER via the scripts/market publisher"],
+    "consumerReadyForCalibration": false,
+    "note": "Consumer readiness is not part of the protocol 3.0.0 READY criteria (item 12) but blocks any use of calibration-grade data until the consuming product has migrated."
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}
