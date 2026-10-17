@@ -1029,6 +1029,8 @@ export function signalsCore(signals) {
   const strategies = {};
   for (const [id, st] of Object.entries(signals.strategies || {})) {
     const c = { ...st };
+    /* Die Zahl kommt aus der Liste selbst: fehlte closedTotal im Signalstand, zeigten Start und Methodik sonst still 0. */
+    if (Array.isArray(st.closed)) c.closedTotal = st.closed.length;
     for (const k of HISTORY_LISTS) delete c[k];
     strategies[id] = c;
   }

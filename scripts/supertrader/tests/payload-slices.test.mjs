@@ -97,7 +97,8 @@ test('signals-core: closed ist Historie, die Zahl bleibt als closedTotal', () =>
   assert.ok(HISTORY_LISTS.includes('closed'));
   for (const [id, st] of Object.entries(signals.strategies)) {
     assert.equal(core.strategies[id].closed, undefined, id);
-    if (st.closedTotal !== undefined) assert.equal(st.closedTotal, st.closed.length, id + '.closedTotal');
+    assert.equal(core.strategies[id].closedTotal, st.closed.length, id + '.closedTotal');
+    if (st.closedTotal !== undefined) assert.equal(st.closedTotal, st.closed.length, id + '.closedTotal (signals.json)');
   }
 });
 
