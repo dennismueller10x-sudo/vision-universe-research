@@ -105,3 +105,13 @@ test('population stage joins populations, reads the provider locus and runs the 
   assert.equal(JSON.stringify(pub).includes(data.securities[3].ticker), false, 'no identities in the public file');
   assert.equal(providerLocus([{ date: 'a', close: 1, adjustedClose: 1 }, { date: 'b', close: 10, adjustedClose: 1 }], 'b'), 'PROVIDER_COLUMNS_DISAGREE_ADJ_CONTINUOUS');
 });
+
+test('rank table: higher CAGR/Sharpe and shallower drawdown rank first; changes are detected', async () => {
+  const { rankTable } = await import('../ranking.mjs');
+  const row = (cagr, sharpe, maxDrawdown) => ({ metrics: { cagr, sharpe, maxDrawdown } });
+  const results = { m1: { benchmark: { cagr: 0.1 }, rows: { A_ORIGINAL: row(0.05, 0.3, -0.4), B_VU_BUGS: row(0.05, 0.3, -0.4), C_INDEPENDENT: row(0.05, 0.3, -0.4) } },
+    m2: { benchmark: { cagr: 0.1 }, rows: { A_ORIGINAL: row(0.02, 0.5, -0.2), B_VU_BUGS: row(0.02, 0.5, -0.2), C_INDEPENDENT: row(0.12, 0.5, -0.2) } } };
+  const t = rankTable(results);
+  assert.deepEqual(t.A_ORIGINAL.cagr, { m1: 1, m2: 2 }); assert.deepEqual(t.A_ORIGINAL.maxDrawdown, { m2: 1, m1: 2 });
+  assert.equal(t.changes.cagr.A_to_B, false); assert.equal(t.changes.cagr.A_to_C, true); assert.equal(t.C_INDEPENDENT.aboveSpy.m2, true);
+});

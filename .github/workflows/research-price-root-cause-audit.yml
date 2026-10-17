@@ -1,5 +1,5 @@
 name: Research price-data root-cause and backtest-impact audit (diagnostic, not certifying; private plaintext never uploaded)
-# [root-cause-audit:population] reruns only the population job (same inputs) and publishes it.
+# [root-cause-audit:ranking] runs only the single-process rank replay; [root-cause-audit:population] reruns only the population job (same inputs) and publishes it.
 # Isolated diagnostic replay for docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md and
 # docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md. Runs only with [root-cause-audit:run] in the head commit message.
 # Reads the canonical capture of the pinned #705 pipeline (same content as freezes V3-84caf2e84e560bec and
@@ -13,7 +13,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: research-price-root-cause-audit-${{ github.ref_name }}
+  group: research-price-root-cause-audit-${{ github.ref_name }}-${{ contains(github.event.head_commit.message, '[root-cause-audit:ranking]') && 'ranking' || 'main' }}
   cancel-in-progress: false
 env:
   BASE_COMMIT: 547d604d9596b0f4af4c13ac31bebce48b3948ec
@@ -274,9 +274,106 @@ jobs:
         if: always()
         run: rm -rf /workspace/private
 
+  ranking:
+    # All six methods under A/B/C in one process, so ranks can be formed without publishing absolute metrics.
+    if: contains(github.event.head_commit.message, '[root-cause-audit:ranking]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: audit
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/research/price-root-cause/
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.V3_COMMIT }}
+          path: v3
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/corporate-action-v3/labels.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/merged" "$RUNNER_TEMP/sealed"
+      - uses: actions/download-artifact@v4
+        with:
+          name: merged-inputs
+          path: ${{ runner.temp }}/merged
+          run-id: ${{ env.MERGED_INPUTS_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Canonical capture (pinned #705 pipeline, read-only)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture-ranking.json"
+      - name: Rank replay (A, B, C for all six frozen methods)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node --expose-gc audit/scripts/research/price-root-cause/ranking.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
+            --sec "$RUNNER_TEMP/merged/sec-events.json" --finra "$RUNNER_TEMP/merged/finra-rows.json" --public-out "$RUNNER_TEMP/pub/RANKING.json" --sealed-dir "$RUNNER_TEMP/sealed"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-public-ranking
+          path: ${{ runner.temp }}/pub/
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-sealed-ranking
+          path: ${{ runner.temp }}/sealed/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 3
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
   publish:
-    needs: [population, methods]
-    if: always() && (contains(github.event.head_commit.message, '[root-cause-audit:run]') || contains(github.event.head_commit.message, '[root-cause-audit:population]'))
+    needs: [population, methods, ranking]
+    if: always() && (contains(github.event.head_commit.message, '[root-cause-audit:run]') || contains(github.event.head_commit.message, '[root-cause-audit:population]') || contains(github.event.head_commit.message, '[root-cause-audit:ranking]'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
