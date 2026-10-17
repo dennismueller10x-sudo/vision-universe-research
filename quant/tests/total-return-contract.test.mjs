@@ -158,17 +158,22 @@ test("signal study: titles without a complete corporate-action record drop out o
   /* Vorher-Zaehlung nach altem Vertrag (Anbieterspalte, Tiingo-Konvention
      aus #349): auch er erkennt seit #349 einen Faktorschritt ohne erfasstes
      Ereignis als fehlende Aktion - die beiden Titel fallen dort ebenfalls. */
+  /* corporate-action-contract-1.2.0: die Fixture-Quelle ref_AGX traegt 1995 einen
+     nicht gemeldeten Reverse Split (0,30 -> 7,50 = exakt 25x ueber Nacht); er
+     faellt jetzt als SPLIT_SUSPECTED_UNDECLARED heraus (V4-D1). Der alte Vertrag
+     sah ihn nicht. */
   assert.equal(c.TOTAL_RETURN_CONFIRMED_BEFORE, 58);
-  assert.equal(c.TOTAL_RETURN_RECONSTRUCTED, 58);
-  assert.equal(c.TOTAL_RETURN_CONFIRMED_AFTER, 58);
+  assert.equal(c.TOTAL_RETURN_RECONSTRUCTED, 57);
+  assert.equal(c.TOTAL_RETURN_CONFIRMED_AFTER, 57);
   assert.equal(c.REJECTED_DIVIDEND_GAP, 2);
-  assert.equal(c.REJECTED_SPLIT_GAP + c.REJECTED_IDENTITY + c.REJECTED_OTHER, 0);
-  assert.equal(study.source.titles, 58, "die beiden Titel rechnen nicht als Gesamtrendite mit");
-  assert.equal(quality.rejected.rows.length, 2);
-  assert.ok(quality.rejected.rows.every((r) => r[1] === "DIVIDEND_MISSING"));
-  assert.equal(quality.contract, "canonical-total-return-1.0.0");
+  assert.equal(c.REJECTED_SPLIT_GAP, 1);
+  assert.equal(c.REJECTED_IDENTITY + c.REJECTED_OTHER, 0);
+  assert.equal(study.source.titles, 57, "die beiden Titel und der Split-Fall rechnen nicht als Gesamtrendite mit");
+  assert.equal(quality.rejected.rows.length, 3);
+  assert.deepEqual(quality.rejected.rows.map((r) => r[1]).sort(), ["DIVIDEND_MISSING", "DIVIDEND_MISSING", "SPLIT_SUSPECTED_UNDECLARED"]);
+  assert.equal(quality.contract, "canonical-total-return-1.2.0");
   assert.equal(quality.benchmark.role, "BENCHMARK_REFERENCE");
-  assert.equal(quality.crossCheck.matchingTitles, 58);
+  assert.equal(quality.crossCheck.matchingTitles, 57);
   assert.ok(!/"close"|"adjustedClose"/.test(JSON.stringify(quality)), "keine Kurse im Artefakt");
   for (const r of study.rules) { assert.equal(r.returnType, "TOTAL_RETURN"); assert.equal(r.baseRateReturnType, "TOTAL_RETURN", "Base Rate auf derselben Basis"); }
   assert.equal(study.basisContract, "same-return-basis-1.0.0");
@@ -184,11 +189,11 @@ test("signal study: titles without a complete corporate-action record drop out o
 
 test("fail closed: below 95 % reconstructed total return the whole study stays on price return, no mixing", (t) => {
   const { study } = signalFixture(t, 4);
-  assert.equal(study.source.totalReturnCoverage.TOTAL_RETURN_CONFIRMED_AFTER, 56);
+  assert.equal(study.source.totalReturnCoverage.TOTAL_RETURN_CONFIRMED_AFTER, 55, "vier Dividendenluecken und der AGX-Split-Fall (1.2.0)");
   assert.equal(study.returnType, "SPLIT_ADJUSTED_PRICE");
   assert.equal(study.returnBasis, "PRICE_RETURN_ONLY");
   assert.equal(study.source.titles, 60, "im Kursmodus zaehlen alle Titel, keiner rechnet mit Gesamtrendite");
-  assert.match(study.returnTypeNote, /nur für 93\.3 % der Titel vollständig belegt/);
+  assert.match(study.returnTypeNote, /nur für 91\.7 % der Titel vollständig belegt/);
   assert.ok(study.rules.every((r) => r.returnType === "SPLIT_ADJUSTED_PRICE" && r.baseRateReturnType === "SPLIT_ADJUSTED_PRICE" && r.checks.returnBasis.state === "FAIL"));
   assert.equal(study.returnBasisComparison.compared, false);
 });
