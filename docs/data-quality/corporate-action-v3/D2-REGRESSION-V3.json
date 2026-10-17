@@ -1,0 +1,112 @@
+{
+  "schema": "d2-regression-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "use": "REGRESSION ONLY: the 11 D2 defects (#721/#722 forensic cause on the 74 adjusted-level > 1e6 securities, not quarantined by canonical-total-return-1.2.0) are recomputed in the runner from the same code (price-integrity.js#explainHighLevel); no v3 rule, threshold or ratio was set from them",
+  "d2": {
+    "highLevel": 74,
+    "byCause": {
+      "DECLARED_SPLIT_INCONSISTENT": 3,
+      "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": 60,
+      "UNDECLARED_JUMP_IN_HISTORY": 10,
+      "UNRESOLVED": 1
+    },
+    "defects": 14,
+    "knownD2NotQuarantinedBy1_2_0": 11,
+    "reproducesEleven": true,
+    "knownD2InValidRangeV2": 10,
+    "knownD2InValidRangeV3": 10,
+    "defectDays": 10,
+    "defectDaysInValidV3": 10,
+    "byCauseV3": {
+      "DECLARED_SPLIT_INCONSISTENT:IN_VALID_RANGE": 2,
+      "UNDECLARED_JUMP_IN_HISTORY:IN_VALID_RANGE": 8,
+      "UNRESOLVED:OUT": 1
+    }
+  },
+  "known83": {
+    "total": 83,
+    "byCause": {
+      "GENUINE_PRICE_MOVE": 40,
+      "UNDECLARED_REVERSE_SPLIT": 23,
+      "PROVIDER_SPIKE": 4,
+      "CURRENCY_OR_UNIT": 7,
+      "STALE_PRICE": 2,
+      "UNRESOLVED": 5,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "defects": 43,
+    "defectsInValidV3": 3,
+    "defectsInValidV2": 11,
+    "genuineHeldV3": 4,
+    "genuineHeldV2": 4,
+    "byCauseAndV3": {
+      "GENUINE_PRICE_MOVE:VALID_STILL_EXTREME": 23,
+      "UNDECLARED_REVERSE_SPLIT:NOT_VALID": 19,
+      "PROVIDER_SPIKE:NOT_VALID": 4,
+      "GENUINE_PRICE_MOVE:VALID": 13,
+      "CURRENCY_OR_UNIT:NOT_VALID": 7,
+      "GENUINE_PRICE_MOVE:NOT_VALID": 4,
+      "STALE_PRICE:NOT_VALID": 2,
+      "UNRESOLVED:NOT_VALID": 4,
+      "DECLARED_SPLIT_INCONSISTENT:VALID_STILL_EXTREME": 1,
+      "UNDECLARED_REVERSE_SPLIT:VALID": 4,
+      "UNRESOLVED:VALID_STILL_EXTREME": 1,
+      "DECLARED_SPLIT_DATE_SHIFT:VALID_STILL_EXTREME": 1
+    }
+  },
+  "acceptance": {
+    "knownD2ValidRangeDefects": {
+      "value": 10,
+      "known": 11,
+      "reproducesEleven": true,
+      "threshold": 0,
+      "pass": false
+    }
+  },
+  "diagnosis": {
+    "source": "sealed per-case rows of run 39031465706, read after the verdict pre-commitment; counts only; no rule changed",
+    "knownD2": 11,
+    "inValidRange": 10,
+    "outOfValidRange": "1 (forensic cause UNRESOLVED, no defect day under the #722 definition)",
+    "declaredSplitInconsistent": {
+      "inValidRange": 2,
+      "residualRatios": "2.02 and 1/2.25 - below the 3:1 semantic candidate threshold and inside the core band 0.4..2.5, so neither layer acts"
+    },
+    "undeclaredJump10x": {
+      "inValidRange": 8,
+      "direction": "all DOWNWARD (-90 % to -97 %)",
+      "semanticCause": {
+        "GENUINE_MOVE": 8
+      },
+      "eventDayShareVolume": "114x to 30,609x the prior median",
+      "independentClass": {
+        "LEGITIMATE_MOVE": 4,
+        "CONFIRMED_EVENT": 1,
+        "UNRESOLVED": 3
+      },
+      "reading": "the second vendor shows 4 of these 8 moves identically without a split (genuine crashes or a split missed by both vendors), the SEC share count confirms one as a corporate action; the #722 label 'defect' is a forensic label, not an independent proof. Removing them from the valid range would need either an independent event source (they are exchange-listed, outside FINRA's OTC scope) or a rule that also holds genuine crashes - neither is in protocol 3.0.0."
+    }
+  }
+}

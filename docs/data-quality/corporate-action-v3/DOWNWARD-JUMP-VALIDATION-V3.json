@@ -1,0 +1,252 @@
+{
+  "schema": "downward-jump-validation-v3-1.0.0",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "finalRun": "39031465706",
+  "finalCodeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "runs": {
+    "first": "39007119068",
+    "labelRequest": "39019906367",
+    "final": "39031465706"
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "semantics": {
+    "engine": "quant/engines/discontinuity-semantics.js",
+    "causes": [
+      "FORWARD_SPLIT",
+      "SPECIAL_DISTRIBUTION",
+      "CURRENCY_OR_UNIT",
+      "LISTING_CHANGE",
+      "BAD_TICK",
+      "DATA_STALENESS",
+      "GENUINE_MOVE",
+      "UNRESOLVED"
+    ],
+    "channels": "event-day share and dollar volume against the prior 20-bar median, persistence of the share-volume scaling over the next 10 sessions, reversion within 2 sessions, stale run before, calendar gap, FINRA listing events, provider dividend; no return threshold decides a cause (3:1 only selects candidates, 10:1 only decides whether an unexplained candidate is held)"
+  },
+  "census": {
+    "candidates": 1550,
+    "extreme": 453,
+    "byCause": {
+      "GENUINE_MOVE": 674,
+      "UNRESOLVED": 243,
+      "BAD_TICK": 219,
+      "DATA_STALENESS": 188,
+      "SPECIAL_DISTRIBUTION": 16,
+      "LISTING_CHANGE": 154,
+      "FORWARD_SPLIT": 37,
+      "CURRENCY_OR_UNIT": 19
+    },
+    "byIndependent": {
+      "CONFIRMED_EVENT": 46,
+      "LEGITIMATE_MOVE": 386,
+      "UNRESOLVED": 1084,
+      "BAD_DATA": 34
+    },
+    "byStatusV3": {
+      "IN_VALID_RETURN": 916,
+      "NOT_IN_VALID_RETURN": 609,
+      "ADJUSTED": 18,
+      "NORMALIZED": 7
+    },
+    "byStatusV2": {
+      "IN_VALID_RETURN": 958,
+      "NOT_IN_VALID_RETURN": 573,
+      "ADJUSTED": 19
+    },
+    "confusion": {
+      "GENUINE_MOVE|CONFIRMED_EVENT|IN_VALID_RETURN": 23,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|IN_VALID_RETURN": 301,
+      "UNRESOLVED|UNRESOLVED|NOT_IN_VALID_RETURN": 93,
+      "GENUINE_MOVE|UNRESOLVED|IN_VALID_RETURN": 273,
+      "BAD_TICK|UNRESOLVED|IN_VALID_RETURN": 44,
+      "UNRESOLVED|LEGITIMATE_MOVE|IN_VALID_RETURN": 16,
+      "UNRESOLVED|UNRESOLVED|IN_VALID_RETURN": 112,
+      "BAD_TICK|UNRESOLVED|NOT_IN_VALID_RETURN": 146,
+      "UNRESOLVED|BAD_DATA|IN_VALID_RETURN": 6,
+      "DATA_STALENESS|UNRESOLVED|IN_VALID_RETURN": 67,
+      "UNRESOLVED|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "SPECIAL_DISTRIBUTION|UNRESOLVED|ADJUSTED": 9,
+      "SPECIAL_DISTRIBUTION|LEGITIMATE_MOVE|ADJUSTED": 3,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 7,
+      "DATA_STALENESS|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 2,
+      "LISTING_CHANGE|UNRESOLVED|ADJUSTED": 2,
+      "LISTING_CHANGE|UNRESOLVED|NOT_IN_VALID_RETURN": 96,
+      "GENUINE_MOVE|UNRESOLVED|NOT_IN_VALID_RETURN": 67,
+      "LISTING_CHANGE|UNRESOLVED|IN_VALID_RETURN": 44,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 4,
+      "FORWARD_SPLIT|UNRESOLVED|NOT_IN_VALID_RETURN": 16,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "DATA_STALENESS|UNRESOLVED|NOT_IN_VALID_RETURN": 99,
+      "FORWARD_SPLIT|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 14,
+      "UNRESOLVED|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "FORWARD_SPLIT|CONFIRMED_EVENT|NORMALIZED": 6,
+      "CURRENCY_OR_UNIT|UNRESOLVED|NOT_IN_VALID_RETURN": 16,
+      "UNRESOLVED|CONFIRMED_EVENT|IN_VALID_RETURN": 3,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|LEGITIMATE_MOVE|IN_VALID_RETURN": 11,
+      "LISTING_CHANGE|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "UNRESOLVED|CONFIRMED_EVENT|NORMALIZED": 1,
+      "DATA_STALENESS|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "SPECIAL_DISTRIBUTION|CONFIRMED_EVENT|ADJUSTED": 4,
+      "CURRENCY_OR_UNIT|BAD_DATA|NOT_IN_VALID_RETURN": 3,
+      "GENUINE_MOVE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 2,
+      "GENUINE_MOVE|BAD_DATA|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|BAD_DATA|NOT_IN_VALID_RETURN": 10,
+      "BAD_TICK|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|IN_VALID_RETURN": 1,
+      "FORWARD_SPLIT|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|BAD_DATA|IN_VALID_RETURN": 1
+    },
+    "independentEvents": 46,
+    "independentEventsInValidReturn": 28,
+    "genuine": 386,
+    "genuineHeld": 43
+  },
+  "upwardForComparison": {
+    "candidates": 1674,
+    "extreme": 471,
+    "byCause": {
+      "GENUINE_MOVE": 779,
+      "UNRESOLVED": 325,
+      "LISTING_CHANGE": 161,
+      "DATA_STALENESS": 181,
+      "BAD_TICK": 182,
+      "REVERSE_SPLIT": 13,
+      "CURRENCY_OR_UNIT": 33
+    },
+    "byIndependent": {
+      "UNRESOLVED": 1062,
+      "LEGITIMATE_MOVE": 441,
+      "CONFIRMED_EVENT": 132,
+      "BAD_DATA": 39
+    },
+    "byStatusV3": {
+      "IN_VALID_RETURN": 956,
+      "NOT_IN_VALID_RETURN": 683,
+      "NORMALIZED": 35
+    },
+    "confusion": {
+      "GENUINE_MOVE|UNRESOLVED|IN_VALID_RETURN": 277,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|IN_VALID_RETURN": 356,
+      "GENUINE_MOVE|CONFIRMED_EVENT|IN_VALID_RETURN": 50,
+      "UNRESOLVED|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 25,
+      "LISTING_CHANGE|UNRESOLVED|NORMALIZED": 5,
+      "UNRESOLVED|UNRESOLVED|IN_VALID_RETURN": 76,
+      "DATA_STALENESS|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "UNRESOLVED|LEGITIMATE_MOVE|IN_VALID_RETURN": 20,
+      "GENUINE_MOVE|UNRESOLVED|NOT_IN_VALID_RETURN": 74,
+      "UNRESOLVED|UNRESOLVED|NOT_IN_VALID_RETURN": 163,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 7,
+      "BAD_TICK|LEGITIMATE_MOVE|IN_VALID_RETURN": 14,
+      "DATA_STALENESS|CONFIRMED_EVENT|NORMALIZED": 2,
+      "DATA_STALENESS|UNRESOLVED|NOT_IN_VALID_RETURN": 97,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 4,
+      "UNRESOLVED|BAD_DATA|NOT_IN_VALID_RETURN": 14,
+      "LISTING_CHANGE|UNRESOLVED|IN_VALID_RETURN": 21,
+      "DATA_STALENESS|UNRESOLVED|IN_VALID_RETURN": 50,
+      "BAD_TICK|UNRESOLVED|IN_VALID_RETURN": 62,
+      "LISTING_CHANGE|UNRESOLVED|NOT_IN_VALID_RETURN": 107,
+      "DATA_STALENESS|BAD_DATA|NOT_IN_VALID_RETURN": 8,
+      "BAD_TICK|UNRESOLVED|NOT_IN_VALID_RETURN": 95,
+      "REVERSE_SPLIT|UNRESOLVED|NOT_IN_VALID_RETURN": 6,
+      "UNRESOLVED|CONFIRMED_EVENT|IN_VALID_RETURN": 11,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NORMALIZED": 9,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 11,
+      "UNRESOLVED|CONFIRMED_EVENT|NORMALIZED": 6,
+      "GENUINE_MOVE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 6,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 4,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NORMALIZED": 2,
+      "UNRESOLVED|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 8,
+      "DATA_STALENESS|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 8,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NORMALIZED": 1,
+      "CURRENCY_OR_UNIT|UNRESOLVED|NOT_IN_VALID_RETURN": 27,
+      "REVERSE_SPLIT|LEGITIMATE_MOVE|IN_VALID_RETURN": 1,
+      "BAD_TICK|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 3,
+      "REVERSE_SPLIT|CONFIRMED_EVENT|NORMALIZED": 5,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|IN_VALID_RETURN": 8,
+      "REVERSE_SPLIT|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|CONFIRMED_EVENT|NORMALIZED": 3,
+      "CURRENCY_OR_UNIT|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "GENUINE_MOVE|BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "LISTING_CHANGE|BAD_DATA|NOT_IN_VALID_RETURN": 1,
+      "UNRESOLVED|UNRESOLVED|NORMALIZED": 2,
+      "BAD_TICK|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|BAD_DATA|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|CONFIRMED_EVENT|IN_VALID_RETURN": 1
+    }
+  },
+  "falseNegatives": {
+    "downward": {
+      "events": 362,
+      "providerDeclared": 336,
+      "notInPrice": 5,
+      "outsideValid": 0,
+      "evaluable": 21,
+      "falseNegatives": 0,
+      "rate": 0,
+      "wilson95": [
+        0,
+        0.1546
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 336,
+        "NOT_IN_PRICE": 5,
+        "HANDLED": 19,
+        "HELD_OR_LINK": 2
+      }
+    },
+    "courseOnlyDownward": {
+      "events": 121,
+      "providerDeclared": 96,
+      "notInPrice": 5,
+      "outsideValid": 0,
+      "evaluable": 20,
+      "falseNegatives": 0,
+      "rate": 0,
+      "wilson95": [
+        0,
+        0.1611
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 96,
+        "NOT_IN_PRICE": 5,
+        "HANDLED": 18,
+        "HELD_OR_LINK": 2
+      }
+    }
+  },
+  "acceptance": {
+    "downwardFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 21,
+      "threshold": 0.1,
+      "minEvaluable": 20,
+      "pass": true
+    },
+    "downwardHoldFalseShare": {
+      "value": 0.5658,
+      "labelled": 76,
+      "threshold": 0.1,
+      "pass": false
+    }
+  }
+}
