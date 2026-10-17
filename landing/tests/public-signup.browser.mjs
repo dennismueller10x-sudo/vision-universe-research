@@ -6,23 +6,28 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
-import {checkDiscoverSwipe,checkTouchSwipe} from './discover-swipe-checks.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
+import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
 await mkdir(resolve(root,'tests/output'),{recursive:true});
 await writeFile(resolve(root,policy),'<!doctype html><html lang="de" data-policy-status="approved" data-newsletter-release-scope="public"><head><title>Nur synthetischer Datenschutz</title></head><body>Testfixture.</body></html>');
 await build({output,production:true,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:policy}});
-let origin,posts=0,accessCalls=0,previousStyleReads=0;
+let origin,posts=0,accessCalls=0,previousStyleReads=0,previousMotionReads=0;
 const server=createServer(async(req,res)=>{
   const requestUrl=new URL(req.url,origin),pathname=requestUrl.pathname;
   if(pathname==='/previous.html'){
     res.writeHead(200,{'Content-Type':'text/html'});
-    res.end('<!doctype html><html><head><link rel="stylesheet" href="/styles.css"></head><body>Previous deployment</body></html>');return;
+    res.end('<!doctype html><html><head><link rel="stylesheet" href="/styles.css"><script src="/presentation.js"></script></head><body>Previous deployment</body></html>');return;
   }
   if(pathname==='/styles.css'&&!requestUrl.search){
     previousStyleReads++;res.writeHead(200,{'Content-Type':'text/css','Cache-Control':'public, max-age=31536000'});
     res.end('body { --previous-landing-styles: loaded; }');return;
+  }
+  if(pathname==='/presentation.js'&&!requestUrl.search){
+    previousMotionReads++;res.writeHead(200,{'Content-Type':'application/javascript','Cache-Control':'public, max-age=31536000'});
+    res.end('document.documentElement.dataset.previousLandingMotion="loaded";document.documentElement.classList.add("intro");');return;
   }
   if(pathname==='/api/newsletter/test-access'){
     accessCalls++;res.writeHead(503);res.end();return;
@@ -50,17 +55,19 @@ try{
       // No request routing here: Playwright routes disable the HTTP cache.
       // Reproduce a visitor who cached styles before the new module shipped.
       const cached=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
-      const returning=await cached.newPage(),beforeStyles=previousStyleReads,beforePosts=posts;
+      const returning=await cached.newPage(),beforeStyles=previousStyleReads,beforeMotion=previousMotionReads,beforePosts=posts;
       await returning.goto(origin+'/previous.html',{waitUntil:'networkidle'});
       assert.equal(previousStyleReads,beforeStyles+1);
+      assert.equal(previousMotionReads,beforeMotion+1);
+      assert.equal(await returning.locator('html').getAttribute('data-previous-landing-motion'),'loaded');
       assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'loaded');
       await returning.goto(origin+'/',{waitUntil:'networkidle'});
       assert.equal(previousStyleReads,beforeStyles+1,'Old URL must not be requested again');
+      assert.equal(previousMotionReads,beforeMotion+1);
+      assert.equal(await returning.locator('html').getAttribute('data-previous-landing-motion'),null,'New composition must not run cached old intro');
+      assert.equal(await returning.locator('html').evaluate(e=>e.classList.contains('intro')),false);
       assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'','New markup must not reuse cached old styles');
-      for(const selector of ['[data-preview-swipe=left]','[data-preview-swipe=right]','[data-preview-reset]']){
-        const box=await returning.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44);
-      }
-      if(name==='Chromium'){await checkTouchSwipe(returning);console.log('Chromium: trusted touchscreen right/left swipe and vertical scroll without accidental save verified.');}
+      await checkIphonePreview(returning);
       assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
       await cached.close();
       for(const javaScriptEnabled of [true,false]){
@@ -68,12 +75,9 @@ try{
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
-        if(javaScriptEnabled)await checkDiscoverSwipe(page);
-        else {
-          assert.equal(await page.locator('.discover-preview').isVisible(),false);
-          assert.equal(await page.locator('.stage .phone .module-home').isVisible(),true);
-        }
-        assert.equal(posts,before); // Swiping never submits the newsletter form.
+        await checkIphonePreview(page);
+        await checkConsentDisclosure(page);
+        assert.equal(posts,before); // The static iPhone never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
         assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);
         await page.locator('#email').fill('synthetic-public@example.test');
@@ -87,7 +91,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': returning mobile visitor with cached old styles verified; Discover swipe/cancel/keyboard/unique-memory/reset verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': returning mobile visitor with cached old styles verified; single static iPhone and ten complete product names verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
