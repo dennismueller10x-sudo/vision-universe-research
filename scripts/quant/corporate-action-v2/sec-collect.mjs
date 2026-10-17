@@ -42,6 +42,9 @@ export const COLLECTOR_VERSION = 'sec-corporate-action-collector-1.0.0';
 
 const stats = { requests: 0, errors: 0, retries: 0, eftsQueries: 0, eftsHits: 0, universeHits: 0, filings: 0, documents: 0, documentErrors: 0, truncatedWindows: 0,
   proxyHits: 0, periodicFilings: 0, incompleteWindows: [], documentsSkippedByCap: 0 };
+/* protocol 3.0.0 (review R2-09, blocker B5): filings with an unreadable document are listed and re-read in a sequential retry pass
+   (--retry-failed 1 during the merge); the extraction rules are unchanged */
+const failedFilings = [];
 let last = 0;
 /* <= 8.7 requests/s by default; parallel collection jobs set SEC_MIN_INTERVAL_MS (three parts at 300 ms reach the SEC fair-access limit of 10/s; review R2-09: use >= 400 ms or a sequential retry pass) */
 const MIN_INTERVAL = Number(process.env.SEC_MIN_INTERVAL_MS || 115);
@@ -128,6 +131,7 @@ async function main() {
     const part = JSON.parse(fs.readFileSync(f, 'utf8'));
     for (const [cik, evs] of Object.entries(part.perCik || {})) add(cik, evs);
     for (const [cik, px] of Object.entries(part.proxies || {})) { const l = proxies.get(cik) || new Map(); px.forEach((x) => l.set(x.accession, x)); proxies.set(cik, l); }
+    failedFilings.push(...(part.failedFilings || []));
     for (const [k, v] of Object.entries(part.stats || {})) {
       if (k === 'incompleteWindows') stats.incompleteWindows.push(...v);
       else if (typeof v === 'number') stats[k] = (stats[k] || 0) + v;
@@ -141,14 +145,15 @@ async function main() {
     while (next < queue.length) {
       const [adsh, f] = queue[next++];
       if (docs >= maxDocs) { stats.documentsSkippedByCap++; continue; }
-      let text = '';
+      let text = '', failed = 0;
       for (const file of [...f.files].sort()) {
         if (!/\.(htm|html|txt)$/i.test(file)) continue;
         docs++;
         const raw = await get(docUrl(f.cik, adsh, file)); stats.documents++;
-        if (raw === null) { stats.documentErrors++; continue; }
+        if (raw === null) { stats.documentErrors++; failed++; continue; }
         text += ' ' + SEC.textOf(raw);
       }
+      if (failed) failedFilings.push({ adsh, cik: f.cik, form: f.form, items: f.items, filedDate: f.filedDate, files: [...f.files].sort(), failed });
       if (!text.trim()) continue;
       const tickers = ciks.get(f.cik).tickers || [];
       const evs = SEC.filingEvents(text, { form: f.form, items: f.items, accession: adsh, cik: f.cik, filedDate: f.filedDate, ticker: tickers[0] || null });
@@ -157,6 +162,30 @@ async function main() {
     }
   };
   await Promise.all([worker(), worker(), worker(), worker()]);
+  /* 2b. sequential retry pass for filings with an unreadable document (merge step only): the whole filing is re-read and its
+     earlier partial events are replaced; documents still unreadable stay counted in documentErrors */
+  if (args['retry-failed'] && failedFilings.length) {
+    stats.retryPass = { filings: failedFilings.length, recoveredFilings: 0, recoveredDocuments: 0 };
+    for (const ff of failedFilings) {
+      let text = '', still = 0;
+      for (const file of ff.files) {
+        if (!/\.(htm|html|txt)$/i.test(file)) continue;
+        await new Promise((r) => setTimeout(r, 400));
+        const raw = await get(docUrl(ff.cik, ff.adsh, file));
+        if (raw === null) { still++; continue; }
+        text += ' ' + SEC.textOf(raw);
+      }
+      const recovered = ff.failed - still;
+      stats.documentErrors -= Math.max(0, recovered); stats.retryPass.recoveredDocuments += Math.max(0, recovered);
+      if (still || !text.trim() || !ciks.has(ff.cik)) continue;
+      stats.retryPass.recoveredFilings++;
+      const tickers = ciks.get(ff.cik).tickers || [];
+      const evs = SEC.filingEvents(text, { form: ff.form, items: ff.items, accession: ff.adsh, cik: ff.cik, filedDate: ff.filedDate, ticker: tickers[0] || null });
+      if (tickers.length > 1) evs.forEach((e) => { e.tickerMentioned = tickers.some((t) => { const p = SEC.tickerPattern(t); return !!p && p.test(text); }); });
+      perCik.set(ff.cik, (perCik.get(ff.cik) || []).filter((e) => e.source?.accession !== ff.adsh));
+      add(ff.cik, evs);
+    }
+  }
   /* 3a. proxies: ANNOUNCED context, metadata only (no ratio) */
   for (const [y, m] of phases.has('proxies') ? months(from, to) : []) {
     const s = `${y}-${pad(m)}-01`, e = `${y}-${pad(m)}-${pad(lastDay(y, m))}`;
@@ -194,7 +223,7 @@ async function main() {
   }
   if (args['raw-out']) {
     fs.mkdirSync(path.dirname(args['raw-out']), { recursive: true });
-    fs.writeFileSync(args['raw-out'], JSON.stringify({ schema: 'sec-corporate-action-raw-part-1.0.0', collector: COLLECTOR_VERSION, extractor: SEC.VERSION, from, to, phases: [...phases], stats,
+    fs.writeFileSync(args['raw-out'], JSON.stringify({ schema: 'sec-corporate-action-raw-part-1.0.0', collector: COLLECTOR_VERSION, extractor: SEC.VERSION, from, to, phases: [...phases], stats, failedFilings,
       perCik: Object.fromEntries(perCik), proxies: Object.fromEntries([...proxies.entries()].map(([c, m]) => [c, [...m.values()]])) }));
     console.log('[sec] raw part', JSON.stringify(stats));
     return;

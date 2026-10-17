@@ -1,0 +1,104 @@
+{
+  "schema": "corporate-action-protocol-3.0.0",
+  "version": "3.0.0",
+  "status": "PRE_REGISTERED",
+  "preRegisteredBefore": "the first Actions run of scripts/quant/corporate-action-v3/audit-v3.mjs; no v3 result on real data exists. Thresholds, windows, label rules and the selection seed below are not changed after any result; a failed criterion is reported as NOT_READY.",
+  "predecessors": {
+    "v2": "CONTROL-SET-PROTOCOL-V2.json 2.0.0 (PR #737, NOT_READY) - unchanged historical evidence",
+    "v4DataFix": "PR #721/#722 (V4-D1/D2) - unchanged; their 83 cases and 74 adjusted-level securities are REGRESSION ONLY",
+    "sourceAcceptance": "PR #709/#712 - source acceptance rules unchanged"
+  },
+  "scope": "Canonical corporate-action data layer only. No calibration, no strategy performance, no change of source acceptance rules.",
+  "contracts": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0 (corporate-action-validation-3.0.0)",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0 (unchanged)",
+    "core": "canonical-total-return-1.2.0 (unchanged)"
+  },
+  "decisionRuleChangesVersusV2": [
+    "FINRA OTC Daily List split events enter the evidence model like SEC effective events (anchor = ex-date, visible from publication); SEC vs FINRA ratio disagreement = CONFLICTING (HOLD)",
+    "NORMALIZE needs a second confirmation independent of the triggering statement for every ratio (second source, share volume in split direction, or SEC share count); v2 required it only below 3:1. Reason: v2 blocker B2 (aggregate normalize false share 0.25); derived from the two-confirmation principle, not from individual cases (the per-case v2 results are sealed and were not read)",
+    "event semantics of every overnight move >= 3:1 without provider event (discontinuity-semantics-1.0.0): mechanical split signature in either direction -> HOLD; extreme (>= 10:1) moves need a positive explanation (genuine information event, special distribution, bad tick, listing change), otherwise HOLD/QUARANTINE",
+    "RESUME_FROM: after a scale-type hold the series continues as a new segment with its own index base when the bars after it are valid on their own; no return across the break"
+  ],
+  "sources": {
+    "integratedInCore": ["SEC_EDGAR (8-K/6-K effective statements, unchanged)", "FINRA_OTC_DAILY_LIST (api.finra.org otcMarket/otcDailyList, publication timestamp dailyListDatetime)"],
+    "validationOnly": ["SECOND_VENDOR_YAHOO_CHART (split events and split-adjusted closes; not point in time, no commercial licence, never a core input)", "SEC_XBRL_SHARES_OUTSTANDING (capture fundamentals)", "EDGAR_SUBMISSIONS_ACCEPTANCE_TIME (data.sec.gov/submissions; PIT oracle timestamps)"],
+    "labelSourceNotValidationSource": "a label never uses the statement that triggered the decision: normalizations triggered by FINRA are not labelled by FINRA, share-count corroboration is not reused as label, course-only holds by definition carry no SEC/FINRA statement and are labelled by vendor, FINRA and share counts"
+  },
+  "pitOracle": {
+    "method": "TRUNCATION ORACLE: for each sampled as-of day t the engine view build(bars, {asOf: t}) is compared with build(bars <= t, evidence truncated outside the engine by its own publication timestamp, no asOf). Any difference in segments, holds, invalid ranges, normalizations or a total-return ratio (1e-9) is a violation. Timestamps: every SEC observation is compared with its EDGAR acceptance time (data.sec.gov/submissions, a different SEC system than the full-text search that supplies visibleAt); an observation treated as public before its acceptance day (US/Eastern) is a violation. observedAt of every hold, normalization, invalid range and RESUME_FROM must appear in the oracle view of that day (else OBSERVED_AT_TOO_EARLY, a violation); appearing already one session earlier is reported as late (conservative, not a violation). Revisions at +1/+5/+20 sessions and lag distributions are disclosed (review R2-07).",
+    "seed": "vu-corporate-action-v3-pit-2026-10-17",
+    "sampleOrder": "segments with at least one hold, invalid range, normalization or RESUME_FROM, ascending sha256(seed + '|' + segmentId)",
+    "maxSegments": 1500,
+    "asOfPoints": "per item: session before the event, event day, session before observedAt, observedAt, +1, +5, +20 sessions",
+    "independence": "independent of the engine's as-of filtering (inputs physically truncated) and of the EFTS extraction (acceptance times from the submissions index). The SEC remains the authority for its own publication time; FINRA has a single timestamp (dailyListDatetime), so FINRA timing is checked by truncation only (disclosed limit)."
+  },
+  "blindedControlSet": {
+    "seed": "vu-corporate-action-v3-blinded-2026-10-17",
+    "perCategory": 150,
+    "ordering": "ascending sha256(seed + '|' + segmentId)",
+    "excluded": [
+      "every segment with a V4 extreme security-month (2213, the 83 included) and every one of the 74 adjusted-level > 1e6 securities",
+      "every segment on which canonical-total-return-1.2.0 places SPLIT_SUSPECTED_UNDECLARED or PRICE_SPIKE_REVERTED (as protocol 2.0.0)",
+      "every member of the v2 control set (recomputed with the v2 seed and rules): seen data are not reused"
+    ],
+    "blinding": "categories and the independent event population are computed in stage select from raw price features, the second vendor, FINRA and SEC only, before any v3 contract is built; their sha256 is written to the public SELECT file before stage evaluate runs. The label module (labels.mjs) imports no engine of the core (test B1).",
+    "categories": {
+      "NORMAL": ">= 250 bars",
+      "VOLATILE": "top decile of the daily raw log-return standard deviation (no provider event days), median raw close >= 1",
+      "PENNY": "median raw close < 1.00",
+      "CONFIRMED_FORWARD_SPLIT": "an independent forward split >= 1.5 inside the segment: second vendor (identity CONFIRMED), FINRA, or an SEC effective statement",
+      "CONFIRMED_REVERSE_SPLIT": "an independent reverse split <= 1/1.5: second vendor, FINRA, SEC effective statement, or an SEC share-count drop <= 1/3 within 200 days",
+      "DOWNWARD_JUMP": "at least one overnight raw close ratio <= 1/3 without provider event",
+      "SYMBOL_CHANGE": "issuer CIK continues under another ticker within 30 days after the segment ends, or a FINRA symbol change / exchange-to-OTC change in the window",
+      "MERGER": "delisted, delisting class ACQUISITION or MERGER_FORM",
+      "DELISTING": "delisted (any class, distress included)",
+      "STALE": ">= 10 consecutive identical raw closes",
+      "HIGH_NOMINAL": "maximum raw close >= 1000"
+    }
+  },
+  "labels": {
+    "vendorIdentity": "daily raw returns of vendor and provider agree within 1 % on >= 90 % of >= 60 common consecutive days (days > 25 % excluded): CONFIRMED; < 50 %: MISMATCH; otherwise INCONCLUSIVE / INSUFFICIENT_OVERLAP. Only CONFIRMED vendor data label anything.",
+    "vendorMove": "vendor raw move on the day (split-adjusted close x later vendor split ratios): SAME_MOVE within 10 % of the provider move; NO_MOVE below half of it in log terms; OTHER_MOVE otherwise",
+    "event": "vendor split within 5 days that explains the move, FINRA split within 10 days that explains it, or SEC shares CONFIRMS (protocol 2.0.0 definition)",
+    "badData": "vendor NO_MOVE and no vendor split within 5 days",
+    "genuine": "vendor SAME_MOVE, no vendor split within 15 days, no FINRA split within 10 days, SEC shares not CONFIRMS",
+    "HOLD": "TRUE_POSITIVE = event or badData; FALSE_POSITIVE = genuine; else UNLABELED",
+    "NORMALIZE": "TRUE_POSITIVE = vendor split of the same ratio (1 %) within 5 days, FINRA same ratio (not if FINRA triggered), SEC shares CONFIRMS (not if the share count was the corroboration); FALSE_POSITIVE = vendor split of another ratio (> 5 %), vendor SAME_MOVE without split within 15 days, SEC shares NO_SPLIT (same caveat); else UNLABELED",
+    "INVALID_RANGE_AND_SEMANTIC_DATA_HOLD": "TRUE_POSITIVE = badData or event; FALSE_POSITIVE = genuine; else UNLABELED",
+    "SEMANTIC_TERMINAL": "TRUE_POSITIVE = FINRA listing event within 5 days; FALSE_POSITIVE = genuine; else UNLABELED",
+    "courseOnlyHold": "a hold whose evidence is the price alone: evidence class PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source statement",
+    "falseNegativePopulation": "independent events inside the segment: vendor splits (identity CONFIRMED, |ln q| >= ln 1.5), FINRA splits (not cancelled), SEC share-count drops <= 1/3 within 200 days (deduplicated). Excluded from the rate: PROVIDER_DECLARED (provider factor of the same ratio within the window) and NOT_IN_PRICE (no day in the window that the ratio explains). FALSE_NEGATIVE = the explained day is a valid canonical return (same segment) with |ln g| >= |ln q| / 2. Course-only events: no SEC statement within 60 days and no FINRA split within 10 days. Direction: q < 1 reverse (upward jump), q > 1 forward (downward jump).",
+    "extremeMoveClass": "CONFIRMED_EVENT = event; BAD_DATA = badData; LEGITIMATE_MOVE = genuine; else UNRESOLVED"
+  },
+  "acceptance": {
+    "pitViolations": 0,
+    "pitMinViews": 1000,
+    "pitAcceptanceTimestampCoverageMin": 0.95,
+    "blindedFalsePositiveRatePooled": 0.02,
+    "blindedFalsePositiveRatePerCategory": 0.05,
+    "falseNegativeRateMax": 0.05,
+    "minEvaluableEvents": 50,
+    "courseOnlyHoldFalseShareMax": 0.1,
+    "courseOnlyHoldMinLabelledShare": 0.5,
+    "courseOnlyFalseNegativeRateMax": 0.1,
+    "normalizeFalseShareMax": 0.05,
+    "downwardFalseNegativeRateMax": 0.1,
+    "downwardHoldFalseShareMax": 0.1,
+    "minEvaluableDownwardEvents": 20,
+    "knownD2ValidRangeDefects": 0,
+    "severeUnresolvedExtremeInsideValid": 0,
+    "unresolvedConflictShareMax": 0.005,
+    "independentLabelCoverageMin": 0.5,
+    "blindedLabelableShareMin": 0.5,
+    "secDocumentErrorShareMax": 0.001,
+    "secondSourceIntegrated": "FINRA collection complete and >= 1 FINRA split event joined to the universe",
+    "reviewHighCriticalOpen": 0,
+    "intervals": "Wilson 95 % reported with every rate; acceptance on the point estimate",
+    "noTuning": "no threshold, window, tolerance, label rule or seed in this file or in the v3 engines is changed after the first run result; a failed criterion is NOT_READY"
+  },
+  "readinessRule": "READY_FOR_PREREGISTERED_CALIBRATION only if every acceptance criterion passes AND the independent review leaves no HIGH/CRITICAL finding open; otherwise NOT_READY. The 83/74 regression and the D2 regression are reported; D2 also gates via knownD2ValidRangeDefects."
+}

@@ -37,7 +37,7 @@ const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity
    Listing-Identitaet gibt es keine (IDENTITY_UNCERTAIN). opts.role
    BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik.
 
-   TEILREIHEN (canonical-price-validity-2.2.0, Review R8) - NUR auf Anforderung
+   TEILREIHEN (canonical-price-validity-3.0.0, Review R8) - NUR auf Anforderung
    fromBarsPartial(payload, opts): lehnt die Rekonstruktion die Reihe ab einem
    bestimmten Tag ab (Sperre, Datenwiderspruch, Luecke), bleiben die gueltigen
    Kerzen davor erhalten: tr traegt Werte bis trValidUntil und NaN danach (und an
@@ -46,8 +46,10 @@ const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity
    erst in einem eigenen PR mit Vorher/Nachher (CLAUDE.md, Review F07/F08).
    Ganz ohne Gesamtrendite bleibt es bei fehlender Identitaet, einer veralteten
    Reihe (opts.asOf/maxStaleDays, unabhaengig vom Grund der Ablehnung geprueft)
-   und fuer BENCHMARK_REFERENCE. opts.secEvents / opts.shares geben unabhaengige
-   Corporate-Action-Belege mit (SEC). */
+   und fuer BENCHMARK_REFERENCE. opts.secEvents / opts.shares / opts.finraEvents /
+   opts.listingEvents geben unabhaengige Corporate-Action-Belege mit (SEC, FINRA).
+   tr beschreibt das erste gueltige Segment; spaetere Segmente (RESUME_FROM,
+   3.0.0) stehen nur in validity.segments und haben eine eigene Indexbasis. */
 const WHOLE_SERIES_ONLY = new Set(["IDENTITY_UNCERTAIN", "NO_BARS", "STALE"]);
 function partialSeries(sorted, dates, ctr, opts) {
   if (opts.role === "BENCHMARK_REFERENCE") return null;
@@ -57,7 +59,7 @@ function partialSeries(sorted, dates, ctr, opts) {
     const lag = Math.round((Date.parse(opts.asOf) - Date.parse(String(sorted[sorted.length - 1].date).slice(0, 10))) / 864e5);
     if (lag > opts.maxStaleDays) return { tr: null, trCoverage: null, validity: null, stale: true };
   }
-  const validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares, asOf: opts.asOf });
+  const validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares, finraEvents: opts.finraEvents, listingEvents: opts.listingEvents, asOf: opts.asOf });
   if (!validity.validUntil) return { tr: null, trCoverage: null, validity };
   return { tr: PriceValidity.alignTr(validity, dates), validity,
     trCoverage: validity.state === "FULL_VALID" ? "FULL" : validity.state === "VALID_PREFIX" ? "PREFIX" : "FULL_WITH_INVALID_BARS" };
