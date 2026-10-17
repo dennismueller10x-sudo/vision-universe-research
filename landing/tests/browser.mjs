@@ -6,6 +6,7 @@ import {readFile,mkdir,writeFile,stat} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
 
 const output=resolve(root,'tests/output/browser');
 await mkdir(output,{recursive:true});
@@ -30,12 +31,13 @@ try{
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
     const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    assert.ok(m.height<=limit,`${name} height ${m.height}>${limit}`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    const totalLimit=limit;
+    assert.ok(m.height<=totalLimit,`${name}: compact coming-soon page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
-    for(const link of ['.lp-cta','.hero .btn']){if(!(await page.locator(link).isVisible()))continue;await page.locator(link).click();assert.equal(new URL(page.url()).hash,'#newsletter');const y=await page.locator('#newsletter').evaluate(e=>e.getBoundingClientRect().top);assert.ok(y<height&&y>=0,`${name} anchor not visible`);await page.goto(base+'/blocked/');}
+    await checkIphonePreview(page);
     assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
     assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
     assert.equal(await page.locator('#email').getAttribute('type'),'email');
@@ -49,7 +51,7 @@ try{
     // its actual text. Double every content font from a simultaneous snapshot;
     // keep the aria-hidden device illustration at its original image scale.
     await page.evaluate(()=>{
-      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.stage')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
+      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.phone')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
       for(const[e,size,line]of rows){e.style.fontSize=size*2+'px';if(Number.isFinite(line))e.style.lineHeight=line*2+'px';}
     });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();
@@ -75,6 +77,22 @@ try{
     const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>v.id),[]);
     await page.goto(base+'/ready/newsletter/bestaetigt/');assert.match(await page.locator('main').innerText(),/direkter Aufruf dieser Seite bestätigt keine Anmeldung/);assert.equal(await page.locator('main button,main input').count(),0);
     await context.close();
+  }
+  // Keep the pending and rejected states readable without a real provider call.
+  await mkdir(resolve(screenshots,'redesign'),{recursive:true});
+  for(const [name,width] of [['desktop',1440],['iphone',390]]){
+    const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'});const pending=await context.newPage();let release;
+    const response=new Promise(r=>{release=r});
+    await pending.route('**/api/newsletter/subscribe',async route=>{await response;await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({message:'Die Bestätigungsmail konnte nicht gesendet werden. Deine Anmeldung ist nicht bestätigt.'})});});
+    await pending.goto(base+'/ready/');await pending.locator('#email').fill('synthetic@example.test');await pending.locator('#consent').check();await pending.locator('button[type=submit]').click();
+    await pending.waitForFunction(()=>document.querySelector('#newsletter-form').getAttribute('aria-busy')==='true');
+    assert.equal(await pending.locator('button[type=submit]').isDisabled(),true);assert.equal(await pending.locator('button[type=submit]').innerText(),'Wird geprüft …');
+    await pending.locator('#newsletter').scrollIntoViewIfNeeded();
+    await pending.screenshot({path:resolve(screenshots,'redesign','state-pending-'+name+'.png')});
+    release();await pending.waitForFunction(()=>document.querySelector('button[type=submit]').textContent==='Anmeldung fehlgeschlagen');
+    assert.equal(await pending.locator('#newsletter-form').getAttribute('aria-busy'),null);
+    await pending.screenshot({path:resolve(screenshots,'redesign','state-error-'+name+'.png')});
+    assert.equal(await pending.evaluate(()=>document.documentElement.scrollWidth),width);await context.close();
   }
   const page=await browser.newPage();
   await page.route('**/api/newsletter/subscribe',route=>route.abort());

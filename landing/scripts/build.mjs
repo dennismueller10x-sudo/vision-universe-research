@@ -52,6 +52,10 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   for (const path of ['index.html','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html']) {
     let page = path === 'index.html' ? html : await readFile(resolve(output,path),'utf8');
     page = page.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','');
+    if (path !== 'index.html') {
+      const version=createHash('sha256').update(await readFile(resolve(output,'legal.css'))).digest('hex').slice(0,16);
+      page=page.replace(/href="((?:\.\.\/)+legal\.css)"/g,`href="$1?v=${version}"`);
+    }
     if (path === 'index.html') html = page; else await writeFile(resolve(output,path),page);
   }
 
@@ -62,7 +66,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   // Returning browsers must not combine new preview markup with old cached
   // controls/styles. Each changed file gets a new, deterministic asset URL.
-  for(const [asset,attribute] of [['styles.css','href'],['assets/home/discover-swipe.js','src']]){
+  for(const [asset,attribute] of [['styles.css','href'],['presentation.js','src'],['assets/home/discover-swipe.js','src']]){
     const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }

@@ -1,63 +1,96 @@
-// Screenshot and computed-style comparison against the pinned original Hero.
-// The reference is repository markup, not an attempt to bypass the public gate.
+// Design contracts and reproducible before/after captures. Research source assets
+// stay byte-identical; landing geometry deliberately follows the approved brief.
 import {chromium} from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 import {createServer} from 'node:http';
-import {readFile,writeFile,mkdir,stat} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {readFile,writeFile,mkdir,stat,rm} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import {existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {root,build} from './build.mjs';
+import {checkIphonePreview} from '../tests/iphone-preview-checks.mjs';
 
-await build();
+const baseline='11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49';
 const provenance=JSON.parse(await readFile(resolve(root,'reference/source.json'),'utf8'));
 const css=(await readFile(resolve(root,'assets/home/home.css'),'utf8')).replace('url(../fonts/inter-latin.woff2)','url(/assets/fonts/inter-latin.woff2)');
-assert.equal(createHash('sha256').update(css).digest('hex'),provenance.cssSha256,'Research-CSS darf außer der relativen Font-URL nicht verändert sein');
-const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.woff2':'font/woff2'};
-const directory=resolve(root);
-const server=createServer(async(req,res)=>{try{let path=resolve(directory,'.'+new URL(req.url,'http://localhost').pathname);if(!path.startsWith(directory+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end();}});
-await new Promise(r=>server.listen(0,'127.0.0.1',r));
-const base=`http://127.0.0.1:${server.address().port}`;
+assert.equal(createHash('sha256').update(css).digest('hex'),provenance.cssSha256,'Originale Research-CSS bleibt unverändert');
+const temporary=resolve(root,'tests/output/design-review');
+await rm(temporary,{recursive:true,force:true});await mkdir(temporary,{recursive:true});
+// An explicit immutable, public repository baseline; no live service or secrets.
+const archive=execFileSync('git',['archive',baseline,'landing'],{cwd:resolve(root,'..'),maxBuffer:64*1024*1024});
+execFileSync('tar',['-x','-C',temporary],{input:archive});
+const previous=await import(pathToFileURL(resolve(temporary,'landing/scripts/build.mjs')));
+const config={mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'legal-drafts/newsletter-release-2026-10-14.html'};
+await previous.build({config});
+const output=resolve(root,'tests/output/design-current');await build({output,config});
+const directories={before:resolve(temporary,'landing/dist'),after:output};
+// Check original font/logo bytes too: no redrawn or substituted brand assets.
+for(const asset of ['assets/fonts/inter-latin.woff2','assets/vision-universe-logo.png','assets/vision-universe-logo-web.png'])assert.deepEqual(await readFile(resolve(output,asset)),await readFile(resolve(directories.before,asset)));
+const server=createServer(async(req,res)=>{
+  try{
+    const pathname=new URL(req.url,'http://localhost').pathname,version=pathname.split('/')[1],directory=directories[version];
+    if(!directory)throw Error();let path=resolve(directory,'.'+pathname.slice(version.length+1));
+    if(path!==directory&&!path.startsWith(directory+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');
+    const content=await readFile(path);res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'application/javascript','.png':'image/png','.woff2':'font/woff2','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(content);
+  }catch{res.writeHead(404);res.end();}
+});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
-const review=resolve(root,'review');await mkdir(review,{recursive:true});
-const selectors={
-  header:['.lp-head',['paddingTop','paddingBottom','position','backgroundColor']],
-  logo:['.lp-logo',['width','aspectRatio','overflow']],
-  logoImage:['.lp-logo img',['filter','marginTop']],
-  shell:['.hero .shell',['width','maxWidth']],
-  hero:['.hero',['paddingTop','paddingBottom','backgroundColor','color']],
-  grid:['.hero-grid',['display','gridTemplateColumns','gap','alignItems']],
-  title:['.hero h1',['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign','marginTop']],
-  accent:['.hero h1 em',['color','textShadow','backgroundImage']],
-  lead:['.hero .lead',['fontFamily','fontSize','lineHeight','color','marginTop']],
-  badge:['.hero-badge',['fontSize','fontWeight','borderRadius','padding','backgroundColor','borderColor']],
-  button:['.hero .btn-app',['fontFamily','fontSize','fontWeight','minHeight','padding','borderRadius','backgroundColor','color','boxShadow']],
-  glow:['.hero::before',['backgroundImage']],
-  background:['.hero-grid-fx',['backgroundImage','maskImage']],
-  stage:['.stage',['height','width','position']],
-  phone:['.stage .phone',['width','height','borderRadius','transform','left','top']],
-  browser:['.stage .browser',['display','width','right','top','backgroundColor','borderRadius']],
-  hud:['.stage .hud',['backgroundImage','borderRadius','boxShadow']],
-};
-async function inspect(page){return page.evaluate(selectors=>Object.fromEntries(Object.entries(selectors).map(([name,[selector,props]])=>{const pseudo=selector.includes('::')?'::'+selector.split('::')[1]:null;const e=document.querySelector(selector.split('::')[0]);const s=getComputedStyle(e,pseudo);return[name,Object.fromEntries(props.map(p=>[p,s[p]]))];})),selectors);}
-const comparisons=[];
+const review=resolve(root,'review/redesign');await mkdir(review,{recursive:true});
+const results=[];
 try{
-  for(const[name,width,height]of[['desktop',1440,900],['iphone',390,844]]){
-    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:'reduce',isMobile:name==='iphone',hasTouch:name==='iphone'});
-    const research=await context.newPage(),landing=await context.newPage();
-    await research.goto(base+'/reference/',{waitUntil:'networkidle'});await landing.goto(base+'/dist/',{waitUntil:'networkidle'});
-    await research.evaluate(()=>document.fonts.ready);await landing.evaluate(()=>document.fonts.ready);
-    const original=await inspect(research),actual=await inspect(landing);assert.deepEqual(actual,original,`${name}: Original-Stile müssen übereinstimmen`);
-    await research.screenshot({path:resolve(review,'research-'+name+'.png')});
-    await landing.screenshot({path:resolve(review,'landing-'+name+'-viewport.png')});
-    // Frame the two unchanged viewport screenshots side by side using the browser.
-    const images=await Promise.all(['research-'+name+'.png','landing-'+name+'-viewport.png'].map(async f=>(await readFile(resolve(review,f))).toString('base64')));
-    const sheet=await context.newPage();await sheet.setViewportSize({width:width*2+48,height:height+84});
-    await sheet.setContent(`<!doctype html><html lang="de"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Research und Coming soon</title><style>body{margin:0;padding:16px;background:#f5f6f2;font:16px system-ui}main{display:grid;grid-template-columns:${width}px ${width}px;gap:16px}h2{font-size:16px;margin:0 0 16px}img{display:block;width:${width}px;height:${height}px}</style><main><section><h2>Research · Original aus dem Repository</h2><img src="data:image/png;base64,${images[0]}"></section><section><h2>Coming soon · PR #543</h2><img src="data:image/png;base64,${images[1]}"></section></main>`);
-    await sheet.screenshot({path:resolve(review,'comparison-'+name+'.png')});
-    comparisons.push({name,viewport:`${width} × ${height}`,styleGroups:Object.keys(selectors).length,matching:true,styles:actual});
-    await context.close();
+  for(const[name,width,height,budget]of[['desktop',1440,900,1800],['iphone',390,844,1688],['iphone-se',375,667,1688],['tablet',768,1024,2200],['narrow',320,800,2000]]){
+    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:'reduce',isMobile:width<=390,hasTouch:width<=390});
+    const page=await context.newPage(),errors=[],external=[];let posts=0;
+    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());if(r.method()==='POST')posts++});
+    await page.goto(base+'/after/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
+    assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Investieren mit Weitblick. Alles in einer App.');
+    assert.equal(await page.locator('h1 em').innerText(),'Weitblick.');
+    assert.equal(await page.locator('.hero-badge').innerText(),'App bald verfügbar');
+    assert.equal(await page.locator('h1 em').evaluate(e=>getComputedStyle(e).color),'rgb(200, 245, 49)');
+    assert.match(await page.locator('h1').evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
+    assert.equal(await page.locator('.footer').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(7, 10, 9)');
+    assert.doesNotMatch(await page.locator('body').innerText(),/Konzeptansicht/);
+    const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
+    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.height<=budget,`${name}: compact coming-soon page (${metrics.height})`);
+    await checkIphonePreview(page);
+    // Compare the complete original form, including all consent text, fields,
+    // defaults, links and status behavior. Marketing copy is outside the form.
+    const form=await page.locator('#newsletter-form').evaluate(e=>e.outerHTML);
+    await page.goto(base+'/before/',{waitUntil:'networkidle'});
+    assert.equal(await page.locator('#newsletter-form').evaluate(e=>e.outerHTML),form,'Complete newsletter form unchanged');
+    await page.goto(base+'/after/',{waitUntil:'networkidle'});
+    const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
+    await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
+    assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
+    await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>!document.querySelector('.lp-head').classList.contains('scrolled'));
+    assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(await page.locator('#consent').isChecked(),false);
+    assert.ok(await page.locator('#email').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)>=16),'Email input avoids automatic Safari focus zoom');
+    assert.equal(await page.locator('[name=CONSENT_VERSION]').getAttribute('value'),'vu-newsletter-v1');
+    for(const selector of ['#email','button[type=submit]','.consent']){
+      const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'Signup retains 44px touch targets');
+    }
+    if(['desktop','iphone','iphone-se'].includes(name))await page.screenshot({path:resolve(review,'after-'+name+'.png'),fullPage:true});
+    for(const path of ['impressum/','datenschutz/','newsletter/bestaetigen/','newsletter/bestaetigt/','newsletter/fehler/']){
+      await page.goto(base+'/after/'+path,{waitUntil:'networkidle'});
+      const afterText=await page.locator('body').innerText(),afterLinks=await page.locator('a').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name}: legal overflow`);
+      assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(8, 10, 12)');
+      const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>({id:v.id,target:v.nodes.map(n=>n.target)})),[],`${name}: ${path} accessibility`);
+      assert.match(await page.locator('link[rel=stylesheet]').getAttribute('href'),/legal\.css\?v=[a-f0-9]{16}$/,'Legal styles bypass stale browser caches');
+      if(['desktop','iphone'].includes(name)&&['impressum/','datenschutz/','newsletter/bestaetigen/'].includes(path))await page.screenshot({path:resolve(review,'after-'+path.split('/')[0]+'-'+name+'.png'),fullPage:path==='impressum/'});
+      await page.goto(base+'/before/'+path,{waitUntil:'networkidle'});
+      assert.equal(await page.locator('body').innerText(),afterText,'All legal/confirmation wording unchanged');
+      assert.deepEqual(await page.locator('a').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),afterLinks,'All legal destinations unchanged');
+      if(['desktop','iphone'].includes(name)&&path==='impressum/')await page.screenshot({path:resolve(review,'before-imprint-'+name+'.png'),fullPage:true});
+    }
+    if(['desktop','iphone'].includes(name)){await page.goto(base+'/before/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:resolve(review,'before-'+name+'.png'),fullPage:true});}
+    assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.equal(posts,0);
+    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,singleIphone:true,tenOriginalProducts:true,twoColumns:true,completeProductNames:true,completeFormUnchanged:true,signupDirectlyBelow:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
   }
-  await writeFile(resolve(review,'design-comparison.json'),JSON.stringify({reference:JSON.parse(await readFile(resolve(root,'reference/source.json'),'utf8')),comparisons,scope:'Gleicher Viewport, gleiche Inter-Datei, reduzierte Bewegung. Originaler Header/Hero aus dem Repository; die öffentliche Research-Auslieferung zeigt den Passwortdialog. Referenz wird nicht veröffentlicht.'},null,2)+'\n');
-  console.log(JSON.stringify(comparisons.map(({name,viewport,styleGroups,matching})=>({name,viewport,styleGroups,matching}))));
+  await writeFile(resolve(review,'checks.json'),JSON.stringify({baseline,reference:provenance.commit,scope:'Local public-mode rendering, approved unchanged privacy document, no credentials or live endpoints; legal copy/links compared with immutable baseline.',results},null,2)+'\n');
+  console.log(JSON.stringify(results,null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}
