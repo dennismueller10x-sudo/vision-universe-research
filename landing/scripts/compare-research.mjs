@@ -71,7 +71,9 @@ try{
       const describedBy=after.querySelector('#consent').getAttribute('aria-describedby');
       const hint=after.querySelector('#signup-status').textContent;
       after.querySelector('.consent-details').remove();
-      after.querySelector('.consent>span').innerHTML=before.querySelector('.consent>span').innerHTML;
+      // Restore only the permitted text node; the privacy link and all its
+      // attributes must still compare exactly with the original form.
+      after.querySelector('.consent>span').firstChild.textContent=before.querySelector('.consent>span').firstChild.textContent;
       after.querySelector('#consent').setAttribute('aria-describedby',before.querySelector('#consent').getAttribute('aria-describedby'));
       after.querySelector('#signup-status').textContent=before.querySelector('#signup-status').textContent;
       const normalize=s=>s.replace(/>\s+</g,'><');
