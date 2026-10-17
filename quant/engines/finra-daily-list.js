@@ -149,15 +149,26 @@
    * Sicht zum Stichtag.
    */
   function splitEvents(listingObservations) {
-    var groups = {};
-    (listingObservations || []).filter(function (o) { return o.kind === "SPLIT"; }).forEach(function (o) {
-      var key = (o.oldSymbol || o.newSymbol || "") + "|" + (o.exDate || o.listDay);
-      (groups[key] = groups[key] || []).push(o);
+    /* Ereignisidentitaet (Review P3-08): eine Aenderungs- (DC) oder Streichungszeile gehoert zum zuletzt angekuendigten
+       Split desselben Symbols, wenn sie binnen 60 Tagen nach ihm veroeffentlicht wird - auch wenn sie den Ex-Tag verschiebt.
+       Eine neue Ankuendigung (DA) mit einem Ex-Tag mehr als 30 Tage neben dem bisherigen ist ein neues Ereignis. */
+    var obsAll = (listingObservations || []).filter(function (o) { return o.kind === "SPLIT"; }).slice().sort(function (a, b) {
+      return String(a.publishedAt || a.visibleAt).localeCompare(String(b.publishedAt || b.visibleAt)) || String(a.id).localeCompare(String(b.id)); });
+    var groups = [];
+    obsAll.forEach(function (o) {
+      var sym = o.oldSymbol || o.newSymbol || "", d = o.exDate || o.listDay, hit = null;
+      for (var g = groups.length - 1; g >= 0 && !hit; g--) {
+        var G = groups[g], last = G.obs[G.obs.length - 1];
+        if (G.sym !== sym) continue;
+        var recent = Math.abs(Date.parse(o.visibleAt) - Date.parse(last.visibleAt)) <= 60 * 864e5;
+        var lastD = last.exDate || last.listDay;
+        if (o.code === "DC" || o.code === "DD" ? recent : (recent && d && lastD && Math.abs(Date.parse(d) - Date.parse(lastD)) <= 30 * 864e5)) hit = G;
+      }
+      if (hit) hit.obs.push(o); else groups.push({ sym: sym, obs: [o] });
     });
-    return Object.keys(groups).sort().map(function (k) {
-      var obs = groups[k].sort(function (a, b) { return String(a.publishedAt || a.visibleAt).localeCompare(String(b.publishedAt || b.visibleAt)) || String(a.id).localeCompare(String(b.id)); });
-      return Object.assign({ observations: obs, provenanceHash: fnv(obs.map(function (x) { return x.provenance; }).join("|")) }, viewOf(obs));
-    });
+    return groups.map(function (G) {
+      return Object.assign({ observations: G.obs, provenanceHash: fnv(G.obs.map(function (x) { return x.provenance; }).join("|")) }, viewOf(G.obs));
+    }).sort(function (a, b) { return String(a.marketDate || a.visibleAt).localeCompare(String(b.marketDate || b.visibleAt)); });
   }
   /** Sicht aus einer Folge von Beobachtungen: die zuletzt veroeffentlichte gilt; eine Streichung hebt auf. */
   function viewOf(obs) {

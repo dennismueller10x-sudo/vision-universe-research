@@ -9,11 +9,17 @@
    Kapitalmassnahme von einer Marktbewegung unterscheiden, nicht aus der
    Groesse der Rendite:
 
-     FORWARD_SPLIT / REVERSE_SPLIT   mechanische Umskalierung: der
-         Dollarumsatz (Stueck x Kurs) bleibt im normalen Band, das
-         Stueckvolumen bewegt sich gegenlaeufig zum Kurs, das Verhaeltnis
-         liegt an einem ueblichen Split-Verhaeltnis. Ein Split aendert den
-         Wert des Unternehmens nicht - eine Nachricht schon.
+     FORWARD_SPLIT / REVERSE_SPLIT   mechanische Umskalierung: am Tag
+         bleibt der Dollarumsatz (Stueck x Kurs) im normalen Band und das
+         Stueckvolumen bewegt sich gegenlaeufig zum Kurs; UND danach bleibt
+         das Stueckvolumen dauerhaft um das Verhaeltnis verschoben (Median
+         der naechsten 10 Sitzungen auf Faktor 2 am Erwartungswert R bzw.
+         1/R), weil sich die Zahl der Aktien geaendert hat. Nach einer
+         Nachricht klingt der Umsatz ab. Ein Split aendert den Wert des
+         Unternehmens nicht - eine Nachricht schon. (Ein "uebliches
+         Verhaeltnis" trennt nichts: die Liste ueblicher Verhaeltnisse mit
+         Tagesbewegung deckt jedes Verhaeltnis ab 1,5 ab; es wird nur
+         berichtet. Review P3-01.)
      SPECIAL_DISTRIBUTION            Abwaertssprung, den eine gemeldete
          Ausschuettung am Tag erklaert
      CURRENCY_OR_UNIT                Faktor 100 oder 1000 (Cent/Dollar,
@@ -25,10 +31,10 @@
          auf 25 % an den Vortag zurueck
      DATA_STALENESS                  vor dem Sprung >= 5 Sitzungen mit
          identischem Schluss oder ohne Umsatz (aufgestauter Kurs)
-     GENUINE_MOVE                    Informationsereignis: Stueck- UND
-         Dollarumsatz je mindestens das Dreifache des Medians (abnormaler
-         Handel; ein Split vervielfacht nur eines von beiden), keine
-         Split-Signatur
+     GENUINE_MOVE                    Informationsereignis: Stueckumsatz am
+         Tag mindestens das Dreifache des Medians (abnormaler Handel) und
+         keine Split-Signatur (die Persistenz trennt den Vorwaertssplit, der
+         das Stueckvolumen ebenfalls vervielfacht)
      UNRESOLVED                      keine dieser Erklaerungen
 
    Alle Schwellen sind hier vor jeder Messung festgelegt
@@ -36,9 +42,12 @@
    nicht aus bekannten Faellen.
 
    POINT IN TIME
-     classify(bars, i) liest nur Kerzen bis i + 2 (Ruecklauf eines
-     Fehlkurses). Ohne Kerzen danach ist BAD_TICK nicht entscheidbar; die
-     Klassifikation traegt observedAt = Datum der letzten gelesenen Kerze.
+     classify(bars, i) liest Kerzen bis i + 2 (Ruecklauf eines Fehlkurses)
+     und fuer die Split-Signatur bis i + 10 (Persistenz). Ohne diese Kerzen
+     ist die Ursache nicht entscheidbar: eine Sicht davor sieht keine
+     Split-Signatur (die Rendite gilt; spaeter revidiert, offengelegt). Die
+     Klassifikation traegt observedAt = Datum der letzten Kerze, die die
+     Entscheidung braucht.
      Die Gueltigkeitssicht zum Stichtag (canonical-price-validity.js) ruft
      sie nur mit Kerzen bis zum Stichtag auf.
    ========================================================================= */
@@ -56,8 +65,8 @@
     unitTolerance: 1.10,
     volumeBase: 20, volumeMinBase: 5,
     mechanicalDollarBand: 3,      /* Dollarumsatz im Band [1/3, 3] des Medians: mechanisch */
-    informationDollarRatio: 3,    /* Informationsereignis: Dollarumsatz >= 3x UND Stueckumsatz >= 3x des Medians */
-    informationShareRatio: 3,
+    informationShareRatio: 3,     /* Informationsereignis: Stueckumsatz am Tag >= 3x des Medians */
+    persistenceSessions: 10, persistenceMinBars: 5, persistenceBand: 2, /* Split: Stueckvolumen danach auf Faktor 2 bei R (vorwaerts) bzw. 1/R (rueckwaerts) */
     revertSessions: 2, revertTolerance: 1.25,
     staleRun: 5,
     listingGapDays: 7,
@@ -143,6 +152,18 @@
     var mechanical = v && v.dollar >= 1 / CONFIG.mechanicalDollarBand && v.dollar <= CONFIG.mechanicalDollarBand;
     var inverseVolume = v && (up ? Math.log(v.share) <= -0.5 * Math.log(R) : Math.log(v.share) >= 0.5 * Math.log(R));
     ch.mechanical = !!mechanical; ch.inverseVolume = !!inverseVolume;
+    /* Persistenz: Median-Stueckvolumen der naechsten 10 Sitzungen gegen den Median davor */
+    var persistent = false, persistLast = i;
+    if (v && mechanical && inverseVolume) {
+      var post = [];
+      for (var m2 = i + 1; m2 < bars.length && m2 <= i + CONFIG.persistenceSessions; m2++) { if (hasSplit(bars[m2])) break; if (isNum(bars[m2].volume) && bars[m2].volume > 0) post.push(bars[m2].volume); persistLast = m2; }
+      var prior = []; for (var m3 = i - 1; m3 >= 0 && prior.length < CONFIG.volumeBase; m3--) if (isNum(bars[m3].volume) && bars[m3].volume > 0 && bars[m3].close > 0) prior.push(bars[m3].volume);
+      if (post.length >= CONFIG.persistenceMinBars && i + CONFIG.persistenceSessions < bars.length) {
+        var ps = median(post) / median(prior), expect = up ? 1 / R : R;
+        ch.postShareVolumeRatio = round(ps); persistent = Math.abs(Math.log(ps / expect)) <= Math.log(CONFIG.persistenceBand);
+      }
+    }
+    ch.persistent = persistent;
 
     var cause;
     if (ch.revertedAfter) cause = "BAD_TICK";
@@ -151,8 +172,8 @@
     else if (stale >= CONFIG.staleRun) cause = "DATA_STALENESS";
     else if (dividendExplains) cause = "SPECIAL_DISTRIBUTION";
     else if (unit && !inverseVolume) cause = "CURRENCY_OR_UNIT";
-    else if (k0 && mechanical && inverseVolume) cause = up ? "REVERSE_SPLIT" : "FORWARD_SPLIT";
-    else if (v && v.dollar >= CONFIG.informationDollarRatio && v.share >= CONFIG.informationShareRatio) cause = "GENUINE_MOVE";
+    else if (mechanical && inverseVolume && persistent) { cause = up ? "REVERSE_SPLIT" : "FORWARD_SPLIT"; lastRead = Math.max(lastRead, persistLast); }
+    else if (v && v.share >= CONFIG.informationShareRatio) cause = "GENUINE_MOVE";
     else cause = "UNRESOLVED";
     /* Ohne die Kerzen danach ist ein Ruecklauf nicht ausgeschlossen: die Ursache steht erst mit ihnen fest. */
     var extreme = R >= CONFIG.extremeRatio;

@@ -188,11 +188,53 @@ test('S9: a genuine extreme squeeze (12x on 40x share volume) is accepted (no gl
 test('S10: residual of a declared split is classified on g = factor x raw move; a 10x residual is already a core quarantine', () => {
   const raw = rescale(series(300), 150, 20).map((b, j) => j === 150 ? { ...b, splitFactor: 0.5 } : b);
   const c = DS.classify(raw, 150);
-  assert.ok(c.onDeclaredSplit); assert.ok(Math.abs(Math.log(c.ratio / 10)) < 0.05); assert.equal(c.cause, 'REVERSE_SPLIT');
+  assert.ok(c.onDeclaredSplit); assert.ok(Math.abs(Math.log(c.ratio / 10)) < 0.05); assert.equal(c.direction, 'UP');
   const v = PV.build(raw, { identity: CONFIRMED });
   assert.equal(v.hold.from, raw[150].date); assert.equal(v.hold.reason, 'CORPORATE_ACTION_CONTRADICTED');
   /* a residual under 3:1 is not a semantic candidate (documented limit; the core band 0.4..2.5 applies) */
   assert.equal(DS.classify(rescale(series(300), 150, 4).map((b, j) => j === 150 ? { ...b, splitFactor: 0.5 } : b), 150), null);
+});
+
+test('P3-01: real crashes (-75 % to -92 % on 5x-30x share volume, volume decaying afterwards) are not split signatures', () => {
+  for (const [m, vm] of [[0.25, 6], [0.2, 10], [0.08, 20], [0.08, 30], [0.25, 5]]) {
+    const raw = genuine(series(300), 150, m, vm).map((b, j) => j > 150 && j <= 160 ? { ...b, volume: Math.round(b.volume * Math.max(1, vm / (j - 149))) } : b);
+    const c = DS.classify(raw, 150);
+    assert.notEqual(c.cause, 'FORWARD_SPLIT', `-${Math.round((1 - m) * 100)} % on ${vm}x`);
+    assert.equal(c.cause, 'GENUINE_MOVE');
+    assert.ok(!PV.build(raw, { identity: CONFIRMED }).holds.some((h) => h.reason === 'UNDECLARED_SPLIT_SIGNATURE'));
+  }
+});
+
+test('P3-01b: a forward split is recognised only once the share volume stays scaled (observedAt after the persistence window)', () => {
+  const raw = rescale(series(300), 150, 1 / 4);
+  const fin = PV.build(raw, { identity: CONFIRMED });
+  assert.equal(fin.hold.reason, 'UNDECLARED_SPLIT_SIGNATURE');
+  assert.equal(fin.hold.observedAt, raw[160].date, 'needs the next 10 sessions');
+  const early = PV.build(raw, { identity: CONFIRMED, asOf: raw[155].date });
+  assert.equal(early.hold, null, 'before the window the move is not yet a split signature (disclosed revision, not a leak)');
+});
+
+test('P3-04: RESUME_FROM is never observed before the hold that created the break (conflict filed later)', () => {
+  const base = series(300), i = 200, k = 20;
+  const raw = base.map((b, j) => j < i ? b : { ...b, close: b.close * k, open: b.open * k })
+    .map((b, j) => ({ ...b, splitFactor: j === i ? 1 / 10 : 1, adjustedClose: b.close }));
+  const c = PV.build(raw, { identity: CONFIRMED, secEvents: [secEv({ marketDate: raw[i].date, visibleAt: raw[i + 15].date })] });
+  const h = c.holds.find((x) => x.from === raw[i].date);
+  assert.ok(h);
+  const r = c.view.RESUME_FROM.find((x) => x.from === raw[i].date);
+  if (r) assert.ok(r.observedAt >= h.observedAt, `resume ${r.observedAt} before hold ${h.observedAt}`);
+  for (const s of c.segments.slice(1)) {
+    const v = PV.build(raw, { identity: CONFIRMED, secEvents: [secEv({ marketDate: raw[i].date, visibleAt: raw[i + 15].date })], asOf: s.resumedAfter.observedAt });
+    assert.ok(v.segments.some((x) => x.from === s.from));
+  }
+});
+
+test('P3-08: a FINRA correction (DC) that moves the ex-date supersedes the announcement (one event, latest ex-date)', () => {
+  const obs = [FDL.observation(finraRow({ exDate: '2014-10-20 00:00:00.0', dailyListDatetime: '2014-10-16 17:00:00.0' })),
+    FDL.observation(finraRow({ OTCDailyListID: 9, dailyListEventCode: 'DC', exDate: '2014-10-27 00:00:00.0', dailyListDatetime: '2014-10-17 12:00:00.0', calendarDay: '2014-10-17' }))];
+  const evs = FDL.splitEvents(FDL.forListing(obs, { ticker: 'TEST', from: '2014-01-02', name: 'Test Mining' }));
+  assert.equal(evs.length, 1); assert.equal(evs[0].marketDate, '2014-10-27');
+  assert.equal(FDL.eventAsOf(evs[0], '2014-10-17').marketDate, '2014-10-20', 'before the correction the announced date applies');
 });
 
 /* ---------------- validity contract 3.0.0: RESUME_FROM ---------------- */

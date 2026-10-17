@@ -18,7 +18,84 @@ env:
   V2_COMMIT: 0d8e2755e3389c8edeaf3208561edb238e530016
   OUT: docs/data-quality/corporate-action-v3
 jobs:
+  prepare:
+    # One capture builds the CIK list and the vendor ticker windows for every collection job (review R2-09 / P3-12).
+    if: contains(github.event.head_commit.message, '[corporate-action-v3:audit]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: fix
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/price-integrity-audit.mjs
+            /scripts/quant/corporate-action-v2/
+            /scripts/quant/corporate-action-v3/
+            /scripts/market/storage/
+            /docs/data-quality/
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/keys"
+      - name: Canonical capture (pinned #705 pipeline, unchanged core 1.0.0 = V4 freeze content)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          grep -q '"canonical-total-return-1.0.0"' base/quant/engines/canonical-total-return.js
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture.json"
+      - name: Prepare (universe, CIKs)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage prepare --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/capture --private /workspace/private/ca --public "$RUNNER_TEMP/pub/PREPARE.json"
+          rm -rf /workspace/private/capture
+          cp /workspace/private/ca/ciks.json /workspace/private/ca/vendor-tickers.json "$RUNNER_TEMP/keys/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: universe-keys
+          path: ${{ runner.temp }}/keys/
+          retention-days: 2
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
   sec:
+    needs: prepare
     if: contains(github.event.head_commit.message, '[corporate-action-v3:audit]')
     runs-on: ubuntu-latest
     timeout-minutes: 355
@@ -74,26 +151,10 @@ jobs:
           sudo chown -R "$USER" /workspace
           chmod 700 /workspace/private
           mkdir -p "$RUNNER_TEMP/pub"
-      - name: Canonical capture (pinned #705 pipeline, unchanged core 1.0.0 = V4 freeze content)
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-          NODE_OPTIONS: --max-old-space-size=12000
-        run: |
-          set -euo pipefail
-          grep -q '"canonical-total-return-1.0.0"' base/quant/engines/canonical-total-return.js
-          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
-          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture.json"
-      - name: Prepare (universe, CIKs)
-        env:
-          NODE_OPTIONS: --max-old-space-size=13000
-        run: |
-          set -euo pipefail
-          node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage prepare --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/capture --private /workspace/private/ca --public "$RUNNER_TEMP/pub/PREPARE.json"
-          rm -rf /workspace/private/capture
+      - uses: actions/download-artifact@v4
+        with:
+          name: universe-keys
+          path: /workspace/private/ca
       - name: SEC/EDGAR evidence part (current reports and proxies, public SEC data)
         env:
           SEC_USER_AGENT: VisionUniverse research info@visionuniverse.de
@@ -117,6 +178,7 @@ jobs:
         run: rm -rf /workspace/private
   vendor:
     # Second price vendor, validation only (never a core input); runs in parallel with the SEC parts.
+    needs: prepare
     if: contains(github.event.head_commit.message, '[corporate-action-v3:audit]')
     runs-on: ubuntu-latest
     timeout-minutes: 355
@@ -162,25 +224,10 @@ jobs:
           sudo chown -R "$USER" /workspace
           chmod 700 /workspace/private
           mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/vendor"
-      - name: Canonical capture (pinned #705 pipeline)
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-          NODE_OPTIONS: --max-old-space-size=12000
-        run: |
-          set -euo pipefail
-          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
-          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture.json"
-      - name: Prepare (ticker windows)
-        env:
-          NODE_OPTIONS: --max-old-space-size=13000
-        run: |
-          set -euo pipefail
-          node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage prepare --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/capture --private /workspace/private/ca --public "$RUNNER_TEMP/pub/PREPARE.json"
-          rm -rf /workspace/private/capture
+      - uses: actions/download-artifact@v4
+        with:
+          name: universe-keys
+          path: /workspace/private/ca
       - name: Second vendor (validation only)
         run: |
           set -euo pipefail

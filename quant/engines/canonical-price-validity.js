@@ -166,7 +166,7 @@
    */
   function resolveObservedAt(rawBars, opts, c) {
     var norm = (c.evidence || []).filter(function (e) { return e.outcome === "NORMALIZE" && e.eventDate; });
-    if (!norm.length && !(c.holds && c.holds.length) && !c.hold) return;
+    if (!norm.length && !(c.holds && c.holds.length) && !c.hold && !((c.segments || []).length > 1)) return;
     var asOf = c.asOf, days = (Array.isArray(rawBars) ? rawBars : []).filter(Boolean).map(function (b) { return day(b.date); })
       .filter(function (d) { return !asOf || d <= asOf; }).sort();
     /* Sperre (Review R2-01): erster Tag, dessen Stichtagssicht dieselbe Sperre zeigt. Ein SEC-Widerspruch
@@ -184,6 +184,19 @@
       h.observedAt = found || (days.length ? addDays(days[days.length - 1], 1) : null);
       h.observedAtBasis = found ? "FIRST_AS_OF_VIEW_WITH_HOLD" : "AFTER_LAST_BAR";
       (c.intervals || []).forEach(function (x) { if (x.state === h.state && x.from === h.from) x.observedAt = h.observedAt; });
+    });
+    /* RESUME_FROM (Review P3-01/P3-04): erster Tag, dessen Stichtagssicht das Segment enthaelt - nie vor der Sperre davor */
+    (c.segments || []).slice(1).forEach(function (sg) {
+      var found = null;
+      for (var j = 0; j < days.length && !found; j++) {
+        if (days[j] < sg.from || (j > 0 && days[j] === days[j - 1])) continue;
+        var sv = buildView(rawBars, Object.assign({}, opts, { asOf: days[j] }));
+        if ((sv.segments || []).some(function (x) { return x.from === sg.from; })) found = days[j];
+      }
+      sg.resumedAfter.observedAt = found || (days.length ? addDays(days[days.length - 1], 1) : null);
+      sg.resumedAfter.observedAtBasis = found ? "FIRST_AS_OF_VIEW_WITH_SEGMENT" : "AFTER_LAST_BAR";
+      (c.intervals || []).forEach(function (x) { if (x.state === "RESUME_FROM" && x.from === sg.from) x.observedAt = sg.resumedAfter.observedAt; });
+      ((c.view && c.view.RESUME_FROM) || []).forEach(function (x) { if (x.from === sg.from) x.observedAt = sg.resumedAfter.observedAt; });
     });
     norm.forEach(function (e) {
       e.observedAtStage = e.observedAt || null;

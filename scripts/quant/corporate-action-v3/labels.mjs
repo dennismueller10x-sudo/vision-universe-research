@@ -83,12 +83,16 @@ export function finraNear(obs, d, days = 10) {
 }
 
 /* ---------------------------------------------------------------- evidence bundle of one day */
-/** Everything the independent sources say about day d with provider raw move r (q: ratio the intervention claims, if any). */
-export function evidenceAt(ctx, d, r, q) {
+/**
+ * Everything the independent sources say about day d with provider raw move r (q: ratio the intervention claims, if any).
+ * exclude: label channels that took part in the decision being scored ('FINRA', 'SHARES'); they are blanked (review P3-02/03:
+ * LABEL_SOURCE != VALIDATION_SOURCE).
+ */
+export function evidenceAt(ctx, d, r, q, exclude = []) {
   const v = vendorAt(ctx.vendor, ctx.vendorIdentity, ctx.bars, d, r);
-  const f = finraNear(ctx.finraObs, d);
+  const f = exclude.includes('FINRA') ? { split: null, listing: [], excluded: true } : finraNear(ctx.finraObs, d);
   const qq = finite(q) ? q : finite(r) && r > 0 ? 1 / r : null;
-  const sh = sharesLabel(sharesAcross(ctx.shares, d), qq);
+  const sh = exclude.includes('SHARES') ? 'EXCLUDED' : sharesLabel(sharesAcross(ctx.shares, d), qq);
   const vendorSplitExplains = !!(v.split && finite(r) && explains(r, v.split.ratio));
   const finraSplitExplains = !!(f.split && finite(r) && explains(r, f.split.ratio));
   return { vendor: v, finra: f, shares: sh, vendorSplitExplains, finraSplitExplains,
@@ -98,9 +102,16 @@ export function evidenceAt(ctx, d, r, q) {
 }
 const out = (label, e, basis) => ({ label, basis, evidence: { vendorMove: e.vendor.move, vendorSplit: e.vendor.split, finraSplit: e.finra.split, finraListing: e.finra.listing, shares: e.shares } });
 
+/** Label channels to blank for a decision whose evidence used these systems. */
+export function excludedBy(systems) {
+  const s = new Set(systems || []), out = [];
+  if (s.has('FINRA_OTC_DAILY_LIST')) out.push('FINRA');
+  if (s.has('SEC_SHARES_OUTSTANDING')) out.push('SHARES');
+  return out;
+}
 /** HOLD from a price discontinuity (any cause): TP = an independent event or provider bad data; FP = genuine move. */
-export function labelHold(ctx, d, r) {
-  const e = evidenceAt(ctx, d, r);
+export function labelHold(ctx, d, r, sourceSystems = []) {
+  const e = evidenceAt(ctx, d, r, undefined, excludedBy(sourceSystems));
   if (e.event) return out('TRUE_POSITIVE', e, e.vendorSplitExplains ? 'VENDOR_SPLIT' : e.finraSplitExplains ? 'FINRA_SPLIT' : 'SEC_SHARES_CONFIRM');
   if (e.badData) return out('TRUE_POSITIVE', e, 'VENDOR_SHOWS_NO_MOVE');
   if (e.genuine) return out('FALSE_POSITIVE', e, 'VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT');
@@ -112,28 +123,31 @@ export function labelHold(ctx, d, r) {
  * FP = vendor shows the same move without any split, a vendor split of a different ratio, or SEC shares NO_SPLIT (same caveat).
  */
 export function labelNormalize(ctx, d, r, q, { triggerSystem, corroboration = [] } = {}) {
-  const e = evidenceAt(ctx, d, r, q);
+  /* FINRA is blanked when it triggered OR corroborated (SECOND_SOURCE), shares when they corroborated; the vendor is never a
+     decision input and is read first, so independent false-positive evidence is never overridden by a dependent channel */
+  const exclude = [...(triggerSystem === 'FINRA_OTC_DAILY_LIST' || corroboration.includes('SECOND_SOURCE') ? ['FINRA'] : []), ...(corroboration.includes('SEC_SHARE_COUNT') ? ['SHARES'] : [])];
+  const e = evidenceAt(ctx, d, r, q, exclude);
   const sameQ = (x) => finite(x) && Math.abs(Math.log(x) - Math.log(q)) <= Math.log(1.01);
-  const sharesUsable = !corroboration.includes('SEC_SHARE_COUNT');
   if (e.vendor.split && sameQ(e.vendor.split.ratio)) return out('TRUE_POSITIVE', e, 'VENDOR_SPLIT_SAME_RATIO');
-  if (triggerSystem !== 'FINRA_OTC_DAILY_LIST' && e.finra.split && sameQ(e.finra.split.ratio)) return out('TRUE_POSITIVE', e, 'FINRA_SPLIT_SAME_RATIO');
-  if (sharesUsable && e.shares === 'CONFIRMS') return out('TRUE_POSITIVE', e, 'SEC_SHARES_CONFIRM');
-  if (e.vendor.split && !sameQ(e.vendor.split.ratio) && Math.abs(Math.log(e.vendor.split.ratio) - Math.log(q)) > Math.log(1.05)) return out('FALSE_POSITIVE', e, 'VENDOR_SPLIT_OTHER_RATIO');
+  if (e.vendor.split && Math.abs(Math.log(e.vendor.split.ratio) - Math.log(q)) > Math.log(1.05)) return out('FALSE_POSITIVE', e, 'VENDOR_SPLIT_OTHER_RATIO');
   if (e.vendor.move === 'SAME_MOVE' && !e.vendor.splitNear10) return out('FALSE_POSITIVE', e, 'VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT');
-  if (sharesUsable && e.shares === 'NO_SPLIT') return out('FALSE_POSITIVE', e, 'SEC_SHARES_NO_SPLIT');
+  if (e.finra.split && sameQ(e.finra.split.ratio)) return out('TRUE_POSITIVE', e, 'FINRA_SPLIT_SAME_RATIO');
+  if (e.shares === 'CONFIRMS') return out('TRUE_POSITIVE', e, 'SEC_SHARES_CONFIRM');
+  if (e.shares === 'NO_SPLIT') return out('FALSE_POSITIVE', e, 'SEC_SHARES_NO_SPLIT');
   return out('UNLABELED', e, null);
 }
 /** INVALID_RANGE / data QUARANTINE at d: TP = vendor shows no such move (provider bad data); FP = vendor shows the same move without split. */
-export function labelDataDefect(ctx, d, r) {
-  const e = evidenceAt(ctx, d, r);
+export function labelDataDefect(ctx, d, r, sourceSystems = []) {
+  const e = evidenceAt(ctx, d, r, undefined, excludedBy(sourceSystems));
   if (e.badData) return out('TRUE_POSITIVE', e, 'VENDOR_SHOWS_NO_MOVE');
   if (e.event) return out('TRUE_POSITIVE', e, 'INDEPENDENT_EVENT');
   if (e.genuine) return out('FALSE_POSITIVE', e, 'VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT');
   return out('UNLABELED', e, null);
 }
 /** TERMINAL from a listing change: TP = FINRA listing event within 5 days; FP = vendor shows the same continuous move without split and no listing evidence. */
-export function labelTerminal(ctx, d, r) {
-  const e = evidenceAt(ctx, d, r);
+export function labelTerminal(ctx, d, r, sourceSystems = []) {
+  /* a terminal triggered by a FINRA listing event is not labelled by it */
+  const e = evidenceAt(ctx, d, r, undefined, excludedBy(sourceSystems));
   if (e.finra.listing.length) return out('TRUE_POSITIVE', e, 'FINRA_LISTING_EVENT');
   if (e.genuine) return out('FALSE_POSITIVE', e, 'VENDOR_CONFIRMS_CONTINUOUS_MOVE');
   return out('UNLABELED', e, null);
@@ -155,14 +169,14 @@ export function trueEvents(ctx) {
   const evs = [], first = ctx.bars[0]?.date, last = ctx.bars[ctx.bars.length - 1]?.date;
   if (!first) return evs;
   if (ctx.vendor && ctx.vendorIdentity?.state === 'CONFIRMED')
-    for (const [d, q] of ctx.vendor.splits) if (d > first && d <= last && Math.abs(Math.log(q)) >= Math.log(1.5)) evs.push({ from: addDays(d, -5), to: addDays(d, 5), date: d, ratio: q, source: 'VENDOR_SPLIT' });
+    for (const [d, q] of ctx.vendor.splits) if (d > first && d <= last && Math.abs(Math.log(q)) >= Math.log(1.5)) evs.push({ from: addDays(d, -5), to: addDays(d, 5), date: d, ratio: q, source: 'VENDOR_SPLIT', engineIndependent: true });
   for (const o of ctx.finraObs || []) if (o.kind === 'SPLIT' && !o.cancelled && finite(o.ratio) && o.exDate && o.exDate > first && o.exDate <= last && Math.abs(Math.log(o.ratio)) >= Math.log(1.5))
-    evs.push({ from: addDays(o.exDate, -5), to: addDays(o.exDate, 5), date: o.exDate, ratio: o.ratio, source: 'FINRA_SPLIT' });
+    evs.push({ from: addDays(o.exDate, -5), to: addDays(o.exDate, 5), date: o.exDate, ratio: o.ratio, source: 'FINRA_SPLIT', engineIndependent: false });
   const sh = (ctx.shares || []).filter((s) => finite(s.value) && s.value > 0).map((s) => ({ at: String(s.periodEnd || s.availableAt).slice(0, 10), value: s.value })).sort((a, b) => (a.at < b.at ? -1 : 1));
   for (let k = 1; k < sh.length; k++) {
     const a = sh[k - 1], b = sh[k], sr = b.value / a.value;
     if (b.at <= a.at || b.at > addDays(a.at, 200) || a.at < first || b.at > last || sr > 1 / 3) continue;
-    evs.push({ from: a.at, to: b.at, date: null, ratio: sr, source: 'SEC_SHARES_DROP' });
+    evs.push({ from: a.at, to: b.at, date: null, ratio: sr, source: 'SEC_SHARES_DROP', engineIndependent: false });
   }
   /* one event per corporate action: a vendor/FINRA event inside a share-count window replaces the window */
   const dated = evs.filter((e) => e.date);

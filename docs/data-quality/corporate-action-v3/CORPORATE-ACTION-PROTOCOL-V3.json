@@ -20,12 +20,19 @@
   "decisionRuleChangesVersusV2": [
     "FINRA OTC Daily List split events enter the evidence model like SEC effective events (anchor = ex-date, visible from publication); SEC vs FINRA ratio disagreement = CONFLICTING (HOLD)",
     "NORMALIZE needs a second confirmation independent of the triggering statement for every ratio (second source, share volume in split direction, or SEC share count); v2 required it only below 3:1. Reason: v2 blocker B2 (aggregate normalize false share 0.25); derived from the two-confirmation principle, not from individual cases (the per-case v2 results are sealed and were not read)",
-    "event semantics of every overnight move >= 3:1 without provider event (discontinuity-semantics-1.0.0): mechanical split signature in either direction -> HOLD; extreme (>= 10:1) moves need a positive explanation (genuine information event, special distribution, bad tick, listing change), otherwise HOLD/QUARANTINE",
+    "event semantics of every overnight move >= 3:1 without provider event (discontinuity-semantics-1.0.0): mechanical split signature (event-day volume + persistent share-volume scaling) in either direction -> HOLD; extreme (>= 10:1) moves need a positive explanation (abnormal turnover, special distribution, bad tick, listing change), otherwise HOLD/QUARANTINE",
     "RESUME_FROM: after a scale-type hold the series continues as a new segment with its own index base when the bars after it are valid on their own; no return across the break"
   ],
   "sources": {
-    "integratedInCore": ["SEC_EDGAR (8-K/6-K effective statements, unchanged)", "FINRA_OTC_DAILY_LIST (api.finra.org otcMarket/otcDailyList, publication timestamp dailyListDatetime)"],
-    "validationOnly": ["SECOND_VENDOR_YAHOO_CHART (split events and split-adjusted closes; not point in time, no commercial licence, never a core input)", "SEC_XBRL_SHARES_OUTSTANDING (capture fundamentals)", "EDGAR_SUBMISSIONS_ACCEPTANCE_TIME (data.sec.gov/submissions; PIT oracle timestamps)"],
+    "integratedInCore": [
+      "SEC_EDGAR (8-K/6-K effective statements, unchanged)",
+      "FINRA_OTC_DAILY_LIST (api.finra.org otcMarket/otcDailyList, publication timestamp dailyListDatetime)"
+    ],
+    "validationOnly": [
+      "SECOND_VENDOR_YAHOO_CHART (split events and split-adjusted closes; not point in time, no commercial licence, never a core input)",
+      "SEC_XBRL_SHARES_OUTSTANDING (capture fundamentals)",
+      "EDGAR_SUBMISSIONS_ACCEPTANCE_TIME (data.sec.gov/submissions; PIT oracle timestamps)"
+    ],
     "labelSourceNotValidationSource": "a label never uses the statement that triggered the decision: normalizations triggered by FINRA are not labelled by FINRA, share-count corroboration is not reused as label, course-only holds by definition carry no SEC/FINRA statement and are labelled by vendor, FINRA and share counts"
   },
   "pitOracle": {
@@ -34,7 +41,7 @@
     "sampleOrder": "segments with at least one hold, invalid range, normalization or RESUME_FROM, ascending sha256(seed + '|' + segmentId)",
     "maxSegments": 1500,
     "asOfPoints": "per item: session before the event, event day, session before observedAt, observedAt, +1, +5, +20 sessions",
-    "independence": "independent of the engine's as-of filtering (inputs physically truncated) and of the EFTS extraction (acceptance times from the submissions index). The SEC remains the authority for its own publication time; FINRA has a single timestamp (dailyListDatetime), so FINRA timing is checked by truncation only (disclosed limit)."
+    "independence": "independent of the engine's as-of filtering (inputs physically truncated) and of the EFTS extraction (acceptance times from the submissions index). The SEC remains the authority for its own publication time; FINRA has a single timestamp (dailyListDatetime), so FINRA timing is checked by truncation only (disclosed limit). The signature/tr comparison re-runs the truncation outside the engine and is reported as a consistency check; the independent parts are the acceptance-time comparison (decision observations) and the observedAt-in-oracle-view check (review P3-06)."
   },
   "blindedControlSet": {
     "seed": "vu-corporate-action-v3-blinded-2026-10-17",
@@ -71,8 +78,9 @@
     "INVALID_RANGE_AND_SEMANTIC_DATA_HOLD": "TRUE_POSITIVE = badData or event; FALSE_POSITIVE = genuine; else UNLABELED",
     "SEMANTIC_TERMINAL": "TRUE_POSITIVE = FINRA listing event within 5 days; FALSE_POSITIVE = genuine; else UNLABELED",
     "courseOnlyHold": "a hold whose evidence is the price alone: evidence class PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source statement",
-    "falseNegativePopulation": "independent events inside the segment: vendor splits (identity CONFIRMED, |ln q| >= ln 1.5), FINRA splits (not cancelled), SEC share-count drops <= 1/3 within 200 days (deduplicated). Excluded from the rate: PROVIDER_DECLARED (provider factor of the same ratio within the window) and NOT_IN_PRICE (no day in the window that the ratio explains). FALSE_NEGATIVE = the explained day is a valid canonical return (same segment) with |ln g| >= |ln q| / 2. Course-only events: no SEC statement within 60 days and no FINRA split within 10 days. Direction: q < 1 reverse (upward jump), q > 1 forward (downward jump).",
-    "extremeMoveClass": "CONFIRMED_EVENT = event; BAD_DATA = badData; LEGITIMATE_MOVE = genuine; else UNRESOLVED"
+    "falseNegativePopulation": "independent events inside the segment: vendor splits (identity CONFIRMED, |ln q| >= ln 1.5), FINRA splits (not cancelled), SEC share-count drops <= 1/3 within 200 days (deduplicated). Excluded from the rate: PROVIDER_DECLARED (provider factor of the same ratio within the window) and NOT_IN_PRICE (no day in the window that the ratio explains). FALSE_NEGATIVE = the explained day is a valid canonical return (same segment) with |ln g| >= |ln q| / 2. Course-only events: no SEC statement within 60 days and no FINRA split within 10 days. Direction: q < 1 reverse (upward jump), q > 1 forward (downward jump). OUTSIDE_VALID (after an earlier non-resumable break) is not evaluable. Gates use engine-independent events (second vendor) only; FINRA and share-count events are engine inputs and reported separately.",
+    "extremeMoveClass": "CONFIRMED_EVENT = event; BAD_DATA = badData; LEGITIMATE_MOVE = genuine; else UNRESOLVED",
+    "labelSourceExclusion": "every label blanks the channels (FINRA, SEC share count) that appear in the sources of the decision it scores; vendor first for NORMALIZE"
   },
   "acceptance": {
     "pitViolations": 0,
@@ -89,16 +97,36 @@
     "downwardFalseNegativeRateMax": 0.1,
     "downwardHoldFalseShareMax": 0.1,
     "minEvaluableDownwardEvents": 20,
-    "knownD2ValidRangeDefects": 0,
-    "severeUnresolvedExtremeInsideValid": 0,
+    "knownD2ValidRangeDefects": "0, and the 11 known D2 defects must be reproduced exactly",
     "unresolvedConflictShareMax": 0.005,
     "independentLabelCoverageMin": 0.5,
     "blindedLabelableShareMin": 0.5,
     "secDocumentErrorShareMax": 0.001,
-    "secondSourceIntegrated": "FINRA collection complete and >= 1 FINRA split event joined to the universe",
+    "secondSourceIntegrated": "FINRA collection complete and >= 1 EFFECTIVE FINRA split event with a parsed ratio joined to the universe",
     "reviewHighCriticalOpen": 0,
     "intervals": "Wilson 95 % reported with every rate; acceptance on the point estimate",
-    "noTuning": "no threshold, window, tolerance, label rule or seed in this file or in the v3 engines is changed after the first run result; a failed criterion is NOT_READY"
+    "noTuning": "no threshold, window, tolerance, label rule or seed in this file or in the v3 engines is changed after the first run result; a failed criterion is NOT_READY",
+    "blindedMinLabelablePerCategory": 30,
+    "blindedInterventionFalseShareMax": 0.1,
+    "extremeInsideValidUnresolvedShareMax": 0.1,
+    "severeExtremeInsideValidWrong": 0
   },
-  "readinessRule": "READY_FOR_PREREGISTERED_CALIBRATION only if every acceptance criterion passes AND the independent review leaves no HIGH/CRITICAL finding open; otherwise NOT_READY. The 83/74 regression and the D2 regression are reported; D2 also gates via knownD2ValidRangeDefects."
+  "readinessRule": "READY_FOR_PREREGISTERED_CALIBRATION only if every acceptance criterion passes AND the independent review leaves no HIGH/CRITICAL finding open; otherwise NOT_READY. The 83/74 regression and the D2 regression are reported; D2 also gates via knownD2ValidRangeDefects.",
+  "preRunReview": {
+    "round": "P3 (independent review agent, separate context, read-only, before any run)",
+    "commitReviewed": "db8d9fbbe",
+    "changesBeforeAnyResult": [
+      "P3-01: split signature no longer uses the (vacuous) conventional-ratio check; it needs event-day mechanical volume AND persistent share-volume scaling over the next 10 sessions (observedAt after that window). GENUINE_MOVE = event-day share volume >= 3x median. Crash tests added.",
+      "P3-02/P3-03: labels blank every channel that took part in the decision (FINRA, SEC share count); for NORMALIZE the vendor is read first so independent FP evidence is never overridden",
+      "P3-04: RESUME_FROM observedAt = first as-of view containing the segment (never before the hold that created the break)",
+      "P3-05: blinded set keeps segments flagged by the 1.2.0 core (only 83/74 and v2 members excluded); reported as a stratum",
+      "P3-06: acceptance-time check restricted to SEC observations behind decisions; the truncation comparison is reported as an engine consistency check; skipped observedAt items counted",
+      "P3-07: OUTSIDE_VALID not evaluable; FN gates use engine-independent (second-vendor) events only; FINRA/share-count events reported separately",
+      "P3-08: FINRA corrections (DC/DD) supersede the announcement even when they move the ex-date",
+      "P3-09: gates tightened: FINRA effective events with a parsed ratio; D2 must reproduce 11; >= 30 labelable segments per category; severe = extreme moves left in valid returns that independent evidence calls an event/bad data (0) or cannot explain (<= 10 %); blinded per-intervention false share gate",
+      "P3-10: resumed bars reported by the label of the break",
+      "P3-11: the authoring session decides readiness from the public counts only; the session envelope is not decrypted before the verdict is written",
+      "P3-12: one prepare job builds ciks.json and the vendor ticker windows for all collection jobs; SOURCES_DISAGREE observedAt waits for both sources"
+    ]
+  }
 }

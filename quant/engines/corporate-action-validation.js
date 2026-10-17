@@ -186,8 +186,10 @@
       var agree = other.filter(function (o) { return Math.abs(Math.log(o.ratio) - Math.log(q)) <= Math.log(CONFIG.providerRatioTolerance); });
       if (disagree.length && !agree.length) {
         var ai = firstIndexOnOrAfter(out, ad);
+        /* sichtbar erst, wenn beide Quellen veroeffentlicht sind (Review P3-12) */
+        var bothAt = disagree.reduce(function (m, x) { return x.visibleAt && x.visibleAt > m ? x.visibleAt : m; }, visibleAt || "");
         evidence.push(record("CONFLICTING_CORPORATE_ACTION", Object.assign(base, { reason: "SOURCES_DISAGREE_ON_RATIO", eventDate: ai >= 0 ? day(out[ai].date) : ad, outcome: "HOLD_FROM_EVENT_DATE",
-          observedAt: ai >= 0 ? (visibleAt && visibleAt >= day(out[ai].date) ? nextBarDate(out, visibleAt) : day(out[ai].date)) : ad,
+          observedAt: ai >= 0 ? (bothAt && bothAt >= day(out[ai].date) ? nextBarDate(out, bothAt) : day(out[ai].date)) : ad,
           sources: base.sources.concat(disagree.map(function (o) { return { system: o.system, ratio: o.ratio, filedDate: o.visibleAt }; })) })));
         return;
       }
@@ -298,7 +300,7 @@
       var an = e.marketDate || e.effectiveDate; return an && Math.abs(Date.parse(an) - Date.parse(d)) <= 10 * 864e5;
     });
     var conflict = near.filter(function (e) { return e.stage === "EFFECTIVE" && r && !explains(r, e.ratio); });
-    if (conflict.length) return record("CONFLICTING_CORPORATE_ACTION", Object.assign(base, { detail: "SEC_EFFECTIVE_RATIO_DIFFERS", sources: base.sources.concat(conflict.map(function (e) { return { system: "SEC_EDGAR", ratio: e.ratio, filedDate: e.visibleAt }; })) }));
+    if (conflict.length) return record("CONFLICTING_CORPORATE_ACTION", Object.assign(base, { detail: "SEC_EFFECTIVE_RATIO_DIFFERS", sources: base.sources.concat(conflict.map(function (e) { return { system: e.system || "SEC_EDGAR", ratio: e.ratio, filedDate: e.visibleAt }; })) }));
     var sh = q ? sharesAround(opts.shares, d, asOf) : null, sv = q ? sharesVerdict(sh, q) : "NONE";
     if (sv === "CONTRADICTS") return record("CONFLICTING_CORPORATE_ACTION", Object.assign(base, { detail: "SEC_SHARE_COUNT_CONTRADICTS", shares: { ratio: round(sh.ratio, 6), verdict: sv },
       sources: base.sources.concat([{ system: "SEC_SHARES_OUTSTANDING", before: sh.before.at, after: sh.after.at }]) }));
@@ -309,7 +311,7 @@
       return v && v <= addDays(d, 10) && v >= addDays(d, -CONFIG.approvedLookbackDays) && r && explains(r, e.ratio);
     });
     if (approved.length) return record("PROBABLE_CORPORATE_ACTION", Object.assign(base, { detail: "SEC_APPROVED_RATIO_NOT_EFFECTIVE_CONFIRMED",
-      sources: base.sources.concat(approved.map(function (e) { return { system: "SEC_EDGAR", ratio: e.ratio, stage: e.stage, filedDate: e.visibleAt }; })) }));
+      sources: base.sources.concat(approved.map(function (e) { return { system: e.system || "SEC_EDGAR", ratio: e.ratio, stage: e.stage, filedDate: e.visibleAt }; })) }));
     if (reason === "SPLIT_MISSING") return record("PROBABLE_CORPORATE_ACTION", Object.assign(base, { detail: "PROVIDER_ADJUSTED_CLOSE_SHOWS_SPLIT",
       sources: base.sources.concat([{ system: "PROVIDER_ADJUSTED_CLOSE", date: d }]) }));
     if (sv === "SUPPORTS") return record("PROBABLE_CORPORATE_ACTION", Object.assign(base, { detail: "SEC_SHARE_COUNT_SUPPORTS", shares: { ratio: round(sh.ratio, 6), verdict: sv },
