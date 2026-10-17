@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-10-16T02:37:08.000Z",
+ "generatedAt": "2026-10-17T03:02:07.000Z",
  "universe": 6686,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-10-15",
+ "evidenceAsOf": "2026-10-16",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -54,13 +54,13 @@
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 413,
+   "answered": 414,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 87,
-   "share": 0.826,
+   "withheld": 86,
+   "share": 0.828,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 81,
+    "INSUFFICIENT_HISTORY": 80,
     "TECHNICAL_SESSION_NOT_A_TRADING_DAY": 1,
     "SOURCE_MISSING": 2,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 3
@@ -69,13 +69,13 @@
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 413,
+   "answered": 414,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 87,
-   "share": 0.826,
+   "withheld": 86,
+   "share": 0.828,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 81,
+    "INSUFFICIENT_HISTORY": 80,
     "TECHNICAL_SESSION_NOT_A_TRADING_DAY": 1,
     "SOURCE_MISSING": 2,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 3
@@ -99,9 +99,9 @@
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
    "answered": 423,
-   "findings": 184,
+   "findings": 187,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 184
+    "NO_PROFILE_FITS_WELL": 187
    },
    "withheld": 77,
    "share": 0.846,
@@ -115,9 +115,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 495,
+   "findings": 497,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 495
+    "NO_ASSIGNMENT_CHANGE": 497
    },
    "withheld": 0,
    "share": 1,
@@ -126,13 +126,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 415,
+   "answered": 416,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 85,
-   "share": 0.83,
+   "withheld": 84,
+   "share": 0.832,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 83,
+    "INSUFFICIENT_HISTORY": 82,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 2
    }
   },
@@ -151,31 +151,31 @@
   "4": 17,
   "5": 5,
   "6": 53,
-  "7": 10,
+  "7": 9,
   "8": 3,
   "9": 1,
-  "10": 25,
+  "10": 26,
   "11": 386
  },
  "shapes": {
-  "full": 412,
-  "reduced": 88,
+  "full": 413,
+  "reduced": 87,
   "minimal": 0,
-  "noticeBoxesBefore": 587,
+  "noticeBoxesBefore": 584,
   "noticeBoxesAfter": 251,
   "worstPageNoticeBoxes": 5,
-  "dataPoorPages": 88,
-  "dataPoorNoticeBoxesBefore": 560,
-  "dataPoorNoticeBoxesAfter": 224,
+  "dataPoorPages": 87,
+  "dataPoorNoticeBoxesBefore": 556,
+  "dataPoorNoticeBoxesAfter": 223,
   "substantiveStationsPerTitle": {
    "3": 13,
    "4": 33,
    "5": 28,
    "6": 2,
-   "7": 11,
+   "7": 10,
    "8": 1,
    "9": 1,
-   "10": 25,
+   "10": 26,
    "11": 386
   },
   "causes": {

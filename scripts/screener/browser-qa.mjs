@@ -143,18 +143,28 @@ for (const theme of ['light', 'dark']) {
       }
 
       // 4 Filter bearbeiten (Market Cap -> < 2 Mrd per Operator "kleiner als" bleibt) und Browser-Zurueck
-      const before = await page.textContent('.sc-counter strong');
+      // Geprueft wird die Wirkung der Bearbeitung: Filtertext und Trichter (Treffer nach jedem Filter). Die Endzahl allein kann mit
+      // den Tagesdaten zufaellig gleich bleiben (16.10.2026: Small 83 -> Mid 73 Titel, nach dem 52W-Filter beide Male 17).
+      const filterState = async () => ({
+        count: await page.textContent('.sc-counter strong'),
+        chips: (await page.$$eval('.sc-chip-body b', (b) => b.map((x) => x.textContent))).join(' | '),
+        funnel: (await page.$$eval('.sc-tl-main b', (s) => s.map((x) => x.textContent))).join(' → ')
+      });
+      const before = await filterState();
       await page.click('.sc-chip-body:has-text("Market Cap")');
       await page.waitForSelector('.sc-sheet.is-open .sc-ops');
       await page.click('.sc-sheet.is-open .sc-preset:has-text("Mid")');
       await settle(page, 300);
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
       await settle(page, 700);
-      const after = await page.textContent('.sc-counter strong');
-      if (after === before) fail(vp, 'Bearbeiten ändert Trefferzahl nicht (' + before + ')'); else ok('Filter bearbeitet: ' + before + ' → ' + after);
+      const after = await filterState();
+      if (after.chips === before.chips) fail(vp, 'Bearbeiten ändert den Filter nicht (' + before.chips + ')');
+      else if (after.funnel === before.funnel) fail(vp, 'Bearbeiten ändert Trefferzahl nicht (' + before.funnel + ')');
+      else ok('Filter bearbeitet: ' + before.funnel + '  ⇒  ' + after.funnel);
       await page.goBack(); await settle(page, 700);
-      const back = await page.textContent('.sc-counter strong');
-      if (back !== before) fail(vp, 'Browser-Zurück stellt Zustand nicht her: ' + back + ' statt ' + before); else ok('Browser-Zurück: ' + back);
+      const back = await filterState();
+      if (back.chips !== before.chips || back.funnel !== before.funnel || back.count !== before.count) fail(vp, 'Browser-Zurück stellt Zustand nicht her: ' + back.funnel + ' statt ' + before.funnel);
+      else ok('Browser-Zurück: ' + back.count);
 
       // 5 Ergebnisse (Karten), Sortierung, Ansichten
       if (!desk) { await page.click('.sc-cta button'); await settle(page, 600); }
