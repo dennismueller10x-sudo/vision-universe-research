@@ -12,6 +12,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {root,build} from './build.mjs';
 import {checkIphonePreview} from '../tests/iphone-preview-checks.mjs';
+import {checkConsentDisclosure} from '../tests/consent-disclosure-checks.mjs';
 
 const baseline='11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49';
 const provenance=JSON.parse(await readFile(resolve(root,'reference/source.json'),'utf8'));
@@ -57,11 +58,30 @@ try{
     const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
     assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.height<=budget,`${name}: compact coming-soon page (${metrics.height})`);
     await checkIphonePreview(page);
-    // Compare the complete original form, including all consent text, fields,
-    // defaults, links and status behavior. Marketing copy is outside the form.
+    await checkConsentDisclosure(page);
+    // Only the authorized compact presentation differs: the full canonical
+    // consent stays accessible, all fields/flags/action and dynamic states stay.
     const form=await page.locator('#newsletter-form').evaluate(e=>e.outerHTML);
     await page.goto(base+'/before/',{waitUntil:'networkidle'});
-    assert.equal(await page.locator('#newsletter-form').evaluate(e=>e.outerHTML),form,'Complete newsletter form unchanged');
+    const comparison=await page.locator('#newsletter-form').evaluate((before,html)=>{
+      const after=new DOMParser().parseFromString(html,'text/html').querySelector('form');
+      const full=after.querySelector('#consent-details-text').textContent;
+      const canonical=before.querySelector('.consent>span').textContent.replace(/\s*Datenschutz\.$/,'');
+      const copy=after.querySelector('.consent>span').textContent;
+      const describedBy=after.querySelector('#consent').getAttribute('aria-describedby');
+      const hint=after.querySelector('#signup-status').textContent;
+      after.querySelector('.consent-details').remove();
+      after.querySelector('.consent>span').innerHTML=before.querySelector('.consent>span').innerHTML;
+      after.querySelector('#consent').setAttribute('aria-describedby',before.querySelector('#consent').getAttribute('aria-describedby'));
+      after.querySelector('#signup-status').textContent=before.querySelector('#signup-status').textContent;
+      const normalize=s=>s.replace(/>\s+</g,'><');
+      return {canonicalMatches:full===canonical,copy,describedBy,hint,allOtherMarkupMatches:normalize(after.outerHTML)===normalize(before.outerHTML)};
+    },form);
+    assert.equal(comparison.canonicalMatches,true,'Original complete consent remains verbatim');
+    assert.equal(comparison.copy,'Ich möchte den Newsletter per E-Mail erhalten. Abmeldung jederzeit. Datenschutz.');
+    assert.equal(comparison.describedBy,'consent-error consent-details-text');
+    assert.equal(comparison.hint,'Anmeldung mit E-Mail-Bestätigung.');
+    assert.equal(comparison.allOtherMarkupMatches,true,'All form markup other than approved compact presentation unchanged');
     await page.goto(base+'/after/',{waitUntil:'networkidle'});
     const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
     await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
@@ -89,7 +109,7 @@ try{
     }
     if(['desktop','iphone'].includes(name)){await page.goto(base+'/before/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:resolve(review,'before-'+name+'.png'),fullPage:true});}
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.equal(posts,0);
-    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,singleIphone:true,tenOriginalProducts:true,twoColumns:true,completeProductNames:true,completeFormUnchanged:true,signupDirectlyBelow:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
+    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,singleIphone:true,tenOriginalProducts:true,twoColumns:true,completeProductNames:true,formControlsAndConsentUnchanged:true,compactConsentDisclosure:true,signupDirectlyBelow:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
   }
   await writeFile(resolve(review,'checks.json'),JSON.stringify({baseline,reference:provenance.commit,scope:'Local public-mode rendering, approved unchanged privacy document, no credentials or live endpoints; legal copy/links compared with immutable baseline.',results},null,2)+'\n');
   console.log(JSON.stringify(results,null,2));
