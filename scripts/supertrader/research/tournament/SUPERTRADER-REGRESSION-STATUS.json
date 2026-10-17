@@ -1,0 +1,44 @@
+{
+  "status": "FAIL",
+  "suites": [
+    {
+      "suite": "core",
+      "exitCode": 1,
+      "passed": false
+    },
+    {
+      "suite": "quant",
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "suite": "products",
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "suite": "python",
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "suite": "isolation",
+      "exitCode": 0,
+      "passed": true
+    }
+  ],
+  "run_id": 38157461683,
+  "interpretation": "FAIL_DOCUMENTED_BASELINE_ONLY",
+  "tests": {
+    "core_pass": 121,
+    "core_total": 122,
+    "quant_pass": 2617,
+    "quant_total": 2617,
+    "products_pass": 813,
+    "products_skip": 8,
+    "products_total": 821,
+    "python_pass": 491,
+    "isolation": "PASS"
+  },
+  "baseline_review": "CORE-BASELINE-REGRESSION-REVIEW"
+}

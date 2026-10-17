@@ -1,0 +1,261 @@
+{
+  "schema": "supertrader-residual-factor-source-data-check-1.0.0",
+  "accessed_date": "2026-10-11",
+  "candidate_id": "residual_momentum",
+  "artifact_type": "AUXILIARY_SOURCE_DATA_CHECK",
+  "factor_values_included": false,
+  "official_sources": [
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/f-f_factors_archive.html",
+      "evidence_scope": "Official annual archived US monthly FF3 data cuts, release convention and earliest-after-July exceptions."
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "evidence_scope": "Official monthly reconstruction/revision warning, January2025 FIZ/CIZ change and copyright attribution."
+    }
+  ],
+  "data_availability": {
+    "official_free_annual_archives_2015_2026": "AVAILABLE",
+    "complete_contemporaneous_monthly_release_vintages_2015_2026": "UNCERTIFIED",
+    "current_revised_monthly_factor_history": "AVAILABLE_BUT_NOT_CERTIFIED_HISTORICAL_PIT",
+    "exact_historical_release_timestamps": "UNCERTIFIED"
+  },
+  "availability_rationale": [
+    "All inspected 2015–2026 official annual FF3 archive downloads are accessible without fee or login.",
+    "The official archive supplies one yearly cut: July2015–July2025; the 2026 entry supplies August data in the September2026 update directory.",
+    "These are archived versions of monthly factor-return histories, not an archive of every monthly publication vintage.",
+    "The official Data Library states that the full return history is reconstructed during monthly updates and can change when the underlying CRSP database is revised.",
+    "Using a later cut to populate factors at earlier monthly decision dates would backdate revised information.",
+    "Using only the latest already-published annual cut leaves intervening monthly observations unavailable for the original monthly residual-momentum protocol.",
+    "Exact original release days were not certified. Directory months and the official annual release description establish only month-level release context; current HTTP Last-Modified headers are not original release proof."
+  ],
+  "rights_status": {
+    "access": "FREE_PUBLIC_DOWNLOAD_NO_LOGIN",
+    "attribution": "Eugene F. Fama and Kenneth R. French",
+    "copyright": "COPYRIGHTED",
+    "general_redistribution_commercial_license": "UNCERTIFIED_FROM_INSPECTED_OFFICIAL_PAGES",
+    "conservative_handling": "Source metadata may be reported here; factor values are omitted. No new paid provider or integration is introduced."
+  },
+  "source_convention_notes": [
+    "CRSP FIZ-to-CIZ transition begins with January2025 releases and changes dividend reinvestment/compounding conventions.",
+    "Archive headers document the RF source transition beginning June2024 from Ibbotson to the ICE BofA US 1-Month Treasury Bill Index.",
+    "These source-convention differences are documented; no silent splice or factor substitution was performed."
+  ],
+  "archives": [
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/09%202026%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "August 2026",
+      "data_cut_month": "2026-08",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2026-09",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "F-F_Research_Data_Factors.csv",
+      "sha256": "593f4fbef03181bc0b22ff6292f217689dd1fb79355049ca905d95b262040a66",
+      "public_file_headers": [
+        "This file was created using the 202608 CRSP database.",
+        "The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index.",
+        "The annual TBill return is compounded from the monthly T-bill rates from January to December.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202025%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2025",
+      "data_cut_month": "2025-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2025-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "F-F_Research_Data_Factors.csv",
+      "sha256": "b70e34975273b2bb267236fc59679a3252cbae3dc4c8bec8d44ea14a3d9ce17e",
+      "public_file_headers": [
+        "This file was created using the 202507 CRSP database.",
+        "The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202024%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2024",
+      "data_cut_month": "2024-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2024-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "F-F_Research_Data_Factors.CSV",
+      "sha256": "0b04328f5d25a6037281de3d7778ebd3932aebffba6fd4eb3fdfec44d4ba5a06",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 202407 CRSP database.",
+        "The 1-month TBill rate data until 202405 are from Ibbotson Associates. Starting from 202406, the 1-month TBill rate is from ICE BofA US 1-Month Treasury Bill Index.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202023%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2023",
+      "data_cut_month": "2023-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2023-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "F-F_Research_Data_Factors.CSV",
+      "sha256": "77d9137fd2d9cc0a5afa17bac8305861ce994e7e74284c76fa925fe61f942d7f",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 202307 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202022%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2022",
+      "data_cut_month": "2022-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2022-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2022 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "846a6d2330504803faf710c608ca17ea0d71abb51a3859595f7fa95d2874dfb0",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 202207 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202021%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2021",
+      "data_cut_month": "2021-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2021-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2021 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "81c676f216c5844bef2b9db8055a4f6bd988ca177d273026ab726a6152acb083",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 202107 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202020%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2020",
+      "data_cut_month": "2020-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2020-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2020 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "c0c3726daab4ea744924791243013fac97db9ac8b4c4abb1ef89613bd281e145",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 202007 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202019%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2019",
+      "data_cut_month": "2019-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2019-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2019 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "4c9701e4812baa9b5f6b13f0a8522ff38dea76aba8abfba52f7531ca1f134de4",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 201907 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202018%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2018",
+      "data_cut_month": "2018-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2018-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2018 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "ba64a9e1f9ab063d49e42f33650811244814c6396414996de5c2377f742e74e0",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 201807 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202017%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2017",
+      "data_cut_month": "2017-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2017-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2017 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "26369097fe46248596152eedcccc7a3ec6aed755884f34af26a6797c498d21d4",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 201707 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates, Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202016%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2016",
+      "data_cut_month": "2016-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2016-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2016 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "7b5ae5d6f7d1c70b42de134a70937a34b7665ec7d8a714d1dad96bd7ae13b7ec",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 201607 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/Historical_Archives/08%202015%20Update/ftp/F-F_Research_Data_Factors_CSV.zip",
+      "vintage_label": "July 2015",
+      "data_cut_month": "2015-07",
+      "historical_series_start_month": "1926-07",
+      "inferred_original_release_month": "2015-08",
+      "release_timestamp_status": "EXACT_DAY_UNCERTIFIED",
+      "zip_member": "Historical_Archives/08 2015 Update/ftp/F-F_Research_Data_Factors.CSV",
+      "sha256": "d40f89a404b677d1bb071b1554acaa71ec50c7d50b46b1c2037e55230b0d1b4c",
+      "public_file_headers": [
+        "This file was created by CMPT_ME_BEME_RETS using the 201507 CRSP database.",
+        "The 1-month TBill return is from Ibbotson and Associates Inc.",
+        ",Mkt-RF,SMB,HML,RF"
+      ],
+      "access_status": "AVAILABLE_OFFICIAL_FREE_DOWNLOAD",
+      "archive_data_rights_status": "COPYRIGHTED_PUBLIC_DOWNLOAD_GENERAL_REDISTRIBUTION_LICENSE_UNCERTIFIED"
+    }
+  ],
+  "frozen_tournament_disposition": {
+    "historical_residual_momentum": "BLOCKED_DATA",
+    "precise_missing_requirement": "Certified complete contemporaneous monthly factor-release vintages for the frozen formation dates.",
+    "free_factors_absent_claim": false,
+    "revised_series_used_as_pit": false,
+    "lagged_or_annual_adaptation_introduced": false,
+    "engine_or_admission_changed": false,
+    "frozen_protocol_or_parameters_changed": false,
+    "existing_source_index_changed": false
+  }
+}

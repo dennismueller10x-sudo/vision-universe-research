@@ -1,0 +1,11 @@
+import {academicMethods,academicPrerequisites} from './engines/academic.mjs';
+import {fundamentalMethods} from './engines/fundamental.mjs';
+import {legendaryMethods,turtleNSeries} from './engines/legendary.mjs';
+import {kullamagiMethods} from './engines/kullamagi.mjs';
+const deepFreeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(deepFreeze);Object.freeze(x);}return x;};
+export const methods=deepFreeze([...academicMethods,...fundamentalMethods,...legendaryMethods,...kullamagiMethods]);
+export const historicalParticipants=deepFreeze([...academicMethods,...legendaryMethods,...kullamagiMethods]);
+export const dataBlocked=deepFreeze([...fundamentalMethods.map(m=>({id:m.id,reason:'CERTIFIED_HISTORICAL_ANNUAL_FACTS_AND_DIRECT_MARKET_EQUITY_UNAVAILABLE',status:'BLOCKED_DATA'})),...academicPrerequisites.filter(m=>!methods.some(x=>x.id===m.id))]);
+export const distinctivenessProduct=deepFreeze({cross_sectional_momentum:65,'52_week_high_effect':70,LOW_VOLATILITY:90,gross_profitability_novy_marx:85,piotroski_value_fscore:80,greenblatt_magic_formula:80,value_plus_momentum:85,TURTLE_S2_EQUITY_DAILY:60,WEINSTEIN_STAGE_DAILY:70,KULLAMAGI_DAILY_ADAPTATION:80});
+export function prepareSourceFeatures(data){for(const s of data.securities)s.sourceFeatures={turtleN20:turtleNSeries(s.bars)};return data;}
+export function rulebook(method){const{evaluate,validateEntryFill,...definition}=method;return{...definition,version:method.version||'1.0.0',classification:typeof method.fidelity==='string'?method.fidelity:method.fidelity.classification,replicationClaimAllowed:false,distinctivenessProductScore:distinctivenessProduct[method.id],runnerOperationalProvenance:'protocol.json',codeAndTestMap:{module:method.id.startsWith('KULLAMAGI')?'engines/kullamagi.mjs':method.id.startsWith('TURTLE')||method.id.startsWith('WEINSTEIN')?'engines/legendary.mjs':fundamentalMethods.some(m=>m.id===method.id)?'engines/fundamental.mjs':'engines/academic.mjs',test:method.id.startsWith('KULLAMAGI')?'tournament-kullamagi.test.mjs':method.id.startsWith('TURTLE')||method.id.startsWith('WEINSTEIN')?'tournament-legendary.test.mjs':fundamentalMethods.some(m=>m.id===method.id)?'tournament-fundamental.test.mjs':'tournament-academic.test.mjs'}};}

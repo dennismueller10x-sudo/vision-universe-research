@@ -1,0 +1,150 @@
+{
+  "schema": "supertrader-public-tournament-projection-1.0.0",
+  "research_only": true,
+  "numerical_metrics": "PRIVATE_ENCRYPTED",
+  "current_security_identifiers": "PRIVATE_ENCRYPTED",
+  "final_review": "PASSED",
+  "methods": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "signal": "NEGATIVE",
+      "confidence": "MEDIUM",
+      "signal_count": 30931,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "signal": "NEGATIVE",
+      "confidence": "MEDIUM",
+      "signal_count": 90331,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "signal": "NEGATIVE",
+      "confidence": "MEDIUM",
+      "signal_count": 27429,
+      "signal_census_basis": "ACADEMIC_FORMATION_SELECTION",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {
+        "PARTIAL": 105
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "gross_profitability_novy_marx",
+      "signal": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE",
+      "signal_count": null,
+      "signal_census_basis": "UNAVAILABLE",
+      "signal_census_measured": null,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {},
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "piotroski_value_fscore",
+      "signal": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE",
+      "signal_count": null,
+      "signal_census_basis": "UNAVAILABLE",
+      "signal_census_measured": null,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {},
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "greenblatt_magic_formula",
+      "signal": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE",
+      "signal_count": null,
+      "signal_census_basis": "UNAVAILABLE",
+      "signal_census_measured": null,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {},
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "value_plus_momentum",
+      "signal": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE",
+      "signal_count": null,
+      "signal_census_basis": "UNAVAILABLE",
+      "signal_census_measured": null,
+      "signal_census_status_counts": {},
+      "portfolio_formation_status_counts": {},
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "signal": "NEGATIVE",
+      "confidence": "LOW",
+      "signal_count": 266283,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2124,
+        "DATA_GAP": 74
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "signal": "NEGATIVE",
+      "confidence": "LOW",
+      "signal_count": 22945,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2045,
+        "DATA_GAP": 153
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    },
+    {
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "signal": "NEGATIVE",
+      "confidence": "LOW",
+      "signal_count": 141,
+      "signal_census_basis": "PORTFOLIO_INDEPENDENT_COMMON_ELIGIBLE_SETUP",
+      "signal_census_measured": true,
+      "signal_census_status_counts": {
+        "READY": 2198
+      },
+      "portfolio_formation_status_counts": {
+        "READY": 2191,
+        "DATA_GAP": 7
+      },
+      "inference": "DESCRIPTIVE_HYPOTHESIS_NOT_PROVEN_ALPHA",
+      "observations_are_independent_trades": false
+    }
+  ]
+}

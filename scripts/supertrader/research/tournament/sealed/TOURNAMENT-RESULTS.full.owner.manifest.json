@@ -1,0 +1,32 @@
+{
+  "schema": "supertrader-encrypted-archive-manifest-1.0.0",
+  "archive_encoding": "UTF8_JSON_OWNER_SEALED_ENVELOPE",
+  "encryption": "RSA-OAEP-256+A256GCM+gzip",
+  "hash_algorithm": "SHA256",
+  "archive_filename": "TOURNAMENT-RESULTS.full.owner.sealed.json",
+  "archive_bytes": 105872566,
+  "archive_sha256": "b3bc6b40dc0dcde49602156583cfd58c8d8e5d78eebcf0a6c0ef3538b0e100fd",
+  "maximum_part_bytes": 50331648,
+  "reassembly": "CONCATENATE_PARTS_IN_ASCENDING_INDEX_THEN_VERIFY_ARCHIVE_SHA256",
+  "reassembly_verified": true,
+  "parts": [
+    {
+      "index": 1,
+      "file": "TOURNAMENT-RESULTS.full.owner.part-0001.bin",
+      "bytes": 50331648,
+      "sha256": "48666058f974d11ca7ac1ab54e9b62ac67dff991a777c7facc0abbea62e4e0ee"
+    },
+    {
+      "index": 2,
+      "file": "TOURNAMENT-RESULTS.full.owner.part-0002.bin",
+      "bytes": 50331648,
+      "sha256": "1a6727c0b4d916c7e9570bec06e46bed35a1d50c27567afc7121ff8a9834c05d"
+    },
+    {
+      "index": 3,
+      "file": "TOURNAMENT-RESULTS.full.owner.part-0003.bin",
+      "bytes": 5209270,
+      "sha256": "9703f378ee310b76af07c41290b8ba33aeb6aa2d667eccc4fdbab9f6fb377298"
+    }
+  ]
+}
