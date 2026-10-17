@@ -7,6 +7,7 @@ import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {checkIphonePreview} from './iphone-preview-checks.mjs';
+import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 
 const output=resolve(root,'tests/output/browser');
 await mkdir(output,{recursive:true});
@@ -38,6 +39,7 @@ try{
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
     await checkIphonePreview(page);
+    await checkConsentDisclosure(page);
     assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
     assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
     assert.equal(await page.locator('#email').getAttribute('type'),'email');

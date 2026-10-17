@@ -7,6 +7,7 @@ import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {checkIphonePreview} from './iphone-preview-checks.mjs';
+import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -75,6 +76,7 @@ try{
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
         await checkIphonePreview(page);
+        await checkConsentDisclosure(page);
         assert.equal(posts,before); // The static iPhone never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
         assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);

@@ -44,7 +44,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace('data-ready="false"','data-ready="false" data-controlled="true"');
   }else if(ready){
     html=html.replace('data-ready="false"','data-ready="true" action="/api/newsletter/subscribe"').replace('<fieldset disabled>','<fieldset>')
-      .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Nach dem Absenden prüfen wir deine Anfrage. Erst der Klick in der Bestätigungsmail bestätigt deine neue Anmeldung.')
+      .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Anmeldung mit E-Mail-Bestätigung.')
       .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden prüfe dein Postfach und bestätige deine neue Anmeldung.')
       .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
   }
