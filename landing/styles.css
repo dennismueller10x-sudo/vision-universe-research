@@ -1,77 +1,95 @@
-/* Research owns branding, typography, Hero, devices and media queries.
-   Only short-page composition, form states and accessibility differ. */
+/* Landing-only presentation. Original Research font, logo and icons stay intact. */
+:root,:root[data-theme="dark"]{--bg:#070a09;--bg-soft:#0b100d;--bg-card:#0c110f;--ink:#f6f7f3;--ink-2:#b8c0bc;--muted:#9da9a2;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime-ink:#c8f531;color-scheme:dark}
 html,body{overflow-x:visible}
+body{background:radial-gradient(ellipse at 50% 40%,rgba(95,134,22,.07),transparent 48%),var(--bg)}
 button,input{font:inherit}
 :focus-visible{outline:3px solid var(--lime);outline-offset:4px}
-.footer :focus-visible{outline-color:#4f6b00}
 .skip-link{position:fixed;left:16px;top:12px;z-index:1100;transform:translateY(-200%);padding:12px 20px;background:var(--lime);color:var(--on-lime);border-radius:999px;font-weight:800}
 .skip-link:focus{transform:none}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.lp-cta{margin-left:auto}
-.lp-logo{position:relative}
+.shell{width:min(760px,calc(100% - 40px))}
+.lp-head,.lp-head.scrolled{position:relative;padding:26px 0 8px;border:0;background:transparent;backdrop-filter:none}
+.lp-row{justify-content:center}
+.lp-logo,.lp-head.scrolled .lp-logo{width:224px;position:relative}
 .lp-logo::after{content:"";position:absolute;inset:-10px 0}
+.lp-logo img{filter:invert(1) brightness(1.08)}
+.hero{padding:12px 0 22px;background:transparent;overflow:visible;isolation:isolate}
+.hero::before{display:none}
+.hero-grid{display:block;text-align:center}
 .hero-copy{min-width:0;overflow-wrap:anywhere}
-.btn{white-space:normal;text-align:center}
-.preview-caption{font-size:12.5px;color:#8b919a;margin-top:16px}
-/* Only the contents of the original device shells change: timeless modules. */
-.module-home{padding:20px 16px 0}
-.module-heading{font-size:30px;line-height:1.04;font-weight:800;letter-spacing:-.035em;max-width:7.5ch}
-.module-heading em{font-style:normal;color:var(--lime)}
-.module-launch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 8px;margin-top:30px}
-.module-tile{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--screen-ink);font-size:10px;font-weight:600;line-height:1.3}
-.module-tile>span:last-child{min-height:26px}
-.module-home-desktop{padding:6px 0 0}
-.module-home-desktop .module-heading{max-width:none;font-size:24px}
-.module-home-desktop .module-launch-grid{margin-top:24px;gap:24px 8px}
-/* Original Research deck/card design inside the unchanged Hero phone shell. */
-.discover-preview[hidden],.stage .module-home[hidden]{display:none}
-.stage .phone:has(.discover-preview){z-index:4}
-.stage .orbit{z-index:1}
-.stage .screen:has(.discover-preview){display:flex;flex-direction:column}
-.stage .screen:has(.discover-preview)>.app-status,.stage .screen:has(.discover-preview)>.app-top{flex-shrink:0}
-.discover-preview{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
-.discover-preview .app-h{padding-bottom:2px}
-.discover-intro{padding:0 16px 10px;color:#bfc5cd;font-size:11px}
-.discover-preview .deck{height:270px;margin-top:0;touch-action:pan-y pinch-zoom}
-.discover-preview .card{overflow-y:auto;overflow-x:hidden;touch-action:pan-y pinch-zoom}
-.discover-preview .cbadge{color:#c8f531;background:rgba(200,245,49,.1)}
-.discover-card-art{flex:1;min-height:64px;display:grid;place-items:center;padding:12px}
-.discover-card-art .hud{width:72px;height:72px}
-.discover-card-art svg{width:48px;height:48px}
-.discover-preview .card-meta{margin-top:auto;flex-wrap:wrap;gap:4px}
-.discover-preview .deck-actions{margin:24px 20px 0}
-.discover-preview .deck-btn{width:54px;height:54px}
-.discover-preview .deck-hint{color:#bfc5cd;font-size:9px}
-.discover-tray{display:flex;align-items:center;gap:8px;padding:4px 14px 0}
-.discover-feedback{flex:1;font-size:10px;line-height:1.4;color:var(--screen-ink)}
-.discover-reset{flex:none;border:0;background:none;color:var(--screen-ink);font-size:11px;text-decoration:underline;min-height:54px;padding:6px 4px;cursor:pointer}
-.discover-preview .cname,.discover-preview .cwhat,.discover-feedback{overflow-wrap:anywhere}
-.discover-disclaimer{font-size:10px;line-height:1.4;text-align:center;color:#bfc5cd;padding:0 16px 8px}
-@media(prefers-reduced-motion:reduce){.discover-preview .card,.discover-preview .stamp,.discover-preview .deck-btn{transition:none}}
-.newsletter{padding:16px 0 24px;scroll-margin-top:76px}
-.nl-box{gap:28px}
-.nl-form{display:block;min-width:0}
-.nl-copy{min-width:0;overflow-wrap:anywhere}
-.consent span{min-width:0;overflow-wrap:anywhere}
+.hero-badge{display:inline-block;border:1px solid #263714;border-radius:999px;padding:7px 15px;background:#122009;color:var(--lime);font-size:12px;line-height:1.35;font-weight:650}
+.hero h1{font-size:clamp(38px,4.4vw,58px);font-weight:800;line-height:1.04;letter-spacing:-.055em;margin:16px auto 0;color:var(--ink);max-width:760px}
+.hero h1 em{font-style:normal;background:none;padding:0;color:var(--lime)}
+.claim-second{display:block}
+/* One wide, compact iPhone; no functional app controls or financial data. */
+.device-frame{position:relative;width:min(300px,calc(100% - 24px));margin:22px auto 0}
+.device-frame::before{content:"";position:absolute;inset:18% -10% -2%;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,rgba(173,228,33,.18),transparent 66%);pointer-events:none}
+.device-frame::after{content:"";position:absolute;bottom:-12px;left:-10%;width:120%;height:30px;z-index:-1;background:radial-gradient(ellipse,rgba(185,240,35,.33),transparent 68%);filter:blur(6px);pointer-events:none}
+.device-frame .phone{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:300/540;padding:8px;border-radius:42px;background:linear-gradient(125deg,#6d7877,#1c2426 12%,#424c4c 35%,#101615 70%,#78827c);box-shadow:0 22px 46px -20px #000,inset 0 0 0 1px #9aa49c}
+.device-frame .phone::before{top:13px;width:84px;height:19px}
+.device-frame .phone .screen{position:absolute;inset:8px;width:auto;height:auto;display:flex;flex-direction:column;padding:32px 11px 18px;border-radius:34px;overflow:visible;background:#090e0c;border:1px solid #060807;color:#f3f5ed}
+.app-top{padding:0 2px;min-height:20px;flex:none}
+.app-top img{width:157px}
+.app-menu{width:17px;height:10px;border-top:1px solid #8d9a92;border-bottom:1px solid #8d9a92;position:relative}
+.app-menu::after{content:"";position:absolute;left:0;right:0;top:4px;border-top:1px solid #8d9a92}
+.module-launch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:13px;flex:1}
+.module-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:5px 3px;border:1px solid #26301d;border-radius:8px;background:radial-gradient(ellipse at 35% 0,rgba(155,202,38,.075),transparent 90%),#0d140d;color:#edf3e6;font-size:11px;font-weight:600;line-height:1.2}
+.module-tile svg{width:36px;height:36px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:var(--lime);filter:drop-shadow(0 0 6px rgba(200,245,49,.3))}
+.module-tile>span{max-width:100%;overflow-wrap:normal;hyphens:none}
+.phone-home{position:absolute;bottom:7px;left:37%;width:26%;height:3px;border-radius:3px;background:#6a746c}
+/* Existing form fields, consent wording and status behavior are unchanged. */
+.newsletter{padding:0 0 18px;scroll-margin-top:20px}
+.nl-box{display:block;padding:26px 30px;border:1px solid #242e25;border-radius:16px;background:linear-gradient(135deg,#0d130f,#090e0c);box-shadow:none}
+.nl-copy{text-align:center;min-width:0;overflow-wrap:anywhere}
+.nl-copy .h2{font-size:clamp(26px,3vw,33px);font-weight:750;letter-spacing:-.045em;line-height:1.12;margin:0}
+.nl-copy .lead{font-size:15px;line-height:1.5;color:var(--ink-2);margin:10px auto 0;max-width:none}
+.nl-form{display:block;min-width:0;margin-top:22px}
 fieldset{border:0;min-width:0}
 .nl-form label:not(.consent){display:block;font-size:14px;font-weight:600;margin-bottom:8px}
-.form-row{display:grid;grid-template-columns:1fr auto;gap:10px}
+.form-row{display:grid;grid-template-columns:1fr;gap:10px}
 .nl-field{min-width:0}
-.nl-field input{min-width:0;height:auto;min-height:56px}
-.consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;font-size:12.5px;line-height:1.5;color:#c3c7cc;min-height:44px;cursor:pointer}
-.consent input{flex:none;width:18px;height:18px;margin:3px 0;accent-color:var(--lime)}
+.nl-field input{min-width:0;width:100%;height:auto;min-height:54px;padding:13px 16px;border-radius:9px;border:1px solid #35413b;background:#101713;color:var(--ink);font-size:16px;line-height:1.5}
+.nl-field input::placeholder{color:#a8b5ad;opacity:1}
+.btn{white-space:normal;text-align:center}
+.nl-form .btn{width:100%;min-height:56px;padding:12px 16px;border-radius:9px;font-size:17px;font-weight:800;background:var(--lime);color:#101709;box-shadow:none}
+.nl-form .btn:hover{background:#d7ff50;box-shadow:0 8px 28px -18px rgba(200,245,49,.55)}
+.nl-form .btn svg{display:none}
+.consent{display:flex;align-items:flex-start;gap:10px;margin-top:12px;min-height:44px;font-size:11.5px;line-height:1.5;color:#bcc7bf;cursor:pointer}
+.consent span{min-width:0;overflow-wrap:anywhere}
+.consent input{flex:none;width:20px;height:20px;margin:2px 0;accent-color:var(--lime)}
 .consent a{text-underline-offset:3px}
-.field-error{font-size:14px;color:#ffbab4;margin-top:8px}
-.form-status{font-size:12.5px;line-height:1.5;color:#c3c7cc;margin-top:12px}
+.consent-details{margin-left:30px;color:#acb9af;font-size:11.5px;line-height:1.5}
+.consent-details summary{width:fit-content;min-height:44px;padding:12px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;list-style-position:inside}
+.consent-details p{font-size:12px;line-height:1.6;padding:0 0 8px}
+/* The always-visible public status already covers the no-JS confirmation hint. */
+.nl-form[data-ready="true"] noscript .form-status{display:none}
+.field-error{font-size:14px;line-height:1.5;color:#ffbab4;margin-top:8px}
+.form-status{font-size:11.5px;line-height:1.5;color:#bac5be;margin-top:4px}
 .honeypot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 button:disabled{cursor:not-allowed;opacity:.65}
 input:disabled{opacity:.65}
-.footer{padding:12px 0}
-.footer .disclaimer{margin-block:0;padding:0;border:0;gap:8px 24px;align-items:center}
-.footer nav{display:flex;gap:24px;flex-wrap:wrap}
-.footer a{display:inline-flex;min-height:44px;align-items:center;text-decoration:none}
+.footer{padding:8px 0 22px;border:0;background:var(--bg)}
+.footer .disclaimer{display:flex;flex-direction:column-reverse;justify-content:center;align-items:center;margin:0;padding:0;border:0;gap:4px;color:#97a59b;font-size:10px}
+.footer nav{display:flex;justify-content:center;gap:26px;flex-wrap:wrap}
+.footer a{display:inline-flex;min-height:44px;align-items:center;text-decoration:none;font-size:12px}
 .footer a:hover{text-decoration:underline;text-underline-offset:4px}
-@media(max-width:900px){.nl-box{padding:20px;gap:16px}}
-@media(max-width:520px){.form-row{grid-template-columns:1fr}.nl-form .btn{width:100%}.preview-caption{max-width:none}}
-@media(max-width:520px){.newsletter{padding-block:12px}.nl-box{padding:12px;gap:14px}}
-@media(prefers-reduced-motion:reduce){.skip-link{transition:none}}
+@media(max-width:760px){
+ .shell{width:calc(100% - 32px)}
+ .lp-head,.lp-head.scrolled{padding:22px 0 8px}.lp-logo,.lp-head.scrolled .lp-logo{width:200px}
+ .hero{padding-top:9px;padding-bottom:20px}.hero h1{font-size:clamp(34px,9.8vw,48px);max-width:560px;line-height:1.06;margin-top:14px;letter-spacing:-.055em}
+ .hero-badge{font-size:11px;padding:6px 12px}
+ .device-frame{width:min(284px,calc(100% - 24px));margin-top:20px}
+ .app-top img{width:145px}
+ .module-tile{font-size:10.5px}.module-tile svg{width:34px;height:34px}
+ .nl-box{padding:22px 16px;border-radius:14px}.nl-copy .h2{font-size:clamp(23px,6.2vw,32px)}.nl-copy .lead{font-size:14px;max-width:35ch;margin-top:8px}
+ .nl-form{margin-top:18px}.nl-form .btn{font-size:16px}
+ .footer{padding-bottom:18px}
+}
+@media(max-width:360px){
+ .hero h1{font-size:clamp(30px,9.6vw,34px)}
+ .device-frame{width:260px;max-width:calc(100% - 20px)}
+ .device-frame .phone{aspect-ratio:260/484;border-radius:38px}.device-frame .phone .screen{border-radius:30px;padding:30px 8px 17px}
+ .app-top img{width:132px}.module-tile{font-size:10px}.module-tile svg{width:31px;height:31px}
+ .nl-box{padding:20px 14px}.nl-copy .h2{font-size:24px}.footer nav{gap:22px}
+}
+@media(prefers-reduced-motion:reduce){.skip-link,.btn{transition:none}}

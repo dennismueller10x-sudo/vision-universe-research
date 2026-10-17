@@ -41,7 +41,11 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
       const page=await context.newPage();
       await page.goto(apex+'/#vu-test='+token);await page.waitForFunction(()=>document.querySelector('#newsletter-form').dataset.ready==='true');
       assert.equal(page.url(),www+'/');assert.equal(await page.locator('#email').isDisabled(),false);
-      await page.locator('a[href="#newsletter"]:visible').first().click();assert.equal(new URL(page.url()).hash,'#newsletter');
+      // The approved single-iPhone layout has no Hero jump-link. Keep the
+      // same-document fragment regression: navigation must retain private access.
+      await page.evaluate(()=>location.hash='newsletter');
+      await page.locator('#newsletter').scrollIntoViewIfNeeded();
+      assert.equal(new URL(page.url()).hash,'#newsletter');
       await page.locator('#email').fill('synthetic@example.test');await page.locator('#consent').check();
       allowed=false;await page.locator('button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#signup-status').textContent.includes('abgelaufen'));
       assert.equal(posts,0);assert.equal(await page.locator('#email').isDisabled(),true);
@@ -70,7 +74,7 @@ for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);
       await context.close();
     }
-    console.log(name+': iPhone Safari and in-app UA, apex redirect, fragment removal, expired/rotated access, resume, in-page link and closed public form verified (synthetic).');
+    console.log(name+': iPhone Safari and in-app UA, apex redirect, fragment removal, expired/rotated access, resume, fragment navigation and closed public form verified (synthetic).');
   }finally{await browser.close();}
 }
 }finally{await new Promise(r=>server.close(r));}
