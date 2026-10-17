@@ -1,0 +1,388 @@
+{
+  "schema": "vu-minervini-data-mapping-1.1.0",
+  "rulebookVersion": "minervini-canonical-replication-1.1.0",
+  "createdAt": "2026-10-06",
+  "parent": "scripts/supertrader/fidelity/MINERVINI-DATA-MAPPING.json (2A, unveraendert)",
+  "pointInTimeRule": "available_date (SEC-Einreichungsdatum der Erstmeldung) < Handelstag der Order; nie Periodenende <= Signaltag (MR-PIT-01).",
+  "datasets": [
+    {
+      "id": "SEC-PIT-MREPL-1",
+      "location": "privater Eimer, _validation/sec-pit-mrepl-1.json.gz je Fenster (DEV: tiingo-delisted, HOLDOUT: tiingo-holdout)",
+      "producer": "scripts/supertrader/replication/minervini/build-sec-facts.mjs (Workflow-Modus mrepl-sec / mrepl-sec-holdout)",
+      "content": "Quartals-EPS, Umsatz, Bruttogewinn (auch Umsatz - Kosten), operatives Ergebnis, Nettoergebnis als Erstmeldung mit filed, accn, form, tag, derived",
+      "pointInTime": true,
+      "status": "NEU in Phase 2A (Erweiterung der bestehenden companyfacts-Extraktion)",
+      "listingToCik": "aus sec-pit-r12 bzw. sec-pit-r11 desselben Fensters (bestehende, in R11-R15 gepruefte Zuordnung)"
+    },
+    {
+      "id": "SEC-PIT-R11-R12",
+      "location": "privater Eimer, _validation/sec-pit-r11.json.gz / sec-pit-r12.json.gz",
+      "producer": "scripts/supertrader/validation/sec-pit.mjs",
+      "content": "Quartals-EPS und Umsatz, Erstmeldung, ohne Accession/Formular/Einheit",
+      "pointInTime": true,
+      "status": "unveraendert; genutzt nur fuer die Listing->CIK-Zuordnung",
+      "knownIssues": [
+        "P3 kein Formularfilter",
+        "P4 Q4-EPS abgeleitet ohne Split-Pruefung",
+        "P5 EPS-Vorjahr nicht split-bereinigt (in earnings.mjs)",
+        "P12 ein EPS-Tag fuer die ganze Reihe",
+        "P13 Waehrung geht verloren",
+        "P15 keine Accession"
+      ]
+    },
+    {
+      "id": "SEC-CONSUMER",
+      "location": "quant/data/sec/consumer/CIK*.json",
+      "producer": "scripts/quant/sec/consumer.py",
+      "content": "alle Kennzahlen, ca. 8 Quartale",
+      "pointInTime": false,
+      "status": "fuer die Replication ungeeignet (as_of_latest, restated, filed = spaeteste Wiederholung)"
+    },
+    {
+      "id": "SEC-CANONICAL-5",
+      "location": "quant/data/sec/canonical/*.json",
+      "producer": "scripts/quant/sec",
+      "content": "5 Titel mit availableAt/Restatement-Status",
+      "pointInTime": true,
+      "status": "irrelevant (5 Titel)"
+    },
+    {
+      "id": "PRICES",
+      "location": "privater Eimer (Tiingo-Reihen inkl. delisteter Listings), geladen ueber validation/analyze-methods.mjs#loadPitData",
+      "content": "Tageskerzen, Dividenden, Split-Faktoren",
+      "pointInTime": true,
+      "status": "unveraendert genutzt (wie R14)"
+    },
+    {
+      "id": "RS-CROSS-SECTION",
+      "location": "validation/analyze-methods.mjs#loadPitData (cross.rs)",
+      "content": "VU-RS-Perzentil im damaligen Universum",
+      "pointInTime": true,
+      "status": "unveraendert genutzt; Definition gegen das Regelbuch geprueft (measure.mjs#checkRsDefinition)"
+    },
+    {
+      "id": "SEC-EVENTS-SIC-1",
+      "location": "privater Eimer, sec-events-sic-1.json.gz je Fenster (DEV: tiingo-delisted, HOLDOUT: tiingo-holdout)",
+      "producer": "scripts/supertrader/data-layer/sec/build-sec-events.mjs (Workflow-Modus sec-events / sec-events-holdout)",
+      "content": "je CIK: Ergebnismitteilungen (8-K Item 2.02, Aenderungen, Duplikate, periodische Berichte) und SIC je gelesenem Einreichungskopf",
+      "pointInTime": true,
+      "visibility": "8-K: filingDate < Handelstag; SIC: juengste gelesene Einreichung mit filingDate < Handelstag",
+      "status": "NEU in Phase 2B (generischer VU-Datenlayer, nur Protokoll in 1.1.0)",
+      "listingToCik": "sec-pit-r12 (sonst r11) plus delistete Listings aus sec-delist-r13",
+      "coverageModel": "Abbruch ohne Ablage bei > 1 % Abruffehlern; Messung verlangt >= 99 % fehlerfreie CIKs",
+      "knownGaps": [
+        "Listings ohne CIK-Zuordnung (Namenszuordnung verlangte XBRL-Daten): fruehe HOLDOUT-Jahre, kleine Emittenten",
+        "SIC-Wechsel A->B->A zwischen zwei gelesenen Koepfen unentdeckt",
+        "kein kommender Ergebnistermin",
+        "Auslandsemittenten (6-K) ohne 8-K-Mitteilungen"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "item": "Analystenschaetzungen, Revisionen, Ueberraschungen",
+      "class": "C",
+      "status": "NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES",
+      "rules": [
+        "MR-SEPA-07",
+        "MR-SEPA-08"
+      ]
+    },
+    {
+      "item": "Ergebnistermine (vergangene)",
+      "class": "A",
+      "status": "8-K Item 2.02 point-in-time (SEC-EVENTS-SIC-1)",
+      "rules": []
+    },
+    {
+      "item": "Ergebnistermine (kommende)",
+      "class": "C",
+      "status": "nicht in SEC-Daten; kein Proxy",
+      "rules": [
+        "MR-ERN-01"
+      ]
+    },
+    {
+      "item": "Institutionelle Daten (13F)",
+      "class": "B",
+      "status": "kostenlos amtlich ab 2013Q2, known_from = Einreichung; CUSIP-Zuordnung lizenzrechtlich offen; keine Minervini-Regel - nicht gebaut",
+      "rules": [
+        "MR-SEPA-11"
+      ]
+    },
+    {
+      "item": "Branchenklassifikation SIC point-in-time",
+      "class": "A",
+      "status": "SEC-EVENTS-SIC-1 (andere Taxonomie als Minervini; nur Protokoll)",
+      "rules": [
+        "MR-SEPA-12"
+      ]
+    },
+    {
+      "item": "Minervinis Branchentaxonomie / IBD-Gruppenrang",
+      "class": "C",
+      "status": "proprietaer",
+      "rules": [
+        "MR-SEPA-12"
+      ]
+    },
+    {
+      "item": "Intraday-Volumen (alle Boersen)",
+      "class": "C",
+      "status": "nur IEX kostenlos (1-3 % des Volumens); keine bezahlte Pipeline",
+      "rules": [
+        "MR-ENT-02",
+        "MR-VCP-05"
+      ]
+    },
+    {
+      "item": "IBD RS Rating",
+      "class": "C",
+      "status": "proprietaer; VU-RS ist VU_FORMALIZATION (MR-TT-08)",
+      "rules": [
+        "MR-TT-08"
+      ]
+    },
+    {
+      "item": "Quartals-EPS, Umsatz, Margen point-in-time",
+      "class": "A",
+      "status": "SEC-PIT-MREPL-1 (Erstmeldung, filed < Handelstag)",
+      "rules": [
+        "MR-SEPA-01",
+        "MR-SEPA-02",
+        "MR-SEPA-04",
+        "MR-SEPA-06"
+      ]
+    },
+    {
+      "item": "Einmalposten",
+      "class": "B",
+      "status": "XBRL-Tags vorhanden, aber kein belastbares Mapping; nicht gebaut",
+      "rules": [
+        "MR-SEPA-09"
+      ]
+    }
+  ],
+  "mapping": [
+    {
+      "ruleId": "MR-SEPA-00",
+      "minerviniRule": "SEPA: Fundamentaldaten muessen vorliegen",
+      "requiredData": "Quartals-EPS und -Umsatz point-in-time",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 (eps, rev)",
+      "pointInTime": true,
+      "currentPipeline": "build-sec-facts.mjs -> sepa.mjs#evaluateSepa",
+      "implementable": "YES",
+      "proxyUsed": false
+    },
+    {
+      "ruleId": "MR-SEPA-01",
+      "minerviniRule": "EPS-Wachstum letztes Quartal gegen Vorjahresquartal >= ca. 20 %",
+      "requiredData": "Quartals-EPS (verwaessert) als Erstmeldung, Split-Ereignisse",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 eps; Split-Faktoren aus Tiingo-Rohkerzen via quant/engines/return-series.js#splitFactors",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs#evaluateSepa (yoyGrowth mit Split-Bereinigung)",
+      "implementable": "YES",
+      "proxyUsed": false,
+      "note": "3.0.0 verglich EPS ueber Splitdaten ohne Bereinigung (Befund P5)"
+    },
+    {
+      "ruleId": "MR-SEPA-02",
+      "minerviniRule": "Gewinnbeschleunigung",
+      "requiredData": "EPS q0..q-5",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 eps",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs#evaluateSepa (Vorquartal mit Kontinuitaetspruefung)",
+      "implementable": "YES",
+      "proxyUsed": false
+    },
+    {
+      "ruleId": "MR-SEPA-03",
+      "minerviniRule": "Code 33 (3 Quartale Beschleunigung EPS, Umsatz, Marge)",
+      "requiredData": "EPS, Umsatz, Nettoergebnis je Quartal, 7 Quartale",
+      "vuDataAvailable": "JA (Marge neu)",
+      "location": "SEC-PIT-MREPL-1 eps, rev, ni",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs#code33 (nur Protokoll)",
+      "implementable": "YES_WITH_EXTENSION",
+      "extensionDone": true,
+      "proxyUsed": false
+    },
+    {
+      "ruleId": "MR-SEPA-04",
+      "minerviniRule": "Umsatzwachstum traegt den Gewinn",
+      "requiredData": "Quartalsumsatz, gleiches Quartal wie EPS",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 rev",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs#evaluateSepa",
+      "implementable": "YES",
+      "proxyUsed": false,
+      "note": "Abgleich auf dasselbe Periodenende neu (Befund P8)"
+    },
+    {
+      "ruleId": "MR-SEPA-05",
+      "minerviniRule": "Umsatzbeschleunigung",
+      "requiredData": "Quartalsumsatz",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 rev",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs#evaluateSepa (revAccel, nur Protokoll)",
+      "implementable": "YES",
+      "proxyUsed": false
+    },
+    {
+      "ruleId": "MR-SEPA-06",
+      "minerviniRule": "Steigende Margen (brutto, operativ, netto)",
+      "requiredData": "GrossProfit bzw. Umsatz - Kosten, OperatingIncomeLoss, NetIncomeLoss, Umsatz je Quartal",
+      "vuDataAvailable": "JA nach Erweiterung",
+      "location": "SEC-PIT-MREPL-1 gp, opinc, ni",
+      "pointInTime": true,
+      "currentPipeline": "sec-facts.mjs#grossProfitSeries/seriesWithFallback -> sepa.mjs#marginsAt",
+      "implementable": "YES_WITH_EXTENSION",
+      "extensionDone": true,
+      "proxyUsed": false,
+      "coverageNote": "GrossProfit-Tag bei ca. 55 % der Emittenten (consumer-Zaehlung), Fallback Umsatz - Kosten; Banken/Versicherer ohne Bruttogewinn. Deshalb nur Protokoll, kein Filter."
+    },
+    {
+      "ruleId": "MR-SEPA-07",
+      "minerviniRule": "Gewinn- und Umsatzueberraschungen",
+      "requiredData": "Konsensschaetzungen zum damaligen Stand",
+      "vuDataAvailable": "NEIN",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "keine bekannte kostenlose offizielle Quelle fuer historische Konsensschaetzungen",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-SEPA-08",
+      "minerviniRule": "Steigende Analystenschaetzungen",
+      "requiredData": "Schaetzungshistorie",
+      "vuDataAvailable": "NEIN",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "keine",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-SEPA-09",
+      "minerviniRule": "Gewinnqualitaet (keine Einmalposten)",
+      "requiredData": "Kennzeichnung von Sonderposten je Quartal",
+      "vuDataAvailable": "NEIN (kein Tag-Mapping)",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "XBRL-Einzeltags (z. B. Restrukturierung) in companyfacts - uneinheitlich, kein belastbares Mapping",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-SEPA-10",
+      "minerviniRule": "Turnaround (+100 % in 1-2 Quartalen)",
+      "requiredData": "EPS-Historie",
+      "vuDataAvailable": "JA",
+      "location": "SEC-PIT-MREPL-1 eps",
+      "pointInTime": true,
+      "currentPipeline": "sepa.mjs (negative Basis -> nicht bewertbar)",
+      "implementable": "YES",
+      "proxyUsed": false,
+      "note": "Prozentrate bei Vorjahresverlust nicht definiert; konservativ ausgeschlossen"
+    },
+    {
+      "ruleId": "MR-SEPA-11",
+      "minerviniRule": "Institutionelle Nachfrage / Sponsorship",
+      "requiredData": "13F-Bestaende point-in-time",
+      "vuDataAvailable": "NEIN",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "SEC Form 13F Data Sets (EDGAR, kostenlos) - dokumentiert, keine Pipeline eingefuehrt (Freigabe noetig)",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-SEPA-12",
+      "minerviniRule": "Branchenfuehrerschaft / Gruppenrang",
+      "requiredData": "Branchenzugehoerigkeit und Gruppenstaerke zum damaligen Stand",
+      "vuDataAvailable": "NEIN (nur heutige SIC)",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "SIC-Code je Einreichung (EDGAR submissions, kostenlos) - waere zeitpunktgenau ableitbar; Gruppenrang selbst ist ein VU-Konstrukt. Dokumentiert, nicht eingefuehrt.",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-SEPA-13",
+      "minerviniRule": "Katalysator",
+      "requiredData": "qualitative Nachrichten",
+      "vuDataAvailable": "NEIN",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "-",
+      "status": "NOT PUBLIC"
+    },
+    {
+      "ruleId": "MR-PIT-01",
+      "minerviniRule": "(Datenregel) Sichtbarkeit nur nach Einreichung, Erstmeldung, keine Restatements rueckwirkend",
+      "requiredData": "filed, accession, form, unit je Wert",
+      "vuDataAvailable": "JA (neu)",
+      "location": "SEC-PIT-MREPL-1",
+      "pointInTime": true,
+      "currentPipeline": "sec-facts.mjs, sepa.mjs#visibleRows",
+      "implementable": "YES",
+      "proxyUsed": false
+    },
+    {
+      "ruleId": "MR-ERN-01",
+      "minerviniRule": "Quartalszahlen-Termin: Halten nur mit Gewinnpolster",
+      "requiredData": "Ankuendigungstermine point-in-time",
+      "vuDataAvailable": "NEIN (10-Q/10-K-Datum ist nicht der Meldetermin)",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "-",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "freeOfficialSource": "EDGAR 8-K Item 2.02 (Results of Operations), kostenlos - dokumentiert, keine Pipeline eingefuehrt",
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-ENT-02",
+      "minerviniRule": "Ausbruch mit zunehmendem Volumen (zum Kaufzeitpunkt)",
+      "requiredData": "Intraday-Volumen bis zum Durchbruch",
+      "vuDataAvailable": "NEIN fuer die Historie (R9: IEX-Minuten nur eingeschraenkt)",
+      "location": "-",
+      "pointInTime": false,
+      "currentPipeline": "portfolio-sim.mjs protokolliert Volumen(t)/SMA50(t-1)",
+      "implementable": "NO",
+      "proxyUsed": false,
+      "status": "NOT REPRODUCIBLE WITH CURRENT DATA"
+    },
+    {
+      "ruleId": "MR-TT-08",
+      "minerviniRule": "IBD-RS-Rang >= 70",
+      "requiredData": "IBD Relative Strength (proprietaer)",
+      "vuDataAvailable": "Ersatz: VU-RS-Perzentil point-in-time",
+      "location": "RS-CROSS-SECTION",
+      "pointInTime": true,
+      "currentPipeline": "loadPitData cross.rs",
+      "implementable": "YES_WITH_EXTENSION",
+      "proxyUsed": true,
+      "proxyDisclosure": "offen ausgewiesene VU-Formalisierung (MR-TT-08); IBD selbst NOT_PUBLIC"
+    }
+  ]
+}

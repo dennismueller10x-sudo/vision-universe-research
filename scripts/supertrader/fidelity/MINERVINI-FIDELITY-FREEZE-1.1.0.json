@@ -1,0 +1,338 @@
+{
+  "schema": "vu-minervini-fidelity-freeze-1.1.0",
+  "status": "FROZEN",
+  "frozenAt": "2026-10-06",
+  "engine": {
+    "id": "MINERVINI_CANONICAL",
+    "version": "1.1.0",
+    "rulebookVersion": "minervini-canonical-replication-1.1.0",
+    "methodEra": "SEPA-PUBLISHED-2013-2022"
+  },
+  "parent": {
+    "freeze": "scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE.json",
+    "freezeSha256": "138fe93e949609bf9363e2b6b1f976961146e7741db5257ee88bff7b55f72f54",
+    "commit": "b365b66e5",
+    "rulebookHash": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5",
+    "codeHash": "f20a12a7a26750daf6dd08732ccaab0dcb7f7bdd5eff6955d03e8f7398acbdcb",
+    "name": "minervini-adaptation-1.0.0"
+  },
+  "commit": "9db37cb18a4",
+  "rulebook": "scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION-1.1.0.json",
+  "rulebookHash": "ae226511dcd045bca2457929e4894e43946c71d096e84c5dbdf0569a18bc6ba7",
+  "sourceHash": "c25280cb719bb3f46de60475dab3cf1ff6865a981e7805b6db469b292ebe71d8",
+  "sourceFiles": [
+    "scripts/supertrader/fidelity/MINERVINI-SOURCE-CONFLICTS.json"
+  ],
+  "codeHash": "2093c8d18adf33495c6ea0aa2312c77bb70aa652e379d194313a2ebf249be930",
+  "codeFiles": [
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/artifacts.mjs",
+      "sha256": "ff839af5637ea49eb161cd4e9cf9a366107015737fe72f347a0a043ee91eb2c4"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/build-rulebook.mjs",
+      "sha256": "d8d946a62ce0d77530d997c484498c2f32c8a2535a29a3eec3a5e31286baafbb"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/diagnostics.mjs",
+      "sha256": "adc30bc57dbba06ecd355e8276ca858d10536a55de2ecfd0a6df8152b3de04e6"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/engine.mjs",
+      "sha256": "01617797dc0d201ed6e53de28737f84f5449267859bddb5447b881356d30f363"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/fidelity-2b.mjs",
+      "sha256": "bdd498418ff1a7ba1eb153320ed6550d4e9703823c9f88657d993fe054054219"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/freeze.mjs",
+      "sha256": "5f8a738af9abb7465fb4ffb4a137953103f34c9ffe83ea27b8dd57b24577cc16"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/industry-record.mjs",
+      "sha256": "07fb6e0dcf0ae1f419a53cf1853637cbd6970bac5692f56f490f68f32f2ef1ab"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/measure.mjs",
+      "sha256": "4c321eb45a6c9ba831538bed83d8babf33af6a493e7397fc435e7d4cfe0608a8"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/params.mjs",
+      "sha256": "4b135cf38355ba00fc21be6c0a7c56119e9bba59abc8bb3b976cbd9ee7913b39"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/portfolio-policy.mjs",
+      "sha256": "e18d5b1934cb00502ce70830d7f73428b3982c6353d5192debed2769e39e40d9"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini-1.1/portfolio-sim.mjs",
+      "sha256": "121fbe97cc12480e526682c129cd53e9f715ce9e3b06777a49b7f721429851b1"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/params.mjs",
+      "sha256": "6ded1b5ea740b201e151b2d3611381b23521f2a83bfc70887dc77eb4f09c367d"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/trend-template.mjs",
+      "sha256": "e7f9a0644871e0a102a01af4d513f007ed724f982003cbd939941bc2a9d94177"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/vcp.mjs",
+      "sha256": "2f003a822e758cdc73641b758a5f7dbfb6466e02014265d27e81ae41f26a9c5d"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/sec-facts.mjs",
+      "sha256": "0512753b31a5b8d7054e00c86bef4cc4b0cb7a846a4d71769d35a321bc712b30"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/sepa.mjs",
+      "sha256": "e20823f49ec2bf3dfa442c3fe036d674286eb90ec229602a82cbd05dd9f5c991"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/signal-engine.mjs",
+      "sha256": "4cde6744aaa604bdc43276bf4b51d7e9d237adc94e7cb3e4342e2b9f0036f352"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/exit-policy.mjs",
+      "sha256": "500c9a27992da5cf2a2b25eae2ad0d16fbd895a3972605186e54ee1ef7a0020c"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/portfolio-policy.mjs",
+      "sha256": "6bc418d4a5d6b9318beba03fcdda403234ccad5ffe90df05feb513abd95e2907"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/portfolio-sim.mjs",
+      "sha256": "eb446e352f2c2b4edfde5fea064eac47784f11a113087bf4767c37f8f30da4f8"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/metrics.mjs",
+      "sha256": "ca8747e5b7283b2e09702814bd356cd968258186052cb36d5ec5cc8ee82161a1"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/measure.mjs",
+      "sha256": "2a2d2d49b1ac2669b144820202e4d153b2bdaf0579b4dcb44449fb635746a5f2"
+    },
+    {
+      "path": "scripts/supertrader/data-layer/sec/earnings-events.mjs",
+      "sha256": "87648989ba60c85de8aece7dd078a0254740d85e0ded31a95c552e17aace6d58"
+    },
+    {
+      "path": "scripts/supertrader/data-layer/sec/industry-sic.mjs",
+      "sha256": "035ae9b00259c2d22640920e07110af56886f99b223f9995c93db78f52dd3919"
+    },
+    {
+      "path": "scripts/supertrader/data-layer/sec/build-sec-events.mjs",
+      "sha256": "35049c1396db8e2025223a40a88972f215b0998cfc90f2f3b7d6039cf09fc389"
+    },
+    {
+      "path": "scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION.json",
+      "sha256": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5"
+    }
+  ],
+  "sharedDependencies": [
+    {
+      "path": "scripts/supertrader/engine/indicators.mjs",
+      "sha256": "3b2be04dc5eae7d0f2801b5b7a1df644b8e96372d10c3dcfc0e23bc3980a117f"
+    },
+    {
+      "path": "quant/engines/return-series.js",
+      "sha256": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54"
+    },
+    {
+      "path": "scripts/supertrader/fidelity/taxonomy.mjs",
+      "sha256": "9bb3924cf64dc080f0b1f8d08fe014663c3a70e3ef3d2b4f886692ee82495700"
+    },
+    {
+      "path": "scripts/supertrader/fidelity/product-classes.mjs",
+      "sha256": "5243939e8657fade0e2e733b5c3db5d523ac3855a7255b9a97a2ff23d9679ee8"
+    },
+    {
+      "path": "scripts/supertrader/validation/lib.mjs",
+      "sha256": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c"
+    },
+    {
+      "path": "scripts/supertrader/validation/analyze-methods.mjs",
+      "sha256": "f66cdbbffbe421829444bf308bcb693be3517444fbe0c535ce5aadaf9657b611"
+    }
+  ],
+  "dataSchema": {
+    "secFacts": {
+      "schema": "vu-sec-pit-mrepl-1.0.0",
+      "rowLayout": [
+        "END",
+        "VALUE",
+        "FILED",
+        "ACCN",
+        "FORM",
+        "DERIVED",
+        "TAG",
+        "COMPONENTS_FROM"
+      ],
+      "storeKey": "_validation/sec-pit-mrepl-1.json.gz",
+      "visibility": "filed < Ausfuehrungstag (MR-PIT-01)"
+    },
+    "earningsEvents": {
+      "schema": "vu-sec-earnings-events-1.0.0",
+      "rowLayout": [
+        "FILED",
+        "ACCN",
+        "FORM",
+        "TYPE",
+        "REPORT",
+        "ACCEPTED"
+      ],
+      "storeKey": "sec-events-sic-1.json.gz",
+      "visibility": "filingDate < Handelstag; nur Protokoll (MR-ERN-01 bleibt nicht reproduzierbar)"
+    },
+    "industrySic": {
+      "schema": "vu-sec-industry-sic-1.0.0",
+      "rowLayout": [
+        "filingDate",
+        "accession",
+        "sic"
+      ],
+      "storeKey": "sec-events-sic-1.json.gz",
+      "visibility": "SIC der juengsten gelesenen Einreichung mit filingDate < Handelstag; nur Protokoll (MR-SEPA-12)"
+    },
+    "relativeStrength": "cross.rs aus validation/analyze-methods.mjs#loadPitData, Definition MR-TT-08 rs.definitionId (unveraendert)",
+    "universe": "loadPitData({excludeNonEquity:true, delistPit:true}) wie 2A; Messrahmen MR-UNI-01"
+  },
+  "dataSchemaHashes": {
+    "secFacts": "7683e09e9c2020540ffb825cdbdc886bbc88522d94df806a79f1504ff8ebfbba",
+    "earningsEvents": "b8f2a45d64d7c30ab61202224006f2d46309eeb29add9f939bea240bfd115abf",
+    "industrySic": "8673c72ce1537911bf0b16d7099cc3b63e8a8cafe153b909d3aef73230896357",
+    "relativeStrength": "18010fa91065faa05987f5e509846694bd7126570bab791456d602e4139e5279",
+    "universe": "cf03408e70219b04e1216a7d10e33f228e021e5a9346cb49a0c5345438960a4e"
+  },
+  "delta": "scripts/supertrader/fidelity/MINERVINI-PHASE2B-FIDELITY-DELTA.json",
+  "deltaHash": "96f7ad3dd51001d5c18843c857ea433961cd95a19cb46e0b1d6c787ba8dd0bf1",
+  "cleanTree": true,
+  "timestamp": "2026-10-06T20:13:30.540Z",
+  "builderHash": "dc3bde5852bede1f3b8bb3c7147d54bb48c75a9947e1f0cf6ba7474010ce6add",
+  "builderFiles": [
+    "scripts/supertrader/data-layer/sec/build-sec-events.mjs",
+    "scripts/supertrader/data-layer/sec/earnings-events.mjs",
+    "scripts/supertrader/data-layer/sec/industry-sic.mjs",
+    "scripts/supertrader/validation/sec-pit.mjs"
+  ],
+  "measurementHash": "9ef08bf8549fd2f95bb2cac5c097a5ddcf86f52d0d9d6bb0aeb52fb8283296bf",
+  "measurementFiles": [
+    "scripts/supertrader/replication/minervini-1.1/measure.mjs",
+    "scripts/supertrader/replication/minervini-1.1/diagnostics.mjs",
+    "scripts/supertrader/replication/minervini/metrics.mjs"
+  ],
+  "dataBuilds": {
+    "DEV": {
+      "commit": "cbbbfcbb988a73ba03bfe72e52784ff8632f41f8",
+      "run": "37497160189"
+    },
+    "HOLDOUT": {
+      "commit": "9db37cb18a4e4004b89e87037b6753f8aab0fbba",
+      "run": "37512610810"
+    }
+  },
+  "fidelityMatrix": [
+    {
+      "area": "trend",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "MEDIUM",
+      "phase2B": "MEDIUM"
+    },
+    {
+      "area": "fundamental",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "vcp",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "entry",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "exit",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "sizing",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "portfolio",
+      "phase2AAsFrozen": "LOW",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "risk",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "LOW",
+      "phase2B": "LOW"
+    },
+    {
+      "area": "market",
+      "phase2AAsFrozen": "MEDIUM",
+      "phase2ARescored": "MEDIUM",
+      "phase2B": "MEDIUM"
+    },
+    {
+      "area": "industry",
+      "phase2AAsFrozen": "NONE",
+      "phase2ARescored": "NONE",
+      "phase2B": "NONE"
+    }
+  ],
+  "classification": {
+    "productClass": "VU_ADAPTATION",
+    "canonicalName": "minervini-adaptation-1.1.0",
+    "displayName": "VU Adaptation – Minervini Canonical (Research)",
+    "replicationClaimAllowed": false,
+    "overallFidelity": "LOW",
+    "gateAreas": {
+      "trend": "MEDIUM",
+      "entry": "LOW",
+      "fundamental": "LOW",
+      "exit": "LOW",
+      "sizing": "LOW",
+      "portfolio": "LOW",
+      "marketRegime": "MEDIUM",
+      "risk": "LOW"
+    },
+    "reportAreas": {
+      "trend": "MEDIUM",
+      "fundamental": "LOW",
+      "vcp": "LOW",
+      "entry": "LOW",
+      "exit": "LOW",
+      "sizing": "LOW",
+      "portfolio": "LOW",
+      "risk": "LOW",
+      "market": "MEDIUM",
+      "industry": "NONE"
+    },
+    "blockingReasons": {
+      "coreAreasNotHigh": [
+        "entry",
+        "exit",
+        "sizing",
+        "portfolio",
+        "risk",
+        "fundamental"
+      ],
+      "foreignOrUnresolvedActive": []
+    }
+  },
+  "backtestPolicy": "Erst nach diesem Freeze. Nur Messung im Rahmen von 2A; das Ergebnis aendert die Engine nicht. DEV und HOLDOUT sind GESEHENE DATEN."
+}
