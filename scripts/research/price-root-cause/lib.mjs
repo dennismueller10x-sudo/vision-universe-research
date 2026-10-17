@@ -117,7 +117,10 @@ export function labelEvent(M, s, ev, sec, finra) {
   else cls = 'UNRESOLVED';
   /* a stated ratio (FINRA or SEC 8-K) that explains the move is the only basis for a normalization; a share count alone is not */
   const statedRatio = e.finraSplitExplains ? finraRatio : secExplains ? secExplains.ratio : null;
-  return { cls, finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
+  /* a share-count confirmation alone can be produced by a DECLARED split within the share-count window (+-200 days) */
+  const declaredNear = s.bars.some((b) => hasSplit(b) && b.date !== ev.date && daysApart(b.date, ev.date) <= 200);
+  const channel = e.finraSplitExplains ? 'FINRA' : secExplains ? 'SEC_8K' : e.shares === 'CONFIRMS' ? (declaredNear ? 'SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR' : 'SEC_SHARES_ONLY') : null;
+  return { cls, channel, finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
     channels: { finraObs: finraObs.length, secEvents: secRows.length, shareRows: ctx.shares.length } };
 }
 

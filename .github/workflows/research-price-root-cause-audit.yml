@@ -1,4 +1,5 @@
 name: Research price-data root-cause and backtest-impact audit (diagnostic, not certifying; private plaintext never uploaded)
+# [root-cause-audit:population] reruns only the population job (same inputs) and publishes it.
 # Isolated diagnostic replay for docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md and
 # docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md. Runs only with [root-cause-audit:run] in the head commit message.
 # Reads the canonical capture of the pinned #705 pipeline (same content as freezes V3-84caf2e84e560bec and
@@ -22,7 +23,7 @@ env:
   OUT: docs/data-quality/root-cause-audit
 jobs:
   population:
-    if: contains(github.event.head_commit.message, '[root-cause-audit:run]')
+    if: contains(github.event.head_commit.message, '[root-cause-audit:run]') || contains(github.event.head_commit.message, '[root-cause-audit:population]')
     runs-on: ubuntu-latest
     timeout-minutes: 340
     permissions:
@@ -275,7 +276,7 @@ jobs:
 
   publish:
     needs: [population, methods]
-    if: always() && contains(github.event.head_commit.message, '[root-cause-audit:run]')
+    if: always() && (contains(github.event.head_commit.message, '[root-cause-audit:run]') || contains(github.event.head_commit.message, '[root-cause-audit:population]'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
