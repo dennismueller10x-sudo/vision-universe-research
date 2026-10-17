@@ -15,6 +15,9 @@ test('Geräteansichten und erneute Research-Übernahme bleiben ohne Finanzdaten'
     assert.doesNotMatch(html,/NVIDIA|NVDA|chart-nvda|data-count|Jahreshoch|12 Geschäftsjahre/);
     assert.equal((html.match(/class="module-launch-grid"/g)||[]).length,2);
     assert.equal((html.match(/class="module-heading"/g)||[]).length,2);
+    assert.match(html,/<b>Coming soon<\/b><span>Bald verfügbar<\/span>/);
+    assert.match(html,/Noch nicht verfügbar\./);
+    assert.doesNotMatch(html,/App in Entwicklung|Die App entsteht gerade/);
     assert.match(html,/aria-label="Discover-Swipe-Vorschau"/); // Survives snapshot regeneration.
     assert.doesNotMatch(html,/class="card-px"|class="cspark"|Rang #[0-9]/);
     for(const [icon,label] of modules){

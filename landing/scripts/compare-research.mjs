@@ -49,6 +49,8 @@ try{
     await page.goto(base+'/after/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
     assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Investieren mit Weitblick. Alles in einer App.');
     assert.equal(await page.locator('h1 em').innerText(),'Weitblick.');
+    assert.match(await page.locator('.hero-badge').innerText(),/Coming soon\s*Bald verfügbar/i);
+    assert.match(await page.locator('.preview-caption').innerText(),/Noch nicht verfügbar\./);
     assert.equal(await page.locator('h1 em').evaluate(e=>getComputedStyle(e).color),'rgb(200, 245, 49)');
     assert.match(await page.locator('h1').evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
     assert.equal(await page.locator('.footer').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(8, 10, 12)');
