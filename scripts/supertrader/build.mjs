@@ -788,7 +788,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/${weeklySeriesId(x.symbol)}.json` } : null }));
     const quality = qualitySummary(open);
-    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
+    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, closedTotal: closed.length, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }
@@ -1014,17 +1014,23 @@ export function registryCore(registry) {
   return { ...registry, slice: 'core', strategies };
 }
 
-/* Die Listen, die nur Signalliste und Aktienseite brauchen. */
-export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+/* Die Listen, die nur Signalliste und Aktienseite brauchen. 'closed' gehoert dazu: das Protokoll ist
+   append-only und waechst mit jedem geschlossenen Trade, waehrend invalidated (150) gekappt ist. Start,
+   Strategien und Methodik brauchen davon nur die Zahl (closedTotal). Solange closed im Kern stand, stieg
+   sein Anteil von Lauf zu Lauf (13.10.: 59,8 %, 14.10.: 62,7 %, 16.10.: 66,9 %) und der Signals-Lauf
+   scheiterte ab dem 14.10. an der 60-%-Pruefung in payload-slices.test.mjs. */
+export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner', 'closed'];
 
 /* Steht in build.json, sobald signals-core.json und stock/<SYM>.json geschrieben sind. */
 export const SLICES_VERSION = 'signals-slices-1';
 
-/** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
+/** signals.json ohne die Historienlisten; Zaehler (closedTotal, invalidatedTotal ...) bleiben. */
 export function signalsCore(signals) {
   const strategies = {};
   for (const [id, st] of Object.entries(signals.strategies || {})) {
     const c = { ...st };
+    /* Die Zahl kommt aus der Liste selbst: fehlte closedTotal im Signalstand, zeigten Start und Methodik sonst still 0. */
+    if (Array.isArray(st.closed)) c.closedTotal = st.closed.length;
     for (const k of HISTORY_LISTS) delete c[k];
     strategies[id] = c;
   }

@@ -268,6 +268,10 @@
   function sortSignals(a, b) { return PHASE_ORDER.indexOf(phaseKey(a)) - PHASE_ORDER.indexOf(phaseKey(b)) || dist(a) - dist(b); }
 
   /* ============================================================ START */
+  /* Zahl geschlossener Trades: signals-core.json traegt das Protokoll closed nicht mehr, nur closedTotal
+     (scripts/supertrader/build.mjs#HISTORY_LISTS). Alte Datenstaende ohne closedTotal zaehlen die Liste. */
+  function closedCount(st) { return st && typeof st.closedTotal === 'number' ? st.closedTotal : ((st && st.closed) || []).length; }
+
   function renderHome(D) {
     var reg = D.registry, sig = D.signals, S = stratMap(reg);
     var live = reg.strategies.filter(function (s) { return s.mode === 'LIVE'; });
@@ -280,7 +284,7 @@
     var resOpen = all.filter(function (s) { return isResearchId(s.strategyId); });
     var positions = open.filter(function (s) { return s.entry; });
     var confirmed = open.filter(function (s) { return s.state === 'TRIGGERED'; });
-    var closed = 0; Object.keys(sig.strategies).forEach(function (k) { if (!isResearchId(k)) closed += sig.strategies[k].closed.length; });
+    var closed = 0; Object.keys(sig.strategies).forEach(function (k) { if (!isResearchId(k)) closed += closedCount(sig.strategies[k]); });
     var stale = staleness(D) >= 2;
 
     main.appendChild(h('header', { class: 'st-hero st-home-hero vu-product-hero vu-hero-fidelity', 'data-product': 'supertrader' }, [
@@ -375,7 +379,7 @@
         h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
         h('p', { text: s.tagline }),
         h('span', { class: 'st-obsmeta', text: (s.fidelity ? s.fidelity.statusLabel + ' · ' : '') + 'Regel v' + s.strategy_version }),
-        h('div', { class: 'st-obsnums' }, [obsNum(prep, 'in Vorbereitung'), obsNum(conf, 'Einstieg bestätigt'), obsNum(pos, 'Modellpositionen'), obsNum(st.closed.length, 'geschlossen')]),
+        h('div', { class: 'st-obsnums' }, [obsNum(prep, 'in Vorbereitung'), obsNum(conf, 'Einstieg bestätigt'), obsNum(pos, 'Modellpositionen'), obsNum(closedCount(st), 'geschlossen')]),
       ]);
     }), { kicker: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · Kurse vom ' + dateDe(sig.asOf), more: more(BASE + 'signals/', 'Alle Signale') }));
     var models = reg.strategies.filter(function (x) { return x.mode === 'MODEL'; });
@@ -744,7 +748,7 @@
     if (pickS) { var host = h('div'); main.appendChild(sec(pickS.symbol + ' im Chart', [host], { kicker: isResearchS(s) ? 'Beispiel aus der Beobachtung' : 'Bestes Setup', more: more(stockUrl(pickS.symbol), 'Lens') })); mountSignalChart(host, pickS, s); }
     // Protokoll
     main.appendChild(sec('Protokoll', [h('div', { class: 'st-kpis small' }, [
-      h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.closed.length) }), h('span', { text: 'geschlossen' })]),
+      h('div', { class: 'st-kpi' }, [h('strong', { text: String(closedCount(st)) }), h('span', { text: 'geschlossen' })]),
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.invalidatedTotal) }), h('span', { text: 'ungültig geworden' })]),
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.retiredTotal || 0) }), h('span', { text: 'Regelwechsel' })]),
     ]), h('p', { class: 'st-hint' }, ['Jeder Zustandswechsel wird mit Regel, Datum und Kurs protokolliert; nichts wird gelöscht. ', h('a', { href: st.ledgerPath, text: 'Ledger (JSON)' })])], { kicker: 'Seit ' + dateDe(st.liveSince) }));
