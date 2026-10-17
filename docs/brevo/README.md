@@ -6,23 +6,25 @@ Der [Merge-Prüfbericht](MERGE-REVIEW.md) dokumentiert die Prüfung vor dem Merg
 
 ## Tatsächlicher Stand am 12. Oktober 2026
 
-**Import vorbereitet, noch nicht durchgeführt.** PR 544 und [PR 545](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/545) sind gemergt. Der explizite `User-Agent: VisionUniverse-Brevo/1.0` ist auf `main` wirksam. Der [reguläre Audit vom 12. Oktober](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38233376781) bestätigt den kostenlosen Tarif, einen bestehenden Kontakt, zehn kompatible VU-Merkmale, einen aktiven Absender, eine noch unbestätigte/nicht authentifizierte Domain und keine Segmente.
+**Import durchgeführt und unabhängig per API zurückgeprüft.** PR 544 und [PR 545](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/545) sind gemergt. Der explizite `User-Agent: VisionUniverse-Brevo/1.0` ist auf `main` wirksam. Der vor dem Import ausgeführte [reguläre Audit vom 12. Oktober](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38233376781) bestätigt den kostenlosen Tarif, einen bestehenden Kontakt, zehn kompatible VU-Merkmale, einen aktiven Absender, eine noch unbestätigte/nicht authentifizierte Domain und keine Segmente.
 
 Die Listenanlage ist durch den erfolgreichen [Setup-Lauf vom 10. Oktober](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38061539873) und den [anschließenden API-Leseabgleich](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38061582213) belegt. Der erneute [Konto-/Ordner-Audit vom 12. Oktober](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38234286301) bestätigt jede Liste sowohl im vollständigen Listeninventar als auch über den Einzelabruf und den Ordnerabruf:
 
+Die Kontaktzahlen der folgenden Tabelle stammen aus der unabhängigen Rückprüfung nach dem Import; IDs und Ordner wurden bereits zuvor bestätigt.
+
 | Liste | ID | Ordner | Kontakte |
 |---|---:|---|---:|
-| VU \| Newsletter | 4 | Vision Universe, ID 3 | 0 |
+| VU \| Newsletter | 4 | Vision Universe, ID 3 | 135 |
 | VU \| App-Warteliste | 5 | Vision Universe, ID 3 | 0 |
-| VU \| Newsletter-Test | 6 | Vision Universe, ID 3 | 0 |
+| VU \| Newsletter-Test | 6 | Vision Universe, ID 3 | 2 |
 
 Der private Vergleich mit der vom Owner genannten Kontobezeichnung ist kompatibel: Die API-Unternehmensbezeichnung unterscheidet sich nur durch einen Rechtsform-/Schreibzusatz. Das allein beweist weder ein anderes Konto noch die Identität der aktiven Browser-Sitzung. Kontoadresse, vollständige Identitätswerte und Rohantworten werden nicht ausgegeben. Ein aktiver Oberflächenfilter ist über die API nicht einsehbar und daher **nicht als Ursache nachgewiesen**. Die drei Listen liegen im spezifischen Ordner „Vision Universe“, ID 3.
 
-Der Owner bestätigt inzwischen sichtbare leere Listen 4, 5 und 6. Der Listenabgleich ist abgeschlossen; keine neue Liste und kein erneutes Setup nötig.
+Der Owner bestätigte die sichtbaren Listen. Der erfolgreiche [Import 38269245067](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38269245067) legte 137 Kontakte an; [Audit 38270000127](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38270000127) liest 135 in Liste 4, zwei in Liste 6 und null in Liste 5. Konto insgesamt 138 Kontakte einschließlich eines unveränderten Bestandskontakts. Keine neue Liste und kein erneutes Setup nötig.
 
 Der aktuelle Auftrag verlangt **API-Import statt dauerhaft manuellem CSV-Import**. Die private Actions-Secret-Übergabe ist abgeschlossen: `BREVO_IMPORT_PAYLOAD` ist hinterlegt. Der [Import-Preview 38262071051](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38262071051) validierte Base64/Gzip/JSON und prüfte alle 137 Kandidaten privat per API: 137 neu, 0 bestehende Treffer, 135 regulär, zwei intern, fünf Käufer, 0 Nicht-Abonnenten. Keine Mutation, kein Versand, keine Actions-Artefakte. Kein weiterer Secret-Upload, Brevo-Export oder manueller CSV-Import erforderlich. Siehe [genauer API-Betriebsweg](API-EXECUTION.md).
 
-Der Owner hat die angeforderte Ansicht **Automatisierungen → Workflows → Aktiv**, einschließlich klassischer Workflows/weiterer Seiten, mit „dort erscheint nichts“ beantwortet. Dieser aktuelle Betreiber-Nachweis wird privat als leerer Aktiv-Bestand dokumentiert; Codex besitzt keinen eigenen Brevo-UI-Zugriff und behauptet keinen selbst geprüften Screenshot. Tatsächlicher Import und anschließende Rückprüfung stehen noch aus.
+Der Owner hat die angeforderte Ansicht **Automatisierungen → Workflows → Aktiv**, einschließlich klassischer Workflows/weiterer Seiten, mit „dort erscheint nichts“ beantwortet. Dieser aktuelle Betreiber-Nachweis wird privat als leerer Aktiv-Bestand dokumentiert; Codex besitzt keinen eigenen Brevo-UI-Zugriff und behauptet keinen selbst geprüften Screenshot. PR 620 wurde nach grünen aktuellen Prüfungen am 12. Oktober 2026 gemergt (`efe9a5350aa1f76036b63e712fe7b23954c9fac3`). Import und Rückprüfung sind erfolgreich: 137 neu, 0 aktualisiert, 0 bestehende Treffer zurückgestellt, fünf Käuferattribute erhalten. Keine E-Mails und keine Actions-Artefakte.
 
 | Prüfung des beigefügten Shopify-Exports | Ergebnis |
 |---|---:|
@@ -36,12 +38,12 @@ Der Owner hat die angeforderte Ansicht **Automatisierungen → Workflows → Akt
 | Käufer mit belegten Bestellungen | 6 |
 | Nicht angemeldete Käufer | 1 |
 | Datensätze mit Tags | 146 |
-| Importiert | 0 |
-| Wegen fehlender Live-Prüfung zurückgestellt | 150 |
+| Importiert | 137 |
+| Nicht-Abonnenten bewusst ausgeschlossen | 13 |
 
 Die Datei ist UTF-8 ohne BOM, mit 21 Spalten. Alle ursprünglichen Spalten wurden geprüft; die Originaldatei bleibt unverändert außerhalb des Repositories. Der Export enthält keine Einwilligungszeitpunkte und keine Double-Opt-in-Nachweise. `yes` wird als ausdrücklich ausgewiesene Anmeldung behandelt, nicht als erfundener DOI-Nachweis. Käuferstatus beruht allein auf `Total Orders > 0`; Ausgaben, Notizen, Telefonnummern und Straßenadressen werden zur Datenminimierung nicht übernommen. Namen, Land, Shopify-IDs, Bestellzahl und sechs vorhandene Tags werden übernommen. Tags sind kein Einwilligungsnachweis.
 
-Beide internen Testpersonen sind jeweils einem eindeutigen Exportkontakt zugeordnet. Ihre Adressen wurden privat vorbereitet, in Brevo aber noch nicht eingerichtet. Beide Kontakte sind im Export angemeldet und Käufer. Sie werden vom regulären Newsletter ausgenommen. Es ist keine Rückfrage nach Adressen erforderlich.
+Beide internen Testpersonen sind jeweils einem eindeutigen Exportkontakt zugeordnet. Ihre Adressen wurden privat vorbereitet und als zwei Kontakte ausschließlich in Liste 6 eingerichtet; tatsächliche Merkmale und Mitgliedschaften zurückgelesen. Beide Kontakte sind im Export angemeldet und Käufer. Sie werden vom regulären Newsletter ausgenommen. Es ist keine Rückfrage nach Adressen erforderlich.
 
 Tarif, Listen-/Ordnerzuordnung und Merkmals-Zählwerte sind live geprüft, siehe [Live-Status](LIVE-STATUS.md). Der Kontaktstatus-Audit vom 10. Oktober meldete einen nicht global gesperrten bestehenden Kontakt, aber fehlende Listen-Abmeldedaten und ungeklärte VU-Einwilligung; Der private API-Abgleich ist abgeschlossen: keiner der 137 Kandidaten ist vorhanden. Der Owner meldet die angeforderte Aktiv-Ansicht leer; verifizierte Unternehmensangaben für die Vorlage fehlen weiterhin. Eine Domain ist in Brevo registriert, aber nicht bestätigt oder authentifiziert; konkrete DNS-Werte wurden am 10. Oktober ausschließlich privat bereitgestellt. Ein Käufersegment existiert noch nicht. Versandbereitschaft besteht nicht.
 
@@ -104,7 +106,7 @@ CSV-Dateien bleiben als private ursprüngliche Übergabe erhalten; sie sind nich
 
 ## Verbindlicher Vorabtest und konkrete Versandfreigabe
 
-`brevo-admin` bleibt ohne Kampagnen-/Versandendpunkte. Der separate neue manuelle Workflow `brevo-newsletter.yml` benötigt nach seinem Code-Merge zusätzlich eine verpflichtende Owner-Review-Umgebung und ein dauerhaftes, personenbezogen datenfreies Versandregister. Entwurf, Prüfen, Vorabtest und Hauptversand sind getrennte Operationen; es gibt keinen automatischen Versand nach Merge, Import oder Testerfolg. Der genaue Einrichtungsschritt und Ablauf stehen in [API-EXECUTION.md](API-EXECUTION.md). Diese Erweiterung ist vorbereitet, **noch nicht live erprobt oder auf main aktiviert**.
+`brevo-admin` bleibt ohne Kampagnen-/Versandendpunkte. Der separate neue manuelle Workflow `brevo-newsletter.yml` benötigt nach seinem Code-Merge zusätzlich eine verpflichtende Owner-Review-Umgebung und ein dauerhaftes, personenbezogen datenfreies Versandregister. Entwurf, Prüfen, Vorabtest und Hauptversand sind getrennte Operationen; es gibt keinen automatischen Versand nach Merge, Import oder Testerfolg. Der genaue Einrichtungsschritt und Ablauf stehen in [API-EXECUTION.md](API-EXECUTION.md). Diese Erweiterung ist mit PR 620 auf main verfügbar. Der Newsletter-Workflow wurde noch nicht ausgeführt; Review-Umgebung, private Newsletter-Konfiguration, verifizierte Unternehmensangaben, Domainauthentifizierung und freigegebener Inhalt bleiben Voraussetzungen. Der Kontaktimport benötigt keinen weiteren manuellen Schritt.
 
 Actions nutzt keine Kontaktdateien, Caches oder herunterladbaren Artefakte. Der Branch `brevo-newsletter-state` enthält ausschließlich numerische IDs, Inhaltsversionen und Reservierungen sowie eine mit privatem Zufallsschlüssel gebundene Testkennung. Keine E-Mail-Adressen, Namen, Inhalte, Betreffzeilen oder ungeschützten Adresshashes. CAS-Sicherung vor jedem irreversiblen API-Aufruf und globale Concurrency verhindern Wiederholungen über Runner-Neustarts hinweg. Das Register niemals löschen/zurücksetzen. GitHub-API-Commits betreffen nur diesen separaten Branch; kein Checkout-Push auf main oder die Research-Daten.
 

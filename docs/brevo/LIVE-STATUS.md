@@ -1,6 +1,6 @@
 # Brevo: belegter Kontostand und Listenansicht
 
-Stand: 12. Oktober 2026. Letzter Listen-Leseabgleich: 12:07 Uhr Europe/Berlin. **Import vorbereitet, noch nicht durchgeführt.** Alle heutigen Brevo-Aufrufe waren GET-Leseprüfungen. Keine neuen Listen oder Merkmale, kein Kontaktimport und kein E-Mail-Versand.
+Stand: 12. Oktober 2026, nach abgeschlossenem Import und unabhängiger API-Rückprüfung. **Import durchgeführt: 137 neue Kontakte.** Keine bestehenden Kontakte aktualisiert, keine neuen Listen/Merkmale, keine E-Mails oder DNS-Änderungen.
 
 ## Setup-Nachweis und erneuter Leseabgleich
 
@@ -23,11 +23,13 @@ Die aktive Browser-Sitzung wurde nicht eingesehen. Der Vergleich einer Unternehm
 
 Der ungefilterte API-Abruf liefert insgesamt 4 Listen in 2 Ordnern. Alle drei Ziel-Listen liegen in **„Vision Universe“ (Ordner-ID 3)** und wurden zusätzlich über `GET /contacts/lists/{id}` sowie `GET /contacts/folders/3/lists` bestätigt:
 
+Kontaktzahlen: unabhängiger Audit nach tatsächlichem Import; Listen-/Ordneridentität: vorherige Einzel- und Ordnerabrufe.
+
 | Liste | Listen-ID | Ordner-ID | Kontakte |
 |---|---:|---:|---:|
-| VU \| Newsletter | 4 | 3 | 0 |
+| VU \| Newsletter | 4 | 3 | 135 |
 | VU \| App-Warteliste | 5 | 3 | 0 |
-| VU \| Newsletter-Test | 6 | 3 | 0 |
+| VU \| Newsletter-Test | 6 | 3 | 2 |
 
 Ein aktuell ausgewählter Oberflächenordner oder ein Suchfilter ist über diese API nicht sichtbar. Dass ein Filter die Listen tatsächlich ausblendet, ist **nicht nachgewiesen**. Die dokumentierte Ordnerauswahl kann die Listenansicht jedoch auf einen anderen Ordner begrenzen.
 
@@ -37,13 +39,23 @@ Ein aktuell ausgewählter Oberflächenordner oder ein Suchfilter ist über diese
 
 PR 609 wurde nach erfolgreichen relevanten Checks gemergt (`54acec5889dc65b8b914531ab3d3affcbc58a902`). Der bisherige manuelle Importauftrag ist durch den aktuellen API-Importauftrag ersetzt.
 
-Die Übergabeblockade ist behoben: Der Owner hat `BREVO_IMPORT_PAYLOAD` hinterlegt. [Preview 38262071051](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38262071051) ist erfolgreich: Base64/Gzip/JSON und Schema gültig, 137 Kandidaten privat per API geprüft, 137 neu, 0 vorhanden, 135 regulär, zwei intern, fünf Käufer, keine Nicht-Abonnenten. Der bestehende Brevo-Kontakt kommt nicht im Paket vor und bleibt unverändert. 0 Kontakte importiert/verändert, 0 E-Mails, 0 Actions-Artefakte. Der vorherige gesperrte Preview bleibt lediglich historisch.
+Die Übergabeblockade ist behoben: Der Owner hat `BREVO_IMPORT_PAYLOAD` hinterlegt. [Preview 38262071051](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38262071051) ist erfolgreich: Base64/Gzip/JSON und Schema gültig, 137 Kandidaten privat per API geprüft, 137 neu, 0 vorhanden, 135 regulär, zwei intern, fünf Käufer, keine Nicht-Abonnenten. Der bestehende Brevo-Kontakt kommt nicht im Paket vor und bleibt unverändert. Beim Preview 0 Kontakte importiert/verändert, 0 E-Mails, 0 Actions-Artefakte. Der vorherige gesperrte Preview bleibt lediglich historisch.
 
 Das private Paket umfasst 137 angemeldete Kandidaten, feste Ziel-IDs 4/5/6 und die konservative Importpolicy. Alle 13 Nicht-Abonnenten sind ausgeschlossen. Gzip/Base64-Payload: 6.236 Byte, außerhalb von Git mit 0600 und validiertem Roundtrip. Originalexport bytegleich aus dem privaten ZIP erhalten, ursprüngliche CSVs unverändert. Private Downloads liegen im bestätigten Owner-Bereich; keine unbegrenzte Speicherung behauptet. Kein erneuter Secret-Upload oder Brevo-Export erforderlich.
 
-Der Owner meldet auf die konkrete Frage zur vollständigen **Automatisierungen → Workflows → Aktiv**-Ansicht, einschließlich klassischer Workflows/weiterer Seiten: **„dort erscheint nichts“**. Dieser Betreiber-Nachweis wird privat als leerer Aktiv-Bestand dokumentiert und an exakten Payload sowie tatsächlichen aktuellen Prüfzeitpunkt gebunden. Kein eigener UI-/Screenshot-Zugriff für Codex und keine pauschale Deaktivierung. Der tatsächliche Import muss nach Code-Merge nochmals den Bestand lesen und seine Ergebnisse zurückprüfen.
+Der Owner meldet auf die konkrete Frage zur vollständigen **Automatisierungen → Workflows → Aktiv**-Ansicht, einschließlich klassischer Workflows/weiterer Seiten: **„dort erscheint nichts“**. Dieser Betreiber-Nachweis wird privat als leerer Aktiv-Bestand dokumentiert und an exakten Payload sowie tatsächlichen aktuellen Prüfzeitpunkt gebunden. Kein eigener UI-/Screenshot-Zugriff für Codex und keine pauschale Deaktivierung. Der tatsächliche Import hat nach Code-Merge den Bestand erneut gelesen und jeden angelegten Kontakt zurückgeprüft.
 
-Separater Newsletter-Ausführungsweg vorbereitet, noch nicht auf main aktiviert: manuelle Entwurfs-/Versionsprüfung, geschützter Vorabtest, separate geschützte Hauptfreigabe und dauerhafte Reservierungen ohne personenbezogene Daten. GitHub liefert beim Einrichten der benötigten Review-Umgebung ebenfalls HTTP 403. Keine vorhandene Review-Umgebung eingerichtet, keine Entwürfe, keine Tests oder Newsletter gesendet. Ein einmaliger Owner-Review-Gate-Schritt ist daher zusätzlich für den **späteren Versand**, nicht den Import, erforderlich.
+Separater Newsletter-Ausführungsweg mit PR 620 auf main verfügbar, noch nicht ausgeführt: manuelle Entwurfs-/Versionsprüfung, geschützter Vorabtest, separate geschützte Hauptfreigabe und dauerhafte Reservierungen ohne personenbezogene Daten. GitHub liefert beim Einrichten der benötigten Review-Umgebung ebenfalls HTTP 403. Keine vorhandene Review-Umgebung eingerichtet, keine Entwürfe, keine Tests oder Newsletter gesendet. Ein einmaliger Owner-Review-Gate-Schritt ist daher zusätzlich für den **späteren Versand**, nicht den Import, erforderlich.
+
+## Tatsächlicher Importabschluss
+
+[PR 620](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/620) am 12. Oktober 2026, 17:15 Uhr Europe/Berlin gemergt (`efe9a5350aa1f76036b63e712fe7b23954c9fac3`). 50 Brevo-Schutztests, Core, CI Config, Currency/FX und Cloudflare auf dem aktuellen Head erfolgreich; vorgesehene nicht ausgelöste Prüfungen übersprungen. Keine Gates abgeschwächt. Der historische Core-Baselinefehler bleibt im Merge-Prüfbericht dokumentiert und ist kein aktueller roter Check.
+
+- [Erneuter Preview 38268919672](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38268919672): alle 137 Kandidaten neu, 0 bestehende Treffer/Zurückstellungen.
+- [Tatsächlicher Import 38269245067](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38269245067): 137 neu angelegt, 135 regulär, zwei intern, 0 aktualisiert, 0 bestehende Treffer zurückgestellt, 0 E-Mails, 0 Actions-Artefakte. Jedes POST-Ergebnis privat zurückgelesen; Käuferstatus separat, fünf Käufer im importierten Paket.
+- [Unabhängiger Audit 38270000127](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38270000127): Liste 4 tatsächlich 135 Kontakte; Liste 6 tatsächlich zwei; Liste 5 tatsächlich null. Konto insgesamt 138 Kontakte. Kostenloser Tarif, zehn kompatible Merkmale, ein aktiver Absender, Domain weiterhin weder bestätigt noch authentifiziert.
+
+Alle 13 Nicht-Abonnenten ausgeschlossen; unveränderter Originalexport und private Nachweise außerhalb von Git. Keine weitere manuelle Aktion für diesen Import nötig. Newsletter bleibt ohne freigegebenen Inhalt, Domainauthentifizierung und verpflichtenden Owner-Review gesperrt; keine Test- oder Hauptsendung ausgeführt.
 
 ## Tatsächlicher weiterer Stand
 
@@ -51,17 +63,17 @@ Separater Newsletter-Ausführungsweg vorbereitet, noch nicht auf main aktiviert:
 |---|---|
 | Tarif | free; keine Buchung oder Tarifänderung |
 | VU-Merkmale | 10 von 10 vorhanden, keine Typkonflikte |
-| Kontaktinventar | 1 bestehender Kontakt; keiner der 137 Kandidaten ist vorhanden |
+| Kontaktinventar | 138 Kontakte: 137 neu importiert plus 1 unveränderter Bestandskontakt |
 | Einwilligung/Sperren | Audit vom 10. Oktober: globale E-Mail-Sperre false, keine protokollierte Abmeldung, Listen-Abmeldedaten nicht geliefert und VU-Einwilligung ungeklärt; keine Anmeldung daraus abgeleitet |
-| Interne Testempfänger | eindeutig privat vorbereitet; noch nicht als VU-Testkontakte eingerichtet |
+| Interne Testempfänger | beide eingerichtet, ausschließlich Liste 6; Merkmale/Mitgliedschaften zurückgelesen |
 | Segmente | 0; Käufersegment weiterhin in der UI anzulegen |
 | Absender | 1, aktiv laut API; Adresse bleibt privat |
 | Domain | 1 registriert; Bestätigung und Authentifizierung fehlen laut aktuellem Audit |
 | DNS-Werte | am 10. Oktober tatsächlich abgerufen und ausschließlich privat bereitgestellt; keine DNS-Änderung |
 | Aktive Automationen | Owner meldet die angeforderte vollständige Aktiv-Ansicht leer; privater Betreiber-Nachweis |
-| Kontaktimport / Newsletter- und Testversand | nicht durchgeführt |
+| Kontaktimport / Newsletter- und Testversand | 137 importiert; 0 Newsletter-/Testmails |
 
-135 reguläre Kontakte und zwei interne Testkontakte sind vorbereitet; 13 Nicht-Abonnenten bleiben auf ausdrücklichen Wunsch zurückgestellt. Insgesamt sechs Käufer, davon einer nicht angemeldet. Der Bestands-/Sperrenabgleich, die tatsächliche Automationsprüfung und die Kontozuordnung/Listenansicht müssen vor jedem Import abgeschlossen sein. Alle 150 Kontakte bleiben zurückgestellt. Keine Bestandskontakte in die App-Warteliste übernehmen und keine vorhandenen Sperren oder Abmeldungen aufheben.
+135 reguläre Kontakte und zwei interne Testkontakte sind importiert und zurückgeprüft; 13 Nicht-Abonnenten bleiben auf ausdrücklichen Wunsch zurückgestellt. Insgesamt sechs Käufer, davon einer nicht angemeldet. Der Bestands-/Sperrenabgleich, die tatsächliche Automationsprüfung und die Kontozuordnung/Listenansicht müssen vor jedem Import abgeschlossen sein. Alle 150 Kontakte bleiben zurückgestellt. Keine Bestandskontakte in die App-Warteliste übernehmen und keine vorhandenen Sperren oder Abmeldungen aufheben.
 
 ## Bereits behobener HTTP 403 und Vorlagenstand
 
