@@ -567,7 +567,8 @@
     var page = el("article", { class: "dv2-stock qx-stock q-stock" });
     main.append(page);
     var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
-    page.append(heroHost, bodyHost);
+    var navHost = el("div", { class: "qx-snav-host" });   /* VU3-Aktien-Navigator, siehe unten */
+    page.append(heroHost, navHost, bodyHost);
 
     var brief = await (ctx.takePrefetched && ctx.takePrefetched(ticker) || api.getIntelligenceBrief(ticker).catch(function () { return null; }));
     var src = (brief && brief.sources) || {};
@@ -580,6 +581,12 @@
       return function () {};
     }
     X.recent.add(ticker);
+    /* VU3-Aktien-Navigator (assets/stock-navigator.js): dieselbe Aktie in den anderen Analysewelten, zwischen Kopf und Inhalt.
+       Ergaenzung zu Menue und Dock; ohne Navigator-Skripte oder bei einem Kuerzel ausserhalb des Kontexts bleibt navHost leer. */
+    try {
+      var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext;
+      if (SN && SCX) disposers.push(SN.mount(navHost, SCX.fromUs(ticker, { name: s.name }), "quant"));
+    } catch (e) { /* Kuerzel ausserhalb des Kontexts: keine Navigator-Zeile */ }
     document.title = (s.name && s.name !== ticker ? s.name + " (" + ticker + ")" : ticker) + " – Quant-Analyse · Vision Universe®";
     var displayName = X.companyName(s) === "Firmenname nicht veröffentlicht" ? null : s.name;
 

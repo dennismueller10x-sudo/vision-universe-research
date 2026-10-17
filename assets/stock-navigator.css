@@ -1,0 +1,49 @@
+/* VISION UNIVERSE — Aktien-Navigator (assets/stock-navigator.js).
+   Nur Tokens aus assets/site-navigation.css (Hell/Dunkel), Produkt-Icons im bestehenden HUD-Material.
+   Schmal (iPhone): sechs beschriftete Kacheln in einer Reihe; breit: Pillen mit Namen. */
+.vu-snav{margin:6px 0 12px;max-width:100%;font-family:inherit;position:relative;z-index:1}
+.vu-snav-row{display:flex;align-items:center;gap:8px;min-width:0}
+.vu-snav-eyebrow{margin:0;flex:none;font:800 11px/1 Inter,-apple-system,"Segoe UI",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-muted)}
+.vu-snav-list{list-style:none;margin:0;padding:2px 0;display:flex;gap:8px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.vu-snav-list::-webkit-scrollbar{display:none}
+.vu-snav-list li{flex:none;min-width:0}
+.vu-snav-chip{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 4px;border:1px solid var(--vu-line-strong);border-radius:999px;color:var(--vu-text-secondary);font:700 13px/1.2 Inter,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.vu-snav-chip:hover{background:var(--vu-surface);color:var(--vu-text)}
+.vu-snav-chip[aria-current=page]{background:var(--vu-accent-soft);border-color:var(--vu-accent-text);color:var(--vu-accent-text);cursor:default}
+.vu-snav-chip[aria-disabled=true],.vu-snav-card[aria-disabled=true]{color:var(--vu-muted);cursor:help;background:repeating-linear-gradient(135deg,transparent 0 6px,var(--vu-line) 6px 7px)}
+.vu-snav-chip[aria-disabled=true] .vu-product-icon,.vu-snav-card[aria-disabled=true] .vu-product-icon{filter:grayscale(1);opacity:.55}
+.vu-snav-icon{--vu-icon-size:36px}
+.vu-snav-tick{position:absolute;left:28px;top:2px;width:16px;height:16px;border-radius:50%;display:none;place-items:center;font:900 9px/1 Inter,sans-serif;font-style:normal;background:var(--vu-bg);color:var(--vu-text-secondary);border:1.5px solid currentColor}
+.vu-snav-tick[data-s=available]{background:var(--vu-accent);color:var(--vu-on-accent);border-color:transparent}
+.vu-snav-tick[data-s=unavailable]{border-style:dotted;color:var(--vu-muted)}
+.vu-snav-tick[data-s=planned]{border-style:dashed;color:var(--vu-muted)}
+.vu-snav-tick[data-s=unknown]{display:none!important}
+.vu-snav-more{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--vu-line-strong);border-radius:999px;background:transparent;color:var(--vu-text);font:700 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
+.vu-snav-more[aria-expanded=true]{background:var(--vu-surface)}
+.vu-snav-more svg{width:14px;height:14px;transition:transform .15s}
+.vu-snav-more[aria-expanded=true] svg{transform:rotate(180deg)}
+.vu-snav-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:8px;margin-top:8px;padding:10px;border:1px solid var(--vu-line-strong);border-radius:20px;background:var(--vu-elevated)}
+.vu-snav-panel[hidden]{display:none}
+.vu-snav-card{display:flex;gap:10px;align-items:center;min-height:60px;padding:8px;border:1px solid var(--vu-line);border-radius:16px;text-decoration:none;color:var(--vu-text)}
+.vu-snav-card[aria-current=page]{background:var(--vu-accent-soft);border-color:var(--vu-accent-text)}
+.vu-snav-card .vu-snav-icon{--vu-icon-size:40px}
+.vu-snav-card b{display:block;font-size:14px}
+.vu-snav-card small{display:block;font-size:12px;line-height:1.35;color:var(--vu-muted)}
+.vu-snav-st{display:block;margin-top:2px;font-size:11px;font-weight:700;color:var(--vu-text-secondary)}
+.vu-snav-note{margin:6px 0 0;font-size:12.5px;line-height:1.4;color:var(--vu-text-secondary)}
+.vu-snav-note:empty{display:none}
+.vu-snav-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.vu-snav a:focus-visible,.vu-snav button:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
+@media(max-width:600px){
+ .vu-snav{margin:4px 0 14px}
+ .vu-snav-row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"eb more" "list list";gap:2px 8px}
+ .vu-snav-eyebrow{grid-area:eb}
+ .vu-snav-more{grid-area:more;min-height:36px;padding:0 4px 0 10px;border:0;color:var(--vu-accent-text)}
+ .vu-snav-more[aria-expanded=true]{background:none}
+ .vu-snav-list{grid-area:list;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;overflow:visible;padding:0}
+ .vu-snav-chip{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:100%;min-height:72px;padding:6px 0 5px;border-radius:16px;border-color:transparent;white-space:normal}
+ .vu-snav-chip>span:not(.vu-product-icon):not(.vu-snav-sr){display:block;max-width:100%;font-size:10px;line-height:1.1;letter-spacing:-.01em;text-align:center;hyphens:manual}
+ .vu-snav-chip[aria-current=page]{border-color:var(--vu-accent-text)}
+ .vu-snav-tick{display:grid;left:calc(50% + 8px)}
+}
+@media(prefers-reduced-motion:reduce){.vu-snav-more svg{transition:none}}
