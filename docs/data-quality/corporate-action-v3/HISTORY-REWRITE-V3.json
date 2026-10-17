@@ -1,0 +1,48 @@
+{
+  "schema": "corporate-action-v3-history-rewrite-1.0.0",
+  "date": "2026-10-17",
+  "scope": "branch quant/corporate-action-protocol-v3 (PR #758) only, commits after its base 0d8e2755e (head of #737)",
+  "reason": "review R3-06 / owner decision: the plaintext validation-vendor evidence (docs/data-quality/corporate-action-v3/VENDOR-EVIDENCE-V3.json, Yahoo-derived split dates/ratios and move ratios, blob 58a95e70ac74\u2026) is removed from every branch commit; only the sealed evidence (scripts/quant/corporate-action-v3/sealed-vendor-evidence/, owner and session envelopes) and the public aggregates derived from it remain",
+  "method": "the 6 commits that carried the file were rebuilt one by one with the identical tree minus that one path, identical author/committer names, e-mails and dates and identical messages (git commit-tree; own commits SSH-signed as before, the github-actions[bot] commit unsigned as before); the 11 earlier commits are untouched (same SHAs, same signatures); pushed with --force-with-lease",
+  "unchanged": "no rule, threshold, label, result or generated output changed; the head tree is byte-identical to the previous head 8629c17b1; no calibration, no recomputation",
+  "plaintextSha256": "fb4cd888f75f209d1e9e09416b45233ecadee649aa07082f74b5c18748af10c5 (= sources.vendor.evidenceSha256 of run 39031465706 and plaintextSha256 in VENDOR-EVIDENCE-V3.sealed-manifest.json)",
+  "shaMap": [
+    {
+      "old": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+      "new": "03ce325ac859da9950417db5ad3faf4e7f9d6533",
+      "signature": "SSH (as before)"
+    },
+    {
+      "old": "bc4f0eb7d8c4feea907245987a93beace216eb51",
+      "new": "cd65ce3d9edf7bcce5d017192201f231cdba31e8",
+      "signature": "none (as before)"
+    },
+    {
+      "old": "fbbb39027594f2b899b8ced6acc2583f2be5c016",
+      "new": "1c01942e6167b81cf3b480d549b5e00bfee3cfc7",
+      "signature": "SSH (as before)"
+    },
+    {
+      "old": "db4b2722066d12d236c02059ac9f87e4040eed11",
+      "new": "c125fb096621f960256ab6b5f3a514537248914c",
+      "signature": "SSH (as before)"
+    },
+    {
+      "old": "e14612ccbe04f624246b1d6a45e4afbd5807f321",
+      "new": "4a43f6ad05ff8bf9e72775f7d6c43d6de20dfec2",
+      "signature": "SSH (as before)"
+    },
+    {
+      "old": "8629c17b12f48654a6125da039f5c14a15331378",
+      "new": "f5ad3ed5c95b0cbbd798e5cbf52c6decb405e1ea",
+      "signature": "SSH (as before)"
+    }
+  ],
+  "runsReferencingOldCommits": {
+    "39031465706": "head 5d116f9ca -> 03ce325ac (run code and inputs identical except the evidence file, which the run read from that commit)"
+  },
+  "limits": [
+    "commits that existed before the rewrite can stay reachable on GitHub by their SHA (cached objects, PR timeline) until GitHub garbage-collects them; a complete purge of those objects needs GitHub support",
+    "clones or forks made before the rewrite keep the old history"
+  ]
+}

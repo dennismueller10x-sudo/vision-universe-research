@@ -164,8 +164,8 @@
           "severity": "MEDIUM",
           "area": "evidence file carries quasi-identifiers",
           "finding": "split dates/ratios and move ratios can be joined to public calendars; derived from a source without commercial licence",
-          "status": "PARTLY_FIXED",
-          "resolution": "the plaintext evidence file was removed from the branch head and sealed (owner and session); it remains in the branch history of commits 5d116f9ca..e14612ccb - purging needs a history rewrite, left to the owner"
+          "status": "FIXED",
+          "resolution": "the plaintext evidence file was sealed (owner and session) and removed from every commit of the branch by a history rewrite (HISTORY-REWRITE-V3.json); old commit objects may stay reachable on GitHub by SHA until garbage collection"
         },
         {
           "id": "R3-07",
