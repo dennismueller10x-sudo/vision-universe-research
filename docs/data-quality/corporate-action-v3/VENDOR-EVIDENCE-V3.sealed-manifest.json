@@ -1,0 +1,18 @@
+{
+  "schema": "corporate-action-v3-vendor-evidence-sealed-1.0.0",
+  "plaintextSha256": "fb4cd888f75f209d1e9e09416b45233ecadee649aa07082f74b5c18748af10c5",
+  "usedByRun": "39031465706 (audit records the same sha256 as sources.vendor.evidenceSha256)",
+  "reason": "review R3-06: split dates/ratios and move ratios are quasi-identifiers and derived from a source without commercial licence; the plaintext stays in the branch history of commits 5d116f9ca..HEAD~1 until the owner decides on a history rewrite",
+  "envelopes": [
+    {
+      "audience": "owner",
+      "file": "scripts/quant/corporate-action-v3/sealed-vendor-evidence/VENDOR-EVIDENCE-V3.owner.sealed.json",
+      "sha256": "ff3f97da4715464d94a9e15c2638a9376da57109c775f77768862fff997cca66"
+    },
+    {
+      "audience": "session",
+      "file": "scripts/quant/corporate-action-v3/sealed-vendor-evidence/VENDOR-EVIDENCE-V3.session.sealed.json",
+      "sha256": "b99ccdc05ec267ceb369d35347ea56605c54f0f44eb1454c58b0e675f84e3f84"
+    }
+  ]
+}

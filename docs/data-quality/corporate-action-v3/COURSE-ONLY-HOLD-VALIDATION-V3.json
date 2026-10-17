@@ -284,6 +284,21 @@
       "PRICE_SPIKE_REVERTED:TRUE_POSITIVE": 3
     }
   },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
   "labelSensitivity": {
     "note": "the FALSE_POSITIVE basis VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT means the second vendor shows the same raw move and no split; if both vendors miss a split (shared upstream), a true hold is counted as false (conservative, pre-registered)",
     "normalizations": {
@@ -292,7 +307,7 @@
         "SEC_SHARES_NO_SPLIT": 6
       },
       "truePositive": 4,
-      "falseShareWithoutVendorMoveBasis": 0.6
+      "withoutVendorMoveBasis": "6 FALSE_POSITIVE (SEC shares NO_SPLIT) vs 4 TRUE_POSITIVE (vendor split same ratio): 0.60, still failing"
     },
     "courseOnlyHolds": {
       "falsePositiveByBasis": {
@@ -300,8 +315,8 @@
         "VENDOR_CONFIRMS_CONTINUOUS_MOVE": 1
       },
       "truePositive": 16,
-      "falseShareWithoutVendorMoveBasis": 0.0
+      "withoutVendorMoveBasis": "NOT_MEASURABLE: the vendor-move basis is the only false-positive channel; removing it leaves no FP evidence at all (the TP channels VENDOR_SHOWS_NO_MOVE 8, VENDOR_SPLIT 6, INDEPENDENT_EVENT 2 remain). A false share of 0 would hold by construction and is not reported (review R3-03)."
     },
-    "reading": "under the pre-registered labels both fail; without the vendor-move basis the course-only hold false share would be 0.0 on 16 labels (still below the 50 % labelled-share minimum) and normalizations would still fail (0.60). The vendor-move basis is the only engine-independent FP evidence available, so the protocol cannot tell 'both vendors miss the split' from 'genuine move' - an open measurement limit."
+    "reading": "FP evidence is single-vendor and asymmetric: a hold or normalization is FALSE_POSITIVE when the second vendor shows the same raw move without a split; that cannot be told from a split both vendors missed (shared upstream). The pre-registered measurement fails either way; the true FP rate is bounded from above by these numbers only if the vendor never misses a split the provider also misses."
   }
 }

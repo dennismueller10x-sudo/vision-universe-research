@@ -132,5 +132,6 @@
     }
   },
   "verdict": "FAIL",
+  "gateDeviation": "the pitViolations gate counts the universe-wide filedBeforeAcceptance observations although review P3-06 restricted the acceptance-time gate to decision observations (0 of 146); conservative, disclosed (review R3-10)",
   "finding": "2 SEC observations carry an EFTS filing date before their EDGAR acceptance day (US/Eastern). None is behind a decision, but an as-of view on the acceptance day could see them: the evidence model must take visibleAt = max(filing date, acceptance day) - a rule change for the next protocol, not applied here."
 }

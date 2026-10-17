@@ -248,5 +248,20 @@
       "threshold": 0.1,
       "pass": false
     }
+  },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
   }
 }

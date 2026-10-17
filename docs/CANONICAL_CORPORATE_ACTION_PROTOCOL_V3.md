@@ -23,7 +23,7 @@ Goal: prove the canonical price-data layer before any return to the book-derived
 |---|---|---|
 | 39007119068 | full run | Everything collected except the validation vendor: GitHub runners get HTTP 429 (25 of 25 symbols blocked). Probe run 39013825289 confirmed both vendor hosts are blocked; FMP and Twelve Data are reachable but limited to 250 and 800 requests per day. |
 | 39019906367 | reuse run (label request) | SEC parts reused; merged SEC/FINRA/EDGAR inputs kept as an artifact. A sealed label request was produced: ticker, a 124-bar identity sample and the days to label. All counts are identical to the first run. |
-| 39031465706 | **final reuse run** | Same merged inputs, plus the vendor evidence computed outside the runner (`vendor-evidence.mjs`, `VENDOR-EVIDENCE-V3.json`: ticker-free, keyed by hashed segment id, no vendor price series). Decisions are identical; only the vendor labels differ. |
+| 39031465706 | **final reuse run** | Same merged inputs, plus the vendor evidence computed outside the runner (`vendor-evidence.mjs`; ticker-free, keyed by hashed segment id, no vendor price series). After review R3-06 the evidence is sealed (`scripts/quant/corporate-action-v3/sealed-vendor-evidence/`, manifest `VENDOR-EVIDENCE-V3.sealed-manifest.json`; sha256 equals the one the final audit recorded). Decisions are identical; only the vendor labels differ. |
 
 Disclosed deviation: the vendor data were fetched from this session's container, not the runner. The label rules are unchanged and the same code computes them; the local path was verified to give byte-identical audit sections on a dry run. The vendor then rate-limited this host too, so 3,204 symbols (3,345 segments, mostly delisted names, of which 94 % of those tried are unknown to the vendor) were not collected. They are reported as `NOT_COLLECTED_BLOCKED`, never guessed. Vendor identity is CONFIRMED for 5,233 of 9,407 segments.
 
@@ -33,7 +33,7 @@ Disclosed deviation: the vendor data were fetched from this session's container,
 |---|---|---|---|
 | PIT violations | Oracle: 0 mismatches in 3,512 views, 0 observedAt too early. 2 SEC observations have a filing date before their EDGAR acceptance day (0 of the 146 behind decisions) | 0 | **no** |
 | Acceptance-time coverage (decision observations) | 1.00 | ≥ 0.95 | yes |
-| Blinded FP rate, pooled (segments) | 0.0119 (10 of 842 labelable; Wilson 0.0065–0.0217) | ≤ 0.02 | yes |
+| Blinded FP rate, pooled (segments) | 0.0119 (10 of 842 labelable; Wilson 0.0065–0.0217). Partly vacuous: "labelable" means a label channel exists, not that a decision was labelled, and MERGER/DELISTING have no vendor identity (FP 0 = not measured; review R3-02) | ≤ 0.02 | yes (formally) |
 | Blinded FP rate, per category | all ≤ 0.04, but HIGH_NOMINAL has 1 labelable segment (pool of 1) | ≤ 0.05, ≥ 30 labelable | **no** |
 | Blinded FP share, per labelled intervention | 0.345 (10 of 29) | ≤ 0.10 | **no** |
 | Blinded FN rate (vendor events) | 0 of 15 | ≤ 0.05, ≥ 50 evaluable | **no** (n) |
@@ -71,7 +71,7 @@ Coverage and data layer:
    - FINRA has a single timestamp, so it is checked by truncation only.
 3. **Blinded control set.** 997 segments in 11 categories, fixed and hashed before evaluation. Pooled segment FP is 0.0119. Per labelled intervention it is 0.345, and blinded FN is not measurable (15 evaluable events).
 4. **Course-only holds.** 277 holds. FP share is 0.568 (21 of 37 labelled, 13 % labelled); FN is 1 of 26. Not acceptable, so **NOT_READY**.
-   - All 21 FP labels rest on "the vendor shows the same raw move without a split". This cannot separate a genuine move from a split both vendors missed (`labelSensitivity`).
+   - All 21 FP labels rest on "the vendor shows the same raw move without a split". This cannot separate a genuine move from a split both vendors missed. Without that basis no FP channel remains, so the FP rate would be unmeasurable, not 0 (`labelSensitivity`, review R3-03).
    - No rule was adapted to known cases.
 5. **Downward jumps.** Event semantics are implemented for both directions; the full census is in `DOWNWARD-JUMP-VALIDATION-V3.json`.
    - 1,550 candidates. Causes: 674 genuine, 243 unresolved, 219 bad tick, 188 staleness, 154 listing change, 37 forward split, 19 currency/unit, 16 special distribution.
@@ -88,7 +88,12 @@ Coverage and data layer:
    - Segments must never be chained. Resumed bars after breaks that a label calls false are reported (`resumedBarsByBreakLabel`).
 9. **Consumers.** Only the four Quant studies read the core, and they drop whole series. No product uses `fromBarsPartial`. Discover, Screener, Supertrader production and Technical are not on the core. Migration is required for Quant, Supertrader (Gate A) and Technical (`PARTIAL-SERIES-CONSUMER-READINESS-V3.json`).
 10. **Pre-registered criteria.** `CORPORATE-ACTION-PROTOCOL-V3.json`, unchanged after the first result. The pre-run review changes are listed in it.
-11. **Independent review.** Round P3 before the run: 5 HIGH, all fixed before any result. Round R3 after the run: see `CORPORATE-ACTION-V3-ADVERSARIAL-REVIEW.json`.
+11. **Independent review.** Round P3 before the run: 5 HIGH, all fixed before any result. Round R3 after the run confirms NOT_READY. It leaves three HIGH open:
+    - R3-01: the vendor evidence was produced off-runner and is only bound to the sealed request after the fact; it is not independently reproducible.
+    - R3-02: the blinded segment FP denominator is partly vacuous.
+    - R3-03: the FP label basis cannot be identified.
+
+    Output wording, coverage disclosure and the evidence sealing were fixed. No rule was changed.
 12. **Readiness:** `NOT_READY`.
     - PIT: not independently passed (data-side timestamp finding).
     - FP/FN: measured and failing.
@@ -123,7 +128,8 @@ Coverage and data layer:
 | `CORPORATE-ACTION-V3-ADVERSARIAL-REVIEW.json` | review |
 | `SUPERTRADER-CORPORATE-ACTION-V3-CALIBRATION-READINESS.json` | verdict |
 | `VERDICT-PRECOMMIT.json` | verdict pre-commitment |
-| `VENDOR-EVIDENCE-V3.json` | ticker-free vendor evidence |
+| `VENDOR-EVIDENCE-V3.sealed-manifest.json` | sealed vendor evidence (hash of the plaintext used by the final run) |
+| `DIAGNOSIS-V3.json` | D2 diagnosis and label sensitivity (counts only) |
 | `RUN-INPUTS.json` | reuse inputs |
 | `run-*/` | the three runs, public counts only |
 

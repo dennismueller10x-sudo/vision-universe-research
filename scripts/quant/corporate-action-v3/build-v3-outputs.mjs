@@ -23,10 +23,15 @@ const A = J(path.join(fin, 'CORPORATE-ACTION-V3-AUDIT.json')), SEL = J(path.join
 const A1 = J(path.join(first, 'CORPORATE-ACTION-V3-AUDIT.json'));
 const PROTOCOL = J(path.join(DIR, 'CORPORATE-ACTION-PROTOCOL-V3.json')), STATIC = J(path.join(DIR, 'source-manifest-static.json'));
 const REVIEW = J(path.join(DIR, 'CORPORATE-ACTION-V3-ADVERSARIAL-REVIEW.json')), CONSUMER = J(path.join(DIR, 'PARTIAL-SERIES-CONSUMER-READINESS-V3.json'));
-const PRE = J(path.join(DIR, 'VERDICT-PRECOMMIT.json'));
+const PRE = J(path.join(DIR, 'VERDICT-PRECOMMIT.json')), DIAG = J(path.join(DIR, 'DIAGNOSIS-V3.json'));
 const acc = A.acceptance;
 const meta = { protocol: PROTOCOL.version, protocolSha256: A.protocolSha256, finalRun: A.runId, finalCodeCommit: A.codeCommit, versions: A.versions,
   runs: { first: A1.runId, labelRequest: path.basename(req).replace('run-', ''), final: A.runId }, vendorMode: A.vendorMode, performanceCalculated: false, calibrationRun: false };
+/* validation-vendor coverage, shown in every validation output (review R3-04) */
+const vstats = A.sources.vendor.stats || {};
+const vendorCoverage = { segments: PREP.universe.segments, identityConfirmed: vstats.identity?.CONFIRMED ?? null, identity: vstats.identity ?? null, segmentsNotCollectedBlocked: vstats.segmentsNotCollected ?? null,
+  symbolsNotFound: vstats.notFound ?? null, collectionOrder: 'sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample',
+  survivorBias: 'delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity' };
 const write = (name, body) => { fs.writeFileSync(path.join(OUT, name), JSON.stringify({ schema: name.replace(/\.json$/, '').toLowerCase() + '-1.0.0', ...meta, ...body }, null, 2) + '\n'); console.log('wrote', name); };
 const share = (k, n) => (n ? Math.round((k / n) * 1e4) / 1e4 : null);
 
@@ -61,6 +66,7 @@ write('INDEPENDENT-PIT-VALIDATION-V3.json', {
   labelSourceVsValidationSource: { label: 'SEC EFTS file_date (visibleAt) and FINRA dailyListDatetime', validation: 'truncation outside the engine; EDGAR submissions acceptanceDateTime (different SEC system); FINRA: single timestamp, truncation only' },
   acceptance: { pitViolations: acc.pitViolations, pitTimestampCoverage: acc.pitTimestampCoverage },
   verdict: acc.pitViolations.pass && acc.pitTimestampCoverage.pass ? 'PASS' : 'FAIL',
+  gateDeviation: 'the pitViolations gate counts the universe-wide filedBeforeAcceptance observations although review P3-06 restricted the acceptance-time gate to decision observations (0 of 146); conservative, disclosed (review R3-10)',
   finding: A.pit.timestamps.filedBeforeAcceptance ? `${A.pit.timestamps.filedBeforeAcceptance} SEC observations carry an EFTS filing date before their EDGAR acceptance day (US/Eastern). None is behind a decision, but an as-of view on the acceptance day could see them: the evidence model must take visibleAt = max(filing date, acceptance day) - a rule change for the next protocol, not applied here.` : null
 });
 
@@ -68,7 +74,9 @@ write('INDEPENDENT-PIT-VALIDATION-V3.json', {
 write('BLINDED-CONTROL-SET-V3.json', {
   design: PROTOCOL.blindedControlSet, selection: { commitment: { membersSha256: SEL.membersSha256, independentEventsSha256: SEL.independentEventsSha256, writtenBefore: 'stage evaluate' },
     inSampleExcluded: SEL.inSampleExcluded, v2ControlMembersExcluded: SEL.v2ControlMembersExcluded, eligible: SEL.eligible, coreFlaggedStratum: SEL.coreFlaggedStratum, distinctMembers: SEL.distinctMembers, categories: SEL.categories, vendorIdentity: SEL.vendorIdentity, independentEvents: SEL.independentEvents },
-  results: A.blindedControl,
+  results: A.blindedControl, vendorCoverage,
+  measurementLimits: ['labelable means a label channel exists for the segment, not that a decision was labelled: the pooled segment FP rate counts segments whose decisions are unlabelled (review R3-02); the per-labelled-intervention false share is the informative figure',
+    'MERGER and DELISTING: no vendor identity, FP 0 = NOT_MEASURED', 'HIGH_NOMINAL: pool of 1 eligible segment; the per-category gate is structurally unreachable on this universe'],
   acceptance: { blindedFalsePositiveRatePooled: acc.blindedFalsePositiveRatePooled, blindedFalsePositiveRatePerCategory: acc.blindedFalsePositiveRatePerCategory, blindedInterventionFalseShare: acc.blindedInterventionFalseShare,
     blindedFalseNegativeRate: acc.blindedFalseNegativeRate, blindedLabelableShare: acc.blindedLabelableShare },
   knownV4CasesUse: 'excluded from the set; regression only (D2-REGRESSION-V3.json)'
@@ -81,7 +89,7 @@ write('COURSE-ONLY-HOLD-VALIDATION-V3.json', {
   resumedBarsByBreakLabel: A.resumedBarsByBreakLabel,
   noPostHocRule: 'no hold rule was changed after any result; the rules are those of the pre-registered protocol (P3 changes were made before the first run)',
   acceptance: { courseOnlyHoldFalseShare: acc.courseOnlyHoldFalseShare, courseOnlyFalseNegativeRate: acc.courseOnlyFalseNegativeRate, falseNegativeRateUniverse: acc.falseNegativeRateUniverse, normalizeFalseShare: acc.normalizeFalseShare },
-  normalizations: A.normalizations, invalidRanges: A.invalidRanges
+  normalizations: A.normalizations, invalidRanges: A.invalidRanges, vendorCoverage, labelSensitivity: DIAG.labelSensitivity
 });
 
 /* 5 downward jumps */
@@ -90,7 +98,7 @@ write('DOWNWARD-JUMP-VALIDATION-V3.json', {
     channels: 'event-day share and dollar volume against the prior 20-bar median, persistence of the share-volume scaling over the next 10 sessions, reversion within 2 sessions, stale run before, calendar gap, FINRA listing events, provider dividend; no return threshold decides a cause (3:1 only selects candidates, 10:1 only decides whether an unexplained candidate is held)' },
   census: A.downward, upwardForComparison: A.upward,
   falseNegatives: { downward: A.falseNegatives.downward, courseOnlyDownward: A.falseNegatives.courseOnlyDownward },
-  acceptance: { downwardFalseNegativeRate: acc.downwardFalseNegativeRate, downwardHoldFalseShare: acc.downwardHoldFalseShare }
+  acceptance: { downwardFalseNegativeRate: acc.downwardFalseNegativeRate, downwardHoldFalseShare: acc.downwardHoldFalseShare }, vendorCoverage
 });
 
 /* 6 D2 regression */
@@ -98,7 +106,7 @@ write('D2-REGRESSION-V3.json', {
   use: 'REGRESSION ONLY: the 11 D2 defects (#721/#722 forensic cause on the 74 adjusted-level > 1e6 securities, not quarantined by canonical-total-return-1.2.0) are recomputed in the runner from the same code (price-integrity.js#explainHighLevel); no v3 rule, threshold or ratio was set from them',
   d2: A.d2, known83: A.known83,
   acceptance: { knownD2ValidRangeDefects: acc.knownD2ValidRangeDefects },
-  diagnosis: 'see CANONICAL_CORPORATE_ACTION_PROTOCOL_V3.md section 6 (counts only; per-case rows sealed)'
+  diagnosis: DIAG.d2
 });
 
 /* 7 extreme movements */
@@ -110,12 +118,14 @@ write('EXTREME-MOVEMENT-CLASSIFICATION-V3.json', {
   extremeInsideValidV3: { total: A.impact.severe.extremeInsideValid, contradictedByIndependentEvidence: A.impact.severe.extremeInsideValidWrong, unexplained: A.impact.severe.extremeInsideValidUnresolved },
   semanticExtremeByCause: A.impact.semanticExtremeByCause,
   noRuleFromDistribution: 'no rule was derived from this distribution; the v3 rules were fixed before the first run',
-  acceptance: { severeExtremeInsideValidWrong: acc.severeExtremeInsideValidWrong, severeExtremeInsideValidUnresolvedShare: acc.severeExtremeInsideValidUnresolvedShare }
+  acceptance: { severeExtremeInsideValidWrong: acc.severeExtremeInsideValidWrong, severeExtremeInsideValidUnresolvedShare: acc.severeExtremeInsideValidUnresolvedShare }, vendorCoverage
 });
 
 /* 8 readiness */
 const reviewOpen = (REVIEW.openHighCritical || []);
-const failed = Object.entries(acc).filter(([k, v]) => k !== 'pass' && v.pass !== true).map(([k, v]) => ({ criterion: k, value: v.value ?? null, threshold: v.threshold ?? null }));
+const failed = Object.entries(acc).filter(([k, v]) => k !== 'pass' && v.pass !== true).map(([k, v]) => ({ criterion: k, value: k === 'unresolvedConflictingHolds' ? v.share : v.value ?? null, count: k === 'unresolvedConflictingHolds' ? v.value : undefined, threshold: v.threshold ?? null,
+  cause: k === 'blindedFalsePositiveRatePerCategory' ? 'HIGH_NOMINAL has 1 labelable segment (pool of 1); every other category <= 0.05' : undefined }));
+const W = (x) => (x && x.wilson95 !== undefined ? x.wilson95 : null);
 const ready = acc.pass === true && reviewOpen.length === 0;
 write('SUPERTRADER-CORPORATE-ACTION-V3-CALIBRATION-READINESS.json', {
   verdict: ready ? 'READY_FOR_PREREGISTERED_CALIBRATION' : 'NOT_READY',
@@ -125,10 +135,13 @@ write('SUPERTRADER-CORPORATE-ACTION-V3-CALIBRATION-READINESS.json', {
     fpFnIndependentlyMeasured: [acc.blindedFalsePositiveRatePooled, acc.blindedFalseNegativeRate, acc.courseOnlyHoldFalseShare, acc.courseOnlyFalseNegativeRate, acc.falseNegativeRateUniverse].every((x) => x.pass),
     downwardJumpsCovered: acc.downwardFalseNegativeRate.pass && acc.downwardHoldFalseShare.pass,
     d2DefectsOutOfValidRange: acc.knownD2ValidRangeDefects.pass,
-    secondIndependentSourceIntegrated: acc.secondSourceIntegrated.pass,
+    secondIndependentSourceIntegrated: acc.secondSourceIntegrated.pass, secondSourceScope: 'FINRA OTC Daily List only: OTC securities and exchange<->OTC transitions; 602 of 9,407 segments have any FINRA row (review R3-08)',
     noHighCriticalOpen: reviewOpen.length === 0
   },
-  acceptance: acc, failedCriteria: failed, openHighCritical: reviewOpen,
+  acceptance: acc, failedCriteria: failed, openHighCritical: reviewOpen, vendorCoverage,
+  intervals95: { blindedInterventionFalseShare: A.blindedControl.pooled.interventions.wilson95, blindedSegmentFalsePositiveRate: A.blindedControl.pooled.wilson95, falseNegativeUniverse: W(A.falseNegatives.universe),
+    downwardFalseNegative: W(A.falseNegatives.downward), courseOnlyHoldFalseShare: A.courseOnlyHolds.wilson95FalseShare, normalizeFalseShare: A.normalizations.wilson95FalseShare },
+  correctionsToThePrecommitment: 'VERDICT-PRECOMMIT.json listed unresolvedConflictingHolds and severeExtremeInsideValidWrong as vendor-independent; both changed with the vendor labels (50 -> 21 holds, 4 -> 6 moves) and still fail (review R3-12)',
   consumerReadiness: CONSUMER.summary,
   mayStartPreregisteredCalibration: ready,
   noCalibrationNoPerformance: true

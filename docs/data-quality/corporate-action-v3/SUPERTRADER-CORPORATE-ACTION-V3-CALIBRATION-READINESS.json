@@ -34,7 +34,8 @@
     "downwardJumpsCovered": false,
     "d2DefectsOutOfValidRange": false,
     "secondIndependentSourceIntegrated": true,
-    "noHighCriticalOpen": true
+    "secondSourceScope": "FINRA OTC Daily List only: OTC securities and exchange<->OTC transitions; 602 of 9,407 segments have any FINRA row (review R3-08)",
+    "noHighCriticalOpen": false
   },
   "acceptance": {
     "pitViolations": {
@@ -187,7 +188,8 @@
     {
       "criterion": "blindedFalsePositiveRatePerCategory",
       "value": null,
-      "threshold": 0.05
+      "threshold": 0.05,
+      "cause": "HIGH_NOMINAL has 1 labelable segment (pool of 1); every other category <= 0.05"
     },
     {
       "criterion": "blindedInterventionFalseShare",
@@ -241,7 +243,8 @@
     },
     {
       "criterion": "unresolvedConflictingHolds",
-      "value": 21,
+      "value": 0.0092,
+      "count": 21,
       "threshold": 0.005
     },
     {
@@ -259,7 +262,53 @@
       "threshold": 0.001
     }
   ],
-  "openHighCritical": [],
+  "openHighCritical": [
+    "R3-01 (vendor evidence binding / reproducibility)",
+    "R3-02 (blinded FP denominator)",
+    "R3-03 (FP label identifiability)"
+  ],
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
+  "intervals95": {
+    "blindedInterventionFalseShare": [
+      0.1994,
+      0.5266
+    ],
+    "blindedSegmentFalsePositiveRate": [
+      0.0065,
+      0.0217
+    ],
+    "falseNegativeUniverse": [
+      0.0406,
+      0.2358
+    ],
+    "downwardFalseNegative": [
+      0,
+      0.1546
+    ],
+    "courseOnlyHoldFalseShare": [
+      0.4091,
+      0.7133
+    ],
+    "normalizeFalseShare": [
+      0.6148,
+      0.9269
+    ]
+  },
+  "correctionsToThePrecommitment": "VERDICT-PRECOMMIT.json listed unresolvedConflictingHolds and severeExtremeInsideValidWrong as vendor-independent; both changed with the vendor labels (50 -> 21 holds, 4 -> 6 moves) and still fail (review R3-12)",
   "consumerReadiness": {
     "readsCanonicalCore": "only the four Quant studies (whole-series drop)",
     "partialLoaderAdopters": 0,

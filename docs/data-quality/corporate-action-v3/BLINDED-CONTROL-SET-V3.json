@@ -554,6 +554,26 @@
       }
     }
   },
+  "vendorCoverage": {
+    "segments": 9407,
+    "identityConfirmed": 5233,
+    "identity": {
+      "CONFIRMED": 5233,
+      "INSUFFICIENT_OVERLAP": 143,
+      "INCONCLUSIVE": 83,
+      "NO_VENDOR_DATA": 3943,
+      "MISMATCH": 5
+    },
+    "segmentsNotCollectedBlocked": 3345,
+    "symbolsNotFound": 597,
+    "collectionOrder": "sorted symbol order until the vendor blocked the host: the collected subset is a prefix, not a random sample",
+    "survivorBias": "delisted names are mostly unknown to the vendor; MERGER and DELISTING blinded categories have no vendor identity"
+  },
+  "measurementLimits": [
+    "labelable means a label channel exists for the segment, not that a decision was labelled: the pooled segment FP rate counts segments whose decisions are unlabelled (review R3-02); the per-labelled-intervention false share is the informative figure",
+    "MERGER and DELISTING: no vendor identity, FP 0 = NOT_MEASURED",
+    "HIGH_NOMINAL: pool of 1 eligible segment; the per-category gate is structurally unreachable on this universe"
+  ],
   "acceptance": {
     "blindedFalsePositiveRatePooled": {
       "value": 0.0119,
