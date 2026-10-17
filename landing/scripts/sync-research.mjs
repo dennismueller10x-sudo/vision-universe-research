@@ -28,14 +28,7 @@ const local=s=>s.replaceAll('/assets/vision-universe-logo.png','../assets/vision
 await writeFile(resolve(root,'reference/index.html'),`<!doctype html><html lang="de" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Research-Startseite · Original-Hero als Referenz</title><link rel="stylesheet" href="../assets/home/home.css"><script src="../assets/home/hero-intro.js" defer></script></head><body>${local(header)}${symbols}<main>${local(hero)}</main></body></html>\n`);
 // Replace only the owned Hero/symbol snapshot; all newsletter configuration stays intact.
 let landing=await readFile(resolve(root,'index.html'),'utf8');
-const adapted=timelessHero(local(hero).replaceAll('../assets/','./assets/'))
-  .replace(/<span class="hero-badge">[\s\S]*?<\/span>/,'<span class="hero-badge"><b>App</b> bald verfügbar</span>')
-  .replace(/<h1>[\s\S]*?<\/h1>/,'<h1 id="hero-title">Investieren mit <em>Weitblick.</em> Bald in einer&nbsp;App.</h1>')
-  .replace(/<p class="lead">[\s\S]*?<\/p>/,'<p class="lead">Vision Universe bündelt Aktienresearch in einer App. Bald verfügbar.</p>')
-  .replace(/<div class="hero-cta">[\s\S]*?<\/div>/,'<div class="hero-cta"><a class="btn btn-app btn-xl" href="#newsletter">Zum App-Start informiert werden <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>')
-  .replace(/\s*<ul class="hero-checks">[\s\S]*?<\/ul>/,'')
-  .replace('<section class="hero" id="hero">','<section class="hero" id="hero" aria-labelledby="hero-title">')
-  .replace(/\n<\/section>$/,'\n  <p class="shell preview-caption">Modulvorschau · App bald verfügbar.</p>\n</section>');
+const adapted=timelessHero();
 landing=landing.replace(/<!-- RESEARCH-SYMBOLS:START -->[\s\S]*?<!-- RESEARCH-SYMBOLS:END -->/,`<!-- RESEARCH-SYMBOLS:START -->\n${presentationSymbols(symbols)}\n<!-- RESEARCH-SYMBOLS:END -->`)
  .replace(/<!-- RESEARCH-HERO:START -->[\s\S]*?<!-- RESEARCH-HERO:END -->/,`<!-- RESEARCH-HERO:START -->\n${adapted}\n<!-- RESEARCH-HERO:END -->`);
 await writeFile(resolve(root,'index.html'),landing);

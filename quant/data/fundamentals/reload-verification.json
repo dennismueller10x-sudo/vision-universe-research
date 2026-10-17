@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-10-15T11:37:45+00:00",
+  "generated_at_utc": "2026-10-17T10:50:43+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.10.0",
@@ -14,118 +14,170 @@
   },
   "note": "Zurueckgeladene Objekte als eigener Faktenspeicher gelesen, kanonisch abgeleitet und mit dem lokalen Stand verglichen. Netzwerkzugriff war waehrend des Vergleichs gesperrt.",
   "RELOAD_WITHOUT_SEC_REFETCH": "PASS",
-  "requested": 7,
-  "passed": 7,
+  "requested": 10,
+  "passed": 10,
   "networkBlocked": true,
   "results": [
     {
-      "cik": "0000023197",
+      "cik": "0000008177",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 924,
+      "canonicalFacts": 597,
+      "canonicalFactsIdentical": true,
+      "currencies": [
+        "USD"
+      ],
+      "annualPeriods": 18,
+      "quarterlyPeriods": 65,
+      "restated": 27,
+      "everyFactHasFilingAndAccession": true,
+      "normalizationLogic": "1.10.0",
+      "pass": true
+    },
+    {
+      "cik": "0000022444",
+      "localPresent": true,
+      "reloadPresent": true,
+      "documentsIdentical": true,
+      "canonicalFacts": 950,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
       "annualPeriods": 19,
       "quarterlyPeriods": 73,
-      "restated": 36,
+      "restated": 238,
       "everyFactHasFilingAndAccession": true,
       "normalizationLogic": "1.10.0",
       "pass": true
     },
     {
-      "cik": "0000031667",
+      "cik": "0000086312",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 741,
+      "canonicalFacts": 583,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 18,
-      "quarterlyPeriods": 66,
-      "restated": 41,
+      "annualPeriods": 21,
+      "quarterlyPeriods": 76,
+      "restated": 50,
       "everyFactHasFilingAndAccession": true,
       "normalizationLogic": "1.10.0",
       "pass": true
     },
     {
-      "cik": "0000806172",
+      "cik": "0001467373",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 873,
+      "canonicalFacts": 903,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 18,
-      "quarterlyPeriods": 66,
-      "restated": 49,
+      "annualPeriods": 20,
+      "quarterlyPeriods": 74,
+      "restated": 96,
       "everyFactHasFilingAndAccession": true,
       "normalizationLogic": "1.10.0",
       "pass": true
     },
     {
-      "cik": "0000908315",
+      "cik": "0001504678",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 815,
-      "canonicalFactsIdentical": true,
-      "currencies": [
-        "USD"
-      ],
-      "annualPeriods": 18,
-      "quarterlyPeriods": 67,
-      "restated": 71,
-      "everyFactHasFilingAndAccession": true,
-      "normalizationLogic": "1.10.0",
-      "pass": true
-    },
-    {
-      "cik": "0001549084",
-      "localPresent": true,
-      "reloadPresent": true,
-      "documentsIdentical": true,
-      "canonicalFacts": 783,
+      "canonicalFacts": 616,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
       "annualPeriods": 17,
-      "quarterlyPeriods": 61,
-      "restated": 110,
+      "quarterlyPeriods": 64,
+      "restated": 116,
       "everyFactHasFilingAndAccession": true,
       "normalizationLogic": "1.10.0",
       "pass": true
     },
     {
-      "cik": "0002053641",
+      "cik": "0001724542",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 82,
+      "canonicalFacts": 49,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"
       ],
-      "annualPeriods": 4,
-      "quarterlyPeriods": 12,
+      "annualPeriods": 13,
+      "quarterlyPeriods": 16,
+      "restated": 12,
+      "everyFactHasFilingAndAccession": true,
+      "normalizationLogic": "1.10.0",
+      "pass": true
+    },
+    {
+      "cik": "0001751912",
+      "localPresent": true,
+      "reloadPresent": true,
+      "documentsIdentical": true,
+      "canonicalFacts": 6,
+      "canonicalFactsIdentical": true,
+      "currencies": [
+        "CAD"
+      ],
+      "annualPeriods": 3,
+      "quarterlyPeriods": 3,
       "restated": 0,
       "everyFactHasFilingAndAccession": true,
       "normalizationLogic": "1.10.0",
       "pass": true
     },
     {
-      "cik": "0002101135",
+      "cik": "0001785680",
       "localPresent": true,
       "reloadPresent": true,
       "documentsIdentical": true,
-      "canonicalFacts": 15,
+      "canonicalFacts": 28,
+      "canonicalFactsIdentical": true,
+      "currencies": [
+        "CNY",
+        "USD"
+      ],
+      "annualPeriods": 9,
+      "quarterlyPeriods": 9,
+      "restated": 5,
+      "everyFactHasFilingAndAccession": true,
+      "normalizationLogic": "1.10.0",
+      "pass": true
+    },
+    {
+      "cik": "0001947210",
+      "localPresent": true,
+      "reloadPresent": true,
+      "documentsIdentical": true,
+      "canonicalFacts": 150,
+      "canonicalFactsIdentical": true,
+      "currencies": [
+        "USD"
+      ],
+      "annualPeriods": 5,
+      "quarterlyPeriods": 16,
+      "restated": 23,
+      "everyFactHasFilingAndAccession": true,
+      "normalizationLogic": "1.10.0",
+      "pass": true
+    },
+    {
+      "cik": "0002095443",
+      "localPresent": true,
+      "reloadPresent": true,
+      "documentsIdentical": true,
+      "canonicalFacts": 14,
       "canonicalFactsIdentical": true,
       "currencies": [
         "USD"

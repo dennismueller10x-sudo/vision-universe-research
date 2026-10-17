@@ -88,3 +88,35 @@ test('Seite fragt nur Ausschnitte an, die build.json ausweist (keine vergebliche
 });
 
 test('SLICES_VERSION ist gesetzt', () => { assert.match(SLICES_VERSION, /^signals-slices-\d+$/); });
+
+/* Signals-Lauf 38559163426 ff. (14.-17.10.2026): signals-core.json trug das append-only Protokoll closed. Mit jedem
+   geschlossenen Trade stieg der Kernanteil (59,8 % -> 66,9 %), bis die 60-%-Pruefung oben jeden Lauf stoppte.
+   Der Kern darf mit dem Protokoll nicht wachsen; die Seiten, die ihn laden, brauchen nur die Zahl. */
+test('signals-core: closed ist Historie, die Zahl bleibt als closedTotal', () => {
+  const core = signalsCore(signals);
+  assert.ok(HISTORY_LISTS.includes('closed'));
+  for (const [id, st] of Object.entries(signals.strategies)) {
+    assert.equal(core.strategies[id].closed, undefined, id);
+    assert.equal(core.strategies[id].closedTotal, st.closed.length, id + '.closedTotal');
+    if (st.closedTotal !== undefined) assert.equal(st.closedTotal, st.closed.length, id + '.closedTotal (signals.json)');
+  }
+});
+
+test('signals-core waechst nicht mit dem Protokoll geschlossener Trades', () => {
+  const trade = (i) => ({ id: 'T' + i, symbol: 'AAA', state: 'CLOSED', transitions: Array.from({ length: 20 }, (_, k) => ({ k, at: '2026-10-01' })) });
+  const at = (n) => ({ schema: 's', strategies: { X: { open: [], closed: Array.from({ length: n }, (_, i) => trade(i)), closedTotal: n, invalidated: [], retired: [], scanner: { top: [] } } } });
+  const grow = size(signalsCore(at(1000))) - size(signalsCore(at(10)));
+  assert.ok(grow <= 3, 'Kern waechst um ' + grow + ' B bei 990 weiteren Trades');
+});
+
+test('Seiten mit signals-core zaehlen geschlossene Trades nur ueber closedCount', () => {
+  const js = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
+  const body = (name) => { const i = js.indexOf('function ' + name + '('); assert.ok(i > 0, name); const j = js.indexOf('\n  function ', i + 10); return js.slice(i, j); };
+  for (const name of ['renderHome', 'renderObservationHome', 'renderStrategies', 'renderStrategy', 'renderModelMethod', 'renderLiveMethod', 'renderPartialMethod', 'renderBacktests']) {
+    assert.doesNotMatch(body(name).replace(/mp\.closed|t\.closed/g, ''), /\.closed\b/, name + ' liest closed direkt');
+  }
+  const closedCount = new Function(body('closedCount') + '; return closedCount;')();
+  assert.equal(closedCount({ closedTotal: 7 }), 7);
+  assert.equal(closedCount({ closed: [1, 2] }), 2, 'alter Datenstand ohne closedTotal');
+  assert.equal(closedCount(undefined), 0);
+});

@@ -2,33 +2,33 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1878671,
+      "RESOLVED_VALUES": 1878746,
       "ISSUERS_WITH_VALUES": 5343
     },
     "byState": {
-      "VALID": 1708993,
-      "WARNING": 169678
+      "VALID": 1709062,
+      "WARNING": 169684
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49684221
+      "RAW_XBRL_FACTS_WITH_FINDING": 49687292
     },
     "byState": {
-      "AMBIGUOUS": 1333919,
-      "RESTATED": 313180,
+      "AMBIGUOUS": 1333615,
+      "RESTATED": 313187,
       "NON_COMPARABLE": 70522,
-      "MISSING": 47946931,
-      "WARNING": 19669
+      "MISSING": 47950302,
+      "WARNING": 19666
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47946931,
-      "CONCEPT_DISAGREEMENT": 1325929,
-      "RESTATEMENT_CONFLICT": 313180,
+      "UNKNOWN_CONCEPT": 47950302,
+      "CONCEPT_DISAGREEMENT": 1325625,
+      "RESTATEMENT_CONFLICT": 313187,
       "UNEXPECTED_DURATION": 54406,
       "PERIOD_MISMATCH": 14855,
-      "FISCAL_PERIOD_CONFLICT": 14836,
+      "FISCAL_PERIOD_CONFLICT": 14833,
       "FUTURE_DATA_LEAK": 7480,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2244,
@@ -114,5 +114,5 @@
       "mapping_version": "1.6.0"
     }
   },
-  "generatedAtUtc": "2026-10-15T11:37:49+00:00"
+  "generatedAtUtc": "2026-10-17T10:50:47+00:00"
 }
