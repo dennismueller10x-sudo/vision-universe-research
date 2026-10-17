@@ -1,0 +1,1482 @@
+{
+  "schema": "corporate-action-v3-audit-1.0.0",
+  "runId": "39031465706",
+  "codeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "capture": {
+    "dataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "securities": 9407
+  },
+  "vendorMode": "EVIDENCE_FILE (vendor-evidence.mjs outside the runner)",
+  "sources": {
+    "sec": {
+      "collector": "sec-corporate-action-collector-1.0.0",
+      "extractor": "sec-corporate-actions-1.1.0",
+      "from": "2001-01",
+      "to": "2026-10",
+      "stats": {
+        "requests": 74474,
+        "errors": 0,
+        "retries": 0,
+        "eftsQueries": 4078,
+        "eftsHits": 284478,
+        "universeHits": 82058,
+        "filings": 45763,
+        "documents": 70395,
+        "documentErrors": 1,
+        "truncatedWindows": 0,
+        "proxyHits": 14541,
+        "periodicFilings": 160,
+        "incompleteWindows": 1,
+        "documentsSkippedByCap": 0,
+        "parts": [
+          {
+            "file": "part-a.json",
+            "from": "2001-01",
+            "to": "2012-12",
+            "phases": [
+              "current",
+              "proxies"
+            ]
+          },
+          {
+            "file": "part-b.json",
+            "from": "2013-01",
+            "to": "2018-12",
+            "phases": [
+              "current",
+              "proxies"
+            ]
+          },
+          {
+            "file": "part-c.json",
+            "from": "2019-01",
+            "to": "2022-06",
+            "phases": [
+              "current",
+              "proxies"
+            ]
+          },
+          {
+            "file": "part-d.json",
+            "from": "2022-07",
+            "to": "2026-10",
+            "phases": [
+              "current",
+              "proxies"
+            ]
+          }
+        ],
+        "retryPass": {
+          "filings": 1,
+          "recoveredFilings": 0,
+          "recoveredDocuments": 0
+        },
+        "complete": false
+      },
+      "ciksWithEvents": 6059,
+      "sha256": "61a068c5f905905391f111541624a8da1e8a130c8b7569ac8c58071f46eedb9b"
+    },
+    "finra": {
+      "collector": "finra-otc-daily-list-collector-1.0.0",
+      "fetchedAt": "2026-10-17T09:51:46.472Z",
+      "stats": {
+        "requests": 79,
+        "retries": 0,
+        "errors": 0,
+        "windows": 22,
+        "incompleteWindows": [],
+        "rows": 168936,
+        "duplicateRowsDropped": 4,
+        "complete": true
+      },
+      "windows": 22,
+      "observations": 168936,
+      "sha256": "c428856a196cf1ce15bc5a62c02eafdc4179e771da475c1a289a8e10b7c41250"
+    },
+    "vendor": {
+      "stats": {
+        "symbols": 8995,
+        "fetched": 0,
+        "cached": 5791,
+        "ok": 5464,
+        "notFound": 597,
+        "other": 1,
+        "segments": 9407,
+        "identity": {
+          "CONFIRMED": 5233,
+          "INSUFFICIENT_OVERLAP": 143,
+          "INCONCLUSIVE": 83,
+          "NO_VENDOR_DATA": 3943,
+          "MISMATCH": 5
+        },
+        "notCollected": 3204,
+        "segmentsNotCollected": 3345
+      },
+      "collector": "vendor-yahoo-chart-collector-1.0.0",
+      "symbols": 9407,
+      "evidenceSha256": "fb4cd888f75f209d1e9e09416b45233ecadee649aa07082f74b5c18748af10c5"
+    },
+    "edgarAcceptance": {
+      "ciks": 1941,
+      "requests": 2198,
+      "retries": 0,
+      "errors": 0,
+      "accessionsWanted": 9132,
+      "accessionsFound": 9132
+    }
+  },
+  "impact": {
+    "segments": 9407,
+    "bars": 14842666,
+    "validBars": {
+      "v2_firstSegment": 14601860,
+      "v3_firstSegment": 14555110,
+      "v3_allSegments": 14675565,
+      "v3_resumed": 118657
+    },
+    "states": {
+      "FULL_VALID": 9014,
+      "VALID_PREFIX": 367,
+      "VALID_WITH_INVALID_BARS": 17,
+      "NO_VALID_BARS": 9
+    },
+    "statesV2": {
+      "FULL_VALID": 9072,
+      "VALID_PREFIX": 316,
+      "VALID_WITH_INVALID_BARS": 14,
+      "NO_VALID_BARS": 5
+    },
+    "holdsByReason": {
+      "QUARANTINE:CORPORATE_ACTION_CONTRADICTED": 68,
+      "HOLD:CORPORATE_ACTION_CONFLICT": 39,
+      "HOLD:UNEXPLAINED_EXTREME_DISCONTINUITY": 67,
+      "HOLD:SPLIT_SUSPECTED_UNDECLARED": 127,
+      "TERMINAL:LISTING_CHANGE_SEMANTIC": 49,
+      "QUARANTINE:STALE_THEN_EXTREME_JUMP": 45,
+      "TERMINAL:LISTING_DISCONTINUITY": 69,
+      "HOLD:UNDECLARED_SPLIT_SIGNATURE": 26,
+      "QUARANTINE:DIVIDEND_MISSING": 16,
+      "QUARANTINE:CURRENCY_OR_UNIT_CHANGE": 12
+    },
+    "holdsByReasonV2": {
+      "QUARANTINE:CORPORATE_ACTION_CONTRADICTED": 78,
+      "HOLD:CORPORATE_ACTION_CONFLICT": 35,
+      "HOLD:SPLIT_SUSPECTED_UNDECLARED": 127,
+      "TERMINAL:LISTING_DISCONTINUITY": 66,
+      "QUARANTINE:DIVIDEND_MISSING": 15
+    },
+    "semanticByCause": {
+      "UNRESOLVED": 67,
+      "LISTING_CHANGE": 49,
+      "DATA_STALENESS": 45,
+      "FORWARD_SPLIT": 26,
+      "CURRENCY_OR_UNIT": 12
+    },
+    "semanticExtremeByCause": {
+      "DOWN:UNRESOLVED": 56,
+      "UP:UNRESOLVED": 109,
+      "UP:LISTING_CHANGE": 102,
+      "UP:GENUINE_MOVE": 71,
+      "UP:DATA_STALENESS": 91,
+      "DOWN:BAD_TICK": 105,
+      "DOWN:DATA_STALENESS": 80,
+      "DOWN:SPECIAL_DISTRIBUTION": 4,
+      "DOWN:LISTING_CHANGE": 74,
+      "UP:BAD_TICK": 61,
+      "DOWN:GENUINE_MOVE": 106,
+      "DOWN:FORWARD_SPLIT": 9,
+      "DOWN:CURRENCY_OR_UNIT": 19,
+      "UP:CURRENCY_OR_UNIT": 33,
+      "UP:REVERSE_SPLIT": 4
+    },
+    "normalizations": {
+      "total": 47,
+      "bySystem": {
+        "SEC_EDGAR": 32,
+        "FINRA_OTC_DAILY_LIST": 15
+      },
+      "byCorroboration": {
+        "SECOND_SOURCE": 18,
+        "SHARE_VOLUME": 41,
+        "SEC_SHARE_COUNT": 24
+      },
+      "v2Total": 40
+    },
+    "finra": {
+      "segmentsWithObservations": 602,
+      "segmentsWithSplitEvents": 169,
+      "splitEventsJoined": 209,
+      "listingEventsJoined": 1030,
+      "normalizedByFinra": 15,
+      "effectiveSplitEventsJoined": 204,
+      "secondSourceCorroborations": 18,
+      "sourcesDisagree": 2,
+      "evidenceFinraByReason": {
+        "PROVIDER_FACTOR_MATCHES_SEC": 60,
+        "SEC_EVENT_NOT_OBSERVED_IN_PRICE": 42,
+        "SEC_EFFECTIVE_AND_PRICE_CONCORDANT_PROVIDER_MISSING": 15,
+        "SEC_EVENT_AFTER_LAST_BAR": 4,
+        "SOURCES_DISAGREE_ON_RATIO": 1,
+        "SEC_EVENT_SMALL_RATIO_UNCORROBORATED": 2,
+        "PROVIDER_FACTOR_DIFFERS_FROM_SEC": 2,
+        "EFFECTIVE_EVENT_UNCORROBORATED": 1
+      }
+    },
+    "evidenceByReason": {
+      "SEC_EVENT_OUTSIDE_SERIES": 603,
+      "PROVIDER_FACTOR_MATCHES_SEC": 2036,
+      "SEC_EVENT_UNDATED_NOT_NORMALIZED": 903,
+      "SEC_EVENT_NOT_OBSERVED_IN_PRICE": 356,
+      "PROVIDER_FACTOR_DIFFERS_FROM_SEC": 41,
+      "SEC_EVENT_PERIODIC_ONLY_NOT_NORMALIZED": 52,
+      "SPLIT_SEMANTIC_UNRESOLVED": 67,
+      "SEC_EFFECTIVE_AND_PRICE_CONCORDANT_PROVIDER_MISSING": 47,
+      "SPLIT_SUSPECTED_UNDECLARED": 127,
+      "EFFECTIVE_EVENT_UNCORROBORATED": 9,
+      "SPLIT_SEMANTIC_FORWARD_SPLIT": 26,
+      "SOURCES_DISAGREE_ON_RATIO": 2,
+      "SEC_EVENT_AFTER_LAST_BAR": 11,
+      "SEC_EVENT_SMALL_RATIO_UNCORROBORATED": 2
+    },
+    "segmentsWithResume": 163,
+    "histories": {
+      "v2HeldOrRejected": 335,
+      "ofThoseUsableBarsGainedV3": 146
+    },
+    "severe": {
+      "extremeInsideValid": 107,
+      "extremeInsideValidWrong": 6,
+      "extremeInsideValidUnresolved": 63,
+      "conflictingHolds": 69,
+      "conflictingHoldsUnlabeled": 21,
+      "segmentsWithCaEvidence": 2284
+    }
+  },
+  "pit": {
+    "segmentsChecked": 426,
+    "viewsCompared": 3512,
+    "mismatchKinds": {},
+    "barsAfterAsOf": 0,
+    "observedAtSkipped": 7,
+    "observedAtTooEarly": 0,
+    "observedAtLate": 0,
+    "observedAtChecked": 898,
+    "revisionsAfterObserved": 4,
+    "lagSessions": {
+      "HOLD:0": 462,
+      "INVALID_RANGE:1": 81,
+      "INVALID_RANGE:2": 21,
+      "RESUME_FROM:1": 188,
+      "HOLD:30": 17,
+      "RESUME_FROM:30": 16,
+      "HOLD:1": 5,
+      "HOLD:9": 1,
+      "RESUME_FROM:9": 1,
+      "HOLD:10": 23,
+      "RESUME_FROM:10": 23,
+      "NORMALIZE:6": 4,
+      "NORMALIZE:0": 37,
+      "HOLD:4": 1,
+      "RESUME_FROM:4": 1,
+      "NORMALIZE:30": 3,
+      "HOLD:2": 1,
+      "HOLD:11": 3,
+      "RESUME_FROM:11": 3,
+      "NORMALIZE:15": 1,
+      "HOLD:7": 1,
+      "RESUME_FROM:7": 1,
+      "NORMALIZE:16": 1,
+      "HOLD:5": 1,
+      "RESUME_FROM:5": 1,
+      "HOLD:20": 1,
+      "HOLD:18": 1,
+      "RESUME_FROM:20": 1,
+      "RESUME_FROM:18": 1,
+      "HOLD:21": 1,
+      "RESUME_FROM:21": 1,
+      "NORMALIZE:1": 1,
+      "RESUME_FROM:2": 1
+    },
+    "observedAtBasis": {
+      "HOLD:FIRST_AS_OF_VIEW_WITH_HOLD": 512,
+      "HOLD:AFTER_LAST_BAR": 6,
+      "INVALID_RANGE:REVERT_BAR": 102,
+      "RESUME_FROM:FIRST_AS_OF_VIEW_WITH_SEGMENT": 237,
+      "NORMALIZE:FIRST_AS_OF_VIEW_WITH_NORMALIZATION": 47,
+      "RESUME_FROM:AFTER_LAST_BAR": 1
+    },
+    "timestamps": {
+      "secObservations": 9643,
+      "withAcceptance": 9643,
+      "filedBeforeAcceptance": 2,
+      "lagDays": {
+        "0": 9121,
+        "1": 414,
+        "2": 14,
+        "3": 76,
+        "4": 15,
+        "5": 1,
+        "-1": 2
+      },
+      "decisionObservations": {
+        "observations": 146,
+        "withAcceptance": 146,
+        "filedBeforeAcceptance": 0
+      }
+    }
+  },
+  "courseOnlyHolds": {
+    "definition": "holds whose evidence is the price only (PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source)",
+    "total": 277,
+    "truePositive": 16,
+    "falsePositive": 21,
+    "unlabeled": 240,
+    "labelled": 37,
+    "labelledShare": 0.1336,
+    "falseShare": 0.5676,
+    "wilson95FalseShare": [
+      0.4091,
+      0.7133
+    ],
+    "worstCaseFalseShare": 0.9422,
+    "byReason": {
+      "LISTING_CHANGE_SEMANTIC:UNLABELED": 48,
+      "SPLIT_SUSPECTED_UNDECLARED:UNLABELED": 91,
+      "STALE_THEN_EXTREME_JUMP:UNLABELED": 36,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:FALSE_POSITIVE": 4,
+      "STALE_THEN_EXTREME_JUMP:FALSE_POSITIVE": 5,
+      "LISTING_CHANGE_SEMANTIC:FALSE_POSITIVE": 1,
+      "UNDECLARED_SPLIT_SIGNATURE:UNLABELED": 10,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:TRUE_POSITIVE": 5,
+      "STALE_THEN_EXTREME_JUMP:TRUE_POSITIVE": 4,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY:UNLABELED": 44,
+      "CURRENCY_OR_UNIT_CHANGE:UNLABELED": 11,
+      "UNDECLARED_SPLIT_SIGNATURE:FALSE_POSITIVE": 8,
+      "SPLIT_SUSPECTED_UNDECLARED:TRUE_POSITIVE": 5,
+      "SPLIT_SUSPECTED_UNDECLARED:FALSE_POSITIVE": 3,
+      "CURRENCY_OR_UNIT_CHANGE:TRUE_POSITIVE": 1,
+      "UNDECLARED_SPLIT_SIGNATURE:TRUE_POSITIVE": 1
+    },
+    "byBasis": {
+      "NONE": 240,
+      "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 20,
+      "VENDOR_CONFIRMS_CONTINUOUS_MOVE": 1,
+      "VENDOR_SHOWS_NO_MOVE": 8,
+      "INDEPENDENT_EVENT": 2,
+      "VENDOR_SPLIT": 6
+    }
+  },
+  "allCaHolds": {
+    "total": 365,
+    "truePositive": 74,
+    "falsePositive": 29,
+    "unlabeled": 262,
+    "labelled": 103,
+    "labelledShare": 0.2822,
+    "falseShare": 0.2816,
+    "wilson95FalseShare": [
+      0.2038,
+      0.3751
+    ],
+    "worstCaseFalseShare": 0.7973,
+    "byFamily": {
+      "DISCONTINUITY_HOLD:TRUE_POSITIVE": 69,
+      "DISCONTINUITY_HOLD:UNLABELED": 167,
+      "DISCONTINUITY_HOLD:FALSE_POSITIVE": 23,
+      "SEMANTIC_TERMINAL:UNLABELED": 48,
+      "SEMANTIC_DATA_HOLD:UNLABELED": 47,
+      "SEMANTIC_DATA_HOLD:FALSE_POSITIVE": 5,
+      "SEMANTIC_TERMINAL:FALSE_POSITIVE": 1,
+      "SEMANTIC_DATA_HOLD:TRUE_POSITIVE": 5
+    }
+  },
+  "coreDataContractHolds": 153,
+  "normalizations": {
+    "total": 47,
+    "truePositive": 4,
+    "falsePositive": 18,
+    "unlabeled": 25,
+    "labelled": 22,
+    "labelledShare": 0.4681,
+    "falseShare": 0.8182,
+    "wilson95FalseShare": [
+      0.6148,
+      0.9269
+    ],
+    "worstCaseFalseShare": 0.9149,
+    "bySystemAndLabel": {
+      "SEC_EDGAR:UNLABELED": 14,
+      "SEC_EDGAR:TRUE_POSITIVE": 4,
+      "FINRA_OTC_DAILY_LIST:FALSE_POSITIVE": 4,
+      "SEC_EDGAR:FALSE_POSITIVE": 14,
+      "FINRA_OTC_DAILY_LIST:UNLABELED": 11
+    },
+    "byBasis": {
+      "NONE": 25,
+      "VENDOR_SPLIT_SAME_RATIO": 4,
+      "SEC_SHARES_NO_SPLIT": 6,
+      "VENDOR_CONFIRMS_MOVE_WITHOUT_SPLIT": 12
+    }
+  },
+  "invalidRanges": {
+    "total": 102,
+    "truePositive": 3,
+    "falsePositive": 6,
+    "unlabeled": 93,
+    "labelled": 9,
+    "labelledShare": 0.0882,
+    "falseShare": 0.6667,
+    "wilson95FalseShare": [
+      0.3542,
+      0.8794
+    ],
+    "worstCaseFalseShare": 0.9706,
+    "byReason": {
+      "PRICE_SPIKE_REVERTED:UNLABELED": 67,
+      "BAD_TICK_REVERTED:UNLABELED": 26,
+      "BAD_TICK_REVERTED:FALSE_POSITIVE": 2,
+      "PRICE_SPIKE_REVERTED:FALSE_POSITIVE": 4,
+      "PRICE_SPIKE_REVERTED:TRUE_POSITIVE": 3
+    }
+  },
+  "falseNegatives": {
+    "gatePopulation": "engine-independent events (second vendor) only; FINRA and share-count events are engine inputs and reported separately (review P3-07)",
+    "universe": {
+      "events": 2263,
+      "providerDeclared": 2183,
+      "notInPrice": 41,
+      "outsideValid": 0,
+      "evaluable": 39,
+      "falseNegatives": 4,
+      "rate": 0.1026,
+      "wilson95": [
+        0.0406,
+        0.2358
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 2183,
+        "NOT_IN_PRICE": 41,
+        "NORMALIZED": 4,
+        "HANDLED": 22,
+        "FALSE_NEGATIVE": 4,
+        "HELD_OR_LINK": 9
+      }
+    },
+    "universeV2": {
+      "events": 2263,
+      "providerDeclared": 2183,
+      "notInPrice": 41,
+      "outsideValid": 0,
+      "evaluable": 39,
+      "falseNegatives": 4,
+      "rate": 0.1026,
+      "wilson95": [
+        0.0406,
+        0.2358
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 2183,
+        "NOT_IN_PRICE": 41,
+        "NORMALIZED": 6,
+        "HANDLED": 22,
+        "HELD_OR_OUTSIDE": 7,
+        "FALSE_NEGATIVE": 4
+      }
+    },
+    "downward": {
+      "events": 362,
+      "providerDeclared": 336,
+      "notInPrice": 5,
+      "outsideValid": 0,
+      "evaluable": 21,
+      "falseNegatives": 0,
+      "rate": 0,
+      "wilson95": [
+        0,
+        0.1546
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 336,
+        "NOT_IN_PRICE": 5,
+        "HANDLED": 19,
+        "HELD_OR_LINK": 2
+      }
+    },
+    "upward": {
+      "events": 1901,
+      "providerDeclared": 1847,
+      "notInPrice": 36,
+      "outsideValid": 0,
+      "evaluable": 18,
+      "falseNegatives": 4,
+      "rate": 0.2222,
+      "wilson95": [
+        0.09,
+        0.4522
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 1847,
+        "NOT_IN_PRICE": 36,
+        "NORMALIZED": 4,
+        "FALSE_NEGATIVE": 4,
+        "HELD_OR_LINK": 7,
+        "HANDLED": 3
+      }
+    },
+    "courseOnly": {
+      "events": 418,
+      "providerDeclared": 384,
+      "notInPrice": 8,
+      "outsideValid": 0,
+      "evaluable": 26,
+      "falseNegatives": 1,
+      "rate": 0.0385,
+      "wilson95": [
+        0.0068,
+        0.1889
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 384,
+        "NOT_IN_PRICE": 8,
+        "HANDLED": 18,
+        "HELD_OR_LINK": 7,
+        "FALSE_NEGATIVE": 1
+      }
+    },
+    "courseOnlyDownward": {
+      "events": 121,
+      "providerDeclared": 96,
+      "notInPrice": 5,
+      "outsideValid": 0,
+      "evaluable": 20,
+      "falseNegatives": 0,
+      "rate": 0,
+      "wilson95": [
+        0,
+        0.1611
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 96,
+        "NOT_IN_PRICE": 5,
+        "HANDLED": 18,
+        "HELD_OR_LINK": 2
+      }
+    },
+    "sourceDependent": {
+      "events": 764,
+      "providerDeclared": 454,
+      "notInPrice": 278,
+      "outsideValid": 4,
+      "evaluable": 28,
+      "falseNegatives": 6,
+      "rate": 0.2143,
+      "wilson95": [
+        0.1021,
+        0.3954
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 454,
+        "NOT_IN_PRICE": 278,
+        "NORMALIZED": 18,
+        "HELD_OR_LINK": 4,
+        "FALSE_NEGATIVE": 6,
+        "OUTSIDE_VALID": 4
+      }
+    },
+    "allSources": {
+      "events": 3027,
+      "providerDeclared": 2637,
+      "notInPrice": 319,
+      "outsideValid": 4,
+      "evaluable": 67,
+      "falseNegatives": 10,
+      "rate": 0.1493,
+      "wilson95": [
+        0.0831,
+        0.2534
+      ],
+      "byStatus": {
+        "PROVIDER_DECLARED": 2637,
+        "NOT_IN_PRICE": 319,
+        "NORMALIZED": 22,
+        "HELD_OR_LINK": 13,
+        "HANDLED": 22,
+        "FALSE_NEGATIVE": 10,
+        "OUTSIDE_VALID": 4
+      }
+    },
+    "bySource": {
+      "SEC_SHARES_DROP:PROVIDER_DECLARED": 377,
+      "SEC_SHARES_DROP:NOT_IN_PRICE": 245,
+      "VENDOR_SPLIT:PROVIDER_DECLARED": 2183,
+      "VENDOR_SPLIT:NOT_IN_PRICE": 41,
+      "FINRA_SPLIT:NOT_IN_PRICE": 33,
+      "SEC_SHARES_DROP:NORMALIZED": 3,
+      "SEC_SHARES_DROP:HELD_OR_LINK": 4,
+      "FINRA_SPLIT:PROVIDER_DECLARED": 77,
+      "VENDOR_SPLIT:NORMALIZED": 4,
+      "FINRA_SPLIT:NORMALIZED": 15,
+      "VENDOR_SPLIT:HANDLED": 22,
+      "VENDOR_SPLIT:FALSE_NEGATIVE": 4,
+      "VENDOR_SPLIT:HELD_OR_LINK": 9,
+      "SEC_SHARES_DROP:FALSE_NEGATIVE": 5,
+      "FINRA_SPLIT:FALSE_NEGATIVE": 1,
+      "FINRA_SPLIT:OUTSIDE_VALID": 2,
+      "SEC_SHARES_DROP:OUTSIDE_VALID": 2
+    }
+  },
+  "resumedBarsByBreakLabel": {
+    "CORPORATE_ACTION_CONFLICT:TRUE_POSITIVE": 23408,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:TRUE_POSITIVE": 4913,
+    "SPLIT_SUSPECTED_UNDECLARED:FALSE_POSITIVE": 7056,
+    "SPLIT_SUSPECTED_UNDECLARED:UNLABELED": 33117,
+    "SPLIT_SUSPECTED_UNDECLARED:TRUE_POSITIVE": 22215,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:FALSE_POSITIVE": 427,
+    "UNDECLARED_SPLIT_SIGNATURE:UNLABELED": 4781,
+    "UNDECLARED_SPLIT_SIGNATURE:FALSE_POSITIVE": 9657,
+    "UNEXPLAINED_EXTREME_DISCONTINUITY:UNLABELED": 8837,
+    "CURRENCY_OR_UNIT_CHANGE:UNLABELED": 490,
+    "CORPORATE_ACTION_CONFLICT:FALSE_POSITIVE": 2,
+    "CORPORATE_ACTION_CONFLICT:UNLABELED": 5538,
+    "CURRENCY_OR_UNIT_CHANGE:TRUE_POSITIVE": 2,
+    "UNDECLARED_SPLIT_SIGNATURE:TRUE_POSITIVE": 12
+  },
+  "labelChannelsExcluded": {
+    "NONE": 467,
+    "SHARES": 32,
+    "FINRA": 19
+  },
+  "downward": {
+    "candidates": 1550,
+    "extreme": 453,
+    "byCause": {
+      "GENUINE_MOVE": 674,
+      "UNRESOLVED": 243,
+      "BAD_TICK": 219,
+      "DATA_STALENESS": 188,
+      "SPECIAL_DISTRIBUTION": 16,
+      "LISTING_CHANGE": 154,
+      "FORWARD_SPLIT": 37,
+      "CURRENCY_OR_UNIT": 19
+    },
+    "byIndependent": {
+      "CONFIRMED_EVENT": 46,
+      "LEGITIMATE_MOVE": 386,
+      "UNRESOLVED": 1084,
+      "BAD_DATA": 34
+    },
+    "byStatusV3": {
+      "IN_VALID_RETURN": 916,
+      "NOT_IN_VALID_RETURN": 609,
+      "ADJUSTED": 18,
+      "NORMALIZED": 7
+    },
+    "byStatusV2": {
+      "IN_VALID_RETURN": 958,
+      "NOT_IN_VALID_RETURN": 573,
+      "ADJUSTED": 19
+    },
+    "confusion": {
+      "GENUINE_MOVE|CONFIRMED_EVENT|IN_VALID_RETURN": 23,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|IN_VALID_RETURN": 301,
+      "UNRESOLVED|UNRESOLVED|NOT_IN_VALID_RETURN": 93,
+      "GENUINE_MOVE|UNRESOLVED|IN_VALID_RETURN": 273,
+      "BAD_TICK|UNRESOLVED|IN_VALID_RETURN": 44,
+      "UNRESOLVED|LEGITIMATE_MOVE|IN_VALID_RETURN": 16,
+      "UNRESOLVED|UNRESOLVED|IN_VALID_RETURN": 112,
+      "BAD_TICK|UNRESOLVED|NOT_IN_VALID_RETURN": 146,
+      "UNRESOLVED|BAD_DATA|IN_VALID_RETURN": 6,
+      "DATA_STALENESS|UNRESOLVED|IN_VALID_RETURN": 67,
+      "UNRESOLVED|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "SPECIAL_DISTRIBUTION|UNRESOLVED|ADJUSTED": 9,
+      "SPECIAL_DISTRIBUTION|LEGITIMATE_MOVE|ADJUSTED": 3,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 7,
+      "DATA_STALENESS|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 2,
+      "LISTING_CHANGE|UNRESOLVED|ADJUSTED": 2,
+      "LISTING_CHANGE|UNRESOLVED|NOT_IN_VALID_RETURN": 96,
+      "GENUINE_MOVE|UNRESOLVED|NOT_IN_VALID_RETURN": 67,
+      "LISTING_CHANGE|UNRESOLVED|IN_VALID_RETURN": 44,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 4,
+      "FORWARD_SPLIT|UNRESOLVED|NOT_IN_VALID_RETURN": 16,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "DATA_STALENESS|UNRESOLVED|NOT_IN_VALID_RETURN": 99,
+      "FORWARD_SPLIT|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 14,
+      "UNRESOLVED|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "FORWARD_SPLIT|CONFIRMED_EVENT|NORMALIZED": 6,
+      "CURRENCY_OR_UNIT|UNRESOLVED|NOT_IN_VALID_RETURN": 16,
+      "UNRESOLVED|CONFIRMED_EVENT|IN_VALID_RETURN": 3,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|LEGITIMATE_MOVE|IN_VALID_RETURN": 11,
+      "LISTING_CHANGE|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "UNRESOLVED|CONFIRMED_EVENT|NORMALIZED": 1,
+      "DATA_STALENESS|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "SPECIAL_DISTRIBUTION|CONFIRMED_EVENT|ADJUSTED": 4,
+      "CURRENCY_OR_UNIT|BAD_DATA|NOT_IN_VALID_RETURN": 3,
+      "GENUINE_MOVE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 2,
+      "GENUINE_MOVE|BAD_DATA|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|BAD_DATA|NOT_IN_VALID_RETURN": 10,
+      "BAD_TICK|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|IN_VALID_RETURN": 1,
+      "FORWARD_SPLIT|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|BAD_DATA|IN_VALID_RETURN": 1
+    },
+    "independentEvents": 46,
+    "independentEventsInValidReturn": 28,
+    "genuine": 386,
+    "genuineHeld": 43
+  },
+  "upward": {
+    "candidates": 1674,
+    "extreme": 471,
+    "byCause": {
+      "GENUINE_MOVE": 779,
+      "UNRESOLVED": 325,
+      "LISTING_CHANGE": 161,
+      "DATA_STALENESS": 181,
+      "BAD_TICK": 182,
+      "REVERSE_SPLIT": 13,
+      "CURRENCY_OR_UNIT": 33
+    },
+    "byIndependent": {
+      "UNRESOLVED": 1062,
+      "LEGITIMATE_MOVE": 441,
+      "CONFIRMED_EVENT": 132,
+      "BAD_DATA": 39
+    },
+    "byStatusV3": {
+      "IN_VALID_RETURN": 956,
+      "NOT_IN_VALID_RETURN": 683,
+      "NORMALIZED": 35
+    },
+    "confusion": {
+      "GENUINE_MOVE|UNRESOLVED|IN_VALID_RETURN": 277,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|IN_VALID_RETURN": 356,
+      "GENUINE_MOVE|CONFIRMED_EVENT|IN_VALID_RETURN": 50,
+      "UNRESOLVED|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 25,
+      "LISTING_CHANGE|UNRESOLVED|NORMALIZED": 5,
+      "UNRESOLVED|UNRESOLVED|IN_VALID_RETURN": 76,
+      "DATA_STALENESS|LEGITIMATE_MOVE|IN_VALID_RETURN": 6,
+      "UNRESOLVED|LEGITIMATE_MOVE|IN_VALID_RETURN": 20,
+      "GENUINE_MOVE|UNRESOLVED|NOT_IN_VALID_RETURN": 74,
+      "UNRESOLVED|UNRESOLVED|NOT_IN_VALID_RETURN": 163,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 7,
+      "BAD_TICK|LEGITIMATE_MOVE|IN_VALID_RETURN": 14,
+      "DATA_STALENESS|CONFIRMED_EVENT|NORMALIZED": 2,
+      "DATA_STALENESS|UNRESOLVED|NOT_IN_VALID_RETURN": 97,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 4,
+      "UNRESOLVED|BAD_DATA|NOT_IN_VALID_RETURN": 14,
+      "LISTING_CHANGE|UNRESOLVED|IN_VALID_RETURN": 21,
+      "DATA_STALENESS|UNRESOLVED|IN_VALID_RETURN": 50,
+      "BAD_TICK|UNRESOLVED|IN_VALID_RETURN": 62,
+      "LISTING_CHANGE|UNRESOLVED|NOT_IN_VALID_RETURN": 107,
+      "DATA_STALENESS|BAD_DATA|NOT_IN_VALID_RETURN": 8,
+      "BAD_TICK|UNRESOLVED|NOT_IN_VALID_RETURN": 95,
+      "REVERSE_SPLIT|UNRESOLVED|NOT_IN_VALID_RETURN": 6,
+      "UNRESOLVED|CONFIRMED_EVENT|IN_VALID_RETURN": 11,
+      "LISTING_CHANGE|CONFIRMED_EVENT|NORMALIZED": 9,
+      "GENUINE_MOVE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 11,
+      "UNRESOLVED|CONFIRMED_EVENT|NORMALIZED": 6,
+      "GENUINE_MOVE|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 6,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 4,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|NORMALIZED": 2,
+      "UNRESOLVED|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 8,
+      "DATA_STALENESS|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 8,
+      "DATA_STALENESS|LEGITIMATE_MOVE|NORMALIZED": 1,
+      "CURRENCY_OR_UNIT|UNRESOLVED|NOT_IN_VALID_RETURN": 27,
+      "REVERSE_SPLIT|LEGITIMATE_MOVE|IN_VALID_RETURN": 1,
+      "BAD_TICK|LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 3,
+      "REVERSE_SPLIT|CONFIRMED_EVENT|NORMALIZED": 5,
+      "LISTING_CHANGE|LEGITIMATE_MOVE|IN_VALID_RETURN": 8,
+      "REVERSE_SPLIT|CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 1,
+      "BAD_TICK|CONFIRMED_EVENT|NORMALIZED": 3,
+      "CURRENCY_OR_UNIT|BAD_DATA|NOT_IN_VALID_RETURN": 6,
+      "BAD_TICK|BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "GENUINE_MOVE|BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "LISTING_CHANGE|BAD_DATA|NOT_IN_VALID_RETURN": 1,
+      "UNRESOLVED|UNRESOLVED|NORMALIZED": 2,
+      "BAD_TICK|CONFIRMED_EVENT|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|BAD_DATA|IN_VALID_RETURN": 1,
+      "GENUINE_MOVE|BAD_DATA|IN_VALID_RETURN": 1,
+      "DATA_STALENESS|CONFIRMED_EVENT|IN_VALID_RETURN": 1
+    }
+  },
+  "extremeV2Unresolved": {
+    "total": 272,
+    "byDirection": {
+      "DOWN": 149,
+      "UP": 123
+    },
+    "byIndependent": {
+      "UNRESOLVED": 194,
+      "CONFIRMED_EVENT": 21,
+      "LEGITIMATE_MOVE": 53,
+      "BAD_DATA": 4
+    },
+    "byV3": {
+      "NOT_IN_VALID_RETURN": 167,
+      "STILL_IN_VALID_RETURN": 97,
+      "ADJUSTED": 8
+    },
+    "byIndependentAndV3": {
+      "UNRESOLVED|NOT_IN_VALID_RETURN": 139,
+      "CONFIRMED_EVENT|NOT_IN_VALID_RETURN": 9,
+      "LEGITIMATE_MOVE|STILL_IN_VALID_RETURN": 38,
+      "UNRESOLVED|STILL_IN_VALID_RETURN": 54,
+      "LEGITIMATE_MOVE|NOT_IN_VALID_RETURN": 15,
+      "BAD_DATA|NOT_IN_VALID_RETURN": 4,
+      "CONFIRMED_EVENT|ADJUSTED": 7,
+      "CONFIRMED_EVENT|STILL_IN_VALID_RETURN": 5,
+      "UNRESOLVED|ADJUSTED": 1
+    }
+  },
+  "d2": {
+    "highLevel": 74,
+    "byCause": {
+      "DECLARED_SPLIT_INCONSISTENT": 3,
+      "ADJUSTED_LEVEL_FROM_DECLARED_REVERSE_SPLITS": 60,
+      "UNDECLARED_JUMP_IN_HISTORY": 10,
+      "UNRESOLVED": 1
+    },
+    "defects": 14,
+    "knownD2NotQuarantinedBy1_2_0": 11,
+    "reproducesEleven": true,
+    "knownD2InValidRangeV2": 10,
+    "knownD2InValidRangeV3": 10,
+    "defectDays": 10,
+    "defectDaysInValidV3": 10,
+    "byCauseV3": {
+      "DECLARED_SPLIT_INCONSISTENT:IN_VALID_RANGE": 2,
+      "UNDECLARED_JUMP_IN_HISTORY:IN_VALID_RANGE": 8,
+      "UNRESOLVED:OUT": 1
+    }
+  },
+  "known83": {
+    "total": 83,
+    "byCause": {
+      "GENUINE_PRICE_MOVE": 40,
+      "UNDECLARED_REVERSE_SPLIT": 23,
+      "PROVIDER_SPIKE": 4,
+      "CURRENCY_OR_UNIT": 7,
+      "STALE_PRICE": 2,
+      "UNRESOLVED": 5,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "defects": 43,
+    "defectsInValidV3": 3,
+    "defectsInValidV2": 11,
+    "genuineHeldV3": 4,
+    "genuineHeldV2": 4,
+    "byCauseAndV3": {
+      "GENUINE_PRICE_MOVE:VALID_STILL_EXTREME": 23,
+      "UNDECLARED_REVERSE_SPLIT:NOT_VALID": 19,
+      "PROVIDER_SPIKE:NOT_VALID": 4,
+      "GENUINE_PRICE_MOVE:VALID": 13,
+      "CURRENCY_OR_UNIT:NOT_VALID": 7,
+      "GENUINE_PRICE_MOVE:NOT_VALID": 4,
+      "STALE_PRICE:NOT_VALID": 2,
+      "UNRESOLVED:NOT_VALID": 4,
+      "DECLARED_SPLIT_INCONSISTENT:VALID_STILL_EXTREME": 1,
+      "UNDECLARED_REVERSE_SPLIT:VALID": 4,
+      "UNRESOLVED:VALID_STILL_EXTREME": 1,
+      "DECLARED_SPLIT_DATE_SHIFT:VALID_STILL_EXTREME": 1
+    }
+  },
+  "blindedControl": {
+    "protocol": "CORPORATE-ACTION-PROTOCOL-V3.json",
+    "seed": "vu-corporate-action-v3-blinded-2026-10-17",
+    "perCategory": 150,
+    "inSampleExcluded": 1425,
+    "v2MembersExcluded": 905,
+    "eligible": 7077,
+    "categories": {
+      "NORMAL": {
+        "pool": 5751,
+        "sampled": 150,
+        "labelable": 125,
+        "labelableShare": 0.8333,
+        "vendorConfirmed": 85,
+        "segmentsWithIntervention": 3,
+        "interventions": 3,
+        "labels": {
+          "HOLD:UNLABELED": 2,
+          "HOLD:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0298
+        ],
+        "falseNegatives": {
+          "events": 26,
+          "providerDeclared": 24,
+          "notInPrice": 2,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 24,
+            "NOT_IN_PRICE": 2
+          }
+        }
+      },
+      "VOLATILE": {
+        "pool": 559,
+        "sampled": 150,
+        "labelable": 130,
+        "labelableShare": 0.8667,
+        "vendorConfirmed": 83,
+        "segmentsWithIntervention": 19,
+        "interventions": 26,
+        "labels": {
+          "NORMALIZE:UNLABELED": 2,
+          "HOLD:TRUE_POSITIVE": 13,
+          "INVALID_RANGE:UNLABELED": 3,
+          "HOLD:UNLABELED": 6,
+          "NORMALIZE:FALSE_POSITIVE": 2
+        },
+        "falsePositiveSegments": 2,
+        "falsePositiveRate": 0.0154,
+        "wilson95": [
+          0.0042,
+          0.0544
+        ],
+        "falseNegatives": {
+          "events": 90,
+          "providerDeclared": 83,
+          "notInPrice": 7,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 83,
+            "NOT_IN_PRICE": 7
+          }
+        }
+      },
+      "PENNY": {
+        "pool": 291,
+        "sampled": 150,
+        "labelable": 111,
+        "labelableShare": 0.74,
+        "vendorConfirmed": 27,
+        "segmentsWithIntervention": 31,
+        "interventions": 56,
+        "labels": {
+          "HOLD:UNLABELED": 36,
+          "INVALID_RANGE:UNLABELED": 17,
+          "HOLD:TRUE_POSITIVE": 2,
+          "NORMALIZE:UNLABELED": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0335
+        ],
+        "falseNegatives": {
+          "events": 29,
+          "providerDeclared": 29,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 29
+          }
+        }
+      },
+      "CONFIRMED_FORWARD_SPLIT": {
+        "pool": 225,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 124,
+        "segmentsWithIntervention": 4,
+        "interventions": 4,
+        "labels": {
+          "HOLD:FALSE_POSITIVE": 1,
+          "NORMALIZE:UNLABELED": 1,
+          "INVALID_RANGE:FALSE_POSITIVE": 1,
+          "HOLD:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 2,
+        "falsePositiveRate": 0.0133,
+        "wilson95": [
+          0.0037,
+          0.0473
+        ],
+        "falseNegatives": {
+          "events": 137,
+          "providerDeclared": 121,
+          "notInPrice": 3,
+          "outsideValid": 0,
+          "evaluable": 13,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.2281
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 121,
+            "NOT_IN_PRICE": 3,
+            "HANDLED": 13
+          }
+        }
+      },
+      "CONFIRMED_REVERSE_SPLIT": {
+        "pool": 870,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 104,
+        "segmentsWithIntervention": 15,
+        "interventions": 23,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "HOLD:UNLABELED": 4,
+          "INVALID_RANGE:UNLABELED": 3,
+          "HOLD:TRUE_POSITIVE": 14,
+          "NORMALIZE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 1,
+        "falsePositiveRate": 0.0067,
+        "wilson95": [
+          0.0012,
+          0.0368
+        ],
+        "falseNegatives": {
+          "events": 119,
+          "providerDeclared": 111,
+          "notInPrice": 7,
+          "outsideValid": 0,
+          "evaluable": 1,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.7935
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 111,
+            "HANDLED": 1,
+            "NOT_IN_PRICE": 7
+          }
+        }
+      },
+      "DOWNWARD_JUMP": {
+        "pool": 303,
+        "sampled": 150,
+        "labelable": 115,
+        "labelableShare": 0.7667,
+        "vendorConfirmed": 51,
+        "segmentsWithIntervention": 48,
+        "interventions": 80,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "INVALID_RANGE:UNLABELED": 23,
+          "HOLD:UNLABELED": 40,
+          "HOLD:FALSE_POSITIVE": 3,
+          "HOLD:TRUE_POSITIVE": 12,
+          "INVALID_RANGE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 4,
+        "falsePositiveRate": 0.0348,
+        "wilson95": [
+          0.0136,
+          0.086
+        ],
+        "falseNegatives": {
+          "events": 65,
+          "providerDeclared": 60,
+          "notInPrice": 3,
+          "outsideValid": 0,
+          "evaluable": 2,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.6576
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 60,
+            "NOT_IN_PRICE": 3,
+            "HANDLED": 2
+          }
+        }
+      },
+      "SYMBOL_CHANGE": {
+        "pool": 163,
+        "sampled": 150,
+        "labelable": 150,
+        "labelableShare": 1,
+        "vendorConfirmed": 43,
+        "segmentsWithIntervention": 27,
+        "interventions": 46,
+        "labels": {
+          "HOLD:UNLABELED": 22,
+          "INVALID_RANGE:UNLABELED": 7,
+          "HOLD:FALSE_POSITIVE": 1,
+          "NORMALIZE:UNLABELED": 3,
+          "NORMALIZE:FALSE_POSITIVE": 5,
+          "HOLD:TRUE_POSITIVE": 7,
+          "NORMALIZE:TRUE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 6,
+        "falsePositiveRate": 0.04,
+        "wilson95": [
+          0.0185,
+          0.0845
+        ],
+        "falseNegatives": {
+          "events": 41,
+          "providerDeclared": 35,
+          "notInPrice": 4,
+          "outsideValid": 0,
+          "evaluable": 2,
+          "falseNegatives": 0,
+          "rate": 0,
+          "wilson95": [
+            0,
+            0.6576
+          ],
+          "byStatus": {
+            "PROVIDER_DECLARED": 35,
+            "NOT_IN_PRICE": 4,
+            "HANDLED": 1,
+            "NORMALIZED": 1
+          }
+        }
+      },
+      "MERGER": {
+        "pool": 1321,
+        "sampled": 150,
+        "labelable": 143,
+        "labelableShare": 0.9533,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 0,
+        "interventions": 0,
+        "labels": {},
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0262
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      },
+      "DELISTING": {
+        "pool": 2606,
+        "sampled": 150,
+        "labelable": 94,
+        "labelableShare": 0.6267,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 1,
+        "interventions": 1,
+        "labels": {
+          "INVALID_RANGE:UNLABELED": 1
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.0393
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      },
+      "STALE": {
+        "pool": 1044,
+        "sampled": 150,
+        "labelable": 105,
+        "labelableShare": 0.7,
+        "vendorConfirmed": 32,
+        "segmentsWithIntervention": 18,
+        "interventions": 32,
+        "labels": {
+          "NORMALIZE:UNLABELED": 1,
+          "HOLD:UNLABELED": 13,
+          "INVALID_RANGE:UNLABELED": 7,
+          "HOLD:TRUE_POSITIVE": 10,
+          "NORMALIZE:FALSE_POSITIVE": 1
+        },
+        "falsePositiveSegments": 1,
+        "falsePositiveRate": 0.0095,
+        "wilson95": [
+          0.0017,
+          0.052
+        ],
+        "falseNegatives": {
+          "events": 26,
+          "providerDeclared": 20,
+          "notInPrice": 6,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {
+            "PROVIDER_DECLARED": 20,
+            "NOT_IN_PRICE": 6
+          }
+        }
+      },
+      "HIGH_NOMINAL": {
+        "pool": 1,
+        "sampled": 1,
+        "labelable": 1,
+        "labelableShare": 1,
+        "vendorConfirmed": 0,
+        "segmentsWithIntervention": 1,
+        "interventions": 5,
+        "labels": {
+          "HOLD:UNLABELED": 1,
+          "INVALID_RANGE:UNLABELED": 4
+        },
+        "falsePositiveSegments": 0,
+        "falsePositiveRate": 0,
+        "wilson95": [
+          0,
+          0.7935
+        ],
+        "falseNegatives": {
+          "events": 0,
+          "providerDeclared": 0,
+          "notInPrice": 0,
+          "outsideValid": 0,
+          "evaluable": 0,
+          "falseNegatives": 0,
+          "rate": null,
+          "wilson95": null,
+          "byStatus": {}
+        }
+      }
+    },
+    "pooled": {
+      "interventions": {
+        "total": 128,
+        "truePositive": 19,
+        "falsePositive": 10,
+        "falseShare": 0.3448,
+        "wilson95": [
+          0.1994,
+          0.5266
+        ]
+      },
+      "distinctSegments": 997,
+      "labelable": 842,
+      "labelableShare": 0.8445,
+      "falsePositiveSegments": 10,
+      "falsePositiveRate": 0.0119,
+      "wilson95": [
+        0.0065,
+        0.0217
+      ],
+      "falseNegatives": {
+        "events": 330,
+        "providerDeclared": 300,
+        "notInPrice": 15,
+        "outsideValid": 0,
+        "evaluable": 15,
+        "falseNegatives": 0,
+        "rate": 0,
+        "wilson95": [
+          0,
+          0.2039
+        ],
+        "byStatus": {
+          "PROVIDER_DECLARED": 300,
+          "NOT_IN_PRICE": 15,
+          "HANDLED": 14,
+          "NORMALIZED": 1
+        }
+      }
+    }
+  },
+  "independentCoverage": {
+    "interventions": 514,
+    "labelled": 134,
+    "share": 0.2607
+  },
+  "acceptance": {
+    "pitViolations": {
+      "value": {
+        "barsAfterAsOf": 0,
+        "mismatches": 0,
+        "observedAtTooEarly": 0,
+        "filedBeforeAcceptance": 2,
+        "decisionFiledBeforeAcceptance": 0
+      },
+      "threshold": 0,
+      "pass": false,
+      "views": 3512,
+      "observedAtSkippedNotABarDate": 7
+    },
+    "pitTimestampCoverage": {
+      "value": 1,
+      "universe": 1,
+      "threshold": 0.95,
+      "pass": true
+    },
+    "blindedFalsePositiveRatePooled": {
+      "value": 0.0119,
+      "threshold": 0.02,
+      "pass": true
+    },
+    "blindedFalsePositiveRatePerCategory": {
+      "threshold": 0.05,
+      "minLabelable": 30,
+      "pass": false
+    },
+    "blindedInterventionFalseShare": {
+      "value": 0.3448,
+      "labelled": 29,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "blindedFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 15,
+      "threshold": 0.05,
+      "minEvaluable": 50,
+      "pass": false
+    },
+    "falseNegativeRateUniverse": {
+      "value": 0.1026,
+      "evaluable": 39,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "courseOnlyHoldFalseShare": {
+      "value": 0.5676,
+      "labelledShare": 0.1336,
+      "threshold": 0.1,
+      "minLabelledShare": 0.5,
+      "pass": false
+    },
+    "courseOnlyFalseNegativeRate": {
+      "value": 0.0385,
+      "evaluable": 26,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "normalizeFalseShare": {
+      "value": 0.8182,
+      "labelled": 22,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "downwardFalseNegativeRate": {
+      "value": 0,
+      "evaluable": 21,
+      "threshold": 0.1,
+      "minEvaluable": 20,
+      "pass": true
+    },
+    "downwardHoldFalseShare": {
+      "value": 0.5658,
+      "labelled": 76,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "knownD2ValidRangeDefects": {
+      "value": 10,
+      "known": 11,
+      "reproducesEleven": true,
+      "threshold": 0,
+      "pass": false
+    },
+    "severeExtremeInsideValidWrong": {
+      "value": 6,
+      "of": 107,
+      "threshold": 0,
+      "pass": false
+    },
+    "severeExtremeInsideValidUnresolvedShare": {
+      "value": 0.5888,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "unresolvedConflictingHolds": {
+      "value": 21,
+      "share": 0.0092,
+      "threshold": 0.005,
+      "pass": false
+    },
+    "independentLabelCoverage": {
+      "value": 0.2607,
+      "threshold": 0.5,
+      "pass": false
+    },
+    "blindedLabelableShare": {
+      "value": 0.8445,
+      "threshold": 0.5,
+      "pass": true
+    },
+    "secondSourceIntegrated": {
+      "value": {
+        "finraEffectiveSplitEventsJoined": 204,
+        "finraSplitEventsJoined": 209,
+        "finraRatioParseFailures": 291,
+        "finraNormalizations": 15,
+        "secondSourceCorroborations": 18
+      },
+      "pass": true
+    },
+    "secCollectionComplete": {
+      "value": {
+        "documentErrors": 1,
+        "incompleteWindows": 1,
+        "documents": 70395
+      },
+      "threshold": 0.001,
+      "pass": false
+    },
+    "pass": false
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}

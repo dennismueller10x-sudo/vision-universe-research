@@ -1,0 +1,123 @@
+{
+  "schema": "corporate-action-v3-select-1.0.0",
+  "runId": "39031465706",
+  "codeCommit": "5d116f9caf7fa2def0d29a903d7f95c5376215a7",
+  "protocol": "3.0.0",
+  "protocolSha256": "3e6a240aa6d40e37924630b8b92802bdc40e1a0575814cb428936f33421e5184",
+  "versions": {
+    "validity": "canonical-price-validity-3.0.0",
+    "corporateActions": "corporate-action-contract-3.0.0",
+    "validation": "corporate-action-validation-3.0.0",
+    "semantics": "discontinuity-semantics-1.0.0",
+    "finra": "finra-daily-list-1.0.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "labels": "corporate-action-v3-labels-1.0.0"
+  },
+  "blinded": true,
+  "note": "written before the evaluate stage: no v3 decision exists when the members and the independent event population are fixed",
+  "inSampleExcluded": 1425,
+  "v2ControlMembersExcluded": 905,
+  "eligible": 7077,
+  "coreFlaggedStratum": 56,
+  "categories": {
+    "NORMAL": {
+      "pool": 5751,
+      "sampled": 150
+    },
+    "VOLATILE": {
+      "pool": 559,
+      "sampled": 150
+    },
+    "PENNY": {
+      "pool": 291,
+      "sampled": 150
+    },
+    "CONFIRMED_FORWARD_SPLIT": {
+      "pool": 225,
+      "sampled": 150
+    },
+    "CONFIRMED_REVERSE_SPLIT": {
+      "pool": 870,
+      "sampled": 150
+    },
+    "DOWNWARD_JUMP": {
+      "pool": 303,
+      "sampled": 150
+    },
+    "SYMBOL_CHANGE": {
+      "pool": 163,
+      "sampled": 150
+    },
+    "MERGER": {
+      "pool": 1321,
+      "sampled": 150
+    },
+    "DELISTING": {
+      "pool": 2606,
+      "sampled": 150
+    },
+    "STALE": {
+      "pool": 1044,
+      "sampled": 150
+    },
+    "HIGH_NOMINAL": {
+      "pool": 1,
+      "sampled": 1
+    }
+  },
+  "distinctMembers": 997,
+  "membersSha256": "34ba70389e07753cf338c330384a4579920a0ba552ce662da62ee440d2bbcb09",
+  "independentEventsSha256": "669b32dd7497b4f4a9fc5432bfdca7edec6e57ef8a9d453489b7c964a6d6890c",
+  "vendorIdentity": {
+    "CONFIRMED": 5233,
+    "INSUFFICIENT_OVERLAP": 143,
+    "INCONCLUSIVE": 83,
+    "NO_VENDOR_DATA": 3943,
+    "MISMATCH": 5
+  },
+  "vendorCollection": {
+    "collector": "vendor-yahoo-chart-collector-1.0.0",
+    "stats": {
+      "symbols": 8995,
+      "fetched": 0,
+      "cached": 5791,
+      "ok": 5464,
+      "notFound": 597,
+      "other": 1,
+      "segments": 9407,
+      "identity": {
+        "CONFIRMED": 5233,
+        "INSUFFICIENT_OVERLAP": 143,
+        "INCONCLUSIVE": 83,
+        "NO_VENDOR_DATA": 3943,
+        "MISMATCH": 5
+      },
+      "notCollected": 3204,
+      "segmentsNotCollected": 3345
+    },
+    "sha256": "fb4cd888f75f209d1e9e09416b45233ecadee649aa07082f74b5c18748af10c5"
+  },
+  "finra": {
+    "collector": "finra-otc-daily-list-collector-1.0.0",
+    "fetchedAt": "2026-10-17T09:51:46.472Z",
+    "stats": {
+      "requests": 79,
+      "retries": 0,
+      "errors": 0,
+      "windows": 22,
+      "incompleteWindows": [],
+      "rows": 168936,
+      "duplicateRowsDropped": 4,
+      "complete": true
+    },
+    "windows": 22
+  },
+  "independentEvents": {
+    "SEC_SHARES_DROP": 636,
+    "VENDOR_SPLIT": 2263,
+    "FINRA_SPLIT": 128
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}
