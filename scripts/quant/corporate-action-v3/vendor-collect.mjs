@@ -19,7 +19,7 @@ const args = (() => { const o = {}, a = process.argv.slice(2); for (let i = 0; i
 export const COLLECTOR_VERSION = 'vendor-yahoo-chart-collector-1.0.0';
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 const INTERVAL = Number(args['interval-ms'] || 700);
-const stats = { symbols: 0, ok: 0, notFound: 0, empty: 0, errors: 0, retries: 0, blocked: 0, requests: 0, stoppedBlocked: false };
+export const stats = { symbols: 0, ok: 0, notFound: 0, empty: 0, errors: 0, retries: 0, blocked: 0, requests: 0, stoppedBlocked: false };
 let last = 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function throttle() { const w = Math.max(0, last + INTERVAL - Date.now()); if (w) await sleep(w); last = Date.now(); }
@@ -27,7 +27,7 @@ const ts = (d) => Math.floor(Date.parse(d + 'T00:00:00Z') / 1000);
 const iso = (s) => new Date(s * 1000).toISOString().slice(0, 10);
 export const yahooSymbol = (t) => String(t).toUpperCase().replace(/\./g, '-');
 
-async function fetchSymbol(sym, from, to) {
+export async function fetchSymbol(sym, from, to) {
   const url = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?period1=${ts(from)}&period2=${ts(to)}&interval=1d&events=split&includeAdjustedClose=false`;
   for (let a = 0; a < 5; a++) {
     await throttle(); stats.requests++;

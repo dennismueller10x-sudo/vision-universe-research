@@ -4,6 +4,10 @@ name: Quant corporate-action protocol 3.0.0 audit (SEC + FINRA, PIT oracle, blin
 # each, review R2-09), FINRA OTC Daily List and the validation-only second vendor, fixes the blinded control set before any
 # v3 decision exists, evaluates canonical-price-validity-3.0.0 against 2.2.0 (v2 checkout) and seals per-case results.
 # Public files carry counts and hashes only. Runs only with [corporate-action-v3:audit] in the head commit message.
+# [corporate-action-v3:reuse] runs only the audit job and takes its collection inputs from earlier runs named in
+# docs/data-quality/corporate-action-v3/RUN-INPUTS.json (SEC parts; merged SEC, FINRA and EDGAR artifacts) and the validation
+# vendor from a committed evidence file (vendor-evidence.mjs; the vendor blocks GitHub-hosted runners). Without an evidence
+# file it seals a label request for that script instead.
 on:
   push:
     branches:
@@ -242,11 +246,12 @@ jobs:
         run: rm -rf /workspace/private
   audit:
     needs: [sec, vendor]
-    if: contains(github.event.head_commit.message, '[corporate-action-v3:audit]')
+    if: ${{ !cancelled() && (contains(github.event.head_commit.message, '[corporate-action-v3:reuse]') || (contains(github.event.head_commit.message, '[corporate-action-v3:audit]') && needs.sec.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 355
     permissions:
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -293,13 +298,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Run inputs (full run or reuse of earlier collections)
+        id: inputs
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          if printf '%s' "$MSG" | grep -q '\[corporate-action-v3:reuse\]'; then
+            node -e "const j=require('./fix/docs/data-quality/corporate-action-v3/RUN-INPUTS.json');const o=[['mode','reuse'],['sec_run',j.secPartsRunId||''],['merged_run',j.mergedInputsRunId||''],['evidence',j.vendorEvidence||'']];for(const [k,v] of o)if(!/^[A-Za-z0-9_./-]*$/.test(String(v)))throw new Error('bad input '+k);console.log(o.map(([k,v])=>k+'='+v).join('\n'))" >> "$GITHUB_OUTPUT"
+          else
+            printf 'mode=full\nsec_run=\nmerged_run=\nevidence=\n' >> "$GITHUB_OUTPUT"
+          fi
+          cat "$GITHUB_OUTPUT"
       - name: Private workspace outside the repositories
         run: |
           set -euo pipefail
           sudo mkdir -p /workspace/private
           sudo chown -R "$USER" /workspace
           chmod 700 /workspace/private
-          mkdir -p "$RUNNER_TEMP/pub"
+          mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/merged"
           grep -q '"canonical-price-validity-2.2.0"' v2/quant/engines/canonical-price-validity.js
           df -h / | tail -1
       - name: Canonical capture (pinned #705 pipeline, unchanged core 1.0.0 = V4 freeze content)
@@ -335,15 +352,33 @@ jobs:
           node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage scan --base-root "$GITHUB_WORKSPACE/base" --private /workspace/private/ca --public "$RUNNER_TEMP/pub/CORPORATE-ACTION-V3-SCAN.json"
           du -sh /workspace/private/ca
       - uses: actions/download-artifact@v4
+        if: steps.inputs.outputs.mode == 'full'
         with:
           pattern: sec-part-*
           path: ${{ runner.temp }}/sec
           merge-multiple: true
       - uses: actions/download-artifact@v4
+        if: steps.inputs.outputs.mode == 'reuse' && steps.inputs.outputs.merged_run == ''
+        with:
+          pattern: sec-part-*
+          path: ${{ runner.temp }}/sec
+          merge-multiple: true
+          run-id: ${{ steps.inputs.outputs.sec_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        if: steps.inputs.outputs.merged_run != ''
+        with:
+          name: merged-inputs
+          path: ${{ runner.temp }}/merged
+          run-id: ${{ steps.inputs.outputs.merged_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        if: steps.inputs.outputs.mode == 'full'
         with:
           name: vendor
           path: ${{ runner.temp }}/vendor
       - name: SEC/EDGAR evidence (merge, sequential retry of unreadable filings, periodic reports for candidates)
+        if: steps.inputs.outputs.merged_run == ''
         env:
           SEC_USER_AGENT: VisionUniverse research info@visionuniverse.de
         run: |
@@ -354,30 +389,64 @@ jobs:
           node fix/scripts/quant/corporate-action-v2/sec-collect.mjs --ciks /workspace/private/ca/ciks.json --periodic-ciks /workspace/private/ca/periodic-ciks.json \
             --phases periodic --merge-raw "$PARTS" --retry-failed 1 --out /workspace/private/ca/sec-events.json --from 2001-01
       - name: FINRA OTC Daily List (second independent corporate-action source, public FINRA data)
+        if: steps.inputs.outputs.merged_run == ''
         run: |
           set -euo pipefail
           node fix/scripts/quant/corporate-action-v3/finra-collect.mjs --out /workspace/private/ca/finra-rows.json --from 2016
       - name: EDGAR acceptance times (PIT oracle timestamps, public SEC data)
+        if: steps.inputs.outputs.merged_run == ''
         env:
           SEC_USER_AGENT: VisionUniverse research info@visionuniverse.de
         run: |
           set -euo pipefail
           node fix/scripts/quant/corporate-action-v3/edgar-acceptance.mjs --sec /workspace/private/ca/sec-events.json --out /workspace/private/ca/edgar-acceptance.json
+      - name: Keep the merged public inputs for a later reuse run (SEC events, FINRA rows, EDGAR acceptance times; public data)
+        if: steps.inputs.outputs.merged_run == ''
+        run: |
+          set -euo pipefail
+          cp /workspace/private/ca/sec-events.json /workspace/private/ca/finra-rows.json /workspace/private/ca/edgar-acceptance.json "$RUNNER_TEMP/merged/"
+      - uses: actions/upload-artifact@v4
+        if: steps.inputs.outputs.merged_run == ''
+        with:
+          name: merged-inputs
+          path: ${{ runner.temp }}/merged/
+          retention-days: 5
+      - name: Use the merged inputs of the earlier run
+        if: steps.inputs.outputs.merged_run != ''
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/merged/sec-events.json" "$RUNNER_TEMP/merged/finra-rows.json" "$RUNNER_TEMP/merged/edgar-acceptance.json" /workspace/private/ca/
+          sha256sum /workspace/private/ca/sec-events.json /workspace/private/ca/finra-rows.json /workspace/private/ca/edgar-acceptance.json
+      - name: Vendor arguments
+        id: vendor
+        env:
+          MODE: ${{ steps.inputs.outputs.mode }}
+          EVIDENCE: ${{ steps.inputs.outputs.evidence }}
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = "full" ]; then echo "args=--vendor $RUNNER_TEMP/vendor/vendor.ndjson.gz" >> "$GITHUB_OUTPUT";
+          elif [ -n "$EVIDENCE" ]; then test -f "fix/$EVIDENCE"; echo "args=--vendor-evidence $GITHUB_WORKSPACE/fix/$EVIDENCE" >> "$GITHUB_OUTPUT";
+          else echo "args=--emit-label-request 1" >> "$GITHUB_OUTPUT"; fi
       - name: Select the blinded control set (before any v3 decision)
         env:
           NODE_OPTIONS: --max-old-space-size=13000
+          VENDOR_ARGS: ${{ steps.vendor.outputs.args }}
         run: |
           set -euo pipefail
+          read -r -a VARGS <<< "$VENDOR_ARGS"
+          if [ "${VARGS[0]}" = "--emit-label-request" ]; then VARGS=(); fi
           node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage select --private /workspace/private/ca --sec /workspace/private/ca/sec-events.json --finra /workspace/private/ca/finra-rows.json \
-            --vendor "$RUNNER_TEMP/vendor/vendor.ndjson.gz" --public "$RUNNER_TEMP/pub/CORPORATE-ACTION-V3-SELECT.json"
+            "${VARGS[@]}" --public "$RUNNER_TEMP/pub/CORPORATE-ACTION-V3-SELECT.json"
           cat "$RUNNER_TEMP/pub/CORPORATE-ACTION-V3-SELECT.json" | head -c 2000
       - name: Evaluate (v3 vs v2, PIT oracle, FP/FN, downward jumps, D2/83 regression, extreme moves, blinded control)
         env:
           NODE_OPTIONS: --max-old-space-size=13000
+          VENDOR_ARGS: ${{ steps.vendor.outputs.args }}
         run: |
           set -euo pipefail
+          read -r -a VARGS <<< "$VENDOR_ARGS"
           node fix/scripts/quant/corporate-action-v3/audit-v3.mjs --stage evaluate --base-root "$GITHUB_WORKSPACE/base" --v2-root "$GITHUB_WORKSPACE/v2" --private /workspace/private/ca \
-            --sec /workspace/private/ca/sec-events.json --finra /workspace/private/ca/finra-rows.json --vendor "$RUNNER_TEMP/vendor/vendor.ndjson.gz" --acceptance /workspace/private/ca/edgar-acceptance.json --public-dir "$RUNNER_TEMP/pub"
+            --sec /workspace/private/ca/sec-events.json --finra /workspace/private/ca/finra-rows.json "${VARGS[@]}" --acceptance /workspace/private/ca/edgar-acceptance.json --public-dir "$RUNNER_TEMP/pub"
       - name: Seal private results (owner and v3 session envelopes)
         if: always()
         run: |
@@ -392,13 +461,13 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          mkdir -p "fix/$OUT/run"
-          cp "$RUNNER_TEMP"/pub/*.json "fix/$OUT/run/" 2>/dev/null || true
+          mkdir -p "fix/$OUT/run-$GITHUB_RUN_ID"
+          cp "$RUNNER_TEMP"/pub/*.json "fix/$OUT/run-$GITHUB_RUN_ID/" 2>/dev/null || true
           cd fix
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$OUT/run"
-          if [ -d scripts/quant/corporate-action-v3/sealed ]; then git add scripts/quant/corporate-action-v3/sealed; fi
+          git add "$OUT/run-$GITHUB_RUN_ID"
+          if [ -d scripts/quant/corporate-action-v3/sealed ]; then mkdir -p "scripts/quant/corporate-action-v3/sealed-run-$GITHUB_RUN_ID"; mv scripts/quant/corporate-action-v3/sealed/*.json "scripts/quant/corporate-action-v3/sealed-run-$GITHUB_RUN_ID/" 2>/dev/null || true; git add "scripts/quant/corporate-action-v3/sealed-run-$GITHUB_RUN_ID"; fi
           if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
           git commit -m "Quant corporate-action v3: audit results (public counts, sealed per-case results; no performance)"
           scripts/ci/push-with-retry.sh "$BRANCH"

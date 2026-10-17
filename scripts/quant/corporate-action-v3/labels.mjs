@@ -36,6 +36,7 @@ export function vendorView(dec) {
  */
 export function vendorIdentity(vv, bars) {
   if (!vv) return { state: 'NO_VENDOR_DATA', overlap: 0, agree: null };
+  if (vv.fromEvidence) return vv.identity;
   let n = 0, ok = 0;
   for (let i = 1; i < bars.length; i++) {
     const a = vv.idx.get(bars[i - 1].date), b = vv.idx.get(bars[i].date);
@@ -53,12 +54,39 @@ export function vendorAt(vv, ident, bars, d, r) {
   if (!vv || ident?.state !== 'CONFIRMED') return { move: 'NO_VENDOR_DATA', split: null, splitNear10: false };
   const split = vv.splits.find((s) => daysApart(s[0], d) <= 5) || null;
   const splitNear10 = vv.splits.some((s) => daysApart(s[0], d) <= 15);
-  const b = vv.idx.get(d);
-  const pi = bars.findIndex((x) => x.date === d) - 1, prevDate = pi >= 0 ? bars[pi].date : null, a = prevDate ? vv.idx.get(prevDate) : undefined;
-  if (b === undefined || a === undefined || !(vv.raw[a] > 0)) return { move: 'NO_VENDOR_DAY', split: split ? { date: split[0], ratio: split[1] } : null, splitNear10 };
-  const rv = vv.raw[b] / vv.raw[a];
+  let rv;
+  if (vv.fromEvidence) {
+    /* precomputed vendor raw ratio of the day (vendor-evidence.mjs, same rule as below) */
+    rv = vv.rvAt[d];
+    if (!finite(rv)) return { move: 'NO_VENDOR_DAY', split: split ? { date: split[0], ratio: split[1] } : null, splitNear10 };
+  } else {
+    const b = vv.idx.get(d);
+    const pi = bars.findIndex((x) => x.date === d) - 1, prevDate = pi >= 0 ? bars[pi].date : null, a = prevDate ? vv.idx.get(prevDate) : undefined;
+    if (b === undefined || a === undefined || !(vv.raw[a] > 0)) return { move: 'NO_VENDOR_DAY', split: split ? { date: split[0], ratio: split[1] } : null, splitNear10 };
+    rv = vv.raw[b] / vv.raw[a];
+  }
   const move = Math.abs(Math.log(rv) - Math.log(r)) <= Math.log(1.1) ? 'SAME_MOVE' : Math.abs(Math.log(rv)) < 0.5 * Math.abs(Math.log(r)) ? 'NO_MOVE' : 'OTHER_MOVE';
   return { move, rv: Math.round(rv * 1e6) / 1e6, split: split ? { date: split[0], ratio: split[1] } : null, splitNear10 };
+}
+
+/**
+ * Vendor evidence computed outside the runner (vendor-evidence.mjs; the validation vendor blocks cloud runners, run
+ * 39007119068): per segment the identity verdict on a sample of provider closes, the vendor split list and, per requested
+ * day, the vendor raw ratio against the provider's previous session. Same rules as vendorView/vendorIdentity/vendorAt.
+ */
+export function vendorFromEvidence(seg) {
+  if (!seg) return null;
+  return { fromEvidence: true, identity: seg.identity, splits: (seg.splits || []).slice().sort((a, b) => (a[0] < b[0] ? -1 : 1)), rvAt: seg.rv || {} };
+}
+/** Local half: identity on the sampled provider bars and the vendor raw ratio of every requested day. */
+export function computeVendorEvidence(vv, req) {
+  const identity = vendorIdentity(vv, req.sample.map(([date, close]) => ({ date, close })));
+  const rv = {};
+  if (vv) for (const [d, prevDate] of req.tasks) {
+    const b = vv.idx.get(d), a = prevDate ? vv.idx.get(prevDate) : undefined;
+    if (b !== undefined && a !== undefined && vv.raw[a] > 0) rv[d] = Math.round((vv.raw[b] / vv.raw[a]) * 1e6) / 1e6;
+  }
+  return { identity, splits: vv ? vv.splits.filter(([d]) => d >= req.from && d <= req.to) : [], rv };
 }
 
 /* ---------------------------------------------------------------- SEC shares outstanding (as protocol 2.0.0) */

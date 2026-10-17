@@ -170,7 +170,10 @@ function loadFinra(file) {
   return { meta: { collector: j.collector, fetchedAt: j.fetchedAt, stats: j.stats, windows: j.windows?.length ?? null }, bySym, rows: obs.length,
     parseFailures: obs.filter((x) => x.kind === 'SPLIT' && !x.cancelled && !finite(x.ratio)).length, splitRows: obs.filter((x) => x.kind === 'SPLIT').length };
 }
-function loadVendor(file) {
+const VENDOR_KEY_SEED = 'vu-corporate-action-v3-vendor-key';
+const vendorKey = (id) => sha(VENDOR_KEY_SEED + '|' + id).slice(0, 24);
+function loadVendor(file, evidenceFile) {
+  if (evidenceFile) { const ev = readJson(evidenceFile); return { m: new Map(), evidence: ev.segments || {}, stats: { collector: ev.collector, stats: ev.stats, sha256: sha(fs.readFileSync(evidenceFile)) } }; }
   const m = new Map();
   if (!file || !fs.existsSync(file)) return { m, stats: null };
   for (const line of zlib.gunzipSync(fs.readFileSync(file)).toString('utf8').split('\n')) { if (!line) continue; const t = line.slice(6, line.indexOf('"', 6)); m.set(t, line); }
@@ -179,6 +182,7 @@ function loadVendor(file) {
 }
 function finraFor(F, u) { return FDL.forListing(F.bySym.get(String(u.ticker).toUpperCase()) || [], { ticker: u.ticker, from: u.firstBar || u.listing.startDate, to: u.listing.endDate, name: u.name }); }
 function vendorFor(V, u, bars) {
+  if (V.evidence) { const seg = V.evidence[vendorKey(u.id)], vv = L.vendorFromEvidence(seg); return { vv, ident: L.vendorIdentity(vv, bars), status: seg ? 'EVIDENCE' : 'NOT_COLLECTED' }; }
   const line = V.m.get(VC.yahooSymbol(u.ticker));
   const x = line ? JSON.parse(line) : null, vv = x ? L.vendorView(VC.decode(x)) : null;
   return { vv, ident: L.vendorIdentity(vv, bars), status: x ? x.status : 'NOT_COLLECTED' };
@@ -189,7 +193,7 @@ const rank = (seed, id) => sha(seed + '|' + id);
 async function select(o) {
   const { universe: U } = readJson(path.join(o.private, 'universe.json'));
   const scanRows = readJson(path.join(o.private, 'scan.json')), pop = readJson(path.join(o.private, 'population.json'));
-  const secByCik = readJson(o.sec).ciks || {}, F = loadFinra(o.finra), V = loadVendor(o.vendor);
+  const secByCik = readJson(o.sec).ciks || {}, F = loadFinra(o.finra), V = loadVendor(o.vendor, o['vendor-evidence']);
   /* in-sample exclusion exactly as protocol 2.0.0 */
   const inSample = new Set([...pop.extreme.map((c) => c.id), ...pop.highIds]);
   scanRows.forEach((r) => { if (!r.missing && r.pref12 && (r.pref12.reason === 'SPLIT_SUSPECTED_UNDECLARED' || r.pref12.reason === 'PRICE_SPIKE_REVERTED')) inSample.add(U[r.i].id); });
@@ -318,7 +322,8 @@ async function evaluate(o) {
   const scanRows = readJson(path.join(o.private, 'scan.json')), pop = readJson(path.join(o.private, 'population.json'));
   const regIn = readJson(path.join(o.private, 'regression-input.json')), sel = readJson(path.join(o.private, 'select.json')), indepRows = readJson(path.join(o.private, 'indep.json'));
   const indepById = new Map(indepRows.map((x) => [x.id, x]));
-  const secAll = readJson(o.sec), secByCik = secAll.ciks || {}, F = loadFinra(o.finra), V = loadVendor(o.vendor);
+  const secAll = readJson(o.sec), secByCik = secAll.ciks || {}, F = loadFinra(o.finra), V = loadVendor(o.vendor, o['vendor-evidence']);
+  const labelRequest = o['emit-label-request'] ? {} : null;
   const ACC = o.acceptance && fs.existsSync(o.acceptance) ? readJson(o.acceptance) : { accessions: {}, stats: null };
   const PV2 = require(path.join(o['v2-root'], 'quant/engines/canonical-price-validity.js'));
   if (PV2.VERSION !== 'canonical-price-validity-2.2.0') throw new Error('V2_ROOT_NOT_2_2_0');
@@ -434,6 +439,15 @@ async function evaluate(o) {
       /* severe (review P3-09d): extreme moves left in a valid return that independent evidence calls an event or bad data, and
          those it cannot explain at all */
       if (c.extreme && statusV3 === 'IN_VALID_RETURN') { M.severe.extremeInsideValid++; if (lab.class === 'CONFIRMED_EVENT' || lab.class === 'BAD_DATA') M.severe.extremeInsideValidWrong++; else if (lab.class === 'UNRESOLVED') M.severe.extremeInsideValidUnresolved++; }
+    }
+    /* ---- label request for the validation vendor (computed outside the runner, review of run 39007119068) ---- */
+    if (labelRequest) {
+      const dates = new Set([...(v3.holds || []).map((h) => h.from), ...v3.evidence.filter((e) => e.outcome === 'NORMALIZE').map((e) => e.eventDate), ...(v3.segmentInvalidRanges || []).map((x) => x.from),
+        ...DS.scan(bars, { listingEvents }).map((c) => c.date), ...r.f.jumps10.map((j) => j.date)].filter(Boolean));
+      const n = bars.length, sample = [];
+      for (let b = 0; b < 4; b++) { const st = Math.floor((b * n) / 4); for (let k = st; k < Math.min(n, st + 31); k++) sample.push([bars[k].date, bars[k].close]); }
+      labelRequest[vendorKey(u.id)] = { ticker: u.ticker, from: addDays(u.firstBar || u.listing.startDate, -40), to: u.listing.endDate ? addDays(u.listing.endDate, 40) : null, sample,
+        tasks: [...dates].sort().map((d) => [d, prevDateOf(bars, d)]) };
     }
     /* ---- the v2 "272": >= 10x moves without provider event inside the v2 valid range, neither normalized nor held ---- */
     const normDates2 = new Set(v2.evidence.filter((e) => e.outcome === 'NORMALIZE').map((e) => e.eventDate));
@@ -588,8 +602,9 @@ async function evaluate(o) {
   };
   acc.pass = Object.values(acc).every((x) => x.pass === true);
   const pub = { schema: 'corporate-action-v3-audit-1.0.0', ...runMeta(), versions: versions(), capture: { dataFingerprint: binding.dataFingerprint, securities: binding.securities },
+    vendorMode: V.evidence ? 'EVIDENCE_FILE (vendor-evidence.mjs outside the runner)' : 'IN_RUNNER',
     sources: { sec: { collector: secAll.collector, extractor: secAll.extractor, from: secAll.from, to: secAll.to, stats: { ...secAll.stats, incompleteWindows: (secAll.stats?.incompleteWindows || []).length }, ciksWithEvents: Object.keys(secByCik).length, sha256: sha(fs.readFileSync(o.sec)) },
-      finra: { ...F.meta, observations: F.rows, sha256: sha(fs.readFileSync(o.finra)) }, vendor: { stats: V.stats?.stats ?? null, collector: V.stats?.collector ?? null, symbols: V.m.size }, edgarAcceptance: ACC.stats },
+      finra: { ...F.meta, observations: F.rows, sha256: sha(fs.readFileSync(o.finra)) }, vendor: { stats: V.stats?.stats ?? null, collector: V.stats?.collector ?? null, symbols: V.evidence ? Object.keys(V.evidence).length : V.m.size, evidenceSha256: V.stats?.sha256 ?? null }, edgarAcceptance: ACC.stats },
     impact: M, pit,
     courseOnlyHolds: { definition: 'holds whose evidence is the price only (PRICE_DISCONTINUITY_NO_CA_EVIDENCE, or a semantic quarantine/terminal without any source)', ...prec(courseOnly), byReason: courseOnly.reduce((a, x) => inc(a, `${x.reason}:${x.label}`), {}), byBasis: courseOnly.reduce((a, x) => inc(a, x.basis ?? 'NONE'), {}) },
     allCaHolds: { ...prec(caHolds), byFamily: caHolds.reduce((a, x) => inc(a, `${x.family}:${x.label}`), {}) }, coreDataContractHolds: P.holds.filter((x) => x.family === 'CORE_DATA_CONTRACT').length,
@@ -614,6 +629,7 @@ async function evaluate(o) {
     independentCoverage, acceptance: acc, ...NO };
   writeJson(path.join(o['public-dir'], 'CORPORATE-ACTION-V3-AUDIT.json'), pub, true);
   writeJson(path.join(o.private, 'evaluate.json'), P);
+  if (labelRequest) writeJson(path.join(o.private, 'label-request.json'), { schema: 'corporate-action-v3-label-request-1.0.0', keySeed: VENDOR_KEY_SEED, segments: labelRequest });
   process.stdout.write(JSON.stringify({ acceptance: Object.fromEntries(Object.entries(acc).map(([k, v]) => [k, v.pass ?? v])) }) + '\n');
 }
 
@@ -628,7 +644,16 @@ async function seal(o) {
     const f = path.join(o['sealed-dir'], `CORPORATE-ACTION-V3-PRIVATE.${aud}.sealed.json`), s = encryptForOwner(fs.readFileSync(k, 'utf8'), bytes);
     fs.writeFileSync(f, s); return { audience: aud, file: path.basename(f), sha256: sha(Buffer.from(s)) };
   });
-  writeJson(o.public, { schema: 'corporate-action-v3-sealed-1.0.0', encoding: 'gzip(JSON)', plaintextSha256: sha(bytes), plaintextBytes: bytes.length, envelopes: env }, true);
+  /* label request for the validation vendor: separate envelope (small), owner and session */
+  let request = null;
+  const rf = path.join(o.private, 'label-request.json');
+  if (fs.existsSync(rf)) {
+    const rb = zlib.gzipSync(fs.readFileSync(rf));
+    request = { plaintextSha256: sha(rb), plaintextBytes: rb.length, envelopes: [['owner', o['owner-key']], ['session', o['session-key']]].map(([aud, k]) => {
+      const f = path.join(o['sealed-dir'], `CORPORATE-ACTION-V3-LABEL-REQUEST.${aud}.sealed.json`), x = encryptForOwner(fs.readFileSync(k, 'utf8'), rb);
+      fs.writeFileSync(f, x); return { audience: aud, file: path.basename(f), sha256: sha(Buffer.from(x)) }; }) };
+  }
+  writeJson(o.public, { schema: 'corporate-action-v3-sealed-1.0.0', encoding: 'gzip(JSON)', plaintextSha256: sha(bytes), plaintextBytes: bytes.length, envelopes: env, labelRequest: request }, true);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
