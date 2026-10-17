@@ -1,0 +1,162 @@
+{
+  "schema": "supertrader-corporate-action-v2-calibration-readiness-1.0.0",
+  "verdict": "NOT_READY",
+  "runId": "38976628673",
+  "codeCommit": "35b2cb2893d820cd2c348555673f63ea853d0922",
+  "versions": {
+    "validity": "canonical-price-validity-2.1.0",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "validation": "corporate-action-validation-2.1.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "coreCorporateActions": "corporate-action-contract-1.2.0"
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "allowedVerdicts": [
+    "READY_FOR_PREREGISTERED_CALIBRATION",
+    "NOT_READY"
+  ],
+  "rule": "READY only if every pre-registered acceptance criterion passes, R5 passes (none of the 11 known D2 defects in the valid range), the 61 legitimate high-level cases stay accepted, no HIGH/CRITICAL review finding is open and the consumers a calibration reads are adopted with before/after.",
+  "criteria": {
+    "secCollectionComplete": {
+      "pass": false,
+      "documentErrorsAfterRetries": 308,
+      "incompleteWindows": 0,
+      "documentsSkippedByCap": 0
+    },
+    "controlFalsePositivePooled": {
+      "value": 0,
+      "threshold": 0.02,
+      "pass": true
+    },
+    "controlFalsePositivePerCategory": {
+      "threshold": 0.05,
+      "pass": true
+    },
+    "holdPrecision": {
+      "pass": null,
+      "status": "CONDITIONAL",
+      "run": {
+        "value": 0.9811,
+        "threshold": 0.8,
+        "pass": true
+      },
+      "detail": "52/53 labelled; 109 of 162 unlabelled (worst case 0.32); price-only holds essentially unlabelled; labels partly from the triggering evidence (R2-03)"
+    },
+    "normalizeFalseShare": {
+      "value": 0.25,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "falseNegativeRate": {
+      "value": 0.0298,
+      "threshold": 0.05,
+      "pass": true
+    },
+    "pitConsistency": {
+      "pass": null,
+      "status": "CONDITIONAL",
+      "run": {
+        "pass": true,
+        "views": 600
+      },
+      "detail": "0 violations in 600 views under protocol 2.0.0, but the check is largely self-referential after F19 and blind to hold timing (R2-02); hold timestamps fixed in 2.2.0 (R2-01) but not re-measured"
+    },
+    "r5KnownD2DefectsOutsideValidRange": {
+      "pass": false,
+      "stillInValidRange": 11,
+      "of": 11
+    },
+    "legitimateHighLevelAccepted": {
+      "pass": false,
+      "accepted": 56,
+      "of": 61
+    },
+    "consumersAdopted": {
+      "pass": false,
+      "detail": "only the opt-in loader fromBarsPartial exists; backtests, survivorship control, setup outcomes and Supertrader (Gate A) still read whole-series 1.2.0 (PARTIAL-SERIES-CONSUMER-MATRIX-V2.json)"
+    },
+    "reviewHighCriticalOpen": {
+      "pass": false,
+      "open": [
+        "R2-01 (fixed in code, not re-measured)",
+        "R2-02",
+        "R2-03"
+      ]
+    }
+  },
+  "blockers": [
+    {
+      "id": "B1",
+      "severity": "BLOCKER",
+      "what": "R5: all 11 known D2 defects (9 undeclared jumps in history, 2 declared splits inconsistent) remain in the valid range; the independent SEC source does not cover them"
+    },
+    {
+      "id": "B2",
+      "severity": "BLOCKER",
+      "what": "SEC normalization precision: 7 of 28 labelled normalizations contradicted by SEC share counts (false share 0.25, Wilson 95% 0.127-0.434; threshold 0.05)"
+    },
+    {
+      "id": "B3",
+      "severity": "BLOCKER",
+      "what": "272 unresolved >= 10x day moves inside the valid range (123 up, 149 down) without corporate-action evidence either way"
+    },
+    {
+      "id": "B4",
+      "severity": "BLOCKER",
+      "what": "5 of the 61 legitimate high-level histories are newly held by price evidence; 5 genuine price moves of the 83 are held; of the 83 cases 7 of 38 defects remain in the valid range and 2 are newly misclassified vs 1.2.0; of the 74 high-level securities 12 of 13 defects remain in the valid range"
+    },
+    {
+      "id": "B5",
+      "severity": "BLOCKER",
+      "what": "SEC collection not complete (308 documents after retries in the final run, 13 in the previous one); 523 of 2,732 provider splits since 2002 with a CIK not found in SEC current reports"
+    },
+    {
+      "id": "B6",
+      "severity": "BLOCKER",
+      "what": "BANKRUPTCY_DISTRESS control category empty: no independent label source for distress in the capture"
+    },
+    {
+      "id": "B7",
+      "severity": "BLOCKER",
+      "what": "No calibration consumer reads contract 2.1.0 yet; adoption needs product-owned PRs with before/after (Supertrader Gate A); the opt-in loader now passes asOf (R2-05) but no consumer reads it"
+    },
+    {
+      "id": "B8",
+      "severity": "BLOCKER",
+      "what": "R2-01: SEC-conflict hold timestamps were too early in the measured contract 2.1.0; fixed in 2.2.0 but not re-measured on real data"
+    },
+    {
+      "id": "B9",
+      "severity": "BLOCKER",
+      "what": "R2-02: no independent PIT check of hold and normalization timing (needs pre-registered protocol 3.0.0)"
+    },
+    {
+      "id": "B10",
+      "severity": "BLOCKER",
+      "what": "R2-03: false-positive rate of price-only holds unmeasured (control set excludes them; 91 of 92 unlabelled)"
+    },
+    {
+      "id": "B11",
+      "severity": "BLOCKER",
+      "what": "R2-04: false negatives for downward jumps / undeclared forward splits unmeasured"
+    }
+  ],
+  "passed": [
+    "control false positives 0 of 905 segments (Wilson 95% upper 0.0053), 0 in every category",
+    "false negatives 47 of 1,577 (0.0298)",
+    "partial series: 306 of 311 histories rejected whole by 1.2.0 kept as valid prefix (221,428 bars)"
+  ],
+  "noRuleChangeAfterResults": "Detection rules, thresholds and ratios are as pre-registered before run 38889245815; the only post-result change is the PIT timestamp fix F19 (contract 2.1.0), which run 38976628673 shows leaves every count but the PIT check unchanged.",
+  "codeAtVerdict": {
+    "contract": "canonical-price-validity-2.2.0",
+    "measured": "canonical-price-validity-2.1.0 in run 38976628673",
+    "difference": "2.2.0 changes only hold.observedAt and its disclosure (R2-01); not yet re-measured"
+  },
+  "conditional": [
+    "PIT: 0 lookahead indicators in 600 as-of views after fix F19 (self-referential check, R2-02)",
+    "hold precision 0.981 (52 of 53 labelled; 109 unlabelled, R2-03)"
+  ],
+  "newlyHeldBarsVsMain": 112772
+}

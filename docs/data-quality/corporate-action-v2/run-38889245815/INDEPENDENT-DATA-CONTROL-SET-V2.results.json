@@ -1,0 +1,294 @@
+{
+  "schema": "corporate-action-v2-control-results-2.0.0",
+  "runId": "38889245815",
+  "codeCommit": "15c3af63bd8bbc99f37926f273dad1e015d5de56",
+  "versions": {
+    "validity": "canonical-price-validity-2.0.0",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "validation": "corporate-action-validation-2.1.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "coreCorporateActions": "corporate-action-contract-1.2.0"
+  },
+  "protocol": "CONTROL-SET-PROTOCOL-V2.json",
+  "protocolVersion": "2.0.0",
+  "protocolSha256": "dc8d7a351b88df96151abd4c3236e28b664ba701d4cda88f415449cc822ce365",
+  "inSampleExcluded": 1525,
+  "eligible": 7882,
+  "volatileSdCut": 0.05993837999999999,
+  "categories": {
+    "NORMAL": {
+      "pool": 6439,
+      "sampled": 150,
+      "withCik": 123,
+      "bars": 288953,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0303
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "VOLATILE": {
+      "pool": 623,
+      "sampled": 150,
+      "withCik": 118,
+      "bars": 146696,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0315
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "HIGH_BETA_MOVE": {
+      "pool": 2280,
+      "sampled": 150,
+      "withCik": 120,
+      "bars": 223039,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.031
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "PENNY": {
+      "pool": 382,
+      "sampled": 150,
+      "withCik": 73,
+      "bars": 99678,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.05
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "HIGH_NOMINAL": {
+      "pool": 63,
+      "sampled": 63,
+      "withCik": 60,
+      "bars": 166230,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0602
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "FORWARD_SPLIT": {
+      "pool": 293,
+      "sampled": 150,
+      "withCik": 141,
+      "bars": 415397,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0265
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "STALE": {
+      "pool": 1206,
+      "sampled": 150,
+      "withCik": 97,
+      "bars": 168176,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0381
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "MERGER": {
+      "pool": 1519,
+      "sampled": 150,
+      "withCik": 149,
+      "bars": 166695,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0251
+      ],
+      "interventionsPer10kBars": 0
+    },
+    "BANKRUPTCY_DISTRESS": {
+      "pool": 0,
+      "sampled": 0,
+      "withCik": 0,
+      "bars": 0,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": null,
+      "wilson95": null,
+      "interventionsPer10kBars": null
+    },
+    "SYMBOL_CHANGE": {
+      "pool": 59,
+      "sampled": 59,
+      "withCik": 59,
+      "bars": 37833,
+      "segmentsWithIntervention": 0,
+      "interventions": 0,
+      "labels": {},
+      "falsePositiveSegments": 0,
+      "falsePositiveRate": 0,
+      "wilson95": [
+        0,
+        0.0611
+      ],
+      "interventionsPer10kBars": 0
+    }
+  },
+  "pooled": {
+    "distinctSegments": 904,
+    "withCik": 725,
+    "falsePositiveSegments": 0,
+    "falsePositiveRate": 0,
+    "wilson95": [
+      0,
+      0.0053
+    ]
+  },
+  "holdPrecision": {
+    "TRUE_POSITIVE": 38,
+    "FALSE_POSITIVE": 1,
+    "UNLABELED": 107,
+    "byClass": {
+      "CONFLICTING_CORPORATE_ACTION:UNLABELED": 15,
+      "CONFLICTING_CORPORATE_ACTION:TRUE_POSITIVE": 17,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE:UNLABELED": 92,
+      "PROBABLE_CORPORATE_ACTION:TRUE_POSITIVE": 20,
+      "CONFLICTING_CORPORATE_ACTION:FALSE_POSITIVE": 1,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE:TRUE_POSITIVE": 1
+    },
+    "labelled": 39,
+    "precision": 0.9744,
+    "wilson95FalseShare": [
+      0.0045,
+      0.1318
+    ]
+  },
+  "normalizePrecision": {
+    "TRUE_POSITIVE": 19,
+    "FALSE_POSITIVE": 4,
+    "UNLABELED": 8,
+    "sharesNone": 1,
+    "labelled": 23,
+    "falseShare": 0.1739,
+    "wilson95FalseShare": [
+      0.0698,
+      0.3714
+    ]
+  },
+  "falseNegatives": {
+    "total": 1585,
+    "evaluable": 1577,
+    "handled": 1481,
+    "held": 51,
+    "falseNegatives": 45,
+    "inSample": {
+      "evaluable": 985,
+      "falseNegatives": 33
+    },
+    "outOfSample": {
+      "evaluable": 592,
+      "falseNegatives": 12
+    },
+    "forwardReported": 807,
+    "falseNegativeRate": 0.0285,
+    "wilson95": [
+      0.0214,
+      0.038
+    ],
+    "heldShare": 0.0323
+  },
+  "secCollection": {
+    "complete": false,
+    "incompleteWindows": 0,
+    "documentErrors": 0,
+    "documentsSkippedByCap": 15862
+  },
+  "pit": {
+    "segmentsChecked": 222,
+    "viewsChecked": 525,
+    "barsAfterAsOf": 0,
+    "holdObservedAfterAsOf": 0,
+    "evidenceVisibleNotBeforeAsOf": 0,
+    "returnMismatchOutsideRevisions": 6,
+    "revisionsHold": 1,
+    "revisionsUnadjusted": 10,
+    "invalidRangesObservedNextSession": 25
+  },
+  "acceptance": {
+    "secCollectionComplete": {
+      "pass": false
+    },
+    "controlFalsePositiveRatePooled": {
+      "value": 0,
+      "threshold": 0.02,
+      "pass": true
+    },
+    "controlFalsePositiveRatePerCategory": {
+      "threshold": 0.05,
+      "pass": true
+    },
+    "holdPrecision": {
+      "value": 0.9744,
+      "threshold": 0.8,
+      "pass": true
+    },
+    "normalizeFalseShare": {
+      "value": 0.1739,
+      "threshold": 0.05,
+      "pass": false
+    },
+    "falseNegativeRate": {
+      "value": 0.0285,
+      "threshold": 0.05,
+      "pass": true
+    },
+    "pitConsistency": {
+      "pass": false,
+      "views": 525
+    },
+    "pass": false
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}

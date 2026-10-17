@@ -1,0 +1,116 @@
+{
+  "schema": "corporate-action-v2-known-v4-regression-1.0.0",
+  "runId": "38976628673",
+  "codeCommit": "35b2cb2893d820cd2c348555673f63ea853d0922",
+  "versions": {
+    "validity": "canonical-price-validity-2.1.0",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "validation": "corporate-action-validation-2.1.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "coreCorporateActions": "corporate-action-contract-1.2.0"
+  },
+  "captureFingerprint": "c8715919485de9bd938ef29bc3c4492d3771bddf9a48097bb74b7830cd40e8e3",
+  "performanceCalculated": false,
+  "calibrationRun": false,
+  "sources": {
+    "audit": "docs/data-quality/corporate-action-v2/run-38976628673/CORPORATE-ACTION-V2-AUDIT.json",
+    "control": "docs/data-quality/corporate-action-v2/run-38976628673/INDEPENDENT-DATA-CONTROL-SET-V2.results.json",
+    "sealedPerCase": "docs/data-quality/corporate-action-v2/run-38976628673/sealed"
+  },
+  "use": "REGRESSION_ONLY: the 83 diagnostic cases and the 74 adjusted-level > 1e6 securities of #722 are evidence for checking v2, not inputs. No rule, threshold or ratio of v2 was set from them; all v2 control-set measures exclude them (protocol 2.0.0).",
+  "labels": "final case labels of the #722 report (build-data-fix-v4.mjs#finalCause), joined in the sealed private space; only counts here",
+  "known83": {
+    "total": 83,
+    "byLabel": {
+      "GENUINE": 40,
+      "DEFECT": 38,
+      "UNRESOLVED": 5
+    },
+    "correctlyClassified": 66,
+    "stillUnresolved": 5,
+    "defectsStillInValidRange": 7,
+    "newlyMisclassifiedVs1_2_0": 2,
+    "newlyCorrectVs1_2_0": 2,
+    "genuineMovesHeld": 5,
+    "defectsNormalizedBySec": 3,
+    "undeclaredReverseSplits": {
+      "total": 23,
+      "normalizedBySecConfirmation": 3,
+      "heldByClass": {
+        "CONFLICTING_CORPORATE_ACTION": 4,
+        "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 9,
+        "PROBABLE_CORPORATE_ACTION": 4
+      },
+      "stillInValidRange": 3
+    },
+    "byCauseAndV2Outcome": {
+      "GENUINE_PRICE_MOVE:VALID_STILL_EXTREME": 35,
+      "UNDECLARED_REVERSE_SPLIT:HELD": 17,
+      "PROVIDER_SPIKE:HELD": 4,
+      "CURRENCY_OR_UNIT:HELD": 5,
+      "CURRENCY_OR_UNIT:VALID_STILL_EXTREME": 2,
+      "GENUINE_PRICE_MOVE:HELD": 5,
+      "STALE_PRICE:HELD": 2,
+      "UNDECLARED_REVERSE_SPLIT:VALID_STILL_EXTREME": 3,
+      "UNRESOLVED:VALID_STILL_EXTREME": 3,
+      "DECLARED_SPLIT_INCONSISTENT:VALID_STILL_EXTREME": 1,
+      "UNDECLARED_REVERSE_SPLIT:NORMALIZED": 3,
+      "UNRESOLVED:VALID": 1,
+      "UNRESOLVED:HELD": 1,
+      "DECLARED_SPLIT_DATE_SHIFT:VALID_STILL_EXTREME": 1
+    }
+  },
+  "adjustedLevelGt1e6": {
+    "total": 74,
+    "legitimateFromDeclaredReverseSplits": 61,
+    "legitimateAccepted": 56,
+    "legitimateNewlyHeldByPriceEvidence": 5,
+    "defects": 13,
+    "defectsOutsideValidRange": 1,
+    "defectsStillInValidRange": 12,
+    "states": {
+      "FULL_VALID": 67,
+      "VALID_PREFIX": 7
+    },
+    "noGlobalPriceCap": true
+  },
+  "r5": {
+    "knownD2DefectsNotQuarantinedBy1_2_0": 11,
+    "stillInValidRange": 11,
+    "byCause": {
+      "UNDECLARED_JUMP_IN_HISTORY:IN_VALID_RANGE": 9,
+      "DECLARED_SPLIT_INCONSISTENT:IN_VALID_RANGE": 2
+    },
+    "rule": "R5 of #722: if the 11 D2 defects remain in the valid range the core is NOT_READY",
+    "verdict": "NOT_READY"
+  },
+  "extremePopulationAll": {
+    "total": 2213,
+    "inValidRange": 2093,
+    "stillExtreme": 2087,
+    "held": 115,
+    "normalizedInMonth": 5
+  },
+  "previousRun": {
+    "runId": "38957800888",
+    "known83": {
+      "correctlyClassified": 66,
+      "defectsStillInValidRange": 7,
+      "undeclaredReverseSplits": {
+        "total": 23,
+        "normalizedBySecConfirmation": 3,
+        "heldByClass": {
+          "CONFLICTING_CORPORATE_ACTION": 4,
+          "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 9,
+          "PROBABLE_CORPORATE_ACTION": 4
+        },
+        "stillInValidRange": 3
+      }
+    },
+    "adjustedLevelGt1e6": {
+      "legitimateAccepted": 56,
+      "r5StillInValidRange": 11
+    }
+  }
+}

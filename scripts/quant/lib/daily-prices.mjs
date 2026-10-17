@@ -18,6 +18,7 @@ const Canonical = require(join(ROOT, "quant/engines/technical/canonical-bars.js"
 const MarketQuality = require(join(ROOT, "quant/engines/market-quality.js"));
 const CanonicalTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
 const SurvivorshipControl = require(join(ROOT, "quant/engines/survivorship-control.js"));
+const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity.js"));
 
 /* Gesamtrendite ist ab canonical-total-return-1.0.0 (Owner-Entscheidung
    03.10.2026) eine EIGENE Rekonstruktion aus Rohkurs, Splitfaktor und
@@ -34,7 +35,33 @@ const SurvivorshipControl = require(join(ROOT, "quant/engines/survivorship-contr
 
    opts.identity ist Pflicht fuer eine Gesamtrendite: ohne bestaetigte
    Listing-Identitaet gibt es keine (IDENTITY_UNCERTAIN). opts.role
-   BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik. */
+   BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik.
+
+   TEILREIHEN (canonical-price-validity-2.2.0, Review R8) - NUR auf Anforderung
+   fromBarsPartial(payload, opts): lehnt die Rekonstruktion die Reihe ab einem
+   bestimmten Tag ab (Sperre, Datenwiderspruch, Luecke), bleiben die gueltigen
+   Kerzen davor erhalten: tr traegt Werte bis trValidUntil und NaN danach (und an
+   einzelnen ungueltigen Kerzen), trCoverage "PREFIX". fromBars bleibt
+   wie bisher (ganze Reihe oder null): die Studien uebernehmen Teilreihen
+   erst in einem eigenen PR mit Vorher/Nachher (CLAUDE.md, Review F07/F08).
+   Ganz ohne Gesamtrendite bleibt es bei fehlender Identitaet, einer veralteten
+   Reihe (opts.asOf/maxStaleDays, unabhaengig vom Grund der Ablehnung geprueft)
+   und fuer BENCHMARK_REFERENCE. opts.secEvents / opts.shares geben unabhaengige
+   Corporate-Action-Belege mit (SEC). */
+const WHOLE_SERIES_ONLY = new Set(["IDENTITY_UNCERTAIN", "NO_BARS", "STALE"]);
+function partialSeries(sorted, dates, ctr, opts) {
+  if (opts.role === "BENCHMARK_REFERENCE") return null;
+  if (ctr.reconstructed && !Array.isArray(opts.secEvents)) return null;
+  if (!ctr.reconstructed && WHOLE_SERIES_ONLY.has(ctr.reason)) return null;
+  if (opts.asOf && Number.isFinite(opts.maxStaleDays) && sorted.length) {
+    const lag = Math.round((Date.parse(opts.asOf) - Date.parse(String(sorted[sorted.length - 1].date).slice(0, 10))) / 864e5);
+    if (lag > opts.maxStaleDays) return { tr: null, trCoverage: null, validity: null, stale: true };
+  }
+  const validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares, asOf: opts.asOf });
+  if (!validity.validUntil) return { tr: null, trCoverage: null, validity };
+  return { tr: PriceValidity.alignTr(validity, dates), validity,
+    trCoverage: validity.state === "FULL_VALID" ? "FULL" : validity.state === "VALID_PREFIX" ? "PREFIX" : "FULL_WITH_INVALID_BARS" };
+}
 export const TR_BASIS = "CANONICAL_TOTAL_RETURN";
 export function fromBars(payload, opts = {}) {
   const bars = payload.bars || [];
@@ -61,6 +88,16 @@ export function fromBars(payload, opts = {}) {
     tr: ctr.reconstructed ? Float64Array.from(ctrSeries) : null, totalReturn: ctr.reconstructed, trBasis: ctr.reconstructed ? TR_BASIS : null,
     trVerdict, ctr: ctrInfo,
     providerTr: providerOk ? Float64Array.from(PTR.close) : null, providerVerdict, legacyTotalReturn };
+}
+export function fromBarsPartial(payload, opts = {}) {
+  const d = fromBars(payload, opts);
+  const sorted = (payload.bars || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+  const p = partialSeries(sorted, d.dates, d.ctr, opts);
+  if (!p) return { ...d, trCoverage: d.totalReturn ? "FULL" : null, trValidUntil: d.totalReturn ? d.dates[d.dates.length - 1] : null };
+  const hold = p.validity && p.validity.hold;
+  return { ...d, tr: p.tr, totalReturn: p.tr !== null, trBasis: p.tr !== null ? TR_BASIS : null, trCoverage: p.trCoverage, trValidUntil: p.validity ? p.validity.validUntil : null,
+    trVerdict: { ...d.trVerdict, coverage: p.trCoverage, validUntil: p.validity ? p.validity.validUntil : null, stale: p.stale === true,
+      hold: hold ? { from: hold.from, observedAt: hold.observedAt, reason: hold.reason, evidenceClass: hold.evidenceClass } : null, validityContract: PriceValidity.VERSION } };
 }
 
 /* Die Arbeitsablage fuehrt je securityId nur das juengste Listing

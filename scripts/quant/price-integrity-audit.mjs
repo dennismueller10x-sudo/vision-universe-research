@@ -321,4 +321,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (!run) throw new Error('STAGE_REQUIRED');
   run(o).catch((e) => { process.stderr.write(JSON.stringify({ phase: 'PRICE_INTEGRITY_AUDIT', stage: o.stage, code: /^[A-Z0-9_:]+$/.test(e.message) ? e.message : 'PRIVATE_RUN_FAILURE', hint: /^[A-Za-z0-9 ,.:'()_\-/]{1,160}$/.test(e.message) ? e.message : null, stack: (e.stack || '').split('\n').slice(1, 5).map((l) => l.replace(/\(.*\/(scripts|quant)\//, '($1/')).join(' | ') }) + '\n'); process.exitCode = 1; });
 }
-export { explainMonth, coreDecision, rawBarsFor, extremeMonths, loadPipeline, coverage };
+export { explainMonth, coreDecision, rawBarsFor, extremeMonths, loadPipeline, loadPrepared, rawReader, coverage, sharesOf };

@@ -1,0 +1,178 @@
+{
+  "schema": "corporate-action-v2-audit-1.1.0",
+  "runId": "38889245815",
+  "codeCommit": "15c3af63bd8bbc99f37926f273dad1e015d5de56",
+  "versions": {
+    "validity": "canonical-price-validity-2.0.0",
+    "corporateActions": "corporate-action-contract-2.0.0",
+    "validation": "corporate-action-validation-2.1.0",
+    "secExtractor": "sec-corporate-actions-1.1.0",
+    "totalReturn": "canonical-total-return-1.2.0",
+    "coreCorporateActions": "corporate-action-contract-1.2.0"
+  },
+  "capture": {
+    "dataFingerprint": "aea4317939b91fc2198a6f7becac2e1ce2271d3f0835d55558e24cbc85eebaae",
+    "securities": 9407
+  },
+  "sec": {
+    "collector": "sec-corporate-action-collector-1.0.0",
+    "extractor": "sec-corporate-actions-1.1.0",
+    "from": "2001-01",
+    "to": "2026-10",
+    "stats": {
+      "requests": 49274,
+      "errors": 0,
+      "retries": 36,
+      "eftsQueries": 4076,
+      "eftsHits": 284479,
+      "universeHits": 82030,
+      "filings": 45744,
+      "documents": 45162,
+      "documentErrors": 0,
+      "truncatedWindows": 0,
+      "proxyHits": 14565,
+      "periodicFilings": 160,
+      "incompleteWindows": 0,
+      "documentsSkippedByCap": 15862,
+      "complete": false
+    },
+    "ciksWithEvents": 5476,
+    "events": 2657,
+    "effectiveEvents": 1993,
+    "eventsByStage": {
+      "EFFECTIVE": 1993,
+      "ANNOUNCED": 55,
+      "MENTION": 334,
+      "APPROVED": 275
+    },
+    "eventsByConfidence": {
+      "HIGH": 1118,
+      "MEDIUM": 366,
+      "LOW": 1173
+    },
+    "sha256": "816269d79313189a8e572b6044d91a0aaf7ee9041a7530b917194dde619295c2"
+  },
+  "impact": {
+    "segments": 9407,
+    "bars": 14836902,
+    "validBars": {
+      "main_1_0_0_wholeSeries": 14589430,
+      "pr721_1_2_0_wholeSeries": 14406082,
+      "v4_1_2_0_prefix": 14590269,
+      "v2_withoutSec": 14609775,
+      "v2": 14603741
+    },
+    "histories": {
+      "wholeSeriesRejected_1_2_0": 311,
+      "ofThoseRetainedAsPrefix_v2": 306,
+      "retainedBarsFromRejectedHistories_v2": 219618,
+      "wholeSeriesRejected_1_0_0": 169,
+      "ofThoseRetainedAsPrefix_v2_vs_main": 169,
+      "retainedBarsFromRejectedHistories_v2_vs_main": 119662
+    },
+    "v2States": {
+      "FULL_VALID": 9090,
+      "VALID_PREFIX": 298,
+      "VALID_WITH_INVALID_BARS": 14,
+      "NO_VALID_BARS": 5
+    },
+    "holdsByEvidenceClass": {
+      "CONFLICTING_CORPORATE_ACTION": 33,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 93,
+      "PROBABLE_CORPORATE_ACTION": 20
+    },
+    "holdsByReason": {
+      "SPLIT_SUSPECTED_UNDECLARED": 133,
+      "CORPORATE_ACTION_CONFLICT": 13
+    },
+    "quarantineByReason": {
+      "CORPORATE_ACTION_CONTRADICTED": 76,
+      "LISTING_DISCONTINUITY": 66,
+      "DIVIDEND_MISSING": 15
+    },
+    "evidenceByClass": {
+      "UNKNOWN": 1366,
+      "CONFIRMED_REVERSE_SPLIT": 918,
+      "CONFLICTING_CORPORATE_ACTION": 35,
+      "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": 93,
+      "CONFIRMED_SPLIT": 108,
+      "PROBABLE_CORPORATE_ACTION": 20
+    },
+    "evidenceByReason": {
+      "SEC_EVENT_OUTSIDE_SERIES": 456,
+      "PROVIDER_FACTOR_MATCHES_SEC": 995,
+      "SEC_EVENT_NOT_OBSERVED_IN_PRICE": 203,
+      "SEC_EVENT_UNDATED_NOT_NORMALIZED": 602,
+      "SEC_EVENT_PERIODIC_ONLY_NOT_NORMALIZED": 100,
+      "SPLIT_SUSPECTED_UNDECLARED": 133,
+      "SEC_EFFECTIVE_AND_PRICE_CONCORDANT_PROVIDER_MISSING": 31,
+      "PROVIDER_FACTOR_DIFFERS_FROM_SEC": 15,
+      "SEC_EVENT_AFTER_LAST_BAR": 5
+    },
+    "normalizedEvents": 31,
+    "normalizedSegments": 31,
+    "invalidBars": 52,
+    "barsNewlyHeld_v2_vs_main": 105302,
+    "unresolved10xInsideValid": {
+      "UP": 124,
+      "DOWN": 150,
+      "total": 274,
+      "normalizedBySec": 7
+    },
+    "providerAgreement": {
+      "secEffectiveMatchedToProviderFactor": 995,
+      "secEffectiveConflictingProviderFactor": 15,
+      "secEffectiveNormalizedProviderMissing": 31,
+      "secEffectiveNotObserved": 203,
+      "secEffectiveOutsideSeries": 461,
+      "secEffectiveUndatedOrPeriodicOnly": 702,
+      "secEffectiveSmallRatioUncorroborated": 0
+    },
+    "extractorVsProvider": {
+      "providerSplitsSince2002WithCik": 2732,
+      "foundDated": 1042,
+      "foundUndated": 123,
+      "missed": 1567
+    },
+    "pit": {
+      "segmentsChecked": 222,
+      "viewsChecked": 525,
+      "barsAfterAsOf": 0,
+      "holdObservedAfterAsOf": 0,
+      "evidenceVisibleNotBeforeAsOf": 0,
+      "returnMismatchOutsideRevisions": 6,
+      "revisionsHold": 1,
+      "revisionsUnadjusted": 10,
+      "invalidRangesObservedNextSession": 25
+    },
+    "secCoverage": {
+      "segmentsWithCik": 7352,
+      "segmentsWithSecEvents": 1704,
+      "segmentsWithEffectiveEvents": 1468
+    }
+  },
+  "regression": {
+    "extremeAll": {
+      "total": 2213,
+      "inValidRange": 2102,
+      "stillExtreme": 2098,
+      "held": 106,
+      "normalizedInMonth": 3
+    },
+    "known83": {
+      "total": 83,
+      "inValidRange": 48,
+      "stillExtreme": 45,
+      "held": 35,
+      "normalizedInMonth": 2
+    },
+    "highLevel": {
+      "total": 74,
+      "fullValid": 69,
+      "validPrefix": 5,
+      "withNormalization": 3
+    }
+  },
+  "performanceCalculated": false,
+  "calibrationRun": false
+}

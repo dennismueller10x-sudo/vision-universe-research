@@ -1,0 +1,218 @@
+{
+  "schema": "partial-series-consumer-matrix-2.0.0",
+  "contract": "canonical-price-validity-2.2.0",
+  "method": "static audit of every caller of canonical-total-return.js#reconstruct and scripts/quant/lib/daily-prices.mjs, plus the product areas that use their own price path (file:line evidence in docs/PARTIAL_SERIES_HANDLING_V2.md)",
+  "columns": {
+    "acceptsPartial": "keeps bars before a hold",
+    "dropsWholeSecurity": "a failure anywhere removes the whole series",
+    "canHonorValidUntil": "can use validUntil/holdFrom",
+    "lookaheadRisk": "uses information after the as-of date for inclusion or settlement",
+    "changedInThisPr": "code changed here (with tests)"
+  },
+  "consumers": [
+    {
+      "id": "QUANT_DAILY_PRICES",
+      "file": "scripts/quant/lib/daily-prices.mjs#fromBars",
+      "before": {
+        "acceptsPartial": false,
+        "dropsWholeSecurity": true
+      },
+      "after": {
+        "acceptsPartial": "opt-in: fromBarsPartial(payload, opts)",
+        "dropsWholeSecurity": "fromBars unchanged (whole series or null)",
+        "canHonorValidUntil": true
+      },
+      "lookaheadRisk": "fromBarsPartial: NaN after trValidUntil; a stale series (asOf/maxStaleDays) gets no partial TR whatever the rejection reason (F14)",
+      "changedInThisPr": true,
+      "tests": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ]
+    },
+    {
+      "id": "QUANT_SIGNAL_BACKTEST",
+      "file": "scripts/quant/build-signal-backtest.mjs",
+      "before": {
+        "acceptsPartial": false,
+        "dropsWholeSecurity": true
+      },
+      "after": {
+        "unchanged": true,
+        "canAdopt": "fromBarsPartial"
+      },
+      "lookaheadRisk": "unchanged (whole-series verdict decides inclusion; see review R8)",
+      "changedInThisPr": false,
+      "adoptionRequirements": [
+        "gate firstTouch/contractExit/oppositeExit and any split-adjusted close path on validUntil (review F08c-e)",
+        "delisted sensitivity pads only when validUntil equals the last bar (F07)",
+        "one coverage enum handled identically for survivors and delisted listings (F15)",
+        "switch rules count trCoverage === 'FULL' (F08a)",
+        "report the censored share per study; product before/after comparison in its own PR (CLAUDE.md)"
+      ]
+    },
+    {
+      "id": "QUANT_SETUP_BACKTEST",
+      "file": "scripts/quant/build-setup-backtest.mjs",
+      "before": {
+        "acceptsPartial": false,
+        "dropsWholeSecurity": true
+      },
+      "after": {
+        "unchanged": true,
+        "canAdopt": "fromBarsPartial"
+      },
+      "lookaheadRisk": "unchanged (whole-series verdict decides inclusion; see review R8)",
+      "changedInThisPr": false,
+      "adoptionRequirements": [
+        "gate firstTouch/contractExit/oppositeExit and any split-adjusted close path on validUntil (review F08c-e)",
+        "delisted sensitivity pads only when validUntil equals the last bar (F07)",
+        "one coverage enum handled identically for survivors and delisted listings (F15)",
+        "switch rules count trCoverage === 'FULL' (F08a)",
+        "report the censored share per study; product before/after comparison in its own PR (CLAUDE.md)"
+      ]
+    },
+    {
+      "id": "QUANT_SURVIVORSHIP_CONTROL",
+      "file": "scripts/quant/build-survivorship-control.mjs",
+      "before": {
+        "acceptsPartial": false,
+        "dropsWholeSecurity": true
+      },
+      "after": {
+        "unchanged": true,
+        "canAdopt": "fromBarsPartial"
+      },
+      "lookaheadRisk": "unchanged (whole-series verdict decides inclusion; see review R8)",
+      "changedInThisPr": false,
+      "adoptionRequirements": [
+        "gate firstTouch/contractExit/oppositeExit and any split-adjusted close path on validUntil (review F08c-e)",
+        "delisted sensitivity pads only when validUntil equals the last bar (F07)",
+        "one coverage enum handled identically for survivors and delisted listings (F15)",
+        "switch rules count trCoverage === 'FULL' (F08a)",
+        "report the censored share per study; product before/after comparison in its own PR (CLAUDE.md)"
+      ]
+    },
+    {
+      "id": "QUANT_SETUP_OUTCOMES",
+      "file": "scripts/quant/build-setup-outcomes.mjs",
+      "before": {
+        "acceptsPartial": false,
+        "dropsWholeSecurity": "whole study switches to price if any title is not reconstructed"
+      },
+      "after": {
+        "acceptsPartial": "inherits daily-prices; its every() switch now sees totalReturn=true for valid prefixes; > 0 guards skip NaN"
+      },
+      "lookaheadRisk": "switch rule depends on the full history (pre-existing)",
+      "changedInThisPr": false,
+      "openItem": "switch rule should count trCoverage === 'FULL' like the other studies; product before/after required before merge"
+    },
+    {
+      "id": "BENCHMARK_HISTORY",
+      "file": "scripts/market/refresh-benchmark-history.mjs",
+      "acceptsPartial": false,
+      "dropsWholeSecurity": true,
+      "byDesign": "BENCHMARK_REFERENCE must be complete",
+      "changedInThisPr": false
+    },
+    {
+      "id": "VORSORGE_ETF_INGEST",
+      "file": "scripts/vorsorge/ingest-tiingo-etfs.mjs",
+      "acceptsPartial": false,
+      "dropsWholeSecurity": "TR only (price published)",
+      "canHonorValidUntil": "yes with a field change",
+      "changedInThisPr": false,
+      "openItem": "ETF product; separate PR (not part of the equity calibration path)"
+    },
+    {
+      "id": "SUPERTRADER_RESEARCH_V4",
+      "file": "scripts/supertrader/research/tournament/data.mjs#firstCanonicalFailure (on #705/#712 branches only)",
+      "acceptsPartial": true,
+      "dropsWholeSecurity": false,
+      "canHonorValidUntil": true,
+      "lookaheadRisk": "runner/accounting/featuresAtDate key exclusion, liquidation and censoring on dataQuarantine.from, not observedAt (R7); V4 price-sanity layer conditions on the full-history adjusted level (R16)",
+      "changedInThisPr": false,
+      "gate": "Supertrader Gate A: own PR",
+      "requiredForCalibration": "a new pre-registered Supertrader protocol must read canonical-price-validity-2.2.0 (asOf view or observedAt gating) and drop the level-conditioned sanity layer"
+    },
+    {
+      "id": "DISCOVER",
+      "file": "scripts/discover/build-discover-data.mjs, scripts/market/publish-discover-series.mjs, publish-long-series.mjs",
+      "usesCore": false,
+      "pricePath": "split-adjusted closes via return-series.js#splitFactors, no total return",
+      "acceptsPartial": "n/a (no TR verdict)",
+      "lookaheadRisk": "back-adjusted levels (scale only)",
+      "changedInThisPr": false,
+      "gate": "Discover gates: own PR if adoption is wanted"
+    },
+    {
+      "id": "SCREENER",
+      "file": "screener/engine/adapters.js, scripts/screener/build-universe.mjs",
+      "usesCore": false,
+      "pricePath": "public 1Y split-adjusted discover-series",
+      "changedInThisPr": false
+    },
+    {
+      "id": "TECHNICAL_ANALYSIS",
+      "file": "scripts/technical/materialize-product-intelligence.mjs, quant/engines/technical/canonical-bars.js",
+      "usesCore": false,
+      "pricePath": "split-adjusted via provider splitFactor; TOTAL_RETURN from provider adjustedClose",
+      "lookaheadRisk": "undeclared splits stay as price jumps (no SEC evidence)",
+      "changedInThisPr": false
+    },
+    {
+      "id": "WATCHLISTS",
+      "file": "quant/watchlist/index.html",
+      "usesCore": false,
+      "pricePath": "public series only",
+      "changedInThisPr": false
+    },
+    {
+      "id": "CURRENT_SCANS_MORNING",
+      "file": "scripts/morning/build-morning.mjs, quant/engines/market-factors.js",
+      "usesCore": false,
+      "pricePath": "provider adjustedClose for factors; morning reads no prices",
+      "changedInThisPr": false
+    },
+    {
+      "id": "SETUP_REPLAY",
+      "file": "scripts/quant/replay-setup-history.mjs",
+      "usesCore": false,
+      "pricePath": "per-cut split-adjusted (point in time)",
+      "changedInThisPr": false
+    },
+    {
+      "id": "LEGACY_BACKTEST_ENGINE",
+      "file": "quant/engines/backtest.js",
+      "usesCore": false,
+      "pricePath": "provider adjustedClose",
+      "changedInThisPr": false
+    }
+  ],
+  "summary": {
+    "consumersOfTheCanonicalCore": 9,
+    "acceptPartialAfterThisPr": [
+      "QUANT_DAILY_PRICES (opt-in fromBarsPartial)",
+      "SUPERTRADER_RESEARCH_V4 (existing prefix logic)"
+    ],
+    "wholeSeriesByDesign": [
+      "BENCHMARK_HISTORY"
+    ],
+    "openConsumerWork": [
+      "QUANT_SIGNAL_BACKTEST, QUANT_SETUP_BACKTEST, QUANT_SURVIVORSHIP_CONTROL, QUANT_SETUP_OUTCOMES: adopt fromBarsPartial in an own PR with before/after (requirements listed per consumer)",
+      "VORSORGE_ETF_INGEST",
+      "SUPERTRADER (observedAt gating, contract v2, no level-conditioned sanity layer) - Gate A, own PR"
+    ],
+    "productsWithoutCore": [
+      "DISCOVER",
+      "SCREENER",
+      "TECHNICAL_ANALYSIS",
+      "WATCHLISTS",
+      "CURRENT_SCANS_MORNING",
+      "SETUP_REPLAY",
+      "LEGACY_BACKTEST_ENGINE"
+    ]
+  },
+  "decision": "After the independent review (F07/F08/F15) the studies keep their current whole-series behaviour in this PR; the canonical contract and the opt-in loader exist, adoption is a model change that needs its own PR with a before/after comparison."
+}

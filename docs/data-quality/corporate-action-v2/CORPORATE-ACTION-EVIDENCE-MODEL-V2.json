@@ -1,0 +1,69 @@
+{
+  "schema": "corporate-action-evidence-model-2.0.0",
+  "contract": "corporate-action-contract-2.0.0",
+  "engine": "quant/engines/corporate-action-validation.js (corporate-action-validation-2.1.0)",
+  "extractor": "quant/engines/sec-corporate-actions.js (sec-corporate-actions-1.1.0)",
+  "derivation": "Rules follow corporate-action semantics and filing language only. No threshold, window or tolerance was fitted on the 83 V4 diagnostic cases, the 74 adjusted-level cases or the 1.2.0 holds; those populations are regression/validation sets only.",
+  "secStages": {
+    "ANNOUNCED": "proposal, intention, vote pending (proxy, 8-K 8.01)",
+    "APPROVED": "board/stockholder approval, ratio set; no effectiveness wording; ranges are at most APPROVED",
+    "EFFECTIVE": "effected / became effective / began trading on a split-adjusted basis; or charter amendment filed with a fixed ratio and a stated effective or market date (scheduled = true)",
+    "OBSERVED_IN_PRICE": "assigned by the validation engine: the price or the provider factor shows a DATED EFFECTIVE event from a current report (8-K/6-K) on the stated session (window -2..+3 sessions). Undated statements and statements known only from periodic reports never normalize."
+  },
+  "classes": {
+    "CONFIRMED_SPLIT": {
+      "when": "SEC EFFECTIVE forward split (newPerOld > 1) observed in price or provider factor",
+      "outcome": "NORMALIZE if the provider factor is missing, ACCEPT if the provider factor matches (1 % rounding)"
+    },
+    "CONFIRMED_REVERSE_SPLIT": {
+      "when": "SEC EFFECTIVE reverse split (newPerOld < 1) observed in price or provider factor",
+      "outcome": "NORMALIZE / ACCEPT as above"
+    },
+    "PROBABLE_CORPORATE_ACTION": {
+      "when": "price-only split signature or provider adjustedClose step, supported by an SEC approval/announcement whose fixed ratio explains the move or by an SEC share-count change consistent with the ratio",
+      "outcome": "HOLD_FROM_EVENT_DATE"
+    },
+    "CONFLICTING_CORPORATE_ACTION": {
+      "when": "provider factor differs from the SEC ratio, an SEC EFFECTIVE ratio near the date does not explain the move, or SEC share counts contradict a price-only split signature",
+      "outcome": "HOLD_FROM_EVENT_DATE"
+    },
+    "PRICE_DISCONTINUITY_NO_CA_EVIDENCE": {
+      "when": "only the canonical-total-return-1.2.0 price signature (frozen, unchanged) or the provider cross-check",
+      "outcome": "HOLD_FROM_EVENT_DATE"
+    },
+    "UNKNOWN": {
+      "when": "SEC event outside the series, not visible in the price, undated and ambiguous, or undated without ticker in the filing",
+      "outcome": "NO_ACTION"
+    }
+  },
+  "matchRule": "a session matches an SEC ratio q when q explains the raw close-to-close move r better than no event: |ln r + ln q| < |ln r|; the best explained session in the window is taken. For |ln q| < ln 3 (splits smaller than 3:1 / 1:3) a second, independent confirmation is required: the share volume moves in split direction against the median of the previous up to 20 bars (reverse: below, forward: above) or SEC shares outstanding support the ratio. A ratio is never inserted twice within 30 sessions.",
+  "recordFields": [
+    "class",
+    "outcome",
+    "reason",
+    "eventDate",
+    "ratio (newPerOld)",
+    "direction",
+    "stage",
+    "confidence",
+    "sources[] (system, form, items, accession, filedDate | provider field)",
+    "identity (cik, basis: CIK_LINK / TICKER_IN_FILING / PRICE_CONCORDANT, cikStatus)",
+    "visibleAt (filing date of the EFFECTIVE document)",
+    "observedAt",
+    "priceObservation (date, rawRatio, residual, anchor)",
+    "shares (ratio, verdict)",
+    "provenanceHash"
+  ],
+  "noSilentRepair": "Only CONFIRMED_* may change a series, by inserting the SEC ratio as splitFactor on the observed session; split adjustment itself stays in return-series.js#splitFactors (ADR-002). Everything else holds from the event date; nothing is back-calculated from prices.",
+  "downwardEvents": "Event semantics, not return semantics: SEC-confirmed forward splits are normalized like reverse splits; provider spikes that revert are invalidated bar-by-bar in both directions; listing gaps > 365 days end the listing (TERMINAL). Downward jumps without a corporate-action source (unit or currency changes, unconfirmed forward splits) get no new price rule; they are counted as unresolved discontinuities (no rule was derived from the known census).",
+  "pointInTime": "Every filing is an observation with its own filing date; a view as of t is rebuilt only from observations filed strictly before t (fields included: a market date that only a later 8-K states is not known earlier). A hold later resolved by a filing is reported with resumeFrom = first session after the filing.",
+  "extraction": {
+    "direction": "only from the ratio phrase and its neighbourhood (80 characters); 'consolidated financial statements', 'reverse merger/acquisition' are removed before the test; without a direction word only 'A-for-B (stock) split' (q = A/B) or a consistent document-wide direction counts",
+    "range": "range words (not less/more than, between, up to, ranging, discretion ...) only in the ratio's neighbourhood; two different ratios in one sentence are a range",
+    "dates": "record, payable and meeting dates are skipped; 'today'/'tomorrow' resolve against the filing date; after-close effectiveness has no market date (next session)",
+    "exchangeRatios": "merger exchange/conversion ratios are skipped",
+    "confidence": "HIGH only for an EFFECTIVE event with exact ratio whose stated date lies within 45 days of a current-report filing (or charter filing)",
+    "ticker": "ticker mentions count only in an exchange/symbol context",
+    "merging": "one event per ratio and date (10 days); undated observations join within 120 days; every filing stays an observation with its own fields and filing date"
+  }
+}
