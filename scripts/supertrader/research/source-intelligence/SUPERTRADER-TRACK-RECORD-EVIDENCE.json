@@ -1,0 +1,1627 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "policy": "VERIFIED scoped to exact competition/account report. Academic simulations use UNKNOWN real-account evidence and explicit RESEARCH_BACKTEST kind. No CAGR/annualization/compounding calculated; null is unknown, not zero.",
+  "candidates": [
+    {
+      "candidate_id": "cross_sectional_momentum",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "1965–1989 original main sample",
+            "returns": null,
+            "source_ids": [
+              "jt1993"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "JT1993 equal-weight overlapping J/K portfolios differ from French size-conditioned value-weighted 2–12 factor. Treat as separate source-defined eras/variants, not interchangeable ground truth.",
+        "Original JT family has no-skip and one-week-skip alternatives; neither silently replaced by French full-month skip. Exact source variant is unresolved until Phase2 freeze."
+      ]
+    },
+    {
+      "candidate_id": "52_week_high_effect",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "July 1963–December 2001",
+            "returns": null,
+            "source_ids": [
+              "gh2004"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "Proximity ranking is not a new-high breakout trigger and not VU Trend52. Do not inherit either method name or paper returns into a breakout engine."
+      ]
+    },
+    {
+      "candidate_id": "industry_momentum",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "July 1963–July 1995",
+            "returns": null,
+            "source_ids": [
+              "mg1999"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "George–Hwang comparison uses a different industry-ranking construction; preserve original MG equal-industry/value-stock structure. Sector ETFs are an adaptation, not paper replication."
+      ]
+    },
+    {
+      "candidate_id": "residual_momentum",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "Raw sample 1926–2009; postformation portfolio results January 1930–December 2009",
+            "returns": null,
+            "source_ids": [
+              "residual2011"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "Residual momentum is not industry-neutral momentum. Regression window, alpha handling and residual standardization are substantive source-defined elements."
+      ]
+    },
+    {
+      "candidate_id": "time_series_momentum",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "Raw series January 1965–December 2009; principal TSMOM factor January 1985–December 2009",
+            "returns": null,
+            "source_ids": [
+              "tsmom2012"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "Paper evidence covers 58 liquid equity-index, bond, currency and commodity derivatives; no inference that same risk/return exists in individual stocks. ETF or long-only equities would change source universe and exposure."
+      ]
+    },
+    {
+      "candidate_id": "dual_momentum_gem",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "MEDIUM",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Author model disclosure; no audited/live account confirmation inspected.",
+        "records": [
+          {
+            "period": "Official GEM extended model history uses pre-1970/pre-1976 index substitutions; no numerical performance imported",
+            "returns": null,
+            "source_ids": [
+              "antonacci_gem"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "Author FAQ acknowledges S&P absolute filter first (book p.98) and relative first (p.101) can differ. Preserve alternatives.",
+        "Public GEM is different from proprietary adaptive models actually used by author.",
+        "GEM performance expressly hypothetical, not actual fund/portfolio; a paper award is not a verified account competition."
+      ]
+    },
+    {
+      "candidate_id": "value_plus_momentum",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "US stock component January 1972–July 2011; other markets have different windows",
+            "returns": null,
+            "source_ids": [
+              "vm2013"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "conflicts": [
+        "50/50 sleeve combination differs from a combined stock-ranking score or intersection filter; these would be VU adaptations.",
+        "Global all-asset evidence does not establish performance of a restricted VU long-only US sleeve."
+      ]
+    },
+    {
+      "candidate_id": "quality_plus_momentum_hypothesis",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "COMPONENT_RESEARCH_BACKTEST_ONLY",
+        "real_account_verified": false,
+        "research_evidence_strength": "LOW_FOR_JOINT_HYBRID_HIGH_FOR_COMPONENTS",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "QMJ component June 1957–December 2016 US / June 1989–December 2016 global; joint hybrid period unknown",
+            "returns": null,
+            "source_ids": [
+              "qmj2019"
+            ],
+            "scope": "Only separate component research; no hybrid performance claim."
+          }
+        ]
+      },
+      "conflicts": [
+        "2013/2014 QMJ working papers used payout component; 2019 published principal definition uses profitability/growth/safety, payout as alternative. Preserve eras.",
+        "Published alpha controlling for UMD is evidence for independent quality premium; it is not evidence for a particular quality+momentum portfolio."
+      ]
+    },
+    {
+      "candidate_id": "pead_bernard_thomas",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_pead_1989",
+            "period": "1974–1986 NYSE/AMEX; supplemental NASDAQ 1974–1985",
+            "summary": "Published event-study spread; not an audited account.",
+            "numbers": [
+              {
+                "metric": "Approximate size-adjusted high-minus-low SUE decile CAR over 60 trading days",
+                "value": 4.2,
+                "unit": "percent",
+                "locator": "Section 4.1.1, pp. 10–11"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "1989 Foster-model SUE and later seasonal-random-walk/analyst-surprise definitions must remain separate.",
+        "The CAR decile test implicitly daily rebalances controls; matched quintile buy-and-hold variant has different portfolio mechanics.",
+        "Original Compustat sample has acknowledged potential survivor bias before 1982; current significance cannot be inferred."
+      ]
+    },
+    {
+      "candidate_id": "earnings_momentum_cjl",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_cjl_1996",
+            "period": "January 1977–January 1993 monthly formation",
+            "summary": "Paper documents distinct earnings and price predictability; precise performance figures not transcribed from scanned tables.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "SUE, ABR and REV6 are separate measured strategies, not one author-prescribed combined engine.",
+        "CJL SUE uses seasonal random walk and preceding eight-quarter difference volatility; Bernard/Thomas Foster-model PEAD differs.",
+        "Revision-free SUE/ABR subset is feasible research, but would not reproduce REV6."
+      ]
+    },
+    {
+      "candidate_id": "piotroski_value_fscore",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_piotroski_paper",
+            "period": "1976–1996 return formation; 1975–1995 financial firm-years",
+            "summary": "Published mean one-year high-minus-low portfolio spread, not CAGR or audited account.",
+            "numbers": [
+              {
+                "metric": "Mean market-adjusted high F-score minus low F-score one-year portfolio return difference",
+                "value": 23.0,
+                "unit": "percentage points",
+                "locator": "Section 4.2/table 3: 0.134 minus -0.096 as reported by paper"
+              },
+              {
+                "metric": "Mean high F-score improvement versus full high-book-to-market quintile",
+                "value": 7.5,
+                "unit": "percentage points",
+                "locator": "Section 4.2/table 3: author-reported difference"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "Removing highest-BM conditioning changes the method.",
+        "University reprint body defines asset turnover with beginning assets while table 1 says average assets: resolve against original final article before rule freeze.",
+        "Study assumes zero delisting return; distressed sample and borrowing costs can affect realizability."
+      ]
+    },
+    {
+      "candidate_id": "greenblatt_magic_formula",
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence": {
+        "class": "SELF_REPORTED",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "SELF_REPORTED",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_magic_interview",
+            "period": "Original 1988–2004 research; 10 years ending September 30, 2009 update mentioned",
+            "summary": "Direct author interview calls the results back-tested; no independently audited Magic Formula account established.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "Do not transfer Gotham Capital special-situations fund record to this retail formula; book promotional returns omitted because methodology appendix was not inspected."
+          }
+        ]
+      },
+      "conflicts": [
+        "Official website allows rejecting names for any reason; mechanical selection must either disclose adaptation or reproduce predeclared ranks.",
+        "2010 interview Formula Investing buys 24 and replaces six quarterly; annual book/retail rule is a different era.",
+        "Interview simplifies EV to market equity plus long-term debt; exact cash/debt adjustments must come from inspected appendix, not harmonized silently."
+      ]
+    },
+    {
+      "candidate_id": "quality_minus_junk",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_qmj_final",
+            "period": "US June 1957–December 2016; broad 24-country June 1989–December 2016",
+            "summary": "Published simulated factor evidence across countries; current AQR products are not this exact historical portfolio.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "Old AQR static PDF includes payout as a fourth component and idiosyncratic volatility in safety; final paper has three core components and payout as alternative.",
+        "Final growth is residual profitability per share; older total-profit growth differs.",
+        "AQR public aggregate factor dataset cites 2014; do not assume final-version constituent/PIT series or product redistribution permission."
+      ]
+    },
+    {
+      "candidate_id": "gross_profitability_novy_marx",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_gp_2012",
+            "period": "July 1963–December 2010",
+            "summary": "Published average monthly spread from table 2, not compounded annual return.",
+            "numbers": [
+              {
+                "metric": "Mean highest-minus-lowest gross-profitability quintile return spread",
+                "value": 0.31,
+                "unit": "percent per month",
+                "locator": "Section 2/table 2, manuscript pp. 9–10"
+              },
+              {
+                "metric": "Fama–French three-factor monthly alpha of spread",
+                "value": 0.52,
+                "unit": "percent per month",
+                "locator": "Section 2/table 2, manuscript p. 10"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "Annual June-lagged variant differs from monthly latest-quarter Appendix A.6 variant; do not merge.",
+        "Profitability plus value combined ranks and industry-adjusted profitability are different variants.",
+        "A long-only quality screen is a VU adaptation of the full long-short research spread."
+      ]
+    },
+    {
+      "candidate_id": "accruals_sloan",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_sloan_1996",
+            "period": "1962–1991 financial firm-years; first-year returns measured after four-month lag",
+            "summary": "Published mean annual size-adjusted research hedge return; no CAGR implied.",
+            "numbers": [
+              {
+                "metric": "Mean first-year size-adjusted low-minus-high accrual decile hedge return",
+                "value": 10.4,
+                "unit": "percent",
+                "locator": "Section IV/table 6, original p. 306"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "2011 peer-reviewed publisher abstract reports historical hedge returns decayed to no longer reliably positive; strong old evidence does not establish current edge.",
+        "Balance-sheet accrual construction differs from modern cash-flow-statement variants.",
+        "Acquisition/divestiture accounting can distort balance-sheet changes."
+      ]
+    },
+    {
+      "candidate_id": "net_share_issuance_pontiff_woodgate",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_issuance_paper",
+            "period": "January 1970–December 2003 primary sample; September 1932–December 1969 earlier sample",
+            "summary": "Published predictor evidence; no standalone normative portfolio account return asserted.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "conflicts": [
+        "Pre-1970 predictor mostly lacks significance and differs from post-1970 sample; material era sensitivity.",
+        "Realized net share contraction is not the same as repurchase announcement or authorized buyback dollars.",
+        "Paper exact annual endpoint is t−11 with six-month lag, not a silently substituted t−12 or t−18 variant."
+      ]
+    },
+    {
+      "candidate_id": "william_oneil_canslim",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "period": null,
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-ONEIL-BOOK"
+            ],
+            "scope": "No independently inspected personal-account performance record; fame and historical winner studies excluded."
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Method era / product rules",
+          "description": "Modern IBD summaries cannot silently become O'Neil personal trading behavior."
+        }
+      ]
+    },
+    {
+      "candidate_id": "david_ryan",
+      "track_record_evidence": "PARTIALLY_VERIFIED",
+      "evidence": {
+        "class": "PARTIALLY_VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "PARTIALLY_VERIFIED",
+            "period": "1985–1987",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-RYAN-INTERVIEW",
+              "G-USIC"
+            ],
+            "scope": "Official organizer confirms historical participation. Host labels three-time winner; exact-year original standings not inspected.",
+            "unaccepted_claims": [
+              "Host episode title says 1,379% over three years; retained only as claim lead, not accepted figure."
+            ]
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "1986 championship rank",
+          "description": "Modern interview description says three wins; indexed Schwager interview lead says 1986 second place. Original standings and authorized interview edition required; neither merged into three verified wins.",
+          "status": "UNRESOLVED_DISCOVERY_LEAD"
+        }
+      ]
+    },
+    {
+      "candidate_id": "nicolas_darvas",
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence": {
+        "class": "SELF_REPORTED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "SELF_REPORTED",
+            "period": "1950s memoir period",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-DARVAS-BOOK",
+              "G-DARVAS-TIME"
+            ],
+            "scope": "More than $2m profit/fortune claim discussed; no auditable capital-flow record inspected.",
+            "unaccepted_claims": [
+              "$2,000,000 is a claimed dollar fortune/profit, not annualized performance."
+            ]
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Performance claim",
+          "description": "Contemporary TIME reported Attorney-General found only $216k ascertainable profit while not locating all accounts. 1961 court restored inquiry order; opinion establishes neither fraud nor authentic $2m performance.",
+          "source_ids": [
+            "G-DARVAS-CHALLENGE",
+            "G-DARVAS-COURT"
+          ]
+        },
+        {
+          "topic": "Behavior vs modern growth filter",
+          "description": "E. L. Bruce trade interview says company business unknown. Universal fundamental-growth prerequisite cannot be presumed.",
+          "source_ids": [
+            "G-DARVAS-TIME"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "stan_weinstein",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "period": null,
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-WEINSTEIN-BOOK",
+              "G-WEINSTEIN-GTA"
+            ],
+            "scope": "No independently inspected managed-account series; institutional popularity not performance evidence."
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Era",
+          "description": "Secondary interview notes claim greater 200-day-MA use in 2022, versus familiar 1988 30-week framework. Primary confirmation pending; do not create universal blended system.",
+          "source_ids": [
+            "G-WEINSTEIN-ERA"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "morales_kacher",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "VERIFIED",
+            "period": "1998-01-01–2005-12-31",
+            "return_literal": "10,904.25% cumulative",
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-MORALES-AUDIT"
+            ],
+            "scope": "Gil Morales one account: attested net commissions/transaction costs, before hypothetical management/performance fees; not technique-specific.",
+            "annual_returns_literal": {
+              "1999": "1,010.37%",
+              "2002": "-50.70%"
+            },
+            "hypothetical_net_fee_return_literal": "5,572.04%; pro forma only",
+            "regime": "Includes dot-com rise/crash and 2003–2005 recovery."
+          },
+          {
+            "classification": "VERIFIED",
+            "period": "1996-01-01–2002-12-31",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-KACHER-KPMG"
+            ],
+            "scope": "Chris Kacher annual account results independently recomputed under agreed-upon procedures, not broad audit assurance or pocket-pivot returns.",
+            "annual_returns_literal": {
+              "1996": "121.57%",
+              "1997": "98.15%",
+              "1998": "227.70%",
+              "1999": "450.57%",
+              "2000": "150.15%",
+              "2001": "-8.30%",
+              "2002": "0.94%"
+            }
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Performance attribution",
+          "description": "Historical account performance cannot validate techniques introduced 2005 or later.",
+          "source_ids": [
+            "G-VOSI-POCKET",
+            "G-KACHER-KPMG",
+            "G-MORALES-AUDIT"
+          ]
+        },
+        {
+          "topic": "Kacher marketing claims",
+          "description": "Site six consecutive triple-digit years1995–2000 conflicts with report1997=98.15%. Report has no18,000% cumulative number; claim not adopted.",
+          "source_ids": [
+            "G-VOSI-BIO",
+            "G-KACHER-KPMG"
+          ]
+        },
+        {
+          "topic": "Signals vs own trades",
+          "description": "Published chart discussions are not a public execution ledger.",
+          "source_ids": [
+            "G-VOSI-PPR"
+          ]
+        },
+        {
+          "topic": "Era-specific entry",
+          "description": "2013–2017 weakness-oriented adaptations broaden initial strength/pocket-pivot rules.",
+          "source_ids": [
+            "G-VOSI-POCKET"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "dan_zanger",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "VERIFIED",
+            "period": "1998-06-01–1999-05-31",
+            "return_literal": "29,223% (cover letter literal)",
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": "Starting market value10,774 in May1998 source table (interview rounds10,775).",
+            "leverage": "Margin documented in primary interview; historical leverage exposure not constant/proven.",
+            "source_ids": [
+              "G-ZANGER-AUDIT"
+            ],
+            "scope": "Independent Effron performance measurement, one small personal portfolio; monthly marked-to-market/time-weighted performance, not solely realized closed trades.",
+            "regime": "Dot-com bull/bubble",
+            "measurement_limit": "Not a standard opinion-letter financial audit; no lifetime or18-/23-month extension verified here."
+          },
+          {
+            "classification": "SELF_REPORTED",
+            "period": "October2000",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-ZANGER-INTERVIEW"
+            ],
+            "scope": "Magazine reports32% loss in one day; not a measured max drawdown.",
+            "one_day_loss_literal": "32%"
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Claim digits",
+          "description": "Effron cover reads29,223%; current website29,233%. Preserve discrepancy; no guessed OCR decimal.",
+          "source_ids": [
+            "G-ZANGER-AUDIT",
+            "G-ZANGER-ABOUT"
+          ]
+        },
+        {
+          "topic": "Indicators/fundamentals vs later description",
+          "description": "2003 interview says chart/volume only; current About page combines growth/float. Separate eras.",
+          "source_ids": [
+            "G-ZANGER-INTERVIEW",
+            "G-ZANGER-ABOUT"
+          ]
+        },
+        {
+          "topic": "Options headline",
+          "description": "Magazine intro says avoids options; interview discloses naked-call trades and a substantial loss.",
+          "source_ids": [
+            "G-ZANGER-INTERVIEW"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "kullamagi_breakout",
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence": {
+        "class": "SELF_REPORTED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "SELF_REPORTED",
+            "period": "Years before2021",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-KULLAMAGI-SETUPS",
+              "G-KULLAMAGI-CWT"
+            ],
+            "scope": "Author/host report tens of millions; no independently read full account series or breakout-only attribution."
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "Rule freedom",
+          "description": "Author permits several entry timeframes, daily fallback, two trailing MAs and discretionary pattern quality; one mechanical version cannot inherit whole method.",
+          "source_ids": [
+            "G-KULLAMAGI-SETUPS"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "episodic_pivot",
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence": {
+        "class": "SELF_REPORTED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "SELF_REPORTED",
+            "period": "Years beforeNovember2021",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-KULLAMAGI-EP"
+            ],
+            "scope": "Author attributes large profits to EP; no setup-specific ledger or independently verified series."
+          }
+        ]
+      },
+      "conflicts": [
+        {
+          "topic": "ATR/ADR allowance",
+          "description": "January1x versus November up to1.5x; preserve versions, no optimization.",
+          "source_ids": [
+            "G-KULLAMAGI-SETUPS",
+            "G-KULLAMAGI-EP"
+          ]
+        },
+        {
+          "topic": "Growth/estimates exceptions",
+          "description": "November explicitly allows no earnings with high sales growth and smaller stocks without analysts; hard GAAP-positive-EPS/consensus gates would reject documented allowable cases.",
+          "source_ids": [
+            "G-KULLAMAGI-EP"
+          ]
+        },
+        {
+          "topic": "Lineage",
+          "description": "Kullamägi learned EP from Bonde and explicitly notes their definitions can differ; do not claim universal EP replication.",
+          "source_ids": [
+            "G-KULLAMAGI-EP"
+          ]
+        }
+      ]
+    },
+    {
+      "candidate_id": "turtle",
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence": {
+        "evidence_class": "SELF_REPORTED",
+        "record": "Participant text asserts successful teaching but also nonprofitable/noncompliant Turtles; no clean full cohort account record inspected. Famous aggregate-profit numbers are not accepted.",
+        "period": "1980s Turtle experiment",
+        "category": "leveraged diversified futures",
+        "source_ids": [
+          "trend_turtle_rules"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "SELF_REPORTED"
+      },
+      "conflicts": [
+        "Participant reports some Turtles failed or changed rules, while popular summaries claim all were successful. Cohort success cannot be attributed to every participant.",
+        "Public document permits discretionary System 1/System 2 allocation and stop variant; there is no single universal Turtle account.",
+        "An equity long-only universe plus earnings filters/shared sizing would be VU Adaptation, never original Turtle Replication."
+      ]
+    },
+    {
+      "candidate_id": "ed_seykota",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "Famous account-growth/percentage claims are not accepted because primary account statements or original interview chapter were not inspected.",
+        "period": "personal career; exact period unavailable",
+        "category": "futures",
+        "source_ids": [
+          "trend_seykota_faq",
+          "trend_seykota_tsp"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "HIGH reproducibility of a public educational example must not be promoted into HIGH replication of Seykota actual career.",
+        "TSP simulated trade logs are not behavioral ground truth or evidence of real-money performance."
+      ]
+    },
+    {
+      "candidate_id": "donchian_channel",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "Historic relevance and canonical signal design are established; no independently checked live Donchian account record or numeric return accepted.",
+        "period": "1930s–1980s",
+        "category": "stocks then commodities",
+        "source_ids": [
+          "trend_donchian_guides",
+          "trend_donchian_channel"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "1934/1978 discretionary Guides, four-week channel and 5/20 futures rule are different documents/eras, not one composite system.",
+        "Generic modern channel plus VU risk policy would be a systematic archetype adaptation; not Donchian trader replication.",
+        "Substantial overlap with Turtle, time-series trend and existing VU breakouts; avoid awarding separate implementation slots for aliases."
+      ]
+    },
+    {
+      "candidate_id": "linda_raschke",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "Host biography reports fund ranked 17th of 4500 over five years. Neither original ranking report nor origin of biographical claim established; exact window, returns, DD/capital and survivorship universe not inspected. Unverified promotional biographical claim only. One first-person narrated Flash Crash episode is anecdotal and is not a track record.",
+        "period": null,
+        "category": "hedge fund/futures",
+        "source_ids": [
+          "trend_raschke_interview"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [
+          {
+            "claim": "17th out of 4500 over five years",
+            "status": "UNVERIFIED_ATTRIBUTED_HOST_BIO",
+            "usable_for_ranking": false
+          }
+        ],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "Model-assisted preparation is explicitly distinguished by her from intraday discretionary improvement; model signal cannot equal actual practice.",
+        "Normative immediate loser-control versus actual Flash Crash entry before a stop was entered is documented as an execution contingency, not silently normalized away.",
+        "One Street Smarts setup (e.g. Turtle Soup) would be a separately scoped setup, not complete Raschke replication."
+      ]
+    },
+    {
+      "candidate_id": "marty_schwartz",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "Official organizer confirms participation. Widely repeated 1984 win and dramatic career-account growth require original historical standings or direct independently checked reporting before accepting exact result/period. Current organizer page alone is not performance proof.",
+        "period": "1980s; historical standings pending",
+        "category": "historical USIC/futures",
+        "source_ids": [
+          "trend_competition_participants",
+          "trend_schwartz_speech"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "10-day EMA bias filter cannot explain all discretion, execution and risk of Pit Bull.",
+        "Current competition verification procedure cannot retroactively audit a historical account or substantiate a particular 1984 rank.",
+        "Secondary sources mix annual competition year, four-month sub-contests and dollar versus percentage winners; unresolved."
+      ]
+    },
+    {
+      "candidate_id": "mark_ritchie",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "No numeric return, drawdown, competition outcome or audited account record recovered from own website. Inclusion rests on historical research relevance, not verified superiority.",
+        "period": null,
+        "category": "commodity floor",
+        "source_ids": [
+          "trend_ritchie_site",
+          "trend_ritchie_book"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "Identity collision with Mark Ritchie II is material: they must have different IDs and source maps.",
+        "God in the Pits is a personal/spiritual memoir; endorsement blurbs are not performance evidence.",
+        "Ritchie Rule teaching game is not the complete actual commodity account system."
+      ]
+    },
+    {
+      "candidate_id": "paul_tudor_jones",
+      "track_record_evidence": "PARTIALLY_VERIFIED",
+      "evidence": {
+        "evidence_class": "PARTIALLY_VERIFIED",
+        "record": "Independent contemporaneous NYT-services report states Tudor Futures Fund gained 201% in 1987. Exact net/gross/account definition not available; retain as source-specific claim, not comparable multi-year statistic. Own firm site establishes continuity and breadth, not performance.",
+        "period": "calendar 1987",
+        "category": "Tudor Futures Fund; not all Tudor entities",
+        "source_ids": [
+          "trend_tudor_1988_report",
+          "trend_tudor_site"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [
+          {
+            "claim": "201% reported gain in 1987",
+            "source_id": "trend_tudor_1988_report",
+            "status": "INDEPENDENT_REPORT_ACCOUNT_SCOPE_UNRESOLVED",
+            "usable_for_ranking": false
+          }
+        ],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "PARTIALLY_VERIFIED"
+      },
+      "conflicts": [
+        "Public 200-day MA educational rule and 5:1 principle do not disclose full global macro method.",
+        "Historic Tudor Futures Fund result must not be merged with other vehicles/net-of-fee series or modern multi-manager firm.",
+        "200%/201% versus widely quoted 125.9% claims could have different account/fee scopes; no universal figure adopted.",
+        "Robbins reprint says flat at top of crash; without instrument/time detail no actual ticker-level trade case is counted."
+      ]
+    },
+    {
+      "candidate_id": "larry_hite",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "evidence_class": "UNKNOWN",
+        "record": "Primary publisher and interviewer describe successful large Mint business but provide no independently inspected numeric account performance series. AUM/success blurbs and bestseller status are not returns. Famous >30% annual figure not accepted without original chapter/disclosure reconciliation.",
+        "period": "Mint founded 1981; exact record window unverified",
+        "category": "institutional leveraged futures",
+        "source_ids": [
+          "trend_hite_book",
+          "trend_hite_podcast"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "UNKNOWN"
+      },
+      "conflicts": [
+        "Systematic execution with LOW trader discretion does not mean HIGH reproducibility when signals/portfolio algorithm remain undisclosed.",
+        "One-percent risk budget is not itself a positive-expectancy strategy and must not be used as proxy for Mint.",
+        "Principal-protected structured products and original trend futures program are different eras/products."
+      ]
+    },
+    {
+      "candidate_id": "oliver_kell",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2020,
+            "reported_return_pct": 941.1,
+            "period": "Organizer-labeled 2020 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2020"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "conflicts": [
+        "NVDA entry labeled January 6 2024 is a Saturday. Do not silently shift to January 8.",
+        "MU review reverses chronology at May 3 after May 22; June 17 2023 occurs among June 2024 actions; June 19 2024 is US market holiday. Those labels cannot support exact fills.",
+        "Six-phase public framework and selected semiconductor winners are later exposition, not proof that identical rules generated 2020 championship result.",
+        "Backtestable third-party GitHub rulebooks were found but excluded as primary ground truth."
+      ]
+    },
+    {
+      "candidate_id": "leif_soreide",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2019,
+            "reported_return_pct": 60.9,
+            "period": "Organizer-labeled 2019 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2019"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "conflicts": [
+        "2025 talk explicitly discounts deep OKLO overhead supply; cannot collapse this contextual exception into a universal no-overhead-supply rule.",
+        "Later focus on liquid leaders represents method evolution; do not merge eras with 2019 result.",
+        "Own website describes 2019 as difficult; organizer says market rose strongly. Market-regime descriptions are contextual/marketing, not standardized evidence.",
+        "IBD MarketSurge RS 90+ reference is proprietary; VU rank replacement would be an adaptation."
+      ]
+    },
+    {
+      "candidate_id": "sean_ryan",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2019,
+            "reported_return_pct": 51.8,
+            "period": "Organizer-labeled 2019 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 2,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2019"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2020,
+            "reported_return_pct": 128,
+            "period": "Organizer-labeled 2020 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2020"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2021,
+            "reported_return_pct": 18,
+            "period": "Organizer-labeled 2021 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2022,
+            "reported_return_pct": 132,
+            "period": "Organizer-labeled 2022 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2023,
+            "reported_return_pct": 151.4,
+            "period": "Organizer-labeled 2023 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2024,
+            "reported_return_pct": 40.8,
+            "period": "Organizer-labeled 2024 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2025,
+            "reported_return_pct": 88.8,
+            "period": "Organizer-labeled 2025 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "conflicts": [
+        "Do not mistake Sean Ryan for David Ryan or unrelated Shawn Ryan podcast host.",
+        "Seven reported annual competition results do not prove continuous same-account compounded live wealth, audited lifetime performance, or absence of losing undisclosed accounts.",
+        "Host-summary rules are provisional, not normative direct quote extraction."
+      ]
+    },
+    {
+      "candidate_id": "j_law",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2024,
+            "reported_return_pct": 353.9,
+            "period": "Organizer-labeled 2024 annual competition",
+            "category": "Stocks $1m+",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2024"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 1000000,
+            "capital_threshold_note": "Organizer category, actual balance unknown",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2025,
+            "reported_return_pct": 252.3,
+            "period": "Organizer-labeled 2025 annual competition",
+            "category": "Stocks $1m+",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 1000000,
+            "capital_threshold_note": "Organizer category, actual balance unknown",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "conflicts": [
+        "Own biography calls checks independently audited; organizer only establishes brokerage-statement verification. Use organizer scope.",
+        "Organizer also reports separate J Law under-$1m account +397% in 2024. Do not merge with +353.9% large-account return or imply all personal capital earned either.",
+        "Own capital size is self-report; actual competition start/end capital and leverage unknown.",
+        "Public technical terms are a glossary, not sufficient evidence for deterministic rules."
+      ]
+    },
+    {
+      "candidate_id": "robb_reinhold",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "evidence_class": "UNKNOWN",
+            "reported_return_pct": null,
+            "period": null,
+            "verification_scope": "No organizer result, audited positive record, or independently documented return series located",
+            "capital_actual_usd": null,
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "source_ids": [
+              "comp_reinhold_interview"
+            ]
+          }
+        ]
+      },
+      "conflicts": [
+        "A prop-firm founder/coauthored strategy book is not a competition win or positive track-record proof.",
+        "Flat Earth Trading Society illustrative experiment is not independently verified lifetime trading performance."
+      ]
+    },
+    {
+      "candidate_id": "VU_TREND_52W",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "VU_MODEL_NOT_REAL_ACCOUNT",
+        "records": []
+      },
+      "conflicts": [
+        "TraderFox private trend stability is replaced with Clenow90-day slope*R2; rules from third-party version are not original Darvas.",
+        "TraderFox performance marketing cannot be assigned to VU method."
+      ]
+    },
+    {
+      "candidate_id": "MOMENTUM_BREAKOUT",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "VU_MODEL_NOT_REAL_ACCOUNT",
+        "records": []
+      },
+      "conflicts": [
+        "HIGH reproducibility only for self-defined VU code contract; original trader basis/size/market judgment are not completely mechanical.",
+        "Entry5-dayhigh is VU daily proxy for trader ORH/daily breakout; EP andparabolicshort absent."
+      ]
+    },
+    {
+      "candidate_id": "VU_HOUSE_HS4_V03",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "VU_MODEL_NOT_REAL_ACCOUNT",
+        "records": []
+      },
+      "conflicts": [
+        "Old HS3 no-model statement is not current HS4 status",
+        "Gain surprise in rule list is earnings change/SUE from SEC history, not analyst-consensus EPS surprise."
+      ]
+    },
+    {
+      "candidate_id": "KK_PARABOLIC_SHORT",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "VU_MODEL_NOT_REAL_ACCOUNT",
+        "records": []
+      },
+      "conflicts": [
+        "Total trader account claims cannot be attributed to parabolic short setup.",
+        "Alladay OHLCV cannot establish exact opening-range trigger/stop ordering or locate execution."
+      ]
+    },
+    {
+      "candidate_id": "MARKET_WIZARDS_NEXT",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "VU_MODEL_NOT_REAL_ACCOUNT",
+        "records": []
+      },
+      "conflicts": [
+        "Publisher teaser securityguard account growth is not assigned to Kullamagi or anyone without direct chapter verification."
+      ]
+    },
+    {
+      "candidate_id": "MINERVINI",
+      "track_record_evidence": "VERIFIED",
+      "evidence": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "period": "2021",
+            "return_reported": "+334.8%",
+            "category": "Money Manager Verified Ratings, Stock Division, $1 million+ accounts",
+            "source_id": "MIN-COMP2021",
+            "capital": null,
+            "minimum_account_category_usd": 1000000,
+            "leverage": null,
+            "max_drawdown": null,
+            "annualized_return": null,
+            "verification_scope": "Organizer result, one competition year; no lifetime audit or scaling evidence"
+          }
+        ]
+      },
+      "conflicts": [
+        "Mechanische SEPA-Definition verfehlt dokumentierte Käufe; Core-Fixes änderten Recall nicht.",
+        "Live Adaptation und Research-Freezes dürfen nicht als Originalreplikation verschmolzen werden."
+      ]
+    },
+    {
+      "candidate_id": "LOW_VOLATILITY",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "academic_evidence_strength": "HIGH",
+        "records": [
+          {
+            "period": "Portfolio formations Dec 1985–Jan 2006, reported study 1986–2006",
+            "source_id": "LV-PAPER",
+            "return_reported": null,
+            "annualized_return": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "verification_scope": "Published simulated decile portfolios, not a verified real account"
+          }
+        ]
+      },
+      "conflicts": [
+        "Original index membership and Factset data are licensed; VU US universe is a disclosed adaptation.",
+        "Low-risk result does not imply strongest raw return in US; costs omitted."
+      ]
+    },
+    {
+      "candidate_id": "SHORT_TERM_REVERSAL",
+      "track_record_evidence": "UNKNOWN",
+      "evidence": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "academic_evidence_strength": "HIGH",
+        "records": [
+          {
+            "period": "July 1962–December 1986",
+            "source_id": "REV-PAPER",
+            "return_reported": null,
+            "annualized_return": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "verification_scope": "Published statistical arbitrage evidence; profits are not funded-account returns"
+          }
+        ]
+      },
+      "conflicts": [
+        "Long-only loser basket would change the original self-financing hypothesis.",
+        "Historical plausible cost treatment does not establish current net profitability."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,795 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "audit": {
+    "schema_version": "source-intelligence-repo-audit-1.0.0",
+    "baseline_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+    "read_at": "2026-10-11",
+    "scope": "Read-only HEAD object inspection; no provider refresh, no raw R2 objects, no code/core/live edits, no backtest",
+    "registry_count": 12,
+    "registry": [
+      {
+        "strategy_id": "MOMENTUM_BREAKOUT",
+        "version": "3.2.0",
+        "name": "VU Adaptation – Kullamägi Breakout",
+        "mode": "LIVE",
+        "classification": "VU_ADAPTATION",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-KK-FAQ",
+          "SRC-KK-SETUPS",
+          "SRC-KK-140K",
+          "SRC-KK-X-SETUPS",
+          "SRC-BL-JT1993",
+          "SRC-KK-EP"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "WEINSTEIN_STAGE",
+        "version": "4.0.0",
+        "name": "VU Adaptation – Weinstein Stage Analysis",
+        "mode": "LIVE",
+        "classification": "VU_ADAPTATION",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-SW-BOOK",
+          "SRC-SW-TRADERLION-INT",
+          "SRC-SW-STAGE-GUIDE"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "DARVAS_BOX",
+        "version": "3.0.2",
+        "name": "VU Adaptation – Darvas",
+        "mode": "LIVE",
+        "classification": "VU_ADAPTATION",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-ND-BOOK",
+          "SRC-ND-DARVAS-SECONDARY",
+          "SRC-ND-INVESTOPEDIA",
+          "SRC-ND-TIME-1960",
+          "SRC-ND-NYCOA-1961",
+          "SRC-BL-DONCHIAN",
+          "SRC-BL-TURTLE",
+          "SRC-ND-TIME-1959",
+          "SRC-ND-TIME-1960B"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "MINERVINI_VCP",
+        "version": "2.0.0",
+        "name": "VU Adaptation – Minervini",
+        "mode": "LIVE",
+        "classification": "VU_ADAPTATION",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-MM-SITE",
+          "SRC-MM-ABOUT-MPA",
+          "SRC-MM-BOOK-TLSMW",
+          "SRC-MM-BOOK-TTLC",
+          "SRC-MM-VCP-PODCAST",
+          "SRC-MM-X-VCP",
+          "SRC-MM-TT-SECONDARY",
+          "SRC-USIC-STANDINGS",
+          "SRC-USIC-2021-PR"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "DONCHIAN_TURTLE",
+        "version": "2.0.2",
+        "name": "VU Equity Adaptation – Turtle Trading",
+        "mode": "LIVE",
+        "classification": "VU_ADAPTATION",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-BL-TURTLE",
+          "SRC-BL-DONCHIAN",
+          "SRC-TURTLE-PDF"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "VU_TREND_52W",
+        "version": "1.0.0",
+        "name": "VU Native – Trendfolge 52W",
+        "mode": "MODEL",
+        "classification": "VU_NATIVE",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-TF-NEO-PP",
+          "SRC-TF-NEO-2018",
+          "SRC-CLENOW-2015",
+          "SRC-INTERNAL-VU"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "CANSLIM",
+        "version": "0.9.0",
+        "name": "CAN SLIM (Teilprüfung)",
+        "mode": "PARTIAL_CHECK",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-CS-ONEIL-BOOK",
+          "SRC-BL-CANSLIM",
+          "SRC-BL-CANSLIM-IBD"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "PIOTROSKI_F",
+        "version": "0.9.0",
+        "name": "Piotroski F-Score (Teilprüfung)",
+        "mode": "PARTIAL_CHECK",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-BL-PIOTROSKI"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "GREENBLATT_VALUE",
+        "version": "1.0.0",
+        "name": "Greenblatt Value Engine",
+        "mode": "DATA_PENDING",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-MF-FAQ",
+          "SRC-MF-HOW",
+          "SRC-MF-HOME",
+          "SRC-MF-ABOUTBOOK",
+          "SRC-MF-BOOK-2005",
+          "SRC-MF-BOOK-2010",
+          "SRC-MF-LUND-SE",
+          "SRC-MF-EUR-TENHOOR",
+          "SRC-MF-REVIEW-POZNAN",
+          "SRC-GOTHAM-STRATEGY"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "KK_EPISODIC_PIVOT",
+        "version": "0.1.0",
+        "name": "Kullamägi Episodic Pivot",
+        "mode": "RESEARCH",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-KK-SETUPS",
+          "SRC-KK-FAQ"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "KK_PARABOLIC_SHORT",
+        "version": "0.1.0",
+        "name": "Kullamägi Parabolic Short",
+        "mode": "RESEARCH",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-KK-SETUPS"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      },
+      {
+        "strategy_id": "MARKET_WIZARDS_NEXT",
+        "version": "0.1.0",
+        "name": "Weitere Market-Wizards-Modelle",
+        "mode": "RESEARCH",
+        "classification": "NOT_LIVE_UNCLASSIFIED",
+        "replication_claim_allowed": false,
+        "classification_note": "R15 product-classes applies only six live/model variants; pending/partial registry rows are not full replications.",
+        "source_ids": [
+          "SRC-MW-NEXTGEN"
+        ],
+        "source_path": "supertrader/data/registry-core.json#strategies; scripts/supertrader/fidelity/product-classes.mjs"
+      }
+    ],
+    "house": {
+      "strategy_id": "VU_HOUSE_HS4_V03",
+      "classification": "VU_NATIVE (interpretive house category; not R15 LIVE_CLASSIFICATION entry)",
+      "source_path": "supertrader/data/ledger/VU_HOUSE_HS4_V03.json",
+      "live_since": "2026-10-05",
+      "status": "LIVE_MODEL_OBSERVATION",
+      "historical_evidence": "EXPLORATORY_NO_EDGE / OOS_NOT_CONFIRMED; no strong real trader track record"
+    },
+    "data_categories": [
+      {
+        "category": "daily_ohlcv",
+        "status": "AVAILABLE",
+        "observed_detail": {
+          "storage": {
+            "denominator": 7803,
+            "stored": 7802,
+            "missing": 1,
+            "missingProviderUnavailable": 0,
+            "missingUnexplained": 1,
+            "missingSymbols": [
+              "GLMD"
+            ],
+            "STORAGE_COVERAGE_PERCENT": 99.99
+          },
+          "technical_eligible": 5644,
+          "historical_research": "US_PIT_2016_A private validation path exists incl. delisted listings since ~2016. Raw private objects were not retrieved; delisting payout and ticker reuse limitations persist."
+        },
+        "source_locators": [
+          "quant/data/market/history/coverage-metrics.json",
+          "quant/config/tiingo-scale.json",
+          "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+          "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+          "scripts/supertrader/validation/lib.mjs"
+        ],
+        "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+        "official_free_capability": "Existing provider, no new subscription",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "intraday",
+        "status": "PARTIAL",
+        "observed_detail": {
+          "interval": "5min",
+          "venue": "IEX",
+          "sessions": [
+            "2026-10-08",
+            "2026-10-09"
+          ],
+          "coverage": {
+            "2026-10-08": {
+              "count": 5096,
+              "regularComplete": 4523
+            },
+            "2026-10-09": {
+              "count": 5049,
+              "regularComplete": 4512
+            }
+          },
+          "limitation": "Only two current 5-minute IEX sessions evidenced; not consolidated volume, no multi-year 1-minute opening range/borrow execution history"
+        },
+        "source_locators": [
+          "quant/data/market/intraday/index.json",
+          "quant/data/market/intraday/status.json"
+        ],
+        "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+        "official_free_capability": "No official free full historical consolidated minute feed evidenced",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "fundamentals_pit",
+        "status": "PARTIAL",
+        "observed_detail": {
+          "consumer_count": 5072,
+          "consumer_as_of": "2026-10-05",
+          "consumer": "Annual, quarterly, TTM latest reported values, not full historical PIT.",
+          "private_research": "sec-pit-r11/r12 quarterly EPS/revenue first filing, r13 adds shares; Golden-Five canonical PIT only five symbols. General historical balances/margins/quality PIT not complete or migrated; PR481 remains separately blocked per task."
+        },
+        "source_locators": [
+          "quant/data/sec/consumer/index.json",
+          "quant/data/sec/canonical_index.json",
+          "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+        ],
+        "data_rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+        "official_free_capability": "SEC companyfacts and original filings public/free; broad extraction still research work",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "estimates",
+        "status": "MISSING",
+        "observed_detail": "No PIT analyst-consensus series. Legacy small sample recommendations/targets are not earnings estimates.",
+        "source_locators": [
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#I",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+        ],
+        "data_rights": "NOT_AVAILABLE; FMP free display rights UNKNOWN",
+        "official_free_capability": "No official SEC analyst estimates source",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "revisions",
+        "status": "MISSING",
+        "observed_detail": "No analyst estimate revisions/time series. SEC filing restatements are a different category.",
+        "source_locators": [
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#I",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+        ],
+        "data_rights": "NOT_AVAILABLE",
+        "official_free_capability": "No official free PIT consensus revisions source evidenced",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "institutional_holdings",
+        "status": "PARTIAL",
+        "observed_detail": {
+          "as_of": "2026-10-10",
+          "history": {
+            "grain": "month-end",
+            "firstMonth": "2016-01-31",
+            "lastMonth": "2026-09-30",
+            "months": 129
+          },
+          "tickers_with_13f": 5890,
+          "current_universe_bias": true,
+          "limitations": [
+            "Ueberlebende: das Universum ist das heutige Produktuniversum - delistete Emittenten fehlen in der Historie (Backtests muessen das beruecksichtigen).",
+            "Insider-Aenderungsmeldungen (4/A) werden ignoriert; korrigierte Werte gehen damit verloren, Doppelzaehlungen werden vermieden.",
+            "Form 3 enthaelt keine Transaktionen; Form 5 (nachtraegliche Jahresmeldung) zaehlt ab ihrem Einreichungsdatum.",
+            "10b5-1: das Kontrollkaestchen gibt es erst seit 2023 und gilt fuer die ganze Einreichung; vorher nur Fussnoten. Fruehe Jahre unterschaetzen Planverkaeufe.",
+            "Kaufwerte ohne gemeldeten Preis zaehlen mit 0 USD (ntx180/noPrice180 im aktuellen Stand).",
+            "13F: Vertrauliche Meldungen (ISCONFIDENTIALOMITTED) und Meldungen, deren Tabelle im Datensatz unter 90 % der angegebenen Zeilen traegt, zaehlen nicht als \"hat gemeldet\" (keine Neu- oder Ausstiege daraus). Eine RESTATEMENT-Aenderung ersetzt ein solches Original nur im selben Datensatz; sonst werden RESTATEMENT-Aenderungen nicht uebernommen; Verwalter, die dieselben Positionen ueber Sub-Advisor/Other Manager mehrfach melden, koennen doppelt zaehlen (fio > 100 % moeglich).",
+            "13F-Positionen ohne CUSIP-Zuordnung (kein Fails-to-Deliver-Eintrag unter dem heutigen Ticker) fehlen.",
+            "Schedule 13D/13G: Rolle (Gegenstand/Meldender) kommt nicht aus dem Index; Meldungen mit zwei Universums-Parteien ohne klare Regel werden verworfen (coverage.schedules.ambiguous).",
+            "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",
+            "Aktienbasis ist eine Jahreszahl (verwaessert, gewichtet), keine taggenaue ausstehende Aktienzahl."
+          ]
+        },
+        "source_locators": [
+          "quant/data/product/ownership-signals-v1/manifest.json",
+          "quant/engines/ownership-signals.js",
+          "scripts/market/build-ownership-signals.mjs"
+        ],
+        "data_rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN",
+        "official_free_capability": "13F official datasets exist; 45-day delay and mapping/amendment limits intrinsic. NOT missing on current main.",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "earnings_dates",
+        "status": "PARTIAL",
+        "observed_detail": "SEC filing dates exist for reported financials. Actual release timestamps and forward earnings calendar not canonical complete data. 8-K Item2.02 free retrospective source only.",
+        "source_locators": [
+          "quant/data/sec/consumer/index.json",
+          "scripts/company_intelligence/earnings.py",
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#L"
+        ],
+        "data_rights": "SEC_OFFICIAL_FREE; calendar legacy vendor rights UNKNOWN",
+        "official_free_capability": "8-K Item2.02 can evidence release events; filing date must not substitute exact announcement time",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "sector_industry",
+        "status": "PARTIAL",
+        "observed_detail": "SEC SIC sectors current available; stable historical PIT industry membership/ranks not evidenced. SIC is coarse vs original IBD/group taxonomy.",
+        "source_locators": [
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#V",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+        ],
+        "data_rights": "SEC_OFFICIAL_FREE for SIC; third-party classification rights not assumed",
+        "official_free_capability": "SEC submissions SIC current official free",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "breadth",
+        "status": "PARTIAL",
+        "observed_detail": {
+          "as_of": "2026-10-09",
+          "universe": 5631,
+          "measures": [
+            "above200",
+            "above50",
+            "trendBullish",
+            "trendBearish",
+            "near52wHigh",
+            "volatilityHigh"
+          ],
+          "limitation": "Current product-universe descriptive breadth exists; ~10 September/October snapshots only. Not complete historical market A/D and not historical PIT group breadth."
+        },
+        "source_locators": [
+          "quant/data/product/market-regime-v1.json",
+          "quant/data/product/market-regime-history/",
+          "quant/methodology/market-regime-v1.json"
+        ],
+        "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+        "official_free_capability": "Derivable from existing OHLCV subject historical-universe coverage",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "short_interest",
+        "status": "MISSING",
+        "observed_detail": "SEC fails-to-deliver used for CUSIP mapping exists; it is not short interest. FINRA source discovery does not create VU capability. Locate/borrow fees unavailable.",
+        "source_locators": [
+          "quant/data/product/ownership-signals-v1/manifest.json#sources.ftd",
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#Z"
+        ],
+        "data_rights": "FINRA_LICENSE_UNKNOWN; SEC FTD official public",
+        "official_free_capability": "FINRA periodic reports discoverable but rights review needed; short volume/FTD not substitute short-interest stocks",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "options",
+        "status": "MISSING",
+        "observed_detail": "No usable historical single-stock options chain/IV/Greeks series evidenced. VIX reference would not supply these.",
+        "source_locators": [
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#AH"
+        ],
+        "data_rights": "CBOE_OCC_LICENSE_UNKNOWN; FRED series-specific citation restrictions",
+        "official_free_capability": "VIX public reference possible; free reference != option trade data",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "macro",
+        "status": "PARTIAL",
+        "observed_detail": "Existing official rates/energy/currency sources plus static macro dashboard current/history JSON. Dashboard has secondary-source estimates/nulls, not full release-vintage PIT macro feed.",
+        "source_locators": [
+          "macro/data/current.json",
+          "macro/data/history.json",
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#D-E",
+          "docs/VU_MULTI_ASSET_DATA_CORE.md"
+        ],
+        "data_rights": "SOURCE_SPECIFIC; FRED not blanket public domain, Treasury/BLS/BEA official free, ECB/WorldBank respective terms",
+        "official_free_capability": "FRED/ALFRED official vintage series available subject underlying source rights; not universally integrated",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "sentiment",
+        "status": "MISSING",
+        "observed_detail": "No validated historical single-stock investor-sentiment/tape series evidenced. Social product/content and sparse news feeds are not a PIT sentiment dataset.",
+        "source_locators": [
+          "docs/VU_FREE_DATA_SOURCE_MAP.md#Y",
+          "docs/VU_SOCIAL_ARCHITECTURE.md"
+        ],
+        "data_rights": "NOT_AVAILABLE; THIRD_PARTY_NEWS_RIGHTS_UNKNOWN",
+        "official_free_capability": "No official free comprehensive sentiment dataset evidenced",
+        "provider_refresh_performed": false
+      },
+      {
+        "category": "market_regime",
+        "status": "PARTIAL",
+        "observed_detail": "SPY trend filters and current descriptive VU market-regime product AVAILABLE. Current VU product has ten dated Sep/Oct snapshots; method-specific historical regime/macro tape judgment is not available as original trader behavioral rule.",
+        "source_locators": [
+          "quant/data/product/market-regime-v1.json",
+          "quant/data/product/market-regime-history/",
+          "scripts/supertrader/registry-p1.mjs",
+          "supertrader/data/market.json"
+        ],
+        "data_rights": "Tiingo derived prices OWNER_DECLARED_LICENSED, backtest-stat publication unresolved",
+        "official_free_capability": "Price-defined regimes derivable existing OHLCV; trader subjective macro judgment not a data field",
+        "provider_refresh_performed": false
+      }
+    ],
+    "gate_A": {
+      "source_path": "scripts/supertrader/guard-protected-paths.mjs",
+      "allowed": [
+        "supertrader/**",
+        "scripts/supertrader/**",
+        "docs/SUPERTRADER_[A-Z0-9_]+.md",
+        ".github/workflows/supertrader-[a-z0-9-]+.yml"
+      ],
+      "recommended_research_json_path": "scripts/supertrader/research/source-intelligence/",
+      "generated_data_no_hand_edit": "CLAUDE.md forbids hand changes under quant/data,discover/data,supertrader/data,social/data"
+    },
+    "conflicts": [
+      {
+        "old": "docs/SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md says no delisted daily history",
+        "current": "Later validation data path and house docs evidence US_PIT_2016_A including delisted listings; old feasibility document is dated Sep30."
+      },
+      {
+        "old": "R15/Free-data-source doc says 13F absent or only100 funds",
+        "current": "Oct10 ownership manifest has whole SEC dataset pipeline, 12,888 managers, 5,890 tickers with13F; availability remains PARTIAL."
+      },
+      {
+        "old": "No market breadth",
+        "current": "Current market-regime product has six breadth measures; historical marketwide series still partial."
+      },
+      {
+        "old": "No house model portfolio (HS3 judgment)",
+        "current": "HS4 V03 Oct5 live model observation has20 holdings; must distinguish eras."
+      },
+      {
+        "old": "Provider-profile claims uniform total-return prices or unknown delisting",
+        "current": "Later universe studies found TOTAL_RETURN_NOT_UNIFORM; validation builds total return from raw closes, dividend and split. Provider-profile dates are older."
+      }
+    ],
+    "global_phase2_gate": "Research feasibility ratings do not authorize engine/backtest. Require method-era freeze, independently reviewable ground truth, complete data contracts, PIT universe and rights specific to planned use."
+  },
+  "normalized_requirement_categories": {
+    "daily_ohlcv": {
+      "category": "daily_ohlcv",
+      "status": "AVAILABLE",
+      "observed_detail": {
+        "storage": {
+          "denominator": 7803,
+          "stored": 7802,
+          "missing": 1,
+          "missingProviderUnavailable": 0,
+          "missingUnexplained": 1,
+          "missingSymbols": [
+            "GLMD"
+          ],
+          "STORAGE_COVERAGE_PERCENT": 99.99
+        },
+        "technical_eligible": 5644,
+        "historical_research": "US_PIT_2016_A private validation path exists incl. delisted listings since ~2016. Raw private objects were not retrieved; delisting payout and ticker reuse limitations persist."
+      },
+      "source_locators": [
+        "quant/data/market/history/coverage-metrics.json",
+        "quant/config/tiingo-scale.json",
+        "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+        "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+        "scripts/supertrader/validation/lib.mjs"
+      ],
+      "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+      "official_free_capability": "Existing provider, no new subscription",
+      "provider_refresh_performed": false
+    },
+    "intraday": {
+      "category": "intraday",
+      "status": "PARTIAL",
+      "observed_detail": {
+        "interval": "5min",
+        "venue": "IEX",
+        "sessions": [
+          "2026-10-08",
+          "2026-10-09"
+        ],
+        "coverage": {
+          "2026-10-08": {
+            "count": 5096,
+            "regularComplete": 4523
+          },
+          "2026-10-09": {
+            "count": 5049,
+            "regularComplete": 4512
+          }
+        },
+        "limitation": "Only two current 5-minute IEX sessions evidenced; not consolidated volume, no multi-year 1-minute opening range/borrow execution history"
+      },
+      "source_locators": [
+        "quant/data/market/intraday/index.json",
+        "quant/data/market/intraday/status.json"
+      ],
+      "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+      "official_free_capability": "No official free full historical consolidated minute feed evidenced",
+      "provider_refresh_performed": false
+    },
+    "fundamentals_pit": {
+      "category": "fundamentals_pit",
+      "status": "PARTIAL",
+      "observed_detail": {
+        "consumer_count": 5072,
+        "consumer_as_of": "2026-10-05",
+        "consumer": "Annual, quarterly, TTM latest reported values, not full historical PIT.",
+        "private_research": "sec-pit-r11/r12 quarterly EPS/revenue first filing, r13 adds shares; Golden-Five canonical PIT only five symbols. General historical balances/margins/quality PIT not complete or migrated; PR481 remains separately blocked per task."
+      },
+      "source_locators": [
+        "quant/data/sec/consumer/index.json",
+        "quant/data/sec/canonical_index.json",
+        "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+        "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+      ],
+      "data_rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+      "official_free_capability": "SEC companyfacts and original filings public/free; broad extraction still research work",
+      "provider_refresh_performed": false
+    },
+    "estimates": {
+      "category": "estimates",
+      "status": "MISSING",
+      "observed_detail": "No PIT analyst-consensus series. Legacy small sample recommendations/targets are not earnings estimates.",
+      "source_locators": [
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#I",
+        "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+      ],
+      "data_rights": "NOT_AVAILABLE; FMP free display rights UNKNOWN",
+      "official_free_capability": "No official SEC analyst estimates source",
+      "provider_refresh_performed": false
+    },
+    "revisions": {
+      "category": "revisions",
+      "status": "MISSING",
+      "observed_detail": "No analyst estimate revisions/time series. SEC filing restatements are a different category.",
+      "source_locators": [
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#I",
+        "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+      ],
+      "data_rights": "NOT_AVAILABLE",
+      "official_free_capability": "No official free PIT consensus revisions source evidenced",
+      "provider_refresh_performed": false
+    },
+    "institutional_holdings": {
+      "category": "institutional_holdings",
+      "status": "PARTIAL",
+      "observed_detail": {
+        "as_of": "2026-10-10",
+        "history": {
+          "grain": "month-end",
+          "firstMonth": "2016-01-31",
+          "lastMonth": "2026-09-30",
+          "months": 129
+        },
+        "tickers_with_13f": 5890,
+        "current_universe_bias": true,
+        "limitations": [
+          "Ueberlebende: das Universum ist das heutige Produktuniversum - delistete Emittenten fehlen in der Historie (Backtests muessen das beruecksichtigen).",
+          "Insider-Aenderungsmeldungen (4/A) werden ignoriert; korrigierte Werte gehen damit verloren, Doppelzaehlungen werden vermieden.",
+          "Form 3 enthaelt keine Transaktionen; Form 5 (nachtraegliche Jahresmeldung) zaehlt ab ihrem Einreichungsdatum.",
+          "10b5-1: das Kontrollkaestchen gibt es erst seit 2023 und gilt fuer die ganze Einreichung; vorher nur Fussnoten. Fruehe Jahre unterschaetzen Planverkaeufe.",
+          "Kaufwerte ohne gemeldeten Preis zaehlen mit 0 USD (ntx180/noPrice180 im aktuellen Stand).",
+          "13F: Vertrauliche Meldungen (ISCONFIDENTIALOMITTED) und Meldungen, deren Tabelle im Datensatz unter 90 % der angegebenen Zeilen traegt, zaehlen nicht als \"hat gemeldet\" (keine Neu- oder Ausstiege daraus). Eine RESTATEMENT-Aenderung ersetzt ein solches Original nur im selben Datensatz; sonst werden RESTATEMENT-Aenderungen nicht uebernommen; Verwalter, die dieselben Positionen ueber Sub-Advisor/Other Manager mehrfach melden, koennen doppelt zaehlen (fio > 100 % moeglich).",
+          "13F-Positionen ohne CUSIP-Zuordnung (kein Fails-to-Deliver-Eintrag unter dem heutigen Ticker) fehlen.",
+          "Schedule 13D/13G: Rolle (Gegenstand/Meldender) kommt nicht aus dem Index; Meldungen mit zwei Universums-Parteien ohne klare Regel werden verworfen (coverage.schedules.ambiguous).",
+          "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",
+          "Aktienbasis ist eine Jahreszahl (verwaessert, gewichtet), keine taggenaue ausstehende Aktienzahl."
+        ]
+      },
+      "source_locators": [
+        "quant/data/product/ownership-signals-v1/manifest.json",
+        "quant/engines/ownership-signals.js",
+        "scripts/market/build-ownership-signals.mjs"
+      ],
+      "data_rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN",
+      "official_free_capability": "13F official datasets exist; 45-day delay and mapping/amendment limits intrinsic. NOT missing on current main.",
+      "provider_refresh_performed": false
+    },
+    "earnings_dates": {
+      "category": "earnings_dates",
+      "status": "PARTIAL",
+      "observed_detail": "SEC filing dates exist for reported financials. Actual release timestamps and forward earnings calendar not canonical complete data. 8-K Item2.02 free retrospective source only.",
+      "source_locators": [
+        "quant/data/sec/consumer/index.json",
+        "scripts/company_intelligence/earnings.py",
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#L"
+      ],
+      "data_rights": "SEC_OFFICIAL_FREE; calendar legacy vendor rights UNKNOWN",
+      "official_free_capability": "8-K Item2.02 can evidence release events; filing date must not substitute exact announcement time",
+      "provider_refresh_performed": false
+    },
+    "sector_industry": {
+      "category": "sector_industry",
+      "status": "PARTIAL",
+      "observed_detail": "SEC SIC sectors current available; stable historical PIT industry membership/ranks not evidenced. SIC is coarse vs original IBD/group taxonomy.",
+      "source_locators": [
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#V",
+        "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+      ],
+      "data_rights": "SEC_OFFICIAL_FREE for SIC; third-party classification rights not assumed",
+      "official_free_capability": "SEC submissions SIC current official free",
+      "provider_refresh_performed": false
+    },
+    "breadth": {
+      "category": "breadth",
+      "status": "PARTIAL",
+      "observed_detail": {
+        "as_of": "2026-10-09",
+        "universe": 5631,
+        "measures": [
+          "above200",
+          "above50",
+          "trendBullish",
+          "trendBearish",
+          "near52wHigh",
+          "volatilityHigh"
+        ],
+        "limitation": "Current product-universe descriptive breadth exists; ~10 September/October snapshots only. Not complete historical market A/D and not historical PIT group breadth."
+      },
+      "source_locators": [
+        "quant/data/product/market-regime-v1.json",
+        "quant/data/product/market-regime-history/",
+        "quant/methodology/market-regime-v1.json"
+      ],
+      "data_rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+      "official_free_capability": "Derivable from existing OHLCV subject historical-universe coverage",
+      "provider_refresh_performed": false
+    },
+    "short_interest": {
+      "category": "short_interest",
+      "status": "MISSING",
+      "observed_detail": "SEC fails-to-deliver used for CUSIP mapping exists; it is not short interest. FINRA source discovery does not create VU capability. Locate/borrow fees unavailable.",
+      "source_locators": [
+        "quant/data/product/ownership-signals-v1/manifest.json#sources.ftd",
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#Z"
+      ],
+      "data_rights": "FINRA_LICENSE_UNKNOWN; SEC FTD official public",
+      "official_free_capability": "FINRA periodic reports discoverable but rights review needed; short volume/FTD not substitute short-interest stocks",
+      "provider_refresh_performed": false
+    },
+    "options": {
+      "category": "options",
+      "status": "MISSING",
+      "observed_detail": "No usable historical single-stock options chain/IV/Greeks series evidenced. VIX reference would not supply these.",
+      "source_locators": [
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#AH"
+      ],
+      "data_rights": "CBOE_OCC_LICENSE_UNKNOWN; FRED series-specific citation restrictions",
+      "official_free_capability": "VIX public reference possible; free reference != option trade data",
+      "provider_refresh_performed": false
+    },
+    "macro": {
+      "category": "macro",
+      "status": "PARTIAL",
+      "observed_detail": "Existing official rates/energy/currency sources plus static macro dashboard current/history JSON. Dashboard has secondary-source estimates/nulls, not full release-vintage PIT macro feed.",
+      "source_locators": [
+        "macro/data/current.json",
+        "macro/data/history.json",
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#D-E",
+        "docs/VU_MULTI_ASSET_DATA_CORE.md"
+      ],
+      "data_rights": "SOURCE_SPECIFIC; FRED not blanket public domain, Treasury/BLS/BEA official free, ECB/WorldBank respective terms",
+      "official_free_capability": "FRED/ALFRED official vintage series available subject underlying source rights; not universally integrated",
+      "provider_refresh_performed": false
+    },
+    "sentiment": {
+      "category": "sentiment",
+      "status": "MISSING",
+      "observed_detail": "No validated historical single-stock investor-sentiment/tape series evidenced. Social product/content and sparse news feeds are not a PIT sentiment dataset.",
+      "source_locators": [
+        "docs/VU_FREE_DATA_SOURCE_MAP.md#Y",
+        "docs/VU_SOCIAL_ARCHITECTURE.md"
+      ],
+      "data_rights": "NOT_AVAILABLE; THIRD_PARTY_NEWS_RIGHTS_UNKNOWN",
+      "official_free_capability": "No official free comprehensive sentiment dataset evidenced",
+      "provider_refresh_performed": false
+    },
+    "market_regime": {
+      "category": "market_regime",
+      "status": "PARTIAL",
+      "observed_detail": "SPY trend filters and current descriptive VU market-regime product AVAILABLE. Current VU product has ten dated Sep/Oct snapshots; method-specific historical regime/macro tape judgment is not available as original trader behavioral rule.",
+      "source_locators": [
+        "quant/data/product/market-regime-v1.json",
+        "quant/data/product/market-regime-history/",
+        "scripts/supertrader/registry-p1.mjs",
+        "supertrader/data/market.json"
+      ],
+      "data_rights": "Tiingo derived prices OWNER_DECLARED_LICENSED, backtest-stat publication unresolved",
+      "official_free_capability": "Price-defined regimes derivable existing OHLCV; trader subjective macro judgment not a data field",
+      "provider_refresh_performed": false
+    },
+    "pit_universe": {
+      "category": "pit_universe",
+      "status": "PARTIAL",
+      "data_rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+      "source_locators": []
+    },
+    "short_borrow": {
+      "category": "short_borrow",
+      "status": "MISSING",
+      "data_rights": "No historical locate/borrow/fee feed.",
+      "source_locators": []
+    },
+    "futures": {
+      "category": "futures",
+      "status": "MISSING",
+      "data_rights": "No source-native futures/forwards contract, roll, multiplier or collateral history evidenced.",
+      "source_locators": []
+    },
+    "factor_returns": {
+      "category": "factor_returns",
+      "status": "PARTIAL",
+      "data_rights": "Public author factor series; data use/redistribution terms require specific review.",
+      "source_locators": []
+    },
+    "risk_free_rate": {
+      "category": "risk_free_rate",
+      "status": "PARTIAL",
+      "data_rights": "Official Treasury/FRED sources free; chosen vintage/calendar contract not yet reviewed.",
+      "source_locators": []
+    },
+    "unresolved": {
+      "category": "unresolved",
+      "status": "MISSING",
+      "data_rights": "Unresolved requirement; no availability inferred.",
+      "source_locators": []
+    }
+  }
+}

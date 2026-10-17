@@ -1,0 +1,69 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "status": "PASS",
+  "checks": {
+    "json_parse": "PASS",
+    "unique_candidate_and_source_ids": "PASS",
+    "candidate_source_references": "PASS",
+    "requested_rating_enums": "PASS",
+    "all_12_registry_lineages": "PASS",
+    "all_10_scorecard_dimensions": "PASS",
+    "zero_case_behavioral_none": "PASS",
+    "academic_oracle_exception_explicit": "PASS",
+    "A_minimum_gates": "PASS",
+    "A_no_missing_in_scope_data_requirement": "PASS",
+    "original_and_adaptation_scope_separate": "PASS",
+    "top5_exact_prefix_of_9": "PASS",
+    "independent_review": "PASS",
+    "research_only_file_scope": "PASS",
+    "actual_supertrader_gate_A": "PASS"
+  },
+  "counts": {
+    "rows_screened": 45,
+    "serious_external_candidates": 38,
+    "serious_dossier_rows_including_local": 42,
+    "additional_existing_vu_or_setup_rows": 4,
+    "reference_or_screened_out_rows": [
+      "quality_plus_momentum_hypothesis",
+      "robb_reinhold",
+      "MARKET_WIZARDS_NEXT"
+    ],
+    "groups": {
+      "A": 9,
+      "B": 29,
+      "C": 7
+    }
+  },
+  "top_count": 9,
+  "source_count": 124,
+  "file_hashes": {
+    "docs/SUPERTRADER_SOURCE_INTELLIGENCE.md": "225dc01a803f1a93b2991999b3692d565474ecb1b43619e33c5700b400b6ca73",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-BEHAVIORAL-CASES.json": "6afea7354984d70798d32b40aaea63cc5e0893b93f0d4ddd4d5d9a1ce9e46070",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-CANDIDATE-UNIVERSE.json": "8302d2816c4aa860406fdb2b929b5e5b625f29cc6b09f56e790c2c6b145a2e99",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-INDEPENDENT-REVIEW.json": "f0cd65b5ceb2a8348000882101236231080d8be49ef4d45c2041a19bc013e90c",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-LEGENDARY-NONREPRODUCIBLE.json": "802f2de713a87483c757f04c31a57f886ccebc6530c45a57810970f8d32c7356",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-OVERLAP-AND-ERA-REVIEW.json": "57d73cf139673e723d3b6386daebccb4f4b12f405dd9ecb451c81dc1385c2f27",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-REPO-DATA-AUDIT.json": "bf0b76665176386c06dd775daa3a48cd4bcfc53ad9b8d4b7d0fed252f964ca0d",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-REPRODUCIBILITY-MATRIX.json": "d88328de1e5e55765395afa5bebc2ce9ed83b3d4e5b6196f1d7faf2116b1bfa8",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-RESEARCH-BASELINE.json": "74faa9af1682b34f1c26c5dc77dc6b8d1784e05ffd37f0884337d5747ef21b72",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-SOURCE-MAP.json": "61ab33f8bb144b009ccc73169d70a3fb95895f40abe8759565417cf715391e31",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-SYSTEMATIC-HIGH-CONFIDENCE.json": "4fbd5e8aa43ea8fcfe9bfbf59d43eb55b16daa5c507a2c7b16ec8d167f153569",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-TOP-IMPLEMENTATION-CANDIDATES.json": "f0df35ce8c3eee52e549e4fef40ea9ad2923ef2bd4bdc75ec6a1220d69a163b3",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-TOP5-PRIORITY.json": "695a5c397fb0c008410aa61f139653a8f0635bfee8b4b73b9266165e1b13edc1",
+    "scripts/supertrader/research/source-intelligence/SUPERTRADER-TRACK-RECORD-EVIDENCE.json": "92141acc52dad97e1e2022bae746e1b11f5e922046f30d11b404c67e956910a9"
+  },
+  "verification_scope": "Structural/source/evidence review and actual Gate-A execution only. No engine tests, historical backtests, raw provider refresh, annualization or live changes. Validation file is excluded from its own file-hash manifest.",
+  "gate_A_evidence": {
+    "base_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+    "audited_research_commit": "3ee13ae",
+    "changed_files": 15,
+    "DISCOVERY_CHANGED": false,
+    "QUANT_2_CHANGED": false,
+    "result": "OK: nur Supertrader-Pfade veraendert."
+  }
+}

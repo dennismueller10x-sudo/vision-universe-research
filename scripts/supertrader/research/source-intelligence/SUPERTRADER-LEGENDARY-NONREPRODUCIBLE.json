@@ -1,0 +1,528 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "strict_evidence_list": [
+    {
+      "candidate_id": "david_ryan",
+      "name": "David Ryan",
+      "performance": {
+        "class": "PARTIALLY_VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "PARTIALLY_VERIFIED",
+            "period": "1985–1987",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-RYAN-INTERVIEW",
+              "G-USIC"
+            ],
+            "scope": "Official organizer confirms historical participation. Host labels three-time winner; exact-year original standings not inspected.",
+            "unaccepted_claims": [
+              "Host episode title says 1,379% over three years; retained only as claim lead, not accepted figure."
+            ]
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Competition participant merits reference/research, but inspected evidence cannot justify a separate mechanical implementation."
+    },
+    {
+      "candidate_id": "morales_kacher",
+      "name": "Gil Morales + Chris Kacher / O'Neil Disciple Techniques",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "VERIFIED",
+            "period": "1998-01-01–2005-12-31",
+            "return_literal": "10,904.25% cumulative",
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-MORALES-AUDIT"
+            ],
+            "scope": "Gil Morales one account: attested net commissions/transaction costs, before hypothetical management/performance fees; not technique-specific.",
+            "annual_returns_literal": {
+              "1999": "1,010.37%",
+              "2002": "-50.70%"
+            },
+            "hypothetical_net_fee_return_literal": "5,572.04%; pro forma only",
+            "regime": "Includes dot-com rise/crash and 2003–2005 recovery."
+          },
+          {
+            "classification": "VERIFIED",
+            "period": "1996-01-01–2002-12-31",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-KACHER-KPMG"
+            ],
+            "scope": "Chris Kacher annual account results independently recomputed under agreed-upon procedures, not broad audit assurance or pocket-pivot returns.",
+            "annual_returns_literal": {
+              "1996": "121.57%",
+              "1997": "98.15%",
+              "1998": "227.70%",
+              "1999": "450.57%",
+              "2000": "150.15%",
+              "2001": "-8.30%",
+              "2002": "0.94%"
+            }
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Strong independent account evidence, excellent technique descriptions, but full combined trader reproduction lacks common sizing/portfolio system and own-trade corpus."
+    },
+    {
+      "candidate_id": "dan_zanger",
+      "name": "Dan Zanger / Chart Patterns",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "ACCOUNT_OR_AUTHOR_CLAIM",
+        "records": [
+          {
+            "classification": "VERIFIED",
+            "period": "1998-06-01–1999-05-31",
+            "return_literal": "29,223% (cover letter literal)",
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": "Starting market value10,774 in May1998 source table (interview rounds10,775).",
+            "leverage": "Margin documented in primary interview; historical leverage exposure not constant/proven.",
+            "source_ids": [
+              "G-ZANGER-AUDIT"
+            ],
+            "scope": "Independent Effron performance measurement, one small personal portfolio; monthly marked-to-market/time-weighted performance, not solely realized closed trades.",
+            "regime": "Dot-com bull/bubble",
+            "measurement_limit": "Not a standard opinion-letter financial audit; no lifetime or18-/23-month extension verified here."
+          },
+          {
+            "classification": "SELF_REPORTED",
+            "period": "October2000",
+            "return_literal": null,
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "source_ids": [
+              "G-ZANGER-INTERVIEW"
+            ],
+            "scope": "Magazine reports32% loss in one day; not a measured max drawdown.",
+            "one_day_loss_literal": "32%"
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Strong extreme one-year independent evidence and useful own-case narratives, but timing, exits, concentration and tape judgment resist faithful automation."
+    },
+    {
+      "candidate_id": "paul_tudor_jones",
+      "name": "Paul Tudor Jones — discretionary global macro / trading turns",
+      "performance": {
+        "evidence_class": "PARTIALLY_VERIFIED",
+        "record": "Independent contemporaneous NYT-services report states Tudor Futures Fund gained 201% in 1987. Exact net/gross/account definition not available; retain as source-specific claim, not comparable multi-year statistic. Own firm site establishes continuity and breadth, not performance.",
+        "period": "calendar 1987",
+        "category": "Tudor Futures Fund; not all Tudor entities",
+        "source_ids": [
+          "trend_tudor_1988_report",
+          "trend_tudor_site"
+        ],
+        "cagr": null,
+        "annualized_return": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "independent_confirmation": null,
+        "market_regime": null,
+        "concentration": null,
+        "claims": [
+          {
+            "claim": "201% reported gain in 1987",
+            "source_id": "trend_tudor_1988_report",
+            "status": "INDEPENDENT_REPORT_ACCOUNT_SCOPE_UNRESOLVED",
+            "usable_for_ranking": false
+          }
+        ],
+        "sanity_check": "No annualized return computed. No account series independently audited in this cluster; fame and assets under management are not return evidence.",
+        "class": "PARTIALLY_VERIFIED"
+      },
+      "reproducibility": "NOT_REPRODUCIBLE",
+      "why_reference": "Strong independent historical performance report but full trading turns/macro practice not mechanically disclosed and data absent. Legendary reference."
+    },
+    {
+      "candidate_id": "oliver_kell",
+      "name": "Oliver Kell — Cycle of Price Action",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2020,
+            "reported_return_pct": 941.1,
+            "period": "Organizer-labeled 2020 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2020"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Strong one-year verified result and useful public trade stories; visual setup interpretation and missing full portfolio/sizing rules keep full replication LOW. Reference now; targeted follow-up may qualify a declared VU adaptation later."
+    },
+    {
+      "candidate_id": "leif_soreide",
+      "name": "Leif Soreide — High Tight Flags / Think Beyond the Pattern",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2019,
+            "reported_return_pct": 60.9,
+            "period": "Organizer-labeled 2019 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2019"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Verified competition winner; direct examples exist, but visual leader/theme selection and exposure discretion dominate. Count only inspected excerpt cases; paid case library not accessed."
+    },
+    {
+      "candidate_id": "sean_ryan",
+      "name": "Sean Ryan — Chart / RSI Swing Trading",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2019,
+            "reported_return_pct": 51.8,
+            "period": "Organizer-labeled 2019 annual competition",
+            "category": "Stocks under $1m",
+            "rank": 2,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2019"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2020,
+            "reported_return_pct": 128,
+            "period": "Organizer-labeled 2020 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2020"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2021,
+            "reported_return_pct": 18,
+            "period": "Organizer-labeled 2021 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2022,
+            "reported_return_pct": 132,
+            "period": "Organizer-labeled 2022 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2023,
+            "reported_return_pct": 151.4,
+            "period": "Organizer-labeled 2023 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2024,
+            "reported_return_pct": 40.8,
+            "period": "Organizer-labeled 2024 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2025,
+            "reported_return_pct": 88.8,
+            "period": "Organizer-labeled 2025 annual competition",
+            "category": "Stocks under $1m",
+            "rank": null,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 20000,
+            "capital_threshold_note": "Historic category explicit; $20,000 minimum confirmed in current rules only",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Exceptional organizer-documented seven annual positive records merit targeted source research. He is a runner-up/top performer, not a verified champion winner. Public interview case chapters are located but not inspected; no artificial case count or Group A gate pass."
+    },
+    {
+      "candidate_id": "j_law",
+      "name": "J Law / Law Wai-Sum — Multiple Edge Trading Area",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "year": 2024,
+            "reported_return_pct": 353.9,
+            "period": "Organizer-labeled 2024 annual competition",
+            "category": "Stocks $1m+",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2024"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 1000000,
+            "capital_threshold_note": "Organizer category, actual balance unknown",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          },
+          {
+            "year": 2025,
+            "reported_return_pct": 252.3,
+            "period": "Organizer-labeled 2025 annual competition",
+            "category": "Stocks $1m+",
+            "rank": 1,
+            "evidence_class": "VERIFIED",
+            "source_ids": [
+              "comp_usic_2025"
+            ],
+            "verification_scope": "Organizer verification of submitted brokerage statements for predesignated competition account; not independent CPA lifetime audit",
+            "realized_only": false,
+            "return_basis": "Account performance; realized-versus-unrealized decomposition unavailable",
+            "capital_actual_usd": null,
+            "capital_threshold_usd": 1000000,
+            "capital_threshold_note": "Organizer category, actual balance unknown",
+            "leverage_actual": null,
+            "max_drawdown_pct": null,
+            "cagr": null,
+            "market_regime": "Historical calendar year only; no regime attribution tested",
+            "concentration": null
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Two consecutive organizer-verified large-account wins and own public concept map make him a credible less-famous discovery. Full rules/cases remain largely course-dependent; public glossary alone cannot support replication."
+    },
+    {
+      "candidate_id": "MINERVINI",
+      "name": "Mark Minervini — SEPA/VCP (bestehendes Urteil)",
+      "performance": {
+        "class": "VERIFIED",
+        "evidence_kind": "COMPETITION_RECORD",
+        "records": [
+          {
+            "period": "2021",
+            "return_reported": "+334.8%",
+            "category": "Money Manager Verified Ratings, Stock Division, $1 million+ accounts",
+            "source_id": "MIN-COMP2021",
+            "capital": null,
+            "minimum_account_category_usd": 1000000,
+            "leverage": null,
+            "max_drawdown": null,
+            "annualized_return": null,
+            "verification_scope": "Organizer result, one competition year; no lifetime audit or scaling evidence"
+          }
+        ]
+      },
+      "reproducibility": "LOW",
+      "why_reference": "Bestehende Entscheidung NOT_FEASIBLE_FROM_PUBLIC_RULES übernehmen. Kein weiterer Deep Dive."
+    }
+  ],
+  "educational_unverified_also": [
+    {
+      "candidate_id": "william_oneil_canslim",
+      "name": "William O'Neil / CAN SLIM",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "nicolas_darvas",
+      "name": "Nicolas Darvas / Box Method",
+      "evidence": "SELF_REPORTED"
+    },
+    {
+      "candidate_id": "stan_weinstein",
+      "name": "Stan Weinstein / Stage Analysis",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "ed_seykota",
+      "name": "Ed Seykota — personal trend-following practice",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "donchian_channel",
+      "name": "Richard Donchian — channel / four-week breakout archetype",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "linda_raschke",
+      "name": "Linda Bradford Raschke — complete discretionary technical practice",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "marty_schwartz",
+      "name": "Marty / Martin “Buzzy” Schwartz — Pit Bull discretionary trading",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "mark_ritchie",
+      "name": "Mark Andrew Ritchie — elder CBOT trader / God in the Pits",
+      "evidence": "UNKNOWN"
+    },
+    {
+      "candidate_id": "larry_hite",
+      "name": "Larry Hite / Mint — risk-controlled systematic futures",
+      "evidence": "UNKNOWN"
+    }
+  ]
+}
