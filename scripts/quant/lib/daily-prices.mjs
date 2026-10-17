@@ -37,7 +37,7 @@ const PriceValidity = require(join(ROOT, "quant/engines/canonical-price-validity
    Listing-Identitaet gibt es keine (IDENTITY_UNCERTAIN). opts.role
    BENCHMARK_REFERENCE fuer SPY - dieselbe Engine, keine Sondermethodik.
 
-   TEILREIHEN (canonical-price-validity-2.1.0, Review R8) - NUR auf Anforderung
+   TEILREIHEN (canonical-price-validity-2.2.0, Review R8) - NUR auf Anforderung
    fromBarsPartial(payload, opts): lehnt die Rekonstruktion die Reihe ab einem
    bestimmten Tag ab (Sperre, Datenwiderspruch, Luecke), bleiben die gueltigen
    Kerzen davor erhalten: tr traegt Werte bis trValidUntil und NaN danach (und an
@@ -57,7 +57,7 @@ function partialSeries(sorted, dates, ctr, opts) {
     const lag = Math.round((Date.parse(opts.asOf) - Date.parse(String(sorted[sorted.length - 1].date).slice(0, 10))) / 864e5);
     if (lag > opts.maxStaleDays) return { tr: null, trCoverage: null, validity: null, stale: true };
   }
-  const validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares });
+  const validity = PriceValidity.build(sorted, { identity: opts.identity, role: opts.role, delisted: opts.delisted, secEvents: opts.secEvents, shares: opts.shares, asOf: opts.asOf });
   if (!validity.validUntil) return { tr: null, trCoverage: null, validity };
   return { tr: PriceValidity.alignTr(validity, dates), validity,
     trCoverage: validity.state === "FULL_VALID" ? "FULL" : validity.state === "VALID_PREFIX" ? "PREFIX" : "FULL_WITH_INVALID_BARS" };

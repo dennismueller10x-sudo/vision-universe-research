@@ -1,6 +1,6 @@
 {
   "schema": "partial-series-consumer-matrix-2.0.0",
-  "contract": "canonical-price-validity-2.1.0",
+  "contract": "canonical-price-validity-2.2.0",
   "method": "static audit of every caller of canonical-total-return.js#reconstruct and scripts/quant/lib/daily-prices.mjs, plus the product areas that use their own price path (file:line evidence in docs/PARTIAL_SERIES_HANDLING_V2.md)",
   "columns": {
     "acceptsPartial": "keeps bars before a hold",
@@ -134,7 +134,7 @@
       "lookaheadRisk": "runner/accounting/featuresAtDate key exclusion, liquidation and censoring on dataQuarantine.from, not observedAt (R7); V4 price-sanity layer conditions on the full-history adjusted level (R16)",
       "changedInThisPr": false,
       "gate": "Supertrader Gate A: own PR",
-      "requiredForCalibration": "a new pre-registered Supertrader protocol must read canonical-price-validity-2.1.0 (asOf view or observedAt gating) and drop the level-conditioned sanity layer"
+      "requiredForCalibration": "a new pre-registered Supertrader protocol must read canonical-price-validity-2.2.0 (asOf view or observedAt gating) and drop the level-conditioned sanity layer"
     },
     {
       "id": "DISCOVER",

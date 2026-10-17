@@ -385,3 +385,37 @@ test('R-F19b: a filing on the event day itself is a disclosed revision (visibleA
   const h = PV.pitHistory(raw, opts, fin).find((x) => x.from === raw[200].date);
   assert.ok(h); assert.equal(h.until, raw[200].date); assert.equal(h.resumeFrom, raw[201].date);
 });
+
+test('R2-01: an SEC-conflict hold is observed on the first session whose as-of view contains it (filing after the event)', () => {
+  const base = series(300), i = 200, k = 20;
+  const raw = base.map((b, j) => j < i ? b : { ...b, close: b.close * k, open: b.open * k })
+    .map((b, j) => ({ ...b, splitFactor: j === i ? 1 / 10 : 1, adjustedClose: b.close }));
+  const opts = { identity: CONFIRMED, secEvents: [ev({ marketDate: raw[i].date, visibleAt: raw[i + 5].date })] };
+  const c = PV.build(raw, opts);
+  assert.equal(c.hold.from, raw[i].date); assert.equal(c.hold.evidenceClass, 'CONFLICTING_CORPORATE_ACTION');
+  assert.equal(c.hold.observedAtStage, raw[i + 5].date, 'the filing date alone would be one session early');
+  assert.equal(c.hold.observedAt, raw[i + 6].date); assert.equal(c.hold.observedAtBasis, 'FIRST_AS_OF_VIEW_WITH_HOLD');
+  assert.ok(!PV.build(raw, { ...opts, asOf: raw[i + 5].date }).hold, 'no hold in the view on the filing day');
+  assert.equal(PV.build(raw, { ...opts, asOf: raw[i + 6].date }).hold.from, raw[i].date);
+  assert.equal(c.intervals.find((x) => x.state === 'HOLD').observedAt, raw[i + 6].date);
+  const h = PV.pitHistory(raw, opts, c).find((x) => x.state === 'HOLD_RETROACTIVE');
+  assert.ok(h, 'earlier views (bars after hold.from valid) are disclosed');
+  assert.equal(h.until, raw[i + 5].date);
+});
+
+test('R2-01b: a price-signature hold is observed on its event day (no change)', () => {
+  const raw = undeclaredReverse(series(300), 200, 20);
+  const c = PV.build(raw, { identity: CONFIRMED });
+  assert.equal(c.hold.observedAt, raw[200].date);
+  assert.ok(!PV.pitHistory(raw, { identity: CONFIRMED }, c).some((x) => x.state === 'HOLD_RETROACTIVE'));
+});
+
+test('R2-05: fromBarsPartial passes asOf to the validity contract (a filing after asOf does not change tr)', () => {
+  const raw = undeclaredReverse(series(300), 200, 20);
+  const sec = [ev({ marketDate: raw[200].date, visibleAt: raw[250].date })];
+  const asOf = raw[240].date, bars = raw.filter((b) => b.date <= asOf);
+  const withSec = DP.fromBarsPartial(payload(bars), { identity: CONFIRMED, secEvents: sec, asOf });
+  const without = DP.fromBarsPartial(payload(bars), { identity: CONFIRMED, asOf });
+  assert.equal(withSec.trValidUntil, without.trValidUntil, 'the later 8-K is invisible as of asOf');
+  assert.equal(withSec.trValidUntil, raw[199].date);
+});

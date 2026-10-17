@@ -161,6 +161,104 @@
           "status": "FIXED_AFTER_RUN_TIMESTAMP_ONLY",
           "resolution": "canonical-price-validity-2.1.0: observedAt = first session whose as-of view contains the normalization (observedAtStage kept); pitHistory discloses every normalization with observedAt > eventDate (until = session before observedAt, resumeFrom = observedAt). No detection rule, threshold or valid bar changes. Tests R-F19, R-F19b fail on 2.0.0 and pass on 2.1.0. Re-measured by the next audit run."
         }
+      ],
+      "correction": "R2-08: the PIT failure behind F19 was already visible in run 38889245815 (6 mismatches in 525 views); the diagnostics that located it were added after that result (cae6581) and change no rule."
+    },
+    {
+      "round": 2,
+      "reviewer": "independent review agent (separate context, read-only)",
+      "scope": "final run 38976628673, code at 35b2cb2893d, all public artifacts",
+      "verdictOfReviewer": "NOT_READY is correct",
+      "checkedWithoutFinding": [
+        "F19 changes timestamps only (buildView identical to 2.0.0 build; all counts equal across runs)",
+        "no engine rule or threshold changed after results other than F19",
+        "public JSON/MD contain no identities",
+        "workflow meets ADR-005",
+        "stated acceptance numbers match their formulas"
+      ],
+      "findings": [
+        {
+          "id": "R2-01",
+          "severity": "HIGH",
+          "area": "PIT: hold.observedAt of SEC-conflict holds too early (filing date; date may come from a later filing)",
+          "status": "FIXED_IN_CODE_NOT_RE_MEASURED",
+          "resolution": "canonical-price-validity-2.2.0: hold.observedAt = first session whose as-of view contains the hold; earlier views disclosed as HOLD_RETROACTIVE. Test R2-01 fails on 2.1.0 and passes on 2.2.0; R2-01b guards price holds. Not re-measured on real data (run 38976628673 measured 2.1.0): stays blocker B8 until a run under a new PIT protocol confirms it."
+        },
+        {
+          "id": "R2-02",
+          "severity": "HIGH",
+          "area": "PIT acceptance check largely self-referential after F19; blind to hold timing",
+          "status": "OPEN_BLOCKER",
+          "resolution": "protocol 2.0.0 is not edited after results; an independent PIT check (view before/at observedAt, fixed offsets after it, delay distribution) must be pre-registered as protocol 3.0.0. Until then the PIT result is reported as conditional, not passed (blocker B9)."
+        },
+        {
+          "id": "R2-03",
+          "severity": "HIGH",
+          "area": "price-only hold false positives unmeasured; hold precision labels partly from the triggering evidence",
+          "status": "OPEN_BLOCKER",
+          "resolution": "hold precision 0.981 reported as conditional: 91 of 92 price-only holds unlabelled, worst case 52/162 = 0.32. Protocol 3.0.0 must label holds excluding the triggering observation and cover PRICE_DISCONTINUITY holds (blocker B10)."
+        },
+        {
+          "id": "R2-04",
+          "severity": "MEDIUM",
+          "area": "FN definition favourable and upward-only; downward/forward FN unmeasured",
+          "status": "OPEN",
+          "resolution": "documented; answer on downward jumps changed to \"event semantics implemented, coverage unmeasured\" (blocker B11)."
+        },
+        {
+          "id": "R2-05",
+          "severity": "MEDIUM",
+          "area": "fromBarsPartial built the contract without asOf",
+          "status": "FIXED",
+          "resolution": "asOf passed to build; test R2-05 fails before, passes after. No consumer uses the loader yet."
+        },
+        {
+          "id": "R2-06",
+          "severity": "LOW",
+          "area": "resolveObservedAt cost (quadratic for AFTER_LAST_BAR) and missing null guard",
+          "status": "PARTLY_FIXED",
+          "resolution": "null guards added; change-point evaluation left for the adoption PR (cost only, no correctness effect)."
+        },
+        {
+          "id": "R2-07",
+          "severity": "LOW",
+          "area": "PIT disclosure too coarse (no observedAtBasis counts, delay, revision cause)",
+          "status": "OPEN",
+          "resolution": "to be reported by the protocol 3.0.0 audit."
+        },
+        {
+          "id": "R2-08",
+          "severity": "LOW",
+          "area": "run history attribution of the PIT failure",
+          "status": "FIXED",
+          "resolution": "run-38889245815/README.md and round 1b corrected."
+        },
+        {
+          "id": "R2-09",
+          "severity": "LOW",
+          "area": "three parts at 300 ms reach the SEC 10 req/s limit; separate captures per part",
+          "status": "OPEN",
+          "resolution": "comment corrected; the next collection should use >= 400 ms per part or a sequential retry pass and one shared ciks.json (part of blocker B5)."
+        },
+        {
+          "id": "R2-10",
+          "severity": "LOW",
+          "area": "docs contradicted the code (<= asOf, conflict observedAt, final-vs-asOf claim)",
+          "status": "FIXED",
+          "resolution": "PARTIAL_SERIES_HANDLING_V2.md and the validity contract aligned with 2.2.0."
+        },
+        {
+          "id": "R2-11",
+          "severity": "MEDIUM",
+          "area": "blocker list incomplete",
+          "status": "FIXED",
+          "resolution": "readiness lists B1-B11 with the known83 / high-level defect counts; reviewHighCriticalOpen = false."
+        }
+      ],
+      "openHighCritical": [
+        "R2-01 (fixed in code, not re-measured)",
+        "R2-02",
+        "R2-03"
       ]
     }
   ]

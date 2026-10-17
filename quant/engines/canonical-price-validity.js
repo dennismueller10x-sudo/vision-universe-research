@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE — canonical-price-validity.js   (canonical-price-validity-2.1.0)
+   VISION UNIVERSE — canonical-price-validity.js   (canonical-price-validity-2.2.0)
 
    KANONISCHER SERIENVERTRAG MIT GUELTIGKEITSINTERVALLEN (Partial Series)
 
@@ -55,7 +55,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var CTR = isNode ? require("./canonical-total-return.js") : global.VUCanonicalTotalReturn;
   var CAV = isNode ? require("./corporate-action-validation.js") : global.VUCorporateActionValidation;
-  var VERSION = "canonical-price-validity-2.1.0";
+  var VERSION = "canonical-price-validity-2.2.0";
 
   var STATE_OF_REASON = {
     CORPORATE_ACTION_CONFLICT: "HOLD",
@@ -144,9 +144,24 @@
    */
   function resolveObservedAt(rawBars, opts, c) {
     var norm = (c.evidence || []).filter(function (e) { return e.outcome === "NORMALIZE" && e.eventDate; });
-    if (!norm.length) return;
-    var asOf = c.asOf, days = (Array.isArray(rawBars) ? rawBars : []).map(function (b) { return day(b.date); })
+    if (!norm.length && !c.hold) return;
+    var asOf = c.asOf, days = (Array.isArray(rawBars) ? rawBars : []).filter(Boolean).map(function (b) { return day(b.date); })
       .filter(function (d) { return !asOf || d <= asOf; }).sort();
+    /* Sperre (Review R2-01): erster Tag, dessen Stichtagssicht dieselbe Sperre zeigt. Ein SEC-Widerspruch
+       wird erst sichtbar, wenn die Einreichung STRIKT vor dem Stichtag liegt und das Datum, das den
+       Anbieterfaktor ins Fenster legt, aus einer spaeteren Einreichung stammen kann. */
+    if (c.hold) {
+      var h = c.hold, found = null;
+      h.observedAtStage = h.observedAt || null;
+      for (var j = 0; j < days.length && !found; j++) {
+        if (days[j] < h.from || (j > 0 && days[j] === days[j - 1])) continue;
+        var hv = buildView(rawBars, Object.assign({}, opts, { asOf: days[j] }));
+        if (hv.hold && hv.hold.from === h.from && hv.hold.state === h.state) found = days[j];
+      }
+      h.observedAt = found || (days.length ? addDays(days[days.length - 1], 1) : null);
+      h.observedAtBasis = found ? "FIRST_AS_OF_VIEW_WITH_HOLD" : "AFTER_LAST_BAR";
+      (c.intervals || []).forEach(function (x) { if (x.state === h.state && x.from === h.from) x.observedAt = h.observedAt; });
+    }
     norm.forEach(function (e) {
       e.observedAtStage = e.observedAt || null;
       for (var k = 0; k < days.length; k++) {
@@ -242,10 +257,16 @@
       if (e.outcome !== "NORMALIZE" || !e.eventDate || !e.observedAt || e.observedAt <= e.eventDate) return;
       var view = buildView(rawBars, Object.assign({}, opts, { asOf: e.eventDate }));
       var held = view.hold && view.hold.from === e.eventDate;
-      out.push({ state: held ? "HOLD" : "PIT_REVISION", from: e.eventDate, until: prevDate(rawBars.map(function (b) { return { date: day(b.date) }; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; }), e.observedAt),
+      out.push({ state: held ? "HOLD" : "PIT_REVISION", from: e.eventDate, until: prevDate((rawBars || []).filter(Boolean).map(function (b) { return { date: day(b.date) }; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; }), e.observedAt),
         resumeFrom: e.observedAt,
         reason: held ? view.hold.reason : "UNADJUSTED_JUMP_UNTIL_SEC_FILING", resolvedBy: e.provenanceHash, evidenceClass: e.class });
     });
+    /* Sperre, die erst nach ihrem Beginn sichtbar wird: Sichten davor halten die Kerzen ab hold.from fuer gueltig (R2-01) */
+    if (fin.hold && fin.hold.observedAt && fin.hold.observedAt > fin.hold.from) {
+      out.push({ state: "HOLD_RETROACTIVE", from: fin.hold.from, observedAt: fin.hold.observedAt,
+        until: prevDate((rawBars || []).filter(Boolean).map(function (b) { return { date: day(b.date) }; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; }), fin.hold.observedAt),
+        reason: fin.hold.reason, evidenceClass: fin.hold.evidenceClass });
+    }
     fin.invalidRanges.forEach(function (x) { out.push({ state: "INVALID_RANGE", from: x.from, to: x.to, observedAt: x.observedAt, reason: x.reason }); });
     return out;
   }

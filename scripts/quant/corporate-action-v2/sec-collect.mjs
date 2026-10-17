@@ -43,7 +43,7 @@ export const COLLECTOR_VERSION = 'sec-corporate-action-collector-1.0.0';
 const stats = { requests: 0, errors: 0, retries: 0, eftsQueries: 0, eftsHits: 0, universeHits: 0, filings: 0, documents: 0, documentErrors: 0, truncatedWindows: 0,
   proxyHits: 0, periodicFilings: 0, incompleteWindows: [], documentsSkippedByCap: 0 };
 let last = 0;
-/* <= 8.7 requests/s by default; parallel collection jobs set SEC_MIN_INTERVAL_MS so that together they stay under the SEC fair-access limit of 10/s */
+/* <= 8.7 requests/s by default; parallel collection jobs set SEC_MIN_INTERVAL_MS (three parts at 300 ms reach the SEC fair-access limit of 10/s; review R2-09: use >= 400 ms or a sequential retry pass) */
 const MIN_INTERVAL = Number(process.env.SEC_MIN_INTERVAL_MS || 115);
 async function throttle() { const wait = Math.max(0, last + MIN_INTERVAL - Date.now()); if (wait) await new Promise((r) => setTimeout(r, wait)); last = Date.now(); }
 async function get(url, { json = false } = {}) {
