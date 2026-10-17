@@ -1,0 +1,18 @@
+{
+  "schema": "corporate-action-v3-sealed-1.0.0",
+  "encoding": "gzip(JSON)",
+  "plaintextSha256": "78f4266a6a358815841d1bd0f79fa175eaa68d5e04c64587efe82080e75ba682",
+  "plaintextBytes": 206406,
+  "envelopes": [
+    {
+      "audience": "owner",
+      "file": "CORPORATE-ACTION-V3-PRIVATE.owner.sealed.json",
+      "sha256": "46ee5409244a8be7ba6c9226371ddbbb6f193c20ff60c835cb70cf8b694f929c"
+    },
+    {
+      "audience": "session",
+      "file": "CORPORATE-ACTION-V3-PRIVATE.session.sealed.json",
+      "sha256": "5da1067f2583976ecb3196dcaec113f759dbeee4a3397df1e920ce36975bbe76"
+    }
+  ]
+}
