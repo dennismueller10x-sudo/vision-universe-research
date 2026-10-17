@@ -173,6 +173,12 @@ export async function buildRelease({root,output}){
    await writeFile(resolve(output,HOME_PATH),JSON.stringify(buildHomeFromDir(root)));
   }catch(e){console.warn('ELLIOTT_HOME_SKIPPED',String(e&&e.message||e).slice(0,200));}
  }
+ /* Verfuegbarkeits-Manifest des Aktien-Navigators (scripts/core/stock-availability.mjs, VU3): je shardKey ein kleiner Ausschnitt
+    aus den Artefakten dieser Auslieferung, nie committet. Faellt es aus, zeigt der Navigator jedes Modul neutral als "unknown". */
+ try{
+  const {writeAvailability,AVAILABILITY_DIR}=await import('../core/stock-availability.mjs');
+  writeAvailability({root,out:resolve(output,AVAILABILITY_DIR)});
+ }catch(e){console.warn('STOCK_AVAILABILITY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
   await mkdir(resolve(output,UNIVERSE_SHARD_DIR),{recursive:true});
