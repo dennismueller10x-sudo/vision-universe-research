@@ -21,6 +21,7 @@ const require = createRequire(import.meta.url);
 export const VERSION = 'vu-price-root-cause-audit-1.0.0';
 export const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 export const finite = (x) => typeof x === 'number' && Number.isFinite(x);
+const K_finite = finite;
 export const inc = (o, k, n = 1) => { o[k] = (o[k] || 0) + n; return o; };
 export const r1 = (x) => (finite(x) ? Math.round(x * 10) / 10 : null);
 export const r3 = (x) => (finite(x) ? Math.round(x * 1000) / 1000 : null);
@@ -29,7 +30,10 @@ const imp = (root, rel) => import(pathToFileURL(path.join(root, rel)).href);
 const daysApart = (a, b) => Math.abs(Date.parse(String(a).slice(0, 10)) - Date.parse(String(b).slice(0, 10))) / 864e5;
 
 /** Census thresholds of the earlier audits (joined, not tuned). */
-export const CENSUS = Object.freeze({ undeclaredRawJump: 10, declaredResidualStep: 2, secWindowDays: 10, finraWindowDays: 10 });
+export const CENSUS = Object.freeze({ undeclaredRawJump: 10, declaredResidualStep: 2, secWindowDays: 10, finraWindowDays: 10,
+  /* strict confirmation (independent review IR-03): the stated ratio must leave at most the +-25 % residual that the
+     #721 core 1.2.0 already used as its conventional-ratio tolerance; a direction-only match is not a confirmation */
+  strictResidualRatio: 1.25 });
 
 /* ------------------------------------------------------------------ loaders */
 
@@ -120,7 +124,16 @@ export function labelEvent(M, s, ev, sec, finra) {
   /* a share-count confirmation alone can be produced by a DECLARED split within the share-count window (+-200 days) */
   const declaredNear = s.bars.some((b) => hasSplit(b) && b.date !== ev.date && daysApart(b.date, ev.date) <= 200);
   const channel = e.finraSplitExplains ? 'FINRA' : secExplains ? 'SEC_8K' : e.shares === 'CONFIRMS' ? (declaredNear ? 'SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR' : 'SEC_SHARES_ONLY') : null;
-  return { cls, channel, finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
+  /* strict class (review IR-03/IR-04/IR-05): ratio residual within tolerance, no SEC share-count contradiction, no
+     declared-split confound for a share-count-only confirmation */
+  const residual = K_finite(statedRatio) && r > 0 ? Math.exp(Math.abs(Math.log(r * statedRatio))) : null;
+  let strictCls = cls;
+  if (cls === 'CONFIRMED_BY_INDEPENDENT_SOURCE') {
+    if (statedRatio !== null && e.shares === 'NO_SPLIT') strictCls = 'CONFLICTING_INDEPENDENT_EVIDENCE';
+    else if (statedRatio !== null && !(residual <= CENSUS.strictResidualRatio)) strictCls = 'RATIO_DOES_NOT_EXPLAIN_MOVE';
+    else if (statedRatio === null && declaredNear) strictCls = 'CONFOUNDED_BY_DECLARED_SPLIT';
+  }
+  return { cls, strictCls, channel, residual, finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
     channels: { finraObs: finraObs.length, secEvents: secRows.length, shareRows: ctx.shares.length } };
 }
 
@@ -232,5 +245,10 @@ export function sealForOwner(M, bytes, file) {
   return { audience: 'owner', file: path.basename(file), plaintextSha256: sha(bytes), sealedSha256: sha(Buffer.from(sealed)) };
 }
 
+/** Fails closed when the capture is not the expected content (review IR-17: the R2 store is live). */
+export function expectFingerprint(expected, raw) {
+  if (expected && raw?.fingerprint !== expected) throw new Error('CAPTURE_FINGERPRINT_CHANGED');
+  return raw?.fingerprint ?? null;
+}
 export function args(argv) { const o = {}; for (let i = 0; i < argv.length; i += 2) o[argv[i].replace(/^--/, '')] = argv[i + 1]; return o; }
 export const writeJson = (f, o) => { fs.mkdirSync(path.dirname(path.resolve(f)), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2) + '\n'); };

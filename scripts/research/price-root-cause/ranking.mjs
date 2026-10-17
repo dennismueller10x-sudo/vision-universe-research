@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Rank comparison of the six frozen tournament methods under scenarios A (original), B (confirmed VU infrastructure
- * fixes) and C (independently confirmed corrections), in ONE process so ranks can be formed without publishing any
+ * fixes) and C (strictly independently confirmed corrections, C2), in ONE process so ranks can be formed without publishing any
  * absolute performance number. Public: ranks by CAGR, Sharpe and max drawdown, and whether the rank order changed.
  * Absolute metrics are sealed to the owner key. Diagnostic only, never certifying.
  * Usage: node ranking.mjs --base-root <#705> --v3-root <#758> --capture <dir> --sec <file> --finra <file> --public-out <file> --sealed-dir <dir>
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import * as K from './lib.mjs';
 import { measureMethod } from './backtest-impact.mjs';
 
-export const RANK_SCENARIOS = ['A_ORIGINAL', 'B_VU_BUGS', 'C_INDEPENDENT'];
+export const RANK_SCENARIOS = ['A_ORIGINAL', 'B_VU_BUGS', 'C2_STRICT'];
 export const METHODS = ['cross_sectional_momentum', '52_week_high_effect', 'LOW_VOLATILITY', 'TURTLE_S2_EQUITY_DAILY', 'WEINSTEIN_STAGE_DAILY', 'KULLAMAGI_DAILY_ADAPTATION'];
 
 /** Rank 1 = best: highest CAGR, highest Sharpe, shallowest drawdown (maxDrawdown is <= 0). */
@@ -29,7 +29,7 @@ export function rankTable(results) {
       aboveSpy: Object.fromEntries(Object.entries(results).map(([m, r]) => [m, K.finite(r.rows[sc]?.metrics?.cagr) && r.rows[sc].metrics.cagr > r.benchmark.cagr])) };
   }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  out.changes = Object.fromEntries(['cagr', 'sharpe', 'maxDrawdown'].map((k) => [k, { A_to_B: !same(out.A_ORIGINAL[k], out.B_VU_BUGS[k]), A_to_C: !same(out.A_ORIGINAL[k], out.C_INDEPENDENT[k]) }]));
+  out.changes = Object.fromEntries(['cagr', 'sharpe', 'maxDrawdown'].map((k) => [k, { A_to_B: !same(out.A_ORIGINAL[k], out.B_VU_BUGS[k]), A_to_C2: !same(out.A_ORIGINAL[k], out.C2_STRICT[k]) }]));
   return out;
 }
 
@@ -38,6 +38,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   (async () => {
     const M = await K.loadModules(path.resolve(o['base-root']), path.resolve(o['v3-root']));
     const { raw, prepared } = K.loadCapture(M, o.capture);
+    K.expectFingerprint(o['expect-fingerprint'], raw);
     const census = K.labelledCensus(M, prepared, K.loadSec(o.sec), K.loadFinra(o.finra, M.FDL));
     const results = {};
     for (const m of METHODS) { results[m] = measureMethod(M, prepared, m, census, { scenarios: RANK_SCENARIOS, log: (x) => process.stdout.write(JSON.stringify(x) + '\n') }); if (global.gc) global.gc(); }

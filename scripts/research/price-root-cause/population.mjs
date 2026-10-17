@@ -50,8 +50,9 @@ export function ewVariant(M, data, exclude) {
 }
 function corrOf(M, months, oracle) {
   const c = M.cmp.compareEwMarket(months, oracle.EW_MARKET);
-  return { correlation: K.r3(c.stats?.correlation), meanDiffBpPerMonth: K.finite(c.stats?.meanDiff) ? Math.round(c.stats.meanDiff * 1e4) : null, trackingErrorPp: K.finite(c.stats?.trackingErrorAnnualized) ? K.r1(100 * c.stats.trackingErrorAnnualized) : null,
-    verdict: c.verdict, holdingCountRatioMean: K.r3(c.informational?.holdingCountRatioMean) };
+  /* correlation, verdict and failed checks only: a mean difference plus the public French series would reveal the absolute
+     mean return of the Tiingo-based EW portfolio (review IR-20) */
+  return { correlation: K.r3(c.stats?.correlation), verdict: c.verdict, failedHardChecks: c.failedHardChecks ?? [], holdingCountRatioMean: K.r3(c.informational?.holdingCountRatioMean) };
 }
 function fullVariant(M, data, oracle) {
   const months = M.cons.buildConstructions(data, { keepMembership: false }).months;
@@ -65,6 +66,7 @@ function fullVariant(M, data, oracle) {
 export async function runPopulation(o) {
   const M = await K.loadModules(path.resolve(o['base-root']), path.resolve(o['v3-root']));
   const { raw, prepared } = o._loaded || K.loadCapture(M, o.capture);
+  K.expectFingerprint(o['expect-fingerprint'], raw);
   const sec = K.loadSec(o.sec), finra = K.loadFinra(o.finra, M.FDL);
   const ca = path.resolve(o.ca);
   const { universe: U } = readJson(path.join(ca, 'universe.json'));
@@ -105,25 +107,29 @@ export async function runPopulation(o) {
   const overlaps = {};
   for (let a = 0; a < keys.length; a++) for (let b = a + 1; b < keys.length; b++) { let n = 0; for (const x of sets[keys[a]]) if (sets[keys[b]].has(x)) n++; if (n) overlaps[keys[a] + '&' + keys[b]] = n; }
   const unionAll = new Set(keys.filter((k) => !['TOURNAMENT_QUARANTINES', 'V3_HOLDS', 'V3_CONFLICTING_HOLDS'].includes(k)).flatMap((k) => [...sets[k]]));
+  const unionWithProtective = new Set(keys.flatMap((k) => [...sets[k]]));
+  const coverage = { segmentsWithCik: U.filter((u) => u.cik).length, segmentsWithShareRows: U.filter((u) => (u.shares || []).length > 1).length,
+    segmentsWithFinraRows: prepared.securities.filter((s) => (finra.bySym.get(String(s.ticker).toUpperCase()) || []).length).length, finraIdentityBasis: 'SYMBOL_IN_LISTING_WINDOW (no name check)',
+    tickersWithMoreThanOneCik: (() => { const m = new Map(); for (const u of U) if (u.cik) { if (!m.has(u.ticker)) m.set(u.ticker, new Set()); m.get(u.ticker).add(u.cik); } return [...m.values()].filter((x) => x.size > 1).length; })() };
 
   /* events joined on segment|day */
   const evKey = (id, d) => id + '|' + d, events = new Map();
   const addEv = (id, d, src, extra) => { if (!d) return; const k = evKey(id, d); if (!events.has(k)) events.set(k, { id, date: d, sources: new Set(), extra: {} }); const e = events.get(k); e.sources.add(src); Object.assign(e.extra, extra); };
   for (const x of e272) addEv(x.segmentId, x.date, 'V2_272', { v3: x.v3, independentNoVendor: x.independent, dir: x.dir });
-  for (const r of censusRows) addEv(r.id, r.date, 'TOURNAMENT_CENSUS', { kind: r.kind, label: r.label.cls, channel: r.label.channel, dayHasDeclaredSplit: r.kind === 'DECLARED_SPLIT_RESIDUAL', inTournamentValidPrefix: true, rawRatio: r.rawRatio });
+  for (const r of censusRows) addEv(r.id, r.date, 'TOURNAMENT_CENSUS', { kind: r.kind, label: r.label.cls, channel: r.label.channel, strictCls: r.label.strictCls, direction: r.dir, dayHasDeclaredSplit: r.kind === 'DECLARED_SPLIT_RESIDUAL', inTournamentValidPrefix: true, rawRatio: r.rawRatio });
   for (const c of k83) { const [id] = c.key.split('|'); addEv(id, c.dominantDay, 'V4_83_DOMINANT_DAY', { cause83: c.cause, defect83: c.defect }); }
   for (const r of d2) for (const dd of r.days || []) addEv(r.segmentId, dd.date, 'D2_DEFECT_DAY', { d2Kind: dd.kind, d2Cause: r.cause });
   const evRows = [];
   for (const e of events.values()) {
     const rb = rawOf(e.id), s = prepById.get(e.id), u = U[idx.get(e.id)];
     const locus = rb ? providerLocus(rb, e.date) : 'NO_STORE_SERIES';
-    let label = e.extra.label ?? null, channel = e.extra.channel ?? null;
+    let label = e.extra.label ?? null, channel = e.extra.channel ?? null, strictCls = e.extra.strictCls ?? null;
     if (!label && s) { const k = s.bars.findIndex((b) => b.date === e.date); if (k > 0) { const a = s.bars[k - 1], b = s.bars[k]; const declared = K.finite(b.splitFactor) && Math.abs(b.splitFactor - 1) > 1e-9;
       const lb = K.labelEvent(M, s, { date: e.date, kind: declared ? 'DECLARED_SPLIT_RESIDUAL' : 'UNDECLARED_RAW_JUMP_10X', rawRatio: b.rawClose / a.rawClose, trStep: b.totalReturnIndex / a.totalReturnIndex }, sec, finra);
-      label = lb.cls; channel = lb.channel; e.extra.dayHasDeclaredSplit = declared; } }
+      label = lb.cls; channel = lb.channel; strictCls = lb.strictCls; e.extra.dayHasDeclaredSplit = declared; e.extra.direction = b.rawClose > a.rawClose ? 'UP' : 'DOWN'; } }
     const k0 = rb ? rb.findIndex((b) => b.date === e.date) : -1, priorRaw = k0 > 0 ? rb[k0 - 1].close : null;
     const inPrefix = !!(s && s.bars.some((b) => b.date === e.date));
-    evRows.push({ id: e.id, ticker: u?.ticker ?? null, securityId: u?.securityId ?? null, cik: u?.cik ?? null, date: e.date, sources: [...e.sources].sort(), locus, independent: label ?? e.extra.independentNoVendor ?? 'NOT_LABELED', channel,
+    evRows.push({ id: e.id, ticker: u?.ticker ?? null, securityId: u?.securityId ?? null, cik: u?.cik ?? null, date: e.date, sources: [...e.sources].sort(), locus, independent: label ?? e.extra.independentNoVendor ?? 'NOT_LABELED', channel, strictCls: strictCls ?? (label ? label : null),
       inTournamentValidPrefix: inPrefix, priorRawClose: priorRaw, exchange: exchangeOf(e.id), ...e.extra });
   }
   const tally = (rows, f) => rows.reduce((a, r) => K.inc(a, f(r)), {});
@@ -131,7 +137,8 @@ export async function runPopulation(o) {
     byLocusAndIndependent: tally(evRows, (r) => r.locus + '|' + r.independent), byConfirmationChannel: tally(evRows.filter((r) => r.channel), (r) => r.channel),
     censusByKindAndChannel: tally(censusRows, (r) => r.kind + '|' + (r.label.channel ?? r.label.cls)), insideTournamentValidPrefix: evRows.filter((r) => r.inTournamentValidPrefix).length,
     byYear: tally(evRows, (r) => year(r.date)), byPriorRawPrice: tally(evRows, (r) => priceBucket(r.priorRawClose)), byExchange: tally(evRows, (r) => r.exchange),
-    securitiesWithEvents: levels(evRows.map((r) => r.id)), unionOfIssuePopulations: levels([...unionAll]) };
+    securitiesWithEvents: levels(evRows.map((r) => r.id)), unionOfIssuePopulations: levels([...unionAll]), unionOfEventPopulationsDefinition: '83 + 74 + D2 + 272 + census (holds and quarantines excluded: protective decisions, not findings)',
+    unionIncludingHoldsAndQuarantines: levels([...unionWithProtective]), byStrictClass: tally(evRows, (r) => r.strictCls ?? 'NOT_LABELED'), evidenceCoverage: coverage };
   /* bars: one return day per event, the level shift of every later bar inside the valid prefix, bars lost to quarantine */
   let levelShiftedBars = 0; for (const r of censusRows) { const s = prepById.get(r.id); levelShiftedBars += s.bars.length - r.i; }
   const lostToQuarantine = P.TOURNAMENT_QUARANTINES.reduce((a, s) => { const rb = rawOf(s.id); return a + (rb ? rb.filter((b) => b.date > s.bars.at(-1).date && b.date <= (s.listing?.endDate || M.protocol.window.to) && b.date <= M.protocol.window.to).length : 0); }, 0);
@@ -141,10 +148,11 @@ export async function runPopulation(o) {
 
   /* 83 cases: forensic cause (#722 finalCause, recomputed by v3) x independent label of the dominant day */
   const evByKey = new Map(evRows.map((r) => [evKey(r.id, r.date), r]));
-  const k83Rows = k83.map((c) => { const [id, month] = c.key.split('|'); const e = c.dominantDay ? evByKey.get(evKey(id, c.dominantDay)) : null; return { id, month, cls: c.cls, cause: c.cause, defect: c.defect, dominantDay: c.dominantDay, independent: e?.independent ?? 'NO_DOMINANT_DAY', channel: e?.channel ?? null, dayHasDeclaredSplit: e?.dayHasDeclaredSplit ?? null, locus: e?.locus ?? null, v3ValidReturn: c.v3ValidReturn, v3StillExtreme: c.v3StillExtreme }; });
+  const k83Rows = k83.map((c) => { const [id, month] = c.key.split('|'); const e = c.dominantDay ? evByKey.get(evKey(id, c.dominantDay)) : null; return { id, month, cls: c.cls, cause: c.cause, defect: c.defect, dominantDay: c.dominantDay, independent: e?.independent ?? 'NO_DOMINANT_DAY', strictCls: e?.strictCls ?? null, direction: e?.direction ?? null, priorPrice: e ? priceBucket(e.priorRawClose) : null, channel: e?.channel ?? null, dayHasDeclaredSplit: e?.dayHasDeclaredSplit ?? null, locus: e?.locus ?? null, v3ValidReturn: c.v3ValidReturn, v3StillExtreme: c.v3StillExtreme }; });
   const cases83 = { rows: k83Rows.length, byCause: tally(k83Rows, (r) => r.cause), byDefect: tally(k83Rows, (r) => String(r.defect)), byIndependent: tally(k83Rows, (r) => r.independent), byCauseAndIndependent: tally(k83Rows, (r) => r.cause + '|' + r.independent),
     byCauseAndLocus: tally(k83Rows, (r) => r.cause + '|' + r.locus), byClassCauseIndependent: tally(k83Rows, (r) => r.cls + '|' + r.cause + '|' + r.independent),
-    byClassAndChannel: tally(k83Rows, (r) => r.cls + '|' + (r.channel ?? r.independent)), dominantDayIsDeclaredSplit: tally(k83Rows, (r) => String(r.dayHasDeclaredSplit)), v3: tally(k83Rows, (r) => (r.v3ValidReturn ? (r.v3StillExtreme ? 'VALID_STILL_EXTREME' : 'VALID') : 'NOT_VALID')) };
+    byClassAndChannel: tally(k83Rows, (r) => r.cls + '|' + (r.channel ?? r.independent)), byCauseAndStrict: tally(k83Rows, (r) => r.cause + '|' + r.strictCls),
+    byClassDirectionPrice: tally(k83Rows, (r) => r.cls + '|' + r.direction + '|' + r.priorPrice), byIndependentDirectionPrice: tally(k83Rows, (r) => r.independent + '|' + r.direction + '|' + r.priorPrice), dominantDayIsDeclaredSplit: tally(k83Rows, (r) => String(r.dayHasDeclaredSplit)), v3: tally(k83Rows, (r) => (r.v3ValidReturn ? (r.v3StillExtreme ? 'VALID_STILL_EXTREME' : 'VALID') : 'NOT_VALID')) };
   const d2Rows = P.D2_DEFECT_SECURITIES.map((r) => ({ id: r.segmentId, cause: r.cause, days: (r.days || []).map((d) => ({ date: d.date, kind: d.kind, independent: evByKey.get(evKey(r.segmentId, d.date))?.independent ?? null, locus: evByKey.get(evKey(r.segmentId, d.date))?.locus ?? null, v3Valid: d.v3ValidReturn })) }));
   const d2Summary = { securities: d2Rows.length, byCause: tally(d2Rows, (r) => r.cause), dayIndependent: tally(d2Rows.flatMap((r) => r.days), (d) => d.independent), dayLocus: tally(d2Rows.flatMap((r) => r.days), (d) => d.locus) };
   const e272Summary = { rows: e272.length, reproducesV3Count: e272.length === 272, byIndependentNoVendor: tally(e272, (x) => x.independent), byV3: tally(e272, (x) => x.v3), byDir: tally(e272, (x) => x.dir),
@@ -157,9 +165,11 @@ export async function runPopulation(o) {
     const oracle = o._oracle || readJson(o['oracle-parsed']).parsed;
     const census4 = M.sanity.priceSanityCensus(prepared.securities);
     const v4 = M.policy.applyCausalTerminals(M.sanity.applyPriceSanityQuarantine(prepared, census4).data).data;
+    let ewSecurityMonths = 0;
     const ext = [], calendar = M.cons.sessionCalendar(v4), calIdx = new Map(calendar.map((d, i) => [d, i])), byId = new Map(v4.securities.map((s) => [s.id, s]));
     for (const m of M.cons.buildConstructions(v4, {}).months) for (const id of m.EW_MARKET.privateMembership) {
       const s = byId.get(id), h = M.cons.holdingReturn(s, m.formation, m.end, calIdx);
+      if (h && K.finite(h.ret)) ewSecurityMonths++;
       if (!h || !K.finite(h.ret) || Math.abs(h.ret) <= 1) continue;
       ext.push({ key: id + '|' + m.month, cls: M.diag.classifyOutlier(M.diag.signature(s, m.formation, m.end)) });
     }
@@ -174,6 +184,8 @@ export async function runPopulation(o) {
       EXCLUDE_83_CONFIRMED_BY_STATED_RATIO_ONLY: set(flagged.filter((x) => ['FINRA', 'SEC_8K'].includes(k83ByKey.get(x.key)?.channel))),
       EXCLUDE_83_FORENSIC_DEFECT_AND_UNDECLARED: set(flagged.filter((x) => k83ByKey.get(x.key)?.defect === true && x.cls === 'UNDECLARED_RAW_JUMP_10X')),
       EXCLUDE_83_UNDECLARED_NOT_CONFIRMED: set(flagged.filter((x) => x.cls === 'UNDECLARED_RAW_JUMP_10X' && k83ByKey.get(x.key)?.independent !== 'CONFIRMED_BY_INDEPENDENT_SOURCE')),
+      EXCLUDE_83_STRICTLY_CONFIRMED_ONLY: set(flagged.filter((x) => k83ByKey.get(x.key)?.strictCls === 'CONFIRMED_BY_INDEPENDENT_SOURCE')),
+      EXCLUDE_83_NOT_STRICTLY_CONFIRMED: set(flagged.filter((x) => k83ByKey.get(x.key)?.strictCls !== 'CONFIRMED_BY_INDEPENDENT_SOURCE')),
       EXCLUDE_83_UNDECLARED_CONFIRMED: set(flagged.filter((x) => x.cls === 'UNDECLARED_RAW_JUMP_10X' && k83ByKey.get(x.key)?.independent === 'CONFIRMED_BY_INDEPENDENT_SOURCE')),
       EXCLUDE_UNDECLARED_RAW_JUMP_10X_ONLY: set(flagged.filter((x) => x.cls === 'UNDECLARED_RAW_JUMP_10X')), EXCLUDE_DECLARED_SPLIT_IN_MONTH_ONLY: set(flagged.filter((x) => x.cls === 'DECLARED_SPLIT_IN_MONTH')),
     };
@@ -184,13 +196,14 @@ export async function runPopulation(o) {
       V4_BASELINE: fullVariant(M, v4, oracle),
       TOURNAMENT_DATA_NO_V4_SANITY: fullVariant(M, tc(prepared), oracle),
       C_INDEPENDENT_CORRECTIONS: fullVariant(M, tc(K.applyEvents(prepared, census, indep).data), oracle),
+      C2_STRICT_CORRECTIONS: fullVariant(M, tc(K.applyEvents(prepared, census, (x) => (x.label.strictCls !== 'CONFIRMED_BY_INDEPENDENT_SOURCE' ? null : x.kind === 'UNDECLARED_RAW_JUMP_10X' && K.finite(x.label.statedRatio) ? 'NORMALIZE' : 'CUT')).data), oracle),
       D_CUT_ALL_CENSUS_EVENTS: fullVariant(M, tc(K.applyEvents(prepared, census, (x) => indep(x) || 'CUT').data), oracle),
       D_CUT_ALL_CENSUS_EVENTS_PLUS_V4_SANITY: (() => { const x = K.applyEvents(prepared, census, (y) => indep(y) || 'CUT').data, c4 = M.sanity.priceSanityCensus(x.securities); return fullVariant(M, tc(M.sanity.applyPriceSanityQuarantine(x, c4).data), oracle); })(),
       E_WHOLE_SERIES_DROP: fullVariant(M, K.dropQuarantined(tc(prepared)).data, oracle),
     };
     let gap = 0, gapFlag = 0; const base = ewVariant(M, v4, new Set()), ref = new Map(oracle.EW_MARKET.map((r) => [r.month, r.ret])), flagMonths = new Set(flagged.map((x) => x.key.split('|')[1]));
     for (const m of base) { const r0 = ref.get(m.month); if (!K.finite(r0) || !K.finite(m.EW_MARKET.ret)) continue; const g2 = (m.EW_MARKET.ret - r0) ** 2; gap += g2; if (flagMonths.has(m.month)) gapFlag += g2; }
-    french = { ewExclusionVariants: ew, fullConstructionVariants: full, extremeSecurityMonths: ext.length, flagged83: flagged.length, squaredGapShareInMonthsWithFlaggedCases: K.r3(gapFlag / gap), v4PriceSanity: { affected: census4.affected, defectQuarantined: census4.defectQuarantined, byClass: census4.byClass } };
+    french = { ewSecurityMonths, ewExclusionVariants: ew, fullConstructionVariants: full, extremeSecurityMonths: ext.length, flagged83: flagged.length, squaredGapShareInMonthsWithFlaggedCases: K.r3(gapFlag / gap), v4PriceSanity: { affected: census4.affected, defectQuarantined: census4.defectQuarantined, byClass: census4.byClass } };
   }
 
   const priv = { evRows, k83Rows, d2Rows, census: censusRows.map((r) => ({ id: r.id, date: r.date, kind: r.kind, rawRatio: r.rawRatio, label: r.label })) };

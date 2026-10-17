@@ -2,8 +2,8 @@ name: Research price-data root-cause and backtest-impact audit (diagnostic, not 
 # [root-cause-audit:ranking] runs only the single-process rank replay; [root-cause-audit:population] reruns only the population job (same inputs) and publishes it.
 # Isolated diagnostic replay for docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md and
 # docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md. Runs only with [root-cause-audit:run] in the head commit message.
-# Reads the canonical capture of the pinned #705 pipeline (same content as freezes V3-84caf2e84e560bec and
-# V4-beae51ae1b07768b), the unchanged corporate-action-v3 stages of #758 WITHOUT the validation vendor, and the merged
+# Reads a fresh canonical capture of the pinned #705 pipeline. Its fingerprint (b3ca8681...) differs from the frozen
+# tournament/V4 input (318c051f...); every job asserts the expected fingerprint and fails on drift. It also reads the unchanged corporate-action-v3 stages of #758 WITHOUT the validation vendor, and the merged
 # public SEC/FINRA inputs of run 39019906367. No rule, threshold, parameter or strategy is changed; nothing is certified.
 # Public outputs: counts, correlations, deltas and directions. Per-case rows and absolute metrics: owner-sealed only.
 on:
@@ -20,6 +20,7 @@ env:
   V3_COMMIT: f8644cf1fda0fd0e037d41d10a67cca8326d4443
   V2_COMMIT: 0d8e2755e3389c8edeaf3208561edb238e530016
   MERGED_INPUTS_RUN: '39019906367'
+  CAPTURE_FINGERPRINT: b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f
   OUT: docs/data-quality/root-cause-audit
 jobs:
   population:
@@ -151,7 +152,7 @@ jobs:
           C=/workspace/private/ca; ORACLE_ARGS=()
           if [ "$ORACLE_OK" = "success" ]; then ORACLE_ARGS=(--oracle-parsed /workspace/private/oracle/oracle-parsed.json); fi
           node audit/scripts/research/price-root-cause/population.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
-            --ca $C --sec $C/sec-events.json --finra $C/finra-rows.json "${ORACLE_ARGS[@]}" --public-out "$RUNNER_TEMP/pub/POPULATION.json" --sealed-dir "$RUNNER_TEMP/sealed"
+            --ca $C --sec $C/sec-events.json --finra $C/finra-rows.json "${ORACLE_ARGS[@]}" --public-out "$RUNNER_TEMP/pub/POPULATION.json" --sealed-dir "$RUNNER_TEMP/sealed" --expect-fingerprint "$CAPTURE_FINGERPRINT"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -247,7 +248,7 @@ jobs:
           set -euo pipefail
           export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
           node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture-${{ matrix.method }}.json"
-      - name: Diagnostic replay of the frozen method (7 scenarios)
+      - name: Diagnostic replay of the frozen method (9 scenarios)
         env:
           NODE_OPTIONS: --max-old-space-size=13000
           METHOD: ${{ matrix.method }}
@@ -255,7 +256,7 @@ jobs:
           set -euo pipefail
           node --expose-gc audit/scripts/research/price-root-cause/backtest-impact.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
             --sec "$RUNNER_TEMP/merged/sec-events.json" --finra "$RUNNER_TEMP/merged/finra-rows.json" --method "$METHOD" \
-            --public-out "$RUNNER_TEMP/pub/BACKTEST-IMPACT-$METHOD.json" --sealed-dir "$RUNNER_TEMP/sealed"
+            --public-out "$RUNNER_TEMP/pub/BACKTEST-IMPACT-$METHOD.json" --sealed-dir "$RUNNER_TEMP/sealed" --expect-fingerprint "$CAPTURE_FINGERPRINT"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -352,7 +353,7 @@ jobs:
         run: |
           set -euo pipefail
           node --expose-gc audit/scripts/research/price-root-cause/ranking.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
-            --sec "$RUNNER_TEMP/merged/sec-events.json" --finra "$RUNNER_TEMP/merged/finra-rows.json" --public-out "$RUNNER_TEMP/pub/RANKING.json" --sealed-dir "$RUNNER_TEMP/sealed"
+            --sec "$RUNNER_TEMP/merged/sec-events.json" --finra "$RUNNER_TEMP/merged/finra-rows.json" --public-out "$RUNNER_TEMP/pub/RANKING.json" --sealed-dir "$RUNNER_TEMP/sealed" --expect-fingerprint "$CAPTURE_FINGERPRINT"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

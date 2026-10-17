@@ -23,8 +23,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as K from './lib.mjs';
 
-export const SCENARIOS = ['A_ORIGINAL', 'B1_A5_TIMING', 'B_VU_BUGS', 'C_INDEPENDENT', 'D_UNRESOLVED_CUT', 'E_WHOLE_SERIES', 'F_V4_FORENSIC_SANITY'];
+export const SCENARIOS = ['A_ORIGINAL', 'B1_A5_TIMING', 'B_VU_BUGS', 'C_INDEPENDENT', 'C2_STRICT', 'C3_STRICT_NORMALIZE_ONLY', 'D_UNRESOLVED_CUT', 'E_WHOLE_SERIES', 'F_V4_FORENSIC_SANITY'];
 
+/* strict variant (review IR-03/04/05): only strictly confirmed events; C3 applies stated-ratio normalisations only (no
+   ex-post cut at an unexecutable pre-event close, review IR-09) */
+const strictDecision = (ev) => (ev.label.strictCls !== 'CONFIRMED_BY_INDEPENDENT_SOURCE' ? null : ev.kind === 'UNDECLARED_RAW_JUMP_10X' && K.finite(ev.label.statedRatio) ? 'NORMALIZE' : 'CUT');
+const strictNormalizeOnly = (ev) => (strictDecision(ev) === 'NORMALIZE' ? 'NORMALIZE' : null);
 const independentDecision = (ev) => (ev.label.cls !== 'CONFIRMED_BY_INDEPENDENT_SOURCE' ? null
   : ev.kind === 'UNDECLARED_RAW_JUMP_10X' && K.finite(ev.label.statedRatio) ? 'NORMALIZE' : 'CUT');
 
@@ -33,8 +37,10 @@ export function scenarioData(M, prepared, census, id) {
   const causal = (d) => M.policy.applyCausalTerminals(d).data;
   switch (id) {
     case 'A_ORIGINAL': return { runner: 'V3', data: prepared, audit: null };
-    case 'B1_A5_TIMING': return { runner: 'V3', data: causal(prepared), audit: null };
-    case 'B_VU_BUGS': return { runner: 'V4', data: causal(prepared), audit: null };
+    case 'B1_A5_TIMING': { const c = M.policy.applyCausalTerminals(prepared); return { runner: 'V3', data: c.data, audit: c.audit }; }
+    case 'B_VU_BUGS': { const c = M.policy.applyCausalTerminals(prepared); return { runner: 'V4', data: c.data, audit: c.audit }; }
+    case 'C2_STRICT': { const x = K.applyEvents(prepared, census, strictDecision); return { runner: 'V4', data: causal(x.data), audit: x.audit }; }
+    case 'C3_STRICT_NORMALIZE_ONLY': { const x = K.applyEvents(prepared, census, strictNormalizeOnly); return { runner: 'V4', data: causal(x.data), audit: x.audit }; }
     case 'C_INDEPENDENT': { const x = K.applyEvents(prepared, census, independentDecision); return { runner: 'V4', data: causal(x.data), audit: x.audit }; }
     case 'D_UNRESOLVED_CUT': { const x = K.applyEvents(prepared, census, (ev) => independentDecision(ev) || 'CUT'); return { runner: 'V4', data: causal(x.data), audit: x.audit }; }
     case 'E_WHOLE_SERIES': { const x = K.dropQuarantined(causal(prepared)); return { runner: 'V4', data: x.data, audit: x.audit }; }
@@ -62,16 +68,21 @@ export function measureMethod(M, prepared, methodId, census, { scenarios = SCENA
 }
 
 const pp = (a, b) => (K.finite(a) && K.finite(b) ? K.r1(100 * (a - b)) : null);
+/* coarse gap to SPY (review IR-16): only the bucket, never the value */
+const bucket = (x, spy) => { if (!K.finite(x) || !K.finite(spy)) return 'UNKNOWN'; const g = 100 * (x - spy); return g >= 0 ? 'AT_OR_ABOVE_SPY' : g > -1 ? 'BELOW_0_TO_1PP' : g > -5 ? 'BELOW_1_TO_5PP' : 'BELOW_MORE_THAN_5PP'; };
 const dir = (x, spy) => (!K.finite(x) || !K.finite(spy) ? 'UNKNOWN' : x > spy ? 'ABOVE_SPY' : x < spy ? 'BELOW_SPY' : 'EQUAL_SPY');
 /** Public view: no absolute performance number, only differences (percentage points, 0.1) and directions. */
 export function publicView(res) {
-  const A = res.rows.A_ORIGINAL?.metrics, B = res.rows.B_VU_BUGS?.metrics, spy = res.benchmark.cagr;
+  const A = res.rows.A_ORIGINAL?.metrics, B = res.rows.B_VU_BUGS?.metrics, Cm = res.rows.C_INDEPENDENT?.metrics, C2 = res.rows.C2_STRICT?.metrics, spy = res.benchmark.cagr;
   const scenarios = {};
   for (const [id, r] of Object.entries(res.rows)) {
     const m = r.metrics, e = r.exposure;
     scenarios[id] = { runner: r.runner, securities: r.securities, audit: r.audit,
       cagrVsSpy: dir(m.cagr, spy), deltaVsA: { cagrPp: pp(m.cagr, A?.cagr), maxDrawdownPp: pp(m.maxDrawdown, A?.maxDrawdown), excessVsSpyPp: pp(m.cagr - spy, A?.cagr - spy), meanExposurePp: pp(m.meanExposure, A?.meanExposure), trades: m.trades - (A?.trades ?? 0) },
       deltaVsB: B ? { cagrPp: pp(m.cagr, B.cagr), maxDrawdownPp: pp(m.maxDrawdown, B.maxDrawdown) } : null,
+      deltaVsC: Cm ? { cagrPp: pp(m.cagr, Cm.cagr), maxDrawdownPp: pp(m.maxDrawdown, Cm.maxDrawdown) } : null,
+      deltaVsC2: C2 ? { cagrPp: pp(m.cagr, C2.cagr), maxDrawdownPp: pp(m.maxDrawdown, C2.maxDrawdown) } : null,
+      cagrGapToSpyBucket: bucket(m.cagr, spy), sharpeVsSpy: dir(m.sharpe, res.benchmark.sharpe).replace('SPY', 'SPY_SHARPE'),
       tradeExposure: { tradeRecords: e.tradeRecords, inEventSecurities: e.inEventSecurities, spanningEvent: e.spanningEvent, enteredWithin252AfterEvent: e.enteredWithin252AfterEvent,
         distinctEventSecuritiesTraded: e.distinctEventSecuritiesTraded, eventMonthsHeld: e.eventMonthsHeld, byClass: e.byClass,
         pnlSpanningShareOfFinalEquityPp: K.finite(m.finalEquity) && m.finalEquity > 0 ? K.r1(100 * e.pnlSpanning / m.finalEquity) : null },
@@ -81,8 +92,16 @@ export function publicView(res) {
 }
 
 export function censusSummary(census) {
-  const s = { events: 0, securities: census.size, byKind: {}, byClass: {}, byKindAndClass: {}, normalizable: 0 };
-  for (const evs of census.values()) for (const e of evs) { s.events++; K.inc(s.byKind, e.kind); K.inc(s.byClass, e.label.cls); K.inc(s.byKindAndClass, e.kind + ':' + e.label.cls); if (independentDecision(e) === 'NORMALIZE') s.normalizable++; }
+  const s = { events: 0, securities: census.size, byKind: {}, byClass: {}, byStrictClass: {}, byKindAndClass: {}, byChannel: {}, residualOfStatedRatio: {}, normalizable: 0, normalizableStrict: 0, strictConfirmedSecurities: 0 };
+  const strictSec = new Set();
+  for (const [id, evs] of census) for (const e of evs) {
+    s.events++; K.inc(s.byKind, e.kind); K.inc(s.byClass, e.label.cls); K.inc(s.byStrictClass, e.label.strictCls); K.inc(s.byKindAndClass, e.kind + ':' + e.label.cls);
+    if (e.label.channel) K.inc(s.byChannel, e.label.channel + (e.label.channel === 'FINRA' ? '_SYMBOL_MATCH_ONLY' : ''));
+    if (K.finite(e.label.residual)) K.inc(s.residualOfStatedRatio, e.label.residual <= 1.25 ? 'LE_1.25' : e.label.residual <= 2 ? '1.25_TO_2' : 'GT_2');
+    if (independentDecision(e) === 'NORMALIZE') s.normalizable++; if (strictDecision(e) === 'NORMALIZE') s.normalizableStrict++;
+    if (e.label.strictCls === 'CONFIRMED_BY_INDEPENDENT_SOURCE') strictSec.add(id);
+  }
+  s.strictConfirmedSecurities = strictSec.size;
   return s;
 }
 
@@ -91,6 +110,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   (async () => {
     const M = await K.loadModules(path.resolve(o['base-root']), path.resolve(o['v3-root']));
     const { raw, prepared } = K.loadCapture(M, o.capture);
+    K.expectFingerprint(o['expect-fingerprint'], raw);
     const sec = K.loadSec(o.sec), finra = K.loadFinra(o.finra, M.FDL);
     const census = K.labelledCensus(M, prepared, sec, finra);
     const res = measureMethod(M, prepared, o.method, census, { log: (x) => process.stdout.write(JSON.stringify(x) + '\n') });
