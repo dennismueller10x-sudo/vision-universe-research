@@ -1,15 +1,12 @@
 import assert from 'node:assert/strict';
-import {showDiscover} from './product-gallery-checks.mjs';
 
 // Trusted touchscreen events: a scrollable card is itself a touch-action
 // boundary. Mouse-only drag tests cannot catch the browser taking this over.
 export async function checkTouchSwipe(page) {
-  await showDiscover(page);
   const cdp=await page.context().newCDPSession(page);
   const front=()=>page.locator('#discover-deck .card[aria-hidden="false"]');
   const swipe=async(dx,dy)=>{
     await front().scrollIntoViewIfNeeded();
-    const galleryLeft=await page.locator('#product-track').evaluate(e=>e.scrollLeft);
     const box=await front().boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
     for(let i=1;i<=8;i++){
@@ -17,7 +14,6 @@ export async function checkTouchSwipe(page) {
       await page.waitForTimeout(18);
     }
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-    assert.ok(Math.abs(await page.locator('#product-track').evaluate(e=>e.scrollLeft)-galleryLeft)<=1,'Discover gestures do not move the product gallery');
   };
   try {
     await swipe(110,2);
@@ -37,7 +33,6 @@ export async function checkTouchSwipe(page) {
 // Real browser interactions, no provider traffic or test contacts.
 export async function checkDiscoverSwipe(page) {
   const root=page.locator('.discover-preview');
-  await showDiscover(page);
   assert.equal(await root.isVisible(),true);
   const fit=await root.evaluate(e=>({scrollHeight:e.scrollHeight,height:e.clientHeight}));
   assert.ok(fit.scrollHeight<=fit.height+1,'Preview instructions and controls fit the phone without nested scrolling');

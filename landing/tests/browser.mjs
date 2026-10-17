@@ -6,6 +6,7 @@ import {readFile,mkdir,writeFile,stat} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
 
 const output=resolve(root,'tests/output/browser');
 await mkdir(output,{recursive:true});
@@ -30,15 +31,13 @@ try{
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
     const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    // Keep the previously permitted total mobile envelope; the gallery replaces
-    // the former extra stacked preview rather than adding another tall section.
-    const totalLimit=width<=760&&Number.isFinite(limit)?limit+430:limit;
-    assert.ok(m.height<=totalLimit,`${name}: compact three-section page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    const totalLimit=limit;
+    assert.ok(m.height<=totalLimit,`${name}: compact coming-soon page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
-    for(const link of ['.lp-cta','.hero .btn']){if(!(await page.locator(link).isVisible()))continue;await page.locator(link).click();assert.equal(new URL(page.url()).hash,'#newsletter');const y=await page.locator('#newsletter').evaluate(e=>e.getBoundingClientRect().top);assert.ok(y<height&&y>=0,`${name} anchor not visible`);await page.goto(base+'/blocked/');}
+    await checkIphonePreview(page);
     assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
     assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
     assert.equal(await page.locator('#email').getAttribute('type'),'email');

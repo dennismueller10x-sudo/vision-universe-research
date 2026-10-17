@@ -1,23 +1,19 @@
-# Landing-Design zur Abnahme
+# Coming-soon-Design nach freigegebener Bildvorlage
 
-Diese Fassung wird nicht auf die Hauptdomain veröffentlicht und nicht gemergt. Die Produktionsseite und ihre öffentliche Newsletter-Freigabe bleiben unverändert.
+Ein einzelnes zentriertes iPhone mit zehn Original-Produkten in zwei Spalten. Direkt darunter die Anmeldekarte. Der Claim bleibt wortgleich; nur „Weitblick.“ ist grün. Der vollständige Einwilligungstext bleibt erhalten. Keine Kontoeinstellung, Freischaltung oder Newsletter-Technik verändert.
 
-Die Bilder entstehen mit `npm run test:design`. Vorher: unveränderter Repository-Stand `11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49` vom Beginn der Arbeit, isoliert mit `git archive` geladen; nachher: aktueller Branch. Beide verwenden die identische freigegebene öffentliche Datenschutzdatei und den öffentlichen Formular-Buildmodus, ohne API-Schlüssel oder angebundenen Mailversand. Gleiche Viewports: Desktop 1440 × 900, iPhone 390 × 844 CSS-Pixel, gleiche lokale Schrift, reduzierte Bewegung. Ganze Landingpage und Impressum, erster Viewport von Datenschutz und Bestätigungshinweis. Die zweite Produktkachel wird separat als Viewport aufgenommen: Chromiums Ganzseitenkamera setzt verschachtelte horizontale Scrollpositionen zurück; die Kachel wird deshalb ohne Änderung des Produkt-CSS in ihrer tatsächlichen Viewportposition erfasst. Keine Aufnahme auf einem physischen iPhone.
+Bilder: `npm run test:design`. Vorher ist der unveränderte Produktions-Quellstand `11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49`, isoliert mit `git archive`; nachher der aktuelle Branch. Identische öffentliche Formular-Buildkonfiguration und freigegebene Datenschutzdatei, keine API-Schlüssel oder Live-Anmeldung. Desktop 1440 × 900, iPhone 390 × 844, zusätzlich schmaler iPhone-SE-Viewport 375 × 667 CSS-Pixel mit Mobile-/Touch-Emulation. Lokale Originalschrift; keine Aufnahme auf einem physischen Gerät.
 
 - [Desktop vorher](before-desktop.png) · [Desktop nachher](after-desktop.png)
 - [iPhone vorher](before-iphone.png) · [iPhone nachher](after-iphone.png)
-- [Discover-Kachel Desktop](after-desktop-discover.png) · [Discover-Kachel iPhone](after-iphone-discover.png)
+- [iPhone SE nachher](after-iphone-se.png)
 - [Impressum vorher](before-imprint-iphone.png) · [Impressum nachher](after-impressum-iphone.png)
 - [Datenschutz nachher](after-datenschutz-iphone.png) · [Bestätigungshinweis](after-newsletter-iphone.png)
-- [Formular prüft](state-pending-iphone.png) · [Fehlerrückmeldung](state-error-iphone.png) (synthetische Adresse/Antwort; erzeugt durch `npm run test:browser`)
-- [Messwerte und Prüfergebnisse](checks.json)
+- [Formular prüft](state-pending-iphone.png) · [Fehlerzustand](state-error-iphone.png), ausschließlich synthetische Daten
+- [Messwerte und Nachweise](checks.json)
 
-Der Designvertrag prüft Original-CSS, Original-Logo und Fontdateien; Claim und Grün; den prominenten Coming-soon-/Bald-verfügbar-Hinweis und die klare Kennzeichnung der noch nicht verfügbaren App; sichtbaren ersten CTA; drei eigenständige Bereiche, iPhone-Übersicht, horizontal blätterbare Produktkacheln und Newsletter darunter; Seitenbudget und Überläufe in 320/390/768/1440 Pixeln; dunkle Rechts-/Bestätigungsseiten; wortgleichen Inhalt und unveränderte Links aller fünf Unterseiten gegenüber dem Ausgangsstand; Zugänglichkeit der Unterseiten; passende Cache-Versionen; keine externen Anfragen und keine Formular-POSTs beim visuellen Test.
+Der Designvertrag prüft Original-Logo/Font/Basis-CSS, Claim/Grün, exakt ein zentriertes iPhone, zehn unbeschnittene Produktnamen in zwei Spalten, Formular unmittelbar unter dem Motiv, 44-px-Formular-Touchflächen und 16-px-Eingabeschrift. Viewports 320/375/390/768/1440 Pixel ohne horizontalen Seitenüberlauf. Ursprüngliche Höhenbudgets: Desktop 1800 px, iPhone 1688 px, schmal 2000 px; keine zusätzliche Galeriehöhe.
 
-Die bestehenden Browserprüfungen testen separat Eingabefehler, Einwilligung, Honeypot, Offline-Zustand, laufende/fehlgeschlagene/unklare Antworten, geschlossenes/kontrolliertes/öffentliches Formular, ohne JavaScript, 200-%-Textvergrößerung und die Weiterleitung zum Bestätigungshinweis. Antworten sind ausschließlich synthetisch. Der vorhandene reale DOI-/Abmeldetest wird durch eine reine Designänderung nicht wiederholt. Die vorhandenen Server-Schutzprüfungen bleiben vollständig bestehen.
+Der vollständige Formular-DOM ist mit der Basis identisch, einschließlich Einwilligung, Link, Feldern, Vorgaben und Rückmeldungen. Die fünf Rechts-/Bestätigungsseiten werden mit wortgleichem Text und identischen Links verglichen und auf WCAG geprüft. Original-Sprite: [Herkunft](../../reference/product-icons-source.json). Keine externen Anfragen und keine Formular-POSTs im visuellen Vergleich.
 
-Die neue Reihenfolge lautet **Hero → Produktgalerie → Newsletter**. Die Desktop-Ansicht der Modul-Icons ist durch ein iPhone ersetzt. Eine lokale native Scroll-Snap-Galerie zeigt beide Produktkacheln horizontal statt untereinander. Galerie und innere Discover-Swipes lösen einander nicht aus; zwei getrennte Prüfungen mit echten Chromium-Touch-Ereignissen sichern dies ab. Buttons und Tastatur werden zusätzlich in Chromium/WebKit geprüft. Bei 200-%-Textvergrößerung werden auch Produktüberschriften und Galerienavigation tatsächlich vergrößert; nur die Geräteansichten behalten ihre Bildskala.
-
-Der zuletzt erlaubte Gesamtrahmen für die mobile Höhe bleibt erhalten (iPhone 1688 + 430 = 2118 px, schmal 2000 + 430 = 2430 px); statt dynamischer Zusatzhöhe gilt dieser nun als feste Gesamtgrenze. Desktop bleibt bei 1800 px. Keine Sicherheits-, Einwilligungs-, Touchziel- oder WCAG-Grenzen gelockert.
-
-Die alte Prüfung auf identische Geometrie zum Research-Hero wäre mit der ausdrücklich beauftragten Designentwicklung unvereinbar. Sie ist durch diese überprüfbaren Layout-/Marken-/Rechtstext-Verträge ersetzt; Original-Asset-, Längen-, Sicherheits- und WCAG-Grenzen werden nicht gelockert. Die Research-Anwendung selbst wird nicht bearbeitet.
+Bestehende synthetische Browsertests prüfen weiterhin Fehler, Einwilligung, Honeypot, Offline-Zustand, laufende/fehlgeschlagene/unklare Antworten, geschlossenes/kontrolliertes/öffentliches Formular, Weiterleitung, ohne JavaScript und 200-%-Textvergrößerung. Die überholten Slider-Bedienfälle sind durch Prüfungen der statischen Produktansicht ersetzt. Sicherheits- und WCAG-Gates bleiben bestehen; kein echter Mailtest für die reine Darstellung.

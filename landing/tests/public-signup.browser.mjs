@@ -6,8 +6,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
-import {checkDiscoverSwipe,checkTouchSwipe} from './discover-swipe-checks.mjs';
-import {checkProductGallery,checkTouchGallery} from './product-gallery-checks.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -67,10 +66,7 @@ try{
       assert.equal(await returning.locator('html').getAttribute('data-previous-landing-motion'),null,'New composition must not run cached old intro');
       assert.equal(await returning.locator('html').evaluate(e=>e.classList.contains('intro')),false);
       assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'','New markup must not reuse cached old styles');
-      for(const selector of ['[data-preview-swipe=left]','[data-preview-swipe=right]','[data-preview-reset]']){
-        const box=await returning.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44);
-      }
-      if(name==='Chromium'){await checkTouchGallery(returning);await checkTouchSwipe(returning);console.log('Chromium: trusted touchscreen right/left swipe and vertical scroll without accidental save verified.');}
+      await checkIphonePreview(returning);
       assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
       await cached.close();
       for(const javaScriptEnabled of [true,false]){
@@ -78,12 +74,8 @@ try{
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
-        if(javaScriptEnabled){await checkProductGallery(page);await checkDiscoverSwipe(page);}
-        else {
-          assert.equal(await page.locator('.discover-preview').isVisible(),false);
-          assert.equal(await page.locator('.product-discover .phone .module-home').isVisible(),true);
-        }
-        assert.equal(posts,before); // Swiping never submits the newsletter form.
+        await checkIphonePreview(page);
+        assert.equal(posts,before); // The static iPhone never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
         assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);
         await page.locator('#email').fill('synthetic-public@example.test');
@@ -97,7 +89,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': returning mobile visitor with cached old styles verified; Discover swipe/cancel/keyboard/unique-memory/reset verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': returning mobile visitor with cached old styles verified; single static iPhone and ten complete product names verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
