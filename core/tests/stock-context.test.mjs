@@ -153,6 +153,15 @@ test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unk
   assert.throws(() => SC.href(nvda, "hedgefonds"), /UNKNOWN_PRODUCT/);
 });
 
+test("Verfuegbarkeit · Ausschnitt ueber die securityId, auch fuer Europa-Kontexte aus der Adresse", () => {
+  assert.equal(SC.availabilityShard(SC.fromUs("NVDA")), "NV");
+  assert.equal(SC.availabilityShard(SC.fromUs("BRK-B")), Identity.shardKey("BRK-B"));
+  assert.equal(SC.availabilityShard(SC.fromUs("F")), "F_");
+  const fromUrl = SC.parse("/discover/#/s/EUROPE/ref_SAP_DE_XETR").ctx;
+  assert.equal(SC.availabilityUrl(fromUrl), "/core/data/stock-availability/SA.json");
+  assert.equal(SC.availabilityShard(SC.fromSearchEntry(entry("EUROPE", "SAP.DE"))), SC.availabilityShard(fromUrl));
+});
+
 test("Browser · laedt nach /core/identity.js als VUCore.StockContext, ohne module", () => {
   const sandbox = { URLSearchParams, WeakMap, Set };
   sandbox.globalThis = sandbox;

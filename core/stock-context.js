@@ -227,6 +227,13 @@
     return Object.freeze({ product: product, state: "unknown", href: h, reason: manifest ? "NOT_IN_MANIFEST" : "NO_MANIFEST" });
   }
 
+  /** Ausschnitt des Manifests, der diesen Kontext fuehrt: core/data/stock-availability/<Schluessel>.json.
+      Ueber die securityId ohne "ref_" (BRK-B -> BR, SAP.DE/ref_SAP_DE_XETR -> SA), also auch fuer Europa-Kontexte,
+      die nur aus der Adresse stammen. */
+  function availabilityShard(ctx) { return Identity.shardKey(ctx.securityId.slice(4)); }
+  var AVAILABILITY_DIR = "/core/data/stock-availability/";
+  function availabilityUrl(ctx) { return AVAILABILITY_DIR + availabilityShard(ctx) + ".json"; }
+
   /** Alle Navigator-Kacheln in fester Reihenfolge. */
   function availability(ctx, manifest) {
     return PRODUCTS.map(function (p) { return moduleState(ctx, p, manifest); });
@@ -236,6 +243,7 @@
     VERSION: VERSION, SCHEMA: SCHEMA, REGIONS: REGIONS, PRODUCTS: PRODUCTS, STATES: STATES, ROUTABLE: ROUTABLE,
     fromUs: fromUs, fromEurope: fromEurope, fromSearchEntry: fromSearchEntry,
     key: key, sameListing: sameListing, sameCompany: sameCompany,
-    href: href, parse: parse, moduleState: moduleState, availability: availability
+    href: href, parse: parse, moduleState: moduleState, availability: availability,
+    availabilityShard: availabilityShard, availabilityUrl: availabilityUrl
   });
 });
