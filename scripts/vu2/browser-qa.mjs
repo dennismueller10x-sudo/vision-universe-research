@@ -335,8 +335,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='radar'){
    /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
       die Sortierregel und die geschlossenen Ereignistypen stehen offen da. */
-   const karten=page.locator('a.q-radar-card');
+   /* Visual First (VU3): die Karte ist ein article; Link zur Aktie ist ihr Kopf, "Details" klappt den bisherigen Inhalt auf. */
+   const karten=page.locator('.q-radar-card');
    if(!await karten.count())befund(view,width,'Radar ohne Karten');
+   if(!await karten.first().locator('a.q-rc-head[href*="/aktie/"]').count())befund(view,width,'Radar-Karte ohne Link zur Aktie');
    const erste=await karten.first().innerText();
    if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(erste))befund(view,width,'Radar-Karte ohne Datum');
    /* "keine Gesamtnote" ist die Absage, nicht die Note. */
