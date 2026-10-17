@@ -29,10 +29,11 @@ try{
     const page=await context.newPage();
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
-    const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,extraPreviewHeight:innerWidth<=760?document.querySelector('.stage .browser').getBoundingClientRect().height+parseFloat(getComputedStyle(document.querySelector('.stage .browser')).marginBottom)+parseFloat(getComputedStyle(document.querySelector('.stage')).rowGap):0}));
-    // Owner requested a separately visible overview before swipe and signup.
-    // Preserve the original content budget, adding only this bounded panel.
-    assert.ok(m.extraPreviewHeight<=430,'Separate overview has a bounded mobile height');assert.ok(m.height-m.extraPreviewHeight<=limit,`${name} original page budget plus separate overview (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
+    // Keep the previously permitted total mobile envelope; the gallery replaces
+    // the former extra stacked preview rather than adding another tall section.
+    const totalLimit=width<=760&&Number.isFinite(limit)?limit+430:limit;
+    assert.ok(m.height<=totalLimit,`${name}: compact three-section page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
@@ -51,7 +52,7 @@ try{
     // its actual text. Double every content font from a simultaneous snapshot;
     // keep the aria-hidden device illustration at its original image scale.
     await page.evaluate(()=>{
-      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.stage')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
+      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.phone')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
       for(const[e,size,line]of rows){e.style.fontSize=size*2+'px';if(Number.isFinite(line))e.style.lineHeight=line*2+'px';}
     });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();

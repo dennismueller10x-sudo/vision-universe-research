@@ -7,6 +7,7 @@ import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {checkDiscoverSwipe,checkTouchSwipe} from './discover-swipe-checks.mjs';
+import {checkProductGallery,checkTouchGallery} from './product-gallery-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -69,7 +70,7 @@ try{
       for(const selector of ['[data-preview-swipe=left]','[data-preview-swipe=right]','[data-preview-reset]']){
         const box=await returning.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44);
       }
-      if(name==='Chromium'){await checkTouchSwipe(returning);console.log('Chromium: trusted touchscreen right/left swipe and vertical scroll without accidental save verified.');}
+      if(name==='Chromium'){await checkTouchGallery(returning);await checkTouchSwipe(returning);console.log('Chromium: trusted touchscreen right/left swipe and vertical scroll without accidental save verified.');}
       assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
       await cached.close();
       for(const javaScriptEnabled of [true,false]){
@@ -77,10 +78,10 @@ try{
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
-        if(javaScriptEnabled)await checkDiscoverSwipe(page);
+        if(javaScriptEnabled){await checkProductGallery(page);await checkDiscoverSwipe(page);}
         else {
           assert.equal(await page.locator('.discover-preview').isVisible(),false);
-          assert.equal(await page.locator('.stage .phone .module-home').isVisible(),true);
+          assert.equal(await page.locator('.product-discover .phone .module-home').isVisible(),true);
         }
         assert.equal(posts,before); // Swiping never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
