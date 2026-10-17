@@ -1,0 +1,317 @@
+name: Research price-data root-cause and backtest-impact audit (diagnostic, not certifying; private plaintext never uploaded)
+# Isolated diagnostic replay for docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md and
+# docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md. Runs only with [root-cause-audit:run] in the head commit message.
+# Reads the canonical capture of the pinned #705 pipeline (same content as freezes V3-84caf2e84e560bec and
+# V4-beae51ae1b07768b), the unchanged corporate-action-v3 stages of #758 WITHOUT the validation vendor, and the merged
+# public SEC/FINRA inputs of run 39019906367. No rule, threshold, parameter or strategy is changed; nothing is certified.
+# Public outputs: counts, correlations, deltas and directions. Per-case rows and absolute metrics: owner-sealed only.
+on:
+  push:
+    branches:
+      - 'claude/vision-universe-price-audit-rewf5h'
+permissions:
+  contents: read
+concurrency:
+  group: research-price-root-cause-audit-${{ github.ref_name }}
+  cancel-in-progress: false
+env:
+  BASE_COMMIT: 547d604d9596b0f4af4c13ac31bebce48b3948ec
+  V3_COMMIT: f8644cf1fda0fd0e037d41d10a67cca8326d4443
+  V2_COMMIT: 0d8e2755e3389c8edeaf3208561edb238e530016
+  MERGED_INPUTS_RUN: '39019906367'
+  OUT: docs/data-quality/root-cause-audit
+jobs:
+  population:
+    if: contains(github.event.head_commit.message, '[root-cause-audit:run]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: audit
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/research/price-root-cause/
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.V3_COMMIT }}
+          path: v3
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/price-integrity-audit.mjs
+            /scripts/quant/corporate-action-v2/
+            /scripts/quant/corporate-action-v3/
+            !/scripts/quant/corporate-action-v3/sealed-run-39007119068/
+            !/scripts/quant/corporate-action-v3/sealed-run-39019906367/
+            !/scripts/quant/corporate-action-v3/sealed-run-39031465706/
+            !/scripts/quant/corporate-action-v3/sealed-vendor-evidence/
+            /scripts/market/storage/
+            /docs/data-quality/corporate-action-v2/CONTROL-SET-PROTOCOL-V2.json
+            /docs/data-quality/corporate-action-v3/CORPORATE-ACTION-PROTOCOL-V3.json
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.V2_COMMIT }}
+          path: v2
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/v3pub" "$RUNNER_TEMP/merged" "$RUNNER_TEMP/sealed"
+          grep -q '"canonical-total-return-1.0.0"' base/quant/engines/canonical-total-return.js
+          grep -q '"canonical-price-validity-2.2.0"' v2/quant/engines/canonical-price-validity.js
+          df -h / | tail -1
+      - uses: actions/download-artifact@v4
+        with:
+          name: merged-inputs
+          path: ${{ runner.temp }}/merged
+          run-id: ${{ env.MERGED_INPUTS_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Canonical capture (pinned #705 pipeline, read-only)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture.json"
+      - name: French Data Library oracle (hash-pinned; fails closed if the library changed)
+        id: oracle
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node base/scripts/supertrader/research/v4/capture-oracle-v4.mjs --out /workspace/private/oracle --public-out "$RUNNER_TEMP/pub/oracle.json"
+      - name: corporate-action-v3 stages, unchanged code, no validation vendor (prepare, scan)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          A=v3/scripts/quant/corporate-action-v3/audit-v3.mjs
+          node $A --stage prepare --base-root "$GITHUB_WORKSPACE/base" --capture /workspace/private/capture --private /workspace/private/ca --public "$RUNNER_TEMP/v3pub/PREPARE.json"
+          node $A --stage scan --base-root "$GITHUB_WORKSPACE/base" --private /workspace/private/ca --public "$RUNNER_TEMP/v3pub/SCAN.json"
+          cp "$RUNNER_TEMP/merged/sec-events.json" "$RUNNER_TEMP/merged/finra-rows.json" "$RUNNER_TEMP/merged/edgar-acceptance.json" /workspace/private/ca/
+          sha256sum /workspace/private/ca/sec-events.json /workspace/private/ca/finra-rows.json /workspace/private/ca/edgar-acceptance.json
+      - name: corporate-action-v3 stages, unchanged code, no validation vendor (select, evaluate)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+        run: |
+          set -euo pipefail
+          A=v3/scripts/quant/corporate-action-v3/audit-v3.mjs; C=/workspace/private/ca
+          node $A --stage select --private $C --sec $C/sec-events.json --finra $C/finra-rows.json --public "$RUNNER_TEMP/v3pub/SELECT.json"
+          node $A --stage evaluate --base-root "$GITHUB_WORKSPACE/base" --v2-root "$GITHUB_WORKSPACE/v2" --private $C --sec $C/sec-events.json --finra $C/finra-rows.json --acceptance $C/edgar-acceptance.json --public-dir "$RUNNER_TEMP/v3pub"
+      - name: Unified population, provider locus, French attribution
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+          ORACLE_OK: ${{ steps.oracle.outcome }}
+        run: |
+          set -euo pipefail
+          C=/workspace/private/ca; ORACLE_ARGS=()
+          if [ "$ORACLE_OK" = "success" ]; then ORACLE_ARGS=(--oracle-parsed /workspace/private/oracle/oracle-parsed.json); fi
+          node audit/scripts/research/price-root-cause/population.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
+            --ca $C --sec $C/sec-events.json --finra $C/finra-rows.json "${ORACLE_ARGS[@]}" --public-out "$RUNNER_TEMP/pub/POPULATION.json" --sealed-dir "$RUNNER_TEMP/sealed"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-public-population
+          path: |
+            ${{ runner.temp }}/pub/
+            ${{ runner.temp }}/v3pub/
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-sealed-population
+          path: ${{ runner.temp }}/sealed/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 3
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  methods:
+    if: contains(github.event.head_commit.message, '[root-cause-audit:run]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        method: [cross_sectional_momentum, 52_week_high_effect, LOW_VOLATILITY, TURTLE_S2_EQUITY_DAILY, WEINSTEIN_STAGE_DAILY, KULLAMAGI_DAILY_ADAPTATION]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: audit
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/research/price-root-cause/
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_COMMIT }}
+          path: base
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            !/scripts/supertrader/research/tournament/sealed/
+            !/scripts/supertrader/research/certification/sealed/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.V3_COMMIT }}
+          path: v3
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /quant/engines/
+            /scripts/quant/corporate-action-v3/labels.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private workspace outside the repositories
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /workspace/private
+          sudo chown -R "$USER" /workspace
+          chmod 700 /workspace/private
+          mkdir -p "$RUNNER_TEMP/pub" "$RUNNER_TEMP/merged" "$RUNNER_TEMP/sealed"
+      - uses: actions/download-artifact@v4
+        with:
+          name: merged-inputs
+          path: ${{ runner.temp }}/merged
+          run-id: ${{ env.MERGED_INPUTS_RUN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Canonical capture (pinned #705 pipeline, read-only)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          export V3_OBSERVED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          node base/scripts/supertrader/research/calibration/capture-v3-inrunner.mjs --out /workspace/private/capture --public-out "$RUNNER_TEMP/pub/capture-${{ matrix.method }}.json"
+      - name: Diagnostic replay of the frozen method (7 scenarios)
+        env:
+          NODE_OPTIONS: --max-old-space-size=13000
+          METHOD: ${{ matrix.method }}
+        run: |
+          set -euo pipefail
+          node --expose-gc audit/scripts/research/price-root-cause/backtest-impact.mjs --base-root "$GITHUB_WORKSPACE/base" --v3-root "$GITHUB_WORKSPACE/v3" --capture /workspace/private/capture \
+            --sec "$RUNNER_TEMP/merged/sec-events.json" --finra "$RUNNER_TEMP/merged/finra-rows.json" --method "$METHOD" \
+            --public-out "$RUNNER_TEMP/pub/BACKTEST-IMPACT-$METHOD.json" --sealed-dir "$RUNNER_TEMP/sealed"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-public-${{ matrix.method }}
+          path: ${{ runner.temp }}/pub/
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rca-sealed-${{ matrix.method }}
+          path: ${{ runner.temp }}/sealed/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 3
+      - name: Remove private plaintext
+        if: always()
+        run: rm -rf /workspace/private
+
+  publish:
+    needs: [population, methods]
+    if: always() && contains(github.event.head_commit.message, '[root-cause-audit:run]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/ci/
+            /docs/data-quality/root-cause-audit/
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rca-public-*
+          path: ${{ runner.temp }}/pub
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rca-sealed-*
+          path: ${{ runner.temp }}/sealed
+          merge-multiple: true
+      - name: Commit public counts and owner-sealed rows
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          D="$OUT/run-$GITHUB_RUN_ID"
+          mkdir -p "$D/sealed"
+          find "$RUNNER_TEMP/pub" -name '*.json' -exec cp {} "$D/" \;
+          find "$RUNNER_TEMP/sealed" -name '*.sealed.json' -exec cp {} "$D/sealed/" \;
+          ls -la "$D" "$D/sealed"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$D"
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "Research root-cause audit: diagnostic run results (public counts and deltas, owner-sealed rows; not certifying)"
+          scripts/ci/push-with-retry.sh "$BRANCH"
