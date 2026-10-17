@@ -1,0 +1,38 @@
+name: Quant corporate-action v3 vendor reachability probe (HTTP status only, no data kept)
+# Which validation-only second vendors answer from a GitHub-hosted runner? Prints HTTP status codes and response sizes
+# for one well-known symbol per endpoint; nothing is stored or committed. Runs only with [corporate-action-v3:probe].
+on:
+  push:
+    branches:
+      - 'quant/corporate-action-protocol-v3'
+permissions:
+  contents: read
+concurrency:
+  group: quant-corporate-action-v3-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  probe:
+    if: contains(github.event.head_commit.message, '[corporate-action-v3:probe]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Probe endpoints (status codes only)
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          set -uo pipefail
+          UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
+          probe() { local name="$1" url="$2"; local out; out=$(curl -s -m 25 -A "$UA" -o /tmp/p.out -w '%{http_code} %{size_download}' "$url" || echo "ERR"); echo "$name $out $(head -c 120 /tmp/p.out | tr -d '\n' | sed -E 's/(apikey|token|key)=[^&\" ]*/\1=***/g')"; }
+          probe yahoo-q2 'https://query2.finance.yahoo.com/v8/finance/chart/AAPL?range=1mo&interval=1d&events=split'
+          probe yahoo-q1 'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1mo&interval=1d&events=split'
+          probe nasdaq-hist 'https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2020-08-01&todate=2020-09-30&limit=100'
+          probe stooq 'https://stooq.com/q/d/l/?s=aapl.us&i=d'
+          probe fmp-splits "https://financialmodelingprep.com/stable/splits?symbol=AAPL&apikey=${FMP_API_KEY}"
+          probe fmp-eod-nonadj "https://financialmodelingprep.com/stable/historical-price-eod/non-split-adjusted?symbol=AAPL&from=2020-08-20&to=2020-09-05&apikey=${FMP_API_KEY}"
+          probe finnhub-split "https://finnhub.io/api/v1/stock/split?symbol=AAPL&from=2015-01-01&to=2026-01-01&token=${FINNHUB_API_KEY}"
+          probe twelvedata-splits "https://api.twelvedata.com/splits?symbol=AAPL&start_date=2015-01-01&apikey=${TWELVE_DATA_API_KEY}"
+          probe twelvedata-ts "https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&start_date=2020-08-20&end_date=2020-09-05&apikey=${TWELVE_DATA_API_KEY}"
+          for i in 1 2 3 4 5 6 7 8 9 10; do probe "yahoo-burst-$i" "https://query2.finance.yahoo.com/v8/finance/chart/MSFT?range=1mo&interval=1d"; sleep 2; done
