@@ -140,7 +140,12 @@ def run():
     process=Process(client,config,ledger=ledger)
     try:
         if operation=="draft":
-            content=json.loads(os.environ.pop("BREVO_NEWSLETTER_CONTENT",""))
+            source=os.environ.get("BREVO_NEWSLETTER_SOURCE","secret")
+            if source=="secret":
+                content=json.loads(os.environ.pop("BREVO_NEWSLETTER_CONTENT",""))
+            else:
+                from newsletter_content import repository_content
+                content=repository_content(source,client)
             return process.draft(content)
         if cid<1: raise Blocked("Konkrete Kampagnen-ID fehlt.")
         if operation=="check":
