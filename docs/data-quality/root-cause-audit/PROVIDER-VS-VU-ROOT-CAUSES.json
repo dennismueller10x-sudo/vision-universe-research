@@ -1,12 +1,12 @@
 {
   "schema": "vu-root-cause-classes-1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-10-18T02:30:00Z",
+  "generatedAt": "2026-10-18T09:30:00Z",
   "provenance": {
     "auditVersion": "vu-price-root-cause-audit-1.0.0",
-    "runId": "39073148967",
+    "runId": "39100831867",
     "workflow": ".github/workflows/research-price-root-cause-audit.yml",
-    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "captureFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
     "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
     "captureEqualsFrozenTournamentInput": false,
     "pinned": {
@@ -18,13 +18,13 @@
     "vendorUsed": false,
     "certifying": false,
     "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
-    "populationRunId": "39073148967",
-    "rankingRunId": "39073148967",
+    "populationRunId": "39100831867",
+    "rankingRunId": "39100831867",
     "fingerprints": {
-      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
-      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "population": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "ranking": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
       "methods": [
-        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+        "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b"
       ]
     },
     "allJobsSameCapture": true
@@ -35,13 +35,12 @@
     "A_PROVIDER_DEFECT": {
       "lenientEvents": 42,
       "lenientSecurities": 37,
-      "strictEvents": 28,
-      "strictSecurities": 26,
+      "strictEvents": 17,
+      "strictSecurities": 17,
       "note": "tournament-prefix census events confirmed by an independent channel and absent from both Tiingo columns; strict = ratio match, no SEC contradiction, no nearby declared split. A lower bound under the covered channels only.",
       "providerColumnsDisagreeSeparately": {
         "columnsDisagree": 4,
-        "declaredSplitAdjContinuous": 2,
-        "note": "separate basis: provider-internal inconsistencies, not added to the confirmed count"
+        "note": "separate basis: adjClose continuous while raw jumps without split factor; not added to the confirmed count. Declared split days with continuous adjClose are correct provider behaviour and not counted."
       }
     },
     "B_VU_DEFECT": [
@@ -62,11 +61,12 @@
   },
   "strictClasses": {
     "UNRESOLVED": 320,
-    "RATIO_DOES_NOT_EXPLAIN_MOVE": 7,
+    "RATIO_DOES_NOT_EXPLAIN_MOVE": 12,
     "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
     "INSUFFICIENT_EVIDENCE": 200,
-    "CONFIRMED_BY_INDEPENDENT_SOURCE": 28,
-    "CONFOUNDED_BY_DECLARED_SPLIT": 6,
+    "CONFIRMED_BY_INDEPENDENT_SOURCE": 17,
+    "CONFOUNDED_BY_DECLARED_SPLIT": 11,
+    "SHARE_RISE_SPLIT_OR_DILUTION": 1,
     "CONFLICTING_INDEPENDENT_EVIDENCE": 1
   },
   "ratioResidual": {
@@ -175,11 +175,11 @@
       "GENUINE_PRICE_MOVE|UNRESOLVED": 18,
       "GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
       "UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
-      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 7,
+      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 6,
       "GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 6,
       "PROVIDER_SPIKE|UNRESOLVED": 2,
       "GENUINE_PRICE_MOVE|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
-      "GENUINE_PRICE_MOVE|CONFOUNDED_BY_DECLARED_SPLIT": 9,
+      "GENUINE_PRICE_MOVE|CONFOUNDED_BY_DECLARED_SPLIT": 10,
       "CURRENCY_OR_UNIT|UNRESOLVED": 3,
       "CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
       "UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
@@ -187,13 +187,12 @@
       "CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
       "STALE_PRICE|UNRESOLVED": 1,
       "UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|RATIO_DOES_NOT_EXPLAIN_MOVE": 5,
       "UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
-      "DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
-      "UNDECLARED_REVERSE_SPLIT|RATIO_DOES_NOT_EXPLAIN_MOVE": 4,
+      "DECLARED_SPLIT_INCONSISTENT|CONFOUNDED_BY_DECLARED_SPLIT": 1,
       "UNRESOLVED|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
       "UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
       "DECLARED_SPLIT_DATE_SHIFT|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
-      "GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
       "STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
     },
     "byClassDirectionPrice": {
@@ -246,6 +245,12 @@
       "UNRESOLVED": 6,
       "INSUFFICIENT_EVIDENCE": 2
     },
+    "dayStrict": {
+      "CONFOUNDED_BY_DECLARED_SPLIT": 2,
+      "UNRESOLVED": 6,
+      "INSUFFICIENT_EVIDENCE": 2
+    },
+    "daysInsideCensus": 10,
     "dayLocus": {
       "PROVIDER_PARTIAL_ADJUSTMENT": 2,
       "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 8

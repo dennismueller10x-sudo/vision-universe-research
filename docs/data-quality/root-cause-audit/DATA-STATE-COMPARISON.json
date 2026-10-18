@@ -1,0 +1,268 @@
+{
+  "schema": "vu-root-cause-data-states-1.0.0",
+  "version": "vu-price-root-cause-audit-1.0.0",
+  "basis": "public capture receipts only (hashes and counts)",
+  "states": {
+    "318c051f_freeze_2026-10-15": {
+      "receipts": 2,
+      "runs": [
+        "38685897684",
+        "38722939085"
+      ],
+      "capturedAt": [
+        "2026-10-15T05:16:52.000Z",
+        "2026-10-15T10:49:28.000Z"
+      ],
+      "allJobsIdenticalInputs": true,
+      "mismatchedKeys": [],
+      "hashes": {
+        "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+        "readReceiptSetSha256": "3626ca58442a3d8f745e1ffdcb05e9d8646b5b9af09a3de2c5c090266897dbb3",
+        "sourceObjectSetSha256": "e3726bf0164af71dfc4c428d1551127408678beff2a62fafcc2712c683a16f42",
+        "listingSourceSha256": "be5bb80921edb5e70c588d0e9902e4fa4b29a750ef5ec1d7006f3ff15ee16f4f",
+        "normalizedPartListSha256": "abf9d7212302a7fa90d31eecbd7a8f660f60f9bd8e724107020c730245b888f3",
+        "normalizedManifestSha256": "7c03ed555118ce64bf363b5a08181b50dbf6f3153d2f61344244b1a77fbe4e12",
+        "normalizedInputsSha256": "d3e63791b9fb74dc36479e154d989532fd23902ef82471eaf8bf74cf60901e52"
+      },
+      "counts": {
+        "inputSegments": 9410,
+        "usableSegments": 9408,
+        "verifiedSecurities": 9408,
+        "readReceipts": 9051,
+        "sourceObjectsAvailable": 9,
+        "providerSupportedListingRecords": 16562,
+        "observedListingGenerations": 15564,
+        "issuerCik": 7353,
+        "rejections": {
+          "CORPORATE_ACTION_CONTRADICTED": 2
+        }
+      }
+    },
+    "b3ca8681_2026-10-17": {
+      "receipts": 15,
+      "runs": [
+        "39053330565",
+        "39073148967"
+      ],
+      "capturedAt": [
+        "2026-10-17T17:20:47.000Z",
+        "2026-10-17T17:20:48.000Z",
+        "2026-10-17T17:20:51.000Z",
+        "2026-10-17T17:20:53.000Z",
+        "2026-10-17T21:58:49.000Z",
+        "2026-10-17T21:58:50.000Z",
+        "2026-10-17T21:58:52.000Z",
+        "2026-10-17T21:58:53.000Z",
+        "2026-10-17T21:58:55.000Z",
+        "2026-10-17T21:58:56.000Z"
+      ],
+      "allJobsIdenticalInputs": true,
+      "mismatchedKeys": [],
+      "hashes": {
+        "dataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+        "readReceiptSetSha256": "5065963e8a4d863176931bf1662a85ab209ff0e870d6a9e120dcf50d874c2b62",
+        "sourceObjectSetSha256": "ada0dc7f838534df2dcb147f966370357b6e261a4ec5fa2a82b342a7d80f1fd2",
+        "listingSourceSha256": "3d5c124ec0a9995056a49962ef7376ec058a4701a7e26d737d08153ec7c09451",
+        "normalizedPartListSha256": "e24abf97685c341b527402bede1a6f78623bc5b03f5e02a1577467417a13c20a",
+        "normalizedManifestSha256": "0f344e10233ea14384bb365490a21a892865c485e3a4e0a7b12fb788eb66fe9b",
+        "normalizedInputsSha256": "8f8a5f8f905728ca410ace382a44bd2bb23ba32f12ebd10b381a1b5981fcc1ba"
+      },
+      "counts": {
+        "inputSegments": 9409,
+        "usableSegments": 9407,
+        "verifiedSecurities": 9407,
+        "readReceipts": 9050,
+        "sourceObjectsAvailable": 9,
+        "providerSupportedListingRecords": 16566,
+        "observedListingGenerations": 15562,
+        "issuerCik": 7352,
+        "rejections": {
+          "CORPORATE_ACTION_CONTRADICTED": 2
+        }
+      }
+    },
+    "d27efdd4_2026-10-18T01:53": {
+      "receipts": 1,
+      "runs": [
+        "39088073626"
+      ],
+      "capturedAt": [
+        "2026-10-18T01:53:17.000Z"
+      ],
+      "allJobsIdenticalInputs": true,
+      "mismatchedKeys": [],
+      "hashes": {
+        "dataFingerprint": "d27efdd4ccd1ceb51f3a3d8b5d84079ee57be64f27bfc0be5bd40158152c8a0d",
+        "readReceiptSetSha256": "1932a9a8f2a4f4a6046a234a09e18d10f83b37b86acf14cbb824723adbde07e5",
+        "sourceObjectSetSha256": "ada0dc7f838534df2dcb147f966370357b6e261a4ec5fa2a82b342a7d80f1fd2",
+        "listingSourceSha256": "247d9032835445ea25ee0ec93d180b7d2748fcfeb50f5a35a7dbebbc1038a576",
+        "normalizedPartListSha256": "4afdba06bf793eb0195d2307054943b50ddd88db323549e7f5017a5d234f48bc",
+        "normalizedManifestSha256": "324e135d2c61812960a337e24dac5bf9875cc070f4163f2d9b16194da5451f26",
+        "normalizedInputsSha256": "0fb9c8b5db910c0a6e3e75ddbe0a522dc928bc18c9067e242d28712047b1a9da"
+      },
+      "counts": {
+        "inputSegments": 9408,
+        "usableSegments": 9406,
+        "verifiedSecurities": 9406,
+        "readReceipts": 9049,
+        "sourceObjectsAvailable": 9,
+        "providerSupportedListingRecords": 16565,
+        "observedListingGenerations": 15562,
+        "issuerCik": 7351,
+        "rejections": {
+          "CORPORATE_ACTION_CONTRADICTED": 2
+        }
+      }
+    },
+    "862c4242_2026-10-18T05:31": {
+      "receipts": 8,
+      "runs": [
+        "39100831867"
+      ],
+      "capturedAt": [
+        "2026-10-18T05:31:27.000Z",
+        "2026-10-18T05:31:28.000Z",
+        "2026-10-18T05:31:30.000Z",
+        "2026-10-18T05:31:31.000Z",
+        "2026-10-18T05:31:36.000Z"
+      ],
+      "allJobsIdenticalInputs": true,
+      "mismatchedKeys": [],
+      "hashes": {
+        "dataFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+        "readReceiptSetSha256": "1932a9a8f2a4f4a6046a234a09e18d10f83b37b86acf14cbb824723adbde07e5",
+        "sourceObjectSetSha256": "ada0dc7f838534df2dcb147f966370357b6e261a4ec5fa2a82b342a7d80f1fd2",
+        "listingSourceSha256": "3d294d3e21ebaf9a6c53a8283916a131163b725f10d95b927cd78b89c29aa583",
+        "normalizedPartListSha256": "580fdd99ceacf45bad803de9347faec0303f3e62da425d172eef5675ffda4e59",
+        "normalizedManifestSha256": "7fb76f4d58691542ae0d6c9c149c723cee830b795f346808ea880f2aded4b383",
+        "normalizedInputsSha256": "83be252c851e8a5282fd3986a1423263e315b883cc7fda56bd5e69a825f02582"
+      },
+      "counts": {
+        "inputSegments": 9408,
+        "usableSegments": 9406,
+        "verifiedSecurities": 9406,
+        "readReceipts": 9049,
+        "sourceObjectsAvailable": 9,
+        "providerSupportedListingRecords": 16565,
+        "observedListingGenerations": 15562,
+        "issuerCik": 7350,
+        "rejections": {
+          "CORPORATE_ACTION_CONTRADICTED": 2
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "from": "318c051f_freeze_2026-10-15",
+      "to": "b3ca8681_2026-10-17",
+      "changedHashes": [
+        "dataFingerprint",
+        "readReceiptSetSha256",
+        "sourceObjectSetSha256",
+        "listingSourceSha256",
+        "normalizedPartListSha256",
+        "normalizedManifestSha256",
+        "normalizedInputsSha256"
+      ],
+      "countDeltas": {
+        "inputSegments": -1,
+        "usableSegments": -1,
+        "verifiedSecurities": -1,
+        "readReceipts": -1,
+        "sourceObjectsAvailable": 0,
+        "providerSupportedListingRecords": 4,
+        "observedListingGenerations": -2,
+        "issuerCik": -1
+      }
+    },
+    {
+      "from": "b3ca8681_2026-10-17",
+      "to": "d27efdd4_2026-10-18T01:53",
+      "changedHashes": [
+        "dataFingerprint",
+        "readReceiptSetSha256",
+        "listingSourceSha256",
+        "normalizedPartListSha256",
+        "normalizedManifestSha256",
+        "normalizedInputsSha256"
+      ],
+      "countDeltas": {
+        "inputSegments": -1,
+        "usableSegments": -1,
+        "verifiedSecurities": -1,
+        "readReceipts": -1,
+        "sourceObjectsAvailable": 0,
+        "providerSupportedListingRecords": -1,
+        "observedListingGenerations": 0,
+        "issuerCik": -1
+      }
+    },
+    {
+      "from": "d27efdd4_2026-10-18T01:53",
+      "to": "862c4242_2026-10-18T05:31",
+      "changedHashes": [
+        "dataFingerprint",
+        "listingSourceSha256",
+        "normalizedPartListSha256",
+        "normalizedManifestSha256",
+        "normalizedInputsSha256"
+      ],
+      "countDeltas": {
+        "inputSegments": 0,
+        "usableSegments": 0,
+        "verifiedSecurities": 0,
+        "readReceipts": 0,
+        "sourceObjectsAvailable": 0,
+        "providerSupportedListingRecords": 0,
+        "observedListingGenerations": 0,
+        "issuerCik": -1
+      }
+    }
+  ],
+  "notDerivable": [
+    "per-security, per-bar and per-corporate-action differences: object receipts and captures are not persisted outside the runner",
+    "which listing row Tiingo dropped"
+  ],
+  "reproducibility": "a state is reproducible only while the R2 objects, the live Tiingo supported-ticker list and the capture date are unchanged; none of the earlier captures is persisted",
+  "attribution": {
+    "freeze_to_b3ca8681": {
+      "r2ObjectsChanged": true,
+      "sourceObjectsChanged": true,
+      "listingTableChanged": true,
+      "vuWritersInWindow": {
+        "examplesNotExhaustive": [
+          "market-data-refresh run 38987427690 (2026-10-17 00:40-03:06Z, sync-history-store --push)",
+          "supertrader-house-live run 39008085244 (2026-10-17 05:56Z, v1/tiingo-delisted, SEC PIT objects)"
+        ],
+        "window": "2026-10-15T10:49Z .. 2026-10-17T17:20Z; writers between were not enumerated run by run"
+      },
+      "cause": "VU pipeline writes of provider data (daily updates) plus live Tiingo listing table; which objects changed is not derivable from receipts"
+    },
+    "b3ca8681_to_d27efdd4": {
+      "r2ObjectsChanged": "one receipt fewer; whether other object hashes changed is not shown",
+      "sourceObjectsChanged": false,
+      "listingTableChanged": true,
+      "vuWritersInWindow": [],
+      "cause": "PROVEN: live Tiingo supported-ticker list lost one eligible row (16,566 -> 16,565); INFERRED: capture date rolled 2026-10-17 -> 2026-10-18 (active-listing cutoff today - 10 days)"
+    },
+    "d27efdd4_to_862c4242": {
+      "r2ObjectsChanged": false,
+      "sourceObjectsChanged": false,
+      "listingTableChanged": true,
+      "vuWritersInWindow": [],
+      "cause": "PROVEN: same R2 object set (readReceiptSetSha256 identical); live Tiingo listing table content changed without a row-count change (one CIK fewer)"
+    }
+  },
+  "snapshot": {
+    "persisted": false,
+    "reason": "captures are rebuilt per job and deleted at job end; the S3 driver forbids versioning and object lock (s3-driver.mjs:165-182); no workflow keeps a copy",
+    "neededForReproducibility": [
+      "owner-encrypted capture parts with manifest stored under a write-once prefix",
+      "archived Tiingo supported_tickers bytes",
+      "fixed V3_OBSERVED_AT"
+    ],
+    "status": "OWNER_DECISION_NOT_IMPLEMENTED (no further development cycle in this audit)"
+  },
+  "oldResultsReproduced": false
+}

@@ -1,12 +1,12 @@
 {
   "schema": "vu-root-cause-french-1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-10-18T02:30:00Z",
+  "generatedAt": "2026-10-18T09:30:00Z",
   "provenance": {
     "auditVersion": "vu-price-root-cause-audit-1.0.0",
-    "runId": "39073148967",
+    "runId": "39100831867",
     "workflow": ".github/workflows/research-price-root-cause-audit.yml",
-    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "captureFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
     "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
     "captureEqualsFrozenTournamentInput": false,
     "pinned": {
@@ -18,13 +18,13 @@
     "vendorUsed": false,
     "certifying": false,
     "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
-    "populationRunId": "39073148967",
-    "rankingRunId": "39073148967",
+    "populationRunId": "39100831867",
+    "rankingRunId": "39100831867",
     "fingerprints": {
-      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
-      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "population": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "ranking": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
       "methods": [
-        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+        "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b"
       ]
     },
     "allJobsSameCapture": true
@@ -37,7 +37,7 @@
     "source": "#705 runs 38722939085 / 38724718674"
   },
   "reproduced": {
-    "ewSecurityMonths": 493258,
+    "ewSecurityMonths": 493154,
     "ewExclusionVariants": {
       "BASELINE": {
         "excludedSecurityMonths": 0,
@@ -60,7 +60,7 @@
           "MEAN_DIFFERENCE",
           "MAX_DRAWDOWN"
         ],
-        "holdingCountRatioMean": 1.337
+        "holdingCountRatioMean": 1.336
       },
       "EXCLUDE_ALL_ABS_RET_GT_100PCT": {
         "excludedSecurityMonths": 2200,
@@ -152,8 +152,8 @@
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_STRICTLY_CONFIRMED_ONLY": {
-        "excludedSecurityMonths": 11,
-        "correlation": 0.145,
+        "excludedSecurityMonths": 8,
+        "correlation": 0.144,
         "verdict": "FAIL",
         "failedHardChecks": [
           "CORRELATION",
@@ -165,14 +165,14 @@
         "holdingCountRatioMean": 1.337
       },
       "EXCLUDE_83_NOT_STRICTLY_CONFIRMED": {
-        "excludedSecurityMonths": 72,
-        "correlation": 0.963,
+        "excludedSecurityMonths": 75,
+        "correlation": 0.965,
         "verdict": "FAIL",
         "failedHardChecks": [
           "MEAN_DIFFERENCE",
           "MAX_DRAWDOWN"
         ],
-        "holdingCountRatioMean": 1.337
+        "holdingCountRatioMean": 1.336
       },
       "EXCLUDE_83_UNDECLARED_CONFIRMED": {
         "excludedSecurityMonths": 15,
@@ -283,12 +283,12 @@
             "VOLATILITY_RELATIVE",
             "MAX_DRAWDOWN"
           ],
-          "holdingCountRatioMean": 1.336
+          "holdingCountRatioMean": 1.337
         },
         "MOM_SPREAD_CORRELATION": 0.033,
         "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
         "MOM_VERDICT": "FAIL",
-        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_SPREAD_CORRELATION": -0.001,
         "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
         "VAR_VERDICT": "FAIL"
       },
@@ -300,7 +300,7 @@
             "MEAN_DIFFERENCE",
             "MAX_DRAWDOWN"
           ],
-          "holdingCountRatioMean": 1.324
+          "holdingCountRatioMean": 1.323
         },
         "MOM_SPREAD_CORRELATION": 0.824,
         "MOM_MEDIAN_BUCKET_CORRELATION": 0.984,
@@ -368,8 +368,8 @@
   "interpretation": {
     "confirmedCorrectionsOnly": 0.146,
     "unconfirmedExcluded": 0.963,
-    "strictlyConfirmedOnly": 0.145,
-    "notStrictlyConfirmedExcluded": 0.963,
+    "strictlyConfirmedOnly": 0.144,
+    "notStrictlyConfirmedExcluded": 0.965,
     "universeDifference": "VU holds about 1.34x the French firm count; a residual level difference remains in every variant (magnitude sealed, review IR-20)",
     "notACertification": true,
     "noExclusionRuleDerived": true

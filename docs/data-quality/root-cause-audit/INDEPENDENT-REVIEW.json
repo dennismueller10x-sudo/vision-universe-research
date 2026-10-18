@@ -1,12 +1,12 @@
 {
   "schema": "vu-root-cause-review-1.0.0",
   "version": "1.0.0",
-  "generatedAt": "2026-10-18T02:30:00Z",
+  "generatedAt": "2026-10-18T09:30:00Z",
   "provenance": {
     "auditVersion": "vu-price-root-cause-audit-1.0.0",
-    "runId": "39073148967",
+    "runId": "39100831867",
     "workflow": ".github/workflows/research-price-root-cause-audit.yml",
-    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "captureFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
     "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
     "captureEqualsFrozenTournamentInput": false,
     "pinned": {
@@ -18,13 +18,13 @@
     "vendorUsed": false,
     "certifying": false,
     "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
-    "populationRunId": "39073148967",
-    "rankingRunId": "39073148967",
+    "populationRunId": "39100831867",
+    "rankingRunId": "39100831867",
     "fingerprints": {
-      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
-      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "population": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "ranking": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
       "methods": [
-        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+        "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b"
       ]
     },
     "allJobsSameCapture": true
@@ -53,7 +53,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Locus is now reported as \"Provider-Ort, falls Defekt\" in a separate table and only conditional on the independent class; the sentence \"Beleg fuer die Provider-Seite\" is removed. POPULATION byLocusAndIndependent is cited.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -68,7 +68,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Headline restated: the impact-relevant population is class E (undecided); the strictly confirmed share (28 of 616 census events, 26 securities) is class C. Cause of the majority stays open.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -83,7 +83,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Strict class added (lib.mjs labelEvent strictCls): stated ratio must explain the move within 25 % (|log(r*q)| <= log 1.25). Residual distribution published (15 <=1.25, 5 in 1.25-2, 3 >2). Full rerun 39073148967; scenarios C2/C3 added, C kept for comparison.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -98,7 +98,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "CONFLICTING_INDEPENDENT_EVIDENCE added (stated ratio and SEC shares NO_SPLIT): 1 census event; excluded from strict confirmation and from C2 corrections. V3 7/7 false-positive normalisation result cited in the root-cause doc section 4.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -113,7 +113,7 @@
       "resolution": {
         "status": "PARTIALLY_RESOLVED",
         "how": "CONFOUNDED_BY_DECLARED_SPLIT added (shares-only confirmation with a declared split within 200 days in the same segment): 6 census events, 14 joined events. Extension to all segments of the same securityId/CIK not implemented; disclosed as a limitation.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -128,7 +128,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Attribution now taken from the unrounded pairwise comparators the runner publishes (deltaVsB, deltaVsC, deltaVsC2); build-artifacts.mjs no longer differences rounded deltas.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -143,7 +143,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Wording: Turtle C2 vs B +2.0, C2 vs A +4.1 including B. C3 (normalise only) shows 0.0 vs B, so the +2.0 comes from a cut at one strictly confirmed event without stated ratio; the cut uses ex-post knowledge. \"P&L of the spanning trade = -18.7 % of final equity\" phrasing adopted. One-event ablation not run; the C3/C2 split isolates it to the cut set.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -158,7 +158,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Order-floor change listed under B. terminalDatesMoved published for B1 (143 of 521 quarantined). Per-fix sentences inside B dropped; only B1 (A5 timing) is isolated.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -173,7 +173,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "D renamed stress scenario, not a bound; ex-post knowledge and unexecutable exit price stated. C2 split into C3 (normalise only, 15) and the cut remainder via C2 - C3.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -188,7 +188,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Renamed \"Vereinigung der Ereignis-Populationen (83, 74, D2, 272, Census)\"; second union including holds and quarantines published (837 segments / 687 securityIds / 503 CIK).",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -203,7 +203,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "One basis per table; locus counts in their own table; \"+2\" removed from provider defects; byClass labelled trade-event pairs.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -233,7 +233,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Level called \"Ticker/securityId\". Coverage published: 7,352/9,407 segments with CIK, 7,108 with share rows, 851 with FINRA rows (symbol-in-window only, no name check), 0 tickers mapped to more than one CIK; 9 census confirmations rest on FINRA symbol matches.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -248,7 +248,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Confirmed counts presented as \"mindestens, unter abgedeckten Kanaelen\" with per-channel coverage and the incomplete SEC window.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -256,14 +256,14 @@
       "severity": "MEDIUM",
       "area": "French attribution",
       "claim": "'Die externe French-Kalibrierung reagiert fast nur auf ungeklaerte Faelle ... Erst das Herausnehmen der nicht bestaetigten Faelle ergibt 0,963 bis 0,992'; 'Die Luecke stammt aus einer Handvoll nicht bestaetigter, aufwaerts gerichteter Spruenge >= 10x bei Pennystocks'.",
-      "evidence": "POPULATION.json french.ewExclusionVariants: CONFIRMED_ONLY(27) 0.146 / 523 bp; NOT_CONFIRMED(56) 0.963 / 58 bp; all 83: 0.992 / 26 bp; UNDECLARED_RAW_JUMP_10X_ONLY(55) 0.992; cases83.byIndependent AGAINST_SPLIT 8 (inside the 56); squaredGapShareInMonthsWithFlaggedCases 1",
+      "evidence": "POPULATION.json french.ewExclusionVariants: CONFIRMED_ONLY(27) 0.146 / [redacted bp]; NOT_CONFIRMED(56) 0.963 / [redacted bp]; all 83: 0.992 / [redacted bp]; UNDECLARED_RAW_JUMP_10X_ONLY(55) 0.992; cases83.byIndependent AGAINST_SPLIT 8 (inside the 56); squaredGapShareInMonthsWithFlaggedCases 1",
       "assessment": "The marginal claim holds: removing the 27 confirmed cases does almost nothing. But correlation is not additive. Removing the 56 gives 0.963, not 0.992, so the last step to 0.992 requires the confirmed cases as well, and '0,992' comes from variants (83, 55) that include confirmed months. The 56 include 8 cases with counter-evidence against a split, which point to genuine moves. Direction ('aufwaerts') and price level ('Pennystocks') of the 83 are not in any public field. 55-56 months is not 'eine Handvoll'.",
       "recommendation": "Say 'marginal' and give the conditional step (0.963 -> 0.992 needs the confirmed months). Either publish the direction and prior-price breakdown of the 83 or drop 'aufwaerts/Pennystocks'. Use the new variants EXCLUDE_83_UNDECLARED_NOT_CONFIRMED / _CONFIRMED once the population rerun lands.",
       "resolvableInThisPR": true,
       "resolution": {
         "status": "RESOLVED",
         "how": "\"marginal\" wording; strict variants published (exclude 11 strictly confirmed -> 0.145; exclude 72 not strictly confirmed -> 0.963; full 83 -> 0.992). Direction and prior-price breakdown of the 83 published (78 UP, 5 DOWN; 50 with prior price < 1 USD).",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -278,7 +278,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Verdict defined as \"CAGR below SPY-TR on capture b3ca8681\". Coarse gap buckets and Sharpe direction vs SPY published per cell (all BELOW_SPY_SHARPE; gap 1-5 pp for Momentum/52W/Weinstein, >5 pp for LowVol/Turtle/Kullamaegi). Missing small-cap benchmark stated next to the verdict.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -293,7 +293,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Workflow header and code comment fixed; --expect-fingerprint b3ca8681... passed to all three jobs and enforced; provenance records population/ranking/method fingerprints (all equal).",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -308,7 +308,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Unsupported mechanism statements marked as hypotheses or removed.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -323,7 +323,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "EW security-month denominator computed in population.mjs (493,258); #705 figures cited with run IDs; the 5,000x figure dropped from the headline.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -331,14 +331,14 @@
       "severity": "LOW",
       "area": "data licensing",
       "claim": "'Einzelfaelle, Ticker und Kurse sind nur an den Owner versiegelt'; performanceNumbersPublished DELTAS_AND_DIRECTIONS_ONLY.",
-      "evidence": "grep over run-39053330565/*.json for tiingo:EX:TICKER, ref_*, ticker fields and close/price/cagr/sharpe/finalEquity values: no hits; POPULATION.json french.*.meanDiffBpPerMonth (e.g. 554) and trackingErrorPp; oracle.json valuesPublished false",
+      "evidence": "grep over run-39053330565/*.json for tiingo:EX:TICKER, ref_*, ticker fields and close/price/cagr/sharpe/finalEquity values: no hits; POPULATION.json french.*.meanDiffBpPerMonth (value redacted) and trackingErrorPp; oracle.json valuesPublished false",
       "assessment": "No identities, tickers, prices or absolute strategy metrics leak. One small residual: French monthly data are public, so the mean bp difference lets anyone reconstruct the mean monthly return of the Tiingo-derived EW construction. This is an aggregate, probably already published in #705, but it is an absolute figure derived from licensed data.",
       "recommendation": "Confirm with the owner that aggregate derived statistics are covered by the Tiingo terms, or publish correlation only.",
       "resolvableInThisPR": true,
       "resolution": {
         "status": "RESOLVED",
         "how": "Correlation, verdict and failed checks only; mean difference and tracking error removed from new outputs, redacted in run-39053330565/POPULATION.json and from the docs. The earlier values remain in git history of this branch (commit bc8b6cb10); owner decision whether to squash before merge.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     },
     {
@@ -353,7 +353,7 @@
       "resolution": {
         "status": "RESOLVED",
         "how": "Removals in C/D (trade counts) and the V3 PIT acceptance failure mentioned in limitations.",
-        "verifiedOnRun": "39073148967"
+        "verifiedOnRun": "39073148967 (re-checked on 39100831867)"
       }
     }
   ],
@@ -386,7 +386,204 @@
     "low": 4,
     "resolved": 19,
     "partiallyResolved": 1,
-    "disclosed": 1
+    "disclosed": 1,
+    "secondPass": {
+      "findings": 16,
+      "high": 3,
+      "medium": 6,
+      "low": 7,
+      "resolved": 16
+    }
   },
-  "reviewProcess": "independent adversarial reviewer (separate agent, no authorship of the code) on run 39053330565; resolutions verified by the author on rerun 39073148967; no second independent pass on the rerun"
+  "reviewProcess": "first pass: independent adversarial reviewer on run 39053330565 (21 findings); second pass: independent reviewer on run 39073148967 and the documents (16 findings, 24 verified claims); resolutions verified by the author on run 39100831867; no third independent pass",
+  "secondPass": {
+    "reviewer": "independent-second-pass",
+    "onRun": "39073148967",
+    "verifiedClaims": 24,
+    "findings": [
+      {
+        "id": "IR2-01",
+        "severity": "HIGH",
+        "claim": "Strict class: 13 of 28 rest on SEC share counts tested by direction only",
+        "requiredFix": "Magnitude test on share counts (|log(r*sr)| <= log 1.25) and republish",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Share-count confirmations now need |log(r*sr)| <= log 1.25 (lib.mjs labelEvent). Residuals of share-count confirmations: 4 <= 1.25, 3 in 1.25-2, 12 > 2. Strict confirmed: 17 events / 17 securities (was 28 / 26).",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-02",
+        "severity": "HIGH",
+        "claim": "Turtle C2 effect called a confirmed data correction although a share-count rise cannot tell a split from dilution",
+        "requiredFix": "Separate class SHARE_RISE_SPLIT_OR_DILUTION; reword; do not count as data correction",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "New class SHARE_RISE_SPLIT_OR_DILUTION; the Turtle-spanned event falls into it. C2 vs B for Turtle is now 0.0; the +2.0 exists only in the lenient C and is reported as such.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-03",
+        "severity": "HIGH",
+        "claim": "5 of 28 strict events are declared-split residuals confirmed by their own split day",
+        "requiredFix": "Include the event day in the declared-split confound; report strict events by kind",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "A share-count-only confirmation on a declared split day is CONFOUNDED_BY_DECLARED_SPLIT. Strict confirmed contains 0 declared-split residuals (16 undeclared UP, 1 undeclared DOWN with FINRA ratio).",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-04",
+        "severity": "MEDIUM",
+        "claim": "'Reverse splits misprocessed >= 28' counts down moves and declared splits",
+        "requiredFix": "Restrict to UP and UNDECLARED or rename",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Reverse-split count restricted to strictly confirmed undeclared UP events: 16.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-05",
+        "severity": "MEDIUM",
+        "claim": "Turtle effect traced to one event although only the cut set is isolated",
+        "requiredFix": "Write 'from the cut set; plausibly one trade' or ablate",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Moot for C2 (no effect). The lenient C effect is described as coming from the cut set.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-06",
+        "severity": "MEDIUM",
+        "claim": "C2 applies 14 normalisations, 12 cuts, 1 removal, not all 28",
+        "requiredFix": "State the audit counts and mention removals",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "C2 audit stated: 15 normalised, 2 cut, 0 removed.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-07",
+        "severity": "MEDIUM",
+        "claim": "SECURITY-AFFECTED-COUNT still lenient (267, 0.0041)",
+        "requiredFix": "Compute from strict class; label lenient block",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "SECURITY-AFFECTED-COUNT computed from strictConfirmedSecurities; lenient block renamed.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-08",
+        "severity": "MEDIUM",
+        "claim": "Doc pre-announced a secondPass that did not exist; 'no HIGH open' was self-assessment",
+        "requiredFix": "Add this review as secondPass and reword",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "This review is recorded as secondPass; the doc no longer pre-announces results. No third independent pass was run on the final rerun.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-09",
+        "severity": "MEDIUM",
+        "claim": "Trade deltas reported vs A in a B context; LowVol +110 attributed to the data correction",
+        "requiredFix": "Report trade deltas vs B",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Trade deltas reported against B (deltaVsB.trades).",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-10",
+        "severity": "LOW",
+        "claim": "2 declared-split days with continuous adjClose counted as provider faults",
+        "requiredFix": "Use 4",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Provider-internal inconsistency counted as 4 days; declared-split days with continuous adjClose are not counted as provider faults.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-11",
+        "severity": "LOW",
+        "claim": "'D ends a trade C normalised, hence Turtle D < C' unsupported (spanning P&L +7.3 in D)",
+        "requiredFix": "Remove",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Unsupported causal sentence removed from doc and build-artifacts.mjs.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-12",
+        "severity": "LOW",
+        "claim": "INDEPENDENT-REVIEW.json still holds bp values",
+        "requiredFix": "Redact",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "bp values redacted from INDEPENDENT-REVIEW.json.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-13",
+        "severity": "LOW",
+        "claim": "D2 confirmations lenient and inside the census, not additional",
+        "requiredFix": "Report strict class; drop 'zusaetzlich'",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "D2 strict class published: 0 confirmed, 2 confounded by their declared split, 6 unresolved, 2 insufficient; all 10 days lie inside the census (not additional).",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-14",
+        "severity": "LOW",
+        "claim": "French: not all 11 strict months needed for 0.992; up/penny wording mixes direction bases",
+        "requiredFix": "Reword",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "Wording changed; direction reported only for undeclared months (52 UP, 3 DOWN).",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-15",
+        "severity": "LOW",
+        "claim": "No B_to_C2 rank flag; low power of the rank test",
+        "requiredFix": "Add flag and note",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "RANKING.changes.B_to_C2 added (false for CAGR, Sharpe and drawdown); low power noted.",
+          "verifiedOnRun": "39100831867"
+        }
+      },
+      {
+        "id": "IR2-16",
+        "severity": "LOW",
+        "claim": "Strict class of spanned events not public",
+        "requiredFix": "Add byStrictClass/channel to trade exposure",
+        "resolution": {
+          "status": "RESOLVED",
+          "how": "tradeExposure.byStrictClassChannelDirection published.",
+          "verifiedOnRun": "39100831867"
+        }
+      }
+    ],
+    "highOrCriticalOpenAtReview": [
+      "IR2-01",
+      "IR2-02",
+      "IR2-03"
+    ],
+    "overall": "Transcription accurate (24 checks). The strict class was not strict for share-count confirmations and declared-split residuals; the Turtle +2.0 cuts a price fall supported only by a share-count rise (split or dilution).",
+    "highOrCriticalOpenAfterResolution": []
+  }
 }
