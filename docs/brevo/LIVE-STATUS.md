@@ -1,5 +1,7 @@
 # Brevo: belegter Kontostand und Listenansicht
 
+**Aktualisierung 18. Oktober 2026:** Der [Audit 39116263425](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39116263425) bestätigt **135 Kontakte in Liste 4, 0 in Liste 5 und 2 in Liste 6**. Ein aktiver Absender und eine bestätigte/authentifizierte Domain; keine Mutationen, kein Versand. Das Newsletter-Register ist initialisiert, die private Newsletter-Konfiguration fehlt im Job und die verpflichtende Review-Umgebung ist noch einzurichten. Details und Belege: [aktueller App-Newsletter-Prozess](APP-NEWSLETTER.md). **Die folgenden Angaben vom 12. Oktober sind historisch und beschreiben weder den heutigen Import- noch den heutigen Domainstatus.**
+
 Stand: 12. Oktober 2026. Letzter Listen-Leseabgleich: 12:07 Uhr Europe/Berlin. **Import vorbereitet, noch nicht durchgeführt.** Alle heutigen Brevo-Aufrufe waren GET-Leseprüfungen. Keine neuen Listen oder Merkmale, kein Kontaktimport und kein E-Mail-Versand.
 
 ## Setup-Nachweis und erneuter Leseabgleich
