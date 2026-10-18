@@ -4,8 +4,8 @@ Stand: 18. Oktober 2026. Das bereitgestellte Testpaket ist als kuratierte Vorlag
 
 ## Inhalt und Vorschau
 
-- Betreff: **Aktienresearch: Zehn Werkzeuge. Eine App.**
-- Preheader: „Vision Universe. Die App. Dein erster Blick vor dem App-Start.“
+- Betreff: **Investieren mit Weitblick. Alles in einer App**
+- Preheader: „Aktien richtig handeln und verstehen“
 - Gestaltung und iPhone-Motiv aus dem freigegebenen Testpaket; Claim, Text, nicht verlinktes „Bald verfügbar“ sowie Website-/Impressum-Links erhalten.
 - Die bestätigte Unternehmensanschrift aus dem bestehenden Impressum ergänzt den Footer.
 - `scripts/brevo/content/vision-universe-app/content.json` und `newsletter.html.tmpl` enthalten ausschließlich öffentliche redaktionelle Angaben. Keine Empfänger, Schlüssel oder privaten Kontaktdateien.
@@ -27,8 +27,25 @@ Die vorhandene private Konfigurationsdatei ist lokal mit 0600 vorbereitet, enth�
 
 **Diese beiden Schritte sind nur einmal nötig.** Das gespeicherte Secret und die Review-Umgebung werden für spätere Newsletter wiederverwendet; die HMAC-Bindung bleibt stabil. Pro Newsletter sind keine erneute Einrichtung und keine Kontaktübergabe nötig. Codex kann die manuellen Workflow-Aufrufe für Entwurf, Versionsprüfung und freigegebenen Versand starten. Der Betreiber bestätigt lediglich den konkreten Test- beziehungsweise Hauptversand im vorhandenen Review-Dialog; diese kampagnenbezogene Freigabe wird nicht automatisch erteilt. Eine erfolgreiche Testfreigabe startet keinen Hauptversand.
 
-1. [Repository → Settings → Secrets and variables → Actions](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/secrets/actions) → **New repository secret** → `BREVO_NEWSLETTER_CONFIG`. Den vollständigen Inhalt der bereits privat vorbereiteten Datei `VU-Brevo-Newsletter-Config.private.json` verwenden, nicht den API-Key und nicht den Shopify-/Import-Payload. Nicht öffentlich einfügen. Die vorhandene HMAC-Bindung beibehalten. Für diese redaktionelle Vorlage ist **kein zusätzliches `BREVO_NEWSLETTER_CONTENT`-Secret** nötig.
-2. [Repository → Settings → Environments](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/environments) → **New environment** → exakt `brevo-newsletter-review` → **Required reviewers** aktivieren → Owner `dennismueller10x-sudo` als einzelnen Benutzer auswählen → speichern. Selbstfreigabe darf erlaubt sein; die explizite Freigabe genau des jeweiligen Runs bleibt Pflicht. Keine vorhandenen Gates ändern.
+### A. Privates Secret speichern
+
+1. Die privat bereitgestellte Datei `VU-Brevo-Newsletter-Config.private.json` als Text öffnen und den gesamten Inhalt einschließlich der äußeren geschweiften Klammern kopieren. Die Datei enthält die vorbereitete Testempfänger-Konfiguration, keinen Brevo-API-Schlüssel. Nicht in Issues oder PR-Kommentare einfügen.
+2. [GitHub → Repository → Settings → Secrets and variables → Actions](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/secrets/actions) öffnen.
+3. **New repository secret** auswählen.
+4. Unter **Name** exakt `BREVO_NEWSLETTER_CONFIG` eingeben. Unter **Secret** den vollständigen Dateiinhalt einfügen.
+5. **Add secret** anklicken. GitHub zeigt den gespeicherten Wert danach nicht mehr an; der Name erscheint in der Secret-Liste. Falls das Secret bereits angelegt wurde, keine abweichende Konfiguration oder neue HMAC-Bindung erzeugen.
+
+`BREVO_API_KEY` bleibt bestehen. Der Import-Payload ist nicht die Newsletter-Konfiguration. Für die kuratierte Vorlage ist kein zusätzliches `BREVO_NEWSLETTER_CONTENT`-Secret nötig.
+
+### B. Pflichtreview einrichten
+
+1. [GitHub → Repository → Settings → Environments](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/environments) öffnen.
+2. **New environment** auswählen, exakt `brevo-newsletter-review` eingeben und **Configure environment** anklicken.
+3. Unter **Deployment protection rules** die Option **Required reviewers** aktivieren.
+4. Im Reviewer-Feld den Benutzer `dennismueller10x-sudo` suchen und als einzelnen Benutzer auswählen. **Prevent self-review** nicht aktivieren: So kann der Betreiber auch einen selbst gestarteten Lauf explizit freigeben. Die konkrete Review-Bestätigung bleibt trotzdem zwingend.
+5. **Save protection rules** anklicken. Danach müssen der Environment-Name und der eingetragene Pflichtreviewer sichtbar sein. Für dieses Environment ist kein weiteres Secret nötig; das Repository-Secret wird wiederverwendet.
+
+Nach der einmaligen Einrichtung kann Codex die reine Prüfung und Entwurfserstellung übernehmen. Das Newsletter-Register ist bereits initialisiert. Der PR muss vor Verwendung der neuen Inhaltsauswahl regulär auf `main` übernommen werden. Für einen später konkret freigegebenen Testlauf erscheint **Review deployments** → `brevo-newsletter-review` auswählen → **Approve and deploy**. Eine solche Testfreigabe startet keinen Hauptversand und ersetzt dessen separate Freigabe nicht.
 
 ## Ablauf nach Merge und Einrichtung
 
