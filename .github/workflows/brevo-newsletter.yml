@@ -12,6 +12,11 @@ on:
         type: string
         description: Konkrete Brevo-Kampagnen-ID
         default: ''
+      content_source:
+        type: choice
+        description: Nur für draft; kuratierter App-Newsletter oder bestehender privater Inhalt
+        options: [secret, vision-universe-app]
+        default: secret
       expected_version:
         type: string
         description: SHA256 der konkreten Inhaltsversion (keine Inhaltsdaten)
@@ -46,6 +51,7 @@ jobs:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_NEWSLETTER_CONFIG: ${{ secrets.BREVO_NEWSLETTER_CONFIG }}
           BREVO_NEWSLETTER_CONTENT: ${{ secrets.BREVO_NEWSLETTER_CONTENT }}
+          BREVO_NEWSLETTER_SOURCE: ${{ inputs.content_source }}
           GITHUB_TOKEN: ${{ github.token }}
           BREVO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           BREVO_NEWSLETTER_OPERATION: ${{ inputs.operation }}

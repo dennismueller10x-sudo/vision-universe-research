@@ -1,5 +1,7 @@
 # Brevo API-Betrieb mit privater Übergabe und Versionsfreigabe
 
+Aktueller Newsletter-Stand vom 18. Oktober 2026: [kuratiertes Testpaket, API-Audit und konkrete Einrichtungsschritte](APP-NEWSLETTER.md). Die nachfolgenden Statusangaben vom 12. Oktober sind historische Momentaufnahmen; der Newsletter-Workflow liegt inzwischen auf `main`, der Kontaktimport ist anhand des aktuellen Audits nachvollziehbar und die Domain authentifiziert. Keine Newsletter versendet.
+
 Stand 12. Oktober 2026: Code vorbereitet, neuer Newsletter-Workflow noch nicht auf main aktiviert. **Import vorbereitet, noch nicht durchgeführt.** Keine E-Mails, DNS-Änderungen oder Buchungen. Die Sichtbarkeit der Listen ist durch den Owner bestätigt.
 
 ## Einmalige Importübergabe
