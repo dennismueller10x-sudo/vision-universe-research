@@ -68,15 +68,21 @@ def confirmed_tests(client, config, lists):
     people = config.get("test_addresses", {})
     if set(people) != {"test_1", "test_2"} or config.get("test_addresses_confirmed") is not True:
         raise Blocked("Beide internen Empfänger müssen eindeutig eingerichtet sein.")
+    if lists.get(LISTS[2]) != 6:
+        raise Blocked("Interne Testliste muss Brevo-Liste 6 sein.")
     addresses = [normalize(people[n]) for n in ("test_1", "test_2")]
     if None in addresses or len(set(addresses)) != 2:
         raise Blocked("Zwei unterschiedliche gültige Testadressen erforderlich.")
+    test_names = []
     for email in addresses:
         contact = client.contact(email)
         if not contact or contact.get("emailBlacklisted") or contact.get("attributes", {}).get("VU_INTERNAL_TEST") is not True:
             raise Blocked("Testkontakt fehlt oder ist gesperrt.")
         if lists[LISTS[2]] not in contact.get("listIds", []) or lists[LISTS[0]] in contact.get("listIds", []):
             raise Blocked("Test- und Hauptliste sind nicht korrekt getrennt.")
+        test_names.append(str(contact.get("attributes", {}).get("VU_FIRSTNAME", "")).strip().casefold())
+    if set(test_names) != {"dennis", "ralf"}:
+        raise Blocked("Testempfänger müssen Dennis und Ralf aus Liste 6 sein.")
     return addresses
 
 
