@@ -58,23 +58,46 @@
 
   function foot(text) { return el("p", { class: "dx-kapitel-fuss", text: text }); }
 
+  /* Visual First (VU3): lange Erklaertexte zeigen zwei Zeilen und "Mehr lesen". Der ganze Text bleibt im DOM
+     (Screenreader, Suche). Nur fuer Erklaerungen ab 150 Zeichen - nie fuer Hinweise zu Gesamtnote,
+     Empfehlung oder Datengrenzen; die stehen immer ganz da. */
+  function readMore(p) {
+    if (!p || (p.textContent || "").length < 150) return p;
+    var id = "qx-rm-" + (++readMore.n);
+    p.classList.add("qx-clamp"); p.id = id;
+    var btn = el("button", { type: "button", class: "qx-readmore", "aria-expanded": "false", "aria-controls": id, text: "Mehr lesen" });
+    btn.addEventListener("click", function () {
+      var open = p.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false"); btn.textContent = open ? "Weniger" : "Mehr lesen";
+    });
+    return el("div", { class: "qx-readmore-wrap" }, [p, btn]);
+  }
+  readMore.n = 0;
+
   /* ------------------------------------------------ 01 Faktor-Karte
      Eine Karte in Discovers Zahlen-Raster (dx-zahlen-karte). Antippen
      klappt sie ueber die ganze Breite auf: Komponenten, Rohwerte,
      Gewichte, Stufe, Referenz, Stichtag, Methodik. */
+  /* Stufenzeichen: stark / Mittelfeld / schwach / nicht bewertbar. */
+  var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
+  function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
   function factorCard(f, ticker) {
     var d = el("details", { class: "qx-factor dx-zahlen-karte tone-" + f.tone, id: "faktor-" + f.id, dataset: { factor: f.id } });
     var available = f.state === "AVAILABLE";
+    /* Visual First (VU3): Name und Wert in einer Zeile, Stufe mit Zeichen (Bedeutung nie nur ueber Farbe),
+       Balken, Position im Markt mit Feldgroesse. Der Begruendungssatz steht in den Details; fehlt die
+       Bewertung, bleibt der Grund sichtbar. */
     d.append(el("summary", {}, [
-      el("div", { class: "dx-zahlen-kopf" }, [el("span", { class: "dx-zahlen-label", text: f.name }),
-        X.pill(available ? (f.word || f.label) : "Nicht bewertbar", f.tone)]),
-      el("b", { class: "dx-zahlen-zahl num", text: available ? String(Math.round(f.score)) : "–" }),
-      el("span", { class: "dx-zahlen-einheit", text: available ? "von 100" + (f.rankText ? " · " + f.rankText.replace(/\.$/, "") : "") : "keine Einordnung" }),
+      el("div", { class: "dx-zahlen-kopf qx-fr-top" }, [
+        el("span", { class: "qx-fr-name" }, [el("span", { class: "dx-zahlen-label", text: f.name }),
+          glyphPill(X.pill(available ? (f.word || f.label) : "Nicht bewertbar", f.tone), available ? f.tone : "unknown")]),
+        el("b", { class: "dx-zahlen-zahl num", text: available ? String(Math.round(f.score)) : "–" })]),
       available ? el("span", { class: "qx-meter", role: "img", "aria-label": f.name + ": Wert " + Math.round(f.score) + " von 100" }, [el("i", { style: "width:" + Math.max(2, Math.min(100, f.score)) + "%" })]) : null,
-      el("p", { class: "dx-zahlen-satz", text: available ? f.why : f.missingText }),
-      el("span", { class: "dx-zahlen-cta", text: "Woraus der Wert besteht" })
+      available ? null : el("p", { class: "dx-zahlen-satz", text: f.missingText }),
+      el("div", { class: "qx-fr-foot" }, [el("span", { class: "dx-zahlen-einheit", text: available ? "von 100" + (f.rankText ? " · " + f.rankText.replace(/\.$/, "") : "") : "keine Einordnung" }),
+        el("span", { class: "dx-zahlen-cta", text: "Details" })])
     ]));
-    var body = el("div", { class: "qx-factor-body" });
+    var body = el("div", { class: "qx-factor-body" }, [available && f.why ? el("p", { class: "dx-zahlen-satz qx-fr-why", text: f.why }) : null]);
     d.append(body);
     var built = false;
     d.addEventListener("toggle", function () {
@@ -141,6 +164,28 @@
      die Kursstaerke auf der Zeitachse - und darunter die Waage (spricht
      dafuer / dagegen). Sie steht direkt hinter dem einen Chart, wie in
      Discover; gemessen wird ihre Lage (M40) im Production-Smoke. */
+  /* Visual First (VU3): der Satz "3 von 6 stark, 1 schwach ..." als Zeichenleiste - ein Feld je Eigenschaft
+     in Kanon-Reihenfolge, Antippen springt zur Eigenschaft. Keine neue Zahl: gezaehlt wird dasselbe wie im Satz.
+     Weichen die Stufen der Karten von der Zaehlung der Engine ab, entfaellt die Leiste (der Satz bleibt). */
+  /* Kurzname je Eigenschaft fuer die schmale Leiste; der volle Name steht in title und aria-label. */
+  var STRIP_SHORT = { quality: "Bilanz", growth: "Wachstum", momentum: "Kurs", value: "Bewert.", profitability: "Profit", revisions: "Erwart.", risk: "Risiko" };
+  var STRIP_WORD = { good: "stark", neutral: "Mittelfeld", bad: "schwach", unknown: "nicht bewertbar" };
+  function balanceStrip(vm) {
+    var o = vm.overall, n = { good: 0, neutral: 0, bad: 0, unknown: 0 };
+    var cells = vm.factors.map(function (f) { var t = f.state === "AVAILABLE" && n.hasOwnProperty(f.tone) ? f.tone : "unknown"; n[t]++; return { f: f, t: t }; });
+    if (n.good !== o.strong || n.bad !== o.weak || n.neutral !== o.middle) return null;
+    return el("div", { class: "qx-strip" }, [
+      el("ol", { class: "qx-strip-cells", "aria-label": "Die sieben Eigenschaften im Überblick" }, cells.map(function (c) {
+        var ok = c.f.state === "AVAILABLE";
+        return el("li", { class: "tone-" + c.t }, [el("a", { href: "#faktor-" + c.f.id, title: c.f.name + ": " + (ok ? Math.round(c.f.score) + " · " + (c.f.word || c.f.label) : "nicht bewertbar"),
+          "aria-label": c.f.name + ": " + (ok ? Math.round(c.f.score) + " von 100, " + (c.f.word || c.f.label) : "nicht bewertbar") }, [
+          el("i", { "aria-hidden": "true", text: TONE_GLYPH[c.t] }), el("b", { class: "num", "aria-hidden": "true", text: ok ? String(Math.round(c.f.score)) : "–" }),
+          el("span", { class: "qx-strip-name", "aria-hidden": "true", text: STRIP_SHORT[c.f.id] || c.f.name })])]);
+      })),
+      el("p", { class: "qx-strip-legend" }, ["good", "neutral", "bad", "unknown"].filter(function (t) { return n[t]; }).map(function (t) {
+        return el("span", { class: "tone-" + t }, [el("i", { "aria-hidden": "true", text: TONE_GLYPH[t] }), document.createTextNode(" " + n[t] + " " + STRIP_WORD[t])]);
+      }))]);
+  }
   function verdictCard(vm, factorsReason, missingNote, nowHost) {
     var o = vm.overall;
     /* qx-verdict-card nur, wo es eine Aussage gibt - ein ETF oder ein Titel
@@ -149,7 +194,7 @@
     if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top", dataset: { tone: o.tone } }, [
         el("p", { class: "dx-dhero-story" }, [el("i", { class: "dx-story-dot", "aria-hidden": "true" }), el("span", { text: o.text })]),
-        el("p", { class: "dx-dhero-hook" }, [el("i", { class: "dx-hook-mark", "aria-hidden": "true" }), el("span", { text: o.sub })])]));
+        el("p", { class: "dx-dhero-hook" }, [el("i", { class: "dx-hook-mark", "aria-hidden": "true" }), el("span", { text: o.sub })]), balanceStrip(vm)]));
       if (o.rated < 3) node.append(el("ul", { class: "dx-kann qx-open" }, vm.gaps.map(function (g) {
         return el("li", { class: "nein" }, [el("b", { text: g.names.join(", ") }), el("span", { text: " – " + g.text })]);
       })));
@@ -161,8 +206,8 @@
     if (vm.returns && vm.returns.state === "AVAILABLE") {
       node.append(el("div", { class: "dx-zeitachse qx-returns", id: "rendite" }, vm.returns.rows.map(function (r) {
         return el("div", {}, [el("span", { text: r.label.replace("12 Monate ohne den letzten", "12 Monate*") }), el("b", { class: "num " + (r.priceRaw > 0 ? "up" : r.priceRaw < 0 ? "down" : ""), text: r.price })]);
-      })), el("p", { class: "qx-small qx-return-kinds", text: vm.returns.rows.map(function (r) { return r.label.replace("12 Monate ohne den letzten", "12 Monate*") + ": Kursstärke " + r.price + ", Anlegerrendite " + r.investor; }).join(" · ") + "." +
-        (vm.returns.rows.some(function (r) { return /ohne den letzten/.test(r.label); }) ? " *12 Monate ohne den letzten Monat." : "") + " Kursstärke misst nur den Kurs, die Anlegerrendite rechnet Ausschüttungen mit ein. " + vm.returns.text }));
+      })), readMore(el("p", { class: "qx-small qx-return-kinds", text: vm.returns.rows.map(function (r) { return r.label.replace("12 Monate ohne den letzten", "12 Monate*") + ": Kursstärke " + r.price + ", Anlegerrendite " + r.investor; }).join(" · ") + "." +
+        (vm.returns.rows.some(function (r) { return /ohne den letzten/.test(r.label); }) ? " *12 Monate ohne den letzten Monat." : "") + " Kursstärke misst nur den Kurs, die Anlegerrendite rechnet Ausschüttungen mit ein. " + vm.returns.text })));
     }
     if (vm.change && vm.change.headline && vm.change.headline.length) node.append(el("p", { class: "qx-small" }, [el("b", { text: "Was sich gerade verändert: " }), el("span", { text: vm.change.headline.join(" · ") + "." })]));
     return node;
@@ -811,7 +856,7 @@
     if (hasFactors && o.rated > 0) {
       bodyHost.append(X.section("Was macht diese Aktie stark oder schwach?", "Jede Eigenschaft wird im Vergleich zu allen anderen Aktien eingeordnet. Antippen zeigt, woraus der Wert besteht – bis zu den Rohdaten.",
         [factorTiles(vm), el("div", { class: "dx-zahlen qx-factors" }, vm.factors.map(function (f) { return factorCard(f, ticker); })),
-          foot("Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufe ist die Position unter allen bewerteten Aktien (stärkste 10 % sehr stark, bis 75 % stark, ab 45 % durchschnittlich, ab 25 % schwach) – eine relative Einordnung, kein absolutes Urteil. Stand " + X.dateDe(vm.asOf && vm.asOf.factors) + (vm.asOf && vm.asOf.fundamentals ? ", Geschäftszahlen bis " + X.dateDe(vm.asOf.fundamentals) : "") + ".")],
+          readMore(foot("Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufe ist die Position unter allen bewerteten Aktien (stärkste 10 % sehr stark, bis 75 % stark, ab 45 % durchschnittlich, ab 25 % schwach) – eine relative Einordnung, kein absolutes Urteil. Stand " + X.dateDe(vm.asOf && vm.asOf.factors) + (vm.asOf && vm.asOf.fundamentals ? ", Geschäftszahlen bis " + X.dateDe(vm.asOf.fundamentals) : "") + "."))],
         { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "05 / Die sieben Eigenschaften", "einordnung"));
     } else if (!hasFactors) {
       bodyHost.append(X.section("Eigenschaften", null, [X.notice("Keine Faktoren", VM.reasonText(factors && factors.reason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht."))], null, "05 / Die sieben Eigenschaften", "einordnung"));

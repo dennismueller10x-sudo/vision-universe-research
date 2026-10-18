@@ -118,26 +118,58 @@
     var tested = c.events.filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
     var testedNode = tested && E ? E.signalEvidence(tested.backtest, { compact: true, label: "„" + ((T[tested.eventType] || {}).label || tested.eventType) + "“ marktweit" }) : null;
     var withheld = !tested ? c.events.filter(function (e) { return e.backtest && e.backtest.state !== "AVAILABLE"; })[0] : null;
-    return el("a", { class: "q-radar-card tone-" + (first.direction || t0.tone || "info"), href: X.routes.stock(c.ticker), dataset: { symbol: c.ticker } }, [
-      el("div", { class: "q-rc-head" }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
-        el("span", { class: "q-rc-id" }, [el("b", { text: nameOf(ctx, c.ticker) }), el("small", { text: c.ticker + (c.setup && c.setup.state !== "NO_SETUP" ? " · " + lifecycleLabel(c.setup.state) + " seit " + X.dateDe(c.setup.since) : "") })])]),
-      el("p", { class: "q-rc-what" }, [el("b", { text: t0.label || first.eventType }), el("span", { text: first.explanation })]),
-      c.events.length > 1 ? el("ul", { class: "q-rc-more" }, c.events.slice(1, 4).map(function (e) {
-        var t = T[e.eventType] || {};
-        return el("li", { class: "tone-" + (e.direction || t.tone || "info"), text: (t.label || e.eventType) + (e.direction === "up" && e.eventType === "FACTOR_CHANGED" ? " ↑" : e.direction === "down" && e.eventType === "FACTOR_CHANGED" ? " ↓" : "") });
-      })) : null,
-      rows.length ? el("dl", { class: "q-rc-levels" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))) : null,
-      tr && tr.trigger ? el("p", { class: "q-rc-next" }, [el("b", { text: "Bestätigt, wenn " }), el("span", { text: plainTrigger(tr.trigger) })])
-        : c.next && c.next.open && c.next.open.length ? el("p", { class: "q-rc-next" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "für „" + lifecycleLabel(c.next.state) + "“ fehlen " + c.next.open.length + " von " + c.next.total + " Bedingungen" })]) : null,
-      ev ? el("p", { class: "q-rc-evidence" }, [el("span", { class: "q-ev-tier tier-observed", text: "Beobachtet" }), el("span", { text: " Bei dieser Aktie: " + ev + "." })]) : null,
-      testedNode,
-      withheld && E ? el("p", { class: "q-rc-withheld" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Getestet" }), el("span", { text: " " + E.reasonText(withheld.backtest.reason) })]) : null,
-      (function () { var hit = E && E.alertMatch ? c.events.map(function (e) { return E.alertMatch(c.ticker, e); }).filter(Boolean)[0] : null;
-        return hit ? el("p", { class: "q-alert-hit", text: "Passt zu deiner Benachrichtigung: " + hit }) : null; })(),
-      /* Schon in einem frueheren Lauf gemeldet (Alert-Ledger, isNew=false):
-         die Karte sagt es, statt eine alte Meldung als heutige zu zeigen. */
-      el("small", { class: "q-rc-date", text: (first.isNew === false ? "Bereits gemeldet · " : "") + "Stand " + X.dateDe(first.occurredAt) })
+    var tone = first.direction || t0.tone || "info";
+    var hit = E && E.alertMatch ? c.events.map(function (e) { return E.alertMatch(c.ticker, e); }).filter(Boolean)[0] : null;
+    /* Visual First (VU3): Kopf -> Kennzahlen -> Belege als Chips -> Details auf Tipp.
+       Die Chips zeigen nur Werte, die die Karte schon traegt; jede Quote steht mit n.
+       Der bisherige Inhalt bleibt vollstaendig im DOM, eingeklappt unter "Details". */
+    var chips = [];
+    if (c.replay && c.replay.sufficient) chips.push(evChip("observed", "Beobachtet", Math.round(c.replay.positiveShare * 100) + " % höher", ["n " + c.replay.completed, "Median " + VM.pct(c.replay.medianReturn, 1, true)]));
+    else if (c.replay && c.replay.state === "AVAILABLE") chips.push(evChip("observed", "Beobachtet", "zu wenige Fälle", ["n " + c.replay.episodes], true));
+    if (tested && E) {
+      var tb = tested.backtest, edge = E.edgeOf(tb);
+      chips.push(evChip("tested", "Getestet", typeof tb.deltaPositiveShare === "number" ? E.pp(tb.deltaPositiveShare) + " ggü. Markt" : E.share1(tb.positiveShare) + " höher",
+        [EDGE_SHORT[edge.id], "n " + E.int(tb.n) + " marktweit", "Evidenz " + (E.TRUST_SHORT[tb.trust] || "nicht bereit")].filter(Boolean), false, edge.tone));
+    } else if (withheld) chips.push(evChip("tested", "Getestet", "noch keine Aussage", [], true));
+    if (c.events.length > 1) chips.push(el("span", { class: "q-rc-chip is-count", title: c.events.slice(1).map(function (e) { return (T[e.eventType] || {}).label || e.eventType; }).join(" · "),
+      text: "+" + (c.events.length - 1) + (c.events.length > 2 ? " Ereignisse" : " Ereignis") }));
+    /* Schon in einem frueheren Lauf gemeldet (Alert-Ledger, isNew=false):
+       die Karte sagt es, statt eine alte Meldung als heutige zu zeigen. Datum und "Details" teilen sich eine Zeile. */
+    var details = el("details", { class: "q-rc-details" }, [el("summary", {}, [
+        el("small", { class: "q-rc-date", text: (first.isNew === false ? "Bereits gemeldet · " : "") + "Stand " + X.dateDe(first.occurredAt) }),
+        el("span", { class: "q-rc-dlabel" }, [document.createTextNode("Details"), el("span", { class: "qx-sr", text: " zu " + nameOf(ctx, c.ticker) })])]),
+      el("div", { class: "q-rc-detail-body" }, [
+        c.setup && c.setup.state !== "NO_SETUP" ? el("p", { class: "q-rc-since", text: lifecycleLabel(c.setup.state) + " seit " + X.dateDe(c.setup.since) }) : null,
+        el("p", { class: "q-rc-what" }, [el("b", { text: t0.label || first.eventType }), el("span", { text: first.explanation })]),
+        c.events.length > 1 ? el("ul", { class: "q-rc-more" }, c.events.slice(1, 4).map(function (e) {
+          var t = T[e.eventType] || {};
+          return el("li", { class: "tone-" + (e.direction || t.tone || "info"), text: (t.label || e.eventType) + (e.direction === "up" && e.eventType === "FACTOR_CHANGED" ? " ↑" : e.direction === "down" && e.eventType === "FACTOR_CHANGED" ? " ↓" : "") });
+        })) : null,
+        tr && tr.trigger ? el("p", { class: "q-rc-next" }, [el("b", { text: "Bestätigt, wenn " }), el("span", { text: plainTrigger(tr.trigger) })])
+          : c.next && c.next.open && c.next.open.length ? el("p", { class: "q-rc-next" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "für „" + lifecycleLabel(c.next.state) + "“ fehlen " + c.next.open.length + " von " + c.next.total + " Bedingungen" })]) : null,
+        ev ? el("p", { class: "q-rc-evidence" }, [el("span", { class: "q-ev-tier tier-observed", text: "Beobachtet" }), el("span", { text: " Bei dieser Aktie: " + ev + "." })]) : null,
+        testedNode,
+        withheld && E ? el("p", { class: "q-rc-withheld" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Getestet" }), el("span", { text: " " + E.reasonText(withheld.backtest.reason) })]) : null,
+        el("p", { class: "q-rc-link" }, [X.link("Zur Analyse von " + c.ticker, X.routes.stock(c.ticker))])
+      ])]);
+    return el("article", { class: "q-radar-card q-rc-compact tone-" + tone, dataset: { symbol: c.ticker } }, [
+      el("a", { class: "q-rc-head", href: X.routes.stock(c.ticker) }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
+        el("span", { class: "q-rc-id" }, [el("b", { text: nameOf(ctx, c.ticker) }),
+          el("span", { class: "q-rc-meta" }, [el("span", { class: "q-rc-ticker", text: c.ticker }),
+            el("span", { class: "q-rc-status tone-" + tone }, [el("i", { "aria-hidden": "true", text: tone === "up" ? "▲" : tone === "down" ? "▼" : "●" }), el("span", { text: t0.label || first.eventType })])])])]),
+      rows.length ? el("dl", { class: "q-rc-kpis" }, rows.map(function (r) { return el("div", {}, [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]); })) : null,
+      chips.length ? el("div", { class: "q-rc-chips" }, chips) : null,
+      hit ? el("p", { class: "q-alert-hit", text: "Passt zu deiner Benachrichtigung: " + hit }) : null,
+      details
     ]);
+  }
+  /* Kurzform der Edge-Sprache (evidence-language-1.0.0) fuer den Beleg-Chip; der volle Satz steht in den Details. */
+  var EDGE_SHORT = { WEAKER: "schwächer als der Markt", NONE: "kein messbarer Vorteil", SMALL: "kleiner Vorteil", MODERATE: "moderater Vorteil", CLEAR: "deutlicher Vorteil", UNKNOWN: null };
+  /* Beleg-Chip: Zeichen + Stufe + Hauptwert + Bezugsgroessen. Gestrichelt (off): noch keine Aussage. */
+  function evChip(tier, label, value, rest, off, tone) {
+    return el("span", { class: "q-rc-chip tier-" + tier + (off ? " is-off" : "") + (tone ? " tone-" + tone : "") }, [
+      el("i", { "aria-hidden": "true", text: tier === "observed" ? "◉" : "▣" }), el("b", { text: label }), el("span", { class: "num", text: value }),
+      rest.length ? el("small", { text: rest.join(" · ") }) : null]);
   }
   function radarSummary(radar) {
     var sm = radar.summary;
