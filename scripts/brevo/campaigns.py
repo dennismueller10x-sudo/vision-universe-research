@@ -11,6 +11,9 @@ from string import Template
 from client import LISTS, free_account, structures
 from prepare import Blocked, normalize, private_path, private_write
 
+NEWSLETTER_SUBJECT = "Investieren mit Weitblick. Vision Universe kommt aufs iPhone."
+NEWSLETTER_PREHEADER = "Zehn Research-Werkzeuge. Eine App. Ein erster Blick auf Vision Universe."
+
 
 def digest(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
@@ -177,7 +180,7 @@ class Process:
         else:
             recipients["listIds"] = [lists[LISTS[0]]]
         body = {"name": content["name"], "type": "classic", "sender": {"id": sender_id},
-                "subject": content["subject"], "previewText": content["preheader"],
+                "subject": NEWSLETTER_SUBJECT, "previewText": NEWSLETTER_PREHEADER,
                 "htmlContent": render(content), "recipients": recipients,
                 "mirrorActive": False}
         fingerprint = digest(body)
