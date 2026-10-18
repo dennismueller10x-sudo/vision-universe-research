@@ -68,8 +68,8 @@ def confirmed_tests(client, config, lists):
     people = config.get("test_addresses", {})
     if set(people) != {"test_1", "test_2"} or config.get("test_addresses_confirmed") is not True:
         raise Blocked("Beide internen Empfänger müssen eindeutig eingerichtet sein.")
-    if lists.get(LISTS[2]) != 6:
-        raise Blocked("Interne Testliste muss Brevo-Liste 6 sein.")
+    if lists.get(LISTS[0]) != 4 or lists.get(LISTS[2]) != 6:
+        raise Blocked("Produktivliste 4 und interne Testliste 6 müssen eindeutig zugeordnet sein.")
     addresses = [normalize(people[n]) for n in ("test_1", "test_2")]
     if None in addresses or len(set(addresses)) != 2:
         raise Blocked("Zwei unterschiedliche gültige Testadressen erforderlich.")
