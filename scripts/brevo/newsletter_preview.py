@@ -52,7 +52,8 @@ def clone_body(source, recipients):
 
 
 def preview_report(client, preview_id):
-    campaign = client.call("GET", "/emailCampaigns/" + str(preview_id))
+    # Brevo can return empty/default statistical nodes unless explicitly selected.
+    campaign = client.call("GET", "/emailCampaigns/" + str(preview_id) + "?statistics=globalStats")
     status = campaign.get("status")
     result = {"preview_campaign_id": preview_id,
               "preview_status": status if status in ("draft", "queued", "sent", "suspended", "inProcess") else "other"}

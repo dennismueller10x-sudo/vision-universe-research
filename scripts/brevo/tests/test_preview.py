@@ -10,7 +10,7 @@ import test_safety as safety
 from campaigns import Process, version
 from client import Client
 from newsletter_actions import NewsletterClient, validate_ledger
-from newsletter_preview import preview, clone_body
+from newsletter_preview import preview, clone_body, preview_report
 from prepare import Blocked
 from test_newsletter_actions import ENV, MemoryLedger
 
@@ -32,7 +32,7 @@ class PreviewFake(safety.Fake):
             self.clone={**copy.deepcopy(body),"id":9,"status":"draft"}
             if self.mutate: self.mutate(self.clone)
             return {"id":9}
-        if method=="GET" and path=="/emailCampaigns/9":
+        if method=="GET" and path.split("?",1)[0]=="/emailCampaigns/9":
             self.calls.append((method,path,None));return copy.deepcopy(self.clone)
         result=super().call(method,path,body,**kwargs)
         if path=="/emailCampaigns/9/sendNow" and self.mutate_after_send:
@@ -226,6 +226,17 @@ class Preview(unittest.TestCase):
             self.assertEqual(client.call("GET","/emailCampaigns?type=classic&limit=50&offset=0")["count"],0)
         self.assertIsNone(client.preview_id)
         self.assertEqual(client.campaign_id,8)
+
+    def test_report_explicitly_requests_aggregate_stats_and_never_exposes_contact_data(self):
+        class Report:
+            def call(self,method,path):
+                assert (method,path)==("GET","/emailCampaigns/9?statistics=globalStats")
+                return {"status":"sent","sender":{"email":"alpha@example.invalid"},
+                    "statistics":{"globalStats":{"sent":2,"delivered":2,"hardBounces":0,"softBounces":0}}}
+        result=preview_report(Report(),9)
+        self.assertEqual(result["preview_sent"],2)
+        self.assertEqual(result["preview_delivered"],2)
+        self.assertNotIn("alpha@example.invalid",json.dumps(result))
 
     def test_recovery_through_real_scoped_client_reads_creates_and_sends_only_copy(self):
         from urllib.parse import unquote
