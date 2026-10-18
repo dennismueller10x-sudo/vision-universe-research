@@ -724,6 +724,17 @@
       X.actions([X.btn("Wie Strategien geprüft werden", X.routes.method("strategien"), "secondary")]));
   }
 
+  /* Visual First (VU3): je Bedingung ein Balken 0-100 mit der Schwelle als Strich und dem Wert als Zahl -
+     dieselben veroeffentlichten Faktorwerte wie im Satz (screeningWhy), der als aria-label an der Zeile bleibt. */
+  function condMeters(row, conditions, dist) {
+    return el("span", { class: "qx-cmeters" + (conditions.length > 3 ? " is-many" : ""), "aria-hidden": "true", style: "--n:" + Math.min(4, conditions.length) }, conditions.map(function (c) {
+      var v = row[c.field], ok = typeof v === "number";
+      var tone = ok && dist ? VM.factorView({ id: c.id, state: "AVAILABLE", score: v, position: VM.positionIn(dist[c.id], v), components: [] }).tone : "unknown";
+      return el("span", { class: "qx-cm tone-" + tone }, [el("small", { text: VM.FACTORS[c.id] ? VM.FACTORS[c.id].name : c.id }),
+        el("i", { style: "--v:" + (ok ? Math.max(2, Math.min(100, v)) : 0) + "%;--t:" + c.value + "%" }),
+        el("b", { class: "num", text: ok ? String(Math.round(v)) : "–" })]);
+    }));
+  }
   async function strategyDetail(main, ctx, p, ix, index, contract) {
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.strategies(), text: "← Strategien" }));
     if (!p) { main.append(el("h1", { class: "qx-h1", text: "Strategie nicht gefunden" }), X.notice("Unbekannte Strategie", "Diese Strategie gibt es in der veröffentlichten Methodik nicht.")); return; }
@@ -746,10 +757,10 @@
     var dist = await distOrNull(ctx);
     var rowBy = {}; ((screening && screening.rows) || []).forEach(function (r) { rowBy[r.ticker] = r; });
     var ids = p.conditions.map(function (c) { return c.id; });
-    membersHost.append(!countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
+    membersHost.append(!countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", {}, [el("p", { class: "qx-small qx-cm-legend", text: "Je Bedingung: Balken = Wert 0–100, Strich = Schwelle der Bedingung, Farbe = Stufe unter allen bewerteten Aktien." }), el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
       var row = rowBy[t];
-      return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids, dist) : null });
-    })) : X.notice("Heute kein Treffer", "Keine Aktie erfüllt derzeit alle Bedingungen."),
+      return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids, dist) : null, whyNode: row ? condMeters(row, p.conditions, dist) : null });
+    }))]) : X.notice("Heute kein Treffer", "Keine Aktie erfüllt derzeit alle Bedingungen."),
       members.length > 30 ? el("div", { style: "margin-top:16px" }, [el("p", { class: "qx-small", text: "Weitere Treffer:" }), X.tickerChips(members.slice(30), 80)]) : null);
     if (tr) {
       main.append(X.world("Was hat sich verändert?", "Seit dem Stand vom " + X.dateDe(index.historicalEvidence.from) + " (jetzt " + X.dateDe(index.historicalEvidence.to) + ").", [
