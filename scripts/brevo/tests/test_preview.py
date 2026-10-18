@@ -219,5 +219,36 @@ class Preview(unittest.TestCase):
         for private in ("alpha@example.invalid","synthetic-only","https://"):
             self.assertNotIn(private,str(caught.exception))
 
+    def test_collection_read_never_sets_creation_id(self):
+        with patch.dict(os.environ,{"BREVO_API_KEY":"synthetic-only"}): client=NewsletterClient("preview",8)
+        client.preview_recovery=True
+        with patch.object(Client,"call",return_value={"campaigns":[],"count":0}):
+            self.assertEqual(client.call("GET","/emailCampaigns?type=classic&limit=50&offset=0")["count"],0)
+        self.assertIsNone(client.preview_id)
+        self.assertEqual(client.campaign_id,8)
+
+    def test_recovery_through_real_scoped_client_reads_creates_and_sends_only_copy(self):
+        from urllib.parse import unquote
+        fingerprint,incident,github=self.recovery()
+        fake=self.fake
+        def transport(method,path,body=None,missing=False):
+            if method=="GET" and path.startswith("/contacts/lists?"):
+                return {"lists":[{"name":n,"id":i} for n,i in fake.lists.items()]}
+            if method=="GET" and path.startswith("/contacts/") and "%40" in path:
+                return fake.contact(unquote(path[len("/contacts/"):]))
+            return fake.call(method,path,body,missing=missing)
+        with patch.dict(os.environ,{**ENV,"BREVO_API_KEY":"synthetic-only"}), \
+                patch.object(Client,"call",side_effect=transport), \
+                patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            client=NewsletterClient("preview",8)
+            process=Process(client,{**self.cfg,"ledger_hmac_key":"11"*32},ledger=self.ledger)
+            result=preview(process,8,fingerprint,True,github)
+        self.assertEqual(client.campaign_id,8)
+        self.assertEqual(client.preview_id,9)
+        self.assertEqual(result["preview_campaign_id"],9)
+        self.assertFalse(result["production_sent"])
+        self.assertEqual(sum(p=="/emailCampaigns/9/sendNow" for _,p,_ in fake.calls),1)
+        self.assertFalse(any(p=="/emailCampaigns/8/sendNow" for _,p,_ in fake.calls))
+
 
 if __name__=="__main__": unittest.main()
