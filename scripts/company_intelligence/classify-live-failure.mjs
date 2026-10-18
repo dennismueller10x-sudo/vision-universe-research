@@ -19,7 +19,7 @@
  *                         text/html auf Lazy-Skripten desselben Ursprungs (Beleg Lauf 38590652362: 503 auf /discover/engines/narrative.js,
  *                         discover/ui/lazy.js laedt Lazy-Skripte ohne Wiederholung). Siehe classifyBrowserHttp; jede Abweichung ist REAL.
  *                         Seit Lauf 39036914225 (17.10.2026, 503 auf /discover/app.js) zaehlen auch die statisch eingebundenen Skripte der
- *                         gepruefsten Seite (<script src> in discover/index.html desselben Commits): ein 5xx auf ihnen meldet Chromium nur mit
+ *                         gepruefsten Seite (Startskripte in discover/index.html desselben Commits, siehe staticScriptsOf): ein 5xx auf ihnen meldet Chromium nur mit
  *                         der Standardzeile, nie als LAZY_SCRIPT_FAILED. Sonst gelten dieselben Bedingungen (kein Seitenfehler, keine
  *                         weitere fehlgeschlagene Anfrage, text/html, Propagation und Commit bewiesen). Die begrenzte Wiederholung
  *                         (retry-live-qa.mjs, hoechstens 2 frische Browser) entscheidet; bleibt der Fehler, bleibt es fail-closed.
@@ -52,12 +52,19 @@ const CHROMIUM_STATUS_LINES = [/^A bad HTTP response code \((\d{3})\) was receiv
 const NAMED_LINE = /^(?:A bad HTTP response code \((\d{3})\) was received when fetching the script\. )?LAZY_SCRIPT_FAILED:(\S+)$/;
 const pathOf = u => String(u ?? '').split('?')[0];
 
-/** Die Live-QA prueft Discover-Aktienseiten; deren statische Skripte sind die <script src> dieser Seite desselben Commits. */
+/** Die Live-QA prueft Discover-Aktienseiten; deren Startskripte stehen in discover/index.html desselben Commits. */
 export const CHECKED_PAGE = 'discover/index.html';
-/** Statische Skripte einer Seite: same-origin <script src="/..."> auf .js, ohne Query (der Release stempelt nur ?v=). */
+/**
+ * Startskripte einer Seite: same-origin <script src="/...">.js ohne Query (der Release stempelt nur ?v=) auf oberster Ebene und in
+ * <template id="dx-start"> (der Inline-Starter laedt sie ohne Fehlerbehandlung, darunter /discover/app.js). NICHT dazu: die
+ * dx-lazy-*-Templates (discover/ui/lazy.js meldet deren Fehler als LAZY_SCRIPT_FAILED; ein unbenannter 5xx dort bleibt REAL),
+ * andere Templates und HTML-Kommentare.
+ */
 export function staticScriptsOf(html) {
+ let text = String(html ?? '').replace(/<!--[\s\S]*?-->/g, '');
+ text = text.replace(/<template\b([^>]*)>([\s\S]*?)<\/template>/gi, (all, attrs, body) => /\bid\s*=\s*"dx-start"/i.test(attrs) ? body : '');
  const out = new Set();
- for (const m of String(html ?? '').matchAll(/<script\b[^>]*\bsrc\s*=\s*"([^"]+)"/gi)) {
+ for (const m of text.matchAll(/<script\b[^>]*\bsrc\s*=\s*"([^"]+)"/gi)) {
   const p = pathOf(m[1]);
   if (p.startsWith('/') && !p.startsWith('//') && !p.includes('..') && /^\/[A-Za-z0-9._\/-]+\.js$/.test(p)) out.add(p);
  }
@@ -67,8 +74,9 @@ export function staticScriptsOf(html) {
 export function staticScriptsFromRepo(root = '.') {
  try { return staticScriptsOf(readFileSync(join(root, CHECKED_PAGE), 'utf8')); } catch { return new Set(); }
 }
-/* Nur diese Listen tragen Fehlerbelege. 'served' (erfolgreiche Antworten) ist reine Auskunft: ist sie gekuerzt, fehlt kein Beleg. */
-const EVIDENCE_LISTS = ['console', 'pageErrors', 'failed', 'http'];
+/* 'served' (erfolgreiche Antworten) ist reine Auskunft: ist sie gekuerzt, fehlt kein Beleg. Jede andere gekuerzte Liste - auch eine
+   spaeter hinzugefuegte - macht den Bericht unvollstaendig und damit REAL. */
+const INFO_ONLY_LISTS = ['served'];
 
 /**
  * Belegbar transienter Browser-Fehler: nur 502/503/504/429 mit text/html auf Same-Origin-Skripten, die genau als
@@ -83,7 +91,7 @@ export function classifyBrowserHttp(report, {expectedSha = null, staticScripts =
  if (report.error?.name !== 'TimeoutError') return no('BROWSER_ERROR_NOT_TIMEOUT');
  const d = report.browserDiagnostics;
  if (!d || typeof d !== 'object' || !['console', 'pageErrors', 'failed', 'http'].every(k => Array.isArray(d[k]))) return no('BROWSER_DIAGNOSTICS_MISSING');
- if (d.truncated && Object.keys(d.truncated).some(k => EVIDENCE_LISTS.includes(k) && d.truncated[k])) return no('BROWSER_DIAGNOSTICS_TRUNCATED');
+ if (d.truncated && Object.keys(d.truncated).some(k => !INFO_ONLY_LISTS.includes(k) && d.truncated[k])) return no('BROWSER_DIAGNOSTICS_TRUNCATED');
  if (d.pageErrors.length) return no('BROWSER_PAGE_ERRORS');
  if (Array.isArray(report.active?.errors) && report.active.errors.length) return no('BROWSER_PAGE_ERRORS');
  if (!d.http.length) return no('BROWSER_NO_HTTP_EVIDENCE');
