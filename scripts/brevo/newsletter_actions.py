@@ -56,8 +56,10 @@ def validate_ledger(state):
             raise Blocked("Entwurfsregister enthält unzulässige Daten.")
     for cid,c in state["campaigns"].items():
         if not re.fullmatch(r"[1-9][0-9]*",cid) or not isinstance(c,dict) or set(c)-{
-                "recipients","sender_id","tests","send","approvals"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
+                "recipients","sender_id","sender_name_sha256","tests","send","approvals"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
         if not integer(c.get("sender_id")): raise Blocked("Absender-ID im Register fehlt.")
+        if "sender_name_sha256" in c and not hex64(c["sender_name_sha256"]):
+            raise Blocked("Ungültige Absendernamensbindung.")
         r=c.get("recipients",{})
         if not isinstance(r,dict) or set(r)-{"listIds","segmentIds","exclusionListIds"} or any(
                 not isinstance(v,list) or any(not integer(i) for i in v) for v in r.values()):
@@ -65,15 +67,17 @@ def validate_ledger(state):
         if c.get("send") not in (None,"pending","api_accepted"): raise Blocked("Unzulässige Versandreservierung.")
         if not isinstance(c.get("tests",{}),dict): raise Blocked("Ungültiges Testregister.")
         for version,t in c.get("tests",{}).items():
-            if not hex64(version) or not isinstance(t,dict) or set(t)!={"state","test_identity"} or t["state"] not in (
-                    "pending","api_accepted") or not hex64(t["test_identity"]):
+            if not hex64(version) or not isinstance(t,dict) or set(t) not in (
+                    {"state","test_identity"}, {"state","test_identity","preview_id"}) or t["state"] not in (
+                    "pending","api_accepted") or not hex64(t["test_identity"]) or (
+                    "preview_id" in t and (not integer(t["preview_id"]) or str(t["preview_id"]) == cid)):
                 raise Blocked("Unzulässige Testreservierung.")
         if not isinstance(c.get("approvals", {}), dict):
             raise Blocked("Ungültiges Freigaberegister.")
         for run_id, approval in c.get("approvals", {}).items():
             if (not re.fullmatch(r"[1-9][0-9]*", run_id) or not isinstance(approval, dict)
                     or set(approval) != {"operation", "version", "approval_sha256", "actor_id"}
-                    or approval["operation"] not in ("test", "send")
+                    or approval["operation"] not in ("test", "preview", "send")
                     or not hex64(approval["version"]) or not hex64(approval["approval_sha256"])
                     or not integer(approval["actor_id"])):
                 raise Blocked("Freigaberegister enthält unzulässige Daten.")
@@ -107,27 +111,42 @@ class Ledger:
 class NewsletterClient(Client):
     def __init__(self,operation,campaign_id=0):
         super().__init__();self.operation,self.campaign_id=operation,campaign_id
+        self.preview_id=None
+        self.preview_recipients=None
     def call(self,method,path,body=None,missing=False):
         clean=path.split("?",1)[0]
         read=method=="GET" and (clean in ("/account","/senders","/contacts/lists") or
             clean.startswith("/senders/domains/") or clean.startswith("/contacts/") or clean=="/contacts" or
-            clean=="/emailCampaigns/"+str(self.campaign_id))
+            clean=="/emailCampaigns/"+str(self.campaign_id) or
+            self.preview_id is not None and clean=="/emailCampaigns/"+str(self.preview_id))
         write=method=="POST" and ((self.operation=="draft" and clean=="/emailCampaigns") or
             (self.operation=="test" and clean=="/emailCampaigns/%d/sendTest"%self.campaign_id) or
             (self.operation=="send" and clean=="/emailCampaigns/%d/sendNow"%self.campaign_id))
+        if self.operation=="preview" and method=="POST":
+            write = (clean=="/emailCampaigns" and self.preview_id is None and
+                self.preview_recipients is not None and isinstance(body,dict) and
+                body.get("recipients")==self.preview_recipients and body.get("type")=="classic" and
+                not any(body.get(k) for k in ("scheduledAt","abTesting","sendAtBestTime"))) or (
+                self.preview_id is not None and self.preview_id!=self.campaign_id and
+                clean=="/emailCampaigns/%d/sendNow"%self.preview_id and body is None)
         if not (read or write): raise Blocked("Newsletter-Aufruf liegt außerhalb der konkreten Operation.")
         result=super().call(method,path,body,missing)
         if clean=="/emailCampaigns" and self.operation=="draft": self.campaign_id=result["id"]
+        if clean=="/emailCampaigns" and self.operation=="preview":
+            candidate=result.get("id")
+            if type(candidate) is not int or candidate<1 or candidate==self.campaign_id:
+                raise Blocked("Vorabkampagnen-ID ungültig; kein Versand.")
+            self.preview_id=candidate
         return result
 
 
 def run():
     if not trusted_newsletter(): raise Blocked("Newsletter nur im separaten manuellen Standardbranch-Workflow.")
     operation=os.environ.get("BREVO_NEWSLETTER_OPERATION")
-    if operation not in ("initialize","draft","check","test","send"): raise Blocked("Ungültige Newsletter-Operation.")
+    if operation not in ("initialize","draft","check","test","preview","send"): raise Blocked("Ungültige Newsletter-Operation.")
     dry_flag=os.environ.get("BREVO_DRY_RUN","false")
-    if dry_flag not in ("true","false") or dry_flag=="true" and operation not in ("test","send"):
-        raise Blocked("Freigabeprüfung ohne Versand ist nur für test/send zulässig.")
+    if dry_flag not in ("true","false") or dry_flag=="true" and operation not in ("test","preview","send"):
+        raise Blocked("Freigabeprüfung ohne Versand ist nur für test/preview/send zulässig.")
     dry_run=dry_flag=="true"
     github=Github();ledger=Ledger(github)
     if operation=="initialize": return ledger.initialize()
@@ -151,10 +170,15 @@ def run():
         if operation=="check":
             state,fingerprint,addresses=process.current(cid)
             attempt=state.get("tests",{}).get(fingerprint,{})
-            return {"campaign_id":cid,"version":fingerprint,"production_sent":False,
+            result={"campaign_id":cid,"version":fingerprint,"production_sent":False,
                 "test_api_accepted":attempt.get("state")=="api_accepted" and
                     attempt.get("test_identity")==process.test_identity(addresses),
                 "requires_owner_approval":True}
+            if attempt.get("preview_id"):
+                from newsletter_preview import preview_report
+                client.preview_id=attempt["preview_id"]
+                result.update(preview_report(client,client.preview_id))
+            return result
         expected=os.environ.get("BREVO_EXPECTED_VERSION","")
         if not re.fullmatch(r"[a-f0-9]{64}",expected) or os.environ.get("BREVO_AUTHORIZE_SEND")!="true":
             raise Blocked("Ausdrückliche Freigabe der konkreten Kampagnenversion fehlt.")
@@ -164,10 +188,17 @@ def run():
         if actual!=expected: raise Blocked("Inhalt seit Versionsfreigabe geändert; neuer Vorabtest erforderlich.")
         if dry_run:
             if operation=="send": process.check(cid)
+            if operation=="preview":
+                from newsletter_preview import preview_audience
+                from client import structures
+                preview_audience(client,config,structures(client))
             return {"campaign_id":cid,"version":actual,"operation":operation,
                 "approval_valid":True,"dry_run":True,"emails_sent":0,"production_sent":False}
         reserve_approval(process,cid,receipt)
         if operation=="test": return process.test(cid,True,expected_version=expected)
+        if operation=="preview":
+            from newsletter_preview import preview
+            return preview(process,cid,expected,authorized=True)
         return process.send(cid,{"campaign_id":cid,"version":expected,"explicit_owner_approval":True,
             "approval_reference":"owner dispatch "+str(receipt["run_id"])+" / "+receipt["approval_sha256"]},True)
     finally: process.close()

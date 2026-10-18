@@ -96,10 +96,14 @@ class AppNewsletter(unittest.TestCase):
         posts = [body for method,path,body in self.fake.calls if method == "POST"]
         self.assertEqual(len(posts), 1)
         self.assertEqual(posts[0]["recipients"], {"listIds":[1],"exclusionListIds":[3]})
+        self.assertEqual(posts[0]["sender"], {"id":1,"name":"Vision Universe | Aktien & Börse 📈"})
         self.assertNotIn("scheduledAt", posts[0])
         self.assertEqual(self.fake.campaign["status"], "draft")
         self.assertFalse(any(path.endswith(("sendTest", "sendNow")) for _,path,_ in self.fake.calls))
         p.test(8, True)  # synthetic API only
+        self.fake.campaign["sender"]["name"]="Other sender"
+        with self.assertRaises(Blocked): p.current(8)
+        self.fake.campaign["sender"]["name"]=content["sender_name"]
         self.fake.campaign["htmlContent"] += "<!-- changed content -->"
         with self.assertRaises(Blocked): p.check(8)
 
