@@ -6,6 +6,7 @@ uses a disposable campaign, never the production draft's sendNow endpoint.
 import copy
 import json
 from pathlib import Path
+from urllib.parse import quote
 from campaigns import confirmed_tests, digest, ids, version
 from client import LISTS, structures
 from prepare import Blocked, normalize
@@ -51,7 +52,7 @@ def clone_body(source, recipients):
     return body
 
 
-def preview_report(client, preview_id):
+def preview_report(client, preview_id, addresses=None):
     # Brevo can return empty/default statistical nodes unless explicitly selected.
     campaign = client.call("GET", "/emailCampaigns/" + str(preview_id) + "?statistics=globalStats")
     status = campaign.get("status")
@@ -62,6 +63,21 @@ def preview_report(client, preview_id):
         value = stats.get(key)
         if type(value) is int and value >= 0:
             result["preview_" + key] = value
+    # If aggregate data is still empty, privately cross-check only the already
+    # confirmed two internal contacts against this exact campaign ID. Never
+    # emit addresses, event times, links, IPs or the provider response.
+    if addresses and not stats.get("sent"):
+        if len(addresses)!=2 or len(set(addresses))!=2 or any(normalize(a)!=a for a in addresses):
+            raise Blocked("Private Zustellprüfung benötigt genau die zwei bestätigten Testkontakte.")
+        reports=[]
+        try:
+            for address in addresses:
+                reports.append(client.call("GET","/contacts/"+quote(address,safe="")+"/campaignStats"))
+            for field in ("messagesSent","delivered","hardBounces","softBounces"):
+                result["preview_contacts_"+field]=sum(any(e.get("campaignId")==preview_id for e in r.get(field,[])) for r in reports)
+            result["private_contact_report_available"]=True
+        except (Blocked,AttributeError,TypeError):
+            result["private_contact_report_available"]=False
     return result
 
 
@@ -182,6 +198,6 @@ def preview(process, campaign_id, expected_version, authorized=False, github=Non
         raise Blocked("Hauptentwurf nach Vorabversand verändert; keine Hauptfreigabe.")
     attempt["state"] = "api_accepted"
     process.save()
-    return {"campaign_id": campaign_id, **preview_report(client, preview_id), "version": fingerprint,
+    return {"campaign_id": campaign_id, **preview_report(client, preview_id, addresses), "version": fingerprint,
             "test": "API angenommen; Zustellung nicht nachgewiesen", "recipient_count": 2,
             "subject_prefix_added": False, "production_sent": False}

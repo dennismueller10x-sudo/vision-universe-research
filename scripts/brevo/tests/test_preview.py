@@ -24,6 +24,8 @@ class PreviewFake(safety.Fake):
         self.listed=[]
 
     def call(self,method,path,body=None,**kwargs):
+        if method=="GET" and path.endswith("/campaignStats"):
+            self.calls.append((method,path,None));return {}
         if method=="GET" and path.startswith("/emailCampaigns?"):
             self.calls.append((method,path,None));return {"campaigns":copy.deepcopy(self.listed),"count":len(self.listed)}
         if method=="POST" and path=="/emailCampaigns":
@@ -237,6 +239,22 @@ class Preview(unittest.TestCase):
         self.assertEqual(result["preview_sent"],2)
         self.assertEqual(result["preview_delivered"],2)
         self.assertNotIn("alpha@example.invalid",json.dumps(result))
+
+    def test_empty_aggregate_is_cross_checked_privately_for_exact_campaign_only(self):
+        class Report:
+            def call(self,method,path):
+                assert method=="GET"
+                if path=="/emailCampaigns/9?statistics=globalStats":
+                    return {"status":"sent","statistics":{"globalStats":{"sent":0,"delivered":0}}}
+                assert path in ("/contacts/alpha%40example.invalid/campaignStats","/contacts/beta%40example.invalid/campaignStats")
+                return {"messagesSent":[{"campaignId":9},{"campaignId":8}],"delivered":[{"campaignId":9}],
+                        "hardBounces":[{"campaignId":8}],"opened":[{"ip":"192.0.2.1"}]}
+        result=preview_report(Report(),9,["alpha@example.invalid","beta@example.invalid"])
+        self.assertEqual(result["preview_contacts_messagesSent"],2)
+        self.assertEqual(result["preview_contacts_delivered"],2)
+        self.assertEqual(result["preview_contacts_hardBounces"],0)
+        for private in ("alpha@example.invalid","beta@example.invalid","192.0.2.1"):
+            self.assertNotIn(private,json.dumps(result))
 
     def test_recovery_through_real_scoped_client_reads_creates_and_sends_only_copy(self):
         from urllib.parse import unquote
