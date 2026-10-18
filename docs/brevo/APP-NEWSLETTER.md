@@ -30,3 +30,8 @@ Auf ausdrücklichen Betreiberwunsch genügt künftig die konkrete Chat-Freigabe.
 4. Erst nach tatsächlicher Testabnahme und separater ausdrücklicher Hauptfreigabe: `operation=send` mit derselben geprüften Inhaltsversion und einer neuen Freigabereferenz. **Kein Hauptversand aus diesem Änderungsauftrag.**
 
 Alle bisherigen Empfänger-, Domain-, Sperren-, Versions- und Wiederholungsschutzprüfungen bleiben erhalten. Keine geplanten Newsletter oder automatischer Hauptversand. 64 synthetische Schutztests prüfen zusätzlich den neuen Owner-Dispatch und die nicht sendende Freigabeprüfung.
+
+
+## Korrektur nach eingegangenem Vorabtest (18. Oktober 2026)
+
+Gewünschter Kampagnenabsender: **Vision Universe | Aktien & Börse 📈**. Betreff bleibt **Investieren mit Weitblick. Alles in einer App**, Preheader **Aktien richtig handeln und verstehen**. Der neue Absender erzeugt eine neue, separat zu prüfende Hauptfassung; der alte Entwurf 10 und dessen Testnachweis werden nicht gelöscht oder umgedeutet. Vorabansicht ohne providerseitigen TEST-Zusatz über den gesonderten Modus `preview`, siehe [APPROVAL.md](APPROVAL.md#vorabansicht-ohne-test-präfix). Dieser Dokumentationsstand allein belegt noch keinen erneuten Versand; maßgeblich sind der erfolgreiche Lauf und anschließende API-Leseabgleich.

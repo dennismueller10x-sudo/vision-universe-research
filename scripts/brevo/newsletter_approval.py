@@ -23,7 +23,7 @@ def authorize_dispatch(github, operation, campaign_id, version):
         reference = os.environ.get("BREVO_APPROVAL_SHA256", "")
         run_id = os.environ.get("GITHUB_RUN_ID", "")
         revision = os.environ.get("GITHUB_SHA", "")
-        if (policy["mode"] != "owner-dispatch-v1" or operation not in ("test", "send")
+        if (policy["mode"] != "owner-dispatch-v1" or operation not in ("test", "preview", "send")
                 or type(campaign_id) is not int or campaign_id < 1
                 or not re.fullmatch(r"[a-f0-9]{64}", version)
                 or not re.fullmatch(r"[a-f0-9]{64}", reference)

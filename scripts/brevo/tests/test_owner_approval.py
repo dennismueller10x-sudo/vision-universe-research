@@ -57,6 +57,9 @@ class OwnerApproval(unittest.TestCase):
         self.assertEqual(self.authorize(),receipt)
         self.event["inputs"]["operation"] = "send"
         self.assertEqual(self.authorize("send")["operation"],"send")
+        self.event["inputs"]["operation"] = "preview"
+        self.assertEqual(self.authorize("preview")["operation"],"preview")
+        with self.assertRaises(Blocked): self.authorize("send")
 
     def test_wrong_actor_rerun_branch_event_and_missing_reference_block(self):
         for key,value in (("GITHUB_ACTOR","other"),("GITHUB_ACTOR_ID","8"),
@@ -146,6 +149,28 @@ class OwnerApproval(unittest.TestCase):
         client.assert_called_once_with("check",8)
         self.assertTrue(result["approval_valid"])
         self.assertTrue(result["dry_run"])
+        self.assertEqual(result["emails_sent"],0)
+        self.assertEqual(ledger.state,before)
+        self.assertFalse(any(method!="GET" for method,_,_ in self.fake.calls))
+
+
+    def test_preview_dry_run_has_no_campaign_creation_send_or_ledger_mutation(self):
+        for address,contact in self.fake.contacts.items(): contact["email"]=address
+        self.env.update({"BREVO_DRY_RUN":"true", "BREVO_NEWSLETTER_OPERATION":"preview",
+            "BREVO_CAMPAIGN_ID":"8", "BREVO_EXPECTED_VERSION":self.fingerprint,
+            "BREVO_NEWSLETTER_CONFIG":json.dumps({**self.cfg,"ledger_hmac_key":"11"*32})})
+        self.event["inputs"].update(operation="preview",dry_run=True)
+        self.event_path.write_text(json.dumps(self.event))
+        ledger=MemoryLedger();before=copy.deepcopy(ledger.state);current_run=self.run
+        class Github:
+            def call(self,method,path): return current_run
+        with patch.dict(os.environ,self.env), patch("newsletter_approval.load_policy",return_value=self.policy), \
+                patch("newsletter_actions.Github",return_value=Github()), \
+                patch("newsletter_actions.Ledger",return_value=ledger), \
+                patch("newsletter_actions.NewsletterClient",return_value=self.fake) as client:
+            result=execute()
+        client.assert_called_once_with("check",8)
+        self.assertTrue(result["approval_valid"])
         self.assertEqual(result["emails_sent"],0)
         self.assertEqual(ledger.state,before)
         self.assertFalse(any(method!="GET" for method,_,_ in self.fake.calls))

@@ -5,7 +5,7 @@ on:
       operation:
         type: choice
         description: Separater Newsletter-Prozess; Versand erst nach konkreter Freigabe
-        options: [check, initialize, draft, test, send]
+        options: [check, initialize, draft, test, preview, send]
         default: check
         required: true
       campaign_id:
@@ -31,7 +31,7 @@ on:
         default: ''
       dry_run:
         type: boolean
-        description: Nur test/send; prüft Freigabe und Version ohne Reservierung oder E-Mail-Versand
+        description: Nur test/preview/send; prüft Freigabe und Version ohne Reservierung oder E-Mail-Versand
         default: false
 permissions:
   contents: read

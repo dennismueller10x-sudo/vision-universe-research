@@ -192,6 +192,11 @@ class Process:
                 "subject": content["subject"], "previewText": content["preheader"],
                 "htmlContent": render(content), "recipients": recipients,
                 "mirrorActive": False}
+        if "sender_name" in content:
+            name = content["sender_name"]
+            if not isinstance(name, str) or not 1 <= len(name) <= 100 or any(ord(c) < 32 for c in name):
+                raise Blocked("Ungültiger Absender-Anzeigename.")
+            body["sender"]["name"] = name
         fingerprint = digest(body)
         if fingerprint in self.state["drafts"]:
             found = self.state["drafts"][fingerprint]
@@ -204,6 +209,8 @@ class Process:
         campaign_id = response["id"]
         self.state["drafts"][fingerprint] = {"id": campaign_id}
         self.state["campaigns"][str(campaign_id)] = {"recipients": recipients, "sender_id": sender_id}
+        if "sender_name" in content:
+            self.state["campaigns"][str(campaign_id)]["sender_name_sha256"] = digest(content["sender_name"])
         self.save()
         return {"campaign_id": campaign_id, "sent": False}
 
@@ -230,6 +237,8 @@ class Process:
             raise Blocked("Private Zielgruppenkonfiguration passt nicht zur Kampagne.")
         if campaign.get("sender", {}).get("id") != state["sender_id"]:
             raise Blocked("Absender der Kampagne wurde verändert.")
+        if state.get("sender_name_sha256") and digest(campaign.get("sender", {}).get("name")) != state["sender_name_sha256"]:
+            raise Blocked("Absender-Anzeigename stimmt nicht mit dem freigegebenen Inhalt überein.")
         tests = confirmed_tests(self.client, self.config, lists)
         audience_check(self.client, self.config, lists)
         return state, fingerprint, tests
