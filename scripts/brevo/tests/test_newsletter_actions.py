@@ -18,7 +18,7 @@ ENV = {"GITHUB_ACTIONS":"true","GITHUB_REF":"refs/heads/main", "BREVO_DEFAULT_BR
 class MemoryLedger:
     def __init__(self):
         self.state={"drafts":{},"campaigns":{"8":{"sender_id":1,
-            "recipients":{"listIds":[1],"exclusionListIds":[3]}}}}
+            "recipients":{"listIds":[4],"exclusionListIds":[6]}}}}
         self.fail=False
     def load(self): return copy.deepcopy(self.state)
     def save(self,state):
