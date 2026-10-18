@@ -45,6 +45,8 @@ export function writeArtifacts(b, outDir, extra = {}) {
   const P = extra.populationRerun || b.pop, R = extra.ranking || null, mfp = [...new Set(METHODS.map((m) => b.methods[m]?.sourceDataFingerprint).filter(Boolean))];
   const prov = { ...b.provenance, populationRunId: P?.runId ?? null, rankingRunId: R?.runId ?? null, fingerprints: { population: P?.sourceDataFingerprint ?? null, ranking: R?.sourceDataFingerprint ?? null, methods: mfp },
     allJobsSameCapture: [P?.sourceDataFingerprint, R?.sourceDataFingerprint, ...mfp].filter(Boolean).every((f) => f === b.provenance.captureFingerprint) };
+  /* every number in the artifacts compares scenarios of one capture; a run whose jobs saw a drifting store is not comparable */
+  if (!prov.allJobsSameCapture && !extra.allowMixedCaptures) throw new Error('JOBS_SAW_DIFFERENT_CAPTURES');
   const head = (schema) => ({ schema, version: '1.0.0', generatedAt: extra.generatedAt || null, provenance: prov, publicContent: 'COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY', certifying: false });
   const w = (name, obj) => K.writeJson(path.join(outDir, name), obj);
   const hist = { V4_83: { securityMonths: 83, source: '#705 diagnostic run 38724718674' }, V4_74: { securities: 74, source: '#705/#721' }, D2_11: { securities: 11, source: '#722 review R5' },

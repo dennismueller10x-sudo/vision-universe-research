@@ -2,8 +2,9 @@ name: Research price-data root-cause and backtest-impact audit (diagnostic, not 
 # [root-cause-audit:ranking] runs only the single-process rank replay; [root-cause-audit:population] reruns only the population job (same inputs) and publishes it.
 # Isolated diagnostic replay for docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md and
 # docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md. Runs only with [root-cause-audit:run] in the head commit message.
-# Reads a fresh canonical capture of the pinned #705 pipeline. Its fingerprint (b3ca8681...) differs from the frozen
-# tournament/V4 input (318c051f...); every job asserts the expected fingerprint and fails on drift. It also reads the unchanged corporate-action-v3 stages of #758 WITHOUT the validation vendor, and the merged
+# Reads a fresh canonical capture of the pinned #705 pipeline. Its fingerprint drifts with the live store (b3ca8681... in run 39073148967) and differs from the frozen
+# tournament/V4 input (318c051f...); jobs assert CAPTURE_FINGERPRINT when set, and the artifact builder requires one
+# fingerprint across all jobs of a run. It also reads the unchanged corporate-action-v3 stages of #758 WITHOUT the validation vendor, and the merged
 # public SEC/FINRA inputs of run 39019906367. No rule, threshold, parameter or strategy is changed; nothing is certified.
 # Public outputs: counts, correlations, deltas and directions. Per-case rows and absolute metrics: owner-sealed only.
 on:
@@ -20,7 +21,9 @@ env:
   V3_COMMIT: f8644cf1fda0fd0e037d41d10a67cca8326d4443
   V2_COMMIT: 0d8e2755e3389c8edeaf3208561edb238e530016
   MERGED_INPUTS_RUN: '39019906367'
-  CAPTURE_FINGERPRINT: b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f
+  # Empty: run on the current capture. The live store drifted after run 39073148967 (b3ca8681... no longer reproducible);
+  # build-artifacts.mjs refuses results whose jobs saw different captures. Set a fingerprint to pin a rerun to one capture.
+  CAPTURE_FINGERPRINT: ''
   OUT: docs/data-quality/root-cause-audit
 jobs:
   population:
