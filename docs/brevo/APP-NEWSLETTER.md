@@ -4,8 +4,8 @@ Stand: 18. Oktober 2026. Das bereitgestellte Testpaket ist als kuratierte Vorlag
 
 ## Inhalt und Vorschau
 
-- Betreff: **Vision Universe. Die App. Dein erster Blick.**
-- Preheader: „Zehn Research-Werkzeuge an einem Ort. Die iPhone-App ist bald verfügbar.“
+- Betreff: **Aktienresearch: Zehn Werkzeuge. Eine App.**
+- Preheader: „Vision Universe. Die App. Dein erster Blick vor dem App-Start.“
 - Gestaltung und iPhone-Motiv aus dem freigegebenen Testpaket; Claim, Text, nicht verlinktes „Bald verfügbar“ sowie Website-/Impressum-Links erhalten.
 - Die bestätigte Unternehmensanschrift aus dem bestehenden Impressum ergänzt den Footer.
 - `scripts/brevo/content/vision-universe-app/content.json` und `newsletter.html.tmpl` enthalten ausschließlich öffentliche redaktionelle Angaben. Keine Empfänger, Schlüssel oder privaten Kontaktdateien.
@@ -24,6 +24,8 @@ Stand: 18. Oktober 2026. Das bereitgestellte Testpaket ist als kuratierte Vorlag
 Die vorhandene private Konfigurationsdatei ist lokal mit 0600 vorbereitet, enthält zwei bestätigte Testadressen und eine stabile HMAC-Bindung. Der Workflow-Check belegt, dass die erforderliche Konfiguration im Newsletter-Job nicht verfügbar ist. Die Secrets-Verwaltungs-API antwortet für den Codex-Zugang ebenfalls mit HTTP 403; kein Auslesen oder Zurückliefern des Brevo-API-Schlüssels. Private Dateien und ihre Werte gehören weder in diesen PR noch in Logs/Artefakte. Lokale Vorbereitung ist kein Nachweis dauerhafter Sicherung.
 
 ## Einmalige Betreiber-Einrichtung
+
+**Diese beiden Schritte sind nur einmal nötig.** Das gespeicherte Secret und die Review-Umgebung werden für spätere Newsletter wiederverwendet; die HMAC-Bindung bleibt stabil. Pro Newsletter sind keine erneute Einrichtung und keine Kontaktübergabe nötig. Codex kann die manuellen Workflow-Aufrufe für Entwurf, Versionsprüfung und freigegebenen Versand starten. Der Betreiber bestätigt lediglich den konkreten Test- beziehungsweise Hauptversand im vorhandenen Review-Dialog; diese kampagnenbezogene Freigabe wird nicht automatisch erteilt. Eine erfolgreiche Testfreigabe startet keinen Hauptversand.
 
 1. [Repository → Settings → Secrets and variables → Actions](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/secrets/actions) → **New repository secret** → `BREVO_NEWSLETTER_CONFIG`. Den vollständigen Inhalt der bereits privat vorbereiteten Datei `VU-Brevo-Newsletter-Config.private.json` verwenden, nicht den API-Key und nicht den Shopify-/Import-Payload. Nicht öffentlich einfügen. Die vorhandene HMAC-Bindung beibehalten. Für diese redaktionelle Vorlage ist **kein zusätzliches `BREVO_NEWSLETTER_CONTENT`-Secret** nötig.
 2. [Repository → Settings → Environments](https://github.com/dennismueller10x-sudo/vision-universe-research/settings/environments) → **New environment** → exakt `brevo-newsletter-review` → **Required reviewers** aktivieren → Owner `dennismueller10x-sudo` als einzelnen Benutzer auswählen → speichern. Selbstfreigabe darf erlaubt sein; die explizite Freigabe genau des jeweiligen Runs bleibt Pflicht. Keine vorhandenen Gates ändern.
