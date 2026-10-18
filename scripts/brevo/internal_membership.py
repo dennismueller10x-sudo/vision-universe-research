@@ -11,10 +11,15 @@ from newsletter_approval import load_policy
 
 
 class MembershipClient(Client):
+    def __init__(self, read_only=False):
+        super().__init__()
+        self.read_only = read_only
+
     def call(self, method, path, body=None, missing=False):
         clean = path.split("?", 1)[0]
-        read = method == "GET" and (clean == "/contacts/lists" or clean.startswith("/contacts/"))
-        write = (method == "POST" and path == "/contacts/lists/4/contacts/add"
+        read = method == "GET" and (clean == "/contacts" or clean.startswith("/contacts/")
+                                    or clean == "/emailCampaigns/11")
+        write = (not self.read_only and method == "POST" and path == "/contacts/lists/4/contacts/add"
                  and isinstance(body, dict) and set(body) == {"ids"}
                  and 1 <= len(body["ids"]) <= 2
                  and all(type(i) is int and i > 0 for i in body["ids"]))
@@ -85,8 +90,11 @@ def run():
             or os.environ.get("GITHUB_RUN_ATTEMPT") != "1"):
         raise Blocked("Nur ein neuer manueller Owner-Lauf auf dem Standardbranch ist erlaubt.")
     operation = os.environ.get("BREVO_MEMBERSHIP_OPERATION", "preview")
-    if operation not in ("preview", "apply"):
+    if operation not in ("preview", "apply", "audit"):
         raise Blocked("Ungültige Mitgliedschaftsoperation.")
+    if operation == "audit":
+        from contact_report import contact_report
+        return contact_report(MembershipClient(read_only=True))
     if operation == "apply":
         automation_review()
     config = json.loads(os.environ.pop("BREVO_NEWSLETTER_CONFIG", ""))

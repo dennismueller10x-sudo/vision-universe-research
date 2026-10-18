@@ -4,7 +4,7 @@ on:
     inputs:
       operation:
         type: choice
-        options: [preview, apply]
+        options: [preview, apply, audit]
         default: preview
         description: Nur bestätigte interne Kontakte zusätzlich in Liste 4; Liste 6 erhalten
       import_triggers_excluded:
@@ -38,7 +38,7 @@ jobs:
       - name: Privater Bestandsabgleich und additive Mitgliedschaft
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
-          BREVO_NEWSLETTER_CONFIG: ${{ secrets.BREVO_NEWSLETTER_CONFIG }}
+          BREVO_NEWSLETTER_CONFIG: ${{ inputs.operation != 'audit' && secrets.BREVO_NEWSLETTER_CONFIG || '' }}
           BREVO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           BREVO_MEMBERSHIP_OPERATION: ${{ inputs.operation }}
           BREVO_IMPORT_TRIGGERS_EXCLUDED: ${{ inputs.import_triggers_excluded }}
