@@ -447,13 +447,23 @@ body.qd .down{color:var(--q-down)}
 .qd .dx-kapitel-fuss--link a{color:var(--q-lime-text);font-weight:800}
 
 /* Veraenderungen als Liste */
-.qd .qx-changes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.qd .qx-change{display:grid;grid-template-columns:10px minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:12px 14px;border-radius:14px;background:var(--q-panel);border:1px solid var(--q-line)}
-.qd .qx-change i{display:block;width:8px;height:8px;border-radius:50%;background:var(--q-unknown)}
-.qd .qx-change.tone-good i{background:var(--q-lime-line)}
-.qd .qx-change.tone-bad i{background:var(--q-down)}
+.qd .qx-changes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-radius:14px;background:var(--q-panel);border:1px solid var(--q-line);overflow:hidden}
+.qd .qx-change{display:grid;grid-template-columns:14px minmax(0,1fr);gap:2px 10px;align-items:baseline;padding:10px 14px;border-top:1px solid var(--q-line)}
+.qd .qx-change:first-child{border-top:0}
+.qd .qx-change i{font-style:normal;font-size:11px;line-height:1;color:var(--q-warm)}
+.qd .qx-change.tone-good i{color:var(--q-up)}
+.qd .qx-change.tone-bad i{color:var(--q-down)}
 .qd .qx-change span{font-size:14px;font-weight:700}
 .qd .qx-change small{grid-column:2;font-size:12px;color:var(--q-dim);white-space:normal;margin:0;padding:0}
+.qd .qx-change-tally{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:6px}
+.qd .qx-change-tally span{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--q-muted);background:var(--q-panel2);border:1px solid var(--q-line)}
+.qd .qx-change-tally i{font-style:normal;font-size:10px}
+.qd .qx-change-tally b{font-size:14px;font-weight:900;color:var(--q-text)}
+.qd .qx-change-tally .tone-good:not(.is-zero){background:var(--q-lime-soft);border-color:transparent;color:var(--q-up)}
+.qd .qx-change-tally .tone-bad:not(.is-zero){background:rgba(255,107,94,.14);border-color:transparent;color:var(--q-down)}
+.qd .qx-change-tally .tone-neutral i{color:var(--q-warm)}
+.qd .qx-change-tally .tone-unknown{border-style:dashed}
+.qd .qx-strategy-link ~ .q-check{margin:16px 0 4px}
 
 /* Setup-Stufen + Bedingungen */
 .qd .qx-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;padding:0;margin:14px 0}
@@ -1030,6 +1040,8 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-ev-observed .q-timeline li.up b,.qd .q-ev-observed .q-dist-bar.up b{color:#2f5000}
 .qd .q-ev-observed .q-timeline li.down b,.qd .q-ev-observed .q-dist-bar.down b{color:#8a1d12}
 .qd .q-ev-observed .q-timeline li.is-off b{color:var(--q-card-muted)}
+/* "Mehr lesen" auf der hellen Karte: dunkles Oliv wie --q-lime-text im Hellmodus (>= 4.5:1), auch im Dunkelmodus. */
+.qd .q-ev-observed .qx-readmore{color:#456200}
 .qd .q-ev-observed .q-timeline li::before{background:var(--q-card)}
 .qd .q-ev-observed .q-timeline::before{background:var(--q-card-line)}
 

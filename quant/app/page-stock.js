@@ -165,7 +165,7 @@
 
   /* Visual First (VU3): Regel-Checkliste. Oben die Zaehlung mit Zeichen (✓ erfuellt, ✗ nicht erfuellt, – nicht messbar) und
      ein Feld je Bedingung, darunter "Bedingungen ansehen" mit der bisherigen Liste (verlangt · aktuell). Ohne Bedingungen: der Satz. */
-  function condCheck(list, emptyText) {
+  function condCheck(list, emptyText, detail) {
     if (!list || !list.length) return conditions(list, emptyText);
     var n = { MET: 0, NOT_MET: 0, OPEN: 0 };
     list.forEach(function (c) { n[c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN"]++; });
@@ -177,7 +177,7 @@
         var k = c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN";
         return el("li", { class: "tone-" + WORD[k][2], title: c.label + ": " + WORD[k][1], text: WORD[k][0] });
       })),
-      el("details", { class: "q-check-details" }, [el("summary", { text: "Bedingungen ansehen" }), conditions(list, emptyText)])]);
+      el("details", { class: "q-check-details" }, [el("summary", { text: "Bedingungen ansehen" }), detail || conditions(list, emptyText)])]);
   }
 
   /* ------------------------------------------------ Die Einordnung
@@ -303,11 +303,12 @@
       el("span", { class: "v2-collection-arrow", text: "→" })]));
     if (!s.fits) kids.push(el("p", { class: "qx-small", text: "Das beschreibt die Nähe zu einem Bedingungssatz und keine Prognose." }));
     if (changeText) kids.push(el("p", { class: "qx-small", text: changeText }));
-    kids.push(el("div", { class: "dx-waage qx-waage-3" }, [
+    /* Visual First (VU3): die Bedingungen als Regel-Checkliste (✓ ✗ –); die Waage Erfuellt / Offen / Nicht erfuellt steht unveraendert dahinter. */
+    kids.push(condCheck(b.met.concat(b.notMet, b.open), "Keine Bedingungen veröffentlicht.", el("div", { class: "dx-waage qx-waage-3" }, [
       el("div", { class: "dx-waage-spalte dx-waage-spalte--pro qx-pc-col tone-good" }, [el("h3", { text: "Erfüllt" }), conditions(b.met, "Keine Bedingung erfüllt.")]),
       el("div", { class: "dx-waage-spalte qx-pc-col qx-open-col tone-unknown" }, [el("h3", { text: "Offen" }), conditions(b.open, "Alle Bedingungen sind messbar.")]),
       el("div", { class: "dx-waage-spalte dx-waage-spalte--contra qx-pc-col tone-bad" }, [el("h3", { text: "Nicht erfüllt" }), conditions(b.notMet, "Keine Bedingung verletzt.")])
-    ]));
+    ])));
     if (b.risk) kids.push(el("p", { class: "qx-small", text: "Typisches Risiko dieses Stils: " + b.risk }));
     /* Anlagestil heisst "welche Art von Investment passt" - nicht "getestete Strategie". */
     kids.push(el("p", { class: "q-setup-evidence" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Strategieperformance" }),
@@ -922,10 +923,19 @@
     if (vm.change.state === "AVAILABLE") {
       var moving = vm.change.items.filter(function (i) { return i.tone !== "neutral"; });
       var still = vm.change.items.filter(function (i) { return i.tone === "neutral"; });
+      /* Visual First (VU3): Richtung als Zeichen (▲ besser, ▼ schlechter, ◆ unveraendert) und oben die Zaehlung;
+         Verschlechterungen stehen zuerst. Gezaehlt wird dasselbe wie im Satz darueber. */
+      moving = moving.filter(function (i) { return i.tone === "bad"; }).concat(moving.filter(function (i) { return i.tone !== "bad"; }));
       function changeItem(i) {
-        return el("li", { class: "qx-change tone-" + i.tone }, [el("i", { class: "dx-story-dot", "aria-hidden": "true" }), el("span", { text: i.text }), el("small", { text: i.group + " · " + (i.window || "") + (i.to ? " · " + i.to : "") })]);
+        return el("li", { class: "qx-change tone-" + i.tone }, [el("i", { class: "qx-change-glyph", "aria-hidden": "true", text: TONE_GLYPH[i.tone] || "–" }), el("span", { text: i.text }), el("small", { text: i.group + " · " + (i.window || "") + (i.to ? " · " + i.to : "") })]);
       }
+      var tally = [["bad", vm.change.items.filter(function (i) { return i.tone === "bad"; }).length, "schlechter"],
+        ["good", vm.change.items.filter(function (i) { return i.tone === "good"; }).length, "besser"],
+        ["neutral", still.length, "unverändert"], ["unknown", vm.change.open.length, "nicht messbar"]];
       bodyHost.append(X.section("Was verändert sich gerade?", vm.change.text + " Stand " + X.dateDe(vm.change.asOf) + ".", [
+        el("p", { class: "qx-change-tally" }, tally.filter(function (t) { return t[1] || t[0] === "good" || t[0] === "bad"; }).map(function (t) {
+          return el("span", { class: "tone-" + t[0] + (t[1] ? "" : " is-zero") }, [el("i", { "aria-hidden": "true", text: TONE_GLYPH[t[0]] }), el("b", { class: "num", text: String(t[1]) }), document.createTextNode(" " + t[2])]);
+        })),
         moving.length ? el("ul", { class: "dx-story-list dx-story-list--detail qx-changes" }, moving.map(changeItem)) : el("p", { class: "dx-journey-satz", text: "Keine deutliche Veränderung." }),
         still.length ? X.more("Unverändert (" + still.length + ")", function () { return el("ul", { class: "dx-story-list dx-story-list--detail qx-changes" }, still.map(changeItem)); }) : null,
         vm.change.open.length ? X.more("Nicht messbar (" + vm.change.open.length + ")", function () { return vm.change.open.map(function (x) { return el("p", { class: "qx-small" }, [el("b", { text: x.label + ": " }), el("span", { text: x.text })]); }); }) : null,
