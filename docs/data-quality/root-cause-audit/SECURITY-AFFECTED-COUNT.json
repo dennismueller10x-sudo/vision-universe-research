@@ -1,0 +1,101 @@
+{
+  "schema": "vu-root-cause-security-count-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "universe": {
+    "segmentsListings": 9407,
+    "securityIds": 8995,
+    "companiesCik": 6649,
+    "tickers": 8995
+  },
+  "withAnyIssue": {
+    "segmentsListings": 355,
+    "securityIds": 304,
+    "companiesCik": 231,
+    "tickers": 304
+  },
+  "withEvents": {
+    "segmentsListings": 296,
+    "securityIds": 245,
+    "companiesCik": 176,
+    "tickers": 245
+  },
+  "independentlyConfirmedInTournamentPrefix": {
+    "rows": 42,
+    "segmentsListings": 37,
+    "securityIds": 37,
+    "companiesCik": 37,
+    "tickers": 37
+  },
+  "strictlyConfirmedSecurities": 26,
+  "evidenceCoverage": {
+    "segmentsWithCik": 7352,
+    "segmentsWithShareRows": 7108,
+    "segmentsWithFinraRows": 851,
+    "finraIdentityBasis": "SYMBOL_IN_LISTING_WINDOW (no name check)",
+    "tickersWithMoreThanOneCik": 0
+  },
+  "confirmedIsLowerBound": "under covered channels only (CIK, SEC window, FINRA OTC scope)",
+  "shares": {
+    "anyIssue": 0.0338,
+    "confirmed": 0.0041
+  },
+  "onlyUnresolvedUpperBound": 267,
+  "byPriorRawPrice": {
+    "5_TO_20": 39,
+    "LT_1": 570,
+    "1_TO_5": 60,
+    "GE_100": 18,
+    "20_TO_100": 20
+  },
+  "byExchange": {
+    "AMEX": 14,
+    "BATS": 3,
+    "NASDAQ": 539,
+    "NYSE MKT": 80,
+    "NYSE": 71
+  },
+  "byYear": {
+    "2015": 60,
+    "2016": 14,
+    "2017": 74,
+    "2018": 146,
+    "2019": 100,
+    "2020": 59,
+    "2021": 36,
+    "2022": 51,
+    "2023": 24,
+    "2024": 39,
+    "2025": 54,
+    "2026": 50
+  }
+}

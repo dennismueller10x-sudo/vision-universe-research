@@ -1,0 +1,210 @@
+{
+  "schema": "vu-root-cause-attribution-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "methods": {
+    "cross_sectional_momentum": {
+      "label": "Cross-sectional Momentum",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": 0.2,
+        "VU_ACCOUNTING_B_vs_B1": 0.2,
+        "STRICT_CORRECTIONS_C2_vs_B": 0,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 0,
+        "UNRESOLVED_STRESS_D_vs_C": 0.3,
+        "WHOLE_SERIES_POLICY_E_vs_B": 0.1,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 36912,
+        "inEventSecurities": 376,
+        "spanningEvent": 24,
+        "enteredWithin252AfterEvent": 87,
+        "distinctEventSecuritiesTraded": 69,
+        "eventMonthsHeld": 15,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 9,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 20,
+          "UNDECLARED_RAW_JUMP_10X:UNRESOLVED": 2
+        },
+        "pnlSpanningShareOfFinalEquityPp": 0.5
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    },
+    "52_week_high_effect": {
+      "label": "52-week-high effect",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": 0.1,
+        "VU_ACCOUNTING_B_vs_B1": 0.1,
+        "STRICT_CORRECTIONS_C2_vs_B": 0,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 0,
+        "UNRESOLVED_STRESS_D_vs_C": 0.1,
+        "WHOLE_SERIES_POLICY_E_vs_B": 0,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 84934,
+        "inEventSecurities": 232,
+        "spanningEvent": 21,
+        "enteredWithin252AfterEvent": 26,
+        "distinctEventSecuritiesTraded": 38,
+        "eventMonthsHeld": 11,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 17,
+          "UNDECLARED_RAW_JUMP_10X:INSUFFICIENT_EVIDENCE": 11
+        },
+        "pnlSpanningShareOfFinalEquityPp": -0.1
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    },
+    "LOW_VOLATILITY": {
+      "label": "Low Volatility",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": 0.1,
+        "VU_ACCOUNTING_B_vs_B1": 0.1,
+        "STRICT_CORRECTIONS_C2_vs_B": 0,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 0,
+        "UNRESOLVED_STRESS_D_vs_C": 0,
+        "WHOLE_SERIES_POLICY_E_vs_B": 0,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 14071,
+        "inEventSecurities": 48,
+        "spanningEvent": 1,
+        "enteredWithin252AfterEvent": 0,
+        "distinctEventSecuritiesTraded": 2,
+        "eventMonthsHeld": 1,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1
+        },
+        "pnlSpanningShareOfFinalEquityPp": 0
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    },
+    "TURTLE_S2_EQUITY_DAILY": {
+      "label": "Turtle Equity Adaptation (S2 daily)",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": 2,
+        "VU_ACCOUNTING_B_vs_B1": 2,
+        "STRICT_CORRECTIONS_C2_vs_B": 2,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 2,
+        "UNRESOLVED_STRESS_D_vs_C": -1.4,
+        "WHOLE_SERIES_POLICY_E_vs_B": -1.4,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 753,
+        "inEventSecurities": 13,
+        "spanningEvent": 1,
+        "enteredWithin252AfterEvent": 0,
+        "distinctEventSecuritiesTraded": 10,
+        "eventMonthsHeld": 1,
+        "byClass": {
+          "UNDECLARED_RAW_JUMP_10X:CONFIRMED_BY_INDEPENDENT_SOURCE": 1
+        },
+        "pnlSpanningShareOfFinalEquityPp": -18.7
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    },
+    "WEINSTEIN_STAGE_DAILY": {
+      "label": "Weinstein Stage Daily Adaptation",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": -0.7,
+        "VU_ACCOUNTING_B_vs_B1": -0.7,
+        "STRICT_CORRECTIONS_C2_vs_B": 0,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 0,
+        "UNRESOLVED_STRESS_D_vs_C": 0,
+        "WHOLE_SERIES_POLICY_E_vs_B": -0.7,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 172,
+        "inEventSecurities": 0,
+        "spanningEvent": 0,
+        "enteredWithin252AfterEvent": 0,
+        "distinctEventSecuritiesTraded": 0,
+        "eventMonthsHeld": 0,
+        "byClass": {},
+        "pnlSpanningShareOfFinalEquityPp": 0
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    },
+    "KULLAMAGI_DAILY_ADAPTATION": {
+      "label": "Kullamägi Daily Adaptation",
+      "cagrStepsPp": {
+        "A5_TIMING_B1_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_A": 0,
+        "VU_ACCOUNTING_B_vs_B1": 0,
+        "STRICT_CORRECTIONS_C2_vs_B": 0,
+        "STRICT_NORMALISE_ONLY_C3_vs_B": 0,
+        "LENIENT_CORRECTIONS_C_vs_B": 0,
+        "UNRESOLVED_STRESS_D_vs_C": 0,
+        "WHOLE_SERIES_POLICY_E_vs_B": 0,
+        "V4_FORENSIC_SANITY_F_vs_B": 0
+      },
+      "directTradeExposureA": {
+        "tradeRecords": 131,
+        "inEventSecurities": 0,
+        "spanningEvent": 0,
+        "enteredWithin252AfterEvent": 0,
+        "distinctEventSecuritiesTraded": 0,
+        "eventMonthsHeld": 0,
+        "byClass": {},
+        "pnlSpanningShareOfFinalEquityPp": 0
+      },
+      "interaction": "steps are pairwise differences, not additive shares; D can end a trade that C normalised. B bundles A4, A5 factor, A8 dust and the V4 order floor; single-fix attribution beyond B1 is not isolated."
+    }
+  },
+  "isolatedCauses": [
+    "A5 timing",
+    "VU accounting A4/A5/A8",
+    "independently confirmed CA corrections",
+    "unresolved-event sensitivity",
+    "quarantine/whole-series policy",
+    "V4 forensic sanity"
+  ],
+  "notIsolated": {
+    "identity": "no identity defect found among the cases (#722); not varied",
+    "orderExecution": "frozen next-open execution unchanged; not varied",
+    "universeConstruction": "covered only through E (whole-series) and the French count ratio"
+  }
+}

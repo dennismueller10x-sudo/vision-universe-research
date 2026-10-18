@@ -1,0 +1,172 @@
+{
+  "schema": "vu-root-cause-verdict-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "outperformanceQuestion": "UNDERPERFORMANCE_REMAINS",
+  "outperformanceDefinition": "CAGR and Sharpe below SPY total return on capture b3ca8681 in all 54 method x scenario cells; no small-cap benchmark used",
+  "secondaryObservations": [
+    "RANKING_CHANGED by VU accounting fixes (A->B: 52W and Weinstein swap ranks 2/3 CAGR and 1/2 Sharpe); not by strictly confirmed data corrections (B->C2 unchanged)",
+    "UNDERPERFORMANCE_REDUCED for Turtle only (+4.1 pp CAGR vs A, half VU fixes, half one ex-post cut); gap bucket unchanged (>5 pp below SPY)"
+  ],
+  "dataErrorsExplainUnderperformance": false,
+  "answers": {
+    "q01_securitiesProvenAffected": {
+      "value": 26,
+      "basis": "strict class, tournament valid prefix, lower bound under covered channels",
+      "lenient": 37,
+      "fullDedupedUnionStrict": "UNKNOWN"
+    },
+    "q02_onlyUnresolved": {
+      "upperBound": 278,
+      "basis": "304 securities in event populations minus 26",
+      "includingHoldsAndQuarantines": 661
+    },
+    "q03_barsOrMonthsProvenWrong": {
+      "returnDays": 28,
+      "securityMonths": 11,
+      "levelShiftedBarsAfterConfirmedEvents": "UNKNOWN"
+    },
+    "q04_shareOfUniverse": {
+      "confirmedSecurities": 0.0029,
+      "confirmedSecurityMonths": 0.00002,
+      "anyEventPopulation": 0.0338,
+      "includingHoldsAndQuarantines": 0.0764
+    },
+    "q05_provenTiingo": {
+      "strictlyConfirmedUndeclaredActionsMissingInBothColumns": 28,
+      "providerInternalInconsistentDays": 6,
+      "returnBasisStudySecuritiesWithInconsistency": "463 of 3184"
+    },
+    "q06_provenVu": [
+      "VU-01",
+      "A4",
+      "A5",
+      "A8",
+      "VU-05",
+      "VU-06",
+      "VU-07"
+    ],
+    "q07_combined": {
+      "events": 28,
+      "mechanism": "Tiingo omits the split factor; core 1.0.0 raw-jump check runs only without adjClose (VU-01)"
+    },
+    "q08_tiingoVsMarketstack": "NOT_COMPARABLE (no overlapping US security, listing or day)",
+    "q09_yahoo": "UNKNOWN (not used per mandate; not reproducible in the runner, #758 R3-01)",
+    "q10_reverseSplitsMisprocessed": {
+      "atLeast": 28,
+      "ofThe23In83": 7,
+      "beyond": "UNKNOWN"
+    },
+    "q11_genuineMovesWronglyBlocked": {
+      "value": "UNKNOWN",
+      "upperBounds": {
+        "tournamentCaContradictedQuarantines": 63,
+        "v3ConflictingHolds": 69
+      }
+    },
+    "q12_calibrationEffect": {
+      "confirmedOnlyEw": "0.145 -> 0.144..0.146",
+      "excludingNotStrictlyConfirmed": 0.963,
+      "excluding83": 0.992,
+      "allVariants": "FAIL"
+    },
+    "q13_methodsEffect": {
+      "strictDataCorrectionsC2vsB_pp": {
+        "momentum": 0,
+        "52w": 0,
+        "lowVol": 0,
+        "turtle": 2,
+        "weinstein": 0,
+        "kullamagi": 0
+      },
+      "vuFixesBvsA_pp": {
+        "momentum": 0.2,
+        "52w": 0.1,
+        "lowVol": 0.1,
+        "turtle": 2,
+        "weinstein": -0.7,
+        "kullamagi": 0
+      }
+    },
+    "q14_cagrDrawdownRankings": {
+      "cagr": "see q13",
+      "maxDrawdownFlatterPp": {
+        "turtle": 3.8,
+        "weinstein": 2.8
+      },
+      "rankings": "A->B changed (52W/Weinstein); B->C2 unchanged; drawdown ranks unchanged"
+    },
+    "q15_productsOnAffectedPaths": {
+      "proven": [
+        "Supertrader Research",
+        "scripts/supertrader/house/live.mjs"
+      ],
+      "possibleNotMeasured": [
+        "Quant",
+        "Technical",
+        "Discover",
+        "Screener",
+        "Supertrader Production"
+      ],
+      "notObserved": [
+        "Vorsorge"
+      ]
+    },
+    "q16_provenVuBugs": [
+      "VU-01",
+      "A4",
+      "A5",
+      "A8",
+      "VU-06",
+      "VU-07"
+    ],
+    "q17_unresolved": {
+      "censusEvents": "588 of 616",
+      "extremeMoves272": "253 of 272",
+      "d2DefectDays": "6 of 10",
+      "securityMonths83": "72 of 83",
+      "v3_194": "UNKNOWN mapping"
+    },
+    "q18_fixFirst": [
+      "port A4/A5/A8 from runner-v4 into the tournament runner (own Supertrader PR with before/after)",
+      "close VU-01 as a HOLD signal, not a repair (own PR)",
+      "widen evidence channels: 2,055 segments without CIK, permaTicker check"
+    ],
+    "q19_withExistingDataAndBudget": [
+      "normalise the 15 strictly confirmed events with a stated ratio; the other 13 can only be held/cut",
+      "Tiingo permaTicker metadata check (~245 requests) within the existing subscription",
+      "A4/A5/A8 need no data"
+    ],
+    "q20_minimalNextStep": "Move the tournament runner onto the V4 infrastructure (scenario B as the new baseline) in its own Supertrader PR, carry undecided events as a hold/sensitivity band, then resume the book-based strategies; data errors are not the bottleneck"
+  },
+  "notCertified": true
+}

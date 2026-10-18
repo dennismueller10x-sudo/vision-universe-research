@@ -1,0 +1,377 @@
+{
+  "schema": "vu-root-cause-french-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "history": {
+    "originalEwCorrelation": 0.145,
+    "diagnosticWithout83": 0.992,
+    "source": "#705 runs 38722939085 / 38724718674"
+  },
+  "reproduced": {
+    "ewSecurityMonths": 493258,
+    "ewExclusionVariants": {
+      "BASELINE": {
+        "excludedSecurityMonths": 0,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_DATA_SIGNATURE": {
+        "excludedSecurityMonths": 83,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_ALL_ABS_RET_GT_100PCT": {
+        "excludedSecurityMonths": 2200,
+        "correlation": 0.99,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "DIRECTION"
+        ],
+        "holdingCountRatioMean": 1.331
+      },
+      "EXCLUDE_83_FORENSIC_DEFECT_ONLY": {
+        "excludedSecurityMonths": 43,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_FORENSIC_GENUINE_ONLY": {
+        "excludedSecurityMonths": 40,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_INDEPENDENTLY_CONFIRMED_ONLY": {
+        "excludedSecurityMonths": 27,
+        "correlation": 0.146,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_NOT_INDEPENDENTLY_CONFIRMED": {
+        "excludedSecurityMonths": 56,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_CONFIRMED_BY_STATED_RATIO_ONLY": {
+        "excludedSecurityMonths": 15,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_FORENSIC_DEFECT_AND_UNDECLARED": {
+        "excludedSecurityMonths": 41,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_UNDECLARED_NOT_CONFIRMED": {
+        "excludedSecurityMonths": 40,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_STRICTLY_CONFIRMED_ONLY": {
+        "excludedSecurityMonths": 11,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_NOT_STRICTLY_CONFIRMED": {
+        "excludedSecurityMonths": 72,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_UNDECLARED_CONFIRMED": {
+        "excludedSecurityMonths": 15,
+        "correlation": 0.146,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_UNDECLARED_RAW_JUMP_10X_ONLY": {
+        "excludedSecurityMonths": 55,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_DECLARED_SPLIT_IN_MONTH_ONLY": {
+        "excludedSecurityMonths": 28,
+        "correlation": 0.144,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      }
+    },
+    "fullConstructionVariants": {
+      "V4_BASELINE": {
+        "EW_MARKET": {
+          "correlation": 0.145,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.337
+        },
+        "MOM_SPREAD_CORRELATION": 0.038,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "TOURNAMENT_DATA_NO_V4_SANITY": {
+        "EW_MARKET": {
+          "correlation": 0.145,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.337
+        },
+        "MOM_SPREAD_CORRELATION": 0.038,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "C_INDEPENDENT_CORRECTIONS": {
+        "EW_MARKET": {
+          "correlation": 0.146,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.335
+        },
+        "MOM_SPREAD_CORRELATION": 0.034,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.001,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "C2_STRICT_CORRECTIONS": {
+        "EW_MARKET": {
+          "correlation": 0.144,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.336
+        },
+        "MOM_SPREAD_CORRELATION": 0.033,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "D_CUT_ALL_CENSUS_EVENTS": {
+        "EW_MARKET": {
+          "correlation": 0.992,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "MEAN_DIFFERENCE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.324
+        },
+        "MOM_SPREAD_CORRELATION": 0.824,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.984,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": 0.963,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "D_CUT_ALL_CENSUS_EVENTS_PLUS_V4_SANITY": {
+        "EW_MARKET": {
+          "correlation": 0.992,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "MEAN_DIFFERENCE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.323
+        },
+        "MOM_SPREAD_CORRELATION": 0.823,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.984,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": 0.963,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "E_WHOLE_SERIES_DROP": {
+        "EW_MARKET": {
+          "correlation": 0.146,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.314
+        },
+        "MOM_SPREAD_CORRELATION": 0.037,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.009,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.993,
+        "VAR_VERDICT": "FAIL"
+      }
+    },
+    "extremeSecurityMonths": 2200,
+    "flagged83": 83,
+    "squaredGapShareInMonthsWithFlaggedCases": 1,
+    "v4PriceSanity": {
+      "affected": 74,
+      "defectQuarantined": 3,
+      "byClass": {
+        "GENUINE_HIGH_NOMINAL_PRICE": 0,
+        "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS": 71,
+        "SPLIT_ARTIFACT": 3,
+        "UNIT_ISSUE": 0,
+        "CURRENCY_ISSUE": 0,
+        "STALE_OR_UNADJUSTED": 0,
+        "TICKER_IDENTITY": 0,
+        "SOURCE_ERROR": 0
+      }
+    }
+  },
+  "interpretation": {
+    "confirmedCorrectionsOnly": 0.146,
+    "unconfirmedExcluded": 0.963,
+    "strictlyConfirmedOnly": 0.145,
+    "notStrictlyConfirmedExcluded": 0.963,
+    "universeDifference": "VU holds about 1.34x the French firm count; a residual level difference remains in every variant (magnitude sealed, review IR-20)",
+    "notACertification": true,
+    "noExclusionRuleDerived": true
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "schema": "vu-root-cause-lineage-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "layers": [
+    {
+      "layer": 1,
+      "name": "Provider raw data",
+      "files": [
+        "providers/tiingo/adapter.js:504-527",
+        "quant/engines/bar-codec.js:45-49",
+        "quant/engines/history-store.js:49-57,92",
+        "scripts/supertrader/validation/lib.mjs:18,97-101 (research R2 namespaces tiingo-delisted/holdout)"
+      ],
+      "input": "Tiingo /tiingo/daily/{sym}/prices: raw OHLCV, adjOpen/High/Low/Close/Volume, divCash, splitFactor",
+      "transformation": "field mapping only; R2 keys are TICKERS, not securityIds",
+      "failureModes": [
+        "provider omits splitFactor",
+        "provider adjClose omits the same event",
+        "ticker-keyed history mixes listings"
+      ],
+      "usedBy": "all US products",
+      "tests": [
+        "quant/tests/tiingo2-corporate-actions.test.mjs (#758 branch)"
+      ]
+    },
+    {
+      "layer": 2,
+      "name": "Adjusted / raw conventions",
+      "files": [
+        "docs/TIINGO_DATA_SEMANTICS.md:24-36,50,74-85",
+        "quant/engines/return-series.js:8-24"
+      ],
+      "input": "raw close + splitFactor; provider adjClose = total-return adjusted",
+      "transformation": "VU rebuilds split-adjusted prices from raw close and splitFactor; adjClose only cross-check (ADR-002)",
+      "failureModes": [
+        "mixing provider adjusted columns with VU-rebuilt columns"
+      ],
+      "exceptions": [
+        "quant/engines/market-factors.js:165-169,218-220 (PROVIDER_SPLIT_ADJUSTED_COLUMN path, investorReturn = provider adjClose)",
+        "quant/engines/technical/canonical-bars.js:211-214 TOTAL_RETURN world from adjClose"
+      ],
+      "usedBy": "Quant factors (provider column), all others VU-rebuilt"
+    },
+    {
+      "layer": 3,
+      "name": "Corporate-action ingestion",
+      "files": [
+        "bars carry splitFactor/divCash per day (no separate CA feed in production)",
+        "quant/engines/sec-corporate-actions.js, finra-daily-list.js (#737/#758 branches only)"
+      ],
+      "input": "provider per-bar fields; research: SEC 8-K/6-K, FINRA OTC Daily List",
+      "transformation": "none in production; research validity contracts 2.2.0/3.0.0 (unmerged)",
+      "failureModes": [
+        "an event absent from both provider columns is invisible to production code"
+      ],
+      "usedBy": "production: none beyond provider fields"
+    },
+    {
+      "layer": 4,
+      "name": "Security / listing identity",
+      "files": [
+        "core/identity.js:56-60",
+        "scripts/supertrader/research/tournament/data.mjs (listing id tiingo:EX:TICKER:START, segment break at gaps > 30 d, #705 branch)",
+        "inline re-implementations: quant/engines/company-master.js:123, scripts/market/select-gate-universe.mjs:218, expand-us-universe.mjs:84, tiingo2-refresh.mjs:98"
+      ],
+      "input": "ticker + listing table",
+      "transformation": "securityId ref_TICKER; research segments per listing window",
+      "failureModes": [
+        "ticker reuse",
+        "ADR/share-class mix"
+      ],
+      "evidence": "#722: 0 of the 83 are identity/listing errors; reused tickers 0/7 return old history (docs/SUPERTRADER_VALIDATION_DATA_PATH.md:26-32)"
+    },
+    {
+      "layer": 5,
+      "name": "Canonical price construction",
+      "files": [
+        "quant/engines/return-series.js:57-70 (splitFactors)",
+        "scripts/supertrader/validation/lib.mjs:132-154 (adjustSeries)",
+        "quant/engines/technical/canonical-bars.js:191-196",
+        "providers/tiingo/adapter.js:978-987",
+        "scripts/vorsorge/ingest-tiingo-etfs.mjs:101-109"
+      ],
+      "input": "raw close + splitFactor",
+      "transformation": "backward cumulative product of later split factors (five implementations, identical geometry; deterministic check in this audit)",
+      "failureModes": [
+        "adapter rounds to 4 decimals (sub-cent precision)",
+        "canonical-bars rounds to 6 decimals"
+      ],
+      "tests": [
+        "quant/tests/*return-series*",
+        "this audit: DETERMINISTIC-E9/F1"
+      ]
+    },
+    {
+      "layer": 6,
+      "name": "Total-return calculation",
+      "files": [
+        "quant/engines/canonical-total-return.js:183-262 (1.0.0 on main and in the tournament freeze)"
+      ],
+      "input": "raw close, splitFactor, dividend, provider adjClose (cross-check)",
+      "transformation": "g_t = s_t (close_t + D_t) / close_{t-1}; backward-normalised index; cross-check blocks SPLIT_MISSING/DIVIDEND_MISSING",
+      "failureModes": [
+        "raw-only SPLIT_SUSPECTED check runs only when no provider adjClose exists (lines 220-229): an undeclared split missing from both provider columns passes as a market move"
+      ],
+      "usedBy": "Quant studies (daily-prices.mjs), Supertrader research tournament (data.mjs firstCanonicalFailure), Vorsorge TR"
+    },
+    {
+      "layer": 7,
+      "name": "Consumer data adapters",
+      "files": [
+        "scripts/quant/lib/daily-prices.mjs:47,56,105-118",
+        "scripts/market/publish-discover-series.mjs:56-59",
+        "scripts/market/publish-long-series.mjs:37,130-136",
+        "scripts/technical/materialize-product-intelligence.mjs:44,81-86,111",
+        "scripts/supertrader/build.mjs:123-150,554",
+        "scripts/screener/build-universe.mjs:233-234"
+      ],
+      "transformation": "per product (see PRODUCT-DATA-LINEAGE.json)",
+      "failureModes": [
+        "whole-series drop on any hold (daily-prices, #721 R8)",
+        "jumps published unmasked (Discover/Screener/Technical)"
+      ]
+    },
+    {
+      "layer": 8,
+      "name": "Backtest engine",
+      "files": [
+        "#705: scripts/supertrader/research/calibration/runner-certified-v3.mjs (tournament)",
+        "#705: scripts/supertrader/research/v4/methods/runner-v4.mjs (V4 infra, never run on the six methods)",
+        "main: scripts/supertrader/validation/analyze*.mjs, quant/engines/backtest.js (Market Pulse validation only)"
+      ],
+      "transformation": "next-open execution, daily mark",
+      "failureModes": [
+        "A4: positions without a bar held at the last close indefinitely",
+        "A5: quarantine terminal booked on quarantine.from (before observedAt)"
+      ],
+      "tests": [
+        "#705: scripts/supertrader/tests/v4-measurement.test.mjs (A4/A5 regression)"
+      ]
+    },
+    {
+      "layer": 9,
+      "name": "Portfolio accounting",
+      "files": [
+        "#705: calibration/accounting-budget-v3.mjs:132-147 (terminal factor 0.7 also for DATA_QUARANTINE)",
+        "#705: v4/measurement/accounting-v4.mjs (data-event factor 1, value-aware dust A8)"
+      ],
+      "failureModes": [
+        "binary64 cash rounding (B1, fixed V3)",
+        "data quarantine written down 30 % like a delisting (A5)",
+        "dust deletion not value-aware (A8)"
+      ]
+    },
+    {
+      "layer": 10,
+      "name": "Benchmark comparison",
+      "files": [
+        "#705: runner-certified-v3.mjs benchmarkCurve (SPY totalReturnIndex from the same canonical capture)",
+        "main: scripts/supertrader/build.mjs:554 (SPY price-only multi-asset series)"
+      ],
+      "failureModes": [
+        "benchmark is SPY only (IWM/QQQ/IWV MISSING_NO_SUBSTITUTION)",
+        "production SPY comparison is price-only"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "product": "QUANT",
+      "source": ".market-cache/tiingo/daily (working store) -> golden-preview -> discover-series",
+      "pipeline": "scripts/market/build-market-factors.mjs; scripts/quant/lib/daily-prices.mjs",
+      "core": "canonical-total-return 1.0.0 (studies); market-factors.js (factors)",
+      "adjustments": "studies: canonical-bars split-adjusted + VU TR; factors: return-series or provider adjusted columns, investorReturn = provider adjClose",
+      "dependencyOnDefect": "studies: same core 1.0.0 gap (undeclared split missing from both provider columns passes); factors: inherit provider adjClose directly",
+      "safe": [
+        "methodology pages",
+        "fundamental (SEC) modules"
+      ],
+      "possiblyAffected": [
+        "momentum/return factors for names with undeclared splits in the look-back",
+        "signal/setup backtests"
+      ],
+      "provenAffected": [],
+      "ownFix": "yes (per study, CLAUDE.md model-change rule)"
+    },
+    {
+      "product": "SUPERTRADER_RESEARCH",
+      "source": "R2 tiingo + tiingo-delisted (+holdout) via capture-v3-inrunner (#705 branch)",
+      "pipeline": "tournament/data.mjs normalizeSegment + firstCanonicalFailure",
+      "core": "canonical-total-return 1.0.0",
+      "adjustments": "return-series splitFactors on the valid prefix; data quarantine from first core failure",
+      "dependencyOnDefect": "DIRECT: this is the path on which the 83/74/272 were found",
+      "provenAffected": [
+        "V4 EW calibration (0.145)",
+        "tournament inputs (same fingerprint 318c051f...)"
+      ],
+      "ownFix": "yes (Gate A, pre-registered)"
+    },
+    {
+      "product": "SUPERTRADER_PRODUCTION",
+      "source": "quant/data/product/technical-signals-v1, discover-series-long, multi-asset SPY (build.mjs:123-150,554); exception house/live.mjs reads R2 like research",
+      "pipeline": "scripts/supertrader/build.mjs, trend52-live.mjs",
+      "core": "none (inherits Technical and Discover series)",
+      "adjustments": "upstream canonical-bars / return-series; price-only",
+      "dependencyOnDefect": "INDIRECT: an undeclared split appears as a price jump in signals and 52W levels (rescaleSignal on level jumps, build.mjs:456)",
+      "safe": [],
+      "possiblyAffected": [
+        "signals on names with undeclared splits in the last year/history"
+      ],
+      "provenAffected": [],
+      "ownFix": "flows from Technical/Discover publisher fixes; house/live.mjs needs its own (research path)"
+    },
+    {
+      "product": "DISCOVER",
+      "source": ".market-cache (1y daily) and R2 tiingo (weekly MAX)",
+      "pipeline": "publish-discover-series.mjs, publish-long-series.mjs, build-discover-data.mjs",
+      "core": "none (return-series splitFactors only)",
+      "adjustments": "split-adjusted, price-only, back-adjusted with final factors",
+      "dependencyOnDefect": "display: undeclared split shown as a real jump; 52W high and returns inherit it; no total-return backtest",
+      "safe": [
+        "fundamentals (SEC)",
+        "Europe (Marketstack raw, separate path)"
+      ],
+      "possiblyAffected": [
+        "charts/returns of names with undeclared splits"
+      ],
+      "provenAffected": [],
+      "ownFix": "optional (publisher masking, Discover gate)"
+    },
+    {
+      "product": "SCREENER",
+      "source": "discover-series + discover/data/stocks",
+      "pipeline": "scripts/screener/build-universe.mjs:233-234",
+      "core": "none",
+      "adjustments": "inherited",
+      "dependencyOnDefect": "current-state RSI/MACD/SMA/YTD on the 1y series; only names with an undeclared event inside the last year",
+      "provenAffected": [],
+      "ownFix": "no (flows from publisher)"
+    },
+    {
+      "product": "TECHNICAL",
+      "source": ".market-cache/tiingo/daily",
+      "pipeline": "materialize-product-intelligence.mjs",
+      "core": "canonical-bars.fromPriceBars (SPLIT_ADJUSTED)",
+      "adjustments": "provider splitFactor; adjClose replaced",
+      "dependencyOnDefect": "SMA200/RS/Elliott read the jump (documented :77-80)",
+      "provenAffected": [],
+      "ownFix": "recommended (own PR)"
+    },
+    {
+      "product": "VORSORGE",
+      "source": "Tiingo direct for ETFs + multi-asset/discover series",
+      "pipeline": "scripts/vorsorge/ingest-tiingo-etfs.mjs",
+      "core": "canonical-total-return.reconstruct (TR) + inline priceReturnSeries",
+      "adjustments": "same core 1.0.0",
+      "dependencyOnDefect": "ETFs rarely have undeclared reverse splits; shared core gap applies formally",
+      "provenAffected": [],
+      "ownFix": "no evidence of need"
+    }
+  ],
+  "researchVsProductPath": "tournament reads R2 via tournament/data.mjs (PR branches only); products read .market-cache and published series; exception scripts/supertrader/house/live.mjs",
+  "v3ConsumerReadiness": "#758 docs/data-quality/corporate-action-v3/PARTIAL-SERIES-CONSUMER-READINESS-V3.json"
+}

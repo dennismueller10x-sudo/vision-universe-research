@@ -1,0 +1,466 @@
+{
+  "schema": "vu-root-cause-classes-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "classes": {
+    "A_PROVIDER_DEFECT": {
+      "lenientEvents": 42,
+      "lenientSecurities": 37,
+      "strictEvents": 28,
+      "strictSecurities": 26,
+      "note": "tournament-prefix census events confirmed by an independent channel and absent from both Tiingo columns; strict = ratio match, no SEC contradiction, no nearby declared split. A lower bound under the covered channels only.",
+      "providerColumnsDisagreeSeparately": {
+        "columnsDisagree": 4,
+        "declaredSplitAdjContinuous": 2,
+        "note": "separate basis: provider-internal inconsistencies, not added to the confirmed count"
+      }
+    },
+    "B_VU_DEFECT": [
+      "VU-02",
+      "VU-03",
+      "VU-04",
+      "VU-06",
+      "VU-07"
+    ],
+    "C_SHARED": "same events as A: provider omission accepted by core 1.0.0 without independent validation (VU-01)",
+    "D_GENUINE_MOVE": {
+      "confirmed": 0,
+      "reason": "no second price provider used; SEC share count unchanged is counter-evidence against a split, not proof of a genuine move"
+    },
+    "E_UNDECIDABLE": {
+      "definition": "UNRESOLVED + INSUFFICIENT_EVIDENCE + CONFLICTING; the impact-relevant majority; cause (provider omission, genuine move, unit error) open"
+    }
+  },
+  "strictClasses": {
+    "UNRESOLVED": 320,
+    "RATIO_DOES_NOT_EXPLAIN_MOVE": 7,
+    "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
+    "INSUFFICIENT_EVIDENCE": 200,
+    "CONFIRMED_BY_INDEPENDENT_SOURCE": 28,
+    "CONFOUNDED_BY_DECLARED_SPLIT": 6,
+    "CONFLICTING_INDEPENDENT_EVIDENCE": 1
+  },
+  "ratioResidual": {
+    "GT_2": 3,
+    "LE_1.25": 15,
+    "1.25_TO_2": 5
+  },
+  "cases83": {
+    "rows": 83,
+    "byCause": {
+      "GENUINE_PRICE_MOVE": 40,
+      "UNDECLARED_REVERSE_SPLIT": 23,
+      "PROVIDER_SPIKE": 4,
+      "CURRENCY_OR_UNIT": 7,
+      "STALE_PRICE": 2,
+      "UNRESOLVED": 5,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "byDefect": {
+      "false": 40,
+      "true": 43
+    },
+    "byIndependent": {
+      "UNRESOLVED": 32,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 8,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 27,
+      "INSUFFICIENT_EVIDENCE": 16
+    },
+    "byCauseAndIndependent": {
+      "GENUINE_PRICE_MOVE|UNRESOLVED": 18,
+      "GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 6,
+      "PROVIDER_SPIKE|UNRESOLVED": 2,
+      "GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "STALE_PRICE|UNRESOLVED": 1,
+      "UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNRESOLVED|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byCauseAndLocus": {
+      "GENUINE_PRICE_MOVE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 37,
+      "UNDECLARED_REVERSE_SPLIT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 23,
+      "PROVIDER_SPIKE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 4,
+      "GENUINE_PRICE_MOVE|PROVIDER_PARTIAL_ADJUSTMENT": 1,
+      "CURRENCY_OR_UNIT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 7,
+      "STALE_PRICE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 2,
+      "UNRESOLVED|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 5,
+      "DECLARED_SPLIT_INCONSISTENT|PROVIDER_PARTIAL_ADJUSTMENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 1,
+      "GENUINE_PRICE_MOVE|PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS": 2
+    },
+    "byClassCauseIndependent": {
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|UNRESOLVED": 10,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 3,
+      "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE|UNRESOLVED": 2,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 3,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|UNRESOLVED": 8,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 10,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE|UNRESOLVED": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 3,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_DATE_SHIFT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byClassAndChannel": {
+      "DECLARED_SPLIT_IN_MONTH|UNRESOLVED": 10,
+      "UNDECLARED_RAW_JUMP_10X|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_RAW_JUMP_10X|SEC_8K": 7,
+      "UNDECLARED_RAW_JUMP_10X|INSUFFICIENT_EVIDENCE": 13,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 22,
+      "DECLARED_SPLIT_IN_MONTH|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 3,
+      "DECLARED_SPLIT_IN_MONTH|SEC_8K": 2,
+      "DECLARED_SPLIT_IN_MONTH|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 8,
+      "UNDECLARED_RAW_JUMP_10X|FINRA": 6,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 1,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY": 1,
+      "DECLARED_SPLIT_IN_MONTH|SEC_SHARES_ONLY": 2,
+      "DECLARED_SPLIT_IN_MONTH|INSUFFICIENT_EVIDENCE": 3
+    },
+    "byCauseAndStrict": {
+      "GENUINE_PRICE_MOVE|UNRESOLVED": 18,
+      "GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 7,
+      "GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 6,
+      "PROVIDER_SPIKE|UNRESOLVED": 2,
+      "GENUINE_PRICE_MOVE|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "GENUINE_PRICE_MOVE|CONFOUNDED_BY_DECLARED_SPLIT": 9,
+      "CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "STALE_PRICE|UNRESOLVED": 1,
+      "UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_REVERSE_SPLIT|RATIO_DOES_NOT_EXPLAIN_MOVE": 4,
+      "UNRESOLVED|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byClassDirectionPrice": {
+      "DECLARED_SPLIT_IN_MONTH|UP|5_TO_20": 10,
+      "UNDECLARED_RAW_JUMP_10X|UP|1_TO_5": 8,
+      "UNDECLARED_RAW_JUMP_10X|UP|LT_1": 40,
+      "DECLARED_SPLIT_IN_MONTH|DOWN|5_TO_20": 2,
+      "UNDECLARED_RAW_JUMP_10X|UP|5_TO_20": 4,
+      "DECLARED_SPLIT_IN_MONTH|UP|1_TO_5": 9,
+      "UNDECLARED_RAW_JUMP_10X|DOWN|LT_1": 3,
+      "DECLARED_SPLIT_IN_MONTH|UP|LT_1": 7
+    },
+    "byIndependentDirectionPrice": {
+      "UNRESOLVED|UP|5_TO_20": 7,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|UP|1_TO_5": 3,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|UP|LT_1": 3,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|LT_1": 16,
+      "INSUFFICIENT_EVIDENCE|UP|1_TO_5": 2,
+      "UNRESOLVED|UP|LT_1": 19,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|DOWN|5_TO_20": 1,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|1_TO_5": 7,
+      "INSUFFICIENT_EVIDENCE|UP|LT_1": 9,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|5_TO_20": 4,
+      "UNRESOLVED|UP|1_TO_5": 5,
+      "INSUFFICIENT_EVIDENCE|DOWN|LT_1": 1,
+      "UNRESOLVED|DOWN|LT_1": 1,
+      "INSUFFICIENT_EVIDENCE|UP|5_TO_20": 3,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|DOWN|LT_1": 1,
+      "INSUFFICIENT_EVIDENCE|DOWN|5_TO_20": 1
+    },
+    "dominantDayIsDeclaredSplit": {
+      "false": 79,
+      "true": 4
+    },
+    "v3": {
+      "VALID_STILL_EXTREME": 26,
+      "NOT_VALID": 40,
+      "VALID": 17
+    }
+  },
+  "d2": {
+    "securities": 11,
+    "byCause": {
+      "DECLARED_SPLIT_INCONSISTENT": 2,
+      "UNDECLARED_JUMP_IN_HISTORY": 8,
+      "UNRESOLVED": 1
+    },
+    "dayIndependent": {
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNRESOLVED": 6,
+      "INSUFFICIENT_EVIDENCE": 2
+    },
+    "dayLocus": {
+      "PROVIDER_PARTIAL_ADJUSTMENT": 2,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 8
+    }
+  },
+  "extreme272": {
+    "rows": 272,
+    "reproducesV3Count": true,
+    "byIndependentNoVendor": {
+      "UNRESOLVED": 253,
+      "CONFIRMED_EVENT": 19
+    },
+    "byV3": {
+      "NOT_IN_VALID_RETURN": 167,
+      "STILL_IN_VALID_RETURN": 97,
+      "ADJUSTED": 8
+    },
+    "byDir": {
+      "DOWN": 149,
+      "UP": 123
+    },
+    "byLocus": {
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 272
+    }
+  },
+  "vuFindings": [
+    {
+      "id": "VU-01",
+      "area": "Missing safeguard (core 1.0.0)",
+      "classification": "MISSING_DATA_CONTRACT",
+      "severity": "HIGH",
+      "status": "CONFIRMED_BY_CODE_AND_DETERMINISTIC_EXAMPLE",
+      "statement": "canonical-total-return 1.0.0 runs its raw-only split check only when no provider adjClose exists; with adjClose present an undeclared split missing from both provider columns is accepted as a market move",
+      "evidence": [
+        "quant/engines/canonical-total-return.js:220-229",
+        "DETERMINISTIC E5 vs E6"
+      ],
+      "primaryCause": "PROVIDER (event absent from both columns)",
+      "vuRole": "no independent validation (C: shared error)"
+    },
+    {
+      "id": "VU-02",
+      "area": "Backtest engine A4",
+      "classification": "BUG_IN_CODE",
+      "severity": "MAJOR",
+      "status": "CONFIRMED (V4 adversarial finding A4, fixed only in runner-v4, never applied to the six tournament methods)",
+      "statement": "positions without a bar are valued at the last close indefinitely (52W diagnostic: 2,175 of 2,198 days with positions without bar)",
+      "evidence": [
+        "#705 SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json A4",
+        "runner-certified-v3.mjs markClose/lastMarks"
+      ]
+    },
+    {
+      "id": "VU-03",
+      "area": "Backtest engine A5",
+      "classification": "BUG_IN_CODE (look-ahead) + MODEL_ASSUMPTION (-30 % on data events)",
+      "severity": "MAJOR",
+      "status": "CONFIRMED (A5, fixed only in V4 policy)",
+      "statement": "data-quarantine terminal booked on quarantine.from although observedAt can be later; data quarantine settled at 0.7 x last close like an economic delisting",
+      "evidence": [
+        "#705 tournament/data.mjs normalizeSegment terminal",
+        "calibration/accounting-budget-v3.mjs:143",
+        "V4 causalTerminals: 146 terminal dates moved"
+      ]
+    },
+    {
+      "id": "VU-04",
+      "area": "Accounting A8 / B1",
+      "classification": "BUG_IN_CODE",
+      "severity": "MODERATE",
+      "status": "B1 FIXED in V3 accounting; A8 FIXED only in accounting-v4",
+      "statement": "binary64 cash/budget roundoff (B1); dust deletion not value-aware (A8)",
+      "evidence": [
+        "#643 ACCOUNTING-BUDGET-V2-BUG-NOTE.json",
+        "#705 A8"
+      ]
+    },
+    {
+      "id": "VU-05",
+      "area": "Quant consumer whole-series drop",
+      "classification": "MODEL_ASSUMPTION with bias",
+      "severity": "HIGH (blocks merge of #721)",
+      "status": "CONFIRMED BY CODE (#721 R8)",
+      "statement": "daily-prices.mjs drops the whole total-return series on a hold instead of keeping the valid prefix",
+      "evidence": [
+        "scripts/quant/lib/daily-prices.mjs:56-87",
+        "#758 PARTIAL-SERIES-CONSUMER-READINESS-V3.json"
+      ]
+    },
+    {
+      "id": "VU-06",
+      "area": "V4 research sanity layer",
+      "classification": "BUG_IN_CODE (look-ahead)",
+      "severity": "MODERATE",
+      "status": "CONFIRMED (#721/#722 R16, R7)",
+      "statement": "price-sanity selection reads the full-history adjusted level; spike quarantine has one session of look-ahead",
+      "evidence": [
+        "#705 v4/measurement/price-sanity-v4.mjs",
+        "#722 review R7/R16"
+      ]
+    },
+    {
+      "id": "VU-07",
+      "area": "Rounding",
+      "classification": "BUG_IN_CODE",
+      "severity": "LOW",
+      "status": "CONFIRMED (deterministic example)",
+      "statement": "providers/tiingo/adapter.js splitAdjustedCloses rounds to 4 decimals; a 0.000031 adjusted close becomes 0. Used for multi-asset (ETF/SPY) series only",
+      "evidence": [
+        "providers/tiingo/adapter.js:982",
+        "DETERMINISTIC F1"
+      ]
+    },
+    {
+      "id": "VU-08",
+      "area": "Five split implementations",
+      "classification": "MISSING_DATA_CONTRACT (ADR-002 open item)",
+      "severity": "LOW",
+      "status": "NO DIVERGENCE FOUND",
+      "statement": "five implementations, identical geometry on forward, reverse and same-day split sequences (rounding aside)",
+      "evidence": [
+        "DETERMINISTIC F1",
+        "docs/architecture/ADR-002-market-data-source-of-truth.md \"Bewusst offen\""
+      ]
+    },
+    {
+      "id": "VU-09",
+      "area": "Identity",
+      "classification": "MISSING_DATA_CONTRACT",
+      "severity": "LOW",
+      "status": "NO DEFECT PROVEN",
+      "statement": "securityId formed inline in four places besides core/identity.js; R2 keyed by ticker. #722 found 0 identity errors among the 83; segments break at listing gaps",
+      "evidence": [
+        "quant/engines/company-master.js:123",
+        "scripts/market/select-gate-universe.mjs:218"
+      ]
+    },
+    {
+      "id": "VU-10",
+      "area": "Split / TR arithmetic",
+      "classification": "NO_DEFECT",
+      "severity": "NONE",
+      "status": "VERIFIED (deterministic examples E1-E4, E8, E9)",
+      "statement": "forward split, reverse split, dividend, split+dividend same day, declared split without raw move: arithmetic correct; timing: split factor applies from its own day"
+    },
+    {
+      "id": "VU-11",
+      "area": "Turtle unit stops (V41-F1)",
+      "classification": "STRATEGY_FIDELITY (not data)",
+      "severity": "MAJOR for Turtle fidelity",
+      "status": "OPEN (#712)",
+      "statement": "one stop for all units instead of per-unit stops; not a data defect, not changed here"
+    }
+  ],
+  "deterministicExamples": [
+    {
+      "id": "E1",
+      "case": "4:1 forward split declared",
+      "result": "split-adjusted [100,101,101.5,102]; TR gross on ex-day 1.00495 (= 101.5*4/404)",
+      "verdict": "CORRECT"
+    },
+    {
+      "id": "E2",
+      "case": "1:10 reverse split declared",
+      "result": "TR gross on ex-day 0.990196 (= 0.1*10.1/1.02)",
+      "verdict": "CORRECT"
+    },
+    {
+      "id": "E3",
+      "case": "dividend 1.00 on close 100 -> 99",
+      "result": "gross 1.000000",
+      "verdict": "CORRECT"
+    },
+    {
+      "id": "E4",
+      "case": "2:1 split + 0.50 dividend same day",
+      "result": "gross 1.010000 = 2*(50+0.5)/100",
+      "verdict": "CORRECT"
+    },
+    {
+      "id": "E5",
+      "case": "undeclared 1:10 reverse split, provider adjClose moves with raw",
+      "result": "TOTAL_RETURN_RECONSTRUCTED, gross 10.0, crossCheck MATCH",
+      "verdict": "ACCEPTED AS MARKET MOVE (safeguard gap VU-01)"
+    },
+    {
+      "id": "E6",
+      "case": "same move without provider adjClose column",
+      "result": "TOTAL_RETURN_UNAVAILABLE / SPLIT_SUSPECTED",
+      "verdict": "raw-only check exists but is disabled when adjClose is present"
+    },
+    {
+      "id": "E7",
+      "case": "undeclared split, provider adjClose continuous",
+      "result": "TOTAL_RETURN_UNAVAILABLE / SPLIT_MISSING",
+      "verdict": "CORRECTLY BLOCKED"
+    },
+    {
+      "id": "E8",
+      "case": "declared 4:1 split without raw move",
+      "result": "TOTAL_RETURN_UNAVAILABLE / SPLIT_NOT_IN_RAW_PRICE",
+      "verdict": "CORRECTLY BLOCKED"
+    },
+    {
+      "id": "E10",
+      "case": "genuine +900 % move without split",
+      "result": "TOTAL_RETURN_RECONSTRUCTED",
+      "verdict": "indistinguishable from E5 on prices alone"
+    },
+    {
+      "id": "F1",
+      "case": "five split implementations on [4:1, 1:10, 10:1] sequence",
+      "result": "return-series, validation/lib, canonical-bars, vorsorge identical; tiingo adapter 0.000031 -> 0 (4-decimal rounding)",
+      "verdict": "GEOMETRY IDENTICAL; adapter rounding defect"
+    }
+  ],
+  "providerVsVuShare": "NOT_REPORTED (overlapping causes; A and C are the same events)"
+}

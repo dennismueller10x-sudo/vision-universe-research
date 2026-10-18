@@ -1,0 +1,243 @@
+{
+  "schema": "vu-root-cause-unified-population-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "historicalPopulations": {
+    "V4_83": {
+      "securityMonths": 83,
+      "source": "#705 diagnostic run 38724718674"
+    },
+    "V4_74": {
+      "securities": 74,
+      "source": "#705/#721"
+    },
+    "D2_11": {
+      "securities": 11,
+      "source": "#722 review R5"
+    },
+    "V2V3_272": {
+      "moves": 272,
+      "source": "#737/#758"
+    },
+    "V3_194_UNRESOLVED": {
+      "moves": 194,
+      "source": "#758 vendor-labelled",
+      "reproducibleWithoutVendor": false
+    }
+  },
+  "denominators": {
+    "universe": {
+      "segmentsListings": 9407,
+      "securityIds": 8995,
+      "companiesCik": 6649,
+      "tickers": 8995
+    },
+    "storeBarsAllHistory": 14842666,
+    "storeBarsTournamentSpan": 14773577,
+    "tournamentCanonicalBars": 14371749,
+    "tournamentCanonicalBarsInMeasurementWindow": 10911133,
+    "tournamentSecurities": 9407,
+    "tournamentQuarantined": 521,
+    "captureRejections": {
+      "CORPORATE_ACTION_CONTRADICTED": 2
+    }
+  },
+  "frozenInputComparison": {
+    "frozen": {
+      "dataFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+      "securities": 9408,
+      "bars": 14374702,
+      "source": "#721 docs/data-quality/price-integrity/QUANT-PRICE-INTEGRITY-POPULATION.json; #722 report section 3"
+    },
+    "current": {
+      "dataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "securities": 9407,
+      "bars": 14371749
+    },
+    "differences": {
+      "securities": -1,
+      "bars": -2953
+    }
+  },
+  "populationsByLevel": {
+    "V4_83_SECURITY_MONTHS": {
+      "rows": 83,
+      "segmentsListings": 67,
+      "securityIds": 67,
+      "companiesCik": 54,
+      "tickers": 67,
+      "securityMonths": 83,
+      "byClass": {
+        "UNDECLARED_RAW_JUMP_10X": 55,
+        "DECLARED_SPLIT_IN_MONTH": 28
+      }
+    },
+    "V4_74_HIGH_LEVEL": {
+      "rows": 74,
+      "segmentsListings": 74,
+      "securityIds": 74,
+      "companiesCik": 68,
+      "tickers": 74
+    },
+    "D2_DEFECT_SECURITIES": {
+      "rows": 11,
+      "segmentsListings": 11,
+      "securityIds": 11,
+      "companiesCik": 9,
+      "tickers": 11
+    },
+    "V2_272_EXTREME_MOVES": {
+      "rows": 272,
+      "segmentsListings": 202,
+      "securityIds": 159,
+      "companiesCik": 103,
+      "tickers": 159
+    },
+    "V3_HOLDS": {
+      "rows": 518,
+      "segmentsListings": 376,
+      "securityIds": 305,
+      "companiesCik": 209,
+      "tickers": 305
+    },
+    "V3_CONFLICTING_HOLDS": {
+      "rows": 69,
+      "segmentsListings": 60,
+      "securityIds": 60,
+      "companiesCik": 59,
+      "tickers": 60
+    },
+    "TOURNAMENT_QUARANTINES": {
+      "rows": 521,
+      "segmentsListings": 521,
+      "securityIds": 403,
+      "companiesCik": 279,
+      "tickers": 403
+    },
+    "TOURNAMENT_CENSUS_EVENTS": {
+      "rows": 616,
+      "segmentsListings": 226,
+      "securityIds": 214,
+      "companiesCik": 149,
+      "tickers": 214
+    },
+    "TOURNAMENT_CENSUS_CONFIRMED": {
+      "rows": 42,
+      "segmentsListings": 37,
+      "securityIds": 37,
+      "companiesCik": 37,
+      "tickers": 37
+    }
+  },
+  "overlapsSegments": {
+    "V4_83_SECURITY_MONTHS&V4_74_HIGH_LEVEL": 2,
+    "V4_83_SECURITY_MONTHS&V2_272_EXTREME_MOVES": 28,
+    "V4_83_SECURITY_MONTHS&V3_HOLDS": 31,
+    "V4_83_SECURITY_MONTHS&V3_CONFLICTING_HOLDS": 9,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_QUARANTINES": 4,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_CENSUS_EVENTS": 42,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_CENSUS_CONFIRMED": 15,
+    "V4_74_HIGH_LEVEL&D2_DEFECT_SECURITIES": 11,
+    "V4_74_HIGH_LEVEL&V2_272_EXTREME_MOVES": 10,
+    "V4_74_HIGH_LEVEL&V3_HOLDS": 10,
+    "V4_74_HIGH_LEVEL&V3_CONFLICTING_HOLDS": 5,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_QUARANTINES": 5,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_CENSUS_EVENTS": 13,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_CENSUS_CONFIRMED": 4,
+    "D2_DEFECT_SECURITIES&V2_272_EXTREME_MOVES": 8,
+    "D2_DEFECT_SECURITIES&V3_HOLDS": 1,
+    "D2_DEFECT_SECURITIES&TOURNAMENT_CENSUS_EVENTS": 10,
+    "D2_DEFECT_SECURITIES&TOURNAMENT_CENSUS_CONFIRMED": 2,
+    "V2_272_EXTREME_MOVES&V3_HOLDS": 111,
+    "V2_272_EXTREME_MOVES&V3_CONFLICTING_HOLDS": 7,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_QUARANTINES": 70,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_CENSUS_EVENTS": 157,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_CENSUS_CONFIRMED": 17,
+    "V3_HOLDS&V3_CONFLICTING_HOLDS": 60,
+    "V3_HOLDS&TOURNAMENT_QUARANTINES": 226,
+    "V3_HOLDS&TOURNAMENT_CENSUS_EVENTS": 126,
+    "V3_HOLDS&TOURNAMENT_CENSUS_CONFIRMED": 22,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_QUARANTINES": 9,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_CENSUS_EVENTS": 13,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_CENSUS_CONFIRMED": 6,
+    "TOURNAMENT_QUARANTINES&TOURNAMENT_CENSUS_EVENTS": 45,
+    "TOURNAMENT_QUARANTINES&TOURNAMENT_CENSUS_CONFIRMED": 6,
+    "TOURNAMENT_CENSUS_EVENTS&TOURNAMENT_CENSUS_CONFIRMED": 37
+  },
+  "joinedEvents": {
+    "distinct": 707,
+    "bySourceCombination": {
+      "TOURNAMENT_CENSUS+V2_272": 178,
+      "TOURNAMENT_CENSUS+V2_272+V4_83_DOMINANT_DAY": 20,
+      "V2_272": 64,
+      "D2_DEFECT_DAY+TOURNAMENT_CENSUS+V2_272": 10,
+      "TOURNAMENT_CENSUS": 369,
+      "TOURNAMENT_CENSUS+V4_83_DOMINANT_DAY": 36,
+      "D2_DEFECT_DAY+TOURNAMENT_CENSUS": 3,
+      "V4_83_DOMINANT_DAY": 27
+    }
+  },
+  "securitiesWithEvents": {
+    "segmentsListings": 296,
+    "securityIds": 245,
+    "companiesCik": 176,
+    "tickers": 245
+  },
+  "unionOfEventPopulations": {
+    "segmentsListings": 355,
+    "securityIds": 304,
+    "companiesCik": 231,
+    "tickers": 304
+  },
+  "unionOfEventPopulationsDefinition": "83 + 74 + D2 + 272 + census (holds and quarantines excluded: protective decisions, not findings)",
+  "unionIncludingHoldsAndQuarantines": {
+    "segmentsListings": 837,
+    "securityIds": 687,
+    "companiesCik": 503,
+    "tickers": 687
+  },
+  "levelNote": "securityId = ticker-derived identity (core/identity.js); not a permaticker",
+  "dedupeKeys": {
+    "security": "securityId",
+    "listing": "segment id tiingo:EX:TICKER:START",
+    "company": "issuer CIK",
+    "event": "segment|date",
+    "securityMonth": "segment|YYYY-MM"
+  },
+  "reproduction": {
+    "v4_83": true,
+    "v4_74": true,
+    "d2_11": true,
+    "v2_272": true,
+    "v3_194": "NOT_REPRODUCIBLE_WITHOUT_SEALED_VENDOR_LABELS"
+  }
+}

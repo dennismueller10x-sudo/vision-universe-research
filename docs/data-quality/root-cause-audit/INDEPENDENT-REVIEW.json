@@ -1,0 +1,392 @@
+{
+  "schema": "vu-root-cause-review-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T02:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39073148967",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39073148967",
+    "rankingRunId": "39073148967",
+    "fingerprints": {
+      "population": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "ranking": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+      "methods": [
+        "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "reviewer": "independent-adversarial-review",
+  "scope": [
+    "docs/VISION_UNIVERSE_CANONICAL_DATA_ROOT_CAUSE_AUDIT.md (draft, placeholders ignored)",
+    "docs/VISION_UNIVERSE_BACKTEST_IMPACT_AUDIT.md (draft, placeholders ignored)",
+    "docs/data-quality/root-cause-audit/run-39053330565/{POPULATION,PREPARE,SCAN,SELECT,CORPORATE-ACTION-V3-AUDIT,oracle,capture*,BACKTEST-IMPACT-*}.json",
+    "scripts/research/price-root-cause/{lib,population,backtest-impact,ranking,static-evidence,build-artifacts}.mjs and tests/ (tests executed with the pinned checkouts: 6/6 + 4/4 pass)",
+    ".github/workflows/research-price-root-cause-audit.yml",
+    "pinned #705 head (runner-certified-v3, runner-v4, accounting-v4, measurement-policy-v4, tournament/data.mjs) and #758 head (corporate-action-v3/labels.mjs, finra-daily-list.js)"
+  ],
+  "findings": [
+    {
+      "id": "IR-01",
+      "severity": "HIGH",
+      "area": "faulty attribution / provider bias",
+      "claim": "Root-cause doc Kurzantwort: 'Beleg fuer die Provider-Seite. An 674 von 707 untersuchten Ereignistagen (95,3 %) zeigt Tiingo in keiner der beiden Spalten ein Ereignis' (also section 3 table, section 6 'Provider-Ort').",
+      "evidence": "population.mjs:30-39 providerLocus(); lib.mjs:91 census selects only days WITHOUT a split factor; POPULATION.json eventStats.byLocusAndIndependent: PROVIDER_NO_EVENT_IN_EITHER_COLUMN|INDEPENDENT_EVIDENCE_AGAINST_SPLIT = 53, |UNRESOLVED = 372, |INSUFFICIENT_EVIDENCE = 197, |CONFIRMED = 46+6",
+      "assessment": "PROVIDER_NO_EVENT_IN_EITHER_COLUMN only says adjClose moved with rawClose on a day with no split factor. A genuine price move produces exactly the same locus, and the census selected 'no declared split' by construction. The metric cannot discriminate provider error from real moves; 53 of the 674 days carry SEC counter-evidence against a split. It shows where a defect would sit if it is one, not that the provider is at fault.",
+      "recommendation": "Reword to 'Provider-Ort, falls Defekt' and report the locus only conditional on the independent class (e.g. 46+6 confirmed days with no event in either column). Drop 'Beleg fuer die Provider-Seite' for the 674.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Locus is now reported as \"Provider-Ort, falls Defekt\" in a separate table and only conditional on the independent class; the sentence \"Beleg fuer die Provider-Seite\" is removed. POPULATION byLocusAndIndependent is cited.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-02",
+      "severity": "HIGH",
+      "area": "faulty attribution (headline vs. impact)",
+      "claim": "'Der Hauptfehler ist ein gemeinsamer Fehler (Klasse C)' and 'Primaer der Provider' (root-cause doc lines 10-23).",
+      "evidence": "BACKTEST-IMPACT-*.json census.byClass: CONFIRMED 42 of 616, INDEPENDENT_EVIDENCE_AGAINST_SPLIT 54, UNRESOLVED 320, INSUFFICIENT 200; POPULATION.json french.ewExclusionVariants.EXCLUDE_83_INDEPENDENTLY_CONFIRMED_ONLY.correlation = 0.146 vs EXCLUDE_83_NOT_INDEPENDENTLY_CONFIRMED = 0.963",
+      "assessment": "Class C is shown for only 42 events (6.8 % of the census). The backtest doc itself shows these confirmed cases explain almost none of the French gap and only one Turtle trade. The effect that matters comes from unresolved events of unknown cause. So 'Hauptfehler' is supported neither by count nor by impact. The two documents contradict each other.",
+      "recommendation": "State it as: the confirmed share is class C. The impact-relevant population is undecided (class E), and its cause (provider omission, genuine move, unit error) is open.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Headline restated: the impact-relevant population is class E (undecided); the strictly confirmed share (28 of 616 census events, 26 securities) is class C. Cause of the majority stays open.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-03",
+      "severity": "HIGH",
+      "area": "corporate actions: ratio normalisation (scenario C)",
+      "claim": "Scenario C: 'Ein FINRA- oder SEC-8-K-Verhaeltnis wird wie ein deklarierter Split angewendet' as a correction 'die eine unabhaengige Quelle belegt'.",
+      "evidence": "lib.mjs:111,114,119 (secExplains/finraSplitExplains via L.explains); v3 labels.mjs:17 explains(r,q) := |log r + log q| < |log r|. Probe: explains(10,0.5)=true (residual 5x), explains(0.01,2)=true (residual 1/50), explains(10,0.011)=true (residual 0.11)",
+      "assessment": "normalizeAt has the correct direction: pre-event OHLC/TR are divided by q, volume is multiplied by q, splitAdjustmentFactor is multiplied by q. This is consistent with the runner snapshot rescaling (runner-v4.mjs snapshot) and the FINRA convention (ratio<1 = REVERSE), and the synthetic test passes. However, a ratio counts as 'confirmed' as soon as it moves r toward 1, even when it is off by up to roughly a factor r. C then applies that ratio and leaves a residual jump that is not checked. Nothing verifies that the normalized step is close to 1, and the residuals are not published. Some 'independently confirmed' corrections may therefore still contain large jumps, and some events may have been 'confirmed' by an unrelated small split.",
+      "recommendation": "Require a ratio match (e.g. |log(r*q)| < log 1.25, as sameQ in labelNormalize). Otherwise classify as CONFLICTING/UNRESOLVED. Publish the distribution of post-normalisation TR steps for the 23 normalizable events and rerun C if any residual stays >= 2x.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Strict class added (lib.mjs labelEvent strictCls): stated ratio must explain the move within 25 % (|log(r*q)| <= log 1.25). Residual distribution published (15 <=1.25, 5 in 1.25-2, 3 >2). Full rerun 39073148967; scenarios C2/C3 added, C kept for comparison.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-04",
+      "severity": "HIGH",
+      "area": "corporate actions: conflicting independent evidence",
+      "claim": "42 census events are CONFIRMED_BY_INDEPENDENT_SOURCE.",
+      "evidence": "lib.mjs:114-115 (FINRA/8-K 'explains' wins even when e.shares === 'NO_SPLIT'); CORPORATE-ACTION-V3-AUDIT.json normalizations: labelled 7, falsePositive 7 (byBasis SEC_SHARES_NO_SPLIT 7), wilson95FalseShare [0.6457,1]; acceptance.blindedInterventionFalseShare 0.2727 FAIL",
+      "assessment": "When FINRA or 8-K states a ratio but the SEC share count is unchanged, the event is still labelled CONFIRMED and normalised. The V3 audit from the same run found that every labelled FINRA/SEC-triggered normalisation (7/7) was contradicted by the share count. That is direct evidence that this channel is unreliable on Tiingo data, and neither document mentions it.",
+      "recommendation": "Add a CONFLICTING class (stated ratio + shares NO_SPLIT). Exclude it from 'confirmed' and from C normalisations, publish its count, and cite the V3 normalisation false-positive result in section 4/12.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "CONFLICTING_INDEPENDENT_EVIDENCE added (stated ratio and SEC shares NO_SPLIT): 1 census event; excluded from strict confirmation and from C2 corrections. V3 7/7 false-positive normalisation result cited in the root-cause doc section 4.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-05",
+      "severity": "MEDIUM",
+      "area": "corporate actions: SEC share-count confound (+-200 days)",
+      "claim": "Limitations: 'ein deklarierter Split in der Naehe kann sie vortaeuschen (Kanalauswertung in Abschnitt 4)'.",
+      "evidence": "lib.mjs:120-122 declaredNear only sets channel 'SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR'; the class stays CONFIRMED (line 114) and C still CUTs these events (backtest-impact.mjs:28-29); declaredNear checks only splits in the same segment's bars; channel fields are absent from the committed POPULATION.json (code added in 8a87c880f after run commit 130c615d5)",
+      "assessment": "The confound is detected but has no consequence. The 42 confirmed events, the 37 'fehlerhafte' securities, C's 18 cuts and the French '27 confirmed' all still include confounded share-count confirmations. Declared splits in a predecessor segment of the same issuer (ticker change, >30-day gap) are not checked. The channel breakdown the doc relies on does not exist yet.",
+      "recommendation": "After the population rerun, report the 42/27 net of SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR. Extend declaredNear to all segments of the same securityId/CIK and show the C delta without the confounded cuts.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "PARTIALLY_RESOLVED",
+        "how": "CONFOUNDED_BY_DECLARED_SPLIT added (shares-only confirmation with a declared split within 200 days in the same segment): 6 census events, 14 joined events. Extension to all segments of the same securityId/CIK not implemented; disclosed as a limitation.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-06",
+      "severity": "MEDIUM",
+      "area": "transcription / double rounding",
+      "claim": "Backtest doc section 7 'Kausale Zerlegung' and section 8 ('hoechstens 1,3 Punkte (Weinstein)').",
+      "evidence": "BACKTEST-IMPACT-*.json scenarios.*.deltaVsB vs doc section 7: B->C LowVol doc -0.1 vs C_INDEPENDENT.deltaVsB.cagrPp 0; B->C Turtle doc +2.1 vs 2.0; B->E 52W doc +0.1 vs E.deltaVsB 0; B->E Turtle doc -1.3 vs -1.4; B->E Weinstein doc -0.6 vs -0.7. Same pattern in build-artifacts.mjs d1() on rounded deltaVsA",
+      "assessment": "The section 3 tables (deltaVsA CAGR and MDD, all 6x6) and section 4 trade-exposure figures are transcribed correctly. The section 7 steps, however, are differences of already-rounded deltaVsA values and disagree with the published unrounded deltaVsB in 5 cells. Section 8 calls Weinstein (-1.3 vs A) the largest whole-series effect, but against its stated comparator B, Turtle (-1.4) is larger. The trade losses 309/794 are also stated vs A, not vs B (-321/-796).",
+      "recommendation": "Take the B->C and B->E steps from deltaVsB. Add a deltaVsC field for C->D (publicView) instead of differencing rounded numbers, and use the same comparator in section 8.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Attribution now taken from the unrounded pairwise comparators the runner publishes (deltaVsB, deltaVsC, deltaVsC2); build-artifacts.mjs no longer differences rounded deltas.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-07",
+      "severity": "MEDIUM",
+      "area": "faulty attribution (Turtle)",
+      "claim": "'Mit der bestaetigten Korrektur (Szenario C) steigt die Turtle-CAGR um 4,1 Punkte' and 'Grosser Effekt bei Turtle, aber von genau einem Ereignis ... kostete 18,7 % des Endvermoegens'.",
+      "evidence": "BACKTEST-IMPACT-TURTLE_S2_EQUITY_DAILY.json: B_VU_BUGS.deltaVsA.cagrPp 2.0, C_INDEPENDENT.deltaVsB.cagrPp 2.0; C tradeExposure inEventSecurities 13->12, distinctEventSecuritiesTraded 10->8, trades -1 vs B; pnlSpanningShareOfFinalEquityPp A -18.7, B -19.2, C +6.4; backtest-impact.mjs:77",
+      "assessment": "About half of the +4.1 comes from the VU accounting fixes (B), not from the data correction. The data correction adds +2.0 vs B. C changes 37 securities, and Turtle's other event-security trades change too, so the single-event attribution is plausible but no ablation isolates it. '18,7 %' is the whole trade's P&L divided by final equity, not the cost of the event. The swing to +6.4 % (on a different final equity) is the closer measure.",
+      "recommendation": "Write: 'C vs B: +2.0 points; C vs A: +4.1 including B'. Either run a one-event ablation or soften 'von genau einem Ereignis'. Rephrase 18,7 % as 'P&L of the spanning trade = -18.7 % of final equity'.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Wording: Turtle C2 vs B +2.0, C2 vs A +4.1 including B. C3 (normalise only) shows 0.0 vs B, so the +2.0 comes from a cut at one strictly confirmed event without stated ratio; the cut uses ex-post knowledge. \"P&L of the spanning trade = -18.7 % of final equity\" phrasing adopted. One-event ablation not run; the C3/C2 split isolates it to the cut set.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-08",
+      "severity": "MEDIUM",
+      "area": "scenario B correspondence / attribution of B1->B",
+      "claim": "B = 'Stale-Limit 5 Sessions (A4), kausaler Quarantaene-Termin und Datenereignis-Faktor 1 (A5), wertbewusster Dust (A8)'; section 8: 'Die Korrektur auf Faktor 1 ... kostet oder bringt hoechstens 0,2 Punkte; Ausnahmen Turtle und Weinstein, bei denen A4 mitwirkt'.",
+      "evidence": "backtest-impact.mjs:37 (runner-v4 + applyCausalTerminals, no price sanity) matches the V4 design. However, accounting-v4.mjs header also changes order-size floors to value-aware MIN_ORDER_VALUE and A12 reconciliation tolerance. LowVol B trades +128, Weinstein +9. B1 audit (terminalDatesMoved) is discarded (scenarioData causal() returns .data only)",
+      "assessment": "B does correspond to runner-v4 + causal terminals without price sanity, so it matches the confirmed A4/A5/A8 findings. It also carries the value-aware order-floor change, which likely drives the +128 LowVol trades, and that change is not named. The A5 factor, A4 and A8 are never isolated, so 'Faktor 1 hoechstens 0,2' and 'A4 wirkt mit' are unsupported. B1 = A exactly (0.0 and 0 trades in all six methods), and nothing published shows whether any terminal moved at all.",
+      "recommendation": "List the order-floor change under A8. Publish applyCausalTerminals audit.terminalDatesMoved for B1. Either add single-fix scenarios (A4-only, A5-factor-only) or drop the per-fix attribution sentences.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Order-floor change listed under B. terminalDatesMoved published for B1 (143 of 521 quarantined). Per-fix sentences inside B dropped; only B1 (A5 timing) is isolated.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-09",
+      "severity": "MEDIUM",
+      "area": "look-ahead / quarantine-induced bias in C and D",
+      "claim": "D is the 'obere Schranke der Sensitivitaet'; C contains only 'Korrekturen, die eine unabhaengige Quelle belegt'.",
+      "evidence": "lib.mjs:147-153 cutAt sets from=observedAt=event date, terminal lastClose = pre-event close; measurement-policy-v4 data-event factor 1; labels.mjs sharesAcross uses periodEnd up to +200 days; Turtle D (+2.7) < C (+4.1); D tradeExposure: Turtle spanning P&L share rises to +7.3 (the doc's 'D beendet einen in C normalisierten Trade' is not visible)",
+      "assessment": "For the diagnostic question 'what if the data were correct', back-applying a stated split ratio is acceptable (split adjustment is retroactive by nature). A CUT is different. It liquidates holders at the pre-event close on the event day with factor 1. That is a perfect-foresight exit, not executable, informed by share counts filed up to 200 days later, and for genuine moves (54 have counter-evidence) it removes real gains and losses. It is not a 'correct data' counterfactual, and it is not a bound: D is below C for Turtle. The 18 cuts in C carry the same issue.",
+      "recommendation": "Call D a stress or sensitivity scenario, not an 'obere Schranke'. State explicitly that cuts use ex-post knowledge and an unexecutable exit price. Separate C into C-normalise (21) and C-cut (18) in the public deltas.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "D renamed stress scenario, not a bound; ex-post knowledge and unexecutable exit price stated. C2 split into C3 (normalise only, 15) and the cut remainder via C2 - C3.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-10",
+      "severity": "MEDIUM",
+      "area": "wrong denominator / union definition",
+      "claim": "'304 von 8.995 Wertpapieren (3,4 %) gehoeren zu irgendeiner historischen Auffaelligkeits-Population'; table row 'Vereinigung aller Auffaelligkeits-Populationen 355/304/231'.",
+      "evidence": "population.mjs:107 unionAll excludes TOURNAMENT_QUARANTINES, V3_HOLDS, V3_CONFLICTING_HOLDS; POPULATION.json populations.V3_HOLDS.securityIds = 305 > unionOfIssuePopulations.securityIds = 304",
+      "assessment": "The 'union of all' leaves out three of the listed populations. V3 holds alone cover more securities (305) than the stated union (304), so 'irgendeiner' is false as written, and '<= 267 nur ungeklaert' inherits the narrower definition. Also bars.shareOfTournamentBars mixes denominators: lostToQuarantine is divided by store bars, the other fields by canonical bars.",
+      "recommendation": "Rename it to 'Vereinigung der Ereignis-Populationen (83, 74, D2, 272, Census)'. Add a second union that includes holds and quarantines, and label each share's denominator in the JSON.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Renamed \"Vereinigung der Ereignis-Populationen (83, 74, D2, 272, Census)\"; second union including holds and quarantines published (837 segments / 687 securityIds / 503 CIK).",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-11",
+      "severity": "MEDIUM",
+      "area": "double counting / class table mixes bases",
+      "claim": "Root-cause section 4 class table (census 616) lists 'PROVIDER_DISAGREEMENT 4 (+2 deklarierter Split ohne adj-Sprung)'; section 6 class A adds '6 Tage mit widerspruechlichen Tiingo-Spalten'; section 4 headline '42 als nicht deklarierte Kapitalmassnahme'.",
+      "evidence": "POPULATION.json eventStats.byLocusAndIndependent (707-day basis): COLUMNS_DISAGREE 3 AGAINST_SPLIT + 1 INSUFFICIENT; DECLARED_SPLIT_ADJ_CONTINUOUS 1 CONFIRMED + 1 INSUFFICIENT; cases83.byCauseAndLocus GENUINE_PRICE_MOVE|PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS 2; BACKTEST census.byKindAndClass DECLARED_SPLIT_RESIDUAL:CONFIRMED 6",
+      "assessment": "The 4+2 come from the 707-day basis, overlap the other rows, and are not additive with the 616-event classes. The '+2' (declared split, adjClose continuous) is correct provider behaviour, not a disagreement or a class-A provider defect. Of the 42 'confirmed', 6 are residuals on DECLARED split days, so not all are 'nicht deklariert'. Section 4 trade class lists (e.g. Momentum 9+20+2 = 31 vs 24 spanning trades) count trade-event pairs, not distinct events.",
+      "recommendation": "Keep one basis per table. Move the locus counts to their own table, drop the '+2' from provider defects, write '36 nicht deklarierte Spruenge + 6 bestaetigte Split-Reste', and label byClass as trade-event pairs.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "One basis per table; locus counts in their own table; \"+2\" removed from provider defects; byClass labelled trade-event pairs.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-12",
+      "severity": "MEDIUM",
+      "area": "VU transformation defects not searched (selection by construction)",
+      "claim": "'VU_TRANSFORMATION_DEFECT 0 Ereignisse'.",
+      "evidence": "lib.mjs:85-95 censusOf: selects on Tiingo raw ratio >= 10x without split, or declared-split days with TR step >= 2x; no criterion for 'TR/canonical jumps while raw is continuous'",
+      "assessment": "The census never looks for days where VU's canonical/TR series jumps while the provider raw series is smooth, such as dividend misapplication or adjustment-geometry errors. The 26 DECLARED_SPLIT_RESIDUAL events (16 unresolved) could be VU or provider defects and are not split between the two. '0' therefore reflects the search design, not a measured absence.",
+      "recommendation": "Write 'nicht gesucht / nur ueber E1-E10, F1 deterministisch geprueft', or add a census of |log TR step| >= log 2 with |log raw| < log 1.25 and no dividend.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "DISCLOSED",
+        "how": "No census of TR-only steps (|log TR| >= log 2 with |log raw| < log 1.25, no dividend) was run; the docs say \"nicht gesucht / nur ueber E1-E10, F1 deterministisch geprueft\".",
+        "verifiedOnRun": null
+      }
+    },
+    {
+      "id": "IR-13",
+      "severity": "MEDIUM",
+      "area": "identity mapping",
+      "claim": "'Kein Identitaetsfehler unter den 83 (#722) nachgewiesen'; '8.995 Wertpapiere (securityId)'.",
+      "evidence": "POPULATION.json: tickers == securityIds in the universe (8995) and in every population row; PREPARE.json universe.withName = 0; lib.mjs:105 FDL.forListing(..., {ticker, name: null}) -> FINRA match on symbol + listing window only (finra-daily-list.js:130-142); SEC by issuerCik only for 7352/9407 segments",
+      "assessment": "The 'securityId' level is in fact the ticker level. Ticker reuse by different issuers collapses into one 'Wertpapier', so 'Wertpapiere' overstates per-security precision. FINRA evidence is joined by symbol alone, old or new symbol, with no name check. A recycled or changed symbol can attach another issuer's split. This has not been shown to happen, but the claim 'no identity defect' rests on #722, not on this run.",
+      "recommendation": "Call the level 'Ticker/securityId'. Report how many confirmed events depend on FINRA symbol-only matches and how many tickers map to more than one CIK.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Level called \"Ticker/securityId\". Coverage published: 7,352/9,407 segments with CIK, 7,108 with share rows, 851 with FINRA rows (symbol-in-window only, no name check), 0 tickers mapped to more than one CIK; 9 census confirmations rest on FINRA symbol matches.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-14",
+      "severity": "MEDIUM",
+      "area": "evidence-coverage bias",
+      "claim": "'Unabhaengig bestaetigt fehlerhaft sind 37 (0,41 %)'.",
+      "evidence": "PREPARE.json universe.withIssuerCik 7352 of 9407; FINRA covers OTC only; CORPORATE-ACTION-V3-AUDIT.json sources.sec.stats.incompleteWindows = 1 (doc mentions only '1 nicht lesbar'); lib.mjs:116 INSUFFICIENT requires no channel at all",
+      "assessment": "Whether an event can be confirmed depends on having a CIK, on OTC status and on 8-K coverage. That skews 'confirmed' toward SEC filers and OTC names and leaves 2,055 segments without the SEC channels. Because of the loose ratio test (IR-03/04), 37 is neither a clean lower bound nor an upper bound.",
+      "recommendation": "Present 37 as 'mindestens unter abgedeckten Kanaelen', report the coverage per channel, and mention the incomplete SEC window.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Confirmed counts presented as \"mindestens, unter abgedeckten Kanaelen\" with per-channel coverage and the incomplete SEC window.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-15",
+      "severity": "MEDIUM",
+      "area": "French attribution",
+      "claim": "'Die externe French-Kalibrierung reagiert fast nur auf ungeklaerte Faelle ... Erst das Herausnehmen der nicht bestaetigten Faelle ergibt 0,963 bis 0,992'; 'Die Luecke stammt aus einer Handvoll nicht bestaetigter, aufwaerts gerichteter Spruenge >= 10x bei Pennystocks'.",
+      "evidence": "POPULATION.json french.ewExclusionVariants: CONFIRMED_ONLY(27) 0.146 / 523 bp; NOT_CONFIRMED(56) 0.963 / 58 bp; all 83: 0.992 / 26 bp; UNDECLARED_RAW_JUMP_10X_ONLY(55) 0.992; cases83.byIndependent AGAINST_SPLIT 8 (inside the 56); squaredGapShareInMonthsWithFlaggedCases 1",
+      "assessment": "The marginal claim holds: removing the 27 confirmed cases does almost nothing. But correlation is not additive. Removing the 56 gives 0.963, not 0.992, so the last step to 0.992 requires the confirmed cases as well, and '0,992' comes from variants (83, 55) that include confirmed months. The 56 include 8 cases with counter-evidence against a split, which point to genuine moves. Direction ('aufwaerts') and price level ('Pennystocks') of the 83 are not in any public field. 55-56 months is not 'eine Handvoll'.",
+      "recommendation": "Say 'marginal' and give the conditional step (0.963 -> 0.992 needs the confirmed months). Either publish the direction and prior-price breakdown of the 83 or drop 'aufwaerts/Pennystocks'. Use the new variants EXCLUDE_83_UNDECLARED_NOT_CONFIRMED / _CONFIRMED once the population rerun lands.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "\"marginal\" wording; strict variants published (exclude 11 strictly confirmed -> 0.145; exclude 72 not strictly confirmed -> 0.963; full 83 -> 0.992). Direction and prior-price breakdown of the 83 published (78 UP, 5 DOWN; 50 with prior price < 1 USD).",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-16",
+      "severity": "MEDIUM",
+      "area": "verdict UNDERPERFORMANCE_REMAINS / benchmark universe",
+      "claim": "'Alle sechs bleiben in allen sieben Szenarien unter SPY'; 'Keine Methode erreicht in einem Szenario SPY'.",
+      "evidence": "All 42 cagrVsSpy == 'BELOW_SPY' (verified); backtest-impact.mjs:65 dir() on unrounded CAGR only; bench from prepared via V3 benchmarkCurve, identical across scenarios; root-cause doc row 10 'IWM/QQQ/IWV fehlen'",
+      "assessment": "The direction field supports the verdict as stated: CAGR below SPY total return on today's copy. But margins, Sharpe and drawdown vs SPY are not public, so no reader can judge robustness (e.g. Turtle C at +4.1 pp could sit just below SPY). The benchmark is a large-cap index while the universes include small and penny caps, and A is a replay, not the sealed original. 'Daraus folgt nicht, dass die Methoden gut waeren' is fine. The verdict is narrower than its wording.",
+      "recommendation": "Define the verdict as 'CAGR < SPY-TR on capture b3ca8681'. Publish a coarse margin bucket (e.g. <1 / 1-5 / >5 pp below) and the Sharpe direction vs SPY, and mention the missing small-cap benchmark next to the verdict.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Verdict defined as \"CAGR below SPY-TR on capture b3ca8681\". Coarse gap buckets and Sharpe direction vs SPY published per cell (all BELOW_SPY_SHARPE; gap 1-5 pp for Momentum/52W/Weinstein, >5 pp for LowVol/Turtle/Kullamaegi). Missing small-cap benchmark stated next to the verdict.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-17",
+      "severity": "MEDIUM",
+      "area": "non-reproducible comparison / capture pinning",
+      "claim": "Workflow header: 'canonical capture of the pinned #705 pipeline (same content as freezes V3-84caf2e84e560bec and V4-beae51ae1b07768b)'; JSON scenario key 'A_ORIGINAL' and backtest-impact.mjs:7 'exactly as measured'.",
+      "evidence": "research-price-root-cause-audit.yml:5-6, 115, 249, 348 (each job re-captures live R2); capture*.json all dataFingerprint b3ca8681..., normalizedPartListSha256 e24abf97... (verified identical across 7 captures) but counts.inputSegments 9409 with 2 CORPORATE_ACTION_CONTRADICTED rejections; build-artifacts.mjs FROZEN 318c051f..., 9408; no fingerprint assertion in ranking/population rerun",
+      "assessment": "The docs correctly call A a replay on a different copy. The workflow comment and the code comment contradict this. The ranking job and the population rerun capture the live store again without failing closed if the fingerprint is no longer b3ca8681, which would silently mix data copies across the twelve artifacts. The difference from the freeze is +1 input segment and 2 capture rejections, not simply '-1 Segment'.",
+      "recommendation": "Fix the header and code comment. Pass the expected fingerprint (b3ca8681...) to ranking.mjs/population.mjs and fail on mismatch. Record populationRun/rankingRun fingerprints in build-artifacts provenance, and report '9409 Eingangssegmente, 2 verworfen'.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Workflow header and code comment fixed; --expect-fingerprint b3ca8681... passed to all three jobs and enforced; provenance records population/ranking/method fingerprints (all equal).",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-18",
+      "severity": "LOW",
+      "area": "post-hoc selection / unexplained mechanisms",
+      "claim": "'Das erklaert, warum D bei Momentum nur +0,6 Punkte bewirkt'; 'bei Turtle ist D deshalb niedriger als C'.",
+      "evidence": "BACKTEST-IMPACT-cross_sectional_momentum.json D enteredWithin252AfterEvent 0, trades -94; Turtle D spanning P&L share +7.3 vs C +6.4",
+      "assessment": "These are after-the-fact explanations with no supporting run. For Turtle, the spanning trade is not ended in D (its P&L share rises), so the stated mechanism is not what the data shows.",
+      "recommendation": "Mark them as hypotheses or remove them.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Unsupported mechanism statements marked as hypotheses or removed.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-19",
+      "severity": "LOW",
+      "area": "unverifiable / hard-coded figures",
+      "claim": "'83 (0,017 %) / 493.362 EW-Security-Months'; 'Uebernachtsprung von 10x bis 5.000x'; 'ohne Rohstart < 1 $ (0,992)', 'Winsorisieren 0,994'.",
+      "evidence": "build-artifacts.mjs ewSecurityMonthsV4: 493362 (constant, not computed in run 39053330565); no max-ratio field in POPULATION.json; #705 figures not in this run",
+      "assessment": "The 0.017 % uses a denominator from the frozen V4 data, while the 83 come from today's copy. The 5,000x figure and the #705 figures cannot be checked from this run.",
+      "recommendation": "Compute the security-month denominator in population.mjs (or cite its source) and give run IDs or file paths for the #705 figures and the 5,000x bound.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "EW security-month denominator computed in population.mjs (493,258); #705 figures cited with run IDs; the 5,000x figure dropped from the headline.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-20",
+      "severity": "LOW",
+      "area": "data licensing",
+      "claim": "'Einzelfaelle, Ticker und Kurse sind nur an den Owner versiegelt'; performanceNumbersPublished DELTAS_AND_DIRECTIONS_ONLY.",
+      "evidence": "grep over run-39053330565/*.json for tiingo:EX:TICKER, ref_*, ticker fields and close/price/cagr/sharpe/finalEquity values: no hits; POPULATION.json french.*.meanDiffBpPerMonth (e.g. 554) and trackingErrorPp; oracle.json valuesPublished false",
+      "assessment": "No identities, tickers, prices or absolute strategy metrics leak. One small residual: French monthly data are public, so the mean bp difference lets anyone reconstruct the mean monthly return of the Tiingo-derived EW construction. This is an aggregate, probably already published in #705, but it is an absolute figure derived from licensed data.",
+      "recommendation": "Confirm with the owner that aggregate derived statistics are covered by the Tiingo terms, or publish correlation only.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Correlation, verdict and failed checks only; mean difference and tracking error removed from new outputs, redacted in run-39053330565/POPULATION.json and from the docs. The earlier values remain in git history of this branch (commit bc8b6cb10); owner decision whether to squash before merge.",
+        "verifiedOnRun": "39073148967"
+      }
+    },
+    {
+      "id": "IR-21",
+      "severity": "LOW",
+      "area": "survivorship / point-in-time",
+      "claim": "Survivorship handled via 'Universum beobachtungsbasiert (A11)'; E 'vermischt Survivorship mit Datenqualitaet'.",
+      "evidence": "PREPARE.json universe.delisted 3195; D audit removed 15, C removed 1, E removed 521; CORPORATE-ACTION-V3-AUDIT.json acceptance.pitViolations pass:false (filedBeforeAcceptance 2)",
+      "assessment": "The acknowledgement is adequate. D and C also delete whole securities (15 and 1) when a cut leaves fewer than 2 bars, a small survivorship effect the docs do not mention. The V3 PIT gate fails on 2 filings, which bears on the SEC channel the census uses and is not mentioned.",
+      "recommendation": "Mention the removals in D/C and the V3 PIT acceptance failure in section 12/10.",
+      "resolvableInThisPR": true,
+      "resolution": {
+        "status": "RESOLVED",
+        "how": "Removals in C/D (trade counts) and the V3 PIT acceptance failure mentioned in limitations.",
+        "verifiedOnRun": "39073148967"
+      }
+    }
+  ],
+  "verifiedClaims": [
+    "Backtest doc section 3 CAGR and MDD delta tables (36 cells each) match deltaVsA in all six BACKTEST-IMPACT-*.json",
+    "Section 4 trade-exposure table (trade records, in event securities, distinct, spanning, months, entries <=252, P&L share) matches tradeExposure of A_ORIGINAL",
+    "All 42 method x scenario combinations are BELOW_SPY; the benchmark is computed once and is identical across scenarios",
+    "Max |meanExposurePp| = 0.6 (Weinstein B)",
+    "Root-cause population table (levels for 83/74/D2/272/holds/conflicting/quarantines/census/confirmed/union) matches POPULATION.json",
+    "Overlaps 83&272=28, 83&census=42, 74&D2=11, 272&census=157, 272&holds=111 match",
+    "707 joined events and the source-combination split (369/178/64/27/36/20/13) match",
+    "Provider locus counts 674/27/4/2 and 272 all NO_EVENT match (interpretation challenged in IR-01)",
+    "83-case cause x independent table and 23 undeclared reverse splits all NO_EVENT_IN_EITHER_COLUMN match",
+    "D2 cause 8/2/1 and day labels 2/6/2 match",
+    "French EW variant table and full-construction table (0.145/0.992/0.990/0.992/0.145/0.146/0.963/0.992/0.144; C/D/E MOM/VAR) match",
+    "Bar shares 616/14,371,749, 327,775 (2.28 %), 401,827/14,773,577 (2.72 %), 37/8995 = 0.41 %, 304/8995 = 3.4 % are arithmetically correct",
+    "Quarantine reasons 434/63/16/8 = 521 match",
+    "normalizeAt direction is correct for q = new shares per old share (FINRA ratio<1 = REVERSE); the synthetic test passes with the pinned checkouts",
+    "Scenario B = runner-v4 + applyCausalTerminals without price sanity; F adds price sanity (74 affected, 3 quarantined)",
+    "All 7 captures share dataFingerprint b3ca8681 and normalizedPartListSha256 e24abf97; census summary is identical in all six method files",
+    "Tiingo self-consistency 60,185/60,991 = 98.7 % and 463/3,184 securities match quant/data/providers/return-basis-universe-study.json",
+    "No tickers, identities, prices or absolute performance metrics found in the public run JSONs"
+  ],
+  "overall": "The numbers are transcribed carefully. Every population, overlap, French and delta-vs-A figure I checked matches the run JSONs, the public files leak no identities or absolute performance, and the scenario machinery (B = runner-v4 + causal terminals, normalizeAt direction) is implemented as described. The weak points are in interpretation and in the confirmation logic. (1) The provider-locus statistic cannot tell provider error from genuine moves, yet it is presented as evidence for the provider side, and the 'Hauptfehler = Klasse C' headline rests on 42 of 616 events whose impact the companion document shows to be negligible. (2) 'Independently confirmed' uses a direction-only ratio test, lets FINRA/8-K override contradicting share counts (the V3 audit from the same run found 7/7 such normalisations to be false positives), and keeps share-count confirmations confounded by nearby declared splits. Scenario C and the 37/42 figures are therefore less 'independent' than claimed. (3) The section 7 decomposition double-rounds and disagrees with the published deltaVsB in 5 cells; Turtle's +4.1 is half VU-fix effect; D is called an upper bound although it is not one; per-fix attributions inside B are not isolated. The UNDERPERFORMANCE_REMAINS direction is supported by the published direction fields, but only as 'CAGR below SPY-TR on capture b3ca8681', without public margins or a small-cap benchmark. Everything except the missing-benchmark limitation can be fixed in this PR by rewording, stricter labels and a rerun with a pinned fingerprint.",
+  "highAndCriticalOpen": [],
+  "summary": {
+    "findings": 21,
+    "high": 4,
+    "medium": 13,
+    "low": 4,
+    "resolved": 19,
+    "partiallyResolved": 1,
+    "disclosed": 1
+  },
+  "reviewProcess": "independent adversarial reviewer (separate agent, no authorship of the code) on run 39053330565; resolutions verified by the author on rerun 39073148967; no second independent pass on the rerun"
+}
