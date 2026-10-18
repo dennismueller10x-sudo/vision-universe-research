@@ -1,14 +1,16 @@
 """Synthetic internal previews; no real API, recipients, secrets or mail."""
 import copy
 import json
+import io
 import os
 import unittest
+import urllib.error
 from unittest.mock import patch
 import test_safety as safety
 from campaigns import Process, version
 from client import Client
 from newsletter_actions import NewsletterClient, validate_ledger
-from newsletter_preview import preview
+from newsletter_preview import preview, clone_body
 from prepare import Blocked
 from test_newsletter_actions import ENV, MemoryLedger
 
@@ -19,8 +21,11 @@ class PreviewFake(safety.Fake):
         self.clone=None
         self.mutate=None
         self.mutate_after_send=False
+        self.listed=[]
 
     def call(self,method,path,body=None,**kwargs):
+        if method=="GET" and path.startswith("/emailCampaigns?"):
+            self.calls.append((method,path,None));return {"campaigns":copy.deepcopy(self.listed),"count":len(self.listed)}
         if method=="POST" and path=="/emailCampaigns":
             self.calls.append((method,path,copy.deepcopy(body)))
             if self.fail_draft: raise Blocked("Synthetic timeout")
@@ -137,6 +142,82 @@ class Preview(unittest.TestCase):
             altered=copy.deepcopy(state)
             next(iter(altered["campaigns"]["8"]["tests"].values())).update(change)
             with self.assertRaises(Blocked): validate_ledger(altered)
+
+    def test_clone_does_not_round_trip_get_only_or_unset_optional_fields(self):
+        source={**self.fake.campaign,"replyTo":"","toField":"","header":"[DEFAULT_HEADER]",
+                "footer":"[DEFAULT_FOOTER]","recurring":False,"providerOnly":True}
+        result=clone_body(source,{"listIds":[3],"exclusionListIds":[1,2]})
+        self.assertEqual(set(result),{"name","type","subject","previewText","htmlContent","sender","recipients"})
+        self.assertEqual(result["sender"],source["sender"])
+
+    def recovery(self,run_change=None):
+        self.fake.fail_draft=True
+        with self.assertRaises(Blocked): self.execute()
+        self.fake.fail_draft=False
+        fingerprint=version(self.fake.campaign)
+        self.ledger.state["campaigns"]["8"]["approvals"]={"12":{
+            "operation":"preview","version":fingerprint,"approval_sha256":"b"*64,"actor_id":7}}
+        incident={"campaign_id":8,"version":fingerprint,"failed_run_id":12,
+                  "head_sha":"c"*40,"approval_sha256":"b"*64,"owner_id":7}
+        run={"id":12,"status":"completed","conclusion":"failure","event":"workflow_dispatch",
+            "head_branch":"main","head_sha":"c"*40,"run_attempt":1,
+            "path":".github/workflows/brevo-newsletter.yml","actor":{"id":7},"triggering_actor":{"id":7}}
+        run.update(run_change or {})
+        class Github:
+            def call(self,method,path):
+                assert (method,path)==("GET","/actions/runs/12")
+                return run
+        return fingerprint,incident,Github()
+
+    def test_reviewed_incident_reconciles_absence_then_one_create_without_reset(self):
+        fingerprint,incident,github=self.recovery()
+        with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            result=preview(self.process(),8,fingerprint,True,github)
+            with self.assertRaises(Blocked): preview(self.process(),8,fingerprint,True,github)
+        state=self.ledger.state["campaigns"]["8"]
+        self.assertEqual(state["creation_recoveries"],{fingerprint:12})
+        self.assertEqual(state["tests"][fingerprint]["state"],"api_accepted")
+        self.assertIn("12",state["approvals"])
+        self.assertFalse(result["production_sent"])
+        self.assertEqual(sum(p.endswith("sendNow") for _,p,_ in self.fake.calls),1)
+
+    def test_existing_unique_matching_draft_is_adopted_without_duplicate_creation(self):
+        fingerprint,incident,github=self.recovery()
+        self.fake.clone={**clone_body(self.fake.campaign,{"listIds":[3],"exclusionListIds":[1,2]}),"id":9,"status":"draft"}
+        self.fake.listed=[self.fake.clone]
+        with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            preview(self.process(),8,fingerprint,True,github)
+        self.assertEqual(sum(m=="POST" and p=="/emailCampaigns" for m,p,_ in self.fake.calls),1) # original rejected call only
+
+    def test_wrong_run_or_possible_send_cannot_be_recovered(self):
+        fingerprint,incident,github=self.recovery({"conclusion":"success"})
+        with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            with self.assertRaises(Blocked): preview(self.process(),8,fingerprint,True,github)
+        self.ledger.state["campaigns"]["8"]["tests"][fingerprint]["preview_id"]=9
+        with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            with self.assertRaises(Blocked): preview(self.process(),8,fingerprint,True,github)
+        self.assertFalse(any(p.endswith("sendNow") for _,p,_ in self.fake.calls))
+
+    def test_second_failed_corrective_creation_cannot_repeat(self):
+        fingerprint,incident,github=self.recovery()
+        self.fake.fail_draft=True
+        with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
+            with self.assertRaises(Blocked): preview(self.process(),8,fingerprint,True,github)
+            self.fake.fail_draft=False
+            with self.assertRaises(Blocked): preview(self.process(),8,fingerprint,True,github)
+        self.assertEqual(sum(m=="POST" and p=="/emailCampaigns" for m,p,_ in self.fake.calls),2)
+        self.assertFalse(any(p.endswith("sendNow") for _,p,_ in self.fake.calls))
+
+    def test_http_diagnostic_emits_only_known_code_and_fixed_parameter_name(self):
+        raw=json.dumps({"code":"invalid_parameter","message":"replyTo invalid: alpha@example.invalid synthetic-only"}).encode()
+        error=urllib.error.HTTPError("https://example.invalid/private",400,"private",{},io.BytesIO(raw))
+        with patch.dict(os.environ,{"BREVO_API_KEY":"synthetic-only"}), \
+                patch("client.urllib.request.OpenerDirector.open",side_effect=error):
+            with self.assertRaises(Blocked) as caught: Client().call("GET","/account")
+        self.assertIn("Code invalid_parameter",str(caught.exception))
+        self.assertIn("Parameter replyTo",str(caught.exception))
+        for private in ("alpha@example.invalid","synthetic-only","https://"):
+            self.assertNotIn(private,str(caught.exception))
 
 
 if __name__=="__main__": unittest.main()

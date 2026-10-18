@@ -56,7 +56,7 @@ def validate_ledger(state):
             raise Blocked("Entwurfsregister enthält unzulässige Daten.")
     for cid,c in state["campaigns"].items():
         if not re.fullmatch(r"[1-9][0-9]*",cid) or not isinstance(c,dict) or set(c)-{
-                "recipients","sender_id","sender_name_sha256","tests","send","approvals"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
+                "recipients","sender_id","sender_name_sha256","tests","send","approvals","creation_recoveries"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
         if not integer(c.get("sender_id")): raise Blocked("Absender-ID im Register fehlt.")
         if "sender_name_sha256" in c and not hex64(c["sender_name_sha256"]):
             raise Blocked("Ungültige Absendernamensbindung.")
@@ -65,6 +65,9 @@ def validate_ledger(state):
                 not isinstance(v,list) or any(not integer(i) for i in v) for v in r.values()):
             raise Blocked("Unzulässige Register-Zielgruppe.")
         if c.get("send") not in (None,"pending","api_accepted"): raise Blocked("Unzulässige Versandreservierung.")
+        recoveries=c.get("creation_recoveries",{})
+        if not isinstance(recoveries,dict) or any(not hex64(k) or not integer(v) for k,v in recoveries.items()):
+            raise Blocked("Unzulässiger Erstellungskorrektur-Nachweis.")
         if not isinstance(c.get("tests",{}),dict): raise Blocked("Ungültiges Testregister.")
         for version,t in c.get("tests",{}).items():
             if not hex64(version) or not isinstance(t,dict) or set(t) not in (
@@ -113,12 +116,14 @@ class NewsletterClient(Client):
         super().__init__();self.operation,self.campaign_id=operation,campaign_id
         self.preview_id=None
         self.preview_recipients=None
+        self.preview_recovery=False
     def call(self,method,path,body=None,missing=False):
         clean=path.split("?",1)[0]
         read=method=="GET" and (clean in ("/account","/senders","/contacts/lists") or
             clean.startswith("/senders/domains/") or clean.startswith("/contacts/") or clean=="/contacts" or
             clean=="/emailCampaigns/"+str(self.campaign_id) or
             self.preview_id is not None and clean=="/emailCampaigns/"+str(self.preview_id))
+        read=read or (method=="GET" and self.operation=="preview" and self.preview_recovery and clean=="/emailCampaigns")
         write=method=="POST" and ((self.operation=="draft" and clean=="/emailCampaigns") or
             (self.operation=="test" and clean=="/emailCampaigns/%d/sendTest"%self.campaign_id) or
             (self.operation=="send" and clean=="/emailCampaigns/%d/sendNow"%self.campaign_id))
@@ -198,7 +203,7 @@ def run():
         if operation=="test": return process.test(cid,True,expected_version=expected)
         if operation=="preview":
             from newsletter_preview import preview
-            return preview(process,cid,expected,authorized=True)
+            return preview(process,cid,expected,authorized=True,github=github)
         return process.send(cid,{"campaign_id":cid,"version":expected,"explicit_owner_approval":True,
             "approval_reference":"owner dispatch "+str(receipt["run_id"])+" / "+receipt["approval_sha256"]},True)
     finally: process.close()

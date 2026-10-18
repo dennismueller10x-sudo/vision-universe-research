@@ -42,7 +42,22 @@ class Client:
         except urllib.error.HTTPError as exc:
             if missing and exc.code == 404:
                 return None
-            raise Blocked("Brevo-Aufruf abgelehnt (HTTP %d); keine automatische Wiederholung." % exc.code) from None
+            # Never emit provider text: it can contain addresses or echoed values.
+            # Only documented error codes and fixed request-field names may leave
+            # this private process. Preserve the status even for non-JSON errors.
+            details=""
+            try:
+                error=json.loads(exc.read(8192))
+                code=error.get("code")
+                known={"invalid_parameter","missing_parameter","duplicate_parameter","unauthorized",
+                       "permission_denied","not_enough_credits","document_not_found","method_not_allowed","bad_request","out_of_range"}
+                if code in known: details+=", Code "+code
+                message=error.get("message","")
+                if isinstance(message,str):
+                    fields=[k for k in ("replyTo","toField","footer","header","sender","subject","recurring","recipients","tag") if k.lower() in message.lower()]
+                    if fields: details+=", Parameter "+"/".join(fields)
+            except Exception: pass
+            raise Blocked("Brevo-Aufruf abgelehnt (HTTP %d%s); keine automatische Wiederholung." % (exc.code,details)) from None
         except (OSError, ValueError):
             raise Blocked("Brevo-Aufruf unklar; Status vor Wiederholung prüfen.") from None
 
