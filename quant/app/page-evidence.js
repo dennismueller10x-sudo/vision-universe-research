@@ -127,6 +127,8 @@
     ROBUST: "Evidenz robust, aber nicht zertifiziert."
   };
   var TRUST_SHORT = { LIMITED: "eingeschränkt", NOT_READY: "nicht bereit", USABLE: "belastbar", ROBUST: "robust" };
+  /* Kurzform der Edge-Sprache fuer Beleg-Chips und Ueberblick (VU3); der volle Satz bleibt edgeSentence. */
+  var EDGE_SHORT = { WEAKER: "schwächer als der Markt", NONE: "kein messbarer Vorteil", SMALL: "kleiner Vorteil", MODERATE: "moderater Vorteil", CLEAR: "deutlicher Vorteil", UNKNOWN: null };
   /* Reihenfolge der Checkliste: was gilt, dann was fehlt. [id, erfuellt, offen, Fachbegriff] */
   var CHECK_WORDS = [
     ["returnBasis", "Dividenden sind berücksichtigt (Gesamtrendite).", "Dividenden sind nicht berücksichtigt.", "Gesamtrendite"],
@@ -386,7 +388,7 @@
   global.QXEvidence = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, TIER_WORD: TIER_WORD, REASON: REASON, RULE_LABEL: RULE_LABEL,
     tierWord: tierWord, statusBadge: statusBadge, pp: pp, baseLine: baseLine, reasonText: reasonText, pct: pct, share: share, num: num, int: int,
     share1: share1, trustPill: trustPill, returnWord: returnWord, evidenceBlock: evidenceBlock, trackingSection: trackingSection,
-    LANGUAGE_VERSION: LANGUAGE_VERSION, EDGE: EDGE, EDGE_THRESHOLDS_PP: EDGE_THRESHOLDS_PP, TRUST_PLAIN: TRUST_PLAIN, TRUST_SHORT: TRUST_SHORT, CHECK_WORDS: CHECK_WORDS,
+    LANGUAGE_VERSION: LANGUAGE_VERSION, EDGE: EDGE, EDGE_THRESHOLDS_PP: EDGE_THRESHOLDS_PP, TRUST_PLAIN: TRUST_PLAIN, TRUST_SHORT: TRUST_SHORT, EDGE_SHORT: EDGE_SHORT, CHECK_WORDS: CHECK_WORDS,
     edgeOf: edgeOf, edgeSentence: edgeSentence, oosAnswer: oosAnswer, trustPlain: trustPlain, trustChecklist: trustChecklist,
     ALERT_CHOICES: ALERT_CHOICES, alertsFor: alertsFor, alertMatch: alertMatch, alertPanel: alertPanel, watchTimeline: watchTimeline, hasEdge: hasEdge,
     drawdownSentence: drawdownSentence, sampleSentence: sampleSentence, SAMPLE_WHY: SAMPLE_WHY, signalEvidence: signalEvidence, certifiedLine: certifiedLine };

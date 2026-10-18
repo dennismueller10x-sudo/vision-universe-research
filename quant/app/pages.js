@@ -129,7 +129,7 @@
     if (tested && E) {
       var tb = tested.backtest, edge = E.edgeOf(tb);
       chips.push(evChip("tested", "Getestet", typeof tb.deltaPositiveShare === "number" ? E.pp(tb.deltaPositiveShare) + " ggü. Markt" : E.share1(tb.positiveShare) + " höher",
-        [EDGE_SHORT[edge.id], "n " + E.int(tb.n) + " marktweit", "Evidenz " + (E.TRUST_SHORT[tb.trust] || "nicht bereit")].filter(Boolean), false, edge.tone));
+        [E.EDGE_SHORT[edge.id], "n " + E.int(tb.n) + " marktweit", "Evidenz " + (E.TRUST_SHORT[tb.trust] || "nicht bereit")].filter(Boolean), false, edge.tone));
     } else if (withheld) chips.push(evChip("tested", "Getestet", "noch keine Aussage", [], true));
     if (c.events.length > 1) chips.push(el("span", { class: "q-rc-chip is-count", title: c.events.slice(1).map(function (e) { return (T[e.eventType] || {}).label || e.eventType; }).join(" · "),
       text: "+" + (c.events.length - 1) + (c.events.length > 2 ? " Ereignisse" : " Ereignis") }));
@@ -163,8 +163,6 @@
       details
     ]);
   }
-  /* Kurzform der Edge-Sprache (evidence-language-1.0.0) fuer den Beleg-Chip; der volle Satz steht in den Details. */
-  var EDGE_SHORT = { WEAKER: "schwächer als der Markt", NONE: "kein messbarer Vorteil", SMALL: "kleiner Vorteil", MODERATE: "moderater Vorteil", CLEAR: "deutlicher Vorteil", UNKNOWN: null };
   /* Beleg-Chip: Zeichen + Stufe + Hauptwert + Bezugsgroessen. Gestrichelt (off): noch keine Aussage. */
   function evChip(tier, label, value, rest, off, tone) {
     return el("span", { class: "q-rc-chip tier-" + tier + (off ? " is-off" : "") + (tone ? " tone-" + tone : "") }, [
