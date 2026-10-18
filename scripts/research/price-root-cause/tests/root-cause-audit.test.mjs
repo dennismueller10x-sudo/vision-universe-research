@@ -115,3 +115,19 @@ test('rank table: higher CAGR/Sharpe and shallower drawdown rank first; changes 
   assert.deepEqual(t.A_ORIGINAL.cagr, { m1: 1, m2: 2 }); assert.deepEqual(t.A_ORIGINAL.maxDrawdown, { m2: 1, m1: 2 });
   assert.equal(t.changes.cagr.A_to_B, false); assert.equal(t.changes.cagr.A_to_C2, true); assert.equal(t.C2_STRICT.aboveSpy.m2, true);
 });
+
+test('strict class: a share-count confirmation must match the move, a share rise stays undecided (second review IR2-01/02)', { skip }, async () => {
+  const { M, data, ids } = await fixture();
+  const s = data.securities.find((x) => x.id === ids[0]);
+  const at = (v0, v1) => [{ ...s.fundamentals[0], value: v0 }, { ...s.fundamentals[1], value: v1 }];
+  const label = (fund) => K.labelledCensus(M, { ...data, securities: [{ ...s, fundamentals: fund }] }, { byCik: {} }, { bySym: new Map(), available: false }).get(s.id)[0].label;
+  const exact = label(at(5e7, 5e6));
+  assert.equal(exact.cls, 'CONFIRMED_BY_INDEPENDENT_SOURCE'); assert.equal(exact.strictCls, 'CONFIRMED_BY_INDEPENDENT_SOURCE'); assert.ok(exact.sharesResidual < 1.01);
+  const loose = label(at(5e7, 1.25e7));
+  assert.equal(loose.cls, 'CONFIRMED_BY_INDEPENDENT_SOURCE', 'the lenient direction test still passes a 4x share drop for a 10x move');
+  assert.equal(loose.strictCls, 'RATIO_DOES_NOT_EXPLAIN_MOVE');
+  /* a 12x price fall with a 10x share rise: forward split or issuance cannot be told apart */
+  const down = { ...s, bars: s.bars.map((b, j) => (j < 900 ? { ...b, rawClose: b.rawClose * 120, close: b.close * 120, open: b.open * 120, high: b.high * 120, low: b.low * 120, rawOpen: b.rawOpen * 120, rawHigh: b.rawHigh * 120, rawLow: b.rawLow * 120, totalReturnIndex: b.totalReturnIndex * 120 } : b)), fundamentals: at(5e6, 5e7) };
+  const d = K.labelledCensus(M, { ...data, securities: [down] }, { byCik: {} }, { bySym: new Map(), available: false }).get(s.id)[0].label;
+  assert.equal(d.direction, 'DOWN'); assert.equal(d.cls, 'CONFIRMED_BY_INDEPENDENT_SOURCE'); assert.equal(d.strictCls, 'SHARE_RISE_SPLIT_OR_DILUTION');
+});

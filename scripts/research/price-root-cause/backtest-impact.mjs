@@ -79,12 +79,12 @@ export function publicView(res) {
     const m = r.metrics, e = r.exposure;
     scenarios[id] = { runner: r.runner, securities: r.securities, audit: r.audit,
       cagrVsSpy: dir(m.cagr, spy), deltaVsA: { cagrPp: pp(m.cagr, A?.cagr), maxDrawdownPp: pp(m.maxDrawdown, A?.maxDrawdown), excessVsSpyPp: pp(m.cagr - spy, A?.cagr - spy), meanExposurePp: pp(m.meanExposure, A?.meanExposure), trades: m.trades - (A?.trades ?? 0) },
-      deltaVsB: B ? { cagrPp: pp(m.cagr, B.cagr), maxDrawdownPp: pp(m.maxDrawdown, B.maxDrawdown) } : null,
+      deltaVsB: B ? { cagrPp: pp(m.cagr, B.cagr), maxDrawdownPp: pp(m.maxDrawdown, B.maxDrawdown), trades: m.trades - (B.trades ?? 0) } : null,
       deltaVsC: Cm ? { cagrPp: pp(m.cagr, Cm.cagr), maxDrawdownPp: pp(m.maxDrawdown, Cm.maxDrawdown) } : null,
       deltaVsC2: C2 ? { cagrPp: pp(m.cagr, C2.cagr), maxDrawdownPp: pp(m.maxDrawdown, C2.maxDrawdown) } : null,
       cagrGapToSpyBucket: bucket(m.cagr, spy), sharpeVsSpy: dir(m.sharpe, res.benchmark.sharpe).replace('SPY', 'SPY_SHARPE'),
       tradeExposure: { tradeRecords: e.tradeRecords, inEventSecurities: e.inEventSecurities, spanningEvent: e.spanningEvent, enteredWithin252AfterEvent: e.enteredWithin252AfterEvent,
-        distinctEventSecuritiesTraded: e.distinctEventSecuritiesTraded, eventMonthsHeld: e.eventMonthsHeld, byClass: e.byClass,
+        distinctEventSecuritiesTraded: e.distinctEventSecuritiesTraded, eventMonthsHeld: e.eventMonthsHeld, byClass: e.byClass, byStrictClassChannelDirection: e.byStrictClass,
         pnlSpanningShareOfFinalEquityPp: K.finite(m.finalEquity) && m.finalEquity > 0 ? K.r1(100 * e.pnlSpanning / m.finalEquity) : null },
       seconds: r.seconds };
   }
@@ -92,11 +92,14 @@ export function publicView(res) {
 }
 
 export function censusSummary(census) {
-  const s = { events: 0, securities: census.size, byKind: {}, byClass: {}, byStrictClass: {}, byKindAndClass: {}, byChannel: {}, residualOfStatedRatio: {}, normalizable: 0, normalizableStrict: 0, strictConfirmedSecurities: 0 };
+  const s = { events: 0, securities: census.size, byKind: {}, byClass: {}, byStrictClass: {}, byKindAndClass: {}, byChannel: {}, residualOfStatedRatio: {}, residualOfShareCount: {}, strictByKindChannelDirection: {}, normalizable: 0, normalizableStrict: 0, strictConfirmedSecurities: 0, strictConfirmedUndeclaredUp: 0 };
   const strictSec = new Set();
   for (const [id, evs] of census) for (const e of evs) {
     s.events++; K.inc(s.byKind, e.kind); K.inc(s.byClass, e.label.cls); K.inc(s.byStrictClass, e.label.strictCls); K.inc(s.byKindAndClass, e.kind + ':' + e.label.cls);
     if (e.label.channel) K.inc(s.byChannel, e.label.channel + (e.label.channel === 'FINRA' ? '_SYMBOL_MATCH_ONLY' : ''));
+    if (K.finite(e.label.sharesResidual)) K.inc(s.residualOfShareCount, e.label.sharesResidual <= 1.25 ? 'LE_1.25' : e.label.sharesResidual <= 2 ? '1.25_TO_2' : 'GT_2');
+    K.inc(s.strictByKindChannelDirection, e.kind + '|' + e.label.strictCls + '|' + (e.label.channel ?? 'NONE') + '|' + e.label.direction);
+    if (e.label.strictCls === 'CONFIRMED_BY_INDEPENDENT_SOURCE' && e.kind === 'UNDECLARED_RAW_JUMP_10X' && e.label.direction === 'UP') s.strictConfirmedUndeclaredUp++;
     if (K.finite(e.label.residual)) K.inc(s.residualOfStatedRatio, e.label.residual <= 1.25 ? 'LE_1.25' : e.label.residual <= 2 ? '1.25_TO_2' : 'GT_2');
     if (independentDecision(e) === 'NORMALIZE') s.normalizable++; if (strictDecision(e) === 'NORMALIZE') s.normalizableStrict++;
     if (e.label.strictCls === 'CONFIRMED_BY_INDEPENDENT_SOURCE') strictSec.add(id);

@@ -29,7 +29,7 @@ export function rankTable(results) {
       aboveSpy: Object.fromEntries(Object.entries(results).map(([m, r]) => [m, K.finite(r.rows[sc]?.metrics?.cagr) && r.rows[sc].metrics.cagr > r.benchmark.cagr])) };
   }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  out.changes = Object.fromEntries(['cagr', 'sharpe', 'maxDrawdown'].map((k) => [k, { A_to_B: !same(out.A_ORIGINAL[k], out.B_VU_BUGS[k]), A_to_C2: !same(out.A_ORIGINAL[k], out.C2_STRICT[k]) }]));
+  out.changes = Object.fromEntries(['cagr', 'sharpe', 'maxDrawdown'].map((k) => [k, { A_to_B: !same(out.A_ORIGINAL[k], out.B_VU_BUGS[k]), A_to_C2: !same(out.A_ORIGINAL[k], out.C2_STRICT[k]), B_to_C2: !same(out.B_VU_BUGS[k], out.C2_STRICT[k]) }]));
   return out;
 }
 

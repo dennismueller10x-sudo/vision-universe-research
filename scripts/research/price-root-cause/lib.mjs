@@ -127,13 +127,21 @@ export function labelEvent(M, s, ev, sec, finra) {
   /* strict class (review IR-03/IR-04/IR-05): ratio residual within tolerance, no SEC share-count contradiction, no
      declared-split confound for a share-count-only confirmation */
   const residual = K_finite(statedRatio) && r > 0 ? Math.exp(Math.abs(Math.log(r * statedRatio))) : null;
+  /* share ratio after/before; a reverse split of k lifts the price by k and cuts the share count to 1/k, so r * sr ~ 1 */
+  const sr = statedRatio === null && e.shares === 'CONFIRMS' ? L.sharesAcross(ctx.shares, ev.date) : null;
+  const sharesResidual = K_finite(sr) && sr > 0 && r > 0 ? Math.exp(Math.abs(Math.log(r * sr))) : null;
   let strictCls = cls;
   if (cls === 'CONFIRMED_BY_INDEPENDENT_SOURCE') {
     if (statedRatio !== null && e.shares === 'NO_SPLIT') strictCls = 'CONFLICTING_INDEPENDENT_EVIDENCE';
     else if (statedRatio !== null && !(residual <= CENSUS.strictResidualRatio)) strictCls = 'RATIO_DOES_NOT_EXPLAIN_MOVE';
-    else if (statedRatio === null && declaredNear) strictCls = 'CONFOUNDED_BY_DECLARED_SPLIT';
+    /* share-count-only confirmations (second review IR2-01..03): the declared split of the event day itself, or one within
+       200 days, moves the share count; a share-count rise cannot tell a forward split from issuance (labels.mjs trueEvents);
+       and the share change must explain the price move within the same tolerance as a stated ratio */
+    else if (statedRatio === null && (ev.kind === 'DECLARED_SPLIT_RESIDUAL' || declaredNear)) strictCls = 'CONFOUNDED_BY_DECLARED_SPLIT';
+    else if (statedRatio === null && K_finite(sr) && sr > 1) strictCls = 'SHARE_RISE_SPLIT_OR_DILUTION';
+    else if (statedRatio === null && !(sharesResidual <= CENSUS.strictResidualRatio)) strictCls = 'RATIO_DOES_NOT_EXPLAIN_MOVE';
   }
-  return { cls, strictCls, channel, residual, finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
+  return { cls, strictCls, channel, residual, sharesResidual, direction: r > 1 ? 'UP' : 'DOWN', finraSplit: !!e.finraSplitExplains, sec8k: !!secExplains, shares: e.shares, statedRatio,
     channels: { finraObs: finraObs.length, secEvents: secRows.length, shareRows: ctx.shares.length } };
 }
 
@@ -220,14 +228,14 @@ export function benchmarkMetrics(M, data) {
 export function tradeExposure(run, census, calendar) {
   const pos = new Map(calendar.map((d, i) => [d, i]));
   const out = { tradeRecords: run.trades.length, inEventSecurities: 0, spanningEvent: 0, enteredWithin252AfterEvent: 0, pnlSpanning: 0, pnlInEventSecurities: 0,
-    distinctEventSecuritiesTraded: 0, eventMonthsHeld: 0, byClass: {} };
+    distinctEventSecuritiesTraded: 0, eventMonthsHeld: 0, byClass: {}, byStrictClass: {} };
   const ids = new Set(), months = new Set();
   for (const t of run.trades) {
     const evs = census.get(t.id);
     if (!evs) continue;
     out.inEventSecurities++; out.pnlInEventSecurities += finite(t.pnl) ? t.pnl : 0; ids.add(t.id);
     const span = evs.filter((e) => t.entryDate < e.date && e.date <= t.date);
-    if (span.length) { out.spanningEvent++; out.pnlSpanning += finite(t.pnl) ? t.pnl : 0; span.forEach((e) => { months.add(t.id + '|' + e.date.slice(0, 7)); inc(out.byClass, e.kind + ':' + e.label.cls); }); }
+    if (span.length) { out.spanningEvent++; out.pnlSpanning += finite(t.pnl) ? t.pnl : 0; span.forEach((e) => { months.add(t.id + '|' + e.date.slice(0, 7)); inc(out.byClass, e.kind + ':' + e.label.cls); inc(out.byStrictClass, e.kind + ':' + e.label.strictCls + ':' + (e.label.channel ?? 'NONE') + ':' + e.label.direction); }); }
     const ei = pos.get(t.entryDate);
     if (finite(ei) && evs.some((e) => e.date <= t.entryDate && finite(pos.get(e.date)) && ei - pos.get(e.date) <= 252)) out.enteredWithin252AfterEvent++;
   }
