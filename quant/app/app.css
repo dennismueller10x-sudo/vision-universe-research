@@ -683,6 +683,25 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-lifecycle li{padding:6px 10px;border-radius:99px;border:1px solid var(--q-line2);font-size:11.5px;font-weight:800;color:var(--q-muted)}
 .qd .q-lifecycle li.is-now{background:var(--q-lime);border-color:var(--q-lime-line);color:var(--q-lime-ink)}
 .qd .q-lifecycle li.is-closed{border-style:dashed;color:var(--q-dim)}
+/* Visual First (VU3): Stufenleiste oben im Setup - erreichte Stufen mit Haken, die aktuelle hervorgehoben, gesperrte gestrichelt. */
+.qd .q-setup>.q-lifecycle-host .q-lifecycle{margin:10px 0 2px}
+.qd .q-lifecycle li.is-past{background:var(--q-lime-soft);border-color:transparent;color:var(--q-lime-text)}
+.qd .q-lifecycle li.is-past::before{content:"✓ ";font-weight:900}
+.qd .q-lifecycle li.is-now::before{content:"● ";font-size:9px;vertical-align:1px}
+/* Regel-Checkliste: Zaehlung, ein Feld je Bedingung, Liste auf Tipp */
+.qd .q-check{display:flex;flex-direction:column;gap:6px}
+.qd .q-check-count{margin:0;font-size:13px;color:var(--q-muted)}
+.qd .q-check-count b,.qd .q-moves .q-check-count b{display:inline;margin:0;font-size:15px;color:var(--q-text)}
+.qd .q-check-more.tone-bad{color:var(--q-down);font-weight:800}.qd .q-check-more.tone-unknown{color:var(--q-dim);font-weight:700}
+.qd .q-check-cells{list-style:none;display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0}
+.qd .q-check-cells li{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;font-size:12px;font-weight:900;background:var(--q-panel);border:1px solid var(--q-line);color:var(--q-dim)}
+.qd .q-check-cells li.tone-good{background:var(--q-lime-soft);border-color:transparent;color:var(--q-up)}
+.qd .q-check-cells li.tone-bad{background:rgba(255,107,94,.14);border-color:transparent;color:var(--q-down)}
+.qd .q-check-cells li.tone-unknown{border-style:dashed}
+.qd .q-check-details>summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;font-size:12.5px;font-weight:850;color:var(--q-lime-text);list-style:none}
+.qd .q-check-details>summary::-webkit-details-marker{display:none}
+.qd .q-check-details>summary::after{content:"+";margin-left:4px}.qd .q-check-details[open]>summary::after{content:"−"}
+.qd .q-check-details>summary:focus-visible{outline:2px solid var(--q-lime-line);outline-offset:2px;border-radius:6px}
 /* Trigger und Bewegung */
 .qd .q-trigger{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--q-panel2);border-left:3px solid var(--q-lime-line)}
 .qd .q-trigger>span{display:block;font-size:11.5px;font-weight:850;color:var(--q-lime-text);text-transform:uppercase;letter-spacing:.08em}
@@ -692,6 +711,7 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-moves>div{padding:12px;border-radius:14px;background:var(--q-panel2)}
 .qd .q-moves b{display:block;font-size:12.5px;margin-bottom:6px}
 .qd .q-moves .is-up b{color:var(--q-lime-text)}.qd .q-moves .is-down b{color:var(--q-down)}
+.qd .q-moves .q-check-count b{color:var(--q-text)}
 /* Historisch getestet */
 .qd .q-evidence{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}
 @media (max-width:900px){.qd .q-evidence{grid-template-columns:repeat(2,minmax(0,1fr))}}
