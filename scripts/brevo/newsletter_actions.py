@@ -182,7 +182,7 @@ def run():
             if attempt.get("preview_id"):
                 from newsletter_preview import preview_report
                 client.preview_id=attempt["preview_id"]
-                result.update(preview_report(client,client.preview_id))
+                result.update(preview_report(client,client.preview_id,addresses))
             return result
         expected=os.environ.get("BREVO_EXPECTED_VERSION","")
         if not re.fullmatch(r"[a-f0-9]{64}",expected) or os.environ.get("BREVO_AUTHORIZE_SEND")!="true":
