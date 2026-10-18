@@ -4,8 +4,8 @@ Stand: 18. Oktober 2026. Das bereitgestellte Testpaket ist als kuratierte Vorlag
 
 ## Inhalt und Vorschau
 
-- Betreff: **Investieren mit Weitblick. Vision Universe. Die App.**
-- Preheader: „Zehn Research-Werkzeuge. Eine App. Ein erster Blick auf Vision Universe.“
+- Betreff: **Vision Universe. Die App. Dein erster Blick.**
+- Preheader: „Zehn Research-Werkzeuge an einem Ort. Die iPhone-App ist bald verfügbar.“
 - Gestaltung und iPhone-Motiv aus dem freigegebenen Testpaket; Claim, Text, nicht verlinktes „Bald verfügbar“ sowie Website-/Impressum-Links erhalten.
 - Die bestätigte Unternehmensanschrift aus dem bestehenden Impressum ergänzt den Footer.
 - `scripts/brevo/content/vision-universe-app/content.json` und `newsletter.html.tmpl` enthalten ausschließlich öffentliche redaktionelle Angaben. Keine Empfänger, Schlüssel oder privaten Kontaktdateien.

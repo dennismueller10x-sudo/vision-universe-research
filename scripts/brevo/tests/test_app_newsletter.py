@@ -37,7 +37,7 @@ class AppNewsletter(unittest.TestCase):
     def test_preserves_approved_layout_subject_and_real_unsubscribe_tag(self):
         content = self.content()
         result = render(content)
-        self.assertEqual(content["subject"], "Investieren mit Weitblick. Vision Universe. Die App.")
+        self.assertEqual(content["subject"], "Vision Universe. Die App. Dein erster Blick.")
         self.assertNotIn("kommt aufs iPhone", result)
         self.assertNotIn("data:image", result)
         self.assertNotIn("<script", result)
