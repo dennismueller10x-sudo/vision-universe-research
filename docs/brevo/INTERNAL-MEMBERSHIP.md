@@ -39,3 +39,20 @@ Bestandskontakte sicher zurückstellen; er entfernt ihre neue Mitgliedschaft nic
 Ein erfolgreicher Code-Merge führt weder den Workflow aus noch sendet er E-Mails.
 Den tatsächlichen Änderungsstand belegt erst ein erfolgreicher `apply`-Lauf samt
 API-Leseabgleich; ein PR oder ein Preview allein ist kein Ausführungsnachweis.
+
+## Zahlendifferenzen privat prüfen
+
+`audit` im selben Workflow ist strikt lesend und lädt die private
+Testadress-Konfiguration nicht. Es zählt das vollständige Kontaktinventar sowie
+die Mitglieder von Liste 4, 5 und 6. Ausgegeben werden nur Zahlen zu vorhandenen,
+E-Mail-gesperrten, ausdrücklich nicht gesperrten und unbekannten Statuswerten,
+VU-Einwilligungsmerkmalen und Überschneidungen. Eine fehlende Statusangabe wird
+nicht als aktive Einwilligung gewertet. Die vorhandene Liste-4-Mitgliedschaft
+allein beweist keine aktuelle Versandberechtigung.
+
+Zusätzlich wird ausschließlich der aggregierte Kampagnenbericht der bereits
+versendeten Kampagne 11 mit `statistics=globalStats` gelesen: Versand-, Zustell-,
+Bounce-, Beschwerde- und Abmeldezähler, soweit als Zahlen vorhanden. Der Audit
+sendet keine Nachricht, erstellt keine Kampagne und verändert keine Kontakte.
+Zustellzahl, aktive E-Mail-Kontakte und Listenmitglieder sind getrennte Größen;
+eine Oberflächenzahl lässt sich ohne passenden Filterkontext nicht gleichsetzen.
