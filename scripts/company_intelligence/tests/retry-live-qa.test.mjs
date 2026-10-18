@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runRetries,attemptCommands,budget,needSeconds,realAttempt,DEFAULTS,JOB_TIMEOUT_S} from '../retry-live-qa.mjs';
-import {CLASSES} from '../classify-live-failure.mjs';
+import {readFileSync} from 'node:fs';
+import {CLASSES,staticScriptsFromRepo} from '../classify-live-failure.mjs';
 
 const P=CLASSES.PROPAGATION,I=CLASSES.INFRA,REAL=CLASSES.REAL;
 const staleReport={status:'FAIL',cause:'AUSLIEFERUNG_NICHT_PROPAGIERT',propagation:{status:'NOT_PROPAGATED',cause:'AUSLIEFERUNG_NICHT_PROPAGIERT',attempts:[{n:1,ok:false,failed:[{name:'release-id',ok:false,cause:'STALE'}]}]},previousFailure:null};
@@ -146,4 +147,38 @@ test('Handler-Reserve 360 s (started_at liegt nach Checkout/Setup)',()=>{
  const need=needSeconds(P,{qa:'live',full:false})+360;
  assert.equal(budget({nowS:T0+JOB_TIMEOUT_S-need,startedAtS:T0,cls:P,qa:'live',full:false}).ok,true);
  assert.equal(budget({nowS:T0+JOB_TIMEOUT_S-need+1,startedAtS:T0,cls:P,qa:'live',full:false}).ok,false);
+});
+
+test('statisches Hauptskript (503 auf /discover/app.js): Erholung -> PASS, anhaltend -> FAIL, echter Fehler -> sofort REAL',async()=>{
+ const B=CLASSES.BROWSER,SHA='0123456789abcdef0123456789abcdef01234567';
+ const fx=()=>JSON.parse(readFileSync(new URL('./fixtures/live-report-static-503.json',import.meta.url),'utf8'));
+ const staticScripts=staticScriptsFromRepo(new URL('../../..',import.meta.url).pathname);
+ const go=(s,extra={})=>runRetries({cls:B,qa:'live',expectedSha:SHA,staticScripts,startedAtS:T0,now:clock(300),sleep:async()=>{},attempt:s.attempt,...extra});
+ /* einmaliger CDN-503, danach baut die Seite auf: kein Rollback */
+ let s=scripted({ok:true});
+ let r=await go(s);
+ assert.equal(r.result,'PASS');assert.equal(r.reason,'PASSED_ON_RETRY_1');assert.equal(s.calls.length,1);
+ /* 503 bleibt ueber beide Wiederholungen: fail-closed (Handler laeuft) */
+ s=scripted({ok:false,report:fx()},{ok:false,report:fx()},{ok:true});
+ r=await go(s);
+ assert.equal(r.result,'FAIL');assert.equal(r.reason,'RETRIES_EXHAUSTED');assert.equal(r.finalClass,B);assert.equal(s.calls.length,2,'hoechstens 2 Wiederholungen');
+ /* Wiederholung zeigt echten JavaScript-Fehler: REAL, keine weitere Wiederholung */
+ const jsErr=fx();jsErr.browserDiagnostics.pageErrors=['ReferenceError: VUDiscover is not defined'];
+ s=scripted({ok:false,report:jsErr},{ok:true});
+ r=await go(s);
+ assert.equal(r.result,'FAIL');assert.equal(r.finalClass,REAL);assert.equal(r.reason,'BROWSER_PAGE_ERRORS');assert.equal(s.calls.length,1);
+ /* Wiederholung: Skripte geladen, Komponente fehlt: REAL */
+ const noComp=fx();Object.assign(noComp.browserDiagnostics,{http:[],failed:[],console:[]});noComp.pageState.scriptResourcesSuspicious=[];
+ s=scripted({ok:false,report:noComp},{ok:true});
+ r=await go(s);
+ assert.equal(r.finalClass,REAL);assert.equal(s.calls.length,1);
+ /* Wiederholung: Generation weicht ab (Assertion): REAL */
+ const gen=fx();gen.error={name:'AssertionError',message:"'gen-b' !== 'gen-a'"};
+ s=scripted({ok:false,report:gen},{ok:true});
+ r=await go(s);
+ assert.equal(r.finalClass,REAL);assert.equal(s.calls.length,1);
+ /* ohne Kenntnis der statischen Skripte wird der 503 auf app.js wie bisher REAL */
+ s=scripted({ok:false,report:fx()},{ok:true});
+ r=await go(s,{staticScripts:new Set()});
+ assert.equal(r.finalClass,REAL);assert.equal(s.calls.length,1);
 });

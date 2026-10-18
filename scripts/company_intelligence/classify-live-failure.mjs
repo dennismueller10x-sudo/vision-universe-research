@@ -18,11 +18,17 @@
  *                         TimeoutError, und ALLE Auffaelligkeiten erklaeren sich durch ein voruebergehendes 502/503/504 (optional 429) mit
  *                         text/html auf Lazy-Skripten desselben Ursprungs (Beleg Lauf 38590652362: 503 auf /discover/engines/narrative.js,
  *                         discover/ui/lazy.js laedt Lazy-Skripte ohne Wiederholung). Siehe classifyBrowserHttp; jede Abweichung ist REAL.
+ *                         Seit Lauf 39036914225 (17.10.2026, 503 auf /discover/app.js) zaehlen auch die statisch eingebundenen Skripte der
+ *                         gepruefsten Seite (<script src> in discover/index.html desselben Commits): ein 5xx auf ihnen meldet Chromium nur mit
+ *                         der Standardzeile, nie als LAZY_SCRIPT_FAILED. Sonst gelten dieselben Bedingungen (kein Seitenfehler, keine
+ *                         weitere fehlgeschlagene Anfrage, text/html, Propagation und Commit bewiesen). Die begrenzte Wiederholung
+ *                         (retry-live-qa.mjs, hoechstens 2 frische Browser) entscheidet; bleibt der Fehler, bleibt es fail-closed.
  *  REAL                   alles andere: Browser-Assertion nach bewiesener Propagation, Hash-/Datenfehler,
  *                         Zugriffs-/Sicherheitsfehler (HTTP 401/403, Gate), INVALID-Antworten, Bericht fehlt/unlesbar/PASS trotz
  *                         Fehler, unbekannte Ursache. FAIL-CLOSED: Im Zweifel REAL.
  */
 import {readFileSync,writeFileSync,appendFileSync,mkdirSync} from 'node:fs';
+import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 export const CLASSES = Object.freeze({INFRA: 'TRANSIENT_INFRA', PROPAGATION: 'TRANSIENT_PROPAGATION', BROWSER: 'TRANSIENT_BROWSER_HTTP', REAL: 'REAL'});
@@ -46,12 +52,30 @@ const CHROMIUM_STATUS_LINES = [/^A bad HTTP response code \((\d{3})\) was receiv
 const NAMED_LINE = /^(?:A bad HTTP response code \((\d{3})\) was received when fetching the script\. )?LAZY_SCRIPT_FAILED:(\S+)$/;
 const pathOf = u => String(u ?? '').split('?')[0];
 
+/** Die Live-QA prueft Discover-Aktienseiten; deren statische Skripte sind die <script src> dieser Seite desselben Commits. */
+export const CHECKED_PAGE = 'discover/index.html';
+/** Statische Skripte einer Seite: same-origin <script src="/..."> auf .js, ohne Query (der Release stempelt nur ?v=). */
+export function staticScriptsOf(html) {
+ const out = new Set();
+ for (const m of String(html ?? '').matchAll(/<script\b[^>]*\bsrc\s*=\s*"([^"]+)"/gi)) {
+  const p = pathOf(m[1]);
+  if (p.startsWith('/') && !p.startsWith('//') && !p.includes('..') && /^\/[A-Za-z0-9._\/-]+\.js$/.test(p)) out.add(p);
+ }
+ return out;
+}
+/** Liest die statischen Skripte der gepruefsten Seite aus dem Checkout (ref = source_sha). Fehlt die Datei: leere Menge (fail-closed). */
+export function staticScriptsFromRepo(root = '.') {
+ try { return staticScriptsOf(readFileSync(join(root, CHECKED_PAGE), 'utf8')); } catch { return new Set(); }
+}
+/* Nur diese Listen tragen Fehlerbelege. 'served' (erfolgreiche Antworten) ist reine Auskunft: ist sie gekuerzt, fehlt kein Beleg. */
+const EVIDENCE_LISTS = ['console', 'pageErrors', 'failed', 'http'];
+
 /**
  * Belegbar transienter Browser-Fehler: nur 502/503/504/429 mit text/html auf Same-Origin-Skripten, die genau als
  * LAZY_SCRIPT_FAILED gemeldet wurden. Alles Weitere (andere Status, andere URLs, pageErrors, weitere fehlgeschlagene
  * Requests, unerklaerte Konsole, fremder Commit, previousFailure, fehlende Diagnose) ist REAL.
  */
-export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
+export function classifyBrowserHttp(report, {expectedSha = null, staticScripts = new Set()} = {}) {
  const no = reason => real(reason);
  if (!expectedSha || report.sourceCommit !== expectedSha) return no('BROWSER_COMMIT_NOT_VERIFIED');
  if (report.previousFailure) return no('BROWSER_PREVIOUS_FAILURE');
@@ -59,7 +83,7 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
  if (report.error?.name !== 'TimeoutError') return no('BROWSER_ERROR_NOT_TIMEOUT');
  const d = report.browserDiagnostics;
  if (!d || typeof d !== 'object' || !['console', 'pageErrors', 'failed', 'http'].every(k => Array.isArray(d[k]))) return no('BROWSER_DIAGNOSTICS_MISSING');
- if (d.truncated && Object.keys(d.truncated).length) return no('BROWSER_DIAGNOSTICS_TRUNCATED');
+ if (d.truncated && Object.keys(d.truncated).some(k => EVIDENCE_LISTS.includes(k) && d.truncated[k])) return no('BROWSER_DIAGNOSTICS_TRUNCATED');
  if (d.pageErrors.length) return no('BROWSER_PAGE_ERRORS');
  if (Array.isArray(report.active?.errors) && report.active.errors.length) return no('BROWSER_PAGE_ERRORS');
  if (!d.http.length) return no('BROWSER_NO_HTTP_EVIDENCE');
@@ -69,7 +93,7 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
   if (typeof url !== 'string' || !url.startsWith('/') || url.startsWith('//')) return no('BROWSER_HTTP_NOT_SAME_ORIGIN'); // safeUrl laesst nur fremde Ursprungs-Praefixe stehen
   if (!BROWSER_STATUSES.includes(h.status)) return no('BROWSER_HTTP_STATUS_' + String(h.status).replace(/\D/g, '').slice(0, 3));
   if (!/^text\/html/i.test(String(h.headers?.['content-type'] ?? ''))) return no('BROWSER_HTTP_NOT_HTML');
-  if (!LAZY_SCRIPT_PATH.test(pathOf(url))) return no('BROWSER_HTTP_NOT_LAZY_SCRIPT');
+  if (!LAZY_SCRIPT_PATH.test(pathOf(url)) && !staticScripts.has(pathOf(url))) return no('BROWSER_HTTP_NOT_LAZY_SCRIPT');
   statuses.add(h.status); paths.add(pathOf(url));
  }
  for (const f of d.failed) if (!paths.has(pathOf(f?.url))) return no('BROWSER_OTHER_FAILED_REQUEST');
@@ -86,8 +110,14 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
   const generic = CHROMIUM_STATUS_LINES.map(re => re.exec(text)).find(Boolean);
   if (!generic || !statuses.has(Number(generic[1]))) return no('BROWSER_CONSOLE_UNEXPLAINED');
  }
- if (!lazy.size) return no('BROWSER_NO_LAZY_FAILURE_NAMED');
- for (const path of paths) if (!lazy.has(path)) return no('BROWSER_HTTP_URL_NOT_NAMED_AS_CAUSE'); // jedes 5xx muss als Ursache benannt sein
+ /* Jedes 5xx braucht eine Ursache: ein Lazy-Skript, das discover/ui/lazy.js als LAZY_SCRIPT_FAILED benennt, oder ein statisches
+    Skript der Seite (dort gibt es nur die Chromium-Standardzeile). Ein Lazy-Pfad ohne Benennung, der nicht statisch ist, bleibt REAL. */
+ const stat = new Set();
+ for (const path of paths) {
+  if (lazy.has(path)) continue;
+  if (!staticScripts.has(path)) return no(lazy.size ? 'BROWSER_HTTP_URL_NOT_NAMED_AS_CAUSE' : 'BROWSER_NO_LAZY_FAILURE_NAMED');
+  stat.add(path);
+ }
  const ps = report.pageState;
  if (!ps || typeof ps !== 'object' || !Array.isArray(ps.scriptResourcesSuspicious)) return no('BROWSER_PAGESTATE_MISSING');
  for (const r of ps.scriptResourcesSuspicious) if (!paths.has(pathOf(r?.n)) || !(BROWSER_STATUSES.includes(r.s) || r.s === 0)) return no('BROWSER_PAGESTATE_MISMATCH');
@@ -96,16 +126,29 @@ export function classifyBrowserHttp(report, {expectedSha = null} = {}) {
  if (Array.isArray(report.markers) && report.markers.some(m => m?.state === 'ERROR')) return no('BROWSER_MARKER_ERROR');
  const seen = report.propagation?.observed?.discoverId;
  if (ps.metaRelease && seen && ps.metaRelease !== seen) return no('BROWSER_SAW_OTHER_RELEASE');
- return {class: CLASSES.BROWSER, reason: 'LAZY_SCRIPT_HTTP_' + [...statuses].sort().join('_'), detail: [...lazy].join(',').slice(0, 120)};
+ const kind = !stat.size ? 'LAZY_SCRIPT_HTTP_' : !lazy.size ? 'STATIC_SCRIPT_HTTP_' : 'SCRIPT_HTTP_';
+ return {class: CLASSES.BROWSER, reason: kind + [...statuses].sort().join('_'), detail: [...lazy, ...stat].join(',').slice(0, 120)};
+}
+
+/** Kurzbeleg fuer Log und Summary, auch bei REAL: welche Anfragen scheiterten, ob Seitenfehler auftraten, was gekuerzt ist.
+    Nur Pfade, Statuscodes und Zaehler aus dem (bereits geschwaerzten) Bericht. */
+export function evidenceOf(report) {
+ const d = report && typeof report === 'object' ? report.browserDiagnostics : null;
+ if (!d || typeof d !== 'object') return null;
+ const list = k => Array.isArray(d[k]) ? d[k] : [];
+ const http = list('http').slice(0, 5).map(h => pathOf(h?.url) + ' ' + h?.status + (/^text\/html/i.test(String(h?.headers?.['content-type'] ?? '')) ? ' html' : ''));
+ const truncated = d.truncated && typeof d.truncated === 'object' ? Object.keys(d.truncated).filter(k => d.truncated[k]) : [];
+ return {http, pageErrors: list('pageErrors').length, failed: list('failed').length, console: list('console').length,
+  ...(truncated.length ? {truncated} : {}), error: String(report.error?.name ?? '') || null};
 }
 
 const real = (reason, detail) => ({class: CLASSES.REAL, reason, ...(detail ? {detail} : {})});
 
 /** Beurteilt nur den Propagationsbericht; alles Unbewiesene ist REAL. */
-export function classifyReport(report, {expectedSha = null} = {}) {
+export function classifyReport(report, {expectedSha = null, staticScripts = new Set()} = {}) {
  if (!report || typeof report !== 'object' || Array.isArray(report)) return real('REPORT_MISSING_OR_INVALID');
  if (report.status !== 'FAIL') return real('REPORT_STATUS_NOT_FAIL', String(report.status).slice(0, 40)); // z. B. PASS-Bericht, spaeterer Befehl scheiterte
- if (report.cause === BROWSER_CAUSE) return classifyBrowserHttp(report, {expectedSha});
+ if (report.cause === BROWSER_CAUSE) return classifyBrowserHttp(report, {expectedSha, staticScripts});
  if (report.cause !== PROPAGATION_CAUSE) return real('CAUSE_NOT_PROPAGATION', String(report.cause).slice(0, 80));
  if (expectedSha && typeof report.sourceCommit === 'string' && report.sourceCommit !== expectedSha) return real('REPORT_COMMIT_MISMATCH'); // fremder/alter Bericht
  const p = report.propagation;
@@ -129,11 +172,11 @@ export function classifyReport(report, {expectedSha = null} = {}) {
  * @param {{depsOutcome?:string, qaOutcome?:string, report?:any}} input
  * depsOutcome/qaOutcome: Ergebnis (steps.<id>.outcome) von "Browser dependencies" bzw. der OFF-/Live-QA.
  */
-export function classify({depsOutcome = '', qaOutcome = '', report = null, expectedSha = null} = {}) {
+export function classify({depsOutcome = '', qaOutcome = '', report = null, expectedSha = null, staticScripts = new Set()} = {}) {
  if (depsOutcome === 'failure') return {class: CLASSES.INFRA, reason: 'BROWSER_DEPENDENCIES_FAILED'};
  if (depsOutcome !== 'success') return real('DEPENDENCIES_NOT_SUCCESSFUL', String(depsOutcome).slice(0, 40));
  if (qaOutcome !== 'failure') return real('QA_NOT_FAILED_UNEXPECTED_STATE', String(qaOutcome).slice(0, 40));
- return classifyReport(report, {expectedSha});
+ return classifyReport(report, {expectedSha, staticScripts});
 }
 
 export function readReport(file) {
@@ -146,25 +189,29 @@ export function reportFile(root, qa) {
 }
 
 /** Nur feste Codes in Annotation/Summary, nie Berichtsinhalt (Berichte sind zwar geschwaerzt; hier gilt zusaetzlich Minimalismus). */
-const safe = v => String(v ?? '').replace(/[^A-Za-z0-9_,.:\- ]/g, '?').slice(0, 160);
+const safe = v => String(v ?? '').replace(/[^A-Za-z0-9_,.:\/;\- ]/g, '?').slice(0, 160);
 
 export function main(env = process.env) {
  const root = env.REPORT_ROOT || env.RUNNER_TEMP || '/tmp';
  const qa = env.ENABLED === 'true' ? 'live' : 'off';
  const qaOutcome = qa === 'live' ? env.LIVE_OUTCOME : env.OFF_OUTCOME;
- let result;
+ let result, report = null;
  try {
-  result = classify({depsOutcome: env.DEPS_OUTCOME, qaOutcome, report: readReport(reportFile(root, qa)), expectedSha: env.EXPECTED_PRODUCTION_SHA || null});
+  report = readReport(reportFile(root, qa));
+  result = classify({depsOutcome: env.DEPS_OUTCOME, qaOutcome, report, expectedSha: env.EXPECTED_PRODUCTION_SHA || null, staticScripts: staticScriptsFromRepo(env.REPO_ROOT || '.')});
  } catch (error) {
   result = real('CLASSIFIER_ERROR', error?.name); // fail-closed
  }
- const out = {...result, qa};
+ const evidence = evidenceOf(report);
+ const out = {...result, qa, ...(evidence ? {evidence} : {})};
  try {
   mkdirSync(root + '/live-failure', {recursive: true});
   writeFileSync(root + '/live-failure/classification.json', JSON.stringify(out, null, 2) + '\n');
  } catch { /* Beleg ist Zusatz; die Ausgabe unten entscheidet */ }
  if (env.GITHUB_OUTPUT) appendFileSync(env.GITHUB_OUTPUT, `class=${out.class}\nreason=${safe(out.reason)}\nqa=${qa}\n`);
- const line = `Live-Fehler klassifiziert: ${out.class} (${safe(out.reason)}${out.detail ? ': ' + safe(out.detail) : ''}), QA=${qa}`;
+ const ev = evidence ? ` | Beleg: HTTP [${safe(evidence.http.join('; '))}], Seitenfehler ${evidence.pageErrors}, fehlgeschlagen ${evidence.failed}, Konsole ${evidence.console}` +
+  (evidence.truncated ? `, gekuerzt ${safe(evidence.truncated.join(','))}` : '') + (evidence.error ? `, Fehler ${safe(evidence.error)}` : '') : '';
+ const line = `Live-Fehler klassifiziert: ${out.class} (${safe(out.reason)}${out.detail ? ': ' + safe(out.detail) : ''}), QA=${qa}${ev}`;
  console.log(line);
  if (env.GITHUB_STEP_SUMMARY) { try { appendFileSync(env.GITHUB_STEP_SUMMARY, line + '\n'); } catch { /* optional */ } }
  return out;
