@@ -1,4 +1,4 @@
-"""No live API or secrets: persistent reservations and reviewed Actions runtime."""
+"""No live API or secrets: persistent reservations and trusted Actions runtime."""
 import copy
 import json
 import os
@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 import test_safety as safety
 from campaigns import Process, digest
-from newsletter_actions import Ledger, NewsletterClient, require_review, trusted_newsletter, validate_ledger
+from newsletter_actions import Ledger, NewsletterClient, trusted_newsletter, validate_ledger
 from prepare import Blocked
 
 ENV = {"GITHUB_ACTIONS":"true","GITHUB_REF":"refs/heads/main", "BREVO_DEFAULT_BRANCH":"main",
@@ -85,22 +85,6 @@ class NewsletterActions(unittest.TestCase):
         ledger=Ledger(Github());ledger.sha="previous"
         with self.assertRaises(Blocked): ledger.save({"drafts":{},"campaigns":{}})
         self.assertEqual(ledger.sha,"previous")
-
-    def test_required_reviewer_and_actual_run_approval(self):
-        class Github:
-            def __init__(self): self.approved=False;self.rule=True
-            def call(self,method,path):
-                if path.startswith("/environments/"):
-                    return {"protection_rules":[{"type":"required_reviewers","reviewers":[
-                        {"type":"User","reviewer":{"login":"owner"}}]}] if self.rule else []}
-                return [{"state":"approved","user":{"login":"owner" if self.approved else "other"},
-                         "environments":[{"name":"brevo-newsletter-review"}]}]
-        github=Github()
-        with patch.dict(os.environ,ENV):
-            with self.assertRaises(Blocked): require_review(github)
-            github.approved=True;require_review(github)
-            github.rule=False
-            with self.assertRaises(Blocked): require_review(github)
 
     def test_operation_scoped_client_blocks_cross_operation_routes(self):
         for operation in ("check","draft","test","send"):

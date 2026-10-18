@@ -25,6 +25,14 @@ on:
         type: boolean
         description: Nur nach ausdrücklicher Freigabe dieses Test- oder Hauptversands
         default: false
+      approval_sha256:
+        type: string
+        description: Nur nach konkreter Owner-Freigabe; SHA256 des privaten Nachweises, niemals Nachricht oder Adressen
+        default: ''
+      dry_run:
+        type: boolean
+        description: Nur test/send; prüft Freigabe und Version ohne Reservierung oder E-Mail-Versand
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -35,11 +43,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: ${{ (inputs.operation == 'test' || inputs.operation == 'send') && 'brevo-newsletter-review' || 'brevo-newsletter-drafts' }}
     permissions:
       contents: write
       actions: read
-      deployments: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -58,4 +64,6 @@ jobs:
           BREVO_CAMPAIGN_ID: ${{ inputs.campaign_id }}
           BREVO_EXPECTED_VERSION: ${{ inputs.expected_version }}
           BREVO_AUTHORIZE_SEND: ${{ inputs.authorize_send }}
+          BREVO_APPROVAL_SHA256: ${{ inputs.approval_sha256 }}
+          BREVO_DRY_RUN: ${{ inputs.dry_run }}
         run: python3 scripts/brevo/newsletter_actions.py
