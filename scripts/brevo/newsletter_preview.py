@@ -24,7 +24,7 @@ def preview_audience(client, config, lists):
         membership = contact.get("listIds", [])
         if (contact.get("emailBlacklisted") is not False or
                 contact.get("attributes", {}).get("VU_INTERNAL_TEST") is not True or
-                lists[LISTS[2]] not in membership or any(lists[n] in membership for n in LISTS[:2])):
+                lists[LISTS[2]] not in membership or lists[LISTS[1]] in membership):
             raise Blocked("Testkontakt gesperrt oder Listentrennung nicht eindeutig; keine Änderung von Sperren.")
     return expected
 
@@ -164,7 +164,9 @@ def preview(process, campaign_id, expected_version, authorized=False, github=Non
     if version(source) != fingerprint:
         raise Blocked("Entwurf wurde zwischenzeitlich verändert.")
     attempts = state.setdefault("tests", {})
-    recipients = {"listIds": [lists[LISTS[2]]], "exclusionListIds": sorted(lists[n] for n in LISTS[:2])}
+    # Exact-two-member validation limits the audience. Excluding the main list
+    # here would now incorrectly suppress an internal contact in both lists.
+    recipients = {"listIds": [lists[LISTS[2]]], "exclusionListIds": [lists[LISTS[1]]]}
     preview_id=None
     if fingerprint in attempts:
         if attempts[fingerprint].get("test_identity")!=process.test_identity(addresses):

@@ -985,6 +985,17 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 @media (min-width:900px){.qd .q-ev-facts{grid-template-columns:1fr 1fr}.qd .q-ev-levels{display:grid;grid-template-columns:1fr 1fr;align-items:start}.qd .q-ev-levels>.is-wide{grid-column:1/-1}}
 .qd .q-ev-closed{margin:4px 0 0;padding-left:18px;font-size:12.5px;line-height:1.45;color:var(--q-muted)}
 .qd .q-ev-signal-host{display:flex;flex-direction:column;gap:10px}
+/* Visual First (VU3): Ueberblick der drei Evidenzstufen (◉ beobachtet, ▣ getestet, ✦ zertifiziert) vor den Einzelheiten. */
+.qd .q-evo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;margin:0 0 14px}
+.qd .q-evo-tile{display:flex;flex-direction:column;gap:3px;min-height:44px;padding:12px 14px;border-radius:16px;text-decoration:none;color:var(--q-text);background:var(--q-panel);border:1px solid var(--q-line)}
+.qd .q-evo-tile:focus-visible{outline:2px solid var(--q-lime-line);outline-offset:2px}
+.qd .q-evo-k{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--q-muted)}
+.qd .q-evo-k i{font-style:normal;font-size:12px}
+.qd .q-evo-tile b{font-size:22px;font-weight:900;letter-spacing:-.02em;line-height:1.15}
+.qd .q-evo-tile small{font-size:12px;line-height:1.35;color:var(--q-muted)}
+.qd .q-evo-tile.tier-observed .q-evo-k i{color:var(--q-info)}.qd .q-evo-tile.tier-tested .q-evo-k i{color:var(--q-up)}
+.qd .q-evo-tile.is-off{background:transparent;border-style:dashed}
+.qd .q-evo-tile.is-off b{font-size:16px;font-weight:800;color:var(--q-muted)}
 .qd .q-ev-more summary{cursor:pointer;font-size:12px;font-weight:700;color:#3a3f45;list-style:none}
 .qd .q-ev-more summary::before{content:"+ "}.qd .q-ev-more[open] summary::before{content:"− "}
 .qd .q-ev-more .q-ev-checks{margin-top:6px}

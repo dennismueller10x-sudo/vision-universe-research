@@ -336,7 +336,37 @@
        B Historisch getestet   - marktweit getestetes Signal, mit Base Rate
        C Zertifiziert          - nur mit Status CERTIFIED
      Jede Quote mit Bedeutungssatz; Rueckgang zuerst als Satz. */
-  function replaySection(vm, conditionWords, evidence, signalHost) {
+  /* Visual First (VU3): Ueberblick der drei Evidenzstufen vor den Einzelheiten - je Stufe Zeichen, Hauptwert und Bezug
+     (Stichprobe, Abstand zum Markt, Evidenzstand), ein Tipp springt zur Stufe. Nur Werte, die die Stufen darunter zeigen.
+     Die marktweite Stufe kommt mit der Radar-Karte; bis dahin steht sie als "wird geladen" da. */
+  function evidenceOverview(vm) {
+    var E = global.QXEvidence, same = vm.replay.levels.filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
+    var main = same && same.state === "AVAILABLE" ? (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] || (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] : null;
+    /* fill: dieselbe Kachel neu befuellen (die marktweite Stufe kommt spaeter), statt sie auszutauschen */
+    function fill(node, tier, glyph, label, value, rest, off) {
+      node.setAttribute("class", "q-evo-tile tier-" + tier + (off ? " is-off" : ""));
+      node.replaceChildren.apply(node, [el("span", { class: "q-evo-k" }, [el("i", { "aria-hidden": "true", text: glyph }), document.createTextNode(label)]),
+        el("b", { class: "num", text: value })].concat(rest ? [el("small", { text: rest })] : []));
+      return node;
+    }
+    function tile(id, tier, glyph, label, value, rest, off) { return fill(el("a", { href: "#" + id }), tier, glyph, label, value, rest, off); }
+    var tested = tile("ev-b", "tested", "▣", "Getestet · marktweit", "…", "wird geladen", true);
+    var node = el("div", { class: "q-evo", role: "group", "aria-label": "Evidenz im Überblick" }, [
+      main ? tile("ev-a", "observed", "◉", "Beobachtet · diese Aktie", (main.positivePct || "–") + " höher", "n " + main.completed + " · Median " + (main.median || "–") + " · " + String(main.label || "").replace(/Monate$/, "Mon."))
+        : tile("ev-a", "observed", "◉", "Beobachtet · diese Aktie", "keine Aussage", same && same.state === "INSUFFICIENT"
+          ? "zu wenige Fälle: n " + (same.episodes || 0) + ", nötig " + (same.minEpisodes || 10) : "keine auswertbare Kurshistorie", true),
+      tested,
+      tile("ev-c", "certified", "✦", "Zertifiziert", "noch nicht", "kein vollständig zertifizierter Backtest", true)]);
+    return { node: node, setTested: function (card) {
+      var ev = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
+      if (ev && E) {
+        var b = ev.backtest, edge = E.edgeOf(b);
+        fill(tested, "tested", "▣", "Getestet · marktweit", typeof b.deltaPositiveShare === "number" ? E.pp(b.deltaPositiveShare) + " ggü. Markt" : E.share1(b.positiveShare) + " höher",
+          [E.EDGE_SHORT[edge.id], "n " + E.int(b.n), "Evidenz " + (E.TRUST_SHORT[b.trust] || "nicht bereit")].filter(Boolean).join(" · "));
+      } else fill(tested, "tested", "▣", "Getestet · marktweit", "kein Signal aktiv", "derzeit löst kein getestetes Signal aus", true);
+    } };
+  }
+  function replaySection(vm, conditionWords, evidence, signalHost, overview) {
     var r = vm.replay, E = global.QXEvidence, kids = [];
     var nach = function (label) { return "nach " + String(label || "").replace(/Monate$/, "Monaten"); };
     var same = r.levels.filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
@@ -348,7 +378,7 @@
       var main = (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] ||
         (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] || null;
       var box = [el("p", { class: "q-ev-head" }, [el("span", { class: "q-ev-tier tier-observed", text: "Historisch beobachtet" }), el("b", { text: same.episodes + " ähnliche Situationen seit " + String(same.from).slice(0, 4) })])];
-      if (same.conditions && same.conditions.length) box.push(el("p", { class: "q-ev-note", text: "Ähnlich heißt: " + same.conditions.map(function (id) { return conditionWords[id] || id.replace(/-/g, " "); }).join(" · ") + "." }));
+      if (same.conditions && same.conditions.length) box.push(readMore(el("p", { class: "q-ev-note", text: "Ähnlich heißt: " + same.conditions.map(function (id) { return conditionWords[id] || id.replace(/-/g, " "); }).join(" · ") + "." })));
       if (main) {
         box.push(el("p", { class: "q-ev-big" }, [el("b", { class: "num", text: main.positivePct || "–" }), el("span", { text: " der Fälle lagen " + nach(main.label) + " höher" })]));
         box.push(el("div", { class: "q-ev-stats" }, [
@@ -374,7 +404,8 @@
     var closed = evidence && evidence.state === "AVAILABLE" ? evidence.kinds.filter(function (k) { return k.state === "WITHHELD"; }) : [];
     if (closed.length) c.push(el("ul", { class: "q-ev-closed" }, closed.map(function (k) { return el("li", { text: closedKindSentence(k) }); })));
 
-    kids.push(el("div", { class: "q-ev-levels" }, [el("div", {}, a), el("div", {}, b), el("div", { class: "is-wide" }, c)]));
+    if (overview) kids.push(overview.node);
+    kids.push(el("div", { class: "q-ev-levels" }, [el("div", { id: "ev-a" }, a), el("div", { id: "ev-b" }, b), el("div", { class: "is-wide", id: "ev-c" }, c)]));
     kids.push(foot(r.isNot));
     kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie der Rückblick rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Alle getesteten Signale", X.routes.backtest())]));
     return [el("div", { class: "qx-replay" }, kids)];
@@ -849,12 +880,14 @@
     /* 4: Was geschah frueher? Beobachtet (diese Aktie), getestet
        (marktweites Signal mit Base Rate), zertifiziert. */
     var evidence = await evidenceP;
+    var evOverview = evidenceOverview(vm);
     var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Signale werden geladen …" })]);
-    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Getrennt nach dem, was bei dieser Aktie beobachtet wurde, und dem, was marktweit getestet ist. Keine Prognose.", replaySection(vm, words, evidence, signalHost), { href: X.routes.method("historie"), label: "Wie das gerechnet wird" }, "02 / Historische Evidenz", "historie"));
+    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Getrennt nach dem, was bei dieser Aktie beobachtet wurde, und dem, was marktweit getestet ist. Keine Prognose.", replaySection(vm, words, evidence, signalHost, evOverview), { href: X.routes.method("historie"), label: "Wie das gerechnet wird" }, "02 / Historische Evidenz", "historie"));
     cardPromise.then(function (rc) {
       if (!signalHost.isConnected) return;
       var card = rc && rc.state === "AVAILABLE" ? rc.card : null;
       signalHost.replaceChildren.apply(signalHost, signalEvidenceFor(card));
+      evOverview.setTested(card);
       /* Ohne ausloesendes Signal spricht die Zertifizierungszeile von der Aktie, nicht von "diesem Signal". */
       var tested = ((card && card.events) || []).some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
       var certHost = signalHost.closest ? signalHost.closest(".qx-replay") : null, certLine = certHost ? certHost.querySelector(".q-ev-cert") : null;
