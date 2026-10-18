@@ -15,16 +15,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from prepare import Blocked, ROOT, normalize, prepare, prepared_digest, private_path, manual_csvs
 from client import ATTRS, LISTS, setup
 from import_contacts import import_contacts, merge_attributes
-from campaigns import Process, render, version
+from campaigns import Process, render, version, confirmed_tests, NEWSLETTER_SUBJECT, NEWSLETTER_PREHEADER
 
 
 class Fake:
     def __init__(self):
         self.calls, self.contacts = [], {}
-        self.lists = {n: i+1 for i, n in enumerate(LISTS)}
+        self.lists = {LISTS[0]: 4, LISTS[1]: 5, LISTS[2]: 6}
         self.campaign = {"id": 8, "status": "draft", "type": "classic", "subject": "Synthetic",
                          "htmlContent": "<html>Synthetic</html>", "sender": {"id": 1},
-                         "recipients": {"lists": [1], "exclusionLists": [3]}}
+                         "recipients": {"lists": [4], "exclusionLists": [6]}}
         self.fail_test = False
         self.fail_send = False
         self.fail_draft = False
@@ -101,7 +101,7 @@ class Safety(unittest.TestCase):
         self.cfg = {"test_addresses_confirmed": True,
                     "test_addresses": {"test_1": "alpha@example.invalid", "test_2": "beta@example.invalid"}}
         for address in self.cfg["test_addresses"].values():
-            self.fake.contacts[address] = {"attributes": {"VU_INTERNAL_TEST": True}, "emailBlacklisted": False, "listIds": [3]}
+            self.fake.contacts[address] = {"attributes": {"VU_INTERNAL_TEST": True, "VU_FIRSTNAME": "Dennis" if address.startswith("alpha") else "Ralf"}, "emailBlacklisted": False, "listIds": [6]}
 
     def tearDown(self):
         self.temp.cleanup()
@@ -110,7 +110,7 @@ class Safety(unittest.TestCase):
         p = Process(self.fake, self.cfg, self.directory / "state.json")
         self.addCleanup(p.close)
         if "8" not in p.state["campaigns"]:
-            p.state["campaigns"]["8"] = {"recipients": {"listIds": [1], "exclusionListIds": [3]}, "sender_id": 1}
+            p.state["campaigns"]["8"] = {"recipients": {"listIds": [4], "exclusionListIds": [6]}, "sender_id": 1}
             p.save()
         return p
 
@@ -179,7 +179,7 @@ class Safety(unittest.TestCase):
 
     def test_upsert_preserves_blocks_and_is_idempotent(self):
         data = self.fixture()
-        self.fake.contacts["yes@example.invalid"] = {"attributes": {}, "emailBlacklisted": True, "listIds": [1, 77]}
+        self.fake.contacts["yes@example.invalid"] = {"attributes": {}, "emailBlacklisted": True, "listIds": [4, 77]}
         first = import_contacts(self.fake, data, self.review(data))
         second = import_contacts(self.fake, data, self.review(data))
         self.assertEqual(first["created"], 1)
@@ -188,7 +188,7 @@ class Safety(unittest.TestCase):
         self.assertTrue(self.fake.contacts["yes@example.invalid"]["emailBlacklisted"])
         self.assertEqual(self.fake.contacts["yes@example.invalid"]["listIds"], [77])
         for e in self.cfg["test_addresses"].values():
-            self.assertEqual(self.fake.contacts[e]["listIds"], [3])
+            self.assertEqual(self.fake.contacts[e]["listIds"], [6])
         self.assertFalse(any("emailBlacklisted" in b for m, _, b in self.fake.calls if m == "PUT"))
 
     def test_existing_withdrawal_never_upgraded(self):
@@ -251,13 +251,13 @@ class Safety(unittest.TestCase):
         p = self.process()
         self.fake.campaign["recipients"]["exclusionLists"] = []
         with self.assertRaises(Blocked): p.test(8, True)
-        self.fake.campaign["recipients"]["exclusionLists"] = [3]
+        self.fake.campaign["recipients"]["exclusionLists"] = [6]
         del self.fake.contacts["beta@example.invalid"]
         with self.assertRaises(Blocked): p.test(8, True)
 
     def test_unconsented_audience_blocks(self):
         p = self.process()
-        self.fake.contacts["unknown@example.invalid"] = {"listIds": [1], "emailBlacklisted": False, "attributes": {}}
+        self.fake.contacts["unknown@example.invalid"] = {"listIds": [4], "emailBlacklisted": False, "attributes": {}}
         with self.assertRaises(Blocked): p.test(8, True)
 
     def test_actions_cannot_send_or_import(self):
@@ -265,15 +265,31 @@ class Safety(unittest.TestCase):
             with self.assertRaises(Blocked): self.process()
             with self.assertRaises(Blocked): import_contacts(self.fake, {}, {})
 
+    def test_test_recipients_are_only_dennis_and_ralf_from_list_six(self):
+        self.assertEqual(set(confirmed_tests(self.fake, self.cfg, self.fake.lists)), set(self.cfg["test_addresses"].values()))
+        for changed in ({**self.fake.lists, LISTS[2]: 9}, {**self.fake.lists, LISTS[0]: 9}):
+            with self.assertRaises(Blocked):
+                confirmed_tests(self.fake, self.cfg, changed)
+        self.fake.contacts["beta@example.invalid"]["attributes"]["VU_FIRSTNAME"] = "Other"
+        with self.assertRaises(Blocked):
+            confirmed_tests(self.fake, self.cfg, self.fake.lists)
+
     def test_template_escape_mobile_and_unsubscribe(self):
         content = {"subject": "<Synthetic>", "preheader": "Preview", "intro": "Für dich.",
                    "items": [{"title": "Title", "text": "Text"}], "cta_text": "Öffnen", "cta_url": "https://example.invalid",
                    "company_name": "Synthetic", "company_address": "Synthetic only", "company_details_verified": True, "sender_id": 1}
         output = render(content)
-        self.assertIn("&lt;Synthetic&gt;", output)
+        self.assertIn(NEWSLETTER_SUBJECT, output)
+        self.assertIn(NEWSLETTER_PREHEADER, output)
         self.assertIn("{{ unsubscribe }}", output)
         self.assertIn("@media", output)
-        self.assertIn("vision-universe-logo-web.png", output)
+        self.assertIn("https://raw.githubusercontent.com/dennismueller10x-sudo/vision-universe-research/main/scripts/brevo/iphone-motiv.png", output)
+        self.assertIn("alt=\"Konzeptvorschau der Vision Universe iPhone-App", output)
+        self.assertIn("href=\"https://www.visionuniverse.de/\"", output)
+        self.assertIn("href=\"https://www.visionuniverse.de/impressum/\"", output)
+        self.assertIn("Bald verfügbar", output)
+        self.assertNotIn("data:image/", output)
+        self.assertNotIn("href=\"https://example.invalid", output)
         self.assertNotIn("<script", output.lower())
         self.assertNotIn("site-navigation", output)
         self.assertNotIn("<vu-navigation", output)
@@ -295,7 +311,9 @@ class Safety(unittest.TestCase):
         requests = [body for method, path, body in self.fake.calls if method == "POST" and path == "/emailCampaigns"]
         self.assertEqual(len(requests), 1)
         self.assertNotIn("scheduledAt", requests[0])
-        self.assertEqual(requests[0]["recipients"]["exclusionListIds"], [3])
+        self.assertEqual(requests[0]["recipients"]["exclusionListIds"], [6])
+        self.assertEqual(requests[0]["subject"], NEWSLETTER_SUBJECT)
+        self.assertEqual(requests[0]["previewText"], NEWSLETTER_PREHEADER)
         self.assertEqual(self.fake.campaign["status"], "draft")
 
     def test_ambiguous_draft_does_not_retry(self):
