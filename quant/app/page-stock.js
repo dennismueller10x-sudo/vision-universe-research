@@ -70,7 +70,12 @@
       var open = p.classList.toggle("is-open");
       btn.setAttribute("aria-expanded", open ? "true" : "false"); btn.textContent = open ? "Weniger" : "Mehr lesen";
     });
-    return el("div", { class: "qx-readmore-wrap" }, [p, btn]);
+    var wrap = el("div", { class: "qx-readmore-wrap" }, [p, btn]);
+    /* Passt der Text in zwei Zeilen (breite Ansicht), gibt es nichts aufzuklappen: der Knopf verschwindet. */
+    function fit() { if (!p.classList.contains("is-open")) btn.hidden = p.scrollHeight <= p.clientHeight + 1; }
+    if (global.ResizeObserver) new global.ResizeObserver(fit).observe(p);
+    else if (global.requestAnimationFrame) global.requestAnimationFrame(fit);
+    return wrap;
   }
   readMore.n = 0;
 
@@ -156,6 +161,23 @@
           el("span", { text: ([c.demand, c.value || c.value2].filter(function (x) { return x && typeof x === "string"; }).join(" · ") || c.text || "") + (c.state === "OPEN" ? " · zählt weder als erfüllt noch als verletzt" : "") })])
       ]);
     }));
+  }
+
+  /* Visual First (VU3): Regel-Checkliste. Oben die Zaehlung mit Zeichen (✓ erfuellt, ✗ nicht erfuellt, – nicht messbar) und
+     ein Feld je Bedingung, darunter "Bedingungen ansehen" mit der bisherigen Liste (verlangt · aktuell). Ohne Bedingungen: der Satz. */
+  function condCheck(list, emptyText) {
+    if (!list || !list.length) return conditions(list, emptyText);
+    var n = { MET: 0, NOT_MET: 0, OPEN: 0 };
+    list.forEach(function (c) { n[c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN"]++; });
+    var WORD = { MET: ["✓", "erfüllt", "good"], NOT_MET: ["✗", "nicht erfüllt", "bad"], OPEN: ["–", "nicht messbar", "unknown"] };
+    return el("div", { class: "q-check" }, [
+      el("p", { class: "q-check-count" }, [el("b", { class: "num", text: n.MET + " von " + list.length }), el("span", { text: " erfüllt" })].concat(
+        ["NOT_MET", "OPEN"].filter(function (k) { return n[k]; }).map(function (k) { return el("span", { class: "q-check-more tone-" + WORD[k][2], text: " · " + WORD[k][0] + " " + n[k] + " " + WORD[k][1] }); }))),
+      el("ol", { class: "q-check-cells", "aria-hidden": "true" }, list.map(function (c) {
+        var k = c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN";
+        return el("li", { class: "tone-" + WORD[k][2], title: c.label + ": " + WORD[k][1], text: WORD[k][0] });
+      })),
+      el("details", { class: "q-check-details" }, [el("summary", { text: "Bedingungen ansehen" }), conditions(list, emptyText)])]);
   }
 
   /* ------------------------------------------------ Die Einordnung
@@ -484,16 +506,18 @@
     if (bear) {
       host.replaceChildren(el("div", { class: "q-setup" }, [el("div", { class: "q-setup-head" }, [el("h2", {}, [el("strong", { text: "Setup" })]),
           el("span", { class: "q-status " + (on ? "is-on" : st.state === "UNAVAILABLE" ? "" : "is-wait"), text: status })]),
+        lifecycleNote || null,
         el("div", { class: "q-levels is-bear", role: "group", "aria-label": "Szenario-Marken" }, [
           cell("is-entry", "Basisszenario", sc.direction === "BEARISH" ? "Abwärts" : "Ohne klare Richtung", "kein Einstieg ausgewiesen"),
           cell("is-inv", "Ungültig über", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darüber: Abwärtsszenario ungültig" : null),
           cell("is-target is-down", "Zielzonen abwärts", targets.length ? targets.map(zone).join(" · ") : null, targets.length ? targets.map(function (t, i) { return "Ziel " + (i + 1); }).join(" · ") : null)]),
-        lifecycleNote || null,
         el("p", { class: "q-scenario-note", text: "Das technische Basisszenario vom " + X.dateDe(ws.asOf) + " zeigt " + (sc.direction === "BEARISH" ? "abwärts" : "keine klare Richtung") + ". Quant weist dafür keinen Einstieg aus – ein Setup ist hier eine Aufwärts-Situation. Keine Empfehlung." })]));
       return;
     }
     var kids = [el("div", { class: "q-setup-head" }, [el("h2", {}, [el("strong", { text: "Setup" })]),
         el("span", { class: "q-status " + (on ? "is-on" : st.state === "UNAVAILABLE" ? "" : "is-wait"), text: status })]),
+      /* Visual First (VU3): die Stufenleiste steht oben - wo die Aktie im Ablauf steht, ist die erste Antwort. */
+      lifecycleNote || null,
       el("div", { class: "q-levels", role: "group", "aria-label": "Szenario-Marken" }, [
         cell("is-entry", "Interessant ab", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
         cell("is-stop", "Stop / Risiko", sc && sc.stop ? usd(sc.stop.price) : null, sc && sc.stop ? (sc.stop.price === invPrice ? "gleich der Invalidation" : "technischer Stop") : null),
@@ -512,16 +536,15 @@
     var nx = st.next, inv = st.invalidation;
     var trigger = sc && sc.confirmation ? sc.confirmation : null;
     if (trigger || (nx && nx.text)) kids.push(el("div", { class: "q-trigger" }, [el("span", { text: "Bestätigt wenn" }),
-      trigger ? el("p", { text: trigger }) : null, nx && nx.text ? el("p", { class: "qx-small", text: nx.text }) : null]));
+      trigger ? el("p", { text: trigger }) : null, nx && nx.text ? readMore(el("p", { class: "qx-small", text: nx.text })) : null]));
     var better = nx && nx.conditions ? nx.conditions : [], worse = inv && inv.conditions ? inv.conditions : [];
     if (better.length || worse.length) kids.push(el("div", { class: "q-moves" }, [
-      el("div", { class: "is-up" }, [el("b", { text: "Was müsste als Nächstes passieren?" }), conditions(better, "Keine offene Bedingung für eine höhere Stufe.")]),
-      el("div", { class: "is-down" }, [el("b", { text: "Was würde das Setup ungültig machen?" }), conditions(worse, "Keine tragende Bedingung veröffentlicht.")])]));
-    if (lifecycleNote) kids.push(lifecycleNote);
-    kids.push(el("p", { class: "q-scenario-note", text: sc
+      el("div", { class: "is-up" }, [el("b", { text: "Was müsste als Nächstes passieren?" }), condCheck(better, "Keine offene Bedingung für eine höhere Stufe.")]),
+      el("div", { class: "is-down" }, [el("b", { text: "Was würde das Setup ungültig machen?" }), condCheck(worse, "Keine tragende Bedingung veröffentlicht.")])]));
+    kids.push(readMore(el("p", { class: "q-scenario-note", text: sc
       ? "Szenario der technischen Auswertung vom " + X.dateDe(ws.asOf) + " (" + sc.label + ", " + sc.status + "). Die Marken zeigen, wo das Szenario rechnerisch ansetzt, ungültig wird und auf Widerstand trifft – keine Empfehlung, keine Order."
       : technical && technical.state === "AVAILABLE" && technical.fullWorkspace && !ws ? "Die Szenario-Marken werden geladen …"
-      : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
+      : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") })));
     var links = [];
     if (st.state !== "UNAVAILABLE") links.push(X.link("Setup im Detail", "#setup"));
     if (technical && technical.fullWorkspace) links.push(X.link("Chartbild öffnen", X.routes.chartbild(ticker)));
@@ -586,10 +609,12 @@
      Verlaufsstufen, die noch nicht freigeschaltet sind. */
   function lifecycleView(lc) {
     if (!lc || lc.state !== "AVAILABLE" || !Radar) return null;
+    /* entscheidbare Stufen in Reihenfolge: was vor der aktuellen liegt, ist erreicht (is-past) */
+    var steps = Radar.LIFECYCLE.filter(function (x) { return x.id !== "NO_SETUP" && x.tier !== "PATH_DEPENDENT"; }).map(function (x) { return x.id; });
     return el("div", { class: "q-lifecycle" }, [
       el("ol", { "aria-label": "Lebenszyklus eines Setups" }, Radar.LIFECYCLE.filter(function (x) { return x.id !== "NO_SETUP"; }).map(function (x) {
-        var now = x.id === lc.current;
-        return el("li", { class: (now ? "is-now " : "") + (x.tier === "PATH_DEPENDENT" ? "is-closed" : ""), "aria-current": now ? "step" : null }, [el("span", { text: x.label })]);
+        var now = x.id === lc.current, past = steps.indexOf(x.id) >= 0 && steps.indexOf(x.id) < steps.indexOf(lc.current);
+        return el("li", { class: (now ? "is-now " : past ? "is-past " : "") + (x.tier === "PATH_DEPENDENT" ? "is-closed" : ""), "aria-current": now ? "step" : null }, [el("span", { text: x.label })]);
       })),
       el("p", { class: "qx-small", text: (lc.current === "NO_SETUP" ? "Derzeit kein Setup" : lifecycleLabel(lc.current) + " " + (lc.sinceIsLowerBound ? "mindestens seit " : "seit ") + X.dateDe(lc.since)) +
         (lc.previous ? " · vorher " + lifecycleLabel(lc.previous) + " (" + X.dateDe(lc.previousAsOf) + ")" : "") +
