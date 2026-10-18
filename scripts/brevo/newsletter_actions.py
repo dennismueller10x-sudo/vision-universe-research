@@ -136,8 +136,8 @@ class NewsletterClient(Client):
                 clean=="/emailCampaigns/%d/sendNow"%self.preview_id and body is None)
         if not (read or write): raise Blocked("Newsletter-Aufruf liegt außerhalb der konkreten Operation.")
         result=super().call(method,path,body,missing)
-        if clean=="/emailCampaigns" and self.operation=="draft": self.campaign_id=result["id"]
-        if clean=="/emailCampaigns" and self.operation=="preview":
+        if method=="POST" and clean=="/emailCampaigns" and self.operation=="draft": self.campaign_id=result["id"]
+        if method=="POST" and clean=="/emailCampaigns" and self.operation=="preview":
             candidate=result.get("id")
             if type(candidate) is not int or candidate<1 or candidate==self.campaign_id:
                 raise Blocked("Vorabkampagnen-ID ungültig; kein Versand.")
