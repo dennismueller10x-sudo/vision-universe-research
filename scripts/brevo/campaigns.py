@@ -34,9 +34,21 @@ def version(campaign):
 
 
 def render(content):
-    required = ("subject", "preheader", "intro", "items", "cta_text", "cta_url", "company_name", "company_address", "sender_id")
+    required = ("subject", "preheader", "intro", "company_name", "company_address", "sender_id")
     if any(not content.get(k) for k in required) or content.get("company_details_verified") is not True:
         raise Blocked("Freigegebener Inhalt und bestätigte Unternehmensangaben fehlen.")
+    layout = content.get("layout", "standard")
+    if layout == "vision-universe-app":
+        import re
+        if not re.fullmatch(r"https://raw\.githubusercontent\.com/dennismueller10x-sudo/vision-universe-research/[a-f0-9]{40}/scripts/brevo/content/vision-universe-app/iphone-motiv\.png", content.get("image_url", "")):
+            raise Blocked("App-Vorlage benötigt das unveränderliche HTTPS-Motiv.")
+        path = Path(__file__).resolve().parent / "content" / layout / "newsletter.html.tmpl"
+        values = {k: html.escape(str(v), quote=True) for k, v in content.items()}
+        return Template(path.read_text(encoding="utf-8")).substitute(values)
+    if layout != "standard":
+        raise Blocked("Unbekannte Newsletter-Vorlage.")
+    if any(not content.get(k) for k in ("items", "cta_text", "cta_url")):
+        raise Blocked("Standardvorlage benötigt Inhalte und CTA.")
     if not isinstance(content["items"], list) or not 1 <= len(content["items"]) <= 3:
         raise Blocked("Vorlage benötigt ein bis drei Inhalte.")
     if not content["cta_url"].startswith("https://"):
@@ -222,10 +234,12 @@ class Process:
         audience_check(self.client, self.config, lists)
         return state, fingerprint, tests
 
-    def test(self, campaign_id, authorized=False):
+    def test(self, campaign_id, authorized=False, expected_version=None):
         if not authorized:
             raise Blocked("Testversand benötigt ausdrückliche Freigabe für diese Kampagne.")
         state, fingerprint, addresses = self.current(campaign_id)
+        if expected_version is not None and fingerprint != expected_version:
+            raise Blocked("Testfreigabe gilt nicht für die aktuelle Inhaltsversion.")
         attempts = state.setdefault("tests", {})
         if fingerprint in attempts:
             raise Blocked("Vorabtest dieser Version bereits aufgerufen; keine doppelte Sendung.")

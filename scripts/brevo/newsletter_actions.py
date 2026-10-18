@@ -12,7 +12,6 @@ from transfer import trusted_dispatch
 
 STATE_BRANCH = "brevo-newsletter-state"
 STATE_PATH = "brevo-newsletter-ledger.json"
-REVIEW_ENV = "brevo-newsletter-review"
 
 
 def trusted_newsletter():
@@ -57,7 +56,7 @@ def validate_ledger(state):
             raise Blocked("Entwurfsregister enthält unzulässige Daten.")
     for cid,c in state["campaigns"].items():
         if not re.fullmatch(r"[1-9][0-9]*",cid) or not isinstance(c,dict) or set(c)-{
-                "recipients","sender_id","tests","send"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
+                "recipients","sender_id","tests","send","approvals"}: raise Blocked("Kampagnenregister enthält unzulässige Daten.")
         if not integer(c.get("sender_id")): raise Blocked("Absender-ID im Register fehlt.")
         r=c.get("recipients",{})
         if not isinstance(r,dict) or set(r)-{"listIds","segmentIds","exclusionListIds"} or any(
@@ -69,6 +68,15 @@ def validate_ledger(state):
             if not hex64(version) or not isinstance(t,dict) or set(t)!={"state","test_identity"} or t["state"] not in (
                     "pending","api_accepted") or not hex64(t["test_identity"]):
                 raise Blocked("Unzulässige Testreservierung.")
+        if not isinstance(c.get("approvals", {}), dict):
+            raise Blocked("Ungültiges Freigaberegister.")
+        for run_id, approval in c.get("approvals", {}).items():
+            if (not re.fullmatch(r"[1-9][0-9]*", run_id) or not isinstance(approval, dict)
+                    or set(approval) != {"operation", "version", "approval_sha256", "actor_id"}
+                    or approval["operation"] not in ("test", "send")
+                    or not hex64(approval["version"]) or not hex64(approval["approval_sha256"])
+                    or not integer(approval["actor_id"])):
+                raise Blocked("Freigaberegister enthält unzulässige Daten.")
     return state
 
 
@@ -96,18 +104,6 @@ class Ledger:
         return {"ledger":"initialized","emails_sent":0}
 
 
-def require_review(github):
-    env=github.call("GET","/environments/"+REVIEW_ENV)
-    if not any(r.get("type")=="required_reviewers" and r.get("reviewers") for r in env.get("protection_rules",[])):
-        raise Blocked("GitHub-Umgebung brevo-newsletter-review benötigt verpflichtenden Betreiberreview.")
-    history=github.call("GET","/actions/runs/"+os.environ["GITHUB_RUN_ID"]+"/approvals")
-    reviewers={r["reviewer"]["login"] for rule in env["protection_rules"] if rule.get("type")=="required_reviewers"
-               for r in rule.get("reviewers",[]) if r.get("type")=="User"}
-    if not any(h.get("state")=="approved" and h.get("user",{}).get("login") in reviewers and any(
-            e.get("name")==REVIEW_ENV for e in h.get("environments",[])) for h in history):
-        raise Blocked("Tatsächliche Review-Freigabe dieses Ausführungslaufs fehlt.")
-
-
 class NewsletterClient(Client):
     def __init__(self,operation,campaign_id=0):
         super().__init__();self.operation,self.campaign_id=operation,campaign_id
@@ -129,18 +125,27 @@ def run():
     if not trusted_newsletter(): raise Blocked("Newsletter nur im separaten manuellen Standardbranch-Workflow.")
     operation=os.environ.get("BREVO_NEWSLETTER_OPERATION")
     if operation not in ("initialize","draft","check","test","send"): raise Blocked("Ungültige Newsletter-Operation.")
+    dry_flag=os.environ.get("BREVO_DRY_RUN","false")
+    if dry_flag not in ("true","false") or dry_flag=="true" and operation not in ("test","send"):
+        raise Blocked("Freigabeprüfung ohne Versand ist nur für test/send zulässig.")
+    dry_run=dry_flag=="true"
     github=Github();ledger=Ledger(github)
     if operation=="initialize": return ledger.initialize()
     try: config=json.loads(os.environ.pop("BREVO_NEWSLETTER_CONFIG",""))
     except Exception: raise Blocked("Private Newsletter-Konfiguration fehlt.") from None
     if not isinstance(config,dict): raise Blocked("Private Newsletter-Konfiguration ungültig.")
     cid=int(os.environ.get("BREVO_CAMPAIGN_ID") or 0)
-    client=NewsletterClient(operation,cid)
+    client=NewsletterClient("check" if dry_run else operation,cid)
     from campaigns import Process
     process=Process(client,config,ledger=ledger)
     try:
         if operation=="draft":
-            content=json.loads(os.environ.pop("BREVO_NEWSLETTER_CONTENT",""))
+            source=os.environ.get("BREVO_NEWSLETTER_SOURCE","secret")
+            if source=="secret":
+                content=json.loads(os.environ.pop("BREVO_NEWSLETTER_CONTENT",""))
+            else:
+                from newsletter_content import repository_content
+                content=repository_content(source,client)
             return process.draft(content)
         if cid<1: raise Blocked("Konkrete Kampagnen-ID fehlt.")
         if operation=="check":
@@ -153,12 +158,18 @@ def run():
         expected=os.environ.get("BREVO_EXPECTED_VERSION","")
         if not re.fullmatch(r"[a-f0-9]{64}",expected) or os.environ.get("BREVO_AUTHORIZE_SEND")!="true":
             raise Blocked("Ausdrückliche Freigabe der konkreten Kampagnenversion fehlt.")
-        require_review(github)
+        from newsletter_approval import authorize_dispatch, reserve_approval
+        receipt=authorize_dispatch(github,operation,cid,expected)
         _,actual,_=process.current(cid)
         if actual!=expected: raise Blocked("Inhalt seit Versionsfreigabe geändert; neuer Vorabtest erforderlich.")
-        if operation=="test": return process.test(cid,True)
+        if dry_run:
+            if operation=="send": process.check(cid)
+            return {"campaign_id":cid,"version":actual,"operation":operation,
+                "approval_valid":True,"dry_run":True,"emails_sent":0,"production_sent":False}
+        reserve_approval(process,cid,receipt)
+        if operation=="test": return process.test(cid,True,expected_version=expected)
         return process.send(cid,{"campaign_id":cid,"version":expected,"explicit_owner_approval":True,
-            "approval_reference":"protected GitHub run "+os.environ["GITHUB_RUN_ID"]},True)
+            "approval_reference":"owner dispatch "+str(receipt["run_id"])+" / "+receipt["approval_sha256"]},True)
     finally: process.close()
 
 
@@ -168,5 +179,5 @@ if __name__=="__main__":
         print("Gesperrt: "+str(error))
         raise SystemExit(1) from None
     except Exception:
-        print("Gesperrt: privaten Inhalt, konkreten Review und dauerhaftes Register prüfen; keine Rohdaten/automatischen Wiederholungen.")
+        print("Gesperrt: privaten Inhalt, konkrete Owner-Freigabe und dauerhaftes Register prüfen; keine Rohdaten/automatischen Wiederholungen.")
         raise SystemExit(1) from None

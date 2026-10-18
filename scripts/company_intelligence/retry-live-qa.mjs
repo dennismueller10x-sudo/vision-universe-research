@@ -14,7 +14,7 @@
 import {mkdirSync,writeFileSync,appendFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {CLASSES,classifyReport,readReport,reportFile} from './classify-live-failure.mjs';
+import {CLASSES,classifyReport,readReport,reportFile,staticScriptsFromRepo} from './classify-live-failure.mjs';
 
 export const JOB_TIMEOUT_S = 35 * 60;
 export const DEFAULTS = Object.freeze({
@@ -43,7 +43,7 @@ export function budget({nowS, startedAtS, cls, qa, full, timeoutS = JOB_TIMEOUT_
  * Kern ohne Prozess-/Dateizugriff (testbar).
  * attempt({n, cls, qa, qaBudgetMs}) -> {depsFailed?:boolean, report?:object|null, ok:boolean}
  */
-export async function runRetries({cls, qa, full = false, expectedSha = null, startedAtS, now = () => Date.now() / 1000, sleep = async () => {}, attempt, d = DEFAULTS, timeoutS = JOB_TIMEOUT_S}) {
+export async function runRetries({cls, qa, full = false, expectedSha = null, staticScripts = new Set(), startedAtS, now = () => Date.now() / 1000, sleep = async () => {}, attempt, d = DEFAULTS, timeoutS = JOB_TIMEOUT_S}) {
  if (!Number.isFinite(startedAtS) || startedAtS <= 0) return {result: 'SKIPPED', finalClass: cls, reason: 'STARTED_AT_INVALID', attempts: []}; // Zeitbudget unbekannt: fail-closed
  if (![CLASSES.PROPAGATION, CLASSES.INFRA, CLASSES.BROWSER].includes(cls)) return {result: 'SKIPPED', finalClass: cls, reason: 'NOT_TRANSIENT', attempts: []};
  const attempts = [];
@@ -55,7 +55,7 @@ export async function runRetries({cls, qa, full = false, expectedSha = null, sta
   if (!b.ok) return {result: attempts.length ? 'FAIL' : 'SKIPPED', finalClass: current, reason: 'NO_TIME_BUDGET (rest ' + b.leftS + ' s < Bedarf ' + b.needS + ' s)', attempts};
   let r;
   try { r = await attempt({n, cls: current, qa, qaBudgetMs: b.qaBudgetMs, deadlineS: startedAtS + timeoutS - d.handlerReserveS}); } catch (error) { r = {ok: false, depsFailed: false, report: null, error: String(error?.name || 'Error')}; }
-  const next = r.ok ? null : r.depsFailed ? {class: CLASSES.INFRA, reason: 'BROWSER_DEPENDENCIES_FAILED'} : classifyReport(r.report, {expectedSha});
+  const next = r.ok ? null : r.depsFailed ? {class: CLASSES.INFRA, reason: 'BROWSER_DEPENDENCIES_FAILED'} : classifyReport(r.report, {expectedSha, staticScripts});
   attempts.push({n, ok: !!r.ok, class: next?.class ?? null, reason: next?.reason ?? null, ...(r.error ? {error: r.error} : {})});
   if (r.ok) return {result: 'PASS', finalClass: current, reason: 'PASSED_ON_RETRY_' + n, attempts};
   current = next.class;
@@ -96,7 +96,7 @@ function realAttempt(env, spawn = spawnSync, nowS = () => Date.now() / 1000) {
 export async function main(env = process.env) {
  const cls = env.CLASS, qa = env.QA === 'off' ? 'off' : 'live', full = env.FULL_ACCEPTANCE === 'true';
  const expectedSha = env.EXPECTED_PRODUCTION_SHA || null, startedAtS = Number(env.STARTED_AT); // fehlt/ungueltig -> runRetries liefert SKIPPED (fail-closed)
- const out = await runRetries({cls, qa, full, expectedSha, startedAtS, sleep: ms => new Promise(r => setTimeout(r, ms)), attempt: realAttempt(env)});
+ const out = await runRetries({cls, qa, full, expectedSha, staticScripts: staticScriptsFromRepo(env.REPO_ROOT || '.'), startedAtS, sleep: ms => new Promise(r => setTimeout(r, ms)), attempt: realAttempt(env)});
  const root = env.RUNNER_TEMP || '/tmp';
  try { mkdirSync(root + '/live-failure', {recursive: true}); writeFileSync(root + '/live-failure/retry.json', JSON.stringify(out, null, 2) + '\n'); } catch { /* Beleg optional */ }
  if (env.GITHUB_OUTPUT) appendFileSync(env.GITHUB_OUTPUT, `result=${out.result}\nfinal_class=${out.finalClass}\n`);

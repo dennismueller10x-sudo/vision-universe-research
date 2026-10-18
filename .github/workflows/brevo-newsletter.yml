@@ -12,6 +12,11 @@ on:
         type: string
         description: Konkrete Brevo-Kampagnen-ID
         default: ''
+      content_source:
+        type: choice
+        description: Nur für draft; kuratierter App-Newsletter oder bestehender privater Inhalt
+        options: [secret, vision-universe-app]
+        default: secret
       expected_version:
         type: string
         description: SHA256 der konkreten Inhaltsversion (keine Inhaltsdaten)
@@ -19,6 +24,14 @@ on:
       authorize_send:
         type: boolean
         description: Nur nach ausdrücklicher Freigabe dieses Test- oder Hauptversands
+        default: false
+      approval_sha256:
+        type: string
+        description: Nur nach konkreter Owner-Freigabe; SHA256 des privaten Nachweises, niemals Nachricht oder Adressen
+        default: ''
+      dry_run:
+        type: boolean
+        description: Nur test/send; prüft Freigabe und Version ohne Reservierung oder E-Mail-Versand
         default: false
 permissions:
   contents: read
@@ -30,11 +43,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: ${{ (inputs.operation == 'test' || inputs.operation == 'send') && 'brevo-newsletter-review' || 'brevo-newsletter-drafts' }}
     permissions:
       contents: write
       actions: read
-      deployments: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -46,10 +57,13 @@ jobs:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_NEWSLETTER_CONFIG: ${{ secrets.BREVO_NEWSLETTER_CONFIG }}
           BREVO_NEWSLETTER_CONTENT: ${{ secrets.BREVO_NEWSLETTER_CONTENT }}
+          BREVO_NEWSLETTER_SOURCE: ${{ inputs.content_source }}
           GITHUB_TOKEN: ${{ github.token }}
           BREVO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           BREVO_NEWSLETTER_OPERATION: ${{ inputs.operation }}
           BREVO_CAMPAIGN_ID: ${{ inputs.campaign_id }}
           BREVO_EXPECTED_VERSION: ${{ inputs.expected_version }}
           BREVO_AUTHORIZE_SEND: ${{ inputs.authorize_send }}
+          BREVO_APPROVAL_SHA256: ${{ inputs.approval_sha256 }}
+          BREVO_DRY_RUN: ${{ inputs.dry_run }}
         run: python3 scripts/brevo/newsletter_actions.py

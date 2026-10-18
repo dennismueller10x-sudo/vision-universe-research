@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {classify,classifyReport,classifyBrowserHttp,isDeliveryCause,main,CLASSES,PROPAGATION_CAUSE} from '../classify-live-failure.mjs';
+import {classify,classifyReport,classifyBrowserHttp,isDeliveryCause,main,CLASSES,PROPAGATION_CAUSE,staticScriptsOf,staticScriptsFromRepo} from '../classify-live-failure.mjs';
 import {verifyPropagation,CAUSE} from '../propagation-proof.mjs';
 
 const T_BROWSER=CLASSES.BROWSER,T_PROP=CLASSES.PROPAGATION,T_INFRA=CLASSES.INFRA,REAL=CLASSES.REAL;
@@ -234,4 +234,114 @@ test('Browser: classifyBrowserHttp wird nur fuer die Browser-Ursache benutzt; Pr
  assert.equal(classifyBrowserHttp(fixture(),{expectedSha:SHA}).class,T_BROWSER);
  assert.equal(run(propagationReport([check('a','STALE')])).class,T_PROP);
  assert.equal(cb({...fixture(),cause:'SOMETHING_ELSE'}).class,REAL);
+});
+
+/* ---- Statisches Hauptskript (Fixture: anonymisierter Bericht des Laufs 39036914225, 17.10.2026: 503 vom CDN auf /discover/app.js,
+   served-Liste gekuerzt). Statisch = <script src> der gepruefsten Seite (discover/index.html desselben Commits). ---- */
+const staticFixture=()=>JSON.parse(readFileSync(new URL('./fixtures/live-report-static-503.json',import.meta.url),'utf8'));
+const DISCOVER_STATIC=staticScriptsFromRepo(new URL('../../..',import.meta.url).pathname);
+const cs=(r,{expectedSha=SHA,staticScripts=DISCOVER_STATIC}={})=>classify({depsOutcome:'success',qaOutcome:'failure',report:r,expectedSha,staticScripts});
+const smut=f=>{const r=staticFixture();f(r);return r;};
+
+test('statische Skripte: aus discover/index.html gelesen, nur same-origin .js ohne Query',()=>{
+ assert.ok(DISCOVER_STATIC.has('/discover/app.js'));assert.ok(DISCOVER_STATIC.size>20);
+ const s=staticScriptsOf('<script src="/a/b.js?v=1"></script><script defer src="/c.js"></script><script src="https://cdn.x/y.js"></script><script src="//x/z.js"></script><script src="/d.json"></script><script src="/e/../f.js"></script><script>inline()</script>'+
+  '<template id="dx-start"><script src="/g.js"></script></template><template id="dx-lazy-detail"><script src="/lazy.js"></script></template><template id="x"><script src="/t.js"></script></template><!-- <script src="/kommentar.js"></script> -->');
+ assert.deepEqual([...s].sort(),['/a/b.js','/c.js','/g.js']);
+ /* echte Seite: Startskripte ja, Lazy-Gruppen (lazy.js meldet sie selbst) nein */
+ assert.ok(!DISCOVER_STATIC.has('/company-intelligence/ui/stock-section.js'));assert.ok(!DISCOVER_STATIC.has('/discover/engines/narrative.js'));
+ assert.equal(staticScriptsFromRepo('/nicht/vorhanden').size,0,'ohne Seite: leere Menge, also fail-closed');
+});
+
+test('statisches Hauptskript: einmaliger CDN-503 (echter Fall 17.10.) -> TRANSIENT_BROWSER_HTTP, Beleg im Ergebnis',()=>{
+ const r=cs(staticFixture());
+ assert.equal(r.class,T_BROWSER);assert.equal(r.reason,'STATIC_SCRIPT_HTTP_503');assert.equal(r.detail,'/discover/app.js');
+ for(const st of [502,504,429])assert.equal(cs(smut(x=>{x.browserDiagnostics.http[0].status=st;x.pageState.scriptResourcesSuspicious[0].s=st;x.browserDiagnostics.console[0]=x.browserDiagnostics.console[0].replace('503',String(st));})).class,T_BROWSER,String(st));
+ /* vorher (ohne Kenntnis der statischen Skripte) war derselbe Bericht REAL */
+ assert.equal(cs(staticFixture(),{staticScripts:new Set()}).class,REAL);
+});
+
+test('statisches Hauptskript: gekuerzte Belegliste bleibt REAL, gekuerzte served-Liste nicht',()=>{
+ for(const k of ['console','pageErrors','failed','http'])assert.equal(cs(smut(x=>{x.browserDiagnostics.truncated={served:true,[k]:true};})).class,REAL,k);
+ assert.equal(cs(smut(x=>{x.browserDiagnostics.truncated={served:true};})).class,T_BROWSER);
+ assert.equal(cs(smut(x=>{x.browserDiagnostics.truncated={};})).class,T_BROWSER);
+ assert.equal(cs(smut(x=>{x.browserDiagnostics.truncated={served:true,kuenftigeListe:true};})).class,REAL,'unbekannte gekuerzte Liste');
+});
+
+test('Lazy-Skript ohne LAZY_SCRIPT_FAILED bleibt auch mit den echten Startskripten REAL (lazy.js hat sich womoeglich erholt)',()=>{
+ for(const u of ['/company-intelligence/ui/stock-section.js','/discover/engines/narrative.js','/company-intelligence/config/rollout.js']){
+  const r=smut(x=>{x.browserDiagnostics.http[0].url=u;x.browserDiagnostics.failed[0].url=u;x.pageState.scriptResourcesSuspicious[0].n=u;});
+  assert.equal(cs(r).class,REAL,u);
+ }
+});
+
+test('alle bisherigen REAL-Faelle bleiben REAL, auch mit den echten Startskripten der Seite',()=>{
+ /* Wiederholung der Faelle aus "Browser: alles andere bleibt REAL" unter der Produktionseinstellung; einzige Ausnahme ist
+    http503AppJs (dort steht app.js faelschlich als LAZY_SCRIPT_FAILED; ohne diese Zeile waere es der echte Fall, s. o.). */
+ const keys=['extra403','extra404','extraOther503','status500','status401','noHtml','foreignOrigin','http503Json','http503Css','consoleUnexplained','pageErrors','activeErrors','truncated','notTimeout','previousFailure','wrongCommit','notPropagated','accessGate','markerError','otherRelease'];
+ const f={extra403:r=>r.browserDiagnostics.http.push(httpEntry('/discover/data/x.json',403)),extra404:r=>r.browserDiagnostics.http.push(httpEntry('/discover/data/x.json',404)),
+  extraOther503:r=>r.browserDiagnostics.http.push(httpEntry('/company-intelligence/data/index.json',503)),status500:r=>{r.browserDiagnostics.http[0].status=500;},status401:r=>{r.browserDiagnostics.http[0].status=401;},
+  noHtml:r=>{r.browserDiagnostics.http[0].headers['content-type']='application/javascript';},foreignOrigin:r=>{r.browserDiagnostics.http[0].url='https://evil.example/discover/engines/narrative.js';},
+  http503Json:r=>{const u='/company-intelligence/data/index.json';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  http503Css:r=>{const u='/discover/app.css';r.browserDiagnostics.http[0].url=u;r.browserDiagnostics.console[0]='LAZY_SCRIPT_FAILED:'+u;r.browserDiagnostics.failed=[];r.pageState.scriptResourcesSuspicious=[];},
+  consoleUnexplained:r=>r.browserDiagnostics.console.push('Uncaught ReferenceError: x is not defined'),pageErrors:r=>r.browserDiagnostics.pageErrors.push('TypeError: boom'),activeErrors:r=>{r.active.errors=['x'];},
+  truncated:r=>{r.browserDiagnostics.truncated={http:true};},notTimeout:r=>{r.error.name='AssertionError';},previousFailure:r=>{r.previousFailure={message:'x'};},wrongCommit:r=>{r.sourceCommit='f'.repeat(40);},
+  notPropagated:r=>{r.propagation.status='NOT_PROPAGATED';},accessGate:r=>{r.pageState.accessGate=true;},markerError:r=>{r.markers=[{state:'ERROR'}];},otherRelease:r=>{r.pageState.metaRelease='relzzzzzzzzzzzz';}};
+ for(const k of keys){
+  assert.equal(cs(mut(f[k])).class,REAL,'lazy-Fixture '+k);
+  assert.equal(cs(smut(f[k])).class,REAL,'statische Fixture '+k);
+ }
+});
+
+test('statisches Hauptskript: echte Fehler bleiben REAL (keine pauschale 503-Ausnahme)',()=>{
+ const cases={
+  jsError:x=>x.browserDiagnostics.pageErrors.push('ReferenceError: VUDiscover is not defined'),
+  jsErrorConsole:x=>x.browserDiagnostics.console.push('Uncaught TypeError: Cannot read properties of undefined'),
+  activeErrors:x=>{x.active.errors=['TypeError: boom'];},
+  /* Skripte geladen, Komponente fehlt trotzdem: kein HTTP-Beleg */
+  componentMissingScriptsOk:x=>{x.browserDiagnostics.http=[];x.browserDiagnostics.failed=[];x.browserDiagnostics.console=[];x.pageState.scriptResourcesSuspicious=[];},
+  /* Generation/Daten: Assertion statt Zeitueberschreitung */
+  generationMismatch:x=>{x.error={name:'AssertionError',message:"Expected values to be strictly equal: 'gen-b' !== 'gen-a'"};},
+  hashMismatch:x=>{x.error={name:'AssertionError',message:'index.json sha256'};},
+  dataJson503:x=>{const u='/company-intelligence/data/index.json';x.browserDiagnostics.http[0].url=u;x.browserDiagnostics.failed[0].url=u;x.pageState.scriptResourcesSuspicious=[];},
+  css503:x=>{const u='/discover/discover.css';x.browserDiagnostics.http[0].url=u;x.browserDiagnostics.failed[0].url=u;x.pageState.scriptResourcesSuspicious[0].n=u;},
+  scriptNotOnPage:x=>{const u='/quant/app/pages.js';x.browserDiagnostics.http[0].url=u;x.browserDiagnostics.failed[0].url=u;x.pageState.scriptResourcesSuspicious[0].n=u;},
+  foreignOrigin:x=>{x.browserDiagnostics.http[0].url='https://cdn.example/discover/app.js';},
+  status500:x=>{x.browserDiagnostics.http[0].status=500;},
+  status403:x=>{x.browserDiagnostics.http[0].status=403;x.browserDiagnostics.console[0]=x.browserDiagnostics.console[0].replace('503','403');},
+  status404:x=>{x.browserDiagnostics.http[0].status=404;},
+  notHtml:x=>{x.browserDiagnostics.http[0].headers['content-type']='application/javascript';},
+  namedAsLazy:x=>{x.browserDiagnostics.console.push('LAZY_SCRIPT_FAILED:/discover/other.js');},
+  extraFailedRequest:x=>x.browserDiagnostics.failed.push({url:'/company-intelligence/data/index.json',error:'net::ERR_FAILED'}),
+  second503Data:x=>x.browserDiagnostics.http.push(httpEntry('/company-intelligence/data/lookup/AA.json',503)),
+  pageStateOther:x=>x.pageState.scriptResourcesSuspicious.push({n:'/discover/detail.js',s:403}),
+  accessGate:x=>{x.pageState.accessGate=true;},
+  otherRelease:x=>{x.pageState.metaRelease='relzzzzzzzzzzzz';},
+  markerError:x=>{x.markers=[{state:'ERROR'}];},
+  wrongCommit:x=>{x.sourceCommit='f'.repeat(40);},
+  notPropagated:x=>{x.propagation.status='NOT_PROPAGATED';},
+  previousFailure:x=>{x.previousFailure={message:'x'};},
+ };
+ for(const [name,f] of Object.entries(cases))assert.equal(cs(smut(f)).class,REAL,name);
+ assert.equal(cs(staticFixture(),{expectedSha:null}).class,REAL,'ohne erwarteten Commit');
+});
+
+test('Beleg im Log: Pfad und Status der gescheiterten Anfrage stehen auch bei REAL in Datei und Summary',()=>{
+ const root=mkdtempSync(join(tmpdir(),'cls-static-'));
+ try{
+  const out=join(root,'gh-out'),sum=join(root,'sum');writeFileSync(out,'');writeFileSync(sum,'');
+  mkdirSync(join(root,'live-fast'),{recursive:true});mkdirSync(join(root,'repo/discover'),{recursive:true});
+  writeFileSync(join(root,'repo/discover/index.html'),'<script src="/discover/app.js"></script>');
+  writeFileSync(join(root,'live-fast/report.json'),JSON.stringify(staticFixture()));
+  const base={REPORT_ROOT:root,REPO_ROOT:join(root,'repo'),GITHUB_OUTPUT:out,GITHUB_STEP_SUMMARY:sum,DEPS_OUTCOME:'success',LIVE_OUTCOME:'failure',OFF_OUTCOME:'skipped',ENABLED:'true',EXPECTED_PRODUCTION_SHA:SHA};
+  let r=main(base);
+  assert.equal(r.class,T_BROWSER);assert.deepEqual(r.evidence.http,['/discover/app.js 503 html']);assert.deepEqual(r.evidence.truncated,['served']);
+  assert.match(readFileSync(sum,'utf8'),/Beleg: HTTP \[\/discover\/app\.js 503 html\], Seitenfehler 0, fehlgeschlagen 1, Konsole 1, gekuerzt served, Fehler TimeoutError/);
+  /* derselbe Bericht mit Seitenfehler: REAL, der Beleg nennt ihn */
+  const bad=staticFixture();bad.browserDiagnostics.pageErrors=['ReferenceError: x'];
+  writeFileSync(join(root,'live-fast/report.json'),JSON.stringify(bad));
+  r=main(base);
+  assert.equal(r.class,REAL);assert.equal(r.reason,'BROWSER_PAGE_ERRORS');assert.equal(r.evidence.pageErrors,1);
+  assert.equal(JSON.parse(readFileSync(join(root,'live-failure/classification.json'),'utf8')).evidence.http[0],'/discover/app.js 503 html');
+ }finally{rmSync(root,{recursive:true,force:true});}
 });

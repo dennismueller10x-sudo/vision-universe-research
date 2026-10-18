@@ -1,5 +1,7 @@
 # Brevo API-Betrieb mit privater Übergabe und Versionsfreigabe
 
+Aktueller Newsletter-Stand vom 18. Oktober 2026: [kuratiertes Testpaket, API-Audit und konkrete Einrichtungsschritte](APP-NEWSLETTER.md). Die nachfolgenden Statusangaben vom 12. Oktober sind historische Momentaufnahmen; der Newsletter-Workflow liegt inzwischen auf `main`, der Kontaktimport ist anhand des aktuellen Audits nachvollziehbar und die Domain authentifiziert. Keine Newsletter versendet.
+
 Stand 12. Oktober 2026: Code vorbereitet, neuer Newsletter-Workflow noch nicht auf main aktiviert. **Import vorbereitet, noch nicht durchgeführt.** Keine E-Mails, DNS-Änderungen oder Buchungen. Die Sichtbarkeit der Listen ist durch den Owner bestätigt.
 
 ## Einmalige Importübergabe
@@ -20,26 +22,10 @@ Nicht `cat`, `echo`, Kommandozeilenwerte, Screenshots oder Debug-Logs zur Überg
 
 Nach erfolgreicher Rückprüfung den temporären Import-Secret entfernen; ein erneuter Import braucht bewusst dasselbe validierte private Paket. Newsletter verwendet eine getrennte kleine Konfiguration und benötigt den Kontaktbestand nicht erneut. Downloads nur in vorhandener privater Ablage aufbewahren; keine neue Speicherplattform.
 
-## Späterer Newsletterbetrieb
+## Newsletterbetrieb ab 18. Oktober 2026
 
-Kein Newsletter-Inhalt, Test oder Hauptversand ist derzeit freigegeben. Domain `verified=false`/`authenticated=false`; keine Versandbereitschaft. Tatsächliche DNS-Werte bleiben in der privaten Übergabe, kein DNS- oder Bestätigungsaufruf.
+Der Owner hat den zusätzlichen GitHub-Klick ausdrücklich durch seine konkrete Chat-Freigabe ersetzen lassen. Der bestehende manuelle Standardbranch-Workflow verifiziert dafür den authentifizierten Owner-Dispatch, die Aktion, Kampagnen-ID, Inhaltsversion und einmalige Freigabereferenz. Kein Versand aus Push, PR oder Zeitplan. Keine automatische Hauptfreigabe nach einem Test.
 
-Der separate `brevo-newsletter.yml` wird ausschließlich manuell auf dem Standardbranch ausgeführt. `brevo-admin` und die alte Actions-CLI bleiben ohne Versandendpunkte. Nach Code-Merge ist für Newsletter einmalig folgendes Betreiber-Setup nötig, weil der aktuelle Zugang für Environment-Schreiboperationen HTTP 403 erhält:
+**Verbindlicher aktueller Ablauf und Nachweisgrenzen:** [APPROVAL.md](APPROVAL.md). Redaktionelle Vorlage und tatsächliche Kampagne: [APP-NEWSLETTER.md](APP-NEWSLETTER.md). `BREVO_NEWSLETTER_CONFIG` ist eingerichtet; keine erneute Einrichtung oder neue Secrets nötig. Bestehende GitHub-Environments bleiben erhalten und werden vom neuen Newsletter-Workflow nicht verwendet.
 
-- Settings → Environments → New environment → **brevo-newsletter-review**. **Required reviewers** aktivieren und ausschließlich den Owner als einzelnen Benutzer auswählen; keine Team-Freigabe. Self review darf zugelassen werden, falls der Owner selbst dispatcht. Eine konkrete Review-Bestätigung ist trotzdem immer erforderlich. Die API prüft sowohl verpflichtende Reviewer als auch die tatsächliche Freigabe genau dieses Runs. Ein ungeschütztes oder automatisch erzeugtes Environment blockiert Versand im Code.
-- Kleine private Konfiguration mit den zwei eindeutigen Testadressen, `test_addresses_confirmed=true` und stabiler zufälliger `ledger_hmac_key` als Repository-Secret **BREVO_NEWSLETTER_CONFIG** hinterlegen. Die vorbereitete Konfiguration enthält keinen API-Key und keinen allgemeinen Kontaktbestand. HMAC-Schlüssel später nicht rotieren, ohne die bestehenden Reservationsbindungen ausdrücklich zu berücksichtigen.
-- Tatsächlich freigegebenen Content als **BREVO_NEWSLETTER_CONTENT** hinterlegen: `name`, bestätigte `sender_id`, `subject`, `preheader`, `intro`, ein bis drei `items` mit `title`/`text`, `cta_text`, HTTPS-`cta_url`, verifizierte `company_name`/`company_address`, `company_details_verified=true`. Keine Unternehmensangaben erfinden. Das ist eine spätere redaktionelle Übergabe, keine laufende KI-Integration.
-
-Ablauf danach:
-
-1. Einmalig **initialize**: Branch `brevo-newsletter-state` mit ausschließlich personenbezogen datenfreiem Register anlegen. Bestehenden Zustand niemals löschen oder erneut initialisieren, auch bei Fehlern. Initialisierung versendet nichts.
-2. **draft** erstellt einen klassischen ungesendeten Entwurf, Hauptliste bzw. konfiguriertes Segment, Testliste ausdrücklich ausgeschlossen. Domain/Absender, beide tatsächlichen Testkontakte und Zielgruppen-Einwilligungen müssen stimmen. Kein Termin, kein A/B-/Best-Time-Versand.
-3. **check** mit Kampagnen-ID liefert den Hash der tatsächlichen Brevo-Inhaltsversion und Teststatus, keine Inhalte/Adressen. Diese Prüfung funktioniert bereits vor dem ersten Test.
-4. Erst nach ausdrücklicher Freigabe dieses Tests: **test** mit derselben Kampagnen-ID, `expected_version` aus check und `authorize_send=true`; Owner genehmigt genau diesen Run in **Review deployments**. Offizielles `sendTest` nur an die zwei bestätigten Empfänger. Produktion bleibt Entwurf; API-Annahme ist kein Zustellnachweis. Keine automatische Fortsetzung.
-5. Nach tatsächlicher Sichtprüfung und separater ausdrücklicher Owner-Freigabe: **send** mit derselben ID/Version und erneutem geschützten Review. Nur ein zur aktuellen Inhaltsversion und Testpaar passender angenommener Test erlaubt Hauptversand. Jede Inhalts-/Vorlagen-/Betreffänderung invalidiert vorherige Tests und Freigaben.
-
-Globale Newsletter-Concurrency und versionsgebundene GitHub-Contents-API-Schreiboperationen sichern Reservierungen **vor** jedem irreversiblen Brevo-Aufruf. Register enthält nur IDs, Versionshashes, Zustände und HMAC-Testbindung mit privatem Zufallsschlüssel; keine Inhalte, Betreffzeilen, Adressen oder ungeschützten Adresshashes. Keine Actions-Artefakte/Caches, kein Git-Push auf main. Fehlende Registerdatei, CAS-Konflikt, API-Fehler oder unklarer Ausgang lassen `pending` und blockieren Wiederholung/Hauptversand. Nur nach privater Klärung in Brevo weiterarbeiten.
-
-Ein Branch-Register ist keine eigene Brevo-Rollenverwaltung: Repository-/Brevo-Administratoren können Schutz außerhalb dieses Prozesses umgehen. Direkte UI-Sendungen begrenzen; während Test/Freigabe/Versand Inhalte nicht parallel bearbeiten. Brevo besitzt keinen atomaren Compare-and-Send; Änderungen nach der letzten API-Prüfung können nicht transaktional ausgeschlossen werden.
-
-Offizielle GitHub-Schnittstellen: [Review-Historie eines Runs](https://docs.github.com/en/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run), [Environment und Pflichtreviewer](https://docs.github.com/en/rest/deployments/environments#get-an-environment), [Contents mit SHA-Vergleich](https://docs.github.com/en/rest/repos/contents#create-or-update-file-contents).
+Das bestehende Register und alle Inhalts-/Empfänger-/Sperrenprüfungen bleiben erhalten. Ein tatsächlicher angenommener Test derselben Version ist weiter Pflicht vor dem ausdrücklich separat freigegebenen Hauptversand. Vor jedem irreversiblen Aufruf werden Freigabe und Versandreservierung mit CAS dauerhaft gespeichert; Fehler und unklarer Ausgang blockieren Wiederholungen. Der derzeit bereits angenommene Test für Kampagne 10 wird nicht erneut ausgelöst.
