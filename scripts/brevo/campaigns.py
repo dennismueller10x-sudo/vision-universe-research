@@ -84,8 +84,8 @@ def confirmed_tests(client, config, lists):
         contact = client.contact(email)
         if not contact or contact.get("emailBlacklisted") or contact.get("attributes", {}).get("VU_INTERNAL_TEST") is not True:
             raise Blocked("Testkontakt fehlt oder ist gesperrt.")
-        if lists[LISTS[2]] not in contact.get("listIds", []) or lists[LISTS[0]] in contact.get("listIds", []):
-            raise Blocked("Test- und Hauptliste sind nicht korrekt getrennt.")
+        if lists[LISTS[2]] not in contact.get("listIds", []):
+            raise Blocked("Interner Kontakt fehlt in der Test-Ausschlussliste.")
     return addresses
 
 

@@ -67,7 +67,7 @@ class Preview(unittest.TestCase):
         self.assertEqual(self.fake.campaign,before)
         self.assertFalse(result["production_sent"])
         self.assertEqual(result["recipient_count"],2)
-        self.assertEqual(self.fake.clone["recipients"],{"listIds":[3],"exclusionListIds":[1,2]})
+        self.assertEqual(self.fake.clone["recipients"],{"listIds":[3],"exclusionListIds":[2]})
         for key in ("subject","sender","htmlContent","previewText"):
             self.assertEqual(self.fake.clone[key],before[key])
         self.assertEqual([p for m,p,_ in self.fake.calls if m=="POST"],
@@ -127,7 +127,7 @@ class Preview(unittest.TestCase):
 
     def test_client_never_sends_source_or_unknown_id_or_transactional_mail(self):
         with patch.dict(os.environ,{"BREVO_API_KEY":"synthetic-only"}): client=NewsletterClient("preview",8)
-        client.preview_recipients={"listIds":[3],"exclusionListIds":[1,2]}
+        client.preview_recipients={"listIds":[3],"exclusionListIds":[2]}
         with patch.object(Client,"call",return_value={"id":9}) as api:
             for path in ("/emailCampaigns/8/sendNow","/emailCampaigns/9/sendNow","/smtp/email"):
                 with self.assertRaises(Blocked): client.call("POST",path)
@@ -148,7 +148,7 @@ class Preview(unittest.TestCase):
     def test_clone_does_not_round_trip_get_only_or_unset_optional_fields(self):
         source={**self.fake.campaign,"replyTo":"","toField":"","header":"[DEFAULT_HEADER]",
                 "footer":"[DEFAULT_FOOTER]","recurring":False,"providerOnly":True}
-        result=clone_body(source,{"listIds":[3],"exclusionListIds":[1,2]})
+        result=clone_body(source,{"listIds":[3],"exclusionListIds":[2]})
         self.assertEqual(set(result),{"name","type","subject","previewText","htmlContent","sender","recipients"})
         self.assertEqual(result["sender"],source["sender"])
 
@@ -185,7 +185,7 @@ class Preview(unittest.TestCase):
 
     def test_existing_unique_matching_draft_is_adopted_without_duplicate_creation(self):
         fingerprint,incident,github=self.recovery()
-        self.fake.clone={**clone_body(self.fake.campaign,{"listIds":[3],"exclusionListIds":[1,2]}),"id":9,"status":"draft"}
+        self.fake.clone={**clone_body(self.fake.campaign,{"listIds":[3],"exclusionListIds":[2]}),"id":9,"status":"draft"}
         self.fake.listed=[self.fake.clone]
         with patch("newsletter_preview.Path.read_text",return_value=json.dumps(incident)):
             preview(self.process(),8,fingerprint,True,github)

@@ -1,0 +1,47 @@
+name: Brevo | Interne Kontakte zusätzlich in Hauptliste (kein Versand)
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [preview, apply]
+        default: preview
+        description: Nur bestätigte interne Kontakte zusätzlich in Liste 4; Liste 6 erhalten
+      import_triggers_excluded:
+        type: boolean
+        default: false
+        description: Tatsächlich geprüft, dass Listenzugang keine Automation auslöst
+      automations_reviewed_at:
+        type: string
+        default: ''
+        description: Tatsächliche Prüfung ISO-8601 mit Zeitzone, höchstens 24h
+      automation_evidence_sha256:
+        type: string
+        default: ''
+        description: SHA256 des privaten Nachweises; keine Adressen oder Screenshots
+permissions:
+  contents: read
+concurrency:
+  group: brevo-newsletter
+  cancel-in-progress: false
+jobs:
+  membership:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.actor == 'dennismueller10x-sudo'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - name: Privater Bestandsabgleich und additive Mitgliedschaft
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_NEWSLETTER_CONFIG: ${{ secrets.BREVO_NEWSLETTER_CONFIG }}
+          BREVO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          BREVO_MEMBERSHIP_OPERATION: ${{ inputs.operation }}
+          BREVO_IMPORT_TRIGGERS_EXCLUDED: ${{ inputs.import_triggers_excluded }}
+          BREVO_AUTOMATIONS_REVIEWED_AT: ${{ inputs.automations_reviewed_at }}
+          BREVO_AUTOMATION_EVIDENCE_SHA256: ${{ inputs.automation_evidence_sha256 }}
+        run: python3 scripts/brevo/internal_membership.py
