@@ -1,5 +1,7 @@
 # Vision Universe: eigenständiges Brevo-System
 
+**Aktueller Newsletterbetrieb, 18. Oktober 2026:** Kampagne 10 angelegt, interner Test von Brevo angenommen, kein Zustellnachweis und kein Hauptversand. Auf ausdrücklichen Owner-Wunsch ersetzt die konkrete Chat-Freigabe künftig den zusätzlichen GitHub-Klick. Aktueller Ablauf und technische Bindungen: [APPROVAL.md](APPROVAL.md). Die folgenden älteren Import-/Einrichtungsstatus sind historische Momentaufnahmen.
+
 Diese Integration verwaltet ausschließlich Newsletter und Kontakte in Brevo. Sie ändert keine Website, Landingpage, DNS-Zone, Shopify-Verbindung, Research-Funktion oder bestehende Automationen. Python 3, Standardbibliothek, offizielle Brevo-v3-REST-Schnittstellen; keine neue Plattform, KI-API oder kostenpflichtige Funktion.
 
 Der [Merge-Prüfbericht](MERGE-REVIEW.md) dokumentiert die Prüfung vor dem Merge. Der [Live-Status](LIVE-STATUS.md) enthält den belegten aktuellen Kontostand, Setup-/Lese-Nachweise und die Grenzen des Oberflächenabgleichs. Ein Merge startet keinen Brevo-Lauf.

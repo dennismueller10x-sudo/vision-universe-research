@@ -234,10 +234,12 @@ class Process:
         audience_check(self.client, self.config, lists)
         return state, fingerprint, tests
 
-    def test(self, campaign_id, authorized=False):
+    def test(self, campaign_id, authorized=False, expected_version=None):
         if not authorized:
             raise Blocked("Testversand benötigt ausdrückliche Freigabe für diese Kampagne.")
         state, fingerprint, addresses = self.current(campaign_id)
+        if expected_version is not None and fingerprint != expected_version:
+            raise Blocked("Testfreigabe gilt nicht für die aktuelle Inhaltsversion.")
         attempts = state.setdefault("tests", {})
         if fingerprint in attempts:
             raise Blocked("Vorabtest dieser Version bereits aufgerufen; keine doppelte Sendung.")
