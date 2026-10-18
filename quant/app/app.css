@@ -1040,6 +1040,8 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-ev-observed .q-timeline li.up b,.qd .q-ev-observed .q-dist-bar.up b{color:#2f5000}
 .qd .q-ev-observed .q-timeline li.down b,.qd .q-ev-observed .q-dist-bar.down b{color:#8a1d12}
 .qd .q-ev-observed .q-timeline li.is-off b{color:var(--q-card-muted)}
+/* "Mehr lesen" auf der hellen Karte: dunkles Oliv wie --q-lime-text im Hellmodus (>= 4.5:1), auch im Dunkelmodus. */
+.qd .q-ev-observed .qx-readmore{color:#456200}
 .qd .q-ev-observed .q-timeline li::before{background:var(--q-card)}
 .qd .q-ev-observed .q-timeline::before{background:var(--q-card-line)}
 
