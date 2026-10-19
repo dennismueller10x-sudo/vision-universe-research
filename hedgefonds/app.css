@@ -6,7 +6,7 @@
    ========================================================================= */
 :root{
   --bg:#ffffff; --bg-soft:#f7f9f2; --panel:#f3f4f5; --panel-2:#eceef0; --card:#ffffff;
-  --ink:#0b0c0e; --ink-2:#2a2e35; --muted:#656a73; --dim:#8d929a;
+  --ink:#0b0c0e; --ink-2:#2a2e35; --muted:#656a73; --dim:#6b7078;
   --line:#dedfe2; --line-soft:#ebecee;
   --accent:#ccf54a; --accent-ink:#0b0c0e; --accent-text:#4d7a00; --accent-soft:#f1fbd2;
   --up:#1e8433; --up-soft:#e5f4e8; --down:#d93a30; --down-soft:#fbe9e7; --warn:#a86800; --warn-soft:#fdf2dc;
@@ -192,6 +192,10 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
 .hf-card-val{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .hf-card-val b{font-size:26px;letter-spacing:-.04em;font-weight:850}
 .hf-card-val small{font-size:11.5px;color:var(--muted)}
+/* Veraenderung der Fondsgroesse: Farbe und Richtungszeichen (nicht vorgelesen) */
+.hf-card-val small .pos{color:var(--up);font-weight:700}.hf-card-val small .neg{color:var(--down);font-weight:700}
+.hf-chg.pos::before{content:"▲";content:"▲" / ""}.hf-chg.neg::before{content:"▼";content:"▼" / ""}
+.hf-chg::before{font-size:.8em;margin-right:.2em}
 .hf-card-hold{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line-soft);padding-top:10px}
 .hf-card-hold .row{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:12.5px}
 .hf-card-hold .row span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
@@ -314,6 +318,16 @@ html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
 .hf-callout{display:flex;align-items:center;gap:10px;margin-top:14px;padding:14px 16px;border-radius:16px;background:var(--accent-soft);font-size:14px}
 .hf-callout .hf-i{color:var(--accent-text)}
 .hf-dstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+/* Kaeufer gegen Verkaeufer: dieselben zwei Zahlen wie die Kacheln */
+.hf-balance{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;font-weight:650}
+.hf-balance span{white-space:nowrap}.hf-balance i{font-style:normal;font-size:.85em}
+.hf-balance-bar{flex:1;display:flex;gap:3px;height:8px;min-width:60px}
+.hf-balance-bar i{display:block;border-radius:4px;min-width:3px}.hf-balance-bar .b{background:var(--up)}.hf-balance-bar .s{background:var(--down)}
+@media (max-width:370px){.hf-balance{flex-wrap:wrap;row-gap:6px}.hf-balance-bar{order:3;flex-basis:100%}}
+/* Hell: Initialen, Abwaerts- und Warn-Plaketten lagen bei 3,3-4,3:1 (WCAG AA 4,5:1) */
+html:not([data-theme=dark]) .hf-avatar{color:color-mix(in srgb,var(--tt,var(--s1)) 55%,var(--ink))}
+html:not([data-theme=dark]) .hf-badge.down{color:#b02a22}
+html:not([data-theme=dark]) .hf-badge.warn,html:not([data-theme=dark]) .hf-note{color:#8a5600}
 .hf-stat{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;min-width:0}
 .hf-stat>div{min-width:0}
 .hf-stat small{display:block;font-size:10px;letter-spacing:.11em;text-transform:uppercase;font-weight:750;color:var(--muted)}
