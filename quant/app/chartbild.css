@@ -102,9 +102,12 @@
 .qd .cb-sc-rr{margin:4px 0 0;font-size:13px;color:var(--q-muted)} .qd .cb-sc-rr b{color:var(--q-text)}
 
 /* ------------------------------------------------------------ Warum / Evidenz */
-.qd .cb-checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.qd .cb-check{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--q-radius-sm);background:var(--q-panel)}
-.qd .cb-check-mark{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--q-panel2)}
+.qd .cb-checks{list-style:none;margin:0;padding:0;display:grid;gap:0;border-radius:var(--q-radius-sm);background:var(--q-panel);overflow:hidden}
+.qd .cb-check{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-top:1px solid var(--q-line)}
+.qd .cb-check:first-child{border-top:0}
+.qd .cb-check-mark{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;background:var(--q-panel2)}
+.qd .cb-why-tally{margin:0 0 10px}
+.qd .cb-why-tally .tone-good:not(.is-zero) i{color:var(--cb-up)}.qd .cb-why-tally .tone-bad:not(.is-zero) i{color:var(--cb-down)}
 .qd .cb-check-supports .cb-check-mark{color:var(--cb-up)} .qd .cb-check-contradicts .cb-check-mark{color:var(--cb-down)}
 .qd .cb-check-neutral .cb-check-mark,.qd .cb-check-unavailable .cb-check-mark{color:var(--q-dim)}
 .qd .cb-check-body b{font-weight:800}
@@ -544,3 +547,6 @@
 
 /* Helles Farbschema: die Palette oben ist fuer dunklen Grund gewaehlt (Limette auf Weiss ist kaum lesbar). Dunklere Toene derselben Bedeutungen. */
 html[data-theme=light] .qd .cb,html[data-theme=light] .qd .cb-teaser{--cb-entry:#4f6b00;--cb-target:#1f62b8;--cb-invalid:#c0392b;--cb-alt:#5f46d1;--cb-up:#2c6e31;--cb-down:#b3321f;--cb-flat:#5b616a;--cb-mixed:#8a6100}
+/* Hellmodus: diese Texte trugen feste helle Grautoene des Dunkelmodus (Kontrast 1,1-1,4:1 auf hellem Grund). */
+html[data-theme=light] .qd .cb-lead,html[data-theme=light] .qd .cb-sc-text,html[data-theme=light] .qd .cb-ew-sub,html[data-theme=light] .qd .cb-sc-diff,html[data-theme=light] .qd .cb-count-stand,html[data-theme=light] .qd .cb-ev-text,html[data-theme=light] .qd .cb-sc-note{color:var(--q-text-soft)}
+html[data-theme=light] .qd .cb-unclear{color:#5a4300}
