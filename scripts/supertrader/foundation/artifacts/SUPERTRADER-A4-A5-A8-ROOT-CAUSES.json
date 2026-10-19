@@ -1,0 +1,238 @@
+{
+ "schema": "supertrader-a4-a5-a8-root-causes-1.0.0",
+ "scope": "Research-Backtest-Accounting. Keine Strategie-, Parameter-, Kosten-, Benchmark-, Universums- oder Corporate-Action-Regel geaendert.",
+ "sources": {
+  "v3v4Findings": "#705 head 547d604d9596b0f4af4c13ac31bebce48b3948ec scripts/supertrader/research/v4/SUPERTRADER-V4-ADVERSARIAL-FINDINGS.json (A4, A5, A8, A12, B1)",
+  "impactAudit": "#763 head 294409bb92d6845b564e8afe448f21dcb09db4b4 docs/data-quality/root-cause-audit/PROVIDER-VS-VU-ROOT-CAUSES.json (VU-02, VU-03, VU-04)",
+  "pinnedBlobs": {
+   "research/v4/measurement/measurement-policy-v4.mjs": "aec74a56b74741473ed2dd1e58b906644c5d50a5",
+   "research/v4/measurement/accounting-v4.mjs": "7bff6f614b135a3f76cbb8754cf5fdc5ac2a7b38",
+   "research/v4/methods/runner-v4.mjs": "1b91291d92881a468ba6e7008169d85264b33f55",
+   "research/calibration/runner-certified-v3.mjs": "b0617735b94e4e51fbde036b0e191938c9583e43",
+   "research/calibration/accounting-budget-v3.mjs": "d9ce86bd86dd453cfb7b592bde67127f05fd8055",
+   "research/tournament/data.mjs": "6c375ca838ca1605f9bf82a440a9adf15ee98ee8"
+  }
+ },
+ "enginePaths": [
+  {
+   "id": "TOURNAMENT_V3",
+   "location": "nur auf Research-Branches (#677/#705), nicht auf main",
+   "files": [
+    "research/calibration/runner-certified-v3.mjs",
+    "research/calibration/accounting-budget-v3.mjs",
+    "research/tournament/data.mjs"
+   ],
+   "methods": [
+    "cross_sectional_momentum",
+    "52_week_high_effect",
+    "LOW_VOLATILITY",
+    "TURTLE_S2_EQUITY_DAILY",
+    "WEINSTEIN_STAGE_DAILY",
+    "KULLAMAGI_DAILY_ADAPTATION"
+   ],
+   "a4": "PRESENT",
+   "a5": "PRESENT",
+   "a8": "PRESENT",
+   "status": "UNVERAENDERT (Research-PR bleibt unangetastet). #763 Szenario A."
+  },
+  {
+   "id": "TOURNAMENT_V4",
+   "location": "nur auf #705 (research/supertrader-source-measurement-acceptance-v4)",
+   "files": [
+    "research/v4/methods/runner-v4.mjs",
+    "research/v4/measurement/accounting-v4.mjs",
+    "research/v4/measurement/measurement-policy-v4.mjs"
+   ],
+   "a4": "FIXED",
+   "a5": "FIXED",
+   "a8": "FIXED",
+   "status": "Quelle der Portierung. #763 Szenario B. Nicht auf main, nicht veraendert."
+  },
+  {
+   "id": "MAIN_SUPERTRADER_VALIDATION",
+   "location": "main",
+   "files": [
+    "scripts/supertrader/engine/simulator.mjs",
+    "scripts/supertrader/validation/analyze-methods.mjs tradesFor/loadPitData",
+    "scripts/supertrader/validation/portfolio.mjs runPortfolioTR"
+   ],
+   "methods": "alle per-Symbol-Engines der Validierungsrunden R7-R15 (Momentum/Kullamaegi, Weinstein, Darvas, Minervini, Donchian/Turtle, 52W, Hausstrategie)",
+   "a4": "PRESENT_DIFFERENT_MECHANISM",
+   "a5": "PRESENT_DIFFERENT_MECHANISM",
+   "a8": "MECHANISM_ABSENT_RELATED_DEFECT_PRESENT",
+   "status": "KORRIGIERT im opt-in-Modus accounting RESEARCH_V1 (dieser PR). Legacy-Standard unveraendert (bitgleich, Golden-Test)."
+  },
+  {
+   "id": "MAIN_LIVE_MODEL_PORTFOLIO",
+   "location": "main",
+   "files": [
+    "scripts/supertrader/model-portfolio.mjs -> runPortfolioTR (Legacy)"
+   ],
+   "status": "NICHT GEAENDERT (keine Live-Aenderung). Gleicher A4-Mechanismus wie MAIN_SUPERTRADER_VALIDATION, wirksam nur wenn Live-Kurse ausbleiben."
+  },
+  {
+   "id": "MAIN_ENGINE_BACKTEST_RUNPORTFOLIO",
+   "location": "main",
+   "files": [
+    "scripts/supertrader/engine/backtest.mjs runPortfolio"
+   ],
+   "status": "NICHT GEAENDERT. Nur Referenz fuer die C2-Gleichheitspruefung (engineCompat). Bewertet fehlende Kurse zum Einstiegspreis (A4-Variante). Fuer Research-Ergebnisse nicht zu verwenden."
+  }
+ ],
+ "findings": [
+  {
+   "id": "A4",
+   "title": "Stale Position Valuation",
+   "previousReview": "V3/V4 A4 MAJOR; #763 VU-02",
+   "tournamentV3": {
+    "codePath": "accounting-budget-v3.mjs posValue/equityAt: bars.get(id)?.close ?? book.lastMarks.get(id) ?? entryPrice; markClose setzt lastMarks nur fuer vorhandene Balken",
+    "mechanism": "Position ohne Balken unbegrenzt zum letzten Schluss bewertet; keine Abrechnung",
+    "evidence": "52W-Diagnose: Positionen ohne Balken an 2.175 von 2.198 Tagen (#705 A4)",
+    "confirmed": true
+   },
+   "mainValidation": {
+    "codePath": "portfolio.mjs runPortfolioTR markOf(): marks.get(date) sonst p.last (engineCompat: Einstiegspreis)",
+    "mechanism": "gleiche Wirkung, anderer Ort: der Simulator ueberspringt Tage ohne Balken; Luecken bis MAX_GAP_DAYS=30 Kalendertage bleiben im Segment, die Position wird ohne Grenze zum letzten Schluss bewertet und ein spaeterer Ausstieg nach der Luecke gebucht",
+    "sameAsTournament": "GLEICHE_WIRKUNG_ANDERER_CODEPFAD",
+    "deterministicExamples": [
+     "C04_STALE_LIMIT_REACHED",
+     "C21_ZERO_VOLUME_STALE",
+     "C17_NO_LOOKAHEAD_QUARANTINE"
+    ],
+    "confirmed": true
+   },
+   "fix": {
+    "function": "accounting-contract.mjs createStaleTracker + portfolio.mjs runPortfolioTR (RESEARCH_V1, Block 'A4')",
+    "rule": "hoechstens 5 Sitzungen zum letzten Schluss, in der 6. Sitzung SECURITY_UNAVAILABLE zum letzten gueltigen Schluss x Datenereignis-Faktor (Basis 1; Sensitivitaeten 0,7 und 0); Nullvolumen bei unveraendertem Schluss ist stale; harte Endpruefung endingPositionCheck",
+    "portedFrom": "measurement-policy-v4.mjs createStaleTracker/endingPositionCheck (Paritaet: 120.000 Vergleiche, 0 Abweichungen)",
+    "causal": "nutzt nur Kurse bis einschliesslich des Abrechnungstags"
+   }
+  },
+  {
+   "id": "A5",
+   "title": "Data Quarantine / Terminal Handling",
+   "previousReview": "V3/V4 A5 MAJOR; #763 VU-03",
+   "tournamentV3": {
+    "codePath": "tournament/data.mjs normalizeSegment: terminal.date = quarantine.from; accounting-budget-v3.mjs settleTerminals: Faktor 0,7 auch fuer DATA_QUARANTINE; runner-certified-v3.mjs fuegt einen synthetischen Balken (open=close=lastClose) nur fuer die Abrechnung ein",
+    "mechanism": "Buchung vor der Information (observedAt > from) = Lookahead; Datenereignis mit pauschalem -30 % wie ein wirtschaftliches Delisting",
+    "syntheticBarExecution": "NICHT_GEFUNDEN: der synthetische Balken wird nach executeTargets eingefuegt und nur von settleTerminals/markClose gelesen; Orders pruefen bar.date===date und open>0",
+    "evidence": "V4 causalTerminals: 146 Termine verschoben (#705), 143 von 521 im #763-Replay (B1)",
+    "confirmed": true
+   },
+   "mainValidation": {
+    "codePath": "analyze-methods.mjs loadPitData: delisted = !active || i < segments-1; tradesFor: terminal kind DELISTED bzw. OPEN_AT_END + Ausstieg OPEN_AT_END_MARK am letzten Balken; portfolio.mjs: DELISTED -> SCENARIOS (S1 -30 %), OPEN_AT_END_MARK als Verkauf mit Gebuehr",
+    "mechanism": [
+     "Segmentende durch eine Datenluecke > 30 Tage wird als DELISTED gefuehrt und im Szenario S1 mit -30 % abgerechnet, obwohl die Notierung weiterlaeuft (Datenereignis mit Pauschalabschlag)",
+     "eine vor dem Fensterende abbrechende Reihe wird am letzten realen Balken zum Schluss verkauft: dass es der letzte Balken war, war an diesem Tag nicht bekannt (Lookahead im Zeitpunkt)",
+     "OPEN_AT_END_MARK am Fensterende ist eine Bewertung, wird aber als Verkauf mit Gebuehr gebucht",
+     "keine Datenquarantaene im main-Pfad: der Quarantaene-Zeitpunkt (from/observedAt) selbst ist dort nicht vorhanden"
+    ],
+    "sameAsTournament": "TEILWEISE: Pauschalabschlag auf Datenereignisse und Zeitpunkt-Lookahead gleich; Quarantaene-Termin nur im Tournament",
+    "deterministicExamples": [
+     "C05_PREMATURE_SERIES_END",
+     "C06_GAP_SEGMENT_END",
+     "C08_LATE_OBSERVED_QUARANTINE",
+     "C09_ONTIME_QUARANTINE",
+     "C15_EXIT_WITHOUT_SOURCE_BAR",
+     "C17_NO_LOOKAHEAD_QUARANTINE",
+     "C18_FINAL_VALUATION"
+    ],
+    "syntheticBarExecution": "Legacy fuellt einen Ausstieg auch an einem Tag ohne Quellbalken der Position (C15); der Simulator erzeugt solche Ausstiege nicht, der Portfolio-Pfad prueft es aber nicht",
+    "confirmed": true
+   },
+   "fix": {
+    "function": "accounting-contract.mjs causalTerminalDate/isDataEvent/dataEventFactor/isExecutableBar; portfolio.mjs runPortfolioTR exitsV1/settleV1/Terminal-Block; analyze-methods.mjs segmentEndCause + terminal.cause",
+    "rule": "Quarantaene in der ersten Sitzung ab max(from, observedAt); DATA_GAP/SECURITY_UNAVAILABLE/DATA_QUARANTINE sind Datenereignisse (Basis Faktor 1); wirtschaftliche Delistings (letztes Segment einer inaktiven Notierung) behalten die Protokoll-Szenarien S0/S1/S2/S1C/S2C unveraendert; OPEN_AT_END_MARK ist keine Order; Orders nur auf realem Quellbalken, Settlement ohne Balken nur fuer Datenereignisse",
+    "portedFrom": "measurement-policy-v4.mjs causalQuarantineTerminal/terminalFactorV4 (Paritaet: 2.000 Termine, 6 Faktoren, 0 Abweichungen)"
+   }
+  },
+  {
+   "id": "A8",
+   "title": "Dust / Share-count Accounting",
+   "previousReview": "V3/V4 A8 MAJOR; #763 VU-04",
+   "tournamentV3": {
+    "codePath": "accounting-budget-v3.mjs closeShares: Loeschung bei p.shares < 1e-10 (Stueckzahl), V3-Ledger glich die Luecke nur buchhalterisch aus",
+    "mechanism": "nicht wertbewusst: 15,6 Restwert bei ~2e11 Kurs verschwand (52W, Lauf 38630329740)",
+    "confirmed": true
+   },
+   "mainValidation": {
+    "codePath": "portfolio.mjs runPortfolioTR: q = shares * fraction / remainingFraction; Loeschung bei remainingFraction <= 1e-9",
+    "mechanism": "Der V3-Mechanismus (Stueckzahlschwelle) existiert hier NICHT: geloescht wird nach Fraktion, also relativ zum Positionswert (Rest <= 1e-9 der Position). C20 (2e11-Kurs) ist im main-Pfad korrekt. Verwandte Defekte: (1) der geloeschte Rest wird ohne Ledger-Zeile verworfen (C13), (2) eine Schlussfraktion knapp ueber dem Rest verkauft mehr als den Bestand und erzeugt Bargeld (C14), (3) ein Rest mit Fraktion > 1e-9 ohne weiteren Ausstieg bleibt unbegrenzt stehen (C19, zusammen mit A4)",
+    "sameAsTournament": "NEIN: anderer Mechanismus, betragsmaessig klein (<= 1e-9 x Positionswert je Fall)",
+    "deterministicExamples": [
+     "C13_ROUNDING_RESIDUAL",
+     "C14_OVERSHOOT_FRACTION",
+     "C19_DUST_BELOW_LIMIT",
+     "C20_HIGH_PRICE_RESIDUAL",
+     "C16_TINY_ORDER"
+    ],
+    "confirmed": "RELATED_DEFECTS_CONFIRMED; V3_MECHANISM_NOT_PRESENT"
+   },
+   "fix": {
+    "function": "accounting-contract.mjs sellQuantity/dustDecision; portfolio.mjs exitsV1, reconcileResearch",
+    "rule": "Schlussverkauf (Fraktion >= Rest - 1e-9) verkauft exakt den Bestand, Teilverkauf nie mehr als den Bestand; Rest unter 0,01 Wert wird mit Wert im Ledger abgeschrieben, Summe je Buch <= 1 (sonst DUST_BOOK_VALUE_CAP_EXCEEDED); Mindestorderwert 1e-6; Bargeld-Rundung (binary64) innerhalb der Toleranz auf 0 gesetzt und protokolliert",
+    "portedFrom": "accounting-v4.mjs DUST_VALUE_LIMIT/DUST_BOOK_VALUE_CAP/MIN_ORDER_VALUE/reconciliationTolerance (gleiche Konstanten)"
+   }
+  }
+ ],
+ "notChanged": [
+  "Strategieparameter",
+  "Entry-/Exit-Regeln",
+  "Signaldefinitionen",
+  "Rankings/Prioritaet",
+  "Portfolio-Slots",
+  "Positionsgroessenlogik",
+  "Kosten (1 bp) und Slippage (10 bp)",
+  "Benchmarks",
+  "Universumsfilter",
+  "Corporate-Action-Erkennung",
+  "PIT-/Survivorship-Policies",
+  "wirtschaftliche Delisting-Szenarien"
+ ],
+ "residualObservations": [
+  {
+   "id": "OBS-1",
+   "severity": "LOW",
+   "where": "TOURNAMENT_V3/V4 tournament/data.mjs",
+   "statement": "Der gueltige Praefix endet bei quarantine.from, das erst bei observedAt bekannt wird; Balken zwischen from und observedAt fehlen im Backtest. Das ist eine Datenqualitaets-/PIT-Policy (keine Handelsentscheidung auf als defekt erkannten Balken), kein Accounting-Fehler; nicht geaendert."
+  },
+  {
+   "id": "OBS-2",
+   "severity": "LOW",
+   "where": "MAIN_LIVE_MODEL_PORTFOLIO",
+   "statement": "Gleiches A4-Verhalten im Live-Modellportfolio (Legacy). Auftragsgemaess keine Live-Aenderung; eigener PR mit Vorher/Nachher noetig."
+  },
+  {
+   "id": "OBS-3",
+   "severity": "LOW",
+   "where": "MAIN_SUPERTRADER_VALIDATION economic DELISTED",
+   "statement": "Wirtschaftliche Delistings werden am letzten Balken abgerechnet (Protokoll S0/S1/S2). Unveraendert, weil Teil der vorab registrierten Szenarien."
+  },
+  {
+   "id": "OBS-4",
+   "severity": "LOW",
+   "where": "MAIN_SUPERTRADER_VALIDATION",
+   "statement": "Die Trades tragen nur Schlusskurse je Tag (marks). isExecutableBar prueft deshalb das Vorhandensein eines realen Quellbalkens am Ausfuehrungstag, nicht dessen Eroeffnung; die Ausfuehrungspreise selbst kommen unveraendert aus dem Simulator, der nur auf realen Balken fuellt. Ein abgelehnter Ausstieg wird nicht nachgeholt; die Position faellt unter die Stale-Regel (Review F10)."
+  }
+ ],
+ "reviewFixes": [
+  {
+   "id": "F3",
+   "severity": "MEDIUM",
+   "statement": "Quarantaene-Settlement nutzte terminal.lastClose (Reihenende, kann nach dem kausalen Termin liegen). Jetzt letzter bis zum Buchungstag bekannter Schluss.",
+   "case": "C23_QUARANTINE_FROM_BEFORE_SERIES_END"
+  },
+  {
+   "id": "F4",
+   "severity": "MEDIUM",
+   "statement": "Letztes Segment einer erst NACH dem Fensterende endenden Notierung wurde als Delisting am Fensterende abgerechnet (Wissen ueber ein spaeteres Delisting). Jetzt WINDOW_END = offene Position, kein Terminal (RESEARCH_V1; Legacy unveraendert).",
+   "case": "C25_DELISTED_AFTER_WINDOW"
+  },
+  {
+   "id": "F9",
+   "severity": "LOW",
+   "statement": "Einstieg nach bereits bekannter Quarantaene wird abgelehnt (QUARANTINED_AT_ENTRY); Quarantaene-Settlement greift ab dem kausalen Termin (<=).",
+   "case": "C24_QUARANTINED_BEFORE_ENTRY"
+  }
+ ]
+}
