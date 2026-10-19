@@ -169,17 +169,33 @@
       el("i", { "aria-hidden": "true", text: tier === "observed" ? "◉" : "▣" }), el("b", { text: label }), el("span", { class: "num", text: value }),
       rest.length ? el("small", { text: rest.join(" · ") }) : null]);
   }
-  function radarSummary(radar) {
+  /* Visual First (VU3): jede Zaehlung traegt ihr Richtungszeichen (▲ verbessert, ▼ verschlechtert, ▣ historisch getestet - wie
+     auf der Karte) und fuehrt zum passenden Filter. onPick: auf der Radar-Seite filtert der Tipp direkt, sonst fuehrt er zum Radar. */
+  var STAT_GLYPH = { up: "▲", down: "▼", tested: "▣" };
+  function radarSummary(radar, onPick) {
     var sm = radar.summary;
-    return [X.stat("Neue Setups", String(sm.newSetups), "Stand " + X.dateDe(radar.sources.setup.to)),
-      X.stat("Setups bestätigt", String(sm.confirmedSetups), "Stand " + X.dateDe(radar.sources.setup.to)),
-      X.stat("Aktien verbessern sich", sm.improvingTickers.toLocaleString("de-DE"), "mindestens ein positives Ereignis"),
-      X.stat("Risiko steigt", String(sm.riskRisingTickers), "Risiko-Faktor fällt eine Stufe"),
-      X.stat("Neues 52-Wochen-Hoch", String(sm.newHighs), "Stand " + X.dateDe(radar.sources.market.asOf)),
-      X.stat("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to))]
+    function tile(label, value, sub, tone, filter) {
+      var kids = [el("b", { class: "num" }, [el("i", { class: "q-rstat-glyph", "aria-hidden": "true", text: STAT_GLYPH[tone] }), document.createTextNode(value)]), el("span", { text: label }), sub ? el("small", { text: sub }) : null];
+      var cls = "q-stat qx-stat q-rstat tone-" + tone;
+      if (!filter) return el("div", { class: cls }, kids);
+      return onPick ? el("button", { type: "button", class: cls, dataset: { pick: filter }, onclick: function () { onPick(filter); } }, kids)
+        : el("a", { class: cls, href: X.routes.radar("filter=" + filter) }, kids);
+    }
+    return [tile("Neue Setups", String(sm.newSetups), "Stand " + X.dateDe(radar.sources.setup.to), "up", "setups"),
+      tile("Setups bestätigt", String(sm.confirmedSetups), "Stand " + X.dateDe(radar.sources.setup.to), "up", "setups"),
+      tile("Aktien verbessern sich", sm.improvingTickers.toLocaleString("de-DE"), "mindestens ein positives Ereignis", "up", null),
+      tile("Risiko steigt", String(sm.riskRisingTickers), "Risiko-Faktor fällt eine Stufe", "down", "faktoren"),
+      tile("Neues 52-Wochen-Hoch", String(sm.newHighs), "Stand " + X.dateDe(radar.sources.market.asOf), "up", "hoch"),
+      tile("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to), "up", "strategien")]
       .concat(typeof sm.edgeTickers === "number" ? [
-        X.stat("Mit messbarem historischen Vorteil", sm.edgeTickers.toLocaleString("de-DE"), "Signal lag historisch über dem Markt – meist nur leicht"),
-        X.stat("Historisch schwächer als der Markt", sm.weakerEdgeTickers.toLocaleString("de-DE"), "Signal lag historisch unter dem Markt")] : []);
+        tile("Mit messbarem historischen Vorteil", sm.edgeTickers.toLocaleString("de-DE"), "Signal lag historisch über dem Markt – meist nur leicht", "tested", "vorteil"),
+        tile("Historisch schwächer als der Markt", sm.weakerEdgeTickers.toLocaleString("de-DE"), "Signal lag historisch unter dem Markt", "down", null)] : []);
+  }
+  /* Richtung eines Ereignisses wie im Typ-Katalog der Engine (tone up/down/info; FACTOR_CHANGED mit eigener Richtung). */
+  function eventTone(e) {
+    var t = RadarC && RadarC.TYPE[e.eventType];
+    var tone = e.eventType === "FACTOR_CHANGED" && (e.direction === "up" || e.direction === "down") ? e.direction : t && t.tone;
+    return tone === "up" ? "good" : tone === "down" ? "bad" : "neutral";
   }
   var RADAR_FILTERS = [
     { id: "alle", label: "Alle", types: null },
@@ -222,29 +238,43 @@
     var list = el("div", { class: "q-radar-grid", "aria-live": "polite" });
     var count = el("p", { class: "qx-count" });
     var watched = X.watch.list();
+    function matches(f, c) {
+      if ((f.watched || onlyWatched) && watched.indexOf(c.ticker) < 0) return false;
+      if (f.evidence) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
+      if (f.edge) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE" && Array.isArray(e.backtest.deltaCi) && e.backtest.deltaCi[0] > 0; });
+      return !f.types || c.events.some(function (e) { return f.types.indexOf(e.eventType) >= 0; });
+    }
     function draw() {
       var f = RADAR_FILTERS.filter(function (x) { return x.id === current; })[0] || RADAR_FILTERS[0];
-      chips.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.filter === f.id ? "true" : "false"); });
-      var cards = r.cards.filter(function (c) {
-        if ((f.watched || onlyWatched) && watched.indexOf(c.ticker) < 0) return false;
-        if (f.evidence) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
-        if (f.edge) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE" && Array.isArray(e.backtest.deltaCi) && e.backtest.deltaCi[0] > 0; });
-        return !f.types || c.events.some(function (e) { return f.types.indexOf(e.eventType) >= 0; });
-      }).map(function (c) {
+      chips.querySelectorAll("button").forEach(function (b) {
+        if (!b.dataset.filter) return;
+        b.setAttribute("aria-pressed", b.dataset.filter === f.id ? "true" : "false");
+        var g = RADAR_FILTERS.filter(function (x) { return x.id === b.dataset.filter; })[0], n = b.querySelector(".q-chip-n");
+        if (g && n) n.textContent = r.cards.filter(function (c) { return matches(g, c); }).length.toLocaleString("de-DE");
+      });
+      var cards = r.cards.filter(function (c) { return matches(f, c); }).map(function (c) {
         if (!f.types) return c;
         var mine = c.events.filter(function (e) { return f.types.indexOf(e.eventType) >= 0; });
         return Object.assign({}, c, { events: mine.concat(c.events.filter(function (e) { return f.types.indexOf(e.eventType) < 0; })) });
       });
       count.textContent = cards.length.toLocaleString("de-DE") + (cards.length === 1 ? " Aktie" : " Aktien") + " mit Ereignissen" + (f.id === "alle" ? "" : " · " + f.label) + (onlyWatched && !f.watched ? " · nur beobachtete" : "");
+      /* Bilanz der Ereignisse dieser Auswahl: ▼ verschlechtert zuerst, dann ▲ verbessert, ◆ ohne Richtung. */
+      var n = { bad: 0, good: 0, neutral: 0 };
+      cards.forEach(function (c) { (f.types ? c.events.filter(function (e) { return f.types.indexOf(e.eventType) >= 0; }) : c.events).forEach(function (e) { n[eventTone(e)]++; }); });
+      tally.replaceChildren.apply(tally, [el("small", { text: "Ereignisse:" })].concat([["bad", "verschlechtert"], ["good", "verbessert"], ["neutral", "ohne Richtung"]].map(function (t) {
+        return el("span", { class: "tone-" + t[0] + (n[t[0]] ? "" : " is-zero") }, [el("i", { "aria-hidden": "true", text: { bad: "▼", good: "▲", neutral: "◆" }[t[0]] }), el("b", { class: "num", text: n[t[0]].toLocaleString("de-DE") }), document.createTextNode(" " + t[1])]);
+      })));
       toggle.setAttribute("aria-pressed", onlyWatched ? "true" : "false");
       list.replaceChildren.apply(list, cards.length ? cards.slice(0, 60).map(function (c, i) { return radarCard(ctx, c, { logo: i < 6 }); })
         : [X.notice(f.watched ? "Keine beobachtete Aktie mit Ereignis" : "Keine Ereignisse dieser Art", f.watched ? "Tippe auf einer Aktienseite auf „Beobachten“ – dann erscheint sie hier, sobald sich etwas ändert." : "Zum aktuellen Stand gibt es keine Ereignisse dieser Art.")]);
     }
     function query() { var q = []; if (current !== "alle") q.push("filter=" + current); if (onlyWatched) q.push("beobachtet=1"); return q.join("&"); }
     var toggle = el("button", { type: "button", class: "q-chip q-chip--toggle", text: "Nur beobachtete", onclick: function () { onlyWatched = !onlyWatched; history.replaceState(null, "", X.routes.radar(query())); draw(); } });
-    RADAR_FILTERS.forEach(function (f) { chips.append(el("button", { type: "button", class: "q-chip", dataset: { filter: f.id }, text: f.label, onclick: function () { current = f.id; history.replaceState(null, "", X.routes.radar(query())); draw(); } })); });
+    function pick(id) { current = id; history.replaceState(null, "", X.routes.radar(query())); draw(); }
+    RADAR_FILTERS.forEach(function (f) { chips.append(el("button", { type: "button", class: "q-chip", dataset: { filter: f.id }, onclick: function () { pick(f.id); } }, [document.createTextNode(f.label + " "), el("small", { class: "q-chip-n num" })])); });
     chips.append(toggle);
-    main.append(el("div", { class: "q-stats qx-stats q-radar-stats" }, radarSummary(r)), chips, count, list);
+    var tally = el("p", { class: "qx-change-tally q-radar-tally" });
+    main.append(el("div", { class: "q-stats qx-stats q-radar-stats" }, radarSummary(r, function (id) { pick(id); list.scrollIntoView({ block: "start", behavior: "smooth" }); })), chips, count, tally, list);
     draw();
     var rev = r.caveats && r.caveats.setupReversal;
     main.append(X.section("Wie der Radar sortiert", null, [
