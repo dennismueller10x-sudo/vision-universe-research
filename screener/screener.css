@@ -180,6 +180,11 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-results-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 0 10px}
 .sc-results-head .sc-count{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-right:auto}
 .sc-results-head .sc-count small{font-size:13px;font-weight:500;color:var(--sc-muted);margin-left:6px}
+/* Anteil am Universum: dieselbe Zahl wie "von N", als Balken */
+.sc-share{display:flex;align-items:center;gap:8px;flex-basis:100%;margin-top:2px}
+.sc-share-bar{flex:0 1 160px;height:6px;border-radius:3px;background:var(--sc-surface-3);overflow:hidden}
+.sc-share-bar i{display:block;height:100%;border-radius:3px;background:var(--sc-up)}
+.sc-share small{font-size:12.5px;color:var(--sc-muted)}
 .sc-toolbar{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none;padding:2px 0 12px;margin:0 calc(var(--sc-gutter) * -1);padding-inline:var(--sc-gutter)}
 .sc-toolbar::-webkit-scrollbar{display:none}
 .sc-filterline{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 12px;margin:0 calc(var(--sc-gutter) * -1);padding-inline:var(--sc-gutter)}
@@ -196,7 +201,10 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-rc-id span{display:block;font-size:12.5px;color:var(--sc-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .sc-rc-mid{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .sc-price{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
-.sc-chg{font-size:13px;font-weight:650;margin-left:6px}
+.sc-chg{font-size:13px;font-weight:650;margin-left:6px;white-space:nowrap}
+/* Richtung zusaetzlich zur Farbe: ▲ gestiegen, ▼ gefallen (Zeichen nicht vorgelesen) */
+.sc-chg.sc-up::before{content:"▲";content:"▲" / ""}.sc-chg.sc-down::before{content:"▼";content:"▼" / ""}
+.sc-chg.sc-up::before,.sc-chg.sc-down::before{font-size:.7em;margin-right:.08em;vertical-align:.08em}
 .sc-spark{width:132px;max-width:45%;height:44px;flex:none}
 .sc-spark path.l{fill:none;stroke-width:1.6}
 .sc-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;padding-top:12px;border-top:1px solid var(--sc-line)}
@@ -309,16 +317,26 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-why-list{display:grid;gap:8px}
 .sc-why-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--sc-surface-2)}
 .sc-why-item b{display:block;font-size:14.5px;font-weight:650;overflow-wrap:anywhere}
-.sc-why-item span{display:block;font-size:13px;color:var(--sc-muted)}
+.sc-why-item b + span{display:block;font-size:13px;color:var(--sc-muted)}
 .sc-why-item .sc-v{margin-left:auto;text-align:right;font-weight:700;font-size:14.5px;white-space:nowrap}
 .sc-okdot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--sc-up);color:#fff}
 .sc-okdot.is-no{background:var(--sc-down)}.sc-okdot.is-na{background:var(--sc-dim)}
 .sc-okdot svg{width:14px;height:14px;stroke-width:2.6}
+/* Bilanz der Kriterien: ✓ erfuellt, ✕ nicht erfuellt, – ohne Daten */
+.sc-why-tally{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.sc-why-tally span{display:inline-flex;align-items:baseline;gap:5px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;background:var(--sc-surface-2);color:var(--sc-muted)}
+.sc-why-tally i{font-style:normal;font-weight:750}.sc-why-tally b{color:var(--sc-text)}
+.sc-why-tally .is-ok:not(.is-zero){background:var(--sc-up-soft)}.sc-why-tally .is-ok:not(.is-zero) i{color:var(--sc-up)}
+.sc-why-tally .is-no:not(.is-zero){background:var(--sc-down-soft)}.sc-why-tally .is-no:not(.is-zero) i{color:var(--sc-down)}
+/* Hell: Gruen und Bernstein auf ihrer zarten Flaeche erreichten nur 4,0-4,3:1 (WCAG AA verlangt 4,5:1) */
+html:not([data-theme=dark]) .sc-allgood b,html:not([data-theme=dark]) .sc-tl-chip:not(.is-base),html:not([data-theme=dark]) .sc-why-tally .is-ok:not(.is-zero) i{color:#0e7040}
+html:not([data-theme=dark]) .sc-legend span[style*="--sc-warn"]{color:#8a5806!important}
+html:not([data-theme=dark]) .sc-tl-main small{color:var(--sc-muted)}
 .sc-allgood{margin-top:12px;padding:18px;border-radius:16px;background:var(--sc-up-soft);text-align:center}
 .sc-allgood b{display:block;color:var(--sc-up);font-size:16px}.sc-allgood span{font-size:13px;color:var(--sc-muted)}
 .sc-qr-head{display:flex;gap:14px;align-items:center;padding:4px 0 14px}
 .sc-qr-head b{display:block;font-size:20px;letter-spacing:-.02em;line-height:1.2}
-.sc-qr-head span{font-size:13px;color:var(--sc-muted)}
+.sc-qr-head b + span{font-size:13px;color:var(--sc-muted)}
 .sc-tabs{display:flex;gap:4px;border-bottom:1px solid var(--sc-line);margin:0 -20px 14px;padding:0 20px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;background:var(--sc-surface);z-index:2}
 .sc-tabs button{border:0;background:none;padding:12px 10px;min-height:44px;font-weight:600;font-size:14px;color:var(--sc-muted);border-bottom:2px solid transparent;white-space:nowrap}
 .sc-tabs button[aria-selected=true]{color:var(--sc-text);border-bottom-color:var(--sc-ink)}
@@ -456,7 +474,7 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-rc{padding:14px 14px 12px;gap:10px}
 .sc-rc-head{display:grid;grid-template-columns:44px minmax(0,1fr) auto auto;gap:10px;align-items:start}
 .sc-rc-head .sc-rc-id b{font-size:15.5px;-webkit-line-clamp:2}
-.sc-rc-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px;margin-top:4px}
+.sc-rc-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 4px;margin-top:4px}
 .sc-rc-price>span:first-child{font-size:17px;font-weight:700;letter-spacing:-.01em}
 .sc-rc-price .sc-chg{margin:0}
 .sc-rc-spark,.sc-rc-head>svg.sc-spark{width:92px!important;height:40px!important;align-self:center;display:block}
