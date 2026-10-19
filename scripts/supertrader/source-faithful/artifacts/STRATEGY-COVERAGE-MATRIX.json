@@ -1,0 +1,4970 @@
+{
+ "schema": "supertrader-sf-coverage-matrix-1.0.0",
+ "rule": "every #709 rule of every candidate context is listed with the status of the executable rule that implements it, or with a written exclusion; UNMAPPED without exclusion is a validation error",
+ "methods": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "candidateId": "C01",
+   "contexts": [
+    "TURTLE_COMMON_ORIGINAL",
+    "TURTLE_SYSTEM1",
+    "TURTLE_WHipsaw"
+   ],
+   "summary": {
+    "rulesInScope": 38,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 29,
+    "unmappedWithExclusion": 9,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 27,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "TUR-MARKETS",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-CONSISTENT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-TR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-N",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-DOLLAR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-UNIT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-WEEKLY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT4",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT6",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT10",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT12",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-NOTIONAL",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-DRAWDOWN",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ALLOC",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (S1 / S2 capital split); the systems are run separately"
+    },
+    {
+     "ruleId": "TUR-INTRADAY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-GAP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S1ENT",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S1SKIP",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S1LOSER",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S1DIR",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-FAILSAFE",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ADD",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ADDFAST",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOPADD",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOPGAP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-WHIP",
+     "method": "TURTLE_WHipsaw",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw stop)"
+    },
+    {
+     "ruleId": "TUR-WHIPRE",
+     "method": "TURTLE_WHipsaw",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw re-entry)"
+    },
+    {
+     "ruleId": "TUR-WHIPST",
+     "method": "TURTLE_WHipsaw",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw stops)"
+    },
+    {
+     "ruleId": "TUR-S1EX",
+     "method": "TURTLE_SYSTEM1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-NOORDER",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention; the protective price is always applied"
+    },
+    {
+     "ruleId": "TUR-LIMITORDER",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "TUR-FAST",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "TUR-RANK",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-RANKVAR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-CONTRACT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)"
+    },
+    {
+     "ruleId": "TUR-ROLL",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)"
+    },
+    {
+     "ruleId": "TUR-SIGNAL-CONSISTENCY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "candidateId": "C02",
+   "contexts": [
+    "TURTLE_COMMON_ORIGINAL",
+    "TURTLE_SYSTEM2",
+    "TURTLE_WHipsaw"
+   ],
+   "summary": {
+    "rulesInScope": 35,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 26,
+    "unmappedWithExclusion": 9,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 24,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "TUR-MARKETS",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-CONSISTENT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-TR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-N",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-DOLLAR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-UNIT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-WEEKLY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT4",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT6",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT10",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-LIMIT12",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-NOTIONAL",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-DRAWDOWN",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ALLOC",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (S1 / S2 capital split); the systems are run separately"
+    },
+    {
+     "ruleId": "TUR-INTRADAY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-GAP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S2ENT",
+     "method": "TURTLE_SYSTEM2",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-S2NOSKIP",
+     "method": "TURTLE_SYSTEM2",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ADD",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-ADDFAST",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOPADD",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-STOPGAP",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-WHIP",
+     "method": "TURTLE_WHipsaw",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw stop)"
+    },
+    {
+     "ruleId": "TUR-WHIPRE",
+     "method": "TURTLE_WHipsaw",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw re-entry)"
+    },
+    {
+     "ruleId": "TUR-WHIPST",
+     "method": "TURTLE_WHipsaw",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (Whipsaw stops)"
+    },
+    {
+     "ruleId": "TUR-S2EX",
+     "method": "TURTLE_SYSTEM2",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-NOORDER",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention; the protective price is always applied"
+    },
+    {
+     "ruleId": "TUR-LIMITORDER",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "TUR-FAST",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "TUR-RANK",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-RANKVAR",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "TUR-CONTRACT",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)"
+    },
+    {
+     "ruleId": "TUR-ROLL",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)"
+    },
+    {
+     "ruleId": "TUR-SIGNAL-CONSISTENCY",
+     "method": "TURTLE_COMMON_ORIGINAL",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "candidateId": "C03",
+   "contexts": [
+    "DARVAS_LATER_QA",
+    "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+    "DARVAS_TECHNICAL_DEVELOPMENT"
+   ],
+   "summary": {
+    "rulesInScope": 35,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 24,
+    "unmappedWithExclusion": 11,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 10,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "DAR-B1",
+     "method": "DARVAS_TECHNICAL_DEVELOPMENT",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine (development chapter box notion; precise rules are the later Q&A)"
+    },
+    {
+     "ruleId": "DAR-B2",
+     "method": "DARVAS_TECHNICAL_DEVELOPMENT",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "DAR-B3",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B4",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "covered by DAR-SF-ENTRY (buy on entry into the higher box)"
+    },
+    {
+     "ruleId": "DAR-B5",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "covered by DAR-SF-ENTRY (resting buy-stop order)"
+    },
+    {
+     "ruleId": "DAR-B6",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B7",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "covered: no profit target, exits only by stop"
+    },
+    {
+     "ruleId": "DAR-B8",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B9",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B10",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B11",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B12",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine (historic commission structure)"
+    },
+    {
+     "ruleId": "DAR-B13",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "DAR-B14",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B15",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-B16",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "DAR-B17",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "DAR-B18",
+     "method": "DARVAS_TECHNO_FUNDAMENTAL_1957_1959",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q1",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q2",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q3",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q4",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q5",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q6",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q7",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q8",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q9",
+     "method": "DARVAS_LATER_QA",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q10",
+     "method": "DARVAS_LATER_QA",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q11",
+     "method": "DARVAS_LATER_QA",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q12",
+     "method": "DARVAS_LATER_QA",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q13",
+     "method": "DARVAS_LATER_QA",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q14",
+     "method": "DARVAS_LATER_QA",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q15",
+     "method": "DARVAS_LATER_QA",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "DAR-Q16",
+     "method": "DARVAS_LATER_QA",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "no automatic long-exit-to-short reversal (Darvas does not recommend it as a method)"
+    },
+    {
+     "ruleId": "DAR-Q17",
+     "method": "DARVAS_LATER_QA",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "no rolling 252-day doubling filter (the Q&A refers to a calendar-year data convention); the earlier VU filter is not carried over"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "candidateId": "C04",
+   "contexts": [
+    "WEIN_STAGE_INVESTOR_1988",
+    "WEIN_MARKET_CONTEXT_1988"
+   ],
+   "summary": {
+    "rulesInScope": 56,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 39,
+    "unmappedWithExclusion": 17,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 14,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "WEIN-S1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-NO4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-NO3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BUY1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BUY2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-PB",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-NOPB",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-ORD",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-LIM",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention (stop-limit spacing)"
+    },
+    {
+     "ruleId": "WEIN-LIMNUM",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine (historic eighth / half point spacing)"
+    },
+    {
+     "ruleId": "WEIN-GTC",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention (good-till-cancelled order practice)"
+    },
+    {
+     "ruleId": "WEIN-MA",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-MARKET",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-GROUP",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-GROUP2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-OH",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-OHAGE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL5",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BASEVOL",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RS",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSP",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSZERO",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSNO",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BASE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-STOP1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-STOP2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-STOP3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reported as evidence (nearest round number below the proposed stop); reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-STOP4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reported as evidence (initial risk vs the 15 % guide, with the stated exceptions); not a gate"
+    },
+    {
+     "ruleId": "WEIN-TRAIL1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TRAIL2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TRAIL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TRAIL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-SELL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-SELL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-AVG",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-REENTRY",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (re-entry after a whipsaw)"
+    },
+    {
+     "ruleId": "WEIN-DIVERS1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio composition preference; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-DIVERS2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-DIVERS3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio composition preference; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-DIVERS4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "WEIN-EXPOSURE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market-indicator exposure context; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-CTX-MI",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market breadth indicator; NYSE advance / decline history not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-MI-ZERO",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "see WEIN-CTX-MI"
+    },
+    {
+     "ruleId": "WEIN-CTX-MI-LIMIT",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "see WEIN-CTX-MI"
+    },
+    {
+     "ruleId": "WEIN-CTX-HL",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "new highs / new lows breadth not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-WORLD",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "foreign index stages not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-GM",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "WEIN-CTX-SEASON",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "candidateId": "C05",
+   "contexts": [
+    "WEIN_STAGE_TRADER_1988",
+    "WEIN_MARKET_CONTEXT_1988",
+    "WEIN_STAGE_INVESTOR_1988"
+   ],
+   "summary": {
+    "rulesInScope": 63,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 32,
+    "unmappedWithExclusion": 31,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 14,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "WEIN-S1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-S4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-NO4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-NO3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BUY1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor method (C04)"
+    },
+    {
+     "ruleId": "WEIN-BUY2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor method (C04)"
+    },
+    {
+     "ruleId": "WEIN-PB",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor method (C04)"
+    },
+    {
+     "ruleId": "WEIN-NOPB",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor method (C04)"
+    },
+    {
+     "ruleId": "WEIN-ORD",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-LIM",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention (stop-limit spacing)"
+    },
+    {
+     "ruleId": "WEIN-LIMNUM",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine (historic eighth / half point spacing)"
+    },
+    {
+     "ruleId": "WEIN-GTC",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention (good-till-cancelled order practice)"
+    },
+    {
+     "ruleId": "WEIN-MA",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-MARKET",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-GROUP",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-GROUP2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-OH",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-OHAGE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-VOL5",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "shared exit rule; see C04"
+    },
+    {
+     "ruleId": "WEIN-BASEVOL",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RS",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSP",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSZERO",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-RSNO",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-BASE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor method (C04)"
+    },
+    {
+     "ruleId": "WEIN-STOP1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-STOP2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "Investor stop (C04)"
+    },
+    {
+     "ruleId": "WEIN-STOP3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reported as evidence (nearest round number below the proposed stop); reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-STOP4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reported as evidence (initial risk vs the 15 % guide, with the stated exceptions); not a gate"
+    },
+    {
+     "ruleId": "WEIN-TRAIL1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor trailing (C04)"
+    },
+    {
+     "ruleId": "WEIN-TRAIL2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor trailing (C04)"
+    },
+    {
+     "ruleId": "WEIN-TRAIL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor trailing (C04)"
+    },
+    {
+     "ruleId": "WEIN-TRAIL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor trailing (C04)"
+    },
+    {
+     "ruleId": "WEIN-SELL3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor Stage 3 sale (C04)"
+    },
+    {
+     "ruleId": "WEIN-SELL4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-AVG",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-REENTRY",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (re-entry after a whipsaw)"
+    },
+    {
+     "ruleId": "WEIN-DIVERS1",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio composition preference; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-DIVERS2",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "Investor sizing (C04)"
+    },
+    {
+     "ruleId": "WEIN-DIVERS3",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio composition preference; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-DIVERS4",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "WEIN-EXPOSURE",
+     "method": "WEIN_STAGE_INVESTOR_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market-indicator exposure context; reviewer decision"
+    },
+    {
+     "ruleId": "WEIN-TR-CONT",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TR-CONT-SIZE",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TR-MIX",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio mix rule of thumb without quota (PREFERENCE)"
+    },
+    {
+     "ruleId": "WEIN-TR-STOP",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TR-TRAIL",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TR-EARLY",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-TR-SELL3",
+     "method": "WEIN_STAGE_TRADER_1988",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "WEIN-CTX-MI",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market breadth indicator; NYSE advance / decline history not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-MI-ZERO",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "see WEIN-CTX-MI"
+    },
+    {
+     "ruleId": "WEIN-CTX-MI-LIMIT",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "see WEIN-CTX-MI"
+    },
+    {
+     "ruleId": "WEIN-CTX-HL",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "new highs / new lows breadth not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-WORLD",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "foreign index stages not in the snapshot (DATA_BLOCKED, see WEIN-SF-MARKET)"
+    },
+    {
+     "ruleId": "WEIN-CTX-GM",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "WEIN-CTX-SEASON",
+     "method": "WEIN_MARKET_CONTEXT_1988",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "contexts": [
+    "MIN_SEPA_GROWTH_2013",
+    "MIN_CHEAT_3C_2013",
+    "MIN_EXIT",
+    "MIN_RISK_2015",
+    "MIN_RISK_EXIT_2017",
+    "MIN_PULLBACK",
+    "MIN_IPO",
+    "MIN_SEPA_TURNAROUND"
+   ],
+   "summary": {
+    "rulesInScope": 118,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 41,
+    "unmappedWithExclusion": 77,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 16,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "MIN-PROCESS-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PROCESS-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PROCESS-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-09",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-10",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-11",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-12",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PROCESS-13",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PROCESS-14",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PROCESS-15",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PROCESS-16",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-TT-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-03P",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "preference (4-5 months rising MA200) reported as evidence"
+    },
+    {
+     "ruleId": "MIN-TT-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-07P",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "preference reported as evidence (distance to the 52-week high)"
+    },
+    {
+     "ruleId": "MIN-TT-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TT-08P",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "preference (RS in the 80s / 90s), DATA_BLOCKED with MIN-TT-08"
+    },
+    {
+     "ruleId": "MIN-EPS-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-EPS-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-EPS-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-09",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-10",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-EPS-11",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-QUALITY-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-QUALITY-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-QUALITY-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-09",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-QUALITY-10",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-CODE33-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (ideal, preference)"
+    },
+    {
+     "ruleId": "MIN-LEAD-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-LEAD-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-LEAD-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-PRICE-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-BASE-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-BASE-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "frequency statement, not a limit"
+    },
+    {
+     "ruleId": "MIN-BASE-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "frequency statement, not a limit"
+    },
+    {
+     "ruleId": "MIN-BASE-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "footprint reported as evidence"
+    },
+    {
+     "ruleId": "MIN-VCP-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "evidence (last contraction volume vs 50-day mean)"
+    },
+    {
+     "ruleId": "MIN-VCP-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-VCP-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-VCP-09",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-VCP-10",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "evidence (up vs down volume)"
+    },
+    {
+     "ruleId": "MIN-RISK-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-RISK-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "exposure management, reviewer"
+    },
+    {
+     "ruleId": "MIN-RISK-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "exposure management, reviewer"
+    },
+    {
+     "ruleId": "MIN-RISK-04",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "exposure management, reviewer"
+    },
+    {
+     "ruleId": "MIN-RISK-05",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-RISK-06",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "sell in strength, reviewer"
+    },
+    {
+     "ruleId": "MIN-RISK-07",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-RISK-08",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-RISK-09",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio preference"
+    },
+    {
+     "ruleId": "MIN-RISK-10",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio preference"
+    },
+    {
+     "ruleId": "MIN-ADD-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (add only after proof of profit)"
+    },
+    {
+     "ruleId": "MIN-TURN-01",
+     "method": "MIN_SEPA_TURNAROUND",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "separate turnaround family; reviewer"
+    },
+    {
+     "ruleId": "MIN-TURN-02",
+     "method": "MIN_SEPA_TURNAROUND",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "separate turnaround family; reviewer"
+    },
+    {
+     "ruleId": "MIN-TURN-03",
+     "method": "MIN_SEPA_TURNAROUND",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "separate turnaround family; reviewer"
+    },
+    {
+     "ruleId": "MIN-MM-IPO-01",
+     "method": "MIN_IPO",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "IPO scope: names with less than 200 + 21 sessions are reported as INSUFFICIENT_HISTORY_IPO_SCOPE, not rejected as failing"
+    },
+    {
+     "ruleId": "MIN-MM-LIQ-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (exit liquidity)"
+    },
+    {
+     "ruleId": "MIN-MM-PRC-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "preference reported as evidence (raw price)"
+    },
+    {
+     "ruleId": "MIN-MM-BOT-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-MM-FUND-EX",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (fundamental exception)"
+    },
+    {
+     "ruleId": "MIN-MM-VOL-EX",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "MIN-MM-VOL-RET",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-MM-VOL-NUM",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "evidence (50-day volume mean); +50 % is not his own rule"
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-01",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-02",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-03",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (risk range 1.25-2.5 %)"
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-04",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (risk 0.75-1.25 %, max 2.5 %)"
+    },
+    {
+     "ruleId": "MIN-MM-STOP-01",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-STOP-02",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-REEN-01",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer"
+    },
+    {
+     "ruleId": "MIN-MM-REEN-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer"
+    },
+    {
+     "ruleId": "MIN-MM-PULL-01",
+     "method": "MIN_PULLBACK",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-MM-PULL-02",
+     "method": "MIN_PULLBACK",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer"
+    },
+    {
+     "ruleId": "MIN-MM-ADD-02",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-MM-ADD-03",
+     "method": "MIN_SEPA_GROWTH_2013",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer"
+    },
+    {
+     "ruleId": "MIN-MM-SELL-01",
+     "method": "MIN_EXIT",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SELL-02",
+     "method": "MIN_EXIT",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SELL-03",
+     "method": "MIN_EXIT",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SELL-04",
+     "method": "MIN_EXIT",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-EARN-HOLD",
+     "method": "MIN_RISK_2015",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (earnings holding)"
+    },
+    {
+     "ruleId": "MIN-TTC-SIZING",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TTC-AVGLOSS",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "guide, not a stop rule"
+    },
+    {
+     "ruleId": "MIN-TTC-ROTATION",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-TTC-EARLY",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-TTC-TRAIL",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-TTC-FREEROLL",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-TTC-BACKSTOP",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-CHEAT-01",
+     "method": "MIN_CHEAT_3C_2013",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (cheat / 3C pivot)"
+    },
+    {
+     "ruleId": "MIN-CHEAT-02",
+     "method": "MIN_CHEAT_3C_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "cheat variant"
+    },
+    {
+     "ruleId": "MIN-CHEAT-03",
+     "method": "MIN_CHEAT_3C_2013",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "cheat variant"
+    },
+    {
+     "ruleId": "MIN-CHEAT-04",
+     "method": "MIN_CHEAT_3C_2013",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "UNMAPPED",
+     "exclusion": "cheat variant (uses the Trend Template MA200 rule)"
+    },
+    {
+     "ruleId": "MIN-TTC-CONCENTRATION",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio preference"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "contexts": [
+    "MIN_POWER_PLAY",
+    "MIN_RISK_2015",
+    "MIN_RISK_EXIT_2017"
+   ],
+   "summary": {
+    "rulesInScope": 20,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 9,
+    "unmappedWithExclusion": 11,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 6,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "MIN-PP-01",
+     "method": "MIN_POWER_PLAY",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PP-02",
+     "method": "MIN_POWER_PLAY",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PP-03",
+     "method": "MIN_POWER_PLAY",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PP-04",
+     "method": "MIN_POWER_PLAY",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-PP-05",
+     "method": "MIN_POWER_PLAY",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-01",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-02",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-03",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (risk range 1.25-2.5 %)"
+    },
+    {
+     "ruleId": "MIN-MM-SIZE-04",
+     "method": "MIN_RISK_2015",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (risk 0.75-1.25 %, max 2.5 %)"
+    },
+    {
+     "ruleId": "MIN-MM-STOP-01",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-STOP-02",
+     "method": "MIN_RISK_2015",
+     "modal": "HARD",
+     "confidence": "MEDIUM",
+     "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-MM-EARN-HOLD",
+     "method": "MIN_RISK_2015",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (earnings holding)"
+    },
+    {
+     "ruleId": "MIN-TTC-SIZING",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-TTC-AVGLOSS",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "guide, not a stop rule"
+    },
+    {
+     "ruleId": "MIN-TTC-ROTATION",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-TTC-EARLY",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-TTC-TRAIL",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-TTC-FREEROLL",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "OPTIONAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not"
+    },
+    {
+     "ruleId": "MIN-TTC-BACKSTOP",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "CONTEXTUAL",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-TTC-CONCENTRATION",
+     "method": "MIN_RISK_EXIT_2017",
+     "modal": "PREFERENCE",
+     "confidence": "MEDIUM",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "portfolio preference"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "candidateId": "C08",
+   "contexts": [
+    "Breakout",
+    "Execution",
+    "Portfolio",
+    "Portfolio/execution"
+   ],
+   "summary": {
+    "rulesInScope": 36,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 21,
+    "unmappedWithExclusion": 15,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 4,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "KK-001",
+     "method": "Portfolio",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-002",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-003",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-004",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-005",
+     "method": "Breakout",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-006",
+     "method": "Breakout",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-007",
+     "method": "Breakout",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-008",
+     "method": "Breakout",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-009",
+     "method": "Breakout",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-010",
+     "method": "Breakout",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-011",
+     "method": "Breakout",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-012",
+     "method": "Breakout",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-013",
+     "method": "Breakout",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-014",
+     "method": "Breakout",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-025",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-026",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-027",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-028",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "rare discretionary stop exception; not an automatic override (KK-C3)"
+    },
+    {
+     "ruleId": "KK-029",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-030",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "borrow context (see C10)"
+    },
+    {
+     "ruleId": "KK-031",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-041",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-043",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-044",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "drawdown target, no published kill switch"
+    },
+    {
+     "ruleId": "KK-045",
+     "method": "Portfolio/execution",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-046",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-047",
+     "method": "Portfolio/execution",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-048",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-049",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-050",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-051",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-052",
+     "method": "Portfolio/execution",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (buy the pullback to the breakout zone)"
+    },
+    {
+     "ruleId": "KK-053",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-054",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-055",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "KK-056",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "contexts": [
+    "Episodic Pivot",
+    "Execution",
+    "Portfolio",
+    "Portfolio/execution"
+   ],
+   "summary": {
+    "rulesInScope": 38,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 20,
+    "unmappedWithExclusion": 18,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 4,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "KK-001",
+     "method": "Portfolio",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-002",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-003",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-004",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-015",
+     "method": "Episodic Pivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-016",
+     "method": "Episodic Pivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-017",
+     "method": "Episodic Pivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": "covered by KK-SF-EP-EXIT"
+    },
+    {
+     "ruleId": "KK-025",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-026",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-027",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-028",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "rare discretionary stop exception; not an automatic override (KK-C3)"
+    },
+    {
+     "ruleId": "KK-029",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-030",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "borrow context (see C10)"
+    },
+    {
+     "ruleId": "KK-031",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-032",
+     "method": "Episodic Pivot",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-033",
+     "method": "Episodic Pivot",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (5-minute ORH add)"
+    },
+    {
+     "ruleId": "KK-034",
+     "method": "Episodic Pivot",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-035",
+     "method": "Episodic Pivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-036",
+     "method": "Episodic Pivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (repeated EPs fail more often)"
+    },
+    {
+     "ruleId": "KK-037",
+     "method": "Episodic Pivot",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-038",
+     "method": "Episodic Pivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-039",
+     "method": "Episodic Pivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-040",
+     "method": "Episodic Pivot",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-041",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-043",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-044",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "drawdown target, no published kill switch"
+    },
+    {
+     "ruleId": "KK-045",
+     "method": "Portfolio/execution",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-046",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-047",
+     "method": "Portfolio/execution",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-048",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-049",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-050",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-051",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-052",
+     "method": "Portfolio/execution",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (buy the pullback to the breakout zone)"
+    },
+    {
+     "ruleId": "KK-053",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-054",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-055",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "KK-056",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "contexts": [
+    "Parabolic Short",
+    "Parabolic Long",
+    "Execution",
+    "Portfolio",
+    "Portfolio/execution"
+   ],
+   "summary": {
+    "rulesInScope": 34,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 16,
+    "unmappedWithExclusion": 18,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 3,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "KK-001",
+     "method": "Portfolio",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-002",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-003",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-004",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-018",
+     "method": "Parabolic Short",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-019",
+     "method": "Parabolic Short",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "EXAMPLE_ONLY move sizes; reported context, never a threshold"
+    },
+    {
+     "ruleId": "KK-020",
+     "method": "Parabolic Short",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-021",
+     "method": "Parabolic Short",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-022",
+     "method": "Parabolic Short",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-023",
+     "method": "Parabolic Short",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-024",
+     "method": "Parabolic Long",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (rare parabolic long)"
+    },
+    {
+     "ruleId": "KK-025",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-026",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-027",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-028",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "rare discretionary stop exception; not an automatic override (KK-C3)"
+    },
+    {
+     "ruleId": "KK-029",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-030",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": "see KK-SF-PS-BORROW"
+    },
+    {
+     "ruleId": "KK-031",
+     "method": "Execution",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-041",
+     "method": "Execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-042",
+     "method": "Parabolic Short",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-043",
+     "method": "Portfolio",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-044",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "drawdown target, no published kill switch"
+    },
+    {
+     "ruleId": "KK-045",
+     "method": "Portfolio/execution",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-046",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-047",
+     "method": "Portfolio/execution",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-048",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-049",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "KK-050",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-051",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "market context, reviewer"
+    },
+    {
+     "ruleId": "KK-052",
+     "method": "Portfolio/execution",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (buy the pullback to the breakout zone)"
+    },
+    {
+     "ruleId": "KK-053",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-054",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "KK-055",
+     "method": "Portfolio/execution",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "execution judgment (order type, fast markets); not modelled, costs follow the research execution convention"
+    },
+    {
+     "ruleId": "KK-056",
+     "method": "Portfolio/execution",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "candidateId": "C11",
+   "contexts": [
+    "PocketPivot",
+    "PocketPivotExit",
+    "PocketPivot/BuyableGapUpExits",
+    "MarketDirectionModel"
+   ],
+   "summary": {
+    "rulesInScope": 22,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 16,
+    "unmappedWithExclusion": 6,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 1,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "MOKAPP-001",
+     "method": "PocketPivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-002",
+     "method": "PocketPivot",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-003",
+     "method": "PocketPivot",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-004",
+     "method": "PocketPivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-005",
+     "method": "PocketPivot",
+     "modal": "OPTIONAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "OPTIONAL variant in #709; the default method is implemented, the variant is not (gap / classic breakout as additional confirmation)"
+    },
+    {
+     "ruleId": "MOKAPP-006",
+     "method": "PocketPivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-007",
+     "method": "PocketPivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-008",
+     "method": "PocketPivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-009",
+     "method": "PocketPivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKAPP-010",
+     "method": "PocketPivot",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-001",
+     "method": "PocketPivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (early base vs continuation pivot)"
+    },
+    {
+     "ruleId": "MOKA12-002",
+     "method": "PocketPivot",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
+    },
+    {
+     "ruleId": "MOKA12-008",
+     "method": "PocketPivotExit",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-009",
+     "method": "PocketPivotExit",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-010",
+     "method": "MarketDirectionModel",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "proprietary Market Direction Model, not reproducible"
+    },
+    {
+     "ruleId": "MOKA12-011",
+     "method": "MarketDirectionModel",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "proprietary Market Direction Model, not reproducible"
+    },
+    {
+     "ruleId": "MOKASTOP-001",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-002",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-003",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-004",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-005",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-006",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "BGU exit (C12)"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "candidateId": "C12",
+   "contexts": [
+    "BuyableGapUp",
+    "BuyableGapUp2024",
+    "PocketPivot/BuyableGapUpExits",
+    "MarketDirectionModel"
+   ],
+   "summary": {
+    "rulesInScope": 15,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 12,
+    "unmappedWithExclusion": 3,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 2,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "MOKA12-003",
+     "method": "BuyableGapUp",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-004",
+     "method": "BuyableGapUp",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-005",
+     "method": "BuyableGapUp",
+     "modal": "UNKNOWN",
+     "confidence": "LOW",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "2012 wording UNKNOWN / LOW, superseded for the standard by MOKA24-VOL (MOKA-C1)"
+    },
+    {
+     "ruleId": "MOKA12-006",
+     "method": "BuyableGapUp",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-007",
+     "method": "BuyableGapUp",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA12-010",
+     "method": "MarketDirectionModel",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "proprietary Market Direction Model, not reproducible"
+    },
+    {
+     "ruleId": "MOKA12-011",
+     "method": "MarketDirectionModel",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "proprietary Market Direction Model, not reproducible"
+    },
+    {
+     "ruleId": "MOKASTOP-001",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-002",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-003",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-004",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-005",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKASTOP-006",
+     "method": "PocketPivot/BuyableGapUpExits",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA24-VOL",
+     "method": "BuyableGapUp2024",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MOKA24-MEGA",
+     "method": "BuyableGapUp2024",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "candidateId": "C13",
+   "contexts": [
+    "HolyGrail2004"
+   ],
+   "summary": {
+    "rulesInScope": 6,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 6,
+    "unmappedWithExclusion": 0,
+    "unmappedWithoutExclusion": 0,
+    "hardRules": 2,
+    "hardRulesImplemented": 0
+   },
+   "rows": [
+    {
+     "ruleId": "RAS04-001",
+     "method": "HolyGrail2004",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "RAS04-002",
+     "method": "HolyGrail2004",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "RAS04-003",
+     "method": "HolyGrail2004",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "RAS04-004",
+     "method": "HolyGrail2004",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "RAS04-005",
+     "method": "HolyGrail2004",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "RAS04-006",
+     "method": "HolyGrail2004",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "NOT_IMPLEMENTED",
+     "exclusion": null
+    }
+   ]
+  }
+ ]
+}

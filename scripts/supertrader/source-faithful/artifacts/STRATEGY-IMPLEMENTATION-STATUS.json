@@ -1,0 +1,236 @@
+{
+ "schema": "supertrader-sf-implementation-status-1.0.0",
+ "statuses": [
+  "IMPLEMENTED_SOURCE_EXACT",
+  "IMPLEMENTED_SOURCE_DERIVED",
+  "PARTIAL_MANUAL_REVIEW",
+  "PARTIAL_DATA_BLOCKED",
+  "SOURCE_UNRESOLVED",
+  "NOT_IMPLEMENTED"
+ ],
+ "derivedFrom": "contract.mjs#deriveImplementationStatus over the rule statuses; never set by hand",
+ "candidates": [
+  {
+   "candidateId": "C01",
+   "strategyId": "SF_TURTLE_S1",
+   "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
+    "ORIGINAL": "NOT_IMPLEMENTED"
+   },
+   "plannedIn": "PR 2 Turtle",
+   "outputKind": "RESEARCH_SIGNAL",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C02",
+   "strategyId": "SF_TURTLE_S2",
+   "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
+    "ORIGINAL": "NOT_IMPLEMENTED"
+   },
+   "plannedIn": "PR 2 Turtle",
+   "outputKind": "RESEARCH_SIGNAL",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C03",
+   "strategyId": "SF_DARVAS_BOX",
+   "trader": "Nicolas Darvas",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 3 Darvas",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C04",
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "trader": "Stan Weinstein",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 4 Weinstein",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C05",
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "trader": "Stan Weinstein",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 4 Weinstein",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C06",
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "trader": "Mark Minervini",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 6 Minervini",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C07",
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "trader": "Mark Minervini",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 6 Minervini",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C08",
+   "strategyId": "SF_KK_BREAKOUT",
+   "trader": "Kristjan Kullamaegi",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 7 Kullamaegi",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C09",
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "trader": "Kristjan Kullamaegi",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 7 Kullamaegi",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C10",
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "trader": "Kristjan Kullamaegi",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 7 Kullamaegi",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C11",
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "trader": "Gil Morales / Chris Kacher",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C12",
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "trader": "Gil Morales / Chris Kacher",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  },
+  {
+   "candidateId": "C13",
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "trader": "Linda Raschke",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "plannedIn": "PR 8 Holy Grail",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY"
+  }
+ ],
+ "nonCandidates": [
+  {
+   "id": "ONEIL_CAN_SLIM",
+   "status": "NOT_A_709_CANDIDATE",
+   "reason": "#709 has no CAN SLIM candidate: B04 (O'Neil 2009) is BOOK_PARTIAL, chapters 3-20 missing (GAP-B04); later IBD / MarketSmith sources close topic gaps, not the original wording. #712 rated it SOURCE_BLOCKED. Not implemented and not counted among the 13.",
+   "contexts": [
+    "Original2009chartmethodpartial",
+    "IBDoperationalization2013",
+    "MarketSmith2018",
+    "Laterinstitutionalbasecount"
+   ]
+  },
+  {
+   "id": "WEINSTEIN_SHORT",
+   "status": "NOT_A_709_CANDIDATE",
+   "reason": "Weinstein Stage 4 short side is a separate #709 context without a candidate row; documented, not implemented.",
+   "contexts": [
+    "WEIN_STAGE_SHORT_1988"
+   ]
+  }
+ ]
+}
