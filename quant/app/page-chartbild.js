@@ -678,7 +678,15 @@
 
     // ---------------------------------------------- Warum?
     var items = a.evidence.checklist.slice().sort(function (x, y) { var o = { SUPPORTS: 0, CONTRADICTS: 1, NEUTRAL: 2, UNAVAILABLE: 3 }; return o[x.status] - o[y.status] || FAMILY_ORDER.indexOf(x.family) - FAMILY_ORDER.indexOf(y.family); });
+    /* Visual First (VU3): Zaehlung vor der Liste - ✓ dafuer, ✕ dagegen, ○ neutral, – nicht verfuegbar; gezaehlt werden dieselben Punkte. */
+    var nWhy = { SUPPORTS: 0, CONTRADICTS: 0, NEUTRAL: 0, UNAVAILABLE: 0 };
+    items.forEach(function (i) { if (nWhy[i.status] !== undefined) nWhy[i.status]++; });
+    var whyTally = el("p", { class: "qx-change-tally cb-why-tally" }, [["SUPPORTS", "✓", "dafür", "good"], ["CONTRADICTS", "✕", "dagegen", "bad"], ["NEUTRAL", "○", "neutral", "neutral"], ["UNAVAILABLE", "–", "nicht verfügbar", "unknown"]]
+      .filter(function (t) { return nWhy[t[0]] || t[0] === "SUPPORTS" || t[0] === "CONTRADICTS"; }).map(function (t) {
+        return el("span", { class: "tone-" + t[3] + (nWhy[t[0]] ? "" : " is-zero") }, [el("i", { "aria-hidden": "true", text: t[1] }), el("b", { class: "num", text: String(nWhy[t[0]]) }), document.createTextNode(" " + t[2])]);
+      }));
     var why = X.section("Warum dieses Bild?", outlook === "MIXED" ? "Die Verfahren widersprechen sich. Beides wird gezeigt, nichts wird gemittelt." : "Was dafür spricht, was dagegen – in Alltagssprache.", [
+      whyTally,
       el("ul", { class: "cb-checks" }, items.slice(0, 5).map(function (i) { return check(i.status, i.family, i.statement); })),
       items.length > 5 ? X.more("Weitere Punkte (" + (items.length - 5) + ")", function () { return el("ul", { class: "cb-checks" }, items.slice(5).map(function (i) { return check(i.status, i.family, i.statement); })); }) : null
     ], null, null, "warum");
@@ -812,7 +820,8 @@
     var lvl = { HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig" };
     var head = el("div", { class: "cb-ew-head" }, [el("span", { class: "cb-ew-k", text: "Elliott-Struktur" }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentelles Modell" })]);
     if (!c || abstain) {
-      var t = P.trend, st = function (x) { return x && x.state === "UP" ? "steigend" : x && x.state === "DOWN" ? "fallend" : "ohne klare Richtung"; };
+      /* Richtung mit demselben Zeichen wie in Quant: ▲ steigend, ▼ fallend, ◆ ohne klare Richtung. */
+      var t = P.trend, st = function (x) { return x && x.state === "UP" ? "▲ steigend" : x && x.state === "DOWN" ? "▼ fallend" : "◆ ohne klare Richtung"; };
       var sup = (P.supportResistance.supports || [])[0], res = (P.supportResistance.resistances || [])[0];
       return el("section", { class: "cb-ew-card is-abstain", "aria-label": "Elliott-Struktur" }, [head,
         el("p", { class: "cb-ew-main", text: "Keine verlässliche Zählung" }),
