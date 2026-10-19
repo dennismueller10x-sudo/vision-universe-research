@@ -162,7 +162,7 @@
       el("div", { class: "qx-row-main" }, [
         o.kicker ? el("span", { class: "qx-row-kicker", text: o.kicker }) : null,
         el("div", { class: "qx-row-title" }, [el("span", { class: "qx-row-name", text: o.name || o.ticker }), el("span", { class: "qx-ticker", text: o.ticker })]),
-        o.why ? el("div", { class: "qx-row-why", text: o.why }) : null,
+        o.whyNode ? el("div", { class: "qx-row-why", "aria-label": o.why || null }, [o.whyNode]) : o.why ? el("div", { class: "qx-row-why", text: o.why }) : null,
         o.verdict ? el("span", { class: "qx-row-verdict" }, [pill(o.verdict.text, o.verdict.tone)]) : null
       ]),
       el("div", { class: "qx-row-side" }, [
