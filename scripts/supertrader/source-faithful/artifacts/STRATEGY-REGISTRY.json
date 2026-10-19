@@ -45,11 +45,11 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "bbb9ceddaf171697a63ad1bd51ce9a385ab93ec97cf0f02395d421f511686275",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "b44fe9b2953721c43937e14c5c4b9653ac6142e664f55ee6748a6e5e9f6ac13b",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
-    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
-    "ORIGINAL": "NOT_IMPLEMENTED"
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
    },
    "outputKind": "RESEARCH_SIGNAL",
    "tradable": false,
@@ -58,20 +58,23 @@
    "sourceCoverage": {
     "rulesInScope": 38,
     "hardRules": 27,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
+    "hardRulesImplemented": 23,
+    "implementedExact": 9,
+    "implementedDerived": 18,
     "manualReview": 0,
-    "dataBlocked": 0,
+    "dataBlocked": 2,
     "ambiguous": 0,
-    "notImplemented": 29,
+    "notImplemented": 0,
     "excluded": 9,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
-   "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "dataBlockedEssentialRules": [
+    "TUR-SF-LIMIT-CORR",
+    "TUR-SF-SHORT"
+   ],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -86,7 +89,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 2 Turtle"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_TURTLE_S2",
@@ -107,11 +110,11 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "44e54491ab7ef3fe090027f9c2b124cc47e31ab9d029203612583e017d466086",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "03d1ddac6e419e6c187071e78ee67e9e3ce1b388a5a39684f44fec79d7696463",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
-    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
-    "ORIGINAL": "NOT_IMPLEMENTED"
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
    },
    "outputKind": "RESEARCH_SIGNAL",
    "tradable": false,
@@ -120,20 +123,23 @@
    "sourceCoverage": {
     "rulesInScope": 35,
     "hardRules": 24,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
+    "hardRulesImplemented": 20,
+    "implementedExact": 9,
+    "implementedDerived": 15,
     "manualReview": 0,
-    "dataBlocked": 0,
+    "dataBlocked": 2,
     "ambiguous": 0,
-    "notImplemented": 26,
+    "notImplemented": 0,
     "excluded": 9,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
-   "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "dataBlockedEssentialRules": [
+    "TUR-SF-LIMIT-CORR",
+    "TUR-SF-SHORT"
+   ],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -147,7 +153,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 2 Turtle"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_DARVAS_BOX",
