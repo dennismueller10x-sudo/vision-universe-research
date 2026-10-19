@@ -964,10 +964,11 @@
       ];
       var pc = D && portfolioCell(D, s); if (pc) cells.push(pc);
       kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] })]); })));
+      // Visual First (VU3): der Ausfuehrungshinweis steht unter dem naechsten Schritt - der Plan bleibt im ersten Bildschirm.
       var en = evidenceNote(p, strat);
-      if (en) kids.push(en);
       var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
       kids.push(h('div', { class: 'st-next', title: p.nextAction.text }, [h('span', { class: 'k', text: 'Nächster Schritt des Modells' }), h('p', { text: nxt }), h('span', { class: 'r', title: p.nextAction.ruleId, text: 'Kursdaten vom ' + dateDe(p.nextAction.dataAsOf) })]));
+      if (en) kids.push(en);
     } else {
       kids.push(h('p', { class: 'st-hint', text: 'Kandidat: Die Grundbedingungen sind erfüllt, ein Setup mit Trigger gibt es noch nicht. Kandidaten werden nicht protokolliert.' }));
     }
