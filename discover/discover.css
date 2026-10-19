@@ -2210,6 +2210,19 @@ body.dx-feed-aktiv .dx-fnav,body.dx-suche-offen .dx-fnav{display:none}
 .dx-analyse[open] .dx-trenner-schalter::after{transform:rotate(-135deg) translate(-2px,-2px)}
 .dx-analyse:not([open]) > summary.dx-trenner{padding-bottom:30px;border-bottom:1px solid var(--discover-line)}
 .dx-waage-weitere{margin-top:12px;padding-top:8px}
+/* Visual First (VU3): Bilanz der Waage (Zaehlung + Verhaeltnisbalken) und Richtungszeichen an den Einstufungen. */
+.dx-waage-bilanz{display:flex;align-items:center;gap:12px;margin:0 0 22px}
+.dx-waage-zahl{display:inline-flex;align-items:baseline;gap:5px;flex:none;font-size:13px;color:var(--discover-muted)}
+.dx-waage-zahl i{font-style:normal;font-weight:800}
+.dx-waage-zahl b{font-size:20px;font-weight:800;color:var(--discover-text,inherit);letter-spacing:-.02em}
+.dx-waage-zahl--pro i{color:var(--discover-up)}.dx-waage-zahl--contra i{color:var(--discover-warm)}
+.dx-waage-balken{display:flex;flex:1 1 auto;min-width:60px;height:8px;gap:3px}
+.dx-waage-balken i{display:block;min-width:0;border-radius:999px}
+.dx-waage-balken .pro{background:var(--discover-up)}.dx-waage-balken .contra{background:var(--discover-warm)}
+.dx-zahlen-grade.up::before{content:"▲ ";content:"▲ " / ""}.dx-zahlen-grade.down::before{content:"▼ ";content:"▼ " / ""}.dx-zahlen-grade.warm::before{content:"◆ ";content:"◆ " / ""}
+.dx-zahlen-grade::before{font-size:.8em}
+.dx-zahlen-grade{white-space:nowrap}
+.dx-zahlen-kopf{flex-wrap:wrap;row-gap:6px}
 .dx-waage-weitere ul{margin-top:12px}
 
 /* ------------------------------------------------------------ Firmenlogos
