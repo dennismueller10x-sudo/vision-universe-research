@@ -15,7 +15,9 @@ export function createSnapshotStore({ driver, smoke = false, meter = null } = {}
   const count = (cls, n = 1) => { if (meter) meter[cls] += n; };
   const objectKey = (hash) => `${prefix}/objects/${hash}.bin`;
   const manifestKey = (id) => `${prefix}/manifests/${id}.json.gz`;
-  const receiptKey = (id, role, runId, job) => `${prefix}/receipts/${id}/${role}-${runId}-${job}.json`;
+  // Review F2: Wiederholungen eines Laufs (gleiche runId) schreiben eigene Belege; der Inhalts-Hash im Schluessel
+  // macht jeden Beleg write-once ohne Konflikt.
+  const receiptKey = (id, role, runId, job, hash) => `${prefix}/receipts/${id}/${role}-${runId}-${job}-${hash.slice(0, 16)}.json`;
 
   async function putOnce(key, bytes) {
     count('classB'); const head = await driver.head(key);
@@ -49,18 +51,22 @@ export function createSnapshotStore({ driver, smoke = false, meter = null } = {}
       return JSON.parse(zlib.gunzipSync(gz).toString('utf8'));
     },
     async listManifests() { count('classA'); return (await driver.list(`${prefix}/manifests/`)).map((o) => o.key.split('/').pop().replace(/\.json\.gz$/, '')).sort(); },
-    async putReceipt(id, receipt) { return putOnce(receiptKey(id, receipt.role, receipt.runId, receipt.job), Buffer.from(canonicalJson(receipt))); },
+    async putReceipt(id, receipt) { const b = Buffer.from(canonicalJson(receipt)); return putOnce(receiptKey(id, receipt.role, receipt.runId, receipt.job, sha256(b)), b); },
     async listReceipts(id) {
       count('classA'); const objs = await driver.list(`${prefix}/receipts/${id}/`);
       const out = [];
       for (const o of objs) { count('classB'); const b = await driver.get(o.key); if (b) out.push(JSON.parse(b.toString('utf8'))); }
       return out;
     },
-    async assertRetention() {
+    // Review F7: Generationen UND belegte Bytes (auch verwaiste Objekte abgebrochener Captures) zaehlen.
+    async assertRetention(incomingBytes = 0) {
       const ids = await this.listManifests();
       const cap = smoke ? RETENTION.maxSmokeGenerations : RETENTION.maxGenerations;
       if (ids.length >= cap) fail(REASON.SNAPSHOT_RETENTION_CAP_REACHED, `${ids.length} >= ${cap} (${prefix})`);
-      return { existing: ids.length, cap, nextGeneration: ids.length + 1 };
+      count('classA'); const used = (await driver.list(`${prefix}/objects/`)).reduce((a, o) => a + (o.size || 0), 0);
+      const byteCap = (smoke ? RETENTION.maxSmokeGenerations : RETENTION.maxGenerations) * RETENTION.maxSnapshotBytes;
+      if (used + incomingBytes > byteCap) fail(REASON.SNAPSHOT_RETENTION_CAP_REACHED, `bytes ${used + incomingBytes} > ${byteCap}`);
+      return { existing: ids.length, cap, nextGeneration: ids.length + 1, usedBytes: used, byteCap };
     },
   };
 }

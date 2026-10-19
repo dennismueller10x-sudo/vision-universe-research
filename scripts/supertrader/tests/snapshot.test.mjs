@@ -199,3 +199,30 @@ test('Aufzeichnung: Schreibversuch im Capture scheitert, Tickerliste wird nicht 
   await assert.rejects((await rec.createDriver()).put('x', Buffer.from('y')), code(/^SNAPSHOT_READ_ONLY$/));
   assert.ok(K.describeContract().reasonCodes.includes('INPUT_INTEGRITY_FAILURE'));
 });
+
+test('Review F2: Wiederholung eines Laufs (gleiche runId und Job) schreibt einen eigenen Beleg statt zu scheitern', async () => {
+  const { store, manifest } = await captured();
+  await restoreSnapshot({ store, snapshotId: manifest.snapshotId, provenance: prov('run-7', 'restore-a') });
+  await restoreSnapshot({ store, snapshotId: manifest.snapshotId, provenance: prov('run-7', 'restore-a') });
+  assert.equal((await store.listReceipts(manifest.snapshotId)).filter((r) => r.role === 'RESTORE').length, 2);
+});
+
+test('Review F6: geaenderter Code ist CODE_VERSION_CHANGED, nicht Datenfehler; Bytes werden trotzdem voll geprueft', async () => {
+  const { store, manifest } = await captured();
+  const opened = await openSnapshot({ store, snapshotId: manifest.snapshotId });
+  const pit = await loadPitData({ ...CANONICAL_LOAD, io: opened.io });
+  const other = { ...manifest, code: { ...manifest.code, sha256: 'older-code' }, replay: { ...manifest.replay, sha256: 'x' } };
+  const v = verifyAgainstManifest(other, pit);
+  assert.equal(v.codeVersionChanged, true);
+  assert.equal(v.datasetVerified, 'EXACT');
+  assert.equal(v.replayVerified, 'CODE_VERSION_CHANGED');
+  assert.equal(verifyAgainstManifest(manifest, pit).replayVerified, 'EXACT');
+});
+
+test('Review F7: belegte Bytes (auch verwaiste Objekte) zaehlen zur Grenze', async () => {
+  const src = await buildSources();
+  const store = createSnapshotStore({ driver: src.driver });
+  await assert.rejects(store.assertRetention(K.RETENTION.maxGenerations * K.RETENTION.maxSnapshotBytes + 1), code(/^SNAPSHOT_RETENTION_CAP_REACHED$/));
+  const r = await store.assertRetention(0);
+  assert.equal(r.usedBytes, 0);
+});

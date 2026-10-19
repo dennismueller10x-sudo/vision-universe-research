@@ -534,11 +534,23 @@ async function main() {
   const SNAPSHOT_ID = arg('--snapshot', null);
   let snapshotIo = LIVE_IO, snapshotRef = null;
   if (SNAPSHOT_ID) {
-    const { createSnapshotStore } = await import('../snapshot/store.mjs');
-    const { openSnapshot } = await import('../snapshot/snapshot.mjs');
-    const opened = await openSnapshot({ store: createSnapshotStore({ driver: await LIVE_IO.createDriver(), smoke: argv.includes('--smoke-snapshot') }), snapshotId: SNAPSHOT_ID, requireRestoreReceipt: true });
-    snapshotIo = opened.io;
-    snapshotRef = { snapshotId: SNAPSHOT_ID, asOfDate: opened.manifest.asOfDate, tickerListSha256: opened.manifest.universe.tickerListSha256, bytesVerified: opened.verified.bytes };
+    const K = await import('../snapshot/contract.mjs');
+    try {
+      // Review F1: Runden mit Live-Minutendaten (r9b/r10b) sind nicht im Snapshot eingefroren.
+      if (SET === 'r9b' || SET === 'r10b') K.fail(K.REASON.SNAPSHOT_NOT_RESTORABLE, 'set requires live intraday data');
+      const { createSnapshotStore } = await import('../snapshot/store.mjs');
+      const { openSnapshot, verifyAgainstManifest, CANONICAL_LOAD } = await import('../snapshot/snapshot.mjs');
+      const opened = await openSnapshot({ store: createSnapshotStore({ driver: await LIVE_IO.createDriver(), smoke: argv.includes('--smoke-snapshot') }), snapshotId: SNAPSHOT_ID, requireRestoreReceipt: true });
+      // Review F5: Datensatz mit den kanonischen Ladeflags gegen das Manifest pruefen (Universumsregeln im Code).
+      const canon = await loadPitData({ LIMIT: opened.manifest.capture.limit || 0, ...CANONICAL_LOAD, io: opened.io });
+      const v = verifyAgainstManifest(opened.manifest, canon, { replay: false });
+      snapshotIo = opened.io;
+      snapshotRef = { snapshotId: SNAPSHOT_ID, asOfDate: opened.manifest.asOfDate, tickerListSha256: opened.manifest.universe.tickerListSha256, bytesVerified: opened.verified.bytes, datasetVerified: v.datasetVerified, codeVersionChanged: v.codeVersionChanged };
+    } catch (e) {
+      // Review F13: oeffentliches Log ohne Objektschluessel (enthalten Ticker).
+      console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}` : 'INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR');
+      process.exit(3);
+    }
   }
   const RUN = SET === 'r13b' ? enginesR13B() : SET === 'r12' ? enginesR12() : SET === 'r11' ? enginesR11() : SET === 'r10m' ? enginesR10M() : SET === 'r10c' ? enginesR10C() : SET === 'r9b' || SET === 'r10b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
   const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b' ? `${e.id}@${e.version}` : e.id);

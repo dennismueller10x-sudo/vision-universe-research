@@ -17,7 +17,7 @@ export const STORE_PREFIX = 'research-snapshots/supertrader/sts1';
 export const SMOKE_PREFIX = 'research-snapshots/supertrader/sts1-smoke';
 // Kostenschranke vor Aktivierung: hoechstens so viele Generationen je Ablage und so viele Bytes je Snapshot.
 // Loeschen erlaubt der Treiber nicht (Zero-Cost-Haertung); das Aufraeumen ist eine Owner-Entscheidung.
-export const RETENTION = Object.freeze({ maxGenerations: 3, maxSmokeGenerations: 3, maxSnapshotBytes: 3e9, shardTargetBytes: 16 * 1024 * 1024 });
+export const RETENTION = Object.freeze({ maxGenerations: 3, maxSmokeGenerations: 5, maxSnapshotBytes: 3e9, shardTargetBytes: 16 * 1024 * 1024 });
 
 export const REASON = Object.freeze({
   INPUT_INTEGRITY_FAILURE: 'INPUT_INTEGRITY_FAILURE',

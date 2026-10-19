@@ -22,6 +22,7 @@ if (argv.includes('--read')) {
   const cap = read('capture.json'), a = read('restore-a.json'), b = read('restore-b.json'), par = read('parallel-consistency.json');
   if (!a || !b || !par?.identical) { console.error('INPUT_INTEGRITY_FAILURE: PARALLEL_INPUT_DIVERGENCE'); process.exit(3); }
   const id = cap?.snapshotId || a.snapshotId;
+  if (a.snapshotId !== id || b.snapshotId !== id || (!cap && cur?.snapshotId !== id)) { console.error('INPUT_INTEGRITY_FAILURE: PARALLEL_INPUT_DIVERGENCE (Snapshot-IDs)'); process.exit(3); }
   const base = cap || cur?.snapshotId !== id ? { snapshotId: id, asOfDate: cap?.asOfDate ?? cur?.asOfDate ?? null, captureRunId: cap?.provenance?.runId ?? cur?.captureRunId ?? null, restores: [] } : cur;
   base.restores = [...(base.restores || []), { runId: a.runId, jobs: [a.job, b.job], datasetSha256: a.datasetSha256, replaySha256: a.replaySha256, independentOfCapture: a.independentOfCapture && b.independentOfCapture }];
   fs.writeFileSync(file, JSON.stringify(base, null, 1) + '\n');

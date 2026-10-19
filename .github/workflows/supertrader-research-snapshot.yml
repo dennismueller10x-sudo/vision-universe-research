@@ -49,6 +49,10 @@ jobs:
     if: needs.mode.outputs.mode == 'smoke' || needs.mode.outputs.mode == 'capture'
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # Review F7: Captures aller Zweige nacheinander (Generations- und Bytegrenze ohne Wettlauf).
+    concurrency:
+      group: supertrader-research-snapshot-capture-global
+      cancel-in-progress: false
     permissions:
       contents: read
     outputs:

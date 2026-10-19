@@ -60,6 +60,7 @@ export async function captureSnapshot({ live = LIVE_IO, store, provenance, limit
   const side = [{ role: 'TICKER_LIST_ZIP', bytes: rec.rec.tickerZip }, ...PIT_REPO_FILES.map((p) => ({ role: 'REPO_FILE', path: p, bytes: rec.rec.repoFiles.get(p) }))];
   const totalBytes = shards.reduce((a, s) => a + s.length, 0) + side.reduce((a, s) => a + (s.bytes?.length || 0), 0);
   if (totalBytes > K.RETENTION.maxSnapshotBytes) K.fail(K.REASON.SNAPSHOT_SIZE_CAP_EXCEEDED, String(totalBytes));
+  await store.assertRetention(totalBytes);
   // Nullkostenschranke VOR dem ersten Schreiben: Speicherzuwachs und Schreibvorgaenge gegen die Freigrenze.
   if (guardUsage) {
     const est = Guard.estimateOperations({ kind: 'RESEARCH_SNAPSHOT_CAPTURE', objectWrites: shards.length + side.length + 2, objectHeads: shards.length + side.length + 2, objectReads: shards.length + side.length + 2, listPages: 2, bytesDelta: totalBytes });
@@ -123,12 +124,17 @@ export async function openSnapshot({ store, snapshotId, expect = {}, requireRest
 }
 
 // Nach loadPitData mit Snapshot-IO: Datensatz und Kontroll-Backtest muessen dem Capture entsprechen.
+// Review F6: Datensatz- und Backtest-Fingerabdruck haengen vom Code ab. Bei gleichem Code muessen sie exakt
+// stimmen. Bei geaendertem Code (CODE_VERSION_CHANGED) ist die Byte-Integritaet (Objekt-Hashes) der Nachweis;
+// die neu gerechneten Fingerabdruecke muessen dann zwischen parallelen Konsumenten identisch sein.
 export function verifyAgainstManifest(manifest, pit, { replay = true } = {}) {
+  const codeVersionChanged = manifest.code.sha256 !== K.codeFingerprint().sha256;
   const dataset = datasetFingerprint(pit);
-  if (K.canonicalJson(dataset) !== K.canonicalJson(manifest.dataset)) K.fail(K.REASON.DATASET_FINGERPRINT_MISMATCH, diffKeys(dataset, manifest.dataset));
+  const datasetSame = K.canonicalJson(dataset) === K.canonicalJson(manifest.dataset);
+  if (!datasetSame && !codeVersionChanged) K.fail(K.REASON.DATASET_FINGERPRINT_MISMATCH, diffKeys(dataset, manifest.dataset));
   const rp = replay ? replayFingerprint(pit) : null;
-  if (rp && rp.sha256 !== manifest.replay.sha256) K.fail(K.REASON.REPLAY_FINGERPRINT_MISMATCH);
-  return { dataset, replay: rp };
+  if (rp && rp.sha256 !== manifest.replay.sha256 && !codeVersionChanged) K.fail(K.REASON.REPLAY_FINGERPRINT_MISMATCH);
+  return { dataset, replay: rp, codeVersionChanged, datasetVerified: datasetSame ? 'EXACT' : 'CODE_VERSION_CHANGED', replayVerified: !rp ? null : rp.sha256 === manifest.replay.sha256 ? 'EXACT' : 'CODE_VERSION_CHANGED' };
 }
 function diffKeys(a, b) { return Object.keys({ ...a, ...b }).filter((k) => K.canonicalJson(a[k]) !== K.canonicalJson(b[k])).join(','); }
 
@@ -140,14 +146,15 @@ export async function restoreSnapshot({ store, snapshotId, provenance, log = () 
   const v = verifyAgainstManifest(opened.manifest, pit);
   const receipt = { role: 'RESTORE', pass: true, snapshotId, runId: provenance.runId, job: provenance.job, runner: provenance.runner, at: new Date().toISOString(), captureRunId: opened.manifest.provenance.runId, captureJob: opened.manifest.provenance.job,
     objectsVerified: opened.verified.shards + opened.verified.sideObjects, sourceObjects: opened.verified.sourceObjects, bytesVerified: opened.verified.bytes,
-    datasetSha256: K.sha256(K.canonicalJson(v.dataset)), replaySha256: v.replay.sha256, counts: v.dataset.counts, seconds: Math.round((Date.now() - t0) / 1000) };
+    datasetSha256: K.sha256(K.canonicalJson(v.dataset)), replaySha256: v.replay.sha256, counts: v.dataset.counts, codeVersionChanged: v.codeVersionChanged, datasetVerified: v.datasetVerified, replayVerified: v.replayVerified,
+    attempt: provenance.runAttempt || null, codeSha256: K.codeFingerprint().sha256, seconds: Math.round((Date.now() - t0) / 1000) };
   await store.putReceipt(snapshotId, receipt);
   return { manifest: opened.manifest, receipt, dataset: v.dataset, replay: v.replay };
 }
 
 // Parallele Konsumenten: alle muessen identische Eingaben gesehen haben.
 export function compareConsumers(results) {
-  const keys = ['snapshotId', 'datasetSha256', 'replaySha256', 'bytesVerified', 'sourceObjects'];
+  const keys = ['snapshotId', 'datasetSha256', 'replaySha256', 'bytesVerified', 'sourceObjects', 'codeSha256'];
   const first = results[0];
   const divergent = results.filter((r) => keys.some((k) => r[k] !== first[k]));
   return { consumers: results.length, identical: divergent.length === 0 && results.length >= 2, compared: keys, values: Object.fromEntries(keys.map((k) => [k, [...new Set(results.map((r) => r[k]))]])), reason: divergent.length ? K.REASON.PARALLEL_INPUT_DIVERGENCE : null };
@@ -165,7 +172,8 @@ export function publicCapture(manifest, receipt) {
 }
 export function publicRestore(r) {
   return { snapshotId: r.receipt.snapshotId, pass: r.receipt.pass, runId: r.receipt.runId, job: r.receipt.job, captureRunId: r.receipt.captureRunId, captureJob: r.receipt.captureJob, independentOfCapture: r.receipt.runId !== r.receipt.captureRunId || r.receipt.job !== r.receipt.captureJob,
-    objectsVerified: r.receipt.objectsVerified, sourceObjects: r.receipt.sourceObjects, bytesVerified: r.receipt.bytesVerified, datasetSha256: r.receipt.datasetSha256, replaySha256: r.receipt.replaySha256, counts: r.receipt.counts, seconds: r.receipt.seconds };
+    objectsVerified: r.receipt.objectsVerified, sourceObjects: r.receipt.sourceObjects, bytesVerified: r.receipt.bytesVerified, datasetSha256: r.receipt.datasetSha256, replaySha256: r.receipt.replaySha256, counts: r.receipt.counts,
+    datasetVerified: r.receipt.datasetVerified, replayVerified: r.receipt.replayVerified, codeVersionChanged: r.receipt.codeVersionChanged, codeSha256: r.receipt.codeSha256, seconds: r.receipt.seconds };
 }
 
 // ---------------------------------------------------------------------------------------------- CLI
