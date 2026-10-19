@@ -245,13 +245,27 @@ Alle als Draft, gestapelt:
 - **Darvas:** nur als Komponentenstudie, gekennzeichnet `COMPONENT_SIGNAL_STUDY_NOT_A_METHOD_RETURN`.
 - **Alle übrigen:** `NOT_READY`. Sie haben keinen mechanischen Exit oder blockierte Daten, und eine Haltedauer festzulegen hieße, Parameter zu erfinden.
 
-Der Lauf ist vorbereitet: Workflow-Modus `sf-research` mit Snapshot-Marke und `research-v1`. Das Ergebnis wird für den Owner verschlüsselt; öffentlich erscheinen nur Hashes.
+Der Lauf ist erfolgt (Workflow-Modus `sf-research`, Run 39271055007, 19.10.2026). Die Ergebnisse sind für den Owner verschlüsselt abgelegt (`claude/supertrader-validation-results`, Stempel `20261019T145341Z`); öffentlich sind nur die Belege:
+
+- Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT`, Code-Fingerabdruck unverändert, 586.282.893 Bytes geprüft, kein `--limit`.
+- Datenabdeckung: 9.211 Wertpapiere (davon 2.932 delistet), 294 Datenlücken-Segmente, 2.701 Sitzungen.
+- Alle Szenarien beider Turtle-Systeme: Abstimmung und Endbestandsprüfung PASS.
+
+| Methode | Beleg (receiptSha256, gekürzt) | Trades BASE_S0 / DELIST_S1 / DELIST_S2 / COST2 / DATA_EVENT |
+|---|---|---|
+| SF_TURTLE_S1 | `64b9aece4cb32f43` | 827 / 789 / 789 / 805 / 796 |
+| SF_TURTLE_S2 | `d32dd805a3a4429b` | 609 / 578 / 578 / 578 / 659 |
+| SF_DARVAS_BOX (Komponentenstudie) | `2fd60c5965c7e6c9` | 22.577 Signale, keine Methodenrendite |
+
+DELIST_S1 und DELIST_S2 haben je System denselben Ledger-Hash: Turtle hielt bei keinem Delisting mit Distress-Signatur eine Position, nur dort unterscheiden sich die Szenarien.
+
+Ein vorheriger Probelauf auf dem Smoke-Snapshot `sts1-4af8…` wurde korrekt abgewiesen (`CODE_VERSION_CHANGED`): Er ist mit einem älteren Code-Fingerabdruck erfasst. Er wurde nicht übergangen.
 
 ### 14. Welche nächsten Schritte führen am schnellsten zu einem quellentreuen, messbaren System?
 
 1. **Quant-PR für V4-D1:** kausale Erkennung nicht deklarierter Splits im kanonischen Kern, danach eine neue Snapshot-Generation und die Rekalibrierung mit unveränderten Toleranzen. Das ist der einzige Weg zu zertifizierbaren Turtle-Messungen.
 2. **SF-1 … SF-9 prüfen und mergen**, in Stack-Reihenfolge.
-3. **Diagnostische Turtle-Läufe** (`sf-research`) auf dem Snapshot laufen lassen; danach entscheidet der Owner auf Basis der versiegelten Ergebnisse.
+3. **Versiegelte Turtle-Ergebnisse auswerten** (Lauf vom 19.10.2026, siehe Frage 13); danach entscheidet der Owner. Keine Parameteränderung nach Rendite.
 4. **PIT-Branchengruppen beschaffen.** Das schaltet gleichzeitig Weinstein-WEIN-GROUP und Turtle-Korrelationsgrenzen frei. Das ist der größte Hebel unter den Datenlücken.
 5. **Englischen Originalwortlaut für Minervini (B12) prüfen.** Damit können die Trend-Template-Schwellen gehärtet werden.
 6. **Manuelle Review-Ebene als Vorwärts-Log einrichten**, zuerst für Darvas, Pocket Pivot und BGU, die die präzisesten Maschinenkomponenten haben. Entscheidungen werden mit #709-Begründungen protokolliert und nie rückwirkend in Backtests eingefügt.
