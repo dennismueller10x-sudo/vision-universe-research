@@ -45,7 +45,7 @@
  "historicalFrozenInputAvailable": false,
  "historicalNote": "Fuer die frueheren Research-Laeufe existiert kein unveraenderlicher historischer Input (#763 Abschnitt 1). Ein exakter historischer Vorher/Nachher-Vergleich wird deshalb NICHT behauptet; der Nachweis erfolgt auf identischen eingefrorenen Eingaben.",
  "summary": {
-  "cases": 22,
+  "cases": 25,
   "identical": 10,
   "changed": [
    "C04_STALE_LIMIT_REACHED",
@@ -59,7 +59,10 @@
    "C17_NO_LOOKAHEAD_QUARANTINE",
    "C18_FINAL_VALUATION",
    "C19_DUST_BELOW_LIMIT",
-   "C21_ZERO_VOLUME_STALE"
+   "C21_ZERO_VOLUME_STALE",
+   "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "C24_QUARANTINED_BEFORE_ENTRY",
+   "C25_DELISTED_AFTER_WINDOW"
   ],
   "researchV1AllReconciled": true,
   "researchV1NoNegativeCash": true,
@@ -1098,6 +1101,153 @@
     "totalReturnPct": -0.209979,
     "equityCurveDaysDifferent": 29,
     "firstDifferentDate": "2020-01-17",
+    "identical": false
+   }
+  },
+  {
+   "case": "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "title": "Quarantaene ab Tag 5 beobachtet, terminal.lastClose stammt vom spaeteren Reihenende (Review F3)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 109999,
+    "cashEnd": 89999,
+    "openValueEnd": 20000,
+    "positionsEnd": 1,
+    "totalReturn": 0.09999,
+    "pnlReconciliation": {
+     "expected": 109999,
+     "end": 109999,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 103983.6014,
+    "cashEnd": 103983.6014,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.03983601,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008809905594376
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -6015.3986,
+    "totalReturnPct": -6.015399,
+    "equityCurveDaysDifferent": 35,
+    "firstDifferentDate": "2020-01-09",
+    "identical": false
+   }
+  },
+  {
+   "case": "C24_QUARANTINED_BEFORE_ENTRY",
+   "title": "Quarantaene vor dem Einstieg bekannt (Review F9)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 100997.9,
+    "cashEnd": 100997.9,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.009979,
+    "pnlReconciliation": {
+     "expected": 100997.9,
+     "end": 100997.9,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 100000,
+    "cashEnd": 100000,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0,
+    "minCash": 100000,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.00000100071054273576
+    },
+    "ledgerRows": 0
+   },
+   "delta": {
+    "finalEquity": -997.9,
+    "totalReturnPct": -0.9979,
+    "equityCurveDaysDifferent": 36,
+    "firstDifferentDate": "2020-01-08",
+    "identical": false
+   }
+  },
+  {
+   "case": "C25_DELISTED_AFTER_WINDOW",
+   "title": "Notierung endet nach dem Fensterende: kein Delisting am Fensterende (Review F4)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 96998.3,
+    "cashEnd": 96998.3,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.030017,
+    "pnlReconciliation": {
+     "expected": 96998.3,
+     "end": 96998.3,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99999,
+    "cashEnd": 89999,
+    "openValueEnd": 10000,
+    "positionsEnd": 1,
+    "totalReturn": -0.00001,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010007816041147634
+    },
+    "ledgerRows": 1
+   },
+   "delta": {
+    "finalEquity": 3000.7,
+    "totalReturnPct": 3.0007,
+    "equityCurveDaysDifferent": 1,
+    "firstDifferentDate": "2020-02-26",
     "identical": false
    }
   },

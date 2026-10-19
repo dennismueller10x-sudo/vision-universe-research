@@ -45,7 +45,7 @@
  "historicalFrozenInputAvailable": false,
  "historicalNote": "Fuer die frueheren Research-Laeufe existiert kein unveraenderlicher historischer Input (#763 Abschnitt 1). Ein exakter historischer Vorher/Nachher-Vergleich wird deshalb NICHT behauptet; der Nachweis erfolgt auf identischen eingefrorenen Eingaben.",
  "summary": {
-  "cases": 22,
+  "cases": 25,
   "legacyFillsWithoutSourceBar": [
    "C15_EXIT_WITHOUT_SOURCE_BAR"
   ],
@@ -1515,6 +1515,180 @@
      "staleSessionMarks": 6,
      "unavailableSettlements": 1,
      "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DATA_QUARANTINE",
+      "date": "2020-01-09",
+      "price": 13.986,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C24_QUARANTINED_BEFORE_ENTRY",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-08",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [],
+    "skipped": [
+     "QUARANTINED_AT_ENTRY"
+    ],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C25_DELISTED_AFTER_WINDOW",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DELISTED",
+      "date": "2020-02-26",
+      "price": 7,
+      "factor": null,
+      "ignoredExits": null
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 1,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
     }
    },
    "fillsOnRealSourceBars": {

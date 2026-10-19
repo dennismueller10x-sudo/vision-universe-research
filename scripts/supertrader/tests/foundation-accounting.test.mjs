@@ -103,6 +103,18 @@ test('A5 Datenluecke ist kein wirtschaftliches Delisting; echtes Delisting bleib
   assert.equal(segmentEndCause(0, 2, false), 'DATA_GAP');
   assert.equal(segmentEndCause(1, 2, false), 'LISTING_INACTIVE');
   assert.equal(segmentEndCause(0, 1, true), 'ACTIVE');
+  assert.equal(segmentEndCause(0, 1, false, '2026-10-05', '2026-09-30'), 'WINDOW_END');
+  assert.equal(segmentEndCause(0, 1, false, '2026-09-25', '2026-09-30'), 'LISTING_INACTIVE');
+});
+
+test('Review F3/F4/F9: Quarantaene zum letzten bekannten Schluss, keine Position nach bekannter Quarantaene, Fensterende ist kein Delisting', () => {
+  const q = v1('C23_QUARANTINE_FROM_BEFORE_SERIES_END').r.taken[0];
+  assert.equal(q.settlement.date, C[5]);
+  assert.equal(q.settlement.lastClose, 14, 'Schluss vor dem Quarantaenetag, nicht terminal.lastClose=999');
+  assert.deepEqual(v1('C24_QUARANTINED_BEFORE_ENTRY').r.skipped.map((s) => s.reason), ['QUARANTINED_AT_ENTRY']);
+  const w = v1('C25_DELISTED_AFTER_WINDOW').r;
+  assert.equal(w.book.terminalCount, 0);
+  assert.equal(w.openAtEnd.length, 1);
 });
 
 test('A5 synthetischer Terminal-Bar: Reihenende vor Fensterende wird nicht am letzten Balken verkauft (dessen Ende war unbekannt)', () => {

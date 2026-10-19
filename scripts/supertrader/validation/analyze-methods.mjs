@@ -304,9 +304,12 @@ function rawFromStoreBars(bars) {
 
 // Foundation Repair (A5): Ursache eines Segmentendes. Nur das letzte Segment einer inaktiven Notierung ist ein
 // wirtschaftliches Delisting; ein Ende durch eine Luecke > MAX_GAP_DAYS ist ein Datenereignis.
-export function segmentEndCause(index, segmentCount, listingActive) {
+// Review F4: endet die Notierung erst nach dem Fensterende, ist das Fensterende kein Delisting (kein Wissen ueber
+// ein spaeteres Delisting verwenden): WINDOW_END = offene Position zum letzten Schluss bewertet.
+export function segmentEndCause(index, segmentCount, listingActive, listEnd = null, windowTo = W.to) {
   if (index < segmentCount - 1) return 'DATA_GAP';
-  return listingActive ? 'ACTIVE' : 'LISTING_INACTIVE';
+  if (listingActive) return 'ACTIVE';
+  return listEnd && listEnd > windowTo ? 'WINDOW_END' : 'LISTING_INACTIVE';
 }
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
@@ -400,7 +403,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
       if (seg.length < 30) return;
       // endCause (Foundation Repair, A5): ein Segmentende durch eine Luecke > MAX_GAP_DAYS ist ein Datenereignis,
       // kein wirtschaftliches Delisting. Legacy liest weiter nur `delisted`.
-      segs.push({ id: i ? `${m.l.id}#${i}` : m.l.id, raw: seg, delisted: !m.l.active || i < all.length - 1, endCause: segmentEndCause(i, all.length, m.l.active), survivor: m.from === 'STORE', cls: m.cls || null });
+      segs.push({ id: i ? `${m.l.id}#${i}` : m.l.id, raw: seg, delisted: !m.l.active || i < all.length - 1, endCause: segmentEndCause(i, all.length, m.l.active, m.l.listEnd), survivor: m.from === 'STORE', cls: m.cls || null });
     });
   }
   r2Raw.clear(); storeRaw.clear();

@@ -67,7 +67,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   let grossFlows = 0, minCash = cash, ignoredExitsAfterSettlement = 0;
   const causalQ = new Map();
   if (rv1) for (const tr of trades) if (tr.terminal?.kind === 'DATA_QUARANTINE') causalQ.set(tr, AC.causalTerminalDate(calendar, { from: tr.terminal.from ?? tr.terminal.date, observedAt: tr.terminal.observedAt }));
-  const isEconomicTerminal = (t) => t && t.kind === 'DELISTED' && !(rv1 && AC.isDataEvent(t.cause));
+  // RESEARCH_V1: nur das Ende einer inaktiven Notierung innerhalb des Fensters ist ein wirtschaftliches Delisting.
+  const isEconomicTerminal = (t) => t && t.kind === 'DELISTED' && !(rv1 && (AC.isDataEvent(t.cause) || t.cause === 'WINDOW_END'));
   const book1 = (row) => { if (rv1) { ledger.push(row); grossFlows += Math.abs(row.gross || 0) + Math.abs(row.fee || 0); } };
   const finishedPnl = [];
   // Runde 8 (cfg.turtleNotional, Turtle Rules Kap. 3 "Adjusting Trading Size"):
@@ -163,6 +164,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       if (!(shares > 0)) { skipped.push({ id: tr.id, reason: 'NO_CASH', date }); continue; }
       if (rv1 && !(shares * tr.entry.price > AC.POLICY.minOrderValue)) { skipped.push({ id: tr.id, reason: 'BELOW_MIN_ORDER_VALUE', date }); continue; }
       if (rv1 && !AC.isExecutableBar({ open: tr.marks.get(date) })) { skipped.push({ id: tr.id, reason: 'ENTRY_WITHOUT_SOURCE_BAR', date }); continue; }
+      // Review F9: keine neue Position, wenn die Quarantaene zum Einstiegstag bereits bekannt ist.
+      if (rv1 && causalQ.has(tr) && causalQ.get(tr) <= date) { skipped.push({ id: tr.id, reason: 'QUARANTINED_AT_ENTRY', date }); continue; }
       const gross = shares * tr.entry.price, c = gross * comm;
       cash -= gross + c; book.commissions += c;
       const p = { tr, shares, entryShares: shares, eqAtEntry: eq, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
@@ -187,9 +190,10 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
         const px = SCENARIOS[scenario](t, slip);
         close(p, p.shares, px, date, 'TERMINAL'); p.remainingFraction = 0; p.terminalPrice = px;
         finish(p); open.splice(i, 1);
-      } else if (rv1 && causalQ.get(p.tr) === date) {
-        // A5: Quarantaene erst ab max(from, observedAt) gebucht, Datenereignis-Faktor.
-        settleV1(p, date, 'DATA_QUARANTINE', t.lastClose ?? p.last); finish(p); open.splice(i, 1);
+      } else if (rv1 && causalQ.has(p.tr) && causalQ.get(p.tr) <= date) {
+        // A5: Quarantaene erst ab max(from, observedAt) gebucht, Datenereignis-Faktor, zum letzten bis dahin
+        // bekannten Schluss (p.last) - nie zu terminal.lastClose, das spaeter liegen kann (Review F3).
+        settleV1(p, date, 'DATA_QUARANTINE', p.last); finish(p); open.splice(i, 1);
       }
     }
     // A4: hoechstens STALE_CARRY_MAX_SESSIONS Sitzungen zum letzten Schluss, dann SECURITY_UNAVAILABLE.
