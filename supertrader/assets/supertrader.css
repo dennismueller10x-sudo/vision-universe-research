@@ -333,7 +333,8 @@ p { margin: 0; }
 .st-chart-tools { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 4px 8px; }
 .st-chart-tools button { font: inherit; font-size: 12px; cursor: pointer; border: 1px solid var(--st-line-2); background: transparent; color: var(--st-text-2); border-radius: 999px; padding: 5px 10px; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
 .st-chart-tools button i { width: 12px; height: 3px; border-radius: 2px; background: var(--c); display: inline-block; }
-.st-chart-tools button[aria-pressed="false"] { opacity: .45; }
+/* Ausgeblendete Linie: gestrichelt und gedaempft, aber lesbar (WCAG AA) - Deckkraft senkte den Kontrast auf 3,1:1. */
+.st-chart-tools button[aria-pressed="false"] { color: var(--st-muted); border-style: dashed; }
 .st-chart-tools button[aria-pressed="false"] i { background: transparent; border: 1px dashed var(--c); height: 5px; }
 .st-chart-status { font-size: 12px; color: var(--st-muted); padding: 6px 8px 2px; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
@@ -401,7 +402,8 @@ p { margin: 0; }
 .st-scale .lv strong { display: block; font-size: 14px; } .st-scale .lv span { font-size: 13px; color: var(--st-text-2); }
 .st-btrow .st-three { margin: 8px 0 2px; }
 .st-linkbtn { background: none; border: 0; padding: 0; color: var(--st-info); font: inherit; text-decoration: underline; cursor: pointer; }
-.st-chips button[data-research] { opacity: .8; }
+/* Forschung: gestrichelter Rand statt Deckkraft - die Zahl bleibt lesbar (WCAG AA). */
+.st-chips button[data-research] { border-style: dashed; }
 .st-obsnums { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 10px; }
 @media (min-width: 720px) { .st-obsnums { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .st-obsnums span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; font-size: 12px; color: var(--st-muted); line-height: 1.25; }
