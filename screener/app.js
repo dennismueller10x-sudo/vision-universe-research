@@ -605,7 +605,11 @@
   function sortLabel() { var s = SORTS.filter(function (x) { return x[0] === state.query.sort.field; })[0]; return (s ? s[1] : fieldName(state.query.sort.field)) + (state.query.sort.dir === 'asc' ? ' ↑' : ' ↓'); }
   function resultsBody(main, r) {
     var q = state.query, d = ds();
-    main.append(h('div', { class: 'sc-results-head' }, [h('div', { class: 'sc-count sc-num' }, [nf(r.total) + (r.total === 1 ? ' Aktie' : ' Aktien'), h('small', { text: 'von ' + nf(r.universe) })])]));
+    var share = r.universe ? r.total / r.universe * 100 : 0;
+    main.append(h('div', { class: 'sc-results-head' }, [h('div', { class: 'sc-count sc-num' }, [nf(r.total) + (r.total === 1 ? ' Aktie' : ' Aktien'), h('small', { text: 'von ' + nf(r.universe) })]),
+      Q.count(q) && r.universe ? h('div', { class: 'sc-share', role: 'img', 'aria-label': 'Anteil am Universum: ' + share.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %' }, [
+        h('span', { class: 'sc-share-bar', 'aria-hidden': 'true' }, h('i', { style: { width: Math.max(share, r.total ? 1 : 0) + '%' } })),
+        h('small', { class: 'sc-num', 'aria-hidden': 'true', text: share.toLocaleString('de-DE', { maximumFractionDigits: 1, minimumFractionDigits: share < 10 ? 1 : 0 }) + ' % des Universums' })]) : null]));
     var fs = Q.filters(q);
     if (fs.length) main.append(h('div', { class: 'sc-filterline', role: 'list', 'aria-label': 'Aktive Filter' }, fs.map(function (f) {
       return h('button', { class: 'sc-mini-chip', type: 'button', role: 'listitem', onclick: function () { openDetail(f.field, { filter: f }); } }, F.describeFilter(f, d.meta.dict));
@@ -1058,6 +1062,11 @@
     var groups = E.why(d, q, i);
     if (!groups.length) { container.append(h('p', { class: 'sc-note', text: 'Es sind keine Filter aktiv – jede Aktie des Universums ist ein Treffer.' })); return; }
     container.append(h('p', { class: 'sc-field-desc', text: 'So erfüllt diese Aktie deine Kriterien – mit dem gemessenen Wert.' }));
+    var all = [].concat.apply([], groups.map(function (g) { return g.items; }));
+    var tally = [[true, '✓', 'erfüllt', 'is-ok'], [false, '✕', 'nicht erfüllt', 'is-no'], [null, '–', 'ohne Daten', 'is-na']].map(function (t) { return { n: all.filter(function (x) { return x.pass === t[0]; }).length, t: t }; });
+    container.append(h('p', { class: 'sc-why-tally', role: 'img', 'aria-label': tally.map(function (x) { return x.n + ' ' + x.t[2]; }).join(', ') }, tally.map(function (x) {
+      return h('span', { class: x.t[3] + (x.n ? '' : ' is-zero') }, [h('i', { text: x.t[1] }), h('b', { class: 'sc-num', text: String(x.n) }), ' ' + x.t[2]]);
+    })));
     groups.forEach(function (g, gi) {
       var passG = g.op === 'OR' ? g.items.some(function (x) { return x.pass === true; }) : g.items.every(function (x) { return x.pass === true; });
       if (groups.length > 1 || g.op === 'OR') container.append(h('p', { class: 'sc-label', text: (g.name || 'Gruppe ' + (gi + 1)) + (g.op === 'OR' ? ' · mindestens ein Kriterium (ODER)' : '') + (passG ? ' ✓' : ' ✗') }));
