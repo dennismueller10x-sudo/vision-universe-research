@@ -833,6 +833,17 @@ html[data-theme=light] body.qd{--discover-dim:#585e66}
 .qd .q-radar-stats{margin-top:16px}
 .qd .qx-kpis,.qd .q-radar-stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr))}
 .qd .qx-kpis .q-stat b,.qd .q-radar-stats .q-stat b{font-size:clamp(20px,2.4vw,26px);overflow-wrap:anywhere}
+/* Visual First (VU3): Radar-Zaehlungen mit Richtungszeichen, antippbar zum Filter. */
+.qd button.q-rstat,.qd a.q-rstat{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;width:100%;border:0;border-radius:0;text-align:left;font:inherit;color:inherit;cursor:pointer;text-decoration:none}
+.qd button.q-rstat:hover,.qd a.q-rstat:hover{background:var(--q-panel2)}
+.qd .q-rstat:focus-visible{outline:2px solid var(--q-lime-line);outline-offset:-2px}
+.qd .q-rstat-glyph{font-style:normal;font-size:.5em;vertical-align:.35em;margin-right:6px}
+.qd .q-rstat.tone-up .q-rstat-glyph{color:var(--q-up)}.qd .q-rstat.tone-down .q-rstat-glyph{color:var(--q-down)}.qd .q-rstat.tone-tested .q-rstat-glyph{color:var(--q-muted)}
+.qd .q-chip-n{font-size:.85em;font-weight:700;opacity:.75}
+@media (min-width:900px){.qd .q-radar-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.qd .q-radar-tally{margin:8px 0 14px;align-items:center}
+.qd .q-radar-tally small{font-size:12px;color:var(--q-muted)}
+@media (max-width:600px){.qd .q-radar-stats .q-stat{padding:10px 12px}.qd .q-radar-stats .q-stat small{font-size:10.5px}}
 .qd .q-levels.is-bear{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:600px){.qd .q-levels.is-bear{grid-template-columns:1fr}}
 .qd .q-levels .is-target.is-down b{color:var(--q-down)}
