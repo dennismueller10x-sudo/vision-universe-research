@@ -1,0 +1,37 @@
+{
+ "schema": "supertrader-foundation-readiness-1.0.0",
+ "status": "READY_FOR_SOURCE_FAITHFUL_STRATEGY_IMPLEMENTATION",
+ "notCalibrationCertified": true,
+ "meaning": "Nur die technische Grundlage fuer Strategieimplementierung und kontrollierte Research-Tests. Keine Kalibrierungs- oder Performance-Zertifizierung; historische Performance-Claims bleiben gesperrt, bis die Measurement-/Data-Acceptance-Gates (#705 NOT_CERTIFIED, #763 diagnostisch) bestanden sind.",
+ "criteria": [
+  {"id": "A4_A5_A8_FIXED_AND_TESTED", "met": true, "evidence": "PR #779: accounting-contract.mjs + runPortfolioTR RESEARCH_V1; foundation-accounting.test.mjs (22 Tests); 15/25 Faelle korrigiert, 10 Kontrollen identisch; V4-Paritaet 0 Abweichungen", "scope": "Research-Pfad auf main (per-Symbol-Engines). Tournament-Methoden nur ueber runner-v4 (#705)."},
+  {"id": "NO_PROVEN_OPEN_ACCOUNTING_DEFECT", "met": true, "evidence": "reconcileResearch in allen Faellen PASS; Review: kein offener HIGH/CRITICAL", "residual": ["OBS-2 Live-Modellportfolio (nicht Research, eigener PR)", "OBS-4 Ausfuehrung nur gegen Schlusskurs-Praesenz geprueft (LOW)"]},
+  {"id": "SNAPSHOT_DURABLE_AND_INDEPENDENTLY_RESTORED", "met": true, "evidence": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d (Lauf 39213033571, 586.282.893 Byte, 9.361 Quellobjekte); 4 unabhaengige Restores in 2 Laeufen (39213033571, 39217202814), Datensatz und Kontroll-Backtest EXACT"},
+  {"id": "PARALLEL_JOBS_IDENTICAL_INPUTS", "met": true, "evidence": "parallel-consistency.json beider Laeufe identical=true; 4 Konsumenten gleiche snapshotId/datasetSha256/replaySha256/bytes/objects"},
+  {"id": "NO_OPEN_HIGH_CRITICAL", "met": true, "evidence": "SUPERTRADER-BACKTEST-FOUNDATION-REVIEW.json openHighOrCritical=0 (F1, F2 HIGH geschlossen)"},
+  {"id": "NO_PRODUCTION_DATA_CHANGED", "met": true, "evidence": "Gate A, Test-Isolation; Schreibzugriffe nur unter research-snapshots/supertrader/ und der bestehende Nutzungszaehler der Nullkostenschranke (_usage); keine Aenderung an quant/discover/supertrader/data"}
+ ],
+ "conditionsForUse": [
+  "Neue Buchstrategien laufen ueber analyze-methods.mjs --accounting research-v1 --snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d.",
+  "Der Validierungs-Workflow (supertrader-validation.yml) reicht --snapshot noch nicht durch; das ist der erste Schritt der Strategie-PRs (oder ein eigener Workflow-Job nach dem Muster dieses PRs).",
+  "Runden mit Live-Minutendaten (r9b/r10b) sind nicht eingefroren und im Snapshot-Modus gesperrt."
+ ],
+ "strategyStart": {
+  "TURTLE_S1_S2": {"canStart": true, "data": "taegliche OHLCV im Snapshot ausreichend", "openFidelityItems": ["V41-F1 Stops je Unit statt ein Stop (#712)", "Aufstocken/Pyramiding, Korrelationsgrenzen der Originalregeln (Futures) als dokumentierte Equity-Uebersetzung"]},
+  "DARVAS": {"canStart": true, "data": "taegliche OHLCV im Snapshot ausreichend", "openFidelityItems": ["Primary-Source-Artefakte (#709) liegen nur auf ihrem Draft-Branch; Golden Cases daraus ableiten"]}
+ },
+ "strategiesNeedingMoreData": [
+  {"id": "KULLAMAGI_EPISODIC_PIVOT", "needs": "Intraday-/Minutendaten und Nachrichten-/Katalysator-Zeitstempel (data-blocked laut #705)"},
+  {"id": "KULLAMAGI_PARABOLIC_SHORT", "needs": "Leihverfuegbarkeit/Borrow-Kosten, Intraday (data-blocked laut #705)"},
+  {"id": "KULLAMAGI_BREAKOUT_INTRADAY_ENTRY", "needs": "eingefrorene Minutendaten (r9b-Cache ist live, nicht im Snapshot)"},
+  {"id": "CAN_SLIM / MINERVINI_FUNDAMENTALS", "needs": "PIT-Quartals-EPS/Umsatz vollstaendiger als sec-pit-r11; Institutionsbesitz; Branchenrang"},
+  {"id": "WEINSTEIN_FULL", "needs": "PIT-Branchengruppen/Sektor-Relative-Staerke"},
+  {"id": "ALL", "needs": "Small-Cap-Benchmark (#763), zweiter Preisanbieter fuer die 599 ungeklaerten Ereignistage"}
+ ],
+ "remainingTechnicalBlockers": [],
+ "ownerDecisions": [
+  "Aufraeumen alter Snapshot-Generationen (Treiber verbietet DELETE; Grenze 3 voll / 5 Smoke, 3 GB je Snapshot)",
+  "optional: zusaetzliche Umschlagverschluesselung der Snapshot-Objekte (braucht ein neues Secret)",
+  "Merge von #779 und PR B"
+ ]
+}

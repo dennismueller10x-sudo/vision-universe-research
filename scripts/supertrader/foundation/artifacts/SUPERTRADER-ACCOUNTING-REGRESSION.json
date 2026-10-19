@@ -1,0 +1,1304 @@
+{
+ "schema": "supertrader-accounting-regression-1.0.0",
+ "contract": {
+  "id": "SUPERTRADER_RESEARCH_ACCOUNTING",
+  "version": "1.0.0",
+  "mode": "RESEARCH_V1",
+  "portedFrom": {
+   "pr": 705,
+   "head": "547d604d9596b0f4af4c13ac31bebce48b3948ec",
+   "files": [
+    "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs",
+    "scripts/supertrader/research/v4/measurement/accounting-v4.mjs"
+   ],
+   "policy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY@1.0.0"
+  },
+  "policy": {
+   "staleCarryMaxSessions": 5,
+   "staleCarryReason": "ONE_TRADING_WEEK; NOT_DERIVED_FROM_ANY_RESULT (V4)",
+   "zeroVolumeUnchangedCloseCountsAsStale": true,
+   "dustValueLimit": 0.01,
+   "dustBookValueCap": 1,
+   "minOrderValue": 0.000001,
+   "reconciliationAbsoluteFloor": 0.000001,
+   "reconciliationFlowUlps": 64,
+   "fullExitFractionEpsilon": 1e-9,
+   "dataEventScenarios": {
+    "baseline": "LAST_VALID_CLOSE",
+    "sensitivity": [
+     "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+     "ZERO_PROCEEDS"
+    ]
+   },
+   "ordersOnlyOnRealSourceBars": true,
+   "syntheticBarsSettlementOnly": true
+  },
+  "dataEvents": [
+   "DATA_QUARANTINE",
+   "SECURITY_UNAVAILABLE",
+   "DATA_GAP"
+  ]
+ },
+ "inputs": "scripts/supertrader/foundation/cases.mjs (eingefroren, synthetisch, deterministisch)",
+ "scenario": "S1_MINUS_30 (wirtschaftliches Delisting -30 %), Datenereignis-Basis LAST_VALID_CLOSE",
+ "engine": "scripts/supertrader/validation/portfolio.mjs runPortfolioTR",
+ "historicalFrozenInputAvailable": false,
+ "historicalNote": "Fuer die frueheren Research-Laeufe existiert kein unveraenderlicher historischer Input (#763 Abschnitt 1). Ein exakter historischer Vorher/Nachher-Vergleich wird deshalb NICHT behauptet; der Nachweis erfolgt auf identischen eingefrorenen Eingaben.",
+ "summary": {
+  "cases": 25,
+  "identical": 10,
+  "changed": [
+   "C04_STALE_LIMIT_REACHED",
+   "C05_PREMATURE_SERIES_END",
+   "C06_GAP_SEGMENT_END",
+   "C08_LATE_OBSERVED_QUARANTINE",
+   "C09_ONTIME_QUARANTINE",
+   "C13_ROUNDING_RESIDUAL",
+   "C14_OVERSHOOT_FRACTION",
+   "C15_EXIT_WITHOUT_SOURCE_BAR",
+   "C17_NO_LOOKAHEAD_QUARANTINE",
+   "C18_FINAL_VALUATION",
+   "C19_DUST_BELOW_LIMIT",
+   "C21_ZERO_VOLUME_STALE",
+   "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "C24_QUARANTINED_BEFORE_ENTRY",
+   "C25_DELISTED_AFTER_WINDOW"
+  ],
+  "researchV1AllReconciled": true,
+  "researchV1NoNegativeCash": true,
+  "dustWrittenOffTotalValue": 0.005
+ },
+ "cases": [
+  {
+   "case": "C01_BAR_PRESENT",
+   "title": "Kurs an jedem Tag vorhanden, Vollverkauf",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "pnlReconciliation": {
+     "expected": 101997.8,
+     "end": 101997.8,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008668777695674
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C02_ONE_MISSING_BAR",
+   "title": "ein Handelstag ohne Kurs",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "pnlReconciliation": {
+     "expected": 101997.8,
+     "end": 101997.8,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008668777695674
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C03_MULTI_MISSING_WITHIN_LIMIT",
+   "title": "mehrere Tage ohne Kurs, innerhalb der Grenze (5)",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "pnlReconciliation": {
+     "expected": 101997.8,
+     "end": 101997.8,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101997.8,
+    "cashEnd": 101997.8,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.019978,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008668777695674
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C04_STALE_LIMIT_REACHED",
+   "title": "Stale-Grenze erreicht: 8 Tage ohne Kurs, spaeter ein Ausstieg zu einem hoeheren Kurs",
+   "finding": "A4",
+   "legacy": {
+    "finalEquity": 109997,
+    "cashEnd": 109997,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.09997,
+    "pnlReconciliation": {
+     "expected": 109997,
+     "end": 109997,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 100687.23107,
+    "cashEnd": 100687.23107,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.00687231,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008575637546216
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -9309.76893,
+    "totalReturnPct": -9.309769,
+    "equityCurveDaysDifferent": 27,
+    "firstDifferentDate": "2020-01-21",
+    "identical": false
+   }
+  },
+  {
+   "case": "C05_PREMATURE_SERIES_END",
+   "title": "Reihe endet vor Fensterende (OPEN_AT_END_MARK am letzten realen Balken)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 101197.88,
+    "cashEnd": 101197.88,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0119788,
+    "pnlReconciliation": {
+     "expected": 101197.88,
+     "end": 101197.88,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101186.68112,
+    "cashEnd": 101186.68112,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01186681,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008611132705026
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -11.19888,
+    "totalReturnPct": -0.011199,
+    "equityCurveDaysDifferent": 28,
+    "firstDifferentDate": "2020-01-20",
+    "identical": false
+   }
+  },
+  {
+   "case": "C06_GAP_SEGMENT_END",
+   "title": "Segmentende durch Datenluecke, als DELISTED gefuehrt (Legacy) - Datenereignis",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 97838.216,
+    "cashEnd": 97838.216,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.02161784,
+    "pnlReconciliation": {
+     "expected": 97838.216,
+     "end": 97838.216,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101186.68112,
+    "cashEnd": 101186.68112,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01186681,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008611132705026
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 3348.46512,
+    "totalReturnPct": 3.348465,
+    "equityCurveDaysDifferent": 28,
+    "firstDifferentDate": "2020-01-20",
+    "identical": false
+   }
+  },
+  {
+   "case": "C07_ECONOMIC_DELISTING",
+   "title": "wirtschaftliches Delisting (Notierung inaktiv) - Protokoll unveraendert",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 97838.216,
+    "cashEnd": 97838.216,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.02161784,
+    "pnlReconciliation": {
+     "expected": 97838.216,
+     "end": 97838.216,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 97838.216,
+    "cashEnd": 97838.216,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.02161784,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008373162359021
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C08_LATE_OBSERVED_QUARANTINE",
+   "title": "Quarantaene ab Tag 12, erst an Tag 15 beobachtet",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 101099,
+    "cashEnd": 89999,
+    "openValueEnd": 11100,
+    "positionsEnd": 1,
+    "totalReturn": 0.01099,
+    "pnlReconciliation": {
+     "expected": 101099,
+     "end": 101099,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101086.79111,
+    "cashEnd": 101086.79111,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01086791,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008604033673265
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -12.20889,
+    "totalReturnPct": -0.012209,
+    "equityCurveDaysDifferent": 25,
+    "firstDifferentDate": "2020-01-23",
+    "identical": false
+   }
+  },
+  {
+   "case": "C09_ONTIME_QUARANTINE",
+   "title": "Quarantaene am selben Tag beobachtet",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 101099,
+    "cashEnd": 89999,
+    "openValueEnd": 11100,
+    "positionsEnd": 1,
+    "totalReturn": 0.01099,
+    "pnlReconciliation": {
+     "expected": 101099,
+     "end": 101099,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101086.79111,
+    "cashEnd": 101086.79111,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01086791,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008604033673265
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -12.20889,
+    "totalReturnPct": -0.012209,
+    "equityCurveDaysDifferent": 28,
+    "firstDifferentDate": "2020-01-20",
+    "identical": false
+   }
+  },
+  {
+   "case": "C10_FULL_SALE",
+   "title": "Vollverkauf mit Dividende",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 100747.95,
+    "cashEnd": 100747.95,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0074795,
+    "pnlReconciliation": {
+     "expected": 100747.95,
+     "end": 100747.95,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 100747.95,
+    "cashEnd": 100747.95,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0074795,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008579949195564
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C11_PARTIAL_THIRDS",
+   "title": "Teilverkauf 1/3 (6 Dezimalen wie im Simulator), dann Rest",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 101664.5003333,
+    "cashEnd": 101664.5003333,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.016645,
+    "pnlReconciliation": {
+     "expected": 101664.5003333,
+     "end": 101664.5003333,
+     "relDiff": 1.1102230246251565e-16
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101664.5003333,
+    "cashEnd": 101664.5003333,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.016645,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008645090593028
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C12_FRACTIONAL_SHARES",
+   "title": "Bruchteilsaktien (Risiko-Sizing ergibt keine ganze Zahl)",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 100404.06947285,
+    "cashEnd": 100404.06947285,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.00404069,
+    "pnlReconciliation": {
+     "expected": 100404.06947285,
+     "end": 100404.06947285,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 100404.06947285,
+    "cashEnd": 100404.06947285,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.00404069,
+    "minCash": 79589.39978571,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010010034954787251
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C13_ROUNDING_RESIDUAL",
+   "title": "Fraktionen summieren sich auf 1 - 5e-10 (Rest unter der Loeschschwelle)",
+   "finding": "A8",
+   "legacy": {
+    "finalEquity": 101497.849994,
+    "cashEnd": 101497.849994,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0149785,
+    "pnlReconciliation": {
+     "expected": 101497.849994,
+     "end": 101497.849994,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101497.85,
+    "cashEnd": 101497.85,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0149785,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008633247006173
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": 0.000006,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 20,
+    "firstDifferentDate": "2020-01-30",
+    "identical": false
+   }
+  },
+  {
+   "case": "C14_OVERSHOOT_FRACTION",
+   "title": "Schlussfraktion um 1e-12 groesser als der Rest (Ueberverkauf)",
+   "finding": "A8",
+   "legacy": {
+    "finalEquity": 101597.84000001,
+    "cashEnd": 101597.84000001,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0159784,
+    "pnlReconciliation": {
+     "expected": 101597.84000001,
+     "end": 101597.84000001,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101597.84,
+    "cashEnd": 101597.84,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0159784,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008640353144073
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": -1e-8,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 20,
+    "firstDifferentDate": "2020-01-30",
+    "identical": false
+   }
+  },
+  {
+   "case": "C15_EXIT_WITHOUT_SOURCE_BAR",
+   "title": "Ausstieg an einem Tag ohne realen Quellbalken (synthetisch, nicht ausfuehrbar)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 98998.1,
+    "cashEnd": 98998.1,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.010019,
+    "pnlReconciliation": {
+     "expected": 98998.1,
+     "end": 98998.1,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99988.001,
+    "cashEnd": 99988.001,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00011999,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008525944323879
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": 989.901,
+    "totalReturnPct": 0.989901,
+    "equityCurveDaysDifferent": 30,
+    "firstDifferentDate": "2020-01-16",
+    "identical": false
+   }
+  },
+  {
+   "case": "C16_TINY_ORDER",
+   "title": "Order unter dem Mindestwert (1e-6)",
+   "finding": "A8",
+   "legacy": {
+    "finalEquity": 0.000002,
+    "cashEnd": 0.000002,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.000004,
+    "pnlReconciliation": {
+     "expected": 0.000002,
+     "end": 0.000002,
+     "relDiff": 2.220446049250313e-16
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 0.000002,
+    "cashEnd": 0.000002,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0,
+    "minCash": 0.000002,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010000000000000141
+    },
+    "ledgerRows": 0
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0.0004,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C17_NO_LOOKAHEAD_QUARANTINE",
+   "title": "kein Effekt einer spaeter beobachteten Quarantaene vor observedAt",
+   "finding": "A4/A5",
+   "legacy": {
+    "finalEquity": 101099,
+    "cashEnd": 89999,
+    "openValueEnd": 11100,
+    "positionsEnd": 1,
+    "totalReturn": 0.01099,
+    "pnlReconciliation": {
+     "expected": 101099,
+     "end": 101099,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101086.79111,
+    "cashEnd": 101086.79111,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01086791,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008604033673265
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -12.20889,
+    "totalReturnPct": -0.012209,
+    "equityCurveDaysDifferent": 23,
+    "firstDifferentDate": "2020-01-27",
+    "identical": false
+   }
+  },
+  {
+   "case": "C18_FINAL_VALUATION",
+   "title": "Position am Fensterende offen (Schlussbewertung)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 101947.805,
+    "cashEnd": 101947.805,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.01947805,
+    "pnlReconciliation": {
+     "expected": 101947.805,
+     "end": 101947.805,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 101949,
+    "cashEnd": 89999,
+    "openValueEnd": 11950,
+    "positionsEnd": 1,
+    "totalReturn": 0.01949,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010007816041147634
+    },
+    "ledgerRows": 1
+   },
+   "delta": {
+    "finalEquity": 1.195,
+    "totalReturnPct": 0.001195,
+    "equityCurveDaysDifferent": 1,
+    "firstDifferentDate": "2020-02-26",
+    "identical": false
+   }
+  },
+  {
+   "case": "C19_DUST_BELOW_LIMIT",
+   "title": "Teilverkauf laesst einen Rest von 5e-7 der Position (Wert ~0,005) ohne weiteren Ausstieg",
+   "finding": "A8",
+   "legacy": {
+    "finalEquity": 99998.0000005,
+    "cashEnd": 99997.9950005,
+    "openValueEnd": 0.005,
+    "positionsEnd": 1,
+    "totalReturn": -0.00002,
+    "pnlReconciliation": {
+     "expected": 99998.0000005,
+     "end": 99998.0000005,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99997.9950005,
+    "cashEnd": 99997.9950005,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00002005,
+    "minCash": 89999,
+    "dustWriteOffs": [
+     {
+      "date": "2020-01-16",
+      "shares": 0.0004999999999881766,
+      "value": 0.005
+     }
+    ],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.000001000852665458236
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": -0.005,
+    "totalReturnPct": -0.000005,
+    "equityCurveDaysDifferent": 30,
+    "firstDifferentDate": "2020-01-16",
+    "identical": false
+   }
+  },
+  {
+   "case": "C20_HIGH_PRICE_RESIDUAL",
+   "title": "V3-52W-Regression: Rest von ~8e-11 Stueck bei 1,97e11 Kurs (Wert ~15,8) nach einem Teilverkauf",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 99997.68235294,
+    "cashEnd": 99997.68235294,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00002318,
+    "pnlReconciliation": {
+     "expected": 99997.68235294,
+     "end": 99997.68235294,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99997.68235294,
+    "cashEnd": 99997.68235294,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00002318,
+    "minCash": 88410.60588235,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008752379318032
+    },
+    "ledgerRows": 3
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  },
+  {
+   "case": "C21_ZERO_VOLUME_STALE",
+   "title": "Nullvolumen bei unveraendertem Schluss zaehlt als stale",
+   "finding": "A4",
+   "legacy": {
+    "finalEquity": 100197.98,
+    "cashEnd": 100197.98,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.0019798,
+    "pnlReconciliation": {
+     "expected": 100197.98,
+     "end": 100197.98,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99988.001,
+    "cashEnd": 99988.001,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00011999,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008525944323879
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -209.979,
+    "totalReturnPct": -0.209979,
+    "equityCurveDaysDifferent": 29,
+    "firstDifferentDate": "2020-01-17",
+    "identical": false
+   }
+  },
+  {
+   "case": "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "title": "Quarantaene ab Tag 5 beobachtet, terminal.lastClose stammt vom spaeteren Reihenende (Review F3)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 109999,
+    "cashEnd": 89999,
+    "openValueEnd": 20000,
+    "positionsEnd": 1,
+    "totalReturn": 0.09999,
+    "pnlReconciliation": {
+     "expected": 109999,
+     "end": 109999,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 103983.6014,
+    "cashEnd": 103983.6014,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.03983601,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010008809905594376
+    },
+    "ledgerRows": 2
+   },
+   "delta": {
+    "finalEquity": -6015.3986,
+    "totalReturnPct": -6.015399,
+    "equityCurveDaysDifferent": 35,
+    "firstDifferentDate": "2020-01-09",
+    "identical": false
+   }
+  },
+  {
+   "case": "C24_QUARANTINED_BEFORE_ENTRY",
+   "title": "Quarantaene vor dem Einstieg bekannt (Review F9)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 100997.9,
+    "cashEnd": 100997.9,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0.009979,
+    "pnlReconciliation": {
+     "expected": 100997.9,
+     "end": 100997.9,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 100000,
+    "cashEnd": 100000,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": 0,
+    "minCash": 100000,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.00000100071054273576
+    },
+    "ledgerRows": 0
+   },
+   "delta": {
+    "finalEquity": -997.9,
+    "totalReturnPct": -0.9979,
+    "equityCurveDaysDifferent": 36,
+    "firstDifferentDate": "2020-01-08",
+    "identical": false
+   }
+  },
+  {
+   "case": "C25_DELISTED_AFTER_WINDOW",
+   "title": "Notierung endet nach dem Fensterende: kein Delisting am Fensterende (Review F4)",
+   "finding": "A5",
+   "legacy": {
+    "finalEquity": 96998.3,
+    "cashEnd": 96998.3,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.030017,
+    "pnlReconciliation": {
+     "expected": 96998.3,
+     "end": 96998.3,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99999,
+    "cashEnd": 89999,
+    "openValueEnd": 10000,
+    "positionsEnd": 1,
+    "totalReturn": -0.00001,
+    "minCash": 89999,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 0,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010007816041147634
+    },
+    "ledgerRows": 1
+   },
+   "delta": {
+    "finalEquity": 3000.7,
+    "totalReturnPct": 3.0007,
+    "equityCurveDaysDifferent": 1,
+    "firstDifferentDate": "2020-02-26",
+    "identical": false
+   }
+  },
+  {
+   "case": "C22_TWO_POSITIONS_CASH",
+   "title": "zwei Positionen, Bargeld knapp (keine negativen Bestaende)",
+   "finding": "CONTROL",
+   "legacy": {
+    "finalEquity": 99980.0019998,
+    "cashEnd": 99980.0019998,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00019998,
+    "pnlReconciliation": {
+     "expected": 99980.0019998,
+     "end": 99980.0019998,
+     "relDiff": 0
+    },
+    "ledger": "NONE"
+   },
+   "researchV1": {
+    "finalEquity": 99980.0019998,
+    "cashEnd": 99980.0019998,
+    "openValueEnd": 0,
+    "positionsEnd": 0,
+    "totalReturn": -0.00019998,
+    "minCash": 0,
+    "dustWriteOffs": [],
+    "cashPrecisionCorrections": 1,
+    "reconciliation": {
+     "pass": true,
+     "checks": {
+      "cashFromLedger": true,
+      "equityIsCashPlusOpen": true,
+      "pnlIdentity": true,
+      "noNegativeCash": true,
+      "noNegativeShares": true,
+      "dustWithinCap": true,
+      "endingFreshness": true
+     },
+     "tolerance": 0.0000010021316282072803
+    },
+    "ledgerRows": 8
+   },
+   "delta": {
+    "finalEquity": 0,
+    "totalReturnPct": 0,
+    "equityCurveDaysDifferent": 0,
+    "firstDifferentDate": null,
+    "identical": true
+   }
+  }
+ ]
+}

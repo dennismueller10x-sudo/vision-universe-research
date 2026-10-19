@@ -1,0 +1,142 @@
+{
+ "schema": "supertrader-snapshot-integrity-result-1.0.0",
+ "status": "PASS",
+ "snapshot": {
+  "schema": "supertrader-snapshot-integrity-result-1.0.0",
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "generation": 1,
+  "smoke": false,
+  "asOfDate": "2026-10-19",
+  "window": {
+   "name": "DEV",
+   "warmupFrom": "2015-01-01",
+   "from": "2016-01-04",
+   "to": "2026-09-30"
+  },
+  "contract": "supertrader-research-snapshot-1.0.0",
+  "provenance": {
+   "runId": "39213033571",
+   "runAttempt": "1",
+   "workflow": "Supertrader Research Snapshot (Capture, Restore, Paritaet)",
+   "job": "capture",
+   "commit": "6adea736ff729e96c7d2877e22637074953f4ac5",
+   "ref": "claude/supertrader-backtest-foundation-wqqa8t-snapshots",
+   "runner": "GitHub Actions 1000024542",
+   "node": "v22.23.3"
+  },
+  "codec": "zstd",
+  "convention": {
+   "id": "VU_SUPERTRADER_VALIDATION_ADJUSTMENT",
+   "basis": "validation/lib.mjs adjustSeries (Split-Divisor = Produkt der splitFactor nach t; TR = (close+div)*split/prevClose-1)",
+   "sha256": "94a96e3056c621b25fafba598a5343776aba4d5b5d63aa86542c18d3e11b02e6"
+  },
+  "codeSha256": "0672fa7dad130fd682a18d844501eda94ccfdc958078ed38e7dff9f418032ebf",
+  "engines": {
+   "simulator": "supertrader-simulator-2.0.0",
+   "accounting": "SUPERTRADER_RESEARCH_ACCOUNTING@1.0.0",
+   "snapshot": "supertrader-research-snapshot-1.0.0"
+  },
+  "universe": {
+   "tickerListSha256": "de247a68d88c7bf2c7237bfe95044115e27d99ed01f775d184b70d05235d09e5",
+   "tickerListBytes": 797922,
+   "listingTableHash": "10bcf3d0ea059c6e9a496e21124b90e023e99f75418722f080765766aada477c",
+   "listings": 15565,
+   "activeAtAsOf": 8266,
+   "inactiveAtAsOf": 7299,
+   "members": 9356
+  },
+  "identity": {
+   "count": 15565,
+   "withSecurityId": 15562,
+   "sha256": "56c8e3e78d78aa37c8bdf061b07b5ba1ef97ac2adb55fc56cc289a4a9ab8b2a1"
+  },
+  "objects": {
+   "shards": 35,
+   "sourceObjects": 9361,
+   "recordedMissing": 0,
+   "totalBytes": 586282893,
+   "sideObjects": [
+    {
+     "role": "TICKER_LIST_ZIP",
+     "path": null,
+     "sha256": "de247a68d88c7bf2c7237bfe95044115e27d99ed01f775d184b70d05235d09e5",
+     "bytes": 797922,
+     "missing": false
+    },
+    {
+     "role": "REPO_FILE",
+     "path": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
+     "sha256": "8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741",
+     "bytes": 4050949,
+     "missing": false
+    },
+    {
+     "role": "REPO_FILE",
+     "path": "quant/data/market/security-master/eligibility.json",
+     "sha256": "b8f85c88d5e9291d0c9bee08334843d372df7e6fd464d88645300ec105523060",
+     "bytes": 4103267,
+     "missing": false
+    },
+    {
+     "role": "REPO_FILE",
+     "path": "quant/data/market/security-master/company-names.json",
+     "sha256": "a6145e828867a8e8232b71a2263d30906a9588ddf782869d82e11324226bb841",
+     "bytes": 5588690,
+     "missing": false
+    }
+   ]
+  },
+  "datasetCounts": {
+   "listings": 15565,
+   "members": 9356,
+   "segments": 9211,
+   "bars": 14499984,
+   "splitEvents": 3339,
+   "dividendEvents": 96443,
+   "delistedSegments": 3226,
+   "duplicates": 91,
+   "offCalendar": 1,
+   "calendarDays": 2701,
+   "activeListings": 8266,
+   "inactiveListings": 7299
+  },
+  "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+  "replay": {
+   "config": {
+    "engine": "DONCHIAN_TURTLE",
+    "segments": 150,
+    "minBars": 300,
+    "accounting": "RESEARCH_V1",
+    "initialEquity": 100000
+   },
+   "segments": 150,
+   "trades": 45,
+   "reconciled": true,
+   "sha256": "18e2a0d8d969bf4476ec1df4cbcdcda21c4b79d091c9c13da45c87d92eca2465"
+  },
+  "captureReceipt": {
+   "runId": "39213033571",
+   "job": "capture",
+   "objectsVerified": 39,
+   "bytesVerified": 586282893
+  },
+  "status": "CAPTURED_AND_VERIFIED"
+ },
+ "smokeSnapshot": {
+  "snapshotId": "sts1-4af8b4a9cb2ae03880fdb31e0c3b0fe9",
+  "runId": "39211850181",
+  "sourceObjects": 405,
+  "totalBytes": 36016446,
+  "status": "CAPTURED_AND_VERIFIED"
+ },
+ "checks": {
+  "singleTickerListDownload": true,
+  "allObjectsReadBackAndHashedBeforeManifest": true,
+  "manifestIdIsContentHash": true,
+  "writeOnceContentAddressed": true,
+  "productionPrefixesWritten": false,
+  "zeroCostGuardPassedBeforeWrite": true,
+  "retentionCapChecked": true
+ },
+ "note": "Nur Hashes, Zaehlungen, Reason Codes. Rohdaten ausschliesslich im privaten R2-Eimer unter research-snapshots/supertrader/sts1/."
+}

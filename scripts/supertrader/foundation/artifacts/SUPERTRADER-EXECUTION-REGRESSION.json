@@ -1,0 +1,1857 @@
+{
+ "schema": "supertrader-execution-regression-1.0.0",
+ "contract": {
+  "id": "SUPERTRADER_RESEARCH_ACCOUNTING",
+  "version": "1.0.0",
+  "mode": "RESEARCH_V1",
+  "portedFrom": {
+   "pr": 705,
+   "head": "547d604d9596b0f4af4c13ac31bebce48b3948ec",
+   "files": [
+    "scripts/supertrader/research/v4/measurement/measurement-policy-v4.mjs",
+    "scripts/supertrader/research/v4/measurement/accounting-v4.mjs"
+   ],
+   "policy": "VU_V4_MISSING_BAR_STALE_VALUATION_TERMINAL_POLICY@1.0.0"
+  },
+  "policy": {
+   "staleCarryMaxSessions": 5,
+   "staleCarryReason": "ONE_TRADING_WEEK; NOT_DERIVED_FROM_ANY_RESULT (V4)",
+   "zeroVolumeUnchangedCloseCountsAsStale": true,
+   "dustValueLimit": 0.01,
+   "dustBookValueCap": 1,
+   "minOrderValue": 0.000001,
+   "reconciliationAbsoluteFloor": 0.000001,
+   "reconciliationFlowUlps": 64,
+   "fullExitFractionEpsilon": 1e-9,
+   "dataEventScenarios": {
+    "baseline": "LAST_VALID_CLOSE",
+    "sensitivity": [
+     "UNKNOWN_PROCEEDS_MINUS_30_PERCENT",
+     "ZERO_PROCEEDS"
+    ]
+   },
+   "ordersOnlyOnRealSourceBars": true,
+   "syntheticBarsSettlementOnly": true
+  },
+  "dataEvents": [
+   "DATA_QUARANTINE",
+   "SECURITY_UNAVAILABLE",
+   "DATA_GAP"
+  ]
+ },
+ "inputs": "scripts/supertrader/foundation/cases.mjs (eingefroren, synthetisch, deterministisch)",
+ "scenario": "S1_MINUS_30 (wirtschaftliches Delisting -30 %), Datenereignis-Basis LAST_VALID_CLOSE",
+ "engine": "scripts/supertrader/validation/portfolio.mjs runPortfolioTR",
+ "historicalFrozenInputAvailable": false,
+ "historicalNote": "Fuer die frueheren Research-Laeufe existiert kein unveraenderlicher historischer Input (#763 Abschnitt 1). Ein exakter historischer Vorher/Nachher-Vergleich wird deshalb NICHT behauptet; der Nachweis erfolgt auf identischen eingefrorenen Eingaben.",
+ "summary": {
+  "cases": 25,
+  "legacyFillsWithoutSourceBar": [
+   "C15_EXIT_WITHOUT_SOURCE_BAR"
+  ],
+  "researchV1FillsWithoutSourceBar": [],
+  "researchV1EndingFreshnessPass": true
+ },
+ "cases": [
+  {
+   "case": "C01_BAR_PRESENT",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 1000,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C02_ONE_MISSING_BAR",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 1000,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 1,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 1
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C03_MULTI_MISSING_WITHIN_LIMIT",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 1000,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 5,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 5
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C04_STALE_LIMIT_REACHED",
+   "finding": "A4",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-02-06",
+      "fraction": 1,
+      "price": 20,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-01-21",
+      "price": 10.6893,
+      "factor": 1,
+      "ignoredExits": 1
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 6,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C05_PREMATURE_SERIES_END",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-20",
+      "fraction": 1,
+      "price": 11.2,
+      "ruleId": "OPEN_AT_END_MARK",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-01-28",
+      "price": 11.1888,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 6,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C06_GAP_SEGMENT_END",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DELISTED",
+      "date": "2020-01-20",
+      "price": 7.84,
+      "factor": null,
+      "ignoredExits": null
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-01-28",
+      "price": 11.1888,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 6,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C07_ECONOMIC_DELISTING",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DELISTED",
+      "date": "2020-01-20",
+      "price": 7.84,
+      "factor": null,
+      "ignoredExits": null
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DELISTED",
+      "date": "2020-01-20",
+      "price": 7.84,
+      "factor": null,
+      "ignoredExits": null
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C08_LATE_OBSERVED_QUARANTINE",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DATA_QUARANTINE",
+      "date": "2020-01-23",
+      "price": 11.0889,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 3,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 3
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C09_ONTIME_QUARANTINE",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DATA_QUARANTINE",
+      "date": "2020-01-20",
+      "price": 11.0889,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C10_FULL_SALE",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-23",
+      "fraction": 1,
+      "price": 10.5,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-23",
+      "shares": 1000,
+      "price": 10.5,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C11_PARTIAL_THIRDS",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 0.333333,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 0.666667,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "shares": 333.33299999999997,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 666.667,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C12_FRACTIONAL_SHARES",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 612.2573930080198
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 1,
+      "price": 34,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 612.2573930080198
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "shares": 612.2573930080198,
+      "price": 34,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C13_ROUNDING_RESIDUAL",
+   "finding": "A8",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 0.5,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 0.4999999995,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     4.999999987376214e-7
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "shares": 500,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 500,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C14_OVERSHOOT_FRACTION",
+   "finding": "A8",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 0.4,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 0.600000000001,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     -9.999894245993346e-10
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "shares": 400,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 600,
+      "price": 12,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C15_EXIT_WITHOUT_SOURCE_BAR",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 1,
+      "price": 9,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": false
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-02-07",
+      "price": 9.99,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "reason": "EXIT_WITHOUT_SOURCE_BAR",
+      "ruleId": "TEST-EXIT"
+     }
+    ],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 7,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": false,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C16_TINY_ORDER",
+   "finding": "A8",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 40
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 1,
+      "price": 1e-9,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [],
+    "skipped": [
+     "BELOW_MIN_ORDER_VALUE"
+    ],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C17_NO_LOOKAHEAD_QUARANTINE",
+   "finding": "A4/A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-01-27",
+      "price": 11.0889,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 6,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C18_FINAL_VALUATION",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-02-26",
+      "fraction": 1,
+      "price": 11.95,
+      "ruleId": "OPEN_AT_END_MARK",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 1,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C19_DUST_BELOW_LIMIT",
+   "finding": "A8",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "fraction": 0.9999995,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0.0004999999999881766
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-16",
+      "shares": 999.9995,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C20_HIGH_PRICE_RESIDUAL",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "ZZZ",
+      "date": "2020-01-03",
+      "shares": 5.882352941176471e-8
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "ZZZ",
+      "date": "2020-01-16",
+      "fraction": 0.99864,
+      "price": 197000000000,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "ZZZ",
+      "date": "2020-01-30",
+      "fraction": 0.00136,
+      "price": 197000000000,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1.6285118309637732e-24
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "ZZZ",
+      "date": "2020-01-03",
+      "shares": 5.882352941176471e-8
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "ZZZ",
+      "date": "2020-01-16",
+      "shares": 5.8743529411764704e-8,
+      "price": 197000000000,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "ZZZ",
+      "date": "2020-01-30",
+      "shares": 8.000000000000469e-11,
+      "price": 197000000000,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C21_ZERO_VOLUME_STALE",
+   "finding": "A4",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 10.2,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "SECURITY_UNAVAILABLE",
+      "date": "2020-01-17",
+      "price": 9.99,
+      "factor": 1,
+      "ignoredExits": 1
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 6,
+     "unavailableSettlements": 1,
+     "maxObservedStaleSessions": 6
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C23_QUARANTINE_FROM_BEFORE_SERIES_END",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DATA_QUARANTINE",
+      "date": "2020-01-09",
+      "price": 13.986,
+      "factor": 1,
+      "ignoredExits": 0
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C24_QUARANTINED_BEFORE_ENTRY",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-08",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 11,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [],
+    "skipped": [
+     "QUARANTINED_AT_ENTRY"
+    ],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C25_DELISTED_AFTER_WINDOW",
+   "finding": "A5",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [
+     {
+      "id": "AAA",
+      "kind": "DELISTED",
+      "date": "2020-02-26",
+      "price": 7,
+      "factor": null,
+      "ignoredExits": null
+     }
+    ],
+    "sharesLeft": [
+     0
+    ],
+    "skipped": []
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 1000
+     }
+    ],
+    "sellFills": [],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     1000
+    ],
+    "skipped": [],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 1,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  },
+  {
+   "case": "C22_TWO_POSITIONS_CASH",
+   "finding": "CONTROL",
+   "legacy": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 2500
+     },
+     {
+      "id": "BBB",
+      "date": "2020-01-03",
+      "shares": 2499.9375
+     },
+     {
+      "id": "CCC",
+      "date": "2020-01-03",
+      "shares": 2499.8750015625
+     },
+     {
+      "id": "DDD",
+      "date": "2020-01-03",
+      "shares": 2499.1875984275007
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "BBB",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "CCC",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "DDD",
+      "date": "2020-01-30",
+      "fraction": 1,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "skipped": [
+     "NO_CASH"
+    ]
+   },
+   "researchV1": {
+    "entries": [
+     {
+      "id": "AAA",
+      "date": "2020-01-03",
+      "shares": 2500
+     },
+     {
+      "id": "BBB",
+      "date": "2020-01-03",
+      "shares": 2499.9375
+     },
+     {
+      "id": "CCC",
+      "date": "2020-01-03",
+      "shares": 2499.8750015625
+     },
+     {
+      "id": "DDD",
+      "date": "2020-01-03",
+      "shares": 2499.1875984275007
+     }
+    ],
+    "sellFills": [
+     {
+      "id": "DDD",
+      "date": "2020-01-30",
+      "shares": 2499.1875984275007,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "CCC",
+      "date": "2020-01-30",
+      "shares": 2499.8750015625,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "BBB",
+      "date": "2020-01-30",
+      "shares": 2499.9375,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     },
+     {
+      "id": "AAA",
+      "date": "2020-01-30",
+      "shares": 2500,
+      "price": 10,
+      "ruleId": "TEST-EXIT",
+      "onRealSourceBar": true
+     }
+    ],
+    "terminalSettlements": [],
+    "sharesLeft": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "skipped": [
+     "NO_CASH"
+    ],
+    "rejections": [],
+    "endingPositionCheck": {
+     "id": "FOUNDATION-A4-ENDING-POSITION-FRESHNESS",
+     "hard": true,
+     "status": "PASS",
+     "checked": 0,
+     "violations": 0
+    },
+    "staleCounts": {
+     "staleSessionMarks": 0,
+     "unavailableSettlements": 0,
+     "maxObservedStaleSessions": 0
+    }
+   },
+   "fillsOnRealSourceBars": {
+    "legacy": true,
+    "researchV1": true
+   }
+  }
+ ]
+}
