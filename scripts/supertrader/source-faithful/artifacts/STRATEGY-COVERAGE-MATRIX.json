@@ -717,16 +717,16 @@
    ],
    "summary": {
     "rulesInScope": 35,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "implementedExact": 4,
+    "implementedDerived": 8,
+    "manualReview": 12,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 24,
+    "notImplemented": 0,
     "unmappedWithExclusion": 11,
     "unmappedWithoutExclusion": 0,
     "hardRules": 10,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 10
    },
    "rows": [
     {
@@ -753,7 +753,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -780,7 +780,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -798,7 +798,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -807,7 +807,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -816,7 +816,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -825,7 +825,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -852,7 +852,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -861,7 +861,7 @@
      "modal": "OPTIONAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -888,7 +888,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -897,7 +897,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -906,7 +906,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -915,7 +915,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -924,7 +924,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -933,7 +933,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -942,7 +942,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -951,7 +951,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -960,7 +960,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -969,7 +969,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -978,7 +978,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -987,7 +987,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -996,7 +996,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1005,7 +1005,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1014,7 +1014,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1023,7 +1023,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {

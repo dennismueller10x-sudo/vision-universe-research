@@ -11,7 +11,8 @@ const CODE = `${SF_ROOT}/methods/darvas.mjs`;
 const T = 'scripts/supertrader/tests/sf-darvas.test.mjs';
 
 export const DARVAS = defineContract({
-  implemented: false,
+  implemented: true,
+  componentBacktest: true,
   plannedIn: 'PR 3 Darvas',
   strategyId: 'SF_DARVAS_BOX',
   candidateId: 'C03',
@@ -25,6 +26,7 @@ export const DARVAS = defineContract({
   exitConditions: ['stop only (DAR-SF-STOP-INIT, DAR-SF-STOP-RAISE); no profit target (DAR-B7)'],
   stops: ['DAR-SF-STOP-INIT a fraction below the broken top', 'DAR-SF-STOP-RAISE a fraction below the bottom of each new completed higher box, never lowered'],
   positionSizing: ['DAR-SF-SIZING (manual)'],
+  dataPartial: ['DAR-Q9: the snapshot series start at the 2015-01-01 warm-up, not at the listing date; the all-time high is only checked within the available history and flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED'],
   requiredData: ['daily split-adjusted OHLC and volume (DAR-Q15)', 'price history from the listing date for the all-time high (DAR-Q9; snapshot history may start later -> flagged)'],
   manualReviewFlags: [
     { id: 'DAR-MR-SELECTION', psr709: ['DAR-Q12', 'DAR-Q14', 'DAR-B9', 'DAR-B10', 'DAR-B11'], question: 'techno-fundamental selection: industry growth expectation, strongest stock of the industry, expected earning power', blocksAutomation: true },

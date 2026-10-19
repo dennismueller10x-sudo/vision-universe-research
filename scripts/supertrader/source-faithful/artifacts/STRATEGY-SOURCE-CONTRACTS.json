@@ -1478,8 +1478,8 @@
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 3 Darvas",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Nicolas Darvas",
    "method": "Later Q&A box construction, buy-stop entry and box stop method (machine component) with manual techno-fundamental layer",
    "scope": {
@@ -1617,8 +1617,8 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
@@ -1626,7 +1626,7 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-HIGHER-RESET"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1640,15 +1640,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOTTOM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-TOUCH-RESET"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1662,14 +1662,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOTTOM-START",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_AMBIGUOUS"
+     "reason": "#709 VU-DAR records the start (after the top day vs after top confirmation) as UNRESOLVED; both are implemented (AFTER_TOP_CONFIRMED default, AFTER_TOP_DAY variant) and the record names the variant"
     },
     {
      "source": "B06",
@@ -1683,14 +1683,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP-EXCEEDED",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM"
      ],
      "derivation": "the bottom is only established under a fixed top (DAR-Q2); a higher high means the top was not final (DAR-Q1)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1704,14 +1704,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP-EXCEEDED",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM"
      ],
      "derivation": "the bottom is only established under a fixed top (DAR-Q2); a higher high means the top was not final (DAR-Q1)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1725,14 +1725,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOX-FAIL",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOX-FAIL"
      ],
      "derivation": "DAR-Q11 (CONTEXTUAL) describes selling on the stop after a lower box break; for a box without position the box simply no longer exists. State transition, not a selection filter.",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1746,14 +1746,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-NO-WAIT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1767,15 +1767,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL"
      ],
      "derivation": "\"a fraction\" is not quantified: VU convention = one raw cent converted to the split-adjusted basis (the smallest price increment); fill = max(open, trigger) on daily bars; the reviewer may set a different fraction (DAR-C-THIO)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1789,14 +1789,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-PROTECT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1810,15 +1810,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-INIT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
      "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1832,15 +1832,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-INIT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
      "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1854,15 +1854,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-RAISE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER"
      ],
      "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1876,15 +1876,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-RAISE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER"
      ],
      "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1898,15 +1898,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-ATH",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasScreen",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-UNVERIFIED"
      ],
      "derivation": "evaluated against every earlier bar of the available (split-adjusted) history; if that history does not reach the listing date the record is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED and goes to review",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1920,14 +1920,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SPLITS",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#fractionFor",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-FRACTION"
      ],
      "derivation": "the snapshot convention (adjustSeries, ADR-002) supplies split-adjusted bars; raw prices only for the one-cent fraction",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1941,12 +1941,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1960,12 +1960,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1979,12 +1979,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1998,12 +1998,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2017,12 +2017,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2036,12 +2036,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2055,12 +2055,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2074,12 +2074,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2093,12 +2093,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2112,12 +2112,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SIZING",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2131,12 +2131,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SIZING",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2150,12 +2150,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-PYRAMID",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2169,12 +2169,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-REENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
