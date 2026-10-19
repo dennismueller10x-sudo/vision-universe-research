@@ -136,6 +136,7 @@
       return h('div', { class: 'st-bar2 pos', role: 'img', 'aria-label': 'Stop ' + num(s.stop) + ', Einstieg ' + num(s.entry.price) + ', Kurs ' + num(last) }, [
         h('div', { class: 'track' }, [h('i', { class: 'm stop', style: { left: pos(s.stop) + '%' } }), h('i', { class: 'm entry', style: { left: pos(s.entry.price) + '%' } }), h('i', { class: 'm now', style: { left: pos(last) + '%' } })]),
         h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Stop ' + num(s.stop) }), h('span', { text: 'Einstieg ' + num(s.entry.price) }), h('span', { class: 'now', text: 'Kurs ' + num(last) })]),
+        riskRow(last, s.stop, s.entry.price),
       ]);
     }
     var trig = lv.trigger, inv = lv.invalidation;
@@ -148,6 +149,27 @@
       h('div', { class: 'track' }, [h('i', { class: 'fill', style: { width: at + '%' } }), h('i', { class: 'm now', style: { left: at + '%' } })]),
       h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + num(inv) }), h('span', { class: 'now', text: s.state === 'TRIGGERED' ? 'Einstieg zur nächsten Eröffnung' : toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + num(trig) })]),
     ]);
+  }
+
+  // Visual First (VU3): Risiko einer offenen Modellposition als Zahl - Abstand des Kurses zum Stop und Veraenderung seit dem
+  // Modelleinstieg, aus denselben drei Kursen wie die Leiste darueber (wie "x % bis Trigger"). ▲/▼ = hoeher/tiefer als der Einstieg.
+  function riskRow(last, stop, entry) {
+    if (!isFinite(last) || !isFinite(stop) || !isFinite(entry) || !last || !entry) return null;
+    var buf = last / stop - 1, since = last / entry - 1;
+    return h('div', { class: 'st-risk' }, [
+      h('span', { class: 'b' + (buf <= 0 ? ' under' : '') }, [h('strong', { text: buf <= 0 ? 'unter dem Stop' : pct(buf, 1) }), buf <= 0 ? null : ' über dem Stop']),
+      h('span', { class: 's ' + (since >= 0 ? 'up' : 'down') }, [h('i', { 'aria-hidden': 'true', text: since >= 0 ? '▲' : '▼' }), h('strong', { text: pct(since, 1, true) }), ' seit Modelleinstieg'])]);
+  }
+  // Lange Hinweise zwei Zeilen hoch mit "Mehr lesen"; der Knopf erscheint nur, wenn der Text wirklich gekuerzt ist.
+  var CLAMP_N = 0;
+  function clamp(box, p) {
+    var id = 'st-cl-' + (++CLAMP_N);
+    p.id = id; p.classList.add('st-clamp');
+    var btn = h('button', { type: 'button', class: 'st-readmore', 'aria-expanded': 'false', 'aria-controls': id, text: 'Mehr lesen' });
+    btn.addEventListener('click', function () { var o = p.classList.toggle('is-open'); btn.setAttribute('aria-expanded', String(o)); btn.textContent = o ? 'Weniger' : 'Mehr lesen'; });
+    function fit() { if (!p.classList.contains('is-open')) btn.hidden = p.scrollHeight <= p.clientHeight + 1; }
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(p); else if (window.requestAnimationFrame) requestAnimationFrame(fit);
+    return h('div', { class: 'st-clamp-wrap' }, [box, btn]);
   }
 
   /* ------------------------------------------------------- Karten */
@@ -967,7 +989,8 @@
     }
     else if (p.entry.evidence === 'INTRADAY_1MIN') txt = (sameDay ? 'Ausstieg am Kauftag: ' : 'Kauftag geprüft: ') + 'Die Reihenfolge von Kauf und Tagestief wurde mit Minutenkursen der Börse IEX bestimmt' + (sameDay ? ' – der Stop wurde nach dem Kauf erreicht.' : ' – der Stop hielt bis zum Schluss.') + ' IEX ist ein einzelner Handelsplatz ohne Eröffnungsauktion; geprüft wird nur, ob Tageshoch und -tief eng zum Tageskurs aller Börsen passen. Einzelne Kurse anderer Börsen können fehlen.';
     else txt = p.entry.gappedAboveTrigger ? 'Ausführung angenommen: Der Kurs eröffnete über dem Trigger, das Modell kauft zur Eröffnung.' : 'Ausführung angenommen: Das Tageshoch erreichte den Trigger. Zu welcher Uhrzeit gekauft worden wäre, zeigen Tageskurse nicht.';
-    return h('p', { class: 'st-evid', 'data-k': p.entry.sameDayOrder === 'AMBIGUOUS' ? 'open' : 'assumed', text: txt });
+    var t = h('span', { text: txt });
+    return clamp(h('p', { class: 'st-evid', 'data-k': p.entry.sameDayOrder === 'AMBIGUOUS' ? 'open' : 'assumed' }, [t]), t);
   }
   function qualityRow(s, strat) {
     var q = s.quality, labels = (strat.quality_tiers && strat.quality_tiers.labels) || {};
