@@ -98,7 +98,18 @@ Jeder Code hat einen Test in `scripts/supertrader/tests/snapshot.test.mjs` (16 T
   - Eine zusätzliche Umschlagverschlüsselung wäre möglich, braucht aber ein neues Schlüssel-Secret für die Konsumenten-Jobs. Das ist eine Owner-Entscheidung.
   - Die Owner-RSA-Versiegelung (`results-public-key.pem`) eignet sich nicht, weil Jobs lesen müssen.
 - **Öffentlich** (das Repository ist öffentlich) erscheinen nur Hashes, Zählungen und Reason Codes. Fehlerdetails, die Objektschlüssel mit Tickern enthalten, stehen nur als Hash da (Test).
-- **Lizenz.** Tiingo-Rohdaten bleiben intern und privat wie im bestehenden Speicher. Die Tickerliste ist eine öffentlich abrufbare Datei. Es gibt keine Weitergabe und keine Veröffentlichung von Kursen.
+- **Lizenz.** Abgleich mit den dokumentierten Anforderungen:
+  - **Interne Nutzung.** Tiingo ist `OWNER_DECLARED_LICENSED` (`docs/SUPERTRADER_VALIDATION_DATA_PATH.md`). Der Snapshot ist eine interne Kopie derselben Objekte, die der bestehende private Speicher für interne Backtests schon hält. Das ist keine neue Nutzungsart.
+  - **Tickerliste.** Ihre Weitergabe in Rohform ist `LEGAL_REVIEW_REQUIRED` (`docs/TIINGO_COMMERCIAL_SCALE_PHASE1.md`). Sie liegt deshalb nur im privaten Eimer; öffentlich erscheinen nur ihr SHA-256 und ihre Größe.
+  - **Kurse und Kennzahlen.** Es werden weder Kurse noch abgeleitete Backtest-Kennzahlen veröffentlicht; deren Rechte sind ungeklärt (`docs/SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md`). Der Kontroll-Backtest erscheint nur als Hash.
+  - **Öffentliche Zählungen.** Universum, Bars und Ereignisse erscheinen nur als Zählungen, ohne Ticker.
+  - **Repository-Dateien.** Die archivierten Dateien stehen ohnehin öffentlich im Repository.
+- **Sicherheit.**
+  - Die Zugangsdaten stehen nur als Actions-Secrets im `env:` der Capture- und Restore-Jobs.
+  - Der Workflow läuft nur bei einem Push mit Marke auf `claude/**`, nicht bei `pull_request` aus Forks; Forks bekommen deshalb keine Secrets.
+  - Prüf-Jobs haben `contents: read`; nur der Publish-Job hat `contents: write` und keine R2-Secrets.
+  - Job-Ausgaben enthalten nur die öffentliche Hash-/Zähl-JSON.
+  - **Ergebnis:** Für diesen internen Research-Scope genügt die bestehende private R2-Ablage den dokumentierten Anforderungen. Zusätzliche Verschlüsselung und Löschregeln sind nicht umgesetzt und bleiben Owner-Entscheidungen.
 - **Kosten** (R2-Freigrenze: 10 GB, 1 Mio. Class A, 10 Mio. Class B).
   - Je Capture: einmal die Reads eines Analyse-Laufs, wenige Dutzend PUTs (16-MB-Shards) und Speicher in Höhe der komprimierten Rohreihen.
   - Die Nullkostenschranke rechnet vorher mit dem Speicherzuwachs (`bytesDelta`).
