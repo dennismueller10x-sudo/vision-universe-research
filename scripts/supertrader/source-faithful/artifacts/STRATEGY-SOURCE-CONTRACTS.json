@@ -551,9 +551,10 @@
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
      "reason": null
     },
     {
@@ -654,13 +655,13 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1"
      ],
-     "derivation": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
      "reason": null
     },
     {
@@ -729,29 +730,29 @@
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 5; printed 11",
-     "ruleId": "TUR-CONSISTENT",
+     "page": "PDF 4; printed 10",
+     "ruleId": "TUR-MARKETS",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
      "candidate": "C01",
-     "executableRule": "TUR-SF-CONSISTENT",
+     "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": null,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
      "reason": null
     },
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 4; printed 10",
-     "ruleId": "TUR-MARKETS",
+     "page": "PDF 5; printed 11",
+     "ruleId": "TUR-CONSISTENT",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
@@ -1234,9 +1235,10 @@
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
      "reason": null
     },
     {
@@ -1337,13 +1339,13 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2"
      ],
-     "derivation": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
      "reason": null
     },
     {
@@ -1412,29 +1414,29 @@
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 5; printed 11",
-     "ruleId": "TUR-CONSISTENT",
+     "page": "PDF 4; printed 10",
+     "ruleId": "TUR-MARKETS",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
      "candidate": "C02",
-     "executableRule": "TUR-SF-CONSISTENT",
+     "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": null,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
      "reason": null
     },
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 4; printed 10",
-     "ruleId": "TUR-MARKETS",
+     "page": "PDF 5; printed 11",
+     "ruleId": "TUR-CONSISTENT",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
@@ -1602,7 +1604,8 @@
    "knownLimitations": [
     "the full Darvas method (selection, volume, market, sizing) cannot be measured on history: manual decisions are logged forward only",
     "all-time high is evaluated within the snapshot history; when that history does not reach the listing date the flag is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED",
-    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, the default is declared"
+    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, default AFTER_TOP_DAY (declared)",
+    "component study population: the pre-registered research universe of #705 (raw close >= 5, 20-session dollar volume >= 1M at the prior session), a measurement convention, not a Darvas rule (DAR-Q10: no general minimum)"
    ],
    "chain": [
     {
@@ -1669,7 +1672,7 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS"
      ],
      "derivation": null,
-     "reason": "#709 VU-DAR records the start (after the top day vs after top confirmation) as UNRESOLVED; both are implemented (AFTER_TOP_CONFIRMED default, AFTER_TOP_DAY variant) and the record names the variant"
+     "reason": "#709 VU-DAR records the start (after the top day vs after top confirmation) as UNRESOLVED; both are implemented and the record names the variant. Default AFTER_TOP_DAY: lows already traded after the top day are not discarded, so the bottom (and a stop raised under it) never lies inside the traded range (review SF-R1-04); AFTER_TOP_CONFIRMED is the variant"
     },
     {
      "source": "B06",
@@ -1927,6 +1930,27 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-FRACTION"
      ],
      "derivation": "the snapshot convention (adjustSeries, ADR-002) supplies split-adjusted bars; raw prices only for the one-cent fraction",
+     "reason": null
+    },
+    {
+     "source": null,
+     "bookEdition": null,
+     "page": null,
+     "ruleId": null,
+     "modal": null,
+     "confidence": null,
+     "originalWordingChecked": null,
+     "clearance": null,
+     "candidate": "C03",
+     "executableRule": "DAR-SF-RESEARCH-POPULATION",
+     "kind": "FILTER",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/runner/run-research.mjs#componentStudy",
+     "tests": [
+      "scripts/supertrader/tests/sf-runner.test.mjs: SF-RUN-COMPONENT"
+     ],
+     "derivation": "measurement convention for the diagnostic component study only; Darvas sets no general volume or liquidity minimum (DAR-Q10); the review screen itself applies no such filter (review SF-R1-05)",
      "reason": null
     },
     {
@@ -2355,9 +2379,10 @@
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
-      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
      ],
-     "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)",
      "reason": null
     },
     {
@@ -2895,7 +2920,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
-     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
+     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)",
      "reason": null
     },
     {
@@ -2917,7 +2942,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
-     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
+     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)",
      "reason": null
     },
     {
@@ -3292,9 +3317,10 @@
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
-      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
      ],
-     "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)",
      "reason": null
     },
     {
@@ -3832,7 +3858,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT"
      ],
-     "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it is the candidate",
+     "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it raises a review record; it rejects no stock (no gate on the WEIN-TR-CONT preference)",
      "reason": null
     },
     {
@@ -5042,7 +5068,7 @@
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN"
      ],
-     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: some close / prior low ratio within fewer than 40 sessions >= 2.0 (lowest low to highest high of the run)",
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: peak high / lowest low of the leg >= 2.0 with fewer than 40 sessions between them; the most recent such peak that is the highest high of the leg is used",
      "reason": null
     },
     {
@@ -7800,7 +7826,7 @@
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST"
      ],
-     "derivation": "daily: the first bar whose low touches or crosses the 20 EMA after ADX(14) > 30 was reached and while ADX stayed > 30 on the prior bar; \"first\" = no earlier touch since ADX crossed above 30; impulse strength is reviewer evidence",
+     "derivation": "daily: gate = a bar whose low touches or crosses the 20 EMA while ADX(14) > 30 and +DI > -DI on the prior bar. Whether it is the FIRST pullback since ADX rose above 30 and whether the impulse was strong are reported as evidence and review flags, not as rejections (review SF-R2-02)",
      "reason": null
     },
     {

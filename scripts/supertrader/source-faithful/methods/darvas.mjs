@@ -26,7 +26,7 @@ export const fractionFor = (b, rawFraction = DARVAS_PARAMS.rawFraction) => rawTi
  * TOP_CANDIDATE, TOP_TOUCH_RESET, TOP_CONFIRMED, BOTTOM_CANDIDATE, BOTTOM_TOUCH_RESET, BOTTOM_CONFIRMED (box complete),
  * TOP_RESTARTED (top exceeded before the bottom), BREAKOUT, BOX_FAILED.
  */
-export function createDarvasBoxMachine(bars, { bottomSearchStart = BOTTOM_SEARCH_START.AFTER_TOP_CONFIRMED, confirmDays = DARVAS_PARAMS.confirmDays, rawFraction = DARVAS_PARAMS.rawFraction } = {}) {
+export function createDarvasBoxMachine(bars, { bottomSearchStart = BOTTOM_SEARCH_START.AFTER_TOP_DAY, confirmDays = DARVAS_PARAMS.confirmDays, rawFraction = DARVAS_PARAMS.rawFraction } = {}) {
   if (!BOTTOM_SEARCH_START[bottomSearchStart]) throw new Error('UNKNOWN_BOTTOM_SEARCH_START');
   let st = { phase: STATES.SEEK_TOP, top: null, topDay: null, count: 0, bottom: null, bottomDay: null };
   const boxes = [];

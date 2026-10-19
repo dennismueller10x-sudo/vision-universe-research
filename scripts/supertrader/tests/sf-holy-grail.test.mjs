@@ -44,12 +44,18 @@ test('GC-RAS-FIRST-PULLBACK: the first bar whose low touches the 20 EMA after AD
   for (let i = 61; i < first; i++) assert.deepEqual(holyGrailScreen({ id: 'X', bars: b }, { asOfIndex: i }), []);
 });
 
-test('GC-RAS-SECOND-PULLBACK-NOT-FIRST: a later touch after the first one is not a Holy Grail setup', () => {
+test('GC-RAS-SECOND-PULLBACK-NOT-FIRST: a later touch is reported with firstPullback false and a review flag, not silently accepted (review SF-R2-02)', () => {
   const rows = trendThenPullback(); for (let k = 0; k < 3; k++) rows.push([147, 152, 146, 151]); rows.push([150, 151, 140, 141]);
   const b = bars(rows), ema = emaSeries(b.map((x) => x.close), 20);
   const touches = b.map((x, i) => (i > 60 && x.low <= ema[i] ? i : -1)).filter((i) => i > 0);
   assert.ok(touches.length >= 2);
-  assert.deepEqual(holyGrailScreen({ id: 'X', bars: b }, { asOfIndex: touches.at(-1) }), []);
+  const res = holyGrailScreen({ id: 'X', bars: b }, { asOfIndex: touches.at(-1) });
+  for (const r of res) {
+    assert.equal(r.machineScreenEvidence.find((e) => e.ruleId === 'RAS-SF-PULLBACK').value.firstPullback, false);
+    assert.ok(r.openQuestions.some((q) => q.flag === 'RAS-MR-NOT-FIRST'));
+  }
+  const [first] = holyGrailScreen({ id: 'X', bars: b }, { asOfIndex: touches[0] });
+  assert.equal(first.machineScreenEvidence.find((e) => e.ruleId === 'RAS-SF-PULLBACK').value.firstPullback, true);
 });
 
 test('GC-RAS-OSC-310: oscillator = SMA3 - SMA10, signal = SMA16 of the oscillator (RAS04-004)', () => {

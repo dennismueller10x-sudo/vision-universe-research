@@ -12,8 +12,8 @@
    ],
    "summary": {
     "rulesInScope": 38,
-    "implementedExact": 9,
-    "implementedDerived": 18,
+    "implementedExact": 7,
+    "implementedDerived": 20,
     "manualReview": 0,
     "dataBlocked": 2,
     "ambiguous": 0,
@@ -39,7 +39,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -291,7 +291,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -378,8 +378,8 @@
    ],
    "summary": {
     "rulesInScope": 35,
-    "implementedExact": 9,
-    "implementedDerived": 15,
+    "implementedExact": 7,
+    "implementedDerived": 17,
     "manualReview": 0,
     "dataBlocked": 2,
     "ambiguous": 0,
@@ -405,7 +405,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -630,7 +630,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -2927,7 +2927,7 @@
      "confidence": "MEDIUM",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
      "status": "UNMAPPED",
-     "exclusion": "IPO scope: names with less than 200 + 21 sessions are reported as INSUFFICIENT_HISTORY_IPO_SCOPE, not rejected as failing"
+     "exclusion": "IPO scope: trendTemplate reports INSUFFICIENT_HISTORY_IPO_SCOPE (not a failure); the SEPA screen does not emit these names - IPO candidates (about 3-4 weeks of history) are left to the reviewer, the long-history criteria are not applicable unchanged"
     },
     {
      "ruleId": "MIN-MM-LIQ-01",
