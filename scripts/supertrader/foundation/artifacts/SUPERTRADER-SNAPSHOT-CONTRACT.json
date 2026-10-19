@@ -1,0 +1,132 @@
+{
+ "schema": "supertrader-snapshot-contract-1.0.0",
+ "contract": "supertrader-research-snapshot-1.0.0",
+ "idScheme": "sts1-sha256(canonicalJson(manifest ohne snapshotId))[0:32]",
+ "storePrefix": "research-snapshots/supertrader/sts1",
+ "smokePrefix": "research-snapshots/supertrader/sts1-smoke",
+ "retention": {
+  "maxGenerations": 3,
+  "maxSmokeGenerations": 5,
+  "maxSnapshotBytes": 3000000000,
+  "shardTargetBytes": 16777216
+ },
+ "reasonCodes": [
+  "INPUT_INTEGRITY_FAILURE",
+  "SNAPSHOT_NOT_FOUND",
+  "SNAPSHOT_INCOMPLETE",
+  "SOURCE_OBJECT_MISSING",
+  "OBJECT_HASH_MISMATCH",
+  "MANIFEST_ID_MISMATCH",
+  "CONTRACT_VERSION_MISMATCH",
+  "DATASET_FINGERPRINT_MISMATCH",
+  "REPLAY_FINGERPRINT_MISMATCH",
+  "TICKER_LIST_NOT_IN_SNAPSHOT",
+  "AS_OF_DATE_MISMATCH",
+  "WINDOW_MISMATCH",
+  "CORPORATE_ACTION_CONVENTION_MISMATCH",
+  "PRIVATE_DATA_UNAVAILABLE",
+  "SNAPSHOT_NOT_RESTORABLE",
+  "SNAPSHOT_READ_ONLY",
+  "SNAPSHOT_OBJECT_CONFLICT",
+  "SNAPSHOT_RETENTION_CAP_REACHED",
+  "SNAPSHOT_SIZE_CAP_EXCEEDED",
+  "ZERO_COST_GUARD_BLOCKED",
+  "PARALLEL_INPUT_DIVERGENCE"
+ ],
+ "components": [
+  "fixe Ticker-Liste (Bytes)",
+  "fixes As-of-Date",
+  "Source-Object-Manifest (Schluessel, SHA-256, Laenge)",
+  "Listing-IDs und securityIds",
+  "kanonischer Datensatz (Fingerabdruck)",
+  "Corporate-Action-Metadaten (Zaehlungen)",
+  "Adjustment-Konvention (Hash)",
+  "Input-Hashes",
+  "Contract-Version",
+  "Code-/Engine-Version",
+  "Capture-Provenienz",
+  "Integrity-Receipts"
+ ],
+ "inputsFrozen": {
+  "tickerList": "Tiingo supported_tickers.zip (Bytes, einmal je Capture)",
+  "repoFiles": [
+   "quant/data/market/scale/universe-FULL_UNIVERSE.json",
+   "quant/data/market/security-master/eligibility.json",
+   "quant/data/market/security-master/company-names.json"
+  ],
+  "r2": "jedes von loadPitData gelesene Objekt (Reihen tiingo-delisted und tiingo, Validierungs-Manifest, SEC-PIT/-Delisting), 404 als fehlend",
+  "extraSeriesKeys": [
+   "_validation/sec-pit-r12.json.gz"
+  ],
+  "canonicalLoad": {
+   "excludeNonEquity": false,
+   "secPit": true,
+   "delistPit": true,
+   "cross": false
+  },
+  "notFrozen": [
+   "Nutzungszaehler der Nullkostenschranke (_usage, Betriebszustand)"
+  ]
+ },
+ "manifest": [
+  "contract",
+  "snapshotId",
+  "generation",
+  "complete",
+  "smoke",
+  "asOfDate",
+  "window",
+  "capture",
+  "provenance",
+  "codec",
+  "convention",
+  "code",
+  "engines",
+  "universe",
+  "identity",
+  "sideObjects",
+  "objects.shards",
+  "objects.index",
+  "dataset",
+  "replay",
+  "privacy"
+ ],
+ "immutability": "Schluessel = SHA-256 des Inhalts; HEAD vor PUT, bestehendes Objekt wird gelesen und verglichen, nie ueberschrieben (SNAPSHOT_OBJECT_CONFLICT); Manifest-ID = Hash des Manifests; neue Quellen = neue Generation",
+ "lifecycle": [
+  "capture (ein Job): lesen, aufzeichnen, Kostenschranke, schreiben, zuruecklesen, Manifest, CAPTURE-Beleg",
+  "restore (unabhaengige Jobs nach Ende des Captures): jedes Byte pruefen, Datensatz neu bauen, Kontroll-Backtest, RESTORE-Beleg",
+  "compare: alle Konsumenten identisch, sonst PARALLEL_INPUT_DIVERGENCE",
+  "Konsument (analyze-methods --snapshot): verlangt unabhaengigen RESTORE-Beleg"
+ ],
+ "failClosed": {
+  "SNAPSHOT_INCOMPLETE": "Snapshot unvollstaendig",
+  "SOURCE_OBJECT_MISSING": "Source-Object fehlt",
+  "DATASET_FINGERPRINT_MISMATCH": "Dataset-Fingerprint weicht ab",
+  "TICKER_LIST_NOT_IN_SNAPSHOT": "Tickerliste gehoert nicht zum Snapshot",
+  "AS_OF_DATE_MISMATCH": "Stichtag unterschiedlich",
+  "CORPORATE_ACTION_CONVENTION_MISMATCH": "Corporate-Action-Konvention weicht ab",
+  "PRIVATE_DATA_UNAVAILABLE": "private Daten nicht verfuegbar",
+  "SNAPSHOT_NOT_RESTORABLE": "nicht unabhaengig wiederhergestellt",
+  "OBJECT_HASH_MISMATCH": "Bytes veraendert",
+  "MANIFEST_ID_MISMATCH": "Manifest manipuliert",
+  "REPLAY_FINGERPRINT_MISMATCH": "Kontroll-Backtest weicht ab",
+  "PARALLEL_INPUT_DIVERGENCE": "parallele Jobs sahen verschiedene Eingaben"
+ },
+ "replay": {
+  "engine": "DONCHIAN_TURTLE",
+  "segments": 150,
+  "minBars": 300,
+  "accounting": "RESEARCH_V1",
+  "initialEquity": 100000
+ },
+ "storage": {
+  "backend": "bestehender privater R2-Eimer (VU_HISTORY_S3_*), bestehender Treiber scripts/market/storage/s3-driver.mjs (nur GET/PUT/HEAD/LIST)",
+  "prefix": "research-snapshots/supertrader/sts1",
+  "smokePrefix": "research-snapshots/supertrader/sts1-smoke",
+  "productionPrefixesTouched": false,
+  "versioning": "nicht noetig (Inhaltsadressierung); Treiber verbietet Versionierung",
+  "deletion": "nicht moeglich (Treiber); Aufraeumen = Owner-Entscheidung",
+  "encryption": "Zugriffsschutz des privaten Eimers (wie der bestehende Rohdatenspeicher); keine zusaetzliche Umschlagverschluesselung, da Konsumenten-Jobs lesen muessen und kein Schluessel-Secret existiert",
+  "publicOutputs": "nur Hashes, Zaehlungen, Reason Codes; Fehlerdetails mit Objektschluesseln nur als Hash"
+ }
+}

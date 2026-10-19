@@ -314,12 +314,23 @@ export function segmentEndCause(index, segmentCount, listingActive, listEnd = nu
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
 // Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
-export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, delistPit = false, secPitKey = '_validation/sec-pit-r11.json.gz', cross = true } = {}) {
-  const KEY = process.env.TIINGO_API_KEY || '';
-  const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
+// io (Durable Research Snapshots): Quelle der Eingaben. Standard = live (Tiingo-Tickerliste, Repository-Dateien,
+// R2). snapshot/io.mjs liefert eine aufzeichnende (Capture) bzw. abspielende (Konsument) Variante.
+export const LIVE_IO = Object.freeze({
+  kind: 'LIVE',
+  async fetchTickerZip() { const KEY = process.env.TIINGO_API_KEY || ''; return Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()); },
+  readRepoFile(rel) { const f = path.join(root, rel); return fs.existsSync(f) ? fs.readFileSync(f) : null; },
+  async createDriver() { const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs')); return createS3DriverFromEnv(process.env); },
+});
+export const PIT_REPO_FILES = Object.freeze(['quant/data/market/scale/universe-FULL_UNIVERSE.json', 'quant/data/market/security-master/eligibility.json', 'quant/data/market/security-master/company-names.json']);
+
+export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, delistPit = false, secPitKey = '_validation/sec-pit-r11.json.gz', cross = true, io = LIVE_IO } = {}) {
+  const zip = await io.fetchTickerZip();
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
-  const uni = JSON.parse(fs.readFileSync(path.join(root, 'quant/data/market/scale/universe-FULL_UNIVERSE.json'), 'utf8'));
-  const elig = JSON.parse(fs.readFileSync(path.join(root, 'quant/data/market/security-master/eligibility.json'), 'utf8'));
+  const repoJson = (rel) => { const b = io.readRepoFile(rel); return b ? JSON.parse(b.toString('utf8')) : null; };
+  const uni = repoJson(PIT_REPO_FILES[0]);
+  const elig = repoJson(PIT_REPO_FILES[1]);
+  if (!uni || !elig) throw new Error('PIT_REPO_INPUT_MISSING');
   const cls = new Map(elig.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(uni.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
   const listings = L.buildListingTable(rows, storeActive);
@@ -327,8 +338,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   const hash = L.tableHash(listings);
   log(`Listings ${listings.length}, Hash ${hash.slice(0, 12)}`);
 
-  const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
-  const driver = createS3DriverFromEnv(process.env);
+  const driver = await io.createDriver();
   const budget = Guard.createBudget({ classAOperations: 50, classBOperations: 30000 });
   const mine = Store.createHistoryStore({ driver, provider: L.SERIES_PROVIDER, market: 'US', budget }); // Runde 14: HOLDOUT eigener Namensraum
   const mainStore = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US', budget });
@@ -355,7 +365,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
 
   const members = [];
   let nonEquityExcluded = 0;
-  const companyRows = excludeNonEquity && fs.existsSync(path.join(root, 'quant/data/market/security-master/company-names.json')) ? JSON.parse(fs.readFileSync(path.join(root, 'quant/data/market/security-master/company-names.json'), 'utf8')).rows || [] : [];
+  const companyRows = excludeNonEquity ? repoJson(PIT_REPO_FILES[2])?.rows || [] : [];
   const companyOf = new Map(companyRows.map((r) => [r.ticker, r]));
   for (const l of listings) {
     if (l.source === 'STORE_ACTIVE') {
@@ -518,6 +528,30 @@ async function main() {
   const ACCOUNTING = arg('--accounting', 'legacy');
   if (!['legacy', 'research-v1'].includes(ACCOUNTING)) throw new Error('UNKNOWN_ACCOUNTING_MODE');
   const accountingMode = ACCOUNTING === 'research-v1' ? 'RESEARCH_V1' : undefined;
+  // Durable Research Snapshot: --snapshot <sts1-...> liest alle Eingaben aus dem eingefrorenen Snapshot
+  // (kein Live-Abruf der Tickerliste, keine Live-Reihen). Ohne unabhaengigen Wiederherstellungsbeleg,
+  // bei fehlendem Objekt oder abweichendem Hash: INPUT_INTEGRITY_FAILURE, kein Ergebnis.
+  const SNAPSHOT_ID = arg('--snapshot', null);
+  let snapshotIo = LIVE_IO, snapshotRef = null;
+  if (SNAPSHOT_ID) {
+    const K = await import('../snapshot/contract.mjs');
+    try {
+      // Review F1: Runden mit Live-Minutendaten (r9b/r10b) sind nicht im Snapshot eingefroren.
+      if (SET === 'r9b' || SET === 'r10b') K.fail(K.REASON.SNAPSHOT_NOT_RESTORABLE, 'set requires live intraday data');
+      const { createSnapshotStore } = await import('../snapshot/store.mjs');
+      const { openSnapshot, verifyAgainstManifest, CANONICAL_LOAD } = await import('../snapshot/snapshot.mjs');
+      const opened = await openSnapshot({ store: createSnapshotStore({ driver: await LIVE_IO.createDriver(), smoke: argv.includes('--smoke-snapshot') }), snapshotId: SNAPSHOT_ID, requireRestoreReceipt: true });
+      // Review F5: Datensatz mit den kanonischen Ladeflags gegen das Manifest pruefen (Universumsregeln im Code).
+      const canon = await loadPitData({ LIMIT: opened.manifest.capture.limit || 0, ...CANONICAL_LOAD, io: opened.io });
+      const v = verifyAgainstManifest(opened.manifest, canon, { replay: false });
+      snapshotIo = opened.io;
+      snapshotRef = { snapshotId: SNAPSHOT_ID, asOfDate: opened.manifest.asOfDate, tickerListSha256: opened.manifest.universe.tickerListSha256, bytesVerified: opened.verified.bytes, datasetVerified: v.datasetVerified, codeVersionChanged: v.codeVersionChanged };
+    } catch (e) {
+      // Review F13: oeffentliches Log ohne Objektschluessel (enthalten Ticker).
+      console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}` : 'INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR');
+      process.exit(3);
+    }
+  }
   const RUN = SET === 'r13b' ? enginesR13B() : SET === 'r12' ? enginesR12() : SET === 'r11' ? enginesR11() : SET === 'r10m' ? enginesR10M() : SET === 'r10c' ? enginesR10C() : SET === 'r9b' || SET === 'r10b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
   const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b' ? `${e.id}@${e.version}` : e.id);
   const examples = {};
@@ -525,7 +559,7 @@ async function main() {
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b', secPit: SET === 'r11', delistPit: SET === 'r13b' });
+  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b', secPit: SET === 'r11', delistPit: SET === 'r13b', io: snapshotIo });
   let k = 0;
   // Runde 9: Minutenquelle aufbauen - Cache aus dem privaten Eimer, fehlende Einstiegstage
   // in Durchgaengen nachladen, bis keine neuen mehr entstehen (Pfadabhaengigkeit).
@@ -666,11 +700,11 @@ async function main() {
     log(`${keyOf(e)}: Portfolio fertig`);
   }
 
-  if (!LIMIT) {
+  if (!LIMIT && !snapshotRef) {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r13b' ? PREREG_R13B : SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, dataFingerprint, accounting: accountingMode || 'LEGACY', commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r13b' ? PREREG_R13B : SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, dataFingerprint, accounting: accountingMode || 'LEGACY', snapshot: snapshotRef, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');

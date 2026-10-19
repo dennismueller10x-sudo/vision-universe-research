@@ -1,0 +1,181 @@
+name: Supertrader Research Snapshot (Capture, Restore, Paritaet)
+
+# Durable Research Snapshots (docs/SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md).
+# Ein Capture-Job friert alle Backtest-Eingaben ein; danach oeffnen ZWEI unabhaengige Jobs
+# (eigene Runner, Capture-Job beendet) denselben Snapshot und muessen bytegleiche Eingaben und
+# denselben Kontroll-Backtest sehen. Bei Abweichung: INPUT_INTEGRITY_FAILURE, keine Veroeffentlichung.
+# Nur ueber eine Marke in der Commit-Nachricht auf claude/**:
+#   [supertrader-snapshot:smoke]          Capture der ersten 400 Mitglieder (Ablage sts1-smoke) + 2 Restores
+#   [supertrader-snapshot:capture]        voller Capture (Ablage sts1) + 2 Restores
+#   [supertrader-snapshot:restore]        nur 2 Restores des zuletzt veroeffentlichten vollen Snapshots
+#   [supertrader-snapshot:restore-smoke]  dasselbe fuer den Smoke-Snapshot
+# Rohdaten liegen nur im privaten Eimer (Praefix research-snapshots/supertrader/). Das Repository ist
+# oeffentlich: Logs und veroeffentlichte Dateien enthalten nur Hashes, Zaehlungen und Reason Codes.
+on:
+  push:
+    branches:
+      - 'claude/**'
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-research-snapshot-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  mode:
+    if: contains(github.event.head_commit.message, '[supertrader-snapshot:')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.m.outputs.mode }}
+    steps:
+      - id: m
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          m=""
+          case "$MSG" in
+            *"[supertrader-snapshot:restore-smoke]"*) m=restore-smoke;;
+            *"[supertrader-snapshot:restore]"*) m=restore;;
+            *"[supertrader-snapshot:smoke]"*) m=smoke;;
+            *"[supertrader-snapshot:capture]"*) m=capture;;
+          esac
+          if [ -z "$m" ]; then echo "unbekannte Marke" >&2; exit 1; fi
+          echo "mode=$m" >> "$GITHUB_OUTPUT"
+
+  capture:
+    needs: mode
+    if: needs.mode.outputs.mode == 'smoke' || needs.mode.outputs.mode == 'capture'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Review F7: Captures aller Zweige nacheinander (Generations- und Bytegrenze ohne Wettlauf).
+    concurrency:
+      group: supertrader-research-snapshot-capture-global
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    outputs:
+      snapshot_id: ${{ steps.cap.outputs.snapshot_id }}
+      capture_json: ${{ steps.pub.outputs.capture_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: cap
+        env:
+          MODE: ${{ needs.mode.outputs.mode }}
+          SNAPSHOT_JOB: capture
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = "smoke" ]; then
+            node scripts/supertrader/snapshot/snapshot.mjs capture --out "$RUNNER_TEMP/snap" --smoke --limit 400
+          else
+            node scripts/supertrader/snapshot/snapshot.mjs capture --out "$RUNNER_TEMP/snap"
+          fi
+      - id: pub
+        run: |
+          set -euo pipefail
+          echo "capture_json=$(base64 -w0 "$RUNNER_TEMP/snap/capture.json")" >> "$GITHUB_OUTPUT"
+
+  restore_a:
+    needs: [mode, capture]
+    if: always() && needs.mode.result == 'success' && (needs.capture.result == 'success' || startsWith(needs.mode.outputs.mode, 'restore'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      result: ${{ steps.r.outputs.result_b64 }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: r
+        env:
+          MODE: ${{ needs.mode.outputs.mode }}
+          CAPTURED_ID: ${{ needs.capture.outputs.snapshot_id }}
+          SNAPSHOT_JOB: restore-a
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: bash scripts/supertrader/snapshot/restore-job.sh
+
+  restore_b:
+    needs: [mode, capture]
+    if: always() && needs.mode.result == 'success' && (needs.capture.result == 'success' || startsWith(needs.mode.outputs.mode, 'restore'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      result: ${{ steps.r.outputs.result_b64 }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: r
+        env:
+          MODE: ${{ needs.mode.outputs.mode }}
+          CAPTURED_ID: ${{ needs.capture.outputs.snapshot_id }}
+          SNAPSHOT_JOB: restore-b
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: bash scripts/supertrader/snapshot/restore-job.sh
+
+  publish:
+    needs: [mode, capture, restore_a, restore_b]
+    if: always() && needs.restore_a.result == 'success' && needs.restore_b.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Paritaet der parallelen Konsumenten pruefen und oeffentliche Ergebnisse ablegen
+        env:
+          MODE: ${{ needs.mode.outputs.mode }}
+          CAPTURE_JSON: ${{ needs.capture.outputs.capture_json }}
+          RESULT_A: ${{ needs.restore_a.outputs.result }}
+          RESULT_B: ${{ needs.restore_b.outputs.result }}
+        run: |
+          set -euo pipefail
+          dir="scripts/supertrader/foundation/artifacts/snapshot-runs/${GITHUB_RUN_ID}"
+          mkdir -p "$dir"
+          printf '%s' "$RESULT_A" | base64 -d > "$dir/restore-a.json"
+          printf '%s' "$RESULT_B" | base64 -d > "$dir/restore-b.json"
+          if [ -n "$CAPTURE_JSON" ]; then printf '%s' "$CAPTURE_JSON" | base64 -d > "$dir/capture.json"; fi
+          node scripts/supertrader/snapshot/snapshot.mjs compare --out "$dir" "$dir/restore-a.json" "$dir/restore-b.json"
+          node scripts/supertrader/snapshot/pointer.mjs --mode "$MODE" --run "$dir"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/supertrader/foundation/artifacts/snapshot-runs scripts/supertrader/snapshot/SNAPSHOT-POINTER*.json
+          git commit -q -m "supertrader: Research-Snapshot ${MODE} (run ${GITHUB_RUN_ID}, nur Hashes und Zaehlungen)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

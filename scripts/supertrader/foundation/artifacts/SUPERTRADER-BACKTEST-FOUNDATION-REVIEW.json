@@ -1,0 +1,138 @@
+{
+ "schema": "supertrader-backtest-foundation-review-1.0.0",
+ "reviewer": "unabhaengiger adversarialer Review-Agent (eigener Kontext, nur Lesezugriff), danach Fixes durch den Autor",
+ "scope": [
+  "Accounting-Konsistenz",
+  "Lookahead",
+  "Synthetic-Bar-Execution",
+  "Stale Valuation",
+  "Dust Conservation",
+  "Snapshot-Immutability",
+  "Verschluesselung",
+  "Secret Handling",
+  "Provider-Lizenzierung",
+  "Restore-Faehigkeit",
+  "Race Conditions",
+  "parallele Jobs",
+  "abweichende Tickerlisten",
+  "Datenverlust",
+  "unbeabsichtigte Live-Auswirkungen",
+  "Regression gegenueber existierenden Engines"
+ ],
+ "verifiedBy": [
+  "node --test scripts/supertrader/tests/*.test.mjs (306/306)",
+  "Legacy-Golden 25 Faelle",
+  "Zufallsvergleich Legacy gegen origin/main 300x3",
+  "V4-Paritaet 120.000/2.000/6 Vergleiche, 0 Abweichungen",
+  "CI-Lauf 39211850181 (Smoke: Capture + 2 unabhaengige Restores identisch)"
+ ],
+ "findings": [
+  {
+   "id": "F1",
+   "severity": "HIGH",
+   "statement": "analyze-methods --snapshot mit r9b/r10b las Live-Minutendaten und schrieb den Live-Cache",
+   "status": "FIXED",
+   "resolution": "Snapshot-Modus lehnt diese Runden ab (SNAPSHOT_NOT_RESTORABLE)"
+  },
+  {
+   "id": "F2",
+   "severity": "HIGH",
+   "statement": "Beleg-Schluessel ohne Laufversuch: Re-run eines Jobs scheiterte mit SNAPSHOT_OBJECT_CONFLICT",
+   "status": "FIXED",
+   "resolution": "Beleg-Schluessel mit Inhalts-Hash; Test 'Review F2'"
+  },
+  {
+   "id": "F3",
+   "severity": "MEDIUM",
+   "statement": "Quarantaene-Settlement zum spaeteren terminal.lastClose (Lookahead, latent)",
+   "status": "FIXED",
+   "resolution": "Settlement zum letzten bekannten Schluss; Fall C23"
+  },
+  {
+   "id": "F4",
+   "severity": "MEDIUM",
+   "statement": "Fensterende einer spaeter delisteten Notierung als Delisting abgerechnet (Lookahead)",
+   "status": "FIXED",
+   "resolution": "WINDOW_END in RESEARCH_V1; Fall C25; Legacy unveraendert"
+  },
+  {
+   "id": "F5",
+   "severity": "MEDIUM",
+   "statement": "Konsument pruefte keinen Datensatz-Fingerabdruck (Universumsregeln im Code)",
+   "status": "FIXED",
+   "resolution": "analyze-methods --snapshot prueft Datensatz mit kanonischen Ladeflags"
+  },
+  {
+   "id": "F6",
+   "severity": "MEDIUM",
+   "statement": "Code-Aenderung erschien als Integritaetsfehler (REPLAY_FINGERPRINT_MISMATCH)",
+   "status": "FIXED",
+   "resolution": "CODE_VERSION_CHANGED getrennt; Bytes immer voll geprueft; Test 'Review F6'"
+  },
+  {
+   "id": "F7",
+   "severity": "MEDIUM",
+   "statement": "Wettlauf der Generationsgrenze zwischen Zweigen; verwaiste Objekte ungezaehlt; kein Loeschpfad",
+   "status": "FIXED_WITH_OWNER_STEP",
+   "resolution": "globale Capture-Concurrency, Bytegrenze ueber objects/; Aufraeumen bleibt Owner-Entscheidung (Treiber verbietet DELETE)"
+  },
+  {
+   "id": "F8",
+   "severity": "MEDIUM",
+   "statement": "leere Capture-ID fiel still auf den alten Zeiger zurueck",
+   "status": "FIXED",
+   "resolution": "Zeiger nur im Restore-Modus; IDs muessen uebereinstimmen"
+  },
+  {
+   "id": "F9",
+   "severity": "LOW",
+   "statement": "Einstieg nach bekannter Quarantaene moeglich",
+   "status": "FIXED",
+   "resolution": "QUARANTINED_AT_ENTRY; Fall C24"
+  },
+  {
+   "id": "F10",
+   "severity": "LOW",
+   "statement": "isExecutableBar prueft nur Vorhandensein eines Schlusskurses; abgelehnter Ausstieg nicht nachgeholt; endingPositionCheck trivial",
+   "status": "ACCEPTED_DOCUMENTED",
+   "resolution": "OBS-4; Simulator fuellt nur auf realen Balken"
+  },
+  {
+   "id": "F11",
+   "severity": "LOW",
+   "statement": "volumes-Map auch im Legacy-Modus (Speicher)",
+   "status": "ACCEPTED",
+   "resolution": "Ausgaben bitgleich; Speicher unkritisch"
+  },
+  {
+   "id": "F12",
+   "severity": "LOW",
+   "statement": "Smoke-Snapshot mit Nicht-Aktien-Ausschluss und --limit: Objekte fehlen (fail closed); Restore-Reads nicht in Nutzungszaehlern",
+   "status": "ACCEPTED_DOCUMENTED",
+   "resolution": "fail closed korrekt; Restore-Reads sind wenige Shard-GETs"
+  },
+  {
+   "id": "F13",
+   "severity": "INFO",
+   "statement": "unbehandelter SnapshotError in analyze-methods konnte Objektschluessel loggen",
+   "status": "FIXED",
+   "resolution": "bereinigte Ausgabe"
+  },
+  {
+   "id": "F14",
+   "severity": "INFO",
+   "statement": "ADR-005, Secrets, Legacy-Bitgleichheit, keine Produktionsschreibzugriffe",
+   "status": "PASS",
+   "resolution": "300 Zufallslaeufe x 3 Szenarien, 0 Abweichungen"
+  }
+ ],
+ "openHighOrCritical": 0,
+ "summary": {
+  "HIGH": 2,
+  "MEDIUM": 6,
+  "LOW": 4,
+  "INFO": 2,
+  "highClosed": 2,
+  "mediumClosed": 6
+ }
+}
