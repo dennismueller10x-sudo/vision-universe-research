@@ -17,7 +17,7 @@ const SOURCES = [
   { sourceId: 'W-KKEP', edition: 'Kristjan Kullamaegi, Episodic Pivots article incl. own replies', role: 'authoritative' },
 ];
 const shared = () => [
-  { id: 'KK-SF-ADR', kind: 'INDICATOR', essential: false, psr709: ['KK-031'], status: 'SOURCE_EXACT', rule: 'ADR20 = mean over 20 sessions of (high / low - 1) x 100', code: `${CODE}#adr20`, tests: [`${T}: GC-KK-ADR20`] },
+  { id: 'KK-SF-ADR', kind: 'INDICATOR', essential: false, psr709: ['KK-031'], status: 'SOURCE_EXACT', rule: 'ADR20 = mean over 20 sessions of (high / low - 1) x 100 (the 20 sessions before the bar, so a check on the entry day uses no same-day range)', code: `${CODE}#adr20`, tests: [`${T}: GC-KK-ADR20`] },
   { id: 'KK-SF-CAP', kind: 'SIZING', psr709: ['KK-001'], status: 'SOURCE_EXACT', rule: 'never more than 30 % of equity in one stock or ETF overnight', code: `${CODE}#overnightCap`, tests: [`${T}: GC-KK-CAP-30`] },
   { id: 'KK-SF-STOPMARKET', kind: 'STOP', psr709: ['KK-027'], status: 'SOURCE_EXACT', rule: 'stops are stop-market orders: a gap through the stop fills at the open, never skipped', code: `${CODE}#stopMarketFill`, tests: [`${T}: GC-KK-STOP-MARKET-GAP`] },
   { id: 'KK-SF-PRIORITY', kind: 'SETUP', essential: false, psr709: ['KK-048', 'KK-049'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter' },
@@ -32,7 +32,7 @@ const sharedExclusions = {
 };
 
 export const KK_BREAKOUT = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_BREAKOUT',
   candidateId: 'C08',
@@ -67,7 +67,7 @@ export const KK_BREAKOUT = defineContract({
 });
 
 export const KK_EPISODIC_PIVOT = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_EPISODIC_PIVOT',
   candidateId: 'C09',
@@ -98,7 +98,7 @@ export const KK_EPISODIC_PIVOT = defineContract({
 });
 
 export const KK_PARABOLIC_SHORT = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_PARABOLIC_SHORT',
   candidateId: 'C10',

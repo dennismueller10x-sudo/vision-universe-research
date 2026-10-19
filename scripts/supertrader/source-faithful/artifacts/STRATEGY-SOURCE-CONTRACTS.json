@@ -5234,8 +5234,8 @@
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Common Breakout, written daily alternative (KK-011); opening-range-high branch DATA_BLOCKED",
    "scope": {
@@ -5352,14 +5352,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5373,14 +5373,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5394,14 +5394,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5415,12 +5415,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5434,12 +5434,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5453,12 +5453,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5472,12 +5472,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5491,12 +5491,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5510,12 +5510,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5529,12 +5529,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5548,14 +5548,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-MOMENTUM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#momentumRanks",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE"
      ],
      "derivation": "cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5569,14 +5569,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-MOMENTUM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#momentumRanks",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE"
      ],
      "derivation": "cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5590,14 +5590,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5611,14 +5611,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5632,14 +5632,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5653,14 +5653,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5674,12 +5674,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5693,12 +5693,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-ORH",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no frozen intraday history in the snapshot (r9b minute cache is live and locked in snapshot mode)"
     },
     {
      "source": "W-KK3",
@@ -5712,8 +5712,8 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutStopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
@@ -5721,7 +5721,7 @@
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5735,12 +5735,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-PARTIAL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5754,12 +5754,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -5767,8 +5767,8 @@
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Episodic Pivot: 10 %+ gap on an unexpected significant catalyst with exceptional early volume; ORH entry, low-of-day stop",
    "scope": {
@@ -5868,14 +5868,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5889,14 +5889,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5910,14 +5910,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5931,12 +5931,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5950,12 +5950,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5969,12 +5969,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5988,12 +5988,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6007,12 +6007,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6026,12 +6026,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6045,12 +6045,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6064,14 +6064,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-GAP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epGapEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
      ],
      "derivation": "gap = open / previous close - 1 on split-adjusted bars, reported with the 10 % reference as evidence; not an exclusion (KK-015 is a STRONG_PREFERENCE description)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KKEP",
@@ -6085,14 +6085,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-SIDEWAYS",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epGapEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6106,12 +6106,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6125,12 +6125,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6144,12 +6144,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6163,12 +6163,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KK3",
@@ -6182,12 +6182,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday volume; daily volume is reported as evidence only"
     },
     {
      "source": "W-KKEP",
@@ -6201,12 +6201,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday volume; daily volume is reported as evidence only"
     },
     {
      "source": "W-KKEP",
@@ -6220,12 +6220,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no frozen intraday history"
     },
     {
      "source": "W-KKEP",
@@ -6239,15 +6239,15 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epStopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-REJECT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6261,12 +6261,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_AMBIGUOUS"
+     "reason": "the article names 20 / 50-day MAs and later 10 / 20-day MAs (KK-C2): exit choice discretionary, no universal MA; the breakout partial sale is not carried over"
     }
    ]
   },
@@ -6274,8 +6274,8 @@
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Parabolic Short: accelerated up-move; ORL / first red 5-minute candle / failed VWAP retest entry; high of day or VWAP reclaim as risk; cover toward the 10 / 20-day MA",
    "scope": {
@@ -6372,14 +6372,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6393,14 +6393,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6414,14 +6414,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6435,12 +6435,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6454,12 +6454,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6473,12 +6473,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6492,12 +6492,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6511,12 +6511,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6530,12 +6530,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6549,12 +6549,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6568,14 +6568,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ACCEL",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#parabolicEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6589,12 +6589,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday bars and VWAP"
     },
     {
      "source": "W-KK3",
@@ -6608,12 +6608,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday bars and VWAP"
     },
     {
      "source": "W-KK3",
@@ -6627,12 +6627,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "VWAP needs intraday data; the high of day is only final after the close"
     },
     {
      "source": "W-KKFAQ",
@@ -6646,12 +6646,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-BORROW",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no historical borrow / locate / fee data (#709 short_interest MISSING)"
     },
     {
      "source": "W-KK3",
@@ -6665,14 +6665,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-TARGET",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#parabolicEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
