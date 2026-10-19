@@ -107,4 +107,9 @@ Jeder Code hat einen Test in `scripts/supertrader/tests/snapshot.test.mjs` (13 T
 
 ## 6. Ergebnis der Läufe
 
-Siehe `SUPERTRADER-SNAPSHOT-INTEGRITY-RESULT.json` und `SUPERTRADER-SNAPSHOT-RESTORE-RESULT.json`. Der Abschnitt wird nach dem CI-Lauf ergänzt.
+| Lauf | Art | Snapshot | Ergebnis |
+|---|---|---|---|
+| 39211850181 | Smoke (400 Mitglieder) | `sts1-4af8b4a9…` | 405 Quellobjekte, 36 MB. Capture und 2 unabhängige Restores identisch |
+| 39213033571 | voll | `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d` | 9.361 Quellobjekte, 586 MB, 35 Shards. 2 unabhängige Restores: Datensatz und Kontroll-Backtest EXACT, identisch |
+
+Einzelheiten stehen in `SUPERTRADER-SNAPSHOT-INTEGRITY-RESULT.json` und `SUPERTRADER-SNAPSHOT-RESTORE-RESULT.json`.
