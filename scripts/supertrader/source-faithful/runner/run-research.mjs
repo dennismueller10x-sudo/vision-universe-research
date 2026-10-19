@@ -184,7 +184,8 @@ async function main() {
     verification = { datasetVerified: v.datasetVerified, codeVersionChanged: v.codeVersionChanged, manifestDatasetSha256: K.sha256(K.canonicalJson(opened.manifest.dataset)), bytesVerified: opened.verified.bytes, smokeStore: argv.includes('--smoke-snapshot') };
     log(`snapshot ${snapshotId}: bytes ${opened.verified.bytes}, dataset ${v.datasetVerified}`);
   } catch (e) {
-    console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}` : 'INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR');
+    // the detail names the failed check (e.g. CODE_VERSION_CHANGED); unexpected errors stay opaque in the public log
+    console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}${e.detail ? ' ' + e.detail : ''}` : 'INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR');
     process.exit(3);
   }
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
