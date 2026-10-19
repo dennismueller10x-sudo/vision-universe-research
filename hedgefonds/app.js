@@ -530,7 +530,7 @@
       '<div class="hf-card-top">' + avatar(f) + "<div><h3>" + esc(f.manager || f.name) + '</h3><div class="fund">' + esc(f.name) +
       '</div><span class="style">' + esc(f.style || "") + "</span></div></div>" +
       '<div class="hf-card-val"><b class="num">' + usd(f.totalValueUSD) + "</b>" +
-      (aumChg != null ? '<small class="num ' + (aumChg >= 0 ? "pos" : "neg") + '">' + pct(aumChg, true) + " ggü. Vorquartal</small>" : "<small>Fondsgröße (13F)</small>") + "</div>" +
+      (aumChg != null ? '<small class="num"><span class="hf-chg ' + (aumChg >= 0 ? "pos" : "neg") + '">' + pct(aumChg, true) + "</span> ggü. Vorquartal</small>" : "<small>Fondsgröße (13F)</small>") + "</div>" +
       '<div class="hf-card-hold">' + top.map(function (h) {
         return '<div class="row">' + logo(h) + "<span>" + esc(issuerName(h)) + "</span>" + (chg(h) || "<i></i>") + "<em>" + pct(h.weightPct) + "</em></div>";
       }).join("") + "</div>" +
@@ -907,6 +907,11 @@
           stat("up", "green", "Käufer", buyers.length, holders.filter(function (h) { return h.st === "new"; }).length + " neu eingestiegen") +
           stat("down", "rose", "Verkäufer", reducers.length + sellers.length, sellers.length + " komplett ausgestiegen") +
         "</div>" +
+        // Dieselben zwei Zahlen wie in den Kacheln, als Verhaeltnis
+        (buyers.length + reducers.length + sellers.length ? '<div class="hf-balance" role="img" aria-label="' + buyers.length + " Käufer, " + (reducers.length + sellers.length) + ' Verkäufer im letzten Quartal">' +
+          '<span class="pos"><i>▲</i> <b class="num">' + buyers.length + "</b> Käufer</span>" +
+          '<span class="hf-balance-bar"><i class="b" style="flex-grow:' + buyers.length + '"></i><i class="s" style="flex-grow:' + (reducers.length + sellers.length) + '"></i></span>' +
+          '<span class="neg"><b class="num">' + (reducers.length + sellers.length) + "</b> Verkäufer <i>▼</i></span></div>" : "") +
         (topW ? '<p class="hf-callout">' + icon("star") + "<span>Größte Überzeugung: <b>" + esc(fundLabel(S.bySlug[topW.s])) + "</b> hält " + esc(name) + " mit <b>" + pct(topW.w) + "</b> seines Portfolios.</span></p>" : "") +
         '<div class="hf-head hf-gap"><div><h2>Diese Fonds halten ' + esc(name) + "</h2><p>Anteil = Gewicht der Aktie im jeweiligen 13F-Portfolio.</p></div>" +
           '<div class="hf-seg" id="hf-hmode"><button type="button" data-hm="all" aria-pressed="true">Alle (' + holders.length + ')</button><button type="button" data-hm="star" aria-pressed="false">Star-Investoren (' + stars.length + ")</button></div></div>" +
