@@ -271,6 +271,14 @@
     return out;
   }
 
+  /** Zaehlt dieselben Punkte wie die Liste darunter: ✓ passt, ⚠ Achtung, • Hinweis. */
+  function einordnungBilanz(list) {
+    var kinds = [["ok", "✓", "passt"], ["warn", "⚠", "Achtung"], ["info", "•", list.filter(function (x) { return x[0] === "info"; }).length === 1 ? "Hinweis" : "Hinweise"]];
+    var n = kinds.map(function (k) { return list.filter(function (x) { return x[0] === k[0]; }).length; });
+    return '<p class="vs-bilanz" role="img" aria-label="' + kinds.map(function (k, i) { return n[i] + " " + k[2]; }).join(", ") + '">' + kinds.map(function (k, i) {
+      return '<span class="' + k[0] + (n[i] ? "" : " is-zero") + '"><i>' + k[1] + '</i><b class="num">' + n[i] + '</b> ' + k[2] + '</span>'; }).join("") + '</p>';
+  }
+
   VS.views.etf = function (r) {
     var sym = decodeURIComponent(r.args[0] || "").toUpperCase();
     var tab = r.query.tab || "uebersicht";
@@ -306,7 +314,7 @@
       root.innerHTML = '<section class="vs-hero"><p class="vs-eyebrow"><a href="#/etfs" style="text-decoration:none">ETF Intelligence</a> · ' + esc(e.category || "") + '</p>' +
         '<div class="vs-etf-head"><div style="min-width:0"><div class="vs-item-top"><span class="vs-ticker">' + esc(e.symbol) + '</span>' + (e.complex ? '<span class="vs-badge complex">⚠ ' + esc(VS.RETIRE[e.retirementClass] || "komplex") + '</span>' : '<span class="vs-badge ok">Standard-Bauart</span>') + '<span class="vs-badge">' + esc(d.currency || "") + '</span></div>' +
         '<h1 style="font-size:clamp(26px,4.6vw,46px);margin-top:10px">' + esc(VS.displayName(d.name || sym)) + '</h1><p class="vs-sub" style="margin-top:6px">' + esc(VS.STRATEGY[e.strategy] || "") + ' · ' + esc(d.exchange || "Börse unbekannt") + (d.issuer ? " · " + esc(d.issuer) : "") + '</p></div>' +
-        '<div class="vs-etf-price"><div class="vs-price num">' + F.price(mt && mt.price, d.currency) + '</div><div class="num ' + F.cls(mt && mt.change1D) + '" style="font-weight:800">' + F.spct(mt && mt.change1D, 2) + ' <span class="vs-sub">1 Tag · ' + F.date(mt && mt.priceDate) + '</span></div></div></div>' +
+        '<div class="vs-etf-price"><div class="vs-price num">' + F.price(mt && mt.price, d.currency) + '</div><div class="num vs-chg ' + F.cls(mt && mt.change1D) + '" style="font-weight:800">' + F.spct(mt && mt.change1D, 2) + ' <span class="vs-sub">1 Tag · ' + F.date(mt && mt.priceDate) + '</span></div></div></div>' +
         '<div class="vs-kpis">' + kp.map(function (k) { return '<div><span>' + esc(k[0]) + '</span><b class="num">' + k[1] + '</b><small>' + esc(k[2]) + '</small></div>'; }).join("") + '</div>' +
         '<div class="vs-tabs"><button class="vs-pill' + (watched ? " primary" : "") + '" id="vs-watch">' + (watched ? "♥ Beobachtet" : "♡ Beobachten") + '</button><a class="vs-pill lime" href="#/etf/' + encodeURIComponent(sym) + '?tab=uebersicht&play=1">Planspiel: ins Vorsorgedepot</a><a class="vs-pill" href="#/vergleich?s=' + encodeURIComponent(sym) + (sym !== "URTH" ? ",URTH" : ",SPY") + '">Vergleichen</a><a class="vs-pill" href="#/portfolio?add=' + encodeURIComponent(sym) + '">Zum Portfolio</a></div></section>' +
         '<div class="vs-etf-sticky"><div class="vs-seg" role="tablist">' + TABS.map(function (t) { return '<button role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div></div>' +
@@ -353,7 +361,7 @@
         '<div class="vs-row" style="margin-top:10px"><span>Index / Strategie</span><span>' + esc(e.index || (d.structure === "ACTIVE" ? "Aktiv gemanagt" : "nicht im Namen genannt")) + '</span></div>' +
         '<div class="vs-row"><span>Assetklasse</span><span>' + esc(VS.ASSET[e.assetClass] || "nicht zugeordnet") + '</span></div><div class="vs-row"><span>Region</span><span>' + esc(VS.REGION[e.region] || "nicht im Namen genannt") + '</span></div>' +
         '<div class="vs-row"><span>Thema</span><span>' + esc(e.theme || "–") + '</span></div><div class="vs-row"><span>Listings dieses Fonds</span><span>' + (d.listingsOfFund || 1) + '</span></div></div>' +
-        '<div class="vs-card app"><p class="vs-label">Vision Universe Einordnung</p><div style="margin-top:8px">' + einordnung(e, d).map(function (x) { return '<div class="vs-row"><span style="color:var(--app-ink)">' + (x[0] === "warn" ? "⚠ " : x[0] === "ok" ? "✓ " : "• ") + esc(x[1]) + '</span></div>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Einordnung aus Daten, keine Empfehlung.</p></div></div></section>' +
+        '<div class="vs-card app"><p class="vs-label">Vision Universe Einordnung</p>' + einordnungBilanz(einordnung(e, d)) + '<div style="margin-top:8px">' + einordnung(e, d).map(function (x) { return '<div class="vs-row"><span style="color:var(--app-ink)">' + (x[0] === "warn" ? "⚠ " : x[0] === "ok" ? "✓ " : "• ") + esc(x[1]) + '</span></div>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Einordnung aus Daten, keine Empfehlung.</p></div></div></section>' +
         '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><div><p class="vs-label">Kursverlauf</p><p class="vs-fine">' + esc(mt ? mt.basisLabel : "") + '</p></div><div class="vs-seg" id="vs-range">' + RANGES.map(function (rg) { return '<button data-m="' + rg[1] + '" aria-pressed="' + (rg[0] === "1J") + '">' + rg[0] + '</button>'; }).join("") + '</div></div><div id="vs-etf-chart"></div></div></section>' +
         '<section class="vs-section" id="vs-play"></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">ETF-DNA</p><div class="vs-dna" style="margin-top:10px">' + Object.keys(dna).map(function (k) {
