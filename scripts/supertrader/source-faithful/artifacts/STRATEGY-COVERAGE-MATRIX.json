@@ -1055,16 +1055,16 @@
    ],
    "summary": {
     "rulesInScope": 56,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "implementedExact": 1,
+    "implementedDerived": 6,
+    "manualReview": 29,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 39,
+    "notImplemented": 0,
     "unmappedWithExclusion": 17,
     "unmappedWithoutExclusion": 0,
     "hardRules": 14,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 4
    },
    "rows": [
     {
@@ -1073,7 +1073,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1082,7 +1082,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1091,7 +1091,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1100,7 +1100,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1109,7 +1109,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1118,7 +1118,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1127,7 +1127,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1136,7 +1136,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1145,7 +1145,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1154,7 +1154,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1163,7 +1163,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1199,7 +1199,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1208,7 +1208,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1217,7 +1217,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1226,7 +1226,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1235,7 +1235,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1244,7 +1244,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1253,7 +1253,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1262,7 +1262,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1271,7 +1271,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1280,7 +1280,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1289,7 +1289,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1298,7 +1298,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1307,7 +1307,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1316,7 +1316,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1325,7 +1325,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1334,7 +1334,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1343,7 +1343,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1352,7 +1352,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1361,7 +1361,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1370,7 +1370,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1397,7 +1397,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1406,7 +1406,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1415,7 +1415,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1424,7 +1424,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1433,7 +1433,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1442,7 +1442,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -1451,7 +1451,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1478,7 +1478,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1583,16 +1583,16 @@
    ],
    "summary": {
     "rulesInScope": 63,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "implementedExact": 1,
+    "implementedDerived": 5,
+    "manualReview": 23,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 32,
+    "notImplemented": 0,
     "unmappedWithExclusion": 31,
     "unmappedWithoutExclusion": 0,
     "hardRules": 14,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 4
    },
    "rows": [
     {
@@ -1601,7 +1601,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1610,7 +1610,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1619,7 +1619,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1628,7 +1628,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1637,7 +1637,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1646,7 +1646,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1691,7 +1691,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1727,7 +1727,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1736,7 +1736,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1745,7 +1745,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1754,7 +1754,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -1763,7 +1763,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1772,7 +1772,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1781,7 +1781,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1790,7 +1790,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1799,7 +1799,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1808,7 +1808,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1817,7 +1817,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1835,7 +1835,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1844,7 +1844,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1853,7 +1853,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1862,7 +1862,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1871,7 +1871,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -1889,7 +1889,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -1970,7 +1970,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -1979,7 +1979,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -2042,7 +2042,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -2051,7 +2051,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -2069,7 +2069,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -2078,7 +2078,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -2087,7 +2087,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -2096,7 +2096,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
