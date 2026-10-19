@@ -86,7 +86,7 @@ Jede Verletzung wirft `INPUT_INTEGRITY_FAILURE:<CODE>`. Dann gibt es keine Rechn
 | Schreibversuch auf einen Snapshot / Inhaltskonflikt | `SNAPSHOT_READ_ONLY` / `SNAPSHOT_OBJECT_CONFLICT` |
 | Kosten- oder Generationsgrenze | `ZERO_COST_GUARD_BLOCKED`, `SNAPSHOT_RETENTION_CAP_REACHED`, `SNAPSHOT_SIZE_CAP_EXCEEDED` |
 
-Jeder Code hat einen Test in `scripts/supertrader/tests/snapshot.test.mjs` (13 Tests).
+Jeder Code hat einen Test in `scripts/supertrader/tests/snapshot.test.mjs` (16 Tests).
 
 ## 5. Speicher, Unveränderlichkeit, Verschlüsselung, Lizenz, Kosten
 
@@ -111,5 +111,32 @@ Jeder Code hat einen Test in `scripts/supertrader/tests/snapshot.test.mjs` (13 T
 |---|---|---|---|
 | 39211850181 | Smoke (400 Mitglieder) | `sts1-4af8b4a9…` | 405 Quellobjekte, 36 MB. Capture und 2 unabhängige Restores identisch |
 | 39213033571 | voll | `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d` | 9.361 Quellobjekte, 586 MB, 35 Shards. 2 unabhängige Restores: Datensatz und Kontroll-Backtest EXACT, identisch |
+| 39217202814 | nur Restore, getrennter Lauf | derselbe (aus `SNAPSHOT-POINTER.json`) | 2 weitere unabhängige Restores: alle 586.282.893 Bytes geprüft, Hashes identisch zu Lauf 39213033571 |
+
+Der Datensatz des vollen Snapshots:
+- 15.565 Listings (8.266 aktiv, 7.299 inaktiv zum Stichtag 2026-10-19), 9.356 Mitglieder, 9.211 Segmente
+- 14.499.984 Bars, 3.339 Split- und 96.443 Dividendenereignisse, 3.226 Segmente mit Ende vor dem Fenster
+
+**Damit beantwortet:**
+- **Persistenz:** Der Snapshot überlebt das Ende des Capture-Jobs und den ganzen Workflow-Lauf.
+- **Bytegleichheit:** Vier unabhängige Jobs in zwei Läufen stellen ihn bytegleich her.
+- **Kein Tickerlisten-Drift:** Die Tickerliste ist als Bytes eingefroren (SHA-256 `de247a68…`/Lauf), ein Konsument kann keine andere Liste bekommen. Eine neue Liste ergibt eine neue Generation.
+
+## 7. Unabhängiger Review
+
+Ein adversarialer Review fand im Snapshot-Teil 2 HIGH- und 4 MEDIUM-Befunde. Alle sind geschlossen (`SUPERTRADER-BACKTEST-FOUNDATION-REVIEW.json`):
+- **F1:** Live-Minutendaten im Snapshot-Modus sind jetzt gesperrt.
+- **F2:** Ein Re-run kollidierte mit Belegen; Belege haben jetzt inhaltsadressierte Schlüssel.
+- **F5:** Konsumenten prüfen jetzt den Datensatz-Fingerabdruck.
+- **F6:** Code-Drift wird getrennt als `CODE_VERSION_CHANGED` gemeldet.
+- **F7:** Captures laufen global nacheinander; die Bytegrenze zählt auch verwaiste Objekte.
+- **F8:** Kein stiller Rückfall auf einen alten Zeiger.
+
+## 8. Grenzen und Owner-Schritte
+
+- **Aufräumen:** Löschen alter Generationen ist im Treiber gesperrt. Die Grenze liegt bei 3 vollen und 5 Smoke-Generationen; danach blockiert der Capture mit `SNAPSHOT_RETENTION_CAP_REACHED`. Aufräumen ist eine Owner-Entscheidung.
+- **Verschlüsselung (optional):** Eine Umschlagverschlüsselung braucht ein neues Secret.
+- **Workflow-Anbindung:** `supertrader-validation.yml` reicht `--snapshot` noch nicht durch; das ist der erste Schritt der Strategie-PRs.
+- **Minutendaten:** r9b/r10b (Minutendaten) sind nicht eingefroren und im Snapshot-Modus gesperrt.
 
 Einzelheiten stehen in `SUPERTRADER-SNAPSHOT-INTEGRITY-RESULT.json` und `SUPERTRADER-SNAPSHOT-RESTORE-RESULT.json`.
