@@ -14,9 +14,9 @@ Artefakte: [`scripts/supertrader/foundation/artifacts/`](../scripts/supertrader/
 - **Fix:** ein gemeinsamer, getesteter Vertrag `validation/accounting-contract.mjs`.
   - Er portiert die vorab registrierte V4-Politik. Paritätstest gegen die V4-Originale: 120.000 Stale-Vergleiche, 2.000 Terminal-Termine und 6 Faktoren, **0 Abweichungen**.
   - Eingeschaltet wird er in `runPortfolioTR` über `opts.accounting = 'RESEARCH_V1'` bzw. `analyze-methods.mjs --accounting research-v1`.
-- **Legacy bleibt bitgleich.** Ein Golden-Test prüft das über 22 Fälle. Damit ändern sich weder das Live-Modellportfolio noch die eingefrorenen Runden R7–R15.
+- **Legacy bleibt bitgleich.** Ein Golden-Test prüft das über 25 Fälle. Damit ändern sich weder das Live-Modellportfolio noch die eingefrorenen Runden R7–R15.
 - **Ergebnis:**
-  - 12 von 22 eingefrorenen Fällen ändern sich, genau die A4/A5/A8-Fälle; alle Kontrollfälle bleiben identisch.
+  - 15 von 25 eingefrorenen Fällen ändern sich, genau die A4/A5/A8-Fälle; alle Kontrollfälle bleiben identisch.
   - RESEARCH_V1 erfüllt in jedem Fall alle Erhaltungsidentitäten.
   - Kein Fill liegt ohne realen Quellbalken.
 
@@ -52,7 +52,7 @@ Toleranz: absolute Untergrenze plus binary64-Hülle der Bruttoflüsse (V4 A12).
 
 ## 4. Regressionstests
 
-`node --test scripts/supertrader/tests/foundation-accounting.test.mjs` (21 Tests):
+`node --test scripts/supertrader/tests/foundation-accounting.test.mjs` (22 Tests):
 
 | Prüfpunkt des Auftrags | Fall / Test |
 |---|---|
@@ -64,7 +64,7 @@ Toleranz: absolute Untergrenze plus binary64-Hülle der Bruttoflüsse (V4 A12).
 | Voll-, Teilverkauf, Bruchteilsaktien | C10, C11, C12 |
 | Rundungsreste | C13, C14 |
 | Schlussbewertung | C18 |
-| Cash-/Shares-Erhaltung, keine negativen Bestände | Identitätstest über alle 22 Fälle, C22 |
+| Cash-/Shares-Erhaltung, keine negativen Bestände | Identitätstest über alle 25 Fälle, C22 |
 | keine Löschung mit relevantem Restwert | C19 (Abschreibung < 0,01), C20 (15,8 bleibt), Dust-Grenze fail closed |
 | kein Lookahead | C17: Equity-Kurve mit und ohne spätere Quarantäne identisch |
 | historische Regression Cases | V3-52W-Dust (C20, `dustDecision(8e-11, 1.97e11) = KEEP`), V4-Testwerte A4/A5 (Paritätstest) |
@@ -87,6 +87,9 @@ Eingaben: `scripts/supertrader/foundation/cases.mjs` (eingefroren, synthetisch).
 | C13 | A8 | 101.497,849994 | 101.497,85 | Rest wird verkauft statt still gelöscht |
 | C14 | A8 | 101.597,84000001 | 101.597,84 | kein Überverkauf |
 | C19 | A8 | 99.998,0000005 | 99.997,9950005 | Rest 0,005 als Dust im Ledger statt unbegrenzt gehalten |
+| C23 | A5 (Review F3) | 109.999,00 (offen) | 103.983,60 | Quarantäne zum letzten bekannten Schluss, nicht zum späteren `terminal.lastClose` |
+| C24 | A5 (Review F9) | 100.997,90 | 100.000,00 | kein Einstieg nach bekannter Quarantäne |
+| C25 | A5 (Review F4) | 96.998,30 | 99.999,00 | Notierung endet erst nach dem Fenster: offene Position statt Delisting-Abschlag |
 | übrige 10 | Kontrolle | identisch | identisch | – |
 
 Die Beträge sind synthetisch und sagen nichts über Strategien. **Ein exakter historischer Vorher/Nachher-Vergleich wird nicht behauptet**, weil kein unveränderlicher historischer Input existiert (#763, Abschnitt 1). Teil B behebt das.
@@ -103,10 +106,20 @@ Die Beträge sind synthetisch und sagen nichts über Strategien. **Ein exakter h
 - **Live-Modellportfolio** (`model-portfolio.mjs`): keine Live-Änderung, OBS-2.
 - **`engine/backtest.mjs runPortfolio`**: nur Referenz der C2-Gleichheitsprüfung, für Research-Ergebnisse nicht verwenden.
 
-## 7. Offene Beobachtungen (kein HIGH)
+## 7. Unabhängiger Review
+
+Ein unabhängiger adversarialer Review fand im Accounting-Teil keinen HIGH- oder CRITICAL-Befund. Der Legacy-Pfad wurde bitgleich verifiziert (300 Zufallsdurchläufe × 3 Szenarien, 0 Abweichungen); RESEARCH_V1 reconcilierte in jedem Zufallsfall. Drei Befunde wurden geschlossen:
+- **F3:** Settlement zum `terminal.lastClose` konnte einen späteren Kurs nutzen.
+- **F4:** Ein Fensterende wurde wie ein Delisting abgerechnet, obwohl die Notierung später endete.
+- **F9:** Ein Einstieg nach bereits bekannter Quarantäne war möglich.
+
+Gesamtbericht: `SUPERTRADER-BACKTEST-FOUNDATION-REVIEW.json` (PR B).
+
+## 8. Offene Beobachtungen (kein HIGH)
 
 - **OBS-1:** Der gültige Präfix im Tournament endet an `quarantine.from`. Das ist eine Datenqualitäts- bzw. PIT-Policy, kein Accounting-Fehler.
 - **OBS-2:** Das Live-Modellportfolio hat dieselbe A4-Wirkung. Die Korrektur braucht einen eigenen PR mit Vorher/Nachher.
 - **OBS-3:** Wirtschaftliche Delistings werden laut Protokoll am letzten Balken abgerechnet; das bleibt unverändert.
+- **OBS-4:** Trades tragen nur Schlusskurse. `isExecutableBar` prüft deshalb, ob am Ausführungstag ein realer Quellbalken vorhanden ist. Ein abgelehnter Ausstieg wird nicht nachgeholt, sondern fällt unter die Stale-Regel (Review F10).
 
 Die Readiness ist erst mit Teil B entschieden: `SUPERTRADER-FOUNDATION-READINESS.json`.
