@@ -312,12 +312,119 @@
 
   function sectionNav(f) {
     var items = [[f.growth.length, 'wachstum', 'Wachstum'], [f.ladder || f.margins.some(function (m) { return m.available; }), 'profitabilitaet', 'Profitabilität'],
-      [f.valuation, 'bewertung', 'Bewertung'], [f.balance, 'bilanz', 'Bilanz'], [true, 'verlauf', 'Verlauf'], [true, 'quellen', 'Quellen']];
+      [f.valuation, 'bewertung', 'Bewertung'], [f.balance, 'bilanz', 'Bilanz'], [f.peerOptions && f.peerOptions.length, 'vergleich', 'Vergleich'], [true, 'verlauf', 'Verlauf'], [true, 'quellen', 'Quellen']];
     return el('nav', { class: 'fu-jump', 'aria-label': 'Abschnitte' }, items.filter(function (x) { return x[0]; }).map(function (x) {
       return el('a', { href: '#/' + encodeURIComponent(f.ticker) + '?s=' + x[1], 'data-target': x[1], onclick: function (ev) {
         var t = document.getElementById(x[1]); if (!t) return; ev.preventDefault(); t.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
       }, text: x[2] });
     }));
+  }
+
+  /* ------------------------------------------------------------ Im Vergleich */
+  /* Unternehmen laden und mit demselben Modell lesen; die Vergleichsgruppen kommen aus der Rohdatei. */
+  function loadStock(t) {
+    return state.cache[t] || (state.cache[t] = fetchJson(M.stockPath(t)).then(function (raw) {
+      var f = M.fromStock(raw); f.peerOptions = M.peerOptions(raw); return f;
+    }).catch(function (e) { delete state.cache[t]; throw e; }));
+  }
+  function loadRow(path) {
+    state.rows = state.rows || {};
+    return state.rows[path] || (state.rows[path] = fetchJson(path).catch(function (e) { delete state.rows[path]; throw e; }));
+  }
+  var CMP = [
+    { title: 'Wachstum', items: [
+      { key: 'growth3', label: 'Umsatz pro Jahr · 3 Jahre', fmt: 'pct', why: function (r) { return r.growth3Reason === 'TOO_SHORT' ? 'zu kurze Reihe' : r.growth3Reason === 'NOT_POSITIVE' ? 'Wert ≤ 0' : null; } },
+      { key: 'growth1', label: 'Umsatz ggü. Vorjahr', fmt: 'pct' }] },
+    { title: 'Profitabilität', items: [
+      { key: 'opMargin', label: 'Operative Marge', fmt: 'pct' },
+      { key: 'netMargin', label: 'Nettomarge', fmt: 'pct' },
+      { key: 'fcfMargin', label: 'Free-Cashflow-Marge', fmt: 'pct' }] },
+    { title: 'Bewertung', items: [
+      { key: 'pe', label: 'KGV', fmt: 'x', cap: 4, why: function (r) { return r.peReason === 'LOSS' ? 'Verlust (12 Mon.)' : r.peReason ? M.reasonText(r.peReason) : null; } },
+      { key: 'ps', label: 'KUV', fmt: 'x', cap: 4 },
+      { key: 'fcfYield', label: 'Free-Cashflow-Rendite', fmt: 'pct' }] }
+  ];
+  function rankText(k, n) { return (k === 1 ? 'höchster Wert' : k + '. höchster Wert') + ' von ' + n; }
+  function cmpValue(item, r) {
+    var v = r[item.key];
+    if (v == null) return null;
+    return item.fmt === 'x' ? M.multiple(v) + (item.key === 'pe' && r.peBasis === 'FY' ? ' (GJ)' : '') : M.pct(v);
+  }
+  function cmpMetric(item, rows, self) {
+    var sc = M.compareScale(rows, item.key, item.cap);
+    var span = sc ? (sc.max - sc.min) || 1 : 1, zero = sc ? -sc.min / span * 100 : 0;
+    return el('div', { class: 'fu-cmp-metric' }, [
+      el('h4', { text: item.label }),
+      el('ul', { class: 'fu-cmp-rows' }, rows.map(function (r) {
+        var v = r[item.key], text = cmpValue(item, r), isSelf = r.ticker === self;
+        var bar = null;
+        if (v != null && sc) {
+          var vv = Math.max(sc.min, Math.min(sc.max, v)), w = Math.abs(vv) / span * 100, over = v > sc.max;
+          bar = el('i', { class: (isSelf ? 'is-self' : '') + (v < 0 ? ' is-neg' : '') + (over ? ' is-over' : ''), style: 'left:' + (v < 0 ? zero - w : zero).toFixed(1) + '%;width:' + Math.max(1, w).toFixed(1) + '%' });
+        }
+        return el('li', { class: isSelf ? 'is-self' : '' }, [
+          el('span', { class: 'fu-cmp-t', text: r.ticker }),
+          el('span', { class: 'fu-cmp-bar', 'aria-hidden': 'true' }, [sc && sc.min < 0 ? el('b', { class: 'fu-cmp-zero', style: 'left:' + zero.toFixed(1) + '%' }) : null, bar]),
+          el('span', { class: 'fu-cmp-v fu-num' + (text ? '' : ' is-none'), text: text || (r.available === false ? 'keine SEC-Zahlen' : (item.why && item.why(r)) || 'keine Angabe') })
+        ]);
+      })),
+      sc ? el('p', { class: 'fu-cmp-foot' }, [rows.filter(function (r) { return r.ticker === self && r[item.key] != null; }).length
+        ? rankText(sc.rank(rows.filter(function (r) { return r.ticker === self; })[0][item.key]), sc.count) + ' · ' : '', 'Median ' + (item.fmt === 'x' ? M.multiple(sc.median) : M.pct(sc.median))]) : null
+    ]);
+  }
+  function compareBody(f, opt, peers, holder, tok) {
+    holder.setAttribute('aria-busy', 'true');
+    holder.replaceChildren(el('div', { class: 'fu-skel', style: 'height:160px' }));
+    Promise.all(peers.map(function (pr) { return loadStock(pr.ticker).then(M.compareRow, function () { return { ticker: pr.ticker, name: pr.name, available: false }; }); })).then(function (peerRows) {
+      if (holder._tok !== tok) return; // inzwischen andere Gruppe gewaehlt
+      var rows = [M.compareRow(f)].concat(peerRows);
+      var me = rows[0];
+      holder.replaceChildren(
+        el('ul', { class: 'fu-cmp-peers', 'aria-label': 'Vergleichsunternehmen' }, rows.map(function (r, i) {
+          var meta = peers[i - 1], fyDiff = r.available && r.fy && me.fy && r.fy !== me.fy;
+          return el('li', { class: i ? '' : 'is-self' }, [
+            i ? el('a', { href: '#/' + encodeURIComponent(r.ticker) }, [el('b', { text: r.ticker }), el('span', { text: (meta && meta.name) || r.name || r.ticker })])
+              : el('span', { class: 'fu-cmp-me' }, [el('b', { text: r.ticker }), el('span', { text: f.name || r.ticker })]),
+            el('small', { text: [meta && meta.was, r.available === false ? 'keine SEC-Zahlen' : 'GJ ' + r.fy + (fyDiff ? ' (abweichend)' : '')].filter(Boolean).join(' · ') })
+          ]);
+        })),
+        el('div', { class: 'fu-cmp-grid' }, CMP.map(function (g) {
+          return el('article', { class: 'fu-card' }, [el('h3', { text: g.title })].concat(g.items.map(function (it) { return cmpMetric(it, rows, me.ticker); })));
+        }))
+      );
+      holder.removeAttribute('aria-busy');
+    });
+  }
+  function compareSection(f) {
+    var opts = f.peerOptions || [];
+    if (!opts.length) return el('section', { class: 'fu-section', id: 'vergleich', 'aria-labelledby': 'fu-h-cmp' }, [
+      el('h2', { id: 'fu-h-cmp', text: 'Im Vergleich' }),
+      el('div', { class: 'fu-notice' }, [el('b', { text: 'Keine sinnvoll vergleichbaren Unternehmen hinterlegt.' }), el('span', { text: 'Weder kuratierter Sektor noch Discover-Thema.' })])]);
+    var holder = el('div', { class: 'fu-cmp-body' }), rule = el('p', { class: 'fu-sub' });
+    var rev = f.metrics.filter(function (m) { return m.id === 'revenue'; })[0];
+    var buttons = opts.map(function (o, i) {
+      return el('button', { type: 'button', class: 'fu-chip fu-cmp-opt', 'aria-pressed': i ? 'false' : 'true', onclick: function () { pick(i); } }, o.label);
+    });
+    function pick(i) {
+      var o = opts[i], tok = holder._tok = (holder._tok || 0) + 1;
+      buttons.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+      rule.textContent = 'Auswahl: ' + o.rule + ' · letztes Geschäftsjahr je Unternehmen';
+      if (o.peers) return compareBody(f, o, o.peers, holder, tok);
+      holder.replaceChildren(el('div', { class: 'fu-skel', style: 'height:160px' }));
+      loadRow(o.row).then(function (row) {
+        if (holder._tok !== tok) return;
+        var peers = M.peersFromRow(row, f.ticker, 4, rev && rev.last ? rev.last.v : null);
+        if (!peers.length) { holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'In diesem Thema gibt es keine weiteren Unternehmen mit Umsatzangabe.' }))); return; }
+        compareBody(f, o, peers, holder, tok);
+      }).catch(function () { if (holder._tok === tok) holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Die Vergleichsgruppe konnte gerade nicht geladen werden.' }))); });
+    }
+    var sec = el('section', { class: 'fu-section', id: 'vergleich', 'aria-labelledby': 'fu-h-cmp' }, [
+      el('h2', { id: 'fu-h-cmp', text: 'Im Vergleich' }),
+      el('div', { class: 'fu-chips fu-cmp-opts', role: 'group', 'aria-label': 'Vergleichsgruppe' }, buttons),
+      rule, holder
+    ]);
+    setTimeout(function () { pick(0); }, 0);
+    return sec;
   }
 
   /* ------------------------------------------------------------ Unternehmen */
@@ -403,7 +510,7 @@
     setTitle(t);
     main.setAttribute('aria-busy', 'true');
     main.replaceChildren(el('div', { class: 'fu-boot' }, [el('div', { class: 'fu-skel', style: 'height:40px;width:50%' }), el('div', { class: 'fu-skel', style: 'height:120px;margin-top:16px' })]));
-    var p = state.cache[t] || (state.cache[t] = fetchJson(M.stockPath(t)).then(M.fromStock).catch(function (e) { delete state.cache[t]; throw e; }));
+    var p = loadStock(t);
     p.then(function (f) {
       if (location.hash.replace(/^#\/?/, '').split('?')[0].toUpperCase() !== t && decodeURIComponent(location.hash.replace(/^#\/?/, '').split('?')[0]).toUpperCase() !== t) return;
       setTitle((f.name || t) + ' (' + t + ')');
@@ -426,6 +533,7 @@
         profitSection(f),
         valuationSection(f),
         balanceSection(f),
+        compareSection(f),
         el('section', { class: 'fu-section', id: 'verlauf', 'aria-labelledby': 'fu-h-glance' }, [
           el('h2', { id: 'fu-h-glance', text: 'Verlauf je Geschäftsjahr' }),
           el('p', { class: 'fu-sub', text: 'Letztes Jahr hervorgehoben · ▲ ▼ Richtung zum Vorjahr' }),

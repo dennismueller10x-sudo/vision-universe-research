@@ -6,7 +6,7 @@
  * Richtung (auf/ab/gleich) ist neutral gemeint; ob mehr Schulden oder weniger Aktien "gut" ist, entscheidet hier niemand. */
 (function (global) {
   'use strict';
-  var VERSION = 'fundamental-model-1.1.0';
+  var VERSION = 'fundamental-model-1.2.0';
   var STOCK_BASE = '/discover/data/stocks/US_REAL/';
   var SEARCH_PATH = '/discover/data/search/US_REAL.json';
 
@@ -131,6 +131,71 @@
   }
   function reasonText(code) { return VAL_REASON[code] || 'nicht berechenbar'; }
   function multiple(v) { return isNum(v) ? num(v, v >= 100 ? 0 : 1) : '–'; }
+
+  /* ---------------------------------------------- Im Vergleich
+   * Vergleichsgruppen nur aus bestehenden Discover-Auswahlen, mit sichtbarer Regel:
+   *  1. gleicher kuratierter Sektor (discoverNext.similar, nur Titel mit demselben Sektor),
+   *  2. gleiches redaktionelles Thema (Discover-Zeile thema-<id>, Reihenfolge der Zeile = Discover-Rang).
+   * Die Discover-Liste "similar" ohne kuratierten Sektor misst nur Abstand in Kennzahlen und Kursverhalten
+   * und waere kein Branchenvergleich; sie wird dann nicht verwendet. */
+  var ROWS_BASE = '/discover/data/rows/US_REAL/';
+  var PEERS = 4;
+  function titleCase(s) {
+    return String(s || '').toLowerCase().replace(/(^|[\s,&\-\/(])([a-zäöüß])/g, function (m, a, b) { return a + b.toUpperCase(); });
+  }
+  function peerOptions(stock) {
+    var out = [], self = stock ? normTicker(stock.symbol) : null;
+    var sim = stock && stock.discoverNext && stock.discoverNext.similar;
+    if (stock && stock.sector && sim && sim.cards) {
+      var same = sim.cards.filter(function (c) { return c && c.symbol && normTicker(c.symbol) !== self && c.sector === stock.sector; })
+        .slice(0, PEERS).map(function (c) { return { ticker: normTicker(c.symbol), name: c.companyName || c.symbol, was: c.was || null }; });
+      if (same.length) out.push({ id: 'sector', kind: 'sector', label: 'Sektor ' + stock.sector, rule: 'gleicher Sektor · nächste nach Wachstum, Marge, Bewertung und Kursverhalten', peers: same });
+    }
+    (stock && stock.themes || []).forEach(function (t) {
+      if (t && /^thema-[a-z0-9-]+$/.test(t.rowId || '')) out.push({ id: t.rowId, kind: 'theme', label: titleCase(t.title), rule: 'gleiches Discover-Thema · ähnlichste Umsatzgröße', row: ROWS_BASE + t.rowId + '.json' });
+    });
+    return out;
+  }
+  /* Aus der Themenzeile die Titel mit der aehnlichsten Umsatzgroesse (Abstand im Verhaeltnis, f_revenue der Zeile);
+   * ohne eigenen Umsatz in der Reihenfolge der Zeile. */
+  function peersFromRow(row, self, n, revenue) {
+    var list = ((row && row.cards) || []).filter(function (c) { return c && c.symbol && normTicker(c.symbol) !== normTicker(self) && c.dataMode !== 'synthetic'; });
+    if (revenue > 0) {
+      list = list.filter(function (c) { return c.metrics && c.metrics.f_revenue > 0; })
+        .map(function (c, i) { return { c: c, d: Math.abs(Math.log(c.metrics.f_revenue / revenue)), i: i }; })
+        .sort(function (a, b) { return a.d - b.d || a.i - b.i; }).map(function (x) { return x.c; });
+    }
+    return list.slice(0, n || PEERS).map(function (c) { return { ticker: normTicker(c.symbol), name: c.companyName || c.symbol, was: c.was || null }; });
+  }
+  /* Eine Zeile je Unternehmen, fuer alle mit denselben Definitionen wie auf der eigenen Seite. */
+  function compareRow(f) {
+    if (!f || !f.available) return { ticker: f && f.ticker, name: f && f.name, available: false };
+    var by = function (id) { return f.metrics.filter(function (m) { return m.id === id; })[0]; };
+    // Eine Marge ueber 100 % des Umsatzes (z. B. Banken mit abweichender Umsatzzeile) ist nicht vergleichbar: kein Wert.
+    var plaus = function (v) { return isNum(v) && Math.abs(v) <= 1 ? v : null; };
+    var mg = function (id) { var m = f.margins.filter(function (x) { return x.id === id; })[0]; return m && m.last ? plaus(m.last.v) : null; };
+    var rev = by('revenue'), g3 = cagr(rev.rows, 3), y = yoy(rev.rows).filter(function (r) { return !r.gap; }).slice(-1)[0];
+    var last = rev.last, fcfStep = f.ladder && f.ladder.steps.filter(function (s) { return s.id === 'free_cash_flow'; })[0];
+    var v = f.valuation;
+    return {
+      ticker: f.ticker, name: f.name, available: true, fy: last ? last.fy : f.latestFiscalYear, stale: !!(f.stale && f.stale.stale),
+      revenue: last ? last.v : null,
+      growth3: g3.rate, growth3Reason: g3.rate == null ? g3.reason : null,
+      growth1: y && y.pct != null && y.fy === (last && last.fy) ? y.pct : null,
+      opMargin: mg('operating'), netMargin: mg('net'), fcfMargin: fcfStep ? plaus(fcfStep.share) : null,
+      pe: v && v.pe ? v.pe.value : null, peBasis: v && v.pe ? v.pe.basis : null, peReason: v ? v.peReason : 'NO_VALUATION',
+      ps: v && v.ps ? v.ps.value : null, fcfYield: v && v.fcfYield != null ? v.fcfYield : null
+    };
+  }
+  /* Werte einer Kennzahl ueber die Gruppe: Skala ab Null, Rang (hoechster Wert = 1), Median der vorhandenen Werte. */
+  function compareScale(rows, key, cap) {
+    var vals = rows.map(function (r) { return r[key]; }).filter(isNum).sort(function (a, b) { return a - b; });
+    if (!vals.length) return null;
+    var mid = vals.length % 2 ? vals[(vals.length - 1) / 2] : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2;
+    var max = Math.max(0, vals[vals.length - 1]), min = Math.min(0, vals[0]);
+    if (cap && mid > 0 && max > cap * mid) max = cap * mid;
+    return { min: min, max: max, median: mid, count: vals.length, rank: function (v) { return isNum(v) ? vals.filter(function (x) { return x > v; }).length + 1 : null; } };
+  }
 
   function fromStock(stock) {
     var f = stock && stock.fundamentals;
@@ -263,7 +328,7 @@
 
   var api = { VERSION: VERSION, METRICS: METRICS, MARGINS: MARGINS, STOCK_BASE: STOCK_BASE, SEARCH_PATH: SEARCH_PATH,
     fromStock: fromStock, change: change, series: series, money: money, count: count, pct: pct, value: value, changeText: changeText,
-    dateDe: dateDe, yearRanges: yearRanges, cagr: cagr, yoy: yoy, reasonText: reasonText, multiple: multiple, HORIZONS: HORIZONS, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
+    dateDe: dateDe, yearRanges: yearRanges, cagr: cagr, yoy: yoy, peerOptions: peerOptions, peersFromRow: peersFromRow, compareRow: compareRow, compareScale: compareScale, titleCase: titleCase, ROWS_BASE: ROWS_BASE, reasonText: reasonText, multiple: multiple, HORIZONS: HORIZONS, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.VUFundamental = global.VUFundamental || {};
   global.VUFundamental.Model = api;
