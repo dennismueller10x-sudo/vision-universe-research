@@ -29,6 +29,21 @@ export function priorLow(bars, i, n) {
   return v;
 }
 
+/**
+ * Lowest low / highest high over the bars of i-n .. i-1 that HAVE a value (exit levels): a missing bar does not switch an
+ * exit off for the length of the window; null only when no bar in the window has a value or fewer than n prior bars.
+ */
+export function priorLowAvailable(bars, i, n) {
+  if (i < n) return null;
+  let v = Infinity; for (let k = i - n; k < i; k++) { const l = bars[k].low; if (fin(l) && l < v) v = l; }
+  return v === Infinity ? null : v;
+}
+export function priorHighAvailable(bars, i, n) {
+  if (i < n) return null;
+  let v = -Infinity; for (let k = i - n; k < i; k++) { const h = bars[k].high; if (fin(h) && h > v) v = h; }
+  return v === -Infinity ? null : v;
+}
+
 /** Simple mean of field over bars i-n+1 .. i (inclusive of i). */
 export function smaAt(bars, i, n, field = 'close') {
   if (i < n - 1) return null;
@@ -97,3 +112,19 @@ export function eligibleAtPriorSession(bars, i, u = RESEARCH_UNIVERSE) {
 
 /** Date -> index map of a bar array. */
 export const indexByDate = (bars) => new Map(bars.map((b, i) => [b.date, i]));
+
+/**
+ * ISO-week aggregation of daily bars (Monday-based week key). Weekly high / low / volume over the sessions that exist;
+ * a week is never filled from missing sessions. Returns [{ week, end, open, high, low, close, volume, sessions }].
+ */
+export function isoWeeks(bars) {
+  const out = [];
+  for (const b of bars) {
+    if (!fin(b.high) || !fin(b.low) || !fin(b.close)) continue;
+    const d = new Date(`${b.date}T00:00:00Z`), monday = new Date(d.getTime() - ((d.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10);
+    const w = out.at(-1);
+    if (!w || w.week !== monday) out.push({ week: monday, end: b.date, open: b.open, high: b.high, low: b.low, close: b.close, volume: fin(b.volume) ? b.volume : 0, sessions: 1 });
+    else { w.end = b.date; w.high = Math.max(w.high, b.high); w.low = Math.min(w.low, b.low); w.close = b.close; w.volume += fin(b.volume) ? b.volume : 0; w.sessions++; }
+  }
+  return out;
+}

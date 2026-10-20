@@ -18,12 +18,14 @@ const SOURCES = [
 ];
 const exitRules = () => [
   { id: 'MOKA-SF-EXIT-MA', kind: 'EXIT', psr709: ['MOKA12-008', 'MOKASTOP-001'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'sell guide: 10DMA if the stock respected it for >= 7 weeks, otherwise 50DMA (preference)' },
-  { id: 'MOKA-SF-EXIT-VIOLATION', kind: 'EXIT', psr709: ['MOKA12-009', 'MOKASTOP-002'], status: 'SOURCE_AMBIGUOUS', rule: 'MA violation = close below the MA, then a later undercut of that day\'s low', reason: 'MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit', code: `${CODE}#maViolationEvidence`, tests: [`${T}: GC-MOKA-MA-VIOLATION-BOTH-READINGS`] },
+  { id: 'MOKA-SF-EXIT-VIOLATION', kind: 'EXIT', variants: ['NEXT_DAY (2012 slide)', 'LATER_DAYS (FAQ)'], psr709: ['MOKA12-009', 'MOKASTOP-002'], status: 'SOURCE_AMBIGUOUS', rule: 'MA violation = close below the MA, then a later undercut of that day\'s low', reason: 'MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit', code: `${CODE}#maViolationEvidence`, tests: [`${T}: GC-MOKA-MA-VIOLATION-BOTH-READINGS`] },
+  { id: 'MOKA-SF-EXIT-GUIDE-EVIDENCE', kind: 'EXIT', essential: false, gate: false, psr709: ['MOKA12-008', 'MOKASTOP-001'], status: 'SOURCE_DERIVED', rule: 'report which sell guide (10DMA after >= 7 weeks of respect, else 50DMA) the printed preference points to', derivation: 'evidence only, never an exit: 7 weeks = 35 sessions (5 per week); "respected" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)', code: `${CODE}#sellGuideEvidence`, tests: ['scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED', 'scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER'] },
   { id: 'MOKA-SF-EXIT-CONTEXT', kind: 'EXIT', essential: false, psr709: ['MOKASTOP-003', 'MOKASTOP-004', 'MOKASTOP-005'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'weak market, partial vs full exit (Gil vs Chris), lagging names in a strong market are reviewer decisions' },
 ];
 
 export const POCKET_PIVOT = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 5 Pocket Pivot / BGU',
   strategyId: 'SF_MOKA_POCKET_PIVOT',
   candidateId: 'C11',
@@ -53,12 +55,12 @@ export const POCKET_PIVOT = defineContract({
     { id: 'MOKA-SF-PP-STOP', kind: 'STOP', psr709: ['MOKAPP-004'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'stop / sell guide decided by the reviewer (no numeric stop in the Pocket Pivot rules)' },
     { id: 'MOKA-SF-PP-SIZE', kind: 'SIZING', psr709: ['MOKAPP-002'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'sizing not specified in #709; reviewer decision' },
     ...exitRules(),
-    { id: 'MOKA-SF-PP-EXIT-PPX', kind: 'EXIT', essential: false, psr709: [], status: 'NOT_IMPLEMENTED', rule: 'PocketPivotExit context rows', reason: 'reported via MOKA-SF-EXIT-MA; no separate machine rule' },
   ],
 });
 
 export const BUYABLE_GAP_UP = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 5 Pocket Pivot / BGU',
   strategyId: 'SF_MOKA_BUYABLE_GAP_UP',
   candidateId: 'C12',

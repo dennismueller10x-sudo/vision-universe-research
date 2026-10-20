@@ -10,18 +10,34 @@
   "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
   "scripts/supertrader/tests/sf-minervini.test.mjs",
   "scripts/supertrader/tests/sf-kullamagi.test.mjs",
-  "scripts/supertrader/tests/sf-holy-grail.test.mjs"
+  "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+  "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+  "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+  "scripts/supertrader/tests/sf-moka-completion.test.mjs"
  ],
  "summary": {
-  "goldenCases": 106,
-  "pass": 106,
+  "goldenCases": 114,
+  "pass": 114,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 130,
+  "testsRun": 159,
   "testsFailed": 0,
-  "testsSkipped": 1
+  "testsSkipped": 2
  },
  "cases": [
+  {
+   "test": "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-REVIEW-DATA",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-REVIEW-DATA"
+   ],
+   "psr709": [
+    "DAR-Q12"
+   ],
+   "result": "PASS"
+  },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
    "strategyIds": [
@@ -727,6 +743,36 @@
    "result": "PASS"
   },
   {
+   "test": "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-GUIDE-EVIDENCE"
+   ],
+   "psr709": [
+    "MOKA12-008",
+    "MOKASTOP-001"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-GUIDE-EVIDENCE"
+   ],
+   "psr709": [
+    "MOKA12-008",
+    "MOKASTOP-001"
+   ],
+   "result": "PASS"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY",
    "strategyIds": [
     "SF_MOKA_BUYABLE_GAP_UP"
@@ -915,6 +961,79 @@
     "DAR-SF-RESEARCH-POPULATION"
    ],
    "psr709": [],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S1EX",
+    "TUR-S2EX"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S1EX",
+    "TUR-S2EX"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "psr709": [
+    "TUR-LIMIT6",
+    "TUR-LIMIT10"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "psr709": [
+    "TUR-LIMIT6",
+    "TUR-LIMIT10"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FAILSAFE-EXIT-READINGS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-FAILSAFE-EXIT"
+   ],
+   "psr709": [
+    "TUR-FAILSAFE"
+   ],
    "result": "PASS"
   },
   {
@@ -1614,7 +1733,7 @@
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
    "name": "SF-GOLDEN-RECORD: the recorded golden results cover every catalogued golden test, all PASS",
-   "result": "PASS"
+   "result": "SKIPPED"
   },
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2194,6 +2313,151 @@
   {
    "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
    "name": "SF-RAS-TEMPORAL: the screen on bar i ignores later bars",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-VERSION: the completed engine carries its own version and the printed limits 6 / 10",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-LIMIT6: at most six long units in one closely correlated group (TUR-LIMIT6)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-LIMIT10: at most ten long units in one loosely correlated group (TUR-LIMIT10)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-LIMIT-CORR-NO-GROUP: a security without a group is only limited by LIMIT4 / LIMIT12; no provider = NOT_EVALUATED",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-LIMIT-CORR-PURE: correlationLimitBreach counts held units of the same group at the decision date",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-ENTRY-BAR-CHANNEL-EXIT: a breakout bar whose low also trades through the exit channel exits there (pessimistic, sf-turtle-1.1.0)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL: on the entry bar the higher of unit stop and channel level is reached first",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "GC-TUR-ENTRY-BAR-NO-EXIT: an ordinary breakout bar keeps the position (regression of the 1.0.0 behaviour)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-LIQUIDITY: each fill reports its share of bar volume and of the 20-session mean volume; no gate",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-SYNTHETIC-BAR-GUARD: a synthetic or open-less bar is never filled; a held position is not traded on it (research-v1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-ENTRY-BAR-ORDER: on the entry bar adds come before the low; a unit stop above the channel closes the adds too (review R2-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-FILTER-ENTRY-BAR: the S1 filter resolves its hypothetical breakout on the breakout bar with the engine convention (review R2-02)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-CHANNEL-MISSING-LOW: one bar without a low does not switch the channel exit off (review R2-04)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-CORR-COUNT-ONCE: a blocked add of a held position is counted once per unit level, groups are read at the prior session (review R2-05 / R2-06)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-FAILSAFE-EXIT-READINGS: the ambiguous failsafe exit runs in both readings, 10-day (default) and 20-day (review R1-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-CORR-COVERAGE: securities without a group are counted and the run is labelled partial, never ENFORCED (review R1-05)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "SF2-DAR-VERSION: the completed Darvas component carries its own version",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "GC-DAR-MULTI-BOX-STOP: each later higher box raises the stop below its bottom; the position exits on the last raised stop (DAR-Q6, DAR-Q8, DAR-B7)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "GC-DAR-MULTI-BOX-GAP-EXIT: a gap below the raised stop exits at the open (DAR-SF-STOP-RAISE, daily bars)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "GC-DAR-MISSING-BAR: a bar without high / low produces no transition and no fill; the machine resumes on the next bar",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "GC-DAR-REVIEW-DATA: the review record carries the DAR-Q12 data (ATH, 2 / 3-year high-low, 26 weekly ranges with volume); evidence only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "GC-DAR-REVIEW-RECORD: a screen record carries the review data and a mechanical position plan, never a buy",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "SF2-DAR-SYNTHETIC-BAR-GUARD: no component entry and no stop fill on a synthetic bar (research-v1 isExecutableBar)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
+   "name": "SF2-DAR-RAISE-ON-SYNTHETIC-BAR: a box completed on a synthetic bar still raises the stop from the next real bar (review R2-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+   "name": "SF2-MOKA-VERSION: version and the placeholder rule is gone",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+   "name": "GC-MOKA-SELL-GUIDE-RESPECTED: a stock without a 10DMA violation for >= 35 sessions points to the 10DMA under both readings",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+   "name": "GC-MOKA-SELL-GUIDE-READINGS-DIFFER: an undercut three days after the close below the MA is a violation only for the FAQ reading",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+   "name": "SF2-MOKA-SELL-GUIDE-CAUSAL: later bars do not change the evidence of an earlier day; records carry it as evidence only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+   "name": "SF2-MOKA-READINGS-NESTED: every next-day violation is also a later-days violation; a recovered stock can violate again (review R1-04)",
    "result": "PASS"
   }
  ]

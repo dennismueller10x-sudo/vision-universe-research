@@ -31,13 +31,15 @@ import { RESEARCH_UNIVERSE, eligibleAtPriorSession } from '../common/series.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const RUNNER_VERSION = 'sf-runner-1.0.0';
+export const RUNNER_VERSION = 'sf-runner-1.1.0';
 export const SCENARIO_SET = Object.freeze([
   { id: 'BASE_S0', scenario: 'S0_LAST_PRICE' },
   { id: 'DELIST_S1_MINUS_30', scenario: 'S1_MINUS_30' },
   { id: 'DELIST_S2_DISTRESS_ZERO', scenario: 'S2_DISTRESS_ZERO' },
   { id: 'COST2_S1', scenario: 'S1_MINUS_30', slippageBps: 20, commissionBps: 2 },
   { id: 'DATA_EVENT_MINUS_30', scenario: 'S0_LAST_PRICE', dataEventScenario: 'UNKNOWN_PROCEEDS_MINUS_30_PERCENT' },
+  // second reading of the SOURCE_AMBIGUOUS failsafe exit (TUR-SF-FAILSAFE-EXIT): 20-day exit; affects System 1 only
+  { id: 'FAILSAFE_EXIT_20D', scenario: 'S0_LAST_PRICE', failsafeExit: '20D' },
 ]);
 const SPLIT_PERIODS = [['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOW.to]];
 
@@ -133,12 +135,13 @@ export function runMethod(methodId, dataset, { snapshotId, datasetSha256, accoun
   const { contract, entry } = assertBacktestReady(methodId);
   const runs = {};
   for (const sc of SCENARIO_SET) {
-    const { run, trades } = RUNNABLE[methodId](dataset, { from, to, initialCapital, scenario: sc.scenario, dataEventScenario: sc.dataEventScenario, slippageBps: sc.slippageBps ?? 10, commissionBps: sc.commissionBps ?? 1 });
+    const { run, trades } = RUNNABLE[methodId](dataset, { from, to, initialCapital, scenario: sc.scenario, dataEventScenario: sc.dataEventScenario, failsafeExit: sc.failsafeExit, slippageBps: sc.slippageBps ?? 10, commissionBps: sc.commissionBps ?? 1 });
     if (!run.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${methodId}:${sc.id}`);
     runs[sc.id] = {
       metrics: computeDiagnosticMetrics({ curve: run.curve, trades, ledger: run.ledger, costs: run.counts.costs, spyTR: dataset.spyTR, splitPeriods: SPLIT_PERIODS, initialCapital }),
       counts: run.counts, filterCounts: run.filterCounts ?? null, staleCounts: run.staleCounts, rejections: run.rejections.length,
       reconciliation: run.reconciliation, endingPositionCheck: run.endingPositionCheck, openAtEnd: run.openAtEnd.length,
+      correlationLimits: run.correlationLimits ?? null, liquidity: run.liquidity ?? null,
       ledgerSha256: crypto.createHash('sha256').update(JSON.stringify(run.ledger)).digest('hex'),
     };
   }
@@ -152,11 +155,15 @@ export function runMethod(methodId, dataset, { snapshotId, datasetSha256, accoun
   };
 }
 
+/** Execution counters (no prices) that the public view may carry for the regression comparison. */
+const PUBLIC_COUNTS = ['entries', 'adds', 'failsafeEntries', 'skippedByFilter', 'rejectNoCash', 'rejectZeroUnit', 'rejectUnitLimit12', 'rejectCorrelationLimit6', 'rejectCorrelationLimit10', 'unitStopExits', 'channelExits', 'sameBarEntryStops', 'sameBarAddStops', 'sameBarEntryChannelExits', 'noAddAfterStopSameBar', 'terminalSettlements', 'unavailableSettlements', 'filterResolvedIntrabar', 'reentrySameBarAsExit', 'correlationGroupMissing'];
+export const executionCountsOf = (c = {}) => Object.fromEntries(PUBLIC_COUNTS.filter((k) => c[k] !== undefined).map((k) => [k, c[k]]));
+
 /** Public, hash-only view of a result (safe for the public repository and logs). */
 export function publicView(result) {
-  if (result.schema === 'supertrader-sf-component-study-1.0.0') return { schema: 'supertrader-sf-research-public-1.0.0', method: result.method, certification: result.certification, label: result.label, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, tradesSha256: result.tradesSha256, signals: result.stats.signals, inputs: result.inputs };
-  return { schema: 'supertrader-sf-research-public-1.0.0', method: result.method, certification: result.certification, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, contractFingerprint: result.receipt.contractFingerprint,
-    scenarios: Object.fromEntries(Object.entries(result.runs).map(([k, v]) => [k, { reconciliation: v.reconciliation.pass, endingPositionCheck: v.endingPositionCheck.status, ledgerSha256: v.ledgerSha256, trades: v.metrics.trades }])), dataCoverage: result.dataCoverage, inputs: result.inputs };
+  if (result.schema === 'supertrader-sf-component-study-1.0.0') return { schema: 'supertrader-sf-research-public-1.1.0', method: result.method, certification: result.certification, label: result.label, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, tradesSha256: result.tradesSha256, signals: result.stats.signals, inputs: result.inputs };
+  return { schema: 'supertrader-sf-research-public-1.1.0', method: result.method, certification: result.certification, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, contractFingerprint: result.receipt.contractFingerprint,
+    scenarios: Object.fromEntries(Object.entries(result.runs).map(([k, v]) => [k, { reconciliation: v.reconciliation.pass, endingPositionCheck: v.endingPositionCheck.status, ledgerSha256: v.ledgerSha256, trades: v.metrics.trades, executionCounts: executionCountsOf(v.counts), correlationLimits: v.correlationLimits ?? null, liquidity: v.liquidity ? { fills: v.liquidity.fills, participationOfBarVolumeP50: v.liquidity.participationOfBarVolume.p50, participationOfAdv20P50: v.liquidity.participationOfAdv20.p50 } : null }])), dataCoverage: result.dataCoverage, inputs: result.inputs };
 }
 
 async function main() {

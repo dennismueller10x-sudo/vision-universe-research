@@ -15,13 +15,18 @@
  * (whole-share units, so no dust), ledger with a cash replay check.
  * Intrabar convention on daily bars (CONVENTION, counted): for a held position the level nearer to the open is reached
  * first (unit stops above the channel exit before it); no add on a bar on which a unit was stopped; after adds or an
- * entry, a low at or below a (raised) stop is assumed to come after them (pessimistic).
+ * entry, a low at or below a (raised) stop is assumed to come after them (pessimistic); the same holds for the
+ * channel exit level on the entry bar (sf-turtle-1.1.0, counted as sameBarEntryChannelExits).
+ *
+ * Correlation limits (TUR-LIMIT6 / TUR-LIMIT10) are enforced when the caller supplies a point-in-time group provider
+ * `groupsOf(securityId, date) -> { closely, loosely } | null`. The frozen research snapshot has no such groups, so the
+ * runner passes none and every result states correlationLimits = NOT_EVALUATED_NO_PIT_GROUPS (DATA_BLOCKED binding).
  */
 import * as AC from '../../validation/accounting-contract.mjs';
 import { SCENARIOS } from '../../validation/portfolio.mjs';
-import { trueRangeAt, priorHigh, priorLow, rawTickAdjusted, eligibleAtPriorSession, RESEARCH_UNIVERSE, fin } from '../common/series.mjs';
+import { trueRangeAt, priorHigh, priorLow, priorLowAvailable, priorHighAvailable, rawTickAdjusted, eligibleAtPriorSession, RESEARCH_UNIVERSE, fin } from '../common/series.mjs';
 
-export const TURTLE_VERSION = 'sf-turtle-1.0.0';
+export const TURTLE_VERSION = 'sf-turtle-1.1.0';
 export const PARAMS = Object.freeze({
   S1: Object.freeze({ entry: 20, exit: 10, filter: true, failsafe: 55 }),   // TUR-S1ENT, TUR-S1EX, TUR-S1SKIP, TUR-FAILSAFE
   S2: Object.freeze({ entry: 55, exit: 20, filter: false, failsafe: null }), // TUR-S2ENT, TUR-S2EX, TUR-S2NOSKIP
@@ -31,6 +36,8 @@ export const PARAMS = Object.freeze({
   addStepN: 0.5,            // TUR-ADD, TUR-STOPADD
   maxUnitsPerMarket: 4,     // TUR-LIMIT4
   maxUnitsLong: 12,         // TUR-LIMIT12
+  maxUnitsClosely: 6,       // TUR-LIMIT6 (per direction, closely correlated group)
+  maxUnitsLoosely: 10,      // TUR-LIMIT10 (per direction, loosely correlated group)
   filterBreakout: 20,       // TUR-S1SKIP (hypothetical 20-day breakouts)
   filterExit: 10,           // TUR-S1LOSER (profitable 10-day exit)
   notionalLossStep: 0.10,   // TUR-DRAWDOWN
@@ -97,7 +104,7 @@ export function createNotionalAccount(maxCuts = 60) {
  */
 export function createBreakoutTracker(bars, N, P = PARAMS) {
   let active = null, last = null;
-  const counts = { WINNER: 0, LOSER: 0, NON_LOSER: 0, AMBIGUOUS_BOTH_DIRECTIONS: 0, ENTRY_BAR_STOP_NOT_RESOLVED: 0 };
+  const counts = { WINNER: 0, LOSER: 0, NON_LOSER: 0, AMBIGUOUS_BOTH_DIRECTIONS: 0, ENTRY_BAR_RESOLVED_PESSIMISTIC: 0 };
   const done = (o, atOpen = false) => { last = o; counts[o]++; active = null; return { outcome: o, atOpen }; };
   return {
     counts,
@@ -106,13 +113,13 @@ export function createBreakoutTracker(bars, N, P = PARAMS) {
       if (!active || i <= active.start) return null;
       const b = bars[i], t = rawTickAdjusted(b, P.rawTick);
       if (active.dir > 0) {
-        const l = priorLow(bars, i, P.filterExit), exitLevel = l === null ? -Infinity : l - t;
+        const l = priorLowAvailable(bars, i, P.filterExit), exitLevel = l === null ? -Infinity : l - t;
         if (b.open <= active.stop) return done('LOSER', true);
         if (exitLevel >= active.stop && b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER', b.open <= exitLevel); }
         if (b.low <= active.stop) return done('LOSER');
         if (b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER', b.open <= exitLevel); }
       } else {
-        const h = priorHigh(bars, i, P.filterExit), exitLevel = h === null ? Infinity : h + t;
+        const h = priorHighAvailable(bars, i, P.filterExit), exitLevel = h === null ? Infinity : h + t;
         if (b.open >= active.stop) return done('LOSER', true);
         if (exitLevel <= active.stop && b.high >= exitLevel) { const px = Math.max(b.open, exitLevel); return done(px < active.entry ? 'WINNER' : 'NON_LOSER', b.open >= exitLevel); }
         if (b.high >= active.stop) return done('LOSER');
@@ -130,7 +137,16 @@ export function createBreakoutTracker(bars, N, P = PARAMS) {
       if (up && down) { counts.AMBIGUOUS_BOTH_DIRECTIONS++; dir = Math.abs(b.open - hh) <= Math.abs(b.open - ll) ? 1 : -1; }
       const entry = dir > 0 ? Math.max(b.open, hh + t) : Math.min(b.open, ll - t);
       active = { dir, start: i, entry, stop: entry - dir * P.stopN * N[i - 1] };
-      if (dir > 0 ? b.low <= active.stop : b.high >= active.stop) counts.ENTRY_BAR_STOP_NOT_RESOLVED++;
+      // the same pessimistic entry-bar convention as the real position (sf-turtle-1.1.0, review R2-02): a range through
+      // the stop or the 10-day exit after the breakout resolves the hypothetical trade on this bar; the level nearer to
+      // the entry is reached first (stop -> LOSER, exit without a 2N move -> NON_LOSER)
+      if (dir > 0) {
+        const l = priorLowAvailable(bars, i, P.filterExit), xl = l === null ? -Infinity : l - t;
+        if (b.low <= Math.max(active.stop, xl)) { counts.ENTRY_BAR_RESOLVED_PESSIMISTIC++; done(active.stop >= xl ? 'LOSER' : 'NON_LOSER'); }
+      } else {
+        const h = priorHighAvailable(bars, i, P.filterExit), xh = h === null ? Infinity : h + t;
+        if (b.high >= Math.min(active.stop, xh)) { counts.ENTRY_BAR_RESOLVED_PESSIMISTIC++; done(active.stop <= xh ? 'LOSER' : 'NON_LOSER'); }
+      }
       return dir;
     },
   };
@@ -154,12 +170,45 @@ export function entryTrigger(bars, i, system, outcomeBefore, P = PARAMS) {
 }
 
 /**
+ * TUR-LIMIT6 / TUR-LIMIT10: would one more long unit of `candidateId` break a correlation-group limit?
+ * held: [{ id, units }]; groupsOf(id, date) -> { closely, loosely } | null, membership known at `date` (the engine passes
+ * the PRIOR session date; point in time, caller-supplied). Group ids are compared with ===; null / undefined = no group.
+ * Returns null (allowed) or 'LIMIT6' / 'LIMIT10'. A security without a group is limited only by LIMIT4 / LIMIT12.
+ */
+export function correlationLimitBreach(held, candidateId, date, groupsOf, P = PARAMS) {
+  const g = groupsOf(candidateId, date);
+  if (!g) return null;
+  let closely = 0, loosely = 0;
+  for (const h of held) {
+    const hg = groupsOf(h.id, date);
+    if (!hg) continue;
+    if (g.closely != null && hg.closely === g.closely) closely += h.units;
+    if (g.loosely != null && hg.loosely === g.loosely) loosely += h.units;
+  }
+  if (g.closely != null && closely + 1 > P.maxUnitsClosely) return 'LIMIT6';
+  if (g.loosely != null && loosely + 1 > P.maxUnitsLoosely) return 'LIMIT10';
+  return null;
+}
+
+const q = (sorted, p) => (sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))] : null);
+/** Liquidity diagnostic of the fills (no gate: the source names no participation limit for liquid markets). */
+export function liquiditySummary(rows) {
+  const s = (k) => { const v = rows.map((r) => r[k]).filter((x) => Number.isFinite(x)).sort((a, b) => a - b); return { n: v.length, p50: q(v, 0.5), p95: q(v, 0.95), p99: q(v, 0.99), max: v.length ? v.at(-1) : null }; };
+  return { fills: rows.length, participationOfBarVolume: s('bar'), participationOfAdv20: s('adv20'), note: 'entries and adds only (exits are not measured): shares of a fill / volume of the fill bar and / mean volume of the 20 prior sessions; diagnostic only, no gate; a value above 1 means the fill exceeds the bar volume' };
+}
+
+/**
  * Portfolio simulation of one system on a frozen dataset.
  * data: { calendar: [date], securities: [{ id, bars, terminal: { date, cause, distress, delistClass } | null }] }
- * opts: { system, initialCapital, from, to, scenario, dataEventScenario, slippageBps, commissionBps, universe }
+ * opts: { system, initialCapital, from, to, scenario, dataEventScenario, slippageBps, commissionBps, universe, groupsOf,
+ *         failsafeExit: '10D' (default) | '20D' (reading of the ambiguous failsafe exit) }
  */
-export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, to, scenario = 'S0_LAST_PRICE', dataEventScenario, slippageBps = 10, commissionBps = 1, universe = RESEARCH_UNIVERSE, P = PARAMS } = {}) {
+export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, to, scenario = 'S0_LAST_PRICE', dataEventScenario, slippageBps = 10, commissionBps = 1, universe = RESEARCH_UNIVERSE, groupsOf = null, failsafeExit = '10D', P = PARAMS } = {}) {
   const S = P[system]; if (!S) throw new Error('TURTLE_SYSTEM_REQUIRED');
+  if (!['10D', '20D'].includes(failsafeExit)) throw new Error('UNKNOWN_FAILSAFE_EXIT');
+  // TUR-SF-FAILSAFE-EXIT is SOURCE_AMBIGUOUS: default = the System 1 10-day exit; the 20-day (System 2) exit is the
+  // second reading, run as the sensitivity scenario FAILSAFE_EXIT_20D (review R1-03)
+  const exitSessionsOf = (path) => (path === 'FAILSAFE_55' && failsafeExit === '20D' ? 20 : S.exit);
   if (!SCENARIOS[scenario]) throw new Error('UNKNOWN_SCENARIO');
   const slip = slippageBps / 1e4, fee = commissionBps / 1e4, dataFactor = AC.dataEventFactor(dataEventScenario);
   const calendar = data.calendar.filter((d) => (!from || d >= from) && (!to || d <= to));
@@ -175,8 +224,9 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
   let cash = initialCapital, year = null, grossFlows = 0;
   const notional = createNotionalAccount();
   const positions = new Map(), lastClose = new Map();
+  const fillLiquidity = [];
   const ledger = [], unitTrades = [], positionTrades = [], signals = [], curve = [], rejections = [];
-  const counts = { entries: 0, adds: 0, failsafeEntries: 0, skippedByFilter: 0, rejectNoCash: 0, rejectZeroUnit: 0, rejectUnitLimit12: 0, unitStopExits: 0, channelExits: 0, sameBarEntryStops: 0, sameBarAddStops: 0, noAddAfterStopSameBar: 0, terminalSettlements: 0, unavailableSettlements: 0, filterResolvedIntrabar: 0, dividends: 0, costs: 0 };
+  const counts = { entries: 0, adds: 0, failsafeEntries: 0, skippedByFilter: 0, rejectNoCash: 0, rejectZeroUnit: 0, rejectUnitLimit12: 0, rejectCorrelationLimit6: 0, rejectCorrelationLimit10: 0, unitStopExits: 0, channelExits: 0, sameBarEntryChannelExits: 0, sameBarEntryStops: 0, sameBarAddStops: 0, noAddAfterStopSameBar: 0, terminalSettlements: 0, unavailableSettlements: 0, filterResolvedIntrabar: 0, reentrySameBarAsExit: 0, correlationGroupMissing: 0, dividends: 0, costs: 0 };
   const unitsLong = () => { let n = 0; for (const p of positions.values()) n += p.units.length; return n; };
   const mv = () => { let v = 0; for (const p of positions.values()) for (const u of p.units) v += u.shares * (lastClose.get(p.id) ?? u.fill); return v; };
   const book = (row) => { ledger.push(row); grossFlows += Math.abs(row.gross || 0) + Math.abs(row.fee || 0); };
@@ -188,7 +238,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     unitTrades.push({ id: pos.id, path: pos.path, unit: u.n, entryDate: u.date, entryFill: u.fill, exitDate: date, exitPrice: px, shares: u.shares, pnl: gross - f - u.cost, reason });
     pos.realized += gross - f - u.cost; pos.units.splice(k, 1);
     if (reason.startsWith('STOP_2N')) pos.unitStopped = true;
-    if (!pos.units.length) finishPosition(pos, date, reason);
+    if (!pos.units.length) { finishPosition(pos, date, reason); exitedToday.add(pos.id); }
   }
   function finishPosition(pos, date, reason) {
     positionTrades.push({ id: pos.id, path: pos.path, entryDate: pos.entryDate, exitDate: date, maxUnits: pos.maxUnits, pnl: pos.realized + pos.dividends, cost: pos.costTotal, returnPct: (pos.realized + pos.dividends) / pos.costTotal, heldSessions: pos.sessions, reason });
@@ -204,6 +254,18 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     if (!(shares > 0)) { counts.rejectZeroUnit++; return null; }
     if (unitsLong() >= P.maxUnitsLong) { counts.rejectUnitLimit12++; return null; }
     if (!AC.isExecutableBar(x.s.bars[i], 'open')) { rejections.push({ id: x.s.id, date, reason: 'ORDER_WITHOUT_SOURCE_BAR' }); return null; }
+    if (groupsOf) {
+      // groups as known at the PRIOR session (review R2-06); a held position's blocked add is counted once per unit level
+      const asOf = x.s.bars[i - 1]?.date ?? date;
+      if (groupsOf(x.s.id, asOf) == null) counts.correlationGroupMissing++;
+      const breach = correlationLimitBreach([...positions.values()].map((p) => ({ id: p.id, units: p.units.length })), x.s.id, asOf, groupsOf, P);
+      if (breach) {
+        const held = positions.get(x.s.id), key = held ? held.nextUnit : 0;
+        if (!held || held.corrRejectedUnit !== key) counts[breach === 'LIMIT6' ? 'rejectCorrelationLimit6' : 'rejectCorrelationLimit10']++;
+        if (held) held.corrRejectedUnit = key;
+        return null;
+      }
+    }
     const px = price * (1 + slip), gross = shares * px, f = gross * fee;
     if (gross + f > cash) { counts.rejectNoCash++; return null; }
     cash -= gross + f; counts.costs += shares * price * slip + f;
@@ -213,6 +275,9 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     const u = { n: pos.nextUnit++, date, fill: price, fillWithSlippage: px, shares, cost: gross + f, stop: price - P.stopN * pos.entryN };
     pos.units.push(u); pos.lastFill = price; pos.costTotal += gross + f; pos.maxUnits = Math.max(pos.maxUnits, pos.units.length);
     book({ date, id: x.s.id, side: 'BUY', unit: u.n, shares, price: px, gross, fee: f, reason: pathLabel });
+    let adv = 0, an = 0; for (let k = Math.max(0, i - 20); k < i; k++) if (fin(x.s.bars[k].volume)) { adv += x.s.bars[k].volume; an++; }
+    const bv = x.s.bars[i].volume;
+    fillLiquidity.push({ bar: fin(bv) && bv > 0 ? shares / bv : null, adv20: an === 20 && adv > 0 ? shares / (adv / an) : null });
     return u;
   }
   /**
@@ -233,13 +298,18 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     }
     return added;
   }
-  /** Pessimistic same-bar check after adds / entry: units whose (raised) stop is at or above the low exit at the stop. */
-  function sameBarStops(pos, b, date, counter) {
-    for (let k = pos.units.length - 1; k >= 0 && positions.has(pos.id); k--) if (b.low <= pos.units[k].stop) { closeUnit(pos, k, pos.units[k].stop, date, 'STOP_2N_SAME_BAR'); counts[counter]++; }
+  /**
+   * Pessimistic same-bar check after adds / entry: units whose (raised) stop is at or above the low exit at the stop.
+   * With a channel level `above`, only stops above it are reached before the channel exit (the caller exits the rest).
+   */
+  function sameBarStops(pos, b, date, counter, above = -Infinity) {
+    for (let k = pos.units.length - 1; k >= 0 && positions.has(pos.id); k--) if (pos.units[k].stop > above && b.low <= pos.units[k].stop) { closeUnit(pos, k, pos.units[k].stop, date, 'STOP_2N_SAME_BAR'); counts[counter]++; }
   }
   let notionalNow = 0;
 
+  const exitedToday = new Set();
   for (const date of calendar) {
+    exitedToday.clear();
     const equityStart = cash + mv();
     if (date.slice(0, 4) !== year) { year = date.slice(0, 4); notional.newYear(equityStart); }
     notionalNow = notional.update(equityStart);
@@ -250,8 +320,8 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       pos.sessions++;
       if (fin(b.dividend) && b.dividend > 0 && pos.entryDate < date) { let sh = 0; for (const u of pos.units) sh += u.shares; const d = sh * b.dividend; cash += d; pos.dividends += d; counts.dividends += d; book({ date, id: pos.id, side: 'DIVIDEND', shares: sh, price: b.dividend, gross: d, fee: 0, reason: 'EX_DATE_HELD_PREVIOUS_CLOSE' }); }
       if (!AC.isExecutableBar(b, 'open')) continue;
-      const l = priorLow(x.s.bars, i, S.exit), exitLevel = l === null ? -Infinity : l - rawTickAdjusted(b, P.rawTick);
-      const exitReason = S.exit === 10 ? 'EXIT_10D' : 'EXIT_20D';
+      const exitN = exitSessionsOf(pos.path), l = priorLowAvailable(x.s.bars, i, exitN), exitLevel = l === null ? -Infinity : l - rawTickAdjusted(b, P.rawTick);
+      const exitReason = `EXIT_${exitN}D`;
       let stopped = false;
       // unit stops above the channel level are reached first (descending)
       const order = pos.units.map((u, k) => ({ u, k })).sort((a, c) => c.u.stop - a.u.stop);
@@ -294,8 +364,15 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       if (!buyUnit(c.x, c.i, price, date, n, n, c.e.path)) continue;
       counts.entries++; if (c.e.path === 'FAILSAFE_55') counts.failsafeEntries++;
       const pos = positions.get(c.x.s.id);
-      sameBarStops(pos, b, date, 'sameBarEntryStops');
-      if (positions.has(pos.id) && addUnits(c.x, pos, c.i, date, n)) sameBarStops(pos, b, date, 'sameBarAddStops');
+      // the channel exit level is a resting stop as well: a low through it on the entry bar is assumed after the
+      // entry (pessimistic, the same convention as the unit stops; whichever level is higher is reached first;
+      // sf-turtle-1.1.0)
+      // order on the entry bar: entry -> high (adds) -> low (unit stops, channel), as declared (review R2-01)
+      const exitN = exitSessionsOf(c.e.path), l = priorLowAvailable(c.x.s.bars, c.i, exitN), lvl = l === null ? -Infinity : l - rawTickAdjusted(b, P.rawTick);
+      if (exitedToday.has(pos.id)) counts.reentrySameBarAsExit++;
+      addUnits(c.x, pos, c.i, date, n);
+      sameBarStops(pos, b, date, 'sameBarEntryStops', lvl);
+      if (positions.has(pos.id) && b.low <= lvl) { settleAll(pos, lvl * (1 - slip), date, `EXIT_${exitN}D_SAME_BAR`); counts.sameBarEntryChannelExits++; }
     }
     // 3) terminals (research-v1, as validation/portfolio.mjs): only the end of an inactive listing is an economic
     // delisting, settled on its last bar by scenario. A data gap or window end is no delisting; a position without
@@ -324,6 +401,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
   return {
     version: TURTLE_VERSION, system, initialCapital, universe: universe.id, scenario, dataEventScenario: dataEventScenario ?? AC.POLICY.dataEventScenarios.baseline,
     curve, unitTrades, positionTrades, signals, counts, filterCounts, ledger, rejections, wholeUnitsNoDust: true, staleCounts: { ...stale.counts },
+    correlationLimits: !groupsOf ? 'NOT_EVALUATED_NO_PIT_GROUPS' : counts.correlationGroupMissing ? 'ENFORCED_PARTIAL_GROUP_COVERAGE' : 'ENFORCED_WITH_CALLER_GROUPS', failsafeExit, liquidity: liquiditySummary(fillLiquidity),
     openAtEnd: [...positions.values()].map((p) => ({ id: p.id, units: p.units.length, value: p.units.reduce((a, u) => a + u.shares * (lastClose.get(p.id) ?? u.fill), 0) })),
     endingPositionCheck: AC.endingPositionCheck([...positions.keys()], stale),
     reconciliation: { ledgerCash: replay, cash, absoluteDifference: Math.abs(replay - cash), tolerance: tol, pass: Math.abs(replay - cash) <= tol },

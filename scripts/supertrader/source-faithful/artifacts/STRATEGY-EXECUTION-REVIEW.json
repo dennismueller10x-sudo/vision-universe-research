@@ -2,13 +2,13 @@
  "schema": "supertrader-sf-execution-review-1.0.0",
  "rule": "no open HIGH / CRITICAL finding in a component called READY",
  "summary": {
-  "reviewers": 4,
-  "findings": 28,
+  "reviewers": 8,
+  "findings": 72,
   "bySeverity": {
    "CRITICAL": 0,
-   "HIGH": 2,
-   "MEDIUM": 12,
-   "LOW": 14
+   "HIGH": 6,
+   "MEDIUM": 27,
+   "LOW": 39
   },
   "openBySeverity": {
    "CRITICAL": 0,
@@ -329,6 +329,474 @@
      "status": "DOCUMENTED",
      "fix": "precedence documented in the workflow header",
      "test": null
+    }
+   ]
+  },
+  {
+   "id": "SF2-R1",
+   "focus": "Supertrader 2.0: source fidelity of the completion changes and the manual-review classification",
+   "findings": [
+    {
+     "id": "SF2-R1-01",
+     "severity": "HIGH",
+     "title": "Data-blocked correlation limits counted as complete once their mechanics existed: Turtle shown as FULL_DIAGNOSTIC_METHOD_RUN / fully measurable although no run can enforce TUR-LIMIT6/10",
+     "rules": [
+      "TUR-LIMIT6",
+      "TUR-LIMIT10"
+     ],
+     "status": "FIXED",
+     "fix": "a DATA_GAP on an essential in-scope rule keeps the dimension PARTIAL; engine state RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION, fullMethodMeasurable false, readiness DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION",
+     "test": "sf-completion.test.mjs: SF2-ACCEPTANCE-GATE"
+    },
+    {
+     "id": "SF2-R1-02",
+     "severity": "HIGH",
+     "title": "Darvas lost a stop raise when the confirming box bar was synthetic or had no open (new guard skipped the raise loop)",
+     "rules": [
+      "DAR-Q6"
+     ],
+     "status": "FIXED",
+     "fix": "raises for every BOTTOM_CONFIRMED up to the bar are applied on the next real bar",
+     "test": "sf-darvas-completion.test.mjs: SF2-DAR-RAISE-ON-SYNTHETIC-BAR"
+    },
+    {
+     "id": "SF2-R1-03",
+     "severity": "MEDIUM",
+     "title": "Ambiguous failsafe exit had only one implemented reading but passed the gate",
+     "rules": [
+      "TUR-FAILSAFE"
+     ],
+     "status": "FIXED",
+     "fix": "both readings (10-day default, 20-day scenario FAILSAFE_EXIT_20D); an ambiguity passes AG-1 only with every reading implemented",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-FAILSAFE-EXIT-READINGS"
+    },
+    {
+     "id": "SF2-R1-04",
+     "severity": "MEDIUM",
+     "title": "MOKA later-days reading kept only the first close-below day, finding fewer violations than the next-day reading",
+     "rules": [
+      "MOKA12-009",
+      "MOKASTOP-002"
+     ],
+     "status": "FIXED",
+     "fix": "reference = highest low of all close-below days since the last confirmation",
+     "test": "sf-moka-completion.test.mjs: SF2-MOKA-READINGS-NESTED"
+    },
+    {
+     "id": "SF2-R1-05",
+     "severity": "MEDIUM",
+     "title": "Correlation limits fail open for securities without a group while the run says ENFORCED",
+     "rules": [
+      "TUR-LIMIT6",
+      "TUR-LIMIT10"
+     ],
+     "status": "FIXED",
+     "fix": "correlationGroupMissing counted; label ENFORCED_PARTIAL_GROUP_COVERAGE",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-CORR-COVERAGE"
+    },
+    {
+     "id": "SF2-R1-06",
+     "severity": "LOW",
+     "title": "Entry-bar adds depended on whether the unit stop was above the channel level",
+     "rules": [
+      "TUR-ADD"
+     ],
+     "status": "FIXED",
+     "fix": "entry -> adds -> stops / channel (see SF2-R2-01)",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-ENTRY-BAR-ORDER"
+    },
+    {
+     "id": "SF2-R1-07",
+     "severity": "LOW",
+     "title": "Darvas bottom-start reading marked non-essential although it decides box bottoms and stop raises",
+     "rules": [
+      "DAR-Q2"
+     ],
+     "status": "FIXED",
+     "fix": "DAR-SF-BOTTOM-START essential with both readings declared; DAR-SF-BOTTOM SOURCE_DERIVED (depends on the reading)",
+     "test": "sf-foundation.test.mjs: SF-CONTRACTS"
+    },
+    {
+     "id": "SF2-R1-08",
+     "severity": "LOW",
+     "title": "Holy Grail shown as MECHANICAL_SCREEN_COMPLETE although its entry is not disclosed",
+     "rules": [
+      "RAS04-001"
+     ],
+     "status": "FIXED",
+     "fix": "an essential SOURCE_GAP entry without mechanics gives MECHANICAL_COMPONENTS_ONLY",
+     "test": "sf-completion.test.mjs: SF2-COMPLETION-ARTIFACTS"
+    },
+    {
+     "id": "SF2-R1-09",
+     "severity": "LOW",
+     "title": "Minervini 10 % stop cap and 25 % position cap classified MANUAL although numerically decidable",
+     "rules": [
+      "MIN-MM-STOP-02",
+      "MIN-MM-SIZE-01"
+     ],
+     "status": "DOCUMENTED",
+     "fix": "kept MANUAL: both #709 rules require original or explicit corroboration (MEDIUM, translation only); stopCheck reports the 10 % flag as evidence; hardening needs the English original (report, next steps)",
+     "test": null
+    },
+    {
+     "id": "SF2-R1-10",
+     "severity": "LOW",
+     "title": "Gate detail lists and AG-2 title inconsistent; gate did not see this review",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "one dimension list for pass and detail; AG-2 = golden and rule tests; this review recorded here (AG-7 reads it)",
+     "test": "sf-completion.test.mjs: SF2-ACCEPTANCE-GATE"
+    }
+   ]
+  },
+  {
+   "id": "SF2-R2",
+   "focus": "Supertrader 2.0: temporal integrity and risk / execution logic",
+   "findings": [
+    {
+     "id": "SF2-R2-01",
+     "severity": "MEDIUM",
+     "title": "Entry bar: a unit stop above the channel closed the entry before the adds, the channel case after them",
+     "rules": [
+      "TUR-ADD",
+      "TUR-STOPADD"
+     ],
+     "status": "FIXED",
+     "fix": "entry -> adds -> unit stops above the channel -> channel exit, declared in knownLimitations",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-ENTRY-BAR-ORDER"
+    },
+    {
+     "id": "SF2-R2-02",
+     "severity": "MEDIUM",
+     "title": "S1 filter kept a breakout OPEN that the engine had already exited on its entry bar",
+     "rules": [
+      "TUR-S1SKIP",
+      "TUR-S1LOSER"
+     ],
+     "status": "FIXED",
+     "fix": "the hypothetical breakout resolves on its start bar with the same pessimistic convention (counted ENTRY_BAR_RESOLVED_PESSIMISTIC)",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-FILTER-ENTRY-BAR"
+    },
+    {
+     "id": "SF2-R2-03",
+     "severity": "MEDIUM",
+     "title": "Darvas stop raise lost on a synthetic confirming bar (same as SF2-R1-02)",
+     "rules": [
+      "DAR-Q6"
+     ],
+     "status": "FIXED",
+     "fix": "see SF2-R1-02",
+     "test": "sf-darvas-completion.test.mjs: SF2-DAR-RAISE-ON-SYNTHETIC-BAR"
+    },
+    {
+     "id": "SF2-R2-04",
+     "severity": "MEDIUM",
+     "title": "One missing low switched the Turtle channel exit off for the whole window",
+     "rules": [
+      "TUR-S1EX",
+      "TUR-S2EX"
+     ],
+     "status": "FIXED",
+     "fix": "exit levels over the bars that have a low (priorLowAvailable)",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-CHANNEL-MISSING-LOW"
+    },
+    {
+     "id": "SF2-R2-05",
+     "severity": "LOW",
+     "title": "Correlation rejections of a held position counted every day and before the source-bar check",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "executable-bar check first; a blocked add counted once per unit level",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-CORR-COUNT-ONCE"
+    },
+    {
+     "id": "SF2-R2-06",
+     "severity": "LOW",
+     "title": "groupsOf received the fill date; group id 0 / empty ignored",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "groups as of the prior session; ids compared with !== null",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-CORR-COUNT-ONCE"
+    },
+    {
+     "id": "SF2-R2-07",
+     "severity": "LOW",
+     "title": "Re-entry on the bar of an exit uses the low twice, uncounted",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "counted as reentrySameBarAsExit (conservative, public count)",
+     "test": null
+    },
+    {
+     "id": "SF2-R2-08",
+     "severity": "LOW",
+     "title": "Liquidity diagnostic covers buys only without saying so",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "note: entries and adds only; > 1 = above bar volume",
+     "test": null
+    },
+    {
+     "id": "SF2-R2-09",
+     "severity": "LOW",
+     "title": "Darvas bottom search accepted a bar without a high; review data `complete` counted indices",
+     "rules": [
+      "DAR-Q2",
+      "DAR-Q12"
+     ],
+     "status": "FIXED",
+     "fix": "both high and low required; complete = sessions with data >= horizon",
+     "test": "sf-darvas-completion.test.mjs: GC-DAR-MISSING-BAR"
+    }
+   ]
+  },
+  {
+   "id": "SF2-R3",
+   "focus": "Supertrader 2.0: accounting, backtest readiness, data completeness",
+   "findings": [
+    {
+     "id": "SF2-R3-01",
+     "severity": "HIGH",
+     "title": "Backtest readiness marked Turtle FULL_DIAGNOSTIC_METHOD_RUN while the status said INCOMPLETE (accounting answer from the registry flag, not from a reconciliation)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "accountingValid from AG-3 (reconciled run of the current code); full run only with fullMethodMeasurable; agreement test",
+     "test": "sf-completion.test.mjs: SF2-READINESS-AGREES-WITH-STATUS"
+    },
+    {
+     "id": "SF2-R3-02",
+     "severity": "MEDIUM",
+     "title": "requiredDataPresent true for data-blocked rules with mechanics (same root as SF2-R1-01)",
+     "rules": [
+      "TUR-LIMIT6",
+      "TUR-LIMIT10",
+      "MIN-SF-TT-8"
+     ],
+     "status": "FIXED",
+     "fix": "no mechanics exemption for data",
+     "test": "sf-completion.test.mjs: SF2-READINESS-AGREES-WITH-STATUS"
+    },
+    {
+     "id": "SF2-R3-03",
+     "severity": "MEDIUM",
+     "title": "AG-3 relied on a typed version string; edits to runner / accounting kept an old run valid",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "AG-3 compares the full codeSha256 of the public receipt with run-research.mjs codeSha256()",
+     "test": "sf-completion.test.mjs: SF2-ACCEPTANCE-GATE"
+    },
+    {
+     "id": "SF2-R3-04",
+     "severity": "MEDIUM",
+     "title": "Component study answered accountingValid yes without a ledger",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "no for component studies",
+     "test": "sf-completion.test.mjs: SF2-READINESS-AGREES-WITH-STATUS"
+    },
+    {
+     "id": "SF2-R3-05",
+     "severity": "LOW",
+     "title": "Gate hard-coded Turtle tests and version for every research method",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "GATE_TESTS per method; code fingerprint instead of version",
+     "test": null
+    },
+    {
+     "id": "SF2-R3-06",
+     "severity": "LOW",
+     "title": "AG-1 pass and detail used different dimension lists",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "one list",
+     "test": null
+    },
+    {
+     "id": "SF2-R3-07",
+     "severity": "LOW",
+     "title": "Correlation rejection counting and truthiness (same as SF2-R2-05 / -06)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "see SF2-R2-05 / -06",
+     "test": "sf-turtle-completion.test.mjs: SF2-TUR-CORR-COUNT-ONCE"
+    },
+    {
+     "id": "SF2-R3-08",
+     "severity": "LOW",
+     "title": "Entry-bar convention missing from knownLimitations",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "declared",
+     "test": null
+    },
+    {
+     "id": "SF2-R3-09",
+     "severity": "LOW",
+     "title": "Public liquidity quantiles p99 / max scale with equity (weak return proxy)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "public view carries fills and medians only; quantiles stay sealed",
+     "test": null
+    },
+    {
+     "id": "SF2-R3-10",
+     "severity": "LOW",
+     "title": "Data catalogue wording overstated four evidence claims (Tiingo sector add-on, SEC available_from, breadth log dates, pre-2015 history coverage)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "claims aligned with the cited files",
+     "test": null
+    }
+   ]
+  },
+  {
+   "id": "SF2-R4",
+   "focus": "Supertrader 2.0: regression, legacy isolation, completion module and signal contract",
+   "findings": [
+    {
+     "id": "SF2-R4-01",
+     "severity": "HIGH",
+     "title": "Signal validator accepted a review candidate or a screen-method signal as RESEARCH_ONLY (mechanical)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "contract lookup by strategy id: RESEARCH_ONLY only for RESEARCH_SIGNAL methods, review methods emit REVIEW_CANDIDATE only, REVIEW_CANDIDATE_AS_MECHANICAL rejected",
+     "test": "sf-completion.test.mjs: SF2-SIGNAL-CONTRACT"
+    },
+    {
+     "id": "SF2-R4-02",
+     "severity": "MEDIUM",
+     "title": "Enum checks accepted prototype keys (constructor, toString)",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "Object.hasOwn",
+     "test": "sf-completion.test.mjs: SF2-SIGNAL-CONTRACT"
+    },
+    {
+     "id": "SF2-R4-03",
+     "severity": "MEDIUM",
+     "title": "Validator accepted extra order fields, null risk, impossible dates and a foreign fingerprint / version",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "key allowlist, buyDeclarationAllowed false or absent, finite stop for ENTRY / ADD, real calendar date, contract version and fingerprint compared",
+     "test": "sf-completion.test.mjs: SF2-SIGNAL-CONTRACT"
+    },
+    {
+     "id": "SF2-R4-04",
+     "severity": "MEDIUM",
+     "title": "Evidence-only rules outranked the manual decision rule citing the same #709 id in the coverage counts",
+     "rules": [
+      "MOKA12-008",
+      "MOKASTOP-001",
+      "DAR-Q12"
+     ],
+     "status": "FIXED",
+     "fix": "an evidence-only rule (gate false, non-essential) never outranks another status in sourceCoverage",
+     "test": "sf-foundation.test.mjs: SF-ARTIFACTS"
+    },
+    {
+     "id": "SF2-R4-05",
+     "severity": "MEDIUM",
+     "title": "AG-1 still used the loose mechanics exemption",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "see SF2-R1-01 / SF2-R1-03",
+     "test": "sf-completion.test.mjs: SF2-ACCEPTANCE-GATE"
+    },
+    {
+     "id": "SF2-R4-06",
+     "severity": "MEDIUM",
+     "title": "Turtle and Darvas engines changed without a before / after snapshot run",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "sf-research run of the changed code on the frozen snapshot; public receipts and execution counts recorded next to the 1.0.0 reference (completion/facts.mjs REFERENCE_RUNS); AG-3 is bound to its code fingerprint",
+     "test": "sf-completion.test.mjs: SF2-ACCEPTANCE-GATE"
+    },
+    {
+     "id": "SF2-R4-07",
+     "severity": "LOW",
+     "title": "Test names matched by prefix (GC-TUR-N matched GC-TUR-NOTIONAL); skipped tests counted as existing",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "exact id match on the title part before \":\" split at \" / \" in recorder, gap matrix and gate; skip / todo tests are not indexed",
+     "test": "sf-completion.test.mjs: SF2-TEST-MATRIX"
+    },
+    {
+     "id": "SF2-R4-08",
+     "severity": "LOW",
+     "title": "Order of artifact builds and golden record undocumented",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "completion/rebuild-all.mjs runs the converging sequence",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-09",
+     "severity": "LOW",
+     "title": "Entry dimension n/a for screens whose entry is a SETUP rule",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "the note names the entry conditions of the screen",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-10",
+     "severity": "LOW",
+     "title": "D10 status was set by hand",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "derived from its gaps",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-11",
+     "severity": "LOW",
+     "title": "Gap totals count a rule in several dimensions",
+     "rules": [],
+     "status": "DOCUMENTED",
+     "fix": "totals are labelled as per-dimension occurrences",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-12",
+     "severity": "LOW",
+     "title": "MECHANICAL_SCREEN_COMPLETE despite data-blocked essential filters (Weinstein, Minervini)",
+     "rules": [
+      "WEIN-GROUP",
+      "WEIN-MARKET",
+      "MIN-TT-8"
+     ],
+     "status": "DOCUMENTED",
+     "fix": "kept: the screen runs and reports the blocked filter as an open review question; the flag PARTIAL_DATA_BLOCKED and blockingDataRules name it in every status row",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-13",
+     "severity": "LOW",
+     "title": "Isolation test searched only some names and skipped tests / data folders",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "any reference to the source-faithful tree under supertrader/, scripts/supertrader/, .github/ and core/ outside the tree, its sf tests and the research workflow fails",
+     "test": "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+    },
+    {
+     "id": "SF2-R4-14",
+     "severity": "LOW",
+     "title": "The production signals workflow runs every Supertrader test file, so a stale research artifact could block it",
+     "rules": [],
+     "status": "ACCEPTED_DOCUMENTED",
+     "fix": "pre-existing coupling (supertrader-signals.yml); every research artifact is regenerated and tested in the same PR; decoupling belongs to a workflow PR",
+     "test": null
+    },
+    {
+     "id": "SF2-R4-15",
+     "severity": "LOW",
+     "title": "Review candidates counted ORIGINAL-only rules as missing data; public schema id unchanged; report link missing",
+     "rules": [],
+     "status": "FIXED",
+     "fix": "declared-scope filter; public view schema 1.1.0; report written",
+     "test": "sf-completion.test.mjs: SF2-SIGNAL-CONTRACT"
     }
    ]
   }

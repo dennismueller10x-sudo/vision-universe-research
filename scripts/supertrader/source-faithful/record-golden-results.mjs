@@ -14,7 +14,7 @@ import { ARTIFACT_DIR } from './build-artifacts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
-export const SF_TEST_FILES = Object.freeze(['sf-foundation', 'sf-turtle', 'sf-runner', 'sf-darvas', 'sf-weinstein', 'sf-morales-kacher', 'sf-minervini', 'sf-kullamagi', 'sf-holy-grail'].map((f) => `scripts/supertrader/tests/${f}.test.mjs`));
+export const SF_TEST_FILES = Object.freeze(['sf-foundation', 'sf-turtle', 'sf-runner', 'sf-darvas', 'sf-weinstein', 'sf-morales-kacher', 'sf-minervini', 'sf-kullamagi', 'sf-holy-grail', 'sf-turtle-completion', 'sf-darvas-completion', 'sf-moka-completion'].map((f) => `scripts/supertrader/tests/${f}.test.mjs`));
 
 /** Parses TAP top-level results: [{ file, name, ok }]. */
 export function parseTap(text, file) {
@@ -35,7 +35,9 @@ export function recordGoldenResults(outDir = ARTIFACT_DIR) {
   const catalogue = JSON.parse(fs.readFileSync(path.join(ARTIFACT_DIR, 'STRATEGY-GOLDEN-CASE-CATALOGUE.json'), 'utf8'));
   const cases = catalogue.goldenTests.map((g) => {
     const [file, name] = g.test.split(': ');
-    const hit = results.find((r) => r.file === file && (r.name.startsWith(name) || r.name.includes(`/ ${name}`) || r.name.includes(`${name} /`)));
+    // exact id match within the file (review SF2-R4-07: 'GC-TUR-N' must not match 'GC-TUR-NOTIONAL')
+    const ids = (t) => t.split(':')[0].split(' / ').map((x) => x.trim());
+    const hit = results.find((r) => r.file === file && ids(r.name).includes(name));
     return { test: g.test, strategyIds: g.strategyIds, rules: g.rules, psr709: g.psr709, result: !hit ? 'NOT_FOUND' : hit.skipped ? 'SKIPPED' : hit.ok ? 'PASS' : 'FAIL' };
   });
   const summary = { goldenCases: cases.length, pass: cases.filter((c) => c.result === 'PASS').length, fail: cases.filter((c) => c.result === 'FAIL').length, notFound: cases.filter((c) => c.result === 'NOT_FOUND').length, testsRun: results.length, testsFailed: results.filter((r) => !r.ok).length, testsSkipped: results.filter((r) => r.skipped).length };
