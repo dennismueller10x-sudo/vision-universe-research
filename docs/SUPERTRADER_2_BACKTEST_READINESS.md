@@ -8,8 +8,8 @@ Bindung: Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, `--accounting researc
 
 | Strategie | completeEntries | completeExits | positionSizeDefined | stopsComplete | requiredDataPresent | accountingValid | signalsCausal | dataSufficient | erlaubt | deklarierte Grenzen |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `SF_TURTLE_S1` | ja | ja | ja | ja | **nein** | **nein** | ja | ja | **DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION** | TUR-SF-LIMIT-CORR (DATA, not enforced), TUR-SF-S1-OPEN-BREAKOUT (SOURCE, readings as scenarios), TUR-SF-FAILSAFE-EXIT (SOURCE, readings as scenarios) |
-| `SF_TURTLE_S2` | ja | ja | ja | ja | **nein** | **nein** | ja | ja | **DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION** | TUR-SF-LIMIT-CORR (DATA, not enforced) |
+| `SF_TURTLE_S1` | ja | ja | ja | ja | **nein** | ja | ja | ja | **DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION** | TUR-SF-LIMIT-CORR (DATA, not enforced), TUR-SF-S1-OPEN-BREAKOUT (SOURCE, readings as scenarios), TUR-SF-FAILSAFE-EXIT (SOURCE, readings as scenarios) |
+| `SF_TURTLE_S2` | ja | ja | ja | ja | **nein** | ja | ja | ja | **DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION** | TUR-SF-LIMIT-CORR (DATA, not enforced) |
 | `SF_DARVAS_BOX` | ja | **nein** | **nein** | ja | ja | **nein** | ja | ja | **COMPONENT_SIGNAL_STUDY_ONLY** | – |
 | `SF_WEINSTEIN_INVESTOR` | ja | **nein** | **nein** | **nein** | **nein** | **nein** | ja | ja | **NONE** | – |
 | `SF_WEINSTEIN_TRADER` | ja | **nein** | **nein** | **nein** | **nein** | **nein** | ja | ja | **NONE** | – |
@@ -30,9 +30,12 @@ Bekannte Befunde, die jede historische Zahl erbt: V4-D1 (nicht deklarierte Rever
 |---|---|---|---|---|---|---|---|---|
 | `SF_TURTLE_S1` | METHOD | 39271055007 | 2026-10-19 | sf-turtle-1.0.0 | `64b9aece4cb32f43` | BASE_S0 827, DELIST_S1_MINUS_30 789, DELIST_S2_DISTRESS_ZERO 789, COST2_S1 805, DATA_EVENT_MINUS_30 796 | PASS | REGRESSION_REFERENCE |
 | `SF_TURTLE_S2` | METHOD | 39271055007 | 2026-10-19 | sf-turtle-1.0.0 | `d32dd805a3a4429b` | BASE_S0 609, DELIST_S1_MINUS_30 578, DELIST_S2_DISTRESS_ZERO 578, COST2_S1 578, DATA_EVENT_MINUS_30 659 | PASS | REGRESSION_REFERENCE |
-| `SF_TURTLE_S1` | METHOD | 39392734794 | 2026-10-20 | sf-turtle-1.1.0 | `6b860bb6d72836bd` | BASE_S0 820, DELIST_S1_MINUS_30 980, DELIST_S2_DISTRESS_ZERO 980, COST2_S1 841, DATA_EVENT_MINUS_30 747, FAILSAFE_EXIT_20D 574 | PASS | CURRENT_ENGINE |
-| `SF_TURTLE_S2` | METHOD | 39392734794 | 2026-10-20 | sf-turtle-1.1.0 | `4cc089e9e5fdc640` | BASE_S0 559, DELIST_S1_MINUS_30 524, DELIST_S2_DISTRESS_ZERO 524, COST2_S1 604, DATA_EVENT_MINUS_30 586, FAILSAFE_EXIT_20D 559 | PASS | CURRENT_ENGINE |
-| `SF_DARVAS_BOX` | COMPONENT_STUDY | 39392734794 | 2026-10-20 | sf-darvas-1.1.0 | `f6c0386da496e2d9` | 22577 Signale | – | CURRENT_ENGINE |
+| `SF_TURTLE_S1` | METHOD | 39397517900 | 2026-10-20 | sf-turtle-1.2.0 | `23f3c932e2ef3213` | BASE_S0 820, DELIST_S1_MINUS_30 980, DELIST_S2_DISTRESS_ZERO 980, COST2_S1 841, DATA_EVENT_MINUS_30 747, FAILSAFE_EXIT_20D 574, ENTRY_BAR_OPTIMISTIC 786, S1_OPEN_BREAKOUT_TAKEN 803 | PASS | CURRENT_ENGINE |
+| `SF_TURTLE_S2` | METHOD | 39397517900 | 2026-10-20 | sf-turtle-1.2.0 | `3d72a153e41f27be` | BASE_S0 559, DELIST_S1_MINUS_30 524, DELIST_S2_DISTRESS_ZERO 524, COST2_S1 604, DATA_EVENT_MINUS_30 586, FAILSAFE_EXIT_20D 559, ENTRY_BAR_OPTIMISTIC 528, S1_OPEN_BREAKOUT_TAKEN 559 | PASS | CURRENT_ENGINE |
+| `SF_DARVAS_BOX` | COMPONENT_STUDY | 39397517900 | 2026-10-20 | sf-darvas-1.1.0 | `b11a5fd25920419f` | 22577 Signale | – | CURRENT_ENGINE |
+| `SF_TURTLE_S1` | METHOD | 39392734794 | 2026-10-20 | sf-turtle-1.1.0 | `6b860bb6d72836bd` | BASE_S0 820, DELIST_S1_MINUS_30 980, DELIST_S2_DISTRESS_ZERO 980, COST2_S1 841, DATA_EVENT_MINUS_30 747, FAILSAFE_EXIT_20D 574 | PASS | REGRESSION_REFERENCE |
+| `SF_TURTLE_S2` | METHOD | 39392734794 | 2026-10-20 | sf-turtle-1.1.0 | `4cc089e9e5fdc640` | BASE_S0 559, DELIST_S1_MINUS_30 524, DELIST_S2_DISTRESS_ZERO 524, COST2_S1 604, DATA_EVENT_MINUS_30 586, FAILSAFE_EXIT_20D 559 | PASS | REGRESSION_REFERENCE |
+| `SF_DARVAS_BOX` | COMPONENT_STUDY | 39392734794 | 2026-10-20 | sf-darvas-1.1.0 | `f6c0386da496e2d9` | 22577 Signale | – | REGRESSION_REFERENCE |
 | `SF_DARVAS_BOX` | COMPONENT_STUDY | 39271055007 | 2026-10-19 | sf-darvas-1.0.0 | `2fd60c5965c7e6c9` | 22577 Signale | – | REGRESSION_REFERENCE |
 
 Kennzahlen (Rendite, Drawdown usw.) liegen nur versiegelt beim Owner. Eine Komponentenstudie ist nie eine Methodenrendite.

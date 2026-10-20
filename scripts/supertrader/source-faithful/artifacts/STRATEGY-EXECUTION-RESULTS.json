@@ -316,6 +316,74 @@
   {
    "method": "SF_TURTLE_S1",
    "kind": "METHOD",
+   "runId": "39397517900",
+   "date": "2026-10-20",
+   "codeVersion": "sf-turtle-1.2.0",
+   "codeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+   "receiptSha256Prefix": "23f3c932e2ef3213",
+   "trades": {
+    "BASE_S0": 820,
+    "DELIST_S1_MINUS_30": 980,
+    "DELIST_S2_DISTRESS_ZERO": 980,
+    "COST2_S1": 841,
+    "DATA_EVENT_MINUS_30": 747,
+    "FAILSAFE_EXIT_20D": 574,
+    "ENTRY_BAR_OPTIMISTIC": 786,
+    "S1_OPEN_BREAKOUT_TAKEN": 803
+   },
+   "failsafeEntries": {
+    "BASE_S0": 710,
+    "FAILSAFE_EXIT_20D": 489,
+    "ENTRY_BAR_OPTIMISTIC": 709,
+    "S1_OPEN_BREAKOUT_TAKEN": 18
+   },
+   "entries": {
+    "BASE_S0": 825,
+    "ENTRY_BAR_OPTIMISTIC": 789,
+    "S1_OPEN_BREAKOUT_TAKEN": 806
+   },
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_TURTLE_S2",
+   "kind": "METHOD",
+   "runId": "39397517900",
+   "date": "2026-10-20",
+   "codeVersion": "sf-turtle-1.2.0",
+   "codeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+   "receiptSha256Prefix": "3d72a153e41f27be",
+   "trades": {
+    "BASE_S0": 559,
+    "DELIST_S1_MINUS_30": 524,
+    "DELIST_S2_DISTRESS_ZERO": 524,
+    "COST2_S1": 604,
+    "DATA_EVENT_MINUS_30": 586,
+    "FAILSAFE_EXIT_20D": 559,
+    "ENTRY_BAR_OPTIMISTIC": 528,
+    "S1_OPEN_BREAKOUT_TAKEN": 559
+   },
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_DARVAS_BOX",
+   "kind": "COMPONENT_STUDY",
+   "runId": "39397517900",
+   "date": "2026-10-20",
+   "codeVersion": "sf-darvas-1.1.0",
+   "codeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+   "receiptSha256Prefix": "b11a5fd25920419f",
+   "signals": 22577,
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_TURTLE_S1",
+   "kind": "METHOD",
    "runId": "39392734794",
    "date": "2026-10-20",
    "codeVersion": "sf-turtle-1.1.0",
@@ -345,7 +413,7 @@
    "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
    "allScenariosReconciled": true,
    "endingPositionCheck": "PASS",
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_TURTLE_S2",
@@ -379,7 +447,7 @@
    "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
    "allScenariosReconciled": true,
    "endingPositionCheck": "PASS",
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_DARVAS_BOX",
@@ -390,7 +458,7 @@
    "codeSha256": "9372a8f8f92bfbdb66d039b00fa29beca42b42ee9b3a49e3fa5a1a948c773cf9",
    "receiptSha256Prefix": "f6c0386da496e2d9",
    "signals": 22577,
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_DARVAS_BOX",

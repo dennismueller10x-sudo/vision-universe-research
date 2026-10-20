@@ -22,7 +22,7 @@
    "strategyId": "SF_TURTLE_S1",
    "candidateId": "C01",
    "sourceContractVersion": "1.1.0",
-   "engine": "INCOMPLETE",
+   "engine": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION",
    "flags": [
     "PARTIAL_DATA_BLOCKED",
     "PARTIAL_SOURCE_BLOCKED",
@@ -52,20 +52,18 @@
    ],
    "manualDecisions": [],
    "acceptanceGate": {
-    "pass": false,
+    "pass": true,
     "dataExceptions": [
      "TUR-SF-LIMIT-CORR"
     ],
-    "failed": [
-     "AG-3-RECONCILED"
-    ]
+    "failed": []
    }
   },
   {
    "strategyId": "SF_TURTLE_S2",
    "candidateId": "C02",
    "sourceContractVersion": "1.1.0",
-   "engine": "INCOMPLETE",
+   "engine": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION",
    "flags": [
     "PARTIAL_DATA_BLOCKED",
     "BACKTEST_DIAGNOSTIC_READY",
@@ -89,13 +87,11 @@
    "blockingSourceRules": [],
    "manualDecisions": [],
    "acceptanceGate": {
-    "pass": false,
+    "pass": true,
     "dataExceptions": [
      "TUR-SF-LIMIT-CORR"
     ],
-    "failed": [
-     "AG-3-RECONCILED"
-    ]
+    "failed": []
    }
   },
   {
@@ -459,7 +455,7 @@
   {
    "strategyId": "SF_TURTLE_S1",
    "scope": "EQUITY_ADAPTATION",
-   "pass": false,
+   "pass": true,
    "dataExceptions": [
     "TUR-SF-LIMIT-CORR"
    ],
@@ -483,9 +479,10 @@
     {
      "id": "AG-3-RECONCILED",
      "title": "execution and accounting reconciled: synthetic ledger replay and every scenario of a snapshot run of the CURRENT code fingerprint",
-     "pass": false,
+     "pass": true,
      "detail": [
       "SF_TURTLE_S1 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
+      "SF_TURTLE_S1 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, current): reconciliation PASS",
       "SF_TURTLE_S1 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
      ]
     },
@@ -523,7 +520,7 @@
   {
    "strategyId": "SF_TURTLE_S2",
    "scope": "EQUITY_ADAPTATION",
-   "pass": false,
+   "pass": true,
    "dataExceptions": [
     "TUR-SF-LIMIT-CORR"
    ],
@@ -545,9 +542,10 @@
     {
      "id": "AG-3-RECONCILED",
      "title": "execution and accounting reconciled: synthetic ledger replay and every scenario of a snapshot run of the CURRENT code fingerprint",
-     "pass": false,
+     "pass": true,
      "detail": [
       "SF_TURTLE_S2 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
+      "SF_TURTLE_S2 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, current): reconciliation PASS",
       "SF_TURTLE_S2 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
      ]
     },

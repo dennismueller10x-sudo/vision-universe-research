@@ -101,7 +101,28 @@ Siehe [Datenvertrag](SUPERTRADER_2_PIT_INDUSTRY_GROUPS_CONTRACT.md). Kurz:
 - `TUR-SF-LIMIT-CORR` bleibt `DATA_BLOCKED`.
 
 <!-- owner-run -->
-Snapshot-Lauf von `sf-turtle-1.2.0` ausstehend.
+### Snapshot-Lauf von `sf-turtle-1.2.0`
+
+**Lauf:** Run 39397517900, Snapshot `sts1-134d…`, `research-v1`.
+- Code-Fingerabdruck `ae2a51ed86ae…`, identisch mit #804.
+- Alle 8 Szenarien beider Systeme sind abgestimmt; Ledger und Endbestand PASS.
+- Die Referenzszenarien sind identisch mit 1.1.0 (S1 820, S2 559 Trades): Die neuen Parameter ändern ohne Wahl der Gegenlesart nichts.
+
+**Trades und Einstiege je Lesart:**
+
+| Szenario (Lesart) | S1 Trades | S1 Einstiege | davon Failsafe | S2 Trades |
+|---|---|---|---|---|
+| BASE_S0 (alle Referenzlesarten) | 820 | 825 | 710 | 559 |
+| ENTRY_BAR_OPTIMISTIC (Tief vor Einstieg) | 786 | 789 | 709 | 528 |
+| S1_OPEN_BREAKOUT_TAKEN (offener Ausbruch überspringt nicht) | 803 | 806 | **18** | 559 (kein Filter) |
+| FAILSAFE_EXIT_20D (20-Tage-Failsafe-Exit) | 574 | 580 | 489 | 559 (kein Failsafe) |
+
+**Lesart der Ergebnisse** (die Kennzahlen bleiben versiegelt; keine Lesart wird nach Rendite gewählt):
+- **Offener Ausbruch:** Der hohe Failsafe-Anteil in System 1 entsteht praktisch vollständig aus der unbelegten Lesart „offener Ausbruch überspringt“.
+  - Mit der Gegenlesart sinken die Failsafe-Einstiege von 710 auf 18.
+  - Bei dieser Lesart verlieren die Lesarten des Failsafe-Exits fast vollständig an Gewicht.
+- **Reihenfolge am Einstiegsbalken:** Die unbekannte Intraday-Reihenfolge verschiebt die Trade-Zahl um etwa 4 % (S1) bzw. 6 % (S2).
+- **Messweise:** Damit sind die drei Unsicherheiten getrennt messbar. Eine Entscheidung zwischen den Lesarten braucht neue Quellen oder Daten, kein Backtest-Ergebnis.
 <!-- /owner-run -->
 
 ## Antworten an den Owner
