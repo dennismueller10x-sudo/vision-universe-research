@@ -368,7 +368,7 @@ def ingest_fsds_quarter(client, store, quarter, observed_at):
 
 def ingest_header(client, store, cik, accession, observed_at):
     cik = normalize_cik(cik)
-    url = HEADER_URL.format(cik=int(cik), nodash=accession.replace("-", ""), accession=accession)
+    url = header_url(cik, accession)
     raw = client.get_bytes(url, use_cache=False)
     key = f"{cik}_{accession}"
     store.put("header", key, raw)
@@ -559,18 +559,43 @@ class RequestBudget:
             raise SicSourceError(f"request budget exhausted ({self.used()}/{self.max_requests})")
 
 
+def header_url(cik, accession):
+    return HEADER_URL.format(cik=int(cik), nodash=accession.replace("-", ""), accession=accession)
+
+
 def load_manifest(path):
+    """Manifest lesen. Header-Pins liegen kompakt als Zeilen und werden hier aufgefaltet."""
     path = Path(path)
-    if path.exists():
-        return json.loads(path.read_text())
-    return {"schemaVersion": SCHEMA_VERSION, "sources": []}
+    if not path.exists():
+        return {"schemaVersion": SCHEMA_VERSION, "sources": []}
+    manifest = json.loads(path.read_text())
+    for observed_at, rows in sorted(manifest.pop("headerPins", {}).items()):
+        for cik, accession, digest, size in rows:
+            manifest["sources"].append({"kind": "header", "key": f"{cik}_{accession}", "cik": cik, "accession": accession,
+                                        "url": header_url(cik, accession), "sha256": digest, "bytes": size,
+                                        "observedAt": observed_at})
+    return manifest
 
 
 def save_manifest(path, manifest):
+    """Manifest schreiben: FSDS- und Codelisten-Pins als Objekte, Header-Pins als Zeilen je Abrufzeit
+    ([cik, accession, sha256, bytes]; die URL folgt aus CIK und Accession). Rund 9 000 Header passen
+    so unter die 2-MB-Grenze je Datei."""
     manifest["sources"].sort(key=lambda e: (e["kind"], e["key"]))
-    manifest.update(stamp(max((e["observedAt"] for e in manifest["sources"]), default=None)))
+    out = {k: v for k, v in manifest.items() if k != "sources"}
+    out.update(stamp(max((e["observedAt"] for e in manifest["sources"]), default=None)))
+    out["sources"] = [e for e in manifest["sources"] if e["kind"] != "header"]
+    pins = {}
+    for e in manifest["sources"]:
+        if e["kind"] == "header":
+            pins.setdefault(e["observedAt"], []).append([e["cik"], e["accession"], e["sha256"], e["bytes"]])
+    out["headerPins"] = pins
+    out["headerPinFields"] = ["cik", "accession", "sha256", "bytes"]
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps(manifest, indent=1, sort_keys=True) + "\n")
+    text = json.dumps({k: v for k, v in out.items() if k != "headerPins"}, indent=1, sort_keys=True)
+    rows = ",\n".join(f" {json.dumps(at)}: [\n" + ",\n".join("  " + json.dumps(r) for r in pins[at]) + "\n ]"
+                       for at in sorted(pins))
+    Path(path).write_text(text[:-2] + ',\n "headerPins": {\n' + rows + "\n }\n}\n")
 
 
 def fetch_fsds(client, store, manifest, quarters, observed_at, budget, refresh=False, log=print):

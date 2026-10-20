@@ -385,6 +385,24 @@ class GapPlanTests(unittest.TestCase):
         self.assertEqual(t, [["0000000005", "s1"]])
 
 
+class ManifestTests(unittest.TestCase):
+    def test_compact_header_pins_roundtrip(self):
+        m = {"schemaVersion": sh.SCHEMA_VERSION, "requestLog": [{"action": "x"}], "sources": [
+            {"kind": "fsds", "key": "2020q1", "url": "u", "sha256": "a" * 64, "observedAt": "t1"},
+            {"kind": "header", "key": "0000000001_0000000001-20-000001", "cik": "0000000001",
+             "accession": "0000000001-20-000001", "url": sh.header_url("0000000001", "0000000001-20-000001"),
+             "sha256": "b" * 64, "bytes": 10, "observedAt": "t2"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            sh.save_manifest(path, json.loads(json.dumps(m)))
+            back = sh.load_manifest(path)
+            self.assertEqual(sorted(json.dumps(e, sort_keys=True) for e in back["sources"]),
+                             sorted(json.dumps(e, sort_keys=True) for e in m["sources"]))
+            self.assertEqual(back["requestLog"], [{"action": "x"}])
+            self.assertEqual(json.loads(path.read_text())["headerPins"]["t2"][0][1], "0000000001-20-000001")
+            self.assertTrue(sh.header_url("1", "0000000001-20-000001").endswith("/data/1/000000000120000001/0000000001-20-000001.hdr.sgml"))
+
+
 class SicCodeTableTests(unittest.TestCase):
     def test_parses_sec_table(self):
         html = b"<table><tr><th>SIC</th></tr><tr><td>5961</td><td>Office of Trade &amp; Services</td><td>RETAIL-CATALOG &amp; MAIL-ORDER HOUSES</td></tr></table>"

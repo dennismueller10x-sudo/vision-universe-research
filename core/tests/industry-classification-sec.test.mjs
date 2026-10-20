@@ -13,8 +13,8 @@ import { loadSicHistory, DEFAULT_DIR } from '../../scripts/core/load-sic-history
 const require = createRequire(import.meta.url);
 const IC = require('../industry-classification.js');
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const AMZN = '0001018724', SUNRUN = '0001469367', SENTI = '0001854270', DIONICS = '0000029006', META = '0001326801', ALPHABET = '0001652044';
-const api = loadSicHistory({ ciks: [AMZN, SUNRUN, SENTI, DIONICS, META, ALPHABET] });
+const TSMC = '0001046179', AMZN = '0001018724', SUNRUN = '0001469367', SENTI = '0001854270', DIONICS = '0000029006', META = '0001326801', ALPHABET = '0001652044';
+const api = loadSicHistory({ ciks: [TSMC, AMZN, SUNRUN, SENTI, DIONICS, META, ALPHABET] });
 
 test('Amazon: 1998 als Buchverlag (2731) klassifiziert, 5961 erst mit dem 10-K von 1999 - die heutige SIC wird nicht rueckdatiert', () => {
   const y1998 = api.getIndustryClassification(AMZN, '1998-06-30');
@@ -51,6 +51,15 @@ test('Dionics: 10-Q angenommen 16:00:31 ET - am selben Datum (Schluss 16:00) uns
   assert.notEqual(sameDay.observation?.accession, '0001052918-12-000246');
   assert.equal(api.getIndustryClassification(DIONICS, '2012-05-15T20:00:31Z').observation.accession, '0001052918-12-000246');
   assert.equal(api.getIndustryClassification(DIONICS, '2012-05-15T20:00:30Z').observation?.accession === '0001052918-12-000246', false);
+});
+
+test('TSMC (ADR, Auslandsemittent): vor der XBRL-Zeit nur ueber 6-K-Header belegt, davor UNKNOWN', () => {
+  const r = api.getIndustryClassification(TSMC, '2016-06-30');
+  assert.equal(r.sic, '3674');
+  assert.equal(r.observation.form, '6-K');
+  assert.equal(r.observation.source, 'FILING_HEADER');
+  assert.equal(api.getIndustryClassification(TSMC, '2015-06-30').status, 'UNKNOWN_BEFORE_FIRST_OBSERVATION');
+  assert.equal(api.getIndustryClassification(TSMC, '2018-06-30').observation.form, '20-F');
 });
 
 test('Meta: Namens- und Tickerwechsel (FB -> META) aendern weder CIK noch SIC', () => {
