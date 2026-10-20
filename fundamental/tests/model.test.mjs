@@ -122,3 +122,49 @@ test('Nur bestehende, ausgelieferte Daten: Discover-Aktiendatei und Suchliste', 
   assert.ok(existsSync(new URL('../../discover/data/search/US_REAL.json', import.meta.url)));
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/, 'keine nicht ausgelieferten SEC-Rohdaten');
 });
+
+/* Fundamental 1.1: Wachstum, Profitabilitaet, Bilanz, Bewertung – nur aus vorhandenen Werten, mit Grund statt Schaetzung. */
+test('Wachstum pro Jahr nur ueber genau n Jahre mit positivem Anfangs- und Endwert', () => {
+  const rows = M.series([p(2020, 100), p(2021, 110), p(2023, 121), p(2025, 161.051)], [2020, 2021, 2022, 2023, 2024, 2025]);
+  const g5 = M.cagr(rows, 5);
+  assert.equal(Math.round(g5.rate * 1e6), 100000); assert.deepEqual([g5.from, g5.to], [2020, 2025]);
+  assert.equal(M.cagr(rows, 3).reason, 'TOO_SHORT', '2022 fehlt: keine Rate ueber eine Luecke als Startjahr');
+  assert.equal(M.cagr(M.series([p(2022, -5), p(2025, 10)], [2022, 2023, 2024, 2025]), 3).reason, 'NOT_POSITIVE');
+  assert.equal(M.cagr([], 3).reason, 'NO_DATA');
+});
+
+test('Vorjahresveraenderung: Luecke unterbricht, Vorzeichenwechsel ohne Prozent', () => {
+  const y = M.yoy(M.series([p(2021, 100), p(2022, 120), p(2024, -10), p(2025, 5)], [2021, 2022, 2023, 2024, 2025]));
+  assert.deepEqual(y.map((r) => r.fy), [2022, 2023, 2024, 2025]);
+  assert.equal(Math.round(y[0].pct * 100), 20);
+  assert.equal(y[1].gap, true); assert.equal(y[2].gap, true);
+  assert.equal(y[3].pct, null); assert.equal(y[3].signFlip, true);
+});
+
+test('Echte Daten NVDA: Gewinn je Aktie mit Split-Hinweis bekommt keine Rate, Umsatz schon', () => {
+  const f = M.fromStock(stock('NVDA'));
+  const eps = f.growth.find((g) => g.id === 'eps_diluted'), rev = f.growth.find((g) => g.id === 'revenue');
+  assert.ok(eps.horizons.every((h) => h.rate == null && h.reason === 'NOT_COMPARABLE'));
+  assert.ok(rev.horizons.every((h) => h.rate > 0));
+  const l = f.ladder.steps;
+  assert.equal(l[0].id, 'revenue'); assert.equal(l[0].share, 1);
+  assert.ok(l.every((s, i) => i === 0 || s.share < 1), 'jede Stufe kleiner als der Umsatz');
+  assert.ok(f.balance.net < 0 && f.balance.cash > 0, 'NVDA: Nettokasse');
+  assert.ok(f.valuation.pe.value > 0 && f.valuation.pe.ratio > 0 && f.valuation.peMedian > 0);
+});
+
+test('Echte Daten: Verlust ohne KGV (AAL), KGV auf Geschaeftsjahresbasis (JPM), ohne Kennzahl keine Bewertung (BRK-B)', () => {
+  const aal = M.fromStock(stock('AAL')).valuation;
+  assert.equal(aal.pe, null); assert.equal(aal.peReason, 'LOSS'); assert.equal(M.reasonText('LOSS'), 'Verlust in den letzten 12 Monaten');
+  assert.ok(aal.ps.value > 0);
+  assert.equal(M.fromStock(stock('JPM')).valuation.pe.basis, 'FY');
+  assert.equal(M.fromStock(stock('JPM')).ladder.steps.map((s) => s.id).join(), 'revenue,net_income', 'Bank: nur gemeldete Stufen');
+  assert.equal(M.fromStock(stock('BRK-B')).valuation, null);
+});
+
+test('Bilanz rechnet Nettoschulden nur aus gemeldeten Werten', () => {
+  const b = M.fromStock(synth({ latest: { annual: { cash_and_equivalents: { v: 30, end: '2024-12-31' }, long_term_debt: { v: 50 }, stockholders_equity: { v: 40 }, total_assets: { v: 160 } }, ttm: {}, derived: { roe: 0.1 } } })).balance;
+  assert.deepEqual([b.net, b.debtKind, b.equityRatio, b.roe, b.end], [20, 'long_term', 0.25, 0.1, '2024-12-31']);
+  assert.equal(M.fromStock(synth()).balance, null);
+  assert.equal(M.fromStock(synth()).ladder, null);
+});
