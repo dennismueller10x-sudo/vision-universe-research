@@ -1,34 +1,44 @@
 {
   "schemaVersion": "intraday-delivery-watchdog-1.0.0",
   "auftrag": "Owner 21.09.2026 §15/§16: unabhaengiger Waechter der Intraday-Auslieferung",
-  "checkedAt": "2026-10-19T19:58:19.002Z",
+  "checkedAt": "2026-10-20T13:55:22.461Z",
   "site": "https://research.visionuniverse.de",
   "session": {
     "marketState": "OPEN",
-    "localTime": "15:58:19",
-    "localDate": "2026-10-19"
+    "localTime": "09:55:22",
+    "localDate": "2026-10-20"
   },
   "delivered": {
     "ok": true,
     "sessionDate": "2026-10-19",
-    "asOfMs": 1792438200000,
-    "generatedAt": "2026-10-19T19:30:05.419Z"
+    "asOfMs": 1792443300000,
+    "generatedAt": "2026-10-20T01:38:14.951Z"
   },
   "verdict": "FAIL",
   "findings": [
     {
+      "severity": "WARNING",
+      "code": "taktVerspaetet",
+      "text": "Letzter Taktzyklus vor 10 min."
+    },
+    {
+      "severity": "WARNING",
+      "code": "standAeltlich",
+      "text": "Der ausgelieferte Stand ist 15 min alt."
+    },
+    {
       "severity": "FAIL",
-      "code": "auslieferungZuWeitHinterher",
-      "text": "Die Auslieferung ist 25 min hinter dem Repository."
+      "code": "auslieferungHinterher",
+      "text": "Im Repository liegt 2026-10-20, ausgeliefert wird 2026-10-19."
     }
   ],
   "facts": {
     "marketState": "OPEN",
-    "expectedSession": "2026-10-19",
-    "snapshotSession": "2026-10-19",
-    "snapshotAgeMinutes": 3,
+    "expectedSession": "2026-10-20",
+    "snapshotSession": "2026-10-20",
+    "snapshotAgeMinutes": 15,
     "deliveredSession": "2026-10-19",
-    "lastCycleAgeMinutes": 0,
+    "lastCycleAgeMinutes": 10,
     "intervalMinutes": 5,
     "graceMinutes": 4
   },
