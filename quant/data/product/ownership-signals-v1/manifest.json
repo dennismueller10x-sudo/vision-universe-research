@@ -1,15 +1,15 @@
 {
  "schemaVersion": "ownership-signals-manifest-1.0.0",
  "engineVersion": "ownership-signals-1.0.0",
- "generatedAt": "2026-10-13T12:55:40.679Z",
- "asOf": "2026-10-13",
+ "generatedAt": "2026-10-20T10:27:15.665Z",
+ "asOf": "2026-10-20",
  "source": "SEC_EDGAR",
  "license": "SEC EDGAR-Daten sind gemeinfrei (public domain); abgeleitete Kennzahlen je Emittent.",
  "access": {
   "userAgent": "SEC_USER_AGENT (Kontaktadresse Pflicht)",
   "ratePerSecondMax": 9,
   "sourceMode": "network",
-  "requests": 66
+  "requests": 1903
  },
  "sources": {
   "pages": {
@@ -73,34 +73,34 @@
   "universeTickers": 6686,
   "universeIssuersWithCik": 5178,
   "cusipMap": {
-   "cusips": 7695,
-   "tickers": 6189,
+   "cusips": 7712,
+   "tickers": 6185,
    "ambiguousSymbols": 6,
-   "rejectedReusedSymbols": 547,
-   "latestObservation": "2026-09-14",
-   "ftdFiles": 294,
-   "ftdMissing": 4
+   "rejectedReusedSymbols": 552,
+   "latestObservation": "2026-09-30",
+   "ftdFiles": 295,
+   "ftdMissing": 3
   },
   "insider": {
    "datasets": 46,
    "missing": [],
    "coverageEnd": "2026-09-30",
-   "accessionsInUniverse": 433299,
-   "transactionsInUniverse": 959209,
-   "purchasesByInsiders": 173678,
+   "accessionsInUniverse": 433850,
+   "transactionsInUniverse": 960724,
+   "purchasesByInsiders": 173850,
    "implausibleValuesNulled": 73,
-   "salesByInsiders": 749712,
-   "issuersWithTransactions": 4256,
+   "salesByInsiders": 751053,
+   "issuersWithTransactions": 4259,
    "amendmentsSkipped": 41329,
    "planColumnSeen": true,
    "form4GapFill": {
-    "needed": 4291,
+    "needed": 6129,
     "cached": 4291,
-    "fetched": 0,
+    "fetched": 1838,
     "failed": 0,
     "cap": 25000,
     "from": "2026-10-01",
-    "to": "2026-10-13",
+    "to": "2026-10-20",
     "missingFilingDays": 0,
     "complete": true
    }
@@ -108,12 +108,12 @@
   "schedules": {
    "indexQuarters": 47,
    "indexMissing": [],
-   "issuersWithFilings": 5036,
-   "filings": 334905,
-   "resolved": 187960,
-   "ambiguous": 2687,
-   "filerOnly": 10680,
-   "notInUniverse": 133578
+   "issuersWithFilings": 5039,
+   "filings": 335219,
+   "resolved": 188172,
+   "ambiguous": 2688,
+   "filerOnly": 10697,
+   "notInUniverse": 133662
   },
   "thirteenF": {
    "datasets": 46,
@@ -138,7 +138,7 @@
    "duplicateOriginals": 22,
    "duplicateAccessions": 0,
    "infoRows": 107096270,
-   "positions": 43813094,
+   "positions": 43762135,
    "unitThousands": 165084,
    "unitDollars": 114969,
    "unitOverrides": 11821,
@@ -192,12 +192,12 @@
    ]
   },
   "sharesBaseIssuers": 4402,
-  "tickersWithAnySignal": 6114,
-  "tickersWithInsiderTx": 4403,
-  "tickersWithSchedule": 5189,
-  "tickersWith13F": 5818,
-  "tickersWithSharesBase": 4401,
-  "historyRows": 536537
+  "tickersWithAnySignal": 6115,
+  "tickersWithInsiderTx": 4406,
+  "tickersWithSchedule": 5192,
+  "tickersWith13F": 5811,
+  "tickersWithSharesBase": 4402,
+  "historyRows": 536399
  },
  "datasets": {
   "insider": [
@@ -581,271 +581,271 @@
     "name": "2015q3_form13f.zip",
     "start": "2015-07-01",
     "end": "2015-09-30",
-    "positions": 502439
+    "positions": 501971
    },
    {
     "name": "2015q4_form13f.zip",
     "start": "2015-10-01",
     "end": "2015-12-31",
-    "positions": 506569
+    "positions": 506141
    },
    {
     "name": "2016q1_form13f.zip",
     "start": "2016-01-01",
     "end": "2016-03-31",
-    "positions": 530930
+    "positions": 530514
    },
    {
     "name": "2016q2_form13f.zip",
     "start": "2016-04-01",
     "end": "2016-06-30",
-    "positions": 541347
+    "positions": 540915
    },
    {
     "name": "2016q3_form13f.zip",
     "start": "2016-07-01",
     "end": "2016-09-30",
-    "positions": 559170
+    "positions": 558673
    },
    {
     "name": "2016q4_form13f.zip",
     "start": "2016-10-01",
     "end": "2016-12-31",
-    "positions": 561431
+    "positions": 560910
    },
    {
     "name": "2017q1_form13f.zip",
     "start": "2017-01-01",
     "end": "2017-03-31",
-    "positions": 595137
+    "positions": 594573
    },
    {
     "name": "2017q2_form13f.zip",
     "start": "2017-04-01",
     "end": "2017-06-30",
-    "positions": 605740
+    "positions": 605147
    },
    {
     "name": "2017q3_form13f.zip",
     "start": "2017-07-01",
     "end": "2017-09-30",
-    "positions": 610410
+    "positions": 609806
    },
    {
     "name": "2017q4_form13f.zip",
     "start": "2017-10-01",
     "end": "2017-12-31",
-    "positions": 617643
+    "positions": 616922
    },
    {
     "name": "2018q1_form13f.zip",
     "start": "2018-01-01",
     "end": "2018-03-31",
-    "positions": 671917
+    "positions": 671143
    },
    {
     "name": "2018q2_form13f.zip",
     "start": "2018-04-01",
     "end": "2018-06-30",
-    "positions": 697865
+    "positions": 697066
    },
    {
     "name": "2018q3_form13f.zip",
     "start": "2018-07-01",
     "end": "2018-09-30",
-    "positions": 710805
+    "positions": 709904
    },
    {
     "name": "2018q4_form13f.zip",
     "start": "2018-10-01",
     "end": "2018-12-31",
-    "positions": 728201
+    "positions": 727256
    },
    {
     "name": "2019q1_form13f.zip",
     "start": "2019-01-01",
     "end": "2019-03-31",
-    "positions": 730860
+    "positions": 729927
    },
    {
     "name": "2019q2_form13f.zip",
     "start": "2019-04-01",
     "end": "2019-06-30",
-    "positions": 761681
+    "positions": 760665
    },
    {
     "name": "2019q3_form13f.zip",
     "start": "2019-07-01",
     "end": "2019-09-30",
-    "positions": 764170
+    "positions": 763170
    },
    {
     "name": "2019q4_form13f.zip",
     "start": "2019-10-01",
     "end": "2019-12-31",
-    "positions": 781342
+    "positions": 780314
    },
    {
     "name": "2020q1_form13f.zip",
     "start": "2020-01-01",
     "end": "2020-03-31",
-    "positions": 823777
+    "positions": 822665
    },
    {
     "name": "2020q2_form13f.zip",
     "start": "2020-04-01",
     "end": "2020-06-30",
-    "positions": 792414
+    "positions": 791563
    },
    {
     "name": "2020q3_form13f.zip",
     "start": "2020-07-01",
     "end": "2020-09-30",
-    "positions": 815153
+    "positions": 814263
    },
    {
     "name": "2020q4_form13f.zip",
     "start": "2020-10-01",
     "end": "2020-12-31",
-    "positions": 830268
+    "positions": 829440
    },
    {
     "name": "2021q1_form13f.zip",
     "start": "2021-01-01",
     "end": "2021-03-31",
-    "positions": 917350
+    "positions": 916398
    },
    {
     "name": "2021q2_form13f.zip",
     "start": "2021-04-01",
     "end": "2021-06-30",
-    "positions": 947381
+    "positions": 946322
    },
    {
     "name": "2021q3_form13f.zip",
     "start": "2021-07-01",
     "end": "2021-09-30",
-    "positions": 1015883
+    "positions": 1014726
    },
    {
     "name": "2021q4_form13f.zip",
     "start": "2021-10-01",
     "end": "2021-12-31",
-    "positions": 993493
+    "positions": 992372
    },
    {
     "name": "2022q1_form13f.zip",
     "start": "2022-01-01",
     "end": "2022-03-31",
-    "positions": 1077748
+    "positions": 1076547
    },
    {
     "name": "2022q2_form13f.zip",
     "start": "2022-04-01",
     "end": "2022-06-30",
-    "positions": 1076293
+    "positions": 1075035
    },
    {
     "name": "2022q3_form13f.zip",
     "start": "2022-07-01",
     "end": "2022-09-30",
-    "positions": 1064350
+    "positions": 1063141
    },
    {
     "name": "2022q4_form13f.zip",
     "start": "2022-10-01",
     "end": "2022-12-31",
-    "positions": 1058123
+    "positions": 1056940
    },
    {
     "name": "2023q1_form13f.zip",
     "start": "2023-01-01",
     "end": "2023-03-31",
-    "positions": 1136890
+    "positions": 1135603
    },
    {
     "name": "2023q2_form13f.zip",
     "start": "2023-04-01",
     "end": "2023-06-30",
-    "positions": 1113809
+    "positions": 1112570
    },
    {
     "name": "2023q3_form13f.zip",
     "start": "2023-07-01",
     "end": "2023-09-30",
-    "positions": 1141119
+    "positions": 1139869
    },
    {
     "name": "2023q4_form13f.zip",
     "start": "2023-10-01",
     "end": "2023-12-31",
-    "positions": 1205139
+    "positions": 1203603
    },
    {
     "name": "01jan2024-29feb2024_form13f.zip",
     "start": "2024-01-01",
     "end": "2024-02-29",
-    "positions": 1245962
+    "positions": 1244418
    },
    {
     "name": "01mar2024-31may2024_form13f.zip",
     "start": "2024-03-01",
     "end": "2024-05-31",
-    "positions": 1292793
+    "positions": 1291160
    },
    {
     "name": "01jun2024-31aug2024_form13f.zip",
     "start": "2024-06-01",
     "end": "2024-08-31",
-    "positions": 1399391
+    "positions": 1397635
    },
    {
     "name": "01sep2024-30nov2024_form13f.zip",
     "start": "2024-09-01",
     "end": "2024-11-30",
-    "positions": 1352006
+    "positions": 1350346
    },
    {
     "name": "01dec2024-28feb2025_form13f.zip",
     "start": "2024-12-01",
     "end": "2025-02-28",
-    "positions": 1444853
+    "positions": 1442991
    },
    {
     "name": "01mar2025-31may2025_form13f.zip",
     "start": "2025-03-01",
     "end": "2025-05-31",
-    "positions": 1443275
+    "positions": 1441365
    },
    {
     "name": "01jun2025-31aug2025_form13f.zip",
     "start": "2025-06-01",
     "end": "2025-08-31",
-    "positions": 1499079
+    "positions": 1497189
    },
    {
     "name": "01sep2025-30nov2025_form13f.zip",
     "start": "2025-09-01",
     "end": "2025-11-30",
-    "positions": 1516901
+    "positions": 1515124
    },
    {
     "name": "01dec2025-28feb2026_form13f.zip",
     "start": "2025-12-01",
     "end": "2026-02-28",
-    "positions": 1626958
+    "positions": 1625027
    },
    {
     "name": "01mar2026-31may2026_form13f.zip",
     "start": "2026-03-01",
     "end": "2026-05-31",
-    "positions": 1695708
+    "positions": 1693617
    },
    {
     "name": "01jun2026-31aug2026_form13f.zip",
     "start": "2026-06-01",
     "end": "2026-08-31",
-    "positions": 1809321
+    "positions": 1807189
    }
   ],
   "indexQuarters": [
@@ -919,5 +919,5 @@
   "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",
   "Aktienbasis ist eine Jahreszahl (verwaessert, gewichtet), keine taggenaue ausstehende Aktienzahl."
  ],
- "runtimeSeconds": 371
+ "runtimeSeconds": 822
 }
