@@ -173,7 +173,17 @@ jobs:
           # Klassifikator und Propagationsbeweis aus Pages-Release). Echte Fehler und erschoepfte Obergrenze enden mit Exit 1:
           # der Schritt "Fail closed" unten rollt dann wie bisher sofort zurueck.
           node scripts/company_intelligence/refresh-live-verify.mjs --out "$RUNNER_TEMP/ci-refresh/live-qa.json"
-          node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json"
+          # observe klassifiziert (observe-production.mjs). Exit 3 = BOOKKEEPING: Produktion belegt (Generation == GOOD), nur
+          # observed.json/health.json liessen sich nicht schreiben. Das schliesst kein gesundes Gate (Lauf 39128011059, 18.10.2026);
+          # der Lauf wird im letzten Schritt rot. Jeder andere Fehler (REAL, Exit 1) laesst den Schritt scheitern -> Fail closed.
+          rc=0
+          node scripts/company_intelligence/refresh-run.mjs observe --health "$RUNNER_TEMP/ci-refresh/health.json" || rc=$?
+          if [ "$rc" -eq 3 ]; then
+            echo "observe_bookkeeping=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Production verified, but recording the observation failed (BOOKKEEPING). Gate stays open, no rollback."
+            rc=0
+          fi
+          exit "$rc"
       - name: Fail closed on actual production regression
         if: failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true
         env:
@@ -228,3 +238,8 @@ jobs:
           name: ${{ env.MARKER }}
           path: ${{ runner.temp }}/ci-refresh-mode.txt
           retention-days: 14
+      - name: Observation bookkeeping failed (run red, gate untouched)
+        if: steps.deploy_live.outputs.observe_bookkeeping == 'true'
+        run: |
+          echo "::error::Live production was verified; only observed.json/health.json could not be recorded. See the observe step for the code."
+          exit 1
