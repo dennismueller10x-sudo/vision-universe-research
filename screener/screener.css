@@ -537,6 +537,8 @@ html[data-theme=dark] .sc-check[aria-checked=true],html[data-theme=dark] .sc-bad
 .sc-product-hero.vu-hero-fidelity .sc-universe strong{font-size:32px}
 .sc-product-hero.vu-hero-fidelity .sc-universe span{font-size:12px}
 .sc-product-hero.vu-hero-fidelity .sc-universe small{font-size:11px}
+/* Hell: Datenstand unter der Universumszahl lag bei 4,3:1 (WCAG AA 4,5:1) */
+html:not([data-theme=dark]) .sc-universe small{color:var(--sc-muted)}
 
 /* BEGIN GENERATED HERO FIDELITY — edit assets/product-hero.css */
 /* Hero-only composition. Source for scripts/design/sync-product-hero.mjs.
