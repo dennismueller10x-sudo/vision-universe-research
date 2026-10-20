@@ -787,6 +787,21 @@
    "result": "SEE_TEST_RUN"
   },
   {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-VIOLATION"
+   ],
+   "psr709": [
+    "MOKA12-009",
+    "MOKASTOP-002"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT",
    "strategyIds": [
     "SF_MOKA_POCKET_PIVOT"

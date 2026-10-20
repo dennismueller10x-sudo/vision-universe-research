@@ -918,8 +918,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "09da9d9f011edd8102ea2b0644c4f3b8e6817965ea9584e033e83c0d6917344c",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "010cc73270415f67c0f0fc20430caa100056f674c8763a0654b56b5fc8b79a09",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -928,18 +928,18 @@
    "sourceCoverage": {
     "rulesInScope": 22,
     "hardRules": 1,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 1,
+    "implementedExact": 1,
     "implementedDerived": 0,
-    "manualReview": 0,
+    "manualReview": 13,
     "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 16,
+    "ambiguous": 2,
+    "notImplemented": 0,
     "excluded": 6,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
    "dataPartial": [],
@@ -983,7 +983,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 5 Pocket Pivot / BGU"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
@@ -1014,8 +1014,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "7e6331f3a2fe7dff952be094674d301574a03b471601916a14dec9a3524446fd",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "ff16c3ace3b6a5223a11edf943fa1aad7ea2637f04b3ebd4adc72dbe128ec6a1",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -1024,21 +1024,24 @@
    "sourceCoverage": {
     "rulesInScope": 15,
     "hardRules": 2,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
     "implementedDerived": 0,
-    "manualReview": 0,
+    "manualReview": 9,
     "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 12,
+    "ambiguous": 1,
+    "notImplemented": 0,
     "excluded": 3,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
-   "dataPartial": [],
+   "dataPartial": [
+    "MOKA24-MEGA: point-in-time market capitalisation for the megacap exception is not in the snapshot; the reviewer judges it",
+    "intraday projected volume (daily variant only)"
+   ],
    "manualReviewRequirements": [
     {
      "id": "MOKA-MR-LEAD",
@@ -1076,7 +1079,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 5 Pocket Pivot / BGU"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",

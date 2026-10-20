@@ -6680,8 +6680,8 @@
    "strategyId": "SF_MOKA_POCKET_PIVOT",
    "candidateId": "C11",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
    "method": "Pocket Pivot volume signature (machine) with manual chart / fundamental context and exits",
    "scope": {
@@ -6795,8 +6795,8 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-VOLUME",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
@@ -6804,7 +6804,7 @@
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-WINDOW-10"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6818,14 +6818,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-DOWNDAY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-NO-DOWN-DAY"
      ],
      "derivation": "the source compares against down-day volume and does not define \"down day\"; close-to-close is the conventional reading",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6839,14 +6839,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-UPDAY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT"
      ],
      "derivation": "a pocket pivot is a buy point on an up day; a down day with large volume is not a pocket pivot",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6860,14 +6860,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6881,14 +6881,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6902,14 +6902,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6923,14 +6923,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6944,14 +6944,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6965,14 +6965,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6986,14 +6986,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7007,14 +7007,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7028,12 +7028,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7047,12 +7047,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7066,12 +7066,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7085,12 +7085,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7104,12 +7104,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7123,12 +7125,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7142,12 +7146,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7161,12 +7165,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7180,12 +7184,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": null,
@@ -7200,11 +7204,11 @@
      "executableRule": "MOKA-SF-PP-EXIT-PPX",
      "kind": "EXIT",
      "status": "NOT_IMPLEMENTED",
-     "targetStatus": "NOT_IMPLEMENTED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target NOT_IMPLEMENTED"
+     "reason": "reported via MOKA-SF-EXIT-MA; no separate machine rule"
     }
    ]
   },
@@ -7212,8 +7216,8 @@
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
    "candidateId": "C12",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
    "method": "Buyable Gap-Up: gap >= 0.75 x ATR40 with standard volume 1.5x (megacap exception), gap-day low as sell guide",
    "scope": {
@@ -7326,15 +7330,15 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-GAP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7348,14 +7352,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-GAP-MEASURE",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY"
      ],
      "derivation": "the source does not define the gap measure or the ATR averaging; open minus previous close and a simple 40-session mean without same-day information are used; the full gap (low - previous high) is reported as evidence",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAV24",
@@ -7369,14 +7373,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKAV24",
@@ -7390,14 +7394,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-VOLWINDOW",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "#709 does not record the window; the ratio over the 50 sessions before the gap day is reported (convention of the authors' daily charts, unverified in #709) and the reviewer confirms"
     },
     {
      "source": "W-MOKAV24",
@@ -7411,14 +7415,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-MEGA",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7432,12 +7436,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7451,12 +7455,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7470,14 +7474,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SELLGUIDE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#buyableGapUpScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7491,14 +7495,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SELLGUIDE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#buyableGapUpScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7512,12 +7516,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7531,12 +7535,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7550,12 +7554,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7569,12 +7573,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7588,12 +7594,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7607,12 +7615,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7626,12 +7634,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7645,12 +7653,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
