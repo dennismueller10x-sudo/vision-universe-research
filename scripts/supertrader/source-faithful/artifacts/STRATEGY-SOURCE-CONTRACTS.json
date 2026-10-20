@@ -3938,8 +3938,8 @@
    "strategyId": "SF_MINERVINI_SEPA_VCP",
    "candidateId": "C06",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 6 Minervini",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Mark Minervini",
    "method": "SEPA: Trend Template qualification and VCP evidence as a machine screen, then manual relative-priority review",
    "scope": {
@@ -4077,14 +4077,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIMPLE",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#sepaScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE"
      ],
      "derivation": "honoured by design: the machine screen is the Trend Template alone; fundamentals, VCP and RS proxy are evidence, never additional AND gates",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4098,14 +4098,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PROCESS",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#sepaScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4119,14 +4119,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-1",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-1"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4140,14 +4140,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-2",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-2"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4161,14 +4161,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-3",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-3"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; one month = 21 sessions, MA200 today above MA200 21 sessions ago",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4182,14 +4182,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-4",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-4"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4203,14 +4203,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-5",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-5"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4224,14 +4224,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-6",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-6"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily lows",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4245,14 +4245,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-7",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-7"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily highs",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4266,14 +4266,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-8",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#rsProxy",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-RS-PROXY-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target DATA_BLOCKED"
+     "reason": "the IBD rating is proprietary and not in the snapshot; a VU cross-sectional percentile is reported as a proxy and never gates (#709: \"Ein VU-Perzentil mit ähnlicher Skala ist kein identischer IBD-Rang\")"
     },
     {
      "source": "B12",
@@ -4287,12 +4287,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4306,12 +4306,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4325,12 +4325,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4344,12 +4344,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4363,12 +4363,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4382,12 +4382,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4401,12 +4401,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4420,12 +4420,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4439,12 +4439,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4458,12 +4458,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4477,12 +4477,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4496,12 +4496,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4515,12 +4515,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4534,14 +4534,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4555,14 +4555,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4576,14 +4576,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4597,14 +4597,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4618,14 +4618,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4639,14 +4639,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4660,12 +4660,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PIVOT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4679,12 +4679,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PIVOT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4698,14 +4698,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4719,14 +4719,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4740,14 +4740,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4761,14 +4761,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B03",
@@ -4782,12 +4782,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4801,12 +4801,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4820,12 +4820,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4839,12 +4839,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4858,12 +4858,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4877,12 +4877,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -4890,8 +4890,8 @@
    "strategyId": "SF_MINERVINI_POWER_PLAY",
    "candidateId": "C07",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 6 Minervini",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Mark Minervini",
    "method": "Power Play: >= 100 % in under eight weeks starting on strong volume, then a tight consolidation that corrects no more than 20-25 %",
    "scope": {
@@ -4993,14 +4993,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-NOFUND",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE"
      ],
      "derivation": "honoured by design: the Power Play screen has no fundamental input",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5014,14 +5014,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-DURATION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SHORT-CONSOLIDATION"
      ],
      "derivation": "no minimum consolidation length is enforced; the duration is reported as evidence",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5035,15 +5035,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-RUNUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: some close / prior low ratio within fewer than 40 sessions >= 2.0 (lowest low to highest high of the run)",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5057,15 +5057,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-CORRECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CORRECTION-RANGE-FLAG"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point)",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5079,15 +5079,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-TIGHT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-WIDE-REVIEW"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; machine: the whole consolidation (run-up high to the lowest low since) spans <= 10 % -> TIGHT; otherwise VCP_CHARACTERISTICS_REVIEW (the OR branch is a reviewer judgment); no extra window is introduced",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5101,12 +5101,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5120,14 +5120,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5141,14 +5141,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5162,14 +5162,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5183,12 +5183,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B03",
@@ -5202,12 +5202,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5221,12 +5221,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },

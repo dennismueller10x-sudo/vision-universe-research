@@ -29,7 +29,7 @@ const RISK_EXIT_EXCLUSIONS = {
 };
 
 export const MINERVINI_SEPA = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 6 Minervini',
   strategyId: 'SF_MINERVINI_SEPA_VCP',
   candidateId: 'C06',
@@ -97,7 +97,7 @@ export const MINERVINI_SEPA = defineContract({
 });
 
 export const MINERVINI_POWER_PLAY = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 6 Minervini',
   strategyId: 'SF_MINERVINI_POWER_PLAY',
   candidateId: 'C07',

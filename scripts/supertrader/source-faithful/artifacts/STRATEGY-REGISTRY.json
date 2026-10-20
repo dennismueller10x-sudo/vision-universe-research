@@ -486,8 +486,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "ba8f694e043a0b67462628950ee764e793782fea9a95b24c973cc97e71b15626",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "5afa38b693f1663a6f944cc850f200f967895e55ec3edac92f7ae959592e61ae",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -496,20 +496,22 @@
    "sourceCoverage": {
     "rulesInScope": 118,
     "hardRules": 16,
-    "hardRulesImplemented": 0,
+    "hardRulesImplemented": 8,
     "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "implementedDerived": 9,
+    "manualReview": 31,
+    "dataBlocked": 1,
     "ambiguous": 0,
-    "notImplemented": 41,
+    "notImplemented": 0,
     "excluded": 77,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "MIN-SF-TT-8"
+   ],
    "dataPartial": [],
    "manualReviewRequirements": [
     {
@@ -571,7 +573,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 6 Minervini"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MINERVINI_POWER_PLAY",
@@ -597,8 +599,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "b319bb6221b51797ab1cedaf5495d0384aa8fd7229d48e3f3b0adab89a3730f1",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "c85b70993227083ff4a300618237915f50a61f421604ea76e62dc025a07e52b8",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -607,18 +609,18 @@
    "sourceCoverage": {
     "rulesInScope": 20,
     "hardRules": 6,
-    "hardRulesImplemented": 0,
+    "hardRulesImplemented": 3,
     "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "implementedDerived": 5,
+    "manualReview": 4,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 9,
+    "notImplemented": 0,
     "excluded": 11,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
    "dataPartial": [],
@@ -650,7 +652,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 6 Minervini"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_BREAKOUT",
