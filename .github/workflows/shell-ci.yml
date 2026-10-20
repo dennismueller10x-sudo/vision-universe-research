@@ -6,10 +6,10 @@ name: Shell Quality Gates
 # und Seitenende - in Chromium (390 bis 1440 px) und in WebKit (iPhone-Profil).
 on:
   pull_request:
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
   push:
     branches: [main]
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', '.github/workflows/shell-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -55,4 +55,45 @@ jobs:
         with:
           name: shell-browser-evidence
           path: /tmp/shell-evidence
+          if-no-files-found: warn
+  vu3-regression:
+    # VU3-Regression (scripts/quality/vu3-regression-qa.mjs): Wege zwischen den Welten (dieselbe Aktie bleibt dieselbe),
+    # Farbschema ueber die Welten, Visual-First-Bausteine je Welt und Kontrast (axe color-contrast) hell/dunkel, 390/1440 px.
+    # Eigener Job neben shell, damit dessen 40-Minuten-Budget unberuehrt bleibt. Europa-Routen bewusst ausgenommen.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build screener universe from committed product data
+        run: node scripts/screener/build-universe.mjs
+      - name: Browser dependencies (Chromium, WebKit, axe-core)
+        run: |
+          npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
+          node /tmp/vu3-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
+      - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
+        env:
+          PLAYWRIGHT_PATH: /tmp/vu3-qa-deps/node_modules/playwright
+          AXE_PATH: /tmp/vu3-qa-deps/node_modules/axe-core/axe.min.js
+        run: |
+          mkdir -p /tmp/vu3-evidence
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/vu3-release" > /tmp/vu3-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/chromium || chromium_status=$?
+          node scripts/quality/vu3-regression-qa.mjs --engine=webkit --only=journeys,theme,visual --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vu3-regression-evidence
+          path: /tmp/vu3-evidence
           if-no-files-found: warn
