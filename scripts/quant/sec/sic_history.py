@@ -368,7 +368,7 @@ def ingest_fsds_quarter(client, store, quarter, observed_at):
 
 def ingest_header(client, store, cik, accession, observed_at):
     cik = normalize_cik(cik)
-    url = HEADER_URL.format(cik=int(cik), nodash=accession.replace("-", ""), accession=accession)
+    url = header_url(cik, accession)
     raw = client.get_bytes(url, use_cache=False)
     key = f"{cik}_{accession}"
     store.put("header", key, raw)
@@ -399,7 +399,6 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
     gleiche Rohdaten -> byte-identisches Ergebnis.
     """
     by_cik, quarantine = {}, []
-    header_obs = {}
     for entry in sorted(manifest["sources"], key=lambda e: (e["kind"], e["key"])):
         raw = verify_and_load(store, entry)
         if entry["kind"] == "fsds":
@@ -410,8 +409,6 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
             obs = [ob] if ob else []
             if bad:
                 quarantine.append(bad)
-            for o in obs:
-                header_obs[(o["cik"], o["accession"])] = o
         for o in obs:
             if cik_filter is not None and o["cik"] not in cik_filter:
                 continue
@@ -432,6 +429,8 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
             if {prior["source"], o["source"]} == {SOURCE_FSDS, SOURCE_HEADER}:
                 fs = prior if prior["source"] == SOURCE_FSDS else o
                 hd = o if fs is prior else prior
+                if prior.get("crosschecked"):
+                    continue  # dieselbe Accession aus einem zweiten FSDS-Quartal: schon verglichen
                 crosscheck["compared"] += 1
                 if fs["sic"] == hd["sic"]:
                     crosscheck["agree"] += 1
@@ -442,7 +441,7 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
                                        "quarter": fs["sourceRef"], "reason": "FSDS_HEADER_SIC_MISMATCH",
                                        "fsds": fs["sic"], "header": hd["sic"], "resolution": "HEADER_USED"})
                 # Der Header ist die Primaerquelle (sekundengenau, zum Einreichungszeitpunkt archiviert).
-                merged[o["accession"]] = hd
+                merged[o["accession"]] = dict(hd, crosschecked=True)
             # dieselbe Accession aus zwei FSDS-Quartalen: die erste (nach Quartal) bleibt
         kept, last_trusted = [], None
         for o in sorted(merged.values(), key=_obs_sort_key):
@@ -560,18 +559,43 @@ class RequestBudget:
             raise SicSourceError(f"request budget exhausted ({self.used()}/{self.max_requests})")
 
 
+def header_url(cik, accession):
+    return HEADER_URL.format(cik=int(cik), nodash=accession.replace("-", ""), accession=accession)
+
+
 def load_manifest(path):
+    """Manifest lesen. Header-Pins liegen kompakt als Zeilen und werden hier aufgefaltet."""
     path = Path(path)
-    if path.exists():
-        return json.loads(path.read_text())
-    return {"schemaVersion": SCHEMA_VERSION, "sources": []}
+    if not path.exists():
+        return {"schemaVersion": SCHEMA_VERSION, "sources": []}
+    manifest = json.loads(path.read_text())
+    for observed_at, rows in sorted(manifest.pop("headerPins", {}).items()):
+        for cik, accession, digest, size in rows:
+            manifest["sources"].append({"kind": "header", "key": f"{cik}_{accession}", "cik": cik, "accession": accession,
+                                        "url": header_url(cik, accession), "sha256": digest, "bytes": size,
+                                        "observedAt": observed_at})
+    return manifest
 
 
 def save_manifest(path, manifest):
+    """Manifest schreiben: FSDS- und Codelisten-Pins als Objekte, Header-Pins als Zeilen je Abrufzeit
+    ([cik, accession, sha256, bytes]; die URL folgt aus CIK und Accession). Rund 9 000 Header passen
+    so unter die 2-MB-Grenze je Datei."""
     manifest["sources"].sort(key=lambda e: (e["kind"], e["key"]))
-    manifest.update(stamp(max((e["observedAt"] for e in manifest["sources"]), default=None)))
+    out = {k: v for k, v in manifest.items() if k != "sources"}
+    out.update(stamp(max((e["observedAt"] for e in manifest["sources"]), default=None)))
+    out["sources"] = [e for e in manifest["sources"] if e["kind"] != "header"]
+    pins = {}
+    for e in manifest["sources"]:
+        if e["kind"] == "header":
+            pins.setdefault(e["observedAt"], []).append([e["cik"], e["accession"], e["sha256"], e["bytes"]])
+    out["headerPins"] = pins
+    out["headerPinFields"] = ["cik", "accession", "sha256", "bytes"]
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps(manifest, indent=1, sort_keys=True) + "\n")
+    text = json.dumps({k: v for k, v in out.items() if k != "headerPins"}, indent=1, sort_keys=True)
+    rows = ",\n".join(f" {json.dumps(at)}: [\n" + ",\n".join("  " + json.dumps(r) for r in pins[at]) + "\n ]"
+                       for at in sorted(pins))
+    Path(path).write_text(text[:-2] + ',\n "headerPins": {\n' + rows + "\n }\n}\n")
 
 
 def fetch_fsds(client, store, manifest, quarters, observed_at, budget, refresh=False, log=print):
@@ -603,24 +627,40 @@ def fetch_fsds(client, store, manifest, quarters, observed_at, budget, refresh=F
     return added, changed
 
 
-def fetch_headers(client, store, manifest, targets, observed_at, budget, log=print):
-    """targets: [(cik, accession)]. Bereits gepinnte Header werden nicht erneut geladen."""
+def fetch_headers(client, store, manifest, targets, observed_at, budget, log=print, workers=4):
+    """targets: [(cik, accession)]. Bereits gepinnte Header werden nicht erneut geladen.
+
+    Parallel mit `workers` Threads; das Tempo begrenzt der gemeinsame Rate-Limiter des
+    Clients (Fair Access), nicht die Thread-Zahl. Das Budget wird VOR dem Start gegen
+    die ganze Liste geprueft - kein halber Lauf.
+    """
+    from concurrent.futures import ThreadPoolExecutor
     have = {e["key"] for e in manifest["sources"] if e["kind"] == "header"}
-    added = []
+    todo, seen = [], set()
     for cik, accession in targets:
         key = f"{normalize_cik(cik)}_{accession}"
-        if key in have and store.has("header", key):
+        if key in seen or (key in have and store.has("header", key)):
             continue
-        budget.check(1)
+        seen.add(key)
+        todo.append((cik, accession, key))
+    budget.check(len(todo))
+
+    def one(item):
+        cik, accession, key = item
         try:
-            entry = ingest_header(client, store, cik, accession, observed_at)
-        except Exception as exc:  # noqa: BLE001
-            log(f"header {key}: {exc}")
-            manifest.setdefault("failures", []).append({"kind": "header", "key": key, "error": str(exc)[:300], "at": observed_at})
-            continue
-        manifest["sources"].append(entry)
-        have.add(key)
-        added.append(key)
+            return key, ingest_header(client, store, cik, accession, observed_at), None
+        except Exception as exc:  # noqa: BLE001 - jede Quellenstoerung wird protokolliert
+            return key, None, str(exc)[:300]
+
+    added = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for key, entry, error in pool.map(one, todo):
+            if error:
+                log(f"header {key}: {error}")
+                manifest.setdefault("failures", []).append({"kind": "header", "key": key, "error": error, "at": observed_at})
+                continue
+            manifest["sources"].append(entry)
+            added.append(key)
     return added
 
 
@@ -756,45 +796,53 @@ def _quarter_of(day):
     return f"{day[:4]}q{(int(day[5:7]) - 1) // 3 + 1}"
 
 
-def plan_gap_headers(client, gaps, first_known, budget, log=print):
+def plan_gap_headers(client, gaps, first_known, budget, log=print, workers=4):
     """Header-Ziele fuer Zeitpunkte vor der ersten Beobachtung.
 
     gaps: {cik: fruehester unbedeckter Tag}; first_known: {cik: knownAt der ersten Beobachtung | None}.
-    Je CIK: das letzte Emittentenfiling am oder vor dem Lueckenbeginn und je Kalenderquartal bis zur
-    ersten Beobachtung das letzte Emittentenfiling. Die Submissions-Liste liefert nur Accession,
-    Formtyp und Datum - ihre SIC (heutiger Stand) wird nicht gelesen.
+    Je CIK: das letzte Emittentenfiling am oder vor dem Lueckenbeginn (gibt es keines, etwa vor
+    einem Boersengang: das erste danach) und je Kalenderjahr bis zur ersten Beobachtung das letzte
+    Emittentenfiling. Die Submissions-Liste liefert nur Accession, Formtyp und Datum - ihre SIC
+    (heutiger Stand) wird nicht gelesen.
     """
-    targets = []
-    for cik in sorted(gaps):
-        cik10 = normalize_cik(cik)
-        budget.check(1)
-        try:
-            doc = client.get_json(SUBMISSIONS_URL.format(cik=cik10))
-        except Exception as exc:  # noqa: BLE001
-            log(f"submissions {cik10}: {exc}")
-            continue
+    from concurrent.futures import ThreadPoolExecutor
+    budget.check(len(gaps))
+
+    def listing(cik10, start):
+        doc = client.get_json(SUBMISSIONS_URL.format(cik=cik10))
         cols = [doc.get("filings", {}).get("recent", {})]
-        start = gaps[cik]
         for page in doc.get("filings", {}).get("files", []):
-            if page.get("filingTo", "9999") >= f"{int(start[:4]) - 2}-01-01":
+            if page.get("filingTo", "9999") >= f"{int(start[:4]) - 2}-01-01" and page.get("filingFrom", "0000") <= start:
                 budget.check(1)
-                try:
-                    cols.append(client.get_json(SUBMISSIONS_PAGE_URL.format(name=page["name"])))
-                except Exception as exc:  # noqa: BLE001
-                    log(f"submissions page {page['name']}: {exc}")
+                cols.append(client.get_json(SUBMISSIONS_PAGE_URL.format(name=page["name"])))
         filings = []
         for c in cols:
             for acc, form, day in zip(c.get("accessionNumber", []), c.get("form", []), c.get("filingDate", [])):
                 if form in ISSUER_FORMS:
                     filings.append((day, acc))
-        filings.sort()
+        return sorted(filings)
+
+    def one(cik):
+        cik10 = normalize_cik(cik)
+        start = gaps[cik]
+        try:
+            filings = listing(cik10, start)
+        except Exception as exc:  # noqa: BLE001
+            return cik10, [], str(exc)[:200]
         end = (first_known.get(cik10) or "9999-12-31")[:10]
         before = [f for f in filings if f[0] <= start]
-        chosen = {before[-1][1]} if before else set()
-        per_quarter = {}
-        for day, acc in filings:
-            if start < day < end:
-                per_quarter[_quarter_of(day)] = acc
-        chosen |= set(per_quarter.values())
-        targets.extend([cik10, acc] for acc in sorted(chosen))
+        after = [f for f in filings if start < f[0] < end]
+        chosen = {before[-1][1]} if before else ({after[0][1]} if after else set())
+        per_year = {}
+        for day, acc in after:
+            per_year[day[:4]] = acc
+        chosen |= set(per_year.values())
+        return cik10, sorted(chosen), None
+
+    targets = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for cik10, accs, error in pool.map(one, sorted(gaps)):
+            if error:
+                log(f"submissions {cik10}: {error}")
+            targets.extend([cik10, a] for a in accs)
     return targets

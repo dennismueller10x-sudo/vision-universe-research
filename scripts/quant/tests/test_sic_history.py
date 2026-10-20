@@ -217,6 +217,16 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(built["crosscheck"]["compared"], 1)
         self.assertEqual(built["quarantine"][0]["reason"], "FSDS_HEADER_SIC_MISMATCH")
 
+    def test_crosscheck_counts_an_accession_once_even_if_two_quarters_list_it(self):
+        fs = sub_txt(("0001018724-26-000004", 1018724, "5961", "10-K", "20260206", "2026-02-05 18:45:00.0"))
+        m = manifest_with(self.store, [
+            ("fsds", "2026q1", fs, {}), ("fsds", "2026q2", fs, {}),
+            ("header", "0001018724_0001018724-26-000004", AMZN_2026, {"cik": "0001018724", "accession": "0001018724-26-000004"}),
+        ])
+        built = sh.build_history(m, self.store)
+        self.assertEqual((built["crosscheck"]["compared"], built["crosscheck"]["agree"]), (1, 1))
+        self.assertEqual(len(built["issuers"]["0001018724"]["observations"]), 1)
+
     def test_suspect_window_drops_unconfirmed_change_keeps_consistent(self):
         before = sub_txt(("0000000007-13-000001", 7, "2080", "10-Q", "20130510", "2013-05-10 09:00:00.0"))
         suspect = sub_txt(("0000000007-13-000002", 7, "3430", "10-Q", "20131108", "2013-11-08 09:00:00.0"),
@@ -339,11 +349,11 @@ class HydrateTests(unittest.TestCase):
 
 
 class GapPlanTests(unittest.TestCase):
-    def test_one_issuer_filing_before_gap_and_one_per_quarter_until_first_observation(self):
+    def test_one_issuer_filing_before_gap_and_one_per_year_until_first_observation(self):
         doc = {"filings": {"recent": {
-            "accessionNumber": ["a1", "a2", "a3", "a4", "a5", "a6", "a7"],
-            "form": ["6-K", "4", "6-K", "20-F", "6-K", "SC 13G", "20-F"],
-            "filingDate": ["2015-11-02", "2016-02-01", "2016-02-10", "2016-04-15", "2016-05-20", "2016-08-01", "2018-04-19"],
+            "accessionNumber": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"],
+            "form": ["6-K", "4", "6-K", "20-F", "6-K", "SC 13G", "6-K", "20-F"],
+            "filingDate": ["2015-11-02", "2016-02-01", "2016-02-10", "2016-04-15", "2016-05-20", "2016-08-01", "2017-03-01", "2018-04-19"],
         }, "files": []}}
 
         class Client:
@@ -356,8 +366,41 @@ class GapPlanTests(unittest.TestCase):
         client = Client()
         t = sh.plan_gap_headers(client, {"1046179": "2016-01-31"}, {"0001046179": "2018-04-19T11:56:59Z"},
                                 sh.RequestBudget(client, 5), log=lambda *_: None)
-        # a1: letztes Emittentenfiling vor der Luecke; 2016q1 -> a3 (a2 ist Form 4); 2016q2 -> a5; SC 13G nie
-        self.assertEqual(t, [["0001046179", "a1"], ["0001046179", "a3"], ["0001046179", "a5"]])
+        # a1: letztes Emittentenfiling vor der Luecke; 2016 -> a5 (letztes Emittentenfiling, Form 4 und SC 13G nie);
+        # 2017 -> a7; a8 ist die erste Beobachtung selbst
+        self.assertEqual(t, [["0001046179", "a1"], ["0001046179", "a5"], ["0001046179", "a7"]])
+
+    def test_without_filing_before_the_gap_the_first_one_after_is_taken(self):
+        doc = {"filings": {"recent": {"accessionNumber": ["s1", "q1"], "form": ["424B4", "10-Q"],
+                                      "filingDate": ["2021-03-02", "2021-05-10"]}, "files": []}}
+
+        class Client:
+            stats = {"requests": 0}
+
+            def get_json(self, url):
+                return doc
+        client = Client()
+        t = sh.plan_gap_headers(client, {"5": "2021-02-28"}, {"0000000005": "2021-05-10T20:00:59Z"},
+                                sh.RequestBudget(client, 5), log=lambda *_: None)
+        self.assertEqual(t, [["0000000005", "s1"]])
+
+
+class ManifestTests(unittest.TestCase):
+    def test_compact_header_pins_roundtrip(self):
+        m = {"schemaVersion": sh.SCHEMA_VERSION, "requestLog": [{"action": "x"}], "sources": [
+            {"kind": "fsds", "key": "2020q1", "url": "u", "sha256": "a" * 64, "observedAt": "t1"},
+            {"kind": "header", "key": "0000000001_0000000001-20-000001", "cik": "0000000001",
+             "accession": "0000000001-20-000001", "url": sh.header_url("0000000001", "0000000001-20-000001"),
+             "sha256": "b" * 64, "bytes": 10, "observedAt": "t2"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            sh.save_manifest(path, json.loads(json.dumps(m)))
+            back = sh.load_manifest(path)
+            self.assertEqual(sorted(json.dumps(e, sort_keys=True) for e in back["sources"]),
+                             sorted(json.dumps(e, sort_keys=True) for e in m["sources"]))
+            self.assertEqual(back["requestLog"], [{"action": "x"}])
+            self.assertEqual(json.loads(path.read_text())["headerPins"]["t2"][0][1], "0000000001-20-000001")
+            self.assertTrue(sh.header_url("1", "0000000001-20-000001").endswith("/data/1/000000000120000001/0000000001-20-000001.hdr.sgml"))
 
 
 class SicCodeTableTests(unittest.TestCase):

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "historical-sic-source-evidence/1.0.0",
+  "checkedAt": "2026-10-20",
+  "userAgent": "VisionUniverseResearch info@visionuniverse.de",
+  "sources": [
+    {
+      "id": "SUBMISSIONS_API",
+      "url": "https://data.sec.gov/submissions/CIK##########.json",
+      "sic": "CURRENT_ONLY",
+      "evidence": [
+        "Amazon CIK 0001018724: Feld sic = 5961; das 10-K405 von 1998 (0000891020-98-000448) traegt im Header 2731. Die Liste der Filings (recent + files) hat keine SIC je Filing.",
+        "formerNames ist fuer Amazon leer; die Liste beschreibt den heutigen Stammsatz."
+      ],
+      "acceptanceDateTime": {
+        "verdict": "NOT_USED_FOR_PIT",
+        "finding": "liegt um den UTC-Offset von Eastern Time zu spaet (Header-Ortszeit + 2x Offset); vor ca. 2001 Platzhalter T10:00:00.000Z",
+        "examples": [
+          { "accession": "0001018724-26-000004", "api": "2026-02-06T04:44:31.000Z", "header": "20260205184431 (ET)", "indexPage": "Accepted 2026-02-05 18:44:31", "trueUtc": "2026-02-05T23:44:31Z" },
+          { "accession": "0001018724-21-000004", "api": "2021-02-03T05:44:10.000Z", "header": "20210202194410 (ET)", "trueUtc": "2021-02-03T00:44:10Z" },
+          { "accession": "0000320193-26-000018", "api": "2026-07-31T00:30:28.000Z", "header": "20260730163028 (ET)", "trueUtc": "2026-07-30T20:30:28Z", "note": "Apple-8-K zu den Quartalszahlen, Veroeffentlichung ueblich 16:30 ET" },
+          { "accession": "0000320193-26-000020", "api": "2026-07-31T14:01:02.000Z", "header": "20260731060102 (ET)", "trueUtc": "2026-07-31T10:01:02Z" }
+        ]
+      },
+      "use": "nur Liste der Accessions/Formtypen/Daten fuer den Header-Lueckenschluss; Feld sic wird nie gelesen"
+    },
+    {
+      "id": "FILING_HEADER",
+      "url": "https://www.sec.gov/Archives/edgar/data/<cik>/<acc ohne Striche>/<acc>.hdr.sgml",
+      "sic": "HISTORICAL_AT_FILING",
+      "fields": { "sic": "<ASSIGNED-SIC> im Unternehmensblock mit genau dieser CIK", "accepted": "<ACCEPTANCE-DATETIME> YYYYMMDDHHMMSS Eastern Time", "filingDate": "<FILING-DATE>", "generated": "<SEC-HEADER>... : YYYYMMDD" },
+      "precision": "SECOND mit ACCEPTANCE-DATETIME; ohne sie (alte Filings) DAY = Ende des spaeteren Tags aus FILING-DATE und Header-Erzeugungstag",
+      "evidence": [
+        { "cik": "0001018724", "accession": "0000891020-98-000448", "form": "10-K405", "filingDate": "1998-03-30", "headerGenerated": "1998-03-31", "sic": "2731", "acceptance": null },
+        { "cik": "0001018724", "accession": "0000891020-99-000375", "form": "10-K", "filingDate": "1999-03-05", "headerGenerated": "1999-03-08", "sic": "5961", "acceptance": null },
+        { "cik": "0001018724", "accession": "0001018724-26-000004", "form": "10-K", "filingDate": "2026-02-06", "acceptance": "2026-02-05 18:44:31 ET", "sic": "5961", "note": "angenommen nach 17:30 ET -> Einreichungsdatum ist der naechste Geschaeftstag" },
+        { "cik": "0000029006", "accession": "0001052918-12-000246", "form": "10-Q", "acceptance": "2012-05-15 16:00:31 ET", "sic": "3674", "note": "31 Sekunden nach Handelsschluss" }
+      ],
+      "coRegistrants": "ein Header kann mehrere FILER-/SUBJECT-COMPANY-Bloecke tragen; genommen wird nur der Block mit der angefragten CIK"
+    },
+    {
+      "id": "FILING_INDEX_PAGE",
+      "url": "https://www.sec.gov/Archives/edgar/data/<cik>/<acc ohne Striche>/<acc>-index.htm",
+      "use": "Gegenprobe der Acceptance-Zeit (Amazon 0001018724-26-000004: Accepted 2026-02-05 18:44:31 = Header)"
+    },
+    {
+      "id": "FSDS_SUB",
+      "url": "https://www.sec.gov/files/dera/data/financial-statement-data-sets/<yyyy>q<n>.zip (Mitglied sub.txt)",
+      "sic": "HISTORICAL_AT_FILING_WITH_EXCEPTION_WINDOW",
+      "readme": "sic: Standard Industrial Classification (SIC). Four digit code assigned by the SEC as of the filing date, indicating the registrant's type of business.",
+      "quarters": "2009q1-2026q3 (71), je Quartal 3 Range-Requests, sub.txt ca. 0,3-0,6 MB komprimiert",
+      "accepted": "Eastern Time, auf die Minute GERUNDET (z. B. 16:16:35 -> 16:17, 16:00:31 -> 16:01); knownAt = Minute + 59 s, in allen gepaarten Faellen nie vor dem Header",
+      "crosscheck": { "pairs": 3017, "agree": 2784, "disagree": 233, "disagreeOutsideWindow": 0, "disagreeByQuarter": { "2013q3": 9, "2013q4": 150, "2014q1": 62, "2014q2": 12 } },
+      "exceptionWindow": {
+        "quarters": ["2013q3", "2013q4", "2014q1", "2014q2"],
+        "finding": "falsche SIC-Werte in einem Teil der Zeilen; der Header zeigt den frueheren, stabilen Wert, der FSDS-Wert kehrt meist nie wieder",
+        "outlierRates": { "2013q3": 0.00174, "2013q4": 0.01631, "2014q1": 0.00629, "2014q2": 0.00152, "otherQuarters": "<= 0.0003" },
+        "remedy": "Werte aus dem Fenster gelten nur mit Header-Bestaetigung oder wenn sie der letzten vertrauenswuerdigen frueheren Beobachtung gleichen; alle 2.565 wechselbehauptenden Fensterwerte wurden per Header geprueft"
+      },
+      "coverageLimits": "nur XBRL-Einreicher; Auslandsemittenten (20-F/40-F/6-K) erst mit ihrer XBRL-Pflicht (in den Stichproben ab 2017/2018)"
+    },
+    {
+      "id": "SIC_CODE_LIST",
+      "url": "https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list",
+      "sic": "CURRENT_DESCRIPTIONS_ONLY",
+      "use": "nur Beschreibungstexte; ein Code ohne Eintrag bleibt ohne Beschreibung"
+    }
+  ],
+  "accessRules": {
+    "userAgent": "deklariert, mit Kontaktadresse (http_client.py erzwingt '@')",
+    "rate": "Token-Bucket 5 req/s, unter der veroeffentlichten Grenze von 10 req/s; parallele Worker teilen denselben Bucket",
+    "retry": "exponentieller Backoff mit Jitter fuer 403/429/5xx; beobachtet: vereinzelte 503, alle nach einem Retry erfolgreich",
+    "cache": "Rohspeicher $SEC_CACHE_DIR/sic-history/raw (gzip, mtime=0), nie committet; Pins (sha256, CRC32) in quant/data/sec/sic-history/manifest.json",
+    "budget": "harte Obergrenze je Lauf (--max-requests); Ueberschreitung bricht vor dem Abruf ab",
+    "log": "manifest.json requestLog je Lauf (Aktion, Zeit, Requests, Budget, User-Agent)"
+  }
+}
