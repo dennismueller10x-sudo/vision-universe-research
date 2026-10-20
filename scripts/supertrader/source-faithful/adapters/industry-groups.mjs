@@ -6,37 +6,57 @@
  *  - Turtle: groupsOf(securityId, priorSessionDate) -> { closely, loosely } | null (methods/turtle.mjs).
  *  - Weinstein: Gruppenzugehoerigkeit zum Zeitpunkt; Gruppen-Stage bleibt DATA_BLOCKED (kein Gruppenchart).
  *
- * Was NICHT hier entschieden wird (Owner, docs/SUPERTRADER_2_PIT_INDUSTRY_GROUPS_CONTRACT.md):
- *  - welche SIC-Ebene "eng" und welche "lose korreliert" heisst (TUR-LIMIT6 / TUR-LIMIT10 sprechen von Futures-Gruppen;
- *    eine SIC-Ebene ist keine gemessene Kurskorrelation);
- *  - wie alt eine Beobachtung hoechstens sein darf (maxAgeDays);
+ * Was NICHT hier entschieden wird (docs/SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md):
+ *  - TUR-LIMIT6 / TUR-LIMIT10 bestimmen ihre Gruppen nur durch Futures-Beispiele (W-TUR, gedruckt S. 16); die Quelle
+ *    nennt weder Mass noch Fenster noch Schwelle. Eine SIC-Ebene ist ein Stellvertreter, keine Korrelation, und vom
+ *    Owner nicht freigegeben.
+ *  - wie lange eine SIC-Beobachtung fortgeschrieben werden darf (maxAgeDays, deklarierte Annahme);
+ *  - welche Identitaetsbelege genuegen (acceptedIdentityEvidence);
  *  - welche Ebene Weinsteins "Gruppe" ist.
  * Ohne diese Entscheidung wirft der Adapter MODEL_ASSUMPTION_REQUIRED. Es gibt keine Voreinstellung.
  *
- * Identitaet: securityId -> CIK nur ueber die Snapshot-Zuordnung (seg.fund.cik aus validation/sec-pit.mjs, mit
- * Listing-Fenster-Pruefung), begrenzt auf das Fenster des Segments. Kein Ticker-, kein Namensabgleich.
+ * Identitaet: securityId -> CIK nur ueber die Snapshot-Zuordnung (validation/sec-pit.mjs), begrenzt auf das Fenster
+ * des Segments und gekennzeichnet nach ihrer Herkunft (IDENTITY_EVIDENCE). Eine heutige Ticker-Zuordnung zaehlt nie
+ * still als historische Bestaetigung: sie wird nur verwendet, wenn die Entscheidung genau diese Klasse annimmt.
+ *
+ * Fehlende Gruppe heisst UNBEKANNT, nicht unabhaengig. Die Engine begrenzt eine Aktie ohne Gruppe nur durch LIMIT4 /
+ * LIMIT12; conformance() sagt das in jedem Lauf und behauptet nie Regelkonformitaet.
  */
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const IC = require('../../../../core/industry-classification.js');
 
-export const ADAPTER_VERSION = 'sf-industry-groups-1.0.0';
+export const ADAPTER_VERSION = 'sf-industry-groups-1.1.0';
 export const LEVELS = ['industry', 'industryGroup', 'majorGroup']; // 4-, 3-, 2-stellig; fein -> grob
 const PREFIX = { industry: 'SIC4', industryGroup: 'SIC3', majorGroup: 'SIC2' };
+
+/**
+ * Herkunft einer CIK je Snapshot-Listing (validation/sec-pit.mjs, Feld `how`):
+ *  - KNOWN      -> CURRENT_TICKER_MAPPING: heutige Ticker->CIK-Liste (company-names.json), ohne Fensterpruefung.
+ *  - NAME_MATCH -> NAME_EXACT_XBRL_IN_LISTING_WINDOW: exakter normierter Name aus cik-lookup-data.txt, genau ein
+ *                  Kandidat mit XBRL-Werten im Listing-Fenster.
+ *  - sonst      -> UNSPECIFIED (z. B. seg.fund.cik ohne `how`).
+ */
+export const IDENTITY_EVIDENCE = Object.freeze({
+  CURRENT_TICKER_MAPPING: 'CURRENT_TICKER_MAPPING',
+  NAME_EXACT_XBRL_IN_LISTING_WINDOW: 'NAME_EXACT_XBRL_IN_LISTING_WINDOW',
+  UNSPECIFIED: 'UNSPECIFIED',
+});
+const EVIDENCE_OF_HOW = { KNOWN: IDENTITY_EVIDENCE.CURRENT_TICKER_MAPPING, NAME_MATCH: IDENTITY_EVIDENCE.NAME_EXACT_XBRL_IN_LISTING_WINDOW };
 
 /** Stand der Bindung, solange keine Owner-Entscheidung vorliegt. Aendert keine Registry. */
 export const BINDING_STATUS = Object.freeze({
   'TUR-SF-LIMIT-CORR': {
     status: 'DATA_BLOCKED',
     dataFoundation: 'PIT_SIC_AVAILABLE',
-    blockedBy: ['OWNER_DECISION_SIC_LEVEL_FOR_CLOSELY_LOOSELY', 'OWNER_DECISION_MAX_OBSERVATION_AGE'],
-    note: 'SIC-Gleichheit ist keine belegte Kurskorrelation; die Abbildung auf eng/lose ist eine Modellannahme ohne Quellenzahl',
+    blockedBy: ['SOURCE_DEFINES_GROUPS_BY_FUTURES_EXAMPLES_ONLY', 'NO_SOURCE_CORRELATION_MEASURE_WINDOW_OR_THRESHOLD', 'OWNER_DECISION_PENDING'],
+    note: 'W-TUR S. 16: "closely correlated markets include: heating oil and crude oil; gold and silver; Swiss franc and Deutschmark; TBill and Eurodollar, etc." - eine SIC-Ebene oder eine Kurskorrelation mit gewaehltem Fenster und gewaehlter Schwelle waere eine Modellannahme ohne Quellenzahl',
   },
   'WEIN-SF-GROUP': {
     status: 'DATA_BLOCKED',
     dataFoundation: 'PIT_SIC_MEMBERSHIP_AVAILABLE',
-    blockedBy: ['OWNER_DECISION_SIC_LEVEL_FOR_GROUP', 'GROUP_CHART_CONSTRUCTION (Gewichtung, Mitgliederwechsel, Mindestzahl)'],
+    blockedBy: ['OWNER_DECISION_GROUP_LEVEL', 'GROUP_CHART_CONSTRUCTION'],
     note: 'Zugehoerigkeit allein beweist keine Gruppenstaerke; WEIN-GROUP verlangt die Stage des Gruppencharts',
   },
 });
@@ -50,55 +70,81 @@ function requireDecision(decision, needs) {
     throw new ModelAssumptionRequired('Owner-Entscheidung fehlt (decision.ref): ' + needs.join(', '));
   }
   if (!Number.isFinite(decision.maxAgeDays) || decision.maxAgeDays <= 0) {
-    throw new ModelAssumptionRequired('decision.maxAgeDays fehlt: wie alt darf die letzte SIC-Beobachtung sein?');
+    throw new ModelAssumptionRequired('decision.maxAgeDays fehlt: bis zu welchem Alter darf die letzte SIC-Beobachtung fortgeschrieben werden?');
+  }
+  const ev = decision.acceptedIdentityEvidence;
+  if (!Array.isArray(ev) || !ev.length || ev.some((e) => !Object.values(IDENTITY_EVIDENCE).includes(e))) {
+    throw new ModelAssumptionRequired('decision.acceptedIdentityEvidence fehlt: welche Identitaetsbelege (IDENTITY_EVIDENCE) gelten?');
   }
 }
 
 /**
- * Snapshot-Segmente -> CIK-Kandidaten je securityId. Ein Segment ohne seg.fund.cik bekommt keinen Eintrag (NO_CIK).
- * Fenster = erste bis letzte Sitzung des Segments: nur dafuer hat sec-pit.mjs die Zuordnung geprueft.
+ * Snapshot-Segmente -> CIK-Kandidaten je securityId, begrenzt auf das Segmentfenster.
+ * secPit (optional): { [listingId]: { cik, how } } aus validation/sec-pit.mjs - nur damit ist die Herkunft bekannt.
+ * Ohne secPit gilt seg.fund.cik als UNSPECIFIED. Ein Segment ohne CIK bekommt keinen Eintrag (NO_CIK).
  */
-export function cikCandidatesFromSegments(segs) {
+export function cikCandidatesFromSegments(segs, secPit = null) {
   const out = new Map();
   for (const seg of segs || []) {
-    const cik = seg?.fund?.cik;
+    const listingId = String(seg.id).split('#')[0];
+    const pit = secPit ? secPit[listingId] : null;
+    const cik = pit?.cik || seg?.fund?.cik;
     if (!cik) continue;
+    const evidence = (pit && EVIDENCE_OF_HOW[pit.how]) || IDENTITY_EVIDENCE.UNSPECIFIED;
     const raw = seg.raw || seg.bars || [];
     const list = out.get(seg.id) || [];
-    list.push({ cik, evidence: 'SNAPSHOT_SEC_PIT_LISTING_MATCH', validFrom: raw[0]?.date ?? null, validTo: raw.at(-1)?.date ?? null });
+    list.push({ cik, evidence, validFrom: raw[0]?.date ?? null, validTo: raw.at(-1)?.date ?? null });
     out.set(seg.id, list);
   }
   return out;
 }
 
-function classifier({ classification, cikCandidates, level, maxAgeDays }) {
+function classifier({ classification, cikCandidates, decision }) {
+  const accepted = new Set(decision.acceptedIdentityEvidence);
   const counts = { lookups: 0, resolved: 0 };
-  const reasons = {};
-  const bump = (k) => { reasons[k] = (reasons[k] || 0) + 1; };
+  const reasons = {}, byEvidence = {};
+  const bump = (m, k) => { m[k] = (m[k] || 0) + 1; };
   function classify(id, date) {
     counts.lookups++;
-    const who = IC.resolveIssuer(cikCandidates.get(id) || [], date);
-    if (who.status !== 'RESOLVED') { bump('IDENTITY_' + who.reason); return null; }
-    const r = classification.getIndustryClassification(who.cik, date, { maxAgeDays });
-    if (r.status !== IC.STATUS.OBSERVED) { bump(r.status); return null; }
+    const all = cikCandidates.get(id) || [];
+    const usable = all.filter((c) => accepted.has(c.evidence));
+    if (all.length && !usable.length) { bump(reasons, 'IDENTITY_EVIDENCE_NOT_ACCEPTED'); return null; }
+    const who = IC.resolveIssuer(usable, date);
+    if (who.status !== 'RESOLVED') { bump(reasons, 'IDENTITY_' + who.reason); return null; }
+    const r = classification.getIndustryClassification(who.cik, date, { maxAgeDays: decision.maxAgeDays });
+    if (r.status !== IC.STATUS.OBSERVED) { bump(reasons, r.status); return null; }
     counts.resolved++;
-    return { cik: who.cik, sic: r.sic, levels: r.levels, knownAt: r.knownAt, accession: r.observation.accession };
+    bump(byEvidence, who.evidence || IDENTITY_EVIDENCE.UNSPECIFIED);
+    return { cik: who.cik, sic: r.sic, levels: r.levels, knownAt: r.knownAt, ageDays: r.ageDays, accession: r.observation.accession };
   }
-  return { classify, diagnostics: () => ({ ...counts, missingByReason: { ...reasons } }) };
+  function diagnostics() {
+    const unknown = counts.lookups - counts.resolved;
+    return {
+      adapter: ADAPTER_VERSION,
+      decision: decision.ref,
+      ...counts,
+      unknown,
+      missingByReason: { ...reasons },
+      resolvedByIdentityEvidence: { ...byEvidence },
+      carryForwardAssumption: `letzte SIC-Beobachtung gilt hoechstens ${decision.maxAgeDays} Tage fort (INFERRED_INTERVAL, Annahme ${decision.ref}); aelter = STALE = unbekannt`,
+      missingGroupMeaning: 'UNKNOWN_NOT_INDEPENDENT',
+    };
+  }
+  return { classify, diagnostics };
 }
 
 /**
- * Turtle: groupsOf fuer runTurtle({ groupsOf }). decision = { ref, closely, loosely, maxAgeDays }.
- * closely muss gleich fein oder feiner sein als loosely (eine enge Gruppe liegt in ihrer losen Gruppe).
- * Unbekannte Zustaende liefern null; die Engine zaehlt sie (correlationGroupMissing) und meldet dann
- * ENFORCED_PARTIAL_GROUP_COVERAGE, der Adapter zaehlt den Grund (diagnostics).
+ * Turtle: groupsOf fuer runTurtle({ groupsOf }). decision = { ref, basis: 'SIC_PROXY', closely, loosely, maxAgeDays,
+ * acceptedIdentityEvidence }. closely muss gleich fein oder feiner sein als loosely.
+ * Unbekannte Zustaende liefern null; conformance(runResult) kennzeichnet den Lauf.
  */
 export function makeTurtleGroupsOf({ classification, cikCandidates, decision }) {
-  requireDecision(decision, ['SIC-Ebene fuer TUR-LIMIT6 (closely)', 'SIC-Ebene fuer TUR-LIMIT10 (loosely)', 'maxAgeDays']);
+  requireDecision(decision, ['basis', 'SIC-Ebene fuer TUR-LIMIT6 (closely)', 'SIC-Ebene fuer TUR-LIMIT10 (loosely)', 'maxAgeDays', 'acceptedIdentityEvidence']);
+  if (decision.basis !== 'SIC_PROXY') throw new ModelAssumptionRequired('decision.basis muss SIC_PROXY sein (andere Gruppenbegriffe hat dieser Adapter nicht)');
   const ci = LEVELS.indexOf(decision.closely), li = LEVELS.indexOf(decision.loosely);
   if (ci < 0 || li < 0) throw new ModelAssumptionRequired(`unbekannte SIC-Ebene: ${decision.closely} / ${decision.loosely}`);
   if (ci > li) throw new RangeError('closely muss gleich fein oder feiner sein als loosely');
-  const c = classifier({ classification, cikCandidates, level: decision.closely, maxAgeDays: decision.maxAgeDays });
+  const c = classifier({ classification, cikCandidates, decision });
   const cache = new Map();
   function groupsOf(id, date) {
     const key = id + '|' + date;
@@ -108,18 +154,38 @@ export function makeTurtleGroupsOf({ classification, cikCandidates, decision }) 
     cache.set(key, g);
     return g;
   }
-  return { groupsOf, diagnostics: () => ({ adapter: ADAPTER_VERSION, decision: decision.ref, ...c.diagnostics() }) };
+  /**
+   * Kennzeichnung eines runTurtle-Ergebnisses. Nie "konform": die Gruppen sind ein SIC-Stellvertreter, und eine
+   * Aktie ohne Gruppe war nur durch LIMIT4 / LIMIT12 begrenzt.
+   */
+  function conformance(runResult) {
+    const d = c.diagnostics();
+    const missing = runResult?.counts?.correlationGroupMissing ?? null;
+    return {
+      rules: ['TUR-LIMIT6', 'TUR-LIMIT10'],
+      engineLabel: runResult?.correlationLimits ?? null,
+      ruleConformance: 'NOT_ESTABLISHED',
+      reasons: [
+        'GROUPS_ARE_SIC_PROXY_NOT_SOURCE_CORRELATION',
+        ...(missing ? ['UNKNOWN_GROUPS_LIMITED_ONLY_BY_LIMIT4_LIMIT12'] : []),
+        ...(d.unknown ? ['UNKNOWN_GROUP_IS_NOT_PROVEN_INDEPENDENCE'] : []),
+      ],
+      entriesWithUnknownGroup: missing,
+      diagnostics: d,
+    };
+  }
+  return { groupsOf, diagnostics: c.diagnostics, conformance };
 }
 
 /**
- * Weinstein: Gruppenzugehoerigkeit zum Zeitpunkt (nur Zugehoerigkeit). decision = { ref, level, maxAgeDays }.
- * rosterAt(ids, date) -> { groups: { key: [ids] }, unknown: [ids] } - die Grundlage eines spaeteren Gruppencharts.
- * Die Stage einer Gruppe wird hier NICHT berechnet (Konstruktion des Gruppencharts ist offen).
+ * Weinstein: Gruppenzugehoerigkeit zum Zeitpunkt (nur Zugehoerigkeit). decision = { ref, level, maxAgeDays,
+ * acceptedIdentityEvidence }. rosterAt(ids, date) -> { groups, unknown, groupStage: 'DATA_BLOCKED' }.
+ * Die Stage einer Gruppe wird hier NICHT berechnet (docs/SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md).
  */
 export function makeWeinsteinGroupMembership({ classification, cikCandidates, decision }) {
-  requireDecision(decision, ['SIC-Ebene fuer Weinsteins Gruppe', 'maxAgeDays']);
+  requireDecision(decision, ['SIC-Ebene fuer Weinsteins Gruppe', 'maxAgeDays', 'acceptedIdentityEvidence']);
   if (!LEVELS.includes(decision.level)) throw new ModelAssumptionRequired(`unbekannte SIC-Ebene: ${decision.level}`);
-  const c = classifier({ classification, cikCandidates, level: decision.level, maxAgeDays: decision.maxAgeDays });
+  const c = classifier({ classification, cikCandidates, decision });
   function groupOf(id, date) {
     const hit = c.classify(id, date);
     return hit ? `${PREFIX[decision.level]}:${hit.levels[decision.level]}` : null;
@@ -130,7 +196,7 @@ export function makeWeinsteinGroupMembership({ classification, cikCandidates, de
       const g = groupOf(id, date);
       if (g) (groups[g] ||= []).push(id); else unknown.push(id);
     }
-    return { date, groups, unknown, groupStage: 'DATA_BLOCKED' };
+    return { date, groups, unknown, unknownMeaning: 'UNKNOWN_NOT_INDEPENDENT', groupStage: 'DATA_BLOCKED' };
   }
-  return { groupOf, rosterAt, diagnostics: () => ({ adapter: ADAPTER_VERSION, decision: decision.ref, ...c.diagnostics() }) };
+  return { groupOf, rosterAt, diagnostics: c.diagnostics };
 }

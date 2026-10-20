@@ -90,23 +90,26 @@ Bericht: `docs/HISTORICAL_SIC_PIT_REPORT.md`. Daten: `quant/data/sec/sic-history
 - Die `acceptanceDateTime` der Submissions-API liegt um den UTC-Offset zu spaet und wird nicht verwendet.
 - Ohne Acceptance-Zeit (alte Header) gilt das Ende des spaeteren Tags aus Einreichungsdatum und Header-Erzeugungstag.
 
-**Adapter:** `scripts/supertrader/source-faithful/adapters/industry-groups.mjs`, Tests `tests/sf-industry-groups.test.mjs`.
+**Adapter:** `scripts/supertrader/source-faithful/adapters/industry-groups.mjs` (sf-industry-groups-1.1.0), Tests `tests/sf-industry-groups.test.mjs`. Pruefergebnis Turtle und Entscheidungsvorlage Weinstein: `SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md`.
 
 | Funktion | liefert | verlangt |
 |---|---|---|
-| `cikCandidatesFromSegments(segs)` | securityId -> CIK aus `seg.fund.cik`, begrenzt auf das Segmentfenster | - |
-| `makeTurtleGroupsOf({ classification, cikCandidates, decision })` | `groupsOf(id, priorSessionDate)` fuer `runTurtle` | `decision = { ref, closely, loosely, maxAgeDays }` |
-| `makeWeinsteinGroupMembership(...)` | `groupOf`, `rosterAt` (nur Zugehoerigkeit; `groupStage: DATA_BLOCKED`) | `decision = { ref, level, maxAgeDays }` |
+| `cikCandidatesFromSegments(segs, secPit)` | securityId -> CIK, begrenzt auf das Segmentfenster, mit Evidenzklasse (`CURRENT_TICKER_MAPPING`, `NAME_EXACT_XBRL_IN_LISTING_WINDOW`, `UNSPECIFIED`) | `secPit` = Ausgabe von `validation/sec-pit.mjs` (`{ cik, how }` je Listing) |
+| `makeTurtleGroupsOf({ classification, cikCandidates, decision })` | `groupsOf(id, priorSessionDate)` fuer `runTurtle`; `conformance(runResult)` mit `ruleConformance: NOT_ESTABLISHED` | `decision = { ref, basis: 'SIC_PROXY', closely, loosely, maxAgeDays, acceptedIdentityEvidence }` |
+| `makeWeinsteinGroupMembership(...)` | `groupOf`, `rosterAt` (nur Zugehoerigkeit; `groupStage: DATA_BLOCKED`) | `decision = { ref, level, maxAgeDays, acceptedIdentityEvidence }` |
 
 Verhalten:
-- Ohne Entscheidung wirft der Adapter `MODEL_ASSUMPTION_REQUIRED`. Es gibt keine Voreinstellung.
-- Unbekannte Zustaende liefern `null`, der Adapter zaehlt sie mit Grund. Die Engine zaehlt `correlationGroupMissing` und meldet `ENFORCED_PARTIAL_GROUP_COVERAGE`.
-- Der Research-Runner ist nicht verdrahtet. `TUR-SF-LIMIT-CORR` und `WEIN-SF-GROUP` bleiben `DATA_BLOCKED`. Die Registry-Artefakte sind unveraendert.
+- Ohne Entscheidung wirft der Adapter `MODEL_ASSUMPTION_REQUIRED`; es gibt keine Voreinstellung.
+- Unbekannte Zustaende liefern `null`, gezaehlt mit Grund (`UNKNOWN_NOT_INDEPENDENT`).
+- Eine heutige Ticker-Zuordnung zaehlt nur, wenn die Entscheidung `CURRENT_TICKER_MAPPING` ausdruecklich annimmt.
+- Der Research-Runner ist nicht verdrahtet. `TUR-SF-LIMIT-CORR` und `WEIN-SF-GROUP` bleiben `DATA_BLOCKED`.
+
+**Pruefergebnis Turtle (20.10.2026):** W-TUR (gedruckte S. 16) bestimmt eng und lose korrelierte Maerkte nur durch Futures-Beispiele. Es gibt weder Mass noch Fenster noch Schwelle. Eine Umsetzung ueber historische Kurskorrelation ist damit nicht quellengedeckt; die Limits bleiben blockiert.
 
 **Fuer die Freigabe noch offen (Owner):**
-1. SIC-Ebene fuer „eng“ und fuer „lose korreliert“ (4-, 3- oder 2-stellig). Eine SIC-Gleichheit ist keine gemessene Kurskorrelation.
+1. Ob TUR-LIMIT6/10 ueberhaupt mit einer deklarierten VU-Modellannahme belegt werden (SIC-Stellvertreter oder Kurskorrelation mit benannten Parametern). Beides ist keine Originalregel.
 2. `maxAgeDays`: wie alt die letzte SIC-Beobachtung hoechstens sein darf. In der Messung stammen 86 % der beobachteten Punkte aus den letzten 100 Tagen (docs/historical-sic/COVERAGE.json).
-3. Weinstein: die Gruppenebene und die Konstruktion des Gruppencharts (Gewichtung, Mitgliederwechsel, Mindestzahl Mitglieder).
+3. Weinstein: Gruppenebene und Gruppenchart, siehe Entscheidungsvorlage. Dazu, welche Identitaetsbelege gelten.
 4. Danach in einem eigenen PR mit Vorher/Nachher-Vergleich:
    - Runner-Verdrahtung;
    - Statuswechsel in `STRATEGY-SOURCE-CONTRACTS.json` / `STRATEGY-DATA-DEPENDENCIES.json`;
