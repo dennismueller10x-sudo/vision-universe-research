@@ -603,24 +603,40 @@ def fetch_fsds(client, store, manifest, quarters, observed_at, budget, refresh=F
     return added, changed
 
 
-def fetch_headers(client, store, manifest, targets, observed_at, budget, log=print):
-    """targets: [(cik, accession)]. Bereits gepinnte Header werden nicht erneut geladen."""
+def fetch_headers(client, store, manifest, targets, observed_at, budget, log=print, workers=4):
+    """targets: [(cik, accession)]. Bereits gepinnte Header werden nicht erneut geladen.
+
+    Parallel mit `workers` Threads; das Tempo begrenzt der gemeinsame Rate-Limiter des
+    Clients (Fair Access), nicht die Thread-Zahl. Das Budget wird VOR dem Start gegen
+    die ganze Liste geprueft - kein halber Lauf.
+    """
+    from concurrent.futures import ThreadPoolExecutor
     have = {e["key"] for e in manifest["sources"] if e["kind"] == "header"}
-    added = []
+    todo, seen = [], set()
     for cik, accession in targets:
         key = f"{normalize_cik(cik)}_{accession}"
-        if key in have and store.has("header", key):
+        if key in seen or (key in have and store.has("header", key)):
             continue
-        budget.check(1)
+        seen.add(key)
+        todo.append((cik, accession, key))
+    budget.check(len(todo))
+
+    def one(item):
+        cik, accession, key = item
         try:
-            entry = ingest_header(client, store, cik, accession, observed_at)
-        except Exception as exc:  # noqa: BLE001
-            log(f"header {key}: {exc}")
-            manifest.setdefault("failures", []).append({"kind": "header", "key": key, "error": str(exc)[:300], "at": observed_at})
-            continue
-        manifest["sources"].append(entry)
-        have.add(key)
-        added.append(key)
+            return key, ingest_header(client, store, cik, accession, observed_at), None
+        except Exception as exc:  # noqa: BLE001 - jede Quellenstoerung wird protokolliert
+            return key, None, str(exc)[:300]
+
+    added = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for key, entry, error in pool.map(one, todo):
+            if error:
+                log(f"header {key}: {error}")
+                manifest.setdefault("failures", []).append({"kind": "header", "key": key, "error": error, "at": observed_at})
+                continue
+            manifest["sources"].append(entry)
+            added.append(key)
     return added
 
 
@@ -756,45 +772,53 @@ def _quarter_of(day):
     return f"{day[:4]}q{(int(day[5:7]) - 1) // 3 + 1}"
 
 
-def plan_gap_headers(client, gaps, first_known, budget, log=print):
+def plan_gap_headers(client, gaps, first_known, budget, log=print, workers=4):
     """Header-Ziele fuer Zeitpunkte vor der ersten Beobachtung.
 
     gaps: {cik: fruehester unbedeckter Tag}; first_known: {cik: knownAt der ersten Beobachtung | None}.
-    Je CIK: das letzte Emittentenfiling am oder vor dem Lueckenbeginn und je Kalenderquartal bis zur
-    ersten Beobachtung das letzte Emittentenfiling. Die Submissions-Liste liefert nur Accession,
-    Formtyp und Datum - ihre SIC (heutiger Stand) wird nicht gelesen.
+    Je CIK: das letzte Emittentenfiling am oder vor dem Lueckenbeginn (gibt es keines, etwa vor
+    einem Boersengang: das erste danach) und je Kalenderjahr bis zur ersten Beobachtung das letzte
+    Emittentenfiling. Die Submissions-Liste liefert nur Accession, Formtyp und Datum - ihre SIC
+    (heutiger Stand) wird nicht gelesen.
     """
-    targets = []
-    for cik in sorted(gaps):
-        cik10 = normalize_cik(cik)
-        budget.check(1)
-        try:
-            doc = client.get_json(SUBMISSIONS_URL.format(cik=cik10))
-        except Exception as exc:  # noqa: BLE001
-            log(f"submissions {cik10}: {exc}")
-            continue
+    from concurrent.futures import ThreadPoolExecutor
+    budget.check(len(gaps))
+
+    def listing(cik10, start):
+        doc = client.get_json(SUBMISSIONS_URL.format(cik=cik10))
         cols = [doc.get("filings", {}).get("recent", {})]
-        start = gaps[cik]
         for page in doc.get("filings", {}).get("files", []):
-            if page.get("filingTo", "9999") >= f"{int(start[:4]) - 2}-01-01":
+            if page.get("filingTo", "9999") >= f"{int(start[:4]) - 2}-01-01" and page.get("filingFrom", "0000") <= start:
                 budget.check(1)
-                try:
-                    cols.append(client.get_json(SUBMISSIONS_PAGE_URL.format(name=page["name"])))
-                except Exception as exc:  # noqa: BLE001
-                    log(f"submissions page {page['name']}: {exc}")
+                cols.append(client.get_json(SUBMISSIONS_PAGE_URL.format(name=page["name"])))
         filings = []
         for c in cols:
             for acc, form, day in zip(c.get("accessionNumber", []), c.get("form", []), c.get("filingDate", [])):
                 if form in ISSUER_FORMS:
                     filings.append((day, acc))
-        filings.sort()
+        return sorted(filings)
+
+    def one(cik):
+        cik10 = normalize_cik(cik)
+        start = gaps[cik]
+        try:
+            filings = listing(cik10, start)
+        except Exception as exc:  # noqa: BLE001
+            return cik10, [], str(exc)[:200]
         end = (first_known.get(cik10) or "9999-12-31")[:10]
         before = [f for f in filings if f[0] <= start]
-        chosen = {before[-1][1]} if before else set()
-        per_quarter = {}
-        for day, acc in filings:
-            if start < day < end:
-                per_quarter[_quarter_of(day)] = acc
-        chosen |= set(per_quarter.values())
-        targets.extend([cik10, acc] for acc in sorted(chosen))
+        after = [f for f in filings if start < f[0] < end]
+        chosen = {before[-1][1]} if before else ({after[0][1]} if after else set())
+        per_year = {}
+        for day, acc in after:
+            per_year[day[:4]] = acc
+        chosen |= set(per_year.values())
+        return cik10, sorted(chosen), None
+
+    targets = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for cik10, accs, error in pool.map(one, sorted(gaps)):
+            if error:
+                log(f"submissions {cik10}: {error}")
+            targets.extend([cik10, a] for a in accs)
     return targets

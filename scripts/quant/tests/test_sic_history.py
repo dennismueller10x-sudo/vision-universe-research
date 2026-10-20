@@ -339,11 +339,11 @@ class HydrateTests(unittest.TestCase):
 
 
 class GapPlanTests(unittest.TestCase):
-    def test_one_issuer_filing_before_gap_and_one_per_quarter_until_first_observation(self):
+    def test_one_issuer_filing_before_gap_and_one_per_year_until_first_observation(self):
         doc = {"filings": {"recent": {
-            "accessionNumber": ["a1", "a2", "a3", "a4", "a5", "a6", "a7"],
-            "form": ["6-K", "4", "6-K", "20-F", "6-K", "SC 13G", "20-F"],
-            "filingDate": ["2015-11-02", "2016-02-01", "2016-02-10", "2016-04-15", "2016-05-20", "2016-08-01", "2018-04-19"],
+            "accessionNumber": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"],
+            "form": ["6-K", "4", "6-K", "20-F", "6-K", "SC 13G", "6-K", "20-F"],
+            "filingDate": ["2015-11-02", "2016-02-01", "2016-02-10", "2016-04-15", "2016-05-20", "2016-08-01", "2017-03-01", "2018-04-19"],
         }, "files": []}}
 
         class Client:
@@ -356,8 +356,23 @@ class GapPlanTests(unittest.TestCase):
         client = Client()
         t = sh.plan_gap_headers(client, {"1046179": "2016-01-31"}, {"0001046179": "2018-04-19T11:56:59Z"},
                                 sh.RequestBudget(client, 5), log=lambda *_: None)
-        # a1: letztes Emittentenfiling vor der Luecke; 2016q1 -> a3 (a2 ist Form 4); 2016q2 -> a5; SC 13G nie
-        self.assertEqual(t, [["0001046179", "a1"], ["0001046179", "a3"], ["0001046179", "a5"]])
+        # a1: letztes Emittentenfiling vor der Luecke; 2016 -> a5 (letztes Emittentenfiling, Form 4 und SC 13G nie);
+        # 2017 -> a7; a8 ist die erste Beobachtung selbst
+        self.assertEqual(t, [["0001046179", "a1"], ["0001046179", "a5"], ["0001046179", "a7"]])
+
+    def test_without_filing_before_the_gap_the_first_one_after_is_taken(self):
+        doc = {"filings": {"recent": {"accessionNumber": ["s1", "q1"], "form": ["424B4", "10-Q"],
+                                      "filingDate": ["2021-03-02", "2021-05-10"]}, "files": []}}
+
+        class Client:
+            stats = {"requests": 0}
+
+            def get_json(self, url):
+                return doc
+        client = Client()
+        t = sh.plan_gap_headers(client, {"5": "2021-02-28"}, {"0000000005": "2021-05-10T20:00:59Z"},
+                                sh.RequestBudget(client, 5), log=lambda *_: None)
+        self.assertEqual(t, [["0000000005", "s1"]])
 
 
 class SicCodeTableTests(unittest.TestCase):
