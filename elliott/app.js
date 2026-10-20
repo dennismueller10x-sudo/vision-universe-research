@@ -253,8 +253,12 @@
         tile(down, "Abwärts", M.buildHash({ richtung: "ab" }), s.richtung === "ab", "down"),
         sm.newlyConfirmed ? tile(sm.newlyConfirmed, "Neu bestätigt", M.buildHash({ reihe: "confirmed" }), s.reihe === "confirmed") : null
       ]),
-      el("div", { class: "el-split", role: "img", "aria-label": up + " Aufwärts, " + down + " Abwärts" }, [
-        el("span", { class: "el-split-up", style: "flex-grow:" + up }), el("span", { class: "el-split-down", style: "flex-grow:" + down })])
+      // Dieselben zwei Zahlen wie die Kacheln Aufwärts/Abwärts, am Balken beschriftet
+      el("div", { class: "el-splitrow", role: "img", "aria-label": up + " Aufwärts, " + down + " Abwärts" }, [
+        el("span", { class: "el-split-n tone-up", "aria-hidden": "true", text: "▲ " + up }),
+        el("div", { class: "el-split" }, [
+          el("span", { class: "el-split-up", style: "flex-grow:" + up }), el("span", { class: "el-split-down", style: "flex-grow:" + down })]),
+        el("span", { class: "el-split-n tone-down", "aria-hidden": "true", text: down + " ▼" })])
     ]);
   }
 
