@@ -60,6 +60,9 @@ test('SF-VALIDATOR: SOURCE_EXACT only on hardenable #709 rules; preferences neve
   assert.ok(mk({ id: 'X1', kind: 'FILTER', psr709: ['MIN-TT-01'], status: 'SOURCE_EXACT', rule: 'x', code: 'x', tests: ['t'] }).errors.some((e) => e.startsWith('EXACT_ON_NON_HARDENABLE_RULE')));
   // KK-005 is a PREFERENCE (DO_NOT_HARDEN_PREFERENCE)
   assert.ok(mk({ id: 'X2', kind: 'FILTER', gate: true, psr709: ['KK-005'], status: 'SOURCE_DERIVED', derivation: 'd', rule: 'x', code: 'x', tests: ['t'] }).errors.some((e) => e.startsWith('PREFERENCE_HARDENED_AS_GATE')));
+  // a free-text gate exemption is not accepted (only GATE_EXEMPTIONS entries for the matching candidate and rule)
+  assert.ok(mk({ id: 'X2b', kind: 'FILTER', gate: true, gateExemption: 'because I say so', psr709: ['KK-005'], status: 'SOURCE_DERIVED', derivation: 'd', rule: 'x', code: 'x', tests: ['t'] }).errors.some((e) => e.startsWith('PREFERENCE_HARDENED_AS_GATE')));
+  assert.ok(mk({ id: 'X2c', kind: 'FILTER', gate: true, gateExemption: 'SETUP_DEFINITION_C13', psr709: ['RAS04-001'], status: 'SOURCE_DERIVED', derivation: 'd', rule: 'x', code: 'x', tests: ['t'] }).errors.some((e) => e.startsWith('PREFERENCE_HARDENED_AS_GATE'))); // wrong candidate (C01)
   assert.ok(mk({ id: 'X3', kind: 'FILTER', psr709: ['TUR-N'], status: 'SOURCE_DERIVED', rule: 'x', code: 'x', tests: ['t'] }).errors.some((e) => e.startsWith('DERIVED_WITHOUT_DERIVATION')));
   assert.ok(mk({ id: 'X4', kind: 'FILTER', psr709: ['TUR-N'], status: 'NOT_IMPLEMENTED', rule: 'x' }).errors.some((e) => e.startsWith('STATUS_WITHOUT_REASON')));
   assert.ok(mk({ id: 'X5', kind: 'FILTER', psr709: ['NOPE-1'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'x' }).errors.some((e) => e.startsWith('UNKNOWN_PSR709_RULE')));
@@ -113,7 +116,7 @@ test('SF-WORKFLOW: supertrader-validation.yml passes --snapshot / --accounting t
   const y = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-validation.yml'), 'utf8');
   assert.match(y, /- name: Snapshot- und Abrechnungsvertrag \(fail closed\)/);
   assert.match(y, /\^sts1-\[0-9a-f\]\{32\}\$/);
-  assert.match(y, /SNAPSHOT_NOT_SUPPORTED_FOR_MODE/);
+  assert.match(y, /SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE/);
   const runs = y.split('\n').filter((l) => /run: node scripts\/supertrader\/validation\/analyze-methods\.mjs/.test(l));
   assert.ok(runs.length >= 3);
   for (const l of runs) assert.match(l, /\$SNAP_ARGS$/, l);
@@ -140,4 +143,37 @@ test('SF-TRACE: every test a contract cites for an implemented rule exists by na
       assert.ok(src.includes(`test('${name}`) || src.includes(`/ ${name}`) || src.includes(`${name} /`), `${c.strategyId} ${r.id}: missing test ${t}`);
     }
   }
+});
+
+test('SF-DOCS: generated coverage / traceability / readiness docs equal a fresh build', async () => {
+  const { buildDocs, DOCS_DIR } = await import('../source-faithful/build-docs.mjs');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sf-docs-'));
+  try { for (const f of Object.keys(buildDocs(tmp))) assert.equal(fs.readFileSync(path.join(tmp, f), 'utf8'), fs.readFileSync(path.join(DOCS_DIR, f), 'utf8'), `${f} is stale: run build-docs.mjs`); }
+  finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test('SF-GOLDEN-RECORD: the recorded golden results cover every catalogued golden test, all PASS', () => {
+  const cat = JSON.parse(fs.readFileSync(path.join(ARTIFACT_DIR, 'STRATEGY-GOLDEN-CASE-CATALOGUE.json'), 'utf8'));
+  const rec = JSON.parse(fs.readFileSync(path.join(ARTIFACT_DIR, 'STRATEGY-GOLDEN-CASE-RESULTS.json'), 'utf8'));
+  assert.deepEqual(rec.cases.map((c) => c.test).sort(), cat.goldenTests.map((g) => g.test).sort(), 'golden record is stale: run record-golden-results.mjs');
+  assert.ok(rec.cases.every((c) => c.result === 'PASS'));
+  assert.equal(rec.summary.testsFailed, 0);
+});
+
+test('SF-INDEPENDENCE: method modules do not import each other; legacy Supertrader code does not import the source-faithful tree', () => {
+  const dir = path.join(ROOT, 'scripts/supertrader/source-faithful/methods');
+  for (const f of fs.readdirSync(dir)) {
+    const src = fs.readFileSync(path.join(dir, f), 'utf8');
+    const imports = [...src.matchAll(/from '([^']+)'/g)].map((m) => m[1]);
+    assert.ok(imports.every((i) => !i.startsWith('./')), `${f} imports another method: ${imports}`);
+    assert.ok(imports.every((i) => /^\.\.\/common\/|^\.\.\/\.\.\/validation\/(accounting-contract|portfolio)\.mjs$|^\.\.\/\.\.\/engine\/indicators\.mjs$/.test(i)), `${f}: ${imports}`);
+  }
+  const legacy = ['engine', 'validation', 'snapshot', 'fidelity', 'house'].flatMap((d) => fs.readdirSync(path.join(ROOT, 'scripts/supertrader', d)).filter((f) => f.endsWith('.mjs')).map((f) => path.join(ROOT, 'scripts/supertrader', d, f)));
+  for (const f of [...legacy, path.join(ROOT, 'scripts/supertrader/build.mjs')]) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /source-faithful/, f);
+});
+
+test('SF-REVIEWS: no open HIGH or CRITICAL review finding; every FIXED finding names its test', async () => {
+  const { REVIEWS, reviewSummary } = await import('../source-faithful/reviews.mjs');
+  assert.equal(reviewSummary().openHighOrCritical, 0);
+  for (const f of REVIEWS.flatMap((r) => r.findings)) if (f.status === 'FIXED' && f.severity !== 'LOW') assert.ok(f.test, f.id);
 });

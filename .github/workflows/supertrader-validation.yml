@@ -20,8 +20,9 @@ name: Supertrader interner Datentest (Validierung)
 # Eingefrorener Research-Snapshot (docs/SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md), zusaetzlich zur Modusmarke:
 #   [supertrader-validation-snapshot:sts1-<32 hex>]  alle Eingaben aus diesem Snapshot (kein Live-Abruf)
 #   [supertrader-validation-accounting:research-v1]  Research-Abrechnung (validation/accounting-contract.mjs)
-# Bei workflow_dispatch ueber die Eingaben snapshot / accounting. Ein Snapshot ist nur fuer Modi
-# zulaessig, deren Runner ihn liest (analyze-methods.mjs); jeder andere Modus bricht dann ab (fail closed).
+# Bei workflow_dispatch ueber die Eingaben snapshot / accounting; eine Marke in der Commit-Nachricht hat Vorrang.
+# Snapshot und research-v1 sind nur fuer Modi zulaessig, deren Runner sie lesen (analyze-methods.mjs, run-research.mjs);
+# jeder andere Modus bricht dann ab (fail closed).
 #   [supertrader-validation:sf-research]        Buchgetreue Methoden (source-faithful/runner/run-research.mjs),
 #   [supertrader-validation:sf-research-smoke]  nur mit Snapshot-Marke und research-v1; Ergebnis DIAGNOSTIC_NOT_CERTIFIED
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
@@ -91,9 +92,9 @@ jobs:
           if [ -n "$snap" ] && ! [[ "$snap" =~ ^sts1-[0-9a-f]{32}$ ]]; then echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_ID_FORMAT" >&2; exit 1; fi
           case "$acc" in legacy|research-v1) ;; *) echo "UNKNOWN_ACCOUNTING_MODE" >&2; exit 1;; esac
           # Nur analyze-methods.mjs liest einen Snapshot; r9b/r10b brauchen Live-Minutendaten (dort ebenfalls gesperrt).
-          if [ -n "$snap" ]; then
+          if [ -n "$snap" ] || [ "$acc" != legacy ]; then
             case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b|sf-research|sf-research-smoke) ;;
-              *) echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_NOT_SUPPORTED_FOR_MODE ($MODE)" >&2; exit 1;; esac
+              *) echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE ($MODE)" >&2; exit 1;; esac
           fi
           # Buchgetreue Methoden: nur eingefrorener Snapshot und research-v1 (fail closed).
           case "$MODE" in sf-research|sf-research-smoke)

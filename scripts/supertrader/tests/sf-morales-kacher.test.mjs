@@ -113,3 +113,14 @@ test('SF-MOKA-TEMPORAL: the screens on bar i ignore later bars', () => {
   const a = bars([...quiet(), [101.5, 104, 101.2, 103, 2000], [103, 104, 90, 91, 9000]]);
   assert.deepEqual(buyableGapUpScreen({ id: 'X', bars: a }, { asOfIndex: 60 }), buyableGapUpScreen({ id: 'X', bars: a.slice(0, 61) }));
 });
+
+test('SF-MOKA-BGU-MISSING-DATA: missing gap-day volume is MISSING_DATA; a short volume window still evaluates the gap (review SF-R2-05 / SF-R2-06)', () => {
+  const b = bars([...quiet(), [101.5, 104, 101.2, 103, NaN]]);
+  assert.equal(gapUpAt(b, b.length - 1).status, 'MISSING_DATA');
+  assert.deepEqual(buyableGapUpScreen({ id: 'X', bars: b }), []);
+  const short = bars([...quiet().slice(0, 45), [101.5, 104, 101.2, 103, 2000]]);
+  const r = gapUpAt(short, short.length - 1);
+  assert.equal(r.status, 'GAP_VOLUME_WINDOW_UNAVAILABLE_REVIEW');
+  assert.equal(r.volumeRatio, null);
+  assert.equal(buyableGapUpScreen({ id: 'X', bars: short })[0].status, 'MANUAL_REVIEW_REQUIRED');
+});

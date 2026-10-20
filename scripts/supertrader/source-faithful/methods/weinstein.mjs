@@ -41,10 +41,14 @@ export function weeklyBars(daily) {
 
 export const ma30w = (weeks, n = WEIN_PARAMS.maWeeks) => smaSeries(weeks.map((w) => w.close), n);
 
-/** WEIN-SF-MA-GATE on completed week w: close > MA30w and MA30w not below its value one week earlier. */
-export function maGate(weeks, ma, w) {
+/**
+ * WEIN-SF-MA-GATE on completed week w: the BUY PRICE (default: the week's close; in the screens the buy-stop trigger)
+ * must be above MA30w and MA30w must not be below its value one week earlier. A Stage 1 -> 2 breakout crosses
+ * resistance and the MA in the same week, so the prior close below the MA is evidence, not a rejection (SF-R1-02).
+ */
+export function maGate(weeks, ma, w, buyPrice = weeks[w]?.close) {
   if (!fin(ma[w]) || !fin(ma[w - 1])) return { pass: false, reason: 'MA_UNAVAILABLE' };
-  if (!(weeks[w].close > ma[w])) return { pass: false, reason: 'CLOSE_AT_OR_BELOW_MA30W' };
+  if (!(buyPrice > ma[w])) return { pass: false, reason: 'BUY_PRICE_AT_OR_BELOW_MA30W' };
   if (ma[w] < ma[w - 1]) return { pass: false, reason: 'MA30W_FALLING' };
   return { pass: true, reason: 'CLOSE_ABOVE_NON_FALLING_MA30W', maSlope: ma[w] - ma[w - 1] };
 }
@@ -118,7 +122,7 @@ export function candidateRecord({ methodId, security, daily, weeks, ma, w, resis
     buyStop: { level: resistance.trigger, resistance: resistance.level, ruleId: 'WEIN-SF-ORDER', psr709: 'WEIN-ORD' },
     proposedStop: { level: stopProposal, ruleId: methodId === 'SF_WEINSTEIN_INVESTOR' ? 'WEIN-SF-INV-STOP' : 'WEIN-SF-TR-STOP', basis: rangeStart.label, riskPct: risk, riskGuide15pct: risk !== null ? risk <= WEIN_PARAMS.riskGuide : null, nearestRoundNumberBelow: roundBelow, decidedByReviewer: true },
     machineScreenEvidence: [
-      { ruleId: 'WEIN-SF-MA-GATE', psr709: 'WEIN-MA', value: { ...maGate(weeks, ma, w - 1), ma30w: ma[w - 1] } },
+      { ruleId: 'WEIN-SF-MA-GATE', psr709: 'WEIN-MA', value: { ...maGate(weeks, ma, w - 1, resistance.trigger), ma30w: ma[w - 1], priorCloseAboveMa: weeks[w - 1].close > ma[w - 1] } },
       { ruleId: 'WEIN-SF-STAGE', psr709: 'WEIN-S2', value: { closeVsMa: weeks[w - 1].close / ma[w - 1] - 1, maSlope4w: fin(ma[w - 5]) ? ma[w - 1] / ma[w - 5] - 1 : null, baseOrConsolidationWeeks: w - rangeStart.week } },
       { ruleId: 'WEIN-SF-VOLUME', psr709: 'WEIN-VOL', value: volumeAlternatives(weeks, w, daily, dayIdx) },
       { ruleId: 'WEIN-SF-RS', psr709: 'WEIN-RS', value: bench ? relativeStrength(weeks, bench.weeklyClose, w) : 'BENCHMARK_UNAVAILABLE' },
@@ -149,12 +153,12 @@ export function investorScreen(security, { bench = null, week = null } = {}) {
   const { daily, weeks, ma } = prepare(security, bench);
   const w = week ?? lastComplete(weeks);
   if (w === null || w < 2) return [];
-  if (!maGate(weeks, ma, w - 1).pass) return [];
   const s = baseStart(ma, w);
   if (s === null || s > w - 1) return [];
   let level = -Infinity, low = Infinity;
   for (let k = s; k <= w - 1; k++) { level = Math.max(level, weeks[k].high); low = Math.min(low, weeks[k].low); }
   const trigger = level + rawTickAdjusted(weeks[w - 1]);
+  if (!maGate(weeks, ma, w - 1, trigger).pass) return [];
   if (!(weeks[w].high >= trigger)) return [];
   return [candidateRecord({ methodId: 'SF_WEINSTEIN_INVESTOR', security, daily, weeks, ma, w, resistance: { level, trigger }, stopProposal: low, rangeStart: { week: s, label: 'lowest weekly low of the base (since the MA30w stopped falling)' }, bench })];
 }
@@ -167,11 +171,10 @@ export function traderScreen(security, { bench = null, week = null } = {}) {
   const { daily, weeks, ma } = prepare(security, bench);
   const w = week ?? lastComplete(weeks);
   if (w === null || w < 3) return [];
-  const g = maGate(weeks, ma, w - 1);
-  if (!g.pass || !(ma[w - 1] > ma[w - 2])) return [];
   const p = lastSwingHigh(weeks, w);
   if (p === null) return [];
   const level = weeks[p].high, trigger = level + rawTickAdjusted(weeks[w - 1]);
+  if (!maGate(weeks, ma, w - 1, trigger).pass || !(ma[w - 1] > ma[w - 2])) return [];
   if (!(weeks[w].high >= trigger)) return [];
   let low = Infinity; for (let k = p + 1; k <= w - 1; k++) low = Math.min(low, weeks[k].low);
   return [candidateRecord({ methodId: 'SF_WEINSTEIN_TRADER', security, daily, weeks, ma, w, resistance: { level, trigger }, stopProposal: low, rangeStart: { week: p, label: 'lowest weekly low of the consolidation after the swing high' }, bench })];

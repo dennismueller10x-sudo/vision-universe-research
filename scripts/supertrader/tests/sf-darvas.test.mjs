@@ -43,8 +43,9 @@ test('GC-DAR-BOTTOM-CONFIRM: the bottom is established only after the top, by th
   const done = events.find((e) => e.type === 'BOTTOM_CONFIRMED');
   assert.equal(done.i, 9);
   assert.deepEqual([boxes[0].top, boxes[0].bottom], [12, 10.5]);
-  // no bottom event before the top is confirmed
-  assert.ok(events.filter((e) => e.type.startsWith('BOTTOM')).every((e) => e.i > 5));
+  // no bottom event before the top is confirmed (bar 5); the default looks back to the lows after the top day
+  assert.ok(events.filter((e) => e.type.startsWith('BOTTOM')).every((e) => e.i >= 5));
+  assert.equal(boxes[0].bottomSearchStart, 'AFTER_TOP_DAY');
 });
 
 test('GC-DAR-BOTTOM-TOUCH-RESET: a re-touch of the candidate bottom restarts the count (DAR-Q2; #709 VU-DAR missing rule)', () => {

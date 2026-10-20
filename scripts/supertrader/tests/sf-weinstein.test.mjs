@@ -42,7 +42,7 @@ test('GC-WEIN-MA-BELOW / GC-WEIN-MA-FALLING / GC-WEIN-MA-OK: no long buy below o
   const s = []; for (let w = 0; w < 40; w++) s.push(wk(100 - w)); // falling
   s.push(wk(80)); // sharp up week above the still falling MA
   const weeks = weeklyBars(daily(s)), ma = ma30w(weeks);
-  assert.equal(maGate(weeks, ma, 39).reason, 'CLOSE_AT_OR_BELOW_MA30W');
+  assert.equal(maGate(weeks, ma, 39).reason, 'BUY_PRICE_AT_OR_BELOW_MA30W');
   const up = [...s.slice(0, 40), wk(85)]; const W2 = weeklyBars(daily(up)), M2 = ma30w(W2);
   assert.ok(W2[40].close > M2[40]); // 85 is above the MA (75.3) but below the dropped close (90)
   assert.equal(maGate(W2, M2, 40).reason, 'MA30W_FALLING');
@@ -142,4 +142,17 @@ test('SF-WEIN-TEMPORAL: the screen on week w uses no bar after week w', () => {
   const a = investorSpec(), b = [...a.slice(0, 71), wk(10), wk(5)];
   const ra = investorScreen({ id: 'X', bars: daily(a) }, { week: 70 }), rb = investorScreen({ id: 'X', bars: daily(b) }, { week: 70 });
   assert.deepEqual(ra, rb);
+});
+
+test('GC-WEIN-BREAKOUT-CROSSES-MA: a Stage 1 -> 2 breakout whose prior close is below a rising MA30w but whose buy-stop is above it is a candidate (WEIN-MA, WEIN-S2; review SF-R1-02)', () => {
+  const s = investorSpec();
+  // last base week closes below the (rising) MA, the breakout week crosses resistance and the MA
+  s[69] = [101.05, 103.5, 99.5, 101.05, 1e5]; // MA30w ~101.07 still rising (drops 101), close just below it
+  const d = daily(s), weeks = weeklyBars(d), ma = ma30w(weeks);
+  assert.ok(weeks[69].close < ma[69]);
+  const [r] = investorScreen({ id: 'X', bars: d }, { week: 70 });
+  assert.ok(r, 'breakout through the MA must be reviewed');
+  const g = r.machineScreenEvidence.find((e) => e.ruleId === 'WEIN-SF-MA-GATE').value;
+  assert.equal(g.pass, true);
+  assert.equal(g.priorCloseAboveMa, false);
 });

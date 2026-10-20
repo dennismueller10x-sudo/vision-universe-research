@@ -81,6 +81,19 @@ test('SF-RUN-COMPONENT: Darvas runs only as a component signal study, labelled a
   const r = componentStudy('SF_DARVAS_BOX', { calendar: b.map((x) => x.date), securities: [{ id: 'X', bars: b }] }, opts);
   assert.equal(r.label, 'COMPONENT_SIGNAL_STUDY_NOT_A_METHOD_RETURN');
   assert.equal(r.stats.signals, 1);
-  assert.ok(r.stats.mean < 0); // stopped at 11.99 after entry at 12.01, net of costs
+  assert.ok(r.stats.base.mean < 0); // stopped at 11.99 after entry at 12.01, net of costs
+  assert.deepEqual(r.stats.endStates, { CLOSED: 1 });
+  assert.ok(r.dataFindings[0].startsWith('V4-D1'));
+  assert.throws(() => componentStudy('SF_DARVAS_BOX', { calendar: [], securities: [] }, { ...opts, datasetSha256: null }), /DATASET_SHA_REQUIRED/);
   assert.doesNotMatch(JSON.stringify(publicView(r)), /"(mean|median|hitRate|stats|ret|p05|p95)"/);
+});
+
+test('SF-RUN-COMPONENT-DELISTING: a component trade open at an inactive listing is settled by the delisting scenario (review SF-R3-03)', async () => {
+  const { componentStudy } = await import('../source-faithful/runner/run-research.mjs');
+  const hl = (h, l) => [(h + l) / 2, h, l, (h + l) / 2];
+  const rows = [...Array.from({ length: 25 }, () => hl(10.5, 9.5)), hl(11, 10), hl(12, 11), hl(11.5, 10.8), hl(11.8, 10.9), hl(11.9, 11), hl(11.2, 10.5), hl(11.4, 10.7), hl(11.3, 10.6), hl(11.6, 10.8), [12, 12.5, 12.05, 12.4], hl(12.6, 12.1)];
+  const b = rows.map(([o, h, l, c], k) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: 2e5, rawClose: c, rawVolume: 2e5, splitAdj: 1, dividend: 0 }));
+  const r = componentStudy('SF_DARVAS_BOX', { calendar: b.map((x) => x.date), securities: [{ id: 'X', bars: b, terminal: { date: b.at(-1).date, cause: 'LISTING_INACTIVE' } }] }, opts);
+  assert.deepEqual(r.stats.endStates, { OPEN_AT_DELISTING: 1 });
+  assert.ok(r.stats.delistingMinus30.mean < r.stats.base.mean);
 });

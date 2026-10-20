@@ -39,8 +39,9 @@ export function oscillator310(bars, P = HG_PARAMS) {
 }
 
 /**
- * Screen on bar i: ADX(14) > 30 on every bar from the last cross above 30 (k0) to i-1, +DI > -DI at i-1, and bar i is
- * the FIRST bar since k0 whose low touches the 20 EMA. Returns a MANUAL_REVIEW_REQUIRED record or [].
+ * Screen on bar i: ADX(14) > 30 and +DI > -DI at i-1, and the low of bar i touches the 20 EMA (the C13 core). Whether
+ * it is the first touch since ADX last rose above 30 (k0) is evidence plus a review flag, never a rejection: a brief
+ * ADX dip resets k0, so "first" is not reliable enough to gate on (review SF-R2-02).
  */
 export function holyGrailScreen(security, { asOfIndex = security.bars.length - 1 } = {}, P = HG_PARAMS) {
   const bars = security.bars, i = asOfIndex;
@@ -48,7 +49,8 @@ export function holyGrailScreen(security, { asOfIndex = security.bars.length - 1
   if (i < 2 || !fin(ADX[i - 1]) || !(ADX[i - 1] > P.adxThreshold) || !(PDI[i - 1] > MDI[i - 1]) || !fin(ema[i])) return [];
   let k0 = i - 1; while (k0 - 1 >= 0 && fin(ADX[k0 - 1]) && ADX[k0 - 1] > P.adxThreshold) k0--;
   if (!(bars[i].low <= ema[i])) return [];
-  for (let k = k0; k < i; k++) if (fin(ema[k]) && bars[k].low <= ema[k]) return []; // not the first pullback
+  let priorTouches = 0; for (let k = k0; k < i; k++) if (fin(ema[k]) && bars[k].low <= ema[k]) priorTouches++;
+  const firstPullback = priorTouches === 0;
   const { osc, signal } = oscillator310(bars, P);
   let impulseHigh = -Infinity, oscMax = -Infinity;
   for (let k = k0; k < i; k++) { impulseHigh = Math.max(impulseHigh, bars[k].high); if (fin(osc[k])) oscMax = Math.max(oscMax, osc[k]); }
@@ -56,10 +58,10 @@ export function holyGrailScreen(security, { asOfIndex = security.bars.length - 1
     status: 'MANUAL_REVIEW_REQUIRED', methodId: 'SF_RASCHKE_HOLY_GRAIL', securityId: security.id, asOf: bars[i].date, buyDeclarationAllowed: false, version: HOLY_GRAIL_VERSION, timeframe: 'DAILY',
     machineScreenEvidence: [
       { ruleId: 'RAS-SF-ADX', psr709: 'RAS04-002', value: { adxBeforePullback: ADX[i - 1], adxAboveSinceDate: bars[k0].date, plusDI: PDI[i - 1], minusDI: MDI[i - 1] } },
-      { ruleId: 'RAS-SF-PULLBACK', psr709: 'RAS04-001', value: { ema20: ema[i], low: bars[i].low, firstTouchSince: bars[k0].date, impulseHigh, impulseAboveEmaPct: impulseHigh / ema[i] - 1 } },
+      { ruleId: 'RAS-SF-PULLBACK', psr709: 'RAS04-001', value: { ema20: ema[i], low: bars[i].low, adxAboveSince: bars[k0].date, firstPullback, priorTouchesSinceAdxAbove30: priorTouches, impulseHigh, impulseAboveEmaPct: impulseHigh / ema[i] - 1 } },
       { ruleId: 'RAS-SF-OSC', psr709: 'RAS04-004', value: { osc: osc[i], signal: signal[i], oscMaxDuringImpulse: oscMax, newMomentumHighDuringImpulse: fin(oscMax) && fin(osc[k0 - 1] ?? null) ? oscMax > osc[k0 - 1] : null } },
     ],
-    openQuestions: [{ flag: 'RAS-MR-IMPULSE', psr709: ['RAS04-001'], question: 'strong impulse before the pullback?' }, { flag: 'RAS-MR-EXECUTION', psr709: ['RAS04-001'], question: 'entry order, stop and exit are not disclosed (#709 C13)' }],
+    openQuestions: [...(firstPullback ? [] : [{ flag: 'RAS-MR-NOT-FIRST', psr709: ['RAS04-001'], question: `not the first touch since ADX rose above 30 (${priorTouches} earlier): is this still the first pullback of the impulse?` }]), { flag: 'RAS-MR-IMPULSE', psr709: ['RAS04-001'], question: 'strong impulse before the pullback?' }, { flag: 'RAS-MR-EXECUTION', psr709: ['RAS04-001'], question: 'entry order, stop and exit are not disclosed (#709 C13)' }],
     dataNotAvailableToMachine: ['intraday timeframes (5-120 minutes)', 'disclosed entry order / stop / size'],
   }];
 }

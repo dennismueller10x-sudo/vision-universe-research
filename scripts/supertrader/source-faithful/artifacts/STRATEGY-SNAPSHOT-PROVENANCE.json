@@ -40,7 +40,8 @@
  ],
  "failClosed": [
   "a snapshot id that is not sts1-<32 hex> stops the workflow",
-  "a mode whose runner cannot read a snapshot stops the workflow (SNAPSHOT_NOT_SUPPORTED_FOR_MODE)",
+  "a mode whose runner cannot read a snapshot or research-v1 stops the workflow (SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE)",
+  "run-research.mjs refuses a changed snapshot code fingerprint unless --allow-code-version-change, and records limit, smoke store and the computed segment set in the receipt",
   "opening the snapshot requires an independent RESTORE receipt and verifies every object hash and the dataset fingerprint (analyze-methods.mjs)"
  ],
  "survivorship": "PIT listing table from the frozen ticker list incl. 7,299 inactive listings; delisted segments settled by the research-v1 terminal policy",

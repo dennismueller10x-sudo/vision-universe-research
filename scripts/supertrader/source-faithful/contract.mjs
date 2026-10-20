@@ -67,6 +67,14 @@ export const FOUNDATION = Object.freeze({
   certification: 'DIAGNOSTIC_NOT_CERTIFIED',
 });
 
+/**
+ * The only allowed exemptions from "a #709 preference is never a machine gate". Each names the #709 candidate row whose
+ * assessment makes the rule the core of the method (review SF-R2-02: no free-text escape hatch).
+ */
+export const GATE_EXEMPTIONS = Object.freeze({
+  SETUP_DEFINITION_C13: Object.freeze({ candidate: 'C13', ruleIds: Object.freeze(['RAS04-001']), citation: '#709 C13 assessment: "20EMA/ADX14>30 core"' }),
+});
+
 export const REQUIRED_CONTRACT_FIELDS = Object.freeze([
   'strategyId', 'candidateId', 'sourceContractVersion', 'trader', 'method', 'scope', 'sources', 'outputKind',
   'securityIdentity', 'timing', 'entryConditions', 'exitConditions', 'stops', 'positionSizing',
@@ -106,8 +114,12 @@ export function validateContract(contract, extract) {
         if (!clean) errors.push(`EXACT_ON_NON_HARDENABLE_RULE:${r.id}:${s.rule_id}`);
       }
     }
+    if (contract.implemented && (r.status === 'SOURCE_EXACT' || r.status === 'SOURCE_DERIVED') && src.some((x) => x.hard_coding_clearance === 'DO_NOT_HARDEN_PREFERENCE') && typeof r.gate !== 'boolean') errors.push(`GATE_FLAG_REQUIRED:${r.id}`);
     if (r.gate && (r.status === 'SOURCE_EXACT' || r.status === 'SOURCE_DERIVED')) {
-      for (const s of src) if (s.hard_coding_clearance === 'DO_NOT_HARDEN_PREFERENCE' && !(r.gateExemption)) errors.push(`PREFERENCE_HARDENED_AS_GATE:${r.id}:${s.rule_id}`);
+      for (const s of src) if (s.hard_coding_clearance === 'DO_NOT_HARDEN_PREFERENCE') {
+        const ex = GATE_EXEMPTIONS[r.gateExemption];
+        if (!ex || ex.candidate !== contract.candidateId || !ex.ruleIds.includes(s.rule_id)) errors.push(`PREFERENCE_HARDENED_AS_GATE:${r.id}:${s.rule_id}`);
+      }
     }
     if (r.status === 'SOURCE_DERIVED' && !r.derivation) errors.push(`DERIVED_WITHOUT_DERIVATION:${r.id}`);
     if (['NOT_IMPLEMENTED', 'DATA_BLOCKED', 'SOURCE_AMBIGUOUS'].includes(r.status) && !r.reason) errors.push(`STATUS_WITHOUT_REASON:${r.id}`);

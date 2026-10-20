@@ -110,3 +110,14 @@ test('SF-MIN-TEMPORAL: the Trend Template on bar i ignores later bars', () => {
   const a = bars([...uptrend(), 1, 1]);
   assert.deepEqual(trendTemplate(a, 299), trendTemplate(bars(uptrend()), 299));
 });
+
+test('SF-MIN-PP-NEWER-PEAK: an older higher peak does not hide a newer Power Play; a very long base gets a review question (review SF-R2-01 / SF-R2-03)', () => {
+  const older = [...Array.from({ length: 60 }, () => 10), ...Array.from({ length: 20 }, (_, k) => 10 + (k + 1) * 0.5), ...Array.from({ length: 10 }, (_, k) => 20 - (k + 1) * 1.01)];
+  const newer = [...Array.from({ length: 20 }, (_, k) => 9.9 + (k + 1) * 0.5), ...Array.from({ length: 10 }, () => 19.3)];
+  const [r] = powerPlayScreen({ id: 'X', bars: bars([...older, ...newer], { range: 0.005 }) });
+  assert.ok(r, 'newer Power Play must be found');
+  assert.ok(r.machineScreenEvidence.find((e) => e.ruleId === 'MIN-SF-PP-CORRECTION').value.correction < 0.1);
+  const long = [...Array.from({ length: 60 }, () => 10), ...Array.from({ length: 20 }, (_, k) => 10 + (k + 1) * 0.55), ...Array.from({ length: 80 }, () => 20.5)];
+  const [l] = powerPlayScreen({ id: 'X', bars: bars(long, { range: 0.005 }) });
+  assert.ok(l.openQuestions.some((q) => q.flag === 'MIN-MR-PP-LONG-BASE'));
+});

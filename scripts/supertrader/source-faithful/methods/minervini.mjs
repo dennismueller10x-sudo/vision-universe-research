@@ -23,6 +23,7 @@ export const MIN_PARAMS = Object.freeze({
   ppMaxCorrection: 0.25,       // MIN-PP-04 outer bound of "20-25 %"
   ppReviewCorrection: 0.20,    // MIN-PP-04 inner bound: (20 %, 25 %] goes to review
   ppTight: 0.10,               // MIN-PP-05 "very tight, at most 10 %"
+  ppTypicalMaxSessions: 30,    // MIN-PP-03 "usually 3-6 weeks": beyond 6 weeks a review question, never a rejection
 });
 const TRANSL = Object.freeze({ translationUnverified: true, clearance: 'REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION' });
 
@@ -112,13 +113,16 @@ export function sepaScreen(security, { asOfIndex = security.bars.length - 1, vuR
  */
 export function powerPlayScreen(security, { asOfIndex = security.bars.length - 1 } = {}, P = MIN_PARAMS) {
   const bars = security.bars, i = asOfIndex;
-  // peak = the highest bar p < i that no later bar exceeds and that has a +100 % run-up within fewer than 40 sessions
+  // peak = the MOST RECENT bar p < i with a +100 % run-up from a low j within fewer than 40 sessions such that p is the
+  // highest high of the whole leg j..i (review SF-R2-01: an older, higher peak must not hide a newer Power Play)
   let runMax = bars[i].high, best = null;
-  for (let p = i - 1; p >= 1; p--) {
+  for (let p = i - 1; p >= 1 && !best; p--) {
     if (!(bars[p].high > runMax)) continue; // p is the highest high of p..i
     runMax = bars[p].high;
     let j = null; for (let k = p - 1; k >= Math.max(0, p - (P.ppMaxSessions - 1)); k--) if (fin(bars[k].low) && bars[k].low * P.ppMultiple <= bars[p].high && (j === null || bars[k].low < bars[j].low)) j = k;
-    if (j !== null) best = { p, j };
+    if (j === null) continue;
+    let legMax = -Infinity; for (let k = j; k < p; k++) legMax = Math.max(legMax, bars[k].high);
+    if (legMax <= bars[p].high) best = { p, j };
   }
   if (!best) return [];
   const { p, j } = best;
@@ -134,7 +138,7 @@ export function powerPlayScreen(security, { asOfIndex = security.bars.length - 1
       { ruleId: 'MIN-SF-PP-TIGHT', psr709: 'MIN-PP-05', value: { tight: correction <= P.ppTight, status: correction <= P.ppTight ? 'TIGHT' : 'VCP_CHARACTERISTICS_REVIEW' } },
       { ruleId: 'MIN-SF-PP-DURATION', psr709: 'MIN-PP-03', value: { consolidationSessions: i - p, note: 'no minimum; 3-6 weeks typical, twelve days printed' } },
     ],
-    openQuestions: [{ flag: 'MIN-MR-PP-VOLUME', psr709: ['MIN-PP-02'], question: 'did the run-up begin with strong volume?' }, ...(correction > P.ppReviewCorrection ? [{ flag: 'MIN-MR-PP-CORR', psr709: ['MIN-PP-04'], question: 'correction between 20 % and 25 %' }] : [])],
+    openQuestions: [{ flag: 'MIN-MR-PP-VOLUME', psr709: ['MIN-PP-02'], question: 'did the run-up begin with strong volume?' }, ...(correction > P.ppReviewCorrection ? [{ flag: 'MIN-MR-PP-CORR', psr709: ['MIN-PP-04'], question: 'correction between 20 % and 25 %' }] : []), ...(i - p > P.ppTypicalMaxSessions ? [{ flag: 'MIN-MR-PP-LONG-BASE', psr709: ['MIN-PP-03'], question: `consolidation of ${i - p} sessions is far beyond the typical 3-6 weeks: still a Power Play?` }] : [])],
     dataNotAvailableToMachine: ['pivot / entry judgment'],
   }];
 }

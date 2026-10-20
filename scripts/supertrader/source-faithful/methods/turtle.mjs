@@ -98,26 +98,27 @@ export function createNotionalAccount(maxCuts = 60) {
 export function createBreakoutTracker(bars, N, P = PARAMS) {
   let active = null, last = null;
   const counts = { WINNER: 0, LOSER: 0, NON_LOSER: 0, AMBIGUOUS_BOTH_DIRECTIONS: 0, ENTRY_BAR_STOP_NOT_RESOLVED: 0 };
-  const done = (o) => { last = o; counts[o]++; active = null; };
+  const done = (o, atOpen = false) => { last = o; counts[o]++; active = null; return { outcome: o, atOpen }; };
   return {
     counts,
     outcome: () => (active ? 'OPEN' : last),
     resolve(i) {
-      if (!active || i <= active.start) return;
+      if (!active || i <= active.start) return null;
       const b = bars[i], t = rawTickAdjusted(b, P.rawTick);
       if (active.dir > 0) {
         const l = priorLow(bars, i, P.filterExit), exitLevel = l === null ? -Infinity : l - t;
-        if (b.open <= active.stop) return done('LOSER');
-        if (exitLevel >= active.stop && b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER'); }
+        if (b.open <= active.stop) return done('LOSER', true);
+        if (exitLevel >= active.stop && b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER', b.open <= exitLevel); }
         if (b.low <= active.stop) return done('LOSER');
-        if (b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER'); }
+        if (b.low <= exitLevel) { const px = Math.min(b.open, exitLevel); return done(px > active.entry ? 'WINNER' : 'NON_LOSER', b.open <= exitLevel); }
       } else {
         const h = priorHigh(bars, i, P.filterExit), exitLevel = h === null ? Infinity : h + t;
-        if (b.open >= active.stop) return done('LOSER');
-        if (exitLevel <= active.stop && b.high >= exitLevel) { const px = Math.max(b.open, exitLevel); return done(px < active.entry ? 'WINNER' : 'NON_LOSER'); }
+        if (b.open >= active.stop) return done('LOSER', true);
+        if (exitLevel <= active.stop && b.high >= exitLevel) { const px = Math.max(b.open, exitLevel); return done(px < active.entry ? 'WINNER' : 'NON_LOSER', b.open >= exitLevel); }
         if (b.high >= active.stop) return done('LOSER');
-        if (b.high >= exitLevel) { const px = Math.max(b.open, exitLevel); return done(px < active.entry ? 'WINNER' : 'NON_LOSER'); }
+        if (b.high >= exitLevel) { const px = Math.max(b.open, exitLevel); return done(px < active.entry ? 'WINNER' : 'NON_LOSER', b.open >= exitLevel); }
       }
+      return null;
     },
     start(i) {
       if (active || i < P.filterBreakout || !fin(N[i - 1])) return null;
@@ -166,7 +167,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     const N = turtleN(s.bars, P.nPeriod), idx = new Map(s.bars.map((b, i) => [b.date, i]));
     const tracker = S.filter ? createBreakoutTracker(s.bars, N, P) : null;
     // warm the filter on the history before the window (causal: only bars before `from`)
-    if (tracker) for (let i = 1; i < s.bars.length && (!from || s.bars[i].date < from); i++) { tracker.resolve(i); tracker.start(i); }
+    if (tracker) for (let i = 1; i < s.bars.length && s.bars[i].date < (calendar[0] ?? ''); i++) { tracker.resolve(i); tracker.start(i); }
     return { s, N, idx, tracker };
   });
   const byId = new Map(sec.map((x) => [x.s.id, x]));
@@ -175,26 +176,27 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
   const notional = createNotionalAccount();
   const positions = new Map(), lastClose = new Map();
   const ledger = [], unitTrades = [], positionTrades = [], signals = [], curve = [], rejections = [];
-  const counts = { entries: 0, adds: 0, failsafeEntries: 0, skippedByFilter: 0, rejectNoCash: 0, rejectZeroUnit: 0, rejectUnitLimit12: 0, unitStopExits: 0, channelExits: 0, sameBarEntryStops: 0, sameBarAddStops: 0, noAddAfterStopSameBar: 0, terminalSettlements: 0, unavailableSettlements: 0, dividends: 0, costs: 0 };
+  const counts = { entries: 0, adds: 0, failsafeEntries: 0, skippedByFilter: 0, rejectNoCash: 0, rejectZeroUnit: 0, rejectUnitLimit12: 0, unitStopExits: 0, channelExits: 0, sameBarEntryStops: 0, sameBarAddStops: 0, noAddAfterStopSameBar: 0, terminalSettlements: 0, unavailableSettlements: 0, filterResolvedIntrabar: 0, dividends: 0, costs: 0 };
   const unitsLong = () => { let n = 0; for (const p of positions.values()) n += p.units.length; return n; };
   const mv = () => { let v = 0; for (const p of positions.values()) for (const u of p.units) v += u.shares * (lastClose.get(p.id) ?? u.fill); return v; };
   const book = (row) => { ledger.push(row); grossFlows += Math.abs(row.gross || 0) + Math.abs(row.fee || 0); };
 
-  function closeUnit(pos, k, price, date, reason) {
-    const u = pos.units[k], px = price * (1 - slip), gross = u.shares * px, f = gross * fee;
-    cash += gross - f; counts.costs += u.shares * price * slip + f;
+  function closeUnit(pos, k, price, date, reason, slipRate = slip) {
+    const u = pos.units[k], px = price * (1 - slipRate), gross = u.shares * px, f = gross * fee;
+    cash += gross - f; counts.costs += u.shares * price * slipRate + f;
     book({ date, id: pos.id, side: 'SELL', unit: u.n, shares: u.shares, price: px, gross, fee: f, reason });
     unitTrades.push({ id: pos.id, path: pos.path, unit: u.n, entryDate: u.date, entryFill: u.fill, exitDate: date, exitPrice: px, shares: u.shares, pnl: gross - f - u.cost, reason });
     pos.realized += gross - f - u.cost; pos.units.splice(k, 1);
+    if (reason.startsWith('STOP_2N')) pos.unitStopped = true;
     if (!pos.units.length) finishPosition(pos, date, reason);
   }
   function finishPosition(pos, date, reason) {
     positionTrades.push({ id: pos.id, path: pos.path, entryDate: pos.entryDate, exitDate: date, maxUnits: pos.maxUnits, pnl: pos.realized + pos.dividends, cost: pos.costTotal, returnPct: (pos.realized + pos.dividends) / pos.costTotal, heldSessions: pos.sessions, reason });
     positions.delete(pos.id); stale.forget(pos.id);
   }
-  /** Sells every remaining unit at a NET price (slippage already applied by the caller). */
-  function settleAll(pos, netPrice, date, reason) {
-    while (pos.units.length) closeUnit(pos, pos.units.length - 1, netPrice / (1 - slip), date, reason);
+  /** Sells every remaining unit at a NET price; slipRate = the slippage the caller already applied (counted as cost). */
+  function settleAll(pos, netPrice, date, reason, slipRate = slip) {
+    while (pos.units.length) closeUnit(pos, pos.units.length - 1, netPrice / (1 - slipRate), date, reason, slipRate);
   }
   /** Buys one unit; returns the unit or null (rejections counted). */
   function buyUnit(x, i, price, date, nSize, nStop, pathLabel) {
@@ -206,19 +208,24 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     if (gross + f > cash) { counts.rejectNoCash++; return null; }
     cash -= gross + f; counts.costs += shares * price * slip + f;
     let pos = positions.get(x.s.id);
-    if (!pos) { pos = { id: x.s.id, path: pathLabel, entryDate: date, entryN: nStop, units: [], realized: 0, dividends: 0, costTotal: 0, maxUnits: 0, sessions: 0, nextUnit: 1 }; positions.set(x.s.id, pos); }
+    if (!pos) { pos = { id: x.s.id, path: pathLabel, entryDate: date, entryN: nStop, units: [], realized: 0, dividends: 0, costTotal: 0, maxUnits: 0, sessions: 0, nextUnit: 1, lastFill: null, unitStopped: false }; positions.set(x.s.id, pos); }
     for (const u of pos.units) u.stop += P.addStepN * pos.entryN; // TUR-STOPADD
     const u = { n: pos.nextUnit++, date, fill: price, fillWithSlippage: px, shares, cost: gross + f, stop: price - P.stopN * pos.entryN };
-    pos.units.push(u); pos.costTotal += gross + f; pos.maxUnits = Math.max(pos.maxUnits, pos.units.length);
+    pos.units.push(u); pos.lastFill = price; pos.costTotal += gross + f; pos.maxUnits = Math.max(pos.maxUnits, pos.units.length);
     book({ date, id: x.s.id, side: 'BUY', unit: u.n, shares, price: px, gross, fee: f, reason: pathLabel });
     return u;
   }
-  /** TUR-ADD on bar i: levels from the last actual fill; first add of the bar at max(open, level). */
+  /**
+   * TUR-ADD on bar i: levels from the last ACTUAL fill (pos.lastFill, also when that unit was stopped out since);
+   * first add of the bar at max(open, level). After any unit stop-out the position takes no further adds: a re-add
+   * would be the optional Whipsaw re-entry (TUR-WHIPRE, not implemented) (review SF-R1-01, derivation).
+   */
   function addUnits(x, pos, i, date, nSize) {
     const b = x.s.bars[i]; let first = true, added = 0;
+    if (pos.unitStopped) return 0;
     for (;;) {
       if (pos.units.length >= P.maxUnitsPerMarket) break;
-      const level = pos.units.at(-1).fill + P.addStepN * pos.entryN;
+      const level = pos.lastFill + P.addStepN * pos.entryN;
       if (!(b.high >= level)) break;
       const px = first ? Math.max(b.open, level) : level; first = false;
       if (!buyUnit(x, i, px, date, nSize, pos.entryN, pos.path)) break;
@@ -262,7 +269,14 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
     for (const x of sec) {
       const i = x.idx.get(date); if (i === undefined || i < 1) continue;
       let before = null;
-      if (x.tracker) { x.tracker.resolve(i); before = x.tracker.outcome(); x.tracker.start(i); }
+      if (x.tracker) {
+        // the filter state is the one before bar i; a resolution on bar i counts only if it happened at the open
+        // (intrabar order of this bar's breakout high and resolving low is unknown; review SF-R3-04, counted)
+        const pre = x.tracker.outcome(), res = x.tracker.resolve(i);
+        before = res && res.atOpen ? res.outcome : pre;
+        if (res && !res.atOpen) counts.filterResolvedIntrabar++;
+        x.tracker.start(i);
+      }
       if (positions.has(x.s.id) || !fin(x.N[i - 1])) continue;
       if (!eligibleAtPriorSession(x.s.bars, i, universe)) continue;
       const e = entryTrigger(x.s.bars, i, system, before, P);
@@ -290,7 +304,9 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       const x = byId.get(pos.id), t = x.s.terminal;
       if (!t || t.date !== date || t.cause !== 'LISTING_INACTIVE') continue;
       const i = x.idx.get(date), last = i === undefined ? lastClose.get(pos.id) : x.s.bars[i].close;
-      settleAll(pos, SCENARIOS[scenario]({ lastClose: last, distress: t.distress, delistClass: t.delistClass }, slip), date, 'TERMINAL_DELISTED'); counts.terminalSettlements++;
+      const net = SCENARIOS[scenario]({ lastClose: last, distress: t.distress, delistClass: t.delistClass }, slip);
+      // S0 (and classified acquisitions) include slippage; the haircut scenarios do not (validation/portfolio.mjs)
+      settleAll(pos, net, date, 'TERMINAL_DELISTED', Math.abs(net - last * (1 - slip)) <= 1e-12 * Math.max(1, last) ? slip : 0); counts.terminalSettlements++;
     }
     // 4) marks, stale limit (A4)
     const seen = new Map();

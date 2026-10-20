@@ -11,7 +11,9 @@
  *   STRATEGY-REGISTRY-VALIDATION.json     contract validation, 13-candidate identity, coverage completeness
  *   STRATEGY-SNAPSHOT-PROVENANCE.json     snapshot / accounting binding every historical run must use
  *   STRATEGY-COVERAGE-MATRIX.json         every #709 rule of every candidate context with its status or exclusion
- *   STRATEGY-GOLDEN-CASE-RESULTS.json     golden case catalogue per method (results are filled from the test run)
+ *   STRATEGY-GOLDEN-CASE-CATALOGUE.json   golden case catalogue per method (results: record-golden-results.mjs)
+ *   STRATEGY-EXECUTION-REVIEW.json        independent adversarial reviews, findings and resolutions
+ *   STRATEGY-IMPLEMENTATION-READINESS.json readiness per candidate, measurement scope, release blockers
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { loadExtract, METHOD_CONTEXTS, PSR709, ACCEPTANCE_PR712 } from './evidence/psr709-extract.mjs';
 import { CONTRACTS, buildRegistry } from './registry.mjs';
 import { sourceCoverage, FOUNDATION } from './contract.mjs';
+import { REVIEWS, reviewSummary } from './reviews.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ARTIFACT_DIR = path.join(HERE, 'artifacts');
@@ -83,6 +86,7 @@ export function registryValidationArtifact(registry, extract) {
     { id: 'RV-ACCOUNTING-RESEARCH-V1', pass: CONTRACTS.every((c) => c.accountingContract.mode === 'RESEARCH_V1') },
     { id: 'RV-CAN-SLIM-NOT-COUNTED', pass: registry.nonCandidates.some((n) => n.id === 'ONEIL_CAN_SLIM') && !registry.entries.some((e) => /CAN_SLIM/.test(e.strategyId)) },
     { id: 'RV-709-HASHES', pass: extract.pin.filesVerified === 20 && extract.pin.mismatches === 0 },
+    { id: 'RV-NO-OPEN-HIGH-CRITICAL-REVIEW', pass: reviewSummary().openHighOrCritical === 0 },
   ];
   return { schema: 'supertrader-sf-registry-validation-1.0.0', pass: checks.every((c) => c.pass), checks };
 }
@@ -97,7 +101,7 @@ export function snapshotProvenanceArtifact() {
     consumers: [
       { path: 'scripts/supertrader/validation/analyze-methods.mjs', flags: '--snapshot <id> --accounting research-v1', workflow: '.github/workflows/supertrader-validation.yml (input snapshot / marker [supertrader-validation-snapshot:<id>])' },
     ],
-    failClosed: ['a snapshot id that is not sts1-<32 hex> stops the workflow', 'a mode whose runner cannot read a snapshot stops the workflow (SNAPSHOT_NOT_SUPPORTED_FOR_MODE)', 'opening the snapshot requires an independent RESTORE receipt and verifies every object hash and the dataset fingerprint (analyze-methods.mjs)'],
+    failClosed: ['a snapshot id that is not sts1-<32 hex> stops the workflow', 'a mode whose runner cannot read a snapshot or research-v1 stops the workflow (SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE)', 'run-research.mjs refuses a changed snapshot code fingerprint unless --allow-code-version-change, and records limit, smoke store and the computed segment set in the receipt', 'opening the snapshot requires an independent RESTORE receipt and verifies every object hash and the dataset fingerprint (analyze-methods.mjs)'],
     survivorship: 'PIT listing table from the frozen ticker list incl. 7,299 inactive listings; delisted segments settled by the research-v1 terminal policy',
     knownDataFindings: [{ id: 'V4-D1', severity: 'BLOCKER (for certification)', status: 'OPEN', summary: 'undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); every diagnostic result inherits it; fix belongs to a Quant PR, not to this work' }],
   };
@@ -116,6 +120,44 @@ export function goldenCatalogueArtifact(extract) {
   };
 }
 
+const SCOPE = {
+  SF_TURTLE_S1: 'full mechanical equity adaptation (long only, no correlation limits) on the snapshot with research-v1, five scenarios',
+  SF_TURTLE_S2: 'full mechanical equity adaptation (long only, no correlation limits) on the snapshot with research-v1, five scenarios',
+  SF_DARVAS_BOX: 'component signal study only: ATH-gated box breakouts with their mechanical stop exits, equal weight, no selection or sizing',
+  SF_WEINSTEIN_INVESTOR: 'none (stage, volume, stop and group judgments are manual or data-blocked); forward review log only',
+  SF_WEINSTEIN_TRADER: 'none (stage, stop and group judgments are manual or data-blocked); forward review log only',
+  SF_MINERVINI_SEPA_VCP: 'none (manual relative priority by design, IBD RS blocked); screen counts only',
+  SF_MINERVINI_POWER_PLAY: 'none (entry / stop manual, thresholds translation-unverified); screen counts only',
+  SF_KK_BREAKOUT: 'none (breakout level manual, exits are preferences); stop-acceptance statistics for reviewer-set levels only',
+  SF_KK_EPISODIC_PIVOT: 'none (catalyst and intraday data missing)',
+  SF_KK_PARABOLIC_SHORT: 'none (intraday and borrow data missing)',
+  SF_MOKA_POCKET_PIVOT: 'none (no mechanical exit; fixed horizons would be invented); signal counts only',
+  SF_MOKA_BUYABLE_GAP_UP: 'none (no mechanical exit); signal counts only',
+  SF_RASCHKE_HOLY_GRAIL: 'none (stop and order sequence not disclosed); signal counts only',
+};
+
+export function readinessArtifact(registry) {
+  const blockers = (e) => {
+    const b = ['no owner release (research only, Draft PRs)', 'measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)'];
+    if (e.dataBlockedEssentialRules.length) b.push(`DATA_BLOCKED: ${e.dataBlockedEssentialRules.join(', ')}`);
+    if (e.manualReviewRequirements.some((m) => m.blocksAutomation)) b.push('manual review layer required');
+    if (e.backtestReadiness === 'NOT_READY') b.push('no diagnostic method backtest possible');
+    return b;
+  };
+  return {
+    schema: 'supertrader-sf-implementation-readiness-1.0.0',
+    binding: { snapshotId: FOUNDATION.snapshotId, accounting: FOUNDATION.accounting.mode, certification: FOUNDATION.certification },
+    reviews: reviewSummary(),
+    methods: registry.entries.map((e) => ({ candidateId: e.candidateId, strategyId: e.strategyId, implementationStatus: e.implementationStatus, statusByScope: e.statusByScope, dataReadiness: e.dataReadiness, executionReadiness: e.executionReadiness, backtestReadiness: e.backtestReadiness, fullyAutomatable: e.fullyAutomatable, tradable: e.tradable, dataPartial: e.dataPartial, measurementScope: SCOPE[e.strategyId], productiveReleaseBlockers: blockers(e) })),
+    commonBlockers: [
+      'V4-D1 (#705): undeclared reverse splits in the canonical price core; a Quant PR with causal detection and a new calibration generation is required before any certification',
+      'V4-D2 (#705): EW universe share-class audit open',
+      'no live activation, no order routing, no portfolio change in this work (mandate section 17)',
+      'Draft PRs SF-1 .. SF-9 need the owner\'s merge decision; #709 / #712 remain drafts',
+    ],
+  };
+}
+
 export function buildAll(outDir = ARTIFACT_DIR) {
   const extract = loadExtract();
   const registry = buildRegistry(extract);
@@ -125,8 +167,10 @@ export function buildAll(outDir = ARTIFACT_DIR) {
     'STRATEGY-REGISTRY-VALIDATION.json': registryValidationArtifact(registry, extract),
     'STRATEGY-SNAPSHOT-PROVENANCE.json': snapshotProvenanceArtifact(),
     'STRATEGY-COVERAGE-MATRIX.json': coverageMatrixArtifact(extract),
-    'STRATEGY-GOLDEN-CASE-RESULTS.json': goldenCatalogueArtifact(extract),
+    'STRATEGY-GOLDEN-CASE-CATALOGUE.json': goldenCatalogueArtifact(extract),
     'STRATEGY-REGISTRY.json': registry,
+    'STRATEGY-EXECUTION-REVIEW.json': { schema: 'supertrader-sf-execution-review-1.0.0', rule: 'no open HIGH / CRITICAL finding in a component called READY', summary: reviewSummary(), reviews: REVIEWS },
+    'STRATEGY-IMPLEMENTATION-READINESS.json': readinessArtifact(registry),
   };
   fs.mkdirSync(outDir, { recursive: true });
   for (const [f, v] of Object.entries(files)) fs.writeFileSync(path.join(outDir, f), JSON.stringify(v, null, 1) + '\n');

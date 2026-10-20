@@ -60,11 +60,15 @@ const meanVolumeBefore = (bars, i, n) => { if (i < n) return null; let s = 0; fo
 
 /** MOKA-SF-BGU-GAP / -VOLUME / -VOLWINDOW / -MEGA on bar i. */
 export function gapUpAt(bars, i, { atrN = MOKA_PARAMS.atrSessions, gapAtr = MOKA_PARAMS.gapAtr, volumeRatio = MOKA_PARAMS.volumeRatio, volumeWindow = MOKA_PARAMS.volumeWindow } = {}) {
-  const atr = atrBefore(bars, i, atrN), avgVol = meanVolumeBefore(bars, i, volumeWindow);
-  if (atr === null || avgVol === null || !(avgVol > 0)) return { status: 'INSUFFICIENT_HISTORY' };
-  const b = bars[i], p = bars[i - 1], gap = b.open - p.close, ratio = b.volume / avgVol;
+  const b = bars[i], p = bars[i - 1];
+  if (!p || !fin(b.open) || !fin(p.close) || !fin(b.volume) || !fin(b.low) || !fin(p.high)) return { status: 'MISSING_DATA' };
+  const atr = atrBefore(bars, i, atrN);
+  if (atr === null) return { status: 'INSUFFICIENT_HISTORY' };
+  // the averaging window is SOURCE_AMBIGUOUS: without it the gap is still evaluated and the volume goes to review (SF-R2-06)
+  const avgVol = meanVolumeBefore(bars, i, volumeWindow), gap = b.open - p.close, ratio = avgVol > 0 ? b.volume / avgVol : null;
   const base = { gap, fullGap: b.low - p.high, atr40: atr, gapInAtr: gap / atr, volumeRatio: ratio, volumeWindow, volumeWindowStatus: 'SOURCE_AMBIGUOUS' };
   if (!(gap >= gapAtr * atr)) return { status: 'GAP_BELOW_0_75_ATR40', ...base };
+  if (ratio === null) return { status: 'GAP_VOLUME_WINDOW_UNAVAILABLE_REVIEW', ...base };
   return { status: ratio >= volumeRatio ? 'GAP_AND_STANDARD_VOLUME' : 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW', ...base };
 }
 
@@ -76,13 +80,13 @@ export const BGU_OPEN_QUESTIONS = Object.freeze([
 
 export function buyableGapUpScreen(security, { asOfIndex = security.bars.length - 1, ...opts } = {}) {
   const r = gapUpAt(security.bars, asOfIndex, opts);
-  if (r.status !== 'GAP_AND_STANDARD_VOLUME' && r.status !== 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW') return [];
+  if (!['GAP_AND_STANDARD_VOLUME', 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW', 'GAP_VOLUME_WINDOW_UNAVAILABLE_REVIEW'].includes(r.status)) return [];
   const b = security.bars[asOfIndex];
   return [{
     status: 'MANUAL_REVIEW_REQUIRED', methodId: 'SF_MOKA_BUYABLE_GAP_UP', securityId: security.id, asOf: b.date, buyDeclarationAllowed: false, version: MOKA_VERSION,
     machineScreenEvidence: [
       { ruleId: 'MOKA-SF-BGU-GAP', psr709: 'MOKA12-004', value: { gap: r.gap, atr40: r.atr40, gapInAtr: r.gapInAtr, fullGap: r.fullGap } },
-      { ruleId: r.status === 'GAP_AND_STANDARD_VOLUME' ? 'MOKA-SF-BGU-VOLUME' : 'MOKA-SF-BGU-MEGA', psr709: r.status === 'GAP_AND_STANDARD_VOLUME' ? 'MOKA24-VOL' : 'MOKA24-MEGA', value: { volumeRatio: r.volumeRatio, volumeWindow: r.volumeWindow, volumeWindowStatus: r.volumeWindowStatus, status: r.status } },
+      { ruleId: r.status === 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW' ? 'MOKA-SF-BGU-MEGA' : r.status === 'GAP_AND_STANDARD_VOLUME' ? 'MOKA-SF-BGU-VOLUME' : 'MOKA-SF-BGU-VOLWINDOW', psr709: r.status === 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW' ? 'MOKA24-MEGA' : 'MOKA24-VOL', value: { volumeRatio: r.volumeRatio, volumeWindow: r.volumeWindow, volumeWindowStatus: r.volumeWindowStatus, status: r.status } },
       { ruleId: 'MOKA-SF-BGU-SELLGUIDE', psr709: 'MOKA12-007', value: { gapDayLow: b.low, note: 'risk reference; below it generally sell at least half (MOKASTOP-006, preference)' } },
     ],
     openQuestions: BGU_OPEN_QUESTIONS,
