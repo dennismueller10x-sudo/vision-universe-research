@@ -97,7 +97,7 @@ test("Adressen · Roundtrip href -> parse fuer US, EU, Klassen-Aktie, ETF-Kuerze
 test("Adressen · genau die Formen, die die Produkt-Router lesen", () => {
   const c = SC.fromUs("NVDA");
   assert.deepEqual(SC.PRODUCTS.map((p) => SC.href(c, p)), [
-    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", null
+    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", "/fundamental/#/NVDA"
   ]);
   /* Altadressen werden erkannt (quant/app/app.js leitet sie auf /elliott/#/<T> um). */
   assert.equal(SC.parse("/quant/#/aktie/NVDA/technik").product, "technik");
@@ -126,12 +126,12 @@ test("Adressen · jedes US-Kuerzel aus Quant, Technik und Supertrader ist adress
   }
 });
 
-test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unknown'; Fundamental 'planned'", () => {
+test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unknown' (auch Fundamental)", () => {
   const nvda = SC.fromUs("NVDA"), sapDe = SC.fromSearchEntry(entry("EUROPE", "SAP.DE"));
   const none = SC.availability(nvda);
-  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "planned"]);
+  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "unknown"]);
   const manifest = { schema: SC.SCHEMA, modules: {
-    discover: { US: ["NVDA"], EUROPE: ["ref_SAP_DE_XETR"] }, quant: { US: ["NVDA"] }, supertrader: { US: new Set(["AAPL"]) }
+    discover: { US: ["NVDA"], EUROPE: ["ref_SAP_DE_XETR"] }, quant: { US: ["NVDA"] }, supertrader: { US: new Set(["AAPL"]) }, fundamental: { US: ["NVDA"] }
   } };
   const a = Object.fromEntries(SC.availability(nvda, manifest).map((m) => [m.product, m]));
   assert.equal(a.discover.state, "available");
@@ -139,12 +139,13 @@ test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unk
   assert.equal(a.supertrader.state, "unavailable");
   assert.equal(a.supertrader.href, null, "kein toter Link");
   assert.equal(a.technik.state, "unknown");
-  assert.equal(a.fundamental.state, "planned");
-  assert.equal(a.fundamental.href, null);
+  assert.equal(a.fundamental.state, "available");
+  assert.equal(a.fundamental.href, "/fundamental/#/NVDA");
   const e = Object.fromEntries(SC.availability(sapDe, manifest).map((m) => [m.product, m]));
   assert.equal(e.discover.state, "available");
   assert.equal(e.quant.state, "unavailable");
   assert.equal(e.quant.reason, "REGION_NOT_COVERED");
+  assert.deepEqual([e.fundamental.state, e.fundamental.reason], ["unavailable", "REGION_NOT_COVERED"], "Fundamental nur US (SEC)");
   /* Fremdes Schema zaehlt nicht als Nachweis. */
   assert.equal(SC.moduleState(nvda, "quant", { schema: "x", modules: manifest.modules }).state, "unknown");
   /* Map: nur true belegt. */
@@ -170,4 +171,14 @@ test("Browser · laedt nach /core/identity.js als VUCore.StockContext, ohne modu
   assert.equal(sandbox.VUCore.StockContext.href(sandbox.VUCore.StockContext.fromUs("NVDA"), "quant"), "/quant/#/aktie/NVDA");
   const bare = { URLSearchParams }; bare.globalThis = bare;
   assert.throws(() => vm.runInNewContext(readFileSync(join(ROOT, "core", "stock-context.js"), "utf8"), bare), /VUCore.Identity fehlt/);
+});
+
+test("Fundamental · Adresse /fundamental/#/<T> und zurueck; #/methodik ist keine Aktie", () => {
+  assert.equal(SC.href(SC.fromUs("BRK-B"), "fundamental"), "/fundamental/#/BRK-B");
+  const p = SC.parse("/fundamental/#/brk-b");
+  assert.deepEqual([p.product, p.ctx.ticker], ["fundamental", "BRK-B"]);
+  assert.equal(SC.parse("/fundamental/#/methodik"), null);
+  assert.equal(SC.parse("/fundamental/#/"), null);
+  assert.equal(SC.parse("/fundamental/#/AAPL/x"), null);
+  assert.equal(SC.href(SC.fromEurope({ securityId: "ref_SAP_DE_XETR" }), "fundamental"), null);
 });

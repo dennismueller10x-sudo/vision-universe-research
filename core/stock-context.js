@@ -4,7 +4,7 @@
    EIN AKTIENKONTEXT FUER ALLE PRODUKTWELTEN (VU3, Stufe 2.1).
 
    Der Aktien-Navigator verbindet die Detailseiten von Discover, Quant,
-   Technik, Elliott, Supertrader und (in Planung) Fundamental. Dafuer
+   Technik, Elliott, Supertrader und Fundamental. Dafuer
    braucht er drei Dinge, die bisher jedes Produkt selbst wusste:
 
      1. Identitaet   Welches Wertpapier ist gemeint? Region + securityId
@@ -58,7 +58,7 @@
   /* Welche Produkte eine Region adressieren koennen. Europa hat heute nur Discover
      (Quant-Universum, Technik-Index und Supertrader-Seiten fuehren keine .DE/.PA-Listings). */
   var ROUTABLE = Object.freeze({
-    US: Object.freeze(["discover", "quant", "technik", "elliott", "supertrader"]),
+    US: Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental"]),
     EUROPE: Object.freeze(["discover"])
   });
 
@@ -140,7 +140,7 @@
   function enc(s) { return encodeURIComponent(s); }
 
   /** Adresse der Detailseite in einem Produkt, oder null, wenn das Produkt diese Region nicht adressiert
-      (Fundamental: immer null, in Planung). */
+      (Fundamental: nur US, SEC-Meldungen). */
   function href(ctx, product) {
     if (PRODUCTS.indexOf(product) < 0) throw fail("UNKNOWN_PRODUCT", str(product));
     /* Auch ein von Hand gebautes Objekt erzeugt keine fremde Adresse (z. B. /supertrader/stock/../). */
@@ -157,6 +157,8 @@
       case "technik": return "/elliott/#/" + t;
       case "elliott": return "/elliott/#/" + t + "?ansicht=profi";
       case "supertrader": return "/supertrader/stock/" + t + "/";
+      /* fundamental/engine/model.js#parseRoute: #/<T> */
+      case "fundamental": return "/fundamental/#/" + t;
     }
     return null;
   }
@@ -188,6 +190,8 @@
     if (path === "/quant/" && parts[0] === "elliott" && parts[1] && parts.length === 2) return us(pro ? "elliott" : "technik", parts[1]);
     /* elliott/engine/home-model.js#parseHash: genau ein fuehrender Schraegstrich, keine Dekodierung. */
     if (path === "/elliott/" && /^\/?[A-Za-z0-9.-]{1,12}\/*$/.test(hpath) && rawParts.length === 1) return us(pro ? "elliott" : "technik", rawParts[0]);
+    /* fundamental/engine/model.js#parseRoute: #/<T> (dekodiert, Grossschreibung); #/methodik ist keine Aktie. */
+    if (path === "/fundamental/" && parts.length === 1 && parts[0].toLowerCase() !== "methodik") return us("fundamental", parts[0].toUpperCase());
     var st = /^\/supertrader\/stock\/([^/]+)\/$/.exec(path);
     if (st && !hash) { var s = dec(st[1]); return s ? us("supertrader", s) : null; }
     return null;
@@ -218,7 +222,6 @@
   /** Zustand eines Moduls fuer einen Kontext: {product, state, href, reason}. */
   function moduleState(ctx, product, manifest) {
     var h = href(ctx, product);
-    if (product === "fundamental") return Object.freeze({ product: product, state: "planned", href: null, reason: "IN_PLANUNG" });
     if (!h) return Object.freeze({ product: product, state: "unavailable", href: null, reason: "REGION_NOT_COVERED" });
     var mod = manifest && manifest.schema === SCHEMA && manifest.modules ? manifest.modules[product] : null;
     var has = mod ? listHas(mod[ctx.region], lookupKey(ctx)) : null;

@@ -12,7 +12,7 @@
    (Manifest-Ausschnitt aus dem Release-Bau); ohne Beleg bleibt eine
    Kachel neutral ("unknown": Link ohne Haken). Nicht abgedeckte Module
    sind ausgegraut und erklaeren sich auf Tippen, statt ins Leere zu
-   fuehren. Fundamental steht als "In Planung".
+   fuehren.
 
    Braucht vorher /core/identity.js und /core/stock-context.js.
    Browser: globalThis.VUStockNavigator; Node (Tests): module.exports.
@@ -35,7 +35,7 @@
     technik: { label: "Technik", icon: "technical", why: "Kursstruktur, Marken und Chartbild" },
     elliott: { label: "Elliott", icon: "elliott", why: "Wellenzählung mit Gegenszenario" },
     supertrader: { label: "Super­trader", plain: "Supertrader", icon: "supertrader", why: "Regelcheck je Strategie" },
-    fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Wachstum, Profitabilität, Bilanz, Bewertung" }
+    fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" }
   };
   var STATE_TEXT = { available: "verfügbar", unavailable: "keine Abdeckung", planned: "In Planung", unknown: "" };
   var TICK = { available: "✓", unavailable: "–", planned: "…", unknown: "" };

@@ -10,6 +10,8 @@
      quant            product/universe-list-v1.json.gz entries[].s               (Aktienliste der Quant-Seite)
      technik/elliott  technical-intelligence/v3/index.json.gz rows[].t           (Chartbild /elliott/#/<T>)
      supertrader      data/build.json slices.stock  UND  stock/<SYM>/index.html   (Seite und Daten)
+     fundamental      fundamental/index.html  UND  discover stocks/US_REAL/<SYM>.json fundamentals.available
+                      (fundamental/engine/model.js liest genau diesen Block; ohne ihn zeigt die Seite nur den Leerzustand)
    Fehlt die Quelle eines Moduls, fehlt das Modul im Manifest: der Navigator zeigt es neutral als "unknown".
 
    Ausgabe: <out>/<shardKey>.json, ein kleiner Ausschnitt je StockContext.availabilityShard (eine Anfrage je Detailseite). */
@@ -55,6 +57,18 @@ export function collectEvidence(root){
  tryModule('supertrader.US',()=>{
   const build=readJson(root,'supertrader/data/build.json');if(!build||!build.slices||!Array.isArray(build.slices.stock))throw Error('SUPERTRADER_BUILD_MISSING');
   put('supertrader','US',build.slices.stock.filter(s=>valid(()=>SC.fromUs(s))&&existsSync(join(root,'supertrader/stock',s,'index.html'))&&existsSync(join(root,'supertrader/data/stock',s+'.json'))));
+ });
+ tryModule('fundamental.US',()=>{
+  if(!existsSync(join(root,'fundamental/index.html')))throw Error('FUNDAMENTAL_PAGE_MISSING');
+  const dir=join(root,'discover/data/stocks/US_REAL');if(!existsSync(dir))throw Error('DISCOVER_STOCKS_MISSING');
+  const keys=[];
+  for(const f of readdirSync(dir)){
+   if(!f.endsWith('.json'))continue;
+   const s=f.slice(0,-5);if(!valid(()=>SC.fromUs(s)))continue;
+   let doc;try{doc=JSON.parse(readFileSync(join(dir,f)));}catch{continue;}
+   if(doc&&doc.fundamentals&&doc.fundamentals.available===true)keys.push(s);
+  }
+  put('fundamental','US',keys);
  });
  return {evidence:ev,skipped};
 }

@@ -17,7 +17,7 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
   try {
     const r = writeAvailability({ root: ROOT, out });
     assert.deepEqual(r.skipped, {});
-    assert.ok(r.counts.discover.US > 1000 && r.counts.discover.EUROPE > 100 && r.counts.quant.US > 1000 && r.counts.supertrader.US > 100, JSON.stringify(r.counts));
+    assert.ok(r.counts.discover.US > 1000 && r.counts.discover.EUROPE > 100 && r.counts.quant.US > 1000 && r.counts.supertrader.US > 100 && r.counts.fundamental.US > 1000, JSON.stringify(r.counts));
     const files = readdirSync(out);
     assert.equal(files.length, r.shards);
     for (const f of files) assert.ok(readFileSync(join(out, f)).length <= SHARD_BUDGET, f);
@@ -29,7 +29,10 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
     const nvda = state(SC.fromUs("NVDA"));
     assert.equal(nvda.discover, "available");
     assert.equal(nvda.quant, "available");
-    assert.equal(nvda.fundamental, "planned");
+    assert.equal(nvda.fundamental, "available");
+    /* Fundamental nur mit SEC-Zahlen in der Discover-Datei: ACU hat eine Discover-Seite, aber keine Fundamentaldaten. */
+    const acu = state(SC.fromUs("ACU"));
+    assert.deepEqual([acu.discover, acu.fundamental], ["available", "unavailable"]);
     const sapDe = state(SC.parse("/discover/#/s/EUROPE/ref_SAP_DE_XETR").ctx);
     assert.equal(sapDe.discover, "available");
     assert.equal(sapDe.quant, "unavailable");
