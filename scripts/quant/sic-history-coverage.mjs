@@ -30,6 +30,7 @@ export function monthEnds(from, to) {
   return out;
 }
 
+export const IDENTITY_ASSUMPTION = 'CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE';
 const AGE_BUCKETS = [[100, 'le100d'], [200, 'le200d'], [400, 'le400d'], [Infinity, 'gt400d']];
 
 export function measure({ instruments, classification, index, from, to }) {
@@ -40,10 +41,12 @@ export function measure({ instruments, classification, index, from, to }) {
   for (const x of withCik) { const c = IC.normalizeCik(x.cik); (byCik.get(c) || byCik.set(c, []).get(c)).push(x.symbol); }
   const points = { notListed: 0, total: 0, identityHold: 0, OBSERVED: 0, NO_SIC_ASSIGNED: 0, UNKNOWN_BEFORE_FIRST_OBSERVATION: 0, UNKNOWN_NO_OBSERVATIONS: 0, CONFLICT: 0 };
   const age = Object.fromEntries(AGE_BUCKETS.map(([, k]) => [k, 0]));
-  const holdReasons = {};
+  const holdReasons = {}, byEvidence = {};
   const gaps = {}; // cik -> fruehester Punkt vor der ersten Beobachtung (Eingabe fuer den Header-Lueckenschluss)
   for (const inst of instruments) {
-    const cands = inst.cik ? [{ cik: inst.cik, evidence: inst.cikSource, validFrom: inst.firstTradeDate || null, validTo: inst.delistedAt || null }] : [];
+    // Die CIK des Instrumentenstamms ist die HEUTIGE Ticker-Zuordnung. Fuer die Vergangenheit ist das eine
+    // Annahme (seit firstTradeDate dieselbe Notierung), keine Bestaetigung - so wird jeder Punkt gekennzeichnet.
+    const cands = inst.cik ? [{ cik: inst.cik, evidence: IDENTITY_ASSUMPTION, source: inst.cikSource, validFrom: inst.firstTradeDate || null, validTo: inst.delistedAt || null }] : [];
     for (const d of dates) {
       // vor dem ersten Handelstag / nach dem Delisting existiert das Listing nicht: kein Coverage-Punkt
       if ((inst.firstTradeDate && d < inst.firstTradeDate) || (inst.delistedAt && d > inst.delistedAt)) { points.notListed++; continue; }
@@ -51,6 +54,7 @@ export function measure({ instruments, classification, index, from, to }) {
       const who = IC.resolveIssuer(cands, d);
       if (who.status !== 'RESOLVED') { points.identityHold++; holdReasons[who.reason] = (holdReasons[who.reason] || 0) + 1; continue; }
       const r = classification.getIndustryClassification(who.cik, d);
+      byEvidence[who.evidence] = (byEvidence[who.evidence] || 0) + 1;
       points[r.status] = (points[r.status] || 0) + 1;
       if (r.status === 'UNKNOWN_BEFORE_FIRST_OBSERVATION' || r.status === 'UNKNOWN_NO_OBSERVATIONS') {
         if (!gaps[who.cik] || d < gaps[who.cik].from) gaps[who.cik] = { from: d, status: r.status };
@@ -95,6 +99,7 @@ export function measure({ instruments, classification, index, from, to }) {
     points: {
       ...points,
       identityHoldReasons: holdReasons,
+      resolvedByIdentityEvidence: byEvidence,
       shares: {
         identityHold: pct(points.identityHold, points.total),
         observedOfAll: pct(points.OBSERVED, points.total),
@@ -113,6 +118,12 @@ export function measure({ instruments, classification, index, from, to }) {
       weinsteinMembershipUsableShare: pct(turtleUsable, points.total),
       weinsteinGroupStageUsableShare: 0,
       weinsteinBinding: 'DATA_BLOCKED (Gruppenchart-Konstruktion offen)',
+    },
+    identity: {
+      evidence: IDENTITY_ASSUMPTION,
+      meaning: 'CIK aus der heutigen SEC-Tickerliste, fuer die Vergangenheit ab firstTradeDate des Instruments angenommen; die SEC fuehrt keine historische Ticker-Zuordnung',
+      notDetectable: 'ein recycelter Ticker, den ein schon vorher meldender Emittent uebernimmt, wenn firstTradeDate die fruehere Notierung einschliesst',
+      mitigation: 'vor der ersten Beobachtung einer CIK liefert die PIT-API UNKNOWN, nie eine SIC',
     },
     semantics: {
       real: 'OBSERVED mit Alter <= 100 Tage: eine Beobachtung aus dem laufenden Berichtszyklus',

@@ -54,6 +54,9 @@
   "identityHoldReasons": {
    "NO_CIK": 78431
   },
+  "resolvedByIdentityEvidence": {
+   "CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE": 547969
+  },
   "shares": {
    "identityHold": 12.52,
    "observedOfAll": 83.68,
@@ -82,6 +85,12 @@
   "weinsteinMembershipUsableShare": 83.68,
   "weinsteinGroupStageUsableShare": 0,
   "weinsteinBinding": "DATA_BLOCKED (Gruppenchart-Konstruktion offen)"
+ },
+ "identity": {
+  "evidence": "CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE",
+  "meaning": "CIK aus der heutigen SEC-Tickerliste, fuer die Vergangenheit ab firstTradeDate des Instruments angenommen; die SEC fuehrt keine historische Ticker-Zuordnung",
+  "notDetectable": "ein recycelter Ticker, den ein schon vorher meldender Emittent uebernimmt, wenn firstTradeDate die fruehere Notierung einschliesst",
+  "mitigation": "vor der ersten Beobachtung einer CIK liefert die PIT-API UNKNOWN, nie eine SIC"
  },
  "semantics": {
   "real": "OBSERVED mit Alter <= 100 Tage: eine Beobachtung aus dem laufenden Berichtszyklus",

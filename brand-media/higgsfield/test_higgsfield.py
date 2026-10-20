@@ -63,7 +63,7 @@ class IntegrationTests(unittest.TestCase):
         model = higgsfield.get_model("alibaba/wan-3.0")
         approved = model["approved_production_reference"]
         self.assertEqual(higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", approved["path"]), model["operations"]["image_to_video"])
-        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only the registered"):
+        with self.assertRaisesRegex(higgsfield.HiggsfieldError, "only a registered"):
             higgsfield.validate(model, "image_to_video", "prompt", 20, "1080p", "9:16", "brand-media/higgsfield/test_higgsfield.py")
 
     def test_wan_produce_skips_estimate_and_submits_exactly_once(self):

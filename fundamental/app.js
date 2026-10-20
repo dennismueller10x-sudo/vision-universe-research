@@ -84,6 +84,11 @@
     return el('form', { class: 'fu-search', role: 'search', onsubmit: function (e) { e.preventDefault(); } }, [searchIcon(), input, list, live]);
   }
 
+  function exampleChips() {
+    return el('div', { class: 'fu-chips fu-examples', role: 'list', 'aria-label': 'Beispiele' }, EXAMPLES.map(function (e) {
+      return el('a', { class: 'fu-chip', role: 'listitem', href: '#/' + e[0] }, [el('b', { text: e[0] }), e[1]]);
+    }));
+  }
   function searchIcon() {
     return svg('svg', { class: 'fu-search-ico', 'aria-hidden': 'true', viewBox: '0 0 24 24' }, [svg('circle', { cx: 11, cy: 11, r: 6.5 }), svg('path', { d: 'M16 16l4.5 4.5' })]);
   }
@@ -97,24 +102,83 @@
         el('div', { class: 'fu-hero-title' }, [el('span', { class: 'fu-hero-icon' }, icon('fundamental', 'fu-ico-lg')), el('h1', { text: 'Fundamental' })]),
         el('p', { class: 'fu-lead', text: 'Was ein Unternehmen umsetzt, verdient und besitzt – Jahr für Jahr aus den Pflichtmeldungen an die US-Börsenaufsicht.' }),
         searchBox(),
-        el('div', { class: 'fu-chips', role: 'list', 'aria-label': 'Beispiele' }, EXAMPLES.map(function (e) {
-          return el('a', { class: 'fu-chip', role: 'listitem', href: '#/' + e[0] }, [el('b', { text: e[0] }), e[1]]);
-        }))
+        exampleChips()
       ]),
+      discoverSection(),
       el('section', { class: 'fu-how', 'aria-label': 'So liest du Fundamental' }, [
-        howTile('▦', 'Auf einen Blick', 'Umsatz, Gewinn, Cashflow, Schulden und Aktienanzahl über alle verfügbaren Geschäftsjahre.'),
-        howTile('▲▼', 'Richtung zum Vorjahr', 'Jede Kennzahl zeigt, ob sie gestiegen oder gefallen ist – ohne Bewertung.'),
-        howTile('◇', 'Lücken bleiben sichtbar', 'Fehlt ein Wert in den Meldungen, steht dort „keine Angabe“ statt einer Schätzung.'),
-        howTile('§', 'Quelle je Jahr', 'Zu jedem Geschäftsjahr: Meldedatum und Link auf die Meldung bei der SEC.')
+        howTile('▦', 'Jahr für Jahr', 'Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr.'),
+        howTile('▲▼', 'Richtung', 'Gestiegen oder gefallen – ohne Wertung.'),
+        howTile('◇', 'Lücken sichtbar', '„keine Angabe“ statt Schätzung.'),
+        howTile('§', 'Quelle je Jahr', 'Link auf die Meldung bei der SEC.')
       ]),
       el('p', { class: 'fu-fine' }, ['US-Unternehmen mit SEC-Meldungen. Rückblickende Ansicht, keine Empfehlung. ', el('a', { href: '#/methodik', text: 'Methodik' })])
     );
     done();
   }
+  /* ------------------------------------------------------------ Start: Entdecken */
+  var HOME_LABELS = { 'profitables-wachstum': 'Profitables Wachstum', 'langfristige-compounder': 'Langfristige Compounder', 'cashflow-maschinen': 'Cashflow-Maschinen',
+    'qualitaet-zum-preis': 'Qualität zum Preis', 'starke-bilanz-wachstum': 'Starke Bilanz + Wachstum', 'margen-werden-staerker': 'Margen werden stärker' };
+  var TILE_CAP = 0.5; // feste Skala fuer alle Kacheln: 0 … 50 %, darueber Pfeil
+  function meter(label, v, odd) {
+    var w = v == null ? 0 : Math.max(0, Math.min(1, v / TILE_CAP)) * 100;
+    return el('div', { class: 'fu-meter' }, [
+      el('span', { class: 'fu-meter-l', text: label }),
+      el('span', { class: 'fu-meter-bar', 'aria-hidden': 'true' }, v == null ? null : el('i', { class: (v > TILE_CAP ? 'is-over' : '') + (v < 0 ? ' is-neg' : ''), style: 'width:' + Math.max(v > 0 ? 2 : 0, w).toFixed(1) + '%' })),
+      el('b', { class: 'fu-num' + (v == null ? ' is-none' : ''), text: v == null ? (odd ? 'nicht plausibel' : 'keine Angabe') : M.pct(v) })
+    ]);
+  }
+  function homeTile(t) {
+    return el('li', {}, el('a', { class: 'fu-tile', href: '#/' + encodeURIComponent(t.ticker) }, [
+      el('span', { class: 'fu-tile-head' }, [el('b', { text: t.ticker }), el('span', { text: t.name })]),
+      t.was ? el('small', { class: 'fu-tile-was', text: t.was }) : null,
+      el('span', { class: 'fu-tile-rev' }, [el('strong', { class: 'fu-num', text: M.money(t.revenue) }), el('small', { text: 'Umsatz · letztes GJ' })]),
+      meter('Wachstum p. a. · 3 J', t.growth3), meter('Nettomarge', t.netMargin, t.implausible.netMargin), meter('Free-Cashflow-Marge', t.fcfMargin, t.implausible.fcfMargin),
+      el('span', { class: 'fu-tile-pe' }, [el('span', { text: 'KGV' }), el('b', { class: 'fu-num' + (t.pe == null ? ' is-none' : ''), text: t.pe == null ? 'keine Angabe' : M.multiple(t.pe) })])
+    ]));
+  }
+  function discoverSection() {
+    var holder = el('div', { class: 'fu-disc-body', 'aria-live': 'polite' }), sub = el('p', { class: 'fu-sub' }), tok = 0, SHOW = matchMedia('(max-width: 560px)').matches ? 4 : 8;
+    var buttons = M.HOME_ROWS.map(function (id, i) {
+      return el('button', { type: 'button', class: 'fu-chip fu-cmp-opt', 'aria-pressed': i ? 'false' : 'true', 'data-row': id, onclick: function () { pick(i); } }, HOME_LABELS[id] || id);
+    });
+    function paint(r, all) {
+      sub.replaceChildren(r.subtitle || '', r.rule ? el('details', { class: 'fu-rule' }, [el('summary', { text: 'Regel' }), el('span', { text: r.rule })]) : null);
+      var tiles = all ? r.tiles : r.tiles.slice(0, SHOW);
+      holder.replaceChildren(el('ul', { class: 'fu-tiles' }, tiles.map(homeTile)),
+        r.tiles.length > SHOW && !all ? el('button', { type: 'button', class: 'fu-chip fu-more', onclick: function () { paint(r, true); } }, 'Alle ' + r.tiles.length + ' zeigen') : null,
+        el('p', { class: 'fu-fine', text: 'Discover-Auswahl · ' + (r.matched ? r.matched.toLocaleString('de-DE') + ' Unternehmen erfüllen die Regel · ' : '') + 'Stand ' + M.dateDe(r.asOf) + ' · Balken 0–50 %' }));
+    }
+    function pick(i) {
+      var my = ++tok, id = M.HOME_ROWS[i];
+      buttons.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+      holder.replaceChildren(el('div', { class: 'fu-skel', style: 'height:220px' }));
+      loadRow(M.ROWS_BASE + id + '.json').then(function (row) {
+        if (my !== tok) return;
+        var r = homeRow(row);
+        if (!r.tiles.length) { holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Gerade erfüllt kein Unternehmen diese Regel.' }))); return; }
+        paint(r, false);
+      }).catch(function () { if (my === tok) holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Die Auswahl konnte gerade nicht geladen werden.' }))); });
+    }
+    setTimeout(function () { pick(0); }, 0);
+    return el('section', { class: 'fu-section fu-disc', 'aria-labelledby': 'fu-h-disc' }, [
+      el('h2', { id: 'fu-h-disc', text: 'Entdecken' }),
+      el('div', { class: 'fu-chips fu-cmp-opts', role: 'group', 'aria-label': 'Auswahl' }, buttons),
+      sub, holder
+    ]);
+  }
+  function homeRow(row) { return M.homeRow(row); }
   function howTile(sym, title, text) { return el('div', { class: 'fu-howtile' }, [el('span', { class: 'fu-howsym', 'aria-hidden': 'true', text: sym }), el('b', { text: title }), el('span', { text: text })]); }
 
   /* ------------------------------------------------------------ Diagramme */
   var W = 300, H = 110, PAD = 6;
+  /* Skala lesbar machen: hoechster (und ggf. tiefster) Wert und die Nulllinie als HTML-Beschriftung ueber dem Diagramm. */
+  var Y_LABEL = 14; // eigene Zeile fuer den Hoechstwert, damit er keine Balkenspitze verdeckt
+  function scaled(chart, top, zeroPx, bottom) {
+    return el('div', { class: 'fu-chart-wrap' }, [chart,
+      el('span', { class: 'fu-y fu-y-top fu-num', 'aria-hidden': 'true', text: top }),
+      zeroPx != null ? el('span', { class: 'fu-y fu-y-zero', 'aria-hidden': 'true', style: 'top:' + (Y_LABEL + 4 + zeroPx).toFixed(1) + 'px', text: '0' }) : null,
+      bottom ? el('span', { class: 'fu-y fu-y-bottom fu-num', 'aria-hidden': 'true', text: bottom }) : null]);
+  }
   function bars(metric) {
     var rows = metric.rows, vals = rows.filter(function (r) { return r.v != null; }).map(function (r) { return r.v; });
     var max = Math.max(0, Math.max.apply(null, vals)), min = Math.min(0, Math.min.apply(null, vals));
@@ -133,7 +197,8 @@
     });
     g.append(svg('line', { class: 'fu-zero', x1: PAD, x2: W - PAD, y1: zero, y2: zero }));
     var label = metric.label + ': ' + rows.map(function (r) { return r.fy + ' ' + (r.v == null ? 'keine Angabe' : M.value(metric, r.v)); }).join(', ');
-    return svg('svg', { class: 'fu-chart', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': label, preserveAspectRatio: 'none' }, [g]);
+    var chart = svg('svg', { class: 'fu-chart', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': label, preserveAspectRatio: 'none' }, [g]);
+    return scaled(chart, max > 0 ? M.value(metric, max) : '0', min < 0 && max > 0 ? zero : null, min < 0 ? M.value(metric, min) : null);
   }
   function lines(margins, years) {
     var avail = margins.filter(function (m) { return m.available; });
@@ -183,7 +248,9 @@
     });
     g.append(svg('line', { class: 'fu-zero', x1: PAD, x2: W - PAD, y1: mid, y2: mid }));
     var label = 'Umsatz ggü. Vorjahr: ' + rows.map(function (r) { return r.fy + ' ' + (r.pct == null ? 'keine Angabe' : rateText(r.pct)); }).join(', ');
-    return svg('svg', { class: 'fu-chart fu-chart-yoy', viewBox: '0 0 ' + W + ' ' + h, role: 'img', 'aria-label': label, preserveAspectRatio: 'none' }, [g]);
+    var chart = svg('svg', { class: 'fu-chart fu-chart-yoy', viewBox: '0 0 ' + W + ' ' + h, role: 'img', 'aria-label': label, preserveAspectRatio: 'none' }, [g]);
+    var cap = have.some(function (r) { return Math.abs(r.pct) > CAP; });
+    return scaled(chart, '+' + M.pct(max) + (cap ? ' (gekappt)' : ''), mid, '−' + M.pct(max));
   }
   function growthSection(f) {
     if (!f.growth.length) return null;
@@ -288,7 +355,7 @@
     var row = function (label, v) {
       return el('li', {}, [el('span', { class: 'fu-ladder-label', text: label }),
         el('span', { class: 'fu-ladder-bar', 'aria-hidden': 'true' }, el('i', { class: 'is-step', style: 'width:' + (v == null ? 0 : Math.max(1, v / big * 100)).toFixed(1) + '%' })),
-        el('b', { class: 'fu-num', text: v == null ? 'keine Angabe' : M.money(v) })]);
+        el('b', { class: 'fu-num' + (v == null ? ' is-none' : ''), text: v == null ? 'keine Angabe' : M.money(v) })]);
     };
     var netCash = b.net != null && b.net < 0;
     return el('section', { class: 'fu-section', id: 'bilanz', 'aria-labelledby': 'fu-h-bal' }, [
@@ -551,7 +618,8 @@
       var notFound = e && e.status === 404;
       main.replaceChildren(el('header', { class: 'fu-head' }, [el('a', { class: 'fu-back', href: '#/', text: '← Fundamental' }), el('h1', { text: t })]),
         el('div', { class: 'fu-notice' }, [el('b', { text: notFound ? 'Diese Aktie ist nicht im US-Universum.' : 'Die Daten konnten gerade nicht geladen werden.' }),
-          el('span', { text: notFound ? 'Fundamental zeigt US-Unternehmen mit SEC-Meldungen.' : 'Bitte später erneut versuchen.' })]));
+          el('span', { text: notFound ? 'Fundamental zeigt US-Unternehmen mit SEC-Meldungen.' : 'Bitte später erneut versuchen.' })]),
+        notFound ? el('div', { class: 'fu-retry' }, [searchBox(), exampleChips()]) : null);
       done();
     });
   }
