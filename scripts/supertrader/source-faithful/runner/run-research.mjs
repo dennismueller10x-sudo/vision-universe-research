@@ -19,12 +19,13 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import * as L from '../../validation/lib.mjs';
 import { runTurtle } from '../methods/turtle.mjs';
+import { darvasComponentTrades } from '../methods/darvas.mjs';
 import { datasetFromPit } from './snapshot-input.mjs';
 import { computeDiagnosticMetrics } from './metrics.mjs';
 import { CONTRACTS, registryEntry } from '../registry.mjs';
 import { loadExtract } from '../evidence/psr709-extract.mjs';
 import { reproducibilityReceipt, contractFingerprint, FOUNDATION } from '../contract.mjs';
-import { RESEARCH_UNIVERSE } from '../common/series.mjs';
+import { RESEARCH_UNIVERSE, eligibleAtPriorSession } from '../common/series.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -44,7 +45,16 @@ export const RUNNABLE = Object.freeze({
   SF_TURTLE_S2: (ds, o) => { const r = runTurtle(ds, { system: 'S2', ...o }); return { run: r, trades: r.positionTrades }; },
 });
 
-const CODE_FILES = ['source-faithful/methods/turtle.mjs', 'source-faithful/common/series.mjs', 'source-faithful/runner/run-research.mjs', 'source-faithful/runner/metrics.mjs', 'source-faithful/runner/snapshot-input.mjs', 'source-faithful/contract.mjs', 'validation/accounting-contract.mjs', 'validation/portfolio.mjs', 'validation/lib.mjs'];
+/**
+ * Component signal studies (backtestReadiness COMPONENT_SIGNAL_STUDY_ONLY): the mechanical part of a manual-review
+ * method, every machine signal of the research universe with its mechanical exit, equal weight, no sizing, no
+ * selection. Reported as trade-level statistics, never as a method return.
+ */
+export const COMPONENT_STUDIES = Object.freeze({
+  SF_DARVAS_BOX: (sec, o) => darvasComponentTrades(sec, o).map((t) => ({ ...t, entryIndex: sec.bars.findIndex((b) => b.date === t.entryDate) })),
+});
+
+const CODE_FILES = ['source-faithful/methods/turtle.mjs', 'source-faithful/methods/darvas.mjs', 'source-faithful/common/series.mjs', 'source-faithful/runner/run-research.mjs', 'source-faithful/runner/metrics.mjs', 'source-faithful/runner/snapshot-input.mjs', 'source-faithful/contract.mjs', 'validation/accounting-contract.mjs', 'validation/portfolio.mjs', 'validation/lib.mjs'];
 export function codeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of CODE_FILES) { h.update(f); h.update(fs.readFileSync(path.join(ROOT, 'scripts/supertrader', f))); }
@@ -59,6 +69,37 @@ export function assertBacktestReady(methodId, extract = loadExtract()) {
   if (e.backtestReadiness !== 'DIAGNOSTIC_READY' || !RUNNABLE[methodId]) throw new Error(`METHOD_NOT_BACKTEST_READY:${methodId}:${e.backtestReadiness}`);
   if (!e.contractValidation.ok) throw new Error(`CONTRACT_INVALID:${methodId}`);
   return { contract: c, entry: e };
+}
+
+/** Gate for component studies: implemented, valid, COMPONENT_SIGNAL_STUDY_ONLY. */
+export function assertComponentStudy(methodId, extract = loadExtract()) {
+  const c = CONTRACTS.find((x) => x.strategyId === methodId);
+  if (!c) throw new Error(`UNKNOWN_METHOD:${methodId}`);
+  const e = registryEntry(c, extract);
+  if (e.backtestReadiness !== 'COMPONENT_SIGNAL_STUDY_ONLY' || !COMPONENT_STUDIES[methodId]) throw new Error(`METHOD_NOT_COMPONENT_STUDY:${methodId}:${e.backtestReadiness}`);
+  return { contract: c, entry: e };
+}
+
+const quantile = (s, q) => (s.length ? s[Math.min(s.length - 1, Math.floor(q * s.length))] : null);
+/** Trade-level statistics of a component study, net of the research execution costs (10 bp + 1 bp per side). */
+export function componentStudy(methodId, dataset, { snapshotId, datasetSha256, accounting, from = L.WINDOW.from, to = L.WINDOW.to, slippageBps = 10, commissionBps = 1, runId = 'local', commit = null } = {}) {
+  if (accounting !== FOUNDATION.accounting.mode) throw new Error('RESEARCH_ACCOUNTING_REQUIRED');
+  const { contract, entry } = assertComponentStudy(methodId);
+  const slip = slippageBps / 1e4, fee = commissionBps / 1e4, trades = [];
+  for (const sec of dataset.securities) for (const t of COMPONENT_STUDIES[methodId](sec, { from, to })) {
+    if (!(t.entryIndex > 0) || !eligibleAtPriorSession(sec.bars, t.entryIndex, RESEARCH_UNIVERSE)) continue;
+    const exit = t.exitFill ?? sec.bars.at(-1).close;
+    trades.push({ ...t, ret: (exit * (1 - slip) * (1 - fee)) / (t.entryFill * (1 + slip) * (1 + fee)) - 1, open: t.exitFill == null });
+  }
+  const r = trades.map((t) => t.ret).sort((a, b) => a - b), wins = r.filter((x) => x > 0), losses = r.filter((x) => x < 0);
+  const byYear = {}; for (const t of trades) { const y = t.entryDate.slice(0, 4); (byYear[y] ||= { n: 0, wins: 0 }).n++; if (t.ret > 0) byYear[y].wins++; }
+  const receipt = reproducibilityReceipt({ snapshotId, datasetSha256: datasetSha256 ?? null, accounting, codeSha256: codeSha256(), contractFingerprint: contractFingerprint(contract), params: { from, to, universe: RESEARCH_UNIVERSE, slippageBps, commissionBps, kind: 'COMPONENT_SIGNAL_STUDY' }, runId, commit });
+  return {
+    schema: 'supertrader-sf-component-study-1.0.0', runner: RUNNER_VERSION, certification: FOUNDATION.certification, label: 'COMPONENT_SIGNAL_STUDY_NOT_A_METHOD_RETURN', method: methodId,
+    implementationStatus: entry.implementationStatus, manualReviewRequirements: entry.manualReviewRequirements.map((m) => m.id), receipt, window: { from, to },
+    stats: { signals: trades.length, stillOpen: trades.filter((t) => t.open).length, hitRate: r.length ? wins.length / r.length : null, mean: r.length ? r.reduce((a, b) => a + b, 0) / r.length : null, median: quantile(r, 0.5), p05: quantile(r, 0.05), p95: quantile(r, 0.95), profitFactor: losses.length ? wins.reduce((a, b) => a + b, 0) / -losses.reduce((a, b) => a + b, 0) : null, medianHeldSessions: quantile(trades.map((t) => t.heldSessions).sort((a, b) => a - b), 0.5), entryBarStops: trades.filter((t) => t.entryBarStop).length, byYear },
+    tradesSha256: crypto.createHash('sha256').update(JSON.stringify(trades)).digest('hex'),
+  };
 }
 
 /** Pure part: runs every scenario of one method on a dataset; returns the (unsealed) result. */
@@ -92,6 +133,7 @@ export function runMethod(methodId, dataset, { snapshotId, datasetSha256, accoun
 
 /** Public, hash-only view of a result (safe for the public repository and logs). */
 export function publicView(result) {
+  if (result.schema === 'supertrader-sf-component-study-1.0.0') return { schema: 'supertrader-sf-research-public-1.0.0', method: result.method, certification: result.certification, label: result.label, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, tradesSha256: result.tradesSha256, signals: result.stats.signals };
   return { schema: 'supertrader-sf-research-public-1.0.0', method: result.method, certification: result.certification, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, contractFingerprint: result.receipt.contractFingerprint,
     scenarios: Object.fromEntries(Object.entries(result.runs).map(([k, v]) => [k, { reconciliation: v.reconciliation.pass, endingPositionCheck: v.endingPositionCheck.status, ledgerSha256: v.ledgerSha256, trades: v.metrics.trades }])), dataCoverage: result.dataCoverage };
 }
@@ -102,10 +144,10 @@ async function main() {
   if (accounting !== 'research-v1') { console.error('RESEARCH_ACCOUNTING_REQUIRED'); process.exit(2); }
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
-  const methods = (arg('--methods', 'SF_TURTLE_S1,SF_TURTLE_S2')).split(',').map((s) => s.trim()).filter(Boolean);
+  const methods = (arg('--methods', [...Object.keys(RUNNABLE), ...Object.keys(COMPONENT_STUDIES)].join(','))).split(',').map((s) => s.trim()).filter(Boolean);
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
   const LIMIT = Number(arg('--limit', '0'));
-  for (const m of methods) assertBacktestReady(m); // gate before any data access
+  for (const m of methods) (COMPONENT_STUDIES[m] ? assertComponentStudy : assertBacktestReady)(m); // gate before any data access
   const t0 = Date.now(), log = (m) => console.log(`[sf-research +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
   let pit, datasetSha256;
@@ -128,12 +170,12 @@ async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   for (const m of methods) {
-    const result = runMethod(m, dataset, { snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null });
+    const result = (COMPONENT_STUDIES[m] ? componentStudy : runMethod)(m, dataset, { snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null });
     const tag = `sf-${m.toLowerCase()}${LIMIT ? '-smoke' : ''}`;
     fs.writeFileSync(path.join(OUT, `${tag}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
     const pub = publicView(result);
     fs.writeFileSync(path.join(OUT, `${tag}.public.json`), JSON.stringify(pub, null, 1) + '\n');
-    log(`${m}: sealed; receipt ${pub.receiptSha256.slice(0, 16)}; reconciliation ${Object.values(pub.scenarios).every((s) => s.reconciliation) ? 'PASS' : 'FAIL'}`);
+    log(`${m}: sealed; receipt ${pub.receiptSha256.slice(0, 16)}${pub.scenarios ? `; reconciliation ${Object.values(pub.scenarios).every((s) => s.reconciliation) ? 'PASS' : 'FAIL'}` : `; component signals ${pub.signals}`}`);
   }
 }
 

@@ -75,6 +75,7 @@
     "TUR-SF-LIMIT-CORR",
     "TUR-SF-SHORT"
    ],
+   "dataPartial": [],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -140,6 +141,7 @@
     "TUR-SF-LIMIT-CORR",
     "TUR-SF-SHORT"
    ],
+   "dataPartial": [],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -169,8 +171,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "d98bdb34c56c4a1f43184dfdc09dde5b44601b3d0c812eaf793a6e3bf5eac89e",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "e2c3fdcccaca23ecb544135d29291b28dbc9c6967f69b99998b8b7ccc99babe9",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -179,20 +181,23 @@
    "sourceCoverage": {
     "rulesInScope": 35,
     "hardRules": 10,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "hardRulesImplemented": 10,
+    "implementedExact": 4,
+    "implementedDerived": 8,
+    "manualReview": 12,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 24,
+    "notImplemented": 0,
     "excluded": 11,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
-   "backtestReadiness": "NOT_READY",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "COMPONENT_SIGNAL_STUDY_ONLY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [
+    "DAR-Q9: the snapshot series start at the 2015-01-01 warm-up, not at the listing date; the all-time high is only checked within the available history and flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED"
+   ],
    "manualReviewRequirements": [
     {
      "id": "DAR-MR-SELECTION",
@@ -255,7 +260,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 3 Darvas"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_WEINSTEIN_INVESTOR",
@@ -295,6 +300,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "WEIN-MR-STAGE",
@@ -400,6 +406,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "WEIN-MR-STAGE",
@@ -497,6 +504,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MIN-MR-PRIORITY",
@@ -607,6 +615,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MIN-MR-PP-VOLUME",
@@ -685,6 +694,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-SETUP",
@@ -775,6 +785,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-CATALYST",
@@ -848,6 +859,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-PARABOLIC",
@@ -924,6 +936,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MOKA-MR-BASE",
@@ -1019,6 +1032,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MOKA-MR-LEAD",
@@ -1096,6 +1110,7 @@
    "executionReadiness": "NOT_IMPLEMENTED",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "RAS-MR-IMPULSE",
