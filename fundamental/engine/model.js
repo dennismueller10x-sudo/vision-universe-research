@@ -1,11 +1,12 @@
 /* Fundamental 1.0 – Modell (UMD, ohne Abhaengigkeiten).
  * Liest NUR den bestehenden Block `fundamentals` der Discover-Aktiendatei (discover/data/stocks/US_REAL/<T>.json,
  * Erzeuger scripts/discover/build-discover-data.mjs aus den SEC-Companyfacts). Keine neue Datenquelle, kein Score,
- * keine Bewertung: Werte, Veraenderung zum Vorjahr, Luecken und Herkunft je Geschaeftsjahr.
+ * kein Urteil: Werte, Veraenderung zum Vorjahr, Luecken und Herkunft je Geschaeftsjahr. Bewertungskennzahlen (KGV, KUV,
+ * FCF-Rendite) und ihr Abstand zum Marktmedian stammen unveraendert aus dem Block `valuation` desselben Erzeugers.
  * Richtung (auf/ab/gleich) ist neutral gemeint; ob mehr Schulden oder weniger Aktien "gut" ist, entscheidet hier niemand. */
 (function (global) {
   'use strict';
-  var VERSION = 'fundamental-model-1.0.0';
+  var VERSION = 'fundamental-model-1.1.0';
   var STOCK_BASE = '/discover/data/stocks/US_REAL/';
   var SEARCH_PATH = '/discover/data/search/US_REAL.json';
 
@@ -59,6 +60,78 @@
     return { last: have[have.length - 1] || null, prev: have[have.length - 2] || null, count: have.length };
   }
 
+  /* ---------------------------------------------- Wachstum, Profitabilitaet, Bilanz, Bewertung
+   * Alles aus Werten, die die Datei bereits traegt; nichts wird geschaetzt. Fehlt eine Voraussetzung, steht ein Grund da. */
+  var GROWTH = ['revenue', 'net_income', 'free_cash_flow', 'eps_diluted'];
+  var HORIZONS = [3, 5, 10];
+
+  /* Jaehrliche Rate ueber genau n Geschaeftsjahre bis zum letzten Jahr mit Wert. Nur bei positivem Anfangs- und Endwert. */
+  function cagr(rows, n) {
+    var have = rows.filter(function (r) { return isNum(r.v); }), end = have[have.length - 1];
+    var out = { years: n, rate: null, from: null, to: end ? end.fy : null, reason: null };
+    if (!end) { out.reason = 'NO_DATA'; return out; }
+    var start = have.filter(function (r) { return r.fy === end.fy - n; })[0];
+    if (!start) { out.reason = 'TOO_SHORT'; return out; }
+    out.from = start.fy; out.fromV = start.v; out.toV = end.v;
+    if (!(start.v > 0) || !(end.v > 0)) { out.reason = 'NOT_POSITIVE'; return out; }
+    out.rate = Math.pow(end.v / start.v, 1 / n) - 1;
+    out.multiple = end.v / start.v;
+    return out;
+  }
+  /* Veraenderung je Jahr nur zwischen direkt aufeinanderfolgenden Geschaeftsjahren; eine Luecke unterbricht die Reihe. */
+  function yoy(rows) {
+    return rows.slice(1).map(function (r, i) {
+      var p = rows[i];
+      if (!isNum(r.v) || !isNum(p.v)) return { fy: r.fy, gap: true };
+      var c = change(p.v, r.v);
+      return { fy: r.fy, pct: c.pct, dir: c.dir, signFlip: c.signFlip };
+    });
+  }
+  /* Vom Umsatz zum Free Cashflow im letzten Geschaeftsjahr: Anteil je Stufe am Umsatz. */
+  var LADDER = [['revenue', 'Umsatz'], ['gross_profit', 'Bruttogewinn'], ['operating_income', 'Operatives Ergebnis'], ['net_income', 'Nettogewinn'], ['free_cash_flow', 'Free Cashflow']];
+  function ladder(annual) {
+    var rev = annual.revenue;
+    if (!rev || !(rev.v > 0)) return null;
+    var steps = LADDER.map(function (s) { var a = annual[s[0]]; return a && isNum(a.v) ? { id: s[0], label: s[1], v: a.v, share: a.v / rev.v } : null; }).filter(Boolean);
+    return steps.length > 1 ? { end: rev.end || null, steps: steps } : null;
+  }
+  function pick(a) { return a && isNum(a.v) ? a.v : null; }
+  function balance(annual, derived) {
+    var cash = pick(annual.cash_and_equivalents), debt = pick(annual.total_debt), lt = pick(annual.long_term_debt);
+    var equity = pick(annual.stockholders_equity), assets = pick(annual.total_assets);
+    var debtV = debt != null ? debt : lt, net = pick(annual.net_debt);
+    if (net == null && cash != null && debtV != null) net = debtV - cash;
+    if (cash == null && debtV == null && equity == null && assets == null) return null;
+    var endOf = function (k) { return annual[k] && annual[k].end; };
+    return {
+      end: endOf('total_assets') || endOf('cash_and_equivalents') || endOf('stockholders_equity') || null,
+      cash: cash, debt: debtV, debtKind: debt != null ? 'total' : lt != null ? 'long_term' : null, net: net,
+      equity: equity, assets: assets, equityRatio: equity != null && assets > 0 ? equity / assets : null,
+      roe: isNum(derived.roe) ? derived.roe : null
+    };
+  }
+  var VAL_REASON = { SOURCE_MISSING: 'nicht berechenbar', NON_USD_REPORTING: 'Meldung nicht in US-Dollar', FOREIGN_FILER: 'ausländischer Emittent',
+    IMPLAUSIBLE_SHARE_BASIS: 'Aktienanzahl nicht plausibel', NO_CURRENT_SHARE_COUNT: 'keine aktuelle Aktienanzahl', LOSS: 'Verlust in den letzten 12 Monaten' };
+  function valuation(v, ttm) {
+    if (!v || !v.available) return null;
+    var ctx = v.context || {}, rel = v.relative || {};
+    var loss = ttm.net_income && isNum(ttm.net_income.v) && ttm.net_income.v < 0;
+    var pe = v.pe && isNum(v.pe.value) ? v.pe : null, ps = v.ps && isNum(v.ps.value) ? v.ps : null, fy = v.fcfYield && isNum(v.fcfYield.value) ? v.fcfYield : null;
+    if (!pe && !ps && !fy) return null;
+    return {
+      price: isNum(v.price) ? v.price : null, basis: v.basis || null,
+      marketCap: v.marketCap && isNum(v.marketCap.value) ? v.marketCap.value : null,
+      pe: pe ? { value: pe.value, basis: pe.basis || null, ratio: isNum(rel.peVsMedian) ? rel.peVsMedian : (ctx.peMedian > 0 ? pe.value / ctx.peMedian : null) } : null,
+      peReason: pe ? null : (loss ? 'LOSS' : v.peReason || 'SOURCE_MISSING'),
+      ps: ps ? { value: ps.value, ratio: ctx.psMedian > 0 ? ps.value / ctx.psMedian : null } : null,
+      fcfYield: fy ? fy.value : null,
+      peMedian: isNum(ctx.peMedian) ? ctx.peMedian : null, psMedian: isNum(ctx.psMedian) ? ctx.psMedian : null,
+      peCount: ctx.peCount || null, label: rel.label || null, stufe: rel.stufe || null
+    };
+  }
+  function reasonText(code) { return VAL_REASON[code] || 'nicht berechenbar'; }
+  function multiple(v) { return isNum(v) ? num(v, v >= 100 ? 0 : 1) : '–'; }
+
   function fromStock(stock) {
     var f = stock && stock.fundamentals;
     var base = { version: VERSION, ticker: stock ? normTicker(stock.symbol) : null, name: stock ? (stock.companyName || stock.legalName || stock.symbol) : null };
@@ -94,11 +167,25 @@
       return { fy: fy, filings: list, values: values, of: metrics.length };
     });
     var stale = latest.staleness || null;
+    var byId = {}; metrics.forEach(function (m) { byId[m.id] = m; });
     return Object.assign(base, {
       available: true, cik: f.cik || null, asOf: f.asOf || null, source: f.source || null,
       years: years, latestFiscalYear: f.latestFiscalYear || (years.length ? years[years.length - 1] : null),
       ttmThrough: f.ttmThrough || null, stale: stale, derived: latest.derived || null,
       metrics: metrics, margins: margins, sources: sources,
+      // Mit Hinweis (Split ohne rueckwirkende Bereinigung, z. B. Gewinn je Aktie) waere jede Rate ueber den Sprung falsch: keine Rate.
+      growth: GROWTH.map(function (id) {
+        var m = byId[id];
+        return { id: id, label: m.label, unit: m.unit, caveat: m.caveat, horizons: HORIZONS.map(function (n) {
+          var g = cagr(m.rows, n);
+          if (m.caveat && g.rate != null) { g.rate = null; g.multiple = null; g.reason = 'NOT_COMPARABLE'; }
+          return g;
+        }) };
+      }).filter(function (g) { return g.horizons.some(function (h) { return h.rate != null || h.reason === 'NOT_COMPARABLE'; }); }),
+      yoy: yoy(byId.revenue.rows),
+      ladder: ladder(annual),
+      balance: balance(annual, latest.derived || {}),
+      valuation: valuation(f.valuation, ttm),
       kpis: KPIS.map(function (id) { return metrics.filter(function (m) { return m.id === id; })[0]; }).filter(function (m) { return m && m.available; }),
       caveats: Object.keys(caveats).map(function (k) { return { track: k, text: caveats[k] }; })
     });
@@ -176,7 +263,7 @@
 
   var api = { VERSION: VERSION, METRICS: METRICS, MARGINS: MARGINS, STOCK_BASE: STOCK_BASE, SEARCH_PATH: SEARCH_PATH,
     fromStock: fromStock, change: change, series: series, money: money, count: count, pct: pct, value: value, changeText: changeText,
-    dateDe: dateDe, yearRanges: yearRanges, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
+    dateDe: dateDe, yearRanges: yearRanges, cagr: cagr, yoy: yoy, reasonText: reasonText, multiple: multiple, HORIZONS: HORIZONS, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.VUFundamental = global.VUFundamental || {};
   global.VUFundamental.Model = api;

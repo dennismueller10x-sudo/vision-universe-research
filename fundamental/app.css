@@ -109,5 +109,55 @@ html[data-theme=dark]{--fu-last:var(--vu-accent,#c8f531);--fu-s0:#c8f531;--fu-s1
 .fu-method h2{margin:22px 0 6px;font-size:20px}
 .fu-method p,.fu-method li{color:var(--vu-text-secondary);line-height:1.6}
 
+/* Fundamental 1.1: Abschnitte Wachstum, Profitabilitaet, Bewertung, Bilanz */
+.fu-jump{display:flex;gap:8px;margin:18px 0 0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.fu-jump::-webkit-scrollbar{display:none}
+.fu-jump a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--vu-line);background:var(--fu-card);text-decoration:none;font-size:14px;font-weight:650;color:var(--vu-text-secondary)}
+.fu-jump a:hover{color:var(--vu-text)}
+.fu-section[id],.fu-sources[id]{scroll-margin-top:72px}
+.fu-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.fu-tag{flex:none;font-size:11.5px;font-weight:650;color:var(--vu-text-secondary)}
+.fu-gwrap{padding:4px 8px;border-radius:20px}
+.fu-gtable{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed}
+.fu-gtable th,.fu-gtable td{padding:12px 8px;text-align:left;border-bottom:1px solid var(--vu-line);vertical-align:middle}
+.fu-gtable thead th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--vu-text-secondary);font-weight:700}
+.fu-gtable tbody th{font-weight:700;width:34%}
+.fu-gtable tbody tr:last-child th,.fu-gtable tbody tr:last-child td{border-bottom:0}
+.fu-gcell{white-space:nowrap}
+.fu-gcell .fu-dir{display:block;font-size:13.5px}
+.fu-gbar{display:block;height:4px;margin-top:6px;border-radius:2px;background:color-mix(in srgb,var(--vu-text) 8%,transparent);overflow:hidden}
+.fu-gbar i{display:block;height:100%;border-radius:2px;background:var(--fu-last)}
+.fu-gcell .dir-down+.fu-gbar i{background:var(--fu-bar)}
+.fu-gcell.is-none{white-space:normal}
+.fu-gnone{font-size:12.5px;color:var(--vu-text-secondary)}
+.fu-ladder-foot{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:12px 0 0;padding-top:12px;border-top:1px solid var(--vu-line);font-size:13.5px}
+.fu-ladder-foot span{color:var(--vu-text-secondary)}.fu-ladder-foot b{font-size:16px;font-weight:820}.fu-ladder-foot small{font-size:12px;color:var(--vu-text-secondary)}
+.fu-chart-yoy{height:120px}
+.fu-ladder{display:flex;flex-direction:column;gap:10px;margin:8px 0 0;padding:0;list-style:none}
+.fu-ladder li{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:center}
+.fu-ladder-label{font-size:13.5px;color:var(--vu-text-secondary);grid-row:span 2}
+.fu-ladder-bar{display:block;height:10px;border-radius:5px;background:color-mix(in srgb,var(--vu-text) 7%,transparent);overflow:hidden;grid-row:span 2}
+.fu-ladder-bar i{display:block;height:100%;border-radius:5px;background:var(--fu-bar)}
+.fu-ladder-bar i.is-step{background:var(--fu-last)}
+.fu-ladder li.is-neg .fu-ladder-bar i{background:color-mix(in srgb,var(--vu-text) 18%,transparent)}
+.fu-ladder b{font-size:14.5px;font-weight:800;text-align:right}
+.fu-ladder small{font-size:12px;color:var(--vu-text-secondary);text-align:right}
+.fu-dtiles-2{grid-template-columns:repeat(2,minmax(0,1fr));margin:0}
+.fu-gauge{margin:10px 0 2px}
+.fu-gauge-track{position:relative;height:12px;border-radius:6px;overflow:visible}
+.fu-gauge-track .z{position:absolute;top:0;bottom:0}
+.fu-gauge-track .z-low{border-radius:6px 0 0 6px;background:color-mix(in srgb,var(--vu-text) 6%,transparent)}
+.fu-gauge-track .z-mid{background:color-mix(in srgb,var(--vu-text) 14%,transparent)}
+.fu-gauge-track .z-high{border-radius:0 6px 6px 0;background:color-mix(in srgb,var(--vu-text) 6%,transparent)}
+.fu-gauge-track .mk{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px}
+.fu-gauge-track .mk-median{background:var(--vu-text-secondary)}
+.fu-gauge-track .mk-self{width:12px;height:12px;top:0;margin-left:-6px;border-radius:50%;background:var(--fu-last);box-shadow:0 0 0 3px var(--fu-card)}
+.fu-gauge-track .mk-self.is-clipped{border-radius:3px}
+.fu-gauge-scale{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;color:var(--vu-text-secondary)}
+.fu-stack{display:flex;height:12px;margin:10px 0 0;border-radius:6px;overflow:hidden;background:color-mix(in srgb,var(--vu-text) 12%,transparent)}
+.fu-stack .is-eq{display:block;height:100%;background:var(--fu-last)}
+
 @media (max-width:1024px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fu-how,.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:640px){.fu-kpis{grid-template-columns:1fr}.fu-grid{grid-template-columns:1fr}.fu-card-wide{grid-column:auto}.fu-how{grid-template-columns:1fr}.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.fu-split{grid-template-columns:1fr}}
+@media (max-width:640px){.fu-kpis{grid-template-columns:1fr}.fu-grid{grid-template-columns:1fr}.fu-card-wide{grid-column:auto}.fu-how{grid-template-columns:1fr}.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fu-gtable{font-size:13px}.fu-gtable th,.fu-gtable td{padding:10px 4px}.fu-gcell .fu-dir{font-size:12.5px}.fu-ladder li{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) auto}}
