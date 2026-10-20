@@ -1,0 +1,63 @@
+name: Vorsorge Daily Rebuild
+# Taeglicher Neubau des Vorsorge-ETF-Stamms aus den bereits eingecheckten Eingangsdaten
+# (Kursreihen und Security-Master unter quant/data, Vorsorge-Ingest unter vorsorge/data/ingest).
+#
+# WARUM: Das Gate "Daten-Build ist reproduzierbar" (vorsorge-ci.yml) vergleicht den Neubau mit dem
+# eingecheckten Stand. Die Kursdaten ruecken jeden Handelstag weiter, einen planmaessigen Neubau gab
+# es nicht: ab dem Folgetag war das Gate auf main rot und jeder PR auf Vorsorge- oder Shell-Pfaden
+# erbte den Fehler (#782, #800, 19./20.10.2026).
+#
+# KOSTEN: kein Anbieterabruf. Nur scripts/vorsorge/build-etf-data.mjs (deterministisch, ohne Uhr und
+# ohne Netz). Der Tiingo-Ingest (vorsorge-etf-universe.yml, rund zwei Anfragen je ETF) bleibt manuell.
+#
+# SCHUTZ: Vor dem Commit laufen dieselben Pruefungen wie im Ingest-Lauf (Tests, assert-vorsorge-data
+# mit den Freigaberegeln, z. B. Xetra-Referenzdaten ohne Freigabe nie im veroeffentlichten Verzeichnis,
+# Hygiene). Schreibt der Neubau ausserhalb von vorsorge/data und vorsorge/sitemap.xml, bricht der Lauf
+# ohne Commit ab. Unveraenderter Stand: kein Commit.
+on:
+  schedule:
+    # Nach dem Marktdaten-Refresh (22:30 UTC Mo-Fr, rund 70 Minuten), Di-Sa
+    - cron: '23 3 * * 2-6'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: vorsorge-daily-rebuild-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Vorsorge-Stamm neu bauen (ohne Netz)
+        run: node scripts/vorsorge/build-etf-data.mjs --quiet
+      - name: Nur erwartete Pfade veraendert
+        id: scope
+        run: |
+          set -euo pipefail
+          changed="$(git status --porcelain)"
+          if [ -z "$changed" ]; then echo "Keine Aenderung."; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          outside="$(printf '%s\n' "$changed" | awk '{print $2}' | grep -vE '^(vorsorge/data/|vorsorge/sitemap\.xml$)' || true)"
+          if [ -n "$outside" ]; then echo "::error::Neubau schreibt ausserhalb von vorsorge/data:"; printf '%s\n' "$outside"; exit 1; fi
+          echo "$(printf '%s\n' "$changed" | wc -l) Dateien geaendert."
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Tests, Qualitaets- und Freigabe-Gates, Hygiene
+        if: steps.scope.outputs.changed == 'true'
+        run: |
+          node --test "vorsorge/tests/*.test.mjs"
+          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node scripts/market/assert-public-data-hygiene.mjs
+      - name: Veroeffentlichen
+        if: steps.scope.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- vorsorge/data vorsorge/sitemap.xml
+          git commit -q -m "Vorsorge: ETF-Stamm aus aktuellen Kursdaten neu gebaut (Lauf ${GITHUB_RUN_ID})"
+          bash scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
