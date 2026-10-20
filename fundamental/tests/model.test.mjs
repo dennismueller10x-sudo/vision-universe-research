@@ -212,3 +212,22 @@ test('Skala der Gruppe: ab Null, Ausreisser gekappt, hoechster Wert = 1', () => 
   assert.equal(M.compareScale([{ x: -5 }, { x: 5 }], 'x').min, -5);
   assert.equal(M.compareScale([{ x: null }], 'x'), null);
 });
+
+/* Fundamental 1.3: Startseite – Discover-Zeilen mit reinen SEC-Regeln, Kachelwerte = Werte der Unternehmensseite. */
+test('Entdecken: Kachelwerte der Discover-Zeile stimmen mit dem Modell der Unternehmensseite ueberein', () => {
+  for (const id of M.HOME_ROWS) {
+    const r = M.homeRow(row(id));
+    assert.ok(r && r.title && r.tiles.length > 0, id);
+    for (const t of r.tiles.slice(0, 6)) {
+      const c = M.compareRow(M.fromStock(stock(t.ticker)));
+      for (const k of ['revenue', 'growth3', 'netMargin', 'pe']) {
+        if (t[k] == null && c[k] == null) continue;
+        assert.ok(t[k] != null && c[k] != null && Math.abs(t[k] - c[k]) <= 1e-6 * Math.max(1, Math.abs(c[k])), id + ' ' + t.ticker + ' ' + k + ': ' + t[k] + ' vs ' + c[k]);
+      }
+    }
+  }
+  assert.equal(M.homeRow(null), null);
+  assert.deepEqual(M.homeTile({ symbol: 'x', metrics: { f_pe: NaN } }).pe, null);
+  const odd = M.homeTile({ symbol: 'x', metrics: { f_netMargin: 1.18, f_fcfMargin: 0.2 } });
+  assert.deepEqual([odd.netMargin, odd.implausible.netMargin, odd.fcfMargin], [null, true, 0.2], 'wie im Vergleich: Marge > 100 % nicht als Wert');
+});
