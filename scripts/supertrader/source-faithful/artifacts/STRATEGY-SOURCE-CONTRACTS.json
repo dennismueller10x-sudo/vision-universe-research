@@ -551,9 +551,10 @@
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
      "reason": null
     },
     {
@@ -654,13 +655,13 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1"
      ],
-     "derivation": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
      "reason": null
     },
     {
@@ -729,29 +730,29 @@
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 5; printed 11",
-     "ruleId": "TUR-CONSISTENT",
+     "page": "PDF 4; printed 10",
+     "ruleId": "TUR-MARKETS",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
      "candidate": "C01",
-     "executableRule": "TUR-SF-CONSISTENT",
+     "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": null,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
      "reason": null
     },
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 4; printed 10",
-     "ruleId": "TUR-MARKETS",
+     "page": "PDF 5; printed 11",
+     "ruleId": "TUR-CONSISTENT",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
@@ -1234,9 +1235,10 @@
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
      "reason": null
     },
     {
@@ -1337,13 +1339,13 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2"
      ],
-     "derivation": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
      "reason": null
     },
     {
@@ -1412,29 +1414,29 @@
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 5; printed 11",
-     "ruleId": "TUR-CONSISTENT",
+     "page": "PDF 4; printed 10",
+     "ruleId": "TUR-MARKETS",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
      "candidate": "C02",
-     "executableRule": "TUR-SF-CONSISTENT",
+     "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": null,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
      "reason": null
     },
     {
      "source": "W-TUR",
      "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
-     "page": "PDF 4; printed 10",
-     "ruleId": "TUR-MARKETS",
+     "page": "PDF 5; printed 11",
+     "ruleId": "TUR-CONSISTENT",
      "modal": "HARD",
      "confidence": "HIGH",
      "originalWordingChecked": true,
@@ -1478,8 +1480,8 @@
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 3 Darvas",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Nicolas Darvas",
    "method": "Later Q&A box construction, buy-stop entry and box stop method (machine component) with manual techno-fundamental layer",
    "scope": {
@@ -1602,7 +1604,8 @@
    "knownLimitations": [
     "the full Darvas method (selection, volume, market, sizing) cannot be measured on history: manual decisions are logged forward only",
     "all-time high is evaluated within the snapshot history; when that history does not reach the listing date the flag is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED",
-    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, the default is declared"
+    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, default AFTER_TOP_DAY (declared)",
+    "component study population: the pre-registered research universe of #705 (raw close >= 5, 20-session dollar volume >= 1M at the prior session), a measurement convention, not a Darvas rule (DAR-Q10: no general minimum)"
    ],
    "chain": [
     {
@@ -1617,8 +1620,8 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
@@ -1626,7 +1629,7 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-HIGHER-RESET"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1640,15 +1643,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOTTOM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-TOUCH-RESET"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1662,14 +1665,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOTTOM-START",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_AMBIGUOUS"
+     "reason": "#709 VU-DAR records the start (after the top day vs after top confirmation) as UNRESOLVED; both are implemented and the record names the variant. Default AFTER_TOP_DAY: lows already traded after the top day are not discarded, so the bottom (and a stop raised under it) never lies inside the traded range (review SF-R1-04); AFTER_TOP_CONFIRMED is the variant"
     },
     {
      "source": "B06",
@@ -1683,14 +1686,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP-EXCEEDED",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM"
      ],
      "derivation": "the bottom is only established under a fixed top (DAR-Q2); a higher high means the top was not final (DAR-Q1)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1704,14 +1707,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-TOP-EXCEEDED",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM"
      ],
      "derivation": "the bottom is only established under a fixed top (DAR-Q2); a higher high means the top was not final (DAR-Q1)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1725,14 +1728,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOX-FAIL",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOX-FAIL"
      ],
      "derivation": "DAR-Q11 (CONTEXTUAL) describes selling on the stop after a lower box break; for a box without position the box simply no longer exists. State transition, not a selection filter.",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1746,14 +1749,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-NO-WAIT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1767,15 +1770,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL"
      ],
      "derivation": "\"a fraction\" is not quantified: VU convention = one raw cent converted to the split-adjusted basis (the smallest price increment); fill = max(open, trigger) on daily bars; the reviewer may set a different fraction (DAR-C-THIO)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1789,14 +1792,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-PROTECT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1810,15 +1813,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-INIT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
      "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1832,15 +1835,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-INIT",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
      "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1854,15 +1857,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-RAISE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER"
      ],
      "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1876,15 +1879,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-STOP-RAISE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER"
      ],
      "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1898,15 +1901,15 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-ATH",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasScreen",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-UNVERIFIED"
      ],
      "derivation": "evaluated against every earlier bar of the available (split-adjusted) history; if that history does not reach the listing date the record is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED and goes to review",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1920,14 +1923,35 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SPLITS",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#fractionFor",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-FRACTION"
      ],
      "derivation": "the snapshot convention (adjustSeries, ADR-002) supplies split-adjusted bars; raw prices only for the one-cent fraction",
-     "reason": "PLANNED (PR 3 Darvas): target SOURCE_DERIVED"
+     "reason": null
+    },
+    {
+     "source": null,
+     "bookEdition": null,
+     "page": null,
+     "ruleId": null,
+     "modal": null,
+     "confidence": null,
+     "originalWordingChecked": null,
+     "clearance": null,
+     "candidate": "C03",
+     "executableRule": "DAR-SF-RESEARCH-POPULATION",
+     "kind": "FILTER",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/runner/run-research.mjs#componentStudy",
+     "tests": [
+      "scripts/supertrader/tests/sf-runner.test.mjs: SF-RUN-COMPONENT"
+     ],
+     "derivation": "measurement convention for the diagnostic component study only; Darvas sets no general volume or liquidity minimum (DAR-Q10); the review screen itself applies no such filter (review SF-R1-05)",
+     "reason": null
     },
     {
      "source": "B06",
@@ -1941,12 +1965,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1960,12 +1984,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1979,12 +2003,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -1998,12 +2022,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2017,12 +2041,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SELECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2036,12 +2060,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2055,12 +2079,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2074,12 +2098,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2093,12 +2117,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2112,12 +2136,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SIZING",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2131,12 +2155,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-SIZING",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2150,12 +2174,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-PYRAMID",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B06",
@@ -2169,12 +2193,12 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-REENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 3 Darvas): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -2182,8 +2206,8 @@
    "strategyId": "SF_WEINSTEIN_INVESTOR",
    "candidateId": "C04",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 4 Weinstein",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Stan Weinstein",
    "method": "Stage 2 Investor: early Stage 2 breakout above resistance, half position at the breakout, half on a constructive pullback",
    "scope": {
@@ -2328,14 +2352,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-WEEKLY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#weeklyBars",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY"
      ],
      "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2349,16 +2373,17 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-MA-GATE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#maGate",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
-      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
      ],
-     "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)",
+     "reason": null
     },
     {
      "source": "B09",
@@ -2372,12 +2397,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2391,12 +2416,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2410,12 +2435,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2429,12 +2454,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2448,12 +2473,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2467,12 +2492,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2486,8 +2511,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2495,7 +2520,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2509,8 +2534,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2518,7 +2543,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2532,8 +2557,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2541,7 +2566,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2555,8 +2580,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2564,7 +2589,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2578,8 +2603,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2587,7 +2612,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2601,8 +2626,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2610,7 +2635,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2624,14 +2649,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2645,14 +2670,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2666,14 +2691,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2687,14 +2712,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2708,12 +2733,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -2727,12 +2752,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -2746,14 +2771,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#marketEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
     },
     {
      "source": "B09",
@@ -2767,12 +2792,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2786,12 +2811,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2805,15 +2830,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-ORDER",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2827,14 +2852,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STOP-PLAN",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2848,12 +2873,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-NO-AVG-DOWN",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2867,14 +2892,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-NONTECH",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2888,15 +2913,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-BREAKOUT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#investorScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
-     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)",
+     "reason": null
     },
     {
      "source": "B09",
@@ -2910,15 +2935,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-BREAKOUT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#investorScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
-     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)",
+     "reason": null
     },
     {
      "source": "B09",
@@ -2932,12 +2957,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2951,12 +2976,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2970,12 +2995,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2989,12 +3014,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3008,14 +3033,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3029,12 +3054,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3048,12 +3073,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3067,12 +3092,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3086,12 +3111,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3105,12 +3130,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3124,12 +3149,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOL5",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -3137,8 +3162,8 @@
    "strategyId": "SF_WEINSTEIN_TRADER",
    "candidateId": "C05",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 4 Weinstein",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Stan Weinstein",
    "method": "Stage 2 Trader continuation: breakout over new resistance after a consolidation near a clearly rising 30-week MA, full position, tighter trader stop",
    "scope": {
@@ -3265,14 +3290,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-WEEKLY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#weeklyBars",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY"
      ],
      "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3286,16 +3311,17 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-MA-GATE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#maGate",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
-      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
      ],
-     "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)",
+     "reason": null
     },
     {
      "source": "B09",
@@ -3309,12 +3335,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3328,12 +3354,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3347,12 +3373,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3366,12 +3392,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3385,12 +3411,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3404,12 +3430,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3423,8 +3449,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3432,7 +3458,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3446,8 +3472,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3455,7 +3481,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3469,8 +3495,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3478,7 +3504,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3492,8 +3518,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3501,7 +3527,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3515,8 +3541,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3524,7 +3550,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3538,8 +3564,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3547,7 +3573,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3561,14 +3587,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3582,14 +3608,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3603,14 +3629,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3624,14 +3650,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3645,12 +3671,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -3664,12 +3690,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -3683,14 +3709,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#marketEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
     },
     {
      "source": "B09",
@@ -3704,12 +3730,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3723,12 +3749,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3742,15 +3768,15 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-ORDER",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3764,14 +3790,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STOP-PLAN",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3785,12 +3811,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-NO-AVG-DOWN",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3804,14 +3830,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-NONTECH",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3825,15 +3851,15 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-CONT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#traderScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT"
      ],
-     "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it is the candidate",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it raises a review record; it rejects no stock (no gate on the WEIN-TR-CONT preference)",
+     "reason": null
     },
     {
      "source": "B09",
@@ -3847,12 +3873,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3866,14 +3892,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3887,12 +3913,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3906,12 +3932,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3925,12 +3951,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -3938,8 +3964,8 @@
    "strategyId": "SF_MINERVINI_SEPA_VCP",
    "candidateId": "C06",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 6 Minervini",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Mark Minervini",
    "method": "SEPA: Trend Template qualification and VCP evidence as a machine screen, then manual relative-priority review",
    "scope": {
@@ -4077,14 +4103,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIMPLE",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#sepaScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE"
      ],
      "derivation": "honoured by design: the machine screen is the Trend Template alone; fundamentals, VCP and RS proxy are evidence, never additional AND gates",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4098,14 +4124,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PROCESS",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#sepaScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4119,14 +4145,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-1",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-1"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4140,14 +4166,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-2",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-2"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4161,14 +4187,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-3",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-3"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; one month = 21 sessions, MA200 today above MA200 21 sessions ago",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4182,14 +4208,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-4",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-4"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4203,14 +4229,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-5",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-5"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4224,14 +4250,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-6",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-6"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily lows",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4245,14 +4271,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-7",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#trendTemplate",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-7"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily highs",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4266,14 +4292,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-TT-8",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#rsProxy",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-RS-PROXY-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target DATA_BLOCKED"
+     "reason": "the IBD rating is proprietary and not in the snapshot; a VU cross-sectional percentile is reported as a proxy and never gates (#709: \"Ein VU-Perzentil mit ähnlicher Skala ist kein identischer IBD-Rang\")"
     },
     {
      "source": "B12",
@@ -4287,12 +4313,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4306,12 +4332,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4325,12 +4351,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4344,12 +4370,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4363,12 +4389,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4382,12 +4408,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4401,12 +4427,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4420,12 +4446,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4439,12 +4465,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4458,12 +4484,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4477,12 +4503,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4496,12 +4522,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4515,12 +4541,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-FUNDAMENTALS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4534,14 +4560,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4555,14 +4581,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4576,14 +4602,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4597,14 +4623,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4618,14 +4644,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4639,14 +4665,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-VCP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#vcpEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4660,12 +4686,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PIVOT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4679,12 +4705,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-PIVOT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4698,14 +4724,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4719,14 +4745,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4740,14 +4766,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -4761,14 +4787,14 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B03",
@@ -4782,12 +4808,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4801,12 +4827,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4820,12 +4846,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4839,12 +4865,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4858,12 +4884,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -4877,12 +4903,12 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-SELL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -4890,8 +4916,8 @@
    "strategyId": "SF_MINERVINI_POWER_PLAY",
    "candidateId": "C07",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 6 Minervini",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Mark Minervini",
    "method": "Power Play: >= 100 % in under eight weeks starting on strong volume, then a tight consolidation that corrects no more than 20-25 %",
    "scope": {
@@ -4993,14 +5019,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-NOFUND",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE"
      ],
      "derivation": "honoured by design: the Power Play screen has no fundamental input",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5014,14 +5040,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-DURATION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SHORT-CONSOLIDATION"
      ],
      "derivation": "no minimum consolidation length is enforced; the duration is reported as evidence",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5035,15 +5061,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-RUNUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN"
      ],
-     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: some close / prior low ratio within fewer than 40 sessions >= 2.0 (lowest low to highest high of the run)",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: peak high / lowest low of the leg >= 2.0 with fewer than 40 sessions between them; the most recent such peak that is the highest high of the leg is used",
+     "reason": null
     },
     {
      "source": "B12",
@@ -5057,15 +5083,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-CORRECTION",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CORRECTION-RANGE-FLAG"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point)",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5079,15 +5105,15 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-TIGHT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#powerPlayScreen",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-WIDE-REVIEW"
      ],
      "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; machine: the whole consolidation (run-up high to the lowest low since) spans <= 10 % -> TIGHT; otherwise VCP_CHARACTERISTICS_REVIEW (the OR branch is a reviewer judgment); no extra window is introduced",
-     "reason": "PLANNED (PR 6 Minervini): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5101,12 +5127,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B12",
@@ -5120,14 +5146,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5141,14 +5167,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5162,14 +5188,14 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5183,12 +5209,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B03",
@@ -5202,12 +5228,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B07",
@@ -5221,12 +5247,12 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 6 Minervini): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -5234,8 +5260,8 @@
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Common Breakout, written daily alternative (KK-011); opening-range-high branch DATA_BLOCKED",
    "scope": {
@@ -5352,14 +5378,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5373,14 +5399,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5394,14 +5420,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5415,12 +5441,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5434,12 +5460,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5453,12 +5479,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5472,12 +5498,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5491,12 +5517,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5510,12 +5536,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5529,12 +5555,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5548,14 +5574,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-MOMENTUM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#momentumRanks",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE"
      ],
      "derivation": "cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5569,14 +5595,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-MOMENTUM",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#momentumRanks",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE"
      ],
      "derivation": "cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5590,14 +5616,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5611,14 +5637,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5632,14 +5658,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5653,14 +5679,14 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-SETUP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5674,12 +5700,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5693,12 +5719,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-ORH",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no frozen intraday history in the snapshot (r9b minute cache is live and locked in snapshot mode)"
     },
     {
      "source": "W-KK3",
@@ -5712,8 +5738,8 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutStopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
@@ -5721,7 +5747,7 @@
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5735,12 +5761,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-PARTIAL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5754,12 +5780,12 @@
      "candidate": "C08",
      "executableRule": "KK-SF-BO-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -5767,8 +5793,8 @@
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Episodic Pivot: 10 %+ gap on an unexpected significant catalyst with exceptional early volume; ORH entry, low-of-day stop",
    "scope": {
@@ -5868,14 +5894,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5889,14 +5915,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -5910,14 +5936,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5931,12 +5957,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5950,12 +5976,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5969,12 +5995,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -5988,12 +6014,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6007,12 +6033,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6026,12 +6052,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6045,12 +6071,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6064,14 +6090,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-GAP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epGapEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
      ],
      "derivation": "gap = open / previous close - 1 on split-adjusted bars, reported with the 10 % reference as evidence; not an exclusion (KK-015 is a STRONG_PREFERENCE description)",
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-KKEP",
@@ -6085,14 +6111,14 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-SIDEWAYS",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epGapEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6106,12 +6132,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6125,12 +6151,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6144,12 +6170,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KKEP",
@@ -6163,12 +6189,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-CATALYST",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
     },
     {
      "source": "W-KK3",
@@ -6182,12 +6208,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday volume; daily volume is reported as evidence only"
     },
     {
      "source": "W-KKEP",
@@ -6201,12 +6227,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday volume; daily volume is reported as evidence only"
     },
     {
      "source": "W-KKEP",
@@ -6220,12 +6246,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no frozen intraday history"
     },
     {
      "source": "W-KKEP",
@@ -6239,15 +6265,15 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epStopCheck",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-REJECT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6261,12 +6287,12 @@
      "candidate": "C09",
      "executableRule": "KK-SF-EP-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_AMBIGUOUS"
+     "reason": "the article names 20 / 50-day MAs and later 10 / 20-day MAs (KK-C2): exit choice discretionary, no universal MA; the breakout partial sale is not carried over"
     }
    ]
   },
@@ -6274,8 +6300,8 @@
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 7 Kullamaegi",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
    "method": "Parabolic Short: accelerated up-move; ORL / first red 5-minute candle / failed VWAP retest entry; high of day or VWAP reclaim as risk; cover toward the 10 / 20-day MA",
    "scope": {
@@ -6372,14 +6398,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-ADR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#adr20",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6393,14 +6419,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-CAP",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6414,14 +6440,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-STOPMARKET",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6435,12 +6461,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6454,12 +6480,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PRIORITY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6473,12 +6499,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6492,12 +6518,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6511,12 +6537,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6530,12 +6556,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KKFAQ",
@@ -6549,12 +6575,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6568,14 +6594,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ACCEL",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#parabolicEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-KK3",
@@ -6589,12 +6615,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday bars and VWAP"
     },
     {
      "source": "W-KK3",
@@ -6608,12 +6634,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "needs intraday bars and VWAP"
     },
     {
      "source": "W-KK3",
@@ -6627,12 +6653,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "VWAP needs intraday data; the high of day is only final after the close"
     },
     {
      "source": "W-KKFAQ",
@@ -6646,12 +6672,12 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-BORROW",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target DATA_BLOCKED"
+     "reason": "no historical borrow / locate / fee data (#709 short_interest MISSING)"
     },
     {
      "source": "W-KK3",
@@ -6665,14 +6691,14 @@
      "candidate": "C10",
      "executableRule": "KK-SF-PS-TARGET",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#parabolicEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 7 Kullamaegi): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -6680,8 +6706,8 @@
    "strategyId": "SF_MOKA_POCKET_PIVOT",
    "candidateId": "C11",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
    "method": "Pocket Pivot volume signature (machine) with manual chart / fundamental context and exits",
    "scope": {
@@ -6795,8 +6821,8 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-VOLUME",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
@@ -6804,7 +6830,7 @@
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-WINDOW-10"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6818,14 +6844,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-DOWNDAY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-NO-DOWN-DAY"
      ],
      "derivation": "the source compares against down-day volume and does not define \"down day\"; close-to-close is the conventional reading",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6839,14 +6865,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-UPDAY",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT"
      ],
      "derivation": "a pocket pivot is a buy point on an up day; a down day with large volume is not a pocket pivot",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6860,14 +6886,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6881,14 +6907,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6902,14 +6928,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6923,14 +6949,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6944,14 +6970,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6965,14 +6991,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -6986,14 +7012,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7007,14 +7033,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#pocketPivotScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7028,12 +7054,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKAPP",
@@ -7047,12 +7073,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-PP-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7066,12 +7092,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7085,12 +7111,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7104,12 +7130,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7123,12 +7151,14 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7142,12 +7172,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7161,12 +7191,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7180,12 +7210,12 @@
      "candidate": "C11",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": null,
@@ -7200,11 +7230,11 @@
      "executableRule": "MOKA-SF-PP-EXIT-PPX",
      "kind": "EXIT",
      "status": "NOT_IMPLEMENTED",
-     "targetStatus": "NOT_IMPLEMENTED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target NOT_IMPLEMENTED"
+     "reason": "reported via MOKA-SF-EXIT-MA; no separate machine rule"
     }
    ]
   },
@@ -7212,8 +7242,8 @@
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
    "candidateId": "C12",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 5 Pocket Pivot / BGU",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
    "method": "Buyable Gap-Up: gap >= 0.75 x ATR40 with standard volume 1.5x (megacap exception), gap-day low as sell guide",
    "scope": {
@@ -7326,15 +7356,15 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-GAP",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7348,14 +7378,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-GAP-MEASURE",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY"
      ],
      "derivation": "the source does not define the gap measure or the ATR averaging; open minus previous close and a simple 40-session mean without same-day information are used; the full gap (low - previous high) is reported as evidence",
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-MOKAV24",
@@ -7369,14 +7399,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-MOKAV24",
@@ -7390,14 +7420,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-VOLWINDOW",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "#709 does not record the window; the ratio over the 50 sessions before the gap day is reported (convention of the authors' daily charts, unverified in #709) and the reviewer confirms"
     },
     {
      "source": "W-MOKAV24",
@@ -7411,14 +7441,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-MEGA",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#gapUpAt",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7432,12 +7462,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7451,12 +7481,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-CONTEXT",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7470,14 +7500,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SELLGUIDE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#buyableGapUpScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7491,14 +7521,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SELLGUIDE",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#buyableGapUpScreen",
      "tests": [
       "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7512,12 +7542,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-BGU-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7531,12 +7561,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7550,12 +7580,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-MA",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKA12",
@@ -7569,12 +7599,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7588,12 +7620,14 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-VIOLATION",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
-     "code": null,
-     "tests": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#maViolationEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS"
+     ],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target SOURCE_AMBIGUOUS"
+     "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
      "source": "W-MOKASTOP",
@@ -7607,12 +7641,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7626,12 +7660,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",
@@ -7645,12 +7679,12 @@
      "candidate": "C12",
      "executableRule": "MOKA-SF-EXIT-CONTEXT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 5 Pocket Pivot / BGU): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -7658,8 +7692,8 @@
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 8 Holy Grail",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Linda Raschke",
    "method": "Holy Grail disclosed setup component: first pullback to the 20 EMA after ADX(14) > 30 on the same (daily) timeframe",
    "scope": {
@@ -7763,15 +7797,15 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-ADX",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#adx",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-BELOW-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7785,15 +7819,15 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-PULLBACK",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#holyGrailScreen",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST"
      ],
-     "derivation": "daily: the first bar whose low touches or crosses the 20 EMA after ADX(14) > 30 was reached and while ADX stayed > 30 on the prior bar; \"first\" = no earlier touch since ADX crossed above 30; impulse strength is reviewer evidence",
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_DERIVED"
+     "derivation": "daily: gate = a bar whose low touches or crosses the 20 EMA while ADX(14) > 30 and +DI > -DI on the prior bar. Whether it is the FIRST pullback since ADX rose above 30 and whether the impulse was strong are reported as evidence and review flags, not as rejections (review SF-R2-02)",
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7807,14 +7841,14 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-OSC",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#oscillator310",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-OSC-310"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7828,12 +7862,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-OSC-HIGH",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7847,14 +7881,14 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-TIMEFRAME",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#holyGrailScreen",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK"
      ],
      "derivation": "only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED",
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7868,12 +7902,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "order sequence not fully disclosed (#709 C13)"
     },
     {
      "source": "W-RAS04",
@@ -7887,12 +7921,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "stop not fully disclosed (#709 C13)"
     },
     {
      "source": "W-RAS04",
@@ -7906,12 +7940,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": null,
@@ -7925,12 +7959,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "not disclosed for the Holy Grail setup"
     }
    ]
   }

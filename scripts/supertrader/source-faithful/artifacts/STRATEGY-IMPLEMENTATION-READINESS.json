@@ -1,0 +1,293 @@
+{
+ "schema": "supertrader-sf-implementation-readiness-1.0.0",
+ "binding": {
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "accounting": "RESEARCH_V1",
+  "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+ },
+ "reviews": {
+  "reviewers": 4,
+  "findings": 28,
+  "bySeverity": {
+   "CRITICAL": 0,
+   "HIGH": 2,
+   "MEDIUM": 12,
+   "LOW": 14
+  },
+  "openBySeverity": {
+   "CRITICAL": 0,
+   "HIGH": 0,
+   "MEDIUM": 0,
+   "LOW": 0
+  },
+  "openHighOrCritical": 0
+ },
+ "methods": [
+  {
+   "candidateId": "C01",
+   "strategyId": "SF_TURTLE_S1",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
+   },
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "full mechanical equity adaptation (long only, no correlation limits) on the snapshot with research-v1, five scenarios",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: TUR-SF-LIMIT-CORR, TUR-SF-SHORT"
+   ]
+  },
+  {
+   "candidateId": "C02",
+   "strategyId": "SF_TURTLE_S2",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
+   },
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "full mechanical equity adaptation (long only, no correlation limits) on the snapshot with research-v1, five scenarios",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: TUR-SF-LIMIT-CORR, TUR-SF-SHORT"
+   ]
+  },
+  {
+   "candidateId": "C03",
+   "strategyId": "SF_DARVAS_BOX",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "COMPONENT_SIGNAL_STUDY_ONLY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [
+    "DAR-Q9: the snapshot series start at the 2015-01-01 warm-up, not at the listing date; the all-time high is only checked within the available history and flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED"
+   ],
+   "measurementScope": "component signal study only: ATH-gated box breakouts with their mechanical stop exits, equal weight, no selection or sizing",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required"
+   ]
+  },
+  {
+   "candidateId": "C04",
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (stage, volume, stop and group judgments are manual or data-blocked); forward review log only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: WEIN-SF-GROUP, WEIN-SF-MARKET",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C05",
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (stage, stop and group judgments are manual or data-blocked); forward review log only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: WEIN-SF-GROUP, WEIN-SF-MARKET",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C06",
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (manual relative priority by design, IBD RS blocked); screen counts only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: MIN-SF-TT-8",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C07",
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (entry / stop manual, thresholds translation-unverified); screen counts only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C08",
+   "strategyId": "SF_KK_BREAKOUT",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (breakout level manual, exits are preferences); stop-acceptance statistics for reviewer-set levels only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C09",
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (catalyst and intraday data missing)",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: KK-SF-EP-CATALYST, KK-SF-EP-VOLUME, KK-SF-EP-ENTRY",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C10",
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (intraday and borrow data missing)",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "DATA_BLOCKED: KK-SF-PS-ENTRY, KK-SF-PS-STOP, KK-SF-PS-BORROW",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C11",
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (no mechanical exit; fixed horizons would be invented); signal counts only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C12",
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [
+    "MOKA24-MEGA: point-in-time market capitalisation for the megacap exception is not in the snapshot; the reviewer judges it",
+    "intraday projected volume (daily variant only)"
+   ],
+   "measurementScope": "none (no mechanical exit); signal counts only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  },
+  {
+   "candidateId": "C13",
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "NOT_READY",
+   "fullyAutomatable": false,
+   "tradable": false,
+   "dataPartial": [],
+   "measurementScope": "none (stop and order sequence not disclosed); signal counts only",
+   "productiveReleaseBlockers": [
+    "no owner release (research only, Draft PRs)",
+    "measurement not certified (#705 NOT_CERTIFIED, V4-D1 open)",
+    "manual review layer required",
+    "no diagnostic method backtest possible"
+   ]
+  }
+ ],
+ "commonBlockers": [
+  "V4-D1 (#705): undeclared reverse splits in the canonical price core; a Quant PR with causal detection and a new calibration generation is required before any certification",
+  "V4-D2 (#705): EW universe share-class audit open",
+  "no live activation, no order routing, no portfolio change in this work (mandate section 17)",
+  "Draft PRs SF-1 .. SF-9 need the owner's merge decision; #709 / #712 remain drafts"
+ ]
+}

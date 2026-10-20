@@ -55,7 +55,7 @@ Solange ein Methoden-PR nicht gemergt ist, meldet sein Vertrag jede Regel als `N
 ## 5. Foundation-Anbindung (Phase 1)
 
 - `supertrader-validation.yml` reicht `--snapshot` und `--accounting` an jeden `analyze-methods.mjs`-Lauf durch: Eingabe `snapshot` / `accounting` (workflow_dispatch) oder Marken `[supertrader-validation-snapshot:sts1-…]` und `[supertrader-validation-accounting:research-v1]`.
-- Fail closed: ungültige Snapshot-ID → Abbruch; Snapshot mit einem Modus, dessen Runner keinen Snapshot liest (z. B. `analyze`, `subset`, `r9b`) → `SNAPSHOT_NOT_SUPPORTED_FOR_MODE`. So kann ein eingefrorener Lauf nie still Live-Tickerlisten oder Live-Reihen laden.
+- Fail closed: ungültige Snapshot-ID → Abbruch; Snapshot mit einem Modus, dessen Runner keinen Snapshot liest (z. B. `analyze`, `subset`, `r9b`) → `SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE` (auch `research-v1` ohne passenden Runner, Review SF-R4-04). So kann ein eingefrorener Lauf nie still Live-Tickerlisten oder Live-Reihen laden.
 - Eingaben nur über `env:` (ADR-005). `analyze-methods.mjs` selbst ist unverändert und verlangt beim Öffnen einen unabhängigen RESTORE-Beleg.
 - Bindung je Vertrag: Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Accounting `RESEARCH_V1`. Ein Reproduzierbarkeitsbeleg ohne `RESEARCH_V1` oder ohne gültige Snapshot-ID wird abgelehnt.
 

@@ -33,7 +33,8 @@ export function readinessOf(contract) {
   const ess = essential(contract), blocked = ess.filter((r) => r.status === 'DATA_BLOCKED');
   const entries = ess.filter((r) => ENTRY_KINDS.has(r.kind));
   const anyImpl = contract.rules.some(isImpl);
-  const dataReadiness = !anyImpl && !contract.implemented ? 'NOT_ASSESSED' : blocked.length === 0 ? 'READY' : entries.length && entries.every((r) => r.status === 'DATA_BLOCKED') ? 'BLOCKED' : 'PARTIAL';
+  const partial = (contract.dataPartial || []).length > 0;
+  const dataReadiness = !anyImpl && !contract.implemented ? 'NOT_ASSESSED' : blocked.length === 0 && !partial ? 'READY' : entries.length && entries.every((r) => r.status === 'DATA_BLOCKED') ? 'BLOCKED' : 'PARTIAL';
   let executionReadiness = 'NOT_IMPLEMENTED';
   if (contract.implemented && anyImpl) {
     if (contract.outputKind === OUTPUT_KIND.RESEARCH_SIGNAL) executionReadiness = ess.filter((r) => ['ENTRY', 'EXIT', 'STOP'].includes(r.kind) && (!r.scopes || r.scopes.includes('EQUITY_ADAPTATION'))).every((r) => isImpl(r) || r.status === 'SOURCE_AMBIGUOUS') ? 'RESEARCH_EXECUTABLE' : 'PARTIAL';
@@ -42,7 +43,7 @@ export function readinessOf(contract) {
   let backtestReadiness = 'NOT_READY';
   if (executionReadiness === 'RESEARCH_EXECUTABLE') backtestReadiness = 'DIAGNOSTIC_READY';
   else if (contract.implemented && contract.componentBacktest) backtestReadiness = 'COMPONENT_SIGNAL_STUDY_ONLY';
-  return { dataReadiness, executionReadiness, backtestReadiness, dataBlockedEssentialRules: blocked.map((r) => r.id) };
+  return { dataReadiness, executionReadiness, backtestReadiness, dataBlockedEssentialRules: blocked.map((r) => r.id), dataPartial: contract.dataPartial || [] };
 }
 
 export function registryEntry(contract, extract) {

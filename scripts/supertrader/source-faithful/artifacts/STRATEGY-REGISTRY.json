@@ -45,7 +45,7 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "b44fe9b2953721c43937e14c5c4b9653ac6142e664f55ee6748a6e5e9f6ac13b",
+   "contractFingerprint": "0a1cba3dfcc0340ad04aced2933e87a77c0c9f90c5c83824319b8c7277d79032",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -59,8 +59,8 @@
     "rulesInScope": 38,
     "hardRules": 27,
     "hardRulesImplemented": 23,
-    "implementedExact": 9,
-    "implementedDerived": 18,
+    "implementedExact": 7,
+    "implementedDerived": 20,
     "manualReview": 0,
     "dataBlocked": 2,
     "ambiguous": 0,
@@ -75,6 +75,7 @@
     "TUR-SF-LIMIT-CORR",
     "TUR-SF-SHORT"
    ],
+   "dataPartial": [],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -110,7 +111,7 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "03d1ddac6e419e6c187071e78ee67e9e3ce1b388a5a39684f44fec79d7696463",
+   "contractFingerprint": "2f5d59a2492502dea55122dc513a8c42322fa235096a62455219bbf4f3a34cb7",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -124,8 +125,8 @@
     "rulesInScope": 35,
     "hardRules": 24,
     "hardRulesImplemented": 20,
-    "implementedExact": 9,
-    "implementedDerived": 15,
+    "implementedExact": 7,
+    "implementedDerived": 17,
     "manualReview": 0,
     "dataBlocked": 2,
     "ambiguous": 0,
@@ -140,6 +141,7 @@
     "TUR-SF-LIMIT-CORR",
     "TUR-SF-SHORT"
    ],
+   "dataPartial": [],
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
@@ -169,8 +171,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "d98bdb34c56c4a1f43184dfdc09dde5b44601b3d0c812eaf793a6e3bf5eac89e",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "9d1ab99616c75792abcb2c5146a0381da044e6577a0e45078a53f1a8d513fff9",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -179,20 +181,23 @@
    "sourceCoverage": {
     "rulesInScope": 35,
     "hardRules": 10,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "hardRulesImplemented": 10,
+    "implementedExact": 4,
+    "implementedDerived": 8,
+    "manualReview": 12,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 24,
+    "notImplemented": 0,
     "excluded": 11,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
-   "backtestReadiness": "NOT_READY",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "backtestReadiness": "COMPONENT_SIGNAL_STUDY_ONLY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [
+    "DAR-Q9: the snapshot series start at the 2015-01-01 warm-up, not at the listing date; the all-time high is only checked within the available history and flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED"
+   ],
    "manualReviewRequirements": [
     {
      "id": "DAR-MR-SELECTION",
@@ -247,7 +252,8 @@
    "knownLimitations": [
     "the full Darvas method (selection, volume, market, sizing) cannot be measured on history: manual decisions are logged forward only",
     "all-time high is evaluated within the snapshot history; when that history does not reach the listing date the flag is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED",
-    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, the default is declared"
+    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, default AFTER_TOP_DAY (declared)",
+    "component study population: the pre-registered research universe of #705 (raw close >= 5, 20-session dollar volume >= 1M at the prior session), a measurement convention, not a Darvas rule (DAR-Q10: no general minimum)"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",
    "contractValidation": {
@@ -255,7 +261,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 3 Darvas"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_WEINSTEIN_INVESTOR",
@@ -271,8 +277,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "77c98982a53ceecb5a36355ac50fce1a75623744d366efab5ce7fa18b51dc867",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "01269dba4b5b2799cf84a72c98a2db1f3ad7f91030ae3e62de1effa0b8a74ad1",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -281,20 +287,24 @@
    "sourceCoverage": {
     "rulesInScope": 56,
     "hardRules": 14,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 6,
+    "manualReview": 29,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 39,
+    "notImplemented": 0,
     "excluded": 17,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "WEIN-MR-STAGE",
@@ -360,7 +370,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 4 Weinstein"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_WEINSTEIN_TRADER",
@@ -376,8 +386,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "9055fef01ef951f8a657910fde4af51ff4a7c8d2de63930fd9238d4a1255a9f2",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "973674fab88be91ca9ba361adbcecb5844cd5f463b4a7d6dc67b6aa6e43b453c",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -386,20 +396,24 @@
    "sourceCoverage": {
     "rulesInScope": 63,
     "hardRules": 14,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 5,
+    "manualReview": 23,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 32,
+    "notImplemented": 0,
     "excluded": 31,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "WEIN-MR-STAGE",
@@ -447,7 +461,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 4 Weinstein"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MINERVINI_SEPA_VCP",
@@ -473,8 +487,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "ba8f694e043a0b67462628950ee764e793782fea9a95b24c973cc97e71b15626",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "d757ed077b97fa5a97370540b7365468c1f7ccf6562f76830714a5f5672dbe35",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -483,20 +497,23 @@
    "sourceCoverage": {
     "rulesInScope": 118,
     "hardRules": 16,
-    "hardRulesImplemented": 0,
+    "hardRulesImplemented": 8,
     "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "implementedDerived": 9,
+    "manualReview": 31,
+    "dataBlocked": 1,
     "ambiguous": 0,
-    "notImplemented": 41,
+    "notImplemented": 0,
     "excluded": 77,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "MIN-SF-TT-8"
+   ],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MIN-MR-PRIORITY",
@@ -557,7 +574,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 6 Minervini"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MINERVINI_POWER_PLAY",
@@ -583,8 +600,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "b319bb6221b51797ab1cedaf5495d0384aa8fd7229d48e3f3b0adab89a3730f1",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "e5b4c0f851d983a379666a0f7bf7cc1c0a7271ab7105d3cb05c45a840b38f466",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -593,20 +610,21 @@
    "sourceCoverage": {
     "rulesInScope": 20,
     "hardRules": 6,
-    "hardRulesImplemented": 0,
+    "hardRulesImplemented": 3,
     "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "implementedDerived": 5,
+    "manualReview": 4,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 9,
+    "notImplemented": 0,
     "excluded": 11,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MIN-MR-PP-VOLUME",
@@ -635,7 +653,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 6 Minervini"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_BREAKOUT",
@@ -661,8 +679,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "7ab2264d725f1691fed24f2acb3874e22eb6c67aef99b51dfe44d1609c20507d",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "19f9ed96e5009cd4ff600c4581157b3e1bb035cac79bedf0cff5b8f0be60428e",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -671,20 +689,21 @@
    "sourceCoverage": {
     "rulesInScope": 36,
     "hardRules": 4,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 2,
+    "manualReview": 14,
+    "dataBlocked": 1,
     "ambiguous": 0,
-    "notImplemented": 21,
+    "notImplemented": 0,
     "excluded": 15,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-SETUP",
@@ -725,7 +744,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_EPISODIC_PIVOT",
@@ -751,8 +770,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "0a9f62888ef8143007ccd40a79d2d816da7e66c23b4c25be5bf562f7eb2b42ce",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "1425d11c18aedcf216fde9dd1e6ea9b01d67b435ff0c42a608a2c658d17731ae",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -761,20 +780,25 @@
    "sourceCoverage": {
     "rulesInScope": 38,
     "hardRules": 4,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 20,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 1,
+    "manualReview": 8,
+    "dataBlocked": 6,
+    "ambiguous": 1,
+    "notImplemented": 0,
     "excluded": 18,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "KK-SF-EP-CATALYST",
+    "KK-SF-EP-VOLUME",
+    "KK-SF-EP-ENTRY"
+   ],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-CATALYST",
@@ -798,7 +822,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_PARABOLIC_SHORT",
@@ -824,8 +848,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "be83fb4cf356957aefe54626a342ebd5e1df48db329f51d426a8c50e15676eb1",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "c21128f86949e5df1ed3e23e3ed9cb3be8f9bdf33f1deea48acf50afb915239a",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -834,20 +858,25 @@
    "sourceCoverage": {
     "rulesInScope": 34,
     "hardRules": 3,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 3,
+    "implementedExact": 3,
     "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "manualReview": 9,
+    "dataBlocked": 4,
     "ambiguous": 0,
-    "notImplemented": 16,
+    "notImplemented": 0,
     "excluded": 18,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "KK-SF-PS-ENTRY",
+    "KK-SF-PS-STOP",
+    "KK-SF-PS-BORROW"
+   ],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "KK-MR-PARABOLIC",
@@ -869,7 +898,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MOKA_POCKET_PIVOT",
@@ -900,8 +929,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "09da9d9f011edd8102ea2b0644c4f3b8e6817965ea9584e033e83c0d6917344c",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "010cc73270415f67c0f0fc20430caa100056f674c8763a0654b56b5fc8b79a09",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -910,20 +939,21 @@
    "sourceCoverage": {
     "rulesInScope": 22,
     "hardRules": 1,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 1,
+    "implementedExact": 1,
     "implementedDerived": 0,
-    "manualReview": 0,
+    "manualReview": 13,
     "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 16,
+    "ambiguous": 2,
+    "notImplemented": 0,
     "excluded": 6,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "MOKA-MR-BASE",
@@ -964,7 +994,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 5 Pocket Pivot / BGU"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
@@ -995,8 +1025,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "7e6331f3a2fe7dff952be094674d301574a03b471601916a14dec9a3524446fd",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "ff16c3ace3b6a5223a11edf943fa1aad7ea2637f04b3ebd4adc72dbe128ec6a1",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -1005,20 +1035,24 @@
    "sourceCoverage": {
     "rulesInScope": 15,
     "hardRules": 2,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
     "implementedDerived": 0,
-    "manualReview": 0,
+    "manualReview": 9,
     "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 12,
+    "ambiguous": 1,
+    "notImplemented": 0,
     "excluded": 3,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [
+    "MOKA24-MEGA: point-in-time market capitalisation for the megacap exception is not in the snapshot; the reviewer judges it",
+    "intraday projected volume (daily variant only)"
+   ],
    "manualReviewRequirements": [
     {
      "id": "MOKA-MR-LEAD",
@@ -1056,7 +1090,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 5 Pocket Pivot / BGU"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
@@ -1072,8 +1106,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "8bd791e41e3737124a4bf04db021573bc0187f26ee8e9f1039f95aa66a13e540",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "d041d8a5084341f739f26ef55dd255fbdbc7dda6dcc5d8f53357d5280d8473de",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -1082,20 +1116,21 @@
    "sourceCoverage": {
     "rulesInScope": 6,
     "hardRules": 2,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
+    "implementedDerived": 2,
+    "manualReview": 2,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 6,
+    "notImplemented": 0,
     "excluded": 0,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
+   "dataPartial": [],
    "manualReviewRequirements": [
     {
      "id": "RAS-MR-IMPULSE",
@@ -1124,7 +1159,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 8 Holy Grail"
+   "plannedIn": null
   }
  ],
  "nonCandidates": [

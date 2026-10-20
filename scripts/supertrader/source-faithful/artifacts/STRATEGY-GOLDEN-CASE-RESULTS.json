@@ -1,7 +1,27 @@
 {
- "schema": "supertrader-sf-golden-cases-1.0.0",
+ "schema": "supertrader-sf-golden-case-results-1.0.0",
  "rule": "golden cases are behaviour tests, never a performance sample; #709 cases are not broker-verified and carry printed, unadjusted prices",
- "goldenTests": [
+ "files": [
+  "scripts/supertrader/tests/sf-foundation.test.mjs",
+  "scripts/supertrader/tests/sf-turtle.test.mjs",
+  "scripts/supertrader/tests/sf-runner.test.mjs",
+  "scripts/supertrader/tests/sf-darvas.test.mjs",
+  "scripts/supertrader/tests/sf-weinstein.test.mjs",
+  "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+  "scripts/supertrader/tests/sf-minervini.test.mjs",
+  "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+  "scripts/supertrader/tests/sf-holy-grail.test.mjs"
+ ],
+ "summary": {
+  "goldenCases": 106,
+  "pass": 106,
+  "fail": 0,
+  "notFound": 0,
+  "testsRun": 130,
+  "testsFailed": 0,
+  "testsSkipped": 1
+ },
+ "cases": [
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
    "strategyIds": [
@@ -13,7 +33,7 @@
    "psr709": [
     "DAR-Q9"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-UNVERIFIED",
@@ -26,7 +46,7 @@
    "psr709": [
     "DAR-Q9"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
@@ -39,7 +59,7 @@
    "psr709": [
     "DAR-Q2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS",
@@ -52,7 +72,7 @@
    "psr709": [
     "DAR-Q2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-TOUCH-RESET",
@@ -65,7 +85,7 @@
    "psr709": [
     "DAR-Q2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOX-FAIL",
@@ -78,7 +98,7 @@
    "psr709": [
     "DAR-Q11"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
@@ -93,7 +113,7 @@
     "DAR-Q3",
     "DAR-Q4"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP",
@@ -107,7 +127,7 @@
     "DAR-Q5",
     "DAR-Q7"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-FRACTION",
@@ -120,7 +140,7 @@
    "psr709": [
     "DAR-Q15"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL",
@@ -133,7 +153,7 @@
    "psr709": [
     "DAR-Q4"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER",
@@ -147,7 +167,7 @@
     "DAR-Q6",
     "DAR-Q8"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
@@ -166,7 +186,7 @@
     "DAR-Q6",
     "DAR-Q8"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
@@ -179,7 +199,7 @@
    "psr709": [
     "DAR-Q1"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM",
@@ -193,7 +213,7 @@
     "DAR-Q1",
     "DAR-Q2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-HIGHER-RESET",
@@ -206,7 +226,7 @@
    "psr709": [
     "DAR-Q1"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-TOUCH-RESET",
@@ -219,7 +239,7 @@
    "psr709": [
     "DAR-Q1"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-BELOW-30",
@@ -232,7 +252,7 @@
    "psr709": [
     "RAS04-002"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
@@ -245,7 +265,7 @@
    "psr709": [
     "RAS04-002"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
@@ -260,7 +280,7 @@
     "RAS04-001",
     "RAS04-006"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-OSC-310",
@@ -273,7 +293,7 @@
    "psr709": [
     "RAS04-004"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST",
@@ -286,7 +306,7 @@
    "psr709": [
     "RAS04-001"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20",
@@ -301,7 +321,7 @@
    "psr709": [
     "KK-031"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30",
@@ -316,7 +336,7 @@
    "psr709": [
     "KK-001"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE",
@@ -331,7 +351,7 @@
     "KK-015",
     "KK-035"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
@@ -344,7 +364,7 @@
    "psr709": [
     "KK-034"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-REJECT",
@@ -357,7 +377,7 @@
    "psr709": [
     "KK-034"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE",
@@ -371,7 +391,7 @@
     "KK-005",
     "KK-054"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE",
@@ -386,7 +406,7 @@
     "KK-018",
     "KK-023"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE",
@@ -402,7 +422,7 @@
     "KK-008",
     "KK-009"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
@@ -415,7 +435,7 @@
    "psr709": [
     "KK-012"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP",
@@ -430,7 +450,7 @@
    "psr709": [
     "KK-027"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP",
@@ -443,7 +463,7 @@
    "psr709": [
     "KK-012"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
@@ -456,7 +476,7 @@
    "psr709": [
     "KK-012"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
@@ -473,7 +493,7 @@
     "MIN-PP-02",
     "MIN-PP-05"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CORRECTION-RANGE-FLAG",
@@ -486,7 +506,7 @@
    "psr709": [
     "MIN-PP-04"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
@@ -499,7 +519,7 @@
    "psr709": [
     "MIN-PP-04"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SHORT-CONSOLIDATION",
@@ -512,7 +532,7 @@
    "psr709": [
     "MIN-PP-03"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN",
@@ -525,7 +545,7 @@
    "psr709": [
     "MIN-PP-02"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-WIDE-REVIEW",
@@ -538,7 +558,7 @@
    "psr709": [
     "MIN-PP-05"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-RS-PROXY-NOT-GATE",
@@ -551,7 +571,7 @@
    "psr709": [
     "MIN-TT-08"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE",
@@ -564,7 +584,7 @@
    "psr709": [
     "MIN-PROCESS-01"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE",
@@ -577,7 +597,7 @@
    "psr709": [
     "MIN-PROCESS-15"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG",
@@ -595,7 +615,7 @@
     "MIN-MM-STOP-02",
     "MIN-RISK-05"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-1",
@@ -608,7 +628,7 @@
    "psr709": [
     "MIN-TT-01"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-2",
@@ -621,7 +641,7 @@
    "psr709": [
     "MIN-TT-02"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-3",
@@ -634,7 +654,7 @@
    "psr709": [
     "MIN-TT-03"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-4",
@@ -647,7 +667,7 @@
    "psr709": [
     "MIN-TT-04"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-5",
@@ -660,7 +680,7 @@
    "psr709": [
     "MIN-TT-05"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-6",
@@ -673,7 +693,7 @@
    "psr709": [
     "MIN-TT-06"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-7",
@@ -686,7 +706,7 @@
    "psr709": [
     "MIN-TT-07"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE",
@@ -704,7 +724,7 @@
     "MIN-VCP-05",
     "MIN-BASE-01"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY",
@@ -717,7 +737,7 @@
    "psr709": [
     "MOKA12-004"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
@@ -730,7 +750,7 @@
    "psr709": [
     "MOKA12-004"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW",
@@ -743,7 +763,7 @@
    "psr709": [
     "MOKA12-004"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION",
@@ -756,7 +776,7 @@
    "psr709": [
     "MOKA24-MEGA"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE",
@@ -770,7 +790,7 @@
     "MOKA12-007",
     "MOKASTOP-006"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT",
@@ -784,7 +804,22 @@
    "psr709": [
     "MOKA24-VOL"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-VIOLATION"
+   ],
+   "psr709": [
+    "MOKA12-009",
+    "MOKASTOP-002"
+   ],
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT",
@@ -797,7 +832,7 @@
    "psr709": [
     "MOKAPP-003"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EQUAL-NOT-GREATER",
@@ -810,7 +845,7 @@
    "psr709": [
     "MOKAPP-003"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE",
@@ -830,7 +865,7 @@
     "MOKAPP-009",
     "MOKAPP-010"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-NO-DOWN-DAY",
@@ -843,7 +878,7 @@
    "psr709": [
     "MOKAPP-003"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
@@ -856,7 +891,7 @@
    "psr709": [
     "MOKAPP-003"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-WINDOW-10",
@@ -869,7 +904,18 @@
    "psr709": [
     "MOKAPP-003"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-runner.test.mjs: SF-RUN-COMPONENT",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-RESEARCH-POPULATION"
+   ],
+   "psr709": [],
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
@@ -883,7 +929,7 @@
    "psr709": [
     "TUR-ADD"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
@@ -899,7 +945,7 @@
     "TUR-STOPADD",
     "TUR-STOPGAP"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
@@ -915,7 +961,7 @@
     "TUR-STOP",
     "TUR-STOPADD"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
@@ -930,7 +976,7 @@
     "TUR-INTRADAY",
     "TUR-GAP"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
@@ -947,7 +993,7 @@
     "TUR-GAP",
     "TUR-S2NOSKIP"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1",
@@ -960,7 +1006,7 @@
    "psr709": [
     "TUR-S1EX"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2",
@@ -973,7 +1019,7 @@
    "psr709": [
     "TUR-S2EX"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE",
@@ -987,7 +1033,7 @@
    "psr709": [
     "TUR-FAILSAFE"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL",
@@ -1004,7 +1050,7 @@
     "TUR-GAP",
     "TUR-S2ENT"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
@@ -1022,7 +1068,7 @@
     "TUR-ADD",
     "TUR-ADDFAST"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
@@ -1037,7 +1083,7 @@
     "TUR-UNIT",
     "TUR-DOLLAR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12",
@@ -1051,7 +1097,7 @@
    "psr709": [
     "TUR-LIMIT12"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4",
@@ -1065,7 +1111,7 @@
    "psr709": [
     "TUR-LIMIT4"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N",
@@ -1083,7 +1129,7 @@
     "TUR-N",
     "TUR-WEEKLY"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH",
@@ -1095,7 +1141,21 @@
     "TUR-SF-CASH"
    ],
    "psr709": [],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-ADD"
+   ],
+   "psr709": [
+    "TUR-ADD"
+   ],
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME",
@@ -1107,10 +1167,9 @@
     "TUR-SF-CONSISTENT"
    ],
    "psr709": [
-    "TUR-SIGNAL-CONSISTENCY",
-    "TUR-CONSISTENT"
+    "TUR-SIGNAL-CONSISTENCY"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL",
@@ -1125,7 +1184,7 @@
     "TUR-NOTIONAL",
     "TUR-DRAWDOWN"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK",
@@ -1140,7 +1199,7 @@
     "TUR-RANK",
     "TUR-RANKVAR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS",
@@ -1155,7 +1214,7 @@
     "TUR-S1LOSER",
     "TUR-S1DIR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
@@ -1170,7 +1229,7 @@
     "TUR-S1LOSER",
     "TUR-S1DIR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
@@ -1185,7 +1244,7 @@
     "TUR-S1LOSER",
     "TUR-S1DIR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
@@ -1200,7 +1259,7 @@
     "TUR-S1LOSER",
     "TUR-S1DIR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
@@ -1215,7 +1274,7 @@
     "TUR-UNIT",
     "TUR-DOLLAR"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
@@ -1229,7 +1288,7 @@
    "psr709": [
     "TUR-STOPADD"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE",
@@ -1241,9 +1300,24 @@
     "TUR-SF-MARKETS"
    ],
    "psr709": [
-    "TUR-MARKETS"
+    "TUR-MARKETS",
+    "TUR-CONSISTENT"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-MA-GATE"
+   ],
+   "psr709": [
+    "WEIN-MA"
+   ],
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
@@ -1264,7 +1338,7 @@
     "WEIN-BASE",
     "WEIN-STOP2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE",
@@ -1278,7 +1352,7 @@
     "WEIN-BUY1",
     "WEIN-BASE"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
@@ -1292,7 +1366,7 @@
    "psr709": [
     "WEIN-MA"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
@@ -1306,7 +1380,7 @@
    "psr709": [
     "WEIN-MA"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
@@ -1320,7 +1394,7 @@
    "psr709": [
     "WEIN-MA"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE",
@@ -1334,7 +1408,7 @@
    "psr709": [
     "WEIN-MARKET"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT",
@@ -1348,7 +1422,7 @@
    "psr709": [
     "WEIN-SELL4"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING",
@@ -1365,7 +1439,7 @@
     "WEIN-RSZERO",
     "WEIN-RSNO"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
@@ -1383,7 +1457,7 @@
     "WEIN-TR-CONT",
     "WEIN-TR-STOP"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT",
@@ -1396,7 +1470,7 @@
    "psr709": [
     "WEIN-TR-CONT"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -1415,7 +1489,7 @@
     "WEIN-VOL4",
     "WEIN-BASEVOL"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-C",
@@ -1434,7 +1508,7 @@
     "WEIN-VOL4",
     "WEIN-BASEVOL"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE",
@@ -1453,7 +1527,7 @@
     "WEIN-VOL4",
     "WEIN-BASEVOL"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   },
   {
    "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY",
@@ -1467,1721 +1541,660 @@
    "psr709": [
     "WEIN-S2"
    ],
-   "result": "SEE_TEST_RUN"
+   "result": "PASS"
   }
  ],
- "psr709CaseCatalogue": {
-  "SF_TURTLE_S1": [
-   {
-    "caseId": "TUR-HO2002",
-    "action": "CALCULATION_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF8–9; printed14–15"
-   },
-   {
-    "caseId": "TUR-GOLD",
-    "action": "NUMERIC_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF14; printed20"
-   },
-   {
-    "caseId": "TUR-CRUDE",
-    "action": "NUMERIC_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF16–18; printed22–24"
-   }
-  ],
-  "SF_TURTLE_S2": [
-   {
-    "caseId": "TUR-HO2002",
-    "action": "CALCULATION_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF8–9; printed14–15"
-   },
-   {
-    "caseId": "TUR-GOLD",
-    "action": "NUMERIC_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF14; printed20"
-   },
-   {
-    "caseId": "TUR-CRUDE",
-    "action": "NUMERIC_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-TUR PDF16–18; printed22–24"
-   }
-  ],
-  "SF_DARVAS_BOX": [
-   {
-    "caseId": "DAR-PIT",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 62; printed 50"
-   },
-   {
-    "caseId": "DAR-LOUIS",
-    "action": "BUY_CHASE",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 66; printed 54"
-   },
-   {
-    "caseId": "DAR-ALS",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 67; printed 55"
-   },
-   {
-    "caseId": "DAR-DRESSER",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 67; printed 55"
-   },
-   {
-    "caseId": "DAR-COOPER",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 67; printed 55"
-   },
-   {
-    "caseId": "DAR-NAA",
-    "action": "BUY_HOLD_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 67; printed 55"
-   },
-   {
-    "caseId": "DAR-LOR1",
-    "action": "BUY_STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 99; printed 87"
-   },
-   {
-    "caseId": "DAR-LOR2",
-    "action": "REENTRY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 100; printed 88"
-   },
-   {
-    "caseId": "DAR-LORADD1",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 101; printed 89"
-   },
-   {
-    "caseId": "DAR-LORADD2",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 101; printed 89"
-   },
-   {
-    "caseId": "DAR-LORADD3",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 101; printed 89"
-   },
-   {
-    "caseId": "DAR-LOREXIT",
-    "action": "SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 107; printed 95"
-   },
-   {
-    "caseId": "DAR-DINERS1",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 104; printed 92"
-   },
-   {
-    "caseId": "DAR-DINERS2",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 104; printed 92"
-   },
-   {
-    "caseId": "DAR-DINERSEX",
-    "action": "SELL_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 105; printed 93"
-   },
-   {
-    "caseId": "DAR-BRUCE",
-    "action": "BUY_AND_ADDS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 107; printed 95"
-   },
-   {
-    "caseId": "DAR-BRUCEEX",
-    "action": "SELL_BLOCKS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 110; printed 98"
-   },
-   {
-    "caseId": "DAR-MOLY",
-    "action": "BUY_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 111; printed 99"
-   },
-   {
-    "caseId": "DAR-HAVEG1",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 112; printed 100"
-   },
-   {
-    "caseId": "DAR-LORLOSS1",
-    "action": "REENTRY_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 112; printed 100"
-   },
-   {
-    "caseId": "DAR-LORLOSS2",
-    "action": "REENTRY_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 112; printed 100"
-   },
-   {
-    "caseId": "DAR-LORLOSS3",
-    "action": "REENTRY_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 112; printed 100"
-   },
-   {
-    "caseId": "DAR-UNIV1",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 113; printed 101"
-   },
-   {
-    "caseId": "DAR-UNIV2",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 114; printed 102"
-   },
-   {
-    "caseId": "DAR-UNIV3",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 114; printed 102"
-   },
-   {
-    "caseId": "DAR-UNIVEX",
-    "action": "SELL_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 135; printed 123"
-   },
-   {
-    "caseId": "DAR-THIO1",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 116; printed 104"
-   },
-   {
-    "caseId": "DAR-THIO2",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 116; printed 104"
-   },
-   {
-    "caseId": "DAR-THIOEX",
-    "action": "SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 137; printed 125"
-   },
-   {
-    "caseId": "DAR-TX1",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 135; printed 123"
-   },
-   {
-    "caseId": "DAR-TX2",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 135; printed 123"
-   },
-   {
-    "caseId": "DAR-TX3",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 136; printed 124"
-   },
-   {
-    "caseId": "DAR-ZP",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-BP",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-FP",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-LP",
-    "action": "PILOT_BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-BEX",
-    "action": "SELL_STOP",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-LEX",
-    "action": "SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-ZADD",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 138; printed 126"
-   },
-   {
-    "caseId": "DAR-FADD",
-    "action": "ADD",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 139; printed 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-1",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 125"
-   },
-   {
-    "caseId": "DAR-CRISIS-2",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 125"
-   },
-   {
-    "caseId": "DAR-CRISIS-3",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-4",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-5",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-6",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-7",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-8",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 126"
-   },
-   {
-    "caseId": "DAR-CRISIS-9",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-10",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-11",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-12",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-13",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-CRISIS-14",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF 127"
-   },
-   {
-    "caseId": "DAR-ARLAN",
-    "action": "CORRECT_READER_INTERPRETATION",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B06 PDF 194–196"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-1",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-2",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-3",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-4",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-5",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-6",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-7",
-    "action": "BUY_SELL_WIN",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF133; printed121"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-8",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF134; printed122"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-9",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF134; printed122"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-10",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF134; printed122"
-   },
-   {
-    "caseId": "DAR-POSTCRISIS-11",
-    "action": "BUY_SELL_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF134; printed122"
-   },
-   {
-    "caseId": "DAR-EARLY-01",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF20;printed8"
-   },
-   {
-    "caseId": "DAR-EARLY-02",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF22;printed10"
-   },
-   {
-    "caseId": "DAR-EARLY-03",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF22;printed10"
-   },
-   {
-    "caseId": "DAR-EARLY-04",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF24;printed12"
-   },
-   {
-    "caseId": "DAR-EARLY-05",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF24;printed12"
-   },
-   {
-    "caseId": "DAR-EARLY-06",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF24;printed12"
-   },
-   {
-    "caseId": "DAR-EARLY-07",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF25;printed13"
-   },
-   {
-    "caseId": "DAR-EARLY-08",
-    "action": "OWNED",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF23;printed11"
-   },
-   {
-    "caseId": "DAR-EARLY-09",
-    "action": "OWNED",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF23;printed11"
-   },
-   {
-    "caseId": "DAR-EARLY-10",
-    "action": "OWNED",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF23;printed11"
-   },
-   {
-    "caseId": "DAR-EARLY-11",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF35;printed23"
-   },
-   {
-    "caseId": "DAR-EARLY-12",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF35;printed23"
-   },
-   {
-    "caseId": "DAR-EARLY-13",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF35;printed23"
-   },
-   {
-    "caseId": "DAR-EARLY-14",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-15",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-16",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-17",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-18",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-19",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-20",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF36;printed24"
-   },
-   {
-    "caseId": "DAR-EARLY-21",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF37;printed25"
-   },
-   {
-    "caseId": "DAR-EARLY-22",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF37;printed25"
-   },
-   {
-    "caseId": "DAR-EARLY-23",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF37;printed25"
-   },
-   {
-    "caseId": "DAR-EARLY-24",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF37;printed25"
-   },
-   {
-    "caseId": "DAR-EARLY-25",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF40;printed28"
-   },
-   {
-    "caseId": "DAR-EARLY-26",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF41;printed29"
-   },
-   {
-    "caseId": "DAR-EARLY-27",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF41;printed29"
-   },
-   {
-    "caseId": "DAR-EARLY-28",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF41;printed29"
-   },
-   {
-    "caseId": "DAR-EARLY-29",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF41;printed29"
-   },
-   {
-    "caseId": "DAR-EARLY-30",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF42;printed30"
-   },
-   {
-    "caseId": "DAR-EARLY-31",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF42;printed30"
-   },
-   {
-    "caseId": "DAR-EARLY-32",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF42;printed30"
-   },
-   {
-    "caseId": "DAR-EARLY-33",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF42;printed30"
-   },
-   {
-    "caseId": "DAR-EARLY-34",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF44;printed32"
-   },
-   {
-    "caseId": "DAR-EARLY-35",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF45;printed33"
-   },
-   {
-    "caseId": "DAR-EARLY-36",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF53;printed41"
-   },
-   {
-    "caseId": "DAR-EARLY-37",
-    "action": "BUY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B06 PDF55;printed43"
-   }
-  ],
-  "SF_WEINSTEIN_INVESTOR": [
-   {
-    "caseId": "WEIN-ED-BS",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 47; printed 33"
-   },
-   {
-    "caseId": "WEIN-ED-IP",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 49; printed 35"
-   },
-   {
-    "caseId": "WEIN-ED-ICH",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 51; printed 37"
-   },
-   {
-    "caseId": "WEIN-ED-MXF",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 74; printed 60"
-   },
-   {
-    "caseId": "WEIN-ED-SFY",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 76; printed 62"
-   },
-   {
-    "caseId": "WEIN-ED-AEG",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 113; printed 99"
-   },
-   {
-    "caseId": "WEIN-ED-PN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 114; printed 100"
-   },
-   {
-    "caseId": "WEIN-ED-GT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 119; printed 105"
-   },
-   {
-    "caseId": "WEIN-ED-TXI",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 120; printed 106"
-   },
-   {
-    "caseId": "WEIN-ED-MRK",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 203; printed 189"
-   },
-   {
-    "caseId": "WEIN-ED-WMT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 204; printed 190"
-   },
-   {
-    "caseId": "WEIN-ED-X",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 196; printed 182"
-   },
-   {
-    "caseId": "WEIN-ED-RLM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 210; printed 196"
-   },
-   {
-    "caseId": "WEIN-ED-BOM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 238; printed 224"
-   },
-   {
-    "caseId": "WEIN-ED-HSN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 239; printed 225"
-   },
-   {
-    "caseId": "WEIN-ED-JOL",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 251; printed 237"
-   },
-   {
-    "caseId": "WEIN-ED-BLAIR",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 266; printed 252"
-   },
-   {
-    "caseId": "WEIN-ED-DOW",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 267; printed 253"
-   },
-   {
-    "caseId": "WEIN-ED-NSM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 245; printed 231"
-   },
-   {
-    "caseId": "WEIN-PTR-DRV",
-    "action": "BUY_RECOMMENDATION_THEN_STOP",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 150; printed 136"
-   },
-   {
-    "caseId": "WEIN-PTR-TDM",
-    "action": "BUY_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 151; printed 137"
-   },
-   {
-    "caseId": "WEIN-PTR-TXN",
-    "action": "BUY_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 151; printed 137"
-   },
-   {
-    "caseId": "WEIN-PTR-GeneralMedical",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 244; printed 230"
-   },
-   {
-    "caseId": "WEIN-PTR-COLE",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 248; printed 234"
-   },
-   {
-    "caseId": "WEIN-PTR-Teleprompter",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 258; printed 244"
-   }
-  ],
-  "SF_WEINSTEIN_TRADER": [
-   {
-    "caseId": "WEIN-ED-BS",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 47; printed 33"
-   },
-   {
-    "caseId": "WEIN-ED-IP",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 49; printed 35"
-   },
-   {
-    "caseId": "WEIN-ED-ICH",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 51; printed 37"
-   },
-   {
-    "caseId": "WEIN-ED-MXF",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 74; printed 60"
-   },
-   {
-    "caseId": "WEIN-ED-SFY",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 76; printed 62"
-   },
-   {
-    "caseId": "WEIN-ED-AEG",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 113; printed 99"
-   },
-   {
-    "caseId": "WEIN-ED-PN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 114; printed 100"
-   },
-   {
-    "caseId": "WEIN-ED-GT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 119; printed 105"
-   },
-   {
-    "caseId": "WEIN-ED-TXI",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 120; printed 106"
-   },
-   {
-    "caseId": "WEIN-ED-MRK",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 203; printed 189"
-   },
-   {
-    "caseId": "WEIN-ED-WMT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 204; printed 190"
-   },
-   {
-    "caseId": "WEIN-ED-X",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 196; printed 182"
-   },
-   {
-    "caseId": "WEIN-ED-RLM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 210; printed 196"
-   },
-   {
-    "caseId": "WEIN-ED-BOM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 238; printed 224"
-   },
-   {
-    "caseId": "WEIN-ED-HSN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 239; printed 225"
-   },
-   {
-    "caseId": "WEIN-ED-JOL",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 251; printed 237"
-   },
-   {
-    "caseId": "WEIN-ED-BLAIR",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 266; printed 252"
-   },
-   {
-    "caseId": "WEIN-ED-DOW",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 267; printed 253"
-   },
-   {
-    "caseId": "WEIN-ED-NSM",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B09 PDF 245; printed 231"
-   },
-   {
-    "caseId": "WEIN-PTR-DRV",
-    "action": "BUY_RECOMMENDATION_THEN_STOP",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 150; printed 136"
-   },
-   {
-    "caseId": "WEIN-PTR-TDM",
-    "action": "BUY_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 151; printed 137"
-   },
-   {
-    "caseId": "WEIN-PTR-TXN",
-    "action": "BUY_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 151; printed 137"
-   },
-   {
-    "caseId": "WEIN-PTR-GeneralMedical",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 244; printed 230"
-   },
-   {
-    "caseId": "WEIN-PTR-COLE",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 248; printed 234"
-   },
-   {
-    "caseId": "WEIN-PTR-Teleprompter",
-    "action": "SHORT_RECOMMENDATION",
-    "category": "WATCHLIST",
-    "source": "B09 PDF 258; printed 244"
-   }
-  ],
-  "SF_MINERVINI_SEPA_VCP": [
-   {
-    "caseId": "MIN-AAPL04",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 245"
-   },
-   {
-    "caseId": "MIN-FSII95",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 265"
-   },
-   {
-    "caseId": "MIN-VIVO07",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 270"
-   },
-   {
-    "caseId": "MIN-CRUS10",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 305"
-   },
-   {
-    "caseId": "MIN-BBY97",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 343"
-   },
-   {
-    "caseId": "MIN-WIRE",
-    "action": "SELECT_CANDIDATE",
-    "category": "WATCHLIST",
-    "source": "B12 PDF 211–212"
-   },
-   {
-    "caseId": "MIN-MIK",
-    "action": "BUY_AND_EARLY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 78"
-   },
-   {
-    "caseId": "MIN-TWTR",
-    "action": "BUILD_AND_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 78–79"
-   },
-   {
-    "caseId": "MIN-AA",
-    "action": "BUY_AND_STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 72"
-   },
-   {
-    "caseId": "MIN-CAB1",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_PROBABLE",
-    "source": "B07 PDF 67"
-   },
-   {
-    "caseId": "MIN-CAB2",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_PROBABLE",
-    "source": "B07 PDF 67"
-   },
-   {
-    "caseId": "MIN-REJECT-FHC",
-    "action": "CONSIDERED_DID_NOT_BUY",
-    "category": "REJECTED_SETUP",
-    "source": "B07 PDF 30"
-   },
-   {
-    "caseId": "MIN-EDU-URBN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 170"
-   },
-   {
-    "caseId": "MIN-EDU-CSCO",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-HD",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-MSFT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-GMCR",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 179"
-   },
-   {
-    "caseId": "MIN-EDU-APOL",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 202"
-   },
-   {
-    "caseId": "MIN-EDU-RST",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 208"
-   },
-   {
-    "caseId": "MIN-EDU-EDU",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 302"
-   },
-   {
-    "caseId": "MIN-EDU-MELI",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 304"
-   },
-   {
-    "caseId": "MIN-EDU-ARNA",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 344"
-   },
-   {
-    "caseId": "MIN-EDU-MNST",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 218"
-   },
-   {
-    "caseId": "MIN-EDU-MGA",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 282"
-   },
-   {
-    "caseId": "MIN-EDU-QSII",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 342"
-   },
-   {
-    "caseId": "MIN-EDU-MDVN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B03 PDF 221"
-   }
-  ],
-  "SF_MINERVINI_POWER_PLAY": [
-   {
-    "caseId": "MIN-AAPL04",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 245"
-   },
-   {
-    "caseId": "MIN-FSII95",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 265"
-   },
-   {
-    "caseId": "MIN-VIVO07",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 270"
-   },
-   {
-    "caseId": "MIN-CRUS10",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 305"
-   },
-   {
-    "caseId": "MIN-BBY97",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B12 PDF 343"
-   },
-   {
-    "caseId": "MIN-WIRE",
-    "action": "SELECT_CANDIDATE",
-    "category": "WATCHLIST",
-    "source": "B12 PDF 211–212"
-   },
-   {
-    "caseId": "MIN-MIK",
-    "action": "BUY_AND_EARLY_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 78"
-   },
-   {
-    "caseId": "MIN-TWTR",
-    "action": "BUILD_AND_SELL",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 78–79"
-   },
-   {
-    "caseId": "MIN-AA",
-    "action": "BUY_AND_STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "B07 PDF 72"
-   },
-   {
-    "caseId": "MIN-CAB1",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_PROBABLE",
-    "source": "B07 PDF 67"
-   },
-   {
-    "caseId": "MIN-CAB2",
-    "action": "BUY",
-    "category": "PERSONAL_TRADE_PROBABLE",
-    "source": "B07 PDF 67"
-   },
-   {
-    "caseId": "MIN-REJECT-FHC",
-    "action": "CONSIDERED_DID_NOT_BUY",
-    "category": "REJECTED_SETUP",
-    "source": "B07 PDF 30"
-   },
-   {
-    "caseId": "MIN-EDU-URBN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 170"
-   },
-   {
-    "caseId": "MIN-EDU-CSCO",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-HD",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-MSFT",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 178"
-   },
-   {
-    "caseId": "MIN-EDU-GMCR",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 179"
-   },
-   {
-    "caseId": "MIN-EDU-APOL",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 202"
-   },
-   {
-    "caseId": "MIN-EDU-RST",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 208"
-   },
-   {
-    "caseId": "MIN-EDU-EDU",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 302"
-   },
-   {
-    "caseId": "MIN-EDU-MELI",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 304"
-   },
-   {
-    "caseId": "MIN-EDU-ARNA",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 344"
-   },
-   {
-    "caseId": "MIN-EDU-MNST",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 218"
-   },
-   {
-    "caseId": "MIN-EDU-MGA",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 282"
-   },
-   {
-    "caseId": "MIN-EDU-QSII",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B12 PDF 342"
-   },
-   {
-    "caseId": "MIN-EDU-MDVN",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "B03 PDF 221"
-   }
-  ],
-  "SF_KK_BREAKOUT": [
-   {
-    "caseId": "KK-B02",
-    "action": "SHORT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
-   },
-   {
-    "caseId": "KK-B03",
-    "action": "LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKTWEET own tweet2020-12-31"
-   },
-   {
-    "caseId": "KK-B04",
-    "action": "ACCIDENTAL_ORDER_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ worsttrade"
-   },
-   {
-    "caseId": "KK-B05",
-    "action": "STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKEP recentexamples"
-   },
-   {
-    "caseId": "KK-B10",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B11",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B12",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B13",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B14",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B15",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B16",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B17",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B18",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B19",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   }
-  ],
-  "SF_KK_EPISODIC_PIVOT": [
-   {
-    "caseId": "KK-B02",
-    "action": "SHORT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
-   },
-   {
-    "caseId": "KK-B03",
-    "action": "LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKTWEET own tweet2020-12-31"
-   },
-   {
-    "caseId": "KK-B04",
-    "action": "ACCIDENTAL_ORDER_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ worsttrade"
-   },
-   {
-    "caseId": "KK-B05",
-    "action": "STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKEP recentexamples"
-   },
-   {
-    "caseId": "KK-B10",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B11",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B12",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B13",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B14",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B15",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B16",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B17",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B18",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B19",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   }
-  ],
-  "SF_KK_PARABOLIC_SHORT": [
-   {
-    "caseId": "KK-B01",
-    "action": "MULTIPLE_SHORT_ENTRIES_EXITS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKLOSS body"
-   },
-   {
-    "caseId": "KK-B02",
-    "action": "SHORT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
-   },
-   {
-    "caseId": "KK-B03",
-    "action": "LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKTWEET own tweet2020-12-31"
-   },
-   {
-    "caseId": "KK-B04",
-    "action": "ACCIDENTAL_ORDER_LOSS",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKFAQ worsttrade"
-   },
-   {
-    "caseId": "KK-B05",
-    "action": "STOP_OUT",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-KKEP recentexamples"
-   },
-   {
-    "caseId": "KK-B10",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B11",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B12",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B13",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B14",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B15",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B16",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B17",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B18",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   },
-   {
-    "caseId": "KK-B19",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-KK3 annotated setup chart"
-   }
-  ],
-  "SF_MOKA_POCKET_PIVOT": [
-   {
-    "caseId": "MOKA-EX-1",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF9"
-   },
-   {
-    "caseId": "MOKA-EX-2",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF10"
-   },
-   {
-    "caseId": "MOKA-EX-3",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF15"
-   },
-   {
-    "caseId": "MOKA-EX-4",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF27"
-   },
-   {
-    "caseId": "MOKA-EX-5",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF28"
-   },
-   {
-    "caseId": "MOKA-EX-6",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF37"
-   },
-   {
-    "caseId": "MOKA-EX-7",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF38"
-   },
-   {
-    "caseId": "MOKA-EX-8",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF41"
-   },
-   {
-    "caseId": "MOKA-EX-9",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF42"
-   },
-   {
-    "caseId": "MOKA-EX-10",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF46"
-   },
-   {
-    "caseId": "MOKA-EX-11",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF47"
-   }
-  ],
-  "SF_MOKA_BUYABLE_GAP_UP": [
-   {
-    "caseId": "MOKA-EX-1",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF9"
-   },
-   {
-    "caseId": "MOKA-EX-2",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF10"
-   },
-   {
-    "caseId": "MOKA-EX-3",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF15"
-   },
-   {
-    "caseId": "MOKA-EX-4",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF27"
-   },
-   {
-    "caseId": "MOKA-EX-5",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF28"
-   },
-   {
-    "caseId": "MOKA-EX-6",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF37"
-   },
-   {
-    "caseId": "MOKA-EX-7",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF38"
-   },
-   {
-    "caseId": "MOKA-EX-8",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF41"
-   },
-   {
-    "caseId": "MOKA-EX-9",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF42"
-   },
-   {
-    "caseId": "MOKA-EX-10",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF46"
-   },
-   {
-    "caseId": "MOKA-EX-11",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKA12 PDF47"
-   },
-   {
-    "caseId": "MOKA24-MCD",
-    "action": "ACCEPT_BELOW_STANDARD_VOLUME",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-MOKAV24 MCDparagraph"
-   }
-  ],
-  "SF_RASCHKE_HOLY_GRAIL": [
-   {
-    "caseId": "RAS-SOY-FLOOD",
-    "action": "BUY_HOLD_LONGER",
-    "category": "PERSONAL_TRADE_CONFIRMED",
-    "source": "W-RAS04 PDF2;ownquote"
-   },
-   {
-    "caseId": "RAS-GRAIL-2003-12-19",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-RAS04 PDF3"
-   },
-   {
-    "caseId": "RAS-GRAIL-2003-12-23",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-RAS04 PDF4"
-   },
-   {
-    "caseId": "RAS-GRAIL-2004-01-02",
-    "action": "CHART_EXAMPLE",
-    "category": "EDUCATIONAL_EXAMPLE",
-    "source": "W-RAS04 PDF4"
-   }
-  ]
- }
+ "otherTests": 16,
+ "allTests": [
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-PIN: #709 extract is pinned to 8b766fa with 20 verified files and the manifest counts",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-PIN-REBUILD: the extract regenerates byte-identically from the #709 files (PSR709_DIR)",
+   "result": "SKIPPED"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-CANDIDATES: the registry holds exactly the 13 #709 candidates; CAN SLIM is documented, not counted",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-CONTRACTS: every contract validates; its classification also validates in the implemented view",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-VALIDATOR: SOURCE_EXACT only on hardenable #709 rules; preferences never hardened as gates",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-STATUS: method status is derived from rule statuses with a fixed precedence",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-PLANNED: before its method PR a contract claims nothing (all rules NOT_IMPLEMENTED with a target)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-RECEIPT: a reproducibility receipt requires the snapshot id format and research-v1 accounting",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-ARTIFACTS: committed artifacts equal a fresh build; registry validation passes",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-WORKFLOW: supertrader-validation.yml passes --snapshot / --accounting to every analyze-methods run and fails closed",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-PSR709-CONST: the pin constant matches the #709 draft branch and commit",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-TRACE: every test a contract cites for an implemented rule exists by name in the cited test file",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-DOCS: generated coverage / traceability / readiness docs equal a fresh build",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-GOLDEN-RECORD: the recorded golden results cover every catalogued golden test, all PASS",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-INDEPENDENCE: method modules do not import each other; legacy Supertrader code does not import the source-faithful tree",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
+   "name": "SF-REVIEWS: no open HIGH or CRITICAL review finding; every FIXED finding names its test",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-N: TR and N = (19 x N_prev + TR) / 20 seeded with the 20-day mean (TUR-TR, TUR-N)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-HO2002: N 0.0141, notional 1,000,000, 42,000 $/point -> 16 contracts (#709 TUR-HO2002, TUR-UNIT)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-UNIT-EQUITY: equities use 1 $ per point and whole shares (TUR-SF-UNIT derivation)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-NOTIONAL: 10 % loss cuts the notional by 20 %, cuts compound, recover at the year start (TUR-NOTIONAL, TUR-DRAWDOWN)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-GOLD: adds at 1/2 N above the previous actual fill (#709 TUR-GOLD 310 / 311.25 / 312.50 / 313.75)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-CRUDE-NORMAL: fills 28.30 / 28.90 / 29.50 / 30.10, N 1.20 -> all stops 27.70 (#709 TUR-CRUDE, TUR-STOPADD)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-CRUDE-GAP: fourth fill gapped to 30.80 -> stops 27.70, 27.70, 27.70, 28.40 (#709 TUR-CRUDE, TUR-STOPGAP; closes #712 V41-F1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-ADD-GAP-FILL / GC-TUR-UNIT-STOP-EXIT: a gapped add fills at the open, units keep different stops, the top unit is stopped out alone",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-NO-READD-AFTER-UNIT-STOP: after a unit is stopped out no further adds; adds measured from the last actual fill (TUR-ADD; review SF-R1-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-ENTRY-S1 / GC-TUR-ENTRY-S2: one tick above the prior 20 / 55-day high, intraday (TUR-S1ENT, TUR-S2ENT, TUR-INTRADAY)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-GAP-FILL: an open above the trigger fills at the open (TUR-GAP)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-S1-SKIP-WINNER / GC-TUR-FAILSAFE: after a profitable hypothetical breakout the 20-day signal is skipped; the 55-day failsafe is taken (TUR-S1SKIP, TUR-FAILSAFE)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-S1-TAKE-AFTER-LOSER: a 2N adverse move before a profitable exit makes a loser; the next signal is taken (TUR-S1LOSER)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT: a 10-day exit at a loss is not profitable, so the next signal is taken (TUR-S1SKIP)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-S1-SHORT-COUNTS: a short 20-day breakout counts for the S1 filter (TUR-S1DIR)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-EXIT-S1 / GC-TUR-EXIT-S2: all units exit one tick below the prior 10 / 20-day low (TUR-S1EX, TUR-S2EX)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-LIMIT4: at most four units per security (TUR-LIMIT4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-LIMIT12: at most twelve long units in the portfolio (TUR-LIMIT12)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-RANK: simultaneous signals are bought strongest first by (close - close 63 sessions ago) / N (TUR-RANK)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-NO-CASH: a unit that does not fit in cash is rejected, never levered (TUR-SF-CASH)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-UNIVERSE: only names that pass the pre-registered research universe at the PRIOR session are traded (TUR-SF-MARKETS)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "GC-TUR-NO-REGIME: the engine takes no market, regime or fundamental input (TUR-SIGNAL-CONSISTENCY)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-TEMPORAL: decisions up to day t do not change when later bars change (no look-ahead)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-MISSING-BAR: a held position without bars is not traded and is settled after the stale limit (research-v1 A4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-TERMINAL: an economic delisting is settled by scenario on its last bar; a data gap only by the stale limit (research-v1 A5)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-ACCOUNTING: the ledger replays the cash exactly; equity = start + closed P&L; costs on every fill (research-v1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-SPLIT-TICK: one tick is one raw cent converted to the split-adjusted basis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle.test.mjs",
+   "name": "SF-TUR-WARMUP-CAUSAL: without `from` the S1 filter warms only on bars before the first calendar date (review SF-R3-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-GATES: research-v1 is mandatory; only DIAGNOSTIC_READY methods run",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-RESULT: every scenario runs, reconciles and carries DIAGNOSTIC_NOT_CERTIFIED and a receipt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-PUBLIC: the public view carries hashes, counts and flags only (no prices, no metrics)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-METRICS: CAGR, drawdown, Sharpe / Sortino, win rate, profit factor, turnover and cost burden on a known curve",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and seals its result",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-COMPONENT: Darvas runs only as a component signal study, labelled as not a method return",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-runner.test.mjs",
+   "name": "SF-RUN-COMPONENT-DELISTING: a component trade open at an inactive listing is settled by the delisting scenario (review SF-R3-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-TOP-CONFIRM: a new high not touched or exceeded on the three following sessions is the box top (DAR-Q1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-TOP-TOUCH-RESET: a session touching the candidate top restarts the three-day count (DAR-Q1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-TOP-HIGHER-RESET: a higher high makes a new candidate top (DAR-Q1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-BOTTOM-CONFIRM: the bottom is established only after the top, by the reverse three-day procedure (DAR-Q2)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-BOTTOM-TOUCH-RESET: a re-touch of the candidate bottom restarts the count (DAR-Q2; #709 VU-DAR missing rule)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-BOTTOM-START-VARIANTS: both readings of the unresolved bottom-search start are supported and can differ (#709 VU-DAR UNRESOLVED)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM: a higher high before the bottom is confirmed restarts the top search (DAR-Q1 / DAR-Q2)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-BOX-FAIL: a low below the completed bottom before a breakout dissolves the box (DAR-Q11 derivation)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-BREAKOUT-NO-WAIT: the breakout fires on the first session through top + fraction; no waiting period (DAR-Q3, DAR-Q4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-GAP-OPEN-FILL: an open above the trigger fills at the open (DAR-Q4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-STOP-PATH: stop placed with the buy a fraction below the broken top, raised below each higher box bottom, exit on the stop (DAR-B6, DAR-Q5..Q8)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-ENTRY-BAR-STOP: a breakout bar that also trades at the initial stop exits the same bar (pessimistic daily-bar convention)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-STOP-NEVER-LOWER: a later box whose bottom is below the current stop does not lower it (DAR-Q6)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-ATH-GATE: a breakout below an earlier high of the available history is not a candidate (DAR-Q9)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-ATH-UNVERIFIED: without listing-to-date history the all-time high is flagged for review (DAR-Q9)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "GC-DAR-FRACTION: \"a fraction\" is one raw cent in the split-adjusted basis (DAR-Q15 derivation)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "SF-DAR-NOT-ROLLING-HIGH: a rolling new high without a confirmed box is no signal",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "SF-DAR-TEMPORAL: events up to bar t do not depend on later bars",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-darvas.test.mjs",
+   "name": "SF-DAR-COMPONENT: the component study lists ATH-gated breakouts with their mechanical exits, one position at a time",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-WEEKLY: ISO-week bars from daily bars; the last week is incomplete",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-MA-BELOW / GC-WEIN-MA-FALLING / GC-WEIN-MA-OK: no long buy below or at a falling MA30w (WEIN-MA)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-INVESTOR-CANDIDATE: early Stage 2 breakout above the base resistance -> review record with buy-stop and proposed stop (WEIN-BUY1, WEIN-ORD, WEIN-STOP1/2)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-INVESTOR-NO-BASE: without a turn of the MA30w (no Stage 1 base) there is no investor candidate",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-TRADER-CANDIDATE: continuation breakout over the last swing high near a rising MA30w, full position (WEIN-TR-CONT, WEIN-TR-STOP)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-TRADER-MA-FLAT: a continuation breakout needs a rising MA30w",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-VOL-A: breakout week volume at least twice the mean of the prior four weeks (WEIN-VOL1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-VOL-C: daily variant - breakout day volume more than twice the prior five sessions (WEIN-VOL3)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-VOL-NONE: no alternative holds -> the record is still a review candidate, volume judged manually (WEIN-VOL4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-RS-BELOW-ZERO-IMPROVING: RS below its zero line but improving is reported, not rejected (WEIN-RSZERO; no RS > 0 gate)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-MARKET-EVIDENCE: SPY 30-week position is evidence only; breadth is DATA_BLOCKED (WEIN-MARKET)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-NO-NONTECH-EXIT: the exit policy is technical only (WEIN-SELL4)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "SF-WEIN-TEMPORAL: the screen on week w uses no bar after week w",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-weinstein.test.mjs",
+   "name": "GC-WEIN-BREAKOUT-CROSSES-MA: a Stage 1 -> 2 breakout whose prior close is below a rising MA30w but whose buy-stop is above it is a candidate (WEIN-MA, WEIN-S2; review SF-R1-02)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-SIGNATURE: up-day volume above the largest down-day volume of the prior ten sessions (MOKAPP-003)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-EQUAL-NOT-GREATER: equal volume is not greater (MOKAPP-003 strictly greater)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-WINDOW-10: a down day eleven sessions back does not count (MOKAPP-003 ten days)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-NO-DOWN-DAY: a window without a down day gives no comparison and no candidate (derivation)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-DOWN-DAY-REJECT: a down day with large volume is not a pocket pivot (derivation)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-PP-EXTENSION-IS-EVIDENCE: distance from the 10 / 50 / 200-day MAs is evidence, never a rejection (MOKAPP-004, MOKAPP-010)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-BGU-CANDIDATE / GC-BGU-VOLUME-1-5-EXACT: gap >= 0.75 x ATR40 with volume 150 % OF the average (MOKA12-004, MOKA24-VOL)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-BGU-GAP-BELOW: a gap just below 0.75 x ATR40 is no candidate (MOKA12-004)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-BGU-ATR40-NO-SAME-DAY: the ATR uses the 40 sessions before the gap day only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-BGU-MCD-EXCEPTION: volume +47.09 % (1.4709x) is not rejected but goes to review (#709 MOKA24-MEGA, case MOKA24-MCD)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-BGU-SELL-GUIDE: the gap-day low is reported as the risk reference (MOKA12-007)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "GC-MOKA-MA-VIOLATION-BOTH-READINGS: next-day and later-day undercut are both reported, no automatic exit (MOKA-C2)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "SF-MOKA-TEMPORAL: the screens on bar i ignore later bars",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-morales-kacher.test.mjs",
+   "name": "SF-MOKA-BGU-MISSING-DATA: missing gap-day volume is MISSING_DATA; a short volume window still evaluates the gap (review SF-R2-05 / SF-R2-06)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-TT-1 / GC-MIN-TT-2 / GC-MIN-TT-3 / GC-MIN-TT-4 / GC-MIN-TT-5 / GC-MIN-TT-6 / GC-MIN-TT-7: each Trend Template criterion 1-7 as printed, translation-unverified",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "SF-MIN-IPO-SCOPE: less history than the Trend Template needs is IPO scope, not a failure (MIN-MM-IPO-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-RS-PROXY-NOT-GATE: IBD RS is DATA_BLOCKED; a VU percentile is a proxy and never a gate (MIN-TT-08)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-SEPA-CANDIDATE: Trend Template 1-7 -> one review record with manual relative priority (MIN-PROCESS-01, MIN-PROCESS-04)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-SEPA-NO-FUNDAMENTAL-GATE: the screen has no EPS / sales input; fundamentals are review questions (MIN-PROCESS-15, MIN-EPS-02)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-VCP-EVIDENCE-NOT-GATE: VCP footprint is reported as evidence; a non-contracting base is still reviewed (MIN-VCP-02/03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-STOP-10PCT-FLAG: a reviewer stop wider than 10 % is flagged, never auto-set (MIN-MM-STOP-02, MIN-RISK-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-CANDIDATE: +100 % in under eight weeks, consolidation within 10 % -> TIGHT review record (MIN-PP-02/05, MIN-PP-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-SLOW-RUN: +100 % over 40 or more sessions is not a Power Play (MIN-PP-02)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-DEEP-CORRECTION: a correction over 25 % is no record (MIN-PP-04 outer bound)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-CORRECTION-RANGE-FLAG: a correction in (20 %, 25 %] is kept and flagged for review (MIN-PP-04 printed range)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-WIDE-REVIEW: a correction between 10 % and 20 % needs VCP characteristics -> review (MIN-PP-05 OR branch)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-SHORT-CONSOLIDATION: no minimum consolidation length - a twelve-session base is screened (MIN-PP-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "SF-MIN-TEMPORAL: the Trend Template on bar i ignores later bars",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "SF-MIN-PP-NEWER-PEAK: an older higher peak does not hide a newer Power Play; a very long base gets a review question (review SF-R2-01 / SF-R2-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-ADR20: ADR20 = mean of (high / low - 1) x 100 over the 20 sessions before the bar (KK-031)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-CAP-30: never more than 30 % of equity in one stock overnight (KK-001)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-STOP-MARKET-GAP: a stop-market order fills at the open after a gap through the stop (KK-027)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-STOP-ACCEPT: low-of-day stop within one ADR is accepted (KK-012)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-STOP-REJECT-WIDE / GC-KK-STOP-NO-CLAMP: a stop wider than one ADR rejects the trade and is never tightened (KK-012; #709 false VU clamp)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-MOMENTUM-RANK-NOT-GATE: 1 / 3 / 6-month percentiles order the review queue and exclude nothing (KK-005, KK-048)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-SETUP-EVIDENCE: prior move, higher lows, rising MAs and ADR are reported as evidence (KK-006..009)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-EP-STOP-ACCEPT / GC-KK-EP-STOP-REJECT: EP stop = low of day with distance at most 1.5 ADR (KK-034; KK-C1 separate from KK-012)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-EP-GAP-EVIDENCE: the 10 % gap is a reference, not a filter; catalyst, early volume and ORH entry are DATA_BLOCKED (KK-015, KK-016, KK-032)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "GC-KK-PS-EVIDENCE: accelerating up streak and MA distances are evidence; entry and borrow are DATA_BLOCKED (KK-018, KK-022, KK-030)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
+   "name": "SF-KK-TEMPORAL: ADR and the stop check of bar i use no later bar",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "GC-RAS-ADX-WILDER: a clean uptrend has +DM only, DX = 100 and ADX = 100; a flat market has ADX 0 (Wilder ADX14)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "GC-RAS-ADX-BELOW-30: no setup while ADX(14) is not above 30 before the pullback (RAS04-002)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "GC-RAS-FIRST-PULLBACK: the first bar whose low touches the 20 EMA after ADX > 30 is a review candidate (RAS04-001, RAS04-006 daily)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "GC-RAS-SECOND-PULLBACK-NOT-FIRST: a later touch is reported with firstPullback false and a review flag, not silently accepted (review SF-R2-02)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "GC-RAS-OSC-310: oscillator = SMA3 - SMA10, signal = SMA16 of the oscillator (RAS04-004)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-holy-grail.test.mjs",
+   "name": "SF-RAS-TEMPORAL: the screen on bar i ignores later bars",
+   "result": "PASS"
+  }
+ ]
 }

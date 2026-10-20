@@ -1,4 +1,5 @@
 import {productionObservation} from './production-observation.mjs';
+import {observeProduction} from './observe-production.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
 import {readFileSync,writeFileSync,mkdirSync,existsSync,rmSync} from 'node:fs';
@@ -253,25 +254,17 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    }
   }
   else if(args[0]==='observe'){
-   const origin='https://research.visionuniverse.de',d=await(await fetch(origin+'/company-intelligence-delivery.json?observe='+Date.now())).json();
-   const ns=await activeNamespace(driver),good=await goodState(driver,ns);
-   if(!good||d.generation!==good.generation){
-    if(args.includes('--same-generation-only')){console.log('OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA');process.exit(0);}
-    throw Error('OBSERVED_PRODUCTION_GENERATION_MISMATCH');
-   }
-   const key=prefixFor(ns)+'observed.json';
-   if(args.includes('--same-generation-only')){
-    const prior=await driver.get(key);
-    if(!prior||JSON.parse(prior).generation!==good.generation){console.log('OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA');process.exit(0);}
-   }
-   const observation={schema:1,generation:d.generation,lastSuccessfulProductionPublication:new Date().toISOString()};
-   const bytes=Buffer.from(JSON.stringify(observation));
-   await driver.put(key,bytes);
-   if(!Buffer.from(await driver.get(key)).equals(bytes))throw Error('OBSERVABILITY_READBACK_FAILED');
-   if(args.includes('--health')){
-    const p=arg('--health'),health=json(p);Object.assign(health,{lastSuccessfulProductionPublication:observation.lastSuccessfulProductionPublication,publicationSLO:'HEALTHY',productionVerified:true});save(p,health);
-   }
-   console.log(JSON.stringify({status:'PASS',generation:d.generation}));
+   // Klassifiziert (observe-production.mjs): REAL -> Exit 1 (fail-closed), BOOKKEEPING -> Exit 3 (Produktion belegt, nur das
+   // Festhalten scheitert). Der Code steht immer im Log.
+   const r=await observeProduction({
+    readGood:async()=>{const n=await activeNamespace(driver);return {ns:n,good:await goodState(driver,n)};},
+    driver,keyFor:n=>prefixFor(n)+'observed.json',sameGenerationOnly:args.includes('--same-generation-only'),
+    saveHealth:args.includes('--health')?o=>{const p=arg('--health'),health=json(p);Object.assign(health,{lastSuccessfulProductionPublication:o.lastSuccessfulProductionPublication,publicationSLO:'HEALTHY',productionVerified:true});save(p,health);}:null
+   });
+   if(r.status==='DEFERRED')console.log(r.code);
+   else console.log(JSON.stringify({status:r.status,class:r.class,code:r.code,generation:r.generation,served:r.served,good:r.good,attempts:r.attempts}));
+   if(r.status==='FAIL')console.log(`::error::observe ${r.class} (${r.code})`);
+   process.exitCode=r.exitCode;
   }else{
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
    console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,
@@ -280,5 +273,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     runtimeSeconds:r.durationSeconds,sourcesChecked:r.sourcesChecked,publicRequests:r.publicRequests,secRequests:r.secRequests,
     httpStats:r.httpStats,sourceOutcomes:r.sourceOutcomes,scheduler:r.scheduler}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
- }catch{console.error('CONTINUOUS_REFRESH_FAILED');process.exitCode=1;}
+ }catch(error){console.error('CONTINUOUS_REFRESH_FAILED ('+(/^[A-Z0-9_:-]+$/.test(error?.message||'')?error.message:(error?.code||error?.name||'UNKNOWN'))+')');process.exitCode=1;}
 }

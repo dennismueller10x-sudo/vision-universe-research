@@ -18,12 +18,12 @@ const SOURCES = [
 ];
 const exitRules = () => [
   { id: 'MOKA-SF-EXIT-MA', kind: 'EXIT', psr709: ['MOKA12-008', 'MOKASTOP-001'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'sell guide: 10DMA if the stock respected it for >= 7 weeks, otherwise 50DMA (preference)' },
-  { id: 'MOKA-SF-EXIT-VIOLATION', kind: 'EXIT', psr709: ['MOKA12-009', 'MOKASTOP-002'], status: 'SOURCE_AMBIGUOUS', rule: 'MA violation = close below the MA, then a later undercut of that day\'s low', reason: 'MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit' },
+  { id: 'MOKA-SF-EXIT-VIOLATION', kind: 'EXIT', psr709: ['MOKA12-009', 'MOKASTOP-002'], status: 'SOURCE_AMBIGUOUS', rule: 'MA violation = close below the MA, then a later undercut of that day\'s low', reason: 'MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit', code: `${CODE}#maViolationEvidence`, tests: [`${T}: GC-MOKA-MA-VIOLATION-BOTH-READINGS`] },
   { id: 'MOKA-SF-EXIT-CONTEXT', kind: 'EXIT', essential: false, psr709: ['MOKASTOP-003', 'MOKASTOP-004', 'MOKASTOP-005'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'weak market, partial vs full exit (Gil vs Chris), lagging names in a strong market are reviewer decisions' },
 ];
 
 export const POCKET_PIVOT = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 5 Pocket Pivot / BGU',
   strategyId: 'SF_MOKA_POCKET_PIVOT',
   candidateId: 'C11',
@@ -58,7 +58,7 @@ export const POCKET_PIVOT = defineContract({
 });
 
 export const BUYABLE_GAP_UP = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 5 Pocket Pivot / BGU',
   strategyId: 'SF_MOKA_BUYABLE_GAP_UP',
   candidateId: 'C12',
@@ -73,6 +73,7 @@ export const BUYABLE_GAP_UP = defineContract({
   stops: ['MOKA-SF-BGU-SELLGUIDE: gap-day low as risk reference (at least half sold below it, preference)'],
   positionSizing: ['MOKA-SF-BGU-SIZE (manual)'],
   requiredData: ['daily split-adjusted OHLCV', 'market capitalisation PIT for the megacap judgment (partial)'],
+  dataPartial: ['MOKA24-MEGA: point-in-time market capitalisation for the megacap exception is not in the snapshot; the reviewer judges it', 'intraday projected volume (daily variant only)'],
   manualReviewFlags: [
     { id: 'MOKA-MR-LEAD', psr709: ['MOKA12-003', 'MOKA12-006'], question: 'strong leadership or theme; uptrend or constructive consolidation before the gap', blocksAutomation: true },
     { id: 'MOKA-MR-MEGA', psr709: ['MOKA24-MEGA'], question: 'volume below 1.5x: does the megacap exception apply (MCD accepted at +47.09 %)?', blocksAutomation: true },
