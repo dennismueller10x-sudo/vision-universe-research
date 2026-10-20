@@ -215,9 +215,22 @@ html[data-theme=dark]{--fu-last:var(--vu-accent,#c8f531);--fu-s0:#c8f531;--fu-s1
 .fu-tile-pe span{color:var(--vu-text-secondary)}.fu-tile-pe b.is-none{font-weight:600;color:var(--vu-text-secondary)}
 .fu-more{margin:12px 0 0;cursor:pointer;font:inherit;font-size:14px;font-weight:650}
 
+/* Gesamtpruefung: Skalen, mobile Leisten, Fehlerseite */
+.fu-chart-wrap{position:relative;padding-top:14px}
+.fu-y{position:absolute;left:0;font-size:10.5px;line-height:1;color:var(--vu-text-secondary);background:var(--fu-card);padding:1px 4px 1px 0;pointer-events:none}
+.fu-y-top{top:0}.fu-y-zero{transform:translateY(-50%)}.fu-y-bottom{bottom:14px}
+.fu-ladder b.is-none{font-size:12.5px;font-weight:600;color:var(--vu-text-secondary)}
+.fu-retry{margin-top:18px}.fu-retry .fu-search{max-width:640px}
+
 @media (max-width:1024px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fu-how,.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1024px){.fu-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.fu-cmp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fu-cmp-peers{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:560px){.fu-tiles{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .fu-examples{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:calc(-1 * var(--fu-gutter));padding-right:var(--fu-gutter)}
+  .fu-examples::-webkit-scrollbar,.fu-cmp-peers::-webkit-scrollbar{display:none}
+  .fu-examples .fu-chip{flex:none}
+  .fu-cmp-peers{display:flex!important;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;margin-right:calc(-1 * var(--fu-gutter));padding-right:var(--fu-gutter)}
+  .fu-cmp-peers li{flex:0 0 46%;scroll-snap-align:start}}
 @media (max-width:760px){.fu-split{grid-template-columns:1fr}.fu-cmp-grid{grid-template-columns:1fr}.fu-cmp-peers{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.fu-kpis{grid-template-columns:1fr}.fu-grid{grid-template-columns:1fr}.fu-card-wide{grid-column:auto}.fu-how{grid-template-columns:1fr}.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fu-gtable{font-size:13px}.fu-gtable th,.fu-gtable td{padding:10px 4px}.fu-gcell .fu-dir{font-size:12.5px}.fu-ladder li{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) auto}}
