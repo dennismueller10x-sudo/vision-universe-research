@@ -105,7 +105,7 @@ Verhalten:
 
 **Fuer die Freigabe noch offen (Owner):**
 1. SIC-Ebene fuer „eng“ und fuer „lose korreliert“ (4-, 3- oder 2-stellig). Eine SIC-Gleichheit ist keine gemessene Kurskorrelation.
-2. `maxAgeDays`: wie alt die letzte SIC-Beobachtung hoechstens sein darf. In der Messung stammen 87 % der beobachteten Punkte aus den letzten 100 Tagen.
+2. `maxAgeDays`: wie alt die letzte SIC-Beobachtung hoechstens sein darf. In der Messung stammen 86 % der beobachteten Punkte aus den letzten 100 Tagen (docs/historical-sic/COVERAGE.json).
 3. Weinstein: die Gruppenebene und die Konstruktion des Gruppencharts (Gewichtung, Mitgliederwechsel, Mindestzahl Mitglieder).
 4. Danach in einem eigenen PR mit Vorher/Nachher-Vergleich:
    - Runner-Verdrahtung;
