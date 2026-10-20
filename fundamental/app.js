@@ -101,16 +101,69 @@
           return el('a', { class: 'fu-chip', role: 'listitem', href: '#/' + e[0] }, [el('b', { text: e[0] }), e[1]]);
         }))
       ]),
+      discoverSection(),
       el('section', { class: 'fu-how', 'aria-label': 'So liest du Fundamental' }, [
-        howTile('▦', 'Auf einen Blick', 'Umsatz, Gewinn, Cashflow, Schulden und Aktienanzahl über alle verfügbaren Geschäftsjahre.'),
-        howTile('▲▼', 'Richtung zum Vorjahr', 'Jede Kennzahl zeigt, ob sie gestiegen oder gefallen ist – ohne Bewertung.'),
-        howTile('◇', 'Lücken bleiben sichtbar', 'Fehlt ein Wert in den Meldungen, steht dort „keine Angabe“ statt einer Schätzung.'),
-        howTile('§', 'Quelle je Jahr', 'Zu jedem Geschäftsjahr: Meldedatum und Link auf die Meldung bei der SEC.')
+        howTile('▦', 'Jahr für Jahr', 'Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr.'),
+        howTile('▲▼', 'Richtung', 'Gestiegen oder gefallen – ohne Wertung.'),
+        howTile('◇', 'Lücken sichtbar', '„keine Angabe“ statt Schätzung.'),
+        howTile('§', 'Quelle je Jahr', 'Link auf die Meldung bei der SEC.')
       ]),
       el('p', { class: 'fu-fine' }, ['US-Unternehmen mit SEC-Meldungen. Rückblickende Ansicht, keine Empfehlung. ', el('a', { href: '#/methodik', text: 'Methodik' })])
     );
     done();
   }
+  /* ------------------------------------------------------------ Start: Entdecken */
+  var HOME_LABELS = { 'profitables-wachstum': 'Profitables Wachstum', 'langfristige-compounder': 'Langfristige Compounder', 'cashflow-maschinen': 'Cashflow-Maschinen',
+    'qualitaet-zum-preis': 'Qualität zum Preis', 'starke-bilanz-wachstum': 'Starke Bilanz + Wachstum', 'margen-werden-staerker': 'Margen werden stärker' };
+  var TILE_CAP = 0.5; // feste Skala fuer alle Kacheln: 0 … 50 %, darueber Pfeil
+  function meter(label, v, odd) {
+    var w = v == null ? 0 : Math.max(0, Math.min(1, v / TILE_CAP)) * 100;
+    return el('div', { class: 'fu-meter' }, [
+      el('span', { class: 'fu-meter-l', text: label }),
+      el('span', { class: 'fu-meter-bar', 'aria-hidden': 'true' }, v == null ? null : el('i', { class: (v > TILE_CAP ? 'is-over' : '') + (v < 0 ? ' is-neg' : ''), style: 'width:' + Math.max(v > 0 ? 2 : 0, w).toFixed(1) + '%' })),
+      el('b', { class: 'fu-num' + (v == null ? ' is-none' : ''), text: v == null ? (odd ? 'nicht plausibel' : 'keine Angabe') : M.pct(v) })
+    ]);
+  }
+  function homeTile(t) {
+    return el('li', {}, el('a', { class: 'fu-tile', href: '#/' + encodeURIComponent(t.ticker) }, [
+      el('span', { class: 'fu-tile-head' }, [el('b', { text: t.ticker }), el('span', { text: t.name })]),
+      t.was ? el('small', { class: 'fu-tile-was', text: t.was }) : null,
+      el('span', { class: 'fu-tile-rev' }, [el('strong', { class: 'fu-num', text: M.money(t.revenue) }), el('small', { text: 'Umsatz · letztes GJ' })]),
+      meter('Wachstum p. a. · 3 J', t.growth3), meter('Nettomarge', t.netMargin, t.implausible.netMargin), meter('Free-Cashflow-Marge', t.fcfMargin, t.implausible.fcfMargin),
+      el('span', { class: 'fu-tile-pe' }, [el('span', { text: 'KGV' }), el('b', { class: 'fu-num' + (t.pe == null ? ' is-none' : ''), text: t.pe == null ? 'keine Angabe' : M.multiple(t.pe) })])
+    ]));
+  }
+  function discoverSection() {
+    var holder = el('div', { class: 'fu-disc-body', 'aria-live': 'polite' }), sub = el('p', { class: 'fu-sub' }), tok = 0, SHOW = matchMedia('(max-width: 560px)').matches ? 4 : 8;
+    var buttons = M.HOME_ROWS.map(function (id, i) {
+      return el('button', { type: 'button', class: 'fu-chip fu-cmp-opt', 'aria-pressed': i ? 'false' : 'true', 'data-row': id, onclick: function () { pick(i); } }, HOME_LABELS[id] || id);
+    });
+    function paint(r, all) {
+      sub.replaceChildren(r.subtitle || '', r.rule ? el('details', { class: 'fu-rule' }, [el('summary', { text: 'Regel' }), el('span', { text: r.rule })]) : null);
+      var tiles = all ? r.tiles : r.tiles.slice(0, SHOW);
+      holder.replaceChildren(el('ul', { class: 'fu-tiles' }, tiles.map(homeTile)),
+        r.tiles.length > SHOW && !all ? el('button', { type: 'button', class: 'fu-chip fu-more', onclick: function () { paint(r, true); } }, 'Alle ' + r.tiles.length + ' zeigen') : null,
+        el('p', { class: 'fu-fine', text: 'Discover-Auswahl · ' + (r.matched ? r.matched.toLocaleString('de-DE') + ' Unternehmen erfüllen die Regel · ' : '') + 'Stand ' + M.dateDe(r.asOf) + ' · Balken 0–50 %' }));
+    }
+    function pick(i) {
+      var my = ++tok, id = M.HOME_ROWS[i];
+      buttons.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+      holder.replaceChildren(el('div', { class: 'fu-skel', style: 'height:220px' }));
+      loadRow(M.ROWS_BASE + id + '.json').then(function (row) {
+        if (my !== tok) return;
+        var r = homeRow(row);
+        if (!r.tiles.length) { holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Gerade erfüllt kein Unternehmen diese Regel.' }))); return; }
+        paint(r, false);
+      }).catch(function () { if (my === tok) holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Die Auswahl konnte gerade nicht geladen werden.' }))); });
+    }
+    setTimeout(function () { pick(0); }, 0);
+    return el('section', { class: 'fu-section fu-disc', 'aria-labelledby': 'fu-h-disc' }, [
+      el('h2', { id: 'fu-h-disc', text: 'Entdecken' }),
+      el('div', { class: 'fu-chips fu-cmp-opts', role: 'group', 'aria-label': 'Auswahl' }, buttons),
+      sub, holder
+    ]);
+  }
+  function homeRow(row) { return M.homeRow(row); }
   function howTile(sym, title, text) { return el('div', { class: 'fu-howtile' }, [el('span', { class: 'fu-howsym', 'aria-hidden': 'true', text: sym }), el('b', { text: title }), el('span', { text: text })]); }
 
   /* ------------------------------------------------------------ Diagramme */

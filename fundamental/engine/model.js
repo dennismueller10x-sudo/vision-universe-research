@@ -6,7 +6,7 @@
  * Richtung (auf/ab/gleich) ist neutral gemeint; ob mehr Schulden oder weniger Aktien "gut" ist, entscheidet hier niemand. */
 (function (global) {
   'use strict';
-  var VERSION = 'fundamental-model-1.2.0';
+  var VERSION = 'fundamental-model-1.3.0';
   var STOCK_BASE = '/discover/data/stocks/US_REAL/';
   var SEARCH_PATH = '/discover/data/search/US_REAL.json';
 
@@ -197,6 +197,24 @@
     return { min: min, max: max, median: mid, count: vals.length, rank: function (v) { return isNum(v) ? vals.filter(function (x) { return x > v; }).length + 1 : null; } };
   }
 
+  /* ---------------------------------------------- Startseite: Entdecken
+   * Bestehende Discover-Zeilen, deren Regel nur auf SEC-Kennzahlen beruht. Die Kachelwerte (f_*) sind dieselben,
+   * die das Modell auf der Unternehmensseite berechnet (Test haelt das fest). */
+  var HOME_ROWS = ['profitables-wachstum', 'langfristige-compounder', 'cashflow-maschinen', 'qualitaet-zum-preis', 'starke-bilanz-wachstum', 'margen-werden-staerker'];
+  function homeTile(card) {
+    var m = (card && card.metrics) || {}, n = function (v) { return isNum(v) ? v : null; };
+    // Wie im Vergleich: eine Marge ueber 100 % des Umsatzes gilt als nicht plausibel und wird nicht als Wert gezeigt.
+    var odd = function (v) { return isNum(v) && Math.abs(v) > 1; }, mg = function (v) { return odd(v) ? null : n(v); };
+    return { ticker: normTicker(card.symbol), name: card.companyName || card.symbol, was: card.was || null,
+      revenue: n(m.f_revenue), growth3: n(m.f_revenueGrowth3y), netMargin: mg(m.f_netMargin), fcfMargin: mg(m.f_fcfMargin), pe: n(m.f_pe),
+      implausible: { netMargin: odd(m.f_netMargin), fcfMargin: odd(m.f_fcfMargin) } };
+  }
+  function homeRow(row) {
+    if (!row || !Array.isArray(row.cards)) return null;
+    return { id: row.rowId, title: titleCase(row.title), subtitle: row.subtitle || null, rule: row.rule || null, asOf: row.asOf || null,
+      matched: row.coverage && row.coverage.matched, tiles: row.cards.filter(function (c) { return c && c.symbol && c.dataMode !== 'synthetic'; }).map(homeTile) };
+  }
+
   function fromStock(stock) {
     var f = stock && stock.fundamentals;
     var base = { version: VERSION, ticker: stock ? normTicker(stock.symbol) : null, name: stock ? (stock.companyName || stock.legalName || stock.symbol) : null };
@@ -328,7 +346,7 @@
 
   var api = { VERSION: VERSION, METRICS: METRICS, MARGINS: MARGINS, STOCK_BASE: STOCK_BASE, SEARCH_PATH: SEARCH_PATH,
     fromStock: fromStock, change: change, series: series, money: money, count: count, pct: pct, value: value, changeText: changeText,
-    dateDe: dateDe, yearRanges: yearRanges, cagr: cagr, yoy: yoy, peerOptions: peerOptions, peersFromRow: peersFromRow, compareRow: compareRow, compareScale: compareScale, titleCase: titleCase, ROWS_BASE: ROWS_BASE, reasonText: reasonText, multiple: multiple, HORIZONS: HORIZONS, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
+    dateDe: dateDe, yearRanges: yearRanges, cagr: cagr, yoy: yoy, HOME_ROWS: HOME_ROWS, homeRow: homeRow, homeTile: homeTile, peerOptions: peerOptions, peersFromRow: peersFromRow, compareRow: compareRow, compareScale: compareScale, titleCase: titleCase, ROWS_BASE: ROWS_BASE, reasonText: reasonText, multiple: multiple, HORIZONS: HORIZONS, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.VUFundamental = global.VUFundamental || {};
   global.VUFundamental.Model = api;
