@@ -180,7 +180,8 @@ const VISUAL = [
   ['Fundamental', '/fundamental/#/NVDA', '.fu-gcell .fu-gbar', 'Wachstum pro Jahr mit Balken'],
   ['Fundamental', '/fundamental/#/NVDA', '.fu-ladder', 'Vom Umsatz zum Free Cashflow'],
   ['Fundamental', '/fundamental/#/JPM', '.fu-gauge .mk-self', 'KGV im Marktvergleich'],
-  ['Fundamental', '/fundamental/#/KO', '.fu-cmp-rows li.is-self .fu-cmp-bar i', 'Im Vergleich: eigener Balken neben Vergleichsunternehmen']
+  ['Fundamental', '/fundamental/#/KO', '.fu-cmp-rows li.is-self .fu-cmp-bar i', 'Im Vergleich: eigener Balken neben Vergleichsunternehmen'],
+  ['Fundamental', '/fundamental/', '.fu-tile .fu-meter-bar i', 'Start: Entdecken-Kacheln mit Kennzahlbalken']
 ];
 if (only.has('visual')) await guard('visual', async () => {
   console.log('\n[3] Visual-First-Bausteine (' + engine + ')');
