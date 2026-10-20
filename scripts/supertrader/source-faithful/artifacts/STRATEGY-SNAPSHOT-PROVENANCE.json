@@ -1,0 +1,55 @@
+{
+ "schema": "supertrader-sf-snapshot-provenance-1.0.0",
+ "binding": {
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "accounting": {
+   "cli": "--accounting research-v1",
+   "mode": "RESEARCH_V1",
+   "module": "scripts/supertrader/validation/accounting-contract.mjs",
+   "id": "SUPERTRADER_RESEARCH_ACCOUNTING",
+   "version": "1.0.0"
+  },
+  "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+ },
+ "pointerAgrees": true,
+ "snapshot": {
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "asOfDate": "2026-10-19",
+  "captureRunId": "39213033571",
+  "restores": [
+   {
+    "runId": "39213033571",
+    "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+    "replaySha256": "18e2a0d8d969bf4476ec1df4cbcdcda21c4b79d091c9c13da45c87d92eca2465",
+    "independentOfCapture": true
+   },
+   {
+    "runId": "39217202814",
+    "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+    "replaySha256": "18e2a0d8d969bf4476ec1df4cbcdcda21c4b79d091c9c13da45c87d92eca2465",
+    "independentOfCapture": true
+   }
+  ]
+ },
+ "consumers": [
+  {
+   "path": "scripts/supertrader/validation/analyze-methods.mjs",
+   "flags": "--snapshot <id> --accounting research-v1",
+   "workflow": ".github/workflows/supertrader-validation.yml (input snapshot / marker [supertrader-validation-snapshot:<id>])"
+  }
+ ],
+ "failClosed": [
+  "a snapshot id that is not sts1-<32 hex> stops the workflow",
+  "a mode whose runner cannot read a snapshot stops the workflow (SNAPSHOT_NOT_SUPPORTED_FOR_MODE)",
+  "opening the snapshot requires an independent RESTORE receipt and verifies every object hash and the dataset fingerprint (analyze-methods.mjs)"
+ ],
+ "survivorship": "PIT listing table from the frozen ticker list incl. 7,299 inactive listings; delisted segments settled by the research-v1 terminal policy",
+ "knownDataFindings": [
+  {
+   "id": "V4-D1",
+   "severity": "BLOCKER (for certification)",
+   "status": "OPEN",
+   "summary": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); every diagnostic result inherits it; fix belongs to a Quant PR, not to this work"
+  }
+ ]
+}

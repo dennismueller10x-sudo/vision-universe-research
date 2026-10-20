@@ -17,6 +17,11 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:r8b]  Darvas/Weinstein 3.0.0 (PREREGISTRATION-R8B.json)
 #   [supertrader-validation:r8-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:sources]  Frei zugaengliche Originalseiten lesen (verschluesselt, sources-r8.json)
+# Eingefrorener Research-Snapshot (docs/SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md), zusaetzlich zur Modusmarke:
+#   [supertrader-validation-snapshot:sts1-<32 hex>]  alle Eingaben aus diesem Snapshot (kein Live-Abruf)
+#   [supertrader-validation-accounting:research-v1]  Research-Abrechnung (validation/accounting-contract.mjs)
+# Bei workflow_dispatch ueber die Eingaben snapshot / accounting. Ein Snapshot ist nur fuer Modi
+# zulaessig, deren Runner ihn liest (analyze-methods.mjs); jeder andere Modus bricht dann ab (fail closed).
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -27,6 +32,14 @@ on:
         type: choice
         options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
+      snapshot:
+        description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
+        type: string
+        default: ''
+      accounting:
+        type: choice
+        options: [legacy, research-v1]
+        default: legacy
   push:
     branches:
       - 'claude/**'
@@ -61,6 +74,31 @@ jobs:
           m="$INPUT"
           case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
+      - name: Snapshot- und Abrechnungsvertrag (fail closed)
+        id: snap
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          IN_SNAPSHOT: ${{ inputs.snapshot }}
+          IN_ACCOUNTING: ${{ inputs.accounting }}
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          set -euo pipefail
+          snap="${IN_SNAPSHOT:-}"; acc="${IN_ACCOUNTING:-legacy}"
+          if [[ "${MSG:-}" =~ \[supertrader-validation-snapshot:([^]]*)\] ]]; then snap="${BASH_REMATCH[1]}"; fi
+          if [[ "${MSG:-}" =~ \[supertrader-validation-accounting:([^]]*)\] ]]; then acc="${BASH_REMATCH[1]}"; fi
+          if [ -n "$snap" ] && ! [[ "$snap" =~ ^sts1-[0-9a-f]{32}$ ]]; then echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_ID_FORMAT" >&2; exit 1; fi
+          case "$acc" in legacy|research-v1) ;; *) echo "UNKNOWN_ACCOUNTING_MODE" >&2; exit 1;; esac
+          # Nur analyze-methods.mjs liest einen Snapshot; r9b/r10b brauchen Live-Minutendaten (dort ebenfalls gesperrt).
+          if [ -n "$snap" ]; then
+            case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b) ;;
+              *) echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_NOT_SUPPORTED_FOR_MODE ($MODE)" >&2; exit 1;; esac
+          fi
+          if [ "$acc" != legacy ] && [ -z "$snap" ]; then echo "research-v1 ohne Snapshot: Eingaben sind live (nicht eingefroren)"; fi
+          args=""
+          [ -n "$snap" ] && args="--snapshot $snap"
+          [ "$acc" != legacy ] && args="$args --accounting $acc"
+          echo "args=$args" >> "$GITHUB_OUTPUT"
+          echo "Snapshot: ${snap:-keiner}; Abrechnung: $acc"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
         run: |
@@ -100,8 +138,9 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          SNAP_ARGS: ${{ steps.snap.outputs.args }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'methods-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'methods-smoke' && '--limit 400' || '' }} $SNAP_ARGS
       - name: Ursachenanalyse (verschluesselt)
         if: steps.mode.outputs.mode == 'diagnose' || steps.mode.outputs.mode == 'diagnose-smoke'
         env:
@@ -122,8 +161,9 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          SNAP_ARGS: ${{ steps.snap.outputs.args }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }} $SNAP_ARGS
       - name: Runde-8 Momentum 3.0.0 und Gegenproben (verschluesselt)
         if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m' || steps.mode.outputs.mode == 'r11' || steps.mode.outputs.mode == 'r12' || steps.mode.outputs.mode == 'r13b'
         env:
@@ -133,8 +173,9 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          SNAP_ARGS: ${{ steps.snap.outputs.args }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m' || steps.mode.outputs.mode == 'r11' || steps.mode.outputs.mode == 'r12' || steps.mode.outputs.mode == 'r13b') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m' || steps.mode.outputs.mode == 'r11' || steps.mode.outputs.mode == 'r12' || steps.mode.outputs.mode == 'r13b') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }} $SNAP_ARGS
       - name: Intraday-Zugangsprobe (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday-probe'
         env:

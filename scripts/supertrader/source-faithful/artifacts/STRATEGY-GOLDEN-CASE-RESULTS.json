@@ -1,0 +1,3172 @@
+{
+ "schema": "supertrader-sf-golden-cases-1.0.0",
+ "rule": "golden cases are behaviour tests, never a performance sample; #709 cases are not broker-verified and carry printed, unadjusted prices",
+ "goldenTests": [
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-ATH"
+   ],
+   "psr709": [
+    "DAR-Q9"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-UNVERIFIED",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-ATH"
+   ],
+   "psr709": [
+    "DAR-Q9"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-BOTTOM"
+   ],
+   "psr709": [
+    "DAR-Q2"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-START-VARIANTS",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-BOTTOM-START"
+   ],
+   "psr709": [
+    "DAR-Q2"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-TOUCH-RESET",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-BOTTOM"
+   ],
+   "psr709": [
+    "DAR-Q2"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOX-FAIL",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-BOX-FAIL"
+   ],
+   "psr709": [
+    "DAR-Q11"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-NO-WAIT",
+    "DAR-SF-ENTRY"
+   ],
+   "psr709": [
+    "DAR-Q3",
+    "DAR-Q4"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-STOP-INIT"
+   ],
+   "psr709": [
+    "DAR-Q5",
+    "DAR-Q7"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-FRACTION",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-SPLITS"
+   ],
+   "psr709": [
+    "DAR-Q15"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-ENTRY"
+   ],
+   "psr709": [
+    "DAR-Q4"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-STOP-RAISE"
+   ],
+   "psr709": [
+    "DAR-Q6",
+    "DAR-Q8"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-PROTECT",
+    "DAR-SF-STOP-INIT",
+    "DAR-SF-STOP-RAISE"
+   ],
+   "psr709": [
+    "DAR-B6",
+    "DAR-Q5",
+    "DAR-Q7",
+    "DAR-Q6",
+    "DAR-Q8"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-TOP"
+   ],
+   "psr709": [
+    "DAR-Q1"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-EXCEEDED-BEFORE-BOTTOM",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-TOP-EXCEEDED"
+   ],
+   "psr709": [
+    "DAR-Q1",
+    "DAR-Q2"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-HIGHER-RESET",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-TOP"
+   ],
+   "psr709": [
+    "DAR-Q1"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-TOP-TOUCH-RESET",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-TOP"
+   ],
+   "psr709": [
+    "DAR-Q1"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-BELOW-30",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ADX"
+   ],
+   "psr709": [
+    "RAS04-002"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ADX"
+   ],
+   "psr709": [
+    "RAS04-002"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-PULLBACK",
+    "RAS-SF-TIMEFRAME"
+   ],
+   "psr709": [
+    "RAS04-001",
+    "RAS04-006"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-OSC-310",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-OSC"
+   ],
+   "psr709": [
+    "RAS04-004"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-PULLBACK"
+   ],
+   "psr709": [
+    "RAS04-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-ADR20",
+   "strategyIds": [
+    "SF_KK_BREAKOUT",
+    "SF_KK_EPISODIC_PIVOT",
+    "SF_KK_PARABOLIC_SHORT"
+   ],
+   "rules": [
+    "KK-SF-ADR"
+   ],
+   "psr709": [
+    "KK-031"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30",
+   "strategyIds": [
+    "SF_KK_BREAKOUT",
+    "SF_KK_EPISODIC_PIVOT",
+    "SF_KK_PARABOLIC_SHORT"
+   ],
+   "rules": [
+    "KK-SF-CAP"
+   ],
+   "psr709": [
+    "KK-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE",
+   "strategyIds": [
+    "SF_KK_EPISODIC_PIVOT"
+   ],
+   "rules": [
+    "KK-SF-EP-GAP",
+    "KK-SF-EP-SIDEWAYS"
+   ],
+   "psr709": [
+    "KK-015",
+    "KK-035"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
+   "strategyIds": [
+    "SF_KK_EPISODIC_PIVOT"
+   ],
+   "rules": [
+    "KK-SF-EP-STOP"
+   ],
+   "psr709": [
+    "KK-034"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-REJECT",
+   "strategyIds": [
+    "SF_KK_EPISODIC_PIVOT"
+   ],
+   "rules": [
+    "KK-SF-EP-STOP"
+   ],
+   "psr709": [
+    "KK-034"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-MOMENTUM-RANK-NOT-GATE",
+   "strategyIds": [
+    "SF_KK_BREAKOUT"
+   ],
+   "rules": [
+    "KK-SF-BO-MOMENTUM"
+   ],
+   "psr709": [
+    "KK-005",
+    "KK-054"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE",
+   "strategyIds": [
+    "SF_KK_PARABOLIC_SHORT"
+   ],
+   "rules": [
+    "KK-SF-PS-ACCEL",
+    "KK-SF-PS-TARGET"
+   ],
+   "psr709": [
+    "KK-018",
+    "KK-023"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE",
+   "strategyIds": [
+    "SF_KK_BREAKOUT"
+   ],
+   "rules": [
+    "KK-SF-BO-SETUP"
+   ],
+   "psr709": [
+    "KK-006",
+    "KK-007",
+    "KK-008",
+    "KK-009"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
+   "strategyIds": [
+    "SF_KK_BREAKOUT"
+   ],
+   "rules": [
+    "KK-SF-BO-STOP"
+   ],
+   "psr709": [
+    "KK-012"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP",
+   "strategyIds": [
+    "SF_KK_BREAKOUT",
+    "SF_KK_EPISODIC_PIVOT",
+    "SF_KK_PARABOLIC_SHORT"
+   ],
+   "rules": [
+    "KK-SF-STOPMARKET"
+   ],
+   "psr709": [
+    "KK-027"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP",
+   "strategyIds": [
+    "SF_KK_BREAKOUT"
+   ],
+   "rules": [
+    "KK-SF-BO-STOP"
+   ],
+   "psr709": [
+    "KK-012"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
+   "strategyIds": [
+    "SF_KK_BREAKOUT"
+   ],
+   "rules": [
+    "KK-SF-BO-STOP"
+   ],
+   "psr709": [
+    "KK-012"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-NOFUND",
+    "MIN-SF-PP-RUNUP",
+    "MIN-SF-PP-TIGHT"
+   ],
+   "psr709": [
+    "MIN-PP-01",
+    "MIN-PP-02",
+    "MIN-PP-05"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CORRECTION-RANGE-FLAG",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-CORRECTION"
+   ],
+   "psr709": [
+    "MIN-PP-04"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-CORRECTION"
+   ],
+   "psr709": [
+    "MIN-PP-04"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SHORT-CONSOLIDATION",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-DURATION"
+   ],
+   "psr709": [
+    "MIN-PP-03"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-RUNUP"
+   ],
+   "psr709": [
+    "MIN-PP-02"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-WIDE-REVIEW",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-TIGHT"
+   ],
+   "psr709": [
+    "MIN-PP-05"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-RS-PROXY-NOT-GATE",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-8"
+   ],
+   "psr709": [
+    "MIN-TT-08"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-PROCESS"
+   ],
+   "psr709": [
+    "MIN-PROCESS-01"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-SIMPLE"
+   ],
+   "psr709": [
+    "MIN-PROCESS-15"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP",
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-STOP",
+    "MIN-SF-PP-STOP"
+   ],
+   "psr709": [
+    "MIN-RISK-01",
+    "MIN-MM-STOP-01",
+    "MIN-MM-STOP-02",
+    "MIN-RISK-05"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-1",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-1"
+   ],
+   "psr709": [
+    "MIN-TT-01"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-2",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-2"
+   ],
+   "psr709": [
+    "MIN-TT-02"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-3",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-3"
+   ],
+   "psr709": [
+    "MIN-TT-03"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-4",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-4"
+   ],
+   "psr709": [
+    "MIN-TT-04"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-5",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-5"
+   ],
+   "psr709": [
+    "MIN-TT-05"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-6",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-6"
+   ],
+   "psr709": [
+    "MIN-TT-06"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-7",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-TT-7"
+   ],
+   "psr709": [
+    "MIN-TT-07"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-VCP"
+   ],
+   "psr709": [
+    "MIN-VCP-01",
+    "MIN-VCP-02",
+    "MIN-VCP-03",
+    "MIN-VCP-04",
+    "MIN-VCP-05",
+    "MIN-BASE-01"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-GAP-MEASURE"
+   ],
+   "psr709": [
+    "MOKA12-004"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-GAP"
+   ],
+   "psr709": [
+    "MOKA12-004"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-GAP"
+   ],
+   "psr709": [
+    "MOKA12-004"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-MEGA"
+   ],
+   "psr709": [
+    "MOKA24-MEGA"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-SELLGUIDE"
+   ],
+   "psr709": [
+    "MOKA12-007",
+    "MOKASTOP-006"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-VOLUME-1-5-EXACT",
+   "strategyIds": [
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-BGU-VOLUME",
+    "MOKA-SF-BGU-VOLWINDOW"
+   ],
+   "psr709": [
+    "MOKA24-VOL"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-UPDAY"
+   ],
+   "psr709": [
+    "MOKAPP-003"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EQUAL-NOT-GREATER",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-VOLUME"
+   ],
+   "psr709": [
+    "MOKAPP-003"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-CONTEXT"
+   ],
+   "psr709": [
+    "MOKAPP-001",
+    "MOKAPP-002",
+    "MOKAPP-004",
+    "MOKAPP-006",
+    "MOKAPP-007",
+    "MOKAPP-008",
+    "MOKAPP-009",
+    "MOKAPP-010"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-NO-DOWN-DAY",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-DOWNDAY"
+   ],
+   "psr709": [
+    "MOKAPP-003"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-VOLUME"
+   ],
+   "psr709": [
+    "MOKAPP-003"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-WINDOW-10",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT"
+   ],
+   "rules": [
+    "MOKA-SF-PP-VOLUME"
+   ],
+   "psr709": [
+    "MOKAPP-003"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-ADD"
+   ],
+   "psr709": [
+    "TUR-ADD"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-STOPADD",
+    "TUR-SF-STOPGAP"
+   ],
+   "psr709": [
+    "TUR-STOPADD",
+    "TUR-STOPGAP"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-STOP",
+    "TUR-SF-STOPADD"
+   ],
+   "psr709": [
+    "TUR-STOP",
+    "TUR-STOPADD"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-ENTRY"
+   ],
+   "psr709": [
+    "TUR-S1ENT",
+    "TUR-INTRADAY",
+    "TUR-GAP"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
+   "strategyIds": [
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-ENTRY",
+    "TUR-SF-S2-NOSKIP"
+   ],
+   "psr709": [
+    "TUR-S2ENT",
+    "TUR-INTRADAY",
+    "TUR-GAP",
+    "TUR-S2NOSKIP"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S1EX"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2",
+   "strategyIds": [
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S2EX"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-FAILSAFE",
+    "TUR-SF-FAILSAFE-EXIT"
+   ],
+   "psr709": [
+    "TUR-FAILSAFE"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-ENTRY"
+   ],
+   "psr709": [
+    "TUR-S1ENT",
+    "TUR-INTRADAY",
+    "TUR-GAP",
+    "TUR-S2ENT"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT4",
+    "TUR-SF-ADD",
+    "TUR-SF-ADDFAST"
+   ],
+   "psr709": [
+    "TUR-LIMIT4",
+    "TUR-ADD",
+    "TUR-ADDFAST"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-UNIT"
+   ],
+   "psr709": [
+    "TUR-UNIT",
+    "TUR-DOLLAR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT12"
+   ],
+   "psr709": [
+    "TUR-LIMIT12"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT4"
+   ],
+   "psr709": [
+    "TUR-LIMIT4"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-TR",
+    "TUR-SF-N",
+    "TUR-SF-N-DAILY"
+   ],
+   "psr709": [
+    "TUR-TR",
+    "TUR-N",
+    "TUR-WEEKLY"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-CASH"
+   ],
+   "psr709": [],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-CONSISTENT"
+   ],
+   "psr709": [
+    "TUR-SIGNAL-CONSISTENCY",
+    "TUR-CONSISTENT"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-NOTIONAL"
+   ],
+   "psr709": [
+    "TUR-NOTIONAL",
+    "TUR-DRAWDOWN"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-RANK"
+   ],
+   "psr709": [
+    "TUR-RANK",
+    "TUR-RANKVAR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-FILTER"
+   ],
+   "psr709": [
+    "TUR-S1SKIP",
+    "TUR-S1LOSER",
+    "TUR-S1DIR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-FILTER"
+   ],
+   "psr709": [
+    "TUR-S1SKIP",
+    "TUR-S1LOSER",
+    "TUR-S1DIR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-FILTER"
+   ],
+   "psr709": [
+    "TUR-S1SKIP",
+    "TUR-S1LOSER",
+    "TUR-S1DIR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-UNIT"
+   ],
+   "psr709": [
+    "TUR-UNIT",
+    "TUR-DOLLAR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-STOPADD"
+   ],
+   "psr709": [
+    "TUR-STOPADD"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-MARKETS"
+   ],
+   "psr709": [
+    "TUR-MARKETS"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-ORDER",
+    "WEIN-SF-STOP-PLAN",
+    "WEIN-SF-INV-BREAKOUT",
+    "WEIN-SF-INV-STOP"
+   ],
+   "psr709": [
+    "WEIN-ORD",
+    "WEIN-STOP1",
+    "WEIN-BUY1",
+    "WEIN-BASE",
+    "WEIN-STOP2"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR"
+   ],
+   "rules": [
+    "WEIN-SF-INV-BREAKOUT"
+   ],
+   "psr709": [
+    "WEIN-BUY1",
+    "WEIN-BASE"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-MA-GATE"
+   ],
+   "psr709": [
+    "WEIN-MA"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-FALLING",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-MA-GATE"
+   ],
+   "psr709": [
+    "WEIN-MA"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-MA-GATE"
+   ],
+   "psr709": [
+    "WEIN-MA"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-MARKET"
+   ],
+   "psr709": [
+    "WEIN-MARKET"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-NONTECH"
+   ],
+   "psr709": [
+    "WEIN-SELL4"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-RS"
+   ],
+   "psr709": [
+    "WEIN-RS",
+    "WEIN-RSP",
+    "WEIN-RSZERO",
+    "WEIN-RSNO"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-ORDER",
+    "WEIN-SF-TR-CONT",
+    "WEIN-SF-TR-STOP"
+   ],
+   "psr709": [
+    "WEIN-ORD",
+    "WEIN-TR-CONT",
+    "WEIN-TR-STOP"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT",
+   "strategyIds": [
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-TR-CONT"
+   ],
+   "psr709": [
+    "WEIN-TR-CONT"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-VOLUME"
+   ],
+   "psr709": [
+    "WEIN-VOL",
+    "WEIN-VOL1",
+    "WEIN-VOL2",
+    "WEIN-VOL3",
+    "WEIN-VOL4",
+    "WEIN-BASEVOL"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-C",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-VOLUME"
+   ],
+   "psr709": [
+    "WEIN-VOL",
+    "WEIN-VOL1",
+    "WEIN-VOL2",
+    "WEIN-VOL3",
+    "WEIN-VOL4",
+    "WEIN-BASEVOL"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-VOLUME"
+   ],
+   "psr709": [
+    "WEIN-VOL",
+    "WEIN-VOL1",
+    "WEIN-VOL2",
+    "WEIN-VOL3",
+    "WEIN-VOL4",
+    "WEIN-BASEVOL"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY",
+   "strategyIds": [
+    "SF_WEINSTEIN_INVESTOR",
+    "SF_WEINSTEIN_TRADER"
+   ],
+   "rules": [
+    "WEIN-SF-WEEKLY"
+   ],
+   "psr709": [
+    "WEIN-S2"
+   ],
+   "result": "SEE_TEST_RUN"
+  }
+ ],
+ "psr709CaseCatalogue": {
+  "SF_TURTLE_S1": [
+   {
+    "caseId": "TUR-HO2002",
+    "action": "CALCULATION_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF8–9; printed14–15"
+   },
+   {
+    "caseId": "TUR-GOLD",
+    "action": "NUMERIC_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF14; printed20"
+   },
+   {
+    "caseId": "TUR-CRUDE",
+    "action": "NUMERIC_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF16–18; printed22–24"
+   }
+  ],
+  "SF_TURTLE_S2": [
+   {
+    "caseId": "TUR-HO2002",
+    "action": "CALCULATION_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF8–9; printed14–15"
+   },
+   {
+    "caseId": "TUR-GOLD",
+    "action": "NUMERIC_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF14; printed20"
+   },
+   {
+    "caseId": "TUR-CRUDE",
+    "action": "NUMERIC_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-TUR PDF16–18; printed22–24"
+   }
+  ],
+  "SF_DARVAS_BOX": [
+   {
+    "caseId": "DAR-PIT",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 62; printed 50"
+   },
+   {
+    "caseId": "DAR-LOUIS",
+    "action": "BUY_CHASE",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 66; printed 54"
+   },
+   {
+    "caseId": "DAR-ALS",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 67; printed 55"
+   },
+   {
+    "caseId": "DAR-DRESSER",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 67; printed 55"
+   },
+   {
+    "caseId": "DAR-COOPER",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 67; printed 55"
+   },
+   {
+    "caseId": "DAR-NAA",
+    "action": "BUY_HOLD_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 67; printed 55"
+   },
+   {
+    "caseId": "DAR-LOR1",
+    "action": "BUY_STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 99; printed 87"
+   },
+   {
+    "caseId": "DAR-LOR2",
+    "action": "REENTRY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 100; printed 88"
+   },
+   {
+    "caseId": "DAR-LORADD1",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 101; printed 89"
+   },
+   {
+    "caseId": "DAR-LORADD2",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 101; printed 89"
+   },
+   {
+    "caseId": "DAR-LORADD3",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 101; printed 89"
+   },
+   {
+    "caseId": "DAR-LOREXIT",
+    "action": "SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 107; printed 95"
+   },
+   {
+    "caseId": "DAR-DINERS1",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 104; printed 92"
+   },
+   {
+    "caseId": "DAR-DINERS2",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 104; printed 92"
+   },
+   {
+    "caseId": "DAR-DINERSEX",
+    "action": "SELL_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 105; printed 93"
+   },
+   {
+    "caseId": "DAR-BRUCE",
+    "action": "BUY_AND_ADDS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 107; printed 95"
+   },
+   {
+    "caseId": "DAR-BRUCEEX",
+    "action": "SELL_BLOCKS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 110; printed 98"
+   },
+   {
+    "caseId": "DAR-MOLY",
+    "action": "BUY_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 111; printed 99"
+   },
+   {
+    "caseId": "DAR-HAVEG1",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 112; printed 100"
+   },
+   {
+    "caseId": "DAR-LORLOSS1",
+    "action": "REENTRY_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 112; printed 100"
+   },
+   {
+    "caseId": "DAR-LORLOSS2",
+    "action": "REENTRY_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 112; printed 100"
+   },
+   {
+    "caseId": "DAR-LORLOSS3",
+    "action": "REENTRY_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 112; printed 100"
+   },
+   {
+    "caseId": "DAR-UNIV1",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 113; printed 101"
+   },
+   {
+    "caseId": "DAR-UNIV2",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 114; printed 102"
+   },
+   {
+    "caseId": "DAR-UNIV3",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 114; printed 102"
+   },
+   {
+    "caseId": "DAR-UNIVEX",
+    "action": "SELL_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 135; printed 123"
+   },
+   {
+    "caseId": "DAR-THIO1",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 116; printed 104"
+   },
+   {
+    "caseId": "DAR-THIO2",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 116; printed 104"
+   },
+   {
+    "caseId": "DAR-THIOEX",
+    "action": "SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 137; printed 125"
+   },
+   {
+    "caseId": "DAR-TX1",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 135; printed 123"
+   },
+   {
+    "caseId": "DAR-TX2",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 135; printed 123"
+   },
+   {
+    "caseId": "DAR-TX3",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 136; printed 124"
+   },
+   {
+    "caseId": "DAR-ZP",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-BP",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-FP",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-LP",
+    "action": "PILOT_BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-BEX",
+    "action": "SELL_STOP",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-LEX",
+    "action": "SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-ZADD",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 138; printed 126"
+   },
+   {
+    "caseId": "DAR-FADD",
+    "action": "ADD",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 139; printed 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-1",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 125"
+   },
+   {
+    "caseId": "DAR-CRISIS-2",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 125"
+   },
+   {
+    "caseId": "DAR-CRISIS-3",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-4",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-5",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-6",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-7",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-8",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 126"
+   },
+   {
+    "caseId": "DAR-CRISIS-9",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-10",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-11",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-12",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-13",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-CRISIS-14",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF 127"
+   },
+   {
+    "caseId": "DAR-ARLAN",
+    "action": "CORRECT_READER_INTERPRETATION",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B06 PDF 194–196"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-1",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-2",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-3",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-4",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-5",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-6",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-7",
+    "action": "BUY_SELL_WIN",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF133; printed121"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-8",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF134; printed122"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-9",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF134; printed122"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-10",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF134; printed122"
+   },
+   {
+    "caseId": "DAR-POSTCRISIS-11",
+    "action": "BUY_SELL_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF134; printed122"
+   },
+   {
+    "caseId": "DAR-EARLY-01",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF20;printed8"
+   },
+   {
+    "caseId": "DAR-EARLY-02",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF22;printed10"
+   },
+   {
+    "caseId": "DAR-EARLY-03",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF22;printed10"
+   },
+   {
+    "caseId": "DAR-EARLY-04",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF24;printed12"
+   },
+   {
+    "caseId": "DAR-EARLY-05",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF24;printed12"
+   },
+   {
+    "caseId": "DAR-EARLY-06",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF24;printed12"
+   },
+   {
+    "caseId": "DAR-EARLY-07",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF25;printed13"
+   },
+   {
+    "caseId": "DAR-EARLY-08",
+    "action": "OWNED",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF23;printed11"
+   },
+   {
+    "caseId": "DAR-EARLY-09",
+    "action": "OWNED",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF23;printed11"
+   },
+   {
+    "caseId": "DAR-EARLY-10",
+    "action": "OWNED",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF23;printed11"
+   },
+   {
+    "caseId": "DAR-EARLY-11",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF35;printed23"
+   },
+   {
+    "caseId": "DAR-EARLY-12",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF35;printed23"
+   },
+   {
+    "caseId": "DAR-EARLY-13",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF35;printed23"
+   },
+   {
+    "caseId": "DAR-EARLY-14",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-15",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-16",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-17",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-18",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-19",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-20",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF36;printed24"
+   },
+   {
+    "caseId": "DAR-EARLY-21",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF37;printed25"
+   },
+   {
+    "caseId": "DAR-EARLY-22",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF37;printed25"
+   },
+   {
+    "caseId": "DAR-EARLY-23",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF37;printed25"
+   },
+   {
+    "caseId": "DAR-EARLY-24",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF37;printed25"
+   },
+   {
+    "caseId": "DAR-EARLY-25",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF40;printed28"
+   },
+   {
+    "caseId": "DAR-EARLY-26",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF41;printed29"
+   },
+   {
+    "caseId": "DAR-EARLY-27",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF41;printed29"
+   },
+   {
+    "caseId": "DAR-EARLY-28",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF41;printed29"
+   },
+   {
+    "caseId": "DAR-EARLY-29",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF41;printed29"
+   },
+   {
+    "caseId": "DAR-EARLY-30",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF42;printed30"
+   },
+   {
+    "caseId": "DAR-EARLY-31",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF42;printed30"
+   },
+   {
+    "caseId": "DAR-EARLY-32",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF42;printed30"
+   },
+   {
+    "caseId": "DAR-EARLY-33",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF42;printed30"
+   },
+   {
+    "caseId": "DAR-EARLY-34",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF44;printed32"
+   },
+   {
+    "caseId": "DAR-EARLY-35",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF45;printed33"
+   },
+   {
+    "caseId": "DAR-EARLY-36",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF53;printed41"
+   },
+   {
+    "caseId": "DAR-EARLY-37",
+    "action": "BUY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B06 PDF55;printed43"
+   }
+  ],
+  "SF_WEINSTEIN_INVESTOR": [
+   {
+    "caseId": "WEIN-ED-BS",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 47; printed 33"
+   },
+   {
+    "caseId": "WEIN-ED-IP",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 49; printed 35"
+   },
+   {
+    "caseId": "WEIN-ED-ICH",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 51; printed 37"
+   },
+   {
+    "caseId": "WEIN-ED-MXF",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 74; printed 60"
+   },
+   {
+    "caseId": "WEIN-ED-SFY",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 76; printed 62"
+   },
+   {
+    "caseId": "WEIN-ED-AEG",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 113; printed 99"
+   },
+   {
+    "caseId": "WEIN-ED-PN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 114; printed 100"
+   },
+   {
+    "caseId": "WEIN-ED-GT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 119; printed 105"
+   },
+   {
+    "caseId": "WEIN-ED-TXI",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 120; printed 106"
+   },
+   {
+    "caseId": "WEIN-ED-MRK",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 203; printed 189"
+   },
+   {
+    "caseId": "WEIN-ED-WMT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 204; printed 190"
+   },
+   {
+    "caseId": "WEIN-ED-X",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 196; printed 182"
+   },
+   {
+    "caseId": "WEIN-ED-RLM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 210; printed 196"
+   },
+   {
+    "caseId": "WEIN-ED-BOM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 238; printed 224"
+   },
+   {
+    "caseId": "WEIN-ED-HSN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 239; printed 225"
+   },
+   {
+    "caseId": "WEIN-ED-JOL",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 251; printed 237"
+   },
+   {
+    "caseId": "WEIN-ED-BLAIR",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 266; printed 252"
+   },
+   {
+    "caseId": "WEIN-ED-DOW",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 267; printed 253"
+   },
+   {
+    "caseId": "WEIN-ED-NSM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 245; printed 231"
+   },
+   {
+    "caseId": "WEIN-PTR-DRV",
+    "action": "BUY_RECOMMENDATION_THEN_STOP",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 150; printed 136"
+   },
+   {
+    "caseId": "WEIN-PTR-TDM",
+    "action": "BUY_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 151; printed 137"
+   },
+   {
+    "caseId": "WEIN-PTR-TXN",
+    "action": "BUY_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 151; printed 137"
+   },
+   {
+    "caseId": "WEIN-PTR-GeneralMedical",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 244; printed 230"
+   },
+   {
+    "caseId": "WEIN-PTR-COLE",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 248; printed 234"
+   },
+   {
+    "caseId": "WEIN-PTR-Teleprompter",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 258; printed 244"
+   }
+  ],
+  "SF_WEINSTEIN_TRADER": [
+   {
+    "caseId": "WEIN-ED-BS",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 47; printed 33"
+   },
+   {
+    "caseId": "WEIN-ED-IP",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 49; printed 35"
+   },
+   {
+    "caseId": "WEIN-ED-ICH",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 51; printed 37"
+   },
+   {
+    "caseId": "WEIN-ED-MXF",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 74; printed 60"
+   },
+   {
+    "caseId": "WEIN-ED-SFY",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 76; printed 62"
+   },
+   {
+    "caseId": "WEIN-ED-AEG",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 113; printed 99"
+   },
+   {
+    "caseId": "WEIN-ED-PN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 114; printed 100"
+   },
+   {
+    "caseId": "WEIN-ED-GT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 119; printed 105"
+   },
+   {
+    "caseId": "WEIN-ED-TXI",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 120; printed 106"
+   },
+   {
+    "caseId": "WEIN-ED-MRK",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 203; printed 189"
+   },
+   {
+    "caseId": "WEIN-ED-WMT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 204; printed 190"
+   },
+   {
+    "caseId": "WEIN-ED-X",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 196; printed 182"
+   },
+   {
+    "caseId": "WEIN-ED-RLM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 210; printed 196"
+   },
+   {
+    "caseId": "WEIN-ED-BOM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 238; printed 224"
+   },
+   {
+    "caseId": "WEIN-ED-HSN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 239; printed 225"
+   },
+   {
+    "caseId": "WEIN-ED-JOL",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 251; printed 237"
+   },
+   {
+    "caseId": "WEIN-ED-BLAIR",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 266; printed 252"
+   },
+   {
+    "caseId": "WEIN-ED-DOW",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 267; printed 253"
+   },
+   {
+    "caseId": "WEIN-ED-NSM",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B09 PDF 245; printed 231"
+   },
+   {
+    "caseId": "WEIN-PTR-DRV",
+    "action": "BUY_RECOMMENDATION_THEN_STOP",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 150; printed 136"
+   },
+   {
+    "caseId": "WEIN-PTR-TDM",
+    "action": "BUY_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 151; printed 137"
+   },
+   {
+    "caseId": "WEIN-PTR-TXN",
+    "action": "BUY_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 151; printed 137"
+   },
+   {
+    "caseId": "WEIN-PTR-GeneralMedical",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 244; printed 230"
+   },
+   {
+    "caseId": "WEIN-PTR-COLE",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 248; printed 234"
+   },
+   {
+    "caseId": "WEIN-PTR-Teleprompter",
+    "action": "SHORT_RECOMMENDATION",
+    "category": "WATCHLIST",
+    "source": "B09 PDF 258; printed 244"
+   }
+  ],
+  "SF_MINERVINI_SEPA_VCP": [
+   {
+    "caseId": "MIN-AAPL04",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 245"
+   },
+   {
+    "caseId": "MIN-FSII95",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 265"
+   },
+   {
+    "caseId": "MIN-VIVO07",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 270"
+   },
+   {
+    "caseId": "MIN-CRUS10",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 305"
+   },
+   {
+    "caseId": "MIN-BBY97",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 343"
+   },
+   {
+    "caseId": "MIN-WIRE",
+    "action": "SELECT_CANDIDATE",
+    "category": "WATCHLIST",
+    "source": "B12 PDF 211–212"
+   },
+   {
+    "caseId": "MIN-MIK",
+    "action": "BUY_AND_EARLY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 78"
+   },
+   {
+    "caseId": "MIN-TWTR",
+    "action": "BUILD_AND_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 78–79"
+   },
+   {
+    "caseId": "MIN-AA",
+    "action": "BUY_AND_STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 72"
+   },
+   {
+    "caseId": "MIN-CAB1",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_PROBABLE",
+    "source": "B07 PDF 67"
+   },
+   {
+    "caseId": "MIN-CAB2",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_PROBABLE",
+    "source": "B07 PDF 67"
+   },
+   {
+    "caseId": "MIN-REJECT-FHC",
+    "action": "CONSIDERED_DID_NOT_BUY",
+    "category": "REJECTED_SETUP",
+    "source": "B07 PDF 30"
+   },
+   {
+    "caseId": "MIN-EDU-URBN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 170"
+   },
+   {
+    "caseId": "MIN-EDU-CSCO",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-HD",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-MSFT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-GMCR",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 179"
+   },
+   {
+    "caseId": "MIN-EDU-APOL",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 202"
+   },
+   {
+    "caseId": "MIN-EDU-RST",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 208"
+   },
+   {
+    "caseId": "MIN-EDU-EDU",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 302"
+   },
+   {
+    "caseId": "MIN-EDU-MELI",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 304"
+   },
+   {
+    "caseId": "MIN-EDU-ARNA",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 344"
+   },
+   {
+    "caseId": "MIN-EDU-MNST",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 218"
+   },
+   {
+    "caseId": "MIN-EDU-MGA",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 282"
+   },
+   {
+    "caseId": "MIN-EDU-QSII",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 342"
+   },
+   {
+    "caseId": "MIN-EDU-MDVN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B03 PDF 221"
+   }
+  ],
+  "SF_MINERVINI_POWER_PLAY": [
+   {
+    "caseId": "MIN-AAPL04",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 245"
+   },
+   {
+    "caseId": "MIN-FSII95",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 265"
+   },
+   {
+    "caseId": "MIN-VIVO07",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 270"
+   },
+   {
+    "caseId": "MIN-CRUS10",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 305"
+   },
+   {
+    "caseId": "MIN-BBY97",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B12 PDF 343"
+   },
+   {
+    "caseId": "MIN-WIRE",
+    "action": "SELECT_CANDIDATE",
+    "category": "WATCHLIST",
+    "source": "B12 PDF 211–212"
+   },
+   {
+    "caseId": "MIN-MIK",
+    "action": "BUY_AND_EARLY_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 78"
+   },
+   {
+    "caseId": "MIN-TWTR",
+    "action": "BUILD_AND_SELL",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 78–79"
+   },
+   {
+    "caseId": "MIN-AA",
+    "action": "BUY_AND_STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "B07 PDF 72"
+   },
+   {
+    "caseId": "MIN-CAB1",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_PROBABLE",
+    "source": "B07 PDF 67"
+   },
+   {
+    "caseId": "MIN-CAB2",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_PROBABLE",
+    "source": "B07 PDF 67"
+   },
+   {
+    "caseId": "MIN-REJECT-FHC",
+    "action": "CONSIDERED_DID_NOT_BUY",
+    "category": "REJECTED_SETUP",
+    "source": "B07 PDF 30"
+   },
+   {
+    "caseId": "MIN-EDU-URBN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 170"
+   },
+   {
+    "caseId": "MIN-EDU-CSCO",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-HD",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-MSFT",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 178"
+   },
+   {
+    "caseId": "MIN-EDU-GMCR",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 179"
+   },
+   {
+    "caseId": "MIN-EDU-APOL",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 202"
+   },
+   {
+    "caseId": "MIN-EDU-RST",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 208"
+   },
+   {
+    "caseId": "MIN-EDU-EDU",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 302"
+   },
+   {
+    "caseId": "MIN-EDU-MELI",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 304"
+   },
+   {
+    "caseId": "MIN-EDU-ARNA",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 344"
+   },
+   {
+    "caseId": "MIN-EDU-MNST",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 218"
+   },
+   {
+    "caseId": "MIN-EDU-MGA",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 282"
+   },
+   {
+    "caseId": "MIN-EDU-QSII",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B12 PDF 342"
+   },
+   {
+    "caseId": "MIN-EDU-MDVN",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "B03 PDF 221"
+   }
+  ],
+  "SF_KK_BREAKOUT": [
+   {
+    "caseId": "KK-B02",
+    "action": "SHORT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
+   },
+   {
+    "caseId": "KK-B03",
+    "action": "LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKTWEET own tweet2020-12-31"
+   },
+   {
+    "caseId": "KK-B04",
+    "action": "ACCIDENTAL_ORDER_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ worsttrade"
+   },
+   {
+    "caseId": "KK-B05",
+    "action": "STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKEP recentexamples"
+   },
+   {
+    "caseId": "KK-B10",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B11",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B12",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B13",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B14",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B15",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B16",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B17",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B18",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B19",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   }
+  ],
+  "SF_KK_EPISODIC_PIVOT": [
+   {
+    "caseId": "KK-B02",
+    "action": "SHORT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
+   },
+   {
+    "caseId": "KK-B03",
+    "action": "LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKTWEET own tweet2020-12-31"
+   },
+   {
+    "caseId": "KK-B04",
+    "action": "ACCIDENTAL_ORDER_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ worsttrade"
+   },
+   {
+    "caseId": "KK-B05",
+    "action": "STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKEP recentexamples"
+   },
+   {
+    "caseId": "KK-B10",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B11",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B12",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B13",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B14",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B15",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B16",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B17",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B18",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B19",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   }
+  ],
+  "SF_KK_PARABOLIC_SHORT": [
+   {
+    "caseId": "KK-B01",
+    "action": "MULTIPLE_SHORT_ENTRIES_EXITS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKLOSS body"
+   },
+   {
+    "caseId": "KK-B02",
+    "action": "SHORT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ besttrade; own embedded2020-12-31tweet"
+   },
+   {
+    "caseId": "KK-B03",
+    "action": "LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKTWEET own tweet2020-12-31"
+   },
+   {
+    "caseId": "KK-B04",
+    "action": "ACCIDENTAL_ORDER_LOSS",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKFAQ worsttrade"
+   },
+   {
+    "caseId": "KK-B05",
+    "action": "STOP_OUT",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-KKEP recentexamples"
+   },
+   {
+    "caseId": "KK-B10",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B11",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B12",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B13",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B14",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B15",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B16",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B17",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B18",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   },
+   {
+    "caseId": "KK-B19",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-KK3 annotated setup chart"
+   }
+  ],
+  "SF_MOKA_POCKET_PIVOT": [
+   {
+    "caseId": "MOKA-EX-1",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF9"
+   },
+   {
+    "caseId": "MOKA-EX-2",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF10"
+   },
+   {
+    "caseId": "MOKA-EX-3",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF15"
+   },
+   {
+    "caseId": "MOKA-EX-4",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF27"
+   },
+   {
+    "caseId": "MOKA-EX-5",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF28"
+   },
+   {
+    "caseId": "MOKA-EX-6",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF37"
+   },
+   {
+    "caseId": "MOKA-EX-7",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF38"
+   },
+   {
+    "caseId": "MOKA-EX-8",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF41"
+   },
+   {
+    "caseId": "MOKA-EX-9",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF42"
+   },
+   {
+    "caseId": "MOKA-EX-10",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF46"
+   },
+   {
+    "caseId": "MOKA-EX-11",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF47"
+   }
+  ],
+  "SF_MOKA_BUYABLE_GAP_UP": [
+   {
+    "caseId": "MOKA-EX-1",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF9"
+   },
+   {
+    "caseId": "MOKA-EX-2",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF10"
+   },
+   {
+    "caseId": "MOKA-EX-3",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF15"
+   },
+   {
+    "caseId": "MOKA-EX-4",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF27"
+   },
+   {
+    "caseId": "MOKA-EX-5",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF28"
+   },
+   {
+    "caseId": "MOKA-EX-6",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF37"
+   },
+   {
+    "caseId": "MOKA-EX-7",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF38"
+   },
+   {
+    "caseId": "MOKA-EX-8",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF41"
+   },
+   {
+    "caseId": "MOKA-EX-9",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF42"
+   },
+   {
+    "caseId": "MOKA-EX-10",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF46"
+   },
+   {
+    "caseId": "MOKA-EX-11",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKA12 PDF47"
+   },
+   {
+    "caseId": "MOKA24-MCD",
+    "action": "ACCEPT_BELOW_STANDARD_VOLUME",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-MOKAV24 MCDparagraph"
+   }
+  ],
+  "SF_RASCHKE_HOLY_GRAIL": [
+   {
+    "caseId": "RAS-SOY-FLOOD",
+    "action": "BUY_HOLD_LONGER",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-RAS04 PDF2;ownquote"
+   },
+   {
+    "caseId": "RAS-GRAIL-2003-12-19",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-RAS04 PDF3"
+   },
+   {
+    "caseId": "RAS-GRAIL-2003-12-23",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-RAS04 PDF4"
+   },
+   {
+    "caseId": "RAS-GRAIL-2004-01-02",
+    "action": "CHART_EXAMPLE",
+    "category": "EDUCATIONAL_EXAMPLE",
+    "source": "W-RAS04 PDF4"
+   }
+  ]
+ }
+}

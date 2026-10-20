@@ -1,0 +1,1145 @@
+{
+ "schema": "supertrader-sf-registry-1.0.0",
+ "sourceEvidence": {
+  "pullRequest": 709,
+  "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+  "manifestSha256": "e9f497ca05c047e07b757f7edaec37ba6c2a9945e016bc763e2aff7463529e12"
+ },
+ "foundation": {
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "snapshotContract": "supertrader-research-snapshot-1.0.0",
+  "accounting": {
+   "cli": "--accounting research-v1",
+   "mode": "RESEARCH_V1",
+   "module": "scripts/supertrader/validation/accounting-contract.mjs",
+   "id": "SUPERTRADER_RESEARCH_ACCOUNTING",
+   "version": "1.0.0"
+  },
+  "securityIdentity": {
+   "scheme": "core/identity.js#securityIdForTicker (ADR-001)",
+   "listing": "snapshot identity listingId tiingo:<EX>:<TICKER>:<start>"
+  },
+  "priceTruth": {
+   "splitFactors": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries",
+   "corporateActions": "snapshot convention hash (adjustSeries, splitSegments, MAX_GAP_DAYS); no new corporate-action protocol"
+  },
+  "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+ },
+ "entries": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "candidateId": "C01",
+   "rank709": 1,
+   "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
+   "method": "System 1 (20-day breakout with skip filter and 55-day failsafe, 10-day exit)",
+   "sources": [
+    {
+     "sourceId": "W-TUR",
+     "edition": "The Original Turtle Trading Rules, 2003 participant publication (printed pp. 7-33)",
+     "role": "authoritative English core"
+    },
+    {
+     "sourceId": "B02",
+     "edition": "Curtis M. Faith, Way of the Turtle (2007), unofficial 2012 Indonesian translation",
+     "role": "secondary; translation conflicts (60 vs 55 days) resolved in favour of W-TUR (#709)"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "bbb9ceddaf171697a63ad1bd51ce9a385ab93ec97cf0f02395d421f511686275",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
+    "ORIGINAL": "NOT_IMPLEMENTED"
+   },
+   "outputKind": "RESEARCH_SIGNAL",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 38,
+    "hardRules": 27,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 29,
+    "excluded": 9,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [],
+   "knownLimitations": [
+    "equity adaptation, long only: net long beta, not the futures risk profile",
+    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
+    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)",
+    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS)"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 2 Turtle"
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "candidateId": "C02",
+   "rank709": 2,
+   "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
+   "method": "System 2 (55-day breakout, 20-day exit, no filter)",
+   "sources": [
+    {
+     "sourceId": "W-TUR",
+     "edition": "The Original Turtle Trading Rules, 2003 participant publication (printed pp. 7-33)",
+     "role": "authoritative English core"
+    },
+    {
+     "sourceId": "B02",
+     "edition": "Curtis M. Faith, Way of the Turtle (2007), unofficial 2012 Indonesian translation",
+     "role": "secondary; translation conflicts (60 vs 55 days) resolved in favour of W-TUR (#709)"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "44e54491ab7ef3fe090027f9c2b124cc47e31ab9d029203612583e017d466086",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "NOT_IMPLEMENTED",
+    "ORIGINAL": "NOT_IMPLEMENTED"
+   },
+   "outputKind": "RESEARCH_SIGNAL",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 35,
+    "hardRules": 24,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 26,
+    "excluded": 9,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [],
+   "knownLimitations": [
+    "equity adaptation, long only: net long beta, not the futures risk profile",
+    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
+    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 2 Turtle"
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "candidateId": "C03",
+   "rank709": 3,
+   "trader": "Nicolas Darvas",
+   "method": "Later Q&A box construction, buy-stop entry and box stop method (machine component) with manual techno-fundamental layer",
+   "sources": [
+    {
+     "sourceId": "B06",
+     "edition": "How I Made $2,000,000 in the Stock Market, Kensington / Lyle Stuart reprint (copyright 1960 / 1971 / 1994), English",
+     "role": "authoritative; Q&A pp. 182-198 for the box rules, chapters for development context"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "d98bdb34c56c4a1f43184dfdc09dde5b44601b3d0c812eaf793a6e3bf5eac89e",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 35,
+    "hardRules": 10,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 24,
+    "excluded": 11,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "DAR-MR-SELECTION",
+     "psr709": [
+      "DAR-Q12",
+      "DAR-Q14",
+      "DAR-B9",
+      "DAR-B10",
+      "DAR-B11"
+     ],
+     "question": "techno-fundamental selection: industry growth expectation, strongest stock of the industry, expected earning power",
+     "blocksAutomation": true
+    },
+    {
+     "id": "DAR-MR-VOLUME",
+     "psr709": [
+      "DAR-Q10",
+      "DAR-B3"
+     ],
+     "question": "volume relative to the stock's own history (no general minimum)",
+     "blocksAutomation": true
+    },
+    {
+     "id": "DAR-MR-MARKET",
+     "psr709": [
+      "DAR-Q13",
+      "DAR-B14"
+     ],
+     "question": "market trend and relevant industry representatives",
+     "blocksAutomation": true
+    },
+    {
+     "id": "DAR-MR-SIZING",
+     "psr709": [
+      "DAR-B15",
+      "DAR-B18",
+      "DAR-B8"
+     ],
+     "question": "position size, pilot buys and adds are the reviewer's decision; personal exceptions (DAR-C1, DAR-C3, DAR-C6) are not generalized",
+     "blocksAutomation": true
+    },
+    {
+     "id": "DAR-MR-FRACTION",
+     "psr709": [
+      "DAR-Q4",
+      "DAR-Q5"
+     ],
+     "question": "\"a fraction\": the machine uses one raw cent; the reviewer may set another fraction per trade (DAR-C-THIO)",
+     "blocksAutomation": false
+    }
+   ],
+   "knownLimitations": [
+    "the full Darvas method (selection, volume, market, sizing) cannot be measured on history: manual decisions are logged forward only",
+    "all-time high is evaluated within the snapshot history; when that history does not reach the listing date the flag is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED",
+    "start of the bottom search is UNRESOLVED in #709 (VU-DAR); both readings are supported, the default is declared"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 3 Darvas"
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "candidateId": "C04",
+   "rank709": 4,
+   "trader": "Stan Weinstein",
+   "method": "Stage 2 Investor: early Stage 2 breakout above resistance, half position at the breakout, half on a constructive pullback",
+   "sources": [
+    {
+     "sourceId": "B09",
+     "edition": "Secrets for Profiting in Bull and Bear Markets, 1988 reprint, English",
+     "role": "authoritative"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "77c98982a53ceecb5a36355ac50fce1a75623744d366efab5ce7fa18b51dc867",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 56,
+    "hardRules": 14,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 39,
+    "excluded": 17,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "WEIN-MR-STAGE",
+     "psr709": [
+      "WEIN-S1",
+      "WEIN-S2",
+      "WEIN-NO3",
+      "WEIN-NO4"
+     ],
+     "question": "is this an early Stage 2 breakout out of a Stage 1 base?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-VOLUME",
+     "psr709": [
+      "WEIN-VOL",
+      "WEIN-VOL4"
+     ],
+     "question": "is the volume confirmation clear (alternatives A / B / C reported)?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-RS",
+     "psr709": [
+      "WEIN-RSNO",
+      "WEIN-RSZERO"
+     ],
+     "question": "is RS negative and still poor (no buy), or below zero but clearly improving?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-OVERHEAD",
+     "psr709": [
+      "WEIN-OH"
+     ],
+     "question": "strong overhead resistance nearby?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-GROUP",
+     "psr709": [
+      "WEIN-GROUP"
+     ],
+     "question": "industry group stage (no data in the machine)",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-STOP",
+     "psr709": [
+      "WEIN-STOP2"
+     ],
+     "question": "which correction low is significant for the initial stop?",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "industry group and market breadth rules are DATA_BLOCKED; the method cannot be fully automated or measured on history",
+    "base start = the week the 30-week MA stopped falling (observable turn); a VU reading of \"MA30 flattens after a decline\", declared"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 4 Weinstein"
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "candidateId": "C05",
+   "rank709": 5,
+   "trader": "Stan Weinstein",
+   "method": "Stage 2 Trader continuation: breakout over new resistance after a consolidation near a clearly rising 30-week MA, full position, tighter trader stop",
+   "sources": [
+    {
+     "sourceId": "B09",
+     "edition": "Secrets for Profiting in Bull and Bear Markets, 1988 reprint, English",
+     "role": "authoritative"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "9055fef01ef951f8a657910fde4af51ff4a7c8d2de63930fd9238d4a1255a9f2",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 63,
+    "hardRules": 14,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 32,
+    "excluded": 31,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "WEIN-MR-STAGE",
+     "psr709": [
+      "WEIN-S2",
+      "WEIN-S3",
+      "WEIN-NO3"
+     ],
+     "question": "is the stock in Stage 2 (not a Stage 3 top)?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-VOLUME",
+     "psr709": [
+      "WEIN-VOL",
+      "WEIN-VOL4"
+     ],
+     "question": "is the volume confirmation clear?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-GROUP",
+     "psr709": [
+      "WEIN-GROUP"
+     ],
+     "question": "industry group stage (no data in the machine)",
+     "blocksAutomation": true
+    },
+    {
+     "id": "WEIN-MR-STOP",
+     "psr709": [
+      "WEIN-TR-STOP"
+     ],
+     "question": "which reaction low is relevant (else about 4-6 % below the breakout and below a round number)?",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "industry group and market breadth rules are DATA_BLOCKED",
+    "consolidation = weeks since the most recent swing high that was not exceeded for at least one week; a VU reading of \"consolidation\", declared"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 4 Weinstein"
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "rank709": 6,
+   "trader": "Mark Minervini",
+   "method": "SEPA: Trend Template qualification and VCP evidence as a machine screen, then manual relative-priority review",
+   "sources": [
+    {
+     "sourceId": "B12",
+     "edition": "Trade Like a Stock Market Wizard (2013), Indonesian machine-like translation",
+     "role": "primary content via translation; modal wording not checked against the English edition"
+    },
+    {
+     "sourceId": "B07",
+     "edition": "Momentum Masters (2015 original), 2021 Indonesian translation file",
+     "role": "Minervini answers (risk, stops, sizing, IPO)"
+    },
+    {
+     "sourceId": "B03",
+     "edition": "Think & Trade Like a Champion, Vietnamese licensed edition (copyright 2017)",
+     "role": "sizing and sell rules"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "ba8f694e043a0b67462628950ee764e793782fea9a95b24c973cc97e71b15626",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 118,
+    "hardRules": 16,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 41,
+    "excluded": 77,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "MIN-MR-PRIORITY",
+     "psr709": [
+      "MIN-PROCESS-04",
+      "MIN-PROCESS-05",
+      "MIN-PROCESS-06",
+      "MIN-PROCESS-07",
+      "MIN-PROCESS-08",
+      "MIN-PROCESS-09",
+      "MIN-PROCESS-10",
+      "MIN-PROCESS-11"
+     ],
+     "question": "relative priority of the remaining names (results, surprises, guidance, industry position, peers, catalysts)",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MIN-MR-QUALITY",
+     "psr709": [
+      "MIN-QUALITY-01",
+      "MIN-QUALITY-02",
+      "MIN-QUALITY-03",
+      "MIN-EPS-01",
+      "MIN-EPS-02"
+     ],
+     "question": "earnings quality (core vs one-off), recent and prior quarters; 20-25 % is a common minimum, not a SEPA constant",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MIN-MR-VCP",
+     "psr709": [
+      "MIN-VCP-01",
+      "MIN-VCP-02",
+      "MIN-VCP-03",
+      "MIN-VCP-04",
+      "MIN-VCP-05"
+     ],
+     "question": "is there a valid contraction pattern (counts and halving are typical, not limits; flat bases / boxes allowed)?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MIN-MR-RS",
+     "psr709": [
+      "MIN-TT-08"
+     ],
+     "question": "IBD RS rating >= 70 cannot be computed; the VU RS percentile is shown as a proxy, not as the IBD rating",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "translation-only source wording: no rule is SOURCE_EXACT",
+    "Trend Template criterion 8 (IBD RS >= 70) is DATA_BLOCKED; a VU percentile is not the IBD rating",
+    "SEPA selection is manual by design (MIN-PROCESS-04); the full method cannot be measured on history"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 6 Minervini"
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "rank709": 7,
+   "trader": "Mark Minervini",
+   "method": "Power Play: >= 100 % in under eight weeks starting on strong volume, then a tight consolidation that corrects no more than 20-25 %",
+   "sources": [
+    {
+     "sourceId": "B12",
+     "edition": "Trade Like a Stock Market Wizard (2013), Indonesian machine-like translation",
+     "role": "primary content via translation; modal wording not checked against the English edition"
+    },
+    {
+     "sourceId": "B07",
+     "edition": "Momentum Masters (2015 original), 2021 Indonesian translation file",
+     "role": "Minervini answers (risk, stops, sizing, IPO)"
+    },
+    {
+     "sourceId": "B03",
+     "edition": "Think & Trade Like a Champion, Vietnamese licensed edition (copyright 2017)",
+     "role": "sizing and sell rules"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "b319bb6221b51797ab1cedaf5495d0384aa8fd7229d48e3f3b0adab89a3730f1",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 20,
+    "hardRules": 6,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 9,
+    "excluded": 11,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "MIN-MR-PP-VOLUME",
+     "psr709": [
+      "MIN-PP-02"
+     ],
+     "question": "did the run-up begin with strong volume? (the machine reports the volume ratio of the run-up start)",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MIN-MR-PP-CORR",
+     "psr709": [
+      "MIN-PP-04"
+     ],
+     "question": "correction between 20 % and 25 %: within the printed 20-25 % range or not?",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "all Power Play thresholds are translation-only (REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION); #712 rated the method SOURCE_PARTIAL",
+    "no minimum consolidation length: 3-6 weeks is typical and twelve days is printed (MIN-PP-03)"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 6 Minervini"
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "candidateId": "C08",
+   "rank709": 8,
+   "trader": "Kristjan Kullamaegi",
+   "method": "Common Breakout, written daily alternative (KK-011); opening-range-high branch DATA_BLOCKED",
+   "sources": [
+    {
+     "sourceId": "W-KK3",
+     "edition": "Kristjan Kullamaegi, \"3 timeless setups that have made me tens of millions\" (qullamaggie.com) incl. own replies",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKFAQ",
+     "edition": "Kristjan Kullamaegi, FAQ (qullamaggie.com)",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKEP",
+     "edition": "Kristjan Kullamaegi, Episodic Pivots article incl. own replies",
+     "role": "authoritative"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "7ab2264d725f1691fed24f2acb3874e22eb6c67aef99b51dfe44d1609c20507d",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 36,
+    "hardRules": 4,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 21,
+    "excluded": 15,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "KK-MR-SETUP",
+     "psr709": [
+      "KK-006",
+      "KK-007",
+      "KK-008",
+      "KK-009"
+     ],
+     "question": "strong prior move, higher lows, orderly tightening, rising 10 / 20-day MA?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "KK-MR-LEVEL",
+     "psr709": [
+      "KK-011"
+     ],
+     "question": "which consolidation high is the breakout level?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "KK-MR-PRIORITY",
+     "psr709": [
+      "KK-048",
+      "KK-049"
+     ],
+     "question": "relative priority: liquidity first, then prior move / MA and momentum, then ADR, then volume and growth (no six-fold AND)",
+     "blocksAutomation": false
+    }
+   ],
+   "knownLimitations": [
+    "the opening-range-high entry (his main entry) is DATA_BLOCKED; the daily close variant is the written alternative (KK-011), not the same execution",
+    "the final low of day is unknown during an intraday entry; the daily variant enters at the close so that the stop rule can be evaluated exactly"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 7 Kullamaegi"
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "rank709": 9,
+   "trader": "Kristjan Kullamaegi",
+   "method": "Episodic Pivot: 10 %+ gap on an unexpected significant catalyst with exceptional early volume; ORH entry, low-of-day stop",
+   "sources": [
+    {
+     "sourceId": "W-KK3",
+     "edition": "Kristjan Kullamaegi, \"3 timeless setups that have made me tens of millions\" (qullamaggie.com) incl. own replies",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKFAQ",
+     "edition": "Kristjan Kullamaegi, FAQ (qullamaggie.com)",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKEP",
+     "edition": "Kristjan Kullamaegi, Episodic Pivots article incl. own replies",
+     "role": "authoritative"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "0a9f62888ef8143007ccd40a79d2d816da7e66c23b4c25be5bf562f7eb2b42ce",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 38,
+    "hardRules": 4,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 20,
+    "excluded": 18,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "KK-MR-CATALYST",
+     "psr709": [
+      "KK-015",
+      "KK-038",
+      "KK-039",
+      "KK-040"
+     ],
+     "question": "is there an unexpected significant catalyst (earnings / guidance, regulation, FDA, contract, sector repricing)?",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "no catalyst or intraday data: no historical EP measurement is possible; only isolated components are implemented and tested",
+    "the 10 % gap of KK-015 is a STRONG_PREFERENCE description, used only as evidence"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 7 Kullamaegi"
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "rank709": 10,
+   "trader": "Kristjan Kullamaegi",
+   "method": "Parabolic Short: accelerated up-move; ORL / first red 5-minute candle / failed VWAP retest entry; high of day or VWAP reclaim as risk; cover toward the 10 / 20-day MA",
+   "sources": [
+    {
+     "sourceId": "W-KK3",
+     "edition": "Kristjan Kullamaegi, \"3 timeless setups that have made me tens of millions\" (qullamaggie.com) incl. own replies",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKFAQ",
+     "edition": "Kristjan Kullamaegi, FAQ (qullamaggie.com)",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-KKEP",
+     "edition": "Kristjan Kullamaegi, Episodic Pivots article incl. own replies",
+     "role": "authoritative"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "be83fb4cf356957aefe54626a342ebd5e1df48db329f51d426a8c50e15676eb1",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 34,
+    "hardRules": 3,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 16,
+    "excluded": 18,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "KK-MR-PARABOLIC",
+     "psr709": [
+      "KK-018",
+      "KK-019"
+     ],
+     "question": "several strongly accelerated up days? (sizes are illustrative, not minimums)",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "short side and intraday execution are DATA_BLOCKED; nothing in this method can be measured on history",
+    "illustrative move sizes (KK-019) are never thresholds"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 7 Kullamaegi"
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "candidateId": "C11",
+   "rank709": 11,
+   "trader": "Gil Morales / Chris Kacher",
+   "method": "Pocket Pivot volume signature (machine) with manual chart / fundamental context and exits",
+   "sources": [
+    {
+     "sourceId": "W-MOKAPP",
+     "edition": "Morales / Kacher, Pocket Pivot rules (web primary)",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-MOKA12",
+     "edition": "Morales / Kacher 2012 presentation (web primary PDF)",
+     "role": "authoritative (BGU, exits)"
+    },
+    {
+     "sourceId": "W-MOKASTOP",
+     "edition": "Morales / Kacher on selling / stops (web primary)",
+     "role": "exits"
+    },
+    {
+     "sourceId": "W-MOKAV24",
+     "edition": "Gil Morales 2024 BGU volume note incl. MCD (web primary)",
+     "role": "current volume definition and megacap exception"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "09da9d9f011edd8102ea2b0644c4f3b8e6817965ea9584e033e83c0d6917344c",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 22,
+    "hardRules": 1,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 16,
+    "excluded": 6,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "MOKA-MR-BASE",
+     "psr709": [
+      "MOKAPP-001",
+      "MOKAPP-006",
+      "MOKAPP-008",
+      "MOKAPP-009"
+     ],
+     "question": "constructive base; no multi-month downtrend, no V-shape after a hard break, no wedging",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MOKA-MR-THEME",
+     "psr709": [
+      "MOKAPP-002"
+     ],
+     "question": "strong fundamentals or a convincing theme",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MOKA-MR-EXT",
+     "psr709": [
+      "MOKAPP-004",
+      "MOKAPP-007",
+      "MOKAPP-010"
+     ],
+     "question": "position relative to the 10DMA / critical MA; not extended",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "the full method (context and exits) cannot be measured on history; only the volume signature is mechanical"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 5 Pocket Pivot / BGU"
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "candidateId": "C12",
+   "rank709": 12,
+   "trader": "Gil Morales / Chris Kacher",
+   "method": "Buyable Gap-Up: gap >= 0.75 x ATR40 with standard volume 1.5x (megacap exception), gap-day low as sell guide",
+   "sources": [
+    {
+     "sourceId": "W-MOKAPP",
+     "edition": "Morales / Kacher, Pocket Pivot rules (web primary)",
+     "role": "authoritative"
+    },
+    {
+     "sourceId": "W-MOKA12",
+     "edition": "Morales / Kacher 2012 presentation (web primary PDF)",
+     "role": "authoritative (BGU, exits)"
+    },
+    {
+     "sourceId": "W-MOKASTOP",
+     "edition": "Morales / Kacher on selling / stops (web primary)",
+     "role": "exits"
+    },
+    {
+     "sourceId": "W-MOKAV24",
+     "edition": "Gil Morales 2024 BGU volume note incl. MCD (web primary)",
+     "role": "current volume definition and megacap exception"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "7e6331f3a2fe7dff952be094674d301574a03b471601916a14dec9a3524446fd",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 15,
+    "hardRules": 2,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 12,
+    "excluded": 3,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "MOKA-MR-LEAD",
+     "psr709": [
+      "MOKA12-003",
+      "MOKA12-006"
+     ],
+     "question": "strong leadership or theme; uptrend or constructive consolidation before the gap",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MOKA-MR-MEGA",
+     "psr709": [
+      "MOKA24-MEGA"
+     ],
+     "question": "volume below 1.5x: does the megacap exception apply (MCD accepted at +47.09 %)?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "MOKA-MR-VOLWINDOW",
+     "psr709": [
+      "MOKA24-VOL"
+     ],
+     "question": "the averaging window of \"average volume\" is not recorded in #709; the 50-session ratio is shown with the 1.5x reading",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "averaging window of the volume standard not recorded in #709 (SOURCE_AMBIGUOUS)",
+    "daily variant only: evaluated with full-day volume after the close"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 5 Pocket Pivot / BGU"
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "candidateId": "C13",
+   "rank709": 13,
+   "trader": "Linda Raschke",
+   "method": "Holy Grail disclosed setup component: first pullback to the 20 EMA after ADX(14) > 30 on the same (daily) timeframe",
+   "sources": [
+    {
+     "sourceId": "W-RAS04",
+     "edition": "Linda Raschke 2004 interview (web primary PDF), own quotes",
+     "role": "authoritative for the disclosed component"
+    }
+   ],
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "8bd791e41e3737124a4bf04db021573bc0187f26ee8e9f1039f95aa66a13e540",
+   "implementationStatus": "NOT_IMPLEMENTED",
+   "statusByScope": null,
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "tradable": false,
+   "liveActivation": false,
+   "fullyAutomatable": false,
+   "sourceCoverage": {
+    "rulesInScope": 6,
+    "hardRules": 2,
+    "hardRulesImplemented": 0,
+    "implementedExact": 0,
+    "implementedDerived": 0,
+    "manualReview": 0,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 6,
+    "excluded": 0,
+    "unmapped": 0
+   },
+   "dataReadiness": "NOT_ASSESSED",
+   "executionReadiness": "NOT_IMPLEMENTED",
+   "backtestReadiness": "NOT_READY",
+   "dataBlockedEssentialRules": [],
+   "manualReviewRequirements": [
+    {
+     "id": "RAS-MR-IMPULSE",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "question": "strong impulse before the pullback?",
+     "blocksAutomation": true
+    },
+    {
+     "id": "RAS-MR-EXECUTION",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "question": "entry order, stop and exit are not disclosed",
+     "blocksAutomation": true
+    }
+   ],
+   "knownLimitations": [
+    "exact stop and order sequence not disclosed (#709 C13); no historical method return can be computed",
+    "intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable"
+   ],
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "contractValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+   },
+   "plannedIn": "PR 8 Holy Grail"
+  }
+ ],
+ "nonCandidates": [
+  {
+   "id": "ONEIL_CAN_SLIM",
+   "status": "NOT_A_709_CANDIDATE",
+   "reason": "#709 has no CAN SLIM candidate: B04 (O'Neil 2009) is BOOK_PARTIAL, chapters 3-20 missing (GAP-B04); later IBD / MarketSmith sources close topic gaps, not the original wording. #712 rated it SOURCE_BLOCKED. Not implemented and not counted among the 13.",
+   "contexts": [
+    "Original2009chartmethodpartial",
+    "IBDoperationalization2013",
+    "MarketSmith2018",
+    "Laterinstitutionalbasecount"
+   ]
+  },
+  {
+   "id": "WEINSTEIN_SHORT",
+   "status": "NOT_A_709_CANDIDATE",
+   "reason": "Weinstein Stage 4 short side is a separate #709 context without a candidate row; documented, not implemented.",
+   "contexts": [
+    "WEIN_STAGE_SHORT_1988"
+   ]
+  }
+ ]
+}
