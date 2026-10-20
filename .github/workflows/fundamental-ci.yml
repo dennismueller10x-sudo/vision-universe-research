@@ -1,0 +1,30 @@
+name: Fundamental CI
+# Fundamental 1.0 (fundamental/**): Modell- und Datentests. Liest nur die bestehenden Discover-Aktiendateien,
+# schreibt nichts. Browser-Kontrast und Wege laufen in shell-ci.yml (vu3-regression), sobald die Welt dort gelistet ist.
+on:
+  push:
+    branches: [main]
+    paths: ['fundamental/**', '.github/workflows/fundamental-ci.yml']
+  pull_request:
+    paths: ['fundamental/**', '.github/workflows/fundamental-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fundamental-ci-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check fundamental/engine/model.js
+          node --check fundamental/app.js
+      - name: Model and data tests
+        run: node --test "fundamental/tests/*.test.mjs"
