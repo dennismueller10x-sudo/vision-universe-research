@@ -111,7 +111,8 @@ function classifier({ classification, cikCandidates, decision }) {
     if (all.length && !usable.length) { bump(reasons, 'IDENTITY_EVIDENCE_NOT_ACCEPTED'); return null; }
     const who = IC.resolveIssuer(usable, date);
     if (who.status !== 'RESOLVED') { bump(reasons, 'IDENTITY_' + who.reason); return null; }
-    const r = classification.getIndustryClassification(who.cik, date, { maxAgeDays: decision.maxAgeDays });
+    const r = classification.getIndustryClassification(who.cik, date, { maxAgeDays: decision.maxAgeDays, assumptionRef: decision.ref });
+    if (!r.carryForward || !r.carryForward.declared) { bump(reasons, 'CARRY_FORWARD_NOT_DECLARED'); return null; }
     if (r.status !== IC.STATUS.OBSERVED) { bump(reasons, r.status); return null; }
     counts.resolved++;
     bump(byEvidence, who.evidence || IDENTITY_EVIDENCE.UNSPECIFIED);

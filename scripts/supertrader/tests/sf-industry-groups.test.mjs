@@ -74,6 +74,9 @@ test('groupsOf: Ebenen aus der SIC zum Zeitpunkt, unbekannte Zustaende null und 
   assert.equal(d.unknown, 3);
   assert.equal(d.missingGroupMeaning, 'UNKNOWN_NOT_INDEPENDENT');
   assert.match(d.carryForwardAssumption, /500 Tage/);
+  // jede verwendete Beobachtung ist in der Kern-API als deklarierte Fortschreibung markiert
+  const r = classification.getIndustryClassification('1', '2020-01-10', { maxAgeDays: decision.maxAgeDays, assumptionRef: decision.ref });
+  assert.deepEqual(r.carryForward, { declared: true, maxAgeDays: 500, assumptionRef: 'TEST-ONLY' });
 });
 
 test('kein Lookahead: Filing nach Handelsschluss gilt erst ab dem naechsten Datum', () => {
