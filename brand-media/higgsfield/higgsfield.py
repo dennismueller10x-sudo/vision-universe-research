@@ -61,9 +61,17 @@ def validate(model, operation, prompt, duration, resolution, aspect_ratio, refer
         candidate = Path(reference_path)
         if candidate.is_absolute() or ".." in candidate.parts:
             raise HiggsfieldError("Reference path must stay inside the checked-out repository")
+        approved_references = model.get("approved_production_references")
         approved = model.get("approved_production_reference")
-        if approved and operation == "image_to_video":
-            if not approved or candidate.as_posix() != approved["path"]:
+        if approved_references and operation == "image_to_video":
+            approved = next((item for item in approved_references if candidate.as_posix() == item["path"]), None)
+            if approved is None:
+                raise HiggsfieldError("Image-to-video accepts only a registered production reference")
+            digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
+            if digest != approved["sha256"]:
+                raise HiggsfieldError("Registered production reference checksum mismatch")
+        elif approved and operation == "image_to_video":
+            if candidate.as_posix() != approved["path"]:
                 raise HiggsfieldError("Image-to-video accepts only the registered THE ARRIVAL master reference")
             digest = hashlib.sha256(candidate.read_bytes()).hexdigest()
             if digest != approved["sha256"]:
