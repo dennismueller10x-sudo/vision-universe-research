@@ -2182,8 +2182,8 @@
    "strategyId": "SF_WEINSTEIN_INVESTOR",
    "candidateId": "C04",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 4 Weinstein",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Stan Weinstein",
    "method": "Stage 2 Investor: early Stage 2 breakout above resistance, half position at the breakout, half on a constructive pullback",
    "scope": {
@@ -2328,14 +2328,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-WEEKLY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#weeklyBars",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY"
      ],
      "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2349,8 +2349,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-MA-GATE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#maGate",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
@@ -2358,7 +2358,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
      ],
      "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2372,12 +2372,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2391,12 +2391,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2410,12 +2410,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2429,12 +2429,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2448,12 +2448,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2467,12 +2467,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2486,8 +2486,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2495,7 +2495,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2509,8 +2509,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2518,7 +2518,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2532,8 +2532,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2541,7 +2541,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2555,8 +2555,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2564,7 +2564,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2578,8 +2578,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2587,7 +2587,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2601,8 +2601,8 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -2610,7 +2610,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2624,14 +2624,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2645,14 +2645,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2666,14 +2666,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2687,14 +2687,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2708,12 +2708,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -2727,12 +2727,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -2746,14 +2746,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#marketEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
     },
     {
      "source": "B09",
@@ -2767,12 +2767,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2786,12 +2786,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2805,15 +2805,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-ORDER",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2827,14 +2827,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-STOP-PLAN",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2848,12 +2848,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-NO-AVG-DOWN",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2867,14 +2867,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-NONTECH",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2888,15 +2888,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-BREAKOUT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#investorScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
      "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2910,15 +2910,15 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-BREAKOUT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#investorScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE"
      ],
      "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE).",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2932,12 +2932,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2951,12 +2951,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2970,12 +2970,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -2989,12 +2989,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3008,14 +3008,14 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3029,12 +3029,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3048,12 +3048,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3067,12 +3067,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3086,12 +3086,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3105,12 +3105,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-INV-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3124,12 +3124,12 @@
      "candidate": "C04",
      "executableRule": "WEIN-SF-VOL5",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },
@@ -3137,8 +3137,8 @@
    "strategyId": "SF_WEINSTEIN_TRADER",
    "candidateId": "C05",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 4 Weinstein",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Stan Weinstein",
    "method": "Stage 2 Trader continuation: breakout over new resistance after a consolidation near a clearly rising 30-week MA, full position, tighter trader stop",
    "scope": {
@@ -3265,14 +3265,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-WEEKLY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#weeklyBars",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY"
      ],
      "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3286,8 +3286,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-MA-GATE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#maGate",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
@@ -3295,7 +3295,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-OK"
      ],
      "derivation": "\"below or at a falling MA\": reject when the weekly close <= MA30w or MA30w < its value one week earlier; one-week comparison is the smallest observable slope (no threshold added)",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3309,12 +3309,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3328,12 +3328,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3347,12 +3347,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3366,12 +3366,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3385,12 +3385,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3404,12 +3404,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STAGE",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3423,8 +3423,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3432,7 +3432,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3446,8 +3446,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3455,7 +3455,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3469,8 +3469,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3478,7 +3478,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3492,8 +3492,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3501,7 +3501,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3515,8 +3515,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3524,7 +3524,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3538,8 +3538,8 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-VOLUME",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#volumeAlternatives",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
@@ -3547,7 +3547,7 @@
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3561,14 +3561,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3582,14 +3582,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3603,14 +3603,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3624,14 +3624,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-RS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#relativeStrength",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3645,12 +3645,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -3664,12 +3664,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-GROUP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
     },
     {
      "source": "B09",
@@ -3683,14 +3683,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-MARKET",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#marketEvidence",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target DATA_BLOCKED"
+     "reason": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
     },
     {
      "source": "B09",
@@ -3704,12 +3704,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3723,12 +3723,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-OVERHEAD",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3742,15 +3742,15 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-ORDER",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3764,14 +3764,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-STOP-PLAN",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
      ],
      "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3785,12 +3785,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-NO-AVG-DOWN",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3804,14 +3804,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-NONTECH",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3825,15 +3825,15 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-CONT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#traderScreen",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT"
      ],
      "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it is the candidate",
-     "reason": "PLANNED (PR 4 Weinstein): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3847,12 +3847,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3866,14 +3866,14 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
      "tests": [
       "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3887,12 +3887,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3906,12 +3906,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "B09",
@@ -3925,12 +3925,12 @@
      "candidate": "C05",
      "executableRule": "WEIN-SF-TR-TRAIL",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 4 Weinstein): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     }
    ]
   },

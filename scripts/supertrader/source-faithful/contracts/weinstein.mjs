@@ -48,7 +48,7 @@ const sharedExclusions = {
 };
 
 export const WEINSTEIN_INVESTOR = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_INVESTOR',
   candidateId: 'C04',
@@ -87,7 +87,7 @@ export const WEINSTEIN_INVESTOR = defineContract({
 });
 
 export const WEINSTEIN_TRADER = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_TRADER',
   candidateId: 'C05',

@@ -276,8 +276,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "77c98982a53ceecb5a36355ac50fce1a75623744d366efab5ce7fa18b51dc867",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "5d3faeb9e7a3966799eb154c4a19b983790de182bd2a89b0fb99bc26b3bf6c6d",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -286,20 +286,23 @@
    "sourceCoverage": {
     "rulesInScope": 56,
     "hardRules": 14,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 6,
+    "manualReview": 29,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 39,
+    "notImplemented": 0,
     "excluded": 17,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
    "dataPartial": [],
    "manualReviewRequirements": [
     {
@@ -366,7 +369,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 4 Weinstein"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_WEINSTEIN_TRADER",
@@ -382,8 +385,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "9055fef01ef951f8a657910fde4af51ff4a7c8d2de63930fd9238d4a1255a9f2",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "9d51cb240cc501daeb8d868ca18a6dab46626427ea1814da5074d948bcb618d6",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -392,20 +395,23 @@
    "sourceCoverage": {
     "rulesInScope": 63,
     "hardRules": 14,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 5,
+    "manualReview": 23,
+    "dataBlocked": 3,
     "ambiguous": 0,
-    "notImplemented": 32,
+    "notImplemented": 0,
     "excluded": 31,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "PARTIAL",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
    "dataPartial": [],
    "manualReviewRequirements": [
     {
@@ -454,7 +460,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 4 Weinstein"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MINERVINI_SEPA_VCP",
