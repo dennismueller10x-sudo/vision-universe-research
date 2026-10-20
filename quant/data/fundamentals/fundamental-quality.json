@@ -2,36 +2,36 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1878746,
+      "RESOLVED_VALUES": 1878775,
       "ISSUERS_WITH_VALUES": 5343
     },
     "byState": {
-      "VALID": 1709062,
-      "WARNING": 169684
+      "VALID": 1709085,
+      "WARNING": 169690
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49687292
+      "RAW_XBRL_FACTS_WITH_FINDING": 49689527
     },
     "byState": {
-      "AMBIGUOUS": 1333615,
-      "RESTATED": 313187,
+      "AMBIGUOUS": 1333649,
+      "RESTATED": 313208,
       "NON_COMPARABLE": 70522,
-      "MISSING": 47950302,
-      "WARNING": 19666
+      "MISSING": 47952478,
+      "WARNING": 19670
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47950302,
-      "CONCEPT_DISAGREEMENT": 1325625,
-      "RESTATEMENT_CONFLICT": 313187,
+      "UNKNOWN_CONCEPT": 47952478,
+      "CONCEPT_DISAGREEMENT": 1325659,
+      "RESTATEMENT_CONFLICT": 313208,
       "UNEXPECTED_DURATION": 54406,
       "PERIOD_MISMATCH": 14855,
       "FISCAL_PERIOD_CONFLICT": 14833,
       "FUTURE_DATA_LEAK": 7480,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
-      "EXTREME_VALUE": 2244,
+      "EXTREME_VALUE": 2248,
       "UNIT_MISMATCH": 1261,
       "UNPLACEABLE_PERIOD": 510
     },
@@ -54,8 +54,8 @@
   "metricsByMissingRate": [
     {
       "metric": "total_debt",
-      "MISSING_COUNT": 2498,
-      "MISSING_RATE": 46.7528
+      "MISSING_COUNT": 2497,
+      "MISSING_RATE": 46.734
     },
     {
       "metric": "revenue",
@@ -100,8 +100,8 @@
   ],
   "highestMissingRate": {
     "metric": "total_debt",
-    "MISSING_COUNT": 2498,
-    "MISSING_RATE": 46.7528
+    "MISSING_COUNT": 2497,
+    "MISSING_RATE": 46.734
   },
   "versions": {
     "normalization_schema": "1.0.0",
@@ -114,5 +114,5 @@
       "mapping_version": "1.6.0"
     }
   },
-  "generatedAtUtc": "2026-10-19T13:15:27+00:00"
+  "generatedAtUtc": "2026-10-20T11:45:55+00:00"
 }

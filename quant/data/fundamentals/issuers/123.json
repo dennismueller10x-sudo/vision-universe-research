@@ -1096,9 +1096,9 @@
       "cik": "0002102123",
       "name": "Apogee Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 106,
-      "mappedFacts": 53,
-      "unmappedFacts": 60,
+      "rawFacts": 170,
+      "mappedFacts": 82,
+      "unmappedFacts": 99,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1219,32 +1219,33 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 60,
+        "total": 99,
         "by_severity": {
-          "INFO": 60
+          "INFO": 99
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 60
+          "UNKNOWN_CONCEPT": 99
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-092179",
-        "filing_date": "2026-08-20",
-        "form": "10-Q",
-        "periodic_filings": 2
+        "accession": "0001213900-26-110391",
+        "filing_date": "2026-10-19",
+        "form": "10-Q/A",
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-10-17T02:29:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "c92dc53eb14947816021f466f3bd18bf6e0dc4f07334e292bf2029cc0acdcbb2",
+      "sourceDigest": "e482485423d0a617e58674759c14a2e37b43d1d9f872e97f2f549a8250610cc5",
       "issuerId": "iss_cik_0002102123"
     }
   ]
