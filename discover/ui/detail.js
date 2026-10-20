@@ -653,6 +653,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     return el("section", { class: "dx-chapter dx-fade" }, [
       el("p", { class: "dx-kicker", text: "Chancen und Risiken" }),
       el("h2", { text: "Was dafür spricht — und was dagegen" }),
+      /* Visual First (VU3): die Bilanz der Waage auf einen Blick - gezaehlt werden dieselben Punkte wie in den Spalten. */
+      el("div", { class: "dx-waage-bilanz", role: "img", "aria-label": w.dafuer.length + " Punkte dafür, " + w.beachten.length + " zu beachten" }, [
+        el("span", { class: "dx-waage-zahl dx-waage-zahl--pro" }, [el("i", { text: "+" }), el("b", { class: "num", text: String(w.dafuer.length) }), " dafür"]),
+        el("span", { class: "dx-waage-balken" }, [el("i", { class: "pro", style: "flex-grow:" + w.dafuer.length }), el("i", { class: "contra", style: "flex-grow:" + w.beachten.length })]),
+        el("span", { class: "dx-waage-zahl dx-waage-zahl--contra" }, [el("i", { text: "−" }), el("b", { class: "num", text: String(w.beachten.length) }), " zu beachten"])
+      ]),
       el("div", { class: "dx-waage" }, [
         spalte("Das spricht dafür", w.dafuer, "pro"),
         spalte("Das sollte man beachten", w.beachten, "contra")
