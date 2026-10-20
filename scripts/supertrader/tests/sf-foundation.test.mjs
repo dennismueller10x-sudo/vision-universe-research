@@ -117,7 +117,8 @@ test('SF-WORKFLOW: supertrader-validation.yml passes --snapshot / --accounting t
   const runs = y.split('\n').filter((l) => /run: node scripts\/supertrader\/validation\/analyze-methods\.mjs/.test(l));
   assert.ok(runs.length >= 3);
   for (const l of runs) assert.match(l, /\$SNAP_ARGS$/, l);
-  assert.equal((y.match(/SNAP_ARGS: \$\{\{ steps\.snap\.outputs\.args \}\}/g) || []).length, runs.length);
+  // every step that runs analyze-methods receives SNAP_ARGS through env
+  for (const block of y.split('      - name: ').filter((b) => /run: node scripts\/supertrader\/validation\/analyze-methods\.mjs/.test(b))) assert.match(block, /SNAP_ARGS: \$\{\{ steps\.snap\.outputs\.args \}\}/);
   // ADR-005: inputs only via env, never in shell text
   for (const l of y.split('\n')) if (/\$\{\{ inputs\.(snapshot|accounting) \}\}/.test(l)) assert.match(l, /^\s+IN_(SNAPSHOT|ACCOUNTING): /, l);
   // the analyze-methods CLI accepts exactly these flags
@@ -129,4 +130,14 @@ test('SF-WORKFLOW: supertrader-validation.yml passes --snapshot / --accounting t
 test('SF-PSR709-CONST: the pin constant matches the #709 draft branch and commit', () => {
   assert.equal(PSR709.pullRequest, 709);
   assert.equal(PSR709.branch, 'research/supertrader-primary-source-reconstruction');
+});
+
+test('SF-TRACE: every test a contract cites for an implemented rule exists by name in the cited test file', () => {
+  for (const c of CONTRACTS.filter((x) => x.implemented)) {
+    for (const r of c.rules) for (const t of r.tests ?? []) {
+      const [file, name] = t.split(': ');
+      const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
+      assert.ok(src.includes(`test('${name}`) || src.includes(`/ ${name}`) || src.includes(`${name} /`), `${c.strategyId} ${r.id}: missing test ${t}`);
+    }
+  }
 });

@@ -18,8 +18,8 @@
    "strategyId": "SF_TURTLE_S1",
    "candidateId": "C01",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 2 Turtle",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
    "method": "System 1 (20-day breakout with skip filter and 55-day failsafe, 10-day exit)",
    "scope": {
@@ -117,14 +117,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-TR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#trueRange",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -138,14 +138,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-N",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#turtleN",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -159,14 +159,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-N-DAILY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#turtleN",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": "the Turtles received weekly N / unit sheets (CONTEXTUAL operational practice); the same formula is evaluated on every session with the value of the prior close, which uses no later information",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -180,15 +180,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-UNIT",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
      ],
      "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -202,15 +202,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-UNIT",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
      ],
      "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -224,14 +224,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-NOTIONAL",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
      ],
      "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -245,14 +245,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-NOTIONAL",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
      ],
      "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -266,15 +266,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-LIMIT4",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -288,14 +288,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-LIMIT12",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12"
      ],
      "derivation": "long-only adaptation: only the 12-unit long limit can bind",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -309,12 +309,12 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-LIMIT-CORR",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
     },
     {
      "source": "W-TUR",
@@ -328,12 +328,12 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-LIMIT-CORR",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
     },
     {
      "source": "W-TUR",
@@ -347,15 +347,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -369,15 +369,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -391,15 +391,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -413,12 +413,12 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-SHORT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
     },
     {
      "source": "W-TUR",
@@ -432,16 +432,17 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-S1-FILTER",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createBreakoutTracker",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "a still open (unresolved) hypothetical breakout counts as not losing (source silent; fewer entries); a 10-day exit at a loss without a prior 2N adverse move is not a loser (literal reading); daily-bar path: the level nearer to the open is reached first",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -455,16 +456,17 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-S1-FILTER",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createBreakoutTracker",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "a still open (unresolved) hypothetical breakout counts as not losing (source silent; fewer entries); a 10-day exit at a loss without a prior 2N adverse move is not a loser (literal reading); daily-bar path: the level nearer to the open is reached first",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -478,16 +480,17 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-S1-FILTER",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createBreakoutTracker",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-LOSER",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "a still open (unresolved) hypothetical breakout counts as not losing (source silent; fewer entries); a 10-day exit at a loss without a prior 2N adverse move is not a loser (literal reading); daily-bar path: the level nearer to the open is reached first",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -501,14 +504,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-FAILSAFE",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -522,14 +525,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-FAILSAFE-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_AMBIGUOUS"
+     "reason": "#709: the published failsafe text does not state its exit. Implemented as the System 1 10-day exit and labelled as that interpretation in every trade record (path FAILSAFE_55)."
     },
     {
      "source": "W-TUR",
@@ -543,15 +546,15 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-ADD",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
      ],
      "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -565,14 +568,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-ADDFAST",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD"
      ],
      "derivation": "consequence of TUR-ADD on daily bars; no extra rule",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -586,14 +589,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -607,8 +610,8 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-STOPADD",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
@@ -616,7 +619,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -630,14 +633,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-STOPGAP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP"
      ],
      "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -651,14 +654,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -672,14 +675,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-RANK",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
      ],
      "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -693,14 +696,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-RANK",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
      ],
      "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -714,14 +717,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-CONSISTENT",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -735,14 +738,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-CONSISTENT",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -756,14 +759,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": "liquid US futures -> members of the frozen research universe of the snapshot (security-master eligibility, unchanged); no additional VU liquidity number is introduced",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
+     "reason": null
     },
     {
      "source": null,
@@ -777,14 +780,14 @@
      "candidate": "C01",
      "executableRule": "TUR-SF-CASH",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH"
      ],
      "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     }
    ]
   },
@@ -792,8 +795,8 @@
    "strategyId": "SF_TURTLE_S2",
    "candidateId": "C02",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 2 Turtle",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
    "method": "System 2 (55-day breakout, 20-day exit, no filter)",
    "scope": {
@@ -890,14 +893,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-TR",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#trueRange",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -911,14 +914,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-N",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#turtleN",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -932,14 +935,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-N-DAILY",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#turtleN",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-N"
      ],
      "derivation": "the Turtles received weekly N / unit sheets (CONTEXTUAL operational practice); the same formula is evaluated on every session with the value of the prior close, which uses no later information",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -953,15 +956,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-UNIT",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
      ],
      "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -975,15 +978,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-UNIT",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
      ],
      "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -997,14 +1000,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-NOTIONAL",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
      ],
      "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1018,14 +1021,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-NOTIONAL",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
      ],
      "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1039,15 +1042,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-LIMIT4",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1061,14 +1064,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-LIMIT12",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12"
      ],
      "derivation": "long-only adaptation: only the 12-unit long limit can bind",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1082,12 +1085,12 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-LIMIT-CORR",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
     },
     {
      "source": "W-TUR",
@@ -1101,12 +1104,12 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-LIMIT-CORR",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
     },
     {
      "source": "W-TUR",
@@ -1120,15 +1123,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1142,15 +1145,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1164,15 +1167,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GAP-FILL"
      ],
      "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1186,12 +1189,12 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-SHORT",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "DATA_BLOCKED",
+     "status": "DATA_BLOCKED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target DATA_BLOCKED"
+     "reason": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
     },
     {
      "source": "W-TUR",
@@ -1205,14 +1208,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-S2-NOSKIP",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ENTRY-S2"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1226,15 +1229,15 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-ADD",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
      ],
      "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1248,14 +1251,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-ADDFAST",
      "kind": "PYRAMIDING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD"
      ],
      "derivation": "consequence of TUR-ADD on daily bars; no extra rule",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1269,14 +1272,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1290,8 +1293,8 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-STOPADD",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
@@ -1299,7 +1302,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1313,14 +1316,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-STOPGAP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP"
      ],
      "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1334,14 +1337,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1355,14 +1358,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-RANK",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
      ],
      "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1376,14 +1379,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-RANK",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
      ],
      "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1397,14 +1400,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-CONSISTENT",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1418,14 +1421,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-CONSISTENT",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-REGIME"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-TUR",
@@ -1439,14 +1442,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-MARKETS",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIVERSE"
      ],
-     "derivation": "liquid US futures -> members of the frozen research universe of the snapshot (security-master eligibility, unchanged); no additional VU liquidity number is introduced",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number",
+     "reason": null
     },
     {
      "source": null,
@@ -1460,14 +1463,14 @@
      "candidate": "C02",
      "executableRule": "TUR-SF-CASH",
      "kind": "PORTFOLIO",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH"
      ],
      "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")",
-     "reason": "PLANNED (PR 2 Turtle): target SOURCE_DERIVED"
+     "reason": null
     }
    ]
   },

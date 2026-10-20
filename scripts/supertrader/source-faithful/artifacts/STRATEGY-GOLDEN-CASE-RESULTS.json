@@ -1188,6 +1188,21 @@
    "result": "SEE_TEST_RUN"
   },
   {
+   "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-FILTER"
+   ],
+   "psr709": [
+    "TUR-S1SKIP",
+    "TUR-S1LOSER",
+    "TUR-S1DIR"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
    "strategyIds": [
     "SF_TURTLE_S1",
