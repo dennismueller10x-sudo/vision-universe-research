@@ -1105,8 +1105,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "8bd791e41e3737124a4bf04db021573bc0187f26ee8e9f1039f95aa66a13e540",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "8977ee4a599c50e71f873a66bad5f00c5fbc780ba28f9fc3bf9311cadb87f690",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -1115,18 +1115,18 @@
    "sourceCoverage": {
     "rulesInScope": 6,
     "hardRules": 2,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
+    "implementedDerived": 2,
+    "manualReview": 2,
     "dataBlocked": 0,
     "ambiguous": 0,
-    "notImplemented": 6,
+    "notImplemented": 0,
     "excluded": 0,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
    "dataPartial": [],
@@ -1158,7 +1158,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 8 Holy Grail"
+   "plannedIn": null
   }
  ],
  "nonCandidates": [

@@ -12,7 +12,7 @@ const CODE = `${SF_ROOT}/methods/holy-grail.mjs`;
 const T = 'scripts/supertrader/tests/sf-holy-grail.test.mjs';
 
 export const HOLY_GRAIL = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 8 Holy Grail',
   strategyId: 'SF_RASCHKE_HOLY_GRAIL',
   candidateId: 'C13',

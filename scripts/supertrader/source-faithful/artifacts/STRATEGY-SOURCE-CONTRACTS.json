@@ -7666,8 +7666,8 @@
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
    "sourceContractVersion": "1.0.0",
-   "implemented": false,
-   "plannedIn": "PR 8 Holy Grail",
+   "implemented": true,
+   "plannedIn": null,
    "trader": "Linda Raschke",
    "method": "Holy Grail disclosed setup component: first pullback to the 20 EMA after ADX(14) > 30 on the same (daily) timeframe",
    "scope": {
@@ -7771,15 +7771,15 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-ADX",
      "kind": "FILTER",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#adx",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-BELOW-30"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7793,15 +7793,15 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-PULLBACK",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#holyGrailScreen",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST"
      ],
      "derivation": "daily: the first bar whose low touches or crosses the 20 EMA after ADX(14) > 30 was reached and while ADX stayed > 30 on the prior bar; \"first\" = no earlier touch since ADX crossed above 30; impulse strength is reviewer evidence",
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7815,14 +7815,14 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-OSC",
      "kind": "INDICATOR",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_EXACT",
+     "status": "SOURCE_EXACT",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#oscillator310",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-OSC-310"
      ],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_EXACT"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7836,12 +7836,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-OSC-HIGH",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7855,14 +7855,14 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-TIMEFRAME",
      "kind": "SETUP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_DERIVED",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/holy-grail.mjs#holyGrailScreen",
      "tests": [
       "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK"
      ],
      "derivation": "only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED",
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_DERIVED"
+     "reason": null
     },
     {
      "source": "W-RAS04",
@@ -7876,12 +7876,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "order sequence not fully disclosed (#709 C13)"
     },
     {
      "source": "W-RAS04",
@@ -7895,12 +7895,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-STOP",
      "kind": "STOP",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "stop not fully disclosed (#709 C13)"
     },
     {
      "source": "W-RAS04",
@@ -7914,12 +7914,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-EXIT",
      "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "MANUAL_REVIEW_REQUIRED",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target MANUAL_REVIEW_REQUIRED"
+     "reason": null
     },
     {
      "source": null,
@@ -7933,12 +7933,12 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-SIZE",
      "kind": "SIZING",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
      "code": null,
      "tests": [],
      "derivation": null,
-     "reason": "PLANNED (PR 8 Holy Grail): target SOURCE_AMBIGUOUS"
+     "reason": "not disclosed for the Holy Grail setup"
     }
    ]
   }
