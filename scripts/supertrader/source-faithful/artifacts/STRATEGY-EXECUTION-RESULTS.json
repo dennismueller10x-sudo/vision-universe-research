@@ -1,0 +1,407 @@
+{
+ "schema": "supertrader-sf-execution-results-1.0.0",
+ "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+ "rule": "public facts only (receipt hashes, counts, pass flags); prices and returns stay sealed for the owner (results-public-key.pem)",
+ "binding": {
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "accounting": "--accounting research-v1"
+ },
+ "methods": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "outputKind": "RESEARCH_SIGNAL",
+   "timing": {
+    "signal": "intraday on the bar whose high reaches the trigger (stop order resting from the prior close)",
+    "earliestExecutable": "same bar: fill = max(open, trigger); every level uses only bars up to the prior close",
+    "decisionData": "prior-close N, prior-close channels, prior-close strength rank"
+   },
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "conventions": [
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)"
+   ],
+   "modelAssumptions": [
+    {
+     "id": "MA-TUR-INTRABAR-ORDER",
+     "kind": "EXECUTION_ON_DAILY_BARS",
+     "question": "On a bar that reaches an entry or add level AND a stop or exit level, which came first?",
+     "source": "not decidable: the source trades intraday (TUR-INTRADAY, TUR-ADDFAST); daily OHLC bars do not record the order",
+     "reference": {
+      "option": "entryBarOrder=PESSIMISTIC",
+      "meaning": "the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)"
+     },
+     "alternative": {
+      "option": "entryBarOrder=OPTIMISTIC",
+      "meaning": "the low comes before the entry: no same-bar stop or channel exit after an entry or add",
+      "scenario": "ENTRY_BAR_OPTIMISTIC"
+     },
+     "resolvableWith": "intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)"
+    },
+    {
+     "id": "MA-TUR-HELD-BAR-ORDER",
+     "kind": "EXECUTION_ON_DAILY_BARS",
+     "question": "On a held bar with several levels in range, which is reached first?",
+     "source": "not decidable on daily bars",
+     "reference": {
+      "option": "fixed",
+      "meaning": "the level nearer the open first (unit stops above the channel level before it); exits before adds; no add on a bar on which a unit was stopped"
+     },
+     "alternative": null,
+     "resolvableWith": "intraday bars"
+    },
+    {
+     "id": "MA-TUR-S1-OPEN-BREAKOUT",
+     "kind": "SOURCE_SILENT",
+     "question": "Does a still unresolved (open) hypothetical last breakout make System 1 skip the next 20-day breakout?",
+     "source": "TUR-S1SKIP defines a skip after a winning last breakout; the source does not say how an open one counts (#709 VU-TUR lists \"open breakout assumed a winner\" as a VU formalization)",
+     "reference": {
+      "option": "openBreakout=SKIP",
+      "meaning": "an open breakout counts as not losing: skip (the 55-day failsafe can still enter)"
+     },
+     "alternative": {
+      "option": "openBreakout=TAKE",
+      "meaning": "only a resolved winning breakout skips; an open one does not",
+      "scenario": "S1_OPEN_BREAKOUT_TAKEN"
+     },
+     "resolvableWith": "no further source in #709 / #712"
+    },
+    {
+     "id": "MA-TUR-FAILSAFE-EXIT",
+     "kind": "SOURCE_SILENT",
+     "question": "Which exit does a 55-day failsafe position use?",
+     "source": "TUR-FAILSAFE states only the entry; #709 VU-TUR: \"Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel\"; #709 revalidation TUR-F-FAILSAFE-55: \"Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt\"; #712 spec V4 T4-FAILSAFE: \"exit like S1 (interpretation)\"",
+     "reference": {
+      "option": "failsafeExit='10D'",
+      "meaning": "System 1 exit (10-day low); the reading of the earlier VU engines, an interpretation"
+     },
+     "alternative": {
+      "option": "failsafeExit='20D'",
+      "meaning": "System 2 exit (20-day low), the exit of the system whose entry channel the failsafe uses; equally an interpretation",
+      "scenario": "FAILSAFE_EXIT_20D"
+     },
+     "resolvableWith": "no further source in #709 / #712"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "outputKind": "RESEARCH_SIGNAL",
+   "timing": {
+    "signal": "intraday on the bar whose high reaches the trigger (stop order resting from the prior close)",
+    "earliestExecutable": "same bar: fill = max(open, trigger); every level uses only bars up to the prior close",
+    "decisionData": "prior-close N, prior-close channels, prior-close strength rank"
+   },
+   "executionReadiness": "RESEARCH_EXECUTABLE",
+   "conventions": [
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)"
+   ],
+   "modelAssumptions": [
+    {
+     "id": "MA-TUR-INTRABAR-ORDER",
+     "kind": "EXECUTION_ON_DAILY_BARS",
+     "question": "On a bar that reaches an entry or add level AND a stop or exit level, which came first?",
+     "source": "not decidable: the source trades intraday (TUR-INTRADAY, TUR-ADDFAST); daily OHLC bars do not record the order",
+     "reference": {
+      "option": "entryBarOrder=PESSIMISTIC",
+      "meaning": "the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)"
+     },
+     "alternative": {
+      "option": "entryBarOrder=OPTIMISTIC",
+      "meaning": "the low comes before the entry: no same-bar stop or channel exit after an entry or add",
+      "scenario": "ENTRY_BAR_OPTIMISTIC"
+     },
+     "resolvableWith": "intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)"
+    },
+    {
+     "id": "MA-TUR-HELD-BAR-ORDER",
+     "kind": "EXECUTION_ON_DAILY_BARS",
+     "question": "On a held bar with several levels in range, which is reached first?",
+     "source": "not decidable on daily bars",
+     "reference": {
+      "option": "fixed",
+      "meaning": "the level nearer the open first (unit stops above the channel level before it); exits before adds; no add on a bar on which a unit was stopped"
+     },
+     "alternative": null,
+     "resolvableWith": "intraday bars"
+    }
+   ]
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "buy stop resting a fraction above a COMPLETED box top (both boundaries confirmed by the close of the confirming session)",
+    "earliestExecutable": "the first session after the box is complete whose high reaches the trigger; fill = max(open, trigger)",
+    "decisionData": "box boundaries known at the prior close"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [
+    "component study population: the pre-registered research universe of #705 (raw close >= 5, 20-session dollar volume >= 1M at the prior session), a measurement convention, not a Darvas rule (DAR-Q10: no general minimum)"
+   ],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "the completed week whose high exceeds the base resistance (buy-stop prepared from the prior week)",
+    "earliestExecutable": "a reviewer decision after the week closes; never back-filled into history",
+    "decisionData": "weekly bars up to the signal week, SPY weekly for RS and market evidence"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "the completed week whose high exceeds the high of the consolidation",
+    "earliestExecutable": "a reviewer decision after the week closes; never back-filled into history",
+    "decisionData": "weekly bars up to the signal week"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "the daily close on which all machine Trend Template criteria hold",
+    "earliestExecutable": "a reviewer decision after the close; never back-filled into history",
+    "decisionData": "daily bars up to the close"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "the daily close on which the measured run-up and consolidation criteria hold",
+    "earliestExecutable": "a reviewer decision after the close",
+    "decisionData": "daily bars up to the close"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "daily close (screen); the daily breakout entry is the breakout-day close, at which the low of day is final",
+    "earliestExecutable": "breakout-day close (market-on-close) after the reviewer accepts the level",
+    "decisionData": "daily bars up to and including the breakout day; the stop check uses that day's final low"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [
+    "the opening-range-high entry (his main entry) is DATA_BLOCKED; the daily close variant is the written alternative (KK-011), not the same execution",
+    "the final low of day is unknown during an intraday entry; the daily variant enters at the close so that the stop rule can be evaluated exactly"
+   ],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "catalyst timestamp and the first intraday minutes (not available)",
+    "earliestExecutable": "not executable on the snapshot",
+    "decisionData": "daily bars give the gap and the final low only after the close"
+   },
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "intraday (not available)",
+    "earliestExecutable": "not executable on the snapshot",
+    "decisionData": "daily bars give only the run-up evidence"
+   },
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
+   "conventions": [
+    "short side and intraday execution are DATA_BLOCKED; nothing in this method can be measured on history"
+   ],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "daily close of the candidate day (its full volume is known only then)",
+    "earliestExecutable": "reviewer decision after the close; intraday projected volume is not available",
+    "decisionData": "daily bars up to the close"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "daily close of the gap day (full-day volume)",
+    "earliestExecutable": "reviewer decision after the close; intraday projected volume is not available",
+    "decisionData": "ATR40 and the volume mean from sessions before the gap day; the gap from the gap-day open"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [
+    "daily variant only: evaluated with full-day volume after the close"
+   ],
+   "modelAssumptions": []
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "outputKind": "MANUAL_REVIEW_CANDIDATE",
+   "timing": {
+    "signal": "daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30",
+    "earliestExecutable": "reviewer decision after the close (entry order not disclosed)",
+    "decisionData": "daily bars up to the close; ADX at the bar before the pullback"
+   },
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
+   "conventions": [
+    "exact stop and order sequence not disclosed (#709 C13); no historical method return can be computed",
+    "intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable"
+   ],
+   "modelAssumptions": []
+  }
+ ],
+ "referenceRuns": [
+  {
+   "method": "SF_TURTLE_S1",
+   "kind": "METHOD",
+   "runId": "39271055007",
+   "date": "2026-10-19",
+   "codeVersion": "sf-turtle-1.0.0",
+   "codeSha256": null,
+   "receiptSha256Prefix": "64b9aece4cb32f43",
+   "trades": {
+    "BASE_S0": 827,
+    "DELIST_S1_MINUS_30": 789,
+    "DELIST_S2_DISTRESS_ZERO": 789,
+    "COST2_S1": 805,
+    "DATA_EVENT_MINUS_30": 796
+   },
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "REGRESSION_REFERENCE"
+  },
+  {
+   "method": "SF_TURTLE_S2",
+   "kind": "METHOD",
+   "runId": "39271055007",
+   "date": "2026-10-19",
+   "codeVersion": "sf-turtle-1.0.0",
+   "codeSha256": null,
+   "receiptSha256Prefix": "d32dd805a3a4429b",
+   "trades": {
+    "BASE_S0": 609,
+    "DELIST_S1_MINUS_30": 578,
+    "DELIST_S2_DISTRESS_ZERO": 578,
+    "COST2_S1": 578,
+    "DATA_EVENT_MINUS_30": 659
+   },
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "REGRESSION_REFERENCE"
+  },
+  {
+   "method": "SF_TURTLE_S1",
+   "kind": "METHOD",
+   "runId": "39392734794",
+   "date": "2026-10-20",
+   "codeVersion": "sf-turtle-1.1.0",
+   "codeSha256": "9372a8f8f92bfbdb66d039b00fa29beca42b42ee9b3a49e3fa5a1a948c773cf9",
+   "receiptSha256Prefix": "6b860bb6d72836bd",
+   "trades": {
+    "BASE_S0": 820,
+    "DELIST_S1_MINUS_30": 980,
+    "DELIST_S2_DISTRESS_ZERO": 980,
+    "COST2_S1": 841,
+    "DATA_EVENT_MINUS_30": 747,
+    "FAILSAFE_EXIT_20D": 574
+   },
+   "executionCountsBase": {
+    "entries": 825,
+    "adds": 562,
+    "failsafeEntries": 710,
+    "unitStopExits": 500,
+    "channelExits": 384,
+    "sameBarEntryStops": 124,
+    "sameBarAddStops": 64,
+    "sameBarEntryChannelExits": 1,
+    "reentrySameBarAsExit": 7,
+    "terminalSettlements": 25,
+    "unavailableSettlements": 5
+   },
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_TURTLE_S2",
+   "kind": "METHOD",
+   "runId": "39392734794",
+   "date": "2026-10-20",
+   "codeVersion": "sf-turtle-1.1.0",
+   "codeSha256": "9372a8f8f92bfbdb66d039b00fa29beca42b42ee9b3a49e3fa5a1a948c773cf9",
+   "receiptSha256Prefix": "4cc089e9e5fdc640",
+   "trades": {
+    "BASE_S0": 559,
+    "DELIST_S1_MINUS_30": 524,
+    "DELIST_S2_DISTRESS_ZERO": 524,
+    "COST2_S1": 604,
+    "DATA_EVENT_MINUS_30": 586,
+    "FAILSAFE_EXIT_20D": 559
+   },
+   "executionCountsBase": {
+    "entries": 562,
+    "adds": 344,
+    "failsafeEntries": 0,
+    "unitStopExits": 452,
+    "channelExits": 143,
+    "sameBarEntryStops": 114,
+    "sameBarAddStops": 40,
+    "sameBarEntryChannelExits": 0,
+    "reentrySameBarAsExit": 4,
+    "terminalSettlements": 26,
+    "unavailableSettlements": 9
+   },
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_DARVAS_BOX",
+   "kind": "COMPONENT_STUDY",
+   "runId": "39392734794",
+   "date": "2026-10-20",
+   "codeVersion": "sf-darvas-1.1.0",
+   "codeSha256": "9372a8f8f92bfbdb66d039b00fa29beca42b42ee9b3a49e3fa5a1a948c773cf9",
+   "receiptSha256Prefix": "f6c0386da496e2d9",
+   "signals": 22577,
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_DARVAS_BOX",
+   "kind": "COMPONENT_STUDY",
+   "runId": "39271055007",
+   "date": "2026-10-19",
+   "codeVersion": "sf-darvas-1.0.0",
+   "codeSha256": null,
+   "receiptSha256Prefix": "2fd60c5965c7e6c9",
+   "signals": 22577,
+   "role": "REGRESSION_REFERENCE"
+  }
+ ]
+}

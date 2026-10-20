@@ -1,0 +1,4433 @@
+{
+ "schema": "supertrader-sf-completion-gaps-1.0.0",
+ "derivedFrom": "completion/gaps.mjs over the 13 contracts, the registry and the sf test sources; never set by hand",
+ "gapClasses": {
+  "IMPLEMENTATION_GAP": "IMPLEMENTATION_GAP",
+  "DATA_GAP": "DATA_GAP",
+  "SOURCE_GAP": "SOURCE_GAP",
+  "MANUAL_DECISION": "MANUAL_DECISION",
+  "MEASUREMENT_GAP": "MEASUREMENT_GAP",
+  "PRODUCT_GAP": "PRODUCT_GAP"
+ },
+ "dimensions": [
+  {
+   "id": "D01_SOURCE_RULE_COVERAGE",
+   "title": "Source Rule Coverage",
+   "ruleKinds": null
+  },
+  {
+   "id": "D02_SIGNAL",
+   "title": "Signal Completeness",
+   "ruleKinds": [
+    "SETUP",
+    "FILTER",
+    "INDICATOR"
+   ]
+  },
+  {
+   "id": "D03_ENTRY",
+   "title": "Entry Completeness",
+   "ruleKinds": [
+    "ENTRY"
+   ]
+  },
+  {
+   "id": "D04_EXIT",
+   "title": "Exit Completeness",
+   "ruleKinds": [
+    "EXIT"
+   ]
+  },
+  {
+   "id": "D05_STOP",
+   "title": "Stop Completeness",
+   "ruleKinds": [
+    "STOP"
+   ]
+  },
+  {
+   "id": "D06_SIZING",
+   "title": "Position Sizing",
+   "ruleKinds": [
+    "SIZING"
+   ]
+  },
+  {
+   "id": "D07_PORTFOLIO_RISK",
+   "title": "Portfolio Risk Limits",
+   "ruleKinds": [
+    "PORTFOLIO",
+    "PYRAMIDING"
+   ]
+  },
+  {
+   "id": "D08_EXECUTION",
+   "title": "Execution Completeness",
+   "ruleKinds": null
+  },
+  {
+   "id": "D09_DATA",
+   "title": "Required Data Coverage",
+   "ruleKinds": null
+  },
+  {
+   "id": "D10_CORPORATE_ACTIONS",
+   "title": "Corporate-Action Handling",
+   "ruleKinds": null
+  },
+  {
+   "id": "D11_PIT",
+   "title": "PIT Integrity",
+   "ruleKinds": null
+  },
+  {
+   "id": "D12_MANUAL",
+   "title": "Manual Decision Dependencies",
+   "ruleKinds": null
+  },
+  {
+   "id": "D13_BACKTEST",
+   "title": "Backtest Readiness",
+   "ruleKinds": null
+  },
+  {
+   "id": "D14_LIVE",
+   "title": "Live Readiness",
+   "ruleKinds": null
+  },
+  {
+   "id": "D15_TESTS",
+   "title": "Missing Tests",
+   "ruleKinds": null
+  }
+ ],
+ "dimensionStatus": [
+  "COMPLETE",
+  "COMPLETE_WITH_DECLARED_LIMITS",
+  "PARTIAL",
+  "NOT_APPLICABLE"
+ ],
+ "totals": {
+  "IMPLEMENTATION_GAP": 0,
+  "DATA_GAP": 37,
+  "SOURCE_GAP": 10,
+  "MANUAL_DECISION": 103,
+  "MEASUREMENT_GAP": 37,
+  "PRODUCT_GAP": 13
+ },
+ "openImplementationGaps": [],
+ "candidates": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "candidateId": "C01",
+   "declaredScope": "EQUITY_ADAPTATION",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "38 #709 rules in scope; HARD 23/27 implemented; 9 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "TUR-SF-S1-OPEN-BREAKOUT",
+       "psr709": [
+        "TUR-S1SKIP"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": true,
+       "detail": "TUR-S1SKIP names a winning last breakout; the source does not say how an open one counts. #709 VU-TUR lists \"Hypothetischer noch offener Breakout als Gewinner angenommen\" as a VU formalization. Both readings are implemented and reported (model assumption MA-TUR-S1-OPEN-BREAKOUT); neither is the source rule."
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-SHORT",
+       "psr709": [
+        "TUR-S1ENT"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "ORIGINAL_ONLY",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "TUR-SF-FAILSAFE-EXIT",
+       "psr709": [
+        "TUR-FAILSAFE"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": true,
+       "detail": "The source states only the failsafe ENTRY (TUR-FAILSAFE, HARD / HIGH, implemented as TUR-SF-FAILSAFE). Its exit is not published: #709 VU-TUR \"Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel\"; #709 revalidation TUR-F-FAILSAFE-55 \"Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt\"; #712 spec V4 T4-FAILSAFE \"exit like S1 (interpretation)\". Both readings are implemented and reported (model assumption MA-TUR-FAILSAFE-EXIT): 10-day (reference reading, path FAILSAFE_55 in every trade record) and 20-day (scenario FAILSAFE_EXIT_20D). Neither is SOURCE_EXACT; no reading is chosen by result."
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-LIMIT-CORR",
+       "psr709": [
+        "TUR-LIMIT6",
+        "TUR-LIMIT10"
+       ],
+       "kind": "PORTFOLIO",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+      }
+     ]
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "signal: intraday on the bar whose high reaches the trigger (stop order resting from the prior close)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-LIMIT-CORR",
+       "psr709": [
+        "TUR-LIMIT6",
+        "TUR-LIMIT10"
+       ],
+       "kind": "PORTFOLIO",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-SHORT",
+       "psr709": [
+        "TUR-S1ENT"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "ORIGINAL_ONLY",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-turtle.test.mjs: GC-TUR-GOLD",
+       "sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+       "sf-turtle.test.mjs: GC-TUR-HO2002",
+       "sf-turtle.test.mjs: GC-TUR-S1-SKIP-WINNER",
+       "sf-turtle.test.mjs: GC-TUR-FAILSAFE"
+      ],
+      "ENTRY_EXIT": [
+       "sf-turtle.test.mjs: GC-TUR-ENTRY-S1",
+       "sf-turtle.test.mjs: GC-TUR-EXIT-S1",
+       "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT"
+      ],
+      "STOP": [
+       "sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+       "sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
+       "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
+      ],
+      "RISK_SIZING": [
+       "sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
+       "sf-turtle.test.mjs: GC-TUR-NOTIONAL",
+       "sf-turtle.test.mjs: GC-TUR-LIMIT12",
+       "sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+       "sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+      ],
+      "GAP": [
+       "sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+       "sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      ],
+      "MISSING_DATA": [
+       "sf-turtle.test.mjs: SF-TUR-MISSING-BAR",
+       "sf-turtle.test.mjs: SF-TUR-TERMINAL"
+      ],
+      "PIT": [
+       "sf-turtle.test.mjs: SF-TUR-TEMPORAL",
+       "sf-turtle.test.mjs: SF-TUR-WARMUP-CAUSAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": [
+       "sf-turtle-completion.test.mjs: SF2-TUR-SYNTHETIC-BAR-GUARD"
+      ],
+      "ACCOUNTING": [
+       "sf-turtle.test.mjs: SF-TUR-ACCOUNTING",
+       "sf-runner.test.mjs: SF-RUN-RESULT"
+      ],
+      "SNAPSHOT": [
+       "sf-runner.test.mjs: SF-RUN-GATES",
+       "sf-foundation.test.mjs: SF-WORKFLOW"
+      ],
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 4,
+    "SOURCE_GAP": 2,
+    "MANUAL_DECISION": 0,
+    "MEASUREMENT_GAP": 2,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "candidateId": "C02",
+   "declaredScope": "EQUITY_ADAPTATION",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "35 #709 rules in scope; HARD 20/24 implemented; 9 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-SHORT",
+       "psr709": [
+        "TUR-S2ENT"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "ORIGINAL_ONLY",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-LIMIT-CORR",
+       "psr709": [
+        "TUR-LIMIT6",
+        "TUR-LIMIT10"
+       ],
+       "kind": "PORTFOLIO",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+      }
+     ]
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "signal: intraday on the bar whose high reaches the trigger (stop order resting from the prior close)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-LIMIT-CORR",
+       "psr709": [
+        "TUR-LIMIT6",
+        "TUR-LIMIT10"
+       ],
+       "kind": "PORTFOLIO",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "TUR-SF-SHORT",
+       "psr709": [
+        "TUR-S2ENT"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "ORIGINAL_ONLY",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "short side needs historical borrow / locate availability and fees, which are not in the snapshot (#709 data requirement short_interest MISSING). The equity adaptation is long only; short breakouts still feed the System 1 filter."
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-turtle.test.mjs: GC-TUR-GOLD",
+       "sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+       "sf-turtle.test.mjs: GC-TUR-HO2002"
+      ],
+      "ENTRY_EXIT": [
+       "sf-turtle.test.mjs: GC-TUR-ENTRY-S2",
+       "sf-turtle.test.mjs: GC-TUR-EXIT-S2",
+       "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT"
+      ],
+      "STOP": [
+       "sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+       "sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
+       "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
+      ],
+      "RISK_SIZING": [
+       "sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
+       "sf-turtle.test.mjs: GC-TUR-NOTIONAL",
+       "sf-turtle.test.mjs: GC-TUR-LIMIT12",
+       "sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+       "sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+      ],
+      "GAP": [
+       "sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+       "sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+      ],
+      "MISSING_DATA": [
+       "sf-turtle.test.mjs: SF-TUR-MISSING-BAR",
+       "sf-turtle.test.mjs: SF-TUR-TERMINAL"
+      ],
+      "PIT": [
+       "sf-turtle.test.mjs: SF-TUR-TEMPORAL",
+       "sf-turtle.test.mjs: SF-TUR-WARMUP-CAUSAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": [
+       "sf-turtle-completion.test.mjs: SF2-TUR-SYNTHETIC-BAR-GUARD"
+      ],
+      "ACCOUNTING": [
+       "sf-turtle.test.mjs: SF-TUR-ACCOUNTING",
+       "sf-runner.test.mjs: SF-RUN-RESULT"
+      ],
+      "SNAPSHOT": [
+       "sf-runner.test.mjs: SF-RUN-GATES",
+       "sf-foundation.test.mjs: SF-WORKFLOW"
+      ],
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 4,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 0,
+    "MEASUREMENT_GAP": 2,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "candidateId": "C03",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "35 #709 rules in scope; HARD 10/10 implemented; 11 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "DAR-SF-BOTTOM-START",
+       "psr709": [
+        "DAR-Q2"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": true,
+       "detail": "#709 VU-DAR records the start (after the top day vs after top confirmation) as UNRESOLVED; both are implemented and the record names the variant. Default AFTER_TOP_DAY: lows already traded after the top day are not discarded, so the bottom (and a stop raised under it) never lies inside the traded range (review SF-R1-04); AFTER_TOP_CONFIRMED is the variant"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-SELECTION",
+       "psr709": [
+        "DAR-Q12",
+        "DAR-Q14",
+        "DAR-B9",
+        "DAR-B10",
+        "DAR-B11"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "techno-fundamental selection (industry growth, strongest stock of the industry, earning power)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-VOLUME",
+       "psr709": [
+        "DAR-Q10",
+        "DAR-B3"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "volume relative to the stock's own history; the machine reports breakout-day volume against its own prior sessions as evidence"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-MARKET",
+       "psr709": [
+        "DAR-Q13",
+        "DAR-B14"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "market trend and industry representatives"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-REENTRY",
+       "psr709": [
+        "DAR-Q11"
+       ],
+       "kind": "ENTRY",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "after a stop-out new all-time highs can allow a re-entry; the machine reports later boxes, the reviewer decides"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-SIZING",
+       "psr709": [
+        "DAR-B15",
+        "DAR-B18"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "position size and pilot buys"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-SF-PYRAMID",
+       "psr709": [
+        "DAR-B8"
+       ],
+       "kind": "PYRAMIDING",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "further buys while the confirmed up-trend continues (no absolute \"every add above every earlier fill\", DAR-C3)"
+      }
+     ]
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: the first session after the box is complete whose high reaches the trigger; fill = max(open, trigger)"
+      }
+     ],
+     "note": "signal: buy stop resting a fraction above a COMPLETED box top (both boundaries confirmed by the close of the confirming session)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "DAR-Q9",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "DAR-Q9: the snapshot series start at the 2015-01-01 warm-up, not at the listing date; the all-time high is only checked within the available history and flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-MR-SELECTION",
+       "psr709": [
+        "DAR-Q12",
+        "DAR-Q14",
+        "DAR-B9",
+        "DAR-B10",
+        "DAR-B11"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "techno-fundamental selection: industry growth expectation, strongest stock of the industry, expected earning power"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-MR-VOLUME",
+       "psr709": [
+        "DAR-Q10",
+        "DAR-B3"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "volume relative to the stock's own history (no general minimum)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-MR-MARKET",
+       "psr709": [
+        "DAR-Q13",
+        "DAR-B14"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "market trend and relevant industry representatives"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-MR-SIZING",
+       "psr709": [
+        "DAR-B15",
+        "DAR-B18",
+        "DAR-B8"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "position size, pilot buys and adds are the reviewer's decision; personal exceptions (DAR-C1, DAR-C3, DAR-C6) are not generalized"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "DAR-MR-FRACTION",
+       "psr709": [
+        "DAR-Q4",
+        "DAR-Q5"
+       ],
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "\"a fraction\": the machine uses one raw cent; the reviewer may set another fraction per trade (DAR-C-THIO)"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "component signal study only: sizing / selection are manual, no method return can be measured"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-darvas.test.mjs: GC-DAR-TOP-CONFIRM",
+       "sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
+       "sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-STOP"
+      ],
+      "ENTRY_EXIT": [
+       "sf-darvas.test.mjs: GC-DAR-BREAKOUT-NO-WAIT",
+       "sf-darvas.test.mjs: GC-DAR-STOP-PATH"
+      ],
+      "STOP": [
+       "sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER",
+       "sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": [
+       "sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL",
+       "sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-GAP-EXIT"
+      ],
+      "MISSING_DATA": [
+       "sf-darvas-completion.test.mjs: GC-DAR-MISSING-BAR",
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-darvas.test.mjs: SF-DAR-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": [
+       "sf-darvas-completion.test.mjs: SF2-DAR-SYNTHETIC-BAR-GUARD"
+      ],
+      "ACCOUNTING": [
+       "sf-runner.test.mjs: SF-RUN-COMPONENT",
+       "sf-runner.test.mjs: SF-RUN-COMPONENT-DELISTING"
+      ],
+      "SNAPSHOT": [
+       "sf-runner.test.mjs: SF-RUN-GATES",
+       "sf-foundation.test.mjs: SF-WORKFLOW"
+      ],
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 1,
+    "SOURCE_GAP": 1,
+    "MANUAL_DECISION": 12,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "candidateId": "C04",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "56 #709 rules in scope; HARD 4/14 implemented; 17 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-STAGE",
+       "psr709": [
+        "WEIN-S1",
+        "WEIN-S2",
+        "WEIN-S3",
+        "WEIN-S4",
+        "WEIN-NO3",
+        "WEIN-NO4"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "stage classification (no Stage 3 buys, no Stage 4 buys or holds); the machine reports MA slope and price-to-MA as evidence, the stage is the reviewer's call"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-VOLUME",
+       "psr709": [
+        "WEIN-VOL",
+        "WEIN-VOL1",
+        "WEIN-VOL2",
+        "WEIN-VOL3",
+        "WEIN-VOL4",
+        "WEIN-BASEVOL"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "clear volume confirmation of the breakout; the machine evaluates the three printed alternatives and reports which hold; no single magic multiplier is enforced (WEIN-VOL4)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-RS",
+       "psr709": [
+        "WEIN-RS",
+        "WEIN-RSP",
+        "WEIN-RSZERO",
+        "WEIN-RSNO"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "relative strength vs a consistent market index: negative AND still poor RS = no buy; below zero but clearly improving may be bought; the machine reports the RS line, its 52-week-normalised level and its recent trend as evidence (no RS > 0 gate)"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-GROUP",
+       "psr709": [
+        "WEIN-GROUP",
+        "WEIN-GROUP2"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-MARKET",
+       "psr709": [
+        "WEIN-MARKET"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-OVERHEAD",
+       "psr709": [
+        "WEIN-OH",
+        "WEIN-OHAGE"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "avoid strong nearby overhead resistance; the machine reports the nearest higher weekly high in the available history and its age"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-INV-TRAIL",
+       "psr709": [
+        "WEIN-TRAIL1",
+        "WEIN-TRAIL2",
+        "WEIN-TRAIL3",
+        "WEIN-TRAIL4",
+        "WEIN-SELL3"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "raise the stop after a significant correction and recovery; protect under the rising MA and the relevant low; a slight MA undercut with intact low is no forced sale; sell half in Stage 3"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-VOL5",
+       "psr709": [
+        "WEIN-VOL5"
+       ],
+       "kind": "EXIT",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "if the buy stop filled without volume confirmation, sell into the first small strength"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-INV-STOP",
+       "psr709": [
+        "WEIN-STOP2"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "investor stop below a significant correction low; the machine proposes the lowest weekly low of the base, the reviewer decides"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-INV-SIZE",
+       "psr709": [
+        "WEIN-BUY2",
+        "WEIN-PB",
+        "WEIN-NOPB",
+        "WEIN-DIVERS2"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "half of the planned position at the breakout, the other half on a constructive pullback with contracting volume; do not only wait for pullbacks; roughly equal dollar amounts per position"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-NO-AVG-DOWN",
+       "psr709": [
+        "WEIN-AVG"
+       ],
+       "kind": "PYRAMIDING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "never average down into a negative situation; add only on confirmation"
+      }
+     ]
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: a reviewer decision after the week closes; never back-filled into history"
+      }
+     ],
+     "note": "signal: the completed week whose high exceeds the base resistance (buy-stop prepared from the prior week)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-GROUP",
+       "psr709": [
+        "WEIN-GROUP",
+        "WEIN-GROUP2"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-MARKET",
+       "psr709": [
+        "WEIN-MARKET"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-STAGE",
+       "psr709": [
+        "WEIN-S1",
+        "WEIN-S2",
+        "WEIN-NO3",
+        "WEIN-NO4"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is this an early Stage 2 breakout out of a Stage 1 base?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-VOLUME",
+       "psr709": [
+        "WEIN-VOL",
+        "WEIN-VOL4"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is the volume confirmation clear (alternatives A / B / C reported)?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-RS",
+       "psr709": [
+        "WEIN-RSNO",
+        "WEIN-RSZERO"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is RS negative and still poor (no buy), or below zero but clearly improving?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-OVERHEAD",
+       "psr709": [
+        "WEIN-OH"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "strong overhead resistance nearby?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-GROUP",
+       "psr709": [
+        "WEIN-GROUP"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "industry group stage (no data in the machine)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-STOP",
+       "psr709": [
+        "WEIN-STOP2"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "which correction low is significant for the initial stop?"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
+       "sf-weinstein.test.mjs: GC-WEIN-WEEKLY"
+      ],
+      "ENTRY_EXIT": [
+       "sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA",
+       "sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
+      ],
+      "STOP": [
+       "sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": [
+       "sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
+      ],
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-weinstein.test.mjs: SF-WEIN-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 4,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 16,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "candidateId": "C05",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "63 #709 rules in scope; HARD 4/14 implemented; 31 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-STAGE",
+       "psr709": [
+        "WEIN-S1",
+        "WEIN-S2",
+        "WEIN-S3",
+        "WEIN-S4",
+        "WEIN-NO3",
+        "WEIN-NO4"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "stage classification (no Stage 3 buys, no Stage 4 buys or holds); the machine reports MA slope and price-to-MA as evidence, the stage is the reviewer's call"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-VOLUME",
+       "psr709": [
+        "WEIN-VOL",
+        "WEIN-VOL1",
+        "WEIN-VOL2",
+        "WEIN-VOL3",
+        "WEIN-VOL4",
+        "WEIN-BASEVOL"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "clear volume confirmation of the breakout; the machine evaluates the three printed alternatives and reports which hold; no single magic multiplier is enforced (WEIN-VOL4)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-RS",
+       "psr709": [
+        "WEIN-RS",
+        "WEIN-RSP",
+        "WEIN-RSZERO",
+        "WEIN-RSNO"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "relative strength vs a consistent market index: negative AND still poor RS = no buy; below zero but clearly improving may be bought; the machine reports the RS line, its 52-week-normalised level and its recent trend as evidence (no RS > 0 gate)"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-GROUP",
+       "psr709": [
+        "WEIN-GROUP",
+        "WEIN-GROUP2"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-MARKET",
+       "psr709": [
+        "WEIN-MARKET"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-OVERHEAD",
+       "psr709": [
+        "WEIN-OH",
+        "WEIN-OHAGE"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "avoid strong nearby overhead resistance; the machine reports the nearest higher weekly high in the available history and its age"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-TR-TRAIL",
+       "psr709": [
+        "WEIN-TR-TRAIL",
+        "WEIN-TR-EARLY",
+        "WEIN-TR-SELL3"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "ignore corrections under 7 %; after a significant correction and recovery raise the stop under the reaction low; do not wait for the MA break; exit earlier than investors at a Stage 3 top"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-TR-STOP",
+       "psr709": [
+        "WEIN-TR-STOP"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "trader stop below the next relevant reaction low; the machine proposes the consolidation low, the reviewer decides"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-TR-SIZE",
+       "psr709": [
+        "WEIN-TR-CONT-SIZE"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "buy the full planned position at the continuation breakout (amount is the reviewer's)"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-SF-NO-AVG-DOWN",
+       "psr709": [
+        "WEIN-AVG"
+       ],
+       "kind": "PYRAMIDING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "never average down into a negative situation; add only on confirmation"
+      }
+     ]
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: a reviewer decision after the week closes; never back-filled into history"
+      }
+     ],
+     "note": "signal: the completed week whose high exceeds the high of the consolidation"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-GROUP",
+       "psr709": [
+        "WEIN-GROUP",
+        "WEIN-GROUP2"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "WEIN-SF-MARKET",
+       "psr709": [
+        "WEIN-MARKET"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-STAGE",
+       "psr709": [
+        "WEIN-S2",
+        "WEIN-S3",
+        "WEIN-NO3"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is the stock in Stage 2 (not a Stage 3 top)?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-VOLUME",
+       "psr709": [
+        "WEIN-VOL",
+        "WEIN-VOL4"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is the volume confirmation clear?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-GROUP",
+       "psr709": [
+        "WEIN-GROUP"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "industry group stage (no data in the machine)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "WEIN-MR-STOP",
+       "psr709": [
+        "WEIN-TR-STOP"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "which reaction low is relevant (else about 4-6 % below the breakout and below a round number)?"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
+      ],
+      "ENTRY_EXIT": [
+       "sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT",
+       "sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT"
+      ],
+      "STOP": [
+       "sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": [
+       "sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
+      ],
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-weinstein.test.mjs: SF-WEIN-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 4,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 13,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "118 #709 rules in scope; HARD 8/16 implemented; 77 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "MIN-SF-TT-8",
+       "psr709": [
+        "MIN-TT-08"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the IBD rating is proprietary and not in the snapshot; a VU cross-sectional percentile is reported as a proxy and never gates (#709: \"Ein VU-Perzentil mit ähnlicher Skala ist kein identischer IBD-Rang\")"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PRIORITY",
+       "psr709": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-05",
+        "MIN-PROCESS-06",
+        "MIN-PROCESS-07",
+        "MIN-PROCESS-08",
+        "MIN-PROCESS-09",
+        "MIN-PROCESS-10",
+        "MIN-PROCESS-11"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "manual relative-priority review of the remaining names"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-FUNDAMENTALS",
+       "psr709": [
+        "MIN-EPS-01",
+        "MIN-EPS-02",
+        "MIN-QUALITY-01",
+        "MIN-QUALITY-02",
+        "MIN-QUALITY-03"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "earnings and sales growth and quality; no fixed percentage gate"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-VCP",
+       "psr709": [
+        "MIN-VCP-01",
+        "MIN-VCP-02",
+        "MIN-VCP-03",
+        "MIN-VCP-04",
+        "MIN-VCP-05",
+        "MIN-BASE-01"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "volatility contraction from left to right in a Stage 2 base; the machine reports the footprint (base length, largest and last correction, range contraction) as evidence"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PIVOT",
+       "psr709": [
+        "MIN-VCP-07",
+        "MIN-PRICE-01"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "buy over the pivot with increasing volume; the fundamental thesis needs price confirmation"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-SELL",
+       "psr709": [
+        "MIN-MM-SELL-01",
+        "MIN-MM-SELL-02",
+        "MIN-MM-SELL-03",
+        "MIN-MM-SELL-04"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "sell into strength, keep a remainder of early leaders with MA50 as an additional guide; no universal target"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-STOP",
+       "psr709": [
+        "MIN-RISK-01",
+        "MIN-MM-STOP-01",
+        "MIN-MM-STOP-02",
+        "MIN-RISK-05"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "loss exit set before the entry, executed regardless of volume, at most 10 % (usually sooner); about 3R almost always to break-even (no absolute 3R obligation); the machine flags a reviewer stop wider than 10 %"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-SIZE",
+       "psr709": [
+        "MIN-TTC-SIZING",
+        "MIN-MM-SIZE-01"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "size from the accepted equity risk and the stop distance; at most 25 % per position (2015 answer)"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: a reviewer decision after the close; never back-filled into history"
+      }
+     ],
+     "note": "signal: the daily close on which all machine Trend Template criteria hold"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "MIN-SF-TT-8",
+       "psr709": [
+        "MIN-TT-08"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "the IBD rating is proprietary and not in the snapshot; a VU cross-sectional percentile is reported as a proxy and never gates (#709: \"Ein VU-Perzentil mit ähnlicher Skala ist kein identischer IBD-Rang\")"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-PRIORITY",
+       "psr709": [
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-05",
+        "MIN-PROCESS-06",
+        "MIN-PROCESS-07",
+        "MIN-PROCESS-08",
+        "MIN-PROCESS-09",
+        "MIN-PROCESS-10",
+        "MIN-PROCESS-11"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "relative priority of the remaining names (results, surprises, guidance, industry position, peers, catalysts)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-QUALITY",
+       "psr709": [
+        "MIN-QUALITY-01",
+        "MIN-QUALITY-02",
+        "MIN-QUALITY-03",
+        "MIN-EPS-01",
+        "MIN-EPS-02"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "earnings quality (core vs one-off), recent and prior quarters; 20-25 % is a common minimum, not a SEPA constant"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-VCP",
+       "psr709": [
+        "MIN-VCP-01",
+        "MIN-VCP-02",
+        "MIN-VCP-03",
+        "MIN-VCP-04",
+        "MIN-VCP-05"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is there a valid contraction pattern (counts and halving are typical, not limits; flat bases / boxes allowed)?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-RS",
+       "psr709": [
+        "MIN-TT-08"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "IBD RS rating >= 70 cannot be computed; the VU RS percentile is shown as a proxy, not as the IBD rating"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-minervini.test.mjs: GC-MIN-TT-1",
+       "sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE"
+      ],
+      "ENTRY_EXIT": [
+       "sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE"
+      ],
+      "STOP": [
+       "sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": "N/A: no gap rule in the SEPA contract",
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-minervini.test.mjs: SF-MIN-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 2,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 12,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "20 #709 rules in scope; HARD 3/6 implemented; 11 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PP-ENTRY",
+       "psr709": [
+        "MIN-VCP-07"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "pivot entry decided by the reviewer"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PP-EXIT",
+       "psr709": [
+        "MIN-MM-SELL-01"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "reviewer sell rules"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PP-STOP",
+       "psr709": [
+        "MIN-RISK-01",
+        "MIN-MM-STOP-01",
+        "MIN-MM-STOP-02"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "loss exit before entry, at most 10 %"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-SF-PP-SIZE",
+       "psr709": [
+        "MIN-MM-SIZE-01",
+        "MIN-TTC-SIZING"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "reviewer sizing, at most 25 % per position"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: a reviewer decision after the close"
+      }
+     ],
+     "note": "signal: the daily close on which the measured run-up and consolidation criteria hold"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-PP-VOLUME",
+       "psr709": [
+        "MIN-PP-02"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "did the run-up begin with strong volume? (the machine reports the volume ratio of the run-up start)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MIN-MR-PP-CORR",
+       "psr709": [
+        "MIN-PP-04"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "correction between 20 % and 25 %: within the printed 20-25 % range or not?"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
+       "sf-minervini.test.mjs: SF-MIN-PP-NEWER-PEAK"
+      ],
+      "ENTRY_EXIT": [
+       "sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE"
+      ],
+      "STOP": [
+       "sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": "N/A: no gap rule in the Power Play contract",
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-minervini.test.mjs: SF-MIN-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 0,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 7,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "candidateId": "C08",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "36 #709 rules in scope; HARD 4/4 implemented; 15 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-PRIORITY",
+       "psr709": [
+        "KK-048",
+        "KK-049"
+       ],
+       "kind": "SETUP",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-BO-SETUP",
+       "psr709": [
+        "KK-006",
+        "KK-007",
+        "KK-008",
+        "KK-009"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "prior move 30-100 % in 1-3 months, higher lows, orderly tightening over 2 weeks - 2 months, rising 10 / 20-day MA; the machine reports these measures as evidence"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-BO-ENTRY",
+       "psr709": [
+        "KK-011"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "daily breakout entry allowed (anticipation is a harder variant); the level is the reviewer's"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-BO-ORH",
+       "psr709": [
+        "KK-010"
+       ],
+       "kind": "ENTRY",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no frozen intraday history in the snapshot (r9b minute cache is live and locked in snapshot mode)"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-BO-PARTIAL",
+       "psr709": [
+        "KK-013"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "after 3-5 days sell 1/3-1/2, rest stop to break-even (preference)"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-BO-TRAIL",
+       "psr709": [
+        "KK-014"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "trail the rest with the 10 / 20-day MA; beginners: first close below the 10-day MA (preference)"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-SIZE",
+       "psr709": [
+        "KK-002",
+        "KK-003",
+        "KK-004",
+        "KK-025",
+        "KK-026"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: breakout-day close (market-on-close) after the reviewer accepts the level"
+      }
+     ],
+     "note": "signal: daily close (screen); the daily breakout entry is the breakout-day close, at which the low of day is final"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-BO-ORH",
+       "psr709": [
+        "KK-010"
+       ],
+       "kind": "ENTRY",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no frozen intraday history in the snapshot (r9b minute cache is live and locked in snapshot mode)"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-MR-SETUP",
+       "psr709": [
+        "KK-006",
+        "KK-007",
+        "KK-008",
+        "KK-009"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "strong prior move, higher lows, orderly tightening, rising 10 / 20-day MA?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-MR-LEVEL",
+       "psr709": [
+        "KK-011"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "which consolidation high is the breakout level?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-MR-PRIORITY",
+       "psr709": [
+        "KK-048",
+        "KK-049"
+       ],
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "relative priority: liquidity first, then prior move / MA and momentum, then ADR, then volume and growth (no six-fold AND)"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-kullamagi.test.mjs: GC-KK-ADR20",
+       "sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT"
+      ],
+      "ENTRY_EXIT": [
+       "sf-kullamagi.test.mjs: GC-KK-SETUP-EVIDENCE"
+      ],
+      "STOP": [
+       "sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
+       "sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+      ],
+      "RISK_SIZING": [
+       "sf-kullamagi.test.mjs: GC-KK-CAP-30"
+      ],
+      "GAP": [
+       "sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+      ],
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-kullamagi.test.mjs: SF-KK-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 2,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 10,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "38 #709 rules in scope; HARD 4/4 implemented; 18 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-PRIORITY",
+       "psr709": [
+        "KK-048",
+        "KK-049"
+       ],
+       "kind": "SETUP",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-EP-SIDEWAYS",
+       "psr709": [
+        "KK-035"
+       ],
+       "kind": "SETUP",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "ideally 3-6 months sideways or longer without a big prior run; machine reports the prior range and prior move"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-CATALYST",
+       "psr709": [
+        "KK-015",
+        "KK-038",
+        "KK-039",
+        "KK-040"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-VOLUME",
+       "psr709": [
+        "KK-016",
+        "KK-037"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "needs intraday volume; daily volume is reported as evidence only"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-ENTRY",
+       "psr709": [
+        "KK-032"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no frozen intraday history"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "KK-SF-EP-EXIT",
+       "psr709": [
+        "KK-017"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "the article names 20 / 50-day MAs and later 10 / 20-day MAs (KK-C2): exit choice discretionary, no universal MA; the breakout partial sale is not carried over"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-SIZE",
+       "psr709": [
+        "KK-002",
+        "KK-003",
+        "KK-004",
+        "KK-025",
+        "KK-026"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "the entry needs data the snapshot lacks: not executable on the snapshot"
+      }
+     ],
+     "note": "signal: catalyst timestamp and the first intraday minutes (not available)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-CATALYST",
+       "psr709": [
+        "KK-015",
+        "KK-038",
+        "KK-039",
+        "KK-040"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no timestamped catalyst / news / estimate / guidance history in the snapshot (#709 estimates, surprises, guidance MISSING)"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-VOLUME",
+       "psr709": [
+        "KK-016",
+        "KK-037"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "needs intraday volume; daily volume is reported as evidence only"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-EP-ENTRY",
+       "psr709": [
+        "KK-032"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no frozen intraday history"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-MR-CATALYST",
+       "psr709": [
+        "KK-015",
+        "KK-038",
+        "KK-039",
+        "KK-040"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "is there an unexpected significant catalyst (earnings / guidance, regulation, FDA, contract, sector repricing)?"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
+      ],
+      "ENTRY_EXIT": "N/A: entry DATA_BLOCKED (intraday opening range)",
+      "STOP": [
+       "sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT"
+      ],
+      "RISK_SIZING": [
+       "sf-kullamagi.test.mjs: GC-KK-CAP-30"
+      ],
+      "GAP": [
+       "sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
+      ],
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-kullamagi.test.mjs: SF-KK-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 7,
+    "SOURCE_GAP": 1,
+    "MANUAL_DECISION": 4,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "34 #709 rules in scope; HARD 3/3 implemented; 18 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-PRIORITY",
+       "psr709": [
+        "KK-048",
+        "KK-049"
+       ],
+       "kind": "SETUP",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-PS-ACCEL",
+       "psr709": [
+        "KK-018"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "several strongly accelerated up days; the machine reports the streak of up days, their returns and whether they accelerate (evidence, no threshold)"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-BORROW",
+       "psr709": [
+        "KK-030"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no historical borrow / locate / fee data (#709 short_interest MISSING)"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-ENTRY",
+       "psr709": [
+        "KK-020",
+        "KK-021"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "needs intraday bars and VWAP"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-PS-TARGET",
+       "psr709": [
+        "KK-023"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "take profits toward the 10 / 20-day MA, early partials; the machine reports the distances"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-STOP",
+       "psr709": [
+        "KK-022"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "VWAP needs intraday data; the high of day is only final after the close"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-SF-SIZE",
+       "psr709": [
+        "KK-002",
+        "KK-003",
+        "KK-004",
+        "KK-025",
+        "KK-026"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "the entry needs data the snapshot lacks: not executable on the snapshot"
+      }
+     ],
+     "note": "signal: intraday (not available)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-ENTRY",
+       "psr709": [
+        "KK-020",
+        "KK-021"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "needs intraday bars and VWAP"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-STOP",
+       "psr709": [
+        "KK-022"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "VWAP needs intraday data; the high of day is only final after the close"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "KK-SF-PS-BORROW",
+       "psr709": [
+        "KK-030"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "no historical borrow / locate / fee data (#709 short_interest MISSING)"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "KK-MR-PARABOLIC",
+       "psr709": [
+        "KK-018",
+        "KK-019"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "several strongly accelerated up days? (sizes are illustrative, not minimums)"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE"
+      ],
+      "ENTRY_EXIT": "N/A: entry DATA_BLOCKED (intraday, VWAP)",
+      "STOP": "N/A: stop DATA_BLOCKED (VWAP)",
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": "N/A: entry DATA_BLOCKED",
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-kullamagi.test.mjs: SF-KK-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 7,
+    "SOURCE_GAP": 0,
+    "MANUAL_DECISION": 5,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "candidateId": "C11",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "22 #709 rules in scope; HARD 1/1 implemented; 6 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-PP-CONTEXT",
+       "psr709": [
+        "MOKAPP-001",
+        "MOKAPP-002",
+        "MOKAPP-004",
+        "MOKAPP-006",
+        "MOKAPP-007",
+        "MOKAPP-008",
+        "MOKAPP-009",
+        "MOKAPP-010"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "base, theme, 10DMA / critical MA position, no V-shape, no wedging, not extended; the machine reports the distances to the 10 / 50 / 200-day MAs as evidence"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "no separate entry rule: the entry is the screen signal (MOKA-SF-PP-VOLUME + MOKA-SF-PP-UPDAY (machine), MOKA-SF-PP-CONTEXT (manual))"
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-EXIT-MA",
+       "psr709": [
+        "MOKA12-008",
+        "MOKASTOP-001"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "sell guide: 10DMA if the stock respected it for >= 7 weeks, otherwise 50DMA (preference)"
+      },
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "MOKA-SF-EXIT-VIOLATION",
+       "psr709": [
+        "MOKA12-009",
+        "MOKASTOP-002"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": true,
+       "detail": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-EXIT-CONTEXT",
+       "psr709": [
+        "MOKASTOP-003",
+        "MOKASTOP-004",
+        "MOKASTOP-005"
+       ],
+       "kind": "EXIT",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "weak market, partial vs full exit (Gil vs Chris), lagging names in a strong market are reviewer decisions"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-PP-STOP",
+       "psr709": [
+        "MOKAPP-004"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "stop / sell guide decided by the reviewer (no numeric stop in the Pocket Pivot rules)"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-PP-SIZE",
+       "psr709": [
+        "MOKAPP-002"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "sizing not specified in #709; reviewer decision"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: reviewer decision after the close; intraday projected volume is not available"
+      }
+     ],
+     "note": "signal: daily close of the candidate day (its full volume is known only then)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-BASE",
+       "psr709": [
+        "MOKAPP-001",
+        "MOKAPP-006",
+        "MOKAPP-008",
+        "MOKAPP-009"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "constructive base; no multi-month downtrend, no V-shape after a hard break, no wedging"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-THEME",
+       "psr709": [
+        "MOKAPP-002"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "strong fundamentals or a convincing theme"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-EXT",
+       "psr709": [
+        "MOKAPP-004",
+        "MOKAPP-007",
+        "MOKAPP-010"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "position relative to the 10DMA / critical MA; not extended"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
+       "sf-morales-kacher.test.mjs: GC-PP-WINDOW-10"
+      ],
+      "ENTRY_EXIT": [
+       "sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS",
+       "sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+       "sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+      ],
+      "STOP": "N/A: no numeric stop in the Pocket Pivot rules (MANUAL_DECISION)",
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": "N/A: gap is the BGU method (C12)",
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-morales-kacher.test.mjs: SF-MOKA-TEMPORAL",
+       "sf-moka-completion.test.mjs: SF2-MOKA-SELL-GUIDE-CAUSAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 0,
+    "SOURCE_GAP": 1,
+    "MANUAL_DECISION": 9,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "candidateId": "C12",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "15 #709 rules in scope; HARD 2/2 implemented; 3 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "MOKA-SF-BGU-VOLWINDOW",
+       "psr709": [
+        "MOKA24-VOL"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "#709 does not record the window; the ratio over the 50 sessions before the gap day is reported (convention of the authors' daily charts, unverified in #709) and the reviewer confirms"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-BGU-MEGA",
+       "psr709": [
+        "MOKA24-MEGA"
+       ],
+       "kind": "FILTER",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "below the standard the record is not rejected: VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-BGU-CONTEXT",
+       "psr709": [
+        "MOKA12-003",
+        "MOKA12-006"
+       ],
+       "kind": "SETUP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "leadership / theme and uptrend or constructive consolidation before the gap"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "no separate entry rule: the entry is the screen signal (MOKA-SF-BGU-GAP + MOKA-SF-BGU-VOLUME (machine), MOKA-SF-BGU-CONTEXT (manual))"
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-EXIT-MA",
+       "psr709": [
+        "MOKA12-008",
+        "MOKASTOP-001"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "sell guide: 10DMA if the stock respected it for >= 7 weeks, otherwise 50DMA (preference)"
+      },
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "MOKA-SF-EXIT-VIOLATION",
+       "psr709": [
+        "MOKA12-009",
+        "MOKASTOP-002"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": true,
+       "detail": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-EXIT-CONTEXT",
+       "psr709": [
+        "MOKASTOP-003",
+        "MOKASTOP-004",
+        "MOKASTOP-005"
+       ],
+       "kind": "EXIT",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "weak market, partial vs full exit (Gil vs Chris), lagging names in a strong market are reviewer decisions"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-BGU-SELLGUIDE",
+       "psr709": [
+        "MOKA12-007",
+        "MOKASTOP-006"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": true,
+       "allReadingsImplemented": false,
+       "detail": "gap-day low as the risk reference; below it generally sell at least half (preference); the machine reports the level"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-SF-BGU-SIZE",
+       "psr709": [
+        "MOKA12-003"
+       ],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "sizing not specified in #709; reviewer decision"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: reviewer decision after the close; intraday projected volume is not available"
+      }
+     ],
+     "note": "signal: daily close of the gap day (full-day volume)"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "DATA_GAP",
+       "ruleId": "MOKA24-MEGA",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "MOKA24-MEGA: point-in-time market capitalisation for the megacap exception is not in the snapshot; the reviewer judges it"
+      },
+      {
+       "class": "DATA_GAP",
+       "ruleId": "intraday projected volume (daily variant only)",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "intraday projected volume (daily variant only)"
+      }
+     ]
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-LEAD",
+       "psr709": [
+        "MOKA12-003",
+        "MOKA12-006"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "strong leadership or theme; uptrend or constructive consolidation before the gap"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-MEGA",
+       "psr709": [
+        "MOKA24-MEGA"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "volume below 1.5x: does the megacap exception apply (MCD accepted at +47.09 %)?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "MOKA-MR-VOLWINDOW",
+       "psr709": [
+        "MOKA24-VOL"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "the averaging window of \"average volume\" is not recorded in #709; the 50-session ratio is shown with the 1.5x reading"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-morales-kacher.test.mjs: GC-BGU-CANDIDATE",
+       "sf-morales-kacher.test.mjs: GC-BGU-MCD-EXCEPTION"
+      ],
+      "ENTRY_EXIT": [
+       "sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE",
+       "sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+      ],
+      "STOP": [
+       "sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
+      ],
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": [
+       "sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW",
+       "sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY"
+      ],
+      "MISSING_DATA": [
+       "sf-morales-kacher.test.mjs: SF-MOKA-BGU-MISSING-DATA",
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-morales-kacher.test.mjs: SF-MOKA-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 2,
+    "SOURCE_GAP": 2,
+    "MANUAL_DECISION": 10,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "candidateId": "C13",
+   "declaredScope": "SINGLE",
+   "dimensions": [
+    {
+     "id": "D01_SOURCE_RULE_COVERAGE",
+     "title": "Source Rule Coverage",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": "6 #709 rules in scope; HARD 2/2 implemented; 0 excluded with a written reason"
+    },
+    {
+     "id": "D02_SIGNAL",
+     "title": "Signal Completeness",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "RAS-SF-OSC-HIGH",
+       "psr709": [
+        "RAS04-005"
+       ],
+       "kind": "SETUP",
+       "essential": false,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "best setups with new oscillator momentum highs; reported as evidence"
+      }
+     ]
+    },
+    {
+     "id": "D03_ENTRY",
+     "title": "Entry Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "RAS-SF-ENTRY",
+       "psr709": [
+        "RAS04-001"
+       ],
+       "kind": "ENTRY",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "order sequence not fully disclosed (#709 C13)"
+      }
+     ]
+    },
+    {
+     "id": "D04_EXIT",
+     "title": "Exit Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "RAS-SF-EXIT",
+       "psr709": [
+        "RAS04-003"
+       ],
+       "kind": "EXIT",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "a new high is an exit opportunity (preference)"
+      }
+     ]
+    },
+    {
+     "id": "D05_STOP",
+     "title": "Stop Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "RAS-SF-STOP",
+       "psr709": [
+        "RAS04-001"
+       ],
+       "kind": "STOP",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "stop not fully disclosed (#709 C13)"
+      }
+     ]
+    },
+    {
+     "id": "D06_SIZING",
+     "title": "Position Sizing",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "SOURCE_GAP",
+       "ruleId": "RAS-SF-SIZE",
+       "psr709": [],
+       "kind": "SIZING",
+       "essential": true,
+       "scope": "DECLARED",
+       "mechanicsImplemented": false,
+       "allReadingsImplemented": false,
+       "detail": "not disclosed for the Holy Grail setup"
+      }
+     ]
+    },
+    {
+     "id": "D07_PORTFOLIO_RISK",
+     "title": "Portfolio Risk Limits",
+     "status": "NOT_APPLICABLE",
+     "gaps": [],
+     "note": "the source assigns no rule of this kind to the method"
+    },
+    {
+     "id": "D08_EXECUTION",
+     "title": "Execution Completeness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no mechanical order: reviewer decision after the close (entry order not disclosed)"
+      }
+     ],
+     "note": "signal: daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30"
+    },
+    {
+     "id": "D09_DATA",
+     "title": "Required Data Coverage",
+     "status": "COMPLETE",
+     "gaps": []
+    },
+    {
+     "id": "D10_CORPORATE_ACTIONS",
+     "title": "Corporate-Action Handling",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D1",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR"
+      }
+     ],
+     "note": "quant/engines/return-series.js#splitFactors (ADR-002) via validation/lib.mjs#adjustSeries; split-adjusted OHLC from the snapshot; raw prices only where a rule names a raw quantity (tick, price floor); no price reconstruction for missing bars"
+    },
+    {
+     "id": "D11_PIT",
+     "title": "PIT Integrity",
+     "status": "COMPLETE_WITH_DECLARED_LIMITS",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": "V4-D2",
+       "essential": false,
+       "scope": "DECLARED",
+       "detail": "share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results"
+      }
+     ],
+     "note": "prior-session levels only; snapshot PIT listing table incl. inactive listings"
+    },
+    {
+     "id": "D12_MANUAL",
+     "title": "Manual Decision Dependencies",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "RAS-MR-IMPULSE",
+       "psr709": [
+        "RAS04-001"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "strong impulse before the pullback?"
+      },
+      {
+       "class": "MANUAL_DECISION",
+       "ruleId": "RAS-MR-EXECUTION",
+       "psr709": [
+        "RAS04-001"
+       ],
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "entry order, stop and exit are not disclosed"
+      }
+     ]
+    },
+    {
+     "id": "D13_BACKTEST",
+     "title": "Backtest Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "MEASUREMENT_GAP",
+       "ruleId": null,
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented"
+      }
+     ]
+    },
+    {
+     "id": "D14_LIVE",
+     "title": "Live Readiness",
+     "status": "PARTIAL",
+     "gaps": [
+      {
+       "class": "PRODUCT_GAP",
+       "ruleId": "LIVE_NOT_APPROVED",
+       "essential": true,
+       "scope": "DECLARED",
+       "detail": "no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables)"
+      }
+     ]
+    },
+    {
+     "id": "D15_TESTS",
+     "title": "Missing Tests",
+     "status": "COMPLETE",
+     "gaps": [],
+     "note": {
+      "GOLDEN": [
+       "sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
+       "sf-holy-grail.test.mjs: GC-RAS-OSC-310"
+      ],
+      "ENTRY_EXIT": [
+       "sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK"
+      ],
+      "STOP": "N/A: stop not disclosed (SOURCE_GAP)",
+      "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+      "GAP": "N/A: no gap rule disclosed",
+      "MISSING_DATA": [
+       "sf-completion.test.mjs: SF2-MISSING-DATA-ALL-SCREENS"
+      ],
+      "PIT": [
+       "sf-holy-grail.test.mjs: SF-RAS-TEMPORAL"
+      ],
+      "SYNTHETIC_BAR_GUARD": "N/A: no fills are simulated",
+      "ACCOUNTING": "N/A: manual-review screen, no positions are simulated",
+      "SNAPSHOT": "N/A: no historical run of the method (MEASUREMENT_GAP)",
+      "INDEPENDENCE": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE"
+      ],
+      "LEGACY_ISOLATION": [
+       "sf-foundation.test.mjs: SF-INDEPENDENCE",
+       "sf-completion.test.mjs: SF2-LEGACY-ISOLATION"
+      ]
+     }
+    }
+   ],
+   "counts": {
+    "IMPLEMENTATION_GAP": 0,
+    "DATA_GAP": 0,
+    "SOURCE_GAP": 3,
+    "MANUAL_DECISION": 5,
+    "MEASUREMENT_GAP": 3,
+    "PRODUCT_GAP": 1
+   }
+  }
+ ]
+}

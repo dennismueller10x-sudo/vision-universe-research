@@ -1,0 +1,911 @@
+{
+ "schema": "supertrader-sf-source-fidelity-results-1.0.0",
+ "rule": "fidelity per rule status (contract.mjs); SOURCE_EXACT only on HARD / HIGH / original-checked #709 rules; every derivation written down",
+ "candidates": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "candidateId": "C01",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "73acd730935229e66974639aba2d7dc7adb127e3dac590d25273bdce79c23c25",
+   "sourceCoverage": {
+    "rulesInScope": 38,
+    "hardRules": 27,
+    "hardRulesImplemented": 23,
+    "implementedExact": 7,
+    "implementedDerived": 20,
+    "manualReview": 0,
+    "dataBlocked": 2,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 9,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "TUR-SF-N-DAILY",
+     "psr709": [
+      "TUR-WEEKLY"
+     ],
+     "gate": false,
+     "derivation": "the Turtles received weekly N / unit sheets (CONTEXTUAL operational practice); the same formula is evaluated on every session with the value of the prior close, which uses no later information"
+    },
+    {
+     "ruleId": "TUR-SF-UNIT",
+     "psr709": [
+      "TUR-UNIT",
+      "TUR-DOLLAR"
+     ],
+     "gate": null,
+     "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)"
+    },
+    {
+     "ruleId": "TUR-SF-NOTIONAL",
+     "psr709": [
+      "TUR-NOTIONAL",
+      "TUR-DRAWDOWN"
+     ],
+     "gate": null,
+     "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)"
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT12",
+     "psr709": [
+      "TUR-LIMIT12"
+     ],
+     "gate": null,
+     "derivation": "long-only adaptation: only the 12-unit long limit can bind"
+    },
+    {
+     "ruleId": "TUR-SF-ENTRY",
+     "psr709": [
+      "TUR-S1ENT",
+      "TUR-INTRADAY",
+      "TUR-GAP"
+     ],
+     "gate": null,
+     "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis"
+    },
+    {
+     "ruleId": "TUR-SF-S1-FILTER",
+     "psr709": [
+      "TUR-S1SKIP",
+      "TUR-S1LOSER",
+      "TUR-S1DIR"
+     ],
+     "gate": null,
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); how a still open breakout counts is the separate SOURCE_AMBIGUOUS rule TUR-SF-S1-OPEN-BREAKOUT; daily-bar path: the level nearer to the open is reached first (model assumption MA-TUR-HELD-BAR-ORDER); the filter is warmed on the history before the window"
+    },
+    {
+     "ruleId": "TUR-SF-ADD",
+     "psr709": [
+      "TUR-ADD"
+     ],
+     "gate": null,
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level"
+    },
+    {
+     "ruleId": "TUR-SF-ADDFAST",
+     "psr709": [
+      "TUR-ADDFAST"
+     ],
+     "gate": false,
+     "derivation": "consequence of TUR-ADD on daily bars; no extra rule"
+    },
+    {
+     "ruleId": "TUR-SF-STOPGAP",
+     "psr709": [
+      "TUR-STOPGAP"
+     ],
+     "gate": false,
+     "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case"
+    },
+    {
+     "ruleId": "TUR-SF-EXIT",
+     "psr709": [
+      "TUR-S1EX"
+     ],
+     "gate": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06); on the entry bar the level is a resting stop like the unit stops: a low through it is assumed after the entry, the higher of unit stop and channel level is reached first (sf-turtle-1.1.0)"
+    },
+    {
+     "ruleId": "TUR-SF-RANK",
+     "psr709": [
+      "TUR-RANK",
+      "TUR-RANKVAR"
+     ],
+     "gate": false,
+     "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group."
+    },
+    {
+     "ruleId": "TUR-SF-MARKETS",
+     "psr709": [
+      "TUR-MARKETS",
+      "TUR-CONSISTENT"
+     ],
+     "gate": true,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number"
+    },
+    {
+     "ruleId": "TUR-SF-CASH",
+     "psr709": [],
+     "gate": null,
+     "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")"
+    }
+   ],
+   "goldenCases": {
+    "total": 30,
+    "pass": 30
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "candidateId": "C02",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "dfd34206b370f21cf26c7fd36fc677ec5d758f6f3db381e7807ba61eee65ac26",
+   "sourceCoverage": {
+    "rulesInScope": 35,
+    "hardRules": 24,
+    "hardRulesImplemented": 20,
+    "implementedExact": 7,
+    "implementedDerived": 17,
+    "manualReview": 0,
+    "dataBlocked": 2,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 9,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "TUR-SF-N-DAILY",
+     "psr709": [
+      "TUR-WEEKLY"
+     ],
+     "gate": false,
+     "derivation": "the Turtles received weekly N / unit sheets (CONTEXTUAL operational practice); the same formula is evaluated on every session with the value of the prior close, which uses no later information"
+    },
+    {
+     "ruleId": "TUR-SF-UNIT",
+     "psr709": [
+      "TUR-UNIT",
+      "TUR-DOLLAR"
+     ],
+     "gate": null,
+     "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)"
+    },
+    {
+     "ruleId": "TUR-SF-NOTIONAL",
+     "psr709": [
+      "TUR-NOTIONAL",
+      "TUR-DRAWDOWN"
+     ],
+     "gate": null,
+     "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)"
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT12",
+     "psr709": [
+      "TUR-LIMIT12"
+     ],
+     "gate": null,
+     "derivation": "long-only adaptation: only the 12-unit long limit can bind"
+    },
+    {
+     "ruleId": "TUR-SF-ENTRY",
+     "psr709": [
+      "TUR-S2ENT",
+      "TUR-INTRADAY",
+      "TUR-GAP"
+     ],
+     "gate": null,
+     "derivation": "daily bars: the buy stop fills at max(open, trigger) on the bar whose high reaches the trigger (the rule itself); one tick = 0.01 raw price converted to the split-adjusted basis"
+    },
+    {
+     "ruleId": "TUR-SF-ADD",
+     "psr709": [
+      "TUR-ADD"
+     ],
+     "gate": null,
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level"
+    },
+    {
+     "ruleId": "TUR-SF-ADDFAST",
+     "psr709": [
+      "TUR-ADDFAST"
+     ],
+     "gate": false,
+     "derivation": "consequence of TUR-ADD on daily bars; no extra rule"
+    },
+    {
+     "ruleId": "TUR-SF-STOPGAP",
+     "psr709": [
+      "TUR-STOPGAP"
+     ],
+     "gate": false,
+     "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case"
+    },
+    {
+     "ruleId": "TUR-SF-EXIT",
+     "psr709": [
+      "TUR-S2EX"
+     ],
+     "gate": null,
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06); on the entry bar the level is a resting stop like the unit stops: a low through it is assumed after the entry, the higher of unit stop and channel level is reached first (sf-turtle-1.1.0)"
+    },
+    {
+     "ruleId": "TUR-SF-RANK",
+     "psr709": [
+      "TUR-RANK",
+      "TUR-RANKVAR"
+     ],
+     "gate": false,
+     "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group."
+    },
+    {
+     "ruleId": "TUR-SF-MARKETS",
+     "psr709": [
+      "TUR-MARKETS",
+      "TUR-CONSISTENT"
+     ],
+     "gate": true,
+     "derivation": "liquid US futures -> snapshot universe members that pass the pre-registered research universe protocol of #705 (raw close >= 5 and mean 20-session raw dollar volume >= 1,000,000 at the prior session; common/series.mjs RESEARCH_UNIVERSE). A measurement convention applied identically to every method, not a Turtle number"
+    },
+    {
+     "ruleId": "TUR-SF-CASH",
+     "psr709": [],
+     "gate": null,
+     "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")"
+    }
+   ],
+   "goldenCases": {
+    "total": 23,
+    "pass": 23
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "candidateId": "C03",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "cc8e0890848903d5aa41748b47b95a61e9990674ee9155cd06a81a11e5c30af5",
+   "sourceCoverage": {
+    "rulesInScope": 35,
+    "hardRules": 10,
+    "hardRulesImplemented": 10,
+    "implementedExact": 3,
+    "implementedDerived": 9,
+    "manualReview": 12,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 11,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "DAR-SF-BOTTOM",
+     "psr709": [
+      "DAR-Q2"
+     ],
+     "gate": null,
+     "derivation": "the three-day procedure is executed as written; which lows count (from the top day or from the top confirmation) is the open reading DAR-SF-BOTTOM-START, so the rule as executed depends on a declared reading (review SF2-R1-07)"
+    },
+    {
+     "ruleId": "DAR-SF-TOP-EXCEEDED",
+     "psr709": [
+      "DAR-Q1",
+      "DAR-Q2"
+     ],
+     "gate": null,
+     "derivation": "the bottom is only established under a fixed top (DAR-Q2); a higher high means the top was not final (DAR-Q1)"
+    },
+    {
+     "ruleId": "DAR-SF-BOX-FAIL",
+     "psr709": [
+      "DAR-Q11"
+     ],
+     "gate": false,
+     "derivation": "DAR-Q11 (CONTEXTUAL) describes selling on the stop after a lower box break; for a box without position the box simply no longer exists. State transition, not a selection filter."
+    },
+    {
+     "ruleId": "DAR-SF-ENTRY",
+     "psr709": [
+      "DAR-Q4"
+     ],
+     "gate": null,
+     "derivation": "\"a fraction\" is not quantified: VU convention = one raw cent converted to the split-adjusted basis (the smallest price increment); fill = max(open, trigger) on daily bars; the reviewer may set a different fraction (DAR-C-THIO)"
+    },
+    {
+     "ruleId": "DAR-SF-STOP-INIT",
+     "psr709": [
+      "DAR-Q5",
+      "DAR-Q7"
+     ],
+     "gate": null,
+     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)"
+    },
+    {
+     "ruleId": "DAR-SF-STOP-RAISE",
+     "psr709": [
+      "DAR-Q6",
+      "DAR-Q8"
+     ],
+     "gate": null,
+     "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)"
+    },
+    {
+     "ruleId": "DAR-SF-ATH",
+     "psr709": [
+      "DAR-Q9"
+     ],
+     "gate": true,
+     "derivation": "evaluated against every earlier bar of the available (split-adjusted) history; if that history does not reach the listing date the record is ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED and goes to review"
+    },
+    {
+     "ruleId": "DAR-SF-SPLITS",
+     "psr709": [
+      "DAR-Q15"
+     ],
+     "gate": false,
+     "derivation": "the snapshot convention (adjustSeries, ADR-002) supplies split-adjusted bars; raw prices only for the one-cent fraction"
+    },
+    {
+     "ruleId": "DAR-SF-RESEARCH-POPULATION",
+     "psr709": [],
+     "gate": true,
+     "derivation": "measurement convention for the diagnostic component study only; Darvas sets no general volume or liquidity minimum (DAR-Q10); the review screen itself applies no such filter (review SF-R1-05)"
+    },
+    {
+     "ruleId": "DAR-SF-REVIEW-DATA",
+     "psr709": [
+      "DAR-Q12"
+     ],
+     "gate": false,
+     "derivation": "evidence only (STRONG_PREFERENCE, never a gate): 2 and 3 years = 504 / 756 sessions, 4-6 months = 17 / 26 ISO weeks of the available history; the all-time high stays ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED without listing-to-date bars (sf-darvas-1.1.0)"
+    }
+   ],
+   "goldenCases": {
+    "total": 18,
+    "pass": 18
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "candidateId": "C04",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "01269dba4b5b2799cf84a72c98a2db1f3ad7f91030ae3e62de1effa0b8a74ad1",
+   "sourceCoverage": {
+    "rulesInScope": 56,
+    "hardRules": 14,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 5,
+    "manualReview": 30,
+    "dataBlocked": 3,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 17,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "WEIN-SF-WEEKLY",
+     "psr709": [
+      "WEIN-S2"
+     ],
+     "gate": false,
+     "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes"
+    },
+    {
+     "ruleId": "WEIN-SF-MA-GATE",
+     "psr709": [
+      "WEIN-MA"
+     ],
+     "gate": true,
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)"
+    },
+    {
+     "ruleId": "WEIN-SF-ORDER",
+     "psr709": [
+      "WEIN-ORD"
+     ],
+     "gate": null,
+     "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled"
+    },
+    {
+     "ruleId": "WEIN-SF-STOP-PLAN",
+     "psr709": [
+      "WEIN-STOP1"
+     ],
+     "gate": null,
+     "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it"
+    },
+    {
+     "ruleId": "WEIN-SF-INV-BREAKOUT",
+     "psr709": [
+      "WEIN-BUY1",
+      "WEIN-BASE"
+     ],
+     "gate": false,
+     "derivation": "resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)"
+    }
+   ],
+   "goldenCases": {
+    "total": 14,
+    "pass": 14
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "candidateId": "C05",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "973674fab88be91ca9ba361adbcecb5844cd5f463b4a7d6dc67b6aa6e43b453c",
+   "sourceCoverage": {
+    "rulesInScope": 63,
+    "hardRules": 14,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
+    "implementedDerived": 4,
+    "manualReview": 24,
+    "dataBlocked": 3,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 31,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "WEIN-SF-WEEKLY",
+     "psr709": [
+      "WEIN-S2"
+     ],
+     "gate": false,
+     "derivation": "weekly bar = ISO week of the daily snapshot bars (open of the first, high/low of the week, close of the last session, summed volume); a week is complete only after its last session; simple 30-week mean of weekly closes"
+    },
+    {
+     "ruleId": "WEIN-SF-MA-GATE",
+     "psr709": [
+      "WEIN-MA"
+     ],
+     "gate": true,
+     "derivation": "\"below or at a falling MA\": reject when the buy price (the buy-stop trigger, prepared from the completed prior week) is at or below MA30w, or MA30w is below its value one week earlier; the prior close vs the MA is reported as evidence (a Stage 1 -> 2 breakout crosses both in the same week, review SF-R1-02); one-week comparison is the smallest observable slope (no threshold added)"
+    },
+    {
+     "ruleId": "WEIN-SF-ORDER",
+     "psr709": [
+      "WEIN-ORD"
+     ],
+     "gate": null,
+     "derivation": "the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled"
+    },
+    {
+     "ruleId": "WEIN-SF-STOP-PLAN",
+     "psr709": [
+      "WEIN-STOP1"
+     ],
+     "gate": null,
+     "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it"
+    },
+    {
+     "ruleId": "WEIN-SF-TR-CONT",
+     "psr709": [
+      "WEIN-TR-CONT"
+     ],
+     "gate": false,
+     "derivation": "MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it raises a review record; it rejects no stock (no gate on the WEIN-TR-CONT preference)"
+    }
+   ],
+   "goldenCases": {
+    "total": 14,
+    "pass": 14
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "d757ed077b97fa5a97370540b7365468c1f7ccf6562f76830714a5f5672dbe35",
+   "sourceCoverage": {
+    "rulesInScope": 118,
+    "hardRules": 16,
+    "hardRulesImplemented": 8,
+    "implementedExact": 0,
+    "implementedDerived": 9,
+    "manualReview": 31,
+    "dataBlocked": 1,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 77,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "MIN-SF-SIMPLE",
+     "psr709": [
+      "MIN-PROCESS-15"
+     ],
+     "gate": false,
+     "derivation": "honoured by design: the machine screen is the Trend Template alone; fundamentals, VCP and RS proxy are evidence, never additional AND gates"
+    },
+    {
+     "ruleId": "MIN-SF-PROCESS",
+     "psr709": [
+      "MIN-PROCESS-01"
+     ],
+     "gate": null,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact"
+    },
+    {
+     "ruleId": "MIN-SF-TT-1",
+     "psr709": [
+      "MIN-TT-01"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact"
+    },
+    {
+     "ruleId": "MIN-SF-TT-2",
+     "psr709": [
+      "MIN-TT-02"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact"
+    },
+    {
+     "ruleId": "MIN-SF-TT-3",
+     "psr709": [
+      "MIN-TT-03"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; one month = 21 sessions, MA200 today above MA200 21 sessions ago"
+    },
+    {
+     "ruleId": "MIN-SF-TT-4",
+     "psr709": [
+      "MIN-TT-04"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact"
+    },
+    {
+     "ruleId": "MIN-SF-TT-5",
+     "psr709": [
+      "MIN-TT-05"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact"
+    },
+    {
+     "ruleId": "MIN-SF-TT-6",
+     "psr709": [
+      "MIN-TT-06"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily lows"
+    },
+    {
+     "ruleId": "MIN-SF-TT-7",
+     "psr709": [
+      "MIN-TT-07"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; 52 weeks = 252 sessions of daily highs"
+    }
+   ],
+   "goldenCases": {
+    "total": 12,
+    "pass": 12
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "e5b4c0f851d983a379666a0f7bf7cc1c0a7271ab7105d3cb05c45a840b38f466",
+   "sourceCoverage": {
+    "rulesInScope": 20,
+    "hardRules": 6,
+    "hardRulesImplemented": 3,
+    "implementedExact": 0,
+    "implementedDerived": 5,
+    "manualReview": 4,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 11,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "MIN-SF-PP-NOFUND",
+     "psr709": [
+      "MIN-PP-01"
+     ],
+     "gate": false,
+     "derivation": "honoured by design: the Power Play screen has no fundamental input"
+    },
+    {
+     "ruleId": "MIN-SF-PP-DURATION",
+     "psr709": [
+      "MIN-PP-03"
+     ],
+     "gate": false,
+     "derivation": "no minimum consolidation length is enforced; the duration is reported as evidence"
+    },
+    {
+     "ruleId": "MIN-SF-PP-RUNUP",
+     "psr709": [
+      "MIN-PP-02"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; eight weeks = 40 sessions: peak high / lowest low of the leg >= 2.0 with fewer than 40 sessions between them; the most recent such peak that is the highest high of the leg is used"
+    },
+    {
+     "ruleId": "MIN-SF-PP-CORRECTION",
+     "psr709": [
+      "MIN-PP-04"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point)"
+    },
+    {
+     "ruleId": "MIN-SF-PP-TIGHT",
+     "psr709": [
+      "MIN-PP-05"
+     ],
+     "gate": true,
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; machine: the whole consolidation (run-up high to the lowest low since) spans <= 10 % -> TIGHT; otherwise VCP_CHARACTERISTICS_REVIEW (the OR branch is a reviewer judgment); no extra window is introduced"
+    }
+   ],
+   "goldenCases": {
+    "total": 7,
+    "pass": 7
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "candidateId": "C08",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "19f9ed96e5009cd4ff600c4581157b3e1bb035cac79bedf0cff5b8f0be60428e",
+   "sourceCoverage": {
+    "rulesInScope": 36,
+    "hardRules": 4,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 2,
+    "manualReview": 14,
+    "dataBlocked": 1,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 15,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "KK-SF-BO-MOMENTUM",
+     "psr709": [
+      "KK-005",
+      "KK-054"
+     ],
+     "gate": false,
+     "derivation": "cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)"
+    }
+   ],
+   "goldenCases": {
+    "total": 8,
+    "pass": 8
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "1425d11c18aedcf216fde9dd1e6ea9b01d67b435ff0c42a608a2c658d17731ae",
+   "sourceCoverage": {
+    "rulesInScope": 38,
+    "hardRules": 4,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 1,
+    "manualReview": 8,
+    "dataBlocked": 6,
+    "ambiguous": 1,
+    "notImplemented": 0,
+    "excluded": 18,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "KK-SF-EP-GAP",
+     "psr709": [
+      "KK-015"
+     ],
+     "gate": false,
+     "derivation": "gap = open / previous close - 1 on split-adjusted bars, reported with the 10 % reference as evidence; not an exclusion (KK-015 is a STRONG_PREFERENCE description)"
+    }
+   ],
+   "goldenCases": {
+    "total": 6,
+    "pass": 6
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "c21128f86949e5df1ed3e23e3ed9cb3be8f9bdf33f1deea48acf50afb915239a",
+   "sourceCoverage": {
+    "rulesInScope": 34,
+    "hardRules": 3,
+    "hardRulesImplemented": 3,
+    "implementedExact": 3,
+    "implementedDerived": 0,
+    "manualReview": 9,
+    "dataBlocked": 4,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 18,
+    "unmapped": 0
+   },
+   "derivations": [],
+   "goldenCases": {
+    "total": 4,
+    "pass": 4
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "candidateId": "C11",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "a5e78033726af04dd05f40f22b8a00e93b83ee54dfe92d0e3edc374d953b3f6e",
+   "sourceCoverage": {
+    "rulesInScope": 22,
+    "hardRules": 1,
+    "hardRulesImplemented": 1,
+    "implementedExact": 1,
+    "implementedDerived": 0,
+    "manualReview": 13,
+    "dataBlocked": 0,
+    "ambiguous": 2,
+    "notImplemented": 0,
+    "excluded": 6,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "MOKA-SF-PP-DOWNDAY",
+     "psr709": [
+      "MOKAPP-003"
+     ],
+     "gate": null,
+     "derivation": "the source compares against down-day volume and does not define \"down day\"; close-to-close is the conventional reading"
+    },
+    {
+     "ruleId": "MOKA-SF-PP-UPDAY",
+     "psr709": [
+      "MOKAPP-003"
+     ],
+     "gate": null,
+     "derivation": "a pocket pivot is a buy point on an up day; a down day with large volume is not a pocket pivot"
+    },
+    {
+     "ruleId": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "psr709": [
+      "MOKA12-008",
+      "MOKASTOP-001"
+     ],
+     "gate": false,
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)"
+    }
+   ],
+   "goldenCases": {
+    "total": 9,
+    "pass": 9
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "candidateId": "C12",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "8dcd54ca938d09b24ae51542493430ebc6a6b8621a21f873b5885269cd4d5f85",
+   "sourceCoverage": {
+    "rulesInScope": 15,
+    "hardRules": 2,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
+    "implementedDerived": 0,
+    "manualReview": 9,
+    "dataBlocked": 0,
+    "ambiguous": 1,
+    "notImplemented": 0,
+    "excluded": 3,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "MOKA-SF-BGU-GAP-MEASURE",
+     "psr709": [
+      "MOKA12-004"
+     ],
+     "gate": null,
+     "derivation": "the source does not define the gap measure or the ATR averaging; open minus previous close and a simple 40-session mean without same-day information are used; the full gap (low - previous high) is reported as evidence"
+    },
+    {
+     "ruleId": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "psr709": [
+      "MOKA12-008",
+      "MOKASTOP-001"
+     ],
+     "gate": false,
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)"
+    }
+   ],
+   "goldenCases": {
+    "total": 9,
+    "pass": 9
+   },
+   "noInventedThreshold": true
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "candidateId": "C13",
+   "sourceContractVersion": "1.0.0",
+   "contractFingerprint": "d041d8a5084341f739f26ef55dd255fbdbc7dda6dcc5d8f53357d5280d8473de",
+   "sourceCoverage": {
+    "rulesInScope": 6,
+    "hardRules": 2,
+    "hardRulesImplemented": 2,
+    "implementedExact": 2,
+    "implementedDerived": 2,
+    "manualReview": 2,
+    "dataBlocked": 0,
+    "ambiguous": 0,
+    "notImplemented": 0,
+    "excluded": 0,
+    "unmapped": 0
+   },
+   "derivations": [
+    {
+     "ruleId": "RAS-SF-PULLBACK",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "gate": true,
+     "derivation": "daily: gate = a bar whose low touches or crosses the 20 EMA while ADX(14) > 30 and +DI > -DI on the prior bar. Whether it is the FIRST pullback since ADX rose above 30 and whether the impulse was strong are reported as evidence and review flags, not as rejections (review SF-R2-02)"
+    },
+    {
+     "ruleId": "RAS-SF-TIMEFRAME",
+     "psr709": [
+      "RAS04-006"
+     ],
+     "gate": false,
+     "derivation": "only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED"
+    }
+   ],
+   "goldenCases": {
+    "total": 5,
+    "pass": 5
+   },
+   "noInventedThreshold": true
+  }
+ ],
+ "goldenSummary": {
+  "goldenCases": 115,
+  "pass": 115,
+  "fail": 0,
+  "notFound": 0,
+  "testsRun": 173,
+  "testsFailed": 0,
+  "testsSkipped": 2
+ }
+}

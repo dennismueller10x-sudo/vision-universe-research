@@ -1,0 +1,282 @@
+{
+ "schema": "supertrader-sf-backtest-readiness-2.0.0",
+ "rule": "a full diagnostic method measurement only when all eight answers are YES (mandate section 14); a runnable engine with a declared data exception may run only as DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION (the unenforced rule is named in every result); otherwise component studies at most, never reported as a method return",
+ "questions": [
+  "completeEntries",
+  "completeExits",
+  "positionSizeDefined",
+  "stopsComplete",
+  "requiredDataPresent",
+  "accountingValid",
+  "signalsCausal",
+  "dataSufficient"
+ ],
+ "methods": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "answers": {
+    "completeEntries": true,
+    "completeExits": true,
+    "positionSizeDefined": true,
+    "stopsComplete": true,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION",
+   "declaredLimits": [
+    "TUR-SF-LIMIT-CORR (DATA, not enforced)",
+    "TUR-SF-S1-OPEN-BREAKOUT (SOURCE, readings as scenarios)",
+    "TUR-SF-FAILSAFE-EXIT (SOURCE, readings as scenarios)"
+   ],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "answers": {
+    "completeEntries": true,
+    "completeExits": true,
+    "positionSizeDefined": true,
+    "stopsComplete": true,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "DIAGNOSTIC_RUN_WITH_DECLARED_DATA_EXCEPTION",
+   "declaredLimits": [
+    "TUR-SF-LIMIT-CORR (DATA, not enforced)"
+   ],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "answers": {
+    "completeEntries": true,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": true,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "COMPONENT_SIGNAL_STUDY_ONLY",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "answers": {
+    "completeEntries": true,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "answers": {
+    "completeEntries": true,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": true,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": true,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": false
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": false,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": false
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "answers": {
+    "completeEntries": false,
+    "completeExits": false,
+    "positionSizeDefined": false,
+    "stopsComplete": false,
+    "requiredDataPresent": true,
+    "accountingValid": false,
+    "signalsCausal": true,
+    "dataSufficient": true
+   },
+   "fullDiagnosticMeasurement": false,
+   "allowed": "NONE",
+   "declaredLimits": [],
+   "knownFindings": [
+    "V4-D1",
+    "V4-D2"
+   ]
+  }
+ ]
+}

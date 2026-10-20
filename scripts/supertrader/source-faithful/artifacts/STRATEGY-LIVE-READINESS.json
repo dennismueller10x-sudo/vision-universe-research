@@ -1,0 +1,154 @@
+{
+ "schema": "supertrader-sf-live-readiness-1.0.0",
+ "rule": "no candidate is live; no signal is published, no order is routed, no model portfolio changes",
+ "methods": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "INCOMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "data for TUR-SF-LIMIT-CORR",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "INCOMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "data for TUR-SF-LIMIT-CORR",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for DAR-SF-SELECTION, DAR-SF-VOLUME, DAR-SF-MARKET, DAR-SF-SIZING, DAR-MR-SELECTION, DAR-MR-VOLUME, DAR-MR-MARKET, DAR-MR-SIZING",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for WEIN-SF-STAGE, WEIN-SF-VOLUME, WEIN-SF-RS, WEIN-SF-OVERHEAD, WEIN-SF-INV-TRAIL, WEIN-SF-INV-STOP, WEIN-SF-INV-SIZE, WEIN-SF-NO-AVG-DOWN, WEIN-MR-STAGE, WEIN-MR-VOLUME, WEIN-MR-RS, WEIN-MR-OVERHEAD, WEIN-MR-GROUP, WEIN-MR-STOP",
+    "data for WEIN-SF-GROUP, WEIN-SF-MARKET",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for WEIN-SF-STAGE, WEIN-SF-VOLUME, WEIN-SF-RS, WEIN-SF-OVERHEAD, WEIN-SF-TR-TRAIL, WEIN-SF-TR-STOP, WEIN-SF-TR-SIZE, WEIN-SF-NO-AVG-DOWN, WEIN-MR-STAGE, WEIN-MR-VOLUME, WEIN-MR-GROUP, WEIN-MR-STOP",
+    "data for WEIN-SF-GROUP, WEIN-SF-MARKET",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for MIN-SF-PRIORITY, MIN-SF-FUNDAMENTALS, MIN-SF-VCP, MIN-SF-PIVOT, MIN-SF-SELL, MIN-SF-STOP, MIN-SF-SIZE, MIN-MR-PRIORITY, MIN-MR-QUALITY, MIN-MR-VCP, MIN-MR-RS",
+    "data for MIN-SF-TT-8",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for MIN-SF-PP-ENTRY, MIN-SF-PP-EXIT, MIN-SF-PP-STOP, MIN-SF-PP-SIZE, MIN-MR-PP-VOLUME, MIN-MR-PP-CORR",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for KK-SF-BO-SETUP, KK-SF-BO-ENTRY, KK-SF-BO-PARTIAL, KK-SF-BO-TRAIL, KK-SF-SIZE, KK-MR-SETUP, KK-MR-LEVEL",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for KK-SF-SIZE, KK-MR-CATALYST",
+    "data for KK-SF-EP-CATALYST, KK-SF-EP-VOLUME, KK-SF-EP-ENTRY",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for KK-SF-PS-ACCEL, KK-SF-PS-TARGET, KK-SF-SIZE, KK-MR-PARABOLIC",
+    "data for KK-SF-PS-BORROW, KK-SF-PS-ENTRY, KK-SF-PS-STOP",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for MOKA-SF-PP-CONTEXT, MOKA-SF-EXIT-MA, MOKA-SF-PP-STOP, MOKA-SF-PP-SIZE, MOKA-MR-BASE, MOKA-MR-THEME, MOKA-MR-EXT",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for MOKA-SF-BGU-MEGA, MOKA-SF-BGU-CONTEXT, MOKA-SF-EXIT-MA, MOKA-SF-BGU-SELLGUIDE, MOKA-SF-BGU-SIZE, MOKA-MR-LEAD, MOKA-MR-MEGA, MOKA-MR-VOLWINDOW",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "prerequisites": [
+    "owner approval (merge of the Draft PRs, then an explicit live decision)",
+    "certifiable measurement: V4-D1 fix (Quant PR) and a new snapshot generation",
+    "forward-logged manual review layer for RAS-SF-EXIT, RAS-MR-IMPULSE, RAS-MR-EXECUTION",
+    "a live signal path that emits research-signal.mjs records (none exists)"
+   ]
+  }
+ ]
+}

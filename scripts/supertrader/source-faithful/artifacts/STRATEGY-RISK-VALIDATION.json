@@ -1,0 +1,1303 @@
+{
+ "schema": "supertrader-sf-risk-validation-1.0.0",
+ "rule": "every stop, sizing, pyramiding and portfolio rule with status and tests; manual risk decisions are never filled with a number",
+ "methods": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "stops": [
+    "TUR-SF-STOP 2N per unit from its own fill",
+    "TUR-SF-STOPADD +1/2 N for every earlier unit per add"
+   ],
+   "positionSizing": [
+    "TUR-SF-UNIT",
+    "TUR-SF-NOTIONAL",
+    "TUR-SF-LIMIT4",
+    "TUR-SF-LIMIT12",
+    "TUR-SF-CASH"
+   ],
+   "rules": [
+    {
+     "ruleId": "TUR-SF-UNIT",
+     "kind": "SIZING",
+     "psr709": [
+      "TUR-UNIT",
+      "TUR-DOLLAR"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "unit = floor(0.01 x notional account / (N x dollars per point))",
+     "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-NOTIONAL",
+     "kind": "SIZING",
+     "psr709": [
+      "TUR-NOTIONAL",
+      "TUR-DRAWDOWN"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "size from a notional account; every 10 % drawdown of the current notional cuts it by 20 %, until the yearly start is regained",
+     "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT4",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT4"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 4 units per market (per security)",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT12",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT12"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 12 units long (and 12 short)",
+     "derivation": "long-only adaptation: only the 12-unit long limit can bind",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT-CORR",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT6",
+      "TUR-LIMIT10"
+     ],
+     "status": "DATA_BLOCKED",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 6 units in closely and 10 in loosely correlated markets per direction",
+     "derivation": null,
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS.",
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-ADD",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "TUR-ADD"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "add one unit every 1/2 N above the previous ACTUAL fill, up to the 4-unit limit",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-ADDFAST",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "TUR-ADDFAST"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": false,
+     "gate": false,
+     "rule": "several units may be added on the same day",
+     "derivation": "consequence of TUR-ADD on daily bars; no extra rule",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOP"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "each unit starts with a stop 2N below its own fill",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOPADD",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOPADD"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "every add raises the stops of all earlier units by 1/2 N; each unit keeps its own stop and is stopped out on its own (closes #712 finding V41-F1)",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOPGAP",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOPGAP"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": false,
+     "gate": false,
+     "rule": "after a gapped add the units carry different stops",
+     "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-RANK",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-RANK",
+      "TUR-RANKVAR"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": false,
+     "rule": "simultaneous signals: buy the strongest first",
+     "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-CASH",
+     "kind": "PORTFOLIO",
+     "psr709": [],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "cash account, no leverage: a unit is bought only if its full cost fits in cash; otherwise REJECT_NO_CASH (counted)",
+     "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+     "sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
+     "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
+    ],
+    "RISK_SIZING": [
+     "sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
+     "sf-turtle.test.mjs: GC-TUR-NOTIONAL",
+     "sf-turtle.test.mjs: GC-TUR-LIMIT12",
+     "sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+     "sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+    ],
+    "GAP": [
+     "sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+     "sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "stops": [
+    "TUR-SF-STOP 2N per unit from its own fill",
+    "TUR-SF-STOPADD +1/2 N for every earlier unit per add"
+   ],
+   "positionSizing": [
+    "TUR-SF-UNIT",
+    "TUR-SF-NOTIONAL",
+    "TUR-SF-LIMIT4",
+    "TUR-SF-LIMIT12",
+    "TUR-SF-CASH"
+   ],
+   "rules": [
+    {
+     "ruleId": "TUR-SF-UNIT",
+     "kind": "SIZING",
+     "psr709": [
+      "TUR-UNIT",
+      "TUR-DOLLAR"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "unit = floor(0.01 x notional account / (N x dollars per point))",
+     "derivation": "equities: dollars per point = 1 per share, so a unit is floor(0.01 x notional / N) whole shares; N is the value at the prior close (no same-day information)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitSize",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-HO2002",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-NOTIONAL",
+     "kind": "SIZING",
+     "psr709": [
+      "TUR-NOTIONAL",
+      "TUR-DRAWDOWN"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "size from a notional account; every 10 % drawdown of the current notional cuts it by 20 %, until the yearly start is regained",
+     "derivation": "Dennis set the yearly notional account subjectively; the adaptation uses actual equity at the first session of each year (as PR #779 / #705); cuts compound per the printed example (1.0 -> 0.8 -> 0.64)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#createNotionalAccount",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NOTIONAL"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT4",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT4"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 4 units per market (per security)",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT4"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT12",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT12"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 12 units long (and 12 short)",
+     "derivation": "long-only adaptation: only the 12-unit long limit can bind",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-LIMIT12"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-LIMIT-CORR",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-LIMIT6",
+      "TUR-LIMIT10"
+     ],
+     "status": "DATA_BLOCKED",
+     "essential": true,
+     "gate": null,
+     "rule": "at most 6 units in closely and 10 in loosely correlated markets per direction",
+     "derivation": null,
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS.",
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-ADD",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "TUR-ADD"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "add one unit every 1/2 N above the previous ACTUAL fill, up to the 4-unit limit",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-ADDFAST",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "TUR-ADDFAST"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": false,
+     "gate": false,
+     "rule": "several units may be added on the same day",
+     "derivation": "consequence of TUR-ADD on daily bars; no extra rule",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-GOLD"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOP"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "each unit starts with a stop 2N below its own fill",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOPADD",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOPADD"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "every add raises the stops of all earlier units by 1/2 N; each unit keeps its own stop and is stopped out on its own (closes #712 finding V41-F1)",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP",
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-STOPGAP",
+     "kind": "STOP",
+     "psr709": [
+      "TUR-STOPGAP"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": false,
+     "gate": false,
+     "rule": "after a gapped add the units carry different stops",
+     "derivation": "not a separate rule: the consequence of TUR-STOPADD that the worked example TUR-CRUDE prints (27.70, 27.70, 27.70, 28.40); reproduced by a golden case",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#unitStops",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-CRUDE-GAP"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-RANK",
+     "kind": "PORTFOLIO",
+     "psr709": [
+      "TUR-RANK",
+      "TUR-RANKVAR"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": false,
+     "rule": "simultaneous signals: buy the strongest first",
+     "derivation": "TUR-RANKVAR (OPTIONAL) allows several normalisations; the one the source names, (close - close 3 months ago) / N with 3 months = 63 sessions at the prior close, is used; ties by security id. Without group data all simultaneous signals form one group.",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-RANK"
+     ]
+    },
+    {
+     "ruleId": "TUR-SF-CASH",
+     "kind": "PORTFOLIO",
+     "psr709": [],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "cash account, no leverage: a unit is bought only if its full cost fits in cash; otherwise REJECT_NO_CASH (counted)",
+     "derivation": "futures margin has no equity analogue in a cash research account; declared adaptation (#709 VU-TUR: \"Long-only-Equity-Adaptation mit Cashgrenze\")",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-CASH"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-turtle.test.mjs: GC-TUR-CRUDE-NORMAL",
+     "sf-turtle.test.mjs: GC-TUR-UNIT-STOP-EXIT",
+     "sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
+    ],
+    "RISK_SIZING": [
+     "sf-turtle.test.mjs: GC-TUR-UNIT-EQUITY",
+     "sf-turtle.test.mjs: GC-TUR-NOTIONAL",
+     "sf-turtle.test.mjs: GC-TUR-LIMIT12",
+     "sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+     "sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+    ],
+    "GAP": [
+     "sf-turtle.test.mjs: GC-TUR-GAP-FILL",
+     "sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "stops": [
+    "DAR-SF-STOP-INIT a fraction below the broken top",
+    "DAR-SF-STOP-RAISE a fraction below the bottom of each new completed higher box, never lowered"
+   ],
+   "positionSizing": [
+    "DAR-SF-SIZING (manual)"
+   ],
+   "rules": [
+    {
+     "ruleId": "DAR-SF-PROTECT",
+     "kind": "STOP",
+     "psr709": [
+      "DAR-B6"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "every buy is protected by a stop-loss order placed at the same time",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
+     "tests": [
+      "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH"
+     ]
+    },
+    {
+     "ruleId": "DAR-SF-STOP-INIT",
+     "kind": "STOP",
+     "psr709": [
+      "DAR-Q5",
+      "DAR-Q7"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "initial stop a fraction below the broken box top, never inside the box",
+     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
+     "tests": [
+      "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
+      "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
+     ]
+    },
+    {
+     "ruleId": "DAR-SF-STOP-RAISE",
+     "kind": "STOP",
+     "psr709": [
+      "DAR-Q6",
+      "DAR-Q8"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "when a new higher box has both boundaries, raise the stop to a fraction below its bottom; never lower it; the new bottom need not equal the old top",
+     "derivation": "one-cent fraction; the raised stop is effective from the session after the box is complete (no same-day information)",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasPosition",
+     "tests": [
+      "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
+      "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER"
+     ]
+    },
+    {
+     "ruleId": "DAR-SF-SIZING",
+     "kind": "SIZING",
+     "psr709": [
+      "DAR-B15",
+      "DAR-B18"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "position size and pilot buys",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "DAR-SF-PYRAMID",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "DAR-B8"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": false,
+     "gate": null,
+     "rule": "further buys while the confirmed up-trend continues (no absolute \"every add above every earlier fill\", DAR-C3)",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-darvas.test.mjs: GC-DAR-STOP-NEVER-LOWER",
+     "sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": [
+     "sf-darvas.test.mjs: GC-DAR-GAP-OPEN-FILL",
+     "sf-darvas-completion.test.mjs: GC-DAR-MULTI-BOX-GAP-EXIT"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "stops": [
+    "WEIN-SF-INV-STOP (proposal below the base low, reviewer decides)"
+   ],
+   "positionSizing": [
+    "WEIN-SF-INV-SIZE (manual: half at the breakout, half on the pullback; roughly equal dollar amounts)"
+   ],
+   "rules": [
+    {
+     "ruleId": "WEIN-SF-STOP-PLAN",
+     "kind": "STOP",
+     "psr709": [
+      "WEIN-STOP1"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "the stop is computed before the buy and placed right after it",
+     "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
+     "tests": [
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
+     ]
+    },
+    {
+     "ruleId": "WEIN-SF-NO-AVG-DOWN",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "WEIN-AVG"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "never average down into a negative situation; add only on confirmation",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "WEIN-SF-INV-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "WEIN-BUY2",
+      "WEIN-PB",
+      "WEIN-NOPB",
+      "WEIN-DIVERS2"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "half of the planned position at the breakout, the other half on a constructive pullback with contracting volume; do not only wait for pullbacks; roughly equal dollar amounts per position",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "WEIN-SF-INV-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "WEIN-STOP2"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "investor stop below a significant correction low; the machine proposes the lowest weekly low of the base, the reviewer decides",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
+     "tests": [
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": [
+     "sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "stops": [
+    "WEIN-SF-TR-STOP (proposal below the consolidation low, reviewer decides)"
+   ],
+   "positionSizing": [
+    "WEIN-SF-TR-SIZE (full planned position at the continuation breakout)"
+   ],
+   "rules": [
+    {
+     "ruleId": "WEIN-SF-STOP-PLAN",
+     "kind": "STOP",
+     "psr709": [
+      "WEIN-STOP1"
+     ],
+     "status": "SOURCE_DERIVED",
+     "essential": true,
+     "gate": null,
+     "rule": "the stop is computed before the buy and placed right after it",
+     "derivation": "every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
+     "tests": [
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE"
+     ]
+    },
+    {
+     "ruleId": "WEIN-SF-NO-AVG-DOWN",
+     "kind": "PYRAMIDING",
+     "psr709": [
+      "WEIN-AVG"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "never average down into a negative situation; add only on confirmation",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "WEIN-SF-TR-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "WEIN-TR-CONT-SIZE"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "buy the full planned position at the continuation breakout (amount is the reviewer's)",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "WEIN-SF-TR-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "WEIN-TR-STOP"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "trader stop below the next relevant reaction low; the machine proposes the consolidation low, the reviewer decides",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#candidateRecord",
+     "tests": [
+      "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": [
+     "sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "stops": [
+    "MIN-SF-STOP (reviewer stop before entry; machine flags a stop more than 10 % below the entry)"
+   ],
+   "positionSizing": [
+    "MIN-SF-SIZE (manual; risk ranges are context, no fixed start exposure)"
+   ],
+   "rules": [
+    {
+     "ruleId": "MIN-SF-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "MIN-RISK-01",
+      "MIN-MM-STOP-01",
+      "MIN-MM-STOP-02",
+      "MIN-RISK-05"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "loss exit set before the entry, executed regardless of volume, at most 10 % (usually sooner); about 3R almost always to break-even (no absolute 3R obligation); the machine flags a reviewer stop wider than 10 %",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ]
+    },
+    {
+     "ruleId": "MIN-SF-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "MIN-TTC-SIZING",
+      "MIN-MM-SIZE-01"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "size from the accepted equity risk and the stop distance; at most 25 % per position (2015 answer)",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": "N/A: no gap rule in the SEPA contract"
+   }
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "stops": [
+    "MIN-SF-PP-STOP (manual, <= 10 % guide flagged)"
+   ],
+   "positionSizing": [
+    "MIN-SF-PP-SIZE (manual)"
+   ],
+   "rules": [
+    {
+     "ruleId": "MIN-SF-PP-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "MIN-RISK-01",
+      "MIN-MM-STOP-01",
+      "MIN-MM-STOP-02"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "loss exit before entry, at most 10 %",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ]
+    },
+    {
+     "ruleId": "MIN-SF-PP-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "MIN-MM-SIZE-01",
+      "MIN-TTC-SIZING"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "reviewer sizing, at most 25 % per position",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": "N/A: no gap rule in the Power Play contract"
+   }
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "stops": [
+    "KK-SF-BO-STOP low of day; reject if (entry - LoD) / entry > ADR20 %"
+   ],
+   "positionSizing": [
+    "KK-SF-SIZE (manual within KK-SF-CAP)"
+   ],
+   "rules": [
+    {
+     "ruleId": "KK-SF-CAP",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-001"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "never more than 30 % of equity in one stock or ETF overnight",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-STOPMARKET",
+     "kind": "STOP",
+     "psr709": [
+      "KK-027"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "stops are stop-market orders: a gap through the stop fills at the open, never skipped",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-002",
+      "KK-003",
+      "KK-004",
+      "KK-025",
+      "KK-026"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "KK-SF-BO-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "KK-012"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": true,
+     "rule": "initial stop = low of the entry day; the distance must be <= ADR (or ATR): a wider stop REJECTS the trade, it is never replaced by a tighter stop",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#breakoutStopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-ACCEPT",
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
+     "sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+    ],
+    "RISK_SIZING": [
+     "sf-kullamagi.test.mjs: GC-KK-CAP-30"
+    ],
+    "GAP": [
+     "sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "stops": [
+    "KK-SF-EP-STOP low of day, distance at most 1.5 ADR"
+   ],
+   "positionSizing": [
+    "KK-SF-SIZE (manual within KK-SF-CAP)"
+   ],
+   "rules": [
+    {
+     "ruleId": "KK-SF-CAP",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-001"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "never more than 30 % of equity in one stock or ETF overnight",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-STOPMARKET",
+     "kind": "STOP",
+     "psr709": [
+      "KK-027"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "stops are stop-market orders: a gap through the stop fills at the open, never skipped",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-002",
+      "KK-003",
+      "KK-004",
+      "KK-025",
+      "KK-026"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "KK-SF-EP-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "KK-034"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": true,
+     "rule": "stop = low of day; distance from entry at most 1.5 ADR (or ATR); a wider stop rejects the trade",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#epStopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-REJECT"
+     ]
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT"
+    ],
+    "RISK_SIZING": [
+     "sf-kullamagi.test.mjs: GC-KK-CAP-30"
+    ],
+    "GAP": [
+     "sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "stops": [
+    "KK-SF-PS-STOP (DATA_BLOCKED: VWAP; high of day only final after the close)"
+   ],
+   "positionSizing": [
+    "KK-SF-SIZE (manual within KK-SF-CAP)"
+   ],
+   "rules": [
+    {
+     "ruleId": "KK-SF-CAP",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-001"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "never more than 30 % of equity in one stock or ETF overnight",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#overnightCap",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-CAP-30"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-STOPMARKET",
+     "kind": "STOP",
+     "psr709": [
+      "KK-027"
+     ],
+     "status": "SOURCE_EXACT",
+     "essential": true,
+     "gate": null,
+     "rule": "stops are stop-market orders: a gap through the stop fills at the open, never skipped",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/kullamagi.mjs#stopMarketFill",
+     "tests": [
+      "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-MARKET-GAP"
+     ]
+    },
+    {
+     "ruleId": "KK-SF-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "KK-002",
+      "KK-003",
+      "KK-004",
+      "KK-025",
+      "KK-026"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "KK-SF-PS-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "KK-022"
+     ],
+     "status": "DATA_BLOCKED",
+     "essential": true,
+     "gate": null,
+     "rule": "high of day or VWAP reclaim",
+     "derivation": null,
+     "reason": "VWAP needs intraday data; the high of day is only final after the close",
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": "N/A: stop DATA_BLOCKED (VWAP)",
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": "N/A: entry DATA_BLOCKED"
+   }
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "stops": [
+    "MOKA-SF-PP-STOP (manual)"
+   ],
+   "positionSizing": [
+    "MOKA-SF-PP-SIZE (manual)"
+   ],
+   "rules": [
+    {
+     "ruleId": "MOKA-SF-PP-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "MOKAPP-004"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "stop / sell guide decided by the reviewer (no numeric stop in the Pocket Pivot rules)",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "MOKA-SF-PP-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "MOKAPP-002"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "sizing not specified in #709; reviewer decision",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": "N/A: no numeric stop in the Pocket Pivot rules (MANUAL_DECISION)",
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": "N/A: gap is the BGU method (C12)"
+   }
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "stops": [
+    "MOKA-SF-BGU-SELLGUIDE: gap-day low as risk reference (at least half sold below it, preference)"
+   ],
+   "positionSizing": [
+    "MOKA-SF-BGU-SIZE (manual)"
+   ],
+   "rules": [
+    {
+     "ruleId": "MOKA-SF-BGU-SELLGUIDE",
+     "kind": "STOP",
+     "psr709": [
+      "MOKA12-007",
+      "MOKASTOP-006"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "gap-day low as the risk reference; below it generally sell at least half (preference); the machine reports the level",
+     "derivation": null,
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#buyableGapUpScreen",
+     "tests": [
+      "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
+     ]
+    },
+    {
+     "ruleId": "MOKA-SF-BGU-SIZE",
+     "kind": "SIZING",
+     "psr709": [
+      "MOKA12-003"
+     ],
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "essential": true,
+     "gate": null,
+     "rule": "sizing not specified in #709; reviewer decision",
+     "derivation": null,
+     "reason": null,
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": [
+     "sf-morales-kacher.test.mjs: GC-BGU-SELL-GUIDE"
+    ],
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": [
+     "sf-morales-kacher.test.mjs: GC-BGU-GAP-BELOW",
+     "sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "stops": [
+    "RAS-SF-STOP (not disclosed)"
+   ],
+   "positionSizing": [
+    "RAS-SF-SIZE (not disclosed)"
+   ],
+   "rules": [
+    {
+     "ruleId": "RAS-SF-STOP",
+     "kind": "STOP",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "status": "SOURCE_AMBIGUOUS",
+     "essential": true,
+     "gate": null,
+     "rule": "initial stop",
+     "derivation": null,
+     "reason": "stop not fully disclosed (#709 C13)",
+     "code": null,
+     "tests": []
+    },
+    {
+     "ruleId": "RAS-SF-SIZE",
+     "kind": "SIZING",
+     "psr709": [],
+     "status": "SOURCE_AMBIGUOUS",
+     "essential": true,
+     "gate": null,
+     "rule": "position size",
+     "derivation": null,
+     "reason": "not disclosed for the Holy Grail setup",
+     "code": null,
+     "tests": []
+    }
+   ],
+   "riskTests": {
+    "STOP": "N/A: stop not disclosed (SOURCE_GAP)",
+    "RISK_SIZING": "N/A: sizing is a reviewer decision (MANUAL_DECISION)",
+    "GAP": "N/A: no gap rule disclosed"
+   }
+  }
+ ]
+}

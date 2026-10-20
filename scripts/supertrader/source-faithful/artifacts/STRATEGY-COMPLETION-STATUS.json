@@ -1,0 +1,586 @@
+{
+ "schema": "supertrader-sf-completion-status-1.1.0",
+ "derivedFrom": "completion/status.mjs; RESEARCH_ENGINE_COMPLETE only with a passing acceptance gate (mandate section 6)",
+ "engineStates": [
+  "RESEARCH_ENGINE_COMPLETE",
+  "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION",
+  "MECHANICAL_SCREEN_COMPLETE",
+  "MECHANICAL_COMPONENTS_ONLY",
+  "INCOMPLETE"
+ ],
+ "currentCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+ "flags": [
+  "PARTIAL_DATA_BLOCKED",
+  "PARTIAL_SOURCE_BLOCKED",
+  "MANUAL_REVIEW_REQUIRED",
+  "BACKTEST_DIAGNOSTIC_READY",
+  "COMPONENT_STUDY_ONLY",
+  "LIVE_NOT_APPROVED"
+ ],
+ "candidates": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "candidateId": "C01",
+   "sourceContractVersion": "1.1.0",
+   "engine": "INCOMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "PARTIAL_SOURCE_BLOCKED",
+    "BACKTEST_DIAGNOSTIC_READY",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
+   },
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [
+    "MA-TUR-INTRABAR-ORDER",
+    "MA-TUR-HELD-BAR-ORDER",
+    "MA-TUR-S1-OPEN-BREAKOUT",
+    "MA-TUR-FAILSAFE-EXIT"
+   ],
+   "blockingDataRules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "blockingSourceRules": [
+    "TUR-SF-S1-OPEN-BREAKOUT",
+    "TUR-SF-FAILSAFE-EXIT"
+   ],
+   "manualDecisions": [],
+   "acceptanceGate": {
+    "pass": false,
+    "dataExceptions": [
+     "TUR-SF-LIMIT-CORR"
+    ],
+    "failed": [
+     "AG-3-RECONCILED"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "candidateId": "C02",
+   "sourceContractVersion": "1.1.0",
+   "engine": "INCOMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "BACKTEST_DIAGNOSTIC_READY",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": {
+    "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
+    "ORIGINAL": "PARTIAL_DATA_BLOCKED"
+   },
+   "backtestReadiness": "DIAGNOSTIC_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [
+    "MA-TUR-INTRABAR-ORDER",
+    "MA-TUR-HELD-BAR-ORDER"
+   ],
+   "blockingDataRules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "blockingSourceRules": [],
+   "manualDecisions": [],
+   "acceptanceGate": {
+    "pass": false,
+    "dataExceptions": [
+     "TUR-SF-LIMIT-CORR"
+    ],
+    "failed": [
+     "AG-3-RECONCILED"
+    ]
+   }
+  },
+  {
+   "strategyId": "SF_DARVAS_BOX",
+   "candidateId": "C03",
+   "sourceContractVersion": "1.1.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "PARTIAL_SOURCE_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "COMPONENT_STUDY_ONLY",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "COMPONENT_SIGNAL_STUDY_ONLY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [
+    "DAR-SF-BOTTOM-START"
+   ],
+   "manualDecisions": [
+    "DAR-SF-SELECTION",
+    "DAR-SF-VOLUME",
+    "DAR-SF-MARKET",
+    "DAR-SF-SIZING",
+    "DAR-MR-SELECTION",
+    "DAR-MR-VOLUME",
+    "DAR-MR-MARKET",
+    "DAR-MR-SIZING"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "candidateId": "C04",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "WEIN-SF-STAGE",
+    "WEIN-SF-VOLUME",
+    "WEIN-SF-RS",
+    "WEIN-SF-OVERHEAD",
+    "WEIN-SF-INV-TRAIL",
+    "WEIN-SF-INV-STOP",
+    "WEIN-SF-INV-SIZE",
+    "WEIN-SF-NO-AVG-DOWN",
+    "WEIN-MR-STAGE",
+    "WEIN-MR-VOLUME",
+    "WEIN-MR-RS",
+    "WEIN-MR-OVERHEAD",
+    "WEIN-MR-GROUP",
+    "WEIN-MR-STOP"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "candidateId": "C05",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [
+    "WEIN-SF-GROUP",
+    "WEIN-SF-MARKET"
+   ],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "WEIN-SF-STAGE",
+    "WEIN-SF-VOLUME",
+    "WEIN-SF-RS",
+    "WEIN-SF-OVERHEAD",
+    "WEIN-SF-TR-TRAIL",
+    "WEIN-SF-TR-STOP",
+    "WEIN-SF-TR-SIZE",
+    "WEIN-SF-NO-AVG-DOWN",
+    "WEIN-MR-STAGE",
+    "WEIN-MR-VOLUME",
+    "WEIN-MR-GROUP",
+    "WEIN-MR-STOP"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [
+    "MIN-SF-TT-8"
+   ],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "MIN-SF-PRIORITY",
+    "MIN-SF-FUNDAMENTALS",
+    "MIN-SF-VCP",
+    "MIN-SF-PIVOT",
+    "MIN-SF-SELL",
+    "MIN-SF-STOP",
+    "MIN-SF-SIZE",
+    "MIN-MR-PRIORITY",
+    "MIN-MR-QUALITY",
+    "MIN-MR-VCP",
+    "MIN-MR-RS"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "MIN-SF-PP-ENTRY",
+    "MIN-SF-PP-EXIT",
+    "MIN-SF-PP-STOP",
+    "MIN-SF-PP-SIZE",
+    "MIN-MR-PP-VOLUME",
+    "MIN-MR-PP-CORR"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_KK_BREAKOUT",
+   "candidateId": "C08",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "KK-SF-BO-SETUP",
+    "KK-SF-BO-ENTRY",
+    "KK-SF-BO-PARTIAL",
+    "KK-SF-BO-TRAIL",
+    "KK-SF-SIZE",
+    "KK-MR-SETUP",
+    "KK-MR-LEVEL"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "PARTIAL_SOURCE_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [
+    "KK-SF-EP-CATALYST",
+    "KK-SF-EP-VOLUME",
+    "KK-SF-EP-ENTRY"
+   ],
+   "blockingSourceRules": [
+    "KK-SF-EP-EXIT"
+   ],
+   "manualDecisions": [
+    "KK-SF-SIZE",
+    "KK-MR-CATALYST"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [
+    "KK-SF-PS-BORROW",
+    "KK-SF-PS-ENTRY",
+    "KK-SF-PS-STOP"
+   ],
+   "blockingSourceRules": [],
+   "manualDecisions": [
+    "KK-SF-PS-ACCEL",
+    "KK-SF-PS-TARGET",
+    "KK-SF-SIZE",
+    "KK-MR-PARABOLIC"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "candidateId": "C11",
+   "sourceContractVersion": "1.1.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_SOURCE_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [
+    "MOKA-SF-EXIT-VIOLATION"
+   ],
+   "manualDecisions": [
+    "MOKA-SF-PP-CONTEXT",
+    "MOKA-SF-EXIT-MA",
+    "MOKA-SF-PP-STOP",
+    "MOKA-SF-PP-SIZE",
+    "MOKA-MR-BASE",
+    "MOKA-MR-THEME",
+    "MOKA-MR-EXT"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "candidateId": "C12",
+   "sourceContractVersion": "1.1.0",
+   "engine": "MECHANICAL_SCREEN_COMPLETE",
+   "flags": [
+    "PARTIAL_DATA_BLOCKED",
+    "PARTIAL_SOURCE_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [
+    "MOKA-SF-BGU-VOLWINDOW",
+    "MOKA-SF-EXIT-VIOLATION"
+   ],
+   "manualDecisions": [
+    "MOKA-SF-BGU-MEGA",
+    "MOKA-SF-BGU-CONTEXT",
+    "MOKA-SF-EXIT-MA",
+    "MOKA-SF-BGU-SELLGUIDE",
+    "MOKA-SF-BGU-SIZE",
+    "MOKA-MR-LEAD",
+    "MOKA-MR-MEGA",
+    "MOKA-MR-VOLWINDOW"
+   ],
+   "acceptanceGate": null
+  },
+  {
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "candidateId": "C13",
+   "sourceContractVersion": "1.0.0",
+   "engine": "MECHANICAL_COMPONENTS_ONLY",
+   "flags": [
+    "PARTIAL_SOURCE_BLOCKED",
+    "MANUAL_REVIEW_REQUIRED",
+    "LIVE_NOT_APPROVED"
+   ],
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+   "statusByScope": null,
+   "backtestReadiness": "NOT_READY",
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "fullMethodMeasurable": false,
+   "modelAssumptions": [],
+   "blockingDataRules": [],
+   "blockingSourceRules": [
+    "RAS-SF-ENTRY",
+    "RAS-SF-STOP",
+    "RAS-SF-SIZE"
+   ],
+   "manualDecisions": [
+    "RAS-SF-EXIT",
+    "RAS-MR-IMPULSE",
+    "RAS-MR-EXECUTION"
+   ],
+   "acceptanceGate": null
+  }
+ ],
+ "acceptanceGates": [
+  {
+   "strategyId": "SF_TURTLE_S1",
+   "scope": "EQUITY_ADAPTATION",
+   "pass": false,
+   "dataExceptions": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "checks": [
+    {
+     "id": "AG-1-RULES",
+     "title": "every rule of the declared equity scope implemented; a data-blocked rule only with implemented and tested mechanics (declared data exception), an ambiguous rule only with every reading implemented",
+     "pass": true,
+     "detail": [
+      "TUR-SF-S1-OPEN-BREAKOUT (SOURCE_GAP, readings all implemented)",
+      "TUR-SF-FAILSAFE-EXIT (SOURCE_GAP, readings all implemented)",
+      "TUR-SF-LIMIT-CORR (DATA_GAP, mechanics implemented, data missing)"
+     ]
+    },
+    {
+     "id": "AG-2-GOLDEN-AND-RULE-TESTS",
+     "title": "all golden and rule tests of the method pass (#709 worked examples and synthetic rule cases)",
+     "pass": true,
+     "detail": "30/30"
+    },
+    {
+     "id": "AG-3-RECONCILED",
+     "title": "execution and accounting reconciled: synthetic ledger replay and every scenario of a snapshot run of the CURRENT code fingerprint",
+     "pass": false,
+     "detail": [
+      "SF_TURTLE_S1 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
+      "SF_TURTLE_S1 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
+     ]
+    },
+    {
+     "id": "AG-4-NO-LOOKAHEAD",
+     "title": "no look-ahead (temporal and warm-up tests)",
+     "pass": true
+    },
+    {
+     "id": "AG-5-NO-UNSOURCED-PRICE",
+     "title": "no unsourced price assumption: fills follow the source entry / gap rules; every model assumption (unknown intrabar order, source-silent reading) is declared with a reference reading, and each boundable one runs its alternative as a scenario",
+     "pass": true,
+     "detail": [
+      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC (scenario ENTRY_BAR_OPTIMISTIC)",
+      "MA-TUR-HELD-BAR-ORDER: reference fixed; alternative none (fixed convention, declared)",
+      "MA-TUR-S1-OPEN-BREAKOUT: reference openBreakout=SKIP; alternative openBreakout=TAKE (scenario S1_OPEN_BREAKOUT_TAKEN)",
+      "MA-TUR-FAILSAFE-EXIT: reference failsafeExit='10D'; alternative failsafeExit='20D' (scenario FAILSAFE_EXIT_20D)"
+     ]
+    },
+    {
+     "id": "AG-6-NO-IMPLEMENTATION-GAP",
+     "title": "no known implementation gap",
+     "pass": true,
+     "detail": []
+    },
+    {
+     "id": "AG-7-REVIEWS",
+     "title": "independent reviews: no open HIGH / CRITICAL finding",
+     "pass": true,
+     "detail": "open HIGH/CRITICAL 0"
+    }
+   ],
+   "notLiveApproval": "a complete research engine is not a strategy approved for live trading"
+  },
+  {
+   "strategyId": "SF_TURTLE_S2",
+   "scope": "EQUITY_ADAPTATION",
+   "pass": false,
+   "dataExceptions": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "checks": [
+    {
+     "id": "AG-1-RULES",
+     "title": "every rule of the declared equity scope implemented; a data-blocked rule only with implemented and tested mechanics (declared data exception), an ambiguous rule only with every reading implemented",
+     "pass": true,
+     "detail": [
+      "TUR-SF-LIMIT-CORR (DATA_GAP, mechanics implemented, data missing)"
+     ]
+    },
+    {
+     "id": "AG-2-GOLDEN-AND-RULE-TESTS",
+     "title": "all golden and rule tests of the method pass (#709 worked examples and synthetic rule cases)",
+     "pass": true,
+     "detail": "23/23"
+    },
+    {
+     "id": "AG-3-RECONCILED",
+     "title": "execution and accounting reconciled: synthetic ledger replay and every scenario of a snapshot run of the CURRENT code fingerprint",
+     "pass": false,
+     "detail": [
+      "SF_TURTLE_S2 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
+      "SF_TURTLE_S2 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
+     ]
+    },
+    {
+     "id": "AG-4-NO-LOOKAHEAD",
+     "title": "no look-ahead (temporal and warm-up tests)",
+     "pass": true
+    },
+    {
+     "id": "AG-5-NO-UNSOURCED-PRICE",
+     "title": "no unsourced price assumption: fills follow the source entry / gap rules; every model assumption (unknown intrabar order, source-silent reading) is declared with a reference reading, and each boundable one runs its alternative as a scenario",
+     "pass": true,
+     "detail": [
+      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC (scenario ENTRY_BAR_OPTIMISTIC)",
+      "MA-TUR-HELD-BAR-ORDER: reference fixed; alternative none (fixed convention, declared)"
+     ]
+    },
+    {
+     "id": "AG-6-NO-IMPLEMENTATION-GAP",
+     "title": "no known implementation gap",
+     "pass": true,
+     "detail": []
+    },
+    {
+     "id": "AG-7-REVIEWS",
+     "title": "independent reviews: no open HIGH / CRITICAL finding",
+     "pass": true,
+     "detail": "open HIGH/CRITICAL 0"
+    }
+   ],
+   "notLiveApproval": "a complete research engine is not a strategy approved for live trading"
+  }
+ ],
+ "tradable": false,
+ "liveActivation": false
+}
