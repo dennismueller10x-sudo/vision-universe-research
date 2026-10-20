@@ -12,16 +12,22 @@ const SC = require(join(ROOT, "core", "stock-context.js"));
 const NAV = require(join(ROOT, "assets", "stock-navigator.js"));
 const chips = (h) => [...h.matchAll(/<a class="vu-snav-chip"([^>]*)>/g)].map((m) => m[1]);
 
-test("Kacheln · Reihenfolge, aktuelle Welt, Fundamental 'In Planung' ohne Link", () => {
+test("Kacheln · Reihenfolge, aktuelle Welt; Fundamental wie jede Welt nach Nachweis", () => {
   const ctx = SC.fromUs("NVDA");
   const h = NAV.html(ctx, SC.availability(ctx), "quant");
   const c = chips(h);
   assert.equal(c.length, 6);
   assert.deepEqual(c.map((a) => /data-module="(\w+)"/.exec(a)[1]), SC.PRODUCTS);
   assert.match(c[1], /aria-current="page"/);
-  assert.match(c[5], /aria-disabled="true"/);
-  assert.doesNotMatch(c[5], /href=/);
-  assert.match(h, /In Planung/);
+  /* Ohne Manifest: Fundamental neutral mit Link wie die anderen Welten, nicht mehr "In Planung". */
+  assert.match(c[5], /href="\/fundamental\/#\/NVDA" /);
+  assert.match(c[5], /data-state="unknown"/);
+  assert.doesNotMatch(h, /In Planung/);
+  /* Mit Nachweis verfuegbar, ohne SEC-Zahlen (NO_DATA) kein Link. */
+  const yes = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: ["NVDA"] } } }), "quant"));
+  assert.match(yes[5], /data-state="available"/);
+  const no = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: [] } } }), "quant"));
+  assert.match(no[5], /aria-disabled="true"/); assert.doesNotMatch(no[5], /href=/);
   /* Ohne Beleg: neutral, Link bleibt, kein Haken. */
   assert.match(c[4], /href="\/supertrader\/stock\/NVDA\/" /);
   assert.match(c[4], /data-state="unknown"/);
