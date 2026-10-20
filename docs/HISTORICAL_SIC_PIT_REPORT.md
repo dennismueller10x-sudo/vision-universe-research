@@ -67,12 +67,23 @@ Abruf: Aus den Quartals-ZIPs wird per HTTP-Range nur `sub.txt` gelesen. Das sind
 
 ## 4. Welche Unternehmen sind eindeutig zuordenbar?
 
-- Die Identität läuft ausschließlich über die **CIK** (`iss_cik_<10>`). Ticker und Firmennamen werden nicht abgeglichen.
+- Die Klassifikation hängt ausschließlich an der **CIK** (`iss_cik_<10>`). Sie selbst gleicht weder Ticker noch Firmennamen ab.
+- **Die Brücke Listing → CIK ist historisch nur eingeschränkt belegbar.** Die SEC führt keine historische Ticker-Zuordnung: FSDS, Header und Submissions tragen nur den heutigen Ticker.
 - **Produktuniversum:**
   - 6.461 von 7.809 Instrumenten tragen eine CIK, 5.481 verschiedene.
-  - Die CIK stammt aus der *heutigen* SEC-Tickerliste und ist deshalb nur ab `firstTradeDate` belegt.
-  - Davor und ohne CIK (1.348 Instrumente) gilt `IDENTITY_HOLD`.
-- **Supertrader-Snapshot:** Die CIK je Segment kommt aus `seg.fund.cik` (`validation/sec-pit.mjs`, Listing-Fenster-Prüfung), begrenzt auf das Segmentfenster.
+  - Die CIK stammt aus der *heutigen* SEC-Tickerliste. Für die Vergangenheit ist sie eine **Annahme ab `firstTradeDate`** (`CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE`), keine Bestätigung. Jeder Coverage-Punkt trägt diese Kennzeichnung (`COVERAGE.json`, `identity`).
+  - Vor `firstTradeDate` gibt es keinen Punkt. Ohne CIK (1.348 Instrumente) gilt `IDENTITY_HOLD`.
+- **Supertrader-Snapshot:** Die CIK je Segment stammt aus `validation/sec-pit.mjs`, und zwar auf zwei Wegen mit unterschiedlicher Beweiskraft:
+
+  | `how` in sec-pit | Evidenzklasse im Adapter | belegt |
+  |---|---|---|
+  | `KNOWN` | `CURRENT_TICKER_MAPPING` | die *heutige* Zuordnung `company-names.json`, ohne Fensterprüfung |
+  | `NAME_MATCH` | `NAME_EXACT_XBRL_IN_LISTING_WINDOW` | exakter normierter Name, genau ein Kandidat mit XBRL-Werten im Listing-Fenster |
+
+  - `analyze-methods.mjs` reicht `how` nicht ins Segment durch. Ohne die sec-pit-Ausgabe gilt deshalb `UNSPECIFIED`.
+  - Der Adapter (#812, sf-industry-groups-1.1.0) verwendet nur Klassen, die die Owner-Entscheidung ausdrücklich annimmt.
+  - Behobener Fehler: Version 1.0.0 hatte jede Segment-CIK als listing-fenster-geprüft geführt.
+- **Nicht erkennbares Restrisiko:** Ein recycelter Ticker, den ein schon vorher meldender Emittent übernimmt, wenn `firstTradeDate` bzw. das Segment die frühere Notierung einschließt. Abmilderung: Vor der ersten Beobachtung einer CIK liefert die API `UNKNOWN`, nie eine SIC. Ein *neuer* Emittent unter altem Ticker erhält also keine falsche Klassifikation.
 - **Abgedeckte Fälle (alle getestet):**
 
   | Fall | Behandlung |
@@ -88,7 +99,7 @@ Abruf: Aus den Quartals-ZIPs wird per HTTP-Range nur `sub.txt` gelesen. Das sind
 
 - Zeitpunkte vor der ersten Beobachtung (`UNKNOWN_BEFORE_FIRST_OBSERVATION`): 2,34 % der aufgelösten Punkte im Produktuniversum nach dem Lückenschluss.
 - Instrumente ohne CIK: 17 % der Instrumente, 12,5 % der Punkte.
-- Delistete Titel sind nicht im Produktuniversum. Ihre CIK kennt nur der private Snapshot; die Basis enthält aber alle 17.176 FSDS-Emittenten ab 2009.
+- Delistete Titel sind nicht im Produktuniversum. Ihre CIK kennt nur der private Snapshot; die Basis enthält aber alle 17.282 Emittenten mit Beobachtungen (FSDS ab 2009 und Header).
 - Der tatsächliche Wechselzeitpunkt zwischen zwei Filings ist unbekannt.
 - Vor 2009 liegen nur gezielt abgerufene Header vor.
 
@@ -134,8 +145,9 @@ Registriert ist der Datensatz als `industryClassificationHistory` in `core/regis
 2. `getIndustryClassification` sieht nur Beobachtungen mit `knownAt ≤ cutoff`. Ein `asOf` als Datum endet um **16:00 America/New_York**. Ein Filing nach Handelsschluss zählt erst ab dem nächsten Datum (Dionics 10-Q, angenommen 16:00:31 ET; Amazon 10-K, angenommen 18:44:31 ET).
 3. Turtle fragt mit dem Datum der *vorherigen* Sitzung (`methods/turtle.mjs`).
 4. Die heutige SIC ist für die Abfrage nicht erreichbar. Fehlende Information bleibt `UNKNOWN`.
-5. Die Rückblick-Sicht `history()` ist als `HINDSIGHT_AUDIT_ONLY` gekennzeichnet und wird nirgends für Entscheidungen verwendet.
-6. Tests:
+5. Fortschreibung nur deklariert: Jedes Ergebnis trägt `carryForward: { declared, maxAgeDays, assumptionRef }`. `declared` ist nur `true`, wenn der Aufrufer eine Altersgrenze **und** eine Entscheidungsreferenz nennt. Ohne das ist das Ergebnis eine Messung (Coverage), keine Grundlage für eine historische Entscheidung. Die 100-Tage-Klasse ist nur eine Coverage- und Frischekennzahl (Owner, 20.10.2026).
+6. Die Rückblick-Sicht `history()` ist als `HINDSIGHT_AUDIT_ONLY` gekennzeichnet und wird nirgends für Entscheidungen verwendet.
+7. Tests:
    - Das Ergebnis zu *t* ist identisch mit dem Ergebnis auf dem bei *t* abgeschnittenen Datensatz, synthetisch und auf einem echten Shard über fünf Stichtage.
    - Grenzfälle eine Sekunde vor und nach der Annahme.
 
@@ -146,7 +158,7 @@ Universum: Produktuniversum (`quant/data/universe/instruments`, 7.809 Instrument
 | Kennzahl | Wert |
 |---|---|
 | untersuchte Instrumente | 7.809 |
-| davon mit CIK (eindeutig auflösbar ab `firstTradeDate`) | 6.461 (82,7 %), 5.481 CIKs, 618 CIKs mit mehreren Listings |
+| davon mit CIK (heutige Zuordnung, angenommen ab `firstTradeDate`) | 6.461 (82,7 %), 5.481 CIKs, 618 CIKs mit mehreren Listings |
 | CIKs mit Beobachtungen in der SIC-Basis | 5.478 von 5.481 (99,95 %) |
 | historische SIC-Beobachtungen dieser CIKs | 206.890 (gesamt 446.074 für 17.282 Emittenten) |
 | beobachtete SIC-Wechsel zwischen Codes | 886 bei 758 Emittenten, davon 738 im Fenster 2016–2026 |
@@ -178,20 +190,27 @@ Nicht gemessen ist der Supertrader-Snapshot selbst (privat, R2). Die Messung dor
   - `makeTurtleGroupsOf` liefert `groupsOf(securityId, priorSessionDate)` für die unveränderte Engine.
   - Fehlende Gruppen zählt der Adapter mit Grund, die Engine meldet `ENFORCED_PARTIAL_GROUP_COVERAGE`.
   - Der Adapter-Test zeigt, dass beide Limits greifen und dass `runTurtle` ohne Adapter bitgleich bleibt.
-- Fachlich bleiben sie gesperrt. Die Originalregel spricht von eng und lose *korrelierten Futures-Märkten* (W-TUR, PDF 10). Eine gleiche SIC ist keine gemessene Kurskorrelation. Keine SIC-Ebene ist durch eine Quelle als „eng“ oder „lose“ gedeckt.
+- Fachlich bleiben sie gesperrt. W-TUR (gedruckte S. 16, am 20.10.2026 an der gepinnten Datei geprüft) bestimmt „closely“ und „loosely correlated markets“ nur durch Futures-Beispiele (Heizöl/Rohöl, Gold/Silber, Franken/D-Mark, TBill/Eurodollar, „etc.“; Gold/Kupfer, Silber/Kupfer, Getreide).
+  - Die Quelle nennt kein Korrelationsmaß, kein Fenster und keine Schwelle. Eine Umsetzung über historische Kurskorrelation wäre deshalb nicht quellengedeckt und wird nicht vorgeschlagen.
+  - Eine gleiche SIC ist keine gemessene Kurskorrelation. Die Beispiele der Quelle verlaufen entlang von Rohstoffen, nicht von Branchen.
+  - Details: `docs/SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md` (#812).
+- Fehlende Gruppen gelten als **unbekannt, nicht unabhängig**. `conformance(runResult)` meldet immer `ruleConformance: NOT_ESTABLISHED`, mit den Gründen und der Zahl der Einstiege mit unbekannter Gruppe.
 - `TUR-RANK` (gleichzeitige Gruppensignale) braucht dieselbe Gruppendefinition und ist nicht Teil dieses Auftrags.
 
 ## 10. Welche zusätzlichen Owner-Entscheidungen sind notwendig?
 
-1. Die SIC-Ebene für TUR-LIMIT6 („eng“) und TUR-LIMIT10 („lose“): 4-stellig, 3-stellig oder 2-stellig. Alternativ eine gemessene Kurskorrelation statt SIC; das wäre ein eigener Datenvertrag.
-2. `maxAgeDays`: ab welchem Alter der letzten SIC-Beobachtung die Gruppe als unbekannt gilt.
-3. Der Umgang mit unbekannter Gruppe. Heute (Engine) greifen dann nur LIMIT4 und LIMIT12. Das wird gezählt und ausgewiesen, aber nicht blockiert.
-4. Weinstein:
-   - die Gruppenebene;
-   - die Konstruktion des Gruppencharts (Gewichtung, Mitgliederwechsel, Mindestzahl);
-   - ob der Gruppenchart aus dem Snapshot gebildet werden darf.
-5. Ein Zeitplan für `sec-sic-history.yml` (heute nur manuell), etwa quartalsweise nach der FSDS-Veröffentlichung.
-6. Das eigene Speicherbudget der SIC-Historie (12 MB) in `test_workflows.py`, nach dem Präzedenzfall `consumer`.
+Entschieden am 20.10.2026:
+- Das 12-MB-Budget ist freigegeben; die übrigen Speichergrenzen bleiben unverändert.
+- Der Workflow bleibt manuell.
+- Die 100-Tage-Grenze ist nur Coverage- und Frischekennzahl.
+- Keine SIC-Ebene gilt als Korrelationsdefinition.
+- Eine fehlende Gruppe ist keine Unabhängigkeit.
+
+Offen:
+1. Ob TUR-LIMIT6/10 überhaupt mit einer **deklarierten VU-Modellannahme** belegt werden sollen (SIC-Stellvertreter oder Kurskorrelation mit benannten Parametern). Beides ist keine Originalregel. Bis dahin bleiben die Limits blockiert.
+2. `maxAgeDays` als ausdrückliche Fortschreibungsannahme für jede spätere Nutzung.
+3. Welche Identitätsbelege (`CURRENT_TICKER_MAPPING`, `NAME_EXACT_XBRL_IN_LISTING_WINDOW`) zählen.
+4. Weinstein: Gruppenebene und Gruppenchart, siehe Entscheidungsvorlage `docs/SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md` (#812).
 
 ## 11. Welche Weinstein-Regeln profitieren davon?
 
@@ -226,7 +245,7 @@ groupIndex(groupKey, level, date) -> { value, members, method }
 | Suite | Ergebnis |
 |---|---|
 | `scripts/quant/tests/test_sic_history.py` | 27/27 |
-| `core/tests/industry-classification.test.mjs` (synthetische Grenzfälle) | 14/14 |
+| `core/tests/industry-classification.test.mjs` (synthetische Grenzfälle) | 15/15 |
 | `core/tests/industry-classification-sec.test.mjs` (echte SEC-Beispiele, Lookahead auf echtem Shard) | 9/9 |
 | `scripts/supertrader/tests/sf-industry-groups.test.mjs` | 7/7 |
 | `node --test "core/tests/*.test.mjs"` | 205/205 |
@@ -283,7 +302,7 @@ A–C sind ein PR: Ein Ingest ohne API oder eine API ohne Daten wäre nicht test
 |---|---|---|
 | Source Accuracy | 3.017 Header ↔ FSDS-Paare; Indexseite als Gegenprobe; Readme-Definition | FSDS-Fehlerfenster gefunden und neutralisiert; API-Acceptance falsch und deshalb nicht verwendet |
 | PIT Integrity | `knownAt` konservativ; 16:00-ET-Schnitt; Abschneide-Test auf echtem Shard; keine heutige SIC erreichbar | keine offenen Befunde |
-| Identity Mapping | nur CIK; Fenster aus `firstTradeDate` bzw. Segmentfenster; `AMBIGUOUS_CIK` und `NO_CIK` als Hold | **MEDIUM (offen, dokumentiert):** Die Instrument-CIK ist eine heutige Zuordnung. Recycelte Ticker vor `firstTradeDate` sind abgefangen, Fehler im `firstTradeDate` selbst nicht |
+| Identity Mapping | nur CIK; Fenster aus `firstTradeDate` bzw. Segmentfenster; `AMBIGUOUS_CIK` und `NO_CIK` als Hold; Evidenzklasse je Zuordnung | **behoben:** Adapter 1.0.0 führte heutige Ticker-Zuordnungen (`how = KNOWN`) als listing-fenster-geprüft; 1.1.0 kennzeichnet sie und verwendet sie nur bei ausdrücklicher Annahme. **MEDIUM (offen, dokumentiert):** Die SEC führt keine historische Ticker-Zuordnung; ein recycelter Ticker eines schon vorher meldenden Emittenten ist nicht erkennbar |
 | SEC Access Compliance | User-Agent mit Kontakt; 5 req/s; Backoff; Range statt Bulk; Budgets; Request-Log | 11.775 protokollierte Requests (FSDS 213, Header 8.930, Submissions-Listen 2.631, SIC-Liste 1) plus rund 30 manuelle Stichproben; 0 dauerhafte Ausfälle Requests insgesamt |
 | Historical Coverage | Abschnitt 8 | echte und extrapolierte Coverage getrennt |
 | Reproducibility | Hash-Pins, `verify` byte-gleich, `hydrate` mit Abbruch bei Abweichung | bestanden |

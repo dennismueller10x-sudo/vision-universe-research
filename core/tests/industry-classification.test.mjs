@@ -72,6 +72,15 @@ test('Staleness nur auf ausdrueckliche Grenze des Aufrufers', () => {
   assert.equal(r.sic, '5961'); // der Wert bleibt sichtbar, das Urteil liegt beim Aufrufer
 });
 
+test('Fortschreibung fuer Entscheidungen nur deklariert: carryForward.declared braucht maxAgeDays UND assumptionRef', () => {
+  assert.equal(api.getIndustryClassification('1', '2016-01-04').carryForward.declared, false);
+  assert.equal(api.getIndustryClassification('1', '2016-01-04', { maxAgeDays: 400 }).carryForward.declared, false);
+  const d = api.getIndustryClassification('1', '2016-01-04', { maxAgeDays: 400, assumptionRef: 'OWNER-2026-10-20' });
+  assert.deepEqual(d.carryForward, { declared: true, maxAgeDays: 400, assumptionRef: 'OWNER-2026-10-20' });
+  assert.equal(d.status, STATUS.OBSERVED);
+  assert.equal(api.getIndustryClassification('1', '2017-01-04', { maxAgeDays: 400, assumptionRef: 'OWNER-2026-10-20' }).status, STATUS.STALE);
+});
+
 test('widerspruechliche Beobachtungen am selben Zeitpunkt -> CONFLICT ohne SIC', () => {
   const r = api.getIndustryClassification('2', '2016-06-01');
   assert.equal(r.status, STATUS.CONFLICT);

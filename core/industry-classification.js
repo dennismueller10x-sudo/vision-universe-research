@@ -18,7 +18,9 @@
      3. Die heutige SIC (data.sec.gov/submissions) kennt diese Datei nicht.
         Fehlt eine Beobachtung, ist das Ergebnis UNKNOWN - nie ein Ersatz.
      4. Die Fortschreibung der letzten Beobachtung ist eine Annahme
-        (INFERRED_INTERVAL) und wird mit Alter ausgewiesen. Eine belegte
+        (INFERRED_INTERVAL) und wird mit Alter ausgewiesen. Fuer eine
+        Entscheidung muss sie deklariert sein: carryForward.declared ist nur
+        true, wenn der Aufrufer maxAgeDays UND assumptionRef nennt. Eine belegte
         Gueltigkeit (validFrom/validTo) gibt es nicht: die SEC kann eine SIC
         zwischen zwei Filings aendern, ohne dass es oeffentlich sichtbar wird.
      5. Identitaet nur ueber CIK / issuerId. Ein Ticker ist kein Schluessel.
@@ -135,16 +137,20 @@
     function describe(sic) { return sic && codes[sic] ? codes[sic].description : null; }
 
     /**
-     * getIndustryClassification(cikOrIssuerId, asOf, { maxAgeDays }) -> Ergebnis.
+     * getIndustryClassification(cikOrIssuerId, asOf, { maxAgeDays, assumptionRef }) -> Ergebnis.
      * maxAgeDays ist eine Entscheidung des Aufrufers (keine Voreinstellung); ohne sie
-     * wird nie STALE gemeldet, das Alter steht aber immer im Ergebnis.
+     * wird nie STALE gemeldet, das Alter steht aber immer im Ergebnis. Ohne maxAgeDays
+     * und assumptionRef ist carryForward.declared false: das Ergebnis ist dann eine
+     * Messung (Coverage), keine Grundlage fuer eine historische Entscheidung.
      */
     function getIndustryClassification(cikOrIssuerId, asOf, opts) {
       opts = opts || {};
       var c = cutoffOf(asOf);
       var cik = normalizeCik(cikOrIssuerId);
+      var declared = Number.isFinite(opts.maxAgeDays) && typeof opts.assumptionRef === "string" && opts.assumptionRef.trim() !== "";
       var base = { cik: cik, asOf: asOf, cutoff: c.cutoff, cutoffBasis: c.basis, datasetObservedThrough: coverageEnd,
-        sic: null, sicDescription: null, levels: null, knownAt: null, ageDays: null, observation: null, interval: null };
+        sic: null, sicDescription: null, levels: null, knownAt: null, ageDays: null, observation: null, interval: null,
+        carryForward: { declared: declared, maxAgeDays: Number.isFinite(opts.maxAgeDays) ? opts.maxAgeDays : null, assumptionRef: declared ? opts.assumptionRef : null } };
       if (!cik) return Object.assign(base, { status: STATUS.IDENTITY_HOLD, reason: "INVALID_CIK" });
       var rec = issuers[cik];
       if (!rec || !rec.observations || !rec.observations.length) return Object.assign(base, { status: STATUS.UNKNOWN_NO_OBSERVATIONS });
