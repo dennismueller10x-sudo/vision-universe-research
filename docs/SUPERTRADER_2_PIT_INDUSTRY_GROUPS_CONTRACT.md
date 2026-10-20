@@ -1,6 +1,6 @@
 # Supertrader 2.0 – Datenvertrag: historische Branchengruppen (PIT-SIC) für Turtle und Weinstein
 
-Stand: 20. Oktober 2026. Status: **Vertrag vorbereitet, keine Pipeline gebaut, keine Schwelle gesetzt.**
+Stand: 20. Oktober 2026. Status: **Datenbasis gebaut (eigener Quant/SEC-PR), Adapter vorbereitet, keine Ebene und keine Schwelle gesetzt.** Nachtrag unten: „Stand nach dem PIT-SIC-Fundament“.
 - Freigabe des Owners: Die Verfügbarkeit gezielt prüfen und einen Vertrag vorbereiten.
 - Nicht freigegeben: eine neue Datenpipeline, kostenpflichtige Anbieter und eigene Zuordnungen „eng“/„lose“.
 
@@ -79,3 +79,35 @@ Bewusst **nicht** umgesetzt:
 3. Bau der Pipeline als eigener Quant/SEC-PR (Bulk-Abruf von etwa 70 Quartalsdateien plus Header für Nicht-XBRL-Fälle).
 
 Bis dahin bleibt `TUR-SF-LIMIT-CORR` `DATA_BLOCKED`. Die Turtle-Engine bleibt `RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION`.
+
+## Stand nach dem PIT-SIC-Fundament (20.10.2026)
+
+Bericht: `docs/HISTORICAL_SIC_PIT_REPORT.md`. Daten: `quant/data/sec/sic-history` (Erzeuger `scripts/quant/cli.py sic-history`). Abfrage: `core/industry-classification.js#getIndustryClassification`.
+
+**Korrekturen an der Verfuegbarkeitspruefung oben:**
+- FSDS `sub.txt` ist nicht durchgaengig verlaesslich. In 2013q3 bis 2014q2 tragen Zeilen falsche SIC-Werte: 233 von 3.017 Paaren widersprechen dem Filing-Header, alle in diesem Fenster. Werte aus dem Fenster gelten deshalb nur mit Header-Bestaetigung.
+- FSDS `accepted` ist auf die Minute gerundet. `knownAt` ist deshalb das Ende der Minute.
+- Die `acceptanceDateTime` der Submissions-API liegt um den UTC-Offset zu spaet und wird nicht verwendet.
+- Ohne Acceptance-Zeit (alte Header) gilt das Ende des spaeteren Tags aus Einreichungsdatum und Header-Erzeugungstag.
+
+**Adapter:** `scripts/supertrader/source-faithful/adapters/industry-groups.mjs`, Tests `tests/sf-industry-groups.test.mjs`.
+
+| Funktion | liefert | verlangt |
+|---|---|---|
+| `cikCandidatesFromSegments(segs)` | securityId -> CIK aus `seg.fund.cik`, begrenzt auf das Segmentfenster | - |
+| `makeTurtleGroupsOf({ classification, cikCandidates, decision })` | `groupsOf(id, priorSessionDate)` fuer `runTurtle` | `decision = { ref, closely, loosely, maxAgeDays }` |
+| `makeWeinsteinGroupMembership(...)` | `groupOf`, `rosterAt` (nur Zugehoerigkeit; `groupStage: DATA_BLOCKED`) | `decision = { ref, level, maxAgeDays }` |
+
+Verhalten:
+- Ohne Entscheidung wirft der Adapter `MODEL_ASSUMPTION_REQUIRED`. Es gibt keine Voreinstellung.
+- Unbekannte Zustaende liefern `null`, der Adapter zaehlt sie mit Grund. Die Engine zaehlt `correlationGroupMissing` und meldet `ENFORCED_PARTIAL_GROUP_COVERAGE`.
+- Der Research-Runner ist nicht verdrahtet. `TUR-SF-LIMIT-CORR` und `WEIN-SF-GROUP` bleiben `DATA_BLOCKED`. Die Registry-Artefakte sind unveraendert.
+
+**Fuer die Freigabe noch offen (Owner):**
+1. SIC-Ebene fuer „eng“ und fuer „lose korreliert“ (4-, 3- oder 2-stellig). Eine SIC-Gleichheit ist keine gemessene Kurskorrelation.
+2. `maxAgeDays`: wie alt die letzte SIC-Beobachtung hoechstens sein darf. In der Messung stammen 87 % der beobachteten Punkte aus den letzten 100 Tagen.
+3. Weinstein: die Gruppenebene und die Konstruktion des Gruppencharts (Gewichtung, Mitgliederwechsel, Mindestzahl Mitglieder).
+4. Danach in einem eigenen PR mit Vorher/Nachher-Vergleich:
+   - Runner-Verdrahtung;
+   - Statuswechsel in `STRATEGY-SOURCE-CONTRACTS.json` / `STRATEGY-DATA-DEPENDENCIES.json`;
+   - Lauf auf dem Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`.
