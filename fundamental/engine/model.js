@@ -1,0 +1,183 @@
+/* Fundamental 1.0 – Modell (UMD, ohne Abhaengigkeiten).
+ * Liest NUR den bestehenden Block `fundamentals` der Discover-Aktiendatei (discover/data/stocks/US_REAL/<T>.json,
+ * Erzeuger scripts/discover/build-discover-data.mjs aus den SEC-Companyfacts). Keine neue Datenquelle, kein Score,
+ * keine Bewertung: Werte, Veraenderung zum Vorjahr, Luecken und Herkunft je Geschaeftsjahr.
+ * Richtung (auf/ab/gleich) ist neutral gemeint; ob mehr Schulden oder weniger Aktien "gut" ist, entscheidet hier niemand. */
+(function (global) {
+  'use strict';
+  var VERSION = 'fundamental-model-1.0.0';
+  var STOCK_BASE = '/discover/data/stocks/US_REAL/';
+  var SEARCH_PATH = '/discover/data/search/US_REAL.json';
+
+  /* Kacheln in fester Reihenfolge. track: Schluessel in journey.tracks, latest: Schluessel in latest.annual/ttm. */
+  var METRICS = [
+    { id: 'revenue', label: 'Umsatz', track: 'revenue', latest: 'revenue', unit: 'USD' },
+    { id: 'net_income', label: 'Nettogewinn', track: 'net_income', latest: 'net_income', unit: 'USD' },
+    { id: 'free_cash_flow', label: 'Free Cashflow', track: 'free_cash_flow', latest: 'free_cash_flow', unit: 'USD' },
+    { id: 'operating_cash_flow', label: 'Operativer Cashflow', track: 'operating_cash_flow', latest: 'operating_cash_flow', unit: 'USD' },
+    { id: 'eps_diluted', label: 'Gewinn je Aktie', track: 'eps_diluted', latest: 'eps_diluted', unit: 'USD/shares' },
+    { id: 'cash', label: 'Liquide Mittel', track: 'cash', latest: 'cash_and_equivalents', unit: 'USD' },
+    { id: 'debt', label: 'Langfristige Schulden', track: 'debt', latest: 'long_term_debt', unit: 'USD' },
+    { id: 'shares', label: 'Aktienanzahl (verwässert)', track: 'shares', latest: 'diluted_weighted_average_shares', unit: 'shares' }
+  ];
+  var MARGINS = [
+    { id: 'gross', label: 'Bruttomarge' }, { id: 'operating', label: 'Operative Marge' }, { id: 'net', label: 'Nettomarge' }
+  ];
+  var KPIS = ['revenue', 'net_income', 'free_cash_flow'];
+
+  function isNum(v) { return typeof v === 'number' && isFinite(v); }
+  function normTicker(t) { return String(t == null ? '' : t).trim().toUpperCase(); }
+  function validTicker(t) { return /^[A-Z0-9][A-Z0-9.-]{0,11}$/.test(t); }
+  function stockPath(t) { return STOCK_BASE + encodeURIComponent(normTicker(t)) + '.json'; }
+
+  function tracksOf(journey) {
+    var t = journey && journey.tracks;
+    if (!t) return {};
+    if (Array.isArray(t)) { var o = {}; t.forEach(function (p) { if (Array.isArray(p)) o[p[0]] = p[1]; }); return o; }
+    return t;
+  }
+
+  /* Veraenderung zwischen zwei Werten. Bei Vorzeichenwechsel oder Vorwert 0 gibt es keine sinnvolle Prozentzahl. */
+  function change(prev, last) {
+    if (!isNum(prev) || !isNum(last)) return null;
+    var dir = last > prev ? 'up' : last < prev ? 'down' : 'flat';
+    var pct = prev !== 0 && (prev > 0) === (last > 0) ? (last - prev) / Math.abs(prev) : null;
+    return { dir: dir, pct: pct, abs: last - prev, signFlip: prev !== 0 && last !== 0 && (prev > 0) !== (last > 0) };
+  }
+
+  /* Punkte je Geschaeftsjahr ueber die ganze Spanne `years`; fehlende Jahre werden als Luecke (v:null) gefuehrt. */
+  function series(points, years) {
+    var byFy = {};
+    (points || []).forEach(function (p) { if (p && isNum(p.fy) && isNum(p.v)) byFy[p.fy] = p; });
+    return (years || []).map(function (fy) {
+      var p = byFy[fy];
+      return p ? { fy: fy, v: p.v, end: p.end || null, filed: p.filed || null, accn: p.accn || null } : { fy: fy, v: null, gap: true };
+    });
+  }
+  function lastTwo(rows) {
+    var have = rows.filter(function (r) { return isNum(r.v); });
+    return { last: have[have.length - 1] || null, prev: have[have.length - 2] || null, count: have.length };
+  }
+
+  function fromStock(stock) {
+    var f = stock && stock.fundamentals;
+    var base = { version: VERSION, ticker: stock ? normTicker(stock.symbol) : null, name: stock ? (stock.companyName || stock.legalName || stock.symbol) : null };
+    if (!f || f.available === false) return Object.assign(base, { available: false, reason: f && f.reason ? f.reason : 'NO_FUNDAMENTALS' });
+    var journey = f.journey || {}, tracks = tracksOf(journey);
+    var years = (journey.years && journey.years.length ? journey.years : f.fiscalYears) || [];
+    years = years.filter(isNum).sort(function (a, b) { return a - b; });
+    var latest = f.latest || {}, annual = latest.annual || {}, ttm = latest.ttm || {};
+    var caveats = journey.caveats || {};
+    var metrics = METRICS.map(function (m) {
+      var rows = series(tracks[m.track], years), lt = lastTwo(rows);
+      var t = ttm[m.latest];
+      return {
+        id: m.id, label: m.label, unit: m.unit, rows: rows,
+        available: lt.count > 0,
+        gaps: rows.filter(function (r) { return r.gap; }).map(function (r) { return r.fy; }),
+        last: lt.last, prev: lt.prev, change: lt.last && lt.prev ? change(lt.prev.v, lt.last.v) : null,
+        ttm: t && isNum(t.v) ? { v: t.v, end: t.end || null, through: t.through || null, derived: !!t.derived } : null,
+        caveat: caveats[m.track] || null
+      };
+    });
+    var mtr = tracks.margins || {};
+    var margins = MARGINS.map(function (m) {
+      var rows = series(mtr[m.id], years), lt = lastTwo(rows);
+      return { id: m.id, label: m.label, unit: 'ratio', rows: rows, available: lt.count > 0, last: lt.last, prev: lt.prev,
+        change: lt.last && lt.prev ? change(lt.prev.v, lt.last.v) : null, gaps: rows.filter(function (r) { return r.gap; }).map(function (r) { return r.fy; }) };
+    });
+    // Herkunft je Geschaeftsjahr: eine Meldung (accn) kann mehrere Jahre tragen (spaetere 10-K mit Vorjahreswerten).
+    var sources = years.map(function (fy) {
+      var seen = {}, list = [];
+      metrics.concat(margins).forEach(function (m) { m.rows.forEach(function (r) { if (r.fy === fy && r.accn && !seen[r.accn]) { seen[r.accn] = 1; list.push({ accn: r.accn, filed: r.filed, end: r.end }); } }); });
+      var values = metrics.filter(function (m) { return m.rows.some(function (r) { return r.fy === fy && isNum(r.v); }); }).length;
+      return { fy: fy, filings: list, values: values, of: metrics.length };
+    });
+    var stale = latest.staleness || null;
+    return Object.assign(base, {
+      available: true, cik: f.cik || null, asOf: f.asOf || null, source: f.source || null,
+      years: years, latestFiscalYear: f.latestFiscalYear || (years.length ? years[years.length - 1] : null),
+      ttmThrough: f.ttmThrough || null, stale: stale, derived: latest.derived || null,
+      metrics: metrics, margins: margins, sources: sources,
+      kpis: KPIS.map(function (id) { return metrics.filter(function (m) { return m.id === id; })[0]; }).filter(function (m) { return m && m.available; }),
+      caveats: Object.keys(caveats).map(function (k) { return { track: k, text: caveats[k] }; })
+    });
+  }
+
+  /* --------------------------------------------------------------- Formatierung (de-DE) */
+  function num(v, d) { return v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  function money(v) {
+    if (!isNum(v)) return '–';
+    var a = Math.abs(v), s = v < 0 ? '−' : '';
+    if (a >= 1e12) return s + num(a / 1e12, 2) + ' Bio. $';
+    if (a >= 1e9) return s + num(a / 1e9, a >= 1e11 ? 0 : a >= 1e10 ? 1 : 2) + ' Mrd. $';
+    if (a >= 1e6) return s + num(a / 1e6, a >= 1e8 ? 0 : 1) + ' Mio. $';
+    return s + num(a, 0) + ' $';
+  }
+  function count(v) {
+    if (!isNum(v)) return '–';
+    if (Math.abs(v) >= 1e9) return num(v / 1e9, 2) + ' Mrd.';
+    if (Math.abs(v) >= 1e6) return num(v / 1e6, 1) + ' Mio.';
+    return num(v, 0);
+  }
+  function pct(v, d) { return isNum(v) ? (v < 0 ? '−' : '') + num(Math.abs(v) * 100, d == null ? 1 : d) + ' %' : '–'; }
+  function value(m, v) {
+    if (m.unit === 'ratio') return pct(v);
+    if (m.unit === 'shares') return count(v);
+    if (m.unit === 'USD/shares') return isNum(v) ? (v < 0 ? '−' : '') + num(Math.abs(v), 2) + ' $' : '–';
+    return money(v);
+  }
+  function changeText(m, c) {
+    if (!c) return null;
+    var sym = c.dir === 'up' ? '▲' : c.dir === 'down' ? '▼' : '■';
+    if (m.unit === 'ratio') return sym + ' ' + (c.abs >= 0 ? '+' : '−') + num(Math.abs(c.abs) * 100, 1) + ' Pp.';
+    if (c.dir === 'flat') return sym + ' unverändert';
+    if (c.signFlip) return sym + ' Vorzeichenwechsel';
+    return sym + ' ' + (c.pct == null ? (c.dir === 'flat' ? 'unverändert' : '–') : (c.pct >= 0 ? '+' : '−') + num(Math.abs(c.pct) * 100, 1) + ' %');
+  }
+  function dateDe(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    return m ? m[3] + '.' + m[2] + '.' + m[1] : '–';
+  }
+  /* Jahreslisten als Bereiche: [2015,2016,2017,2020] -> "2015–2017, 2020". */
+  function yearRanges(years) {
+    var ys = (years || []).filter(isNum).slice().sort(function (a, b) { return a - b; }), out = [], i = 0;
+    while (i < ys.length) { var j = i; while (j + 1 < ys.length && ys[j + 1] === ys[j] + 1) j++; out.push(j > i ? ys[i] + '–' + ys[j] : String(ys[i])); i = j + 1; }
+    return out.join(', ');
+  }
+  /* Ordner der Meldung im EDGAR-Archiv (CIK ohne fuehrende Nullen, Accession ohne Bindestriche). */
+  function secFilingUrl(cik, accn) {
+    if (!/^\d{1,10}$/.test(String(cik || '')) || !/^\d{10}-\d{2}-\d{6}$/.test(String(accn || ''))) return null;
+    return 'https://www.sec.gov/Archives/edgar/data/' + String(Number(cik)) + '/' + accn.replace(/-/g, '') + '/';
+  }
+
+  /* Suche in der Discover-Suchliste (entries: {s:Symbol, n:Name}). Exakter Ticker zuerst, dann Anfang, dann enthalten. */
+  function search(entries, q, limit) {
+    var t = String(q || '').trim().toLowerCase();
+    if (!t) return [];
+    var out = [];
+    (entries || []).forEach(function (e) {
+      if (!e || !e.s) return;
+      var s = e.s.toLowerCase(), n = String(e.n || '').toLowerCase(), r = -1;
+      if (s === t) r = 0; else if (s.indexOf(t) === 0) r = 1; else if (n.indexOf(t) === 0) r = 2; else if (n.indexOf(t) >= 0) r = 3;
+      if (r >= 0) out.push({ r: r, s: e.s, n: e.n || e.s });
+    });
+    out.sort(function (a, b) { return a.r - b.r || a.s.length - b.s.length || (a.s < b.s ? -1 : 1); });
+    return out.slice(0, limit || 8).map(function (x) { return { ticker: x.s, name: x.n }; });
+  }
+
+  function parseRoute(hash) {
+    var h = String(hash || '').replace(/^#\/?/, '');
+    var t = normTicker(decodeURIComponent(h.split('?')[0].split('/')[0] || ''));
+    if (!t) return { view: 'home' };
+    if (t === 'METHODIK') return { view: 'method' };
+    return validTicker(t) ? { view: 'company', ticker: t } : { view: 'home', invalid: true };
+  }
+
+  var api = { VERSION: VERSION, METRICS: METRICS, MARGINS: MARGINS, STOCK_BASE: STOCK_BASE, SEARCH_PATH: SEARCH_PATH,
+    fromStock: fromStock, change: change, series: series, money: money, count: count, pct: pct, value: value, changeText: changeText,
+    dateDe: dateDe, yearRanges: yearRanges, secFilingUrl: secFilingUrl, search: search, parseRoute: parseRoute, stockPath: stockPath, normTicker: normTicker, validTicker: validTicker };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.VUFundamental = global.VUFundamental || {};
+  global.VUFundamental.Model = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
