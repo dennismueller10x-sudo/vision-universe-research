@@ -133,6 +133,13 @@
 .el-split span{min-width:6px;border-radius:999px}
 .el-split-up{background:var(--el-up);opacity:.75}
 .el-split-down{background:var(--el-down);opacity:.75}
+.el-splitrow{display:flex;align-items:center;gap:10px}
+.el-splitrow .el-split{flex:1}
+.el-split-n{font-size:12.5px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+.el-split-n.tone-up{color:var(--el-up)}.el-split-n.tone-down{color:var(--el-down)}
+/* Richtung der Kacheln nicht nur ueber Farbe */
+.el-stat.tone-up span::before{content:"▲ ";content:"▲ " / ""}.el-stat.tone-down span::before{content:"▼ ";content:"▼ " / ""}
+.el-stat.tone-up span::before{color:var(--el-up)}.el-stat.tone-down span::before{color:var(--el-down)}
 .el-row.is-flagship{margin-top:22px;padding:18px 0 4px;border-top:1px solid var(--vu-line)}
 .el-row.is-flagship .el-row-title{font-size:26px}
 .el-row.is-flagship .el-track .el-slot{flex-basis:min(82vw,330px)}
