@@ -13,14 +13,15 @@
   "scripts/supertrader/tests/sf-holy-grail.test.mjs",
   "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
   "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
-  "scripts/supertrader/tests/sf-moka-completion.test.mjs"
+  "scripts/supertrader/tests/sf-moka-completion.test.mjs",
+  "scripts/supertrader/tests/sf-completion.test.mjs"
  ],
  "summary": {
   "goldenCases": 115,
   "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 162,
+  "testsRun": 173,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1676,7 +1677,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 16,
+ "otherTests": 27,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2486,6 +2487,61 @@
   {
    "file": "scripts/supertrader/tests/sf-moka-completion.test.mjs",
    "name": "SF2-MOKA-READINGS-NESTED: every next-day violation is also a later-days violation; a recovered stock can violate again (review R1-04)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-GAPS-SHAPE: 13 candidates x 15 dimensions; every gap has one of the six classes",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-GAPS-DERIVED: a rule status change moves the gap class; nothing is declared closed by hand",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-TEST-MATRIX: every required test category is covered by an existing test or declared N/A with a reason",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-STATUS-DIMENSIONS: engine state and flags are separate; every candidate is LIVE_NOT_APPROVED; nothing is tradable",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-ACCEPTANCE-GATE: the gate needs a reconciled snapshot run of the CURRENT code fingerprint; a data-blocked limit makes the engine complete only WITH_DATA_EXCEPTION",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-READINESS-AGREES-WITH-STATUS: the backtest readiness never claims more than the completion status (review SF2-R3-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-SIGNAL-CONTRACT: research signals carry the snapshot provenance; review candidates are never mechanical; live / orders are rejected",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-MISSING-DATA-ALL-SCREENS: missing bars never throw, never produce NaN evidence and never become a box boundary",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-LEGACY-ISOLATION: no product, page, workflow or legacy module imports the completion or signal modules; no live path exists",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-COMPLETION-ARTIFACTS: committed completion artifacts equal a fresh build; no open implementation gap",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-completion.test.mjs",
+   "name": "SF2-COMPLETION-DOCS: generated completion matrix / data gaps / backtest readiness docs equal a fresh build",
    "result": "PASS"
   }
  ]
