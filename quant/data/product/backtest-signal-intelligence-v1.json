@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-17T03:01:17.465Z",
- "radarAsOf": "2026-10-16",
+ "generatedAt": "2026-10-20T03:33:09.531Z",
+ "radarAsOf": "2026-10-19",
  "signalAsOf": "2026-10-16",
- "setupAsOf": "2026-10-16",
+ "setupAsOf": "2026-10-19",
  "measures": {
   "SETUP_BACKTEST_READY": {
    "ready": true,
@@ -15,7 +15,7 @@
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
    "replayTitles": 157,
-   "parity": "2276/2276"
+   "parity": "2427/2427"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -57,9 +57,9 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 637,
-  "RADAR_EVENTS_TOTAL": 1022,
-  "WATCHLIST_EVENTS_TRACKABLE": 5569,
+  "RADAR_EVENTS_WITH_BACKTEST": 421,
+  "RADAR_EVENTS_TOTAL": 2399,
+  "WATCHLIST_EVENTS_TRACKABLE": 5571,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
   "LOOKAHEAD_PASS": "PASS",
@@ -124,19 +124,20 @@
    "ticker": "NVDA",
    "state": "WATCH",
    "since": "2026-10-13",
-   "durationDays": 3,
+   "durationDays": 6,
    "invalidation": 206,
    "next": "Setup entsteht (1/4)",
-   "evidence": "BROAD",
+   "evidence": "THIN",
    "events": [
-    "STRATEGY_MATCH_NEW:WITHHELD MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT"
+    "STRATEGY_MATCH_LOST:WITHHELD MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT",
+    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
    ]
   },
   {
    "ticker": "AAPL",
    "state": "SETUP_FORMING",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": 297,
    "next": "Setup bestätigt (1/5)",
    "evidence": "BROAD",
@@ -146,7 +147,7 @@
    "ticker": "MSFT",
    "state": "WATCH",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": 343,
    "next": "Setup entsteht (1/4)",
    "evidence": "THIN",
@@ -156,9 +157,9 @@
    "ticker": "JPM",
    "state": "WATCH",
    "since": "2026-09-30",
-   "durationDays": 16,
+   "durationDays": 19,
    "invalidation": 322,
-   "next": "Setup entsteht (1/4)",
+   "next": "Setup entsteht (2/4)",
    "evidence": "BROAD",
    "events": []
   },
@@ -166,44 +167,46 @@
    "ticker": "GOOG",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "BROAD",
    "events": [
-    "TREND_DOWN:LIMITED n=85996",
-    "MOMENTUM_DETERIORATED:LIMITED n=88966"
+    "TREND_UP:LIMITED n=86110",
+    "MOMENTUM_IMPROVED:LIMITED n=88880"
    ]
   },
   {
    "ticker": "AMD",
    "state": "WATCH",
    "since": "2026-10-16",
-   "durationDays": 0,
+   "durationDays": 3,
    "invalidation": 427,
    "next": "Setup entsteht (1/4)",
-   "evidence": "WITHHELD",
+   "evidence": "THIN",
    "events": [
-    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
+    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
    ]
   },
   {
    "ticker": "META",
    "state": "SETUP_FORMING",
    "since": "2026-09-24",
-   "durationDays": 22,
+   "durationDays": 25,
    "invalidation": 525,
    "next": "Setup bestätigt (2/5)",
-   "evidence": "BROAD",
-   "events": []
+   "evidence": "THIN",
+   "events": [
+    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
+   ]
   },
   {
    "ticker": "DXPE",
-   "state": "NO_SETUP",
-   "since": "2026-10-16",
+   "state": "WATCH",
+   "since": "2026-10-19",
    "durationDays": 0,
    "invalidation": null,
-   "next": "Beobachten (1/1)",
+   "next": "Setup entsteht (3/4)",
    "evidence": "BROAD",
    "events": []
   },
@@ -211,17 +214,19 @@
    "ticker": "ABCB",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": null,
-   "next": "Beobachten (1/2)",
-   "evidence": "THIN",
-   "events": []
+   "next": "Beobachten (1/1)",
+   "evidence": "UNAVAILABLE",
+   "events": [
+    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
+   ]
   },
   {
    "ticker": "O",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "UNAVAILABLE",
@@ -231,7 +236,7 @@
    "ticker": "CRWV",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 36,
+   "durationDays": 39,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "NONE",

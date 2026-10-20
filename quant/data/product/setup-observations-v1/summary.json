@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-17T02:40:37.000Z",
- "asOf": "2026-10-16",
+ "generatedAt": "2026-10-20T03:12:03.000Z",
+ "asOf": "2026-10-19",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,14 +323,14 @@
    "predicateHash": null
   }
  ],
- "universe": 5642,
- "observed": 5642,
+ "universe": 5643,
+ "observed": 5643,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4458,
-  "WATCH": 741,
+  "NO_SETUP": 4468,
+  "WATCH": 728,
   "SETUP_FORMING": 435,
-  "CONFIRMED": 8,
+  "CONFIRMED": 12,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
@@ -338,10 +338,10 @@
  },
  "ruleCounts": {
   "setup.forming.complete-setup-awaiting-trigger": 435,
-  "setup.none.fallback": 4458,
-  "setup.watch.bullish-trend": 448,
-  "setup.watch.confirmed-structure-near-high": 293,
-  "setup.confirmed.structure-trend-volume": 8
+  "setup.none.fallback": 4468,
+  "setup.watch.bullish-trend": 437,
+  "setup.watch.confirmed-structure-near-high": 291,
+  "setup.confirmed.structure-trend-volume": 12
  },
  "pathTier": {
   "states": [
@@ -374,14 +374,15 @@
    "2026-10-13",
    "2026-10-14",
    "2026-10-15",
-   "2026-10-16"
+   "2026-10-16",
+   "2026-10-19"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5642
+   "instruments": 5643
   }
  },
  "shards": [
@@ -1022,8 +1023,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 73,
-  "cutoff": "2026-10-16",
+  "count": 72,
+  "cutoff": "2026-10-19",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-09-29": 5,
@@ -1031,10 +1032,10 @@
    "2026-09-04": 1,
    "2026-08-28": 1,
    "2026-09-11": 1,
+   "2026-10-16": 3,
    "2026-08-17": 2,
    "2026-09-03": 1,
    "2026-10-14": 1,
-   "2026-10-15": 4,
    "2026-09-01": 3,
    "2026-09-18": 3,
    "2026-09-30": 2,
@@ -1084,6 +1085,10 @@
     "dataCutoff": "2026-09-11"
    },
    {
+    "ticker": "ATKR",
+    "dataCutoff": "2026-10-16"
+   },
+   {
     "ticker": "AVB",
     "dataCutoff": "2026-08-17"
    },
@@ -1094,10 +1099,6 @@
    {
     "ticker": "CCO",
     "dataCutoff": "2026-10-14"
-   },
-   {
-    "ticker": "CNO-P-A",
-    "dataCutoff": "2026-10-15"
    },
    {
     "ticker": "CRNX",
@@ -1128,14 +1129,6 @@
     "dataCutoff": "2026-09-23"
    },
    {
-    "ticker": "F-P-B",
-    "dataCutoff": "2026-10-15"
-   },
-   {
-    "ticker": "F-P-D",
-    "dataCutoff": "2026-10-15"
-   },
-   {
     "ticker": "FBRX",
     "dataCutoff": "2026-08-27"
    },
@@ -1154,10 +1147,6 @@
    {
     "ticker": "GBTG",
     "dataCutoff": "2026-09-29"
-   },
-   {
-    "ticker": "GL-P-D",
-    "dataCutoff": "2026-10-15"
    },
    {
     "ticker": "GWH",
@@ -1256,12 +1245,24 @@
     "dataCutoff": "2026-10-13"
    },
    {
+    "ticker": "PCL",
+    "dataCutoff": "2026-10-16"
+   },
+   {
     "ticker": "PHGE",
     "dataCutoff": "2026-09-10"
    },
    {
     "ticker": "PRIF-P-L",
     "dataCutoff": "2026-10-13"
+   },
+   {
+    "ticker": "QNCX",
+    "dataCutoff": "2026-10-13"
+   },
+   {
+    "ticker": "QRVO",
+    "dataCutoff": "2026-10-05"
    }
   ]
  }

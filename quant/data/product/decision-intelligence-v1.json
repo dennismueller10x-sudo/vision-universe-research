@@ -1,58 +1,58 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-17T03:01:16.876Z",
- "asOf": "2026-10-16",
+ "generatedAt": "2026-10-20T03:33:08.840Z",
+ "asOf": "2026-10-19",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 1022,
+  "RADAR_EVENTS_TOTAL": 2399,
   "RADAR_EVENTS_BY_TYPE": {
-   "SETUP_CONFIRMED": 2,
-   "SETUP_NEW": 58,
-   "STRATEGY_MATCH_NEW": 25,
-   "NEW_52W_HIGH": 165,
-   "MOMENTUM_IMPROVED": 61,
-   "TREND_UP": 57,
-   "PATTERN_MATCH_NEW": 0,
-   "FACTOR_CHANGED": 158,
-   "RISK_RISING": 3,
-   "SETUP_WEAKENED": 116,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_NEW": 62,
+   "STRATEGY_MATCH_NEW": 26,
+   "NEW_52W_HIGH": 116,
+   "MOMENTUM_IMPROVED": 62,
+   "TREND_UP": 54,
+   "PATTERN_MATCH_NEW": 921,
+   "FACTOR_CHANGED": 190,
+   "RISK_RISING": 12,
+   "SETUP_WEAKENED": 61,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 23,
-   "MOMENTUM_DETERIORATED": 241,
-   "TREND_DOWN": 113,
-   "EVIDENCE_CHANGED": 0
+   "STRATEGY_MATCH_LOST": 37,
+   "MOMENTUM_DETERIORATED": 99,
+   "TREND_DOWN": 90,
+   "EVIDENCE_CHANGED": 664
   },
-  "SETUPS_TRACKED": 1157,
-  "SETUP_TRANSITIONS": 4506,
-  "SETUP_TRANSITIONS_LATEST": 257,
+  "SETUPS_TRACKED": 1147,
+  "SETUP_TRANSITIONS": 4688,
+  "SETUP_TRANSITIONS_LATEST": 182,
   "BACKTEST_ELIGIBLE_RULES": 96,
   "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5642,
-   "covered": 5290,
-   "available": 4470,
+   "universe": 5643,
+   "covered": 5296,
+   "available": 4448,
    "sufficient": {
-    "m1": 2136,
+    "m1": 2145,
     "m3": 2063,
     "m6": 1987,
-    "m12": 1881
+    "m12": 1879
    },
    "broad": {
-    "m6": 663
+    "m6": 689
    },
    "reasons": {
-    "NOT_COVERED": 352,
-    "NO_PRICE_CONDITION_TODAY": 754,
-    "NO_COMPARABLE_CASE": 66
+    "NOT_COVERED": 347,
+    "NO_PRICE_CONDITION_TODAY": 774,
+    "NO_COMPARABLE_CASE": 74
    }
   },
-  "WATCHLIST_TRACKABLE_TITLES": 5569,
-  "ALERT_READY_EVENTS": 1022
+  "WATCHLIST_TRACKABLE_TITLES": 5571,
+  "ALERT_READY_EVENTS": 2399
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "889 Karten aus 1022 Ereignissen"
+   "measured": "1736 Karten aus 2399 Ereignissen"
   },
   {
    "question": "warum",
@@ -62,17 +62,17 @@
   {
    "question": "welches Setup vorliegt",
    "pass": true,
-   "measured": "5569 Titel mit Setup-Zustand"
+   "measured": "5571 Titel mit Setup-Zustand"
   },
   {
    "question": "wo Trigger / Invalidation / Ziele liegen",
    "pass": true,
-   "measured": "10 von 13 Stichprobentiteln mit Einstieg, Stop und Zielen"
+   "measured": "9 von 13 Stichprobentiteln mit Einstieg, Stop und Zielen"
   },
   {
    "question": "wie sich der Zustand verändert",
    "pass": true,
-   "measured": "4506 gemessene Setup-Wechsel, 257 zum letzten Stand"
+   "measured": "4688 gemessene Setup-Wechsel, 182 zum letzten Stand"
   },
   {
    "question": "was historisch bei derselben Lage geschah",
@@ -95,7 +95,8 @@
    "ticker": "NVDA",
    "kind": "Großwert",
    "radarEvents": [
-    "STRATEGY_MATCH_NEW"
+    "STRATEGY_MATCH_LOST",
+    "EVIDENCE_CHANGED"
    ],
    "setup": {
     "state": "WATCH",
@@ -105,36 +106,36 @@
    },
    "levels": {
     "entry": [
-     222,
-     230
+     218,
+     222
     ],
     "stop": 206,
     "invalidation": 206,
     "targets": [
      [
-      261,
-      267
+      235,
+      238
      ],
      [
-      281,
-      290
+      242,
+      245
      ]
     ],
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
     "rr": {
-     "low": 1.29,
-     "high": 2.81,
-     "target2Low": 2.13,
-     "target2High": 4.25
+     "low": 0.81,
+     "high": 1.67,
+     "target2Low": 1.25,
+     "target2High": 2.25
     },
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 59,
+    "episodes": 29,
     "horizon": "m6",
-    "evidence": "BROAD",
-    "positiveShare": 0.6785714285714286,
-    "medianReturn": 0.17146082527355788
+    "evidence": "THIN",
+    "positiveShare": 0.75,
+    "medianReturn": 0.18464210208396248
    },
    "factors": 6
   },
@@ -175,7 +176,7 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 74,
+    "episodes": 75,
     "horizon": "m6",
     "evidence": "BROAD",
     "positiveShare": 0.7391304347826086,
@@ -277,8 +278,8 @@
    "ticker": "GOOG",
    "kind": "Großwert",
    "radarEvents": [
-    "TREND_DOWN",
-    "MOMENTUM_DETERIORATED"
+    "TREND_UP",
+    "MOMENTUM_IMPROVED"
    ],
    "setup": {
     "state": "NO_SETUP",
@@ -296,11 +297,11 @@
     "direction": "NEUTRAL"
    },
    "replay": {
-    "episodes": 38,
+    "episodes": 33,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.7777777777777778,
-    "medianReturn": 0.08415097856053533
+    "positiveShare": 0.7878787878787878,
+    "medianReturn": 0.09653770000535133
    },
    "factors": 4
   },
@@ -308,7 +309,7 @@
    "ticker": "AMD",
    "kind": "Großwert",
    "radarEvents": [
-    "SETUP_WEAKENED"
+    "EVIDENCE_CHANGED"
    ],
    "setup": {
     "state": "WATCH",
@@ -343,18 +344,20 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 11,
-    "horizon": "m3",
+    "episodes": 14,
+    "horizon": "m6",
     "evidence": "THIN",
-    "positiveShare": 0.5,
-    "medianReturn": -0.009234260076163903
+    "positiveShare": 0.46153846153846156,
+    "medianReturn": -0.059116365899191115
    },
    "factors": 6
   },
   {
    "ticker": "META",
    "kind": "Großwert",
-   "radarEvents": [],
+   "radarEvents": [
+    "EVIDENCE_CHANGED"
+   ],
    "setup": {
     "state": "SETUP_FORMING",
     "since": "2026-09-24",
@@ -375,7 +378,7 @@
      ],
      [
       771,
-      803
+      802
      ]
     ],
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
@@ -383,16 +386,16 @@
      "low": 0.3,
      "high": 0.83,
      "target2Low": 0.52,
-     "target2High": 1.17
+     "target2High": 1.16
     },
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 45,
+    "episodes": 12,
     "horizon": "m6",
-    "evidence": "BROAD",
-    "positiveShare": 0.8863636363636364,
-    "medianReturn": 0.1710465377685937
+    "evidence": "THIN",
+    "positiveShare": 0.8181818181818182,
+    "medianReturn": 0.2950068712780578
    },
    "factors": 4
   },
@@ -401,36 +404,19 @@
    "kind": "Small Cap",
    "radarEvents": [],
    "setup": {
-    "state": "NO_SETUP",
-    "since": "2026-10-16",
+    "state": "WATCH",
+    "since": "2026-10-19",
     "sinceIsLowerBound": false,
-    "previous": "WATCH"
+    "previous": "NO_SETUP"
    },
    "levels": {
-    "entry": [
-     172,
-     179
-    ],
-    "stop": 202,
-    "invalidation": 202,
-    "targets": [
-     [
-      152,
-      156
-     ],
-     [
-      142,
-      149
-     ]
-    ],
-    "trigger": "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.",
-    "rr": {
-     "low": 0.53,
-     "high": 1.17,
-     "target2Low": 0.77,
-     "target2High": 1.61
-    },
-    "direction": "BEARISH"
+    "entry": null,
+    "stop": null,
+    "invalidation": 174,
+    "targets": [],
+    "trigger": "Ein Close ueber 198.74 oder unter 177.36 beendet die Range; bis dahin keine richtungsgebende Hypothese.",
+    "rr": null,
+    "direction": "NEUTRAL"
    },
    "replay": {
     "episodes": 37,
@@ -444,7 +430,9 @@
   {
    "ticker": "ABCB",
    "kind": "Regionalbank",
-   "radarEvents": [],
+   "radarEvents": [
+    "EVIDENCE_CHANGED"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-09-10",
@@ -460,29 +448,25 @@
     "invalidation": 90.9,
     "targets": [
      [
-      77.9,
-      79.4
-     ],
-     [
       75.7,
       77.2
+     ],
+     [
+      74.2,
+      75.5
      ]
     ],
     "trigger": "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.",
     "rr": {
-     "low": 0.31,
-     "high": 0.63,
-     "target2Low": 0.56,
-     "target2High": 0.9
+     "low": 0.56,
+     "high": 0.9,
+     "target2Low": 0.75,
+     "target2High": 1.09
     },
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 21,
-    "horizon": "m6",
-    "evidence": "THIN",
-    "positiveShare": 0.7619047619047619,
-    "medianReturn": 0.17316530763528526
+    "reason": "NO_PRICE_CONDITION_TODAY"
    },
    "factors": 5
   },
