@@ -176,7 +176,10 @@ const VISUAL = [
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
   ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-kpi .fu-dir', 'Kennzahl mit Richtung zum Vorjahr'],
-  ['Fundamental', '/fundamental/#/NVDA', '.fu-gap', 'Luecke als "keine Angabe" sichtbar']
+  ['Fundamental', '/fundamental/#/NVDA', '.fu-gap', 'Luecke als "keine Angabe" sichtbar'],
+  ['Fundamental', '/fundamental/#/NVDA', '.fu-gcell .fu-gbar', 'Wachstum pro Jahr mit Balken'],
+  ['Fundamental', '/fundamental/#/NVDA', '.fu-ladder', 'Vom Umsatz zum Free Cashflow'],
+  ['Fundamental', '/fundamental/#/JPM', '.fu-gauge .mk-self', 'KGV im Marktvergleich']
 ];
 if (only.has('visual')) await guard('visual', async () => {
   console.log('\n[3] Visual-First-Bausteine (' + engine + ')');
