@@ -3470,16 +3470,16 @@
    ],
    "summary": {
     "rulesInScope": 36,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "implementedExact": 4,
+    "implementedDerived": 2,
+    "manualReview": 14,
+    "dataBlocked": 1,
     "ambiguous": 0,
-    "notImplemented": 21,
+    "notImplemented": 0,
     "unmappedWithExclusion": 15,
     "unmappedWithoutExclusion": 0,
     "hardRules": 4,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 4
    },
    "rows": [
     {
@@ -3488,7 +3488,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3497,7 +3497,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3506,7 +3506,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3515,7 +3515,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3524,7 +3524,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -3533,7 +3533,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3542,7 +3542,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3551,7 +3551,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3560,7 +3560,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3569,7 +3569,7 @@
      "modal": "OPTIONAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -3578,7 +3578,7 @@
      "modal": "OPTIONAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3587,7 +3587,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3596,7 +3596,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3605,7 +3605,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3614,7 +3614,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3623,7 +3623,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3632,7 +3632,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3668,7 +3668,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3731,7 +3731,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3740,7 +3740,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3785,7 +3785,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": "context or example in #709; documented for the reviewer, not a rule of the machine"
     },
     {
@@ -3819,16 +3819,16 @@
    ],
    "summary": {
     "rulesInScope": 38,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 20,
+    "implementedExact": 4,
+    "implementedDerived": 1,
+    "manualReview": 8,
+    "dataBlocked": 6,
+    "ambiguous": 1,
+    "notImplemented": 0,
     "unmappedWithExclusion": 18,
     "unmappedWithoutExclusion": 0,
     "hardRules": 4,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 4
    },
    "rows": [
     {
@@ -3837,7 +3837,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3846,7 +3846,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3855,7 +3855,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3864,7 +3864,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3873,7 +3873,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_DERIVED",
      "exclusion": null
     },
     {
@@ -3882,7 +3882,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -3891,7 +3891,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_AMBIGUOUS",
      "exclusion": "covered by KK-SF-EP-EXIT"
     },
     {
@@ -3900,7 +3900,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3909,7 +3909,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -3918,7 +3918,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3954,7 +3954,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3963,7 +3963,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -3981,7 +3981,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -3990,7 +3990,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4008,7 +4008,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4017,7 +4017,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4026,7 +4026,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4035,7 +4035,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4098,7 +4098,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4107,7 +4107,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4187,16 +4187,16 @@
    ],
    "summary": {
     "rulesInScope": 34,
-    "implementedExact": 0,
+    "implementedExact": 3,
     "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "manualReview": 9,
+    "dataBlocked": 4,
     "ambiguous": 0,
-    "notImplemented": 16,
+    "notImplemented": 0,
     "unmappedWithExclusion": 18,
     "unmappedWithoutExclusion": 0,
     "hardRules": 3,
-    "hardRulesImplemented": 0
+    "hardRulesImplemented": 3
    },
    "rows": [
     {
@@ -4205,7 +4205,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -4214,7 +4214,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4223,7 +4223,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4232,7 +4232,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4241,7 +4241,7 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4259,7 +4259,7 @@
      "modal": "OPTIONAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4268,7 +4268,7 @@
      "modal": "OPTIONAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4277,7 +4277,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": null
     },
     {
@@ -4286,7 +4286,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4304,7 +4304,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4313,7 +4313,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4322,7 +4322,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -4349,7 +4349,7 @@
      "modal": "CONTEXTUAL",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "DATA_BLOCKED",
      "exclusion": "see KK-SF-PS-BORROW"
     },
     {
@@ -4358,7 +4358,7 @@
      "modal": "HARD",
      "confidence": "HIGH",
      "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
-     "status": "NOT_IMPLEMENTED",
+     "status": "SOURCE_EXACT",
      "exclusion": null
     },
     {
@@ -4430,7 +4430,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {
@@ -4439,7 +4439,7 @@
      "modal": "PREFERENCE",
      "confidence": "HIGH",
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
-     "status": "NOT_IMPLEMENTED",
+     "status": "MANUAL_REVIEW_REQUIRED",
      "exclusion": null
     },
     {

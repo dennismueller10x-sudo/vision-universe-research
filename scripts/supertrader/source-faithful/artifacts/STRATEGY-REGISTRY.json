@@ -678,8 +678,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "7ab2264d725f1691fed24f2acb3874e22eb6c67aef99b51dfe44d1609c20507d",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "19f9ed96e5009cd4ff600c4581157b3e1bb035cac79bedf0cff5b8f0be60428e",
+   "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -688,18 +688,18 @@
    "sourceCoverage": {
     "rulesInScope": 36,
     "hardRules": 4,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 2,
+    "manualReview": 14,
+    "dataBlocked": 1,
     "ambiguous": 0,
-    "notImplemented": 21,
+    "notImplemented": 0,
     "excluded": 15,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "READY",
+   "executionReadiness": "MANUAL_REVIEW_SCREEN",
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
    "dataPartial": [],
@@ -743,7 +743,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_EPISODIC_PIVOT",
@@ -769,8 +769,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "0a9f62888ef8143007ccd40a79d2d816da7e66c23b4c25be5bf562f7eb2b42ce",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "1425d11c18aedcf216fde9dd1e6ea9b01d67b435ff0c42a608a2c658d17731ae",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -779,20 +779,24 @@
    "sourceCoverage": {
     "rulesInScope": 38,
     "hardRules": 4,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
-    "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
-    "ambiguous": 0,
-    "notImplemented": 20,
+    "hardRulesImplemented": 4,
+    "implementedExact": 4,
+    "implementedDerived": 1,
+    "manualReview": 8,
+    "dataBlocked": 6,
+    "ambiguous": 1,
+    "notImplemented": 0,
     "excluded": 18,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "KK-SF-EP-CATALYST",
+    "KK-SF-EP-VOLUME",
+    "KK-SF-EP-ENTRY"
+   ],
    "dataPartial": [],
    "manualReviewRequirements": [
     {
@@ -817,7 +821,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_KK_PARABOLIC_SHORT",
@@ -843,8 +847,8 @@
     }
    ],
    "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "be83fb4cf356957aefe54626a342ebd5e1df48db329f51d426a8c50e15676eb1",
-   "implementationStatus": "NOT_IMPLEMENTED",
+   "contractFingerprint": "c21128f86949e5df1ed3e23e3ed9cb3be8f9bdf33f1deea48acf50afb915239a",
+   "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "tradable": false,
@@ -853,20 +857,24 @@
    "sourceCoverage": {
     "rulesInScope": 34,
     "hardRules": 3,
-    "hardRulesImplemented": 0,
-    "implementedExact": 0,
+    "hardRulesImplemented": 3,
+    "implementedExact": 3,
     "implementedDerived": 0,
-    "manualReview": 0,
-    "dataBlocked": 0,
+    "manualReview": 9,
+    "dataBlocked": 4,
     "ambiguous": 0,
-    "notImplemented": 16,
+    "notImplemented": 0,
     "excluded": 18,
     "unmapped": 0
    },
-   "dataReadiness": "NOT_ASSESSED",
-   "executionReadiness": "NOT_IMPLEMENTED",
+   "dataReadiness": "BLOCKED",
+   "executionReadiness": "COMPONENTS_ONLY_DATA_BLOCKED",
    "backtestReadiness": "NOT_READY",
-   "dataBlockedEssentialRules": [],
+   "dataBlockedEssentialRules": [
+    "KK-SF-PS-ENTRY",
+    "KK-SF-PS-STOP",
+    "KK-SF-PS-BORROW"
+   ],
    "dataPartial": [],
    "manualReviewRequirements": [
     {
@@ -889,7 +897,7 @@
     "errors": [],
     "warnings": []
    },
-   "plannedIn": "PR 7 Kullamaegi"
+   "plannedIn": null
   },
   {
    "strategyId": "SF_MOKA_POCKET_PIVOT",
