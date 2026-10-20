@@ -2,7 +2,7 @@
 // Ergaenzt shell-browser-qa.mjs (Kopf, Produkt-Leiste, Menue, Ueberlauf je Route), ohne es zu wiederholen:
 //
 //  1 Wege zwischen den Welten: dieselbe Aktie bleibt dieselbe (Quant -> Elliott/Supertrader/Discover und zurueck,
-//    Hedgefonds -> Discover, Screener-Link -> Quant), Browser-Zurueck, Altlinks, Bindestrich-Ticker (BRK-B).
+//    Hedgefonds -> Discover, Fundamental -> Quant-Zahlen, Screener-Link -> Quant), Browser-Zurueck, Altlinks, Bindestrich-Ticker (BRK-B).
 //  2 Farbschema bleibt beim Wechsel zwischen den Welten (ein Klick auf den Schalter, danach jede Welt).
 //  3 Visual-First-Bausteine sind sichtbar (Zaehlungen, Bilanzen, Richtungsbalken je Welt).
 //  4 Kontrast (axe color-contrast, WCAG AA) je Welt in hell und dunkel, mobil und Desktop: 0 Verstoesse,
@@ -100,6 +100,13 @@ if (only.has('journeys')) await guard('journeys', async () => {
     if (errors.length) fail(name, 'Seitenfehler: ' + errors.slice(0, 2).join(' | '));
     await page.close();
   }
+  // Fundamental PLTR -> Quant-Zahlen derselben Aktie
+  {
+    const { page } = await open(ctx, '/fundamental/#/PLTR');
+    const href = await follow(page, /^\/quant\/#\/aktie\/PLTR\/zahlen$/, 'Quant-Zahlen');
+    href && /\/quant\/#\/aktie\/PLTR\/zahlen(\?|$)/.test(where(page)) && await page.evaluate(() => /\bPLTR\b/.test(document.querySelector('main, #app, body').innerText)) ? pass('fundamental->quant', where(page)) : fail('fundamental->quant', href ? 'Ziel falsch: ' + where(page) + ' · ' + await title(page) : 'Link fehlt');
+    await page.close();
+  }
   // Hedgefonds-Aktie -> Discover
   {
     const { page } = await open(ctx, '/hedgefonds/#/aktie/NVDA');
@@ -138,7 +145,7 @@ if (only.has('theme')) await guard('theme', async () => {
   await page.waitForTimeout(400);
   const after = await theme();
   after === 'dark' ? pass('theme', 'Quant: Schalter -> dunkel') : fail('theme', 'Quant nach Klick: ' + after);
-  for (const path of ['/vorsorge/#/', '/screener/', '/hedgefonds/#/', '/elliott/', '/supertrader/', '/discover/#/', '/quant/#/aktie/NVDA']) {
+  for (const path of ['/vorsorge/#/', '/screener/', '/hedgefonds/#/', '/elliott/', '/supertrader/', '/discover/#/', '/fundamental/', '/quant/#/aktie/NVDA']) {
     await page.goto(base + path, { waitUntil: 'load' }); await page.waitForTimeout(1500);
     const t = await theme();
     t === 'dark' ? pass('theme', path + ' dunkel') : fail('theme', path + ' zeigt ' + t + ' statt dunkel');
@@ -167,7 +174,9 @@ const VISUAL = [
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
-  ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken']
+  ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-kpi .fu-dir', 'Kennzahl mit Richtung zum Vorjahr'],
+  ['Fundamental', '/fundamental/#/NVDA', '.fu-gap', 'Luecke als "keine Angabe" sichtbar']
 ];
 if (only.has('visual')) await guard('visual', async () => {
   console.log('\n[3] Visual-First-Bausteine (' + engine + ')');
@@ -194,7 +203,8 @@ const CONTRAST = [
   '/screener/', '/screener/?f=roic:gt:0.1',
   '/vorsorge/#/', '/vorsorge/#/etf/VT', '/vorsorge/#/etfs', '/vorsorge/#/plan', '/vorsorge/#/portfolio',
   '/hedgefonds/#/', '/hedgefonds/#/aktie/NVDA', '/hedgefonds/#/fonds/pershing-square', '/hedgefonds/#/investoren',
-  '/elliott/', '/elliott/#/?richtung=ab', '/elliott/#/methodik'
+  '/elliott/', '/elliott/#/?richtung=ab', '/elliott/#/methodik',
+  '/fundamental/', '/fundamental/#/PLTR', '/fundamental/#/NVDA'
 ];
 if (only.has('contrast')) await guard('contrast', async () => {
   console.log('\n[4] Kontrast und Ueberlauf (' + engine + ')');
