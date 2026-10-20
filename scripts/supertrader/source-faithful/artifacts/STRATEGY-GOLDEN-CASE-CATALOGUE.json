@@ -3,6 +3,19 @@
  "rule": "golden cases are behaviour tests, never a performance sample; #709 cases are not broker-verified and carry printed, unadjusted prices",
  "goldenTests": [
   {
+   "test": "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-REVIEW-DATA",
+   "strategyIds": [
+    "SF_DARVAS_BOX"
+   ],
+   "rules": [
+    "DAR-SF-REVIEW-DATA"
+   ],
+   "psr709": [
+    "DAR-Q12"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ATH-GATE",
    "strategyIds": [
     "SF_DARVAS_BOX"
@@ -707,6 +720,36 @@
    "result": "SEE_TEST_RUN"
   },
   {
+   "test": "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-GUIDE-EVIDENCE"
+   ],
+   "psr709": [
+    "MOKA12-008",
+    "MOKASTOP-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+   "strategyIds": [
+    "SF_MOKA_POCKET_PIVOT",
+    "SF_MOKA_BUYABLE_GAP_UP"
+   ],
+   "rules": [
+    "MOKA-SF-EXIT-GUIDE-EVIDENCE"
+   ],
+   "psr709": [
+    "MOKA12-008",
+    "MOKASTOP-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-BGU-ATR40-NO-SAME-DAY",
    "strategyIds": [
     "SF_MOKA_BUYABLE_GAP_UP"
@@ -895,6 +938,92 @@
     "DAR-SF-RESEARCH-POPULATION"
    ],
    "psr709": [],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S1EX",
+    "TUR-S2EX"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-EXIT"
+   ],
+   "psr709": [
+    "TUR-S1EX",
+    "TUR-S2EX"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "psr709": [
+    "TUR-LIMIT6",
+    "TUR-LIMIT10"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+   "strategyIds": [
+    "SF_TURTLE_S1",
+    "SF_TURTLE_S2"
+   ],
+   "rules": [
+    "TUR-SF-LIMIT-CORR"
+   ],
+   "psr709": [
+    "TUR-LIMIT6",
+    "TUR-LIMIT10"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FAILSAFE-EXIT-READINGS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-FAILSAFE-EXIT"
+   ],
+   "psr709": [
+    "TUR-FAILSAFE"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-OPEN-BREAKOUT-READINGS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-OPEN-BREAKOUT"
+   ],
+   "psr709": [
+    "TUR-S1SKIP"
+   ],
    "result": "SEE_TEST_RUN"
   },
   {

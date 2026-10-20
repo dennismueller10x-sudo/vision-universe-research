@@ -175,9 +175,12 @@ export function sourceCoverage(contract, extract, contexts) {
   for (const r of contract.rules || []) for (const p of r.psr709 || []) {
     const prev = byId.get(p);
     const rank = { SOURCE_EXACT: 6, SOURCE_DERIVED: 5, MANUAL_REVIEW_REQUIRED: 4, DATA_BLOCKED: 3, SOURCE_AMBIGUOUS: 2, NOT_IMPLEMENTED: 1 };
-    if (!prev || rank[r.status] > rank[prev]) byId.set(p, r.status);
+    // an evidence-only rule (gate false, non-essential) never outranks the decision rule that cites the same #709 id:
+    // reporting evidence for a manual rule does not implement it (review SF2-R4-04)
+    const rk = (st, rule) => (rule && rule.gate === false && rule.essential === false && (st === 'SOURCE_EXACT' || st === 'SOURCE_DERIVED') ? 0.5 : rank[st]);
+    if (!prev || rk(r.status, r) > prev.rank) byId.set(p, { status: r.status, rank: rk(r.status, r) });
   }
-  const rows = inScope.map((r) => ({ ruleId: r.rule_id, method: r.method, modal: r.modal_strength, confidence: r.confidence, clearance: r.hard_coding_clearance, status: byId.get(r.rule_id) ?? 'UNMAPPED', exclusion: (contract.exclusions || {})[r.rule_id] ?? null }));
+  const rows = inScope.map((r) => ({ ruleId: r.rule_id, method: r.method, modal: r.modal_strength, confidence: r.confidence, clearance: r.hard_coding_clearance, status: byId.get(r.rule_id)?.status ?? 'UNMAPPED', exclusion: (contract.exclusions || {})[r.rule_id] ?? null }));
   const count = (pred) => rows.filter(pred).length;
   const hardScoped = rows.filter((r) => r.modal === 'HARD');
   return {

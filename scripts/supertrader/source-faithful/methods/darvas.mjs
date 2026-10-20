@@ -11,9 +11,10 @@
  *
  * Bars: [{ date, open, high, low, close, volume, splitAdj? }] split-adjusted (DAR-Q15), ascending.
  */
-import { rawTickAdjusted, fin } from '../common/series.mjs';
+import { rawTickAdjusted, fin, isoWeeks } from '../common/series.mjs';
+import { isExecutableBar } from '../../validation/accounting-contract.mjs';
 
-export const DARVAS_VERSION = 'sf-darvas-1.0.0';
+export const DARVAS_VERSION = 'sf-darvas-1.1.0';
 export const DARVAS_PARAMS = Object.freeze({ confirmDays: 3, rawFraction: 0.01 }); // DAR-Q1 / DAR-Q2: three days; "a fraction": one raw cent (convention)
 export const STATES = Object.freeze({ SEEK_TOP: 'SEEK_TOP', TOP_PENDING: 'TOP_PENDING', BOTTOM_SEARCH: 'BOTTOM_SEARCH', BOX: 'BOX' });
 export const BOTTOM_SEARCH_START = Object.freeze({ AFTER_TOP_CONFIRMED: 'AFTER_TOP_CONFIRMED', AFTER_TOP_DAY: 'AFTER_TOP_DAY' });
@@ -53,9 +54,11 @@ export function createDarvasBoxMachine(bars, { bottomSearchStart = BOTTOM_SEARCH
             ev.push({ type: 'TOP_CONFIRMED', top: st.top, topDate: bars[st.topDay].date });
             st = { ...st, phase: STATES.BOTTOM_SEARCH, count: 0, bottom: null, bottomDay: null };
             if (bottomSearchStart === BOTTOM_SEARCH_START.AFTER_TOP_DAY) {
-              // candidate = lowest low after the top day (latest on ties); the reverse count runs from that bar
-              let k = st.topDay + 1; for (let j = st.topDay + 1; j <= i; j++) if (bars[j].low <= bars[k].low) k = j;
-              st.bottom = bars[k].low; st.bottomDay = k; st.count = i - k;
+              // candidate = lowest low after the top day (latest on ties); the reverse count runs from that bar.
+              // Bars without a low are skipped and not counted (sf-darvas-1.1.0: a missing bar was taken as low 0)
+              let k = -1, after = 0;
+              for (let j = st.topDay + 1; j <= i; j++) { if (!fin(bars[j].low) || !fin(bars[j].high)) continue; if (k < 0 || bars[j].low <= bars[k].low) { k = j; after = 0; } else after++; }
+              st.bottom = bars[k].low; st.bottomDay = k; st.count = after;
               ev.push({ type: 'BOTTOM_CANDIDATE', bottom: st.bottom });
               if (st.count >= confirmDays) ev.push(complete(i));
             }
@@ -106,13 +109,42 @@ export function darvasPosition(bars, entry, { opts, rawFraction = DARVAS_PARAMS.
   const path = [{ i: entry.i, date: e.date, stop, ruleId: 'DAR-SF-STOP-INIT' }];
   if (e.low <= stop) return { entry: { i: entry.i, date: e.date, fill: entry.fill }, path, exit: { i: entry.i, date: e.date, stop, fill: stop, reason: 'STOP_ENTRY_BAR_PESSIMISTIC' }, entryBarStop: true };
   const later = darvasEvents(bars.slice(entry.i), opts).events.map((x) => ({ ...x, i: x.i + entry.i }));
+  // a box completed on a bar without a fill (missing / synthetic) still raises the stop, effective from the next real bar
+  // (review R2-03): raises are applied for every BOTTOM_CONFIRMED up to and including bar i
+  const confirms = later.filter((x) => x.type === 'BOTTOM_CONFIRMED');
+  let next = 0;
   for (let i = entry.i + 1; i < bars.length; i++) {
     const b = bars[i];
-    if (!fin(b.low)) continue; // missing bar: no fill, no decision
+    if (!fin(b.low) || !isExecutableBar(b)) continue; // missing or synthetic bar: no fill, no decision (research-v1)
+    const raise = (upTo) => { for (; next < confirms.length && confirms[next].i <= upTo; next++) { const x = confirms[next], s = x.bottom - fractionFor(bars[x.i], rawFraction); if (s > stop) { stop = s; path.push({ i, date: b.date, stop, ruleId: 'DAR-SF-STOP-RAISE', boxTop: x.top, boxBottom: x.bottom, confirmedOn: bars[x.i].date }); } } };
+    raise(i - 1); // boxes confirmed on skipped bars are in force on this bar
     if (b.low <= stop) return { entry: { i: entry.i, date: e.date, fill: entry.fill }, path, exit: { i, date: b.date, stop, fill: Math.min(b.open, stop), reason: b.open <= stop ? 'STOP_GAP_OPEN' : 'STOP' }, entryBarStop: false };
-    for (const x of later) if (x.i === i && x.type === 'BOTTOM_CONFIRMED') { const s = x.bottom - fractionFor(b, rawFraction); if (s > stop) { stop = s; path.push({ i, date: b.date, stop, ruleId: 'DAR-SF-STOP-RAISE', boxTop: x.top, boxBottom: x.bottom }); } }
+    raise(i); // a box confirmed by this close raises the stop from the next bar
   }
   return { entry: { i: entry.i, date: e.date, fill: entry.fill }, path, exit: null, entryBarStop: false };
+}
+
+/** DAR-Q12 review horizons: 2-3 years and 4-6 months, converted at 252 sessions / 21 sessions per month and ISO weeks. */
+export const DARVAS_REVIEW_HORIZONS = Object.freeze({ highLowYears: Object.freeze([2, 3]), sessionsPerYear: 252, rangeVolumeWeeks: Object.freeze([17, 26]) });
+
+/**
+ * DAR-SF-REVIEW-DATA (DAR-Q12): the data Darvas names for the reviewer - all-time high (within the available history),
+ * high / low of the last 2 and 3 years, weekly range and volume over the last 4-6 months (17 / 26 ISO weeks). Evidence
+ * only; no field is a gate. Uses bars up to and including asOfIndex (the record is produced after that close).
+ */
+export function darvasReviewData(bars, asOfIndex, H = DARVAS_REVIEW_HORIZONS) {
+  const upto = bars.slice(0, asOfIndex + 1);
+  const hl = (n) => { let h = -Infinity, l = Infinity, k = 0; for (let j = Math.max(0, upto.length - n); j < upto.length; j++) { const b = upto[j]; if (fin(b.high) && fin(b.low)) { h = Math.max(h, b.high); l = Math.min(l, b.low); k++; } } return k ? { high: h, low: l, sessions: k, complete: k >= n } : null; };
+  const weeks = isoWeeks(upto), last = (n) => weeks.slice(-n).map((w) => ({ week: w.week, high: w.high, low: w.low, rangePct: w.low > 0 ? w.high / w.low - 1 : null, volume: w.volume, sessions: w.sessions }));
+  let ath = -Infinity; for (const b of upto) if (fin(b.high)) ath = Math.max(ath, b.high);
+  return {
+    allTimeHighInHistory: Number.isFinite(ath) ? ath : null,
+    highLow: Object.fromEntries(H.highLowYears.map((y) => [`${y}y`, hl(y * H.sessionsPerYear)])),
+    // the 6-month list (26 weeks); its last 17 entries are the 4-month window
+    weekly: last(H.rangeVolumeWeeks[1]),
+    fourMonthWeeks: Math.min(H.rangeVolumeWeeks[0], last(H.rangeVolumeWeeks[1]).length),
+    note: 'DAR-Q12 review data; evidence only (STRONG_PREFERENCE), no threshold',
+  };
 }
 
 export const DARVAS_OPEN_QUESTIONS = Object.freeze([
@@ -147,7 +179,9 @@ export function darvasScreen(security, { asOfIndex = security.bars.length - 1, h
         { ruleId: 'DAR-SF-STOP-INIT', psr709: 'DAR-Q5', value: e.top - fractionFor(b) },
         { ruleId: 'DAR-SF-ATH', psr709: 'DAR-Q9', value: historyFromListing ? 'ALL_TIME_HIGH' : 'ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED' },
         { ruleId: 'DAR-SF-VOLUME', psr709: 'DAR-Q10', value: { breakoutVolume: b.volume, meanVolumeDuringBox: vn ? vs / vn : null, ratio: vn && vs > 0 ? b.volume / (vs / vn) : null, note: 'evidence only; no minimum (DAR-Q10)' } },
+        { ruleId: 'DAR-SF-REVIEW-DATA', psr709: 'DAR-Q12', value: darvasReviewData(bars, e.i) },
       ],
+      positionPlan: { initialStop: e.top - fractionFor(b), stopRule: 'DAR-SF-STOP-INIT, raised by DAR-SF-STOP-RAISE under every later completed higher box, never lowered; exit = stop (DAR-B7)', sizing: 'REVIEWER (DAR-MR-SIZING)' },
       openQuestions: DARVAS_OPEN_QUESTIONS,
       dataNotAvailableToMachine: [...(historyFromListing ? [] : ['listing-to-date price history (all-time high unverified)']), 'industry (PIT)', 'fundamentals / expected earning power'],
     });
@@ -165,6 +199,7 @@ export function darvasComponentTrades(security, { from = null, to = null, opts }
   for (const e of events) {
     while (k < e.i) { if (fin(bars[k].high) && bars[k].high > priorMax) priorMax = bars[k].high; k++; }
     if (e.type !== 'BREAKOUT' || !(e.trigger > priorMax) || e.i <= busyUntil) continue;
+    if (!isExecutableBar(bars[e.i])) continue; // no order on a bar without a real open (research-v1, sf-darvas-1.1.0)
     if ((from && bars[e.i].date < from) || (to && bars[e.i].date > to)) continue;
     const p = darvasPosition(bars, e, { opts });
     trades.push({ id: security.id, entryDate: p.entry.date, entryFill: p.entry.fill, exitDate: p.exit?.date ?? null, exitFill: p.exit?.fill ?? null, reason: p.exit?.reason ?? 'OPEN_AT_END', stopRaises: p.path.length - 1, entryBarStop: p.entryBarStop, heldSessions: (p.exit?.i ?? bars.length - 1) - e.i });

@@ -152,7 +152,8 @@ test('SF-DOCS: generated coverage / traceability / readiness docs equal a fresh 
   finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });
 
-test('SF-GOLDEN-RECORD: the recorded golden results cover every catalogued golden test, all PASS', () => {
+// skipped while record-golden-results.mjs runs the suite: the record cannot certify the file it is about to replace
+test('SF-GOLDEN-RECORD: the recorded golden results cover every catalogued golden test, all PASS', { skip: process.env.SF_RECORDING === '1' }, () => {
   const cat = JSON.parse(fs.readFileSync(path.join(ARTIFACT_DIR, 'STRATEGY-GOLDEN-CASE-CATALOGUE.json'), 'utf8'));
   const rec = JSON.parse(fs.readFileSync(path.join(ARTIFACT_DIR, 'STRATEGY-GOLDEN-CASE-RESULTS.json'), 'utf8'));
   assert.deepEqual(rec.cases.map((c) => c.test).sort(), cat.goldenTests.map((g) => g.test).sort(), 'golden record is stale: run record-golden-results.mjs');

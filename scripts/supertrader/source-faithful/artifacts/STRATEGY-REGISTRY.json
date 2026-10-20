@@ -44,8 +44,8 @@
      "role": "secondary; translation conflicts (60 vs 55 days) resolved in favour of W-TUR (#709)"
     }
    ],
-   "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "0a1cba3dfcc0340ad04aced2933e87a77c0c9f90c5c83824319b8c7277d79032",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "73acd730935229e66974639aba2d7dc7adb127e3dac590d25273bdce79c23c25",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -79,10 +79,12 @@
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
-    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "correlation limits (6 / 10 units): engine mechanics implemented, not applied in research runs: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED binding)",
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
-    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)",
-    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS)"
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)",
+    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS, scenario FAILSAFE_EXIT_20D); open hypothetical breakout not covered by the source (TUR-SF-S1-OPEN-BREAKOUT, SOURCE_AMBIGUOUS, scenario S1_OPEN_BREAKOUT_TAKEN)"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",
    "contractValidation": {
@@ -110,8 +112,8 @@
      "role": "secondary; translation conflicts (60 vs 55 days) resolved in favour of W-TUR (#709)"
     }
    ],
-   "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "2f5d59a2492502dea55122dc513a8c42322fa235096a62455219bbf4f3a34cb7",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "dfd34206b370f21cf26c7fd36fc677ec5d758f6f3db381e7807ba61eee65ac26",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -145,9 +147,11 @@
    "manualReviewRequirements": [],
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
-    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "correlation limits (6 / 10 units): engine mechanics implemented, not applied in research runs: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED binding)",
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
-    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)"
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",
    "contractValidation": {
@@ -170,8 +174,8 @@
      "role": "authoritative; Q&A pp. 182-198 for the box rules, chapters for development context"
     }
    ],
-   "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "9d1ab99616c75792abcb2c5146a0381da044e6577a0e45078a53f1a8d513fff9",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "cc8e0890848903d5aa41748b47b95a61e9990674ee9155cd06a81a11e5c30af5",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -182,8 +186,8 @@
     "rulesInScope": 35,
     "hardRules": 10,
     "hardRulesImplemented": 10,
-    "implementedExact": 4,
-    "implementedDerived": 8,
+    "implementedExact": 3,
+    "implementedDerived": 9,
     "manualReview": 12,
     "dataBlocked": 0,
     "ambiguous": 0,
@@ -289,8 +293,8 @@
     "hardRules": 14,
     "hardRulesImplemented": 4,
     "implementedExact": 1,
-    "implementedDerived": 6,
-    "manualReview": 29,
+    "implementedDerived": 5,
+    "manualReview": 30,
     "dataBlocked": 3,
     "ambiguous": 0,
     "notImplemented": 0,
@@ -398,8 +402,8 @@
     "hardRules": 14,
     "hardRulesImplemented": 4,
     "implementedExact": 1,
-    "implementedDerived": 5,
-    "manualReview": 23,
+    "implementedDerived": 4,
+    "manualReview": 24,
     "dataBlocked": 3,
     "ambiguous": 0,
     "notImplemented": 0,
@@ -928,8 +932,8 @@
      "role": "current volume definition and megacap exception"
     }
    ],
-   "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "010cc73270415f67c0f0fc20430caa100056f674c8763a0654b56b5fc8b79a09",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "a5e78033726af04dd05f40f22b8a00e93b83ee54dfe92d0e3edc374d953b3f6e",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -1024,8 +1028,8 @@
      "role": "current volume definition and megacap exception"
     }
    ],
-   "sourceContractVersion": "1.0.0",
-   "contractFingerprint": "ff16c3ace3b6a5223a11edf943fa1aad7ea2637f04b3ebd4adc72dbe128ec6a1",
+   "sourceContractVersion": "1.1.0",
+   "contractFingerprint": "8dcd54ca938d09b24ae51542493430ebc6a6b8621a21f873b5885269cd4d5f85",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",

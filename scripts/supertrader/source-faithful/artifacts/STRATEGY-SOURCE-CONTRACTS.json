@@ -17,7 +17,7 @@
   {
    "strategyId": "SF_TURTLE_S1",
    "candidateId": "C01",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
@@ -99,10 +99,12 @@
    },
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
-    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "correlation limits (6 / 10 units): engine mechanics implemented, not applied in research runs: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED binding)",
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
-    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)",
-    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS)"
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)",
+    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS, scenario FAILSAFE_EXIT_20D); open hypothetical breakout not covered by the source (TUR-SF-S1-OPEN-BREAKOUT, SOURCE_AMBIGUOUS, scenario S1_OPEN_BREAKOUT_TAKEN)"
    ],
    "chain": [
     {
@@ -311,10 +313,13 @@
      "kind": "PORTFOLIO",
      "status": "DATA_BLOCKED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ],
      "derivation": null,
-     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
     },
     {
      "source": "W-TUR",
@@ -330,10 +335,13 @@
      "kind": "PORTFOLIO",
      "status": "DATA_BLOCKED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ],
      "derivation": null,
-     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
     },
     {
      "source": "W-TUR",
@@ -441,7 +449,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); how a still open breakout counts is the separate SOURCE_AMBIGUOUS rule TUR-SF-S1-OPEN-BREAKOUT; daily-bar path: the level nearer to the open is reached first (model assumption MA-TUR-HELD-BAR-ORDER); the filter is warmed on the history before the window",
      "reason": null
     },
     {
@@ -465,7 +473,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); how a still open breakout counts is the separate SOURCE_AMBIGUOUS rule TUR-SF-S1-OPEN-BREAKOUT; daily-bar path: the level nearer to the open is reached first (model assumption MA-TUR-HELD-BAR-ORDER); the filter is warmed on the history before the window",
      "reason": null
     },
     {
@@ -489,8 +497,29 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-TAKE-AFTER-UNPROFITABLE-EXIT",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-S1-SHORT-COUNTS"
      ],
-     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); a still open (unresolved) hypothetical breakout counts as not losing and skips (source silent; fewer entries); daily-bar path: the level nearer to the open is reached first; the filter is warmed on the history before the window",
+     "derivation": "skip only after a profitable last breakout (TUR-S1SKIP); a 10-day exit at a loss without a prior 2N adverse move is neither a loser (TUR-S1LOSER) nor profitable, so the next signal is taken (the #705 engine skipped it); how a still open breakout counts is the separate SOURCE_AMBIGUOUS rule TUR-SF-S1-OPEN-BREAKOUT; daily-bar path: the level nearer to the open is reached first (model assumption MA-TUR-HELD-BAR-ORDER); the filter is warmed on the history before the window",
      "reason": null
+    },
+    {
+     "source": "W-TUR",
+     "bookEdition": "The Original Turtle Trading Rules, 2003 participant publication mirrored at Trading Blox | en",
+     "page": "PDF 13; printed 19",
+     "ruleId": "TUR-S1SKIP",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "candidate": "C01",
+     "executableRule": "TUR-SF-S1-OPEN-BREAKOUT",
+     "kind": "FILTER",
+     "status": "SOURCE_AMBIGUOUS",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#entryTrigger",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-OPEN-BREAKOUT-READINGS"
+     ],
+     "derivation": null,
+     "reason": "TUR-S1SKIP names a winning last breakout; the source does not say how an open one counts. #709 VU-TUR lists \"Hypothetischer noch offener Breakout als Gewinner angenommen\" as a VU formalization. Both readings are implemented and reported (model assumption MA-TUR-S1-OPEN-BREAKOUT); neither is the source rule."
     },
     {
      "source": "W-TUR",
@@ -529,10 +558,11 @@
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-FAILSAFE",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-FAILSAFE-EXIT-READINGS"
      ],
      "derivation": null,
-     "reason": "#709: the published failsafe text does not state its exit. Implemented as the System 1 10-day exit and labelled as that interpretation in every trade record (path FAILSAFE_55)."
+     "reason": "The source states only the failsafe ENTRY (TUR-FAILSAFE, HARD / HIGH, implemented as TUR-SF-FAILSAFE). Its exit is not published: #709 VU-TUR \"Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel\"; #709 revalidation TUR-F-FAILSAFE-55 \"Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt\"; #712 spec V4 T4-FAILSAFE \"exit like S1 (interpretation)\". Both readings are implemented and reported (model assumption MA-TUR-FAILSAFE-EXIT): 10-day (reference reading, path FAILSAFE_55 in every trade record) and 20-day (scenario FAILSAFE_EXIT_20D). Neither is SOURCE_EXACT; no reading is chosen by result."
     },
     {
      "source": "W-TUR",
@@ -659,9 +689,11 @@
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S1",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
      ],
-     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06); on the entry bar the level is a resting stop like the unit stops: a low through it is assumed after the entry, the higher of unit stop and channel level is reached first (sf-turtle-1.1.0)",
      "reason": null
     },
     {
@@ -795,7 +827,7 @@
   {
    "strategyId": "SF_TURTLE_S2",
    "candidateId": "C02",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Original Turtles (Richard Dennis / William Eckhardt rules)",
@@ -877,9 +909,11 @@
    },
    "knownLimitations": [
     "equity adaptation, long only: net long beta, not the futures risk profile",
-    "correlation limits (6 / 10 units) not applied: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED)",
+    "correlation limits (6 / 10 units): engine mechanics implemented, not applied in research runs: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED binding)",
+    "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
-    "daily bars: the order of intrabar events is a convention (exits before adds; a raised stop is re-checked pessimistically on an add bar)"
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)"
    ],
    "chain": [
     {
@@ -1088,10 +1122,13 @@
      "kind": "PORTFOLIO",
      "status": "DATA_BLOCKED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ],
      "derivation": null,
-     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
     },
     {
      "source": "W-TUR",
@@ -1107,10 +1144,13 @@
      "kind": "PORTFOLIO",
      "status": "DATA_BLOCKED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
+     "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach",
+     "tests": [
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT6",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-LIMIT10"
+     ],
      "derivation": null,
-     "reason": "the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither, and choosing one would add an unsourced parameter. Not applied; declared as an open fidelity gap."
+     "reason": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
     },
     {
      "source": "W-TUR",
@@ -1343,9 +1383,11 @@
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/turtle.mjs#runTurtle",
      "tests": [
-      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2"
+      "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-EXIT-S2",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
+      "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-STOP-BEFORE-CHANNEL"
      ],
-     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06)",
+     "derivation": "the opposite channel breakout uses the same one-tick convention as the entry (0.01 raw, split-adjusted); fill min(open, level) on daily bars (review SF-R1-06); on the entry bar the level is a resting stop like the unit stops: a low through it is assumed after the entry, the higher of unit stop and channel level is reached first (sf-turtle-1.1.0)",
      "reason": null
     },
     {
@@ -1479,7 +1521,7 @@
   {
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Nicolas Darvas",
@@ -1643,14 +1685,14 @@
      "candidate": "C03",
      "executableRule": "DAR-SF-BOTTOM",
      "kind": "SETUP",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#createDarvasBoxMachine",
      "tests": [
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-CONFIRM",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-BOTTOM-TOUCH-RESET"
      ],
-     "derivation": null,
+     "derivation": "the three-day procedure is executed as written; which lows count (from the top day or from the top confirmation) is the open reading DAR-SF-BOTTOM-START, so the rule as executed depends on a declared reading (review SF2-R1-07)",
      "reason": null
     },
     {
@@ -1951,6 +1993,27 @@
       "scripts/supertrader/tests/sf-runner.test.mjs: SF-RUN-COMPONENT"
      ],
      "derivation": "measurement convention for the diagnostic component study only; Darvas sets no general volume or liquidity minimum (DAR-Q10); the review screen itself applies no such filter (review SF-R1-05)",
+     "reason": null
+    },
+    {
+     "source": "B06",
+     "bookEdition": "Nicolas Darvas | How I Made $2,000,000 in the Stock Market | Kensington/Lyle Stuart reprint; copyright 1994/1971/1960 | en",
+     "page": "PDF 206; printed 194",
+     "ruleId": "DAR-Q12",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C03",
+     "executableRule": "DAR-SF-REVIEW-DATA",
+     "kind": "INDICATOR",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/darvas.mjs#darvasReviewData",
+     "tests": [
+      "scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-REVIEW-DATA"
+     ],
+     "derivation": "evidence only (STRONG_PREFERENCE, never a gate): 2 and 3 years = 504 / 756 sessions, 4-6 months = 17 / 26 ISO weeks of the available history; the all-time high stays ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED without listing-to-date bars (sf-darvas-1.1.0)",
      "reason": null
     },
     {
@@ -6705,7 +6768,7 @@
   {
    "strategyId": "SF_MOKA_POCKET_PIVOT",
    "candidateId": "C11",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
@@ -7161,6 +7224,50 @@
      "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
     },
     {
+     "source": "W-MOKA12",
+     "bookEdition": "Chris Kacher own Traders Expo London 2012 presentation",
+     "page": "PDF50",
+     "ruleId": "MOKA12-008",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C11",
+     "executableRule": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "kind": "EXIT",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#sellGuideEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+     ],
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)",
+     "reason": null
+    },
+    {
+     "source": "W-MOKASTOP",
+     "bookEdition": "Official Mo Kastop FAQ",
+     "page": "paragraph2/3",
+     "ruleId": "MOKASTOP-001",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C11",
+     "executableRule": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "kind": "EXIT",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#sellGuideEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+     ],
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)",
+     "reason": null
+    },
+    {
      "source": "W-MOKASTOP",
      "bookEdition": "Official Mo Kastop FAQ",
      "page": "paragraph3",
@@ -7216,32 +7323,13 @@
      "tests": [],
      "derivation": null,
      "reason": null
-    },
-    {
-     "source": null,
-     "bookEdition": null,
-     "page": null,
-     "ruleId": null,
-     "modal": null,
-     "confidence": null,
-     "originalWordingChecked": null,
-     "clearance": null,
-     "candidate": "C11",
-     "executableRule": "MOKA-SF-PP-EXIT-PPX",
-     "kind": "EXIT",
-     "status": "NOT_IMPLEMENTED",
-     "targetStatus": null,
-     "code": null,
-     "tests": [],
-     "derivation": null,
-     "reason": "reported via MOKA-SF-EXIT-MA; no separate machine rule"
     }
    ]
   },
   {
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
    "candidateId": "C12",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Gil Morales / Chris Kacher",
@@ -7628,6 +7716,50 @@
      ],
      "derivation": null,
      "reason": "MOKA-C2: the 2012 slide says the next day, the FAQ says later days; both readings kept, reported as evidence, no automatic exit"
+    },
+    {
+     "source": "W-MOKA12",
+     "bookEdition": "Chris Kacher own Traders Expo London 2012 presentation",
+     "page": "PDF50",
+     "ruleId": "MOKA12-008",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C12",
+     "executableRule": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "kind": "EXIT",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#sellGuideEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+     ],
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)",
+     "reason": null
+    },
+    {
+     "source": "W-MOKASTOP",
+     "bookEdition": "Official Mo Kastop FAQ",
+     "page": "paragraph2/3",
+     "ruleId": "MOKASTOP-001",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C12",
+     "executableRule": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+     "kind": "EXIT",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/morales-kacher.mjs#sellGuideEvidence",
+     "tests": [
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+      "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER"
+     ],
+     "derivation": "evidence only, never an exit: 7 weeks = 35 sessions (5 per week); \"respected\" = no confirmed 10DMA violation, evaluated under both MOKA-C2 readings (next day / later days) because the violation itself is SOURCE_AMBIGUOUS; replaces the former NOT_IMPLEMENTED placeholder MOKA-SF-PP-EXIT-PPX (sf-morales-kacher-1.1.0)",
+     "reason": null
     },
     {
      "source": "W-MOKASTOP",

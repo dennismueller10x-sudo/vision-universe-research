@@ -11,8 +11,8 @@
  */
 import { fin, smaAt } from '../common/series.mjs';
 
-export const MOKA_VERSION = 'sf-morales-kacher-1.0.0';
-export const MOKA_PARAMS = Object.freeze({ ppWindow: 10, atrSessions: 40, gapAtr: 0.75, volumeRatio: 1.5, volumeWindow: 50 });
+export const MOKA_VERSION = 'sf-morales-kacher-1.1.0';
+export const MOKA_PARAMS = Object.freeze({ ppWindow: 10, atrSessions: 40, gapAtr: 0.75, volumeRatio: 1.5, volumeWindow: 50, respectWeeks: 7, sessionsPerWeek: 5 });
 
 /** MOKA-SF-PP-VOLUME / -DOWNDAY / -UPDAY on bar i. Needs 11 prior closes (10 window days + 1 reference). */
 export function pocketPivotAt(bars, i, window = MOKA_PARAMS.ppWindow) {
@@ -43,6 +43,7 @@ export function pocketPivotScreen(security, { asOfIndex = security.bars.length -
     machineScreenEvidence: [
       { ruleId: 'MOKA-SF-PP-VOLUME', psr709: 'MOKAPP-003', value: { volume: r.volume, maxDownVolume: r.maxDownVolume, downDays: r.downDays } },
       { ruleId: 'MOKA-SF-PP-CONTEXT', psr709: 'MOKAPP-004', value: { pctFrom10DMA: dist(10), pctFrom50DMA: dist(50), pctFrom200DMA: dist(200), note: 'evidence; extension is judged by the reviewer, never a rejection (MOKAPP-010)' } },
+      { ruleId: 'MOKA-SF-EXIT-GUIDE-EVIDENCE', psr709: 'MOKA12-008', value: sellGuideEvidence(bars, asOfIndex) },
     ],
     openQuestions: POCKET_PIVOT_OPEN_QUESTIONS,
     dataNotAvailableToMachine: ['fundamentals / theme', 'chart-pattern judgment', 'intraday projected volume'],
@@ -88,6 +89,7 @@ export function buyableGapUpScreen(security, { asOfIndex = security.bars.length 
       { ruleId: 'MOKA-SF-BGU-GAP', psr709: 'MOKA12-004', value: { gap: r.gap, atr40: r.atr40, gapInAtr: r.gapInAtr, fullGap: r.fullGap } },
       { ruleId: r.status === 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW' ? 'MOKA-SF-BGU-MEGA' : r.status === 'GAP_AND_STANDARD_VOLUME' ? 'MOKA-SF-BGU-VOLUME' : 'MOKA-SF-BGU-VOLWINDOW', psr709: r.status === 'VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW' ? 'MOKA24-MEGA' : 'MOKA24-VOL', value: { volumeRatio: r.volumeRatio, volumeWindow: r.volumeWindow, volumeWindowStatus: r.volumeWindowStatus, status: r.status } },
       { ruleId: 'MOKA-SF-BGU-SELLGUIDE', psr709: 'MOKA12-007', value: { gapDayLow: b.low, note: 'risk reference; below it generally sell at least half (MOKASTOP-006, preference)' } },
+      { ruleId: 'MOKA-SF-EXIT-GUIDE-EVIDENCE', psr709: 'MOKA12-008', value: sellGuideEvidence(security.bars, asOfIndex) },
     ],
     openQuestions: BGU_OPEN_QUESTIONS,
     dataNotAvailableToMachine: ['intraday projected volume', 'market capitalisation PIT (megacap judgment)', 'fundamentals / theme'],
@@ -108,4 +110,38 @@ export function maViolationEvidence(bars, i, n) {
   const next = v + 1 <= i ? bars[v + 1].low < bars[v].low : null;
   let later = false; for (let k = v + 1; k <= i; k++) if (bars[k].low < bars[v].low) later = true;
   return { closeBelowMa: bars[v].date, nextDayUndercut: next, laterUndercut: v < i ? later : null, readings: ['2012 slide: next day', 'FAQ: later days'] };
+}
+
+/**
+ * MOKA-SF-EXIT-GUIDE-EVIDENCE (MOKA12-008 / MOKASTOP-001, PREFERENCE): which sell guide the printed rule would point to
+ * on bar i - the 10DMA if the stock has respected it for at least 7 weeks (35 sessions, 5 per week), otherwise the
+ * 50DMA. "Respected" = no confirmed 10DMA violation; the violation itself is SOURCE_AMBIGUOUS (MOKA-C2), so both
+ * readings are evaluated: NEXT_DAY (2012 slide) and LATER_DAYS (FAQ). Evidence only, never an exit.
+ */
+export function sellGuideEvidence(bars, i, P = MOKA_PARAMS) {
+  const below = (k) => { const m = smaAt(bars, k, 10); return m !== null && fin(bars[k].close) && bars[k].close < m; };
+  const lastViolation = (reading) => {
+    // scan backwards for the most recent confirmation day: a day k whose low undercuts the low of a close-below-MA day v
+    // (v = k - 1 for NEXT_DAY; any v < k for LATER_DAYS); only bars up to i are used
+    // NEXT_DAY: every close below the MA opens a one-day window. LATER_DAYS: every close below the MA since the last
+    // confirmation stays open until a later low undercuts it, so the reference is the highest such low (review R1-04:
+    // every NEXT_DAY violation is also a LATER_DAYS violation). A bar without a low neither confirms nor opens.
+    let ref = null, last = null;
+    for (let k = 10; k <= i; k++) {
+      const b = bars[k];
+      if (!fin(b.low)) { if (reading === 'NEXT_DAY') ref = null; continue; }
+      if (ref !== null && b.low < ref) { last = k; ref = null; }
+      if (reading === 'NEXT_DAY') ref = below(k) ? b.low : null;
+      else if (below(k)) ref = ref === null ? b.low : Math.max(ref, b.low);
+    }
+    return last;
+  };
+  const minSessions = P.respectWeeks * P.sessionsPerWeek;
+  const firstMa = bars.findIndex((_, k) => smaAt(bars, k, 10) !== null);
+  const readings = Object.fromEntries(['NEXT_DAY', 'LATER_DAYS'].map((r) => {
+    const v = lastViolation(r), since = v === null ? (firstMa >= 0 && firstMa <= i ? i - firstMa + 1 : 0) : i - v;
+    return [r, { lastViolationDate: v === null ? null : bars[v].date, respectedSessions: since, noViolationInHistory: v === null, proposedGuide: since >= minSessions ? '10DMA' : '50DMA' }];
+  }));
+  const ma = (n) => smaAt(bars, i, n);
+  return { asOf: bars[i].date, ma10: ma(10), ma50: ma(50), minRespectSessions: minSessions, readings, agree: readings.NEXT_DAY.proposedGuide === readings.LATER_DAYS.proposedGuide, note: 'evidence for the reviewer (preference MOKA12-008); the exit decision stays manual (MOKA-SF-EXIT-MA)' };
 }
