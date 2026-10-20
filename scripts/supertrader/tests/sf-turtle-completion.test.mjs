@@ -14,7 +14,7 @@ const run = (secs, opts = {}) => runTurtle(dataOf(secs), { system: 'S2', from: s
 const buys = (r, id) => r.ledger.filter((x) => x.side === 'BUY' && (!id || x.id === id));
 
 test('SF2-TUR-VERSION: the completed engine carries its own version and the printed limits 6 / 10', () => {
-  assert.equal(TURTLE_VERSION, 'sf-turtle-1.1.0');
+  assert.equal(TURTLE_VERSION, 'sf-turtle-1.2.0');
   assert.equal(PARAMS.maxUnitsClosely, 6);
   assert.equal(PARAMS.maxUnitsLoosely, 10);
 });
@@ -182,4 +182,38 @@ test('SF2-TUR-CORR-COVERAGE: securities without a group are counted and the run 
   const r = run(secs, { groupsOf: (id) => (id === 'C0' ? { closely: 'G', loosely: 'L' } : null) });
   assert.ok(r.counts.correlationGroupMissing >= 1);
   assert.equal(r.correlationLimits, 'ENFORCED_PARTIAL_GROUP_COVERAGE');
+});
+
+test('SF2-TUR-MODEL-ASSUMPTIONS: every assumption names the open question, why the source does not decide it, a reference and (where boundable) an alternative scenario', async () => {
+  const { MODEL_ASSUMPTIONS } = await import('../source-faithful/methods/turtle.mjs');
+  const { SCENARIO_SET } = await import('../source-faithful/runner/run-research.mjs');
+  assert.deepEqual(MODEL_ASSUMPTIONS.map((m) => m.id), ['MA-TUR-INTRABAR-ORDER', 'MA-TUR-HELD-BAR-ORDER', 'MA-TUR-S1-OPEN-BREAKOUT', 'MA-TUR-FAILSAFE-EXIT']);
+  for (const m of MODEL_ASSUMPTIONS) {
+    assert.ok(m.question && m.source && m.reference, m.id);
+    if (m.alternative) assert.ok(SCENARIO_SET.some((s) => s.id === m.alternative.scenario), m.id);
+  }
+});
+
+test('SF2-TUR-ENTRY-BAR-ORDER-READINGS: the optimistic reading takes no same-bar exit after an entry; the pessimistic one does (MA-TUR-INTRABAR-ORDER)', () => {
+  const rows = [...flat(60), [100, 106, 94, 100]]; // breakout high 106 and a low through the channel exit 94.99
+  const pes = run([{ id: 'A', bars: bars(rows) }], { system: 'S1' });
+  const opt = run([{ id: 'A', bars: bars(rows) }], { system: 'S1', entryBarOrder: 'OPTIMISTIC' });
+  assert.equal(pes.counts.sameBarEntryChannelExits, 1);
+  assert.equal(opt.counts.sameBarEntryChannelExits, 0);
+  assert.equal(opt.openAtEnd.length, 1);
+  assert.equal(opt.modelAssumptions.entryBarOrder, 'OPTIMISTIC');
+  assert.ok(opt.reconciliation.pass && pes.reconciliation.pass);
+  assert.throws(() => run([{ id: 'A', bars: bars(rows) }], { entryBarOrder: 'X' }), /UNKNOWN_ENTRY_BAR_ORDER/);
+});
+
+test('SF2-TUR-OPEN-BREAKOUT-READINGS: an open hypothetical breakout skips the next 20-day breakout only under the SKIP reading (MA-TUR-S1-OPEN-BREAKOUT)', async () => {
+  const { entryTrigger } = await import('../source-faithful/methods/turtle.mjs');
+  const b = bars([...flat(60), [100, 108, 104, 107]]);
+  // flat history: the 20- and the 55-day high coincide, so a skipped breakout is entered by the failsafe on the same bar
+  assert.equal(entryTrigger(b, 60, 'S1', 'OPEN').skipped, true);
+  assert.equal(entryTrigger(b, 60, 'S1', 'OPEN').path, 'FAILSAFE_55');
+  assert.equal(entryTrigger(b, 60, 'S1', 'OPEN', undefined, { openBreakout: 'TAKE' }).path, 'S1');
+  assert.equal(entryTrigger(b, 60, 'S1', 'WINNER', undefined, { openBreakout: 'TAKE' }).skipped, true); // a resolved winner skips under both
+  assert.equal(entryTrigger(b, 60, 'S2', 'OPEN').path, 'S2'); // System 2 has no filter
+  assert.throws(() => run([{ id: 'A', bars: b }], { system: 'S1', openBreakout: 'X' }), /UNKNOWN_OPEN_BREAKOUT/);
 });

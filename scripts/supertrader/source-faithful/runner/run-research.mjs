@@ -40,6 +40,9 @@ export const SCENARIO_SET = Object.freeze([
   { id: 'DATA_EVENT_MINUS_30', scenario: 'S0_LAST_PRICE', dataEventScenario: 'UNKNOWN_PROCEEDS_MINUS_30_PERCENT' },
   // second reading of the SOURCE_AMBIGUOUS failsafe exit (TUR-SF-FAILSAFE-EXIT): 20-day exit; affects System 1 only
   { id: 'FAILSAFE_EXIT_20D', scenario: 'S0_LAST_PRICE', failsafeExit: '20D' },
+  // model assumptions (methods/turtle.mjs MODEL_ASSUMPTIONS): the alternative reading of each, never chosen by result
+  { id: 'ENTRY_BAR_OPTIMISTIC', scenario: 'S0_LAST_PRICE', entryBarOrder: 'OPTIMISTIC' },
+  { id: 'S1_OPEN_BREAKOUT_TAKEN', scenario: 'S0_LAST_PRICE', openBreakout: 'TAKE' },
 ]);
 const SPLIT_PERIODS = [['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOW.to]];
 
@@ -135,13 +138,13 @@ export function runMethod(methodId, dataset, { snapshotId, datasetSha256, accoun
   const { contract, entry } = assertBacktestReady(methodId);
   const runs = {};
   for (const sc of SCENARIO_SET) {
-    const { run, trades } = RUNNABLE[methodId](dataset, { from, to, initialCapital, scenario: sc.scenario, dataEventScenario: sc.dataEventScenario, failsafeExit: sc.failsafeExit, slippageBps: sc.slippageBps ?? 10, commissionBps: sc.commissionBps ?? 1 });
+    const { run, trades } = RUNNABLE[methodId](dataset, { from, to, initialCapital, scenario: sc.scenario, dataEventScenario: sc.dataEventScenario, failsafeExit: sc.failsafeExit, entryBarOrder: sc.entryBarOrder, openBreakout: sc.openBreakout, slippageBps: sc.slippageBps ?? 10, commissionBps: sc.commissionBps ?? 1 });
     if (!run.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${methodId}:${sc.id}`);
     runs[sc.id] = {
       metrics: computeDiagnosticMetrics({ curve: run.curve, trades, ledger: run.ledger, costs: run.counts.costs, spyTR: dataset.spyTR, splitPeriods: SPLIT_PERIODS, initialCapital }),
       counts: run.counts, filterCounts: run.filterCounts ?? null, staleCounts: run.staleCounts, rejections: run.rejections.length,
       reconciliation: run.reconciliation, endingPositionCheck: run.endingPositionCheck, openAtEnd: run.openAtEnd.length,
-      correlationLimits: run.correlationLimits ?? null, liquidity: run.liquidity ?? null,
+      correlationLimits: run.correlationLimits ?? null, modelAssumptions: run.modelAssumptions ?? null, liquidity: run.liquidity ?? null,
       ledgerSha256: crypto.createHash('sha256').update(JSON.stringify(run.ledger)).digest('hex'),
     };
   }
@@ -163,7 +166,7 @@ export const executionCountsOf = (c = {}) => Object.fromEntries(PUBLIC_COUNTS.fi
 export function publicView(result) {
   if (result.schema === 'supertrader-sf-component-study-1.0.0') return { schema: 'supertrader-sf-research-public-1.1.0', method: result.method, certification: result.certification, label: result.label, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, tradesSha256: result.tradesSha256, signals: result.stats.signals, inputs: result.inputs };
   return { schema: 'supertrader-sf-research-public-1.1.0', method: result.method, certification: result.certification, receiptSha256: result.receipt.receiptSha256, snapshotId: result.receipt.snapshotId, codeSha256: result.receipt.codeSha256, contractFingerprint: result.receipt.contractFingerprint,
-    scenarios: Object.fromEntries(Object.entries(result.runs).map(([k, v]) => [k, { reconciliation: v.reconciliation.pass, endingPositionCheck: v.endingPositionCheck.status, ledgerSha256: v.ledgerSha256, trades: v.metrics.trades, executionCounts: executionCountsOf(v.counts), correlationLimits: v.correlationLimits ?? null, liquidity: v.liquidity ? { fills: v.liquidity.fills, participationOfBarVolumeP50: v.liquidity.participationOfBarVolume.p50, participationOfAdv20P50: v.liquidity.participationOfAdv20.p50 } : null }])), dataCoverage: result.dataCoverage, inputs: result.inputs };
+    scenarios: Object.fromEntries(Object.entries(result.runs).map(([k, v]) => [k, { reconciliation: v.reconciliation.pass, endingPositionCheck: v.endingPositionCheck.status, ledgerSha256: v.ledgerSha256, trades: v.metrics.trades, executionCounts: executionCountsOf(v.counts), correlationLimits: v.correlationLimits ?? null, modelAssumptions: v.modelAssumptions ?? null, liquidity: v.liquidity ? { fills: v.liquidity.fills, participationOfBarVolumeP50: v.liquidity.participationOfBarVolume.p50, participationOfAdv20P50: v.liquidity.participationOfAdv20.p50 } : null }])), dataCoverage: result.dataCoverage, inputs: result.inputs };
 }
 
 async function main() {

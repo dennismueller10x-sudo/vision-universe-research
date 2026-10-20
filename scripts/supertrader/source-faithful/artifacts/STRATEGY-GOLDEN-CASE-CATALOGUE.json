@@ -1014,6 +1014,19 @@
    "result": "SEE_TEST_RUN"
   },
   {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-OPEN-BREAKOUT-READINGS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-OPEN-BREAKOUT"
+   ],
+   "psr709": [
+    "TUR-S1SKIP"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
    "strategyIds": [
     "SF_TURTLE_S1",

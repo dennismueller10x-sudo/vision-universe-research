@@ -16,11 +16,11 @@
   "scripts/supertrader/tests/sf-moka-completion.test.mjs"
  ],
  "summary": {
-  "goldenCases": 114,
-  "pass": 114,
+  "goldenCases": 115,
+  "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 159,
+  "testsRun": 162,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1033,6 +1033,19 @@
    ],
    "psr709": [
     "TUR-FAILSAFE"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: SF2-TUR-OPEN-BREAKOUT-READINGS",
+   "strategyIds": [
+    "SF_TURTLE_S1"
+   ],
+   "rules": [
+    "TUR-SF-S1-OPEN-BREAKOUT"
+   ],
+   "psr709": [
+    "TUR-S1SKIP"
    ],
    "result": "PASS"
   },
@@ -2393,6 +2406,21 @@
   {
    "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
    "name": "SF2-TUR-CORR-COVERAGE: securities without a group are counted and the run is labelled partial, never ENFORCED (review R1-05)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-MODEL-ASSUMPTIONS: every assumption names the open question, why the source does not decide it, a reference and (where boundable) an alternative scenario",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-ENTRY-BAR-ORDER-READINGS: the optimistic reading takes no same-bar exit after an entry; the pessimistic one does (MA-TUR-INTRABAR-ORDER)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
+   "name": "SF2-TUR-OPEN-BREAKOUT-READINGS: an open hypothetical breakout skips the next 20-day breakout only under the SKIP reading (MA-TUR-S1-OPEN-BREAKOUT)",
    "result": "PASS"
   },
   {

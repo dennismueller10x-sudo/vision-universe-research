@@ -26,7 +26,19 @@ import * as AC from '../../validation/accounting-contract.mjs';
 import { SCENARIOS } from '../../validation/portfolio.mjs';
 import { trueRangeAt, priorHigh, priorLow, priorLowAvailable, priorHighAvailable, rawTickAdjusted, eligibleAtPriorSession, RESEARCH_UNIVERSE, fin } from '../common/series.mjs';
 
-export const TURTLE_VERSION = 'sf-turtle-1.1.0';
+export const TURTLE_VERSION = 'sf-turtle-1.2.0';
+
+/**
+ * Explicit model assumptions (owner review 2026-10-20): what the source does not decide and daily bars cannot show.
+ * None is a source rule; each has a reference reading and a bounding / alternative reading that every research run
+ * reports as its own scenario. No reading is chosen by performance.
+ */
+export const MODEL_ASSUMPTIONS = Object.freeze([
+  Object.freeze({ id: 'MA-TUR-INTRABAR-ORDER', kind: 'EXECUTION_ON_DAILY_BARS', question: 'On a bar that reaches an entry or add level AND a stop or exit level, which came first?', source: 'not decidable: the source trades intraday (TUR-INTRADAY, TUR-ADDFAST); daily OHLC bars do not record the order', reference: { option: 'entryBarOrder=PESSIMISTIC', meaning: 'the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)' }, alternative: { option: 'entryBarOrder=OPTIMISTIC', meaning: 'the low comes before the entry: no same-bar stop or channel exit after an entry or add', scenario: 'ENTRY_BAR_OPTIMISTIC' }, resolvableWith: 'intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)' }),
+  Object.freeze({ id: 'MA-TUR-HELD-BAR-ORDER', kind: 'EXECUTION_ON_DAILY_BARS', question: 'On a held bar with several levels in range, which is reached first?', source: 'not decidable on daily bars', reference: { option: 'fixed', meaning: 'the level nearer the open first (unit stops above the channel level before it); exits before adds; no add on a bar on which a unit was stopped' }, alternative: null, resolvableWith: 'intraday bars' }),
+  Object.freeze({ id: 'MA-TUR-S1-OPEN-BREAKOUT', kind: 'SOURCE_SILENT', question: 'Does a still unresolved (open) hypothetical last breakout make System 1 skip the next 20-day breakout?', source: 'TUR-S1SKIP defines a skip after a winning last breakout; the source does not say how an open one counts (#709 VU-TUR lists "open breakout assumed a winner" as a VU formalization)', reference: { option: 'openBreakout=SKIP', meaning: 'an open breakout counts as not losing: skip (the 55-day failsafe can still enter)' }, alternative: { option: 'openBreakout=TAKE', meaning: 'only a resolved winning breakout skips; an open one does not', scenario: 'S1_OPEN_BREAKOUT_TAKEN' }, resolvableWith: 'no further source in #709 / #712' }),
+  Object.freeze({ id: 'MA-TUR-FAILSAFE-EXIT', kind: 'SOURCE_SILENT', question: 'Which exit does a 55-day failsafe position use?', source: 'TUR-FAILSAFE states only the entry; #709 VU-TUR: "Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel"; #709 revalidation TUR-F-FAILSAFE-55: "Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt"; #712 spec V4 T4-FAILSAFE: "exit like S1 (interpretation)"', reference: { option: "failsafeExit='10D'", meaning: 'System 1 exit (10-day low); the reading of the earlier VU engines, an interpretation' }, alternative: { option: "failsafeExit='20D'", meaning: 'System 2 exit (20-day low), the exit of the system whose entry channel the failsafe uses; equally an interpretation', scenario: 'FAILSAFE_EXIT_20D' }, resolvableWith: 'no further source in #709 / #712' }),
+]);
 export const PARAMS = Object.freeze({
   S1: Object.freeze({ entry: 20, exit: 10, filter: true, failsafe: 55 }),   // TUR-S1ENT, TUR-S1EX, TUR-S1SKIP, TUR-FAILSAFE
   S2: Object.freeze({ entry: 55, exit: 20, filter: false, failsafe: null }), // TUR-S2ENT, TUR-S2EX, TUR-S2NOSKIP
@@ -102,7 +114,7 @@ export function createNotionalAccount(maxCuts = 60) {
  * losing (source silent; fewer entries).
  * A stop inside the hypothetical breakout bar is not resolved on that bar (counted).
  */
-export function createBreakoutTracker(bars, N, P = PARAMS) {
+export function createBreakoutTracker(bars, N, P = PARAMS, { entryBarOrder = 'PESSIMISTIC' } = {}) {
   let active = null, last = null;
   const counts = { WINNER: 0, LOSER: 0, NON_LOSER: 0, AMBIGUOUS_BOTH_DIRECTIONS: 0, ENTRY_BAR_RESOLVED_PESSIMISTIC: 0 };
   const done = (o, atOpen = false) => { last = o; counts[o]++; active = null; return { outcome: o, atOpen }; };
@@ -140,6 +152,7 @@ export function createBreakoutTracker(bars, N, P = PARAMS) {
       // the same pessimistic entry-bar convention as the real position (sf-turtle-1.1.0, review R2-02): a range through
       // the stop or the 10-day exit after the breakout resolves the hypothetical trade on this bar; the level nearer to
       // the entry is reached first (stop -> LOSER, exit without a 2N move -> NON_LOSER)
+      if (entryBarOrder === 'OPTIMISTIC') return dir; // MA-TUR-INTRABAR-ORDER alternative: the low came before the breakout
       if (dir > 0) {
         const l = priorLowAvailable(bars, i, P.filterExit), xl = l === null ? -Infinity : l - t;
         if (b.low <= Math.max(active.stop, xl)) { counts.ENTRY_BAR_RESOLVED_PESSIMISTIC++; done(active.stop >= xl ? 'LOSER' : 'NON_LOSER'); }
@@ -156,12 +169,13 @@ export function createBreakoutTracker(bars, N, P = PARAMS) {
  * TUR-SF-ENTRY / TUR-SF-FAILSAFE / TUR-SF-S1-FILTER: entry trigger of bar i given the filter outcome before bar i.
  * Returns { trigger, path } or null. Long side only (equity adaptation).
  */
-export function entryTrigger(bars, i, system, outcomeBefore, P = PARAMS) {
+export function entryTrigger(bars, i, system, outcomeBefore, P = PARAMS, { openBreakout = 'SKIP' } = {}) {
   const S = P[system], b = bars[i], t = rawTickAdjusted(b, P.rawTick);
   const hE = priorHigh(bars, i, S.entry);
   if (hE === null || !(b.high >= hE + t)) return null;
-  // TUR-S1SKIP skips only after a profitable last breakout; an open (unresolved) one counts as not losing (derivation)
-  if (S.filter && (outcomeBefore === 'WINNER' || outcomeBefore === 'OPEN')) {
+  // TUR-S1SKIP skips after a profitable last breakout; how an open (unresolved) one counts is not in the source:
+  // MA-TUR-S1-OPEN-BREAKOUT, reference SKIP, alternative TAKE (scenario S1_OPEN_BREAKOUT_TAKEN)
+  if (S.filter && (outcomeBefore === 'WINNER' || (outcomeBefore === 'OPEN' && openBreakout === 'SKIP'))) {
     const h55 = priorHigh(bars, i, S.failsafe);
     if (h55 !== null && b.high >= h55 + t) return { trigger: h55 + t, path: 'FAILSAFE_55', skipped: true };
     return { trigger: null, path: 'SKIPPED_BY_FILTER', skipped: true };
@@ -201,20 +215,24 @@ export function liquiditySummary(rows) {
  * Portfolio simulation of one system on a frozen dataset.
  * data: { calendar: [date], securities: [{ id, bars, terminal: { date, cause, distress, delistClass } | null }] }
  * opts: { system, initialCapital, from, to, scenario, dataEventScenario, slippageBps, commissionBps, universe, groupsOf,
- *         failsafeExit: '10D' (default) | '20D' (reading of the ambiguous failsafe exit) }
+ *         failsafeExit: '10D' (reference reading) | '20D' (alternative reading), entryBarOrder: 'PESSIMISTIC' | 'OPTIMISTIC',
+ *         openBreakout: 'SKIP' | 'TAKE' } - see MODEL_ASSUMPTIONS; every reading is an assumption, none a source rule
  */
-export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, to, scenario = 'S0_LAST_PRICE', dataEventScenario, slippageBps = 10, commissionBps = 1, universe = RESEARCH_UNIVERSE, groupsOf = null, failsafeExit = '10D', P = PARAMS } = {}) {
+export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, to, scenario = 'S0_LAST_PRICE', dataEventScenario, slippageBps = 10, commissionBps = 1, universe = RESEARCH_UNIVERSE, groupsOf = null, failsafeExit = '10D', entryBarOrder = 'PESSIMISTIC', openBreakout = 'SKIP', P = PARAMS } = {}) {
   const S = P[system]; if (!S) throw new Error('TURTLE_SYSTEM_REQUIRED');
   if (!['10D', '20D'].includes(failsafeExit)) throw new Error('UNKNOWN_FAILSAFE_EXIT');
-  // TUR-SF-FAILSAFE-EXIT is SOURCE_AMBIGUOUS: default = the System 1 10-day exit; the 20-day (System 2) exit is the
-  // second reading, run as the sensitivity scenario FAILSAFE_EXIT_20D (review R1-03)
+  if (!['PESSIMISTIC', 'OPTIMISTIC'].includes(entryBarOrder)) throw new Error('UNKNOWN_ENTRY_BAR_ORDER');
+  if (!['SKIP', 'TAKE'].includes(openBreakout)) throw new Error('UNKNOWN_OPEN_BREAKOUT');
+  const optimistic = entryBarOrder === 'OPTIMISTIC';
+  // TUR-SF-FAILSAFE-EXIT is SOURCE_AMBIGUOUS (MA-TUR-FAILSAFE-EXIT): reference reading 10-day (System 1) exit, alternative
+  // 20-day (System 2) exit as scenario FAILSAFE_EXIT_20D; neither is the source's (review R1-03, owner review)
   const exitSessionsOf = (path) => (path === 'FAILSAFE_55' && failsafeExit === '20D' ? 20 : S.exit);
   if (!SCENARIOS[scenario]) throw new Error('UNKNOWN_SCENARIO');
   const slip = slippageBps / 1e4, fee = commissionBps / 1e4, dataFactor = AC.dataEventFactor(dataEventScenario);
   const calendar = data.calendar.filter((d) => (!from || d >= from) && (!to || d <= to));
   const sec = data.securities.filter((s) => s.bars.length > S.entry + 1).map((s) => {
     const N = turtleN(s.bars, P.nPeriod), idx = new Map(s.bars.map((b, i) => [b.date, i]));
-    const tracker = S.filter ? createBreakoutTracker(s.bars, N, P) : null;
+    const tracker = S.filter ? createBreakoutTracker(s.bars, N, P, { entryBarOrder }) : null;
     // warm the filter on the history before the window (causal: only bars before `from`)
     if (tracker) for (let i = 1; i < s.bars.length && s.bars[i].date < (calendar[0] ?? ''); i++) { tracker.resolve(i); tracker.start(i); }
     return { s, N, idx, tracker };
@@ -332,7 +350,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       if (positions.has(pos.id) && b.low <= exitLevel) { settleAll(pos, Math.min(b.open, exitLevel) * (1 - slip), date, exitReason); counts.channelExits++; continue; }
       if (!positions.has(pos.id)) continue;
       if (stopped) { counts.noAddAfterStopSameBar++; continue; }
-      if (addUnits(x, pos, i, date, x.N[i - 1] ?? pos.entryN)) sameBarStops(pos, b, date, 'sameBarAddStops');
+      if (addUnits(x, pos, i, date, x.N[i - 1] ?? pos.entryN) && !optimistic) sameBarStops(pos, b, date, 'sameBarAddStops');
     }
     // 2) new entries: every security advances its filter; strongest first (TUR-RANK)
     const cands = [];
@@ -349,7 +367,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       }
       if (positions.has(x.s.id) || !fin(x.N[i - 1])) continue;
       if (!eligibleAtPriorSession(x.s.bars, i, universe)) continue;
-      const e = entryTrigger(x.s.bars, i, system, before, P);
+      const e = entryTrigger(x.s.bars, i, system, before, P, { openBreakout });
       if (!e) continue;
       if (e.skipped) counts.skippedByFilter++;
       if (e.trigger === null) continue;
@@ -371,8 +389,8 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       const exitN = exitSessionsOf(c.e.path), l = priorLowAvailable(c.x.s.bars, c.i, exitN), lvl = l === null ? -Infinity : l - rawTickAdjusted(b, P.rawTick);
       if (exitedToday.has(pos.id)) counts.reentrySameBarAsExit++;
       addUnits(c.x, pos, c.i, date, n);
-      sameBarStops(pos, b, date, 'sameBarEntryStops', lvl);
-      if (positions.has(pos.id) && b.low <= lvl) { settleAll(pos, lvl * (1 - slip), date, `EXIT_${exitN}D_SAME_BAR`); counts.sameBarEntryChannelExits++; }
+      if (!optimistic) sameBarStops(pos, b, date, 'sameBarEntryStops', lvl);
+      if (!optimistic && positions.has(pos.id) && b.low <= lvl) { settleAll(pos, lvl * (1 - slip), date, `EXIT_${exitN}D_SAME_BAR`); counts.sameBarEntryChannelExits++; }
     }
     // 3) terminals (research-v1, as validation/portfolio.mjs): only the end of an inactive listing is an economic
     // delisting, settled on its last bar by scenario. A data gap or window end is no delisting; a position without
@@ -401,7 +419,7 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
   return {
     version: TURTLE_VERSION, system, initialCapital, universe: universe.id, scenario, dataEventScenario: dataEventScenario ?? AC.POLICY.dataEventScenarios.baseline,
     curve, unitTrades, positionTrades, signals, counts, filterCounts, ledger, rejections, wholeUnitsNoDust: true, staleCounts: { ...stale.counts },
-    correlationLimits: !groupsOf ? 'NOT_EVALUATED_NO_PIT_GROUPS' : counts.correlationGroupMissing ? 'ENFORCED_PARTIAL_GROUP_COVERAGE' : 'ENFORCED_WITH_CALLER_GROUPS', failsafeExit, liquidity: liquiditySummary(fillLiquidity),
+    correlationLimits: !groupsOf ? 'NOT_EVALUATED_NO_PIT_GROUPS' : counts.correlationGroupMissing ? 'ENFORCED_PARTIAL_GROUP_COVERAGE' : 'ENFORCED_WITH_CALLER_GROUPS', failsafeExit, modelAssumptions: { entryBarOrder, openBreakout: S.filter ? openBreakout : 'N/A', failsafeExit: S.filter ? failsafeExit : 'N/A' }, liquidity: liquiditySummary(fillLiquidity),
     openAtEnd: [...positions.values()].map((p) => ({ id: p.id, units: p.units.length, value: p.units.reduce((a, u) => a + u.shares * (lastClose.get(p.id) ?? u.fill), 0) })),
     endingPositionCheck: AC.endingPositionCheck([...positions.keys()], stale),
     reconciliation: { ledgerCash: replay, cash, absoluteDifference: Math.abs(replay - cash), tolerance: tol, pass: Math.abs(replay - cash) <= tol },

@@ -45,7 +45,7 @@
     }
    ],
    "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "8e517f7c35c363155cf9f0e78ec1bbfb84f87eb54e88b387c51e5c3c1283c1a8",
+   "contractFingerprint": "73acd730935229e66974639aba2d7dc7adb127e3dac590d25273bdce79c23c25",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -83,7 +83,8 @@
     "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
     "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
-    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS)"
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)",
+    "failsafe exit not stated in the source (TUR-SF-FAILSAFE-EXIT, SOURCE_AMBIGUOUS, scenario FAILSAFE_EXIT_20D); open hypothetical breakout not covered by the source (TUR-SF-S1-OPEN-BREAKOUT, SOURCE_AMBIGUOUS, scenario S1_OPEN_BREAKOUT_TAKEN)"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",
    "contractValidation": {
@@ -112,7 +113,7 @@
     }
    ],
    "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "606fe1572b5ab360fee6ff7d78491953e40bb00625e656c1223b358690bae914",
+   "contractFingerprint": "dfd34206b370f21cf26c7fd36fc677ec5d758f6f3db381e7807ba61eee65ac26",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": {
     "EQUITY_ADAPTATION": "PARTIAL_DATA_BLOCKED",
@@ -149,7 +150,8 @@
     "correlation limits (6 / 10 units): engine mechanics implemented, not applied in research runs: no point-in-time groups (TUR-SF-LIMIT-CORR, DATA_BLOCKED binding)",
     "liquidity: no participation limit in the source (\"liquid markets\" = research universe protocol); every run reports fill participation of bar volume and of the 20-session mean as a diagnostic",
     "cash account: with 1 % / N units only a few units fit in cash; REJECT_NO_CASH is counted",
-    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)"
+    "daily bars: the order of intrabar events is a convention: on a held bar exits come before adds and a raised stop is re-checked pessimistically; on the entry bar the order is entry -> adds -> unit stops above the channel level -> channel exit, even if the low was traded at the open (pessimistic, counted)",
+    "model assumptions are reported, never decided by result: MA-TUR-INTRABAR-ORDER (scenario ENTRY_BAR_OPTIMISTIC), MA-TUR-HELD-BAR-ORDER (fixed convention, no bound)"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",
    "contractValidation": {
