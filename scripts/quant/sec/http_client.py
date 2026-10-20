@@ -324,6 +324,63 @@ class SECHttpClient:
                            last_error[1] if last_error else "download failed",
                            self.max_retries + 1)
 
+    def get_range(self, url, start, end=None, use_cache=True):
+        """Fetch a byte range of a URL (HTTP Range, inclusive bounds).
+
+        `start` < 0 means the last -start bytes (suffix range). Fuer einzelne
+        Dateien in den Quartals-ZIPs der SEC: `sub.txt` ist rund 0,5 MB eines
+        100-MB-Archivs. Antwortet der Server nicht mit 206, wird abgebrochen,
+        bevor der Rumpf gelesen wird - ein ignorierter Range-Header darf nie
+        still das ganze Archiv laden.
+
+        Returns (payload, total_size).
+        """
+        spec = f"bytes={start}" if start < 0 else f"bytes={start}-{'' if end is None else end}"
+        key = f"{url}#range={spec}"
+        if use_cache:
+            cached = self.cache.get(key)
+            if cached is not None:
+                self.stats["cache_hits"] += 1
+                total = int.from_bytes(cached[:8], "big")
+                return cached[8:], total
+        headers = dict(self._headers(), Range=spec)
+        headers.pop("Accept-Encoding", None)
+        last_status, last_message = None, ""
+        for attempt in range(self.max_retries + 1):
+            self.rate_limiter.acquire()
+            self.stats["requests"] += 1
+            try:
+                payload, total = self._range_opener(url, headers, self.timeout)
+                LOGGER.info("sec_range url=%s range=%s bytes=%d attempt=%d",
+                            url, spec, len(payload), attempt + 1)
+                break
+            except urllib.error.HTTPError as exc:
+                last_status, last_message = exc.code, str(exc.reason)
+                retryable = exc.code in RETRYABLE_STATUS
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                last_status, last_message = None, str(exc)
+                retryable = True
+            LOGGER.warning("sec_range url=%s status=%s attempt=%d error=%s",
+                           url, last_status, attempt + 1, last_message)
+            if not retryable or attempt == self.max_retries:
+                raise SECHTTPError(url, last_status, last_message, attempt + 1)
+            self.stats["retries"] += 1
+            self._sleep(self._backoff_seconds(attempt))
+        if use_cache:
+            self.cache.put(key, total.to_bytes(8, "big") + payload)
+        return payload, total
+
+    def _range_opener(self, url, headers, timeout):
+        if getattr(self, "range_opener", None):
+            return self.range_opener(url, headers, timeout)
+        request = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            if response.status != 206:
+                raise SECHTTPError(url, response.status, "range not honoured", 1)
+            content_range = response.headers.get("Content-Range") or ""
+            total = int(content_range.rsplit("/", 1)[-1]) if "/" in content_range else -1
+            return response.read(), total
+
     def get_json(self, url, use_cache=True):
         payload = self.get_bytes(url, use_cache=use_cache)
         try:
