@@ -81,6 +81,14 @@ test('GC-TUR-ADD-GAP-FILL / GC-TUR-UNIT-STOP-EXIT: a gapped add fills at the ope
   assert.equal(r.openAtEnd[0].units, 1);
 });
 
+test('GC-TUR-NO-READD-AFTER-UNIT-STOP: after a unit is stopped out no further adds; adds measured from the last actual fill (TUR-ADD; review SF-R1-01)', () => {
+  // as GC-TUR-UNIT-STOP-EXIT, then a recovery through 110 / 115 / 120 / 130
+  const rows = [...F(), [100, 108, 104, 107], [125, 126, 124, 125.5], [110, 111, 104.5, 106], [106, 121, 105.5, 120], [120, 131, 119, 130]];
+  const r = run([{ id: 'A', bars: bars(rows) }]);
+  assert.equal(buyFills(r, 'A').length, 2); // no re-adds below or above after the stop-out
+  assert.equal(r.openAtEnd[0].units, 1);
+});
+
 test('GC-TUR-ENTRY-S1 / GC-TUR-ENTRY-S2: one tick above the prior 20 / 55-day high, intraday (TUR-S1ENT, TUR-S2ENT, TUR-INTRADAY)', () => {
   const rows = F(); rows[30] = [100, 110, 95, 100]; // 55-day high 110 in the window, 20-day high 105
   const b = bars([...rows, [100, 106, 99, 105]]), i = b.length - 1;
@@ -231,4 +239,14 @@ test('SF-TUR-ACCOUNTING: the ledger replays the cash exactly; equity = start + c
 test('SF-TUR-SPLIT-TICK: one tick is one raw cent converted to the split-adjusted basis', () => {
   const b = bars([...flat(60, 50, 2.5), [50, 53, 50.1, 52.9]], { splitAdj: 2 });
   assert.ok(close(entryTrigger(b, b.length - 1, 'S2', null).trigger, 52.505, 1e-12));
+});
+
+test('SF-TUR-WARMUP-CAUSAL: without `from` the S1 filter warms only on bars before the first calendar date (review SF-R3-01)', () => {
+  const rows = [...F()];
+  for (let k = 0; k < 40; k++) rows.push([100 + (k % 7) * 3, 106 + (k % 7) * 3, 98 + (k % 5), 101 + (k % 7) * 3]);
+  const secs = [{ id: 'A', bars: bars(rows) }];
+  const a = runTurtle(dataOf(secs), { system: 'S1' });
+  const b = runTurtle(dataOf(secs), { system: 'S1', from: day(0) });
+  assert.deepEqual(a.ledger, b.ledger);
+  assert.deepEqual(a.counts, b.counts);
 });

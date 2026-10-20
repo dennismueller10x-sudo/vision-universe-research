@@ -22,6 +22,12 @@ export function securityFromSegment(seg) {
   return { id: seg.id, bars, terminal, survivor: seg.survivor === true, cls: seg.cls || null };
 }
 
+/** SPY daily bars (split-adjusted) from the snapshot, the consistent market index for RS / market evidence. */
+export function benchmarkFromPit(pit) {
+  const a = pit.spyAdj;
+  return a.date.map((date, i) => ({ date, open: a.open[i], high: a.high[i], low: a.low[i], close: a.close[i], volume: a.volume[i], splitAdj: 1 }));
+}
+
 export function datasetFromPit(pit) {
-  return { calendar: pit.calendar, securities: pit.segs.map(securityFromSegment), spyTR: pit.spyTR };
+  return { calendar: pit.calendar, securities: pit.segs.map(securityFromSegment), spyTR: pit.spyTR, benchmark: benchmarkFromPit(pit) };
 }

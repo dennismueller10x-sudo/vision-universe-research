@@ -12,7 +12,7 @@ const CODE = `${SF_ROOT}/methods/holy-grail.mjs`;
 const T = 'scripts/supertrader/tests/sf-holy-grail.test.mjs';
 
 export const HOLY_GRAIL = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 8 Holy Grail',
   strategyId: 'SF_RASCHKE_HOLY_GRAIL',
   candidateId: 'C13',
@@ -35,10 +35,10 @@ export const HOLY_GRAIL = defineContract({
   exclusions: {},
   rules: [
     { id: 'RAS-SF-ADX', kind: 'FILTER', gate: true, psr709: ['RAS04-002'], status: 'SOURCE_EXACT', rule: 'ADX(14) > 30 on the same timeframe before the pullback (Wilder ADX)', code: `${CODE}#adx`, tests: [`${T}: GC-RAS-ADX-WILDER`, `${T}: GC-RAS-ADX-BELOW-30`] },
-    { id: 'RAS-SF-PULLBACK', kind: 'SETUP', gate: true, gateExemption: 'SETUP_DEFINITION: the first pullback to the 20 EMA is the definition of the Holy Grail setup, not a filter applied to another method', psr709: ['RAS04-001'], status: 'SOURCE_DERIVED', rule: 'first pullback to the 20 EMA after the ADX condition', derivation: 'daily: the first bar whose low touches or crosses the 20 EMA after ADX(14) > 30 was reached and while ADX stayed > 30 on the prior bar; "first" = no earlier touch since ADX crossed above 30; impulse strength is reviewer evidence', code: `${CODE}#holyGrailScreen`, tests: [`${T}: GC-RAS-FIRST-PULLBACK`, `${T}: GC-RAS-SECOND-PULLBACK-NOT-FIRST`] },
+    { id: 'RAS-SF-PULLBACK', kind: 'SETUP', gate: true, gateExemption: 'SETUP_DEFINITION_C13', psr709: ['RAS04-001'], status: 'SOURCE_DERIVED', rule: 'pullback to the 20 EMA after the ADX condition (the C13 core "20EMA/ADX14>30")', derivation: 'daily: gate = a bar whose low touches or crosses the 20 EMA while ADX(14) > 30 and +DI > -DI on the prior bar. Whether it is the FIRST pullback since ADX rose above 30 and whether the impulse was strong are reported as evidence and review flags, not as rejections (review SF-R2-02)', code: `${CODE}#holyGrailScreen`, tests: [`${T}: GC-RAS-FIRST-PULLBACK`, `${T}: GC-RAS-SECOND-PULLBACK-NOT-FIRST`] },
     { id: 'RAS-SF-OSC', kind: 'INDICATOR', essential: false, psr709: ['RAS04-004'], status: 'SOURCE_EXACT', rule: '3/10 oscillator = SMA3 - SMA10 of the close; signal line = SMA16 of the oscillator', code: `${CODE}#oscillator310`, tests: [`${T}: GC-RAS-OSC-310`] },
     { id: 'RAS-SF-OSC-HIGH', kind: 'SETUP', essential: false, psr709: ['RAS04-005'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'best setups with new oscillator momentum highs; reported as evidence' },
-    { id: 'RAS-SF-TIMEFRAME', kind: 'SETUP', essential: false, psr709: ['RAS04-006'], status: 'SOURCE_DERIVED', rule: 'timeframes are separate; 5 / 15 / 30 / 60 / 120 minutes possible', derivation: 'only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED', code: `${CODE}#holyGrailScreen`, tests: [`${T}: GC-RAS-FIRST-PULLBACK`] },
+    { id: 'RAS-SF-TIMEFRAME', gate: false, kind: 'SETUP', essential: false, psr709: ['RAS04-006'], status: 'SOURCE_DERIVED', rule: 'timeframes are separate; 5 / 15 / 30 / 60 / 120 minutes possible', derivation: 'only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED', code: `${CODE}#holyGrailScreen`, tests: [`${T}: GC-RAS-FIRST-PULLBACK`] },
     { id: 'RAS-SF-ENTRY', kind: 'ENTRY', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'entry order after the pullback', reason: 'order sequence not fully disclosed (#709 C13)' },
     { id: 'RAS-SF-STOP', kind: 'STOP', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'initial stop', reason: 'stop not fully disclosed (#709 C13)' },
     { id: 'RAS-SF-EXIT', kind: 'EXIT', psr709: ['RAS04-003'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'a new high is an exit opportunity (preference)' },

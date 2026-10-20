@@ -29,7 +29,7 @@ const RISK_EXIT_EXCLUSIONS = {
 };
 
 export const MINERVINI_SEPA = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 6 Minervini',
   strategyId: 'SF_MINERVINI_SEPA_VCP',
   candidateId: 'C06',
@@ -73,7 +73,7 @@ export const MINERVINI_SEPA = defineContract({
     ...RISK_EXIT_EXCLUSIONS,
     'MIN-MM-REEN-01': 'reviewer', 'MIN-MM-REEN-02': 'reviewer', 'MIN-MM-PULL-01': EXCLUDE.optionalVariant, 'MIN-MM-PULL-02': 'reviewer', 'MIN-MM-ADD-02': EXCLUDE.optionalVariant, 'MIN-MM-ADD-03': 'reviewer',
     'MIN-CHEAT-01': EXCLUDE.optionalVariant + ' (cheat / 3C pivot)', 'MIN-CHEAT-02': 'cheat variant', 'MIN-CHEAT-03': 'cheat variant', 'MIN-CHEAT-04': 'cheat variant (uses the Trend Template MA200 rule)',
-    'MIN-MM-IPO-01': 'IPO scope: names with less than 200 + 21 sessions are reported as INSUFFICIENT_HISTORY_IPO_SCOPE, not rejected as failing',
+    'MIN-MM-IPO-01': 'IPO scope: trendTemplate reports INSUFFICIENT_HISTORY_IPO_SCOPE (not a failure); the SEPA screen does not emit these names - IPO candidates (about 3-4 weeks of history) are left to the reviewer, the long-history criteria are not applicable unchanged',
   },
   rules: [
     { id: 'MIN-SF-SIMPLE', kind: 'SETUP', essential: false, gate: false, psr709: ['MIN-PROCESS-15'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'prefer simple separate screens; too many AND criteria eliminate good candidates', derivation: 'honoured by design: the machine screen is the Trend Template alone; fundamentals, VCP and RS proxy are evidence, never additional AND gates', code: `${CODE}#sepaScreen`, tests: [`${T}: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE`] },
@@ -97,7 +97,7 @@ export const MINERVINI_SEPA = defineContract({
 });
 
 export const MINERVINI_POWER_PLAY = defineContract({
-  implemented: false,
+  implemented: true,
   plannedIn: 'PR 6 Minervini',
   strategyId: 'SF_MINERVINI_POWER_PLAY',
   candidateId: 'C07',
@@ -121,7 +121,7 @@ export const MINERVINI_POWER_PLAY = defineContract({
   rules: [
     { id: 'MIN-SF-PP-NOFUND', kind: 'SETUP', essential: false, gate: false, psr709: ['MIN-PP-01'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'a Power Play can be bought without already visible strong earnings and sales', derivation: 'honoured by design: the Power Play screen has no fundamental input', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-CANDIDATE`] },
     { id: 'MIN-SF-PP-DURATION', kind: 'SETUP', essential: false, gate: false, psr709: ['MIN-PP-03'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'consolidation usually 3-6 weeks; breakouts after twelve days are printed', derivation: 'no minimum consolidation length is enforced; the duration is reported as evidence', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-SHORT-CONSOLIDATION`] },
-    { id: 'MIN-SF-PP-RUNUP', kind: 'SETUP', gate: true, psr709: ['MIN-PP-02'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'at least +100 % in less than eight weeks', derivation: TRANSL + '; eight weeks = 40 sessions: some close / prior low ratio within fewer than 40 sessions >= 2.0 (lowest low to highest high of the run)', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-CANDIDATE`, `${T}: GC-MIN-PP-SLOW-RUN`] },
+    { id: 'MIN-SF-PP-RUNUP', kind: 'SETUP', gate: true, psr709: ['MIN-PP-02'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'at least +100 % in less than eight weeks', derivation: TRANSL + '; eight weeks = 40 sessions: peak high / lowest low of the leg >= 2.0 with fewer than 40 sessions between them; the most recent such peak that is the highest high of the leg is used', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-CANDIDATE`, `${T}: GC-MIN-PP-SLOW-RUN`] },
     { id: 'MIN-SF-PP-CORRECTION', kind: 'SETUP', gate: true, psr709: ['MIN-PP-04'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'the consolidation corrects no more than 20-25 %', derivation: TRANSL + '; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point)', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-DEEP-CORRECTION`, `${T}: GC-MIN-PP-CORRECTION-RANGE-FLAG`] },
     { id: 'MIN-SF-PP-TIGHT', kind: 'SETUP', gate: true, psr709: ['MIN-PP-05'], status: 'SOURCE_DERIVED', translationUnverified: true, rule: 'very tight price action of at most 10 % or VCP characteristics', derivation: TRANSL + '; machine: the whole consolidation (run-up high to the lowest low since) spans <= 10 % -> TIGHT; otherwise VCP_CHARACTERISTICS_REVIEW (the OR branch is a reviewer judgment); no extra window is introduced', code: `${CODE}#powerPlayScreen`, tests: [`${T}: GC-MIN-PP-CANDIDATE`, `${T}: GC-MIN-PP-WIDE-REVIEW`] },
     { id: 'MIN-SF-PP-ENTRY', kind: 'ENTRY', psr709: ['MIN-VCP-07'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'pivot entry decided by the reviewer' },

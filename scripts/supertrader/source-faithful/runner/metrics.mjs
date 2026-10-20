@@ -24,7 +24,9 @@ const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
 const sd = (a) => { if (a.length < 2) return null; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); };
 const median = (a) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
-export function computeDiagnosticMetrics({ curve, trades, ledger, costs, spyTR = null, riskFreeRate = 0.02, splitPeriods = [] }) {
+export function computeDiagnosticMetrics({ curve: rawCurve, trades, ledger, costs, spyTR = null, riskFreeRate = 0.02, splitPeriods = [], initialCapital = null }) {
+  // start from the initial capital so that first-day costs and moves are included (review SF-R3-06)
+  const curve = initialCapital > 0 && rawCurve.length ? [{ date: rawCurve[0].date, equity: initialCapital, exposure: 0 }, ...rawCurve] : rawCurve;
   const r = dailyReturns(curve), rf = (1 + riskFreeRate) ** (1 / Y) - 1, ex = r.map((x) => x - rf);
   const vol = sd(r), down = r.filter((x) => x < rf).map((x) => (x - rf) ** 2);
   const downDev = down.length ? Math.sqrt(down.reduce((a, b) => a + b, 0) / r.length) : null;
@@ -51,6 +53,7 @@ export function computeDiagnosticMetrics({ curve, trades, ledger, costs, spyTR =
     trades: trades.length,
     winRate: trades.length ? wins.length / trades.length : null,
     profitFactor: losses.length ? wins.reduce((a, t) => a + t.pnl, 0) / -losses.reduce((a, t) => a + t.pnl, 0) : null,
+    profitFactorUndefined: losses.length ? null : trades.length ? 'NO_LOSING_TRADES' : 'NO_TRADES',
     exposure: mean(curve.map((p) => p.exposure ?? 0)),
     turnover: years && meanEq ? traded / meanEq / years : null,
     medianHoldingSessions: median(trades.map((t) => t.heldSessions).filter(Number.isFinite)),
