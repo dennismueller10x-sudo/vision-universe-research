@@ -42,6 +42,68 @@ Ergebnis heute:
 
 Das Turtle-Acceptance-Gate ist mit allen sieben Prüfungen bestanden, darunter die Abstimmung eines Snapshot-Laufs des aktuellen Codes (siehe [Snapshot-Lauf](#snapshot-lauf-der-neuen-engines)).
 
+## Owner-Klärungen vom 20.10.2026
+
+Drei Punkte wurden vor der Merge-Entscheidung gezielt geprüft. Ergebnis: Was belegt ist, ist als Quellenregel umgesetzt. Was nicht belegt ist, ist eine **Modellannahme** mit Referenz- und Gegenlesart; jede Gegenlesart läuft als eigenes Szenario (`methods/turtle.mjs` `MODEL_ASSUMPTIONS`, Prüfung AG-5 des Gates). Keine Lesart wurde nach Ergebnis gewählt.
+
+### Turtle-Failsafe
+
+**Belegt (Originalregel, TUR-FAILSAFE, HARD/HIGH):** Wird ein System-1-Ausbruch wegen eines Gewinner-Vorgängers übersprungen, wird am 55-Tage-Ausbruch eingestiegen. Das ist als `TUR-SF-FAILSAFE` umgesetzt.
+
+**Nicht belegt: der Exit der Failsafe-Position.** Alle geprüften Artefakte sagen das ausdrücklich:
+
+| Artefakt | Aussage |
+|---|---|
+| #709 VU-Gap-Matrix (VU-TUR) | „Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel“ |
+| #709 Revalidation TUR-F-FAILSAFE-55 | „Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt“ |
+| #709 High-Confidence-Reproducible | „failsafe-exit interpretation“ als verbleibende Grenze |
+| #712 Spec V4, T4-FAILSAFE | „exit like S1 (interpretation)“ |
+| #712 R15-Regeln | `interpretationNeeded`: „ja (Ausstieg des Failsafe-Trades)“ |
+
+Umsetzung: `TUR-SF-FAILSAFE-EXIT` bleibt `SOURCE_AMBIGUOUS`, nie `SOURCE_EXACT`.
+- Beide Lesarten sind getrennt dokumentiert und gemessen:
+  - 10-Tage-Exit: Referenzlesart der bisherigen VU-Engines, eine Auslegung.
+  - 20-Tage-Exit: Szenario `FAILSAFE_EXIT_20D`, ebenfalls eine Auslegung.
+- Die frühere Bezeichnung „Standard“ ist durch „Referenzlesart“ ersetzt.
+
+**Bei der Prüfung zusätzlich gefunden.** Der hohe Failsafe-Anteil (710 von 825 S1-Einstiegen) hängt an einer zweiten unbelegten Lesart: Ein noch **offener** hypothetischer Ausbruch zählt im S1-Filter als „nicht verloren“ und überspringt.
+- Diese Lesart war bisher in die Ableitung von `TUR-SF-S1-FILTER` eingebettet.
+- #709 führt sie als VU-Formalisierung, nicht als Quellenregel („Hypothetischer noch offener Breakout als Gewinner angenommen“).
+- Sie ist jetzt eine eigene Regel `TUR-SF-S1-OPEN-BREAKOUT` (`SOURCE_AMBIGUOUS`) mit beiden Lesarten:
+  - `SKIP`: Referenzlesart;
+  - `TAKE`: Szenario `S1_OPEN_BREAKOUT_TAKEN`.
+
+### Ereignisreihenfolge am Einstiegsbalken
+
+**Belegt:**
+- Einstieg intraday beim Ausbruch, bei Gap zur Eröffnung (TUR-INTRADAY, TUR-GAP).
+- Stop je Unit 2N unter dem eigenen Fill (TUR-STOP).
+- Mehrere Adds am selben Tag möglich (TUR-ADDFAST).
+
+**Nicht belegt und auf Tagesbalken nicht feststellbar:** ob das Tief eines Balkens vor oder nach Einstieg und Adds lag. Weder Quelle noch Daten entscheiden das. Die in 1.1.0 eingeführte Reihenfolge (Einstieg → Adds → Stops → Kanal) ist deshalb keine Tatsache, sondern die Modellannahme `MA-TUR-INTRABAR-ORDER`:
+
+| Lesart | Annahme | Wirkung |
+|---|---|---|
+| Referenz `PESSIMISTIC` | Tief nach Einstieg und Adds | gleiche-Balken-Stops und -Exits werden genommen |
+| Gegenlesart `OPTIMISTIC` (Szenario `ENTRY_BAR_OPTIMISTIC`) | Tief vor dem Einstieg | kein gleicher-Balken-Exit |
+
+- Gilt für Engine und S1-Filter gleichermaßen.
+- Die Spanne zwischen beiden Lesarten ist die Unsicherheit aus der fehlenden Intraday-Reihenfolge.
+- Die übrigen Tagesbalken-Konventionen gehaltener Positionen (näheres Niveau zuerst, Exits vor Adds) sind als `MA-TUR-HELD-BAR-ORDER` deklariert. Sie haben keine Gegenvariante: Es ist keine Richtung des Fehlers, sondern eine neutrale Reihenfolge.
+- Auflösbar wäre die Frage nur mit Intraday-Daten der Triggertage. IEX-Minuten ab 2017 liegen privat für die r9-Studie vor, sind aber nicht im Snapshot eingefroren.
+
+### Historische Branchengruppen (PIT-SIC)
+
+Siehe [Datenvertrag](SUPERTRADER_2_PIT_INDUSTRY_GROUPS_CONTRACT.md). Kurz:
+- **Verfügbar:** Die historische SIC ist rechtmäßig, öffentlich und kostenlos verfügbar, über Filing-Header je Filing und über die SEC Financial Statement Data Sets (`sub.txt`, ab 2009q2, mit Acceptance-Zeitpunkt). Beispiel: Amazon 1998 SIC 2731, heute 5961.
+- **Nur aktuell:** Die Submissions-API liefert nur die aktuelle SIC.
+- **Nicht umgesetzt:** keine Pipeline, keine Zuordnung von SIC-Ebenen zu „eng“/„lose korreliert“. Beides sind offene Owner-Entscheidungen.
+- `TUR-SF-LIMIT-CORR` bleibt `DATA_BLOCKED`.
+
+<!-- owner-run -->
+Snapshot-Lauf von `sf-turtle-1.2.0` ausstehend.
+<!-- /owner-run -->
+
 ## Antworten an den Owner
 
 ### 1. Welche der 13 Methoden sind jetzt mechanisch vollständig?
@@ -108,8 +170,8 @@ Daten, die Methoden nur teilweise einschränken:
 | Regel | Umsetzung |
 |---|---|
 | TUR-LIMIT6 / TUR-LIMIT10 | Engine-Mechanik mit PIT-Gruppenanbieter `groupsOf(securityId, priorDate)`. Abdeckung wird gezählt (`ENFORCED_PARTIAL_GROUP_COVERAGE`). Datenbindung `DATA_BLOCKED`. |
-| TUR-FAILSAFE (Exit) | Beide Lesarten der quellenoffenen Regel: 10-Tage-Exit (Standard) und 20-Tage-Exit als Szenario `FAILSAFE_EXIT_20D` |
-| TUR-S1EX/S2EX am Einstiegsbalken | Kanal-Exit als ruhender Stop, Reihenfolge Einstieg → Adds → Unit-Stops → Kanal. Der S1-Filter nutzt dieselbe Konvention. |
+| TUR-FAILSAFE (Exit) | Keine Quellenregel: Beide Auslegungen werden getrennt gemessen, 10-Tage-Exit (Referenzlesart) und 20-Tage-Exit (Szenario `FAILSAFE_EXIT_20D`). Siehe Owner-Klärungen. |
+| TUR-S1EX/S2EX am Einstiegsbalken | Kanal-Exit als ruhender Stop. Die Reihenfolge am Balken ist eine Modellannahme (`MA-TUR-INTRABAR-ORDER`): Referenz pessimistisch (Einstieg → Adds → Stops → Kanal), Gegenlesart optimistisch (Szenario `ENTRY_BAR_OPTIMISTIC`). Der S1-Filter folgt derselben Lesart. |
 | DAR-Q12 | Review-Daten: Allzeithoch, Hoch/Tief über 2 und 3 Jahre, Wochenspanne und Volumen über 4–6 Monate. Nur Evidenz. |
 | DAR-Q6 | Stop-Anhebung auch dann, wenn die Box an einem übersprungenen Balken bestätigt wurde |
 | MOKA12-008 / MOKASTOP-001 | Sell-Guide-Evidenz (10DMA nach ≥ 7 Wochen Respekt, sonst 50DMA) unter beiden Lesarten der MA-Verletzung (MOKA-C2). Nie ein automatischer Exit. Ersetzt den bisherigen `NOT_IMPLEMENTED`-Platzhalter. |
@@ -251,7 +313,7 @@ Die vier HIGH-Befunde:
 | Darvas (Komponentenstudie) | 1.0.0 → 1.1.0 | beide | `2fd60c59…` → `f6c0386d…` | 22.577 Signale | | | | | |
 
 Die Unterschiede zwischen 1.0.0 und 1.1.0 haben benannte Ursachen und sind keine Optimierung:
-- **Reihenfolge am Einstiegsbalken:** Einstieg → Adds → Stops (SF2-R2-01).
+- **Reihenfolge am Einstiegsbalken:** Einstieg → Adds → Stops (SF2-R2-01). Das ist eine Modellannahme, keine Tatsache; siehe Owner-Klärungen.
   - Adds fallen jetzt auch dann an, wenn derselbe Balken danach den Stop erreicht. Das bindet Cash und verschiebt den weiteren Pfad.
   - Zählwerte im Basisszenario: S1 `sameBarEntryStops` 124, `sameBarAddStops` 64; S2 114 und 40.
 - **Kanal-Exit am Einstiegsbalken:** sehr selten. S1 hat 1 Fall im Basisszenario, S2 keinen.
