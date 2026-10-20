@@ -1621,6 +1621,10 @@ def cmd_sic_history(args):
                     first_known[cik] = rec["observations"][0][0] if rec["observations"] else None
         targets = sh.plan_gap_headers(client, gaps, first_known, budget)
         Path(args.targets).write_text(json.dumps(targets) + "\n")
+        manifest.setdefault("requestLog", []).append({"action": args.action, "at": observed_at,
+                                                      "requests": budget.used(), "budget": args.max_requests,
+                                                      "userAgent": client.user_agent, "targets": len(targets)})
+        sh.save_manifest(manifest_path, manifest)
         print(f"  {len(targets)} Header-Ziele fuer {len(gaps)} CIKs; Requests {budget.used()} / {args.max_requests}")
         return 0
 

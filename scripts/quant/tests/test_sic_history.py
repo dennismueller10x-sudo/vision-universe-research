@@ -217,6 +217,16 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(built["crosscheck"]["compared"], 1)
         self.assertEqual(built["quarantine"][0]["reason"], "FSDS_HEADER_SIC_MISMATCH")
 
+    def test_crosscheck_counts_an_accession_once_even_if_two_quarters_list_it(self):
+        fs = sub_txt(("0001018724-26-000004", 1018724, "5961", "10-K", "20260206", "2026-02-05 18:45:00.0"))
+        m = manifest_with(self.store, [
+            ("fsds", "2026q1", fs, {}), ("fsds", "2026q2", fs, {}),
+            ("header", "0001018724_0001018724-26-000004", AMZN_2026, {"cik": "0001018724", "accession": "0001018724-26-000004"}),
+        ])
+        built = sh.build_history(m, self.store)
+        self.assertEqual((built["crosscheck"]["compared"], built["crosscheck"]["agree"]), (1, 1))
+        self.assertEqual(len(built["issuers"]["0001018724"]["observations"]), 1)
+
     def test_suspect_window_drops_unconfirmed_change_keeps_consistent(self):
         before = sub_txt(("0000000007-13-000001", 7, "2080", "10-Q", "20130510", "2013-05-10 09:00:00.0"))
         suspect = sub_txt(("0000000007-13-000002", 7, "3430", "10-Q", "20131108", "2013-11-08 09:00:00.0"),

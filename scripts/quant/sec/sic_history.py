@@ -399,7 +399,6 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
     gleiche Rohdaten -> byte-identisches Ergebnis.
     """
     by_cik, quarantine = {}, []
-    header_obs = {}
     for entry in sorted(manifest["sources"], key=lambda e: (e["kind"], e["key"])):
         raw = verify_and_load(store, entry)
         if entry["kind"] == "fsds":
@@ -410,8 +409,6 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
             obs = [ob] if ob else []
             if bad:
                 quarantine.append(bad)
-            for o in obs:
-                header_obs[(o["cik"], o["accession"])] = o
         for o in obs:
             if cik_filter is not None and o["cik"] not in cik_filter:
                 continue
@@ -432,6 +429,8 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
             if {prior["source"], o["source"]} == {SOURCE_FSDS, SOURCE_HEADER}:
                 fs = prior if prior["source"] == SOURCE_FSDS else o
                 hd = o if fs is prior else prior
+                if prior.get("crosschecked"):
+                    continue  # dieselbe Accession aus einem zweiten FSDS-Quartal: schon verglichen
                 crosscheck["compared"] += 1
                 if fs["sic"] == hd["sic"]:
                     crosscheck["agree"] += 1
@@ -442,7 +441,7 @@ def build_history(manifest, store, sic_codes=None, cik_filter=None):
                                        "quarter": fs["sourceRef"], "reason": "FSDS_HEADER_SIC_MISMATCH",
                                        "fsds": fs["sic"], "header": hd["sic"], "resolution": "HEADER_USED"})
                 # Der Header ist die Primaerquelle (sekundengenau, zum Einreichungszeitpunkt archiviert).
-                merged[o["accession"]] = hd
+                merged[o["accession"]] = dict(hd, crosschecked=True)
             # dieselbe Accession aus zwei FSDS-Quartalen: die erste (nach Quartal) bleibt
         kept, last_trusted = [], None
         for o in sorted(merged.values(), key=_obs_sort_key):
