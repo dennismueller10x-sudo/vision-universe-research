@@ -16,8 +16,8 @@
   ];
   /* Produkt-Dock: die schwebende Leiste am unteren Rand jedes Produkts.
      Regel fuer alle Produkte: [PRODUKT] [Funktion] [Funktion] [Funktion] [☰].
-     Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start"); seine Spalte ist etwas breiter (1,3fr),
-     damit lange Namen wie "Fundamental" oder "Supertrader" auch bei 320 px nicht abgeschnitten werden.
+     Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start"); die Spalten sind gleich breit, aber nie
+     schmaler als ihre Beschriftung (minmax(min-content,1fr)), damit lange Namen wie "Fundamental" nicht abgeschnitten werden.
      und fuehrt zur Startseite des Produkts; ☰ oeffnet das GLOBALE Menue
      dieser Komponente. Ziele sind die bestehenden Routen der Produkte.
      active(loc) liefert die id des aktiven Eintrags oder null; dann zeigt
@@ -168,7 +168,7 @@
   const dockStyles = `
         :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:grid;grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr));gap:2px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:#0d0f12;color:#f4f5f1;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 16px 36px -14px rgba(0,0,0,.55)}
+        nav{pointer-events:auto;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:2px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:#0d0f12;color:#f4f5f1;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 16px 36px -14px rgba(0,0,0,.55)}
         a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:54px;padding:7px 2px 6px;border:0;border-radius:20px;background:transparent;color:rgba(244,245,241,.66);font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.15;letter-spacing:.01em;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .15s}
         a:hover,button:hover{color:#fff;background:rgba(255,255,255,.07)}
         a:active,button:active{transform:scale(.96)}

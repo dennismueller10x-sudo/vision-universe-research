@@ -92,7 +92,7 @@ test('active dock state follows deep links after reload', () => {
 
 test('the dock respects safe areas, keeps touch targets and sits below overlays and the menu', () => {
   assert.match(dockStyles, /env\(safe-area-inset-bottom\)/);
-  assert.match(dockStyles, /grid-template-columns:minmax\(0,1\.3fr\) repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(dockStyles, /grid-template-columns:repeat\(5,minmax\(min-content,1fr\)\)/);
   assert.match(dockStyles, /min-height:54px/);
   assert.match(dockStyles, /z-index:900/);
   assert.match(dockStyles, /:focus-visible/);
