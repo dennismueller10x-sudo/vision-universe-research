@@ -16,3 +16,4 @@ step('build-artifacts.mjs');
 for (let k = 0; k < 2; k++) { step('completion/build-completion.mjs'); step('completion/build-completion-docs.mjs'); step('build-docs.mjs'); step('record-golden-results.mjs'); }
 step('completion/build-completion.mjs'); step('completion/build-completion-docs.mjs'); step('build-docs.mjs');
 process.exitCode = step('record-golden-results.mjs');
+step('completion/build-readiness-sf3.mjs'); // Supertrader 3.0: six readiness dimensions (reads the completion status)

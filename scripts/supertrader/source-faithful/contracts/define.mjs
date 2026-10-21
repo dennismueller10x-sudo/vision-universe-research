@@ -30,6 +30,12 @@ export function defineContract(spec) {
   };
 }
 
+/**
+ * Supertrader 3.0 research evidence attached to a rule (research/*.mjs). It never changes the rule status: a proxy or
+ * evidence component is not the source rule, and a DATA_BLOCKED / MANUAL rule stays so (docs/SUPERTRADER_3_*.md).
+ */
+export const sf3Evidence = (file, fn, tests, note) => Object.freeze({ code: `${SF_ROOT}/research/${file}#${fn}`, tests: Object.freeze(tests.map(([f, id]) => `scripts/supertrader/tests/${f}.test.mjs: ${id}`)), note });
+
 /** Shared rule fragments (one definition, referenced by several contracts). */
 export const EXCLUDE = Object.freeze({
   futuresOnly: 'futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)',

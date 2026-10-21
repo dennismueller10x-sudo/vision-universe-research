@@ -1,0 +1,832 @@
+{
+ "schema": "supertrader-sf3-strategy-readiness-1.0.0",
+ "derivedFrom": [
+  "STRATEGY-COMPLETION-STATUS.json",
+  "contracts/*.mjs (researchEvidence)"
+ ],
+ "principles": [
+  "a mechanically complete screening component is not a tradable strategy",
+  "a historical model assumption is not a source rule",
+  "a diagnostic performance is not a certified performance",
+  "a proxy (SIC group, universe breadth, VU RS percentile) never unblocks a DATA_BLOCKED rule"
+ ],
+ "measurementClasses": [
+  "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+  "MECHANICAL_COMPONENT_STUDY",
+  "SCREEN_STATISTICS",
+  "NOT_MEASURABLE"
+ ],
+ "candidates": [
+  {
+   "candidateId": "C01",
+   "strategyId": "SF_TURTLE_S1",
+   "sourceContractVersion": "1.2.0",
+   "sourceFidelity": {
+    "exact": 7,
+    "derived": 13,
+    "manual": 0,
+    "dataBlocked": 2,
+    "sourceAmbiguous": 2,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "TUR-SF-S1-OPEN-BREAKOUT",
+     "TUR-SF-FAILSAFE-EXIT"
+    ],
+    "modelAssumptions": [
+     "MA-TUR-INTRABAR-ORDER",
+     "MA-TUR-HELD-BAR-ORDER",
+     "MA-TUR-S1-OPEN-BREAKOUT",
+     "MA-TUR-FAILSAFE-EXIT"
+    ]
+   },
+   "mechanicalCompleteness": {
+    "engine": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION",
+    "acceptanceGate": {
+     "pass": true,
+     "dataExceptions": [
+      "TUR-SF-LIMIT-CORR"
+     ],
+     "failed": []
+    },
+    "researchComponents": [
+     "TUR-SF-LIMIT-CORR <- turtle-correlation.mjs#createCorrelationGroupProvider"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "TUR-SF-LIMIT-CORR"
+    ],
+    "proxiesAvailableNotUnblocking": [
+     "TUR-SF-LIMIT-CORR: equity model assumption, never SOURCE_EXACT"
+    ]
+   },
+   "backtestReadiness": {
+    "registry": "DIAGNOSTIC_READY",
+    "measurement": {
+     "class": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+     "note": "diagnostic run WITH DATA EXCEPTION (TUR-SF-LIMIT-CORR not enforced in reference runs)"
+    },
+    "sf3RunnerParts": [
+     "turtle"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [],
+    "required": false
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C02",
+   "strategyId": "SF_TURTLE_S2",
+   "sourceContractVersion": "1.2.0",
+   "sourceFidelity": {
+    "exact": 7,
+    "derived": 12,
+    "manual": 0,
+    "dataBlocked": 2,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [],
+    "modelAssumptions": [
+     "MA-TUR-INTRABAR-ORDER",
+     "MA-TUR-HELD-BAR-ORDER"
+    ]
+   },
+   "mechanicalCompleteness": {
+    "engine": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION",
+    "acceptanceGate": {
+     "pass": true,
+     "dataExceptions": [
+      "TUR-SF-LIMIT-CORR"
+     ],
+     "failed": []
+    },
+    "researchComponents": [
+     "TUR-SF-LIMIT-CORR <- turtle-correlation.mjs#createCorrelationGroupProvider"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "TUR-SF-LIMIT-CORR"
+    ],
+    "proxiesAvailableNotUnblocking": [
+     "TUR-SF-LIMIT-CORR: equity model assumption, never SOURCE_EXACT"
+    ]
+   },
+   "backtestReadiness": {
+    "registry": "DIAGNOSTIC_READY",
+    "measurement": {
+     "class": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+     "note": "diagnostic run WITH DATA EXCEPTION (TUR-SF-LIMIT-CORR not enforced in reference runs)"
+    },
+    "sf3RunnerParts": [
+     "turtle"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [],
+    "required": false
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C03",
+   "strategyId": "SF_DARVAS_BOX",
+   "sourceContractVersion": "1.2.0",
+   "sourceFidelity": {
+    "exact": 3,
+    "derived": 10,
+    "manual": 6,
+    "dataBlocked": 0,
+    "sourceAmbiguous": 1,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "DAR-SF-BOTTOM-START"
+    ],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "DAR-SF-SELECTION <- context-evidence.mjs#withContextEvidence",
+     "DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "COMPONENT_SIGNAL_STUDY_ONLY",
+    "measurement": {
+     "class": "MECHANICAL_COMPONENT_STUDY",
+     "note": "mechanical signals with their mechanical exit, equal weight, no selection or sizing; not a method return"
+    },
+    "sf3RunnerParts": [
+     "context"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "DAR-SF-SELECTION",
+     "DAR-SF-VOLUME",
+     "DAR-SF-MARKET",
+     "DAR-SF-SIZING",
+     "DAR-MR-SELECTION",
+     "DAR-MR-VOLUME",
+     "DAR-MR-MARKET",
+     "DAR-MR-SIZING"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C04",
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 1,
+    "derived": 5,
+    "manual": 9,
+    "dataBlocked": 2,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence",
+     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "WEIN-SF-GROUP",
+     "WEIN-SF-MARKET"
+    ],
+    "proxiesAvailableNotUnblocking": [
+     "WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART",
+     "WEIN-SF-MARKET: proxy, not NYSE breadth"
+    ]
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "weinstein"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "WEIN-SF-STAGE",
+     "WEIN-SF-VOLUME",
+     "WEIN-SF-RS",
+     "WEIN-SF-OVERHEAD",
+     "WEIN-SF-INV-TRAIL",
+     "WEIN-SF-INV-STOP",
+     "WEIN-SF-INV-SIZE",
+     "WEIN-SF-NO-AVG-DOWN",
+     "WEIN-MR-STAGE",
+     "WEIN-MR-VOLUME",
+     "WEIN-MR-RS",
+     "WEIN-MR-OVERHEAD",
+     "WEIN-MR-GROUP",
+     "WEIN-MR-STOP"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C05",
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 1,
+    "derived": 5,
+    "manual": 8,
+    "dataBlocked": 2,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence",
+     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "WEIN-SF-GROUP",
+     "WEIN-SF-MARKET"
+    ],
+    "proxiesAvailableNotUnblocking": [
+     "WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART",
+     "WEIN-SF-MARKET: proxy, not NYSE breadth"
+    ]
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "weinstein"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "WEIN-SF-STAGE",
+     "WEIN-SF-VOLUME",
+     "WEIN-SF-RS",
+     "WEIN-SF-OVERHEAD",
+     "WEIN-SF-TR-TRAIL",
+     "WEIN-SF-TR-STOP",
+     "WEIN-SF-TR-SIZE",
+     "WEIN-SF-NO-AVG-DOWN",
+     "WEIN-MR-STAGE",
+     "WEIN-MR-VOLUME",
+     "WEIN-MR-GROUP",
+     "WEIN-MR-STOP"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C06",
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 0,
+    "derived": 9,
+    "manual": 7,
+    "dataBlocked": 1,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": true,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "MIN-SF-TT-8 <- minervini-components.mjs#createRsPercentileProxy",
+     "MIN-SF-FUNDAMENTALS <- minervini-components.mjs#fundamentalEvidence",
+     "MIN-SF-VCP <- minervini-components.mjs#vcpContractions",
+     "MIN-SF-PIVOT <- minervini-components.mjs#pivotBreakout",
+     "MIN-SF-STOP <- minervini-components.mjs#sellEvidence",
+     "MIN-SF-SIZE <- minervini-components.mjs#positionSize",
+     "MIN-SF-SELL <- minervini-components.mjs#sellEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "MIN-SF-TT-8"
+    ],
+    "proxiesAvailableNotUnblocking": [
+     "MIN-SF-TT-8: VU percentile of the PIT research universe; not the IBD rating, never a gate"
+    ]
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "minervini"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "MIN-SF-PRIORITY",
+     "MIN-SF-FUNDAMENTALS",
+     "MIN-SF-VCP",
+     "MIN-SF-PIVOT",
+     "MIN-SF-SELL",
+     "MIN-SF-STOP",
+     "MIN-SF-SIZE",
+     "MIN-MR-PRIORITY",
+     "MIN-MR-QUALITY",
+     "MIN-MR-VCP",
+     "MIN-MR-RS"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C07",
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 0,
+    "derived": 5,
+    "manual": 4,
+    "dataBlocked": 0,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": true,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "MIN-SF-PP-ENTRY <- minervini-components.mjs#powerPlayClassify"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "minervini"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "MIN-SF-PP-ENTRY",
+     "MIN-SF-PP-EXIT",
+     "MIN-SF-PP-STOP",
+     "MIN-SF-PP-SIZE",
+     "MIN-MR-PP-VOLUME",
+     "MIN-MR-PP-CORR"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C08",
+   "strategyId": "SF_KK_BREAKOUT",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 4,
+    "derived": 1,
+    "manual": 6,
+    "dataBlocked": 1,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": false,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "context"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "KK-SF-BO-SETUP",
+     "KK-SF-BO-ENTRY",
+     "KK-SF-BO-PARTIAL",
+     "KK-SF-BO-TRAIL",
+     "KK-SF-SIZE",
+     "KK-MR-SETUP",
+     "KK-MR-LEVEL"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C09",
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 4,
+    "derived": 1,
+    "manual": 3,
+    "dataBlocked": 3,
+    "sourceAmbiguous": 1,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "KK-SF-EP-EXIT"
+    ],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_COMPONENTS_ONLY",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "KK-SF-EP-CATALYST",
+     "KK-SF-EP-VOLUME",
+     "KK-SF-EP-ENTRY"
+    ],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "NOT_MEASURABLE",
+     "note": "the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only"
+    },
+    "sf3RunnerParts": [],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "KK-SF-SIZE",
+     "KK-MR-CATALYST"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C10",
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "sourceContractVersion": "1.1.0",
+   "sourceFidelity": {
+    "exact": 3,
+    "derived": 0,
+    "manual": 4,
+    "dataBlocked": 3,
+    "sourceAmbiguous": 0,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "translationOnlySource": false,
+    "sourceOpenRules": [],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_COMPONENTS_ONLY",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [
+     "KK-SF-PS-BORROW",
+     "KK-SF-PS-ENTRY",
+     "KK-SF-PS-STOP"
+    ],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "NOT_MEASURABLE",
+     "note": "the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only"
+    },
+    "sf3RunnerParts": [],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "KK-SF-PS-ACCEL",
+     "KK-SF-PS-TARGET",
+     "KK-SF-SIZE",
+     "KK-MR-PARABOLIC"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C11",
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "sourceContractVersion": "1.2.0",
+   "sourceFidelity": {
+    "exact": 1,
+    "derived": 3,
+    "manual": 5,
+    "dataBlocked": 0,
+    "sourceAmbiguous": 1,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "MOKA-SF-EXIT-VIOLATION"
+    ],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "MOKA-SF-PP-CONTEXT <- context-evidence.mjs#withContextEvidence",
+     "MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "context"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "MOKA-SF-PP-CONTEXT",
+     "MOKA-SF-EXIT-MA",
+     "MOKA-SF-PP-STOP",
+     "MOKA-SF-PP-SIZE",
+     "MOKA-MR-BASE",
+     "MOKA-MR-THEME",
+     "MOKA-MR-EXT"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C12",
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "sourceContractVersion": "1.2.0",
+   "sourceFidelity": {
+    "exact": 2,
+    "derived": 2,
+    "manual": 6,
+    "dataBlocked": 0,
+    "sourceAmbiguous": 2,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "MOKA-SF-BGU-VOLWINDOW",
+     "MOKA-SF-EXIT-VIOLATION"
+    ],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_SCREEN_COMPLETE",
+    "acceptanceGate": null,
+    "researchComponents": [
+     "MOKA-SF-BGU-CONTEXT <- context-evidence.mjs#withContextEvidence",
+     "MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence"
+    ]
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "SCREEN_STATISTICS",
+     "note": "machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return"
+    },
+    "sf3RunnerParts": [
+     "context"
+    ],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "MOKA-SF-BGU-MEGA",
+     "MOKA-SF-BGU-CONTEXT",
+     "MOKA-SF-EXIT-MA",
+     "MOKA-SF-BGU-SELLGUIDE",
+     "MOKA-SF-BGU-SIZE",
+     "MOKA-MR-LEAD",
+     "MOKA-MR-MEGA",
+     "MOKA-MR-VOLWINDOW"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  },
+  {
+   "candidateId": "C13",
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "sourceContractVersion": "1.0.0",
+   "sourceFidelity": {
+    "exact": 2,
+    "derived": 2,
+    "manual": 2,
+    "dataBlocked": 0,
+    "sourceAmbiguous": 3,
+    "notImplemented": 0,
+    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
+    "translationOnlySource": false,
+    "sourceOpenRules": [
+     "RAS-SF-ENTRY",
+     "RAS-SF-STOP",
+     "RAS-SF-SIZE"
+    ],
+    "modelAssumptions": []
+   },
+   "mechanicalCompleteness": {
+    "engine": "MECHANICAL_COMPONENTS_ONLY",
+    "acceptanceGate": null,
+    "researchComponents": []
+   },
+   "dataCoverage": {
+    "blockingDataRules": [],
+    "proxiesAvailableNotUnblocking": []
+   },
+   "backtestReadiness": {
+    "registry": "NOT_READY",
+    "measurement": {
+     "class": "NOT_MEASURABLE",
+     "note": "the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only"
+    },
+    "sf3RunnerParts": [],
+    "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+   },
+   "manualReview": {
+    "essentialDecisions": [
+     "RAS-SF-EXIT",
+     "RAS-MR-IMPULSE",
+     "RAS-MR-EXECUTION"
+    ],
+    "required": true
+   },
+   "liveReadiness": {
+    "status": "LIVE_NOT_APPROVED",
+    "liveActivation": false,
+    "orders": false
+   }
+  }
+ ],
+ "summary": {
+  "FULL_DIAGNOSTIC_STRATEGY_BACKTEST": [
+   "SF_TURTLE_S1",
+   "SF_TURTLE_S2"
+  ],
+  "MECHANICAL_COMPONENT_STUDY": [
+   "SF_DARVAS_BOX"
+  ],
+  "SCREEN_STATISTICS": [
+   "SF_WEINSTEIN_INVESTOR",
+   "SF_WEINSTEIN_TRADER",
+   "SF_MINERVINI_SEPA_VCP",
+   "SF_MINERVINI_POWER_PLAY",
+   "SF_KK_BREAKOUT",
+   "SF_MOKA_POCKET_PIVOT",
+   "SF_MOKA_BUYABLE_GAP_UP"
+  ],
+  "NOT_MEASURABLE": [
+   "SF_KK_EPISODIC_PIVOT",
+   "SF_KK_PARABOLIC_SHORT",
+   "SF_RASCHKE_HOLY_GRAIL"
+  ]
+ }
+}

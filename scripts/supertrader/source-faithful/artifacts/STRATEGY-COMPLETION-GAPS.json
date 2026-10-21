@@ -218,7 +218,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS. Supertrader 3.0: point-in-time price data allow causal correlation groups, and pre-registered EQUITY MODEL variants are implemented as research (research/turtle-correlation.mjs: RAW / market-residual returns, 63 / 126 / 252 sessions, complete / average / single linkage, absolute and pair-quantile thresholds, explicit unknown policies); the binding stays blocked because the source names no measure, window or threshold (source-open) and no variant is owner-approved. Reference runs stay without groups."
       }
      ]
     },
@@ -246,7 +246,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS. Supertrader 3.0: point-in-time price data allow causal correlation groups, and pre-registered EQUITY MODEL variants are implemented as research (research/turtle-correlation.mjs: RAW / market-residual returns, 63 / 126 / 252 sessions, complete / average / single linkage, absolute and pair-quantile thresholds, explicit unknown policies); the binding stays blocked because the source names no measure, window or threshold (source-open) and no variant is owner-approved. Reference runs stay without groups."
       },
       {
        "class": "DATA_GAP",
@@ -464,7 +464,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS. Supertrader 3.0: point-in-time price data allow causal correlation groups, and pre-registered EQUITY MODEL variants are implemented as research (research/turtle-correlation.mjs: RAW / market-residual returns, 63 / 126 / 252 sessions, complete / average / single linkage, absolute and pair-quantile thresholds, explicit unknown policies); the binding stays blocked because the source names no measure, window or threshold (source-open) and no variant is owner-approved. Reference runs stay without groups."
       }
      ]
     },
@@ -492,7 +492,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS."
+       "detail": "the engine enforces both limits whenever a point-in-time group provider is supplied (sf-turtle-1.1.0). The binding is DATA_BLOCKED: the groups are futures market groups; for equities they need point-in-time industry membership or a declared correlation measure. The snapshot has neither (SEC SIC in the repository is CURRENT_ONLY, sic-peer-taxonomy-v1 backtestEligible false), and choosing a correlation threshold would add an unsourced parameter. Research runs therefore report correlationLimits NOT_EVALUATED_NO_PIT_GROUPS. Supertrader 3.0: point-in-time price data allow causal correlation groups, and pre-registered EQUITY MODEL variants are implemented as research (research/turtle-correlation.mjs: RAW / market-residual returns, 63 / 126 / 252 sessions, complete / average / single linkage, absolute and pair-quantile thresholds, explicit unknown policies); the binding stays blocked because the source names no measure, window or threshold (source-open) and no variant is owner-approved. Reference runs stay without groups."
       },
       {
        "class": "DATA_GAP",
@@ -1081,7 +1081,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": false,
        "allReadingsImplemented": false,
-       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented. Supertrader 3.0: PIT SEC SIC membership and a VU PROXY group chart exist as research evidence (research/industry-strength.mjs: equal-weight chain index, group MA30w relation, group RS, breadth, volume, rotation; cap weighting DATA_BLOCKED without PIT shares); SIC is not Weinstein's group list, so the rule stays DATA_BLOCKED and the group stage stays the reviewer's call"
       },
       {
        "class": "DATA_GAP",
@@ -1094,7 +1094,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only; Supertrader 3.0 adds research-universe breadth (research/market-breadth.mjs, labelled VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE)."
       },
       {
        "class": "MANUAL_DECISION",
@@ -1250,7 +1250,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": false,
        "allReadingsImplemented": false,
-       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented. Supertrader 3.0: PIT SEC SIC membership and a VU PROXY group chart exist as research evidence (research/industry-strength.mjs: equal-weight chain index, group MA30w relation, group RS, breadth, volume, rotation; cap weighting DATA_BLOCKED without PIT shares); SIC is not Weinstein's group list, so the rule stays DATA_BLOCKED and the group stage stays the reviewer's call"
       },
       {
        "class": "DATA_GAP",
@@ -1263,7 +1263,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only; Supertrader 3.0 adds research-universe breadth (research/market-breadth.mjs, labelled VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE)."
       }
      ]
     },
@@ -1527,7 +1527,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": false,
        "allReadingsImplemented": false,
-       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented. Supertrader 3.0: PIT SEC SIC membership and a VU PROXY group chart exist as research evidence (research/industry-strength.mjs: equal-weight chain index, group MA30w relation, group RS, breadth, volume, rotation; cap weighting DATA_BLOCKED without PIT shares); SIC is not Weinstein's group list, so the rule stays DATA_BLOCKED and the group stage stays the reviewer's call"
       },
       {
        "class": "DATA_GAP",
@@ -1540,7 +1540,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only; Supertrader 3.0 adds research-universe breadth (research/market-breadth.mjs, labelled VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE)."
       },
       {
        "class": "MANUAL_DECISION",
@@ -1678,7 +1678,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": false,
        "allReadingsImplemented": false,
-       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented"
+       "detail": "point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented. Supertrader 3.0: PIT SEC SIC membership and a VU PROXY group chart exist as research evidence (research/industry-strength.mjs: equal-weight chain index, group MA30w relation, group RS, breadth, volume, rotation; cap weighting DATA_BLOCKED without PIT shares); SIC is not Weinstein's group list, so the rule stays DATA_BLOCKED and the group stage stays the reviewer's call"
       },
       {
        "class": "DATA_GAP",
@@ -1691,7 +1691,7 @@
        "scope": "DECLARED",
        "mechanicsImplemented": true,
        "allReadingsImplemented": false,
-       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only."
+       "detail": "Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only; Supertrader 3.0 adds research-universe breadth (research/market-breadth.mjs, labelled VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE)."
       }
      ]
     },

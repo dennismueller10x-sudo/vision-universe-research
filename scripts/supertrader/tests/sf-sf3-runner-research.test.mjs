@@ -65,3 +65,28 @@ test('SF3-RUNNER-FINGERPRINT: Research-Code hat eigenen Fingerabdruck; der Engin
   const current = REFERENCE_RUNS.filter((r) => r.role === 'CURRENT_ENGINE' && r.method.startsWith('SF_TURTLE'));
   assert.ok(current.length === 2 && current.every((r) => r.codeSha256 === codeSha256()));
 });
+
+test('SF3-READINESS: sechs Dimensionen getrennt, Artefakt = frischer Build, kein Stellvertreter hebt eine Sperre auf, nichts live', async () => {
+  const fs = await import('node:fs');
+  const { buildReadiness, MEASUREMENT } = await import('../source-faithful/completion/build-readiness-sf3.mjs');
+  const fresh = buildReadiness();
+  const committed = JSON.parse(fs.readFileSync(new URL('../source-faithful/artifacts/STRATEGY-READINESS-SF3.json', import.meta.url), 'utf8'));
+  assert.deepEqual(committed, JSON.parse(JSON.stringify(fresh)));
+  assert.equal(fresh.candidates.length, 13);
+  for (const c of fresh.candidates) {
+    for (const k of ['sourceFidelity', 'mechanicalCompleteness', 'dataCoverage', 'backtestReadiness', 'manualReview', 'liveReadiness']) assert.ok(c[k], `${c.strategyId}:${k}`);
+    assert.equal(c.liveReadiness.status, 'LIVE_NOT_APPROVED'); assert.equal(c.liveReadiness.orders, false);
+    assert.equal(c.backtestReadiness.certification, 'DIAGNOSTIC_NOT_CERTIFIED');
+    if (c.backtestReadiness.measurement.class === MEASUREMENT.FULL) assert.equal(c.backtestReadiness.registry, 'DIAGNOSTIC_READY');
+  }
+  const by = (id) => fresh.candidates.find((c) => c.strategyId === id);
+  // proxies are listed but the rules stay blocked
+  assert.ok(by('SF_WEINSTEIN_INVESTOR').dataCoverage.blockingDataRules.includes('WEIN-SF-GROUP'));
+  assert.ok(by('SF_WEINSTEIN_INVESTOR').dataCoverage.proxiesAvailableNotUnblocking.some((p) => p.startsWith('WEIN-SF-GROUP')));
+  assert.ok(by('SF_MINERVINI_SEPA_VCP').dataCoverage.blockingDataRules.includes('MIN-SF-TT-8'));
+  assert.ok(by('SF_TURTLE_S1').dataCoverage.blockingDataRules.includes('TUR-SF-LIMIT-CORR'));
+  // a screen is never a full strategy backtest; intraday- or source-blocked entries are not measurable
+  for (const id of ['SF_MINERVINI_SEPA_VCP', 'SF_MINERVINI_POWER_PLAY', 'SF_WEINSTEIN_INVESTOR']) assert.equal(by(id).backtestReadiness.measurement.class, MEASUREMENT.SCREEN);
+  for (const id of ['SF_KK_EPISODIC_PIVOT', 'SF_KK_PARABOLIC_SHORT', 'SF_RASCHKE_HOLY_GRAIL']) assert.equal(by(id).backtestReadiness.measurement.class, MEASUREMENT.NONE);
+  assert.equal(by('SF_DARVAS_BOX').backtestReadiness.measurement.class, MEASUREMENT.COMPONENT);
+});

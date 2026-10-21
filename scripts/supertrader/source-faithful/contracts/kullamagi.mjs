@@ -6,7 +6,7 @@
  * distance at most 1.5 ADR/ATR). Setup quality, catalysts and exits are preferences or need intraday / news / borrow
  * data. The earlier VU ADR clamp that replaced the low-of-day stop (#709 false hard rule) is not repeated.
  */
-import { defineContract, EXCLUDE, SF_ROOT } from './define.mjs';
+import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/kullamagi.mjs`;
@@ -20,7 +20,7 @@ const shared = () => [
   { id: 'KK-SF-ADR', kind: 'INDICATOR', essential: false, psr709: ['KK-031'], status: 'SOURCE_EXACT', rule: 'ADR20 = mean over 20 sessions of (high / low - 1) x 100 (the 20 sessions before the bar, so a check on the entry day uses no same-day range)', code: `${CODE}#adr20`, tests: [`${T}: GC-KK-ADR20`] },
   { id: 'KK-SF-CAP', kind: 'SIZING', psr709: ['KK-001'], status: 'SOURCE_EXACT', rule: 'never more than 30 % of equity in one stock or ETF overnight', code: `${CODE}#overnightCap`, tests: [`${T}: GC-KK-CAP-30`] },
   { id: 'KK-SF-STOPMARKET', kind: 'STOP', psr709: ['KK-027'], status: 'SOURCE_EXACT', rule: 'stops are stop-market orders: a gap through the stop fills at the open, never skipped', code: `${CODE}#stopMarketFill`, tests: [`${T}: GC-KK-STOP-MARKET-GAP`] },
-  { id: 'KK-SF-PRIORITY', kind: 'SETUP', essential: false, psr709: ['KK-048', 'KK-049'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter' },
+  { id: 'KK-SF-PRIORITY', kind: 'SETUP', essential: false, psr709: ['KK-048', 'KK-049'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth')] },
   { id: 'KK-SF-SIZE', kind: 'SIZING', psr709: ['KK-002', 'KK-003', 'KK-004', 'KK-025', 'KK-026'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap' },
 ];
 const sharedExclusions = {
@@ -33,6 +33,7 @@ const sharedExclusions = {
 
 export const KK_BREAKOUT = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_BREAKOUT',
   candidateId: 'C08',
@@ -68,6 +69,7 @@ export const KK_BREAKOUT = defineContract({
 
 export const KK_EPISODIC_PIVOT = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_EPISODIC_PIVOT',
   candidateId: 'C09',
@@ -99,6 +101,7 @@ export const KK_EPISODIC_PIVOT = defineContract({
 
 export const KK_PARABOLIC_SHORT = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_PARABOLIC_SHORT',
   candidateId: 'C10',
