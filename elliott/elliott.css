@@ -22,8 +22,11 @@
 .el-title{display:flex;align-items:center;gap:14px;margin:0;font-size:var(--vu-hero-title);line-height:var(--vu-hero-leading);letter-spacing:var(--vu-hero-tracking);font-weight:800}
 .el-mark{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:26%;background:#07090b;color:var(--vu-accent);box-shadow:0 0 0 1px rgba(200,245,49,.28),0 10px 30px -12px rgba(200,245,49,.4)}
 .el-mark svg{width:27px;height:27px}
-.el-lead{margin:8px 0 14px;font-size:clamp(16px,4.2vw,22px);line-height:1.35;color:var(--vu-text-secondary);max-width:30ch}
-.el-lead span{display:block}
+.el-lead{margin:6px 0 12px;font-size:clamp(14px,3.8vw,18px);line-height:1.4;color:var(--vu-text-secondary);max-width:44ch}
+.el-suche-hint{margin:10px 0 0;font-size:14px;color:var(--vu-text-secondary)}
+.el-suche-hint a{color:var(--vu-accent-text);font-weight:700}
+.is-suche .el-hero-side,.is-suche .el-content,.is-suche .el-lead{display:none}
+.is-suche .el-hero{display:block;min-height:60vh}
 .el-search{position:relative;max-width:640px}
 .el-input{width:100%;box-sizing:border-box;height:52px;padding:0 48px 0 20px;border:1px solid var(--vu-line-strong);border-radius:999px;background:var(--vu-elevated);color:var(--vu-text);font:500 17px Inter,inherit;-webkit-appearance:none;appearance:none}
 .el-input::placeholder{color:var(--vu-muted)}
@@ -61,42 +64,43 @@
 .el-chip-n{font-size:12px;font-weight:700;opacity:.6}
 .el-chip-sep{flex:0 0 1px;align-self:stretch;margin:10px 2px;background:var(--vu-line-strong)}
 
-/* ---- Reihen und Raster */
+/* ---- Reihen und Raster: Ranglisten-Zeilen (VU3 .vu-rank) statt Karten; je Reihe die ersten 5, "Alle" fuehrt zur Liste */
 .el-row{margin:14px 0 26px}
-.el-row-head,.el-result-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.el-row-head,.el-result-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:6px}
 .el-result-head{flex-wrap:wrap}
 .el-row-title{margin:0;font-size:22px;line-height:1.15;letter-spacing:-.025em;font-weight:800}
 .el-row-rule{margin:2px 0 0;font-size:13px;color:var(--vu-muted);max-width:56ch}
 .el-all{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--vu-text);font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--vu-line-strong)}
-.el-track{display:flex;gap:12px;margin:0 calc(var(--el-gutter)*-1);padding:2px var(--el-gutter) 14px;list-style:none;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-inline:var(--el-gutter);scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-.el-track::-webkit-scrollbar{display:none}
-.el-track .el-slot{flex:0 0 min(78vw,300px);scroll-snap-align:start;display:flex}
-.el-skel-row,.el-track .el-skel{height:240px;flex:0 0 min(78vw,300px);border-radius:var(--vu-radius);background:var(--vu-surface)}
-.el-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:12px;margin:0;padding:0;list-style:none}
-.el-grid .el-slot{display:flex}
+.el-track,.el-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0 40px;margin:0;padding:0;list-style:none;counter-reset:el-rank}
+.el-track .el-slot:nth-child(n+6){display:none}
+.el-slot{display:flex;min-width:0;border-bottom:1px solid var(--vu-line)}
+/* Ladeplatzhalter: flache Zeilen ohne Kasten */
+.el-skel-row{height:208px;background:repeating-linear-gradient(180deg,transparent 0 51px,var(--vu-line) 51px 52px)}
 
-/* ---- Karte */
-.el-card{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;padding:16px;border:1px solid var(--vu-line);border-radius:var(--vu-radius);background:var(--el-card);color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
-.el-card:hover{border-color:var(--vu-line-strong);transform:translateY(-2px)}
-.el-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px}
-.el-role{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--vu-muted)}
+/* ---- Zeile: Rang | Name, Kuerzel, Welle | Projektionszone */
+.el-card{flex:1;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;align-items:center;min-width:0;min-height:64px;padding:12px 0;color:inherit;text-decoration:none;counter-increment:el-rank}
+.el-card:before{content:counter(el-rank);grid-row:1/span 2;font-size:13px;font-weight:800;color:var(--vu-muted);font-variant-numeric:tabular-nums}
+.el-card>*{grid-column:2;min-width:0}
+.el-card:hover .el-name{text-decoration:underline;text-underline-offset:4px}
+.el-card-top{grid-column:2;grid-row:4;display:flex;gap:6px}
+.el-role{font-size:11px;font-weight:700;color:var(--vu-muted)}
 .el-role-explore_highlight .el-role{color:var(--vu-accent-text)}
-.el-chg{flex:none;padding:2px 9px;border-radius:999px;background:var(--vu-accent-soft);color:var(--vu-accent-text);font-size:12px;font-weight:700}
-.el-name{margin:4px 0 0;font-size:19px;line-height:1.2;letter-spacing:-.02em;font-weight:800;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
-.el-sub{margin:0;font-size:14px;color:var(--vu-muted)}
-.el-sub b{color:var(--vu-text)}
-.el-wave{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0 0;font-size:15px;font-weight:600}
-.el-dir{padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
-.el-dir.is-up{background:var(--el-up-bg);color:var(--el-up)}
-.el-dir.is-down{background:var(--el-down-bg);color:var(--el-down)}
-.el-proj{display:flex;flex-direction:column;gap:2px;margin:6px 0 2px;padding:10px 12px;border-radius:14px;background:var(--vu-surface)}
-.el-proj-k{font-size:12px;color:var(--vu-muted)}
-.el-proj-v{font-size:clamp(17px,5vw,20px);line-height:1.2;letter-spacing:-.02em;font-weight:800;overflow-wrap:anywhere}
-.el-proj-o{font-size:12px;color:var(--vu-muted);overflow-wrap:anywhere}
-.el-note-role{margin:0;font-size:12px;color:var(--vu-accent-text);font-weight:600}
-.el-meta{margin:0;font-size:13px;color:var(--vu-text-secondary)}
-.el-delayed{margin:0;font-size:12px;color:var(--el-down)}
-.el-cta{margin-top:auto;padding-top:6px;font-size:14px;font-weight:700}
+.el-chg{display:none}
+.el-name{grid-row:1;margin:0;font-size:16px;line-height:1.25;letter-spacing:-.01em;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.el-sub{grid-row:2;margin:0;font-size:13px;color:var(--vu-muted)}
+.el-sub b{color:var(--vu-text-secondary)}
+.el-wave{grid-column:2/4!important;grid-row:3;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:0;font-size:13px;font-weight:600;color:var(--vu-text-secondary)}
+.el-dir{font-size:13px;font-weight:750;white-space:nowrap}
+.el-dir.is-up{color:var(--el-up)}
+.el-dir.is-down{color:var(--el-down)}
+.el-proj{grid-column:3;grid-row:1/span 2;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:1px}
+.el-proj-k{font-size:11px;color:var(--vu-muted)}
+.el-proj-v{font-size:16px;line-height:1.2;letter-spacing:-.02em;font-weight:800;white-space:nowrap}
+.el-proj-o,.el-meta,.el-ctx,.el-cta{display:none}
+.el-note-role{grid-column:2/4!important;grid-row:5;margin:0;font-size:12px;color:var(--vu-accent-text);font-weight:600}
+.el-role-explore_highlight .el-role{display:none}
+.el-delayed{grid-column:3!important;grid-row:4;margin:0;font-size:11.5px;text-align:right;white-space:nowrap;color:var(--el-down)}
+.is-suche .el-search{margin-top:16px}
 
 /* ---- Leerzustaende, Hinweise */
 .el-empty{margin:24px 0;padding:24px;border:1px solid var(--vu-line);border-radius:var(--vu-radius);background:var(--vu-surface)}
@@ -113,15 +117,12 @@
   :root{--el-gutter:32px}
   .el-hero{padding:48px 0 12px}
   .el-title{gap:18px}.el-mark{width:64px;height:64px}.el-mark svg{width:38px;height:38px}
-  .el-track .el-slot{flex-basis:320px}
   .el-chips{margin-inline:calc(var(--el-gutter)*-1)}
 }
 @media(min-width:1100px){
   .el-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:0 64px;align-items:end;padding:56px 0 16px}
   .el-stats{flex-wrap:wrap;margin-top:0}
 }
-@media(prefers-reduced-motion:reduce){.el-card,.el-skel{transition:none;animation:none}.el-card:hover{transform:none}}
-@media(max-width:350px){.el-track .el-slot{flex-basis:86vw}}
 
 /* ---- Politur: Kennzahlen mit Verhaeltnis, Flaggschiff-Reihe, Kontext, leise Reihen */
 .el-statwrap{display:grid;gap:10px}
@@ -142,24 +143,17 @@
 .el-stat.tone-up span::before{color:var(--el-up)}.el-stat.tone-down span::before{color:var(--el-down)}
 .el-row.is-flagship{margin-top:22px;padding:18px 0 4px;border-top:1px solid var(--vu-line)}
 .el-row.is-flagship .el-row-title{font-size:26px}
-.el-row.is-flagship .el-track .el-slot{flex-basis:min(82vw,330px)}
-.el-card.is-flagship{background:linear-gradient(180deg,var(--vu-accent-soft),transparent 55%),var(--el-card);border-color:var(--vu-line-strong)}
 .el-row.is-secondary{margin-top:36px;padding-top:18px;border-top:1px dashed var(--vu-line)}
 .el-row.is-secondary .el-row-title{font-size:18px;color:var(--vu-text-secondary)}
-.el-row.is-secondary .el-card{background:transparent}
-.el-ctx{display:flex;flex-wrap:wrap;gap:4px 12px;margin:2px 0 0;padding:0;list-style:none;font-size:12px;color:var(--vu-muted)}
-.el-ctx b{color:var(--vu-text);font-weight:700}
-.el-meta{display:flex;gap:8px;align-items:center}
-.el-card{box-shadow:0 1px 0 rgba(0,0,0,.02),0 14px 30px -26px rgba(0,0,0,.28)}
-.el-card:hover{box-shadow:0 18px 36px -24px rgba(0,0,0,.34)}
 
 /* ---- Aktienbild im Gast-Betrieb (Chartbild unter /elliott/#/<T>) */
 .el-detail{min-height:60vh}
 .el-detail[hidden]{display:none!important}
 .el-skel-detail{height:320px;margin-top:24px;border-radius:var(--vu-radius)}
 .dx .el-detail,.qd .el-detail{background:transparent}
-@media(min-width:1100px){.el-row.is-flagship .el-track .el-slot{flex-basis:340px}}
 @media(min-width:1100px){
   .el-stats{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
   .el-stat{min-width:0}
 }
+@media(min-width:900px){.el-track,.el-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.el-track .el-slot:nth-child(6){display:flex}}
+@media(prefers-reduced-motion:reduce){.el-skel{animation:none}}
