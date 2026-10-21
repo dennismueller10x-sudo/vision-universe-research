@@ -97,7 +97,8 @@
     }))]));
     /* Owner-Auftrag "Quant Daily Usefulness": die Begriffe bleiben intern
        sauber getrennt - die Oberflaeche erklaert sie in Alltagssprache. */
-    main.append(X.section("Acht Begriffe, sauber getrennt", "Jede Aussage auf Quant gehört zu genau einer dieser Fragen.", [el("dl", { class: "q-terms" }, [].concat.apply([], [
+    /* VU3: Begriffe, Prinzipien und die Matrix sind Erklaerung - hinter Aufklappzeilen, die Themen oben zuerst. */
+    main.append(X.more("Acht Begriffe, sauber getrennt", function () { return [el("p", { class: "qx-small", text: "Jede Aussage auf Quant gehört zu genau einer dieser Fragen." }), el("dl", { class: "q-terms" }, [].concat.apply([], [
       ["Faktor", "Wie gut ist die Aktie in einer Eigenschaft – im Vergleich zu allen anderen?"],
       ["Veränderung", "Was bewegt sich gerade – wird eine Eigenschaft besser oder schlechter?"],
       ["Setup", "Entsteht im Kursbild eine konkrete Situation – und wie weit ist sie?"],
@@ -106,8 +107,8 @@
       ["Marktmuster", "Was geschah im ganzen Markt in ähnlichen Fällen?"],
       ["Backtest", "Wie hätte eine fest definierte Regel historisch abgeschnitten? (noch nicht freigegeben)"],
       ["Radar", "Was ist heute neu – welcher Zustand hat sich seit dem letzten Stand geändert?"]
-    ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
-    main.append(X.section("Unsere Prinzipien", null, [el("div", { class: "q-principles qx-principles" }, [
+    ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]; }));
+    main.append(X.more("Unsere Prinzipien", function () { return [el("div", { class: "q-principles qx-principles" }, [
       el("span", { class: "q-shield", "aria-hidden": "true" }, [X.icon("shield")]),
       el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
         ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
@@ -116,7 +117,7 @@
         ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
         ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
         ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
-      ].map(function (p, i) { return el("li", { class: "q-rowlink is-static" }, [el("span", { class: "q-num", text: "0" + (i + 1) }), el("span", {}, [el("strong", { text: p[0] }), el("small", { text: p[1] })])]); }))]));
+      ].map(function (p, i) { return el("li", { class: "q-rowlink is-static" }, [el("span", { class: "q-num", text: "0" + (i + 1) }), el("span", {}, [el("strong", { text: p[0] }), el("small", { text: p[1] })])]); }))]; }));
     main.append(X.section("Wie ein Faktorwert zu lesen ist", "Jeder Faktor ist ein Wert von 0 bis 100, gebildet aus Rangplätzen im Vergleich zu anderen US-Aktien. Die Stufe sagt, wo dieser Wert unter allen bewerteten Aktien liegt.", [bandScale(),
       el("p", { class: "qx-small", text: "„Sehr stark“ heißt: höher als mindestens 90 % der bewerteten Aktien – gezählt am selben Stichtag, je Eigenschaft. Die Stufe ist damit eine relative Einordnung, kein absolutes Gütesiegel: Sie sagt, wie eine Aktie im Vergleich dasteht, nicht, ob sie für sich genommen gut ist." })],
       { href: X.routes.method("faktoren"), label: "Verteilung ansehen" }));
@@ -127,12 +128,12 @@
       ["bars", "Backtesting", "Strategie-Backtests sind noch nicht freigegeben. Deshalb zeigt Quant keine Trefferquoten."]
     ].map(function (x) { return el("div", {}, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(x[0])]), el("b", { text: x[1] }), el("span", { text: x[2] })]); }))],
       { href: X.routes.method("grenzen"), label: "Alle Grenzen" }));
-    main.append(X.section("Transparenz-Matrix", "Was du bei Quant nachprüfen kannst – und was es (noch) nicht gibt.", [el("div", { class: "q-matrix" }, [
+    main.append(X.more("Transparenz-Matrix: was offen liegt und was es nicht gibt", function () { return [el("div", { class: "q-matrix" }, [
       el("div", { class: "is-yes" }, [el("h3", { text: "Offen gelegt" }), el("ul", {}, [
         "Datenquellen und Stichtag jeder Zahl (SEC EDGAR, Tiingo)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
         "Alle Vergleichsfälle im Rückblick – nie ein herausgegriffener", "Versionen jeder Regel"].map(function (x) { return el("li", { text: x }); }))]),
       el("div", { class: "is-no" }, [el("h3", { text: "Gibt es bewusst nicht – oder noch nicht" }), el("ul", {}, [
-        "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]));
+        "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]; }));
     main.append(X.actions([X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("SEC-Dateninspektor", "/quant/data-inspector/", "secondary")]));
   }
 
