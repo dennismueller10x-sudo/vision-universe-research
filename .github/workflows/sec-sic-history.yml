@@ -36,9 +36,10 @@ jobs:
   sic-history:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # runner.temp ist auf Job-Ebene nicht verfuegbar (nur in Steps); SEC_CACHE_DIR wird
+    # deshalb im ersten Step aus $RUNNER_TEMP gesetzt und ueber GITHUB_ENV weitergereicht.
     env:
       SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
-      SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,6 +56,7 @@ jobs:
           IN_MAX: ${{ inputs.max_requests }}
         run: |
           set -euo pipefail
+          echo "SEC_CACHE_DIR=$RUNNER_TEMP/sec-cache" >> "$GITHUB_ENV"
           case "$IN_MAX" in ''|*[!0-9]*) echo "::error::max_requests muss eine Zahl sein"; exit 1;; esac
 
       - name: Rohdaten aus dem Cache
