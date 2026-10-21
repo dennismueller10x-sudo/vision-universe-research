@@ -25,18 +25,17 @@ Einzeldokumente:
 - **Keine Engine wurde verändert.** Das gilt für `methods/*.mjs`, `runner/run-research.mjs` und `runner/snapshot-input.mjs`. Der Code-Fingerabdruck `ae2a51ed86ae…` des Turtle-Acceptance-Gates (AG-3) bleibt gültig; ein Test prüft das (`SF3-RUNNER-FINGERPRINT`).
 - Alle neuen Bausteine liegen in `source-faithful/research/` und werden über das Feld `researchEvidence` an die Vertragsregeln gebunden. Ein Regelstatus wurde **nicht** hochgestuft.
 
-## Snapshot-Messung (Lauf `sf3-research` 39573166338)
+## Snapshot-Messung (maßgeblich: Lauf `sf3-research` 39575564781, korrigierter Code; Gegenprobe: Lauf 39573166338)
 
 Eckdaten des Laufs:
 - Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT` verifiziert (RESTORE-Beleg).
 - 9.211 Segmente, 2.701 Sitzungen. Sec-pit-Fundamentals für 6.289 Wertpapiere.
-- Engine-Fingerabdruck `ae2a51ed86ae…` (unverändert), Research-Code `3b5dd5fa40bf…`.
+- Engine-Fingerabdruck `ae2a51ed86ae…` (unverändert).
 - Öffentlich sind nur Zählungen; Kennzahlen liegen versiegelt auf `claude/supertrader-validation-results` (`20261021T130218Z`).
 
-Lauf 1 verwendete den Research-Code **vor** den Review-Fixes:
-- Turtle und Minervini sind davon unberührt (L1 betrifft nur die Zählerausweisung).
-- Die Weinstein-Labels können sich in Fällen mit Mitgliedschaftslücken ändern (M1).
-- Lauf 2 (39575564781) mit dem korrigierten Code wurde gestartet und bestätigt bzw. korrigiert diese Zahlen.
+Zwei Läufe:
+- **Lauf 2 (39575564781, maßgeblich):** Research-Code `76289d0cd9c3…` mit allen Review-Fixes. Versiegelt als `20261021T145819Z`.
+- **Lauf 1 (39573166338):** Code vor den Fixes. Turtle-Zählungen und Minervini-Statistiken sind in beiden Läufen identisch. Die Weinstein-Anteile stimmen nach dem M1-Fix innerhalb eines Prozentpunkts überein. Lauf 2 zieht nur jede 8. statt jede 4. Woche als Stichprobe.
 
 ### Turtle: Referenz unverändert, Korrelationslimits binden im tatsächlichen Buch nicht
 
@@ -69,7 +68,7 @@ Befund:
 - Die Absicht von TUR-LIMIT6/10, Risiko in gleichlaufenden Units zu begrenzen, wird im gemessenen Zeitraum **ohne** Limit eingehalten. Das gilt für jede vertretbare Variante.
 - Die Datenausnahme der Referenzläufe hat damit nach dieser Messung praktisch keine Wirkung. Das ist kein Freigabeargument; die Regel bleibt quellenoffen.
 
-**Unknown-Anteil:** 9,1 % der Gruppenabfragen (126er-Variante). Die Gründe:
+**Unknown-Anteil:** 9,5 % der Gruppenabfragen der Engine (Lauf 2, `engineLookups`, 126er-Variante: 236.654 von 2.483.801). Die Gründe (kumulierte Zähler, Lauf 1):
 - 43 % am Anker nicht im Research-Universum;
 - 32 % vor dem ersten vollständigen Anker;
 - 25 % mit unvollständigem Renditefenster.
@@ -80,24 +79,24 @@ Befund:
 
 | Variante | Mitgliedschaft aufgelöst | Gruppensitzungen gültig | Gruppen mit Chart je Jahr | Kandidaten mit Gruppenevidenz KNOWN |
 |---|---|---|---|---|
-| SIC3-EW-MIN5-400D-WIDE | 77,8 % | 59,6 % | 145–157 | 101.877 von 143.048 (71 %) |
-| SIC3-EW-MIN5-400D-STRICT | 17,8 % | 22,9 % | 19–59 | 15.106 (11 %) |
-| SIC2-EW-MIN5-400D-WIDE | 77,8 % | 89,3 % | 60–63 | 108.746 (76 %) |
-| SIC4-EW-MIN5-400D-WIDE | 77,8 % | 48,3 % | 179–196 | 95.393 (67 %) |
-| SIC3-EW-MIN3-400D-WIDE | 77,8 % | 76,4 % | 188–197 | 106.602 (75 %) |
-| SIC3-EW-MIN10-400D-WIDE | 77,8 % | 33,3 % | 83–92 | 88.098 (62 %) |
-| SIC3-EW-MIN5-120D-WIDE | 75,5 % | 58,8 % | 145–157 | 97.362 (68 %) |
+| SIC3-EW-MIN5-400D-WIDE | 77,8 % | 59,6 % | 145–157 | 51.529 von 71.824 (72 %) |
+| SIC3-EW-MIN5-400D-STRICT | 17,8 % | 22,9 % | 19–59 | 7.857 von 71.824 (11 %) |
+| SIC2-EW-MIN5-400D-WIDE | 77,8 % | 89,3 % | 60–63 | 54.922 von 71.824 (76 %) |
+| SIC4-EW-MIN5-400D-WIDE | 77,8 % | 48,3 % | 179–196 | 48.311 von 71.824 (67 %) |
+| SIC3-EW-MIN3-400D-WIDE | 77,8 % | 76,4 % | 188–197 | 53.861 von 71.824 (75 %) |
+| SIC3-EW-MIN10-400D-WIDE | 77,8 % | 33,3 % | 83–92 | 44.717 von 71.824 (62 %) |
+| SIC3-EW-MIN5-120D-WIDE | 75,5 % | 58,8 % | 145–157 | 49.307 von 71.824 (69 %) |
 | SIC3-CAP-MIN5-400D-WIDE | – | – | – | `DATA_BLOCKED` (keine PIT-Aktienzahl) |
 
-Kandidaten sind die Investor- und Trader-Screens jeder 4. Woche: 87.067 bzw. 55.981.
+Kandidaten sind die Investor- und Trader-Screens jeder 8. Woche (Lauf 2): 43.339 bzw. 28.485.
 
 Befunde:
 - **Die strenge Identitätsvariante ist nicht tragfähig.** Die meisten Snapshot-CIKs stammen aus der heutigen Tickerliste (1,67 Mio. gegenüber 0,50 Mio. Auflösungen). Ohne die Annahme `CURRENT_TICKER_MAPPING` bleiben 82 % unbekannt.
 - **Hauptgrund für fehlende Mitgliedschaft:** `IDENTITY_NO_CIK` (542.594 Abfragen).
 - **SIC3 mit 5 Mitgliedern** ist ein Mittelweg zwischen Granularität und gültigen Charts. SIC2 ist stabiler, aber sehr grob.
 - **Kandidaten in SIC3-MIN5-WIDE:**
-  - 80.942 von 101.877 (79 %) stehen in Gruppen `ABOVE_RISING_MA30W`;
-  - 10.552 (10 %) in Gruppen `BELOW_FALLING_MA30W`. Diese Kandidaten würde das Review-Gate `WEIN-RG-GROUP` als mögliche „negative Gruppe“ zur Entscheidung vorlegen.
+  - 41.378 von 51.529 (80 %) stehen in Gruppen `ABOVE_RISING_MA30W`;
+  - 5.125 (10 %) in Gruppen `BELOW_FALLING_MA30W`. Diese Kandidaten würde das Review-Gate `WEIN-RG-GROUP` als mögliche „negative Gruppe“ zur Entscheidung vorlegen.
 - **2022:** Das Bild der Gruppenlabels kehrt sich um (5.162 `BELOW_FALLING` gegen 1.558 `ABOVE_RISING`). Die Gruppenevidenz bildet Branchenrotation und Marktphase also sichtbar ab.
 
 ### Minervini: Screen-Statistiken (Monatsenden, keine Strategierendite)
@@ -269,7 +268,7 @@ Details: `context-evidence.mjs#DATA_FRONTIER`.
 | Test-Isolation (`check-test-isolation.mjs`) | bestanden |
 | AG-3-Code-Fingerabdruck | unverändert (`SF3-RUNNER-FINGERPRINT`) |
 | Unabhängiges adversariales Review | 0 CRITICAL, 0 HIGH; 2 MEDIUM (M1, M2) und 4 LOW behoben (siehe Abschnitt „Review“) |
-| Snapshot-Lauf `sf3-research` 39573166338 | erfolgreich: Datensatz `EXACT`, Turtle-Referenz identisch mit CURRENT_ENGINE, alle Varianten abgestimmt |
+| Snapshot-Läufe `sf3-research` 39575564781 (maßgeblich) und 39573166338 | beide erfolgreich: Datensatz `EXACT`, Turtle-Referenz identisch mit CURRENT_ENGINE, alle Varianten abgestimmt, Ergebnisse zwischen den Läufen konsistent |
 
 ## Review
 
