@@ -1667,3 +1667,8 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
   .dv2 .dx-m3-klartext .dx-m3-kt-zahlen{grid-template-columns:repeat(2,minmax(0,1fr))}
   .dv2 .dx-m3-klartext .dx-m3-kt-zahl.is-warn{grid-column:1 / -1}
 }
+
+/* VU3: Anbieter stehen gesammelt in "Daten & Methodik" am Seitenende. */
+.dv2 .dx-maerkte .dx-markt-quelle{display:none}
+.dv2 .dx-maerkte-stand.vu-dm{margin-top:32px}
+.dv2 .dx-m3-kt-mehr{margin-top:12px}
