@@ -16,6 +16,7 @@
  */
 import { fin } from '../common/series.mjs';
 import { groupEvidence } from './industry-strength.mjs';
+import { isoWeekKey } from '../../engine/indicators.mjs';
 
 export const CONTEXT_EVIDENCE_VERSION = 'sf3-context-evidence-1.0.0';
 export const CONTEXT_CONVENTIONS = Object.freeze({ leadershipLookbackSessions: 252, note: '252 sessions = 52 weeks (convention; Darvas names no window for "strongest")' });
@@ -59,7 +60,7 @@ export function withContextEvidence(record, { built = null, breadth = null, benc
   if (!rules) throw new Error(`NO_CONTEXT_RULES:${record.methodId}`);
   const out = { ...record, machineScreenEvidence: [...(record.machineScreenEvidence || [])] };
   const lead = industryLeadership(built, record.securityId, record.asOf);
-  const groupChart = lead.group && built ? groupEvidence(built, lead.group, built.weekOf[built.calendar.indexOf(record.asOf)] ?? '9999', { bench }) : null;
+  const groupChart = lead.group && built ? groupEvidence(built, lead.group, isoWeekKey(record.asOf), { bench }) /* the week of the decision date itself: only earlier weeks are read (review M2) */ : null;
   out.machineScreenEvidence.push({ ruleId: rules.leadership, kind: 'CONTEXT_INDUSTRY_LEADERSHIP', value: { ...lead, groupChart, version: CONTEXT_EVIDENCE_VERSION } });
   if (breadth) out.machineScreenEvidence.push({ ruleId: rules.market, kind: 'CONTEXT_MARKET_BREADTH', value: { ...breadth.at(record.asOf, { causal: true }), sourceStatus: 'VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE' } });
   return out;
