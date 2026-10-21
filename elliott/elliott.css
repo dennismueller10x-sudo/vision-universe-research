@@ -74,8 +74,8 @@
 .el-track,.el-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0 40px;margin:0;padding:0;list-style:none;counter-reset:el-rank}
 .el-track .el-slot:nth-child(n+6){display:none}
 .el-slot{display:flex;min-width:0;border-bottom:1px solid var(--vu-line)}
-.el-track .el-skel{grid-column:1/-1}
-.el-skel-row,.el-track .el-skel{height:300px;border-radius:var(--vu-radius);background:var(--vu-surface)}
+/* Ladeplatzhalter: flache Zeilen ohne Kasten */
+.el-skel-row{height:208px;background:repeating-linear-gradient(180deg,transparent 0 51px,var(--vu-line) 51px 52px)}
 
 /* ---- Zeile: Rang | Name, Kuerzel, Welle | Projektionszone */
 .el-card{flex:1;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 12px;align-items:center;min-width:0;min-height:64px;padding:12px 0;color:inherit;text-decoration:none;counter-increment:el-rank}

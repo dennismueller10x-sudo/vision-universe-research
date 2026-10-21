@@ -207,24 +207,17 @@
   }
 
   /* ------------------------------------------------------------ Bausteine */
-  function rowSection(row, eager) {
+  /* Zeilen sofort: die Startseite hat ihre Daten schon (ein kompakter Index), Platzhalter koennten sonst leer stehen bleiben. */
+  function rowSection(row) {
     var more = row.total > row.cards.length, flagship = row.kind === "flagship";
-    var track = el("ul", { class: "el-track", role: "list" });
-    var fill = function () { row.cards.forEach(function (c) { track.append(el("li", { class: "el-slot" }, [card(c, { flagship: flagship })])); }); track.dataset.ready = "true"; };
-    var section = el("section", { class: "el-row is-" + row.kind, "aria-labelledby": "el-h-" + row.id, dataset: { row: row.id } }, [
+    var track = el("ul", { class: "el-track", role: "list", dataset: { ready: "true" } }, row.cards.map(function (c) { return el("li", { class: "el-slot" }, [card(c, { flagship: flagship })]); }));
+    return el("section", { class: "el-row is-" + row.kind, "aria-labelledby": "el-h-" + row.id, dataset: { row: row.id } }, [
       el("header", { class: "el-row-head" }, [
         el("div", {}, [el("h2", { id: "el-h-" + row.id, class: "el-row-title", text: row.title }), el("p", { class: "el-row-rule", text: row.rule })]),
         el("a", { class: "el-all", href: M.rowHref(row), text: more ? "Alle " + row.total : "Als Liste" })
       ]),
       track
     ]);
-    if (eager || typeof IntersectionObserver !== "function") fill();
-    else {
-      track.append(el("li", { class: "el-skel", "aria-hidden": "true" }));
-      var io = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); track.replaceChildren(); fill(); } }, { rootMargin: "400px 0px" });
-      io.observe(section);
-    }
-    return section;
   }
   function emptyBox(e) {
     return el("section", { class: "el-empty", role: "status" }, [el("h2", { text: e.title }), el("p", { text: e.text }),
@@ -389,7 +382,7 @@
       host.append(grid);
       if (list.length > shown.length) host.append(el("button", { class: "el-btn el-more", type: "button", text: "Mehr anzeigen (" + (list.length - shown.length) + ")", onclick: function () { state.shown += M.PAGE; render(); var g = document.querySelectorAll(".el-grid .el-card"); if (g[shown.length]) g[shown.length].focus(); } }));
     } else {
-      M.rowsOf(home).forEach(function (r, i) { host.append(rowSection(r, i < 2)); });
+      M.rowsOf(home).forEach(function (r) { host.append(rowSection(r)); });
       var note = M.missingRowNote(home, "wave5");
       if (note) host.append(el("p", { class: "el-note", text: note }));
     }

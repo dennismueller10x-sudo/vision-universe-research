@@ -492,14 +492,15 @@
   }
 
   /* ---------------------------------------------- VU3-Aktienkopf (assets/stock-navigator.js)
-     Name als H1, hoechstens EIN Kurs: der Schlusskurs der letzten Bar des Aktienbilds mit ihrem Datum. Ohne echten Kurs kein Kurs. */
+     Name als H1, hoechstens EIN Kurs: der Schluss der letzten Bar des Aktienbilds mit ihrem Datum (Wochenschluss bzw. Schlusskurs). Ohne echten Kurs kein Kurs. */
   function shortDate(iso) { return /^\d{4}-\d{2}-\d{2}/.test(iso || "") ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." : null; }
   function headPrice(a) {
     var last = a && a.price && a.price.close, at = shortDate(a && a.asOf);
     if (!isNum(last) || !at) return null;
     var c = (a.chart && a.chart.close) || [], ts = (a.chart && a.chart.timestamps) || [];
     var prev = c.length > 1 && ts[ts.length - 1] === a.asOf && c[c.length - 1] === last ? c[c.length - 2] : null;
-    return { value: last, currency: "USD", kind: "close", at: at, changePct: isNum(prev) && prev > 0 ? (last / prev - 1) * 100 : null, changeLabel: a.timeframe === "1W" ? "zur Vorwoche" : "zum Vortag" };
+    /* Wochenchart: Schluss der letzten Wochenkerze, kein aktueller Kurs - deshalb ausdruecklich "Wochenschluss". */
+    return { value: last, currency: "USD", kind: a.timeframe === "1W" ? "Wochenschluss" : "close", at: at, changePct: isNum(prev) && prev > 0 ? (last / prev - 1) * 100 : null, changeLabel: a.timeframe === "1W" ? "zur Vorwoche" : "zum Vortag" };
   }
   function stockHead(host, ctx, ticker, current) {
     var name = (ctx && ctx.names && ctx.names[ticker]) || ticker, SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, sctx = null, api = null;
