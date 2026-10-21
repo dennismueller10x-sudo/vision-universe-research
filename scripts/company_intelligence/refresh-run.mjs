@@ -1,5 +1,5 @@
 import {productionObservation} from './production-observation.mjs';
-import {observeProduction} from './observe-production.mjs';
+import {observeProduction,codeOf} from './observe-production.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
    in outputs. Existing SQLite/checkpoint, HTTP, SEC and R2 paths are reused. */
 import {readFileSync,writeFileSync,mkdirSync,existsSync,rmSync} from 'node:fs';
@@ -223,6 +223,22 @@ export async function runRollback(driver,{expectGeneration}={}){
  }
  return {result,exitCode:result.status==='GENERATION_MISMATCH'?1:0};
 }
+/** `observe`-Unterbefehl (CLI-Zweig als Funktion, damit Exit-Code und Log testbar sind).
+ *  Klassifiziert (observe-production.mjs): REAL -> Exit 1 (fail-closed), BOOKKEEPING -> Exit 3 (Produktion belegt, nur das
+ *  Festhalten scheitert), sonst 0. Der Code steht immer im Log. `extra` nur fuer Tests (fetcher, sleep, attempts, delayMs, now, log). */
+export async function runObserve(args,driver,{log=console.log,...extra}={}){
+ const arg=k=>args[args.indexOf(k)+1];
+ const r=await observeProduction({
+  readGood:async()=>{const n=await activeNamespace(driver);return {ns:n,good:await goodState(driver,n)};},
+  driver,keyFor:n=>prefixFor(n)+'observed.json',sameGenerationOnly:args.includes('--same-generation-only'),
+  saveHealth:args.includes('--health')?o=>{const p=arg('--health'),health=json(p);Object.assign(health,{lastSuccessfulProductionPublication:o.lastSuccessfulProductionPublication,publicationSLO:'HEALTHY',productionVerified:true});save(p,health);}:null,
+  ...extra
+ });
+ if(r.status==='DEFERRED')log(r.code+(r.reason?` (${r.reason})`:''));
+ else log(JSON.stringify({status:r.status,class:r.class,code:r.code,generation:r.generation,served:r.served,good:r.good,attempts:r.attempts}));
+ if(r.status==='FAIL')log(`::error::observe ${r.class} (${r.code})`);
+ return r.exitCode;
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];const driver=args[0]==='health'?null:createS3DriverFromEnv();
  try{
@@ -254,17 +270,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    }
   }
   else if(args[0]==='observe'){
-   // Klassifiziert (observe-production.mjs): REAL -> Exit 1 (fail-closed), BOOKKEEPING -> Exit 3 (Produktion belegt, nur das
-   // Festhalten scheitert). Der Code steht immer im Log.
-   const r=await observeProduction({
-    readGood:async()=>{const n=await activeNamespace(driver);return {ns:n,good:await goodState(driver,n)};},
-    driver,keyFor:n=>prefixFor(n)+'observed.json',sameGenerationOnly:args.includes('--same-generation-only'),
-    saveHealth:args.includes('--health')?o=>{const p=arg('--health'),health=json(p);Object.assign(health,{lastSuccessfulProductionPublication:o.lastSuccessfulProductionPublication,publicationSLO:'HEALTHY',productionVerified:true});save(p,health);}:null
-   });
-   if(r.status==='DEFERRED')console.log(r.code);
-   else console.log(JSON.stringify({status:r.status,class:r.class,code:r.code,generation:r.generation,served:r.served,good:r.good,attempts:r.attempts}));
-   if(r.status==='FAIL')console.log(`::error::observe ${r.class} (${r.code})`);
-   process.exitCode=r.exitCode;
+   process.exitCode=await runObserve(args,driver);
   }else{
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
    console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,
@@ -273,5 +279,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     runtimeSeconds:r.durationSeconds,sourcesChecked:r.sourcesChecked,publicRequests:r.publicRequests,secRequests:r.secRequests,
     httpStats:r.httpStats,sourceOutcomes:r.sourceOutcomes,scheduler:r.scheduler}));if(r.status!=='SUCCESS')process.exitCode=1;
   }
- }catch(error){console.error('CONTINUOUS_REFRESH_FAILED ('+(/^[A-Z0-9_:-]+$/.test(error?.message||'')?error.message:(error?.code||error?.name||'UNKNOWN'))+')');process.exitCode=1;}
+ }catch(error){console.error('CONTINUOUS_REFRESH_FAILED ('+codeOf(error)+')');process.exitCode=1;}
 }

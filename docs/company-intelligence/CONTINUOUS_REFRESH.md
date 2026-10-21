@@ -764,3 +764,55 @@ nach der alten Frist). Ein echter Fehler des eigenen Pages-Laufs (`failure`, `ti
 - Bewusste Folge: Scheitert `approved` aus einem anderen Grund als `PRODUCTION_GATE_CHANGED_AFTER_PACKAGE`, obwohl das Artefakt schon
   ausgeliefert ist, erfolgt nur disable und OFF-Dispatch, kein Rollback.
 - `--expect-generation` wertet `refresh-run.mjs rollback` erst mit PR #726 (CAS in `rollbackGood`) aus; bis dahin wird es ignoriert.
+
+## observe: Fehlerklassen REAL und BOOKKEEPING (B4/B5, nach dem Vorfall 18.10.2026, Lauf 39128011059)
+
+**Vorfall.** Auslieferung und Live-QA (16 Faelle) waren bestanden, danach scheiterte nur `refresh-run.mjs observe`; ein leeres `catch{}`
+verschluckte die Ursache. Der Fail-closed-Pfad wertete das als Produktionsfehler, rollte zurueck und schloss das Gate (DISABLED).
+
+**Klassen (`observe-production.mjs`).**
+
+| Klasse | Exit | Bedeutung | Folge |
+|---|---|---|---|
+| PASS / DEFERRED | 0 | Generation belegt und `observed.json` geschrieben, bzw. mit `--same-generation-only` ohne passende Vorbeobachtung aufgeschoben (Ursache steht im Log) | keine |
+| REAL | 1 | Produktion nicht belegbar: Auslieferung nach Wiederholung nicht lesbar (HTTP, HTML statt JSON, Netz, Zeitlimit), ausgelieferte Generation != GOOD, GOOD in R2 nicht lesbar | Schritt rot, **Fail closed** (Rollback, disable, OFF-Dispatch) wie bisher |
+| BOOKKEEPING | 3 | Generation == GOOD ist **belegt**; nur das Schreiben/Zuruecklesen von `observed.json`, das Lesen der Vorbeobachtung (`--same-generation-only`) oder das Schreiben von `health.json` scheitert | **kein** Rollback, kein disable; Lauf wird rot (Refresh) bzw. warnt (Pages) |
+
+Exit 3 entsteht nur nach belegter Generationsgleichheit. Die Wiederholung (3 Versuche, 20 s Pause, je Versuch GOOD und Auslieferung neu
+gelesen) gilt unveraendert fuer Lesefehler und Generationsabweichung; ein Wechsel von GOOD zwischen den Versuchen wird immer gegen den
+aktuellen GOOD verglichen. Das Zuruecklesen belegt die **Generation** der Beobachtung (nicht Byte-Gleichheit): ein paralleler Schreiber
+derselben Generation ist kein Fehler, eine fremde oder fehlende Generation bleibt BOOKKEEPING.
+
+**Refresh-Workflow.** `deploy_live` setzt bei Exit 3 den Output `observe_bookkeeping=true` und endet mit 0 (`::error::`-Zeile im Log);
+nur Exit 3 wird so behandelt, jeder andere Exit-Code bleibt Exit-Code des Schritts. Aggregate-health, `Mark successful run` und
+`Upload run marker` laufen weiter. **Letzter Schritt** `Observation bookkeeping failed` macht den Lauf rot, ohne Rollback/disable/Dispatch.
+Der Marker ist in diesem Fall ein Erfolgs-Marker eines roten Laufs: unschaedlich, weil das Scheduler-Gate (`scheduler-gate.mjs`) einen
+Marker nur bei `conclusion == success` als frisch zaehlt; ein roter Lauf zaehlt nicht als frisch (Cooldown nach rotem Lauf: 45 min).
+
+**Pages-Workflow.** Der Schritt `Record actual verified publication ...` (`observe --same-generation-only`) behandelt Exit 3 wie der
+Refresh: `::warning::` plus Eintrag in die Step-Summary, Exit 0 fuer den Schritt. Damit wird `failure()` nicht wahr, und der Handler
+`Fail-closed persistent consumer gate and emergency Pages rollback` (pages-rollback-decision, Rollback, disable, OFF-Dispatch) laeuft nicht.
+Der Pages-Lauf bleibt gruen, die Warnung steht an der Zusammenfassung. Jeder andere Nicht-Null-Exit scheitert wie bisher.
+Nicht angefasst: `company-intelligence-profile-source.yml` und `company-intelligence-universe-release.yml` rufen `observe` ebenfalls auf,
+ohne Exit-3-Behandlung (manuelle Laeufe mit eigener Entscheidungslogik); eine Angleichung gehoert in einen eigenen PR.
+
+**Diagnose-Codes.** Jeder Fehler traegt einen Code im Log (`::error::observe <Klasse> (<Code>)`), nie Meldungstext, Schluessel, URLs oder Header
+(`codeOf`): `HTTP_403` / `HTTP_503` (Antwort des S3-Treibers), `FETCH_FAILED[:ECONNRESET]` (Netz), `TIMEOUT`, `S3_CONFIG` (Zugangsdaten/Bucket
+fehlen), `ZERO_COST_GUARD_BLOCKED`, sonst Fehlercode bzw. Fehlername (`[A-Za-z0-9_]`, hoechstens 40 Zeichen) oder `UNKNOWN`. Beispiele:
+`BOOKKEEPING (OBSERVED_WRITE_FAILED:HTTP_403)`, `BOOKKEEPING (OBSERVABILITY_READBACK_FAILED)`, `BOOKKEEPING (OBSERVED_READ_FAILED:FETCH_FAILED)`,
+`BOOKKEEPING (HEALTH_WRITE_FAILED:ENOSPC)`, `REAL (DELIVERY_HTTP_503)`, `REAL (OBSERVED_PRODUCTION_GENERATION_MISMATCH)`,
+`REAL (GOOD_UNREADABLE:HTTP_403)`. Aufschub mit Ursache: `OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA (PRIOR_OBSERVATION_MISSING |
+PRIOR_OBSERVATION_UNPARSEABLE | PRIOR_OBSERVATION_GENERATION_DIFFERS | SERVED_GENERATION_NOT_GOOD | GOOD_ABSENT)`.
+Der Sammel-Fehler `CONTINUOUS_REFRESH_FAILED (<Code>)` nutzt dieselbe Klassifikation.
+
+**Vorgehen nach einem roten Exit-3-Lauf.**
+1. Im Log des Schritts `deploy_live` den Code lesen (`OBSERVED_WRITE_FAILED:HTTP_403` = R2-Schluessel/Rechte, `FETCH_FAILED` = Netz, `ENOSPC` = Runner).
+2. Nichts zurueckrollen, das Gate nicht anfassen: die Produktion ist belegt und gesund.
+3. Der naechste Refresh-Lauf schreibt `observed.json` neu und heilt (`node scripts/core/system-health.mjs` bzw. `refresh-run.mjs health`
+   zeigen bis dahin ggf. eine veraltete Veroeffentlichungsuhr).
+4. Der Re-Freeze-Guard bleibt **BLOCKED**, bis `observed.json` == GOOD gilt; er wird nicht umgangen.
+5. Bleibt Exit 3 ueber mehrere Laeufe bestehen (gleicher Code), ist es ein Speicher-/Rechteproblem und gehoert behoben, nicht ignoriert.
+
+**Tests.** `observe-production.test.mjs` (Klassifikation), `observe-cli.test.mjs` (CLI-Zweig im Kindprozess mit Fake-R2: Exit 0/1/3, Log-Zeile,
+Verdrahtung `keyFor`/`--health`/`--same-generation-only`, Wiederholungs-Default 3 x 20 s, GOOD-Wechsel, Diagnose-Codes gegen die echten
+Fehlerformate des S3-Treibers; die Workflow-Snippets beider Workflows werden mit einem `node`-Stub tatsaechlich in bash ausgefuehrt).

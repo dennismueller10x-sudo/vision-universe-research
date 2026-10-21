@@ -220,6 +220,8 @@ jobs:
             ${{ runner.temp }}/ci-refresh/live-qa.json.verify.json
             ${{ runner.temp }}/ci-refresh/dispatch-wait.json
           retention-days: 14
+      # Bei observe Exit 3 (BOOKKEEPING) laeuft auch dieser Schritt und der Marker wird hochgeladen, obwohl der Lauf am Ende rot wird.
+      # Unschaedlich: das Scheduler-Gate wertet einen Marker nur bei conclusion == success (scheduler-gate.mjs), rote Laeufe zaehlen nicht.
       - name: Mark successful run (mode and financial state for the next freshness guard)
         if: success()
         env:
