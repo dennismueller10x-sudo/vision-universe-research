@@ -1,6 +1,7 @@
 /* VISION UNIVERSE — Aktien-Navigator (assets/stock-navigator.js).
    Nur Tokens aus assets/site-navigation.css (Hell/Dunkel), Produkt-Icons im bestehenden HUD-Material.
-   Schmal (iPhone): sechs beschriftete Kacheln in einer Reihe; breit: Pillen mit Namen. */
+   Schmal (iPhone): sieben beschriftete Kacheln in einer Reihe; breit: Pillen mit Namen.
+   Dazu der einheitliche Aktienkopf (.vu-shead): flach, ohne Rahmen, Kurs mit Art und Zeitbezug. */
 .vu-snav{margin:6px 0 12px;max-width:100%;font-family:inherit;position:relative;z-index:1}
 .vu-snav-row{display:flex;align-items:center;gap:8px;min-width:0}
 .vu-snav-eyebrow{margin:0;flex:none;font:800 11px/1 Inter,-apple-system,"Segoe UI",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-muted)}
@@ -40,10 +41,37 @@
  .vu-snav-eyebrow{grid-area:eb}
  .vu-snav-more{grid-area:more;min-height:36px;padding:0 4px 0 10px;border:0;color:var(--vu-accent-text)}
  .vu-snav-more[aria-expanded=true]{background:none}
- .vu-snav-list{grid-area:list;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;overflow:visible;padding:0}
+ .vu-snav-list{grid-area:list;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;overflow:visible;padding:0}
  .vu-snav-chip{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:100%;min-height:72px;padding:6px 0 5px;border-radius:16px;border-color:transparent;white-space:normal}
- .vu-snav-chip>span:not(.vu-product-icon):not(.vu-snav-sr){display:block;max-width:100%;font-size:10px;line-height:1.1;letter-spacing:-.01em;text-align:center;hyphens:manual}
+ .vu-snav-chip>span:not(.vu-product-icon):not(.vu-snav-sr){display:block;max-width:100%;font-size:9.5px;line-height:1.1;letter-spacing:-.015em;text-align:center;hyphens:manual}
+ .vu-snav-chip .vu-snav-icon{--vu-icon-size:34px}
  .vu-snav-chip[aria-current=page]{border-color:var(--vu-accent-text)}
- .vu-snav-tick{display:grid;left:calc(50% + 8px)}
+ .vu-snav-tick{display:grid;left:calc(50% + 7px);width:14px;height:14px;font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){.vu-snav-more svg{transition:none}}
+
+/* ---------------------------------------------------------------- Aktienkopf */
+.vu-shead{display:block;margin:0 0 8px;color:var(--vu-text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.vu-shead-back{display:inline-flex;align-items:center;gap:6px;min-height:36px;margin:0 0 6px;color:var(--vu-text-secondary);font-size:13px;font-weight:700;text-decoration:none}
+.vu-shead-back:hover{color:var(--vu-text)}
+.vu-shead-id{display:flex;align-items:center;gap:14px;min-width:0}
+.vu-shead-logo{position:relative;flex:none;width:48px;height:48px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px var(--vu-line);display:grid;place-items:center;overflow:hidden}
+.vu-shead-logo:before{content:attr(data-mono);font:800 20px/1 Inter,sans-serif;color:#101318}
+.vu-shead-logo img{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);object-fit:contain;background:#fff}
+.vu-shead-names{min-width:0;flex:1}
+.vu-shead-name{margin:0;font-size:clamp(22px,5.6vw,30px);line-height:1.12;font-weight:850;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-wrap:balance}
+.vu-shead-meta{margin:3px 0 0;font-size:13px;line-height:1.3;font-weight:650;color:var(--vu-muted);letter-spacing:.02em}
+.vu-shead-actions{flex:none;display:flex;gap:8px;align-items:center}
+.vu-shead-actions:empty{display:none}
+.vu-shead-pricebox:empty{display:none}
+.vu-shead-price{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px;row-gap:2px;margin:16px 0 4px}
+.vu-shead-value{font-size:clamp(34px,9vw,46px);line-height:1;font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.vu-shead-change{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--vu-text-secondary)}
+.vu-shead-change small{font-size:13px;font-weight:650;color:var(--vu-muted)}
+.vu-shead-price[data-direction=up] .vu-shead-change{color:var(--vu-up,#1e8433)}
+.vu-shead-price[data-direction=down] .vu-shead-change{color:var(--vu-down,#d93a30)}
+.vu-shead-when{flex-basis:100%;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--vu-muted)}
+.vu-shead-live{width:7px;height:7px;border-radius:50%;background:var(--vu-up,#1e8433);box-shadow:0 0 0 3px color-mix(in srgb,var(--vu-up,#1e8433) 22%,transparent)}
+.vu-shead-nav{margin-top:14px}
+.vu-shead-nav .vu-snav{margin:0}
+@media(min-width:761px){.vu-shead-logo{width:56px;height:56px;border-radius:16px}.vu-shead-price{margin-top:20px}}

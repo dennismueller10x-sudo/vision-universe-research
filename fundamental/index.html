@@ -11,12 +11,16 @@
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die ganze Plattform; ohne Wahl dunkel wie Quant. -->
 <script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="light"||v==="dark")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/stock-navigator.css">
 <link rel="stylesheet" href="/fundamental/app.css">
 </head>
 <body class="fu-body"><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 <a class="fu-skip" href="#fu-main">Zum Inhalt</a>
 <main id="fu-main" class="fu" tabindex="-1" aria-busy="true"><div class="fu-boot"><div class="fu-skel" style="height:44px;width:42%"></div><div class="fu-skel" style="height:16px;width:64%;margin-top:12px"></div></div></main>
 <noscript><p style="padding:24px">Fundamental benötigt JavaScript.</p></noscript>
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/assets/stock-navigator.js"></script>
 <script src="/fundamental/engine/model.js"></script>
 <script src="/fundamental/app.js"></script>
 </body>

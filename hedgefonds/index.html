@@ -10,6 +10,7 @@
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie Discover -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#0b0d10":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/assets/stock-navigator.css">
 <link rel="stylesheet" href="/hedgefonds/app.css">
 </head>
 <body class="hf"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
@@ -31,6 +32,9 @@
 <main class="hf-main hf-wrap" id="hf-root" tabindex="-1"></main>
 <!-- Identität (Ticker -> Scherbe) für die Eigentümer-Signale, ADR-001 -->
 <script src="/core/identity.js"></script>
+<!-- Aktienkopf und Aktien-Navigator (VU3): dieselbe Aktie in den anderen Analysewelten -->
+<script src="/core/stock-context.js"></script>
+<script src="/assets/stock-navigator.js"></script>
 <script src="/hedgefonds/app.js"></script>
 </body>
 </html>

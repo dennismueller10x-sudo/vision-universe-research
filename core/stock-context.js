@@ -41,10 +41,10 @@
 
   if (!Identity || typeof Identity.securityIdForTicker !== "function") throw new Error("VUCore.Identity fehlt (core/identity.js vor stock-context.js laden)");
 
-  var VERSION = "core-stock-context-1.0.0";
+  var VERSION = "core-stock-context-1.1.0";
   var REGIONS = Object.freeze(["US", "EUROPE"]);
   /* Reihenfolge der Kacheln im Navigator. */
-  var PRODUCTS = Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental"]);
+  var PRODUCTS = Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]);
   var STATES = Object.freeze(["available", "unavailable", "unknown", "planned"]);
 
   /* US-Kuerzel so, wie Quant, Elliott, Supertrader und Discover sie fuehren (BRK-B, BF-A).
@@ -58,7 +58,7 @@
   /* Welche Produkte eine Region adressieren koennen. Europa hat heute nur Discover
      (Quant-Universum, Technik-Index und Supertrader-Seiten fuehren keine .DE/.PA-Listings). */
   var ROUTABLE = Object.freeze({
-    US: Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental"]),
+    US: Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]),
     EUROPE: Object.freeze(["discover"])
   });
 
@@ -159,6 +159,8 @@
       case "supertrader": return "/supertrader/stock/" + t + "/";
       /* fundamental/engine/model.js#parseRoute: #/<T> */
       case "fundamental": return "/fundamental/#/" + t;
+      /* hedgefonds/app.js#routeStockId: ein Kuerzel wird auf die CUSIP-Seite weitergeleitet. */
+      case "hedgefonds": return "/hedgefonds/#/aktie/" + t;
     }
     return null;
   }
@@ -192,6 +194,8 @@
     if (path === "/elliott/" && /^\/?[A-Za-z0-9.-]{1,12}\/*$/.test(hpath) && rawParts.length === 1) return us(pro ? "elliott" : "technik", rawParts[0]);
     /* fundamental/engine/model.js#parseRoute: #/<T> (dekodiert, Grossschreibung); #/methodik ist keine Aktie. */
     if (path === "/fundamental/" && parts.length === 1 && parts[0].toLowerCase() !== "methodik") return us("fundamental", parts[0].toUpperCase());
+    /* Hedgefonds: nur die Kuerzel-Adresse; eine CUSIP (#/aktie/69608A108) traegt kein Kuerzel, dort zeichnet die Seite selbst. */
+    if (path === "/hedgefonds/" && parts[0] === "aktie" && parts[1] && parts.length === 2 && !/^[0-9A-Z]{8}[0-9]$/.test(parts[1])) return us("hedgefonds", parts[1]);
     var st = /^\/supertrader\/stock\/([^/]+)\/$/.exec(path);
     if (st && !hash) { var s = dec(st[1]); return s ? us("supertrader", s) : null; }
     return null;
