@@ -253,6 +253,8 @@ body.qd .down{color:var(--q-down)}
 .qd .qx-watch{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:46px;height:46px;padding:0 14px;border-radius:99px;border:0;background:var(--q-lime);color:var(--q-lime-ink);font-weight:900;font-size:13px}
 .qd .qx-watch[aria-pressed=false]{background:var(--q-panel2);color:var(--q-text);border:1px solid var(--q-line2)}
 @media (min-width:980px){.qd .q-stock-head{grid-template-columns:auto auto minmax(0,1fr) auto}.qd .q-stock-price{grid-column:auto}}
+/* VU3: im einheitlichen Aktienkopf traegt der Kursblock .q-stock-price nur als Pruefanker - ohne das alte Raster-Layout. */
+.qd .vu-shead .q-stock-price{grid-column:auto;display:block;padding:0}
 
 /* Tabs (Übersicht · Analyse · Setup · Backtesting · News) */
 .qd .q-tabs{position:sticky;top:0;z-index:50;display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin:6px 0 4px;background:linear-gradient(var(--q-bg) 80%,transparent);scrollbar-width:none}

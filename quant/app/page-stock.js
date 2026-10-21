@@ -713,9 +713,10 @@
       var meta = headApi.el.querySelector(".vu-shead-meta");
       if (meta) { meta.classList.add("qx-stock-id"); meta.replaceChildren.apply(meta, idLine.concat(displayName ? [] : [el("span", { text: "Firmenname nicht veröffentlicht" })])); }
       quote = headApi.el.querySelector(".vu-shead-pricebox");
-      if (quote) { quote.classList.add("qx-quote"); quote.setAttribute("aria-live", "polite"); if (!closePrice) quote.replaceChildren.apply(quote, noPrice); }
+      /* q-stock-price: Anker der Direktlink- und Release-Pruefungen (scripts/vu2/direct-link-lib.mjs) fuer den sichtbaren Kurs. */
+      if (quote) { quote.classList.add("qx-quote", "q-stock-price"); quote.setAttribute("aria-live", "polite"); if (!closePrice) quote.replaceChildren.apply(quote, noPrice); }
     } else {
-      quote = el("div", { class: "qx-quote vu-shead-pricebox", "aria-live": "polite" }, closePrice ? [el("b", { class: "num", text: X.money(closePrice.value, "USD") }),
+      quote = el("div", { class: "qx-quote q-stock-price vu-shead-pricebox", "aria-live": "polite" }, closePrice ? [el("b", { class: "num", text: X.money(closePrice.value, "USD") }),
         el("small", { text: "Schlusskurs · " + closePrice.at })] : noPrice);
       hero.append(el("header", { class: "vu-shead qv-shead" }, [
         el("a", { class: "vu-shead-back qv-shead-back", href: X.routes.stocks(), text: "← Aktien" }),
