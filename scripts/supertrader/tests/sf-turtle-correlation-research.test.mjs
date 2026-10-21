@@ -184,3 +184,14 @@ test('SF3-TUR-CORR-VERSION: Komponente ist versioniert und deterministisch', () 
   for (const s of SPEC) assert.deepEqual(a.groupsOf(s.id, day(399)), b.groupsOf(s.id, day(399)));
   assert.deepEqual(a.anchorStats(), b.anchorStats());
 });
+
+test('SF3-TUR-CORR-SHARED-ANCHORS: geteilter Anker-Cache liefert dieselben Gruppen fuer beide Unknown-Politiken', () => {
+  const data = universe({ spec: SPEC }), cache = new Map();
+  const a = createCorrelationGroupProvider(data, RAW, { unknownPolicy: 'REPORT_ONLY', anchorCache: cache });
+  const b = createCorrelationGroupProvider(data, RAW, { unknownPolicy: 'POOLED_UNKNOWN', anchorCache: cache });
+  const d = day(380);
+  assert.deepEqual(a.groupsOf('A1', d), b.groupsOf('A1', d));
+  assert.equal(a.groupsOf('NEW', d), null);
+  assert.deepEqual(b.groupsOf('NEW', d), { closely: 'UNKNOWN', loosely: 'UNKNOWN' });
+  assert.ok(cache.size >= 1);
+});

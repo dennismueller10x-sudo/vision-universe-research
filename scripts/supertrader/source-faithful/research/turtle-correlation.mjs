@@ -226,7 +226,7 @@ export function groupsAtAnchor(ids, vectors, variant) {
  * data: { calendar, securities, benchmark } (runner/snapshot-input.mjs datasetFromPit). variant: CORRELATION_VARIANTS
  * entry. unknownPolicy: REPORT_ONLY | POOLED_UNKNOWN (no default: the caller decides and the run records it).
  */
-export function createCorrelationGroupProvider(data, variant, { unknownPolicy, universe = RESEARCH_UNIVERSE, populationFilter = null } = {}) {
+export function createCorrelationGroupProvider(data, variant, { unknownPolicy, universe = RESEARCH_UNIVERSE, populationFilter = null, anchorCache = null } = {}) {
   const errors = validateVariant(variant);
   if (errors.length) throw new Error('INVALID_VARIANT:' + errors.join(','));
   if (!UNKNOWN_POLICIES.includes(unknownPolicy)) throw new Error('UNKNOWN_POLICY_REQUIRED');
@@ -235,7 +235,9 @@ export function createCorrelationGroupProvider(data, variant, { unknownPolicy, u
   const rets = alignedReturns(data.securities, calendar);
   const mktR = variant.basis === 'MARKET_RESIDUAL' ? benchmarkReturns(data.benchmark, calendar) : null;
   if (variant.basis === 'MARKET_RESIDUAL' && !mktR) throw new Error('BENCHMARK_REQUIRED_FOR_RESIDUALS');
-  const W = variant.windowSessions, cache = new Map();
+  // anchorCache: share the computed anchors between providers of the SAME variant and data (e.g. the two unknown
+  // policies); the groups do not depend on the policy
+  const W = variant.windowSessions, cache = anchorCache ?? new Map();
   const counts = { lookups: 0, resolved: 0 }, reasons = {};
   const bump = (k) => { reasons[k] = (reasons[k] || 0) + 1; };
 
@@ -308,6 +310,7 @@ export function createCorrelationGroupProvider(data, variant, { unknownPolicy, u
   function anchorStats() {
     return [...cache.values()].filter((g) => !g.unavailable).sort((x, y) => x.date.localeCompare(y.date)).map((g) => ({ anchor: g.date, thresholds: g.thresholds, ...g.stats }));
   }
+  /** Counters are cumulative over every lookup (engine and measurement); callers take differences per run. */
   function diagnostics() {
     return { version: TURTLE_CORR_RESEARCH_VERSION, variant: variant.id, unknownPolicy, sourceStatus: 'EQUITY_MODEL_ASSUMPTION', ...counts, unknown: counts.lookups - counts.resolved, unknownByReason: { ...reasons }, anchorsComputed: cache.size, unknownMeaning: 'UNKNOWN_NOT_INDEPENDENT' };
   }
