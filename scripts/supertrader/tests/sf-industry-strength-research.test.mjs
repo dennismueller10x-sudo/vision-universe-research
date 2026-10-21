@@ -132,3 +132,27 @@ test('SF3-MARKET-BREADTH: Universums-Breite kausal; NYSE bleibt DATA_BLOCKED', (
   assert.ok(now.momentumIndexProxy !== null);
   assert.equal(br.at('2018-01-01').status, 'UNAVAILABLE');
 });
+
+test('SF3-WEIN-GROUP-GAP (Review M1/M2): Luecke in der Mitgliedschaft wird UNKNOWN; nie eine alte Woche als aktuell, nie eine spaetere Woche', () => {
+  const gapFrom = '2019-06-01', gapTo = '2019-11-30';
+  const membership = { groupOf: (id, date) => (id.startsWith('UP') && !(date >= gapFrom && date <= gapTo) ? 'G:UP' : null) };
+  const b = buildGroupStrength(data, membership, { minMembers: 5 });
+  const g = b.groups.get('G:UP');
+  // contiguous calendar weeks; weeks of the gap have no close
+  const keys = g.weeks.map((w) => w.key);
+  assert.deepEqual(keys, [...new Set(b.weekOf.slice(b.weekOf.indexOf(keys[0])))]);
+  assert.ok(g.weeks.filter((w) => w.date > '2019-06-10' && w.date < '2019-11-25').every((w) => w.close === null));
+  // inside the gap and shortly after: no evidence (stale weeks are not shown as KNOWN)
+  const inGap = groupEvidence(b, 'G:UP', isoWeekKey('2019-09-16'));
+  assert.notEqual(inGap.status, GROUP_STATE.KNOWN);
+  const after = groupEvidence(b, 'G:UP', isoWeekKey('2019-12-16'));
+  assert.equal(after.status, GROUP_STATE.INSUFFICIENT_HISTORY); // MA30w needs 30 complete weeks after the gap
+  // the evidence week is always the calendar week right before the decision week
+  assert.equal(groupEvidence(b, 'G:UP', isoWeekKey(CAL[300])).week, b.weekOf.filter((k) => k < isoWeekKey(CAL[300])).at(-1));
+  assert.equal(groupEvidence(b, 'G:UP', '2099-W01').week, b.weekOf.at(-1));
+  // a group absent from the roster in the prior week gets no stale evidence
+  const gapWeek = groupEvidence(b, 'G:UP', isoWeekKey('2019-07-15'));
+  assert.equal(gapWeek.status, GROUP_STATE.TOO_FEW_MEMBERS); assert.equal(gapWeek.members, 0);
+  const early = groupEvidence(b, 'G:UP', '2018-W01');
+  assert.equal(early.reason, 'NO_CALENDAR_WEEK_BEFORE');
+});

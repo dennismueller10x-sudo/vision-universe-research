@@ -103,6 +103,13 @@ export function buildGroupIndices(data, membership, { minMembers, weighting = 'E
     }
   }
   for (const g of groups.values()) {
+    // sessions without a roster entry for the group (membership lost, e.g. carry-forward expired) are explicit
+    // UNKNOWN sessions, so the weekly series stays contiguous on the calendar (review M1: no silent gap)
+    const byT = new Map(g.daily.map((d) => [d.t, d])), full = [];
+    for (let t = g.daily[0].t; t < T; t++) full.push(byT.get(t) ?? { t, date: cal[t], ret: null, members: 0, valid: false, noRoster: true });
+    g.daily = full;
+    // chain level: carried across UNKNOWN sessions (declared); a week with an UNKNOWN session has no close, and MA30w
+    // needs 30 complete consecutive weeks, so no stage evidence is computed across a gap
     let level = 100;
     for (const d of g.daily) { if (d.valid) level *= 1 + d.ret; d.value = d.valid ? level : null; }
     g.weeks = groupWeeks(g.daily, weekOf);
@@ -110,7 +117,7 @@ export function buildGroupIndices(data, membership, { minMembers, weighting = 'E
   return { status: 'BUILT', weighting, minMembers, groups, rosterByWeek, coverage, closes, vols, calendar: cal, weekOf };
 }
 
-/** Weekly closes of a group index: a week is complete only if it has no UNKNOWN session and a later week exists. */
+/** Weekly closes of a group index: a week has a close only if it has no UNKNOWN session (the current, incomplete week is excluded by groupEvidence, which only reads weeks before the decision week). */
 function groupWeeks(daily, weekOf) {
   const out = [];
   for (const d of daily) {
@@ -140,9 +147,11 @@ export function maRelation(weeks, w) {
 export function groupEvidence(built, groupKey, beforeWeekKey, { bench = null, minMembers = built.minMembers } = {}) {
   const g = built.groups.get(groupKey);
   if (!g) return { status: GROUP_STATE.UNKNOWN_MEMBERSHIP, group: groupKey };
-  let w = g.weeks.findIndex((x) => x.key >= beforeWeekKey) - 1;
-  if (w < -1) w = g.weeks.length - 1;
-  if (w < 0) return { status: GROUP_STATE.INSUFFICIENT_HISTORY, group: groupKey };
+  // the evidence week must be the calendar week immediately before the decision week (review M1 / M2): no older week
+  // is shown as current and nothing after the decision week is ever read
+  const prior = built.weekOf.filter((k) => k < beforeWeekKey).at(-1) ?? null;
+  const w = prior === null ? -1 : g.weeks.findIndex((x) => x.key === prior);
+  if (w < 0) return { status: GROUP_STATE.INSUFFICIENT_HISTORY, group: groupKey, reason: prior === null ? 'NO_CALENDAR_WEEK_BEFORE' : 'GROUP_NOT_IN_ROSTER_IN_PRIOR_WEEK', priorWeek: prior };
   const wk = g.weeks[w];
   if (!fin(wk.close)) return { status: wk.minMembers < minMembers ? GROUP_STATE.TOO_FEW_MEMBERS : GROUP_STATE.INSUFFICIENT_HISTORY, group: groupKey, week: wk.key, members: wk.minMembers };
   const rel = maRelation(g.weeks, w);
