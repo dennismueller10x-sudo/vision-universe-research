@@ -52,7 +52,7 @@ Ausgewiesene Komponenten: `MECHANICAL_PASS`, `DATA_BLOCKED_IBD_RS`, `EVIDENCE_MA
 Für jede Klasse gilt:
 - Die Ausgabe bleibt `MANUAL_REVIEW_REQUIRED` mit `buyDeclarationAllowed: false`.
 - „Bestätigt“ bezieht sich nur auf den mechanischen Teil. Das Urteil über das starke Startvolumen sowie Einstieg, Stop und Größe bleiben manuell.
-- Zusätzlich ausgewiesen werden die Stop-Referenz (tiefstes Tief der Konsolidierung, 10-%-Flag) und der Ausbruch über das Laufhoch.
+- Zusätzlich ausgewiesen werden die Stop-Referenz (tiefstes Tief der Konsolidierung, 10-%-Flag) und der Pivot am Laufhoch (`PIVOT_SET_AWAITING_BREAKOUT`; den Ausbruch bewertet `pivotBreakout` an einem späteren Balken).
 
 ## 4. Keine erfundenen Regeln
 
