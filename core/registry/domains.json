@@ -382,6 +382,30 @@
         "European documents require owner display rights, matching catalog SHA and current exact-MIC calendar.",
         "Long histories are fetched only for an opened stock detail; provider RAW stays private."
       ]
+    },
+    {
+      "id": "industryClassificationHistory",
+      "label": "Branchenklassifikation historisch (SEC-SIC, PIT)",
+      "layer": "CORE",
+      "group": "Fundamentals",
+      "critical": false,
+      "artifact": "/quant/data/sec/sic-history/index.json",
+      "repositoryOnly": true,
+      "timestamp": [
+        "observedThrough"
+      ],
+      "records": "stats.issuers",
+      "role": "SIC je Emittent (CIK) zum Einreichungszeitpunkt mit knownAt, aus FSDS sub.txt und Filing-Headern; keine heutige SIC rueckdatiert. Abfrage: core/industry-classification.js.",
+      "producer": "scripts/quant/cli.py sic-history",
+      "workflow": "sec-sic-history.yml",
+      "schedule": "manuell (kein Zeitplan bis zur Owner-Entscheidung)",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": [
+        "core/industry-classification.js",
+        "Supertrader-Research-Adapter (nicht aktiviert)"
+      ]
     }
   ]
 }

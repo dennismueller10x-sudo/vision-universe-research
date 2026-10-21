@@ -1,0 +1,104 @@
+name: SEC SIC-Historie (PIT-Branchenklassifikation)
+
+# Historische SIC-Beobachtungen aus offiziellen SEC-Quellen
+# (docs/HISTORICAL_SIC_PIT_REPORT.md):
+#  - Financial Statement Data Sets, je Quartal nur sub.txt per HTTP-Range
+#    (~0,5 MB statt ~100 MB je Quartal, 3 Requests),
+#  - Filing-Header (.hdr.sgml) fuer die Kreuzpruefung und das FSDS-Verdachtsfenster.
+#
+# Nur manuell. Kein Zeitplan, bis der Owner einen festlegt.
+#  - action=refresh: neue Quartale holen (bekannte werden nicht erneut geladen),
+#    fehlende gepinnte Rohdaten nachladen (Hash-Pruefung), neu bauen, committen.
+#  - action=verify: nur nachladen + Rebuild byte-gleich pruefen, nichts committen.
+# Jeder Lauf hat ein hartes Request-Budget (Eingabe max_requests).
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'refresh = neue Quartale + Rebuild + Commit; verify = Rebuild pruefen'
+        type: choice
+        options: [verify, refresh]
+        default: verify
+      max_requests:
+        description: 'Request-Obergrenze je Schritt'
+        type: string
+        default: '4000'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sec-sic-history-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  sic-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+      SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Eingaben pruefen
+        env:
+          IN_MAX: ${{ inputs.max_requests }}
+        run: |
+          set -euo pipefail
+          case "$IN_MAX" in ''|*[!0-9]*) echo "::error::max_requests muss eine Zahl sein"; exit 1;; esac
+
+      - name: Rohdaten aus dem Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/sec-cache/sic-history/raw
+          key: sic-history-raw-${{ hashFiles('quant/data/sec/sic-history/manifest.json') }}
+          restore-keys: sic-history-raw-
+
+      - name: Offline-Tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/quant/tests -p 'test_sic_history.py'
+          node --test core/tests/industry-classification.test.mjs core/tests/industry-classification-sec.test.mjs
+
+      - name: Gepinnte Quellen nachladen (Hash-Pruefung)
+        env:
+          IN_MAX: ${{ inputs.max_requests }}
+        run: python3 scripts/quant/cli.py --log-level WARNING sic-history hydrate --max-requests "$IN_MAX"
+
+      - name: Neue Quartale
+        if: inputs.action == 'refresh'
+        env:
+          IN_MAX: ${{ inputs.max_requests }}
+        run: python3 scripts/quant/cli.py --log-level WARNING sic-history fetch-fsds --max-requests "$IN_MAX"
+
+      - name: Rebuild
+        env:
+          IN_ACTION: ${{ inputs.action }}
+        run: |
+          set -euo pipefail
+          if [ "$IN_ACTION" = "refresh" ]; then
+            python3 scripts/quant/cli.py sic-history build
+          fi
+          python3 scripts/quant/cli.py sic-history verify
+          node --test core/tests/industry-classification-sec.test.mjs
+
+      - name: Commit und Push
+        if: inputs.action == 'refresh'
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/sec/sic-history
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          git commit -m "SEC SIC-Historie: $(node -e 'const i=require("./quant/data/sec/sic-history/index.json");console.log(i.fsdsLastQuarter+", "+i.stats.issuers+" Emittenten, "+i.stats.observations+" Beobachtungen")')"
+          PUSH_OWNED_PATHS="quant/data/sec/sic-history/" scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

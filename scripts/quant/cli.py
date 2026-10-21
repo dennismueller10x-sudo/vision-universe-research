@@ -1593,6 +1593,99 @@ def cmd_consumer(args):
     return 0
 
 
+SIC_HISTORY_DIR = DATA_DIR / "sic-history"
+
+
+def cmd_sic_history(args):
+    """Historische SIC-Beobachtungen (PIT): Abruf mit Budget, Offline-Build, Verify."""
+    import hashlib
+    import tempfile
+    from quant.sec import sic_history as sh
+    from quant.sec.http_client import SECHttpClient, DEFAULT_CACHE_DIR
+
+    manifest_path = Path(args.manifest)
+    store = sh.RawStore(Path(args.raw_dir) if args.raw_dir else DEFAULT_CACHE_DIR / "sic-history" / "raw")
+    manifest = sh.load_manifest(manifest_path)
+    observed_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    if args.action == "plan-gapfill":
+        client = SECHttpClient()
+        budget = sh.RequestBudget(client, args.max_requests)
+        gaps = {k: v["from"] for k, v in json.loads(Path(args.gaps).read_text()).items()}
+        first_known = {}
+        for shard in sorted({sh.shard_of(c) for c in gaps}):
+            path = Path(args.out) / "issuers" / f"{shard}.json.gz"
+            if path.exists():
+                import gzip as _gz
+                for cik, rec in json.loads(_gz.decompress(path.read_bytes()))["issuers"].items():
+                    first_known[cik] = rec["observations"][0][0] if rec["observations"] else None
+        targets = sh.plan_gap_headers(client, gaps, first_known, budget)
+        Path(args.targets).write_text(json.dumps(targets) + "\n")
+        manifest.setdefault("requestLog", []).append({"action": args.action, "at": observed_at,
+                                                      "requests": budget.used(), "budget": args.max_requests,
+                                                      "userAgent": client.user_agent, "targets": len(targets)})
+        sh.save_manifest(manifest_path, manifest)
+        print(f"  {len(targets)} Header-Ziele fuer {len(gaps)} CIKs; Requests {budget.used()} / {args.max_requests}")
+        return 0
+
+    if args.action == "hydrate":
+        client = SECHttpClient()
+        budget = sh.RequestBudget(client, args.max_requests)
+        sh.hydrate(client, store, manifest, budget)
+        print(f"  Requests: {budget.used()} / Budget {args.max_requests}")
+        return 0
+
+    if args.action in ("fetch-fsds", "fetch-headers", "fetch-codes"):
+        client = SECHttpClient()
+        budget = sh.RequestBudget(client, args.max_requests)
+        if args.action == "fetch-fsds":
+            last = args.to or _last_complete_quarter()
+            added, changed = sh.fetch_fsds(client, store, manifest, sh.quarter_range(args.since, last),
+                                           observed_at, budget, refresh=args.refresh)
+            print(f"  fsds: {len(added)} neu/aktualisiert, {len(changed)} neu veroeffentlicht")
+        elif args.action == "fetch-codes":
+            budget.check(1)
+            raw = client.get_bytes(sh.SIC_CODES_URL, use_cache=False)
+            store.put("siccodes", "sec-sic-list", raw)
+            manifest["sources"] = [e for e in manifest["sources"] if e["kind"] != "siccodes"]
+            manifest["sources"].append({"kind": "siccodes", "key": "sec-sic-list", "url": sh.SIC_CODES_URL,
+                                        "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw),
+                                        "observedAt": observed_at})
+        else:
+            targets = json.loads(Path(args.targets).read_text())
+            added = sh.fetch_headers(client, store, manifest, [tuple(t) for t in targets], observed_at, budget)
+            print(f"  header: {len(added)} neu")
+        manifest.setdefault("requestLog", []).append({"action": args.action, "at": observed_at,
+                                                      "requests": budget.used(), "budget": args.max_requests,
+                                                      "userAgent": client.user_agent})
+        sh.save_manifest(manifest_path, manifest)
+        print(f"  Requests: {budget.used()} / Budget {args.max_requests}")
+        return 0
+
+    if args.action == "build":
+        index = sh.build_and_write(manifest, store, Path(args.out))
+        print(f"  {index['stats']}")
+        return 0
+
+    if args.action == "verify":
+        # Deterministischer Rebuild: gleiches Manifest + Rohdaten -> byte-identische Ausgabe.
+        with tempfile.TemporaryDirectory() as tmp:
+            sh.build_and_write(manifest, store, Path(tmp))
+            diff = sh.compare_trees(Path(tmp), Path(args.out))
+        if diff:
+            print("  ABWEICHUNG:", *diff[:20], sep="\n    ")
+            return 1
+        print("  verify: Rebuild byte-identisch")
+        return 0
+    return 2
+
+
+def _last_complete_quarter(today=None):
+    today = today or date.today()
+    q = (today.month - 1) // 3  # abgeschlossene Quartale dieses Jahres
+    return f"{today.year}q{q}" if q else f"{today.year - 1}q4"
+
+
 def cmd_test(args):
     import unittest
     loader = unittest.TestLoader()
@@ -1778,6 +1871,19 @@ def build_parser():
     census.add_argument("--top", type=int, default=30)
     census.add_argument("--out", default=str(DATA_DIR / "concept-census.json"))
     census.set_defaults(func=cmd_concept_census)
+
+    shp = subparsers.add_parser("sic-history", help="historische SIC-Beobachtungen (PIT) aus FSDS und Filing-Headern")
+    shp.add_argument("action", choices=["fetch-fsds", "fetch-headers", "fetch-codes", "plan-gapfill", "hydrate", "build", "verify"])
+    shp.add_argument("--manifest", default=str(SIC_HISTORY_DIR / "manifest.json"))
+    shp.add_argument("--raw-dir", help="Rohspeicher (Default: $SEC_CACHE_DIR/sic-history/raw)")
+    shp.add_argument("--out", default=str(SIC_HISTORY_DIR))
+    shp.add_argument("--since", default="2009q1")
+    shp.add_argument("--to", help="letztes Quartal (Default: letztes abgeschlossenes)")
+    shp.add_argument("--refresh", action="store_true", help="bekannte Quartale erneut laden (Neuveroeffentlichung erkennen)")
+    shp.add_argument("--targets", help="JSON [[cik, accession], ...] fuer fetch-headers (plan-gapfill schreibt hierhin)")
+    shp.add_argument("--gaps", help="JSON {cik: {from}} aus scripts/quant/sic-history-coverage.mjs --gaps-out")
+    shp.add_argument("--max-requests", type=int, default=250, help="harte Obergrenze je Lauf")
+    shp.set_defaults(func=cmd_sic_history)
 
     test = subparsers.add_parser("test", help="run the offline test suite")
     test.add_argument("--verbose", action="store_true")

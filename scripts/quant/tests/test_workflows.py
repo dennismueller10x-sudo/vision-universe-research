@@ -209,12 +209,19 @@ class DataBudgetTests(unittest.TestCase):
     # is an owner decision recorded in docs/VU_DISCOVER_V3_NETFLIX_BUILD.md.
     CONSUMER_BUDGET_KB = 160 * 1024
     CONSUMER_DIR = "consumer"
+    # Die historische SIC-Basis (sec-sic-history.yml, docs/HISTORICAL_SIC_PIT_REPORT.md) ist die zweite
+    # bewusste Ausnahme: ~17 000 Emittenten, 1 000 gzip-Shards, nicht ausgeliefert (repositoryOnly,
+    # build-release.mjs nimmt sie nicht mit). Eigenes Budget, gemessen 20.10.2026; der Rohspeicher
+    # (FSDS sub.txt, Header) bleibt lokal und faellt unter test_raw_payloads_and_factbooks_are_not_committed.
+    SIC_HISTORY_BUDGET_KB = 12 * 1024
+    SIC_HISTORY_DIR = "sic-history"
 
     @classmethod
     def files(cls):
         root = ROOT / "quant" / "data" / "sec"
         return [p for p in root.rglob("*")
-                if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts]
+                if p.is_file() and cls.CONSUMER_DIR not in p.relative_to(root).parts
+                and cls.SIC_HISTORY_DIR not in p.relative_to(root).parts]
 
     @classmethod
     def consumer_files(cls):
@@ -228,6 +235,17 @@ class DataBudgetTests(unittest.TestCase):
         total = sum(p.stat().st_size for p in files) // 1024
         self.assertLessEqual(total, self.CONSUMER_BUDGET_KB,
                              f"quant/data/sec/consumer is {total}KB, over the {self.CONSUMER_BUDGET_KB}KB budget")
+        for path in files:
+            self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
+
+    def test_the_sic_history_stays_within_its_own_budget(self):
+        root = ROOT / "quant" / "data" / "sec" / self.SIC_HISTORY_DIR
+        files = [p for p in root.rglob("*") if p.is_file()]
+        if not files:
+            self.skipTest("no sic history committed")
+        total = sum(p.stat().st_size for p in files) // 1024
+        self.assertLessEqual(total, self.SIC_HISTORY_BUDGET_KB,
+                             f"quant/data/sec/sic-history is {total}KB, over the {self.SIC_HISTORY_BUDGET_KB}KB budget")
         for path in files:
             self.assertLessEqual(path.stat().st_size, self.MAX_FILE_BYTES, f"{path.name} is too large")
 

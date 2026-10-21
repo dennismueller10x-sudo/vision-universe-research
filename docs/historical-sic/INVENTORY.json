@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "historical-sic-inventory/1.0.0",
+  "asOf": "2026-10-20",
+  "baseCommit": "c64fb4aaf",
+  "question": "Welche SIC-/Branchenklassifikationen liegen im Repository, woher, mit welcher Zeitgueltigkeit?",
+  "verdict": "Vor diesem Auftrag war jede gespeicherte SIC die HEUTIGE SIC aus data.sec.gov/submissions bzw. submissions.zip. Kein Artefakt trug ein Wirksamkeitsdatum oder eine SIC-Historie.",
+  "existingStores": [
+    { "artifact": "quant/data/fundamentals/issuers/NNN.json", "producer": "scripts/quant/sec/universe_coverage.py#issuer_fundamentals", "source": "data.sec.gov/submissions (sic)", "key": "issuerId iss_cik_<10>", "records": 5479, "withSic": 5371, "timestamp": "keiner je Datensatz (retrieved_at verworfen)", "temporal": "CURRENT" },
+    { "artifact": "quant/data/product/sic-peer-taxonomy-v1.json", "producer": "scripts/quant/build-sic-peer-taxonomy.mjs", "source": "Shards oben", "key": "securityId -> issuerId", "records": 5521, "timestamp": "classificationTime.observedAt; effectiveAt null", "temporal": "CURRENT_ONLY (historicalClassificationAvailable false, backtestEligible false)" },
+    { "artifact": "vorsorge/data/sources/sec-sic.json", "producer": "scripts/vorsorge/fetch-sec-sic.mjs", "source": "Archives/edgar/daily-index/bulkdata/submissions.zip", "key": "Ticker", "records": 9075, "timestamp": "keiner", "temporal": "CURRENT", "note": "wird auf historische N-PORT-Bestaende angewendet (vorsorge/data/holdings)" },
+    { "artifact": "quant/data/sec/canonical/*.json, inspector/*, coverage_matrix.json", "producer": "scripts/quant/sec/canonical.py, cli.py", "source": "submissions (sic, sicDescription)", "key": "Ticker", "records": 5, "temporal": "CURRENT" },
+    { "artifact": "company-intelligence/config/profile-qa-reference-metadata.json", "producer": "scripts/company_intelligence/profile_qa_metadata.py", "source": "submissions", "key": "issuerId", "records": 250, "timestamp": "verifiedAt (Beobachtung)", "temporal": "CURRENT (DATED_QA_GROUP_CLASSIFICATION_ONLY)" },
+    { "artifact": "supertrader/data/stock/*.json, signals*.json (sicDivision)", "producer": "scripts/supertrader/build.mjs#sicInfo", "source": "sic-peer-taxonomy-v1", "key": "Ticker", "temporal": "CURRENT" },
+    { "artifact": "quant/data/product/factor-evidence-v1/*.json.gz (peer.industry)", "producer": "scripts/quant/build-factor-evidence.mjs", "source": "sic-peer-taxonomy-v1", "key": "Ticker", "temporal": "CURRENT" },
+    { "artifact": "quant/data/market/scale/universe-*.json (sector)", "producer": "scripts/market/universe-source.mjs#overlayCuratedSectors", "source": "kuratierte Liste quant/config/gate-100-seed.json", "key": "securityId", "records": "100 von 7.803 kuratiert", "temporal": "STATIC_CURATION (kein SEC)" },
+    { "artifact": "quant/config/sec-metric-registry.json (industries BANK/INSURER/REIT)", "producer": "Konfiguration", "source": "SIC-Bereiche", "temporal": "REGEL, keine Zuordnung" }
+  ],
+  "identity": {
+    "rule": "core/identity.js: securityId = ref_<TICKER> (nicht stabil ueber Tickerwechsel), issuerId = iss_cik_<10>; keine CIK-Tabelle in core",
+    "cikSources": [
+      { "artifact": "quant/data/universe/instruments/*.json", "instruments": 7809, "withCik": 6461, "withoutCik": 1348, "cikSource": { "sec:company_tickers_exchange": 6460, "config:sec-universe(declaredOverride)": 1 }, "temporal": "CURRENT ticker->CIK; belegt nur ab firstTradeDate", "uniqueCiks": 5481, "ciksWithSeveralListings": 618 },
+      { "artifact": "quant/data/universe/cik-map.json", "tickers": 10426, "source": "sec.gov/files/company_tickers*.json", "temporal": "CURRENT" },
+      { "artifact": "Supertrader-Snapshot seg.fund.cik (privat, R2)", "producer": "scripts/supertrader/validation/sec-pit.mjs", "method": "gelistete Titel: company-names; delistete: cik-lookup-data.txt + XBRL-Quartale im Listing-Fenster (selectDelistCik), sonst verworfen", "coverage": "6.148 von 9.211 Segmenten, delistet 2.101 von 3.226 (Lauf 39392734794)", "temporal": "LISTING_WINDOW_VALIDATED" }
+    ],
+    "tickerOnly": "Instrumente ohne CIK (1.348) sind nur ueber den Ticker bekannt; sie erhalten keine Klassifikation (IDENTITY_HOLD NO_CIK)"
+  },
+  "gaps": [
+    "Keine historische SIC vor diesem Auftrag (alle Werte CURRENT).",
+    "Keine CIK-Historie je Ticker im Repository; die Instrument-CIK ist die heutige Zuordnung.",
+    "Delistete Titel fehlen im Produktuniversum; ihre CIK kennt nur der private Supertrader-Snapshot.",
+    "Keine Gruppenindizes / Gruppencharts fuer Weinstein."
+  ],
+  "consumersInNeed": [
+    { "rule": "TUR-LIMIT6 / TUR-LIMIT10 (TUR-SF-LIMIT-CORR)", "method": "Turtle S1/S2", "engine": "scripts/supertrader/source-faithful/methods/turtle.mjs#correlationLimitBreach (groupsOf)", "status": "DATA_BLOCKED" },
+    { "rule": "WEIN-GROUP (WEIN-SF-GROUP), WEIN-GROUP2, WEIN-DIVERS3, WEIN-SH-GRP", "method": "Weinstein Investor/Trader", "engine": "scripts/supertrader/source-faithful/methods/weinstein.mjs", "status": "DATA_BLOCKED" },
+    { "rule": "TUR-RANK (gleichzeitige Gruppensignale)", "method": "Turtle", "status": "nicht Teil dieses Auftrags; braucht dieselbe Gruppendefinition" },
+    { "rule": "MIN-PROCESS-09/10, MIN-QUALITY-04, DAR-Q14, IBD13-016", "method": "Minervini, Darvas, IBD", "status": "PREFERENCE/CONTEXTUAL - nicht mechanisch, nicht Teil dieses Auftrags" }
+  ]
+}

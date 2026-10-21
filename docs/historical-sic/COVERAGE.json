@@ -1,0 +1,100 @@
+{
+ "schemaVersion": "sic-history-coverage/1.0.0",
+ "universe": "Produktuniversum quant/data/universe/instruments (heutiger Stand; delistete Titel fehlen dort)",
+ "window": {
+  "from": "2016-01-01",
+  "to": "2026-09-30",
+  "grid": "Monatsende",
+  "dates": 129,
+  "note": "Punkte = Listing x Monatsende, nur solange das Listing gehandelt wurde (firstTradeDate..delistedAt)"
+ },
+ "dataset": {
+  "fsdsQuarters": 71,
+  "fsdsLastQuarter": "2026q3",
+  "headers": 8906,
+  "observedThrough": "2026-10-20T14:25:27Z",
+  "issuersTotal": 17282,
+  "observationsTotal": 446074
+ },
+ "companies": {
+  "instruments": 7809,
+  "instrumentsWithCik": 6461,
+  "instrumentsWithoutCik": 1348,
+  "cikShare": 82.74,
+  "uniqueCiks": 5481,
+  "ciksWithSeveralListings": 618,
+  "cikSource": [
+   {
+    "source": "sec:company_tickers_exchange",
+    "instruments": 6460
+   },
+   {
+    "source": "config:sec-universe(declaredOverride)",
+    "instruments": 1
+   }
+  ],
+  "ciksInSicHistory": 5478,
+  "ciksInSicHistoryShare": 99.95
+ },
+ "observations": {
+  "forUniverseCiks": 206890,
+  "sicChangesBetweenCodes": 886,
+  "sicChangesInWindow": 738,
+  "issuersWithChange": 758
+ },
+ "points": {
+  "notListed": 380961,
+  "total": 626400,
+  "identityHold": 78431,
+  "OBSERVED": 524145,
+  "NO_SIC_ASSIGNED": 10698,
+  "UNKNOWN_BEFORE_FIRST_OBSERVATION": 12803,
+  "UNKNOWN_NO_OBSERVATIONS": 323,
+  "CONFLICT": 0,
+  "identityHoldReasons": {
+   "NO_CIK": 78431
+  },
+  "resolvedByIdentityEvidence": {
+   "CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE": 547969
+  },
+  "shares": {
+   "identityHold": 12.52,
+   "observedOfAll": 83.68,
+   "observedOfResolved": 95.65,
+   "unknownBeforeFirstOfResolved": 2.34,
+   "noObservationsOfResolved": 0.06,
+   "conflictOfResolved": 0
+  },
+  "observedAgeBuckets": {
+   "le100d": 451674,
+   "le200d": 46548,
+   "le400d": 24008,
+   "gt400d": 1915
+  },
+  "observedAgeShares": {
+   "le100d": 86.17,
+   "le200d": 8.88,
+   "le400d": 4.58,
+   "gt400d": 0.37
+  }
+ },
+ "use": {
+  "turtleDataUsablePoints": 524145,
+  "turtleDataUsableShare": 83.68,
+  "turtleBinding": "DATA_BLOCKED (Owner: SIC-Ebene eng/lose, maxAgeDays)",
+  "weinsteinMembershipUsableShare": 83.68,
+  "weinsteinGroupStageUsableShare": 0,
+  "weinsteinBinding": "DATA_BLOCKED (Gruppenchart-Konstruktion offen)"
+ },
+ "identity": {
+  "evidence": "CURRENT_TICKER_MAPPING_ASSUMED_SINCE_FIRST_TRADE",
+  "meaning": "CIK aus der heutigen SEC-Tickerliste, fuer die Vergangenheit ab firstTradeDate des Instruments angenommen; die SEC fuehrt keine historische Ticker-Zuordnung",
+  "notDetectable": "ein recycelter Ticker, den ein schon vorher meldender Emittent uebernimmt, wenn firstTradeDate die fruehere Notierung einschliesst",
+  "mitigation": "vor der ersten Beobachtung einer CIK liefert die PIT-API UNKNOWN, nie eine SIC"
+ },
+ "semantics": {
+  "real": "OBSERVED mit Alter <= 100 Tage: eine Beobachtung aus dem laufenden Berichtszyklus",
+  "extrapolated": "OBSERVED mit hoeherem Alter: fortgeschriebene letzte Beobachtung (INFERRED_INTERVAL)",
+  "note": "Altersklassen sind Berichtsklassen, keine Entscheidungsgrenzen"
+ }
+}
