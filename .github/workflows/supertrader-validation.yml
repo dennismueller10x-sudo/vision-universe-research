@@ -25,6 +25,8 @@ name: Supertrader interner Datentest (Validierung)
 # jeder andere Modus bricht dann ab (fail closed).
 #   [supertrader-validation:sf-research]        Buchgetreue Methoden (source-faithful/runner/run-research.mjs),
 #   [supertrader-validation:sf-research-smoke]  nur mit Snapshot-Marke und research-v1; Ergebnis DIAGNOSTIC_NOT_CERTIFIED
+#   [supertrader-validation:sf3-research]       Supertrader-3.0-Research-Komponenten (source-faithful/research/run-sf3-research.mjs),
+#   [supertrader-validation:sf3-research-smoke] gleiche Bedingungen; Engines und AG-3-Fingerabdruck unveraendert
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -33,7 +35,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [sf-research, sf-research-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
       snapshot:
         description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
@@ -75,7 +77,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:sf3-research-smoke]"*) m=sf3-research-smoke;; *"[supertrader-validation:sf3-research]"*) m=sf3-research;; *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Snapshot- und Abrechnungsvertrag (fail closed)
         id: snap
@@ -93,11 +95,11 @@ jobs:
           case "$acc" in legacy|research-v1) ;; *) echo "UNKNOWN_ACCOUNTING_MODE" >&2; exit 1;; esac
           # Nur analyze-methods.mjs liest einen Snapshot; r9b/r10b brauchen Live-Minutendaten (dort ebenfalls gesperrt).
           if [ -n "$snap" ] || [ "$acc" != legacy ]; then
-            case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b|sf-research|sf-research-smoke) ;;
+            case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b|sf-research|sf-research-smoke|sf3-research|sf3-research-smoke) ;;
               *) echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE ($MODE)" >&2; exit 1;; esac
           fi
           # Buchgetreue Methoden: nur eingefrorener Snapshot und research-v1 (fail closed).
-          case "$MODE" in sf-research|sf-research-smoke)
+          case "$MODE" in sf-research|sf-research-smoke|sf3-research|sf3-research-smoke)
             if [ -z "$snap" ] || [ "$acc" != research-v1 ]; then echo "INPUT_INTEGRITY_FAILURE: SF_RESEARCH_REQUIRES_SNAPSHOT_AND_RESEARCH_V1" >&2; exit 1; fi;; esac
           if [ "$acc" != legacy ] && [ -z "$snap" ]; then echo "research-v1 ohne Snapshot: Eingaben sind live (nicht eingefroren)"; fi
           args=""
@@ -198,6 +200,23 @@ jobs:
           extra=""
           [ "$MODE" = sf-research-smoke ] && extra="--smoke-snapshot"
           node scripts/supertrader/source-faithful/runner/run-research.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
+          cat "$RUNNER_TEMP/val"/*.public.json
+      - name: Supertrader 3.0 Research-Komponenten, diagnostisch (Snapshot + research-v1, verschluesselt)
+        if: steps.mode.outputs.mode == 'sf3-research' || steps.mode.outputs.mode == 'sf3-research-smoke'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+          SNAP_ARGS: ${{ steps.snap.outputs.args }}
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          set -euo pipefail
+          extra=""
+          [ "$MODE" = sf3-research-smoke ] && extra="--smoke-snapshot"
+          node scripts/supertrader/source-faithful/research/run-sf3-research.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
           cat "$RUNNER_TEMP/val"/*.public.json
       - name: Intraday-Zugangsprobe (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday-probe'
