@@ -281,7 +281,7 @@ Details: `context-evidence.mjs#DATA_FRONTIER`.
 
 ## Review
 
-Ein unabhängiges adversariales Review über den gesamten Diff fand **keine CRITICAL- oder HIGH-Befunde**.
+Ein unabhängiges adversariales Review über den gesamten Diff fand **keine CRITICAL- oder HIGH-Befunde**. Eine zweite, gezielte Prüfung der Fix-Commits fand weder CRITICAL/HIGH noch MEDIUM, nur vier LOW-Punkte (unten).
 
 Geprüft und bestätigt:
 - **NN-Chain-Clustering:** gegen eine naive Referenz auf 3.000 Zufallsmatrizen inklusive Ties, ohne Abweichung.
@@ -300,6 +300,10 @@ Geprüft und bestätigt:
 | L2 Power-Play-Ausbruch am Klassifikationsbalken konnte nie auslösen | LOW | Pivot gesetzt (`PIVOT_SET_AWAITING_BREAKOUT`), Ausbruch an späterem Balken |
 | L3 Laufzeit: doppelte Ankerberechnung, Weinstein-Stichprobe | LOW | geteilter Anker-Cache, Stichprobe jede 8. Woche |
 | L4 Readiness überbewertete den Kontext-Teil; Klassifikation `TUR-SF-LIMIT-CORR` | LOW | Kontext als reine Abdeckungsmessung benannt. `TUR-SF-LIMIT-CORR` ist im Lückenmodell eine Datenausnahme mit umgesetzter Mechanik; die Operationalisierung ist quellenoffen. Beides gilt gleichzeitig. |
+| Re-Review L-a geteilter Anker-Cache ohne Bindung an Variante/Daten | LOW | Cache wird beim ersten Gebrauch markiert, Fremdnutzung wirft `ANCHOR_CACHE_MISMATCH` |
+| Re-Review L-b `anchorStats` des zweiten Providers zählt den gemeinsamen Cache | LOW | dokumentiert: Ankerstatistik beschreibt den Variant-Cache, nicht die Unknown-Politik |
+| Re-Review L-c Entscheidungswoche nach Datenende liest die letzte, evtl. unvollständige Woche | LOW | dokumentiert; kein Zukunftszugriff |
+| Re-Review L-d M2-Test zu schwach | LOW | Test prüft streng „vor der Entscheidungswoche“ |
 
 ## 13. Welche Draft-PRs wurden erstellt?
 
