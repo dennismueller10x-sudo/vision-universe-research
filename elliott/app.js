@@ -198,33 +198,26 @@
         el("strong", { class: "el-proj-v num", text: head.text }),
         others.length ? el("span", { class: "el-proj-o", text: others.map(function (o) { return o.label + " " + o.text; }).join(" · ") }) : null
       ]) : null,
-      c.role === "EXPLORE_HIGHLIGHT" ? el("p", { class: "el-note-role", text: "Explorativ – nicht als reguläre Alternative freigegeben" }) : null,
+      c.role === "EXPLORE_HIGHLIGHT" ? el("p", { class: "el-note-role", text: "Explorativ · nicht als reguläre Alternative freigegeben" }) : null,
       el("p", { class: "el-meta" }, [el("b", { text: M.STATUS_LABEL[c.st] })]),
       chips.length ? el("ul", { class: "el-ctx", "aria-label": "Kontext" }, chips.map(function (x) { return el("li", {}, [el("span", { text: x.k }), " ", el("b", { text: x.v })]); })) : null,
-      c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kursdaten verzögert · letzter Stand " + M.dateDe(c.last) }) : null,
+      c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kurs verzögert · " + M.dateDe(c.last) }) : null,
       el("span", { class: "el-cta", "aria-hidden": "true", text: "Analyse öffnen →" })
     ]);
   }
 
   /* ------------------------------------------------------------ Bausteine */
-  function rowSection(row, eager) {
+  /* Zeilen sofort: die Startseite hat ihre Daten schon (ein kompakter Index), Platzhalter koennten sonst leer stehen bleiben. */
+  function rowSection(row) {
     var more = row.total > row.cards.length, flagship = row.kind === "flagship";
-    var track = el("ul", { class: "el-track", role: "list" });
-    var fill = function () { row.cards.forEach(function (c) { track.append(el("li", { class: "el-slot" }, [card(c, { flagship: flagship })])); }); track.dataset.ready = "true"; };
-    var section = el("section", { class: "el-row is-" + row.kind, "aria-labelledby": "el-h-" + row.id, dataset: { row: row.id } }, [
+    var track = el("ul", { class: "el-track", role: "list", dataset: { ready: "true" } }, row.cards.map(function (c) { return el("li", { class: "el-slot" }, [card(c, { flagship: flagship })]); }));
+    return el("section", { class: "el-row is-" + row.kind, "aria-labelledby": "el-h-" + row.id, dataset: { row: row.id } }, [
       el("header", { class: "el-row-head" }, [
         el("div", {}, [el("h2", { id: "el-h-" + row.id, class: "el-row-title", text: row.title }), el("p", { class: "el-row-rule", text: row.rule })]),
         el("a", { class: "el-all", href: M.rowHref(row), text: more ? "Alle " + row.total : "Als Liste" })
       ]),
       track
     ]);
-    if (eager || typeof IntersectionObserver !== "function") fill();
-    else {
-      track.append(el("li", { class: "el-skel", "aria-hidden": "true" }));
-      var io = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); track.replaceChildren(); fill(); } }, { rootMargin: "400px 0px" });
-      io.observe(section);
-    }
-    return section;
   }
   function emptyBox(e) {
     return el("section", { class: "el-empty", role: "status" }, [el("h2", { text: e.title }), el("p", { text: e.text }),
@@ -331,6 +324,10 @@
     if (initialQ) run();
     return form;
   }
+  /* Fokusrahmen am programmatisch fokussierten Kopf nur bei Tastaturbedienung (chartbild.css: html[data-kbd]). */
+  var de = document.documentElement;
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Tab") de.setAttribute("data-kbd", ""); });
+  document.addEventListener("pointerdown", function () { de.removeAttribute("data-kbd"); });
   /* "/" fokussiert die Suche der Startseite (wie in Quant und Discover). */
   document.addEventListener("keydown", function (ev) {
     if (state.view !== "home" || ev.key !== "/" || ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -346,7 +343,9 @@
         el("p", { class: "el-eyebrow", text: "Vision Universe" }),
         el("h1", { class: "el-title" }, [el("span", { class: "el-mark" }, [icon()]), "Elliott"]),
         el("p", { class: "el-lead" }, [el("span", { text: "Strukturelle Marktszenarien." }), " ", el("span", { text: "Klare Projektionen." }), " ", el("span", { text: "Transparente Invalidierung." })]),
-        buildSearch(s.q, s.suche)
+        buildSearch(s.q, s.suche),
+        /* Unteransicht Suche (Dock): nur das Suchfeld, fokussiert; die Uebersicht ist einen Schritt entfernt. */
+        s.suche ? el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]) : null
       ]),
       el("div", { class: "el-hero-side" }, [
         home ? stats(home, s) : null,
@@ -383,7 +382,7 @@
       host.append(grid);
       if (list.length > shown.length) host.append(el("button", { class: "el-btn el-more", type: "button", text: "Mehr anzeigen (" + (list.length - shown.length) + ")", onclick: function () { state.shown += M.PAGE; render(); var g = document.querySelectorAll(".el-grid .el-card"); if (g[shown.length]) g[shown.length].focus(); } }));
     } else {
-      M.rowsOf(home).forEach(function (r, i) { host.append(rowSection(r, i < 2)); });
+      M.rowsOf(home).forEach(function (r) { host.append(rowSection(r)); });
       var note = M.missingRowNote(home, "wave5");
       if (note) host.append(el("p", { class: "el-note", text: note }));
     }
@@ -422,7 +421,9 @@
     if (key !== state.homeKey) { state.shown = M.PAGE; state.homeKey = key; }
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
+    root.classList.toggle("is-suche", !!s.suche);
     root.replaceChildren(hero(Object.assign({}, s, { q: q })), content(s));
+    if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
     restoreFocus();
     document.title = (M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";

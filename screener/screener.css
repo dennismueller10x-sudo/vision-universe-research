@@ -540,6 +540,28 @@ html[data-theme=dark] .sc-check[aria-checked=true],html[data-theme=dark] .sc-bad
 /* Hell: Datenstand unter der Universumszahl lag bei 4,3:1 (WCAG AA 4,5:1) */
 html:not([data-theme=dark]) .sc-universe small{color:var(--sc-muted)}
 
+
+/* =========================================================================
+   VU3 UI-System: Abgrenzung in einer Zeile, Filterauswahl sichtbar im
+   Fokus („Screen bauen“), Metadaten gebuendelt in „Daten & Methodik“.
+   ========================================================================= */
+.sc-scope{margin:10px 0 0;font-size:13.5px;line-height:1.45;color:var(--sc-muted)}
+.sc-scope a{display:inline-flex;align-items:center;min-height:44px;color:var(--sc-text);font-weight:750;text-underline-offset:3px}
+.sc-scope{margin-bottom:6px}
+.sc-mode-line .sc-note{margin:0}
+.sc-criteria .sc-quick{min-height:72px}
+.sc-criteria.is-focus{padding:16px;border-radius:var(--sc-radius);background:var(--sc-accent-soft);margin-top:0}
+.sc-criteria.is-focus .sc-section-head{margin-top:0}
+.sc-criteria.is-focus .sc-quick{background:var(--sc-surface)}
+.sc-side.is-active .sc-stack>.sc-btn-secondary{border-color:var(--sc-accent);color:var(--sc-text);box-shadow:0 0 0 1px var(--sc-accent)}
+.sc-results-title{margin-top:0}
+.sc-preview-title{margin:28px 0 4px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sc-muted)}
+.sc-foot{border-top:0;padding-top:0}
+.sc-foot .vu-dm{margin-top:0}
+.sc-foot .vu-dm p{margin:0 0 8px}
+.sc-foot .vu-dm .sc-link{margin:0 0 14px;min-height:44px}
+.sc-legal{margin:4px 0 0;font-size:12px;line-height:1.5;color:var(--sc-muted)}
+
 /* BEGIN GENERATED HERO FIDELITY — edit assets/product-hero.css */
 /* Hero-only composition. Source for scripts/design/sync-product-hero.mjs.
    Compiled into existing product styles: no delayed CSS or extra requests. */

@@ -18,8 +18,45 @@
   const picker = (stocks, symbol, target, id) => `<section class="picker"><input class="search" id="${id}" placeholder="Aktie oder Symbol suchen"><div class="stock-buttons">${stocks.map((s) => `<a class="stock-button ${s.symbol === symbol ? 'selected' : ''}" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="/dashboard/${target}/?symbol=${s.symbol}${target === 'charting' ? '&days=' + rangeDays + '&side=' + side : ''}"><b>${s.symbol}</b><span>${esc(s.name)}</span></a>`).join('')}</div></section>`;
   const bindSearch = (id) => { const input = document.getElementById(id); if (input) input.oninput = () => document.querySelectorAll('.stock-button,.watch-card').forEach((el) => { el.hidden = !el.dataset.search.includes(input.value.toLowerCase()); }); };
 
+  /* ---------------------------------------------------------------- VU3
+     Das Dashboard ist eine dokumentierte Altwelt (dashboard/ARCHITECTURE.md).
+     Es bleibt erreichbar, ordnet sich aber in das Gesamtsystem ein: gleiche
+     Bausteine (assets/site-navigation.css), Aktienlinks fuehren in die
+     Produktwelten (Discover-Aktienseite mit Navigator), Charts in das
+     Chartbild der Plattform (/elliott/). Nichts wird neu berechnet. */
+  const SC = window.VUCore && window.VUCore.StockContext;
+  const ctxOf = (t) => { try { return SC ? SC.fromUs(t) : null; } catch (e) { return null; } };
+  const productHref = (t, product) => { const c = ctxOf(t); try { if (c) return SC.href(c, product); } catch (e) { /* unbekannt */ } return product === 'technik' ? '/elliott/#/' + encodeURIComponent(t) : '/discover/#/s/US_REAL/' + encodeURIComponent(t); };
+  const stockHref = (t) => productHref(t, 'discover');
+  const chartHref = (t) => productHref(t, 'technik');
+  const dateDe = (iso) => { if (!iso) return '—'; const d = String(iso).slice(0, 10).split('-'); return d.length === 3 ? d[2] + '.' + d[1] + '.' + d[0] : esc(iso); };
+  const icon = (id) => `<span class="vu-product-icon vu-product-icon--card" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#${id}"></use></svg></span>`;
+  const WORLDS = [
+    ['discover', 'Discover', 'Aktien entdecken, Kurs, Kennzahlen', '/discover/#/'],
+    ['quant', 'Quant', 'Faktor-Scores und Ranglisten', '/quant/'],
+    ['screener', 'Screener', 'Eigene Filter auf Kennzahlen', '/screener/'],
+    ['technical', 'Technik & Elliott', 'Chartbild und Wellen', '/elliott/'],
+    ['fundamental', 'Fundamental', 'Bilanz und Umsatz aus SEC-Daten', '/fundamental/#/'],
+    ['supertrader', 'Supertrader', 'Regelbasierte Strategien', '/supertrader/'],
+    ['hedgefonds', 'Hedgefonds', 'Was große Investoren halten', '/hedgefonds/'],
+    ['vorsorge', 'Vorsorge', 'Rente, ETFs und Förderung', '/vorsorge/#/']
+  ];
+  const worldsHtml = () => `<div class="db-worlds">${WORLDS.map((w) => `<a class="db-world" href="${w[3]}">${icon(w[0])}<span><b>${w[1]}</b><small>${w[2]}</small></span></a>`).join('')}</div>`;
+  /* Dashboard-Score (Beta): fester Wert aus dashboard/data/fundamental_scores.json (Feld fundamental_score_beta),
+     von Hand gepflegt, ohne Erzeuger-Skript; Teilwerte quality/growth/value/risk; Stand je Aktie data_as_of. */
+  const scoreExplain = (asOf) => `<details class="vu-more db-score-more"><summary>Was ist der Dashboard-Score (Beta)?</summary><div class="vu-more-body"><p>Ein Beta-Wert aus dem älteren Research-Dashboard für einen festen Kreis von Aktien. Er liegt als fester Wert vor (Stand ${dateDe(asOf)}) und wird nicht laufend neu berechnet. Dazu gehören die Teilwerte Qualität, Wachstum, Bewertung und Risiko; beim Risiko bedeutet ein höherer Wert mehr Risiko. Die Gewichtung der Teilwerte zum Gesamtwert ist nicht dokumentiert.</p><p>Er ist <b>kein Gesamturteil von Vision Universe</b> und nicht der Quant-Score. Aktuelle, laufend berechnete Bewertungen findest du in <a href="/quant/">Quant</a> und <a href="/fundamental/#/">Fundamental</a>. Keine Anlageberatung.</p></div></details>`;
+  const dm = (rows, asOf) => `<details class="vu-dm"><summary>Daten & Methodik${asOf ? ` <small>Stand ${dateDe(asOf)}</small>` : ''}</summary><dl>${rows.map((r) => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}<dt>Hinweis</dt><dd>Das Dashboard ist ein älterer Bereich mit festem Aktienkreis. Keine Anlageberatung.</dd></dl></details>`;
+
   if (view === 'home') {
-    app.innerHTML = `<section class="home"><div class="kicker">VISION UNIVERSE</div><h1>Was möchtest du heute verstehen?</h1><p class="intro">Unabhängiges Research für fundiertere Anlageentscheidungen.</p><div class="actions"><a class="action" href="/dashboard/research/"><b>Research</b><span>Fundamentale Analyse und Score</span></a><a class="action" href="/dashboard/charting/"><b>Charting</b><span>Kurs, Trend und Szenarien</span></a><a class="action" href="/dashboard/discover/"><b>Entdecken</b><span>Aktien suchen und auswählen</span></a><a class="action" href="/dashboard/news/"><b>News</b><span>Kursrelevante Meldungen aus Primärquellen</span></a><a class="action" href="/dashboard/watchlist/"><b>Watchlist</b><span>Scores und Kennzahlen vergleichen</span></a></div></section>`;
+    app.innerHTML = `<section class="db-hero"><p class="vu-eyebrow">Dashboard · älterer Bereich</p><h1 class="db-title">Research-Dashboard</h1><p class="vu-lead">Fester Aktienkreis mit Profilen und einem Beta-Score. Laufende Analysen findest du in den Produktwelten.</p></section>` +
+      `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Produktwelten</h2></div>${worldsHtml()}</section>` +
+      `<section class="vu-sec" id="dbStocks"><div class="vu-sec-head"><h2 class="vu-sec-title">Aktien im Dashboard</h2><a class="vu-sec-link" href="/dashboard/watchlist/">Watchlist →</a></div><p class="vu-empty">Aktien werden geladen …</p></section>` +
+      `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Im Dashboard</h2></div><ul class="db-links"><li><a href="/dashboard/research/"><b>Research</b><small>Profil, Kennzahlen und Dashboard-Score (Beta) je Aktie</small></a></li><li><a href="/dashboard/watchlist/"><b>Watchlist</b><small>Der Aktienkreis nach Dashboard-Score (Beta)</small></a></li><li><a href="/dashboard/discover/"><b>Entdecken</b><small>Aktie suchen</small></a></li><li><a href="/news/"><b>News</b><small>Meldungen auf der Vision-Universe-Startseite</small></a></li></ul></section>` +
+      dm([['Daten', 'Profile und Scores: Dashboard-Datensätze (dashboard/data). Kursreihen werden im Dashboard nicht veröffentlicht; Charts zeigt das <a href="/elliott/">Chartbild</a> der Plattform.']]);
+    get('config/universe.json').then((u) => {
+      const list = u.stocks.filter((s) => s.active);
+      document.getElementById('dbStocks').innerHTML = `<div class="vu-sec-head"><h2 class="vu-sec-title">Aktien im Dashboard</h2><a class="vu-sec-link" href="/dashboard/watchlist/">Watchlist →</a></div><ul class="db-stocks">${list.map((x) => `<li><a href="${stockHref(x.symbol)}"><b>${esc(x.symbol)}</b><span>${esc(x.name)}</span></a></li>`).join('')}</ul><p class="db-note">Jede Aktie öffnet die Discover-Aktienseite mit allen Produktwelten.</p>`;
+    }).catch(() => { document.getElementById('dbStocks').innerHTML = '<p class="vu-alert">Der Aktienkreis konnte nicht geladen werden.</p>'; });
     return;
   }
 
@@ -61,14 +98,35 @@
         ['Dividendenrendite', fmtPct(metric.dividend_yield_pct)],
         ['Free Cashflow (TTM)', fmtMoney(metric.free_cash_flow_ttm)]
       ];
-      app.innerHTML = `<div class="kicker">Fundamentale Analyse</div><h1 class="heading">Research</h1>${picker(stocks, stock.symbol, 'research', 'researchSearch')}<section class="research-grid">${s ? `<div class="orb-wrap"><span class="orb-label">Vision Universe Score</span><div class="orb ${scoreClass(s.fundamental_score_beta)}"><b>${s.fundamental_score_beta}</b><span>/100</span></div></div>` : `<div class="orb-wrap"><span class="orb-label">Vision Universe Score</span><div class="orb"><b>—</b><span>noch offen</span></div></div>`}<div class="profile"><h2>${esc(profile ? profile.name : stock.name)}</h2>${profile ? `<p>${esc(profile.summary)}</p><ul>${(profile.highlights || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : `<p>Noch kein Research-Profil hinterlegt.</p>`}</div></section>${scoreItems.length ? `<h2 class="section-title">Score-Analyse</h2><section class="scores score-details">${scoreItems.map(([name, value]) => `<article class="score"><span>${name}</span><b class="${scoreClass(value)}-text">${Math.round(value)}</b><i class="${scoreClass(value)}" style="width:${Math.min(value, 100)}%"></i><p>${esc(reasons[name])}</p></article>`).join('')}</section>` : ''}<h2 class="section-title">Fundamentale Kennzahlen</h2><section class="metrics">${metricRows.map(([name, value]) => `<div class="metric"><span>${name}</span><b>${value}</b></div>`).join('')}</section><p class="data-note">Datenstand ${metric.data_as_of ? esc(new Date(metric.data_as_of).toLocaleDateString('de-DE')) : esc(m.legacy_data_as_of || (s && s.data_as_of) || 'unbekannt')} · Quelle laut Datensatz: ${esc(m.provider || 'STATIC')}; ergänzende Bestandswerte: ${esc(m.legacy_sources || '—')}. Nicht verfügbare Werte werden nicht geschätzt.</p>`;
+      const top = ['Marktkapitalisierung', 'KGV (TTM)', 'KUV', 'Umsatzwachstum YoY', 'Bruttomarge', 'Operative Marge', 'FCF-Rendite', 'Eigenkapitalrendite'];
+      const kpi = (r) => `<div class="vu-kpi"><span class="vu-kpi-label">${r[0]}</span><span class="vu-kpi-value db-kv">${r[1]}</span></div>`;
+      const dataAsOf = metric.data_as_of ? String(metric.data_as_of).slice(0, 10) : (m.legacy_data_as_of || (s && s.data_as_of) || null);
+      const parts = !s ? [] : [['Qualität', s.quality, 'Quality'], ['Wachstum', s.growth, 'Growth'], ['Bewertung', s.value, 'Value'], ['Risiko', s.risk, 'Risiko']];
+      app.innerHTML = `<nav class="db-picker" aria-label="Aktie wählen">${stocks.map((x) => `<a class="vu-product-chip" href="/dashboard/research/?symbol=${x.symbol}"${x.symbol === stock.symbol ? ' aria-current="page"' : ''}>${x.symbol}</a>`).join('')}</nav>` +
+        `<section class="db-hero db-hero--stock"><p class="vu-eyebrow">Dashboard · Research</p><h1 class="db-title">${esc(profile ? (profile.name.endsWith(' ' + stock.symbol) ? profile.name.slice(0, -stock.symbol.length - 1) : profile.name) : stock.name)}</h1><p class="db-ticker">${esc(stock.symbol)} · <a href="${stockHref(stock.symbol)}">Aktienseite in Discover →</a></p><div id="dbNav" class="db-nav-host"></div></section>` +
+        `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Dashboard-Score <span class="db-beta">Beta</span></h2>${s ? `<span class="vu-status" data-tone="warn">Stand ${dateDe(s.data_as_of)}</span>` : ''}</div>` +
+        (s ? `<div class="db-score"><div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Dashboard-Score (Beta), nicht laufend aktualisiert</span><span class="vu-kpi-value">${s.fundamental_score_beta}<small> / 100</small></span></div>` +
+          `<ul class="db-parts">${parts.map((x) => `<li><span>${x[0]}${x[0] === 'Risiko' ? ' <small>(höher = mehr Risiko)</small>' : ''}</span><b>${Math.round(x[1])}</b><span class="vu-bar${x[0] === 'Risiko' ? ' db-bar-risk' : ''}"><i style="--v:${Math.min(100, Math.max(0, x[1]))}"></i></span></li>`).join('')}</ul></div>` +
+          `<details class="vu-more"><summary>Begründung der Teilwerte</summary><div class="vu-more-body">${parts.map((x) => `<p><b>${x[0]}:</b> ${esc(reasons[x[2]])}</p>`).join('')}</div></details>`
+          : `<p class="vu-empty"><b>Kein Dashboard-Score</b>Für ${esc(stock.symbol)} liegt im Dashboard kein Score vor. <a href="${productHref(stock.symbol, 'quant')}">Quant-Analyse öffnen →</a></p>`) +
+        scoreExplain(s && s.data_as_of) + `</section>` +
+        `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Profil</h2></div>${profile ? `<p class="db-summary">${esc(profile.summary)}</p><ul class="db-highlights">${(profile.highlights || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : `<p class="vu-empty">Noch kein Research-Profil hinterlegt.</p>`}</section>` +
+        `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Kennzahlen</h2></div><div class="vu-kpis db-kpis">${metricRows.filter((r) => top.indexOf(r[0]) >= 0).map(kpi).join('')}</div>` +
+        `<details class="vu-more"><summary>Alle ${metricRows.length} Kennzahlen</summary><div class="vu-more-body"><div class="vu-kpis db-kpis">${metricRows.filter((r) => top.indexOf(r[0]) < 0).map(kpi).join('')}</div></div></details></section>` +
+        dm([['Kennzahlen', `Quelle laut Datensatz: ${esc(m.provider || 'STATIC')}; ergänzende Bestandswerte: ${esc(m.legacy_sources || '—')}. Nicht verfügbare Werte werden nicht geschätzt.`], ['Score', 'Dashboard-Score (Beta) aus dashboard/data/fundamental_scores.json, fester Wert je Aktie.']], dataAsOf);
+      if (window.VUStockNavigator && ctxOf(stock.symbol)) { try { window.VUStockNavigator.mount(document.getElementById('dbNav'), ctxOf(stock.symbol), null); } catch (e) { /* Navigator optional */ } }
       bindSearch('researchSearch'); return;
     }
 
     if (view === 'charting') {
       const [u, t, market, fundamentals] = await Promise.all([get('config/universe.json'), get('data/technical_scores.json'), get('data/market_data.json'), get('data/fundamental_metrics.json')]);
       if (market.status !== 'generated' || !Object.keys(market.symbols || {}).length || !market.public_data_state || market.public_data_state.display_allowed !== true) {
-        app.innerHTML = `<div class="kicker">Charting</div><h1 class="heading">Daten nicht verfügbar</h1><p class="notice">Öffentlich speicherbare Kursdaten liegen derzeit nicht vor. Es wird nicht auf Mock-Kurse oder stille Nullwerte zurückgefallen. Für Charts ist ein geschützter interner Datenpfad erforderlich.</p>`;
+        /* Das Dashboard veroeffentlicht keine Kursreihen (ARCHITECTURE.md). Statt einer Sackgasse: das Chartbild der Plattform. */
+        const list = u.stocks.filter((s) => s.active), cur = list.find((s) => s.symbol === selected) || list[0];
+        app.innerHTML = `<section class="db-hero"><p class="vu-eyebrow">Dashboard · Charts</p><h1 class="db-title">Charts im Chartbild</h1><p class="vu-lead">Kursverläufe, Trend und Wellen zeigt das Chartbild von Vision Universe.</p>` +
+          `<div class="db-actions"><a class="vu-product-action" href="${chartHref(cur.symbol)}">Chart ${esc(cur.symbol)} öffnen</a><a class="vu-product-action vu-product-action--secondary" href="/elliott/">Alle Chartbilder</a></div></section>` +
+          `<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Chart je Aktie</h2></div><ul class="db-stocks">${list.map((x) => `<li><a href="${chartHref(x.symbol)}"><b>${esc(x.symbol)}</b><span>${esc(x.name)}</span></a></li>`).join('')}</ul></section>` +
+          dm([['Kursdaten', 'Das Dashboard speichert und zeigt keine eigenen Kursreihen; es fällt nicht auf Mock-Kurse oder Nullwerte zurück.']]);
         return;
       }
       const stocks = u.stocks.filter((s) => s.active), stock = stocks.find((s) => s.symbol === selected) || stocks[0], tech = t.symbols[stock.symbol];
@@ -211,8 +269,16 @@
     if (view === 'discover' || view === 'watchlist') {
       const [u, f, m] = await Promise.all([get('config/universe.json'), get('data/fundamental_scores.json'), get('data/fundamental_metrics.json')]);
       const stocks = u.stocks.filter((s) => s.active).sort((a, b) => (f.symbols[b.symbol] ? f.symbols[b.symbol].fundamental_score_beta : -1) - (f.symbols[a.symbol] ? f.symbols[a.symbol].fundamental_score_beta : -1));
-      if (view === 'discover') { app.innerHTML = `<div class="kicker">Aktienauswahl</div><h1 class="heading">Entdecken</h1><input class="search" id="discoverSearch" placeholder="Aktie oder Symbol suchen"><div id="discoverList"></div>`; const render = (term) => { document.getElementById('discoverList').innerHTML = stocks.filter((s) => (s.symbol + ' ' + s.name).toLowerCase().includes(term.toLowerCase())).map((s) => `<div class="row"><b>${s.symbol}</b><span>${esc(s.name)}</span><span class="row-actions"><a href="/dashboard/research/?symbol=${s.symbol}">Research</a><a href="/dashboard/charting/?symbol=${s.symbol}">Chart</a></span></div>`).join(''); }; render(''); document.getElementById('discoverSearch').oninput = (e) => render(e.target.value); return; }
-      app.innerHTML = `<div class="kicker">Nach Fundamental-Score sortiert</div><h1 class="heading">Watchlist</h1>${picker(stocks, '', 'research', 'watchSearch')}<div class="watch-cards">${stocks.map((s) => { const score = f.symbols[s.symbol], metric = m.symbols[s.symbol] || {}, legacy = metric.legacy || {}; return `<a class="watch-card" data-search="${esc((s.symbol + ' ' + s.name).toLowerCase())}" href="/dashboard/research/?symbol=${s.symbol}"><div><b>${s.symbol}</b><span>${esc(s.name)}</span><em>KGV ${pick(metric.pe_ratio_ttm, legacy.pe_ratio, fmtRatio)} · KUV ${pick(metric.ps_ratio_ttm, legacy.ps_ratio, fmtRatio)}</em></div><strong class="score-badge ${score ? scoreClass(score.fundamental_score_beta) : ''}">${score ? score.fundamental_score_beta : '—'}</strong></a>`; }).join('')}</div>`; bindSearch('watchSearch'); return;
+      if (view === 'discover') {
+        app.innerHTML = `<section class="db-hero"><p class="vu-eyebrow">Dashboard · Entdecken</p><h1 class="db-title">Aktie finden</h1><input class="db-search" id="discoverSearch" type="search" placeholder="Aktie oder Symbol suchen" aria-label="Aktie oder Symbol suchen"></section><section class="vu-sec db-sec-tight"><ul class="db-rows" id="discoverList"></ul><p class="db-note">Mehr Aktien: <a href="/discover/#/">Discover</a> durchsucht das ganze Universum.</p></section>` + dm([['Aktienkreis', 'dashboard/config/universe.json, aktive Einträge']]);
+        const render = (term) => { document.getElementById('discoverList').innerHTML = stocks.filter((s) => (s.symbol + ' ' + s.name).toLowerCase().includes(term.toLowerCase())).map((s) => `<li><a class="db-row-main" href="${stockHref(s.symbol)}"><b>${s.symbol}</b><span>${esc(s.name)}</span></a><span class="db-row-actions"><a class="vu-product-chip" href="${chartHref(s.symbol)}">Chart</a><a class="vu-product-chip" href="/dashboard/research/?symbol=${s.symbol}">Research</a></span></li>`).join('') || '<li class="vu-empty">Keine Aktie im Dashboard-Kreis passt. <a href="/discover/#/">In Discover suchen →</a></li>'; };
+        render(''); document.getElementById('discoverSearch').oninput = (e) => render(e.target.value); return;
+      }
+      const scoreAsOf = Object.keys(f.symbols).map((k) => f.symbols[k].data_as_of).filter(Boolean).sort().pop();
+      app.innerHTML = `<section class="db-hero"><p class="vu-eyebrow">Dashboard · Watchlist</p><h1 class="db-title">Watchlist</h1><p class="vu-lead">Der Dashboard-Aktienkreis, sortiert nach Dashboard-Score (Beta).</p></section>` +
+        `<section class="vu-sec db-sec-tight"><ol class="vu-rank db-rank">${stocks.map((s) => { const score = f.symbols[s.symbol], metric = m.symbols[s.symbol] || {}, legacy = metric.legacy || {}; return `<li><a class="db-row-main" href="${stockHref(s.symbol)}"><b>${s.symbol}</b><span>${esc(s.name)}</span><small>KGV ${pick(metric.pe_ratio_ttm, legacy.pe_ratio, fmtRatio)} · KUV ${pick(metric.ps_ratio_ttm, legacy.ps_ratio, fmtRatio)}</small></a><a class="db-score-badge" href="/dashboard/research/?symbol=${s.symbol}" aria-label="Dashboard-Score (Beta) ${score ? score.fundamental_score_beta : 'offen'} für ${s.symbol}"><b>${score ? score.fundamental_score_beta : '—'}</b><small>Score β</small></a></li>`; }).join('')}</ol>` +
+        scoreExplain(scoreAsOf) + `</section>` + dm([['Score', 'Dashboard-Score (Beta), fester Wert je Aktie aus dashboard/data/fundamental_scores.json'], ['Kennzahlen', esc(m.provider || 'STATIC') + '; ergänzend: ' + esc(m.legacy_sources || '—')]], scoreAsOf);
+      bindSearch('watchSearch'); return;
     }
   } catch (error) { console.error(error); app.innerHTML = '<p class="notice">Die Daten konnten nicht vollständig geladen werden. Bitte die Seite neu laden.</p>'; }
 }());

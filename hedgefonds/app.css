@@ -601,3 +601,62 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .hf-smblock{margin-top:8px}
 @media (max-width:760px){.hf-sm-ks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.hf-sm-k{padding:8px}.hf-sm-k b{font-size:15px}}
 .hf-panel .hf-empty{padding:16px 0;margin:0}
+
+/* =========================================================================
+   VU3 UI-Refresh: flache Kennzahlen, weniger Kaesten, Erklaerungen hinter
+   Klick, Daten & Methodik am Seitenende. Ranglisten, Logos und Fotos bleiben.
+   ========================================================================= */
+.hf-flatkpis{margin-top:22px}
+.hf-flatkpis a.vu-kpi{text-decoration:none;color:inherit;border-radius:12px}
+.hf-flatkpis a.vu-kpi:hover .vu-kpi-value{color:var(--accent-text)}
+.hf-flatkpis a.vu-kpi:focus-visible{outline:2px solid var(--vu-focus);outline-offset:4px}
+.hf-flatkpis .vu-kpi-value .pos{color:var(--up)}.hf-flatkpis .vu-kpi-value .neg{color:var(--down)}
+/* Listen ohne Kasten: Abschnitte tragen Weissraum und Haarlinien */
+.hf-panel{background:none;border:0;border-radius:0;padding:0}
+.hf-panel h3{padding:4px 0 6px;border-bottom:1px solid var(--line)}
+.hf-two{gap:20px 40px}
+.hf-stat{background:none;border:0;border-radius:0;padding:0}
+.hf-stat b{font-size:clamp(22px,2.4vw,28px)}
+.hf-more-line{display:inline-flex;margin-top:14px}
+.hf-section .vu-more{margin-top:10px}
+.hf .vu-more-body p{margin:0 0 8px}
+.hf .vu-more-body .hf-table-wrap{margin-top:8px}
+.hf-inst-more{margin-top:28px}
+.hf-sold{margin-top:20px}
+.hf-legal{margin-top:48px;font-size:12px;color:var(--muted)}
+.hf-dm{margin-top:8px}
+.hf-dm a{color:var(--ink-2)}
+/* Aktienkopf ohne Navigator (Aktien ohne US-Kuerzel) */
+.hf-shead-plain{display:flex;align-items:center;gap:16px;margin:8px 0 4px}
+.hf-shead-plain h1{font-size:clamp(28px,4.4vw,48px);letter-spacing:-.04em;line-height:1.05;font-weight:850}
+.hf-shead-meta{margin-top:4px;font-size:13px;font-weight:700;color:var(--muted)}
+#hf-shead .vu-shead{margin-top:10px}
+.hf-skpis{margin-top:14px}
+.hf-detail .hf-balance{margin-top:20px}
+/* Entdecken: kompakte Tueren */
+.hf .hf-door{min-height:150px}
+@media (max-width:760px){
+  .hf-flatkpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
+  .hf-flatkpis:not(.hf-skpis){grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .hf-flatkpis:not(.hf-skpis) .vu-kpi-value{font-size:26px}
+  .hf-flatkpis:not(.hf-skpis) .vu-kpi-sub{font-size:11.5px}
+  .hf-cons-more{display:none}
+  .hf-doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .hf .hf-door{min-height:0;padding:14px;border-radius:18px;gap:4px}
+  .hf-door b{font-size:15px;margin-top:10px}
+  .hf-door span:not(.hf-tile-ico),.hf-door em{display:none}
+  .hf-door .hf-tile-ico{width:38px;height:38px;border-radius:12px}
+  .hf-panel{padding:0}
+}
+/* Tabellen und Mini-Kennzahlen ohne Rahmen */
+.hf-table-wrap{border:0;border-radius:0;background:none}
+.hf-sm-k{padding:0;border:0;border-radius:0;background:none}
+.hf-sm-k b{font-size:22px}
+@media (max-width:760px){.hf-sm-k{padding:0}.hf-sm-k b{font-size:19px}.hf-sm-ks{gap:14px 10px}}
+@media (max-width:760px){.hf .hf-door{flex-direction:row;align-items:center;gap:10px}.hf-door .hf-tile-ico{margin-bottom:0}.hf-door b{margin-top:0}}
+a.hf-chip{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+/* Meistgehaltene Aktien: Ranglisten-Zeilen statt Kaesten */
+.hf-stock-grid{column-gap:32px;row-gap:0}
+.hf-stile{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 2px;min-height:56px}
+.hf-stile:hover{transform:none;box-shadow:none;background:var(--panel)}
+@media (max-width:760px){.hf-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-16px;padding-right:16px}.hf-chips::-webkit-scrollbar{display:none}.hf-chips .hf-chip{flex:none}}

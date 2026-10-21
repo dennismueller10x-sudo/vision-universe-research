@@ -360,8 +360,14 @@ test("EH-18 · Elliott detail context: breadcrumb back to Elliott, honest absten
   assert.match(cb, /Frag VU zu dieser Lesart/);
   assert.match(cb, /"\/ask\/\?q=" \+ encodeURIComponent\(/, "VU Ask bekommt nur eine Frage; die Antwort kommt aus den strukturierten Technical-Intelligence-Daten");
   /* Das Aktienbild bleibt in der Produktansicht erhalten: der Abstention-Zweig leitet nicht um */
-  const block = cb.slice(cb.indexOf("Elliott-Produkt: ohne gezeigte Lesart"), cb.indexOf("host.append(el(\"div\", { class: \"cb-viewswitch\""));
-  assert.doesNotMatch(block, /location\./);
+  /* VU3: die Absage steht kurz im Elliott-Bereich der Seite (Technik und Profi), nicht als Umleitung */
+  const spans = [["Ohne gezeigte Lesart bleibt die Aktie sichtbar", "// ---------------------------------------------- Warum?"], ["var ewKids = [];", "var ewSec = X.section(\"Elliott\""]];
+  for (const [from, to] of spans) {
+    const a = cb.indexOf(from), b = cb.indexOf(to);
+    assert.ok(a > 0 && b > a, "Abschnitt gefunden: " + from);
+    assert.doesNotMatch(cb.slice(a, b), /location\./);
+  }
+  assert.match(cb.slice(cb.indexOf("var ewKids = [];"), cb.indexOf("var ewSec = X.section")), /class: "cb-nothesis"/, "die Absage bleibt sichtbar, wo die Elliott-Aussage fehlt");
 });
 
 test("EH-19 · release ships the home view built from the committed shards, never committed itself", () => {

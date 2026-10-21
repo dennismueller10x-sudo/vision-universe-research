@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-20T11:45:10.962Z",
+  "generated_at_utc": "2026-10-21T11:56:42.054Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5323,
+    "withDeliveredStockPage": 5320,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -38898,20 +38898,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "NVNI",
-      "name": "Nvni Group Ltd",
-      "cik": "0001965143",
-      "instrumentId": "vu_119c59260cea53",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "NVNIW"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "NVNO",
       "name": "enVVeno Medical Corp",
       "cik": "0001661053",
@@ -44642,17 +44628,6 @@
       "cik": "0002106613",
       "instrumentId": "vu_abd5cf00bd9baf",
       "exchange": "AMEX",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "QNCX",
-      "name": "Quince Therapeutics, Inc.",
-      "cik": "0001662774",
-      "instrumentId": "vu_9838fa174a4343",
-      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -50579,21 +50554,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "SPKL",
-      "name": "Spark I Acquisition Corp",
-      "cik": "0001884046",
-      "instrumentId": "vu_c52f70775a7f5b",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "SPKLU",
-        "SPKLW"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -61908,6 +61868,20 @@
       "role": "universe"
     },
     {
+      "ticker": "NVNI",
+      "name": "Nvni Group Ltd",
+      "cik": "0001965143",
+      "instrumentId": "vu_119c59260cea53",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "NVNIW"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "OCLTU",
       "name": "OceanLight Acquisition Corp",
       "cik": "0002137679",
@@ -62045,6 +62019,17 @@
       "role": "universe"
     },
     {
+      "ticker": "QNCX",
+      "name": "Quince Therapeutics, Inc.",
+      "cik": "0001662774",
+      "instrumentId": "vu_9838fa174a4343",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "QRVO",
       "name": "Qorvo, Inc.",
       "cik": "0001604778",
@@ -62155,6 +62140,21 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "SPKL",
+      "name": "Spark I Acquisition Corp",
+      "cik": "0001884046",
+      "instrumentId": "vu_c52f70775a7f5b",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SPKLU",
+        "SPKLW"
+      ],
       "role": "universe"
     },
     {

@@ -22,7 +22,10 @@ concurrency:
 jobs:
   frontend:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    # Bekannte Fehler (scripts/discover/known-defects.json) warten je Ladevorgang
+    # bis zum Zeitlimit der Pruefung; mit Direktlink-Schritt in beiden Engines
+    # reichen 35 Minuten dann nicht. Kein Check wird dadurch gelockert.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

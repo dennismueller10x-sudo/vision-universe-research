@@ -387,6 +387,15 @@
    * (dieselbe Regel wie quant/engines/plain-verdict.js). Der Nenner ist
    * die Zahl der bewerteten Faktoren, nicht sieben.
    */
+  /* Nenner sichtbar machen (VU3): "3 von 6 gemessenen" neben sieben Werten
+     liest sich wie ein Rechenfehler. Der Satz nennt deshalb, welche
+     Eigenschaft nicht bewertbar ist - nichts wird nachgerechnet. */
+  function unratedNote(factors, rated) {
+    var off = factors.filter(function (f) { return f.state !== "AVAILABLE"; });
+    if (!off.length || rated.length === factors.length) return "";
+    var names = off.map(function (f) { return f.name || (FACTORS[f.id] && FACTORS[f.id].name) || f.id; });
+    return " " + (off.length === 1 ? "Nicht bewertbar: " : off.length + " nicht bewertbar: ") + names.join(", ") + ".";
+  }
   function overall(factors) {
     var PV = (typeof module !== "undefined" && module.exports) ? require("../engines/plain-verdict.js") : global.VUPlainVerdict;
     var rated = factors.filter(function (f) { return f.state === "AVAILABLE"; });
@@ -401,7 +410,7 @@
     var id = u.stufeId;
     var sub = rated.length < 3
       ? (rated.length ? "Nur " + rated.length + " von " + factors.length + " Eigenschaften lassen sich messen – ein dünnes Bild." : "Keine der sieben Eigenschaften lässt sich für diesen Titel messen.")
-      : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld.";
+      : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld." + unratedNote(factors, rated);
     return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,
       open: u.luecke, openText: u.luecketext || null };

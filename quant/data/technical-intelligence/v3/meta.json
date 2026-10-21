@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-20T11:40:54.287Z",
+ "generatedAt": "2026-10-21T11:27:49.526Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,20 +43,20 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4649,
+ "runtimeSec": 3346,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4390,
-   "DATA_INVALID": 450,
+   "ABSTAIN": 4376,
+   "DATA_INVALID": 448,
+   "WITHHELD": 74,
    "NO_PROJECTION": 108,
-   "AVAILABLE": 40,
-   "WITHHELD": 57
+   "AVAILABLE": 39
   },
-  "consumerVisible": 40,
+  "consumerVisible": 39,
   "types": {
-   "NEXT_MOVE": 33,
+   "NEXT_MOVE": 32,
    "WAVE_C": 2,
    "THRUST": 3,
    "WAVE_5": 1,
@@ -120,8 +120,8 @@
      "DOWN <50%": 1,
      "UP >1000%": 2,
      "UP 50-100%": 3,
-     "DOWN 50-100%": 2,
-     "UP 100-250%": 13
+     "UP 100-250%": 13,
+     "DOWN 50-100%": 2
     }
    },
    "candidates": {
@@ -164,7 +164,7 @@
    }
   },
   "splitResolved": 203,
-  "normalAlternative": 40,
+  "normalAlternative": 39,
   "motiveAlternative": 27,
   "motiveDOWN": 25,
   "motiveUP": 2,
@@ -178,39 +178,42 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-19",
+   "reference": "2026-10-20",
    "titles": 5040,
    "states": {
-    "FRESH": 4975,
-    "STALE": 54,
-    "DELAYED": 8,
-    "NON_TRADING": 3
+    "FRESH": 5,
+    "DELAYED": 4961,
+    "NON_TRADING": 20,
+    "STALE": 54
    },
    "reasons": {
-    "REFRESH_STOPPED": 35,
-    "NO_NEWER_BARS": 27,
-    "SECURITY_INACTIVE": 3
+    "REFRESH_STOPPED": 4988,
+    "SECURITY_INACTIVE": 20,
+    "NO_NEWER_BARS": 27
    },
-   "reasonsKnown": 3,
-   "delayedWithNotice": 8,
+   "reasonsKnown": 20,
+   "delayedWithNotice": 4961,
    "affected": {
-    "titles": 57,
-    "primary": 50,
-    "alternative": 47,
+    "titles": 74,
+    "primary": 64,
+    "alternative": 62,
     "motiveAlternative": 0,
     "exploreHighlights": 6,
     "exploreCandidates": 115,
-    "consumerVisibleProjections": 0
+    "consumerVisibleProjections": 1
    },
    "ageBuckets": {
-    "0-3": 4980,
-    "11-20": 21,
-    "21-40": 21,
-    ">40": 12,
-    "6-10": 3,
-    "4-5": 3
+    "0-3": 4979,
+    "11-20": 22,
+    "21-40": 18,
+    ">40": 15,
+    "4-5": 4,
+    "6-10": 2
    },
    "withheldTitles": [
+    "ADAMM",
+    "ADAMN",
+    "ADSE",
     "AIXC",
     "ANY",
     "APGE",
@@ -225,57 +228,71 @@
     "DBRG",
     "DBRG-P-H",
     "DOMO",
+    "EFOR",
+    "FBRT",
     "FBRX",
     "FGNXP",
     "FGNX",
     "FSEA",
     "GBTG",
+    "GOODN",
     "GWH",
     "HLX",
+    "JPM-P-M",
     "IWML",
     "IWFL",
     "JUPGF",
     "LEG",
+    "KREF-P-A",
     "LBRDK",
+    "LANDP",
     "LBRDA",
     "LBRDP",
     "LESL",
-    "MAA-P-I",
     "MDV-P-A",
+    "MAA-P-I",
     "MDV",
-    "MTUL",
+    "MS-P-O",
     "NCSM",
+    "MTUL",
     "NLY-P-I",
     "NSTS",
     "NTZ",
+    "OXLCP",
     "PHGE",
     "QRVO",
     "QULL",
+    "PSA-P-Q",
     "RMAX",
     "SAT",
+    "RIV-P-A",
+    "RPT",
     "SCDL",
+    "SF-P-B",
+    "SEVN",
     "SNYR",
+    "THRD",
     "TALK",
-    "TWO-P-C",
     "TWO",
     "TWO-P-B",
+    "TWO-P-C",
     "TWO-P-A",
     "VRME",
     "WBS",
     "WBS-P-F",
+    "ZTEK",
     "VTAK",
     "WALD",
     "WBD",
-    "WBS-P-G",
-    "ZTEK"
+    "WBS-P-G"
    ],
    "systemic": {
-    "share": 0.0113,
+    "share": 0.0147,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 0,
+  "lifecycleEvents": 2,
   "tracked": 444
  }
 }

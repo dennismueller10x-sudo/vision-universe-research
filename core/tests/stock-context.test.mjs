@@ -97,8 +97,10 @@ test("Adressen · Roundtrip href -> parse fuer US, EU, Klassen-Aktie, ETF-Kuerze
 test("Adressen · genau die Formen, die die Produkt-Router lesen", () => {
   const c = SC.fromUs("NVDA");
   assert.deepEqual(SC.PRODUCTS.map((p) => SC.href(c, p)), [
-    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", "/fundamental/#/NVDA"
+    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", "/fundamental/#/NVDA", "/hedgefonds/#/aktie/NVDA"
   ]);
+  assert.equal(SC.parse("/hedgefonds/#/aktie/NVDA").product, "hedgefonds");
+  assert.equal(SC.parse("/hedgefonds/#/aktie/67066G104"), null, "CUSIP traegt kein Kuerzel");
   /* Altadressen werden erkannt (quant/app/app.js leitet sie auf /elliott/#/<T> um). */
   assert.equal(SC.parse("/quant/#/aktie/NVDA/technik").product, "technik");
   assert.equal(SC.parse("/quant/#/aktie/NVDA/technik?elliott=1").product, "elliott");
@@ -129,7 +131,7 @@ test("Adressen · jedes US-Kuerzel aus Quant, Technik und Supertrader ist adress
 test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unknown' (auch Fundamental)", () => {
   const nvda = SC.fromUs("NVDA"), sapDe = SC.fromSearchEntry(entry("EUROPE", "SAP.DE"));
   const none = SC.availability(nvda);
-  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "unknown"]);
+  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown"]);
   const manifest = { schema: SC.SCHEMA, modules: {
     discover: { US: ["NVDA"], EUROPE: ["ref_SAP_DE_XETR"] }, quant: { US: ["NVDA"] }, supertrader: { US: new Set(["AAPL"]) }, fundamental: { US: ["NVDA"] }
   } };
@@ -151,7 +153,7 @@ test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unk
   /* Map: nur true belegt. */
   const m = { schema: SC.SCHEMA, modules: { quant: { US: new Map([["NVDA", false]]) } } };
   assert.equal(SC.moduleState(nvda, "quant", m).state, "unavailable");
-  assert.throws(() => SC.href(nvda, "hedgefonds"), /UNKNOWN_PRODUCT/);
+  assert.throws(() => SC.href(nvda, "watchlist"), /UNKNOWN_PRODUCT/);
 });
 
 test("Verfuegbarkeit · Ausschnitt ueber die securityId, auch fuer Europa-Kontexte aus der Adresse", () => {

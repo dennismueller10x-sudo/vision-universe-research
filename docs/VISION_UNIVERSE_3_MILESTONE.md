@@ -1,15 +1,25 @@
 # Vision Universe 3.0 – Meilenstein 20.10.2026
 
-Stand nach dem Merge von #810. Vision Universe 3.0 (VU3) ist bis auf **zwei offene Punkte** umgesetzt (siehe unten).
+Stand 21.10.2026 nach #817. Vision Universe 3.0 (VU3) ist bis auf **einen offenen Punkt** umgesetzt (siehe unten).
 
 ## Offene Punkte
 
 | # | Punkt | Status | Abhängigkeit | Nächster Schritt |
 |---|---|---|---|---|
-| **OFFEN 1** | Fundamental im globalen Menü und eigenes Dock | zurückgestellt | Discover-Gate (`discover-frontend-ci.yml`) ist auf `main` rot (letzter Lauf 39380525123, 20.10.); jede Änderung an `assets/site-navigation.js` löst es aus | Sobald das Gate grün ist: ein Shell-PR mit Menüeintrag und Dock, danach Fundamental in die Shell-Routen der VU3-Regression |
-| **OFFEN 2** | Europäische Kursdaten (Discover #778, u. a. Rheinmetall) | in Klärung | separater Codex-Auftrag mit Marketstack | Keine parallelen Änderungen oder Daten-Rebuilds. Ist das gelöst, wird das Discover-Gate grün und OFFEN 1 folgt |
+| ~~OFFEN 1~~ | Fundamental im globalen Menü und eigenes Dock | umgesetzt (#817) | – | – |
+| **OFFEN 2** | Europäische Kursdaten (Discover #778, u. a. Rheinmetall) | in Klärung | separater Codex-Auftrag mit Marketstack | Keine parallelen Änderungen oder Daten-Rebuilds. Nach der Behebung die temporäre Gate-Ausnahme zurücknehmen (siehe unten) |
 
-Bis dahin ist Fundamental über den Aktien-Navigator (#803), die Querverweise der anderen Welten und direkt unter `/fundamental/` erreichbar.
+### Temporäre Ausnahme im Discover-Gate (#819)
+
+Seit #819 (vom Owner am 21.10.2026 freigegeben) blockiert der unveränderte Rheinmetall-Fehler das Discover-Browser-Gate nicht mehr. Die Ausnahme ist **temporär**:
+- Sie greift nur für die Route `rheinmetall`, nur bei genau dieser Fehlersignatur und nur solange der Fingerabdruck über die europäischen Daten- und Codepfade gleich bleibt (`scripts/discover/known-defects.json`).
+- Sie bleibt in jedem Lauf sichtbar (`::warning::`, Bericht, Job-Zusammenfassung). Alle anderen Fehler blockieren weiter.
+- Das Zeitlimit des `frontend`-Jobs in `discover-frontend-ci.yml` ist vorübergehend 75 statt 35 Minuten, weil jeder Rheinmetall-Ladevorgang bis zum Prüf-Zeitlimit wartet (grüner Lauf auf #819: 56 Minuten).
+
+**Rücknahme nach Behebung von #778:**
+1. Eintrag `rheinmetall-europe-unavailable` aus `scripts/discover/known-defects.json` entfernen. Ändern die Codex-Daten den Fingerabdruck, greift die Ausnahme ohnehin nicht mehr.
+2. Das Gate muss danach ohne Ausnahme grün sein.
+3. `timeout-minutes` des `frontend`-Jobs auf 35 zurücksetzen, sofern die Laufzeit des grünen Laufs deutlich darunter liegt (vor dem Fehler: 13–17 Minuten).
 
 ## Umgesetzt
 

@@ -50,6 +50,14 @@
     try {
       global.VUDiscover.Detail.render(page, detail, ctx || {});
       var fundamentalObserver = compose(page, detail);
+      var SH = global.VUDiscover.StockHead, head = SH && SH.head(page, detail);
+      if (head) { unsubscribers.push(head.dispose); if (head.observer) observers.push(head.observer); }
+      if (SH) SH.calm(page, detail);
+      /* app.js und ui/europe.js setzen den Watchlist-Knopf nach dem Zeichnen vor die Seite: in den Kopf holen. */
+      Promise.resolve().then(function () {
+        var watch = root.querySelector(":scope > .v2-watch-button"), slot = page.querySelector(".dv2-head-actions");
+        if (watch && slot) slot.appendChild(watch);
+      });
       var chartObserver = neutralCharts(page);
       if (fundamentalObserver) observers.push(fundamentalObserver);
       if (chartObserver) observers.push(chartObserver);
@@ -94,7 +102,6 @@
     if (hero && chart) {
       var context = node("section", "dv2-stock-context");
       context.setAttribute("aria-label", "Was bei dieser Aktie auffällt");
-      context.appendChild(node("p", "dv2-detail-eyebrow", "Der Blick auf die Aktie"));
       [".dx-dhero-story", ".dx-dhero-hook", ".dx-dhero-sigs", ".dx-zeitachse", ".dx-spanne"].forEach(function (selector) {
         var item = hero.querySelector(selector);
         if (item) context.appendChild(item);
@@ -116,18 +123,16 @@
     disclose(page.querySelector(".dx-chapter--damals"), "Damals und heute im direkten Vergleich");
     if (analysis) analysis.open = false;
 
+    /* VU3: keine Ueberschrift "... verstehen." mehr, nur die Sprungleiste zu den vier Kapiteln. */
     var research = node("section", "dv2-research-entry");
-    research.appendChild(node("p", "dv2-detail-eyebrow", "Vom Kurs zum Unternehmen"));
-    research.appendChild(node("h2", "", (detail.companyName || detail.symbol) + " verstehen."));
     var nav = node("nav", "dv2-stock-nav");
     nav.setAttribute("aria-label", "Auf dieser Aktienseite");
     [[business, "Geschäft", "Womit verdient es Geld?"], [journey, "Entwicklung", "Wie wächst es?"], [valuation, "Bewertung", "Was kostet die Aktie?"], [risks, "Risiken", "Was sollte ich hinterfragen?"]].forEach(function (entry, index) {
       if (!entry[0]) return;
       entry[0].id = index === 1 ? "journey" : id + "-" + index;
       var button = node("button", "");
-      button.appendChild(node("span", "dv2-research-number", "0" + (index + 1)));
       button.appendChild(node("b", "", entry[1]));
-      button.appendChild(node("small", "", entry[2]));
+      button.title = entry[2];
       button.type = "button";
       button.setAttribute("aria-controls", entry[0].id);
       button.addEventListener("click", function () {
@@ -302,16 +307,23 @@
     var block = node("section", "dv2-valuation-components");
     block.setAttribute("aria-label", "Bewertungsbausteine");
     block.appendChild(node("h3", "", "Bewertungsbausteine"));
-    block.appendChild(node("p", "", "Die wichtigsten Verhältnisse auf einen Blick. Jeder Baustein nutzt dieselben ausgelieferten Unternehmenszahlen wie die Detailanalyse."));
     var grid = node("div", "dv2-valuation-grid");
+    /* VU3: Kennzahl sichtbar, Rechenweg je Baustein hinter "Wie wird das berechnet?". */
+    var how = node("details", "vu-more"), list = node("dl", "dv2-how");
+    how.appendChild(node("summary", "", "Wie werden die Bausteine berechnet?"));
+    how.appendChild(node("div", "vu-more-body"));
+    how.lastChild.appendChild(node("p", "", "Jeder Baustein nutzt dieselben ausgelieferten Unternehmenszahlen wie die Detailanalyse."));
     cards.forEach(function (card) {
       var item = node("div", "dv2-valuation-card");
       item.appendChild(node("span", "", card.label));
       item.appendChild(node("b", "num", card.text));
-      item.appendChild(node("small", "", card.note));
       grid.appendChild(item);
+      list.appendChild(node("dt", "", card.label));
+      list.appendChild(node("dd", "", card.note));
     });
+    how.lastChild.appendChild(list);
     block.appendChild(grid);
+    block.appendChild(how);
     var tabs = section.querySelector(".dx-bewertung-tabs");
     section.insertBefore(block, tabs || section.querySelector(".dx-weitere") || null);
   }

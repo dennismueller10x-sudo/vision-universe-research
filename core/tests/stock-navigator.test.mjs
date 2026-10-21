@@ -16,7 +16,7 @@ test("Kacheln · Reihenfolge, aktuelle Welt; Fundamental wie jede Welt nach Nach
   const ctx = SC.fromUs("NVDA");
   const h = NAV.html(ctx, SC.availability(ctx), "quant");
   const c = chips(h);
-  assert.equal(c.length, 6);
+  assert.equal(c.length, 7);
   assert.deepEqual(c.map((a) => /data-module="(\w+)"/.exec(a)[1]), SC.PRODUCTS);
   assert.match(c[1], /aria-current="page"/);
   /* Ohne Manifest: Fundamental neutral mit Link wie die anderen Welten, nicht mehr "In Planung". */

@@ -95,7 +95,7 @@
 .qd .cb-sc-kind{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--q-muted)}
 .qd .cb-dir{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;background:var(--q-panel2)}
 .qd .cb-dir-up{color:var(--cb-up)} .qd .cb-dir-down{color:var(--cb-down)} .qd .cb-dir-flat{color:var(--cb-flat)}
-.qd .cb-sc-status{margin:0;font-size:13px;color:var(--q-lime)}
+.qd .cb-sc-status{margin:0;font-size:13px;color:var(--q-lime-text)}
 .qd .cb-sc-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:6px 0}
 .qd .cb-sc-dl dt{color:var(--q-muted);font-size:13px} .qd .cb-sc-dl dd{margin:0;text-align:right;font-weight:750}
 .qd .cb-sc-note{margin:0;font-size:13px;color:#cfd2cc}
@@ -125,7 +125,7 @@
 .qd .cb-pro-title{margin:36px 0 2px;font-size:22px}
 .qd .cb-pro-open{min-height:44px;padding:10px 20px;border-radius:99px;border:1px solid var(--q-line2);background:var(--q-panel);color:var(--q-text);font-weight:800}
 .qd .cb-pro h4{margin:12px 0 6px;font-size:15px}
-.qd .cb-waves{margin:6px 0;padding-left:20px;display:grid;gap:3px;font-size:13px} .qd .cb-waves .is-dev b{color:var(--q-lime)}
+.qd .cb-waves{margin:6px 0;padding-left:20px;display:grid;gap:3px;font-size:13px} .qd .cb-waves .is-dev b{color:var(--q-lime-text)}
 .qd .cb-zlist{margin:6px 0;padding-left:18px;font-size:13px;display:grid;gap:3px}
 .qd .cb-table-wrap{overflow-x:auto}
 .qd .cb-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -139,7 +139,7 @@
 .qd .cb-chip-btn[aria-selected=true]{background:var(--q-lime);color:var(--q-lime-ink);border-color:var(--q-lime)}
 .qd .cb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .qd .cb-tile{display:flex;flex-direction:column;gap:3px;padding:14px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line);text-decoration:none}
-.qd .cb-tile-t{font-size:18px;font-weight:850} .qd .cb-tile-o{font-size:13px} .qd .cb-tile-z{font-size:13px;color:var(--q-lime)} .qd .cb-tile-m{font-size:12px;color:var(--q-dim)}
+.qd .cb-tile-t{font-size:18px;font-weight:850} .qd .cb-tile-o{font-size:13px} .qd .cb-tile-z{font-size:13px;color:var(--q-lime-text)} .qd .cb-tile-m{font-size:12px;color:var(--q-dim)}
 .qd .cb-tile.cb-tone-down .cb-tile-z{color:var(--cb-down)}
 .qd .cb-teaser{display:flex;flex-direction:column;gap:10px;padding:18px 20px;border-radius:var(--q-radius);background:var(--q-panel);border:1px solid var(--q-line);text-decoration:none;color:var(--q-text)}
 .qd .cb-teaser:hover{border-color:var(--q-line2)}
@@ -150,7 +150,7 @@
 .qd .cb-teaser-grid > span{display:flex;flex-direction:column;gap:2px}
 .qd .cb-teaser-grid small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--q-muted)}
 .qd .cb-teaser-grid strong{font-size:20px;font-weight:820}
-.qd .cb-teaser-go{font-size:14px;font-weight:750;color:var(--q-lime)}
+.qd .cb-teaser-go{font-size:14px;font-weight:750;color:var(--q-lime-text)}
 
 /* ------------------------------------------------------------ Mobil */
 @media (max-width:760px){
@@ -372,7 +372,7 @@
 .qd .cb-rule-val{flex:none;font-size:13px;font-weight:800;color:var(--q-text)}
 .qd .cb-rule-src-btn{flex:none;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--q-muted);padding:3px 9px;border-radius:99px;border:1px solid var(--q-line2)}
 .qd .cb-rule-src-btn::after{content:" ▾"}
-.qd .cb-rule details[open] .cb-rule-src-btn{color:var(--q-lime);border-color:rgba(200,245,49,.4)}
+.qd .cb-rule details[open] .cb-rule-src-btn{color:var(--q-lime-text);border-color:rgba(200,245,49,.4)}
 .qd .cb-rule details[open] .cb-rule-src-btn::after{content:" ▴"}
 .qd .cb-rule-src{margin:0;padding:0 12px 10px 46px;font-size:13px;line-height:1.5;color:var(--q-muted)}
 .qd .cb-legend-marks{display:flex;flex-wrap:wrap;gap:4px 16px;margin:2px 0 4px;font-size:12px;color:var(--q-muted)}
@@ -385,7 +385,7 @@
 .qd .cb-count.is-primary{border-color:rgba(200,245,49,.4);box-shadow:inset 3px 0 0 var(--q-lime)}
 .qd .cb-count-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .qd .cb-count-k{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--q-muted)}
-.qd .cb-count.is-primary .cb-count-k{color:var(--q-lime)}
+.qd .cb-count.is-primary .cb-count-k{color:var(--q-lime-text)}
 .qd .cb-count-name{margin:0;font-size:17px;font-weight:820;line-height:1.3}
 .qd .cb-count-stand{margin:0;font-size:13px;color:#d9dcd6;line-height:1.45}
 .qd .cb-count-bound{display:flex;align-items:flex-start;gap:10px;padding:8px 0 0;border-top:1px solid var(--q-line)}
@@ -550,3 +550,96 @@ html[data-theme=light] .qd .cb,html[data-theme=light] .qd .cb-teaser{--cb-entry:
 /* Hellmodus: diese Texte trugen feste helle Grautoene des Dunkelmodus (Kontrast 1,1-1,4:1 auf hellem Grund). */
 html[data-theme=light] .qd .cb-lead,html[data-theme=light] .qd .cb-sc-text,html[data-theme=light] .qd .cb-ew-sub,html[data-theme=light] .qd .cb-sc-diff,html[data-theme=light] .qd .cb-count-stand,html[data-theme=light] .qd .cb-ev-text,html[data-theme=light] .qd .cb-sc-note{color:var(--q-text-soft)}
 html[data-theme=light] .qd .cb-unclear{color:#5a4300}
+
+/* =========================================================================
+   VU3 UI-System (docs/design/VU3_UI_SYSTEM.md): Aktienkopf, Ergebnis zuerst,
+   Kennzahlen ohne Kaesten, Chart ohne Rahmen in den Farben des VU3-Kurscharts.
+   Fachliche Darstellung (Zonen, Wellen, Kerzen) bleibt, nur ruhiger.
+   ========================================================================= */
+.cb-crumbs{justify-content:space-between;margin:0}
+.cb-crumb-link{font-size:13px}
+.qd .cb-head{margin:0 0 4px}
+/* Der Kopf bekommt nach dem Laden programmatisch den Fokus (Screenreader). Ein Rahmen nur bei Tastaturbedienung (elliott/app.js setzt data-kbd). */
+html:not([data-kbd]) body.qd h1[tabindex="-1"]:focus{outline:none}
+.qd .cb .cb-hero{display:block;padding:20px 0 0}
+.qd .cb .cb-kicker{margin:0 0 6px;font-size:11px;letter-spacing:.12em;color:var(--vu-muted,var(--q-muted))}
+.qd .cb .cb-outlook{margin:0;font-size:clamp(40px,11vw,68px);gap:12px}
+.qd .cb .cb-structure{margin:6px 0 0;font-size:clamp(17px,4.4vw,22px);font-weight:700;color:var(--vu-text-secondary,var(--q-muted))}
+.qd .cb .cb-hero > .cb-layers{display:flex;flex-wrap:wrap;gap:8px;max-width:none;margin:14px 0 0;grid-column:auto;grid-row:auto}
+.qd .cb .cb-layer{display:inline-flex;flex-direction:row;padding:3px 11px 3px 9px;border:0;border-radius:999px;font-size:12.5px;font-weight:700}
+.qd .cb .cb-layer b{font-size:12.5px;font-weight:800}
+.qd .cb .cb-layer-k{display:inline;font-size:12.5px;font-weight:650;letter-spacing:0;text-transform:none;color:inherit;white-space:pre}
+.qd .cb .vu-alert.cb-delayed{margin:12px 0 0;font-weight:650}
+/* Schluesselniveaus: Kennzahlen ohne Rahmen; das Zeichen vor der Bezeichnung traegt die Zonenfarbe des Charts. */
+.qd .cb .cb-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,104px),1fr));gap:18px 16px;margin:24px 0 0;overflow:visible}
+.qd .cb .cb-level{padding:0;border:0;border-radius:0;background:none;gap:2px}
+.qd .cb .cb-level-icon{display:none}
+.qd .cb .cb-level-label{display:flex;align-items:center;gap:6px;font-size:12px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--vu-muted,var(--q-muted))}
+.qd .cb .cb-level-label:before{content:"";width:8px;height:8px;flex:none;border-radius:2px;background:var(--cb-flat)}
+.qd .cb .cb-level-entry .cb-level-label:before{background:var(--cb-entry)}
+.qd .cb .cb-level-target .cb-level-label:before{background:var(--cb-target)}
+.qd .cb .cb-level-invalid .cb-level-label:before{height:0;border-top:2px dashed var(--cb-invalid);border-radius:0;background:none}
+.qd .cb .cb-level-value{font-size:clamp(22px,6.2vw,30px);line-height:1.1;font-weight:850;letter-spacing:-.03em}
+.qd .cb .cb-level-sub{font-size:12px;line-height:1.35;color:var(--vu-text-secondary,var(--q-dim))}
+/* Szenarien: kompakte Auswahl ohne Rahmen */
+.qd .cb .cb-scenario{margin:22px 0 4px}
+.qd .cb .cb-switch{border:0;background:var(--vu-surface,var(--q-panel));padding:3px}
+.qd .cb .cb-sc-after{margin-top:12px}
+.qd .cb .cb-sc-after .cb-sc-text{margin:0;font-size:14.5px;line-height:1.55;color:var(--vu-text-secondary,var(--q-muted))}
+.qd .cb .cb-sc-after details.qx-more{margin-top:10px}
+/* Chart: kein Rahmen, keine Flaeche, kein Gitter; Linie gruen/rot zum Startkurs des Zeitraums (wie VUChart). */
+.qd .cb .cb-chart-card{margin:8px 0 0;padding:0;border:0;border-radius:0;background:none}
+.qd .cb .cb-chart{color:var(--vu-chart-base)}
+.qd .cb .cb-chart[data-direction=up]{color:var(--vu-chart-up)}
+.qd .cb .cb-chart[data-direction=down]{color:var(--vu-chart-down)}
+.qd .cb .ti-grid line{stroke:none}
+.qd .cb .ti-axis{fill:var(--vu-chart-axis,var(--q-dim));font:600 11px/1 Inter,-apple-system,sans-serif;font-variant-numeric:tabular-nums}
+.qd .cb .ti-area{display:none}
+.qd .cb .ti-line{stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.qd .cb .ti-last,.qd .cb .ti-last-tag rect{fill:currentColor}
+.qd .cb .ti-last-halo{fill:currentColor;opacity:.25}
+.qd .cb .ti-last-tag text{fill:#0b0d10}
+.qd .cb .ti-proj-bg{fill:none}
+.qd .cb .ti-up line{stroke:var(--vu-chart-up)} .qd .cb .ti-up rect{fill:var(--vu-chart-up)}
+.qd .cb .ti-down line{stroke:var(--vu-chart-down)} .qd .cb .ti-down rect{fill:var(--vu-chart-down)}
+.qd .cb .cb-controls{gap:6px 10px;margin:10px 0 4px}
+.qd .cb .cb-seg{border:0;background:transparent;padding:0}
+.qd .cb .cb-seg-btn{min-height:36px;color:var(--vu-text-secondary,var(--q-muted))}
+.qd .cb .cb-seg-btn[aria-pressed=true]{background:var(--vu-text,var(--q-text));color:var(--vu-bg,var(--q-bg))}
+.qd .cb .cb-legend{margin:6px 0 0;font-size:11.5px}
+@media (max-width:760px){.qd .cb .cb-chart-card{margin-inline:-8px}.qd .cb .cb-controls,.qd .cb .cb-legend,.qd .cb .cb-chart-card > .cb-small{padding-inline:8px}}
+/* Abschnitte: Haarlinie und Weissraum statt Kaesten */
+.qd .cb .cb-sec{margin-top:36px;padding-top:28px;border-top:1px solid var(--vu-line,var(--q-line))}
+.qd .cb .cb-sec .q-sec-head{margin-bottom:12px}
+.qd .cb .cb-ew-card{margin:0 0 20px;padding:0;border:0;border-radius:0;background:none}
+.qd .cb .cb-ew-card.is-compact .cb-ew-k{display:block;margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--vu-muted,var(--q-muted))}
+.qd .cb .cb-nothesis{margin:0 0 18px;padding:0;border:0;border-radius:0;font-size:14px;line-height:1.5;color:var(--vu-text-secondary,var(--q-muted))}
+.qd .cb .cb-nothesis-h{margin:0 0 2px;font-size:16px;color:var(--vu-text,var(--q-text))}
+.qd .cb .cb-nothesis p{margin:0 0 4px}
+.qd .cb .cb-nothesis-link{display:inline-flex;align-items:center;min-height:44px;font-weight:750;color:var(--vu-accent-text,var(--q-lime-text))}
+.qd .cb .cb-checks{background:none;border-radius:0}
+.qd .cb .cb-stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,128px),1fr));gap:18px 16px;margin:14px 0 4px}
+.qd .cb .cb-stat{padding:0;border-radius:0;background:none;color:var(--vu-text,var(--q-text))}
+.qd .cb .cb-stat-label,.qd .cb .cb-stat-sub{color:var(--vu-muted,var(--q-muted))}
+.qd .cb .cb-stat strong{font-size:clamp(22px,6.2vw,30px);letter-spacing:-.03em}
+.qd .cb .cb-pro-open{margin:4px 0 0;min-height:48px}
+.qd .cb .cb-pro-title{margin:20px 0 10px}
+.qd .cb .cb-pc{padding:14px 0 0;border:0;border-top:1px solid var(--vu-line,var(--q-line));border-radius:0;background:none}
+.qd .cb .cb-pro .qx-card{padding:16px 0 0;border:0;border-top:1px solid var(--vu-line,var(--q-line));border-radius:0;background:none}
+.qd .cb .cb-more-end{margin-top:28px}
+.qd .cb .cb-foot.vu-dm{margin:28px 0 0;padding:0;font-size:12.5px}
+.qd .cb .cb-foot.vu-dm dd{color:var(--vu-muted,var(--q-muted))}
+.qd .cb .cb-none{margin:20px 0 4px}
+.qd .cb .cb-replay{padding:0;border:0;border-radius:0;background:none}
+/* Aktienkopf und Inhalt in einer Flucht (der Kopf nutzt die volle Inhaltsbreite). */
+.qd .cb{max-width:none}
+/* Elliott-Profi: Kennzahlen und Regeln ohne Kaesten, Trennung durch Haarlinien. */
+.qd .cb .cb-pt-grid,.qd .cb .cb-pt-row{gap:18px 16px}
+.qd .cb .cb-pt{padding:0;border:0;border-radius:0;background:none}
+.qd .cb .cb-pt-k{letter-spacing:0;text-transform:none;font-size:12px;font-weight:700}
+.qd .cb .cb-ewp-count,.qd .cb .cb-count{padding:0 0 4px;border:0;border-radius:0;background:none}
+.qd .cb .cb-ewp-bound{border:0}
+.qd .cb .cb-rule details,.qd .cb .cb-rule > .cb-rule-head{border:0;border-bottom:1px solid var(--vu-line,var(--q-line));border-radius:0;background:none}
+.qd .cb .cb-pro-sub{letter-spacing:0;text-transform:none;font-size:16px;color:var(--vu-text,var(--q-text))}
+/* Zonenbeschriftung: Freistellung in der Flaechenfarbe statt fester Dunkelkontur (hell und dunkel lesbar). */
+.qd .cb .ti-zone-label,.qd .cb .ti-invalid-label{stroke:var(--vu-bg,#0b0d10)}

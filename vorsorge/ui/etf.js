@@ -56,15 +56,20 @@
     return '<div class="vs-seg" role="tablist" aria-label="Markt" style="margin-top:16px"><a role="tab" class="vs-seg-link" href="#/etfs" aria-pressed="' + (active === "us") + '">USA · Kurse, Holdings, Kosten</a>' +
       '<a role="tab" class="vs-seg-link" href="#/europa" aria-pressed="' + (active === "eu") + '">Europa · UCITS-Anteilklassen</a></div>';
   };
+  /* Seitenweise Liste: 25 kompakte Zeilen, dann „Weitere“. */
+  var PAGE = 25;
   VS.views.etfs = function (r) {
     var q = r.query || {};
     var st = { q: q.q || "", ac: q.ac || "", region: q.region || "", theme: q.theme || "", issuer: q.issuer || "", exchange: q.exchange || "", currency: q.currency || "",
       index: q.index || "", hist: q.hist || "", ptype: q.ptype || "", strat: q.strat || "", rc: q.rc || "", maxvol: "", maxdd: "", trendUp: false, dist: false,
       maxcost: q.maxcost || "", minaum: q.minaum || "", minpos: "", maxt10: "", hasHoldings: q.holdings === "1", dom: q.dom || "",
-      complex: q.complex === "1", inactive: false, hasPrice: q.price === "1", hasCost: q.cost === "1", sort: q.sort || "p1Y", dir: -1, limit: 50, row: q.row || "" };
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">US-gelistete ETFs mit echter Kurshistorie, Schwankung und größtem Rückgang – und, wo die SEC-Daten reichen, mit Holdings, X-Ray und Kosten laut Prospekt. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert. Europäische UCITS-Anteilklassen findest du über ISIN im Bereich Europa.</p>' + VS.marketSwitch("us") +
+      complex: q.complex === "1", inactive: false, hasPrice: q.price === "1", hasCost: q.cost === "1", sort: q.sort || "p1Y", dir: -1, limit: PAGE, row: q.row || "" };
+    var root = VS.render('<section class="vs-hero vs-hero--compact"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.</h1>' + VS.marketSwitch("us") +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, ISIN, Name, Index, Thema, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
-      '<section class="vs-section" id="vs-rows"></section><section class="vs-section" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>');
+      '<section class="vs-section vs-section--first" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section><section class="vu-sec" id="vs-rows"></section>', { dm: [
+        ["Was gezeigt wird", "US-gelistete ETFs mit echter Kurshistorie, Schwankung und größtem Rückgang – und, wo die SEC-Daten reichen, mit Holdings, X-Ray und Kosten laut Prospekt. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert. Europäische UCITS-Anteilklassen: <a href=\"#/europa\">eigener Bereich</a> (Suche über ISIN)."],
+        ["Kennzahlen", "Rendite = Kursentwicklung ohne Ausschüttungen. Kosten (Expense Ratio) und Fondsvermögen aus SEC-Daten, Holdings aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null."],
+        ["ETF-Welten", "Nur Standard-Bauart, sortiert nach Länge der Kurshistorie, nicht nach Rendite. Kategorien aus dem Fondsnamen abgeleitet."]] });
     (q.inactive === "1" ? VS.masterAll() : VS.master()).then(function (m) {
       var t0 = (global.performance && performance.now()) || 0;
       var host = root.querySelector("#vs-screener");
@@ -72,8 +77,8 @@
       var input = root.querySelector("#vs-q"), timer = null;
       root.querySelector("#vs-search-form").addEventListener("submit", function (ev) { ev.preventDefault();
         if (/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(input.value.trim())) { VS.go("#/europa/" + input.value.trim().toUpperCase()); return; }
-        st.q = input.value; st.limit = 50; draw(); VS.analytics.track("etf_search", { query: st.q.slice(0, 40) }); });
-      input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { st.q = input.value; st.limit = 50; draw(); }, 140); });
+        st.q = input.value; st.limit = PAGE; draw(); VS.analytics.track("etf_search", { query: st.q.slice(0, 40) }); });
+      input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { st.q = input.value; st.limit = PAGE; draw(); }, 140); });
       var hasDist = all.some(function (e) { return e.distributionPolicy; });
       drawRows();
       function drawRows() {
@@ -83,15 +88,20 @@
           var list = std.filter(rw.test).sort(function (a, b) { return ((b.m && b.m.hy) || 0) - ((a.m && a.m.hy) || 0); });
           return { rw: rw, list: list };
         }).filter(function (x) { return x.list.length; });
-        el.innerHTML = rows.length ? '<div class="vs-section-head"><div><h2>ETF-Welten</h2><p class="vs-sub">Nur Standard-Bauart · sortiert nach Länge der Kurshistorie, nicht nach Rendite · Kategorien aus dem Fondsnamen abgeleitet</p></div></div>' +
-          '<div class="vs-chips" role="group" aria-label="ETF-Welten">' + rows.map(function (x) { return '<button class="vs-pill small' + (st.row === x.rw.id ? " primary" : "") + '" data-row="' + x.rw.id + '" aria-pressed="' + (st.row === x.rw.id) + '">' + esc(x.rw.label) + ' <span class="vs-sub">' + x.list.length + '</span></button>'; }).join("") + '</div>' +
-          (st.row ? (function () { var x = rows.filter(function (y) { return y.rw.id === st.row; })[0]; return x ? '<div class="vs-grid g4" style="margin-top:12px">' + x.list.slice(0, 8).map(card).join("") + '</div>' : ""; })() : "") : "";
+        el.innerHTML = rows.length ? '<div class="vu-sec-head"><h2 class="vu-sec-title">ETF-Welten</h2></div><p class="vs-sub" style="margin:-8px 0 14px">Standard-ETFs nach Region und Thema · längste Historie zuerst</p>' +
+          '<div class="vs-worlds" role="group" aria-label="ETF-Welten">' + rows.map(function (x) {
+            var mx = Math.max.apply(null, rows.map(function (y) { return y.list.length; })), open = st.row === x.rw.id;
+            return '<button class="vs-world" data-row="' + x.rw.id + '" aria-expanded="' + open + '"><span class="vs-world-l">' + esc(x.rw.label) + '</span><b class="num">' + x.list.length.toLocaleString("de-DE") + '</b>' +
+              '<span class="vu-bar" aria-hidden="true"><i style="width:' + Math.max(2, x.list.length / mx * 100).toFixed(1) + '%"></i></span></button>' +
+              (open ? '<div class="vs-list vs-world-list">' + x.list.slice(0, 8).map(card).join("") + '</div>' : "");
+          }).join("") + '</div>' : "";
         el.querySelectorAll("[data-row]").forEach(function (b) { b.onclick = function () { st.row = st.row === b.dataset.row ? "" : b.dataset.row; drawRows(); }; });
       }
       function card(e) {
-        return '<a class="vs-card link" href="' + VS.etfHref(e) + '"><p class="vs-label">' + esc(e.symbol) + ' · ' + esc(e.exchange || "") + '</p><p style="margin-top:4px;font-weight:750">' + esc(e.name) + '</p>' +
-          '<p class="vs-fine" style="margin-top:6px">' + esc(e.category || "") + '</p><div class="vs-row" style="margin-top:6px"><span>Historie</span><span>' + F.years(e.m && e.m.hy) + '</span></div>' +
-          '<div class="vs-row"><span>Schwankung</span><span class="num">' + F.pct(e.m && e.m.vol) + '</span></div><div class="vs-row"><span>Max. Rückgang</span><span class="num">' + F.pct(e.m && e.m.mdd) + '</span></div></a>';
+        return '<a class="vs-item" href="' + VS.etfHref(e) + '"><span class="vs-ava c-' + esc(e.assetClass || "") + '" title="' + esc(e.issuer || "") + '">' + esc(VS.issuerShort(e)) + '</span>' +
+          '<span class="vs-item-main"><span class="vs-item-top"><b>' + esc(e.symbol) + '</b><span class="vs-item-name">' + esc(VS.displayName(e.name)) + '</span></span>' +
+          '<span class="vs-item-meta">Schwankung ' + F.pct(e.m && e.m.vol, 0) + ' · Max. Rückgang ' + F.pct(e.m && e.m.mdd, 0) + '</span></span>' +
+          '<span class="vs-item-perf"><b class="num">' + F.years(e.m && e.m.hy) + '</b><small>Historie</small></span></a>';
       }
       function sel(k, label, values, labeler) { return '<select data-k="' + k + '" aria-label="' + esc(label) + '"><option value="">' + esc(label) + ': alle</option>' + values.map(function (v) { return opt(v, labeler ? labeler(v) : v, st[k]); }).join("") + '</select>'; }
       function controls(pool) {
@@ -166,13 +176,13 @@
       function fmtP(x) { var v = x[0]; return x[2] === "cost" ? VS.costPct(v) : x[2] === "money" ? VS.money(v, "USD") : x[2] === "years" ? F.years(v) : x[2] === "neutral" ? F.pct(v) : F.spct(v); }
       function item(e) {
         var pr = primary(e), chips = [];
-        if (e.m && e.m.vol !== null && e.m.vol !== undefined) chips.push('<span class="vs-chip">Schwankung ' + F.pct(e.m.vol, 0) + '</span>');
-        if (e.cost !== null && e.cost !== undefined) chips.push('<span class="vs-chip">Kosten ' + VS.costPct(e.cost) + '</span>');
-        if (e.m && e.m.hy) chips.push('<span class="vs-chip">' + F.years(e.m.hy) + '</span>');
-        if (e.series) chips.push('<span class="vs-chip on">Holdings ✓</span>');
+        if (e.cost !== null && e.cost !== undefined) chips.push('Kosten ' + VS.costPct(e.cost));
+        if (e.m && e.m.vol !== null && e.m.vol !== undefined) chips.push('Schwankung ' + F.pct(e.m.vol, 0));
+        if (e.m && e.m.hy && chips.length < 2) chips.push(F.years(e.m.hy));
+        if (e.series) chips.push('<span class="vs-item-on">Holdings ✓</span>');
         return '<a class="vs-item" href="' + VS.etfHref(e) + '"><span class="vs-ava c-' + esc(e.assetClass || "") + (e.complex ? " cx" : "") + '" title="' + esc(e.issuer || "") + '">' + esc(VS.issuerShort(e)) + '</span>' +
           '<span class="vs-item-main"><span class="vs-item-top"><b>' + esc(e.symbol) + '</b>' + (e.retirementClass === "SEHR_KOMPLEX" ? '<span class="vs-badge bad">sehr komplex</span>' : e.complex ? '<span class="vs-badge complex">komplex</span>' : "") + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : "") + '</span>' +
-          '<span class="vs-item-name">' + esc(VS.displayName(e.name)) + '</span><span class="vs-item-chips">' + chips.join("") + '</span></span>' +
+          '<span class="vs-item-name">' + esc(VS.displayName(e.name)) + '</span><span class="vs-item-meta">' + chips.join(" · ") + '</span></span>' +
           '<span class="vs-item-perf"><b class="num ' + (pr[2] === "pct" ? F.cls(pr[0]) : "") + '">' + fmtP(pr) + '</b><small>' + esc(pr[1]) + '</small></span></a>';
       }
       function draw() {
@@ -188,10 +198,10 @@
         var nComplex = all.filter(function (e) { return e.layer === "COMPLEX"; }).length, nArch = all.filter(function (e) { return e.layer === "ARCHIVE"; }).length, nA = activeCount();
         var wasOpen = host.querySelector("details.vs-sheet") ? host.querySelector("details.vs-sheet").open : false;
         var asTable = st.view === "table" && (global.innerWidth || 1000) >= 760;
-        host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' ETFs</h2><p class="vs-sub">' + (st.complex ? "" : nComplex.toLocaleString("de-DE") + ' komplexe ausgeblendet · ') + 'Stand ' + F.date(m.asOf) + VS.stale(m.asOf) + ' · Quelle Tiingo, SEC</p></div><a class="vs-pill small" href="#/daten">Datenabdeckung</a></div>' +
+        host.innerHTML = '<div class="vs-etfs-head"><p class="vs-etfs-count"><b class="num">' + list.length.toLocaleString("de-DE") + '</b> ETFs</p><p class="vs-sub">' + (st.complex ? "Standard und komplex" : nComplex.toLocaleString("de-DE") + ' komplexe ausgeblendet') + VS.stale(m.asOf) + '</p></div>' +
           '<div class="vs-quickchips" role="group" aria-label="Schnellfilter">' + QUICK.map(function (q) { return '<button class="vs-qc" data-q="' + q[0] + '" aria-pressed="' + qOn(q[0]) + '">' + esc(q[1]) + '</button>'; }).join("") + '</div>' +
           '<div class="vs-toolbar"><select class="vs-sort" id="vs-sortsel" aria-label="Sortieren">' + SORTS.map(function (x) { return '<option value="' + x[0] + '"' + (st.sort === x[0] ? " selected" : "") + '>Sortiert: ' + esc(x[1]) + '</option>'; }).join("") + '</select>' +
-          '<div class="vs-seg" id="vs-viewsel" style="margin-left:auto"><button data-v="list" aria-pressed="' + !asTable + '">Liste</button><button data-v="table" aria-pressed="' + asTable + '">Tabelle</button></div></div>' +
+          '<div class="vs-seg vs-viewsel" id="vs-viewsel" style="margin-left:auto"><button data-v="list" aria-pressed="' + !asTable + '">Liste</button><button data-v="table" aria-pressed="' + asTable + '">Tabelle</button></div></div>' +
           '<details class="vs-sheet"' + (wasOpen ? " open" : "") + '><summary><span>Alle Filter' + (nA ? '<span class="vs-badge lime">' + nA + ' aktiv</span>' : "") + '</span></summary><div class="vs-sheet-body">' + controls(all) + (nA ? '<button class="vs-pill small" id="vs-reset" style="margin-top:12px">Filter zurücksetzen</button>' : "") + '</div></details>' +
           (asTable ? '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">ETF-Screener, sortierbar</caption><thead><tr>' + COLS.map(function (c) {
             return '<th scope="col" data-sort="' + c.id + '"' + (c.id === st.sort ? ' aria-sort="' + (st.dir < 0 ? "descending" : "ascending") + '"' : "") + ' tabindex="0">' + esc(c.label) + '</th>';
@@ -203,25 +213,25 @@
               }).join("") + '</tr>';
           }).join("") + '</tbody></table></div>'
             : '<div class="vs-list">' + list.slice(0, st.limit).map(item).join("") + '</div>') +
-          (list.length > st.limit ? '<div style="text-align:center;margin-top:16px"><button class="vs-pill" id="vs-more">Weitere ' + Math.min(50, list.length - st.limit) + ' von ' + (list.length - st.limit).toLocaleString("de-DE") + ' anzeigen</button></div>' : "") +
+          (list.length > st.limit ? '<div style="text-align:center;margin-top:16px"><button class="vs-pill" id="vs-more">Weitere ' + Math.min(PAGE, list.length - st.limit) + ' von ' + (list.length - st.limit).toLocaleString("de-DE") + ' anzeigen</button></div>' : "") +
           (list.length === 0 ? '<div class="vs-empty">Kein ETF passt zu diesen Filtern.</div>' : "") +
-          (st.q && list.length < 10 ? '<p class="vs-sub" style="margin-top:12px">Europäische UCITS-Anteilklassen: <a href="#/europa?q=' + encodeURIComponent(st.q) + '">„' + esc(st.q) + '“ in Europa suchen</a></p>' : "") +
-          '<p class="vs-fine" style="margin-top:12px">Rendite = Kursentwicklung ohne Ausschüttungen. Kosten (Expense Ratio) und Fondsvermögen aus SEC-Daten, Holdings aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null. Europäische UCITS-ETFs: <a href="#/europa">eigener Bereich</a>.</p>';
-        host.querySelectorAll("select[data-k]").forEach(function (sx) { sx.addEventListener("change", function () { st[sx.dataset.k] = sx.value; st.limit = 50; draw(); }); });
+          (st.q && list.length < 10 ? '<p class="vs-sub" style="margin-top:12px">Europäische UCITS-Anteilklassen: <a href="#/europa?q=' + encodeURIComponent(st.q) + '">„' + esc(st.q) + '“ in Europa suchen</a></p>' : "");
+        host.querySelectorAll("select[data-k]").forEach(function (sx) { sx.addEventListener("change", function () { st[sx.dataset.k] = sx.value; st.limit = PAGE; draw(); }); });
         host.querySelectorAll("input[data-k]").forEach(function (c) { c.addEventListener("change", function () {
           if (c.dataset.k === "inactive" && c.checked && !m.extraLoaded) { VS.masterAll().then(function (full) { all = full.etfs.filter(function (e) { return e.layer !== "REVIEW"; }); m.extraLoaded = true; st.inactive = true; draw(); }); return; }
-          st[c.dataset.k] = c.checked; st.limit = 50; draw(); }); });
-        host.querySelectorAll("[data-q]").forEach(function (b) { b.onclick = function () { qSet(b.dataset.q, !qOn(b.dataset.q)); st.limit = 50; draw(); }; });
-        host.querySelector("#vs-sortsel").onchange = function () { st.sort = this.value; st.dir = /^(vol|cost|name)$/.test(st.sort) ? 1 : -1; st.limit = 50; draw(); };
+          st[c.dataset.k] = c.checked; st.limit = PAGE; draw(); }); });
+        host.querySelectorAll("[data-q]").forEach(function (b) { b.onclick = function () { qSet(b.dataset.q, !qOn(b.dataset.q)); st.limit = PAGE; draw(); }; });
+        host.querySelector("#vs-sortsel").onchange = function () { st.sort = this.value; st.dir = /^(vol|cost|name)$/.test(st.sort) ? 1 : -1; st.limit = PAGE; draw(); };
         host.querySelectorAll("#vs-viewsel [data-v]").forEach(function (b) { b.onclick = function () { st.view = b.dataset.v; draw(); }; });
         var rs = host.querySelector("#vs-reset"); if (rs) rs.onclick = function () { FKEYS.forEach(function (k) { st[k] = ""; }); ["trendUp", "dist", "hasHoldings", "hasPrice", "hasCost", "complex", "inactive"].forEach(function (k) { st[k] = false; }); draw(); };
         host.querySelectorAll("th[data-sort]").forEach(function (th) {
           function go() { var id = th.dataset.sort; if (st.sort === id) st.dir *= -1; else { st.sort = id; st.dir = id === "vol" || id === "name" ? 1 : -1; } draw(); }
           th.addEventListener("click", go); th.addEventListener("keydown", function (ev) { if (ev.key === "Enter") go(); });
         });
-        var more = host.querySelector("#vs-more"); if (more) more.onclick = function () { st.limit += 50; draw(); };
+        var more = host.querySelector("#vs-more"); if (more) more.onclick = function () { st.limit += PAGE; draw(); };
       }
       draw();
+      VS.dm([["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (N-PORT, Prospekt) · <a href=\"#/daten\">Datenabdeckung</a>"]], m.asOf);
       VS.lastRenderMs = ((global.performance && performance.now()) || 0) - t0;
     }).catch(function (e) { root.querySelector("#vs-screener").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", String(e.message || e)); });
   };
@@ -319,7 +329,7 @@
         '<div class="vs-tabs"><button class="vs-pill' + (watched ? " primary" : "") + '" id="vs-watch">' + (watched ? "♥ Beobachtet" : "♡ Beobachten") + '</button><a class="vs-pill lime" href="#/etf/' + encodeURIComponent(sym) + '?tab=uebersicht&play=1">Planspiel: ins Vorsorgedepot</a><a class="vs-pill" href="#/vergleich?s=' + encodeURIComponent(sym) + (sym !== "URTH" ? ",URTH" : ",SPY") + '">Vergleichen</a><a class="vs-pill" href="#/portfolio?add=' + encodeURIComponent(sym) + '">Zum Portfolio</a></div></section>' +
         '<div class="vs-etf-sticky"><div class="vs-seg" role="tablist">' + TABS.map(function (t) { return '<button role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div></div>' +
         (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (SEC N-PORT)", xray: "keine Holdings (SEC N-PORT)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +
-        '<div id="vs-etf-body"></div>' + '<p class="vs-disclaimer">' + esc(VS.DISCLAIMER) + '</p>';
+        '<div id="vs-etf-body"></div>' + VS.footer({ asOf: mt && mt.asOf, dm: [["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (Prospekt, N-PORT) · Region, Index und Thema aus dem Fondsnamen abgeleitet"]] });
       root.querySelector("#vs-watch").onclick = function () { var on = watchToggle(sym); this.textContent = on ? "♥ Beobachtet" : "♡ Beobachten"; this.classList.toggle("primary", on); };
       root.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { tab = b.dataset.tab; root.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); body(); }; });
       function body() {
@@ -355,26 +365,32 @@
   var TAB_VIEWS = {
     uebersicht: function (el, e, d) {
       var mt = d.metrics, dna = d.dna || {};
-      el.innerHTML = '<section class="vs-section">' + VS.quickHeader(e, d) + '</section><section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Was ist das?</p><p style="margin-top:8px;font-size:16px">' + esc(whatIsIt(e, d)) + '</p><p id="vs-hsum" class="vs-sub" style="margin-top:8px"></p>' +
+      el.innerHTML = '<section class="vu-sec vs-etf-chart-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Kursverlauf</h2></div><p class="vs-fine" style="margin:-10px 0 0">' + esc(mt ? mt.basisLabel : "") + '</p>' + (global.VUChart ? "" : '<div class="vs-seg" id="vs-range">' + RANGES.map(function (rg) { return '<button data-m="' + rg[1] + '" aria-pressed="' + (rg[0] === "1J") + '">' + rg[0] + '</button>'; }).join("") + '</div>') + '<div id="vs-etf-chart"></div></section>' + '<section class="vs-section">' + VS.quickHeader(e, d) + '</section><section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Was ist das?</p><p style="margin-top:8px;font-size:16px">' + esc(whatIsIt(e, d)) + '</p><p id="vs-hsum" class="vs-sub" style="margin-top:8px"></p>' +
         (d.description ? '<details style="margin-top:10px"><summary class="vs-fine" style="cursor:pointer">Beschreibung des Anbieters (Tiingo, Originalsprache)</summary><p class="vs-fine" style="margin-top:6px">' + esc(d.description) + '</p></details>' : "") +
         '<div class="vs-row" style="margin-top:10px"><span>Produkttyp</span><span>' + esc(e.productType || "–") + ' · ' + esc(VS.STRATEGY[e.strategy] || "–") + '</span></div>' +
         '<div class="vs-row" style="margin-top:10px"><span>Index / Strategie</span><span>' + esc(e.index || (d.structure === "ACTIVE" ? "Aktiv gemanagt" : "nicht im Namen genannt")) + '</span></div>' +
         '<div class="vs-row"><span>Assetklasse</span><span>' + esc(VS.ASSET[e.assetClass] || "nicht zugeordnet") + '</span></div><div class="vs-row"><span>Region</span><span>' + esc(VS.REGION[e.region] || "nicht im Namen genannt") + '</span></div>' +
         '<div class="vs-row"><span>Thema</span><span>' + esc(e.theme || "–") + '</span></div><div class="vs-row"><span>Listings dieses Fonds</span><span>' + (d.listingsOfFund || 1) + '</span></div></div>' +
         '<div class="vs-card app"><p class="vs-label">Vision Universe Einordnung</p>' + einordnungBilanz(einordnung(e, d)) + '<div style="margin-top:8px">' + einordnung(e, d).map(function (x) { return '<div class="vs-row"><span style="color:var(--app-ink)">' + (x[0] === "warn" ? "⚠ " : x[0] === "ok" ? "✓ " : "• ") + esc(x[1]) + '</span></div>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Einordnung aus Daten, keine Empfehlung.</p></div></div></section>' +
-        '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><div><p class="vs-label">Kursverlauf</p><p class="vs-fine">' + esc(mt ? mt.basisLabel : "") + '</p></div><div class="vs-seg" id="vs-range">' + RANGES.map(function (rg) { return '<button data-m="' + rg[1] + '" aria-pressed="' + (rg[0] === "1J") + '">' + rg[0] + '</button>'; }).join("") + '</div></div><div id="vs-etf-chart"></div></div></section>' +
+
         '<section class="vs-section" id="vs-play"></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">ETF-DNA</p><div class="vs-dna" style="margin-top:10px">' + Object.keys(dna).map(function (k) {
           var x = dna[k];
           return '<div class="vs-bar"><span>' + esc(x.label) + '</span>' + (x.value === null ? '<span class="vs-fine" style="grid-column:span 2">' + esc(VS.STATUS_TEXT[x.status] || "Noch nicht verfügbar") + '</span>'
             : '<span class="track"><span class="fill" style="display:block;width:' + x.value + '%;background:var(--s1)"></span></span><span class="v num">' + x.value + '/100</span>') + '</div>';
-        }).join("") + '</div></div>' + quality(d) + '</div></section>';
+        }).join("") + '</div></div><div><details class="vu-more"><summary>Datenqualität & Stand</summary><div class="vu-more-body">' + quality(d) + '</div></details></div></div></section>';
       var trM = d.metricsTotal && d.metricsTotal.windows && d.metricsTotal.windows.MAX, prM = mt && mt.windows && mt.windows.MAX, useM = trM && Number.isFinite(trM.annualized) ? trM : prM;
       VS.renderPlanspiel(el.querySelector("#vs-play"), { symbol: e.symbol, slug: e.slug, name: d.name, complex: e.complex, us: /^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/i.test(String(e.exchange || "")),
         cagr: useM ? useM.annualized : null, vol: mt && mt.volatility ? mt.volatility.value : null, since: useM && useM.from ? useM.from.slice(0, 4) : "", years: mt ? mt.historyYears : 0,
         basis: useM === trM ? "Tiingo, Gesamtrendite mit Ausschüttungen" : "Tiingo, nur Kurs – Ausschüttungen nicht enthalten" });
       if (d.holdings && d.holdings.status === "AVAILABLE") VS.holdings(d.holdings.series).then(function (f) { var x = el.querySelector("#vs-hsum"); if (f && x) x.innerHTML = (d.holdings.proxy ? "Referenzbestand " + esc(d.holdings.proxy.symbol) + " (gleicher Index): " : "") + esc(f.summary || "") + (f.changes && f.changes.sentence ? " " + esc(f.changes.sentence) + ' <a href="#" data-goto="aenderungen">Details</a>' : ""); var g = x && x.querySelector("[data-goto]"); if (g) g.onclick = function (ev) { ev.preventDefault(); var b = document.querySelector('[data-tab="aenderungen"]'); if (b) b.click(); }; });
       if (!mt) { el.querySelector("#vs-etf-chart").innerHTML = VS.pending("Keine Kursdaten", "Für diesen ETF liefert der Anbieter derzeit keine Kursreihe."); return; }
+      if (global.VUChart) {
+        // Gleiches Kursbild wie die Aktienseiten (assets/vu-chart.js): eine Linie, Startlinie, Achse rechts.
+        global.VUChart.mount(el.querySelector("#vs-etf-chart"), { currency: d.currency || "USD", initial: "1J", label: "Kursverlauf " + d.symbol,
+          ranges: RANGES.map(function (rg) { return { id: rg[0], label: rg[0], points: chartSeries(d, rg[1]) }; }).filter(function (x) { return x.points && x.points.length > 1; }) });
+        return;
+      }
       function draw(months) { var pts = chartSeries(d, months); VS.lineChart(el.querySelector("#vs-etf-chart"), [{ label: d.symbol, points: pts, area: true }], { label: "Kursverlauf " + d.symbol, fmtY: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 2 }); } }); }
       el.querySelectorAll("#vs-range button").forEach(function (b) { b.onclick = function () { el.querySelectorAll("#vs-range button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); draw(Number(b.dataset.m)); }; });
       draw(12);
