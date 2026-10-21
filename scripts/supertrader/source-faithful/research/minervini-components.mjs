@@ -228,7 +228,9 @@ export function powerPlayClassify(security, i, P = MIN_PARAMS) {
   const peak = bars.findIndex((b) => b.date === run.peakDate);
   const lowSince = (() => { let lo = Infinity; for (let k = peak + 1; k <= i; k++) lo = Math.min(lo, bars[k].low); return lo; })();
   const stopReference = { level: lowSince, riskFromPeakPct: 1 - lowSince / bars[peak].high, exceeds10pct: 1 - lowSince / bars[peak].high > P.maxStopPct, note: 'reference only: lowest low of the consolidation; the stop is the reviewer\'s (MIN-RISK-01)' };
-  const breakout = pivotBreakout(bars, i, bars[peak].high, { P });
+  // the run-up high is the highest high of peak..i, so bar i cannot be the breakout (review L2): the pivot is set and
+  // a LATER bar is evaluated with pivotBreakout(bars, k, pivot.level)
+  const breakout = { status: 'PIVOT_SET_AWAITING_BREAKOUT', pivot: { level: bars[peak].high, date: bars[peak].date, basis: 'run-up high (highest high of the consolidation)' }, distanceToPivotPct: bars[peak].high / bars[i].close - 1, evaluateWith: 'pivotBreakout(bars, k, pivot.level) for k > i' };
   const reasons = [], dataGaps = [];
   if (!fin(run.startVolumeVs50d)) dataGaps.push('RUN_START_VOLUME_HISTORY_UNAVAILABLE');
   if (corr.inPrintedRange20to25) reasons.push('CORRECTION_IN_PRINTED_RANGE_20_25');

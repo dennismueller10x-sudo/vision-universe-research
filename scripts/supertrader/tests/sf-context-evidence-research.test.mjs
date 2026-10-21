@@ -50,6 +50,12 @@ test('SF3-CTX-APPEND: Evidenz an jede Momentum-Methode, Status und Kaufsperre un
     assert.equal(out.machineScreenEvidence[2].value.sourceStatus, 'VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE');
   }
   assert.throws(() => withContextEvidence({ methodId: 'SF_RASCHKE_HOLY_GRAIL' }, {}), /NO_CONTEXT_RULES/);
+  // review M2: a decision date that is not a session never reads a later week
+  const weekend = new Date(Date.parse(CAL[200] + 'T00:00:00Z') + 864e5 * (6 - new Date(CAL[200] + 'T00:00:00Z').getUTCDay())).toISOString().slice(0, 10);
+  const w = withContextEvidence({ status: 'MANUAL_REVIEW_REQUIRED', methodId: 'SF_DARVAS_BOX', securityId: 'L3', asOf: weekend, buyDeclarationAllowed: false, machineScreenEvidence: [] }, { built, breadth });
+  const chart = w.machineScreenEvidence[0].value.groupChart;
+  assert.ok(chart.week === undefined || chart.week < weekend.slice(0, 4) + '-W99');
+  assert.ok(!chart.week || chart.week <= built.weekOf[200], `${chart.week} vs ${built.weekOf[200]}`);
 });
 
 test('SF3-CTX-FRONTIER: jede verbleibende Daten- und Quellensperre ist konkret benannt; kein kostenpflichtiger Pfad ohne Freigabe', () => {
