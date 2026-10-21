@@ -31,6 +31,11 @@ export const COMPONENT_CONVENTIONS = Object.freeze({
   yoyMinDays: 350, yoyMaxDays: 380, // same fiscal quarter one year earlier (end-date distance)
 });
 const TRANSL = Object.freeze({ translationUnverified: true, clearance: 'REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION' });
+/**
+ * Carried by every classification (owner 2026-10-21): a mechanically confirmed setup or a Trend Template pass is a
+ * review candidate, never a complete tradable strategy and never a performance statement.
+ */
+export const NOT_A_STRATEGY = Object.freeze({ tradability: 'NOT_A_TRADABLE_STRATEGY', performanceClaim: 'NONE', meaning: 'machine screen / setup classification for manual review; entry, stop, size and sells stay manual; no historical return is implied' });
 const days = (a, b) => (Date.parse(b) - Date.parse(a)) / 864e5;
 
 /**
@@ -190,10 +195,10 @@ export function sellEvidence(bars, i, { entry, stop }) {
 export function sepaClassify(security, i, { rsProxy = null, asOfDate = security.bars[i]?.date } = {}) {
   const tt = trendTemplate(security.bars, i);
   const cls = tt.status === 'TREND_TEMPLATE_1_7_PASS' ? 'MECHANICAL_SCREEN_PASS' : tt.status === 'MISSING_DATA' ? 'DATA_BLOCKED' : tt.status === 'INSUFFICIENT_HISTORY_IPO_SCOPE' ? 'IPO_SCOPE_REVIEW' : 'NOT_QUALIFIED';
-  if (cls !== 'MECHANICAL_SCREEN_PASS') return { methodId: 'SF_MINERVINI_SEPA_VCP', securityId: security.id, asOf: asOfDate, classification: cls, trendTemplate: tt.status, buyDeclarationAllowed: false };
+  if (cls !== 'MECHANICAL_SCREEN_PASS') return { methodId: 'SF_MINERVINI_SEPA_VCP', securityId: security.id, asOf: asOfDate, classification: cls, trendTemplate: tt.status, buyDeclarationAllowed: false, ...NOT_A_STRATEGY };
   const vcp = vcpContractions(security.bars, i);
   return {
-    methodId: 'SF_MINERVINI_SEPA_VCP', securityId: security.id, asOf: asOfDate, classification: cls, buyDeclarationAllowed: false, status: 'MANUAL_REVIEW_REQUIRED', version: MINERVINI_COMPONENTS_VERSION, ...TRANSL,
+    methodId: 'SF_MINERVINI_SEPA_VCP', securityId: security.id, asOf: asOfDate, classification: cls, buyDeclarationAllowed: false, status: 'MANUAL_REVIEW_REQUIRED', version: MINERVINI_COMPONENTS_VERSION, ...TRANSL, ...NOT_A_STRATEGY,
     components: {
       trendTemplate: { state: 'MECHANICAL_PASS', value: tt },
       relativeStrength: { state: 'DATA_BLOCKED_IBD_RS', value: rsProxy ? rsProxy.at(security.id, asOfDate) : null },
@@ -218,7 +223,7 @@ export function sepaClassify(security, i, { rsProxy = null, asOfDate = security.
  */
 export function powerPlayClassify(security, i, P = MIN_PARAMS) {
   const bars = security.bars, from = Math.max(0, i - 2 * P.ppMaxSessions);
-  const base = { methodId: 'SF_MINERVINI_POWER_PLAY', securityId: security.id, asOf: bars[i]?.date, buyDeclarationAllowed: false, version: MINERVINI_COMPONENTS_VERSION, ...TRANSL };
+  const base = { methodId: 'SF_MINERVINI_POWER_PLAY', securityId: security.id, asOf: bars[i]?.date, buyDeclarationAllowed: false, version: MINERVINI_COMPONENTS_VERSION, ...TRANSL, ...NOT_A_STRATEGY };
   if (i < P.ppMaxSessions) return { ...base, classification: 'DATA_BLOCKED_SETUP', reasons: ['INSUFFICIENT_HISTORY'] };
   for (let k = from; k <= i; k++) if (!fin(bars[k].high) || !fin(bars[k].low)) return { ...base, classification: 'DATA_BLOCKED_SETUP', reasons: ['MISSING_BARS_IN_WINDOW'] };
   const [rec] = powerPlayScreen(security, { asOfIndex: i }, P);
