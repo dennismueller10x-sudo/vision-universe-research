@@ -797,9 +797,9 @@
       "cik": "0001646972",
       "name": "Albertsons Companies, Inc.",
       "sic": "5411",
-      "rawFacts": 12752,
-      "mappedFacts": 3304,
-      "unmappedFacts": 9014,
+      "rawFacts": 13020,
+      "mappedFacts": 3411,
+      "unmappedFacts": 9205,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -809,9 +809,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 35,
+      "quarterlyPeriods": 36,
       "firstPeriodEnd": "2016-02-27",
-      "lastPeriodEnd": "2026-06-20",
+      "lastPeriodEnd": "2026-09-12",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
@@ -823,7 +823,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2018-02-24",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 8.0
@@ -850,7 +850,7 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2016-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 10.0
@@ -864,7 +864,7 @@
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2016-02-27",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 10.0
@@ -878,14 +878,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-02-24",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-02-25",
           "lastAvailablePeriod": "2026-02-28",
           "historyYears": 9.0
@@ -909,46 +909,47 @@
       },
       "quality": {
         "MEDIUM": 18,
-        "HIGH": 230
+        "HIGH": 235
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 248,
-        "resolvedValues": 248
+        "datableValues": 253,
+        "resolvedValues": 253
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 10023,
+        "total": 10200,
         "by_severity": {
-          "INFO": 9014,
-          "WARNING": 1009
+          "INFO": 9205,
+          "WARNING": 995
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 396,
+          "CONCEPT_DISAGREEMENT": 380,
           "PERIOD_MISMATCH": 11,
-          "RESTATEMENT_CONFLICT": 105,
-          "UNEXPECTED_DURATION": 497,
-          "UNKNOWN_CONCEPT": 9014
+          "RESTATEMENT_CONFLICT": 103,
+          "UNEXPECTED_DURATION": 501,
+          "UNKNOWN_CONCEPT": 9205
         }
       },
       "latestFiling": {
-        "accession": "0001646972-26-000046",
-        "filing_date": "2026-07-28",
+        "accession": "0001646972-26-000065",
+        "filing_date": "2026-10-20",
         "form": "10-Q",
-        "periodic_filings": 36
+        "periodic_filings": 37,
+        "acceptance_datetime": "2026-10-20T16:25:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "fff3f8cca451f069c73dbfe7f6898b998a3b227b5324c34bcaf5c089ae50af1c",
+      "sourceDigest": "6e62258a4c49bf6ad73593d59817e7395480b97f4f2fa892bd1cdffb3c2d9d29",
       "issuerId": "iss_cik_0001646972"
     },
     {
