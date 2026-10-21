@@ -72,3 +72,10 @@ Für keine Kennzahl ist eine Schwelle für „gesund“ oder „negativ“ geset
 - SIC ist ein Stellvertreter: Sie wird von der SEC vergeben, ist grob und enthält Sammelcodes (6770, 6798, 2834).
 - Das Universum ist das des Snapshots. Delistete Titel sind eingeschlossen, ETFs und Titel ohne CIK nicht.
 - Keine Trading-Readiness: WEIN-SF-STAGE, WEIN-SF-GROUP (Gruppen-Stage) und weitere qualitative Kriterien bleiben manuell.
+
+## 7. Owner-Entscheidung (21.10.2026)
+
+- `SIC3-EW-MIN5-400D-WIDE` (SIC3, mindestens fünf Gruppenmitglieder) darf als **klar gekennzeichnete Research-Referenz** verwendet werden.
+- Sie ist **keine** `SOURCE_EXACT`-Regel und **kein** verbindliches Trading-Gate. `WEIN-SF-GROUP` bleibt `DATA_BLOCKED`; die Stage der Gruppe entscheidet der Reviewer (`WEIN-RG-GROUP`).
+- Die übrigen Varianten und ihre Coverage (Snapshot-Messung im Abschlussbericht) bleiben als Vergleich erhalten.
+- Kapitalgewichtung: kein neuer Snapshot-Capture. Die Datenanforderung (PIT-Aktienzahl aus `sec-pit-r13` in `EXTRA_SERIES_KEYS`) bleibt in `research/context-evidence.mjs#DATA_FRONTIER` dokumentiert.
