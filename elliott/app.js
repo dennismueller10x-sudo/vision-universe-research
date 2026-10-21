@@ -198,10 +198,10 @@
         el("strong", { class: "el-proj-v num", text: head.text }),
         others.length ? el("span", { class: "el-proj-o", text: others.map(function (o) { return o.label + " " + o.text; }).join(" · ") }) : null
       ]) : null,
-      c.role === "EXPLORE_HIGHLIGHT" ? el("p", { class: "el-note-role", text: "Explorativ – nicht als reguläre Alternative freigegeben" }) : null,
+      c.role === "EXPLORE_HIGHLIGHT" ? el("p", { class: "el-note-role", text: "Explorativ · nicht als reguläre Alternative freigegeben" }) : null,
       el("p", { class: "el-meta" }, [el("b", { text: M.STATUS_LABEL[c.st] })]),
       chips.length ? el("ul", { class: "el-ctx", "aria-label": "Kontext" }, chips.map(function (x) { return el("li", {}, [el("span", { text: x.k }), " ", el("b", { text: x.v })]); })) : null,
-      c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kursdaten verzögert · letzter Stand " + M.dateDe(c.last) }) : null,
+      c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kurs verzögert · " + M.dateDe(c.last) }) : null,
       el("span", { class: "el-cta", "aria-hidden": "true", text: "Analyse öffnen →" })
     ]);
   }
@@ -331,6 +331,10 @@
     if (initialQ) run();
     return form;
   }
+  /* Fokusrahmen am programmatisch fokussierten Kopf nur bei Tastaturbedienung (chartbild.css: html[data-kbd]). */
+  var de = document.documentElement;
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Tab") de.setAttribute("data-kbd", ""); });
+  document.addEventListener("pointerdown", function () { de.removeAttribute("data-kbd"); });
   /* "/" fokussiert die Suche der Startseite (wie in Quant und Discover). */
   document.addEventListener("keydown", function (ev) {
     if (state.view !== "home" || ev.key !== "/" || ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -346,7 +350,9 @@
         el("p", { class: "el-eyebrow", text: "Vision Universe" }),
         el("h1", { class: "el-title" }, [el("span", { class: "el-mark" }, [icon()]), "Elliott"]),
         el("p", { class: "el-lead" }, [el("span", { text: "Strukturelle Marktszenarien." }), " ", el("span", { text: "Klare Projektionen." }), " ", el("span", { text: "Transparente Invalidierung." })]),
-        buildSearch(s.q, s.suche)
+        buildSearch(s.q, s.suche),
+        /* Unteransicht Suche (Dock): nur das Suchfeld, fokussiert; die Uebersicht ist einen Schritt entfernt. */
+        s.suche ? el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]) : null
       ]),
       el("div", { class: "el-hero-side" }, [
         home ? stats(home, s) : null,
@@ -422,7 +428,9 @@
     if (key !== state.homeKey) { state.shown = M.PAGE; state.homeKey = key; }
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
+    root.classList.toggle("is-suche", !!s.suche);
     root.replaceChildren(hero(Object.assign({}, s, { q: q })), content(s));
+    if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
     restoreFocus();
     document.title = (M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
