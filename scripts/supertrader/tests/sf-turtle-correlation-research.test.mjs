@@ -194,4 +194,6 @@ test('SF3-TUR-CORR-SHARED-ANCHORS: geteilter Anker-Cache liefert dieselben Grupp
   assert.equal(a.groupsOf('NEW', d), null);
   assert.deepEqual(b.groupsOf('NEW', d), { closely: 'UNKNOWN', loosely: 'UNKNOWN' });
   assert.ok(cache.size >= 1);
+  // a cache of another variant is refused (re-review L-a)
+  assert.throws(() => createCorrelationGroupProvider(data, RES, { unknownPolicy: 'REPORT_ONLY', anchorCache: cache }), /ANCHOR_CACHE_MISMATCH/);
 });

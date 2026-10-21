@@ -238,6 +238,9 @@ export function createCorrelationGroupProvider(data, variant, { unknownPolicy, u
   // anchorCache: share the computed anchors between providers of the SAME variant and data (e.g. the two unknown
   // policies); the groups do not depend on the policy
   const W = variant.windowSessions, cache = anchorCache ?? new Map();
+  // a shared cache must belong to the same variant, data and population (re-review L-a): tag it on first use
+  const cacheTag = JSON.stringify({ variant: variant.id, calendar: [data.calendar.length, data.calendar[0], data.calendar.at(-1)], securities: data.securities.length, universe: universe?.id ?? null, populationFilter: populationFilter ? 'CUSTOM' : null });
+  if (anchorCache) { if (anchorCache.tag === undefined) anchorCache.tag = cacheTag; else if (anchorCache.tag !== cacheTag || populationFilter) throw new Error('ANCHOR_CACHE_MISMATCH'); }
   const counts = { lookups: 0, resolved: 0 }, reasons = {};
   const bump = (k) => { reasons[k] = (reasons[k] || 0) + 1; };
 
