@@ -1,6 +1,6 @@
 # Vision Universe Research – Arbeitsregeln
 
-Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md).
+Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md).
 
 Statische Seite (GitHub Pages, `research.visionuniverse.de`), Node 22 ohne Abhängigkeiten, UMD-Engines (`globalThis` + `module.exports`), Python für SEC.
 Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.

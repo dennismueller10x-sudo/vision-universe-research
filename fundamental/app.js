@@ -94,7 +94,7 @@
   }
 
   /* ------------------------------------------------------------ Start */
-  function home() {
+  function home(focus) {
     setTitle(null);
     main.replaceChildren(
       el('section', { class: 'fu-hero' }, [
@@ -160,7 +160,7 @@
       }).catch(function () { if (my === tok) holder.replaceChildren(el('div', { class: 'fu-notice' }, el('b', { text: 'Die Auswahl konnte gerade nicht geladen werden.' }))); });
     }
     setTimeout(function () { pick(0); }, 0);
-    return el('section', { class: 'fu-section fu-disc', 'aria-labelledby': 'fu-h-disc' }, [
+    return el('section', { class: 'fu-section fu-disc', id: 'entdecken', 'aria-labelledby': 'fu-h-disc' }, [
       el('h2', { id: 'fu-h-disc', text: 'Entdecken' }),
       el('div', { class: 'fu-chips fu-cmp-opts', role: 'group', 'aria-label': 'Auswahl' }, buttons),
       sub, holder
@@ -647,6 +647,10 @@
     window.scrollTo(0, 0);
     if (r.view === 'company') company(r.ticker); else if (r.view === 'method') method(); else home();
     var h = main.querySelector('h1'); if (h && r.view !== 'home') { h.setAttribute('tabindex', '-1'); }
+    if (r.focus === 'entdecken') { var d = document.getElementById('entdecken'); if (d) d.scrollIntoView({ block: 'start' }); }
+    if (r.focus === 'suche') { var q = document.getElementById('fu-q'); if (q) q.focus({ preventScroll: true }); }
+    // Produkt-Leiste der Shell (opt-in); den aktiven Eintrag leitet sie aus der Adresse ab.
+    if (global.VUNavigation) global.VUNavigation.dock({});
   }
   window.addEventListener('hashchange', render);
   render();
