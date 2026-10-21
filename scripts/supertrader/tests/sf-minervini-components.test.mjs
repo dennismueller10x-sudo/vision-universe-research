@@ -133,6 +133,10 @@ test('GC-MIN-PP-CLASSES: bestaetigt mechanisch / manuell / datenblockiert / nich
   assert.equal(a.status, 'MANUAL_REVIEW_REQUIRED'); assert.equal(a.buyDeclarationAllowed, false);
   assert.ok(a.openManualQuestions.some((q) => q.flag === 'MIN-MR-PP-VOLUME'), 'strong start volume stays a judgment');
   assert.equal(a.evidence.stopReference.exceeds10pct, false);
+  // review L2: the classification bar cannot be the breakout; the pivot is set and a later bar is evaluated
+  assert.equal(a.evidence.breakout.status, 'PIVOT_SET_AWAITING_BREAKOUT');
+  const next = { ...ok, bars: [...ok.bars, { ...ok.bars[i], date: day(i + 1), open: 21.6, high: a.evidence.breakout.pivot.level * 1.01, close: a.evidence.breakout.pivot.level, volume: 3e6 }] };
+  assert.equal(pivotBreakout(next.bars, i + 1, a.evidence.breakout.pivot.level).status, 'PIVOT_REACHED');
   assert.equal(powerPlayClassify(pp(cons(0.15)), i).classification, 'MANUAL_REVIEW_SETUP');
   assert.deepEqual(powerPlayClassify(pp(cons(0.22)), i).reasons, ['CORRECTION_IN_PRINTED_RANGE_20_25', 'NOT_TIGHT_VCP_CHARACTERISTICS_REVIEW']);
   assert.equal(powerPlayClassify(pp(cons(0.3)), i).classification, 'NOT_QUALIFIED');
