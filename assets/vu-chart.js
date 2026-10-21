@@ -93,9 +93,10 @@
     var lp = g.pts[g.pts.length - 1];
     svg.appendChild(el("circle", { class: "vu-chart-dot", cx: lp.x.toFixed(1), cy: lp.y.toFixed(1), r: 3.6 }));
     if (o.axis !== false) {
+      /* Der letzte Kurs zuerst; Hoch oder Tief, die naeher als 14 px daneben laegen, entfallen (keine uebereinander gedruckten Zahlen). */
       var used = [];
-      g.yTicks.forEach(function (t) {
-        if (used.some(function (u) { return Math.abs(u - t.y) < 14; }) && !t.last) return;
+      g.yTicks.slice().sort(function (a, b) { return (b.last ? 1 : 0) - (a.last ? 1 : 0); }).forEach(function (t) {
+        if (used.some(function (u) { return Math.abs(u - t.y) < 14; })) return;
         used.push(t.y);
         var tx = el("text", { class: "vu-chart-axis", x: g.w - g.padR + 8, y: (t.y + 4).toFixed(1) });
         if (t.last) tx.setAttribute("font-weight", "800");

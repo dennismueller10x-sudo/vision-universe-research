@@ -66,7 +66,7 @@
 .vu-shead-pricebox:empty{display:none}
 .vu-shead-price{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px;row-gap:2px;margin:16px 0 4px}
 .vu-shead-value{font-size:clamp(34px,9vw,46px);line-height:1;font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
-.vu-shead-change{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--vu-text-secondary)}
+.vu-shead-change{font-size:16px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--vu-text-secondary)}
 .vu-shead-change small{font-size:13px;font-weight:650;color:var(--vu-muted)}
 .vu-shead-price[data-direction=up] .vu-shead-change{color:var(--vu-up,#1a7330)}
 .vu-shead-price[data-direction=down] .vu-shead-change{color:var(--vu-down,#b8281f)}
