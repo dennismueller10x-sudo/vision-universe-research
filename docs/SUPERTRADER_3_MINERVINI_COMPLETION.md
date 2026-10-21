@@ -68,3 +68,9 @@ Für jede Klasse gilt:
 
 - **Fundamentals:** Der Snapshot enthält `sec-pit-r12` (EPS, Umsatz, Erst-Einreichungsdatum; Q4 abgeleitet). Sichtbar ist nur, was **vor** dem Sitzungstag eingereicht wurde. Die Durchreichung an die Wertpapiere (`seg.fund`) erfolgt im Research-Runner (PR 5/5); `runner/snapshot-input.mjs` bleibt unverändert, damit der AG-3-Fingerabdruck nicht bricht.
 - **Daten blockiert:** IBD-Rating, Schätzungen, Überraschungen, Guidance-Historie.
+
+## 6. Owner-Entscheidung (21.10.2026)
+
+- Die SEPA-/VCP- und Power-Play-Komponenten bleiben vollständig erhalten.
+- Jede Klassifikation trägt `tradability: NOT_A_TRADABLE_STRATEGY` und `performanceClaim: NONE` (`NOT_A_STRATEGY`); getestet in `GC-MIN-NOT-A-STRATEGY` für alle Klassen einschließlich `CONFIRMED_MECHANICAL_SETUP` und `MECHANICAL_SCREEN_PASS`.
+- Ein mechanisch bestätigtes Setup ist ein Review-Kandidat: keine vollständig handelbare Strategie, keine Aussage über Profitabilität. Screen-Statistiken des Snapshot-Laufs sind als `SCREEN_STATISTICS_NOT_A_STRATEGY` gekennzeichnet; Vorwärts-Kursänderungen nur versiegelt als `SCREEN_STATISTIC_FORWARD_PRICE_CHANGE_NOT_A_STRATEGY_RETURN`.

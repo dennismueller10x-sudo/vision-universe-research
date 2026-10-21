@@ -79,3 +79,9 @@ Synthetischer Beleg (Test `SF3-TUR-CORR-ENGINE`): Ohne Limit konzentriert sich e
 - Owner-Entscheidung, ob überhaupt eine Variante als Equity-Adaption geführt werden soll; bis dahin bleibt `TUR-SF-LIMIT-CORR` `DATA_BLOCKED`/quellenoffen.
 - Snapshot-Messung (Vorher/Nachher, Coverage der Unknown-Zustände) über den Research-Runner (siehe Abschlussbericht `SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md`).
 - `TUR-RANK` nach Gruppen ist nicht Teil dieser Komponente.
+
+## 8. Owner-Entscheidung (21.10.2026)
+
+- **Keine** der acht Korrelationsvarianten wird als verbindliche Handelsregel aktiviert. Sie bleiben dokumentierte Equity-Research-Modelle.
+- Keine Runner-Änderung und keine Änderung der bestehenden Turtle-Acceptance (AG-1 bis AG-7). `TUR-SF-LIMIT-CORR` bleibt eine deklarierte Datenausnahme; die Operationalisierung bleibt quellenoffen.
+- Grundlage der Entscheidung ist die Snapshot-Messung (`SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md`): Im tatsächlichen Referenzbuch binden die Limits unter keiner COMPLETE- oder AVERAGE-Variante.

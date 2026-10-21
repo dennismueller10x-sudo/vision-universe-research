@@ -2,7 +2,7 @@
 // Golden Cases und adversariale Faelle, synthetisch. Kein Kaufsignal, keine Wachstumsschwelle, keine erfundene Volumenregel.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRsPercentileProxy, fundamentalEvidence, vcpContractions, pivotBreakout, positionSize, sellEvidence, sepaClassify, powerPlayClassify, MINERVINI_COMPONENTS_VERSION } from '../source-faithful/research/minervini-components.mjs';
+import { createRsPercentileProxy, fundamentalEvidence, vcpContractions, pivotBreakout, positionSize, sellEvidence, sepaClassify, powerPlayClassify, MINERVINI_COMPONENTS_VERSION, NOT_A_STRATEGY } from '../source-faithful/research/minervini-components.mjs';
 import { sepaScreen, powerPlayScreen, MINERVINI_VERSION } from '../source-faithful/methods/minervini.mjs';
 
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
@@ -157,4 +157,17 @@ test('ADV-MIN-PP-LONG-BASE: Konsolidierung jenseits 3-6 Wochen wird Review, nie 
   const r = powerPlayClassify(s, i);
   assert.equal(r.classification, 'MANUAL_REVIEW_SETUP');
   assert.ok(r.reasons.includes('CONSOLIDATION_BEYOND_TYPICAL_DURATION'));
+});
+
+test('GC-MIN-NOT-A-STRATEGY (Owner 21.10.2026): jede Klassifikation, auch CONFIRMED_MECHANICAL_SETUP, ist keine handelbare Strategie und keine Performance-Aussage', () => {
+  const ok = pp(cons(0.07)), i = ok.bars.length - 1;
+  const outs = [powerPlayClassify(ok, i), powerPlayClassify(pp(cons(0.15)), i), powerPlayClassify(pp(cons(0.3)), i), powerPlayClassify(pp(cons(0.07), { flat: 20 }), pp(cons(0.07), { flat: 20 }).bars.length - 1), sepaClassify({ id: 'V', bars: mk(VCP, vcpVol) }, VCP.length - 1), sepaClassify({ id: 'D', bars: mk(Array.from({ length: 300 }, (_, k) => 200 - k * 0.3)) }, 299)];
+  assert.deepEqual(new Set(outs.map((o) => o.classification)), new Set(['CONFIRMED_MECHANICAL_SETUP', 'MANUAL_REVIEW_SETUP', 'NOT_QUALIFIED', 'DATA_BLOCKED_SETUP', 'MECHANICAL_SCREEN_PASS']));
+  for (const o of outs) {
+    assert.equal(o.tradability, 'NOT_A_TRADABLE_STRATEGY'); assert.equal(o.performanceClaim, 'NONE'); assert.equal(o.buyDeclarationAllowed, false);
+    // no performance field and no buy wording anywhere in the record (the explanatory `meaning` text excluded)
+    const { meaning, ...rest } = o;
+    assert.doesNotMatch(JSON.stringify(rest), /profit|return|cagr|sharpe|BUY_SIGNAL|"TRADABLE"/i);
+  }
+  assert.equal(NOT_A_STRATEGY.tradability, 'NOT_A_TRADABLE_STRATEGY');
 });

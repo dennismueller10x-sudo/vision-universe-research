@@ -39,6 +39,7 @@ export const INDUSTRY_STRENGTH_VERSION = 'sf3-industry-strength-1.0.0';
 const G = (id, level, minMembers, maxAgeDays, identity, weighting = 'EQUAL', role = 'SENSITIVITY') => Object.freeze({ id, ref: `SF3-RESEARCH-VARIANT:${id}`, level, minMembers, maxAgeDays, acceptedIdentityEvidence: Object.freeze(identity), weighting, role, sourceStatus: 'VU_PROXY_OF_WEINSTEIN_GROUP_CHART' });
 const STRICT = ['NAME_EXACT_XBRL_IN_LISTING_WINDOW'], WIDE = ['NAME_EXACT_XBRL_IN_LISTING_WINDOW', 'CURRENT_TICKER_MAPPING'];
 export const GROUP_VARIANTS = Object.freeze([
+  // owner 2026-10-21: research reference (clearly labelled), never SOURCE_EXACT and never a trading gate
   G('SIC3-EW-MIN5-400D-WIDE', 'industryGroup', 5, 400, WIDE, 'EQUAL', 'BASELINE_FOR_COMPARISON'),
   G('SIC3-EW-MIN5-400D-STRICT', 'industryGroup', 5, 400, STRICT),
   G('SIC2-EW-MIN5-400D-WIDE', 'majorGroup', 5, 400, WIDE),
