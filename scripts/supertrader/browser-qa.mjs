@@ -119,13 +119,16 @@ async function main() {
       page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
       // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
       // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
-      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse/.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
+      // Firmenlogo im Aktienkopf (assets/stock-navigator.js): fehlt die Datei, zeigt der Kopf das Monogramm - kein Fehler.
+      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse|\/discover\/logos\/files\//.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
       page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse|^Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });
       try { await page.waitForSelector(selector, { timeout: 15000 }); } catch { errors.push(`selector ${selector} fehlt`); }
-      if (name === 'lens' || name === 'replay') { try { await page.waitForSelector('.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
+      // Lens (VU3): Kursverlauf ueber den gemeinsamen Kurschart (assets/vu-chart.js); das Chartbild der Methode liegt dort hinter einer Aufklappzeile.
+      if (name === 'lens' || name === 'replay') { try { await page.waitForSelector(name === 'lens' ? '.vu-chart svg path.vu-chart-line' : '.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
+      if (name === 'lens') { const lv = await page.locator('.vu-chart svg .st-lvl').count(); if (!lv) errors.push('Kursmarken des Setups fehlen im Kurschart'); }
       const m = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),

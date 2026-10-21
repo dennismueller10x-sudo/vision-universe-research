@@ -113,15 +113,14 @@
     return n;
   }
   function staleness(D) { return tradingDaysBetween(D.signals.asOf, D.market.session && D.market.session.lastCompletedSession); }
-  function freshness(D, full) {
+  /* VU3: Datenstand als eine kurze Zeile. Sie nennt die Schlusskurse, auf denen die Signale beruhen
+     (nicht das Alter eines angezeigten Kurses). Ab zwei Handelstagen Rueckstand bleibt eine sichtbare Warnung (.vu-alert). */
+  function freshness(D) {
     var asOf = D.signals.asOf, last = D.market.session && D.market.session.lastCompletedSession;
     var lag = tradingDaysBetween(asOf, last);
-    var stale = lag > 0;
-    var detail = stale ? 'Letzter abgeschlossener Handelstag: ' + dateDe(last) + '. Die Tageskurse sind noch nicht nachgezogen; alle Signale gelten für den ' + dateDe(asOf) + '.' : 'Signale auf Tagesschlussbasis des letzten Handelstags.';
-    var head = stale ? 'Kurse vom ' + dateShort(asOf) + ' — ' + lag + ' Handelstag' + (lag === 1 ? '' : 'e') + ' alt' : 'Kurse vom ' + dateShort(asOf) + ' · aktuell';
-    if (full && lag >= 3) return h('div', { class: 'st-fresh stale' }, [icon(IC.clock), h('div', null, [h('strong', { text: head }), h('span', { text: detail })])]);
-    var d = h('details', { class: 'st-fresh mini' + (stale ? ' stale' : '') }, [h('summary', null, [icon(IC.clock), h('strong', { text: head })]), h('span', { text: detail })]);
-    return d;
+    var head = 'Signale auf Schlusskursen vom ' + dateShort(asOf);
+    if (lag >= 2) return h('div', { class: 'st-fresh stale vu-alert', role: 'status' }, [h('span', null, [h('strong', { text: head + ' – ' + lag + ' Handelstage alt. ' }), 'Letzter abgeschlossener Handelstag: ' + dateDe(last) + '. Die Tageskurse sind noch nicht nachgezogen.'])]);
+    return h('p', { class: 'st-fresh st-asof' + (lag ? ' stale' : '') }, [icon(IC.clock), head + (lag ? ' · 1 Handelstag alt' : '')]);
   }
 
   /* -------------------------------------------- Setup-Leiste (visuell) */
@@ -133,9 +132,9 @@
     if (s.entry && isFinite(s.stop)) {
       var lo = Math.min(s.stop, last, s.entry.price), hi = Math.max(s.stop, last, s.entry.price) * 1.02;
       var pos = function (v) { return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100)); };
-      return h('div', { class: 'st-bar2 pos', role: 'img', 'aria-label': 'Stop ' + num(s.stop) + ', Einstieg ' + num(s.entry.price) + ', Kurs ' + num(last) }, [
+      return h('div', { class: 'st-bar2 pos', role: 'img', 'aria-label': 'Stop ' + num(s.stop) + ', Einstieg ' + num(s.entry.price) + ', Schlusskurs ' + num(last) }, [
         h('div', { class: 'track' }, [h('i', { class: 'm stop', style: { left: pos(s.stop) + '%' } }), h('i', { class: 'm entry', style: { left: pos(s.entry.price) + '%' } }), h('i', { class: 'm now', style: { left: pos(last) + '%' } })]),
-        h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Stop ' + num(s.stop) }), h('span', { text: 'Einstieg ' + num(s.entry.price) }), h('span', { class: 'now', text: 'Kurs ' + num(last) })]),
+        h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Stop ' + num(s.stop) }), h('span', { text: 'Einstieg ' + num(s.entry.price) }), h('span', { class: 'now', text: 'Schluss ' + num(last) })]),
         riskRow(last, s.stop, s.entry.price),
       ]);
     }
@@ -145,7 +144,7 @@
     var span = hi2 - lo2 || 1;
     var at = Math.max(0, Math.min(100, (last - lo2) / span * 100));
     var toTrig = trig / last - 1, toInv = inv / last - 1;
-    return h('div', { class: 'st-bar2', role: 'img', 'aria-label': 'Kurs ' + num(last) + ', Trigger ' + num(trig) + ' (' + pct(toTrig, 1, true) + '), Ungültig unter ' + num(inv) }, [
+    return h('div', { class: 'st-bar2', role: 'img', 'aria-label': 'Schlusskurs ' + num(last) + ', Trigger ' + num(trig) + ' (' + pct(toTrig, 1, true) + '), Ungültig unter ' + num(inv) }, [
       h('div', { class: 'track' }, [h('i', { class: 'fill', style: { width: at + '%' } }), h('i', { class: 'm now', style: { left: at + '%' } })]),
       h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + num(inv) }), h('span', { class: 'now', text: s.state === 'TRIGGERED' ? 'Einstieg zur nächsten Eröffnung' : toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + num(trig) })]),
     ]);
@@ -245,7 +244,7 @@
   /* ------------------------------------------------ Grundbausteine */
   function sec(title, kids, opts) {
     opts = opts || {};
-    return h('section', { class: 'st-sec', id: opts.id || null }, [h('div', { class: 'st-sec-h' }, [h('div', null, [opts.kicker ? h('div', { class: 'st-kick', text: opts.kicker }) : null, h('h2', { text: title })]), opts.more || null])].concat(kids));
+    return h('section', { class: 'st-sec vu-sec', id: opts.id || null }, [h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [opts.kicker ? h('div', { class: 'st-kick vu-eyebrow', text: opts.kicker }) : null, h('h2', { class: 'vu-sec-title', text: title })]), opts.more || null])].concat(kids));
   }
   function more(href, text) { return h('a', { class: 'st-more', href: href }, [text, icon(IC.arrow)]); }
   /* Link zur Discover-Aktienseite nur, wenn der Build sie nicht als fehlend
@@ -259,11 +258,40 @@
   }
   function emptyBox(title, text) { return h('div', { class: 'st-emptybox' }, [h('strong', { text: title }), h('p', { text: text })]); }
   function details(summary, kids, open) { var d = h('details', { class: 'st-det' }, [h('summary', { text: summary })].concat(kids)); if (open) d.open = true; return d; }
+  /* VU3: Erklaerungen hinter eine einheitliche Aufklappzeile (.vu-more). */
+  function moreBox(summary, kids, open) {
+    var d = h('details', { class: 'vu-more st-vmore' }, [h('summary', { text: summary }), h('div', { class: 'vu-more-body' }, kids)]);
+    if (open) d.open = true;
+    return d;
+  }
+  /* Kennzahlen ohne Kaesten (.vu-kpis). k: [Wert, Bezeichnung, Zusatz?, Ton?] */
+  function kpiList(list, cls) {
+    return h('ul', { class: 'vu-kpis st-vkpis' + (cls ? ' ' + cls : '') }, list.filter(Boolean).map(function (k) {
+      return h('li', { class: 'vu-kpi' }, [h('span', { class: 'vu-kpi-label', text: k[1] }), h('strong', { class: 'vu-kpi-value' + (k[3] ? ' ' + k[3] : ''), text: k[0] }), k[2] ? h('span', { class: 'vu-kpi-sub', text: k[2] }) : null]);
+    }));
+  }
+  /* Interne Lauf-/Rundennamen („Runde 11“) gehoeren nicht in die Kundenansicht; der Inhalt der Notiz bleibt. */
+  function noRun(t) {
+    return String(t || '').replace(/\s*\((?:[^()]*?\s)?(?:in )?Runde \d+\)/g, '').replace(/\s+in Runde \d+/g, '').replace(/\bRunde \d+:?\s*/g, '').replace(/\s{2,}/g, ' ').trim();
+  }
+  function vstatus(text, tone) { return h('span', { class: 'vu-status', 'data-tone': tone || null, text: text }); }
+  var TONE = { good: 'good', warn: 'warn', bad: 'bad', info: 'accent', mute: null };
+  /* Daten & Methodik: einmal je Seite, am Ende. Seiten melden zusaetzliche Zeilen ueber dmAdd. */
+  var DM = [];
+  function dmAdd(k, v) { for (var i = 0; i < DM.length; i++) if (DM[i][0] === k) { DM[i][1] = v; return; } DM.push([k, v]); }
+  var APP = null;
   function disclaimer(sig) {
-    return h('footer', { class: 'st-foot' }, [
-      h('p', { text: (sig && sig.disclaimer) || 'Modellsignale einer regelbasierten Strategie-Nachbildung. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung.' }),
-      h('p', { text: 'Modellpositionen sind Simulationen nach festen Regeln — keine realen Orders. Kursdaten aus der Discovery-Dateninfrastruktur (Tiingo, split-adjustiert).' }),
-    ]);
+    var m = (APP && APP.market) || {}, asOf = sig && sig.asOf, last = m.session && m.session.lastCompletedSession;
+    var rows = [['Datenstand', 'Signale auf Tagesschlusskursen vom ' + dateDe(asOf) + (last && last !== asOf ? ' · letzter abgeschlossener Handelstag ' + dateDe(last) : '') + '.']]
+      .concat(DM)
+      .concat([
+        ['Kursdaten', 'Tageskurse aus der Discover-Dateninfrastruktur (Tiingo, split-adjustiert).'],
+        ['Modellpositionen', 'Simulationen nach festen Regeln – keine realen Orders.'],
+        ['Methodik', h('a', { href: BASE + 'sources/', text: 'Quellen der Regeln' })],
+      ]);
+    var dm = h('details', { class: 'vu-dm st-dm' }, [h('summary', null, ['Daten & Methodik', h('small', { text: asOf ? 'Stand ' + dateShort(asOf) : '' })]),
+      h('dl', null, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', null, [r[1]])]; })))]);
+    return h('footer', { class: 'st-foot' }, [dm, h('p', { class: 'st-legal', text: (sig && sig.disclaimer) || 'Modellsignale einer regelbasierten Strategie-Nachbildung. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung.' })]);
   }
 
   /* --------------------------------------------- Kopf & Navigation
@@ -271,15 +299,16 @@
      (assets/site-navigation.js): Supertrader | Methoden | Signale |
      Backtests | ☰. Supertrader traegt nur noch seine Produktzeile im
      Inhalt: Name, Kursstand und der Weg zu den Quellen. */
-  function chrome(asOf) {
+  function chrome() {
     var line = h('div', { class: 'st-productline' }, [
-      h('a', { class: 'st-logo', href: BASE, 'aria-label': 'Supertrader Start' }, [h('i'), 'SUPERTRADER']),
-      h('span', { class: 'st-stamp', text: asOf ? 'Kurse ' + dateShort(asOf) : '' }),
+      h('a', { class: 'st-logo', href: BASE, 'aria-label': 'Supertrader Start' }, [h('i'), 'Supertrader']),
       h('a', { class: 'st-productlink', href: BASE + 'sources/', 'aria-current': page === 'sources' ? 'page' : null, text: 'Quellen' }),
     ]);
-    if (page !== 'home') main.insertBefore(line, main.firstChild);
-    // Produkt-Leiste der gemeinsamen Shell anfordern (aktiver Eintrag aus dem Pfad)
-    if (window.VUNavigation) window.VUNavigation.dock({});
+    /* Aktienseite: Kopf und Aktien-Navigator tragen den Kontext; der Datenstand steht am Kurs bzw. in „Daten & Methodik“. */
+    if (page !== 'home' && page !== 'stock') main.insertBefore(line, main.firstChild);
+    /* Produkt-Leiste der gemeinsamen Shell anfordern. Der aktive Eintrag kommt aus dem Pfad -
+       ausser auf der Aktienseite: sie gehoert zu keinem Dock-Eintrag (sonst stuende dort faelschlich „Signale“). */
+    if (window.VUNavigation) window.VUNavigation.dock(page === 'stock' ? { active: null } : {});
   }
 
   /* ============================================== Datenaufbereitung */
@@ -312,19 +341,15 @@
     main.appendChild(h('header', { class: 'st-hero st-home-hero vu-product-hero vu-hero-fidelity', 'data-product': 'supertrader' }, [
       h('div', { class: 'vu-hero-scene', 'aria-hidden': 'true' }),
       h('span', { class: 'vu-product-icon vu-product-icon--hero', 'aria-hidden': 'true', html: '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"></use></svg>' }),
-      h('div', { class: 'vu-hero-name', text: 'SuperTrader' }),
+      h('div', { class: 'vu-hero-name', text: 'Supertrader' }),
       h('h1', { class: 'vu-product-title vu-hero-headline', text: 'Methoden. Setups. Klare Regeln.' }),
-      h('p', { class: 'st-lead vu-product-lead vu-hero-description', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
+      h('p', { class: 'st-lead vu-product-lead vu-hero-description', text: 'Welche Aktien regelbasierte Methoden heute beobachten – und wie belastbar jede Methode ist.' }),
       h('div', { class: 'vu-product-hero__actions' }, [
         h('a', { class: 'vu-product-action', href: BASE + 'strategies/' }, ['Methoden entdecken', icon(IC.arrow)]),
         h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Signale ansehen' }),
       ]),
-      h('nav', { class: 'st-hero-quick', 'aria-label': 'Supertrader Schnellzugriff' }, [
-        h('a', { class: 'vu-product-chip', href: BASE + 'backtests/', text: 'Backtests & Evidenz' }),
-        h('a', { class: 'vu-product-chip', href: BASE + 'sources/', text: 'Quellen' }),
-      ]),
     ]));
-    main.appendChild(freshness(D, true));
+    main.appendChild(freshness(D));
 
     if (!current.length) { renderObservationHome(D, research, partial, pending, S); return; }
     // Status auf einen Blick (nur Methoden mit aktuellen Setups)
@@ -359,8 +384,8 @@
     if (positions.length) {
       var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
       main.appendChild(sec('Modellpositionen', [
-        h('p', { class: 'st-hint', text: 'Modelleinstieg nach der Regel der jeweiligen Version: Momentum, Weinstein, Darvas und Turtle per Kauf-Stop am Ausbruchspunkt im Tagesverlauf, Minervini nach einem Schlusskurs über dem Pivot zur nächsten Eröffnung. Das ist die Umsetzung von Vision Universe auf Tageskursen, nicht überall wörtlich die Regel des Traders. Simulation, keine Orders.' }),
         h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
+        moreBox('Wie das Modell einsteigt', [h('p', { text: 'Modelleinstieg nach der Regel der jeweiligen Version: Momentum, Weinstein, Darvas und Turtle per Kauf-Stop am Ausbruchspunkt im Tagesverlauf, Minervini nach einem Schlusskurs über dem Pivot zur nächsten Eröffnung. Das ist die Umsetzung von Vision Universe auf Tageskursen, nicht überall wörtlich die Regel des Traders. Simulation, keine Orders.' })]),
       ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
     }
 
@@ -370,7 +395,7 @@
       var pos = st.open.filter(function (x) { return x.entry; }).length, obs = st.open.filter(function (x) { return !x.entry; }).length;
       return h('a', { class: 'st-research', href: stratUrl(s), style: worldVars(s) }, [
         h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
-        h('p', { text: 'Neue Setups sind Modellbeobachtungen, keine Einstiegschancen. ' + pos + ' laufende Modellpositionen werden nach Regelversion ' + (ev(s).version || s.strategy_version) + ' weiter geführt; ' + obs + ' Setups in Beobachtung.' }),
+        h('p', { text: pos + ' Modellpositionen · ' + obs + ' Setups in Beobachtung · keine Einstiegschancen' }),
       ]);
     }), { kicker: 'Weiter protokolliert, nicht hervorgehoben' }));
 
@@ -389,26 +414,33 @@
   // Methoden sind Modellbeobachtung. Kein Einstieg wird als Chance hervorgehoben.
   function renderObservationHome(D, research, partial, pending, S) {
     var reg = D.registry, sig = D.signals, stale = staleness(D) >= 2;
-    main.appendChild(h('div', { class: 'st-evbanner', 'data-t': 'warn' }, [
-      h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Stand der Evidenz' }), h('span', { class: 'st-tag', 'data-t': 'warn', text: 'In Prüfung' })]),
-      h('p', { class: 'res', text: 'Für keine laufende Regelversion ist bisher ein Vorteil belegt. Alle Methoden laufen deshalb als Modellbeobachtung: Setups, bestätigte Einstiege, Positionen und Ausstiege werden nach festen Regeln protokolliert – als Forschung, nicht als Empfehlung oder Einstiegschance.' }),
-      h('p', { class: 'np', text: (reg.evidenceScale && reg.evidenceScale.noPromise) || '' }),
-    ]));
-    main.appendChild(sec('Was die Modelle gerade beobachten', research.map(function (s) {
+    var per = research.map(function (s) {
       var st = sig.strategies[s.strategy_id] || { open: [], closed: [] };
-      var prep = st.open.filter(function (x) { return !x.entry && x.state !== 'TRIGGERED'; }).length, conf = st.open.filter(function (x) { return x.state === 'TRIGGERED'; }).length, pos = st.open.filter(function (x) { return x.entry; }).length;
-      return h('a', { class: 'st-research', href: stratUrl(s), style: worldVars(s) }, [
+      return { s: s, prep: st.open.filter(function (x) { return !x.entry && x.state !== 'TRIGGERED'; }).length, conf: st.open.filter(function (x) { return x.state === 'TRIGGERED'; }).length, pos: st.open.filter(function (x) { return x.entry; }).length, done: closedCount(st) };
+    });
+    var sum = function (k) { return per.reduce(function (a, x) { return a + x[k]; }, 0); };
+    // VU3: Ergebnis zuerst - was die Modelle heute protokollieren, dann der Status der Evidenz in einer Zeile.
+    main.appendChild(h('section', { class: 'st-sec vu-sec st-today' }, [
+      h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Signale')]),
+      kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstieg bestätigt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
+      h('div', { class: 'st-evline' }, [vstatus('Alle Methoden in Prüfung', 'warn'), h('span', { text: 'Kein belegter Vorteil – Beobachtung, keine Empfehlung.' })]),
+      moreBox('Was heißt „in Prüfung“?', [
+        h('p', { text: 'Für keine laufende Regelversion ist bisher ein Vorteil belegt. Alle Methoden laufen deshalb als Modellbeobachtung: Setups, bestätigte Einstiege, Positionen und Ausstiege werden nach festen Regeln protokolliert – als Forschung, nicht als Empfehlung oder Einstiegschance.' }),
+        h('p', { text: (reg.evidenceScale && reg.evidenceScale.noPromise) || '' }),
+      ]),
+    ]));
+    main.appendChild(sec('Je Methode', per.map(function (x) {
+      var s = x.s;
+      return h('a', { class: 'st-research st-mrow', href: stratUrl(s), style: worldVars(s) }, [
         h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
-        h('p', { text: s.tagline }),
-        h('span', { class: 'st-obsmeta', text: (s.fidelity ? s.fidelity.statusLabel + ' · ' : '') + 'Regel v' + s.strategy_version }),
-        h('div', { class: 'st-obsnums' }, [obsNum(prep, 'in Vorbereitung'), obsNum(conf, 'Einstieg bestätigt'), obsNum(pos, 'Modellpositionen'), obsNum(closedCount(st), 'geschlossen')]),
+        h('div', { class: 'st-obsnums' }, [obsNum(x.prep, 'vorbereitet'), obsNum(x.conf, 'bestätigt'), obsNum(x.pos, 'Positionen'), obsNum(x.done, 'geschlossen')]),
       ]);
-    }), { kicker: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · Kurse vom ' + dateDe(sig.asOf), more: more(BASE + 'signals/', 'Alle Signale') }));
+    }), { kicker: 'Regeln, Setups und Protokoll je Methode' }));
     var models = reg.strategies.filter(function (x) { return x.mode === 'MODEL'; });
-    if (models.length) main.appendChild(sec('Modelldepots', [h('div', { class: 'st-rail' }, models.map(function (x) { return methodTile(x, D); }))], { kicker: 'Monatliche Umschichtung · Positionen, Orders und Gründe' }));
-    if (D.replay) main.appendChild(replayTeaser(D.replay));
+    if (models.length) main.appendChild(sec('Modelldepots', [h('div', { class: 'st-rail' }, models.map(function (x) { return methodTile(x, D); }))], { kicker: 'Monatliche Umschichtung' }));
     if (partial.length) main.appendChild(sec('Teilprüfung', [h('div', { class: 'st-rail' }, partial.map(function (s) { return methodTile(s, D); })),
-      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Signale): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Ein- und Ausstieg' }));
+      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung: ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Ein- und Ausstieg' }));
+    if (D.replay) main.appendChild(sec('Beispiel', [replayTeaser(D.replay)], { kicker: 'Historisch · kein aktuelles Signal' }));
     main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; }))], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'backtests/', 'Details') }));
     main.appendChild(disclaimer(sig));
   }
@@ -444,30 +476,29 @@
   /* ======================================================== METHODEN */
   function renderStrategies(D) {
     var reg = D.registry;
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Methoden vergleichen' }), h('h1', { text: 'Was sucht welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Methode zeigt drei getrennte Aussagen: ob ihre Regeln laufen, wie gut ihre Quellen sind und ob sie historisch geprüft ist.' })]));
+    var live = reg.strategies.filter(function (s) { return s.mode === 'LIVE' || s.mode === 'MODEL'; }).length, pc = reg.strategies.filter(function (s) { return s.mode === 'PARTIAL_CHECK'; }).length;
+    var validated = reg.strategies.filter(function (s) { return ev(s).level === 'CRITERIA_MET'; }).length;
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Methoden' }), h('h1', { text: 'Was sucht welche Methode?' })]));
+    main.appendChild(kpiList([[String(live), 'Laufen nach festen Regeln'], [String(pc), 'Teilprüfung'], [String(validated), 'Historische Kriterien erfüllt']]));
+    main.appendChild(moreBox('Wie liest man diese Seite?', [h('p', { text: 'Jede Methode zeigt getrennte Aussagen: ob ihre Regeln laufen, wie gut ihre Quellen sind und ob sie historisch geprüft ist. Die Zahl rechts zählt, was die Methode heute sieht.' })]));
     main.appendChild(sec('Eigene Strategie', [h('div', { class: 'st-list' }, [houseCard()])]));
-    var groups = [['LIVE', 'Aktuelle Setups — mit Ein- und Ausstiegen'], ['LIVE_RESEARCH', 'Forschung · Modellbeobachtung — weiter protokolliert, nicht hervorgehoben'], ['MODEL', 'Modelldepots — monatliche Umschichtung, Positionen mit Begründung'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
+    var groups = [['LIVE', 'Aktuelle Setups'], ['LIVE_RESEARCH', 'Modellbeobachtung'], ['MODEL', 'Modelldepots'], ['PARTIAL_CHECK', 'Teilprüfung'], ['DATA_PENDING', 'Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
     groups.forEach(function (g) {
       var list = reg.strategies.filter(function (s) { return g[0] === 'LIVE' ? s.mode === 'LIVE' && !isResearchS(s) : g[0] === 'LIVE_RESEARCH' ? s.mode === 'LIVE' && isResearchS(s) : s.mode === g[0]; });
       if (!list.length) return;
-      main.appendChild(sec(g[1], [h('div', { class: 'st-list' }, list.map(function (s) { return g[0] === 'RESEARCH' ? researchRow(s) : compareCard(s, D); }))], { id: g[0] === 'RESEARCH' || g[0] === 'DATA_PENDING' ? 'vorbereitung' : null }));
+      var KICK = { LIVE: 'Mit Ein- und Ausstiegen', LIVE_RESEARCH: 'Weiter protokolliert, nicht hervorgehoben', MODEL: 'Monatliche Umschichtung mit Begründung', PARTIAL_CHECK: 'Kandidaten ohne Signale', DATA_PENDING: 'Regeln beschrieben', RESEARCH: 'Noch keine Regeln' };
+      main.appendChild(sec(g[1] + ' (' + list.length + ')', [h('div', { class: 'st-list' }, list.map(function (s) { return g[0] === 'RESEARCH' ? researchRow(s) : compareCard(s, D); }))], { kicker: KICK[g[0]], id: g[0] === 'RESEARCH' || g[0] === 'DATA_PENDING' ? 'vorbereitung' : null }));
     });
     main.appendChild(disclaimer(D.signals));
   }
   function sectionText(card, id) { var x = card && (card.sections || []).filter(function (q) { return q.id === id; })[0]; return x ? x.text : null; }
+  /* VU3: je Methode Zahl, Regelstatus, Evidenz und ein Satz. Regeln, Daten und Ausstieg stehen auf der Methodenseite. */
   function compareCard(s, D) {
-    var c = card0(s), cnt = countFor(s, D);
-    var rows = [
-      ['Sucht', s.how_it_thinks && s.how_it_thinks[0] ? s.how_it_thinks.slice(0, 2).join(' ') : s.tagline],
-      ['Daten', c && c.required_data ? c.required_data.map(function (d) { return d.item; }).join(' · ') : '–'],
-      ['Evidenz', ev(s).levelLabel + (ev(s).note ? ' – ' + ev(s).note : '')],
-      ['Einstieg vorbereitet', s.mode === 'LIVE' || s.mode === 'MODEL' ? sectionText(c, 'prepared') : (s.mode === 'PARTIAL_CHECK' ? 'Keine Ein- und Ausstiege — nur Teilprüfung der Kriterien.' : 'Erst wenn die Daten vorliegen.')],
-      ['Setup endet', s.mode === 'MODEL' ? 'Ausstieg: ' + (c.plan ? c.plan.exitSummary : '') : s.mode === 'LIVE' ? (sectionText(c, 'invalid') + ' Ausstieg: ' + (c.plan ? c.plan.exitSummary : '')) : (c && c.executable && c.executable.gaps ? 'Offen: ' + c.executable.gaps.join(' · ') : '–')],
-    ];
+    var cnt = countFor(s, D), m = modeOf(s), e = ev(s);
     return h('a', { class: 'st-cmp', href: stratUrl(s), style: worldVars(s) }, [
       h('div', { class: 'top' }, [h('div', null, [h('h3', { text: niceName(s) }), h('div', { class: 'who', text: s.originator })]), cnt[0] !== null ? h('div', { class: 'cnt' }, [h('strong', { text: String(cnt[0]) }), h('span', { text: cnt[1] })]) : null]),
-      threeStatus(s),
-      h('dl', null, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] || '–' })]; }))),
+      h('div', { class: 'st-cmp-st' }, [vstatus(m[0], TONE[m[1]]), h('span', { class: 'st-tag', 'data-t': e.levelTone, text: e.levelLabel })]),
+      s.tagline ? h('p', { class: 'st-cmp-why', text: s.tagline }) : null,
     ]);
   }
   function researchRow(s) {
@@ -488,6 +519,7 @@
       h('p', { class: 'st-lead', text: s.tagline }),
       threeStatus(s),
     ]));
+    // VU3: Status in je einer Zeile (Evidenz, Produktklasse, Methodentreue), Begruendung auf Klick.
     if (s.mode !== 'RESEARCH') main.appendChild(evidenceBanner(s, D));
     if (prod(s)) main.appendChild(productBlock(s, D));
     if (s.fidelity && s.fidelity.rules && s.fidelity.rules.length) main.appendChild(fidelityBanner(s));
@@ -497,31 +529,29 @@
       main.appendChild(disclaimer(sig)); return;
     }
 
-    // So funktioniert's
-    main.appendChild(sec('So denkt die Methode', [h('p', { class: 'st-p', text: s.story }), s.mode === 'LIVE' ? steps(s, c) : null], { kicker: s.strategy_family }));
-
-    if (s.mode === 'LIVE') { var mp = D.portfolio && D.portfolio.strategies[s.strategy_id]; if (mp) main.appendChild(portfolioSection(mp, s, D)); renderLiveMethod(D, s, c); }
+    // Ergebnisse zuerst: was die Methode heute sieht, Modellportfolio, Protokoll.
+    if (s.mode === 'LIVE') { renderLiveMethod(D, s, c); var mp = D.portfolio && D.portfolio.strategies[s.strategy_id]; if (mp) main.appendChild(portfolioSection(mp, s, D)); }
     else if (s.mode === 'MODEL') renderModelMethod(D, s, c);
     else if (s.mode === 'PARTIAL_CHECK') renderPartialMethod(D, s, c);
     else main.appendChild(sec('Warum heute keine Kandidaten?', [emptyBox('Pflichtdaten fehlen', (c && c.activationCondition) || 'Die Methode braucht Daten, die noch nicht vorliegen.'), c ? gapList(c) : null]));
 
-    if (s.fidelity && s.fidelity.rules && s.fidelity.rules.length) main.appendChild(sec('Was stammt vom Trader, was von Vision Universe?', [fidelityList(s, D)], { kicker: 'Methodentreue je Regel' }));
-    if (s.research_versions && s.research_versions.length) main.appendChild(sec('Geprüft, aber nicht live', [h('ul', { class: 'st-ul' }, s.research_versions.map(function (x) { return h('li', { text: 'Version ' + x.version + ' (Runde ' + x.round + ', ' + (x.status === 'WITHDRAWN' ? 'zurückgenommen' : 'Forschung') + '): ' + x.note }); })),
-      h('p', { class: 'st-hint', text: 'Live läuft Version ' + s.strategy_version + '. Offene Setups und Positionen älterer Versionen laufen unter ihrer ursprünglichen Regelversion weiter.' })], { kicker: 'Versionslinie' }));
-    if (s.processChain) { var PCL = { DOCUMENTED_VARIANT: ['dokumentierte Variante', 'info'], OPERATIONALIZATION: ['umgesetzt', 'info'], VU_EXTENSION: ['VU-Annahme', 'warn'], MISSING: ['fehlt', 'mute'] };
-      main.appendChild(sec('Vom Kandidaten bis zur Portfoliorendite', [h('ol', { class: 'st-chain' }, s.processChain.steps.map(function (x) { var pl = PROVLAB[x.cls], c = pl ? [pl.label + (x.cls === 'FOREIGN_RULE' && x.from ? ': ' + x.from : ''), pl.tone] : (PCL[x.cls] || [x.cls, 'mute']); return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x.step }), h('span', { class: 'st-tag', 'data-t': c[1], text: c[0] })]), h('p', { text: x.rule }), h('p', { class: 'st-hint', text: 'Quelle: ' + x.source })]); })),
-        s.processChain.finding ? h('p', { class: 'st-p', text: s.processChain.finding }) : null], { kicker: 'Prozesskette v' + s.processChain.version + ' · Regel, Quelle, Herkunft' })); }
-    // Drei Aussagen im Detail
-    if (c) main.appendChild(sec('Was ist belegt?', [assessments(s, c, D)], { kicker: 'Regel · Quellen · Daten · Evidenz' }));
-    // Details
-    main.appendChild(sec('Methodendetails', [
-      c ? details('Regelkarte (' + c.sections.length + ' Abschnitte, v' + c.rule_version + ')', [ruleCardList(c)]) : null,
-      c && c.edge_cases && c.edge_cases.length ? details('Gaps, fehlende Daten, Konflikte', [ruleCardList({ sections: c.edge_cases })]) : null,
-      rulesBlock(s, D),
-      s.prohibited_interpretations && s.prohibited_interpretations.length ? details('Was diese Methode nicht ist', [h('ul', { class: 'st-ul' }, s.prohibited_interpretations.map(function (p) { return h('li', { text: p }); }))]) : null,
-      details('Quellen', [h('ul', { class: 'st-ul' }, (s.sources || []).map(function (sid) { var x = D.srcMap[sid]; return h('li', null, [x && x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : (x ? x.title : sid), x ? ' — ' + x.author : '']); }))]),
-      h('p', { class: 'st-hint', text: s.track_record_note || '' }),
-    ]));
+    // Methode im Detail: alles Erklaerende hinter Aufklappzeilen.
+    var PCL = { DOCUMENTED_VARIANT: ['dokumentierte Variante', 'info'], OPERATIONALIZATION: ['umgesetzt', 'info'], VU_EXTENSION: ['VU-Annahme', 'warn'], MISSING: ['fehlt', 'mute'] };
+    main.appendChild(sec('Die Methode im Detail', [
+      moreBox('So denkt die Methode', [h('p', { class: 'st-p', text: s.story }), s.mode === 'LIVE' ? steps(s, c) : null]),
+      c ? moreBox('Was ist belegt? Regel, Quellen, Daten, Evidenz', [assessments(s, c, D)]) : null,
+      s.fidelity && s.fidelity.rules && s.fidelity.rules.length ? moreBox('Was stammt vom Trader, was von Vision Universe?', [fidelityList(s, D)]) : null,
+      s.processChain ? moreBox('Vom Kandidaten bis zur Portfoliorendite', [h('ol', { class: 'st-chain' }, s.processChain.steps.map(function (x) { var pl = PROVLAB[x.cls], cc = pl ? [pl.label + (x.cls === 'FOREIGN_RULE' && x.from ? ': ' + x.from : ''), pl.tone] : (PCL[x.cls] || [x.cls, 'mute']); return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x.step }), h('span', { class: 'st-tag', 'data-t': cc[1], text: cc[0] })]), h('p', { text: x.rule }), h('p', { class: 'st-hint', text: 'Quelle: ' + x.source })]); })),
+        s.processChain.finding ? h('p', { class: 'st-p', text: s.processChain.finding }) : null]) : null,
+      s.research_versions && s.research_versions.length ? moreBox('Geprüft, aber nicht live', [h('ul', { class: 'st-ul' }, s.research_versions.map(function (x) { return h('li', { text: 'Version ' + x.version + ' (' + (x.status === 'WITHDRAWN' ? 'zurückgenommen' : 'Forschung') + '): ' + noRun(x.note) }); })),
+        h('p', { class: 'st-hint', text: 'Live läuft Version ' + s.strategy_version + '. Offene Setups und Positionen älterer Versionen laufen unter ihrer ursprünglichen Regelversion weiter.' })]) : null,
+      c ? moreBox('Regelkarte (' + c.sections.length + ' Abschnitte, v' + c.rule_version + ')', [ruleCardList(c)]) : null,
+      c && c.edge_cases && c.edge_cases.length ? moreBox('Lücken, fehlende Daten, Konflikte', [ruleCardList({ sections: c.edge_cases })]) : null,
+      moreBox('Alle Regeln der Version ' + s.strategy_version, [rulesBlock(s, D)]),
+      s.prohibited_interpretations && s.prohibited_interpretations.length ? moreBox('Was diese Methode nicht ist', [h('ul', { class: 'st-ul' }, s.prohibited_interpretations.map(function (p) { return h('li', { text: p }); }))]) : null,
+      moreBox('Quellen (' + (s.sources || []).length + ')', [h('ul', { class: 'st-ul' }, (s.sources || []).map(function (sid) { var x = D.srcMap[sid]; return h('li', null, [x && x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : (x ? x.title : sid), x ? ' — ' + x.author : '']); }))]),
+    ], { kicker: s.strategy_family }));
+    if (s.track_record_note) dmAdd('Bilanz des Traders', s.track_record_note);
     main.appendChild(disclaimer(sig));
   }
   // Methodentreue (registry.fidelity): Produktstatus und Einordnung je Regel.
@@ -531,9 +561,8 @@
     var parts = [['ORIGINAL', 'Original'], ['DOCUMENTED_VARIANT', 'dokumentierte Variante'], ['OPERATIONALIZATION', 'umgesetzt'], ['VU_EXTENSION', 'VU-eigen'], ['UNBACKED', 'unbelegt'], ['MISSING', 'fehlt']].filter(function (x) { return n[x[0]]; });
     return h('div', { class: 'st-fidban', 'data-s': f.status }, [
       h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Methodentreue' }), h('strong', { text: f.statusLabel })]),
-      h('p', { text: f.statusPlain }),
       h('div', { class: 'st-fidcount' }, parts.map(function (x) { return h('span', { class: 'st-tag', 'data-t': FCLS[x[0]], text: n[x[0]] + ' ' + x[1] }); })),
-      f.mechanizableNote ? h('p', { class: 'mech', text: f.mechanizableNote }) : null,
+      f.statusPlain || f.mechanizableNote ? moreBox('Was heißt das?', [f.statusPlain ? h('p', { text: f.statusPlain }) : null, f.mechanizableNote ? h('p', { class: 'mech', text: f.mechanizableNote }) : null]) : null,
     ]);
   }
   function fidelityList(s, D) {
@@ -579,8 +608,7 @@
     })));
     if (mp.notTaken && mp.notTaken.length) kids.push(details('Nicht übernommen (' + mp.notTaken.length + ')', [h('p', { class: 'st-hint', text: 'Diese Modelleinstiege stehen im Protokoll, bekamen im Modellportfolio aber keinen Platz.' }), h('ul', { class: 'st-ul' }, mp.notTaken.slice(0, 60).map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' · ' + ({ MAX_POSITIONS: 'alle Plätze belegt', NO_CASH: 'kein Kapital frei', NO_RISK: 'Stop nicht unter dem Einstieg', MARKET_FILTER: 'Marktampel rot – keine neue Position' }[x.reason] || x.reason) }); }))]));
     if (mp.closed && mp.closed.length) kids.push(details('Abgeschlossen (' + mp.closed.length + ')', [h('ul', { class: 'st-ul' }, mp.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + ruleText(x.exitRuleId) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
-    kids.push(rules);
-    kids.push(h('p', { class: 'st-hint', text: mp.publication || '' }));
+    kids.push(moreBox('Regeln des Modellportfolios', [rules, mp.publication ? h('p', { class: 'st-hint', text: mp.publication }) : null]));
     return sec('Modellportfolio', kids, { kicker: 'Laufend · alle Ein- und Ausstiege nach Regel' });
   }
 
@@ -670,10 +698,13 @@
   }
   function evidenceBanner(s, D) {
     var e = ev(s);
-    var kids = [h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Evidenz · Version ' + (e.version || s.strategy_version) }), evidenceTag(s)]), h('p', { text: e.levelPlain || '' })];
-    if (e.presentation === 'RESEARCH') kids.push(h('p', { class: 'res', text: 'Diese Methode läuft als Forschung und Modellbeobachtung weiter. Neue Setups sind keine Einstiegschancen. Laufende Modellpositionen werden nach der Regelversion geführt, unter der sie eröffnet wurden, und bis zum Ausstieg protokolliert. Die Einstufung ist eine Produktentscheidung, kein Marktsignal.' }));
-    if (e.note) kids.push(h('p', { class: 'note', text: e.note }));
-    kids.push(h('p', { class: 'np', text: e.noPromise || '' }));
+    var kids = [h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Evidenz · Version ' + (e.version || s.strategy_version) }), evidenceTag(s)])];
+    if (e.presentation === 'RESEARCH') kids.push(h('p', { class: 'res', text: 'Modellbeobachtung: Neue Setups sind keine Einstiegschancen.' }));
+    kids.push(moreBox('Was bedeutet die Einstufung?', [
+      e.levelPlain ? h('p', { text: e.levelPlain }) : null,
+      e.presentation === 'RESEARCH' ? h('p', { text: 'Diese Methode läuft als Forschung und Modellbeobachtung weiter. Laufende Modellpositionen werden nach der Regelversion geführt, unter der sie eröffnet wurden, und bis zum Ausstieg protokolliert. Die Einstufung ist eine Produktentscheidung, kein Marktsignal.' }) : null,
+      e.note ? h('p', { class: 'note', text: noRun(e.note) }) : null,
+      e.noPromise ? h('p', { class: 'np', text: e.noPromise }) : null]));
     return h('div', { class: 'st-evbanner', 'data-t': e.levelTone }, kids);
   }
   function steps(s, c) {
@@ -738,9 +769,9 @@
     var AREAS = [['Einstieg', 'entry_fidelity', 'entry'], ['Ausstieg', 'exit_fidelity', 'exit'], ['Positionsgröße', 'position_sizing_fidelity', 'sizing'], ['Portfolio', 'portfolio_fidelity', 'portfolio'], ['Fundamentalauswahl', 'fundamental_fidelity', 'fundamental'], ['Marktumfeld', 'market_fidelity', null]];
     return h('div', { class: 'st-fidban', 'data-s': p.product_class }, [
       h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Produktklasse' }), h('strong', { text: p.product_class_label })]),
-      h('p', { text: pc.plain || '' }),
+      moreBox('Was heißt das?', [h('p', { text: pc.plain || '' }),
       h('p', { class: 'mech', text: p.replication_claim_allowed ? 'Die Bezeichnung „Replication“ ist für diese Version zulässig.' : 'Keine Replikation: Die Bezeichnung „Replication“ ist für diese Version nicht zulässig, weil mindestens ein Kernbereich (Einstieg, Ausstieg, Positionsgröße, Portfolio, Risiko) nicht der Originalmethode entspricht.' }),
-      details('Methodentreue je Bereich (intern)', [h('ul', { class: 'st-ul' }, AREAS.map(function (a) { var v = p[a[1]], na = a[2] === 'fundamental' && required.indexOf('fundamental') < 0; return h('li', { text: a[0] + ': ' + (na ? 'nicht Teil der Methode' : (FID_LABEL[v] || v)) }); }).concat([h('li', { text: 'Replikationsanspruch zulässig: ' + (p.replication_claim_allowed ? 'ja' : 'nein') })]))]),
+      h('p', { class: 'k', text: 'Methodentreue je Bereich' }), h('div', null, [h('ul', { class: 'st-ul' }, AREAS.map(function (a) { var v = p[a[1]], na = a[2] === 'fundamental' && required.indexOf('fundamental') < 0; return h('li', { text: a[0] + ': ' + (na ? 'nicht Teil der Methode' : (FID_LABEL[v] || v)) }); }).concat([h('li', { text: 'Replikationsanspruch zulässig: ' + (p.replication_claim_allowed ? 'ja' : 'nein') })]))])]),
     ]);
   }
 
@@ -758,22 +789,23 @@
     ]));
     kids.push(main1.length ? h('div', { class: 'st-list' }, main1.slice(0, 12).map(function (x) { return stockCard(x, s); })) : emptyBox(hasQ ? 'Heute kein A-Setup' : 'Heute kein Setup', hasQ ? 'Alle ' + bList.length + ' gültigen Boxen verfehlen mindestens ein Qualitätskriterium.' : 'Die Regeln sind heute für keinen Titel erfüllt. Supertrader erfindet kein Signal.'));
     if (main1.length > 12 || bList.length) kids.push(more(BASE + 'signals/?method=' + s.strategy_id, 'Alle ' + open.length + ' Setups' + (bList.length ? ' (inkl. ' + bList.length + ' B)' : '')));
-    if (WATCH[s.strategy_id] && !isResearchS(s)) kids.unshift(h('p', { class: 'st-hint', text: 'Die Turtle-Regeln handeln jeden Ausbruch über das 20-Tage-Hoch. Das Modell nimmt Aktien erst auf, wenn sie höchstens 6 % darunter stehen (ab 3 % „vorbereitet“) – diese Abstände sind VU-Regeln, keine Turtle-Regeln, und Ausbrüche aus größerer Entfernung können dadurch verloren gehen. Die Liste ist eine Beobachtungsliste, kein vorbereiteter Einstieg. Steigt der Kurs im Tagesverlauf über den Ausbruchspunkt, kauft das Modell (Kauf-Stop); nach einem Gewinner-Ausbruch gilt das 55-Tage-Hoch.' }));
+    if (WATCH[s.strategy_id] && !isResearchS(s)) kids.push(moreBox('Warum eine Beobachtungsliste?', [h('p', { text: 'Die Turtle-Regeln handeln jeden Ausbruch über das 20-Tage-Hoch. Das Modell nimmt Aktien erst auf, wenn sie höchstens 6 % darunter stehen (ab 3 % „vorbereitet“) – diese Abstände sind VU-Regeln, keine Turtle-Regeln, und Ausbrüche aus größerer Entfernung können dadurch verloren gehen. Die Liste ist eine Beobachtungsliste, kein vorbereiteter Einstieg. Steigt der Kurs im Tagesverlauf über den Ausbruchspunkt, kauft das Modell (Kauf-Stop); nach einem Gewinner-Ausbruch gilt das 55-Tage-Hoch.' })]));
     if (isResearchS(s)) {
-      kids.unshift(h('p', { class: 'st-hint', text: 'Modellbeobachtung: Die Regeln laufen unverändert weiter, damit die Beobachtung nicht rückwirkend geschönt wird. Die Liste ist keine Auswahl von Einstiegschancen.' }));
+      kids.push(moreBox('Warum Modellbeobachtung?', [h('p', { text: 'Die Regeln laufen unverändert weiter, damit die Beobachtung nicht rückwirkend geschönt wird. Die Liste ist keine Auswahl von Einstiegschancen.' })]));
       var pos = open.filter(function (x) { return x.entry; });
       if (pos.length) main.appendChild(sec('Laufende Modellpositionen (' + pos.length + ')', [h('p', { class: 'st-hint', text: 'Ausstieg und Stop gelten nach der Regelversion, unter der die Position eröffnet wurde.' }), h('div', { class: 'st-list' }, pos.slice(0, 12).map(function (x) { return stockCard(x, s); })), pos.length > 12 ? more(BASE + 'signals/?method=' + s.strategy_id + '&phase=pos', 'Alle ' + pos.length) : null], { kicker: 'Forschung · weiter geführt' }));
     }
     main.appendChild(sec(isResearchS(s) ? 'Modellbeobachtung: aktuelle Setups' : WATCH[s.strategy_id] ? 'Beobachtungsliste: nahe dem 20-Tage-Hoch' : 'Aktien, die die Regeln heute erfüllen', kids, { kicker: 'Live seit ' + dateDe(st.liveSince) }));
     // Chart des besten Setups
     var pickS = main1[0] || open[0];
-    if (pickS) { var host = h('div'); main.appendChild(sec(pickS.symbol + ' im Chart', [host], { kicker: isResearchS(s) ? 'Beispiel aus der Beobachtung' : 'Bestes Setup', more: more(stockUrl(pickS.symbol), 'Lens') })); mountSignalChart(host, pickS, s); }
+    if (pickS) { var host = h('div'); main.appendChild(sec(pickS.symbol + ' im Chart', [host], { kicker: isResearchS(s) ? 'Beispiel aus der Beobachtung' : 'Bestes Setup', more: more(stockUrl(pickS.symbol), 'Zur Aktie') })); mountSignalChart(host, pickS, s); }
     // Protokoll
     main.appendChild(sec('Protokoll', [h('div', { class: 'st-kpis small' }, [
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(closedCount(st)) }), h('span', { text: 'geschlossen' })]),
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.invalidatedTotal) }), h('span', { text: 'ungültig geworden' })]),
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.retiredTotal || 0) }), h('span', { text: 'Regelwechsel' })]),
-    ]), h('p', { class: 'st-hint' }, ['Jeder Zustandswechsel wird mit Regel, Datum und Kurs protokolliert; nichts wird gelöscht. ', h('a', { href: st.ledgerPath, text: 'Ledger (JSON)' })])], { kicker: 'Seit ' + dateDe(st.liveSince) }));
+    ])], { kicker: 'Seit ' + dateDe(st.liveSince) }));
+    dmAdd('Protokoll', h('span', null, ['Jeder Zustandswechsel wird mit Regel, Datum und Kurs protokolliert; nichts wird gelöscht. ', h('a', { href: st.ledgerPath, text: 'Protokoll als Datei (JSON)' })]));
   }
   function qTile(n, label, sub) { return h('div', { class: 'st-kpi' }, [h('strong', { text: String(n || 0) }), h('span', { text: label }), sub ? h('em', { text: sub }) : null]); }
 
@@ -798,7 +830,8 @@
     var head = isCS
       ? 'Geprüft wurden ' + pc.counts.evaluated + ' handelbare US-Aktien. ' + pc.counts.partialMatch + ' erfüllen alle fünf prüfbaren Kriterien. Marktrichtung (M) heute: ' + (pc.market.status === 'PASS' ? 'steigend' : 'nicht bestätigt') + '.'
       : 'Geprüft wurden ' + pc.counts.evaluated + ' Aktien mit Jahresabschlüssen; ' + pc.counts.valueUniverse + ' gehören zum günstigsten Fünftel, ' + pc.counts.candidates + ' davon erreichen mindestens 7 von 8 prüfbaren Signalen.';
-    main.appendChild(sec(isCS ? 'Die sieben Kriterien' : 'Die neun Signale', [h('p', { class: 'st-hint', text: head }), grid, h('p', { class: 'st-hint', text: 'Daten: ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.' })], { kicker: 'Was prüfbar ist' }));
+    dmAdd('Fundamentaldaten', pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.');
+    main.appendChild(sec(isCS ? 'Die sieben Kriterien' : 'Die neun Signale', [h('p', { class: 'st-hint', text: head }), moreBox(isCS ? 'Kriterien und Trefferquote' : 'Signale und Trefferquote', [grid])], { kicker: 'Was prüfbar ist' }));
     var list = pc.candidates;
     main.appendChild(sec(isCS ? 'Teiltreffer' : 'Kandidaten der Teilprüfung', [
       h('div', { class: 'st-warnbox' }, [icon(IC.info), h('span', { text: isCS ? 'Teiltreffer erfüllen alle prüfbaren Kriterien. Weil „I“ fehlt und kein Basisausbruch gerechnet wird, gibt es keinen Ein- oder Ausstieg — und kein CAN-SLIM-Signal.' : 'Ein Teil-Score ist kein F-Score: das Liquiditätssignal fehlt. Piotroski bildete einmal jährlich ein Portfolio; daraus entstehen hier keine Ein- und Ausstiege.' })]),
@@ -823,7 +856,7 @@
     });
     ['CANSLIM', 'PIOTROSKI_F'].forEach(function (id) { var pc = sig.partialChecks && sig.partialChecks[id]; if (pc) pc.candidates.forEach(function (r) { rows.push({ kind: 'partial', s: r, id: id, phase: 'partial' }); }); });
 
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Signale' }), h('h1', { text: 'Setups finden' }), h('p', { class: 'st-lead', text: 'Nach Methode und Phase filtern. Vorbereitet heißt: noch kein Einstieg. Forschung heißt: Modellbeobachtung einer Methode in Prüfung – keine Einstiegschance.' })]));
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Signale' }), h('h1', { text: 'Setups finden' })]));
     main.appendChild(freshness(D));
 
     var methods = reg.strategies.filter(function (s) { return s.mode === 'LIVE' || s.mode === 'PARTIAL_CHECK'; });
@@ -836,7 +869,7 @@
     qSel.value = f.quality;
     var dSel = h('select', { 'aria-label': 'Branche', onchange: function () { f.division = dSel.value; update(); } }, [h('option', { value: '', text: 'Branche: alle' })].concat(Object.keys(divisions).sort().map(function (k) { return h('option', { value: k, text: divisions[k] }); })));
     dSel.value = f.division;
-    var extra = h('div', { class: 'st-extra', hidden: true }, [qSel, dSel, h('p', { class: 'st-hint', text: 'Markt: USA. Datenstand aller Setups: ' + dateDe(sig.asOf) + '.' })]);
+    var extra = h('div', { class: 'st-extra', hidden: true }, [qSel, dSel, h('p', { class: 'st-hint', text: 'Markt: USA.' })]);
     moreBtn.addEventListener('click', function () { extra.hidden = !extra.hidden; moreBtn.setAttribute('aria-expanded', String(!extra.hidden)); });
     var countLine = h('p', { class: 'st-count' });
     var list = h('div', { class: 'st-list' });
@@ -844,6 +877,7 @@
     var showMore = h('button', { type: 'button', class: 'st-loadmore', onclick: function () { limit += 30; render(); } }, ['Mehr anzeigen']);
 
     main.appendChild(h('div', { class: 'st-filters2' }, [search, methodRow, phaseRow, h('div', { class: 'st-frow' }, [moreBtn]), extra]));
+    main.appendChild(moreBox('Was bedeuten die Phasen?', [h('p', { text: 'Vorbereitet heißt: noch kein Einstieg. Bestätigt heißt: der Trigger wurde erreicht, das Modell kauft nach seiner Regel. Position heißt: simulierte Modellposition, keine reale Order. Forschung heißt: Modellbeobachtung einer Methode in Prüfung – keine Einstiegschance.' })]));
     main.appendChild(countLine); main.appendChild(list); main.appendChild(showMore);
 
     function filtered(ignore) {
@@ -898,6 +932,91 @@
   }
 
   /* ====================================================== STRATEGY LENS */
+  /* VU3: einheitlicher Aktienkopf (assets/stock-navigator.js) und Kurschart (assets/vu-chart.js).
+     Die Aktienseiten sind generiert (scripts/supertrader/build.mjs#writeStockPages); Kopf, Navigator
+     und Chart werden deshalb hier zur Laufzeit nachgeladen statt in jede Seite geschrieben. */
+  var SCRIPT_P = {};
+  function loadScript(src) {
+    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
+    return SCRIPT_P[src];
+  }
+  function loadCss(href) { if (document.querySelector('link[href="' + href + '"]')) return; document.head.appendChild(h('link', { rel: 'stylesheet', href: href })); }
+  function stockKit() {
+    loadCss('/assets/stock-navigator.css');
+    var core = window.VUStockNavigator ? Promise.resolve() : loadScript('/core/identity.js').then(function () { return loadScript('/core/stock-context.js'); }).then(function () { return loadScript('/assets/stock-navigator.js'); });
+    var chart = window.VUChart ? Promise.resolve() : loadScript('/assets/vu-chart.js');
+    return Promise.all([core, chart]);
+  }
+  function companyName(sym, list) {
+    var n = '';
+    list.forEach(function (x) { var c = x.s.companyName; if (!n && c && c !== sym) n = c; });
+    list.forEach(function (x) { if (!n && x.s.name && x.s.name !== sym) n = x.s.name; });
+    return n;
+  }
+  /* Kurs fuer den Kopf: EIN Kurs mit Art und Zeitbezug. Intraday (IEX, verzoegert) nur, wenn er
+     juenger ist als der letzte Tagesschluss; sonst der Schlusskurs. Keine Zahl ohne Datengrundlage. */
+  function headPrice(bars, snap) {
+    var n = bars ? bars.close.length : 0, last = n ? { d: bars.date[n - 1], c: bars.close[n - 1], p: n > 1 ? bars.close[n - 2] : null } : null;
+    var pts = (snap && snap.points) || [];
+    if (pts.length && (!last || snap.sessionDate > last.d)) {
+      var lp = pts[pts.length - 1], prev = isFinite(snap.previousClose) ? snap.previousClose : null;
+      return { value: lp[1], currency: 'USD', changePct: prev ? (lp[1] / prev - 1) * 100 : null, changeLabel: 'heute', kind: snap.regularComplete ? 'intraday' : 'delayed', at: dateShort(snap.sessionDate) + ', ' + lp[0] + ' Uhr ET' };
+    }
+    if (!last) return null;
+    return { value: last.c, currency: 'USD', changePct: last.p ? (last.c / last.p - 1) * 100 : null, changeLabel: 'zum Vortag', kind: 'close', at: dateShort(last.d) };
+  }
+  function intradaySnap(sym) {
+    return fetch('/quant/data/market/intraday/index.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (idx) {
+      var e = idx.entries && idx.entries[sym];
+      if (!e || !e.path) return null;
+      return fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); });
+    }).catch(function () { return null; });
+  }
+  /* Kursmarken des gewaehlten Setups (Trigger, Einstieg, Stop/Ungueltig) - nur, was das Signal traegt. */
+  function levelsOf(e) {
+    if (!e || e.kind !== 'sig') return [];
+    var s = e.s, lv = s.levels || {}, out = [];
+    if (isFinite(lv.trigger) && !s.entry) out.push(['trig', 'Trigger', lv.trigger]);
+    if (s.entry && isFinite(s.entry.price)) out.push(['entry', 'Einstieg', s.entry.price]);
+    if (isFinite(s.stop)) out.push(['stop', 'Stop', s.stop]);
+    else if (isFinite(lv.invalidation) && !s.entry) out.push(['stop', 'Ungültig unter', lv.invalidation]);
+    return out;
+  }
+  function drawLevels(svg, g, levels) {
+    if (!svg || !g) return;
+    Array.prototype.slice.call(svg.querySelectorAll('.st-lvl')).forEach(function (n) { n.remove(); });
+    var tr = g.log ? Math.log : function (v) { return v; };
+    var span = tr(g.hi) - tr(g.lo), yLo = tr(g.lo) - span * 0.06, yHi = tr(g.hi) + span * 0.06;
+    var top = 14, bottom = g.h - g.padBottom, NS = 'http://www.w3.org/2000/svg';
+    levels.forEach(function (l) {
+      if (!(l[2] > 0)) return;
+      var y = bottom - ((tr(l[2]) - yLo) / (yHi - yLo)) * (bottom - top);
+      if (y < top - 2 || y > bottom + 2) return;
+      var gEl = document.createElementNS(NS, 'g'); gEl.setAttribute('class', 'st-lvl'); gEl.setAttribute('data-k', l[0]);
+      var ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', 2); ln.setAttribute('x2', g.w - g.padR); ln.setAttribute('y1', y.toFixed(1)); ln.setAttribute('y2', y.toFixed(1));
+      var tx = document.createElementNS(NS, 'text'); tx.setAttribute('x', 6); tx.setAttribute('y', (y - 5).toFixed(1)); tx.textContent = l[1] + ' ' + num(l[2]);
+      gEl.appendChild(ln); gEl.appendChild(tx); svg.appendChild(gEl);
+    });
+  }
+  function priceChart(host, legend, bars, snap) {
+    var n = bars ? bars.close.length : 0;
+    var all = []; for (var i = 0; i < n; i++) if (isFinite(bars.close[i])) all.push([bars.date[i], bars.close[i]]);
+    if (all.length < 2) { host.replaceChildren(h('p', { class: 'vu-empty', text: 'Für diese Aktie liegen keine Tageskurse vor. Es wird kein Ersatzchart gezeichnet.' })); return null; }
+    var ranges = [], pts = (snap && snap.points) || [];
+    if (pts.length > 1 && snap.sessionDate >= all[all.length - 1][0]) ranges.push({ id: '1T', label: '1T', points: pts.map(function (p) { return [snap.sessionDate + 'T' + p[0], p[1]]; }), base: isFinite(snap.previousClose) ? snap.previousClose : undefined, sessionEnd: snap.sessionDate + 'T' + (snap.sessionCloseLocal || '16:00') });
+    [['1M', 21], ['3M', 63], ['6M', 126], ['1J', 252]].forEach(function (r) { if (all.length > r[1] * 0.6 || r[0] === '1J') ranges.push({ id: r[0], label: r[0], points: all.slice(-r[1] - 1) }); });
+    var state = { levels: [], geo: null };
+    var api = window.VUChart.mount(host, { currency: 'USD', initial: all.length > 100 ? '6M' : '1J', ranges: ranges, label: 'Kursverlauf',
+      onRange: function (id, g) { state.geo = g; drawLevels(host.querySelector('.vu-chart svg'), g, state.levels); } });
+    return { api: api, setLevels: function (lv) {
+      state.levels = lv;
+      drawLevels(host.querySelector('.vu-chart svg'), state.geo, lv);
+      legend.replaceChildren.apply(legend, lv.map(function (l) { return h('span', { 'data-k': l[0] }, [h('i', { 'aria-hidden': 'true' }), l[1] + ' ' + num(l[2])]); }));
+      legend.hidden = !lv.length;
+    } };
+  }
+
   function renderStock(D) {
     var reg = D.registry, sig = D.signals, S = stratMap(reg);
     var sym = (body.getAttribute('data-symbol') || new URLSearchParams(location.search).get('s') || '').toUpperCase();
@@ -915,39 +1034,74 @@
     // Teilpruefungen (kein Signal) stehen hinter vollstaendigen Modellen, auch hinter Forschung.
     var rank = function (e) { return e.kind === 'partial' ? 2 : isResearchId(e.id) ? 1 : 0; };
     entries.sort(function (a, b) { return rank(a) - rank(b) || PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
-    var name = (entries[0] && (entries[0].s.companyName || entries[0].s.name)) || (history[0] && history[0].s.companyName) || '';
-    main.appendChild(h('header', { class: 'st-lens-h' }, [h('div', null, [h('h1', { text: sym || '–' }), h('div', { class: 'co', text: name })]), h('div', { class: 'st-price', id: 'st-live' })]));
+    var name = companyName(sym, entries.concat(history));
+
+    // Kopf: zuerst schlicht (Name, Kuerzel), dann der einheitliche Aktienkopf mit Kurs und Navigator.
+    var headHost = h('div', { class: 'st-shead' }, [h('header', { class: 'vu-shead' }, [h('h1', { class: 'vu-shead-name', text: name || sym || '–' }), h('p', { class: 'vu-shead-meta', text: sym })])]);
+    main.appendChild(headHost);
+    var chartRef = null; entries.concat(history).forEach(function (x) { if (!chartRef && x.s.chart) chartRef = x.s.chart; });
+    var kit = sym ? stockKit() : Promise.reject(new Error('kein Symbol'));
+    var headApi = kit.then(function () {
+      var ctx; try { ctx = window.VUCore.StockContext.fromUs(sym); } catch (e) { return null; }
+      return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym });
+    }).catch(function () { return null; });
+    var shard = function () { return chartRef ? chartRef.shard : window.VUCore && window.VUCore.Identity ? window.VUCore.Identity.shardKey(sym) : sym.slice(0, 2); };
+
     var t52 = trend52For(D, sym), t52s = (reg.strategies.filter(function (x) { return x.strategy_id === 'VU_TREND_52W'; })[0]);
     var t52Node = t52 && t52s ? h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: t52s.world_name }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]) : null;
-    // Visual First (VU3): mit Setups steht die Hausstrategie hinter dem Planblock - Ein-/Ausstieg bleibt im ersten Bildschirm.
-    if (t52Node && !entries.length) main.appendChild(t52Node);
     if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
-      main.appendChild(discoverLink(sym, sig, 'In Discovery öffnen'));
+      if (sym) main.appendChild(discoverLink(sym, sig, 'In Discover öffnen'));
       main.appendChild(disclaimer(sig)); return;
     }
-    liveQuote(sym, D.market);
-    var tabs = h('div', { class: 'st-chips lens', role: 'tablist' });
+    // Kurse erst laden, wenn ein Modell die Aktie fuehrt (sonst keine vergebliche Anfrage).
+    var prices = kit.catch(function () {}).then(function () {
+      return Promise.all([window.STChart ? STChart.loadBars(shard(), sym).catch(function () { return null; }) : null, intradaySnap(sym)]);
+    });
+    prices.then(function (r) { var p = headPrice(r[0], r[1]); return headApi.then(function (hd) { if (hd && p) hd.setPrice(p); }); });
+    // Visual First (VU3): mit Setups steht die Hausstrategie hinter dem Planblock - Ein-/Ausstieg bleibt im ersten Bildschirm.
+    if (t52Node && !entries.length) main.appendChild(t52Node);
+    var tabs = h('div', { class: 'st-chips lens', role: 'tablist', 'aria-label': 'Methoden für ' + sym });
     var panel = h('div', { class: 'st-lens-panel' });
-    var chartHost = h('div');
+    var chartHost = h('div', { class: 'st-pchart' }), legend = h('p', { class: 'st-lvlkey', hidden: true });
+    var methodChart = h('div'), methodMore = moreBox('Chartbild der Methode: Kerzen, Linien und Marken', [methodChart]);
+    var current = null, chart = null;
     function show(e) {
-      var s = S[e.id]; setWorld(s);
+      var s = S[e.id]; setWorld(s); current = e;
       Array.prototype.forEach.call(tabs.children, function (b) { b.setAttribute('aria-selected', String(b._e === e)); });
-      panel.innerHTML = ''; chartHost.innerHTML = '';
-      if (e.kind === 'partial') { panel.appendChild(partialLens(e.s, s, e.id, D)); return; }
+      panel.innerHTML = ''; methodChart.innerHTML = '';
+      if (chart) chart.setLevels(levelsOf(e));
+      if (e.kind === 'partial') { panel.appendChild(partialLens(e.s, s, e.id, D)); methodMore.hidden = true; return; }
       panel.appendChild(lensBlock(e.s, s, D));
-      mountSignalChart(chartHost, e.s, s);
+      methodMore.hidden = !e.s.chart;
+      if (methodMore.open) mountSignalChart(methodChart, e.s, s);
     }
+    methodMore.addEventListener('toggle', function () { if (methodMore.open && current && current.kind === 'sig' && !methodChart.firstChild) mountSignalChart(methodChart, current.s, S[current.id]); });
     entries.forEach(function (e) {
       var s = S[e.id];
       var b = h('button', { type: 'button', role: 'tab', style: worldVars(s), onclick: function () { show(e); } }, [s.world_name]);
       b._e = e; tabs.appendChild(b);
     });
+    if (entries.length) { main.appendChild(tabs); main.appendChild(panel); }
     main.appendChild(freshness(D));
-    if (entries.length) { main.appendChild(tabs); main.appendChild(panel); if (t52Node) main.appendChild(t52Node); main.appendChild(chartHost); show(entries[0]); }
+    // Kursverlauf: dieselben Tageskurse wie Discover und Quant (technische Materialisierung), dazu der Tagesverlauf.
+    main.appendChild(sec('Kursverlauf', [chartHost, legend, methodMore]));
+    chartHost.appendChild(h('div', { class: 'vu-chart-empty', text: 'Kurse werden geladen …' }));
+    prices.then(function (r) {
+      if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
+      chart = priceChart(chartHost, legend, r[0], r[1]);
+      if (chart && current) chart.setLevels(levelsOf(current));
+    });
+    if (entries.length) { if (t52Node) main.appendChild(t52Node); show(entries[0]); }
     var hist = history.concat(entries.filter(function (e) { return e.kind === 'sig' && e.s.transitions; }));
-    if (hist.length) main.appendChild(sec('Protokoll für ' + sym, [timeline(hist, S)], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
-    main.appendChild(discoverLink(sym, sig, 'Vollständige Aktienansicht in Discovery'));
+    if (hist.length) {
+      // Die juengsten Eintraege sichtbar, aeltere hinter einer Aufklappzeile - vollstaendig, nichts geloescht.
+      var tl = timeline(hist, S), older = Array.prototype.slice.call(tl.children, 5);
+      var rest = older.length > 1 ? moreBox('Ältere Einträge (' + older.length + ')', [h('ol', { class: 'st-tl' }, older)]) : null;
+      main.appendChild(sec('Protokoll', [tl, rest], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
+    }
+    entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
+    dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
     main.appendChild(disclaimer(sig));
   }
   function lensBlock(s, strat, D) {
@@ -999,24 +1153,36 @@
     var q = s.quality, labels = (strat.quality_tiers && strat.quality_tiers.labels) || {};
     return h('div', { class: 'st-qrow2' }, [h('span', { class: 'k', text: (QLABEL[q.label] || q.tier) + ' — VU-Qualitätsstufe, nicht validiert' }), h('div', { class: 'st-dots wide' }, Object.keys(q.criteria).map(function (k) { var v = q.criteria[k]; var m = v === true ? ['ok', '✓'] : v === false ? ['no', '✕'] : ['nd', '…']; return h('span', { class: 'd ' + m[0] }, [h('i', { text: m[1] }), h('b', { text: labels[k] || k })]); }))]);
   }
+  /* Teilpruefung in der Lens (VU3): Ergebnis zuerst (Erfuellt-Zaehler), dann eine flache Haekchen-Liste.
+     CAN SLIM „N“ heisst in Supertrader nicht „neues Hoch“: die VU-Regel prueft, ob der Kurs hoechstens
+     15 % unter dem 52-Wochen-Hoch liegt (registry: CS-N-VU). Deshalb „Nahe am 52-Wochen-Hoch“ mit Abstand und Grenze. */
   function partialLens(r, strat, id, D) {
     var isCS = id === 'CANSLIM', pc = D.signals.partialChecks[id];
     var defs = isCS ? pc.criteria : pc.signals, crit = isCS ? r.criteria : r.signals;
     var STX = { PASS: 'erfüllt', FAIL: 'nicht erfüllt', NO_DATA: 'keine Daten', NOT_AVAILABLE: 'nicht prüfbar', DISPLAY_ONLY: 'nur angezeigt' };
-    var val = function (k, c) {
+    var limit = function (d) { var m = /(\d+)\s?%/.exec(d.short || ''); return m ? m[1] + ' %' : null; };
+    var label = function (d) { return isCS && d.id === 'N' ? 'Nahe am 52-Wochen-Hoch' : d.label; };
+    var val = function (d, c) {
+      var k = d.id;
       if (c.value === null || c.value === undefined) return c.note || '';
       if (isCS && (k === 'C' || k === 'A')) return pct(c.value, 0, true) + (c.periodEnd ? ' · bis ' + dateShort(c.periodEnd) : '');
-      if (isCS && k === 'N') return pct(c.value, 1) + ' zum Hoch';
-      if (isCS && k === 'L') return 'RS ' + c.value;
-      if (isCS && k === 'S') return 'Volumen 20/50 T.: ' + num(c.value, 2) + '×';
+      if (isCS && k === 'N') return (c.value < 0 ? pct(-c.value, 1) + ' unter dem Hoch' : 'am Hoch') + (limit(d) ? ' · erlaubt bis ' + limit(d) : '');
+      if (isCS && k === 'L') return 'Relative Stärke ' + c.value;
+      if (isCS && k === 'S') return 'Volumen 20/50 Tage: ' + num(c.value, 2) + '×';
       if (isCS && k === 'M') return c.note || '';
       return '';
     };
-    return h('div', { class: 'st-lensblock', style: worldVars(strat) }, [
-      h('div', { class: 'r1' }, [phaseBadge('PARTIAL'), h('span', { class: 'since', text: isCS ? r.passed.length + ' von 5 prüfbaren erfüllt' : 'Teil-Score ' + r.partialScore + ' von 8' })]),
-      h('div', { class: 'st-warnbox' }, [icon(IC.info), h('span', { text: isCS ? 'Teilprüfung: Kein CAN-SLIM-Signal, kein Ein- oder Ausstieg. „I“ ist nicht prüfbar.' : 'Teil-Score, kein F-Score: das Liquiditätssignal fehlt. Keine Ein- und Ausstiege.' })]),
-      h('ul', { class: 'st-critlist' }, defs.map(function (d) { var c = crit[d.id] || { status: 'NO_DATA' }; var m = CRIT_STATUS[c.status] || CRIT_STATUS.NO_DATA; return h('li', { 'data-s': m[0] }, [h('span', { class: 'i', text: m[1] }), h('div', null, [h('strong', { text: (isCS ? d.id + ' · ' : '') + d.label }), h('span', { text: STX[c.status] + (val(d.id, c) ? ' · ' + val(d.id, c) : '') })])]); })),
-      h('p', { class: 'st-hint', text: 'Daten: ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.' }),
+    var checkable = (pc.checkable || []).length || (isCS ? 5 : 8);
+    var passed = isCS ? r.passed.length : r.partialScore;
+    return h('div', { class: 'st-lensblock st-partial', style: worldVars(strat) }, [
+      h('div', { class: 'r1' }, [phaseBadge('PARTIAL'), h('span', { class: 'since', text: isCS ? 'Kein CAN-SLIM-Signal' : 'Teil-Score, kein F-Score' })]),
+      h('div', { class: 'st-score' }, [h('strong', null, [String(passed), h('small', { text: ' / ' + checkable })]), h('span', { text: 'prüfbare Kriterien erfüllt' })]),
+      h('div', { class: 'vu-bar', 'data-tone': 'good', style: { '--v': Math.round(passed / checkable * 100) }, role: 'img', 'aria-label': passed + ' von ' + checkable + ' erfüllt' }, [h('i')]),
+      h('p', { class: 'st-pnote', text: isCS ? 'Teilprüfung: kein Ein- oder Ausstieg. „I“ (Institutionen) ist nicht prüfbar.' : 'Das Liquiditätssignal fehlt. Keine Ein- und Ausstiege.' }),
+      h('ul', { class: 'st-critlist' }, defs.map(function (d) {
+        var c = crit[d.id] || { status: 'NO_DATA' }, m = CRIT_STATUS[c.status] || CRIT_STATUS.NO_DATA, v = val(d, c);
+        return h('li', { 'data-s': m[0], title: d.short || '' }, [h('span', { class: 'i', 'aria-hidden': 'true', text: m[1] }), h('div', null, [h('strong', { text: (isCS ? d.id + ' · ' : '') + label(d) }), h('span', { text: STX[c.status] + (v ? ' · ' + v : '') })])]);
+      })),
     ]);
   }
   function timeline(items, S) {
@@ -1042,21 +1208,6 @@
       return h('li', { 'data-kind': re ? 'reassessed' : null }, [h('span', { class: 'dt', text: dateShort(e.t.date) }), h('div', null, [h('div', { class: 'r1' }, [phaseBadge(st), h('span', { class: 'm', text: e.strat ? e.strat.world_name : '' })]), h('span', { class: 'rule', title: e.t.ruleId + ' · v' + (e.t.ruleVersion || e.s.version), text: txt })])]);
     }));
   }
-  function liveQuote(sym, market) {
-    var slot = document.getElementById('st-live');
-    fetch('/quant/data/market/intraday/index.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (idx) {
-      var e = idx.entries && idx.entries[sym];
-      if (!e || !e.path) throw 0;
-      return fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (snap) {
-        var pts = snap.points || []; if (!pts.length) throw 0;
-        var last = pts[pts.length - 1];
-        slot.innerHTML = '';
-        slot.appendChild(h('strong', { text: num(last[1]) + ' USD' }));
-        slot.appendChild(h('span', { text: (e.freshnessState === 'LIVE' && !snap.regularComplete ? 'IEX, verzögert · ' : 'Stand ') + dateShort(snap.sessionDate) + ' ' + last[0] + ' ET · nur Anzeige' }));
-      });
-    }).catch(function () { slot.innerHTML = ''; });
-  }
-
   /* ---------------------------------------------------- Signal-Chart */
   function mountSignalChart(host, s, strat) {
     if (!s.chart || !window.STChart) return;
@@ -1106,26 +1257,28 @@
   function renderBacktests(D) {
     var bt = D.backtests, pl = D.pilot, reg = D.registry;
     var sc = reg.evidenceScale || {};
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtest Lab' }), h('h1', { text: 'Wie belastbar ist welche Methode?' }), h('p', { class: 'st-lead', text: 'Jeder Test prüft unsere VU-Version einer Methode – die im Code umgesetzte Lesart der Quellen –, nicht den Trader selbst und nicht seine Wettbewerbsergebnisse. Jede Regelversion trägt eine eigene Evidenzstufe, getrennt von der Qualität ihrer Quellen und ihrer Daten. ' + (sc.noPromise || '') })]));
-    // Skala
-    if (sc.levels) main.appendChild(sec('Die vier Stufen', [h('div', { class: 'st-scale' }, Object.keys(sc.levels).map(function (k) { var l = sc.levels[k]; return h('div', { class: 'lv', 'data-t': l.tone }, [h('strong', { text: l.label }), h('span', { text: l.plain })]); })), sc.publicationNote ? h('p', { class: 'st-hint', text: sc.publicationNote }) : null], { kicker: 'Evidenz' }));
-    // Je Strategieversion
     var core = reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; });
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtests' }), h('h1', { text: 'Wie belastbar ist welche Methode?' })]));
+    // VU3: Ergebnis zuerst - wie viele Regelversionen auf welcher Evidenzstufe stehen.
+    if (sc.levels) main.appendChild(kpiList(Object.keys(sc.levels).map(function (k) { var n = core.filter(function (s) { return ev(s).level === k; }).length; return [String(n), sc.levels[k].label]; })));
+    main.appendChild(moreBox('Was wird geprüft?', [h('p', { text: 'Jeder Test prüft unsere VU-Version einer Methode – die im Code umgesetzte Lesart der Quellen –, nicht den Trader selbst und nicht seine Wettbewerbsergebnisse. Jede Regelversion trägt eine eigene Evidenzstufe, getrennt von der Qualität ihrer Quellen und ihrer Daten.' }), sc.noPromise ? h('p', { text: sc.noPromise }) : null,
+      sc.levels ? h('div', { class: 'st-scale' }, Object.keys(sc.levels).map(function (k) { var l = sc.levels[k]; return h('div', { class: 'lv', 'data-t': l.tone }, [h('strong', { text: l.label }), h('span', { text: l.plain })]); })) : null, sc.publicationNote ? h('p', { class: 'st-hint', text: sc.publicationNote }) : null]));
+    // Je Strategieversion
     main.appendChild(sec('Je Strategieversion', [h('div', { class: 'st-list' }, core.map(function (s) {
       var e = ev(s);
       return h('div', { class: 'st-btrow', style: worldVars(s) }, [
-        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: 'Test unserer VU-Version: ' + s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
+        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
         h('div', { class: 'st-three' }, [pill('Methodentreue', fidelityOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
-        e.note ? h('p', { class: 'st-hint', text: e.note }) : null,
+        e.note ? moreBox('Was der Test zeigte', [h('p', { text: noRun(e.note) })]) : null,
       ]);
     }))], { kicker: 'Stufe · Quellen · Daten' }));
-    main.appendChild(sec('Wie geprüft wird', [h('ul', { class: 'st-need' }, [
+    main.appendChild(sec('Wie geprüft wird', [moreBox('Fünf Grundsätze jedes Tests', [h('ul', { class: 'st-need' }, [
       h('li', null, [h('b', { text: 'Vorab festgelegt' }), ' – Universum, Zeitraum, Regeln, Kosten, Vergleich und Erfolgskriterien werden vor dem Test eingefroren.']),
       h('li', null, [h('b', { text: 'Damaliges Universum' }), ' – alle an jedem Tag gelisteten US-Aktien, einschließlich später delisteter Titel; neu vergebene Kürzel werden getrennt.']),
       h('li', null, [h('b', { text: 'Delistings ohne Schönrechnen' }), ' – drei vorab festgelegte Annahmen für den letzten Kurs; ein Ergebnis, das an dieser Annahme hängt, gilt nicht als belegt.']),
       h('li', null, [h('b', { text: 'Gleiche Regeln wie live' }), ' – derselbe Rechenkern erzeugt Live-Signale und historische Trades.']),
       h('li', null, [h('b', { text: 'Keine Nachoptimierung' }), ' – eine neue Parametervariante ist eine neue Hypothese und braucht eine spätere, unabhängige Prüfung.']),
-    ])], { kicker: 'Methode' }));
+    ])]), (bt.nextSteps || []).length ? moreBox('Nächste Schritte', [h('ol', { class: 'st-plan2' }, (bt.nextSteps || []).map(function (x) { return h('li', null, [h('strong', { text: x[0] }), h('span', { text: x[1] })]); }))]) : null], { kicker: 'Methode' }));
     if (pl) {
       var sm = pl.strategy.metrics, cmp = pl.comparison, au = pl.audit || {}, prev = (pl.history || [])[0];
       main.appendChild(sec('Älterer explorativer Pilot', [details(pl.method.label + ' – nur heute gelistete Aktien, Wochenbasis', [
@@ -1158,7 +1311,6 @@
           ])]),
       ])], { kicker: 'Abgelöst durch die interne Prüfung · Version ' + (pl.spec.version || '1.0.0') }));
     }
-    main.appendChild(sec('Nächste Schritte', [h('ol', { class: 'st-plan2' }, (bt.nextSteps || []).map(function (x) { return h('li', null, [h('strong', { text: x[0] }), h('span', { text: x[1] })]); }))], { kicker: 'Was als Nächstes kommt' }));
     main.appendChild(disclaimer(D.signals));
   }
   function mcell(k, v, d) { return h('div', { class: 'mc' }, [h('span', { class: 'k', text: k }), h('strong', { text: v }), h('span', { class: 'd', text: d })]); }
@@ -1224,16 +1376,21 @@
   }
 
   /* ========================================================== QUELLEN */
+  /* VU3: Zahlen zuerst (wie viele Quellen, wie viele von VU im Volltext gelesen), dann je Methode aufklappbar.
+     Abrufhinweise und Quellenpolitik stehen in „Daten & Methodik“ - ohne interne Pruefbegriffe. */
   function renderSources(D) {
     var src = D.sources.sources, reg = D.registry;
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Quellen' }), h('h1', { text: 'Woher die Regeln stammen' }), h('p', { class: 'st-lead', text: D.sources.retrievalNote })]));
-    reg.strategies.filter(function (s) { return s.sources && s.sources.length; }).forEach(function (s) {
-      main.appendChild(details(s.world_name + ' (' + s.sources.length + ')', [h('ul', { class: 'st-ul' }, s.sources.map(function (sid) { var x = D.srcMap[sid]; if (!x) return h('li', { text: sid }); return h('li', null, [x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : x.title, ' — ' + x.author + (x.url_verification === 'NO_URL_FOUND' ? ' (ohne URL)' : '') + (x.content_retrieved_by_vu ? '' : ' · Inhalt nicht von VU geprüft')]); }))]));
-    });
-    main.appendChild(h('p', { class: 'st-hint', text: D.sources.policy }));
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Quellen' }), h('h1', { text: 'Woher die Regeln stammen' })]));
+    var read = src.filter(function (x) { return x.content_retrieved_by_vu; }).length, withUrl = src.filter(function (x) { return x.url; }).length;
+    main.appendChild(kpiList([[String(src.length), 'Quellen'], [String(withUrl), 'mit Adresse'], [String(read), 'von Vision Universe im Volltext gelesen']]));
+    main.appendChild(sec('Je Methode', reg.strategies.filter(function (s) { return s.sources && s.sources.length; }).map(function (s) {
+      return details(s.world_name + ' (' + s.sources.length + ')', [h('ul', { class: 'st-ul' }, s.sources.map(function (sid) { var x = D.srcMap[sid]; if (!x) return h('li', { text: sid }); return h('li', null, [x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : x.title, ' — ' + x.author + (x.url_verification === 'NO_URL_FOUND' ? ' (ohne Adresse)' : '') + (x.content_retrieved_by_vu ? '' : ' · Inhalt nicht von VU geprüft')]); }))]);
+    })));
+    var m = /(\d{4}-\d{2}-\d{2})/.exec(D.sources.retrievalNote || '');
+    dmAdd('Abruf', (m ? 'Adressen am ' + dateDe(m[1]) + ' über Suchergebnisse mit exaktem Titel bestätigt. ' : '') + 'Ob Vision Universe den Inhalt selbst gelesen hat, steht je Quelle dabei.');
+    if (D.sources.policy) dmAdd('Quellenpolitik', D.sources.policy);
     main.appendChild(disclaimer(D.signals));
   }
-
 
   /* ================================================ VU HAUSSTRATEGIE */
   var HOUSE_HISTORY = [
@@ -1325,7 +1482,8 @@
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
     main.innerHTML = '';
-    chrome(D.signals.asOf);
+    APP = D;
+    chrome();
     ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
   }).catch(function (e) {
     main.innerHTML = '';

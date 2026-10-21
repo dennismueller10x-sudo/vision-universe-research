@@ -617,3 +617,174 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
   html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
 }
 /* END GENERATED HERO FIDELITY */
+
+/* =====================================================================
+   VU3 UI-System (docs/design/VU3_UI_SYSTEM.md): flach statt Kaesten.
+   Abschnitte trennt eine Haarlinie, Kennzahlen stehen ohne Rahmen,
+   Listen sind Zeilen. Karten bleiben nur, wo sie einen Link tragen.
+   ===================================================================== */
+.st-main { padding-left: var(--vu-gutter); padding-right: var(--vu-gutter); --st-gutter: var(--vu-gutter); }
+.st-productline { padding-top: 14px; min-height: 40px; }
+.st-logo { font-size: 12px; text-transform: uppercase; }
+.st-productlink { margin-left: auto; min-height: 44px; }
+/* Abschnitte */
+.st-main > .st-sec, .st-lens-panel ~ .st-sec { margin: 32px 0 0; padding: 28px 0 0; border-top: 1px solid var(--vu-line); }
+.st-sec .st-sec-h { margin: 0 0 14px; }
+.st-sec .vu-eyebrow { margin: 0 0 4px; }
+.st-sec h2.vu-sec-title { font-size: clamp(20px, 5vw, 24px); }
+.st-hero.sm { padding: 18px 0 6px; }
+.st-hero.sm h1 { font-size: clamp(28px, 7.4vw, 40px); letter-spacing: -.03em; }
+.st-hero.sm .st-lead { font-size: 15px; }
+/* Datenstand als Zeile, Warnung als vu-alert */
+.st-fresh.st-asof { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 0; border: 0; background: none; font-size: 12.5px; color: var(--vu-muted); }
+.st-fresh.st-asof .st-ic { width: 14px; height: 14px; margin: 0; color: var(--vu-muted); }
+.st-fresh.st-asof.stale, .st-fresh.st-asof.stale .st-ic { color: var(--vu-warn); }
+.st-fresh.vu-alert { border: 0; }
+.st-fresh.vu-alert strong { display: inline; font-size: 13px; color: var(--vu-text); }
+/* Kennzahlen ohne Kaesten */
+.st-vkpis { margin: 18px 0 0; }
+.st-vkpis .vu-kpi-value.up { color: var(--vu-up); } .st-vkpis .vu-kpi-value.down { color: var(--vu-down); }
+.st-kpis { gap: 18px 16px; }
+.st-kpi { padding: 0 0 0 12px; border: 0; border-left: 3px solid var(--pc, var(--vu-line-strong)); border-radius: 0; background: none; }
+.st-kpi strong { font-size: clamp(26px, 7vw, 32px); letter-spacing: -.03em; }
+a.st-kpi:hover strong { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.st-mphead { gap: 18px 16px; margin-bottom: 14px; }
+.st-mphead .c { padding: 0; border: 0; background: none; }
+.st-mphead strong { font-size: 22px; letter-spacing: -.02em; }
+.st-qsplit .st-kpi { padding-left: 10px; }
+/* Listen: Zeilen mit Haarlinie statt Karten */
+.st-list { gap: 0; column-gap: 32px; }
+.st-card2 { padding: 14px 0; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; gap: 6px; }
+.st-card2:active { background: none; }
+.st-card2:hover .sym { text-decoration: underline; text-underline-offset: 4px; }
+.st-card2 .r2 .meth { position: relative; padding-left: 12px; }
+.st-card2 .r2 .meth::before { content: ''; position: absolute; left: 0; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--w, var(--vu-muted)); }
+.st-evlist { gap: 0; }
+.st-evrow { padding: 12px 0; min-height: 48px; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; }
+.st-research { padding: 14px 0; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; margin: 0; }
+.st-mplist { gap: 0; }
+.st-mplist a { padding: 12px 0; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; }
+.st-rrow { padding: 12px 0; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; min-height: 48px; }
+.st-btrow { padding: 14px 0; border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; }
+.st-emptybox { padding: 18px 0; border: 0; background: none; border-radius: 0; }
+.st-det { border: 0; border-top: 1px solid var(--vu-line); border-radius: 0; background: none; margin: 0; }
+.st-det > summary { padding: 14px 0; min-height: 48px; align-items: center; }
+.st-det > :not(summary) { padding: 0 0 14px; }
+.st-rcl .row, .st-rules .row { padding: 10px 0; border-radius: 0; background: none; border-bottom: 1px solid var(--vu-line); }
+.st-fidlist li, .st-chain > li, .st-steps li, .st-assess, .st-crit .c, .st-scale .lv { background: none; border-radius: 0; border: 0; border-bottom: 1px solid var(--vu-line); padding-left: 0; padding-right: 0; }
+.st-chain > li { padding-left: 32px; }
+.st-chain > li::before { left: 0; }
+.st-assess { border-left: 3px solid var(--ac, var(--vu-line-strong)); padding-left: 12px; }
+.st-scale .lv { border-left: 3px solid var(--st-text-2); padding-left: 12px; }
+.st-chainbox { padding: 0; border: 0; background: none; }
+.st-pill { background: none; border: 0; padding: 0; }
+.st-three { gap: 10px 16px; }
+/* Methoden-Kacheln und Vergleich: Links ohne Flaechen */
+.st-mtile { background: none; border: 0; border-top: 3px solid var(--w); border-radius: 0; padding: 12px 0 14px; }
+html[data-theme=light] .st-mtile { background: none; }
+.st-cmp { border: 0; border-bottom: 1px solid var(--vu-line); border-radius: 0; background: none; padding: 16px 0 16px 14px; border-left: 3px solid var(--w); gap: 8px; }
+.st-cmp .cnt strong { font-size: 26px; }
+/* Evidenz, Methodentreue: eine Zeile mit Status, Erklaerung auf Klick */
+.st-evbanner, .st-fidban { margin: 12px 0 0; padding: 0 0 0 12px; border: 0; border-left: 3px solid var(--st-text-2); border-radius: 0; background: none; }
+.st-evbanner .h, .st-fidban .h { margin: 0; justify-content: flex-start; gap: 10px; flex-wrap: wrap; }
+.st-evbanner p.res { font-size: 15px; }
+.st-fidban { border-left-color: var(--st-info); }
+.st-warnbox, .st-audit, .st-biases, .st-demo-banner { border: 0; border-radius: 12px; }
+/* Fuss: Daten & Methodik + Pflichthinweis */
+.st-foot { margin-top: 40px; padding-top: 0; border-top: 0; gap: 0; }
+.st-foot .vu-dm { margin: 0; }
+.st-foot .vu-dm dd { overflow-wrap: anywhere; }
+.st-foot .st-legal { margin: 4px 0 0; padding: 12px 0 0; border-top: 1px solid var(--vu-line); font-size: 12px; line-height: 1.5; color: var(--vu-muted); }
+/* Aufklappzeilen */
+.st-vmore { margin-top: 16px; }
+.st-vmore .vu-more-body > * + * { margin-top: 10px; }
+.st-vmore .st-hint { margin-top: 0; }
+
+/* ---------------------------------------------- Aktienseite (Lens) */
+.st-shead { padding: 16px 0 0; }
+.st-shead .vu-shead { margin-bottom: 0; }
+.st-chips.lens { margin-top: 18px; }
+.st-lensblock { padding: 4px 0 0; border: 0; border-radius: 0; background: none; }
+@media (min-width: 641px) { .st-lensblock { gap: 12px; } }
+.st-lensblock .r1 { justify-content: flex-start; }
+.st-cells { gap: 8px 16px; }
+.st-cells .c { padding: 0 0 0 10px; border-radius: 0; background: none; border-left: 2px solid var(--vu-line-strong); }
+.st-cells .c.bad { border-left-color: color-mix(in srgb, var(--st-bad) 70%, transparent); }
+.st-cells strong { font-size: 18px; letter-spacing: -.01em; }
+.st-cells .k { font-weight: 700; }
+.st-next { padding: 0 0 0 12px; border-radius: 0; background: none; border-left: 3px solid var(--w); }
+.st-next p { font-size: 15px; font-weight: 650; color: var(--vu-text); }
+.st-evid { border: 0; padding: 0; }
+/* Teilpruefung: Zaehler, Balken, flache Haekchen-Liste */
+.st-partial .r1 .since { font-weight: 700; color: var(--vu-text-secondary); }
+.st-score { display: flex; align-items: baseline; gap: 10px; }
+.st-score strong { font-size: clamp(40px, 11vw, 52px); line-height: 1; font-weight: 850; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.st-score strong small { font-size: .5em; font-weight: 750; color: var(--vu-muted); letter-spacing: 0; }
+.st-score > span { font-size: 14px; font-weight: 650; color: var(--vu-text-secondary); }
+.st-partial .vu-bar { max-width: 420px; }
+.st-pnote { font-size: 13px; line-height: 1.45; color: var(--vu-text-secondary); }
+.st-critlist { gap: 0; }
+.st-critlist li { padding: 10px 0; border-radius: 0; background: none; border-bottom: 1px solid var(--vu-line); align-items: flex-start; }
+.st-critlist li:last-child { border-bottom: 0; }
+.st-critlist strong { font-size: 14.5px; }
+.st-critlist span:not(.i) { font-size: 13px; color: var(--vu-text-secondary); }
+.st-critlist .i { margin-top: 1px; }
+.st-critlist li[data-s="na"] strong, .st-critlist li[data-s="nd"] strong { color: var(--vu-text-secondary); }
+/* Kurschart (VUChart) mit Kursmarken des Setups */
+.st-pchart { min-height: 240px; }
+.st-pchart .st-lvl line { stroke-width: 1.2; stroke-dasharray: 5 4; opacity: .85; }
+.st-pchart .st-lvl text { font: 700 10.5px/1 Inter, -apple-system, sans-serif; paint-order: stroke; stroke: var(--vu-bg); stroke-width: 3px; }
+.st-lvl[data-k="trig"] line { stroke: var(--chart-trigger); } .st-lvl[data-k="trig"] text { fill: var(--st-trigger); }
+.st-lvl[data-k="entry"] line { stroke: var(--chart-entry); } .st-lvl[data-k="entry"] text { fill: var(--st-good); }
+.st-lvl[data-k="stop"] line { stroke: var(--chart-stop); } .st-lvl[data-k="stop"] text { fill: var(--st-bad); }
+.st-lvlkey { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0 0; font-size: 12.5px; font-weight: 650; color: var(--vu-text-secondary); font-variant-numeric: tabular-nums; }
+.st-lvlkey[hidden] { display: none; }
+.st-lvlkey i { display: inline-block; width: 14px; height: 0; margin-right: 6px; vertical-align: middle; border-top: 2px dashed currentColor; }
+.st-lvlkey [data-k="trig"] i { color: var(--chart-trigger); } .st-lvlkey [data-k="entry"] i { color: var(--chart-entry); } .st-lvlkey [data-k="stop"] i { color: var(--chart-stop); }
+.st-chart { border: 0; border-radius: 0; padding: 4px 0 0; background: none; }
+.st-tl { margin-top: 4px; }
+@media (max-width: 640px) {
+  .st-main > .st-sec, .st-lens-panel ~ .st-sec { margin-top: 26px; padding-top: 22px; }
+  .st-shead { padding-top: 4px; }
+  .st-shead .vu-shead-logo { width: 40px; height: 40px; border-radius: 12px; }
+  .st-shead .vu-shead-name { font-size: 22px; }
+  .st-shead .vu-shead-price { margin: 8px 0 0; }
+  .st-shead .vu-shead-value { font-size: 32px; }
+  .st-shead .vu-shead-nav { margin-top: 4px; }
+  .st-shead .vu-snav { margin-bottom: 0; }
+  .st-chips.lens { margin-top: 4px; margin-bottom: 4px; }
+  .st-next p { font-size: 13.5px; font-weight: 600; line-height: 1.35; }
+  .st-cells .c { padding-left: 8px; }
+  .st-cells strong { font-size: 16px; }
+}
+/* Startseite: Ergebnis, Status-Zeile, Methoden als Zeilen */
+.st-main > .st-today { margin-top: 8px; padding-top: 24px; }
+.st-evline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 22px 0 0; font-size: 13.5px; color: var(--vu-text-secondary); }
+.st-mrow .r1 { margin-bottom: 6px; }
+.st-mrow .r1 strong { font-size: 16px; }
+.st-mrow .st-obsnums { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; }
+.st-mrow .st-obsnums span { display: inline-flex; flex-direction: row; align-items: baseline; gap: 5px; font-size: 12.5px; }
+.st-mrow .st-obsnums strong { font-size: 16px; }
+.st-replay-t { border: 0; padding: 0; background: none; border-radius: 0; }
+/* Methoden-Uebersicht */
+.st-cmp-st { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.st-cmp-why { font-size: 13.5px; line-height: 1.45; color: var(--vu-text-secondary); }
+.st-cmp .cnt span { display: block; max-width: 12ch; }
+.st-hero.sm + .st-vkpis { margin-top: 10px; }
+/* Hero der Startseite kompakter */
+html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { margin-bottom: 0; padding-bottom: 20px; }
+/* Desktop: Abschnitte duerfen breiter atmen, Listen zweispaltig */
+@media (min-width: 761px) {
+  .st-vkpis { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+@media (max-width: 480px) {
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { --vu-hero-icon-size: 64px; padding-top: 16px; }
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] .vu-product-icon--hero { margin-bottom: 10px; border-radius: 16px; }
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] .vu-hero-name { font-size: 28px; }
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] .vu-hero-headline { font-size: 20px; margin-bottom: 10px; }
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] .vu-hero-description { margin-bottom: 14px; }
+  html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] .vu-hero-scene { height: 200px; }
+  .st-main > .st-today { padding-top: 18px; }
+}
+/* Fingerspur ausserhalb des Plots (Ruhestellung x=-10) nicht zeigen: der Chart zeichnet mit overflow:visible. */
+.st-pchart .vu-chart-cross[x1="-10"] { visibility: hidden; }
