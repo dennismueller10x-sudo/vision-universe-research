@@ -288,32 +288,11 @@ body.qd .down{color:var(--q-down)}
 .qd .q-ftile.tone-bad i::before{background:#e0584b}
 .qd .q-ftile.tone-neutral i::before{background:#d9a722}
 
-/* Kursentwicklung: der eine Chart, dunkel, Lime-Linie */
-.qd .qc-chart{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px 16px 12px;margin-top:0}
+/* Kursentwicklung: der eine Chart - Gestaltung im VU3-Block am Ende (gemeinsamer Kurschart). */
 .qd .qc-chart>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.qd .qc-chart .dx-chart-head{order:3}
-.qd .qc-chart .qc-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
-.qd .qc-chart .dx-chart-hero-preis{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
-.qd .qc-chart .qc-price{font-size:20px;font-weight:900}
-.qd .qc-chart .qc-delta{font-size:15px;font-weight:900}
-.qd .qc-chart .qc-word{font-size:12px;color:var(--q-dim)}
-.qd .qc-chart .qc-meta{font-size:11.5px;color:var(--q-dim)}
-.qd .qc-chart .qc-plot{margin-top:8px;color:var(--q-lime-text)}
-.qd .qc-chart .qc-plot svg{display:block;width:100%;height:auto;touch-action:pan-y}
-.qd .qc-chart .dx-range-line,.qd .qc-chart .dx-art-line{stroke:var(--q-lime-line)}
-.qd .qc-chart [data-direction=down] .dx-range-line,.qd .qc-chart svg[data-direction=down] .dx-art-line,.qd .qc-chart svg[data-direction=down] .dx-range-line{stroke:var(--q-down)}
-.qd .qc-chart .dx-art-fill{fill:var(--q-lime-fill)}
-.qd .qc-chart .dx-scrub-line{stroke:var(--q-scrub);stroke-width:1}
-.qd .qc-chart .dx-scrub-node{fill:var(--q-lime-line);stroke:var(--q-bg);stroke-width:2}
-.qd .qc-ranges,.qd .dx-tf{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0 2px}
-.qd .qc-ranges::-webkit-scrollbar{display:none}
-.qd .qc-range{flex:none;min-width:40px;min-height:34px;padding:6px 10px;border-radius:99px;border:0;background:transparent;color:var(--q-muted);font-size:12.5px;font-weight:800}
-.qd .qc-range[aria-pressed=true]{background:var(--q-lime);color:var(--q-lime-ink)}
-.qd .qc-range:disabled{opacity:.35;cursor:not-allowed}
-.qd .qc-note{font-size:11px;line-height:1.5;color:var(--q-dim);margin:8px 0 0}
-.qd .qc-empty,.qd .dx-empty{display:flex;flex-direction:column;gap:4px;padding:40px 12px;text-align:center;color:var(--q-muted)}
-.qd .qc-chart .dx-chart{display:flex;flex-direction:column}
-.qd .qc-chart>div{display:flex;flex-direction:column}
+.qd .qc-chart svg{touch-action:pan-y}
+.qd .qc-range{min-width:40px;font-size:13px}
+.qd .dx-empty{display:flex;flex-direction:column;gap:4px;padding:40px 12px;text-align:center;color:var(--q-muted)}
 
 /* Setup-Karte (Einstieg · Stop-Loss · Invalidation · Ziele) */
 .qd .q-setup{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px}
@@ -1224,3 +1203,169 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
   html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
 }
 /* END GENERATED HERO FIDELITY */
+
+/* =====================================================================
+   VU3 UI-Refresh (docs/design/VU3_UI_SYSTEM.md)
+   Ergebnis zuerst, Details auf Klick, weniger Kaesten: Abschnitte trennt
+   Weissraum und eine Haarlinie, Kennzahlen stehen ohne Rahmen, Karten
+   bleiben nur, wo sie eine Interaktion tragen (Aktie, Strategie, Filter).
+   ===================================================================== */
+.qd .vu-up{color:var(--q-up)}.qd .vu-down{color:var(--q-down)}
+/* Aufklappzeile: die Quant-Aufklapper sehen aus wie .vu-more. */
+.qd details.qx-more{margin-top:12px;border-top:1px solid var(--q-line)}
+.qd details.qx-more>summary{min-height:48px;padding:10px 0;font-size:14px;font-weight:750;letter-spacing:0}
+.qd details.qx-more>summary::after{content:"";width:9px;height:9px;flex:none;margin-right:4px;border-right:2px solid var(--q-muted);border-bottom:2px solid var(--q-muted);transform:rotate(45deg) translateY(-3px);transition:transform .15s;font-size:0}
+.qd details.qx-more[open]>summary::after{content:"";transform:rotate(225deg) translate(-2px,-1px)}
+.qd details.qx-more>summary small{font-weight:600;color:var(--q-muted)}
+.qd .vu-more>summary,.qd .vu-dm>summary{color:var(--q-text)}
+.qd .vu-more>.vu-more-body{color:var(--q-muted)}
+.qd .vu-more>.vu-more-body>p{margin:0 0 8px;font-size:13.5px;line-height:1.55;color:var(--q-muted)}
+/* Aufklappzeile in einer hellen Belegkarte: Kartenfarben. */
+.qd .q-ev-observed .vu-more{border-top-color:var(--q-card-line)}
+.qd .q-ev-observed .vu-more>summary{color:var(--q-card-text)}
+.qd .q-ev-observed .vu-more>.vu-more-body,.qd .q-ev-observed .vu-more>.vu-more-body>p{color:var(--q-card-muted)}
+.qd .vu-dm{color:var(--q-muted)}.qd .vu-dm>summary{color:var(--q-text-soft)}.qd .vu-dm>summary small{color:var(--q-muted)}
+.qd .vu-dm dt{color:var(--q-text-soft)}.qd .vu-dm a{color:var(--q-text-soft)}
+.qd .vu-alert{color:var(--q-text)}
+/* Kennzahlen-Streifen ohne Rahmen. */
+.qd .q-stats,.qd .qx-stats{gap:20px 18px;background:none;border:0;border-radius:0;overflow:visible;margin:14px 0 0}
+.qd .q-stat,.qd .qx-stat{background:none;box-shadow:none;padding:0}
+.qd .q-stat b,.qd .qx-stat b{font-size:clamp(22px,6vw,30px)}
+.qd .q-panel,.qd .qx-card{background:none;border:0;border-top:1px solid var(--q-line);border-radius:0;padding:16px 0 0}
+@media (max-width:979px){.qd .qx-main{padding-left:var(--vu-gutter,16px);padding-right:var(--vu-gutter,16px)}}
+
+/* ------------------------------------------------ Aktienseite (qv-) */
+.qd .qv-stock .qx-hero-host{margin-top:4px}
+.qd .qv-head .vu-shead{margin:0}
+.qd .qv-head .qx-stock-id{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.qd .qv-head .qx-stock-id b{color:var(--q-text);font-weight:800}
+.qd .qv-head .qx-tag{font-size:11.5px}
+.qd .qv-head .qx-watch{min-height:44px;padding:0 14px;font-size:13px;white-space:nowrap}
+.qd .qv-head .qx-quote-none{display:block;font-size:20px;font-weight:850}
+.qd .qv-head .qx-quote small{display:block;font-size:12.5px;color:var(--q-muted);margin-top:4px}
+.qd .qv-alert{display:flex}.qd .qv-alert b{display:block}.qd .qv-alert p{margin:4px 0 0}
+.qd .qv-alert.qx-notice{border:0;border-radius:12px;background:color-mix(in srgb,var(--q-warm) 12%,transparent)}
+.qd .qv-stock .qx-section{margin-top:32px;padding-top:32px;border-top:1px solid var(--q-line);scroll-margin-top:70px}
+@media (min-width:761px){.qd .qv-stock .qx-section{margin-top:56px;padding-top:48px}}
+.qd .qv-stock .q-sec-head h2{font-size:clamp(20px,5vw,26px);font-weight:850}
+.qd .qv-stock .qx-stock-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;margin-top:18px}
+.qd .qv-stock .qx-stock-layout>*{min-width:0}
+@media (min-width:1100px){.qd .qv-stock .qx-stock-layout{grid-template-columns:minmax(0,1fr) 420px;grid-template-rows:auto 1fr;gap:40px;align-items:start}
+ .qd .qv-stock .qx-stock-layout .qx-glance{grid-column:2;grid-row:1/span 2;padding:0;border:0;border-radius:0;background:none;margin:0}
+ .qd .qv-stock .qx-stock-layout>#setup{grid-column:1;grid-row:2;margin-top:8px}}
+/* Kurschart wie der gemeinsame Kurschart: kein Rahmen, keine Flaeche. */
+.qd .qc-chart{background:none;border:0;border-radius:0;padding:0;margin:0}
+.qd .qc-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;margin:0;font-size:13px;color:var(--q-muted);min-height:20px}
+.qd .qc-head .qc-delta{font-size:15px;font-weight:850;color:var(--q-text)}
+.qd .qc-head .qc-delta.up{color:var(--q-up)}.qd .qc-head .qc-delta.down{color:var(--q-down)}
+.qd .qc-head .qc-word{font-weight:700;color:var(--q-text-soft)}
+.qd .qc-plot{position:relative}
+.qd .qc-chart .vu-chart-empty b{display:block;color:var(--q-text);font-size:14px}
+.qd .qc-chart .vu-ranges button{color:var(--q-muted)}
+.qd .qc-chart .vu-ranges button[aria-pressed=true]{background:var(--q-text);color:var(--q-bg)}
+.qd .qc-chart .vu-ranges button:disabled{opacity:.38;cursor:default}
+.qd .qc-chart .vu-chart-axis{fill:var(--q-muted)}
+.qd .qc-about{margin-top:6px}.qd .qc-about .qc-note{margin:0;font-size:12.5px;color:var(--q-muted)}
+.qd .qc-chart .vu-chart-tip{top:4px}
+/* Erste Ansicht: Was sagen die quantitativen Analysen? */
+.qd .qv-glance{margin:0}
+.qd .qv-glance .qv-q{margin:0 0 8px;color:var(--q-muted)}
+.qd .qv-result{display:flex;align-items:baseline;gap:10px;margin:0}
+.qd .qv-dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--q-unknown);transform:translateY(-2px)}
+.qd .qx-verdict-top[data-tone=good] .qv-dot{background:var(--q-lime-line)}
+.qd .qx-verdict-top[data-tone=bad] .qv-dot{background:var(--q-down)}
+.qd .qx-verdict-top[data-tone=neutral] .qv-dot{background:var(--q-warm)}
+.qd .qv-sub{margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--q-text-soft)}
+.qd .qv-fbars{list-style:none;margin:18px 0 0;padding:0}
+.qd .qv-fbars li a{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;grid-template-areas:"n w v" "b b b";align-items:baseline;gap:4px 10px;min-height:48px;padding:8px 0;color:inherit;text-decoration:none;border-bottom:1px solid var(--q-line)}
+.qd .qv-fb-name{grid-area:n;font-size:14.5px;font-weight:750;color:var(--q-text)}
+.qd .qv-fb-word{grid-area:w;font-size:12.5px;font-weight:700;color:var(--q-muted);white-space:nowrap}
+.qd .qv-fb-word i{font-style:normal}
+.qd .qv-fb-val{grid-area:v;justify-self:end;font-size:22px;font-weight:850;letter-spacing:-.02em;color:var(--q-text)}
+.qd .qv-fb-bar{grid-area:b;margin-top:2px;background:var(--q-line)}
+.qd .qv-fb-bar>i{background:var(--q-unknown)}
+.qd .qv-fbars .tone-good .qv-fb-bar>i{background:var(--q-lime-line)}.qd .qv-fbars .tone-good .qv-fb-word{color:var(--q-up)}
+.qd .qv-fbars .tone-bad .qv-fb-bar>i{background:var(--q-down)}.qd .qv-fbars .tone-bad .qv-fb-word{color:var(--q-down)}
+.qd .qv-fbars .tone-neutral .qv-fb-bar>i{background:var(--q-warm)}
+.qd .qv-fbars .is-off .qv-fb-name,.qd .qv-fbars .is-off .qv-fb-val{color:var(--q-muted)}
+.qd .qv-fbars .is-off .qv-fb-bar{background:repeating-linear-gradient(90deg,var(--q-line2) 0 6px,transparent 6px 10px)}
+.qd .qv-kpis{margin:22px 0 0;grid-template-columns:repeat(auto-fit,minmax(min(100%,104px),1fr))}
+.qd .qv-kpis a{display:block;color:inherit;text-decoration:none;min-height:44px}
+.qd .qv-kpis .vu-kpi-label{color:var(--q-muted)}.qd .qv-kpis .vu-kpi-sub{color:var(--q-muted)}
+.qd .qv-kpi-v{font-size:clamp(19px,5vw,24px);color:var(--q-text)}
+.qd .qv-returns{display:flex;flex-wrap:wrap;gap:6px 18px;margin:20px 0 0}
+.qd .qv-returns>div{display:flex;flex-direction:column;background:none;border:0;padding:0}
+.qd .qv-returns span{font-size:12px;color:var(--q-muted)}.qd .qv-returns b{font-size:15px;font-weight:850}
+.qd .qv-now{margin-top:20px;padding-top:16px;border-top:1px solid var(--q-line)}
+.qd .qv-now-h{margin:0 0 8px;font-size:15px;font-weight:850}
+.qd .qv-now .q-now{margin:0}
+.qd .qv-limit{margin:14px 0 0;font-size:12px;color:var(--q-muted)}
+.qd .qv-toc{position:sticky;top:0;margin:28px 0 0;padding:8px 0;flex-wrap:nowrap}
+.qd .qv-toc a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px}
+/* Setup: Marken als Kennzahlen, ohne Kasten. */
+.qd .qv-stock .q-setup{background:none;border:0;border-radius:0;padding:0}
+.qd .qv-stock .q-setup-head h2{font-size:15px}
+.qd .qv-stock .q-levels{gap:18px 16px;background:none;border:0}
+.qd .qv-stock .q-levels>div{background:none;border:0;padding:0;border-radius:0;box-shadow:none}
+.qd .qv-stock .q-rr{background:none;padding:0;border-radius:0;justify-content:flex-start}
+.qd .qv-stock .q-trigger{background:none;border-radius:0;padding:2px 0 2px 12px}
+.qd .qv-stock .q-moves>div{background:none;padding:0;border-radius:0}
+.qd .qv-stock .q-moves{gap:16px}
+.qd .qv-stock .q-check-cells li{border:0}
+/* Rueckblick: der Ueberblick flach; die Einzelheiten (hinter "Mehr") behalten ihre hellen Belegkarten. */
+.qd .qv-stock .q-evo-tile{background:none;color:inherit;border:0;border-radius:0;padding:0 0 0 12px;border-left:3px solid var(--q-line2);box-shadow:none}
+.qd .qv-stock .q-evo-tile.tier-observed{border-left-color:var(--q-info)}.qd .qv-stock .q-evo-tile.tier-tested{border-left-color:var(--q-lime-line)}
+.qd .qv-stock .q-evo-tile *{color:inherit}.qd .qv-stock .q-evo-tile small{color:var(--q-muted)}
+.qd .qv-stock .q-ev-cert{border:0;border-radius:0;padding:0}
+/* Pro/Contra: zwei Spalten ohne Kasten. */
+.qd .qv-stock .dx-waage-spalte{background:none;border:0;border-radius:0;padding:10px 0 0;border-top:3px solid var(--q-line2)}
+.qd .qv-stock .dx-waage-spalte--pro{border-top-color:var(--q-lime-line)}.qd .qv-stock .dx-waage-spalte--contra{border-top-color:var(--q-down)}
+/* Die sieben Eigenschaften als Zeilen. */
+.qd .qv-frows{display:block}
+.qd .qv-stock .qx-factor{background:none;border:0;border-bottom:1px solid var(--q-line);border-radius:0;padding:0}
+.qd .qv-stock .qx-factor>summary.qx-frow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;min-height:56px;padding:10px 0;list-style:none;cursor:pointer}
+.qd .qv-stock .qx-factor>summary::-webkit-details-marker{display:none}
+.qd .qv-stock .qx-fr-name{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:6px 10px;text-align:left}
+.qd .qv-stock .qx-factor>summary{text-align:left}
+.qd .qv-stock .qx-fr-name .qx-pill{font-size:12px;padding:3px 9px}
+.qd .qx-fr-label{font-size:15px;font-weight:800;color:var(--q-text)}
+.qd .qx-fr-value{font-size:22px;font-weight:850;color:var(--q-text)}
+.qd .qx-fr-sub{grid-column:1/-1;font-size:12px;color:var(--q-muted)}
+.qd .qv-stock .qx-factor[open]>summary .qx-fr-value{color:var(--q-lime-text)}
+.qd .qv-stock .qx-factor-body{padding:0 0 14px}
+.qd .qv-stock .dx-firma>div{background:none;border:0;padding:0}
+/* Veraenderungen ohne Kasten. */
+.qd .qv-stock .qx-changes{background:none;border:0;border-radius:0}
+.qd .qv-stock .qx-changes li{padding-left:0;padding-right:0}
+.qd .qv-stock .qx-qa>div{background:none;border:0;padding:0;border-radius:0}
+/* Anlagestil: ein Link statt Bildkarte. */
+.qd .qv-link{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;margin-top:14px;padding:10px 0;border-top:1px solid var(--q-line);border-bottom:1px solid var(--q-line);color:var(--q-text);text-decoration:none}
+.qd .qv-link strong{display:block;font-size:15px}.qd .qv-link small{display:block;font-size:12.5px;color:var(--q-muted)}
+.qd .qv-link i{font-style:normal;color:var(--q-lime-text);font-weight:900}
+.qd .qv-lead{margin:0 0 12px;font-size:15px;line-height:1.45}
+/* Daten & Methodik */
+.qd .qv-stock .qv-limits{border-top:0;padding-top:0}
+.qd .qv-gaps-h{font-size:17px;margin:0 0 8px}
+.qd .qv-dm-links{display:flex;flex-wrap:wrap;gap:4px}
+.qd .qv-stock .q-sec-head{flex-wrap:wrap;align-items:baseline}
+.qd .qv-ev-more{margin-top:14px}
+/* Unternehmensmeldungen (eigene Komponente) ohne Kasten. */
+.qd .qv-ci-host .dx-chapter.ci-company-intelligence{margin:40px 0 0;padding:40px 0 0;border:0;border-top:1px solid var(--q-line);border-radius:0;background:none}
+.qd .qv-stock details.dx-weitere.qx-more>summary{text-transform:none;letter-spacing:0;font-size:14px;color:var(--q-text)}
+.qd .qv-stock details.dx-weitere.qx-more>summary::before{display:none}
+/* ------------------------------------------------ Screener, Listen */
+.qd .q-note-line{margin:10px 0 0}
+.qd .q-filter-more .q-filter{margin-top:4px}
+.qd .q-results{--q-card-text:var(--q-text);--q-card-muted:var(--q-muted);--q-card-line:var(--q-line);background:none;color:var(--q-text);border-radius:0;padding:0;margin-top:18px;box-shadow:none}
+.qd .q-results .q-results-head{padding:2px 0 10px}
+.qd .q-results .q-results-head span{color:var(--q-muted)}
+.qd .q-results .qx-row{padding-left:0;padding-right:0}
+.qd .q-results .qx-count{margin-left:0;margin-right:0}
+.qd .q-results .qx-notice{background:none;border:0;padding-left:0}
+.qd .q-results .qx-row-kicker{color:var(--q-muted)}
+/* Methodik: Abgrenzung ohne Kaesten */
+.qd .q-role{border:0;border-top:1px solid var(--q-line);border-radius:0;padding:12px 0 0}
+/* Kopf: Richtungsfarben aus Quants geprueften Tokens (--vu-down #d93a30 erreicht auf Quants hellem Grund nur 4,2:1). */
+.qd .vu-shead{--vu-up:var(--q-up);--vu-down:var(--q-down)}
+.qd .q-results .q-scorebox b{color:#1d2708}.qd .q-results .q-scorebox.down b{color:#7c1d15}.qd .q-results .q-scorebox.warm b{color:#5c4204}.qd .q-results .q-scorebox.none b{color:#5a6068}
+.qd .qv-stock .q-alerts{color:var(--q-text);border:0;border-top:1px solid var(--q-line);border-radius:0;padding:12px 0 0}

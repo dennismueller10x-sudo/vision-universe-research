@@ -1,7 +1,11 @@
 /* =========================================================================
-   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.1.0)
+   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.2.0)
 
    EIN CHART. ALLE ZEITRAEUME. DERSELBE WIE IN DISCOVER.
+
+   VU3 (quant-chart-1.2.0): gezeichnet wird mit dem gemeinsamen Kurschart
+   assets/vu-chart.js (VUChart.render) - ohne Rahmen, ohne zweiten Kurs
+   ueber dem Bild. Datenquellen und Zeitraeume unten sind unveraendert.
 
    Vorher zeigte die Aktienseite oben einen Chart, der fuer 1T "nicht
    verfuegbar" sagte, und weiter unten einen zweiten Tagesverlauf. Zwei
@@ -45,7 +49,7 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-chart-1.1.0";
+  var VERSION = "quant-chart-1.2.0";
   var RANGES = [
     { id: "1D", label: "1T", word: "heute" },
     { id: "5D", label: "5T", days: 7, word: "in 5 Tagen" },
@@ -151,23 +155,27 @@
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
     var st = { range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
-    /* Dieselbe Gliederung wie Discovers Chart (discover/ui/detail.js
-       chartSection): Zeitraum-Leiste (dx-tf), Kopf mit Kurs, Veraenderung
-       und Zeitpunkt (dx-chart-hero), die Flaeche, die Fussnote. */
-    var headPrice = el("b", { class: "num qc-price" });
-    var headDelta = el("span", { class: "num qc-delta" });
-    var headWord = el("span", { class: "dx-chart-hero-wort qc-word" });
-    var headMeta = el("span", { class: "dx-chart-hero-span qc-meta" });
-    var headNode = el("div", { class: "dx-chart-hero qc-head" }, [
-      el("div", { class: "dx-chart-hero-preis" }, [headPrice, headDelta, headWord]),
-      el("div", { class: "dx-chart-hero-meta" }, [headMeta])]);
-    var plot = el("div", { class: "dx-range-chart-wrap qc-plot", "aria-live": "off" });
-    var bar = el("div", { class: "dx-tf qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
-    var note = el("p", { class: "dx-intraday-note qc-note" });
-    var box = el("div", { class: "dx-chart" }, [headNode, plot, note]);
-    var node = el("section", { class: "dx-chapter dx-chapter--chart qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
-      el("h2", { text: "Kursverlauf" }),
-      el("div", {}, [el("div", { class: "dx-chart-head" }, [bar]), box])
+    /* VU3 (docs/design/VU3_UI_SYSTEM.md, Kurschart): das Bild zeichnet
+       assets/vu-chart.js (VUChart.render) - dieselbe Linie, Startlinie,
+       Kursachse und Fingerspur wie der gemeinsame Kurschart, ohne Rahmen,
+       ohne Flaeche, ohne Gitter. Datenquellen, Zeitraeume und ihre Regeln
+       bleiben die dieser Datei. Ueber dem Bild steht KEIN zweiter Kurs:
+       der Kurs steht einmal im Kopf der Seite. Hier stehen nur die
+       Veraenderung im Zeitraum und ihr Zeitbezug; der Kurs an einer Stelle
+       erscheint beim Tippen in der Fingerspur (qc-price). */
+    var headPrice = el("div", { class: "vu-chart-tip qc-price", "aria-hidden": "true" });
+    headPrice.hidden = true;
+    var headDelta = el("b", { class: "num qc-delta" });
+    var headWord = el("span", { class: "qc-word" });
+    var headMeta = el("span", { class: "qc-meta" });
+    var headNode = el("p", { class: "qc-head" }, [headDelta, headWord, headMeta]);
+    var plot = el("div", { class: "qc-plot", "aria-live": "off" });
+    var box = el("div", { class: "vu-chart vu-chart--bleed qc-box" }, [plot]);
+    var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
+    var note = el("p", { class: "qc-note" });
+    var node = el("section", { class: "qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
+      el("h2", { class: "qx-sr", text: "Kursverlauf" }), headNode, box, bar,
+      el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [note])])
     ]);
 
     var buttons = {};
@@ -200,53 +208,63 @@
         buttons[r.id].classList.toggle("is-active", r.id === st.range);
       });
     }
-    /* Discovers Mass (chartMass): volle Breite, am Handy gut die Haelfte
-       des Bildschirms hoch - der Chart ist die Hauptflaeche. */
-    var mobile = function () { return global.innerWidth < 860; };
-    function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 40 : 1100))); }
-    function height() { return mobile() ? Math.round(Math.max(300, Math.min(global.innerHeight * 0.52, 480))) : 440; }
+    /* Masse des gemeinsamen Kurscharts: volle Inhaltsbreite, mobil 240 px,
+       breit 320 px hoch. */
+    var mobile = function () { return global.innerWidth < 760; };
+    function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 24 : 1100))); }
+    function height() { return mobile() ? 240 : 320; }
     /* Die Flaeche bleibt bis zum ersten Zeichnen leer (Tagesverlauf bis zu 3 s). Ohne
        reservierte Hoehe schob das spaetere SVG alles darunter weg (CLS 0,25 auf NVDA). */
     plot.style.minHeight = height() + "px";
 
-    /* Beruehrung wie in Discover (beruehrung): Finger oder Zeiger zeigen den
-       Kurs an dieser Stelle - im Kopf und als Marke im Bild. Loslassen
-       stellt den letzten Kurs wieder her. */
+    /* Zeichnen: der gemeinsame Kurschart (VUChart.render). Fehlt er (Tests
+       ohne Browser), zeichnet Discovers Komponente dieselben Punkte. */
+    function paint(pts, opt) {
+      var VC = global.VUChart;
+      if (VC && VC.render) return VC.render(pts, { width: width(), height: height(), base: opt.base, sessionEnd: opt.sessionEnd, label: o.ticker });
+      if (!MC) return null;
+      if (opt.intraday) return MC.renderIntraday ? MC.renderIntraday(opt.snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: opt.label }) : null;
+      return MC.renderRange(pts, { width: width(), height: height(), symbol: o.ticker, range: opt.range, label: opt.label, grain: opt.grain });
+    }
+    function place(svg) {
+      plot.replaceChildren(svg, headPrice);
+      headPrice.hidden = true;
+      var dir = svg.getAttribute && svg.getAttribute("data-direction");
+      if (dir) box.dataset.direction = dir; else delete box.dataset.direction;
+    }
+
+    /* Fingerspur wie im gemeinsamen Kurschart: Tippen oder Zeigen zeigt Kurs
+       und Zeitpunkt an dieser Stelle; die Zeile darueber nennt die
+       Veraenderung bis dorthin. Loslassen stellt den Zeitraum wieder her. */
     function scrub(svg, base, fmtWhen) {
-      if (!svg || !svg.__punkte || svg.__punkte.length < 2) return;
-      var pts = svg.__punkte, frame = svg.__basis || {};
+      var g = svg && svg.__vuGeometry;
+      if (!g || !g.pts || g.pts.length < 2 || !svg.addEventListener) return;
       var ns = "http://www.w3.org/2000/svg";
-      var g = document.createElementNS(ns, "g"); g.setAttribute("class", "dx-scrub"); g.setAttribute("aria-hidden", "true");
-      var line = document.createElementNS(ns, "line"); line.setAttribute("class", "dx-scrub-line qc-cursor");
-      var dot = document.createElementNS(ns, "circle"); dot.setAttribute("class", "dx-scrub-node"); dot.setAttribute("r", "5");
-      g.appendChild(line); g.appendChild(dot);
-      var vb = (svg.getAttribute("viewBox") || "0 0 0 0").split(" ").map(Number);
-      var resting = { price: headPrice.textContent, delta: headDelta.textContent, deltaClass: headDelta.className, word: headWord.textContent };
+      var cross = document.createElementNS(ns, "line");
+      cross.setAttribute("class", "vu-chart-cross qc-cursor"); cross.setAttribute("y1", 0); cross.setAttribute("y2", g.h - g.padBottom);
+      cross.setAttribute("x1", 0); cross.setAttribute("x2", 0); cross.style.display = "none";
+      svg.appendChild(cross);
+      var resting = { delta: headDelta.textContent, deltaClass: headDelta.className, word: headWord.textContent };
       var on = false;
-      function nearest(clientX) {
-        var rect = svg.getBoundingClientRect(), x = (clientX - rect.left) / Math.max(1, rect.width) * vb[2];
-        var best = pts[0], d = Infinity;
-        for (var i = 0; i < pts.length; i++) { var dd = Math.abs(pts[i].x - x); if (dd < d) { d = dd; best = pts[i]; } }
-        return best;
-      }
       function show(evt) {
-        var pt = nearest(evt.clientX);
-        if (!on) { on = true; svg.appendChild(g); svg.classList.add("dx-scrubbing"); node.classList.add("is-scrub"); }
-        line.setAttribute("x1", pt.x); line.setAttribute("x2", pt.x);
-        line.setAttribute("y1", frame.padTop || 0); line.setAttribute("y2", vb[3] - (frame.padBottom || 0));
-        dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
-        headPrice.textContent = global.QX.money(pt.close, o.currency || "USD");
-        var d = isNum(base) && base > 0 ? (pt.close / base - 1) * 100 : null;
-        headDelta.textContent = signedPct(d);
-        headDelta.className = "num qc-delta " + (d > 0 ? "up" : d < 0 ? "down" : "");
-        headWord.textContent = fmtWhen(pt);
+        var rect = svg.getBoundingClientRect(), x = (evt.clientX - rect.left) * g.w / Math.max(1, rect.width), best = g.pts[0];
+        for (var i = 0; i < g.pts.length; i++) if (Math.abs(g.pts[i].x - x) < Math.abs(best.x - x)) best = g.pts[i];
+        on = true; node.classList.add("is-scrub");
+        cross.setAttribute("x1", best.x.toFixed(1)); cross.setAttribute("x2", best.x.toFixed(1)); cross.style.display = "";
+        headPrice.hidden = false;
+        headPrice.textContent = global.QX.money(best.v, o.currency || "USD") + " · " + fmtWhen(best.t);
+        headPrice.style.left = Math.min(rect.width - 70, Math.max(70, best.x * rect.width / g.w)) + "px";
+        var d = isNum(base) && base > 0 ? (best.v / base - 1) * 100 : null;
+        headDelta.textContent = arrow(d) + signedPct(d);
+        headDelta.className = "num qc-delta " + dirClass(d);
+        headWord.textContent = " bis " + fmtWhen(best.t);
       }
       function rest() {
         if (!on) return;
-        on = false; if (g.parentNode) g.parentNode.removeChild(g);
-        svg.classList.remove("dx-scrubbing"); node.classList.remove("is-scrub");
-        headPrice.textContent = resting.price; headDelta.textContent = resting.delta;
-        headDelta.className = resting.deltaClass; headWord.textContent = resting.word;
+        on = false; node.classList.remove("is-scrub");
+        cross.style.display = "none";
+        headPrice.hidden = true;
+        headDelta.textContent = resting.delta; headDelta.className = resting.deltaClass; headWord.textContent = resting.word;
       }
       svg.addEventListener("pointerdown", function (e) { if (e.pointerType === "mouse" && e.button !== 0) return; show(e); });
       svg.addEventListener("pointermove", function (e) { if (on || e.pointerType === "mouse") show(e); });
@@ -255,15 +273,19 @@
       svg.addEventListener("pointercancel", rest);
     }
 
+    /* Richtung nie nur ueber Farbe: Pfeil plus Vorzeichen. */
+    function arrow(d) { return isNum(d) && d > 0 ? "▲ " : isNum(d) && d < 0 ? "▼ " : ""; }
+    function dirClass(d) { return d > 0 ? "up vu-up" : d < 0 ? "down vu-down" : ""; }
     function head(price, delta, word, meta) {
-      headPrice.textContent = global.QX.money(price, o.currency || "USD");
-      headDelta.textContent = signedPct(delta);
-      headDelta.className = "num qc-delta " + (delta > 0 ? "up" : delta < 0 ? "down" : "");
-      headWord.textContent = word;
+      void price;   /* der Kurs steht im Kopf der Seite, nicht ein zweites Mal ueber dem Chart */
+      headDelta.textContent = arrow(delta) + signedPct(delta);
+      headDelta.className = "num qc-delta " + dirClass(delta);
+      headWord.textContent = word ? " " + word : "";
       headMeta.textContent = meta || "";
     }
     function empty(title, text) {
-      plot.replaceChildren(el("div", { class: "dx-empty qc-empty" }, [el("b", { text: title }), el("span", { text: text })]));
+      plot.replaceChildren(el("div", { class: "vu-chart-empty qc-empty" }, [el("b", { text: title }), text ? el("span", { text: " " + text }) : null]));
+      delete box.dataset.direction;
     }
 
     function drawIntraday() {
@@ -277,26 +299,33 @@
       /* Ein Stand, der nicht live ist (STALE: Schluss fehlt, Takt steht),
          heisst nicht "heute" - er traegt sein Datum und seine Uhrzeit. */
       var datiert = frozen || !!(q && q.state === "STALE");
-      head(last, delta, datiert ? "am " + dateDe(snap.sessionDate) + (snap.lastRegularLocal ? ", letzter 5-Minuten-Kurs " + String(snap.lastRegularLocal).slice(0, 5) + " Uhr" : "") : "heute",
-        (isNum(snap.previousClose) ? "seit Vortagesschluss " + global.QX.money(snap.previousClose, o.currency || "USD") : "seit dem ersten Kurs des Tages") +
-        (q && q.label ? " · " + q.label : ""));
-      var svg = MC && MC.renderIntraday ? MC.renderIntraday(snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: q && q.label }) : null;
+      /* Eine Zeile: Veraenderung, Bezug, Zeitpunkt. Ein Stand, der nicht live ist, nennt Datum und Uhrzeit. */
+      var bis = snap.lastRegularLocal || snap.asOfLocal;
+      head(last, delta, isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages",
+        (datiert ? dateDe(snap.sessionDate).slice(0, 6) + (bis ? ", bis " + String(bis).slice(0, 5) + " Uhr New York" : "") : "heute" + (bis ? ", " + String(bis).slice(0, 5) + " Uhr New York" : "")) +
+        (q && q.state === "STALE" ? " · nicht aktuell" : q && q.state === "FINAL_SESSION" ? " · Sitzung beendet" : ""));
+      /* Uhrzeiten New York als Zeitpunkte des Sitzungstags; die Achse reicht bis zum Handelsschluss. */
+      var day = String(snap.sessionDate || "").slice(0, 10), iso = function (hm) { return day + "T" + String(hm).slice(0, 5) + ":00"; };
+      var svg = paint(pts.map(function (x) { return [iso(x[0]), x[1]]; }), { intraday: true, snap: snap, base: isNum(snap.previousClose) ? snap.previousClose : undefined,
+        sessionEnd: day && (snap.sessionCloseLocal || snap.closeLocal) ? iso(snap.sessionCloseLocal || snap.closeLocal) : undefined, label: q && q.label });
       if (!svg) { empty("Kein Tagesverlauf", "Der Tagesverlauf dieses Titels ist unvollständig."); return; }
-      svg.classList.add("dx-intraday-chart", "qc-svg");
-      plot.className = "dx-intraday qc-plot";
-      plot.replaceChildren(svg);
+      svg.classList.add("qc-svg");
+      plot.className = "qc-plot";
+      place(svg);
       plot.dataset.sourceState = q ? q.state : "";
       plot.dataset.live = frozen ? "complete" : (snap.streaming ? "streaming" : "running");
-      scrub(svg, base, function (pt) { return pt.time + " New York"; });
+      scrub(svg, base, function (t) { return String(t).slice(11, 16) + " New York"; });
       var satz = { REALTIME: "Der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss.",
         SNAPSHOT: "Die Sitzung läuft; der Verlauf wächst mit dem nächsten Stand.",
         FINAL_SESSION: "Die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen." };
-      note.textContent = ((q && q.sourceText) || "5-Minuten-Kurse") + " · Uhrzeiten New York · Startlinie: " +
+      note.textContent = (q && q.label ? q.label + ". " : "") + ((q && q.sourceText) || "5-Minuten-Kurse") + " · Uhrzeiten New York · Startlinie: " +
         (isNum(snap.previousClose) ? "Vortagesschluss" : "erster Kurs des Tages") + ". " + ((q && satz[q.state]) || "");
       /* Nur ein LAUFENDER Tag aktualisiert den Kurs im Kopf der Seite. Nach
          Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
          5-Minuten-Kurs ist kein Schlusskurs. */
-      if (o.onPrice) o.onPrice({ price: last, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (snap.asOfLocal ? ", " + String(snap.asOfLocal).slice(0, 5) + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE") });
+      var time = snap.asOfLocal ? String(snap.asOfLocal).slice(0, 5) : null;
+      if (o.onPrice) o.onPrice({ price: last, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE"),
+        kind: q && q.state === "REALTIME" ? "live" : "delayed", at: dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : "") });
     }
 
     function drawRange(r) {
@@ -317,14 +346,14 @@
          juengste Tagesschluss. */
       var weekly = src === st.long;
       head(last, delta, r.word, dateDe(pts[0][0]) + " – " + dateDe(pts[pts.length - 1][0]));
-      var svg = MC.renderRange(pts, { width: width(), height: height(), symbol: o.ticker, range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
+      var svg = paint(pts, { range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
       if (!svg) { empty("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum."); return; }
       svg.classList.add("qc-svg");
-      plot.className = "dx-range-chart-wrap qc-plot";
+      plot.className = "qc-plot";
       plot.dataset.range = r.id; plot.dataset.grain = weekly ? "weekly" : "daily";
-      plot.replaceChildren(svg);
+      place(svg);
       delete plot.dataset.sourceState; delete plot.dataset.live;
-      scrub(svg, first, function (pt) { return dateDe(pt.date); });
+      scrub(svg, first, function (t) { return dateDe(t); });
       var capt = [];
       capt.push(r.id === "5D" ? "Tagesschlusskurse der letzten Handelstage (5-Minuten-Kurse werden nur für den aktuellen Tag aufbewahrt)"
         : weekly ? "Wochenschlusskurse, letzter Punkt Tagesschluss vom " + dateDe(pts[pts.length - 1][0]) : "Tagesschlusskurse");
@@ -334,6 +363,7 @@
       capt.push("ohne Dividenden");
       note.textContent = capt.join(" · ") + ".";
     }
+
 
     /* Ein Ladevorgang, auf den jeder wartet: wer waehrend des Ladens einen
        anderen langen Zeitraum waehlt, zeichnet, sobald die Reihe da ist. */
@@ -386,7 +416,7 @@
        antwortet sofort aus dem Cache oder nach einem Abruf; wer nicht
        antwortet, haelt den Chart nicht auf. */
     function start() {
-      if (!MC || !MC.renderRange) { empty("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden."); return; }
+      if (!(global.VUChart && global.VUChart.render) && !(MC && MC.renderRange)) { empty("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden."); return; }
       if (eod.length < 2 && !(Hub && Hub.enabled && Hub.enabled())) {
         empty("Keine Kursreihe", "Für diesen Titel liegt keine veröffentlichte Kursreihe vor."); syncButtons(); return;
       }
