@@ -341,6 +341,9 @@
     var t = normTicker(decodeURIComponent(h.split('?')[0].split('/')[0] || ''));
     if (!t) return { view: 'home' };
     if (t === 'METHODIK') return { view: 'method' };
+    // Ziele des Produkt-Docks: Ansichten der Startseite (Abschnitt "Entdecken", Suche mit Fokus)
+    if (t === 'ENTDECKEN') return { view: 'home', focus: 'entdecken' };
+    if (t === 'SUCHE') return { view: 'home', focus: 'suche' };
     return validTicker(t) ? { view: 'company', ticker: t } : { view: 'home', invalid: true };
   }
 
