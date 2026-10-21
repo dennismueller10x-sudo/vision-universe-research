@@ -209,9 +209,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      if(m.groups.join('|')!=='Discover|Quant|Elliott|Screener|Vorsorge|Supertrader|Hedgefonds|Weitere Produkte') fail(where,'Produktstruktur falsch: '+m.groups.join('|'));
+      if(m.groups.join('|')!=='Discover|Quant|Elliott|Fundamental|Screener|Vorsorge|Supertrader|Hedgefonds|Weitere Produkte') fail(where,'Produktstruktur falsch: '+m.groups.join('|'));
       if(m.expanded!==0||m.hiddenVisible) fail(where,'Home-Menü ist nicht eingeklappt');
-      if(m.icons.length!==8||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      if(m.icons.length!==9||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       if(m.small) fail(where,m.small+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
       if (!m.dockInert || !m.dockCovered) fail(where, 'Leiste liegt ueber dem Menue oder bleibt fokussierbar');
