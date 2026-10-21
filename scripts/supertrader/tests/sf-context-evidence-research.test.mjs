@@ -7,6 +7,7 @@ import { buildGroupStrength, GROUP_VARIANTS } from '../source-faithful/research/
 import { buildMarketBreadth } from '../source-faithful/research/market-breadth.mjs';
 import { industryLeadership, withContextEvidence, CONTEXT_RULES, DATA_FRONTIER, SOURCE_FRONTIER } from '../source-faithful/research/context-evidence.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
+import { isoWeekKey } from '../engine/indicators.mjs';
 
 const require = createRequire(import.meta.url);
 const IC = require('../../../core/industry-classification.js');
@@ -54,8 +55,9 @@ test('SF3-CTX-APPEND: Evidenz an jede Momentum-Methode, Status und Kaufsperre un
   const weekend = new Date(Date.parse(CAL[200] + 'T00:00:00Z') + 864e5 * (6 - new Date(CAL[200] + 'T00:00:00Z').getUTCDay())).toISOString().slice(0, 10);
   const w = withContextEvidence({ status: 'MANUAL_REVIEW_REQUIRED', methodId: 'SF_DARVAS_BOX', securityId: 'L3', asOf: weekend, buyDeclarationAllowed: false, machineScreenEvidence: [] }, { built, breadth });
   const chart = w.machineScreenEvidence[0].value.groupChart;
-  assert.ok(chart.week === undefined || chart.week < weekend.slice(0, 4) + '-W99');
-  assert.ok(!chart.week || chart.week <= built.weekOf[200], `${chart.week} vs ${built.weekOf[200]}`);
+  // strictly before the week of the decision date (re-review L-d)
+  assert.ok(chart.week, JSON.stringify(chart));
+  assert.ok(chart.week < isoWeekKey(weekend), `${chart.week} vs ${isoWeekKey(weekend)}`);
 });
 
 test('SF3-CTX-FRONTIER: jede verbleibende Daten- und Quellensperre ist konkret benannt; kein kostenpflichtiger Pfad ohne Freigabe', () => {
