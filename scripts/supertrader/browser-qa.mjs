@@ -177,7 +177,7 @@ async function main() {
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
-      if (name === 'lens' && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
+      if ((name === 'lens' || name === 'lens-position') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
       if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       const shot = path.join(OUT, `${vpName}-${name}.png`);
       await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' });
