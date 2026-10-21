@@ -2,8 +2,10 @@
    VISION UNIVERSE — assets/stock-navigator.js        Aktien-Navigator (VU3)
 
    Eine Zeile unter dem Kopf jeder Aktien-Detailseite: dieselbe Aktie in
-   Discover, Quant, Technik, Elliott, Supertrader und (in Planung)
-   Fundamental. Ergaenzung, kein Ersatz: Hauptmenue, Produkt-Untermenues
+   Discover, Quant, Technik, Elliott, Supertrader, Fundamental und
+   Hedgefonds. Dazu der einheitliche Aktienkopf (head): Logo, Name,
+   Kuerzel und Boerse, ein eindeutig beschrifteter Kurs, darunter der
+   Navigator - auf jeder Aktienseite gleich (VU3 UI-Refresh). Ergaenzung, kein Ersatz: Hauptmenue, Produkt-Untermenues
    und Dock bleiben unberuehrt; die Kacheln nutzen die Produkt-Icons aus
    /assets/product-icons.svg.
 
@@ -26,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-1.0.0";
+  var VERSION = "stock-navigator-2.0.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite (Technik heisst dort "technical"). */
   var MODULES = {
@@ -35,7 +37,8 @@
     technik: { label: "Technik", icon: "technical", why: "Kursstruktur, Marken und Chartbild" },
     elliott: { label: "Elliott", icon: "elliott", why: "Wellenzählung mit Gegenszenario" },
     supertrader: { label: "Super­trader", plain: "Supertrader", icon: "supertrader", why: "Regelcheck je Strategie" },
-    fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" }
+    fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" },
+    hedgefonds: { label: "Hedge­fonds", plain: "Hedgefonds", icon: "hedgefonds", why: "Welche Fonds die Aktie halten, kaufen und verkaufen" }
   };
   var STATE_TEXT = { available: "verfügbar", unavailable: "keine Abdeckung", planned: "In Planung", unknown: "" };
   var TICK = { available: "✓", unavailable: "–", planned: "…", unknown: "" };
@@ -128,5 +131,60 @@
     return function () { alive = false; if (nav.parentNode) nav.parentNode.removeChild(nav); };
   }
 
-  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, html: html, mount: mount, loadShard: loadShard });
+  /* ------------------------------------------------------------ Aktienkopf */
+  var KIND = { live: "Live", delayed: "Verzögert", close: "Schlusskurs", intraday: "Letzter Kurs" };
+  function num(v, d) { return Number(v).toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
+  /** Kurs als Text: 197,61 $ (Waehrungszeichen wie in Discover nachgestellt). */
+  function money(v, cur) { var c = CUR[cur] || cur || ""; return num(v, Math.abs(v) >= 1000 ? 0 : 2) + (c ? "\u00a0" + c : ""); }
+  /** Kursblock: Wert, Veraenderung, Art und Zeitbezug. Ohne Wert kein Block (keine erfundene Zahl). */
+  function priceHtml(p) {
+    if (!p || typeof p.value !== "number" || !isFinite(p.value)) return "";
+    var ch = typeof p.changePct === "number" && isFinite(p.changePct) ? p.changePct : null;
+    var dir = ch == null ? "flat" : ch > 0 ? "up" : ch < 0 ? "down" : "flat";
+    var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "";
+    var when = [KIND[p.kind] || p.kind || "", p.at || ""].filter(Boolean).join(" · ");
+    return '<div class="vu-shead-price" data-direction="' + dir + '"><b class="vu-shead-value">' + esc(money(p.value, p.currency)) + "</b>" +
+      (ch == null ? "" : '<span class="vu-shead-change">' + arrow + "\u00a0" + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + "\u00a0%" +
+        (p.changeLabel ? '<small> ' + esc(p.changeLabel) + "</small>" : "") + "</span>") +
+      (when ? '<span class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) + "</span>" : "") + "</div>";
+  }
+  function logoHtml(o) {
+    var t = esc(o.ctx.displaySymbol), mono = esc((o.name || o.ctx.displaySymbol || "?").replace(/[^A-Za-z0-9ÄÖÜäöü]/g, "").slice(0, 1).toUpperCase());
+    var src = o.logo === false ? null : o.logo || (o.ctx.region === "US" ? "/discover/logos/files/" + encodeURIComponent(o.ctx.ticker) + ".png" : null);
+    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" decoding="async">' : "") + "</span>";
+  }
+  /**
+   * Einheitlicher Aktienkopf. o: {ctx, current, name, exchange, logo, price:{value,currency,changePct,changeLabel,kind,at}, back:{href,label}, actions: Node}
+   * Zeichnet Kopf + Navigator in host. @returns {{setPrice:function, dispose:function, el:Element}}
+   */
+  function head(host, o) {
+    if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null };
+    var doc = host.ownerDocument, wrap = doc.createElement("header");
+    wrap.className = "vu-shead";
+    var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
+    wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '"><span aria-hidden="true">←</span> ' + esc(o.back.label) + "</a>" : "") +
+      '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
+      '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +
+      '<div class="vu-shead-pricebox">' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
+    var img = wrap.querySelector(".vu-shead-logo img");
+    if (img) img.addEventListener("error", function () { img.remove(); });
+    if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
+    host.replaceChildren(wrap);
+    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o);
+    return {
+      el: wrap,
+      setPrice: function (p) { wrap.querySelector(".vu-shead-pricebox").innerHTML = priceHtml(p); },
+      dispose: function () { dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+    };
+  }
+
+  /** Navigator aus der Adresse der Seite (StockContext.parse); null, wenn die Adresse keine Aktie ist. */
+  function auto(host, opts) {
+    var loc = root.location ? root.location.pathname + root.location.hash : "";
+    var hit = SC.parse(loc);
+    return hit ? mount(host, hit.ctx, hit.product, opts) : null;
+  }
+
+  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money });
 });
