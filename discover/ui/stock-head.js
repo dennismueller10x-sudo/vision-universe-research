@@ -67,17 +67,17 @@
     [title, hero.querySelector(".dx-dhero-meta")].forEach(function (n) { if (n) n.remove(); });
     var nav = head.el.querySelector(".vu-shead-nav"), observer = null;
     if (nav && chart) {
-      /* Direkt unter Kurs, Chart und Zeitraumleiste. Das Kapitel baut sich neu, sobald die Kursreihe da ist:
-         bis dahin steht der Navigator hinter dem Kapitel, danach vor den Chart-Werkzeugen. */
+      /* Wie in allen Welten: direkt unter Name und Kurs, vor dem Chart. Der Kurs steht live im Chart-Hero;
+         der Chart zeichnet Hero und Linie bei jedem Zeitraum neu - der Navigator wird dann wieder hinter
+         den Hero gesetzt. Ohne Hero (Kursreihe laedt, keine Reihe) steht er vor dem Kapitel. */
       nav.classList.add("dv2-head-nav");
       var place = function () {
-        var tools = chart.querySelector(".dx-werkzeuge");
-        if (tools && nav.nextSibling !== tools) tools.parentNode.insertBefore(nav, tools);
-        else if (!tools && !nav.isConnected) chart.insertAdjacentElement("afterend", nav);
+        var price = chart.querySelector(".dx-chart-hero");
+        if (price) { if (price.nextSibling !== nav) price.insertAdjacentElement("afterend", nav); }
+        else if (!nav.isConnected || nav.parentNode !== chart.parentNode) chart.insertAdjacentElement("beforebegin", nav);
       };
-      chart.insertAdjacentElement("afterend", nav);
       observer = new MutationObserver(place);
-      observer.observe(chart, { childList: true });
+      observer.observe(chart, { childList: true, subtree: true });
       place();
     }
     return { dispose: head.dispose, observer: observer };

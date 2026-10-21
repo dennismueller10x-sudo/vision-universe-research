@@ -257,9 +257,13 @@ body.dv2 .dv2-stock .dx-chapter--chart{padding:10px 0 4px;min-height:0;border:0}
 body.dv2 .dv2-stock .dx-chart-hero{margin:0 0 6px}
 body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:clamp(40px,5vw,64px);letter-spacing:-.06em}
 body.dv2 .dv2-stock .dx-intraday-note{font-size:11.5px;line-height:1.45;color:var(--discover-muted)}
-body.dv2 .dv2-head-nav{margin:0;padding:10px 0 4px;border-top:1px solid var(--discover-line)}
+body.dv2 .dv2-head-nav{margin:6px 0 10px;padding:10px 0 6px;border-top:1px solid var(--discover-line);border-bottom:1px solid var(--discover-line)}
 body.dv2 .dv2-head-nav .vu-snav{margin:0}
-body.dv2 .dv2-stock .dx-chapter--chart .dv2-head-nav{order:1;margin-top:2px}
+/* Zeitraumleiste unter dem Chart, auch am Desktop: Kurs, Navigator, Chart, Zeitraeume */
+body.dv2 .dv2-stock .dx-chapter--chart>div:not(.dx-chart){display:flex;flex-direction:column}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-chart-head{order:1;margin:10px 0}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-werkzeuge{order:2}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-inline-note{order:3}
 /* Kernaussagen: ein Satz, darunter die Zeitachse als Kennzahlen */
 body.dv2 .dv2-stock-context{display:block;padding:var(--vu3-gap) 0 0;border:0}
 body.dv2 .dv2-stock-context .dx-dhero-story{font-size:clamp(22px,2.6vw,32px);line-height:1.15;font-weight:780;letter-spacing:-.035em;margin:0 0 10px;max-width:30ch}
