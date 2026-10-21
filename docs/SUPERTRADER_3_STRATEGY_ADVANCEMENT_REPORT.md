@@ -25,6 +25,103 @@ Einzeldokumente:
 - **Keine Engine wurde verändert.** Das gilt für `methods/*.mjs`, `runner/run-research.mjs` und `runner/snapshot-input.mjs`. Der Code-Fingerabdruck `ae2a51ed86ae…` des Turtle-Acceptance-Gates (AG-3) bleibt gültig; ein Test prüft das (`SF3-RUNNER-FINGERPRINT`).
 - Alle neuen Bausteine liegen in `source-faithful/research/` und werden über das Feld `researchEvidence` an die Vertragsregeln gebunden. Ein Regelstatus wurde **nicht** hochgestuft.
 
+## Snapshot-Messung (Lauf `sf3-research` 39573166338)
+
+Eckdaten des Laufs:
+- Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT` verifiziert (RESTORE-Beleg).
+- 9.211 Segmente, 2.701 Sitzungen. Sec-pit-Fundamentals für 6.289 Wertpapiere.
+- Engine-Fingerabdruck `ae2a51ed86ae…` (unverändert), Research-Code `3b5dd5fa40bf…`.
+- Öffentlich sind nur Zählungen; Kennzahlen liegen versiegelt auf `claude/supertrader-validation-results` (`20261021T130218Z`).
+
+Lauf 1 verwendete den Research-Code **vor** den Review-Fixes:
+- Turtle und Minervini sind davon unberührt (L1 betrifft nur die Zählerausweisung).
+- Die Weinstein-Labels können sich in Fällen mit Mitgliedschaftslücken ändern (M1).
+- Lauf 2 (39575564781) mit dem korrigierten Code wurde gestartet und bestätigt bzw. korrigiert diese Zahlen.
+
+### Turtle: Referenz unverändert, Korrelationslimits binden im tatsächlichen Buch nicht
+
+Referenzläufe ohne Gruppen:
+- **S1:** 820 Trades, 825 Einstiege.
+- **S2:** 559 Trades.
+- Beide sind identisch mit den CURRENT_ENGINE-Referenzzählungen, und die Abstimmung ist bestanden. Die Engine ist damit nachweislich unverändert.
+
+| Variante (Unknown-Politik) | S1 Trades | S1 LIMIT6-Ablehnungen | S2 Trades | S2 LIMIT6 | größte enge Gruppe im Universum (Median / Max) |
+|---|---|---|---|---|---|
+| RAW-126-COMPLETE-70-50 (REPORT_ONLY) | 820 | 0 | 559 | 0 | 29 / 87 |
+| RAW-126-COMPLETE-70-50 (POOLED_UNKNOWN) | 889 | 4.694 | 564 | 1.777 | 29 / 87 |
+| RAW-63-COMPLETE-70-50 | 820 | 0 | 559 | 0 | 29 / 121 |
+| RAW-252-COMPLETE-70-50 | 820 | 0 | 559 | 0 | 31 / 97 |
+| RAW-126-COMPLETE-80-60 | 820 | 0 | 559 | 0 | 13 / 51 |
+| RES-126-COMPLETE-50-30 | 820 | 0 | 559 | 0 | 51 / 157 |
+| RES-126-AVERAGE-50-30 | 820 | 0 | 559 | 0 | 146 / 492 |
+| RAW-126-COMPLETE-Q005-Q025 | 820 | 0 | 559 | 0 | 43 / 92 |
+| RAW-126-SINGLE-70-50 (Diagnose) | 917 | 1 (LIMIT10: 2.986) | 590 | 1 | 616 / 2.148 |
+
+Konzentration des **tatsächlichen Referenzbuchs** (je Sitzungsende, S1, 2.333 Sitzungen mit Positionen):
+- **Units je enger Gruppe:** in allen COMPLETE- und AVERAGE-Varianten höchstens 4. Das entspricht genau einem Titel und ist durch LIMIT4 gedeckt; keine Sitzung liegt über 6 bzw. 10.
+- **Paarweise Nachbarschaft:** höchstens 4 bis 5 Units.
+- **Mittlere unit-gewichtete Paarkorrelation:** p50 0,11, p95 0,29.
+- **Gesamtbuch:** p50 5, max 12 Units.
+- **Ausnahme SINGLE (Verkettung):** Hier entstehen marktweite Gruppen (bis 2.148 Titel). Dann liegen 28 Sitzungen über 6 und 137 über 10.
+
+Befund:
+- Für die long-only Cash-Adaption mit 1-%-Units hält das Buch selten mehr als 5 Units. Diese Units verteilen sich auf schwach korrelierte Titel.
+- Die Absicht von TUR-LIMIT6/10, Risiko in gleichlaufenden Units zu begrenzen, wird im gemessenen Zeitraum **ohne** Limit eingehalten. Das gilt für jede vertretbare Variante.
+- Die Datenausnahme der Referenzläufe hat damit nach dieser Messung praktisch keine Wirkung. Das ist kein Freigabeargument; die Regel bleibt quellenoffen.
+
+**Unknown-Anteil:** 9,1 % der Gruppenabfragen (126er-Variante). Die Gründe:
+- 43 % am Anker nicht im Research-Universum;
+- 32 % vor dem ersten vollständigen Anker;
+- 25 % mit unvollständigem Renditefenster.
+
+`POOLED_UNKNOWN` behandelt alle unbekannten Titel als einen Block. Das erzeugt die einzigen nennenswerten Ablehnungen. Es zeigt die Größe der Unbekannt-Menge, nicht ein Konzentrationsrisiko.
+
+### Weinstein: Gruppen-Coverage (Variantenvergleich)
+
+| Variante | Mitgliedschaft aufgelöst | Gruppensitzungen gültig | Gruppen mit Chart je Jahr | Kandidaten mit Gruppenevidenz KNOWN |
+|---|---|---|---|---|
+| SIC3-EW-MIN5-400D-WIDE | 77,8 % | 59,6 % | 145–157 | 101.877 von 143.048 (71 %) |
+| SIC3-EW-MIN5-400D-STRICT | 17,8 % | 22,9 % | 19–59 | 15.106 (11 %) |
+| SIC2-EW-MIN5-400D-WIDE | 77,8 % | 89,3 % | 60–63 | 108.746 (76 %) |
+| SIC4-EW-MIN5-400D-WIDE | 77,8 % | 48,3 % | 179–196 | 95.393 (67 %) |
+| SIC3-EW-MIN3-400D-WIDE | 77,8 % | 76,4 % | 188–197 | 106.602 (75 %) |
+| SIC3-EW-MIN10-400D-WIDE | 77,8 % | 33,3 % | 83–92 | 88.098 (62 %) |
+| SIC3-EW-MIN5-120D-WIDE | 75,5 % | 58,8 % | 145–157 | 97.362 (68 %) |
+| SIC3-CAP-MIN5-400D-WIDE | – | – | – | `DATA_BLOCKED` (keine PIT-Aktienzahl) |
+
+Kandidaten sind die Investor- und Trader-Screens jeder 4. Woche: 87.067 bzw. 55.981.
+
+Befunde:
+- **Die strenge Identitätsvariante ist nicht tragfähig.** Die meisten Snapshot-CIKs stammen aus der heutigen Tickerliste (1,67 Mio. gegenüber 0,50 Mio. Auflösungen). Ohne die Annahme `CURRENT_TICKER_MAPPING` bleiben 82 % unbekannt.
+- **Hauptgrund für fehlende Mitgliedschaft:** `IDENTITY_NO_CIK` (542.594 Abfragen).
+- **SIC3 mit 5 Mitgliedern** ist ein Mittelweg zwischen Granularität und gültigen Charts. SIC2 ist stabiler, aber sehr grob.
+- **Kandidaten in SIC3-MIN5-WIDE:**
+  - 80.942 von 101.877 (79 %) stehen in Gruppen `ABOVE_RISING_MA30W`;
+  - 10.552 (10 %) in Gruppen `BELOW_FALLING_MA30W`. Diese Kandidaten würde das Review-Gate `WEIN-RG-GROUP` als mögliche „negative Gruppe“ zur Entscheidung vorlegen.
+- **2022:** Das Bild der Gruppenlabels kehrt sich um (5.162 `BELOW_FALLING` gegen 1.558 `ABOVE_RISING`). Die Gruppenevidenz bildet Branchenrotation und Marktphase also sichtbar ab.
+
+### Minervini: Screen-Statistiken (Monatsenden, keine Strategierendite)
+
+SEPA:
+- 101.528 Monatsende-Treffer für Trend Template 1–7.
+- Davon hatten 80,3 % ein RS-Perzentil (Proxy) und 81,6 % PIT-Fundamentalevidenz.
+- Bei 26.933 Treffern war das EPS-Wachstum beschleunigt (Evidenz, kein Filter).
+
+Power Play, 2016–2026:
+
+| Klasse | Anzahl | Anmerkung |
+|---|---|---|
+| `CONFIRMED_MECHANICAL_SETUP` | 1.469 | Spitze 2020: 396 |
+| `MANUAL_REVIEW_SETUP` | 7.581 | |
+| `DATA_BLOCKED_SETUP` | 8.837 | überwiegend junge Notierungen ohne 50 Sitzungen Volumenhistorie vor dem Lauf (IPO-Power-Plays) |
+
+Die Vorwärts-Kursänderung nach einer Klassifikation liegt nur im versiegelten Teil, ausgewiesen als `SCREEN_STATISTIC_FORWARD_PRICE_CHANGE_NOT_A_STRATEGY_RETURN`.
+
+### Kontext
+
+- Branchenrang (Quartalsenden) als Evidenz verfügbar: 66–78 % der notierten Titel je Jahr ab 2017 (Rest: unbekannte Mitgliedschaft oder zu kurze Historie). 2016 ist reine Anlaufzeit.
+- Universums-Breite: im Mittel 3.100 Titel je Sitzung.
+
 ## 1. Welche 13 Methoden wurden weiterentwickelt?
 
 | Kandidat | Methode | Fortschritt in diesem Auftrag |
@@ -72,7 +169,10 @@ Daraus folgt:
 - **Paar-Quantil-Schwellen** sind regime-robust. Absolute Rohschwellen verschmelzen in Korrelationsspitzen das Universum (synthetischer Test `SF3-TUR-CORR-QUANTILE`).
 - Fenster 63, 126 und 252 sowie die Schwellen sind Sensitivitäten, keine Empfehlung. **Ausgewählt wird nicht nach Rendite.**
 
-Snapshot-Messung: Abschnitt „Snapshot-Messung“ unten.
+Snapshot-Messung (Abschnitt oben):
+- Im tatsächlichen Referenzbuch binden die Limits unter keiner COMPLETE- oder AVERAGE-Variante; das Buch hält höchstens 4 Units je enger Gruppe.
+- Nur die Verkettung (SINGLE) erzeugt marktweite Pseudogruppen.
+- Eine Freigabe einer Variante würde die Referenzergebnisse daher kaum verändern. Sie bleibt trotzdem eine Owner-Entscheidung über eine Modellannahme.
 
 ## 4. Wie wird historische Weinstein-Branchenstärke gemessen?
 
@@ -160,14 +260,38 @@ Details: `context-evidence.mjs#DATA_FRONTIER`.
 
 | Prüfung | Ergebnis |
 |---|---|
-| `node --test "scripts/supertrader/tests/*.test.mjs"` | 523 Tests: 522 bestanden, 1 bestehender Skip, 0 fehlgeschlagen |
-| neue Suiten | `sf-turtle-correlation-research` 10, `sf-industry-strength-research` 7, `sf-minervini-components` 10, `sf-context-evidence-research` 3, `sf-sf3-runner-research` 3 |
-| Golden Record (`rebuild-all`) | 115/115 Golden Cases PASS, 206 Tests, 0 fehlgeschlagen |
+| `node --test "scripts/supertrader/tests/*.test.mjs"` | 525 Tests: 524 bestanden, 1 bestehender Skip, 0 fehlgeschlagen |
+| neue Suiten | `sf-turtle-correlation-research` 11, `sf-industry-strength-research` 8, `sf-minervini-components` 10, `sf-context-evidence-research` 3, `sf-sf3-runner-research` 3 |
+| Golden Record (`rebuild-all`) | 115/115 Golden Cases PASS, 208 Tests, 0 fehlgeschlagen |
+| CI auf allen fünf PR-Zweigen | grün (Core, Supertrader Quality Gates, CI Config, Currency & FX) |
 | Artefakte = frischer Build | bestanden (SF2-COMPLETION-ARTIFACTS, SF3-READINESS) |
 | Gate A (`guard-protected-paths.mjs`) | nur Supertrader-Pfade, bestanden |
 | Test-Isolation (`check-test-isolation.mjs`) | bestanden |
 | AG-3-Code-Fingerabdruck | unverändert (`SF3-RUNNER-FINGERPRINT`) |
-| Unabhängiges Review | siehe Abschnitt „Review“ |
+| Unabhängiges adversariales Review | 0 CRITICAL, 0 HIGH; 2 MEDIUM (M1, M2) und 4 LOW behoben (siehe Abschnitt „Review“) |
+| Snapshot-Lauf `sf3-research` 39573166338 | erfolgreich: Datensatz `EXACT`, Turtle-Referenz identisch mit CURRENT_ENGINE, alle Varianten abgestimmt |
+
+## Review
+
+Ein unabhängiges adversariales Review über den gesamten Diff fand **keine CRITICAL- oder HIGH-Befunde**.
+
+Geprüft und bestätigt:
+- **NN-Chain-Clustering:** gegen eine naive Referenz auf 3.000 Zufallsmatrizen inklusive Ties, ohne Abweichung.
+- **Lance-Williams-Updates und Terminierung:** korrekt.
+- **PIT-Grenzen:** Anker, Wochen-Roster, Breite, Fundamentals und Branchenrang halten sie ein.
+- **Unknown-Politik:** explizit, ohne Voreinstellung.
+- **Ledger-Unit-Buchhaltung:** korrekt.
+- **Workflow:** Eingaben nur über `env:`, fail closed, keine neuen Rechte.
+- **Statusangaben:** kein Regelstatus hochgestuft.
+
+| Befund | Schwere | Behebung |
+|---|---|---|
+| M1 Gruppenevidenz bei Mitgliedschaftslücken konnte eine Monate alte Woche als KNOWN melden | MEDIUM | Lücken als UNKNOWN-Sitzungen, Evidenz nur aus der Kalendervorwoche; Test `SF3-WEIN-GROUP-GAP` |
+| M2 Kontext-Evidenz fiel bei einem Nicht-Handelstag auf das Datenende zurück (Lookahead, latent) | MEDIUM | Entscheidungswoche aus dem Datum selbst; Test in `SF3-CTX-APPEND` |
+| L1 kumulative Provider-Zähler als Lauf-Abdeckung ausgewiesen | LOW | `engineLookups` je Lauf als Differenz |
+| L2 Power-Play-Ausbruch am Klassifikationsbalken konnte nie auslösen | LOW | Pivot gesetzt (`PIVOT_SET_AWAITING_BREAKOUT`), Ausbruch an späterem Balken |
+| L3 Laufzeit: doppelte Ankerberechnung, Weinstein-Stichprobe | LOW | geteilter Anker-Cache, Stichprobe jede 8. Woche |
+| L4 Readiness überbewertete den Kontext-Teil; Klassifikation `TUR-SF-LIMIT-CORR` | LOW | Kontext als reine Abdeckungsmessung benannt. `TUR-SF-LIMIT-CORR` ist im Lückenmodell eine Datenausnahme mit umgesetzter Mechanik; die Operationalisierung ist quellenoffen. Beides gilt gleichzeitig. |
 
 ## 13. Welche Draft-PRs wurden erstellt?
 
@@ -177,7 +301,7 @@ Details: `context-evidence.mjs#DATA_FRONTIER`.
 | [#822](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/822) | Weinstein-Branchenstärke und Universums-Breite | #821 |
 | [#823](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/823) | Minervini SEPA/VCP und Power Play | #822 |
 | [#824](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/824) | Kontext-Evidenz Darvas/KK/MoKa, Daten- und Quellengrenze | #823 |
-| Abschluss-PR (Zweig `claude/supertrader-3-strategy-advancement-thxo8e`) | Snapshot-Runner und Workflow-Modus, Verträge (`researchEvidence`), Readiness, Artefakte, dieser Bericht | #824 |
+| [#825](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/825) | Snapshot-Runner und Workflow-Modus, Verträge (`researchEvidence`), Readiness, Artefakte, dieser Bericht | #824 |
 
 Die PRs sind gestapelt, weil die generierten Artefakte nur einmal am Ende neu gebaut werden. Ein paralleler Neubau in mehreren PRs würde Konflikte erzeugen. Keine Merges ohne Owner-Freigabe.
 
