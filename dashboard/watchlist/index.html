@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Watchlist · Vision Universe</title>
-<link rel="stylesheet" href="../v2.css?v=8">
-<link rel="stylesheet" href="/assets/site-navigation.css"></head>
-<body data-view="watchlist"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<meta name="theme-color" content="#ffffff">
+<title>Watchlist · Dashboard · Vision Universe</title>
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie alle Welten -->
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/dashboard/v2.css?v=9">
+</head>
+<body class="db" data-view="watchlist"><vu-navigation theme="light" theme-switch></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <div class="shell">
-<div class="vu-section-nav"><nav class="nav" aria-label="Dashboard-Navigation">
-<a href="/dashboard/" data-nav="home">Home</a>
-<a href="/dashboard/research/" data-nav="research">Research</a>
-<a href="/dashboard/charting/" data-nav="charting">Charting</a>
-<a href="/dashboard/discover/" data-nav="discover">Entdecken</a>
-<a href="/dashboard/watchlist/" data-nav="watchlist">Watchlist</a>
-</nav></div>
+<nav class="db-nav" aria-label="Dashboard"><a class="vu-product-chip" href="/dashboard/">Übersicht</a><a class="vu-product-chip" href="/dashboard/research/">Research</a><a class="vu-product-chip" href="/dashboard/discover/">Entdecken</a><a class="vu-product-chip" href="/dashboard/watchlist/" aria-current="page">Watchlist</a></nav>
 <main id="app"></main>
 </div>
-<script src="../app-rebuild.js?v=8"></script>
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/dashboard/app-rebuild.js?v=9"></script>
 </body>
 </html>
