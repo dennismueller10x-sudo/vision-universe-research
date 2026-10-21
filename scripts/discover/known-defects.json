@@ -1,0 +1,35 @@
+{
+  "schema": "vu-discover-known-defects-1",
+  "note": "Nur nachweislich unveraenderte, bekannte Datenfehler. Ein Eintrag greift nur, solange der Fingerabdruck ueber 'scope' gleich bleibt; sonst prueft das Gate die Route wieder streng. Siehe scripts/discover/known-defects.mjs und docs/VISION_UNIVERSE_3_MILESTONE.md.",
+  "defects": [
+    {
+      "id": "rheinmetall-europe-unavailable",
+      "title": "Rheinmetall (EUROPE ref_RHM_DE_XETR) zeigt 'Aktie derzeit nicht verfügbar' – europäische Kursdaten",
+      "issue": "#778",
+      "owner": "separater Codex-/Marketstack-Auftrag",
+      "since": "2026-10-16",
+      "evidence": "Discover Frontend Quality Gates auf main, Lauf 39380525123 (20.10.2026): 201/202 (Chromium) und 37/38 (WebKit) grün, einziger Fehler diese Route",
+      "route": "rheinmetall",
+      "signature": {
+        "cause": "^h1 \"Aktie derzeit nicht verfügbar\" passt nicht zu /Rheinmetall/$",
+        "consequences": [
+          "^Hauptbereich zu kurz: \\d+ < 800 Zeichen$",
+          "^kein sichtbarer Kursblock mit Preis$",
+          "^Kernbereich \\(Kopf/Chart\\) nicht sichtbar$",
+          "^kein gezeichneter Chart "
+        ]
+      },
+      "scope": [
+        "discover/data/europe",
+        "discover/engines/europe-bootstrap.js",
+        "discover/engines/europe-product.js",
+        "discover/ui/europe.js",
+        "core/europe-discover-eligibility.js",
+        "core/europe-market-data.js",
+        "core/europe-session-proof.js",
+        "scripts/discover/direct-link-lib.mjs"
+      ],
+      "fingerprint": "f53e3116850234ff2034eb378c6ec569a6a6aedb53902ee2aad2f6c645411df8"
+    }
+  ]
+}

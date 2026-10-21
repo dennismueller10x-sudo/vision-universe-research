@@ -27,3 +27,17 @@ test('Lens mobil: Kopf und Block sind kompakt gesetzt', () => {
   assert.match(m, /\.st-lensblock \.st-next \{ padding: 8px 10px; \}/);
   assert.match(m, /\.st-lensblock \.st-cells \.c \{ padding: 7px 8px; \}/);
 });
+
+test('Lens mobil: bei Modellposition (4 Zellen) steht der naechste Schritt vor dem Zellenraster', () => {
+  // IOVA 21.10.2026: Positionsgroesse als vierte Zelle -> 2x2-Raster, .st-next unten bei 720 px (Grenze 600 px).
+  const m = mobileBlock();
+  assert.match(m, /\.st-lensblock > \.st-cells\.four,\s*\.st-lensblock > \.st-cells\.four ~ :not\(\.st-next\):not\(\.st-clamp-wrap\) \{ order: 1; \}/);
+  // nur mobil: ausserhalb des Media-Blocks keine Umordnung
+  assert.equal(css.replace(m, '').includes('.st-cells.four ~'), false);
+});
+
+test('Browser-QA prueft den ersten Bildschirm auch fuer die Lens im Positionszustand', () => {
+  const qa = fs.readFileSync(new URL('../browser-qa.mjs', import.meta.url), 'utf8');
+  assert.match(qa, /\(name === 'lens' \|\| name === 'lens-position'\) && isMobile/);
+});
+

@@ -15,7 +15,22 @@
 export const CLASS=Object.freeze({REAL:'REAL',BOOKKEEPING:'BOOKKEEPING'});
 export const EXIT=Object.freeze({PASS:0,REAL:1,BOOKKEEPING:3});
 const DELIVERY='https://research.visionuniverse.de/company-intelligence-delivery.json?observe=';
-const codeOf=e=>/^[A-Z0-9_:-]+$/.test(e?.message||'')?e.message:(e?.code||e?.name||'UNKNOWN');
+/** Fehlerklasse als kurzer Code fuer das Log. Gibt NIE Meldungstext aus (S3-Meldungen tragen Schluessel, Pfade, Antwortkoerper):
+ *  - reine Codes (A-Z0-9_:-, hoechstens 64 Zeichen) gehen unveraendert durch
+ *  - s3-driver: "<METHODE> <schluessel>: HTTP 403 ..." -> HTTP_403; ZERO_COST_GUARD_BLOCKED; fehlende Zugangsdaten -> S3_CONFIG
+ *  - Netz: "fetch failed" (TypeError, Ursache in cause.code) -> FETCH_FAILED[:ECONNRESET]; Zeitueberschreitung -> TIMEOUT
+ *  - sonst Fehlercode bzw. Fehlername, jeweils nur [A-Za-z0-9_]{1,40}, sonst UNKNOWN. */
+export function codeOf(e){
+ const m=typeof e?.message==='string'?e.message:'';
+ if(m.length<=64&&/^[A-Z0-9_:-]+$/.test(m))return m;
+ const http=/\bHTTP (\d{3})\b/.exec(m);if(http)return 'HTTP_'+http[1];
+ if(/^ZERO_COST_GUARD_BLOCKED\b/.test(m))return 'ZERO_COST_GUARD_BLOCKED';
+ if(/^s3-driver: (?:keine Zugangsdaten|kein Bucket)/.test(m))return 'S3_CONFIG';
+ if(e?.name==='TimeoutError'||e?.name==='AbortError'||/ETIMEDOUT|timed? ?out/i.test(m))return 'TIMEOUT';
+ if(/fetch failed/i.test(m)){const c=e?.cause?.code;return typeof c==='string'&&/^[A-Z0-9_]{1,40}$/.test(c)?'FETCH_FAILED:'+c:'FETCH_FAILED';}
+ const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_]{1,40}$/.test(v)?v:null;
+ return safe(e?.code)||safe(e?.name)||'UNKNOWN';
+}
 const fail=(cls,code,extra={})=>({status:'FAIL',class:cls,code,exitCode:EXIT[cls],...extra});
 
 /** Liest delivery.json einmal. Wirft nie; liefert {generation} oder {error}. */
@@ -48,22 +63,28 @@ export async function observeProduction({readGood,driver,keyFor,fetcher=fetch,sa
   const d=await readDelivery(fetcher);
   if(d.error){last={code:d.error};continue;}
   if(!good||d.generation!==good.generation){
-   if(sameGenerationOnly)return {status:'DEFERRED',code:'OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA',exitCode:EXIT.PASS,attempts:i};
+   if(sameGenerationOnly)return {status:'DEFERRED',code:'OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA',reason:good?'SERVED_GENERATION_NOT_GOOD':'GOOD_ABSENT',exitCode:EXIT.PASS,attempts:i};
    last={code:'OBSERVED_PRODUCTION_GENERATION_MISMATCH',served:d.generation,good:good?.generation||null};continue;
   }
   // Produktion belegt. Ab hier ist jeder Fehler reine Buchfuehrung.
   if(sameGenerationOnly){
    let prior;
    try{prior=await driver.get(key);}catch(e){return fail(CLASS.BOOKKEEPING,'OBSERVED_READ_FAILED:'+codeOf(e),{generation:d.generation,attempts:i});}
-   let priorGen=null;try{priorGen=prior?JSON.parse(Buffer.from(prior).toString('utf8')).generation:null;}catch{}
-   if(priorGen!==good.generation)return {status:'DEFERRED',code:'OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA',exitCode:EXIT.PASS,attempts:i};
+   // Kaputte Vorbeobachtung: Verhalten bleibt (aufschieben, der volle Refresh-QA-Lauf schreibt neu), aber die Ursache steht im Log.
+   let priorGen=null,reason='PRIOR_OBSERVATION_GENERATION_DIFFERS';
+   if(!prior)reason='PRIOR_OBSERVATION_MISSING';
+   else try{priorGen=JSON.parse(Buffer.from(prior).toString('utf8'))?.generation??null;}catch{reason='PRIOR_OBSERVATION_UNPARSEABLE';}
+   if(priorGen!==good.generation)return {status:'DEFERRED',code:'OBSERVATION_DEFERRED_TO_FULL_REFRESH_QA',reason,exitCode:EXIT.PASS,attempts:i};
   }
   const observation={schema:1,generation:d.generation,lastSuccessfulProductionPublication:now().toISOString()};
   const bytes=Buffer.from(JSON.stringify(observation));
   try{
    await driver.put(key,bytes);
+   // Beleg ist die GENERATION der zurueckgelesenen Beobachtung, nicht Byte-Gleichheit: ein paralleler Schreiber derselben
+   // Generation (anderer Zeitstempel) ist kein Fehler; eine fehlende, kaputte oder fremde Generation bleibt einer.
    const back=await driver.get(key);
-   if(!back||!Buffer.from(back).equals(bytes))throw Error('OBSERVABILITY_READBACK_FAILED');
+   let backGen=null;try{backGen=back?JSON.parse(Buffer.from(back).toString('utf8'))?.generation??null:null;}catch{}
+   if(backGen!==d.generation)throw Error('OBSERVABILITY_READBACK_FAILED');
   }catch(e){return fail(CLASS.BOOKKEEPING,codeOf(e)==='OBSERVABILITY_READBACK_FAILED'?'OBSERVABILITY_READBACK_FAILED':'OBSERVED_WRITE_FAILED:'+codeOf(e),{generation:d.generation,attempts:i});}
   if(saveHealth){try{saveHealth(observation);}catch(e){return fail(CLASS.BOOKKEEPING,'HEALTH_WRITE_FAILED:'+codeOf(e),{generation:d.generation,attempts:i});}}
   return {status:'PASS',generation:d.generation,exitCode:EXIT.PASS,attempts:i};

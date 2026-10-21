@@ -503,7 +503,17 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           if curl -fsS https://research.visionuniverse.de/company-intelligence-refresh.json >/dev/null; then
-            node scripts/company_intelligence/refresh-run.mjs observe --same-generation-only
+            # Exit 3 = BOOKKEEPING (observe-production.mjs): Produktion belegt (Generation == GOOD), nur observed.json liess sich
+            # nicht schreiben/zuruecklesen. Das darf den Fail-closed-Handler unten nicht ausloesen (kein Rollback, kein disable):
+            # sichtbar markieren, der naechste Refresh heilt. Jeder andere Exit-Code bleibt Exit-Code des Schritts.
+            rc=0
+            node scripts/company_intelligence/refresh-run.mjs observe --same-generation-only || rc=$?
+            if [ "$rc" -eq 3 ]; then
+              echo "::warning::Production verified, but recording the observation failed (BOOKKEEPING). Gate stays open, no rollback; the next refresh heals it."
+              echo "Company Intelligence: production verified, observed.json could not be recorded (BOOKKEEPING, observe exit 3). No rollback; the next refresh run heals it." >> "$GITHUB_STEP_SUMMARY"
+              rc=0
+            fi
+            exit "$rc"
           fi
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
         # Erst NACH Klassifikation und begrenzter Wiederholung (Schritte classify/retry, beide ohne Zustandsaenderung).

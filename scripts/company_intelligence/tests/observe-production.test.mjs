@@ -131,8 +131,8 @@ test('Workflow: Buchfuehrungsfehler macht den Lauf rot, aber ohne Rollback, disa
 
 test('CLI: observe nutzt die Klassifikation; der Sammel-Fehler nennt den Code statt ihn zu verschlucken',()=>{
  const src=readFileSync(fileURLToPath(new URL('../refresh-run.mjs',import.meta.url)),'utf8');
- assert.match(src,/import \{observeProduction\} from '\.\/observe-production\.mjs';/);
- assert.match(src,/process\.exitCode=r\.exitCode;/);
+ assert.match(src,/import \{observeProduction,codeOf\} from '\.\/observe-production\.mjs';/);
+ assert.match(src,/args\[0\]==='observe'\)\{\n\s*process\.exitCode=await runObserve\(args,driver\);/,'Verhalten des Zweigs: observe-cli.test.mjs (Kindprozess)');
  assert.doesNotMatch(src,/\}catch\{console\.error\('CONTINUOUS_REFRESH_FAILED'\)/);
  assert.match(src,/console\.error\('CONTINUOUS_REFRESH_FAILED \('\+/);
 });
