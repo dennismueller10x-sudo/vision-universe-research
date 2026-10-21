@@ -28,6 +28,7 @@ import {mkdtemp, mkdir, readdir, readFile, writeFile, copyFile, rm} from 'node:f
 import {tmpdir} from 'node:os';
 import {resolve, join, extname, dirname, relative, sep} from 'node:path';
 import {protectRelease, accessStateFor, verifierForKey} from '../access-gate/build.mjs';
+import {activeDefects, createRecorder} from './known-defects.mjs';
 import {SPECS, waitRendered, sleep, collectFacts, fullSpec, assessRequests, assessRelease, pageStamps, discoverExpectation, pickWithheldProbes, qualifyingCoreTitles, CORE_CANDIDATES} from './direct-link-lib.mjs';
 
 const require = createRequire(import.meta.url);
@@ -281,6 +282,8 @@ if (gateOn) await check('Zugangsmaske ist aktiv: ohne Zugang keine App, mit Zuga
 function assert(condition, message) { if (!condition) throw Error(message); }
 
 // ---------------------------------------------------------------- 2. Direktlinks (durch die Maske)
+// Bekannte, unveraenderte Datenfehler (known-defects.json): nur exakte Signatur bei unveraendertem Fingerabdruck, sichtbar gemeldet.
+const known = createRecorder(activeDefects());
 const critical = ['nvda', 'rheinmetall', 'einzeln'], others = ['daten', 'maerkte', 'strategien', 'aktien'];
 for (const device of devices) {
   const primary = device === devices[0];
@@ -292,7 +295,7 @@ for (const device of devices) {
       for (let i = 0; i < count; i++) {
         loads++;
         const result = await loadThroughGate({device, spec: named(key)});
-        if (result.problems.length) failures.push(label(device, key, i, count) + ': ' + result.problems.join('; '));
+        if (result.problems.length && !known.absorb(key, result.problems, result.pageErrors)) failures.push(label(device, key, i, count) + ': ' + result.problems.join('; '));
       }
     }
     assert(!failures.length, failures.length + ' von ' + loads + ' Ladevorgaengen ohne Inhalt:\n' + failures.slice(0, 8).join('\n'));
@@ -362,7 +365,7 @@ for (const device of engine === 'chromium' ? [devices[0]] : devices) {
     const failures = [];
     for (const key of ['nvda', 'rheinmetall', 'einzeln', 'daten']) for (let i = 0; i < reps(1); i++) {
       const result = await loadThroughGate({device, spec: named(key), throttle: 'cdp'});
-      if (result.problems.length) failures.push(key + ' #' + (i + 1) + ': ' + result.problems.join('; '));
+      if (result.problems.length && !known.absorb(key, result.problems, result.pageErrors)) failures.push(key + ' #' + (i + 1) + ': ' + result.problems.join('; '));
     }
     assert(!failures.length, failures.join('\n'));
   });
@@ -370,7 +373,7 @@ for (const device of engine === 'chromium' ? [devices[0]] : devices) {
     const failures = [];
     for (const key of critical) for (let i = 0; i < reps(engine === 'webkit' ? 5 : 3); i++) {
       const result = await loadThroughGate({device, spec: named(key), delays: true});
-      if (result.problems.length) failures.push(key + ' #' + (i + 1) + ': ' + result.problems.join('; '));
+      if (result.problems.length && !known.absorb(key, result.problems, result.pageErrors)) failures.push(key + ' #' + (i + 1) + ': ' + result.problems.join('; '));
     }
     for (const key of others) {
       const result = await loadThroughGate({device, spec: named(key), delays: true});
@@ -387,10 +390,10 @@ for (const device of devices) {
     const failures = [];
     for (let round = 0; round < reps(engine === 'webkit' ? 4 : 2); round++) {
       const separate = await Promise.all(parallelKeys.map(key => loadThroughGate({device, spec: named(key), delays: round % 2 === 1})));
-      separate.forEach((result, i) => { if (result.problems.length) failures.push('Kontext ' + parallelKeys[i] + ' Runde ' + (round + 1) + ': ' + result.problems.join('; ')); });
+      separate.forEach((result, i) => { if (result.problems.length && !known.absorb(parallelKeys[i], result.problems, result.pageErrors)) failures.push('Kontext ' + parallelKeys[i] + ' Runde ' + (round + 1) + ': ' + result.problems.join('; ')); });
       const shared = await browser.newContext(device.options);
       const tabs = await Promise.all(parallelKeys.map(key => loadThroughGate({device, spec: named(key), context: shared})));
-      tabs.forEach((result, i) => { if (result.problems.length) failures.push('Tab ' + parallelKeys[i] + ' Runde ' + (round + 1) + ': ' + result.problems.join('; ')); });
+      tabs.forEach((result, i) => { if (result.problems.length && !known.absorb(parallelKeys[i], result.problems, result.pageErrors)) failures.push('Tab ' + parallelKeys[i] + ' Runde ' + (round + 1) + ': ' + result.problems.join('; ')); });
       await shared.close().catch(() => {});
     }
     assert(!failures.length, failures.join('\n'));
@@ -400,7 +403,8 @@ for (const device of devices) {
 await browser.close();
 server.close();
 const failed = results.filter(r => !r.pass);
-const report = {status: failed.length ? 'FAIL' : 'PASS', engine, seed, scale, release: relative(process.cwd(), release) || '.', overlay: overlay ? relative(process.cwd(), overlay) : null,
+known.report('browser-qa-direct ' + engine);
+const report = {status: failed.length ? 'FAIL' : 'PASS', knownDefects: known.summary(), engine, seed, scale, release: relative(process.cwd(), release) || '.', overlay: overlay ? relative(process.cwd(), overlay) : null,
   empty: [...emptyPaths], gate: gateOn ? gateReport : null, seconds: Math.round(results.reduce((n, r) => n + r.milliseconds, 0) / 1000), checks: results};
 await writeFile(join(out, 'direct-links-' + engine + '.json'), JSON.stringify(report, null, 2));
 console.log(JSON.stringify({status: report.status, engine, seed, checks: results.length, failed: failed.map(f => f.name), seconds: report.seconds}));
