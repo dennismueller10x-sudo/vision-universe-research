@@ -94,6 +94,8 @@ async function premiumMobileAudit(page,key){
  const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
  assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=5,'Need five distinct archetypes across the long journey: '+[...archetypes]);assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports: '+JSON.stringify({longest,rhythm:rhythm.map(x=>({index:x.index,id:x.id,archetype:x.archetype,visible:x.visible,features:x.features}))}));assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, visual interlude and differently sized chart beats: '+JSON.stringify(portfolio));
 }
+// Bekannte, unveraenderte Datenfehler (known-defects.json): ausserhalb von try, weil der Bericht nach dem Lauf sie zusammenfasst.
+const known=createRecorder(activeDefects());
 try{
 await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
 for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorScheme of (engine==='webkit'?['dark']:['light','dark'])){
@@ -380,7 +382,6 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
 }
 // Direktlinks auf Routen mit nachgeladenen Skriptgruppen: jeder frische Aufruf muss zeichnen (kein "Gerade nicht erreichbar", keine Seitenfehler).
 // WebKit zeigte hier einmal ein Zufallsrennen zwischen Parser und Start; deshalb dort 25 frische Aufrufe je Link.
-const known=createRecorder(activeDefects());
 await check('direct links to lazy-loaded routes render on every fresh load',async()=>{
  // Seit der Verschaerfung zaehlt nur eine Route als gerendert, die ihre Inhaltsmerkmale SICHTBAR zeigt (direct-link-lib.mjs):
  // erwarteter h1, Kursblock, gezeichneter Chart, Mindesttext, keine Ladeanzeige. Die Seite durch die Zugangsmaske und
