@@ -35,3 +35,10 @@ test("Format · Kurs mit Waehrungszeichen wie Discover", () => {
   assert.equal(C.money(197.61, "USD"), "197,61 $");
   assert.equal(C.money(1234.5, "EUR"), "1.235 €");
 });
+
+test("Kursmarken · liegen im Bild und behalten ihren Wert", () => {
+  const g = C.geometry([["2026-10-01", 100], ["2026-10-02", 110]], { levels: [{ value: 90, label: "Stop", tone: "bad" }, { value: 120, label: "Ziel" }, { value: NaN }] });
+  assert.equal(g.levels.length, 2);
+  assert.equal(g.lo, 90); assert.equal(g.hi, 120);
+  assert.ok(g.levels[0].y > g.levels[1].y, "Stop unter Ziel");
+});

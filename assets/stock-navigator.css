@@ -75,3 +75,11 @@
 .vu-shead-nav{margin-top:14px}
 .vu-shead-nav .vu-snav{margin:0}
 @media(min-width:761px){.vu-shead-logo{width:56px;height:56px;border-radius:16px}.vu-shead-price{margin-top:20px}}
+/* Kompakt (Seiten, deren Hauptblock in den ersten Bildschirm muss): kleineres Logo und kleinerer Kurs. */
+@media(max-width:760px){
+ .vu-shead--compact .vu-shead-logo{width:40px;height:40px;border-radius:12px}
+ .vu-shead--compact .vu-shead-name{font-size:20px}
+ .vu-shead--compact .vu-shead-price{margin-top:10px}
+ .vu-shead--compact .vu-shead-value{font-size:32px}
+ .vu-shead--compact .vu-shead-nav{margin-top:10px}
+}
