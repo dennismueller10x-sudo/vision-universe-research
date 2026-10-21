@@ -2,7 +2,7 @@
 // Golden Cases und adversariale Faelle, synthetisch. Kein Kaufsignal, keine Wachstumsschwelle, keine erfundene Volumenregel.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRsPercentileProxy, fundamentalEvidence, vcpContractions, pivotBreakout, positionSize, sellEvidence, sepaClassify, powerPlayClassify, MINERVINI_COMPONENTS_VERSION } from '../source-faithful/methods/minervini-components.mjs';
+import { createRsPercentileProxy, fundamentalEvidence, vcpContractions, pivotBreakout, positionSize, sellEvidence, sepaClassify, powerPlayClassify, MINERVINI_COMPONENTS_VERSION } from '../source-faithful/research/minervini-components.mjs';
 import { sepaScreen, powerPlayScreen, MINERVINI_VERSION } from '../source-faithful/methods/minervini.mjs';
 
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);

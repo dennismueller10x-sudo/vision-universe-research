@@ -1,6 +1,6 @@
 /**
  * Minervini SEPA / VCP (C06) and Power Play (C07): mechanical components around the existing screens
- * (methods/minervini.mjs stays unchanged). Contract: contracts/minervini.mjs. Source: #709 B12 / B07 / B03, every
+ * (methods/minervini.mjs stays unchanged; research/ because method modules do not import each other). Contract: contracts/minervini.mjs. Source: #709 B12 / B07 / B03, every
  * Minervini rule MEDIUM confidence with unchecked English wording (translation-only): nothing here is SOURCE_EXACT.
  *
  * What is mechanical (computed exactly, no added number):
@@ -21,7 +21,7 @@
  * Nothing here declares a buy: every output keeps buyDeclarationAllowed false.
  */
 import { fin, smaAt, eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
-import { trendTemplate, powerPlayScreen, stopCheck, MIN_PARAMS } from './minervini.mjs';
+import { trendTemplate, powerPlayScreen, stopCheck, MIN_PARAMS } from '../methods/minervini.mjs';
 
 export const MINERVINI_COMPONENTS_VERSION = 'sf-minervini-components-1.0.0';
 export const COMPONENT_CONVENTIONS = Object.freeze({

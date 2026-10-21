@@ -1,6 +1,6 @@
 # Supertrader 3.0 – Minervini SEPA/VCP und Power Play: Komponenten
 
-Stand: 21. Oktober 2026. Code: `scripts/supertrader/source-faithful/methods/minervini-components.mjs` (`sf-minervini-components-1.0.0`). Tests: `scripts/supertrader/tests/sf-minervini-components.test.mjs` (10 Golden- und adversariale Fälle).
+Stand: 21. Oktober 2026. Code: `scripts/supertrader/source-faithful/research/minervini-components.mjs` (`sf-minervini-components-1.0.0`). Tests: `scripts/supertrader/tests/sf-minervini-components.test.mjs` (10 Golden- und adversariale Fälle).
 
 Die bestehenden Screens (`methods/minervini.mjs`, `sf-minervini-1.0.0`) sind unverändert. Alle Minervini-Regeln in #709 haben MEDIUM-Konfidenz und eine ungeprüfte englische Formulierung (Übersetzung). Deshalb ist **nichts** `SOURCE_EXACT`, und jede Ausgabe trägt `translationUnverified`.
 
