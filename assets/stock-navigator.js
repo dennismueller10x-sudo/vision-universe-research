@@ -161,7 +161,7 @@
   function head(host, o) {
     if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null };
     var doc = host.ownerDocument, wrap = doc.createElement("header");
-    wrap.className = "vu-shead";
+    wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "");
     var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
     wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '"><span aria-hidden="true">←</span> ' + esc(o.back.label) + "</a>" : "") +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
