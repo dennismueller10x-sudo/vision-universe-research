@@ -10,29 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-10-21T18:28:18.649Z",
+  "updatedAt": "2026-10-21T18:42:30.119Z",
   "cycles": [
-    {
-      "cycle": 22,
-      "runId": "39426822345",
-      "triggerAt": "2026-10-20T18:38:06.180Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "14:38:06",
-      "fetchStartAt": "2026-10-20T18:38:06.181Z",
-      "fetchEndAt": "2026-10-20T18:52:08.557Z",
-      "session": "2026-10-20",
-      "written": 1299,
-      "requests": 1430,
-      "notPublishable": 61,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-10-20T18:52:08.547Z"
-    },
     {
       "cycle": 1,
       "runId": "39469022161",
@@ -712,6 +691,34 @@
       "written": 1316,
       "requests": 1440,
       "notPublishable": 56,
+      "addAt": "2026-10-21T18:28:18.650Z",
+      "commitAt": "2026-10-21T18:28:19.161Z",
+      "pushAt": "2026-10-21T18:28:27.624Z",
+      "sha": "4b6e08ff42",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-10-21T18:28:18.638Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher"
+        ]
+      }
+    },
+    {
+      "cycle": 21,
+      "runId": "39604289633",
+      "triggerAt": "2026-10-21T18:28:27.989Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "14:28:27",
+      "fetchStartAt": "2026-10-21T18:28:27.989Z",
+      "fetchEndAt": "2026-10-21T18:42:30.117Z",
+      "session": "2026-10-21",
+      "written": 1301,
+      "requests": 1440,
+      "notPublishable": 55,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -719,7 +726,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-10-21T18:28:18.638Z"
+      "snapshotAt": "2026-10-21T18:42:30.107Z"
     }
   ]
 }
