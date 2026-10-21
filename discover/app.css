@@ -165,3 +165,11 @@ body.dv2{--v2-signal:#c8f531;--v2-radius-sm:12px;--v2-radius-md:20px;--v2-space-
 @media(max-width:760px) and (display-mode:standalone){
   body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 165px - env(safe-area-inset-bottom))}
 }
+/* VU3: Unterseiten mit kompaktem Kopf - Titel, Kennzahl, ein Satz. Sprungleisten wischen statt umbrechen. */
+body.dv2 .v2-collection-hero.v2-collection-hero--band{height:clamp(84px,14vw,150px);margin:4px 0 18px;border-radius:14px}
+.dv2 .v2-main>.v2-lead--kpi{font-size:15px;line-height:1.5;margin-top:6px}
+.dv2 .v2-lead--kpi b{color:var(--v2-ink);font-weight:800}
+.dv2 .v2-theme-jumps{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:16px 0 8px}
+.dv2 .v2-theme-jumps::-webkit-scrollbar{display:none}
+.dv2 .v2-theme-jumps button{flex:none;white-space:nowrap}
+.dv2 .v2-theme-group .v2-theme-tile .v2-theme-art{aspect-ratio:21/9}

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Tesla / ARK-Kursziel</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--bg-card:#121519;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+html.ovl,body.ovl{background:transparent!important}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#glow{inset:0;background:radial-gradient(circle at 92% 6%,rgba(200,245,49,.16),rgba(200,245,49,0) 46%)}
+#glow2{left:-300px;top:900px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.07),rgba(200,245,49,0) 62%)}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:262px}
+.hook{font-weight:900;letter-spacing:-.04em;line-height:1.0}
+.lime{color:var(--lime)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.86)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+#sub{left:72px;right:72px;top:1330px;height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:56px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.85)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:36px;color:var(--ink-2)}
+.mut{color:var(--muted)}
+.scn{left:72px;top:490px;width:936px;opacity:0}
+.ic{stroke:currentColor;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.track{height:26px;border-radius:13px;background:rgba(255,255,255,.08);position:relative;overflow:hidden;margin-top:22px}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:13px;width:0}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<svg width="0" height="0" style="position:absolute"><defs>
+ <symbol id="car" viewBox="0 0 104 50"><path class="ic" d="M5 36 C5 31 9 29 15 28 L29 14 C32 11 37 9 43 9 L63 9 C71 9 77 12 83 20 L93 23 C99 25 100 29 100 35 L100 38 L5 38 Z"/><path class="ic" d="M31 25 L39 14 L62 14 L72 25 Z"/><circle class="ic" cx="26" cy="40" r="7" fill="#08080a"/><circle class="ic" cx="80" cy="40" r="7" fill="#08080a"/></symbol>
+ <symbol id="robot" viewBox="0 0 80 104"><path class="ic" d="M40 2 V10"/><rect class="ic" x="20" y="10" width="40" height="30" rx="11"/><rect x="28" y="20" width="24" height="9" rx="4.5" fill="currentColor" stroke="none"/><path class="ic" d="M35 40 V46 M45 40 V46"/><rect class="ic" x="10" y="46" width="60" height="36" rx="13"/><circle cx="40" cy="64" r="5" fill="currentColor" stroke="none"/><path class="ic" d="M10 54 L2 80 M70 54 L78 80"/><path class="ic" d="M27 82 V100 M53 82 V100"/></symbol>
+</defs></svg>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="glow" class="abs"></div><div id="glow2" class="abs"></div>
+<div id="scrim" class="abs" style="inset:0;opacity:0;background:linear-gradient(180deg,rgba(8,8,10,.80) 0%,rgba(8,8,10,.52) 32%,rgba(8,8,10,.46) 58%,rgba(8,8,10,.70) 76%,rgba(8,8,10,.90) 100%)"></div>
+<div id="img3" class="abs" style="inset:0;opacity:0;overflow:hidden"><img id="im3" src="assets/cab_duo.jpg" style="width:100%;height:100%;object-fit:cover;transform-origin:40% 62%"></div>
+<div id="img4" class="abs" style="inset:0;opacity:0;overflow:hidden"><img id="im4" src="assets/opt_duo.jpg" style="width:100%;height:100%;object-fit:cover;transform-origin:50% 40%"></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Tesla · ARK-Kursziel</div>
+<div id="sym" class="abs" style="right:72px;top:262px;opacity:0"><span class="chip" style="font-size:26px;padding:8px 20px">Symbolbild</span></div>
+<div id="cam" class="abs" style="inset:0;transform-origin:540px 900px">
+ <!-- S1 Hook -->
+ <svg id="spark" class="abs" style="left:72px;top:760px;opacity:.38" width="936" height="440" viewBox="0 0 936 440"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".45"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
+  <path id="sparea" d="M0 420 C160 416 300 400 420 330 S700 120 936 20 L936 440 L0 440 Z" fill="url(#sg)" opacity="0"/>
+  <path id="spline" d="M0 420 C160 416 300 400 420 330 S700 120 936 20" fill="none" stroke="#c8f531" stroke-width="7" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+ <div id="s1" class="abs scn" style="top:380px">
+  <div id="h1a" class="kicker" style="font-size:44px;margin-bottom:6px">&Uuml;ber</div>
+  <div id="h1" class="big lime" style="font-size:206px;white-space:nowrap;letter-spacing:-.055em">+1.200&nbsp;%</div>
+  <div id="h1b" class="lab" style="font-size:54px;margin-top:14px;color:var(--ink)">Rendite f&uuml;r die Tesla-Aktie</div>
+  <div id="h1c" style="margin-top:30px"><span class="chip"><b>BULL CASE</b> ARK Invest &middot; 2031</span></div>
+  <div id="h1d" class="hook" style="font-size:112px;margin-top:64px;opacity:0">Klingt<br><span class="lime">verr&uuml;ckt.</span></div>
+  <div id="h1e" class="big" style="font-size:62px;margin-top:30px;opacity:0;line-height:1.05">Was muss daf&uuml;r<br>passieren?</div>
+ </div>
+ <!-- S2 Kurs zum Ziel (Linienchart) -->
+ <div id="s2" class="abs scn" style="top:470px">
+  <div style="margin-bottom:22px"><span class="chip"><b>VOM KURS ZUM ZIEL</b></span></div>
+  <svg width="936" height="560" viewBox="0 0 936 560" style="overflow:visible"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".4"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
+   <g stroke="rgba(255,255,255,.07)" stroke-width="2"><path d="M0 130H936M0 250H936M0 370H936M0 490H936"/></g>
+   <path id="carea" d="M20 470 C220 462 400 432 540 340 S800 120 916 60 L916 500 L20 500 Z" fill="url(#cg)" opacity="0"/>
+   <path id="cbase" d="M20 470 C220 464 400 442 540 372 S800 170 916 112" fill="none" stroke="#8b919a" stroke-width="6" stroke-linecap="round" stroke-dasharray="1 16" pathLength="100" opacity="0"/>
+   <path id="cbull" d="M20 470 C220 462 400 432 540 340 S800 120 916 60" fill="none" stroke="#c8f531" stroke-width="10" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+   <g id="dstart" opacity="0"><circle cx="20" cy="470" r="14" fill="#f4f5f1"/><text x="20" y="528" font-family="Inter" font-weight="800" font-size="40" fill="#f4f5f1">aktuell &asymp; 370 $</text></g>
+   <g id="dbull" opacity="0"><circle cx="916" cy="60" r="20" fill="#c8f531"/><circle cx="916" cy="60" r="36" fill="none" stroke="#c8f531" stroke-opacity=".45" stroke-width="4"/><text x="880" y="30" text-anchor="end" font-family="Inter" font-weight="900" font-size="56" fill="#c8f531">Bull 5.000 $</text></g>
+   <g id="dbase" opacity="0"><circle cx="916" cy="112" r="11" fill="#8b919a"/><text x="916" y="345" text-anchor="end" font-family="Inter" font-weight="700" font-size="38" fill="#c3c7cc">Basis 4.400 $</text></g>
+   <text x="916" y="540" text-anchor="end" font-family="Inter" font-weight="700" font-size="34" fill="#8b919a">2031</text>
+  </svg>
+  <div id="pc" style="margin-top:6px;opacity:0"><span class="chip" style="font-size:44px;padding:16px 36px"><b style="font-size:38px">RENDITE</b> &uuml;ber +1.200&nbsp;%</span></div>
+ </div>
+ <!-- S3 Robotaxis -->
+ <div id="s3" class="abs scn" style="top:440px">
+  <div style="margin-bottom:20px"><span class="chip"><b>BULL CASE</b> Robotaxis</span></div>
+  <div class="card" style="display:flex;align-items:center;gap:32px;padding:22px 28px;background:rgba(14,16,19,.86)">
+   <div style="position:relative;width:236px;height:236px;flex:none">
+    <svg width="236" height="236" viewBox="0 0 340 340" style="transform:rotate(-90deg)"><circle cx="170" cy="170" r="140" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="34"/><circle id="ring" cx="170" cy="170" r="140" fill="none" stroke="#c8f531" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+    <svg class="abs" style="left:46px;top:92px;color:#f4f5f1" width="144" height="69"><use href="#car"/></svg>
+   </div>
+   <div><div id="r80" class="big lime" style="font-size:150px;letter-spacing:-.06em">80&nbsp;%</div><div class="lab" style="font-size:36px;margin-top:6px;color:var(--ink)">des Werts aus Robotaxis<br><span class="mut" style="font-size:30px">Basisfall 2031</span></div></div>
+  </div>
+  <div id="r8" class="card" style="margin-top:20px;padding:22px 28px;opacity:0;background:rgba(14,16,19,.86);border-color:rgba(200,245,49,.65)"><div id="cars" style="display:flex;gap:8px"></div><div class="big" style="font-size:58px;margin-top:14px;white-space:nowrap"><span class="lime">10 Mio.</span> Robotaxis</div></div>
+  <div id="cc" class="card" style="margin-top:20px;padding:22px 28px;opacity:0;background:rgba(14,16,19,.86)">
+   <div class="lab" style="font-size:32px;color:var(--ink-2)">Kosten pro Meile, 2031E</div>
+   <div style="display:flex;align-items:center;gap:18px;margin-top:12px"><div style="width:150px;font-weight:800;font-size:30px;color:#c3c7cc">Waymo</div><div class="track" style="flex:1;margin-top:0;height:30px"><div class="fill" style="width:100%;background:#8b919a"></div></div></div>
+   <div style="display:flex;align-items:center;gap:18px;margin-top:12px"><div style="width:150px;font-weight:800;font-size:30px;color:#c8f531">Cybercab</div><div class="track" style="flex:1;margin-top:0;height:30px"><div id="fcc" class="fill" style="background:#c8f531"></div></div><div class="big lime" style="font-size:44px;width:130px;text-align:right">&minus;40&nbsp;%</div></div>
+  </div>
+ </div>
+ <!-- S4 Optimus -->
+ <div id="s4" class="abs scn" style="top:470px">
+  <div style="margin-bottom:22px"><span class="chip"><b>BULL CASE</b> Optimus-Roboter</span></div>
+  <div id="o1" class="card" style="padding:30px 38px;opacity:0;display:flex;align-items:center;gap:36px"><svg width="132" height="172" style="color:#c8f531;flex:none"><use href="#robot"/></svg><div><div class="big" style="font-size:112px">1,2 Mio.</div><div class="lab" style="font-size:40px;margin-top:8px">Roboter an Kunden verkauft</div></div></div>
+  <div id="o200" class="card" style="margin-top:26px;padding:34px 38px;opacity:0;border-color:rgba(200,245,49,.65)"><div class="big lime" style="font-size:128px">&gt; 250 Mrd. $</div><div class="lab" style="font-size:40px;margin-top:10px">Umsatz laut Bull Case</div></div>
+ </div>
+ <!-- S5 Modell -->
+ <div id="s5" class="abs scn" style="top:520px">
+  <div class="hook" style="font-size:190px">Ein<br>Modell.</div>
+  <div id="kp" class="hook lime" style="font-size:150px;margin-top:20px;opacity:0">Keine<br>Prognose.</div>
+ </div>
+ <!-- S6 CTA -->
+ <div id="s6" class="abs scn" style="top:480px">
+  <div style="margin-bottom:22px"><span class="chip"><b>APP</b> Vision Universe &middot; bald verf&uuml;gbar</span></div>
+  <div class="hook" style="font-size:112px">Tesla in<br>der <span class="lime">App.</span></div>
+  <div id="p1" class="card" style="margin-top:46px;padding:26px 38px;opacity:0;display:flex;align-items:center;gap:30px"><svg width="130" height="63" style="color:#f4f5f1;flex:none"><use href="#car"/></svg><div><div class="big" style="font-size:64px">Autonomes Fahren</div><div class="lab" style="font-size:36px;margin-top:8px">Sensorik, Software und Robotaxis</div></div></div>
+  <div id="p2" class="card" style="margin-top:22px;padding:26px 38px;opacity:0;border-color:rgba(200,245,49,.65);display:flex;align-items:center;gap:30px"><svg width="70" height="91" style="color:#c8f531;flex:none;margin:0 30px 0 30px"><use href="#robot"/></svg><div><div class="big lime" style="font-size:64px">Humanoide Robotik</div><div class="lab" style="font-size:36px;margin-top:8px">Roboter und die KI dahinter</div></div></div>
+ </div>
+</div>
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+  <div class="abs lab mut" style="left:0;right:0;top:1040px;text-align:center;font-size:40px">Bald verf&uuml;gbar</div>
+</div>
+<div id="shade" class="abs" style="left:0;right:0;top:1250px;height:670px;background:linear-gradient(to bottom,rgba(8,8,10,0),rgba(8,8,10,.74) 26%,rgba(8,8,10,.74) 100%)"></div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, TOK=TM.tok;
+if(new URLSearchParams(location.search).get("ovl")==="1"){document.documentElement.classList.add("ovl");document.body.classList.add("ovl");}
+const CARS=[];(function(){const h=$("cars");for(let i=0;i<10;i++){const s=document.createElementNS("http://www.w3.org/2000/svg","svg");s.setAttribute("width","83");s.setAttribute("height","40");s.style.color="#c8f531";s.style.opacity=".15";s.innerHTML='<use href="#car"/>';h.appendChild(s);CARS.push(s);}})();
+function scene(id,t,a,b,first,last){
+  const el=$(id); const fi=first?1:eo(seg(t,a,a+.4)), fo=last?0:eo(seg(t,b-.3,b));
+  el.style.opacity=first?1-seg(t,b-.25,b):(last?seg(t,a,a+.35):Math.min(seg(t,a,a+.3),1-seg(t,b-.25,b)));
+  el.style.transform=`translateX(${(1-fi)*70-fo*70}px)`; el.style.filter=`blur(${(1-fi)*6+fo*5}px)`;
+}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  const camId=t<a2?0:t<a3?1:t<a4?2:t<a5?3:t<a6?4:5;
+  const bounds=[[0,a2],[a2,a3],[a3,a4],[a4,a5],[a5,a6],[a6,end]][camId];
+  const p=eio(seg(t,bounds[0],bounds[1]));
+  $("cam").style.transform=`scale(${1+.03*p}) translateY(${-8*p}px)`;
+  scene("s1",t,0,a2,true,false);scene("s2",t,a2,a3);scene("s3",t,a3,a4);scene("s4",t,a4,a5);scene("s5",t,a5,a6);scene("s6",t,a6,end,false,true);
+  // S1: Zahl ab Bild 0, Sparkline laeuft mit der Stimme
+  const k0=Math.exp(-t*9); $("h1").style.transform=`scale(${1+.14*k0})`; $("h1").style.transformOrigin="0 50%";
+  const sp=eio(seg(t,.3,a2-.6)); $("spline").style.strokeDashoffset=1-sp; $("sparea").style.opacity=sp*.9;
+  $("spark").style.opacity=.38*(1-seg(t,a2-.3,a2));
+  pop("h1d",t,TOK[16],34); pop("h1e",t,TOK[18],24);
+  // S2: Linienchart
+  const k1=eo(seg(t,TOK[28]-.05,TOK[28]+.35)); $("dstart").style.opacity=k1;
+  const draw=eio(seg(t,TOK[34],TOK[37]+.1)); $("cbull").style.strokeDashoffset=1-draw; $("carea").style.opacity=draw*.9;
+  $("cbase").style.opacity=draw>0.02?.9*eo(seg(t,TOK[34],TOK[37])):0;
+  $("dbull").style.opacity=eo(seg(t,TOK[37]-.1,TOK[37]+.3)); $("dbase").style.opacity=eo(seg(t,TOK[37]+.2,TOK[37]+.6));
+  pop("pc",t,TOK[37]+.35,22);
+  // S3: Ring + Autos
+  $("ring").style.strokeDashoffset=100-80*eio(seg(t,TOK[44]-.3,TOK[44]+1.2));
+  $("r80").style.transform=`scale(${1+.08*Math.exp(-Math.max(0,t-TOK[44])*8)*Math.cos(Math.max(0,t-TOK[44])*20)})`;$("r80").style.transformOrigin="0 50%";
+  pop("r8",t,TOK[53],30);pop("cc",t,TOK[58],30);$("fcc").style.width=(60*eio(seg(t,TOK[61],TOK[61]+.9)))+"%";
+  CARS.forEach((c,i)=>{c.style.opacity=.15+.85*eo(seg(t,TOK[53]+.06*i,TOK[53]+.06*i+.25));});
+  // S4
+  pop("o1",t,TOK[69],30); pop("o200",t,TOK[78],30);
+  // S5
+  pop("kp",t,TOK[86],30);
+  // S6
+  const q1=eo(seg(t,TOK[99]-.05,TOK[99]+.35)),q2=eo(seg(t,TOK[102]-.05,TOK[102]+.35));
+  $("p1").style.opacity=q1;$("p1").style.transform=`translateX(${(1-q1)*80}px)`;$("p2").style.opacity=q2;$("p2").style.transform=`translateX(${(1-q2)*80}px)`;
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=Math.min(seg(t,0,.4),1-seg(t,end,end+.3));$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=(cur&&t<end)?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+  $("shade").style.opacity=t<end?1:0;
+  const IMW=[[a3,a4,"img3","im3"],[a4,a5,"img4","im4"]];let imv=0;
+  IMW.forEach(([x,y,id,iid])=>{const o=Math.min(seg(t,x-.05,x+.35),1-seg(t,y-.3,y+.05));$(id).style.opacity=o;imv=Math.max(imv,o);const k=seg(t,x,y);$(iid).style.transform=`scale(${1.04+.10*k}) translate(${-8*k}px,${-10*k}px)`;});
+  $("sym").style.opacity=imv;
+  const inC=(TM.clips||[]).some(c=>t>=c[0]-.05&&t<c[1]+.05);$("bg").style.opacity=inC?0:1;
+  let scv=0;(TM.clips||[]).forEach(cc=>{scv=Math.max(scv,Math.min(seg(t,cc[0]-.01,cc[0]+.25),1-seg(t,cc[1]-.2,cc[1]+.05)));});if(t<.3)scv=Math.max(scv,1);scv=Math.max(scv,imv*.45);
+  $("scrim").style.opacity=scv;$("glow").style.opacity=1-scv*.7;$("glow2").style.opacity=1-scv;
+  $("glow2").style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.3)*40}px)`;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>

@@ -7,6 +7,7 @@
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
+    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', entries:[['Übersicht','/fundamental/#/','⌂'],['Entdecken','/fundamental/#/entdecken','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
@@ -15,7 +16,8 @@
   ];
   /* Produkt-Dock: die schwebende Leiste am unteren Rand jedes Produkts.
      Regel fuer alle Produkte: [PRODUKT] [Funktion] [Funktion] [Funktion] [☰].
-     Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start")
+     Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start"); die Spalten sind gleich breit, aber nie
+     schmaler als ihre Beschriftung (minmax(min-content,1fr)), damit lange Namen wie "Fundamental" nicht abgeschnitten werden.
      und fuehrt zur Startseite des Produkts; ☰ oeffnet das GLOBALE Menue
      dieser Komponente. Ziele sind die bestehenden Routen der Produkte.
      active(loc) liefert die id des aktiven Eintrags oder null; dann zeigt
@@ -54,6 +56,11 @@
         const k = hashPart(loc, 0);
         return {'': 'quant', radar: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien'}[k] || null;
       }},
+    /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
+       Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */
+    {id: 'fundamental', label: 'Fundamental', match: p => p.startsWith('/fundamental/'),
+      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['entdecken','Entdecken','/fundamental/#/entdecken','explore'],['suche','Suche','/fundamental/#/suche','search'],['methodik','Methodik','/fundamental/#/methodik','table']],
+      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', entdecken: 'entdecken', suche: 'suche', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
     {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
       items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Plan','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {
@@ -85,6 +92,7 @@
   "vorsorge": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11.5a9 9 0 0 1 18 0z\"/><path d=\"M12 11.5v7a2.2 2.2 0 0 0 4.4 0\"/><path class=\"dim\" opacity=\".45\" d=\"M12 2.5V1M7.5 11.5c0-4 2-7 4.5-9M16.5 11.5c0-4-2-7-4.5-9\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20\" cy=\"20\" r=\"1.3\"/><path class=\"dim\" opacity=\".45\" d=\"M18.5 16l1.5 4\"/></g>",
   "supertrader": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path class=\"dim\" opacity=\".45\" d=\"M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5\"/><rect x=\"10.3\" y=\"9\" width=\"3.4\" height=\"6\" rx=\".6\"/><path d=\"M12 6.8V9M12 15v2.2\"/></g>",
   "elliott": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path class=\"dim\" opacity=\".45\" d=\"M2 21h20\" stroke-dasharray=\"1.5 2\"/><path d=\"M2 19 6 12l2.5 3L14 5l2.5 4L21 3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"6\" cy=\"12\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"8.5\" cy=\"15\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"16.5\" cy=\"9\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"21\" cy=\"3\" r=\"1.5\"/></g>",
+  "fundamental": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 21h20\"/><path d=\"M4.5 21v-6M8.5 21V10M12.5 21v-5\"/><circle cx=\"16\" cy=\"9\" r=\"4.5\"/><path d=\"m19.3 12.3 2.7 2.7\"/><path class=\"dim\" opacity=\".45\" d=\"M14.2 9.6 15.5 8l1.2 1.2 1.6-2\"/></g>",
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>"
 };
   const dockProductIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>`;
@@ -160,7 +168,7 @@
   const dockStyles = `
         :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:#0d0f12;color:#f4f5f1;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 16px 36px -14px rgba(0,0,0,.55)}
+        nav{pointer-events:auto;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:2px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:#0d0f12;color:#f4f5f1;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 16px 36px -14px rgba(0,0,0,.55)}
         a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:54px;padding:7px 2px 6px;border:0;border-radius:20px;background:transparent;color:rgba(244,245,241,.66);font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.15;letter-spacing:.01em;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .15s}
         a:hover,button:hover{color:#fff;background:rgba(255,255,255,.07)}
         a:active,button:active{transform:scale(.96)}
@@ -246,6 +254,12 @@
     document.querySelectorAll('vu-navigation').forEach(n => n.setAttribute('theme', mode));
     document.dispatchEvent(new Event('vu-theme-change'));
   };
+  /* VU3: Ohne eigene Wahl startete jede Welt mit ihrem eigenen Schema (Discover hell, Quant dunkel) und die
+     Seite sprang beim Wechsel zwischen hell und dunkel. Jetzt haelt die erste besuchte Welt ihr Schema fest;
+     jede weitere Welt liest es vor dem ersten Zeichnen (ihr Inline-Skript liest denselben Schluessel). */
+  if (typeof window !== 'undefined' && document.querySelector('vu-navigation[theme-switch]')) {
+    try { if (!localStorage.getItem(THEME_KEY)) localStorage.setItem(THEME_KEY, currentTheme()); } catch (_) { /* ohne Speicher: je Seite */ }
+  }
   if (typeof window !== 'undefined') {
     window.VUTheme = {key: THEME_KEY, mode: currentTheme, set: m => applyTheme(m === 'dark' ? 'dark' : 'light', true),
       toggle: () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true)};

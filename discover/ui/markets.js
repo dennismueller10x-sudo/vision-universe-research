@@ -465,6 +465,18 @@
     });
   }
 
+  /* VU3: "Im Klartext" zeigt Satz, Hauptzahl und Kennzahlen; Fazit, Neuberechnung und Fussnote hinter Klick. */
+  function leiser(box) {
+    if (!box || !box.querySelector) return box;
+    var teile = [".dx-m3-kt-fazit", ".dx-m3-kt-neu", ".dx-m3-kt-fuss"].map(function (s) { return box.querySelector(s); }).filter(Boolean);
+    if (!teile.length) return box;
+    var body = el("div", { class: "vu-more-body" });
+    var mehr = el("details", { class: "vu-more dx-m3-kt-mehr" }, [el("summary", { text: "Was heißt das genau?" }), body]);
+    (teile[teile.length - 1].parentNode || box).appendChild(mehr);
+    teile.forEach(function (t) { body.appendChild(t); });
+    return box;
+  }
+
   function gruppenSektion(g, layer, titel) {
     return el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": titel || g.titel }, [
       el("h2", { text: titel || g.titel }),
@@ -495,7 +507,7 @@
       /* Owner-Feedback: das Barometer ganz oben, dann die Kurse. */
       if (MI && MI.stimmung) dazu(MI.stimmung(d.puls, d.beleg));
       var MBk = global.VUDiscover && global.VUDiscover.MarketBarometer;
-      if (MBk && MBk.klartext && d.puls) dazu(MBk.klartext(d.puls, d.beleg));
+      if (MBk && MBk.klartext && d.puls) leiser(dazu(MBk.klartext(d.puls, d.beleg)));
       else if (d.puls && !d.puls.environment) dazu(pulsBereich(d.puls));
       seite.appendChild(sprungleiste(gruppen));
       var aktien = gruppen.filter(function (g) { return g.id === "aktien"; })[0];
@@ -506,8 +518,19 @@
       if (weitere.length) dazu(el("div", { class: "dx-m3-trenner", id: "maerkte-alle" }, [el("h2", { text: "Weitere Märkte" }),
         el("p", { text: "Rohstoffe, Krypto, Zinsen und Devisen – antippen für Verlauf und Einordnung. Renditen bewegen sich in Basispunkten." })]));
       weitere.forEach(function (g) { dazu(gruppenSektion(g, layer)); });
-      seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(d.snap.generatedAt) || "unbekannt") +
-        ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand. Informationen zur eigenen Recherche, keine Anlageberatung." }));
+      /* VU3: Datenstand, Quellen und Hinweise in EINEM Block "Daten & Methodik" am Seitenende. */
+      var quellen = [];
+      Array.prototype.forEach.call(seite.querySelectorAll(".dx-markt-quelle"), function (q) { if (quellen.indexOf(q.textContent) < 0) quellen.push(q.textContent); });
+      var stand = standText(d.snap.generatedAt) || "unbekannt";
+      seite.appendChild(el("details", { class: "dx-maerkte-stand vu-dm" }, [
+        el("summary", {}, [document.createTextNode("Daten & Methodik "), el("small", { text: "Stand " + stand })]),
+        el("dl", {}, [
+          el("dt", { text: "Datenstand" }), el("dd", { text: "Datenstand: " + stand + "." }),
+          el("dt", { text: "Darstellung" }), el("dd", { text: "Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand." }),
+          quellen.length ? el("dt", { text: "Quellen" }) : null, quellen.length ? el("dd", { text: quellen.join(" · ") }) : null,
+          el("dt", { text: "Hinweis" }), el("dd", { text: "Informationen zur eigenen Recherche, keine Anlageberatung." })
+        ])
+      ]));
       root.appendChild(seite);
       if (MI && MI.beleben) MI.beleben(root);
     });

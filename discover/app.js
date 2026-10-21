@@ -100,6 +100,15 @@
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
     watchButton(root,symbol);
   }
+  // Stil aus einem inerten <template> (wie markets.js#ensureStyles): einmal einsetzen, auf das Laden warten, bei Fehler erneut versuchen.
+  const cssLoads={};
+  function ensureCss(id){
+    if(cssLoads[id])return cssLoads[id];
+    const tpl=document.getElementById(id),link=tpl&&tpl.content&&tpl.content.firstElementChild&&document.importNode(tpl.content.firstElementChild,true);
+    if(!link)return Promise.resolve(false);
+    cssLoads[id]=new Promise(resolve=>{link.onload=()=>resolve(true);link.onerror=()=>{delete cssLoads[id];link.remove();resolve(false);};});
+    tpl.before(link);return cssLoads[id];
+  }
   let fxReady=null;
   async function route(k) {
     if(!meta)return;const y=k===1?scrollY:0;
@@ -116,7 +125,7 @@
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
       const index=D.EuropeView.loadIndex(ctx);
-      if(!home){await Promise.all([index,D.Lazy&&D.Lazy.forRoute(parts),parts[0]==='maerkte'&&D.Markets.ensureStyles()]);if(!active())return;}
+      if(!home){await Promise.all([index,D.Lazy&&D.Lazy.forRoute(parts),parts[0]==='maerkte'&&D.Markets.ensureStyles(),parts[0]==='s'&&ensureCss('dx-snav-css')]);if(!active())return;}
       if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
       else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
@@ -147,9 +156,9 @@
         }
         await D.GlobalView.watchlist(root,{active,route});
       } else if(parts[0]==='welten'){
-        root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead',text:'Entdecke Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.'}));
-        root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));
-        root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Themenwelten'}),el('span',{text:V.Themes.all.length+' Welten'})]));
+        // VU3: kompakter Kopf - Titel, Zahl der Welten, ein Satz; das Motiv als flaches Band.
+        root.append(el('div',{class:'v2-collection-hero v2-collection-hero--band'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));
+        root.append(el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead v2-lead--kpi'},[el('b',{text:V.Themes.all.length+' Welten'}),document.createTextNode(' · Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.')]));
         const jumps=el('nav',{class:'v2-theme-jumps','aria-label':'Themenbereiche'});root.append(jumps);
         THEME_GROUPS.forEach(([group,label])=>{
           const themes=V.Themes.all.filter(t=>t.group===group);if(!themes.length)return;
@@ -161,10 +170,11 @@
         });
       } else if(parts[0]==='strategien'){
         document.title='Strategien — Discover — Vision Universe®';
-        root.append(el('p',{class:'v2-eyebrow',text:'Gezielt entdecken'}),el('h1',{text:'Strategien'}),el('p',{class:'v2-lead',text:'Aktienauswahlen nach Wachstum, Qualität und Marktbewegung. Entdecke die Regeln und Unternehmen hinter jeder Auswahl.'}));
         const rows=(meta.rows||[]).find(entry=>entry.universeId===ctx.universeId);
+        const strategies=((rows&&rows.rows)||[]).filter(row=>row.returned>0&&!V.Themes.byRow(row.rowId));
+        root.append(el('h1',{text:'Strategien'}),el('p',{class:'v2-lead v2-lead--kpi'},[el('b',{text:strategies.length+' Auswahlen'}),document.createTextNode(' · nach Wachstum, Qualität und Marktbewegung, jede mit ihren Regeln.')]));
         const list=el('div',{class:'v2-collection-links'});
-        ((rows&&rows.rows)||[]).filter(row=>row.returned>0&&!V.Themes.byRow(row.rowId)).forEach(row=>list.append(V.Home.strategyLink(row,ctx)));
+        strategies.forEach(row=>list.append(V.Home.strategyLink(row,ctx)));
         root.append(list);
       } else if(parts[0]==='thema'&&parts[1]){
         const theme=V.Themes.bySlug(parts[1]);

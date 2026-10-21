@@ -51,7 +51,8 @@ test("Home: erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, da
   for (const cls of ["q-claim", "vu-product-title", "vu-hero-headline"]) assert.ok(heading[1].split(/\s+/).includes(cls), "Hero-Überschrift ohne " + cls);
   const hero = at(heading[0]), search = at("onclick: ctx.openSearch"), promises = at("promiseList()");
   const today = at('X.world("Heute bei Quant"'), mine = at('X.world("Deine Aktien"'), rails = at("page.append(rails)");
-  const proof = at('X.world("Warum Quant mehr ist als ein Screener"'), tools = at('X.section("Selbst suchen"'), trust = at('"Warum kann ich dem vertrauen?"');
+  /* VU3: die Abgrenzung steht als Aufklappzeile (Details auf Klick) - an derselben Stelle der Reihenfolge. */
+  const proof = at('"Warum Quant mehr ist als ein Screener"'), tools = at('X.section("Selbst suchen"'), trust = at('"Warum kann ich dem vertrauen?"');
   assert.ok(hero < search && search < promises && promises < today, "der erste Bildschirm ist nicht Claim → Suche → Versprechen");
   assert.ok(today < mine && mine < rails && rails < proof && proof < tools && tools < trust, "Reihenfolge: heute → deine Aktien → neue Treffer → Beleg → Werkzeuge → Methodik");
   /* Keine Werkzeugtour und kein Slogan mehr, keine statischen Demo-Aktien. */

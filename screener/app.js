@@ -296,6 +296,7 @@
     var b = main.querySelector('.sc-bar');
     if (b) { var onS = function () { b.classList.toggle('is-stuck', window.scrollY > 4); }; onS(); window.onscroll = onS; }
     if (opts.keepScroll) window.scrollTo(0, y);
+    else if (state.view === 'build' && !sheets.length) { var fb = main.querySelector('.sc-stack .sc-btn-secondary'); if (fb && fb.focus) { try { fb.focus({ preventScroll: true }); } catch (e) { /* aelterer Browser */ } } }
     if (state.stock && !sheets.some(function (s) { return s.stock; })) setTimeout(function () { openQuick(state.stock, { fromUrl: true }); }, 0);
   }
   mqDesk.addEventListener('change', function () { render({ keepScroll: true }); });
@@ -311,9 +312,13 @@
   }
   function footer() {
     var i = info(); if (!i) return null;
+    /* VU3: Universum, Datenstand und Quellen gebuendelt in „Daten & Methodik“; sichtbar bleibt nur die Einordnung. */
     return h('footer', { class: 'sc-foot' }, [
-      h('div', { text: 'Universum: ' + nf(i.count) + ' ' + i.universeLabel + ' · Kurse Stand ' + dateDe(i.asOf) + ' · Fundamentaldaten SEC EDGAR bis ' + dateDe(i.fundamentalsAsOf) + '.' }),
-      h('div', { text: 'Branchen aus SEC-SIC-Codes (kein GICS). Filter und Übereinstimmung beschreiben Kennzahlen – sie sind kein Anlageurteil und keine Kaufempfehlung.' })]);
+      h('details', { class: 'vu-dm sc-dm' }, [h('summary', {}, ['Daten & Methodik ', h('small', { text: 'Stand ' + dateDe(i.asOf) })]),
+        h('p', { text: 'Universum: ' + nf(i.count) + ' ' + i.universeLabel + ' · Kurse Stand ' + dateDe(i.asOf) + ' · Fundamentaldaten SEC EDGAR bis ' + dateDe(i.fundamentalsAsOf) + '.' }),
+        h('p', { text: 'Branchen aus SEC-SIC-Codes (kein GICS). Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Match = gewichteter Durchschnitt der Perzentile im Gesamtuniversum.' }),
+        h('button', { class: 'sc-link', type: 'button', onclick: function () { openUniverseInfo(); } }, 'Universum und Plausibilitätsprüfung')]),
+      h('p', { class: 'sc-legal', text: 'Filter und Übereinstimmung beschreiben Kennzahlen – kein Anlageurteil und keine Kaufempfehlung.' })]);
   }
 
   // ------------------------------------------------------------ START
@@ -329,6 +334,7 @@
       h('p', { class: 'vu-hero-name', text: 'Screener' }),
       h('h1', { class: 'vu-hero-headline', id: 'sc-product-title', text: 'Finde genau die Aktien, die zu dir passen.' }),
       h('p', { class: 'vu-hero-description', text: 'Filtere Aktien nach deinen eigenen Kriterien. Gewichte Kennzahlen und vergleiche Unternehmen – schnell, präzise, unabhängig.' }),
+      h('p', { class: 'sc-scope' }, ['Eigene Kennzahlen-Filter. Ranglisten nach Quant-Score: ', h('a', { href: '/quant/#/screener' }, 'Quant Screener →')]),
       h('div', { class: 'sc-hero-actions' }, [
         h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
         h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“'])]),
@@ -336,18 +342,22 @@
       h('div', { class: 'sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }),
         h('span', {}, ['Aktien im Universum', h('button', { class: 'sc-info', type: 'button', 'aria-label': 'Was gehört zum Universum?', onclick: openUniverseInfo }, 'i')]),
         h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })])]) ]));
-    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), modeSeg()]),
-      h('div', { class: 'sc-quickgrid', style: { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } }, [
-        modeCard('simple', 'Einfach', 'Schnell starten mit den wichtigsten Kriterien – Größe, Wachstum, Bewertung, Qualität, Momentum, Technik.'),
-        modeCard('pro', 'Pro', 'Zusätzlich Bilanz, Perzentile, Quant-Faktoren, Gruppen mit UND/ODER und gewichtetes Ranking.')])]));
-    left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, h('h2', { text: 'Kriterien nach Bereich' })),
-      h('div', { class: 'sc-quickgrid' }, F.groups({ mode: q.mode }).map(function (g) {
-        var n = F.list({ mode: q.mode }).filter(function (f) { return f.group === g.id && f.available; }).length;
-        return h('button', { class: 'sc-quick', type: 'button', onclick: function () { openLibrary({ group: g.id }); } }, [h('span', { class: 'sc-chip-cat' }, icon(g.icon)), h('b', { text: g.label }), h('span', { text: n + ' Kriterien' })]);
-      }))]));
+    left.append(criteriaSection('Kriterien nach Bereich'));
+    left.append(h('section', { class: 'sc-section sc-mode-line' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), modeSeg()]),
+      h('p', { class: 'sc-note', text: state.query.mode === 'pro' ? 'Pro: zusätzlich Bilanz, Perzentile, Quant-Faktoren, Gruppen mit UND/ODER und gewichtetes Ranking.' : 'Einfach: die wichtigsten Kriterien – Größe, Wachstum, Bewertung, Qualität, Momentum, Technik.' })]));
+    void modeCard;
     right.append(recentSection(5), savedSection(3));
     if (mqDesk.matches) main.append(h('div', { class: 'sc-start' }, [left, h('div', { style: { paddingTop: '48px' } }, right)]));
     else main.append(left, right);
+  }
+  /** Filterauswahl nach Bereich: Start, „Screen bauen“ ohne Filter und Desktop-Arbeitsbereich. */
+  function criteriaSection(title, opts) {
+    var q = state.query; opts = opts || {};
+    return h('section', { class: 'sc-section sc-criteria' + (opts.focus ? ' is-focus' : ''), 'aria-label': title }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: title }), opts.side || null]),
+      h('div', { class: 'sc-quickgrid' }, F.groups({ mode: q.mode }).map(function (g) {
+        var n = F.list({ mode: q.mode }).filter(function (f) { return f.group === g.id && f.available; }).length;
+        return h('button', { class: 'sc-quick', type: 'button', onclick: function () { openLibrary({ group: g.id }); } }, [h('span', { class: 'sc-chip-cat' }, icon(g.icon)), h('b', { text: g.label }), h('span', { text: n + ' Kriterien' })]);
+      }))]);
   }
   function globe() {
     var w = h('div', { class: 'sc-globe', 'aria-hidden': 'true' });
@@ -564,6 +574,7 @@
     main.append(bar(state.screenId && store.get(state.screenId) ? store.get(state.screenId).name : 'Screen bauen', { right: [modeSeg()] }));
     if (state.invalidLink) main.append(invalidNotice());
     main.append(counter(r), stackHead() || h('div', { style: { height: '12px' } }), stack(r));
+    if (!Q.count(state.query)) main.append(criteriaSection('Filter auswählen'));
     var sg = suggestions(); if (sg) main.append(sg);
     if (Q.count(state.query)) main.append(impact(r));
     if (state.query.mode === 'pro') main.append(ranking());
@@ -582,12 +593,16 @@
     var r = result();
     main.append(bar('Screener', { right: [modeSeg()] }));
     if (state.invalidLink) main.append(invalidNotice());
-    var side = h('aside', { class: 'sc-side', 'aria-label': 'Filter' }, [counter(r), stackHead() || h('div', { style: { height: '12px' } }), stack(r)]);
-    var sg = suggestions(); if (sg) side.append(sg);
+    var building = state.view === 'build';
+    var side = h('aside', { class: 'sc-side' + (building ? ' is-active' : ''), 'aria-label': 'Filter' }, [counter(r), stackHead() || h('div', { style: { height: '12px' } }), stack(r)]);
+    var sg = building ? suggestions() : null; if (sg) side.append(sg);
     if (Q.count(state.query)) side.append(impact(r));
     if (state.query.mode === 'pro') side.append(ranking());
     side.append(buildActions());
-    var mainCol = h('div', {});
+    var mainCol = h('div', { class: 'sc-maincol' });
+    if (building) mainCol.append(criteriaSection('Filter auswählen', { focus: true, side: h('button', { class: 'sc-link', type: 'button', onclick: function () { go({ view: 'results' }); window.scrollTo(0, 0); } }, 'Nur Treffer zeigen →') }),
+      h('h2', { class: 'sc-preview-title', text: 'Vorschau der Treffer' }));
+    else mainCol.append(h('h2', { class: 'sc-preview-title sc-results-title', text: 'Treffer' }));
     resultsBody(mainCol, r);
     main.append(h('div', { class: 'sc-layout' }, [side, mainCol]));
     rememberRun(r);

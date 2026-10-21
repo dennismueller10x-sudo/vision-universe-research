@@ -415,3 +415,19 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
   html body .vu-product-hero.vu-hero-fidelity[data-product] .q-intro-note{font-size:13px}
 }
 /* END GENERATED HERO FIDELITY */
+
+/* VU3: kompakter Kopf. Im hellen Schema stand das Globus-Motiv mit 42 % Deckkraft
+   grau auf Weiss; jetzt voll deckend und kleiner, der schwarze Bildgrund wird
+   kreisfoermig um die Kugel ausgeblendet (gleiches Motiv). */
+html body.dv2 .vu-product-hero.vu-hero-fidelity[data-product=discover]{--vu-hero-icon-size:76px;padding-bottom:18px}
+html[data-theme=light] body.dv2 .vu-product-hero.vu-hero-fidelity[data-product=discover] .vu-hero-scene{
+  inset:2px 0 auto auto;width:176px;height:176px;opacity:1;filter:saturate(1.2) contrast(1.05);
+  -webkit-mask-image:radial-gradient(circle 68px at 110px 69px,#000 86%,transparent 100%);-webkit-mask-composite:source-over;
+  mask-image:radial-gradient(circle 68px at 110px 69px,#000 86%,transparent 100%);mask-composite:add}
+@media(min-width:768px){
+  html body.dv2 .vu-product-hero.vu-hero-fidelity[data-product=discover]{--vu-hero-icon-size:96px}
+  html[data-theme=light] body.dv2 .vu-product-hero.vu-hero-fidelity[data-product=discover] .vu-hero-scene{
+    inset:8px 0 auto auto;width:440px;height:440px;
+    -webkit-mask-image:radial-gradient(circle 170px at 275px 172px,#000 88%,transparent 100%);
+    mask-image:radial-gradient(circle 170px at 275px 172px,#000 88%,transparent 100%)}
+}

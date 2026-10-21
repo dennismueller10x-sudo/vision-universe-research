@@ -12,6 +12,7 @@
      supertrader      data/build.json slices.stock  UND  stock/<SYM>/index.html   (Seite und Daten)
      fundamental      fundamental/index.html  UND  discover stocks/US_REAL/<SYM>.json fundamentals.available
                       (fundamental/engine/model.js liest genau diesen Block; ohne ihn zeigt die Seite nur den Leerzustand)
+     hedgefonds       hedgefonds/data/stocks/index.json rows[].ticker               (hedgefonds/app.js#stockByTicker: Kuerzel -> CUSIP-Seite)
    Fehlt die Quelle eines Moduls, fehlt das Modul im Manifest: der Navigator zeigt es neutral als "unknown".
 
    Ausgabe: <out>/<shardKey>.json, ein kleiner Ausschnitt je StockContext.availabilityShard (eine Anfrage je Detailseite). */
@@ -69,6 +70,11 @@ export function collectEvidence(root){
    if(doc&&doc.fundamentals&&doc.fundamentals.available===true)keys.push(s);
   }
   put('fundamental','US',keys);
+ });
+ tryModule('hedgefonds.US',()=>{
+  const idx=readJson(root,'hedgefonds/data/stocks/index.json');if(!idx||!Array.isArray(idx.fields)||!Array.isArray(idx.rows))throw Error('HEDGEFONDS_INDEX_MISSING');
+  const ti=idx.fields.indexOf('ticker');if(ti<0)throw Error('HEDGEFONDS_INDEX_NO_TICKER');
+  put('hedgefonds','US',idx.rows.map(r=>String(r[ti]||'').toUpperCase()).filter(s=>s&&valid(()=>SC.fromUs(s))));
  });
  return {evidence:ev,skipped};
 }
