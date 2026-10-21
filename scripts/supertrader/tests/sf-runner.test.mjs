@@ -64,7 +64,13 @@ test('SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and
   const y = fs.readFileSync(new URL('../../../.github/workflows/supertrader-validation.yml', import.meta.url), 'utf8');
   assert.match(y, /SF_RESEARCH_REQUIRES_SNAPSHOT_AND_RESEARCH_V1/);
   assert.match(y, /run-research\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
-  assert.match(y, /sf-research\|sf-research-smoke\) ;;/);
+  assert.match(y, /sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\) ;;/);
+  // Supertrader 3.0 research runner: same fail-closed conditions, sealed result
+  assert.match(y, /case "\$MODE" in sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\)\n\s+if \[ -z "\$snap" \] \|\| \[ "\$acc" != research-v1 \]/);
+  assert.match(y, /run-sf3-research\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
+  const r3 = fs.readFileSync(new URL('../source-faithful/research/run-sf3-research.mjs', import.meta.url), 'utf8');
+  assert.match(r3, /requireRestoreReceipt: true/);
+  assert.match(r3, /encryptForOwner/);
   const r = fs.readFileSync(new URL('../source-faithful/runner/run-research.mjs', import.meta.url), 'utf8');
   assert.match(r, /requireRestoreReceipt: true/);
   assert.match(r, /encryptForOwner/);
