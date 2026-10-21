@@ -121,6 +121,15 @@ Die Vorwärts-Kursänderung nach einer Klassifikation liegt nur im versiegelten 
 - Branchenrang (Quartalsenden) als Evidenz verfügbar: 66–78 % der notierten Titel je Jahr ab 2017 (Rest: unbekannte Mitgliedschaft oder zu kurze Historie). 2016 ist reine Anlaufzeit.
 - Universums-Breite: im Mittel 3.100 Titel je Sitzung.
 
+## Owner-Entscheidungen (21.10.2026)
+
+| Thema | Entscheidung | Umsetzung |
+|---|---|---|
+| Turtle-Korrelation | keine der acht Varianten als verbindliche Handelsregel; dokumentierte Equity-Research-Modelle | keine Runner-Änderung, Turtle-Acceptance unverändert; Vertragsbegründung `TUR-SF-LIMIT-CORR` ergänzt |
+| Weinstein-Gruppen | SIC3 mit mindestens fünf Mitgliedern als klar gekennzeichnete Research-Referenz; nicht `SOURCE_EXACT`, kein Trading-Gate | `WEIN-SF-GROUP` bleibt `DATA_BLOCKED`, Review-Gate `WEIN-RG-GROUP`; übrige Varianten bleiben als Vergleich |
+| Minervini | Komponenten vollständig erhalten; mechanisch bestätigte Setups nie als handelbare oder profitable Strategie | jede Klassifikation trägt `NOT_A_TRADABLE_STRATEGY` / `performanceClaim: NONE` (Test `GC-MIN-NOT-A-STRATEGY`) |
+| Historische Aktienzahlen | kein neuer Snapshot-Capture | Datenanforderung in `DATA_FRONTIER` (`CAP-weighted group index`) dokumentiert |
+
 ## 1. Welche 13 Methoden wurden weiterentwickelt?
 
 | Kandidat | Methode | Fortschritt in diesem Auftrag |
@@ -306,11 +315,9 @@ Die PRs sind gestapelt, weil die generierten Artefakte nur einmal am Ende neu ge
 
 ## 14. Nächste Schritte zu wirklich nutzbaren Supertrader-Strategien
 
-1. **Owner-Entscheidung Turtle:**
-   - Soll eine Korrelationsvariante (Vorschlag zur Prüfung: COMPLETE, Residuen oder Paar-Quantil) als deklarierte Equity-Adaption geführt werden?
-   - Falls ja, braucht sie eine eigene Szenariozeile im Runner. Die Änderung am Runner erfordert einen neuen AG-3-Lauf.
-2. **Snapshot-Erweiterung:** Capture mit `sec-pit-r13` (PIT-Aktienzahl). Damit werden CAP-Gruppen und die Megacap-Evidenz möglich.
-3. **Weinstein:** Owner wählt die SIC-Ebene und die Mindestgröße anhand der Coverage-Zahlen des Laufs. Danach folgt ein Reviewer-Pilot mit Gruppenchart-Evidenz an echten Kandidaten, weiterhin ohne Gate.
+1. **Turtle:** entschieden (keine Variante aktiv). Eine spätere Aktivierung bräuchte eine eigene Szenariozeile im Runner und einen neuen AG-3-Lauf.
+2. **Snapshot-Erweiterung:** zurückgestellt (Owner). Ein späterer Capture mit `sec-pit-r13` würde CAP-Gruppen und die Megacap-Evidenz ermöglichen.
+3. **Weinstein:** SIC3 / min. 5 ist als Research-Referenz entschieden. Nächster Schritt wäre ein Reviewer-Pilot mit Gruppenchart-Evidenz an echten Kandidaten, weiterhin ohne Gate.
 4. **Minervini:** Review-Paket (`sepaClassify` / `powerPlayClassify`) in die bestehende Supertrader-Review-Oberfläche einbinden. Das ist ein eigener Produkt-PR ohne UI-Neugestaltung und ohne Kaufsignal.
 5. **Intraday-Erweiterung:** IEX-Minuten der Triggertage einfrieren. Damit werden die Turtle-Intrabar-Annahme und die KK-ORH-Varianten messbar.
 6. **Zertifizierung:** V4-D1 (nicht deklarierte Reverse-Splits) und V4-D2 (Gattungen) im Quant-PR schließen. Erst danach sind historische Zahlen zertifizierbar.

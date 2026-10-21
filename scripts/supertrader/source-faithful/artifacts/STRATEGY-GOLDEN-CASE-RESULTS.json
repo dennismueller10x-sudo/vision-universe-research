@@ -26,7 +26,7 @@
   "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 208,
+  "testsRun": 209,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1682,7 +1682,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 62,
+ "otherTests": 63,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2692,6 +2692,11 @@
   {
    "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
    "name": "ADV-MIN-PP-LONG-BASE: Konsolidierung jenseits 3-6 Wochen wird Review, nie Ablehnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-NOT-A-STRATEGY (Owner 21.10.2026): jede Klassifikation, auch CONFIRMED_MECHANICAL_SETUP, ist keine handelbare Strategie und keine Performance-Aussage",
    "result": "PASS"
   },
   {
