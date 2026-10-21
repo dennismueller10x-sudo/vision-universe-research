@@ -35,3 +35,22 @@ test("Format · Kurs mit Waehrungszeichen wie Discover", () => {
   assert.equal(C.money(197.61, "USD"), "197,61 $");
   assert.equal(C.money(1234.5, "EUR"), "1.235 €");
 });
+
+test("Kursmarken · liegen im Bild und behalten ihren Wert", () => {
+  const g = C.geometry([["2026-10-01", 100], ["2026-10-02", 110]], { levels: [{ value: 90, label: "Stop", tone: "bad" }, { value: 120, label: "Ziel" }, { value: NaN }] });
+  assert.equal(g.levels.length, 2);
+  assert.equal(g.lo, 90); assert.equal(g.hi, 120);
+  assert.ok(g.levels[0].y > g.levels[1].y, "Stop unter Ziel");
+});
+
+test("Achse · letzter Kurs nah am Hoch: nur eine Zahl, kein Uebereinanderdruck", () => {
+  /* Kleinstes SVG-DOM fuer render(): Knoten mit Attributen, Kindern und Text. */
+  const node = (name) => ({ name, attrs: {}, children: [], textContent: "", setAttribute(k, v) { this.attrs[k] = String(v); }, getAttribute(k) { return this.attrs[k]; }, appendChild(c) { this.children.push(c); return c; } });
+  const prev = globalThis.document;
+  globalThis.document = { createElementNS: (_, name) => node(name) };
+  try {
+    const svg = C.render([["2026-10-01", 100], ["2026-10-02", 199.83], ["2026-10-03", 199.39]], { width: 600, height: 220 });
+    const labels = svg.children.filter((c) => c.name === "text" && c.attrs["text-anchor"] === undefined).map((c) => c.textContent);
+    assert.deepEqual(labels.sort(), ["100,00", "199,39"], "letzter Kurs bleibt, das Hoch daneben entfaellt");
+  } finally { globalThis.document = prev; }
+});
