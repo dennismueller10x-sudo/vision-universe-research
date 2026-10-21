@@ -75,3 +75,25 @@ Apify: Profil-, Reel- und Hashtag-Scraper (Datensätze vom 15. bis 21.10.2026), 
 | 7 Tage | | | | | | | |
 
 Rückblick auf das Reel (Selbstkritik nach Kallaway-Muster): Hook und Verstärker vorhanden; Re-Hook in der Mitte, Kontrast und Teilen-Aufruf fehlen; viel geliehene Autorität; kein Katalogwert.
+
+## 8. Standard-Kanäle für jede neue Analyse
+
+Auf Wunsch des Owners (21.10.2026) gehören diese Kanäle dauerhaft in jede Wettbewerbsanalyse, zusätzlich zu den Konten aus Abschnitt 2:
+
+- `wirliebenaktien` (91.755 Follower)
+- `traderepublic_de` (763.587 Follower)
+- `goldeselinvesting` (92.274 Follower)
+
+Weitere Kanäle (Owner-Liste): auf Zuruf ergänzen. Abruf je Lauf: `apify/instagram-reel-scraper` (30 Reels, 90 Tage, etwa 0,08 USD je Kanal) und `apify/instagram-profile-scraper` (Follower). Kosten vorher nennen.
+
+### Auswertung vom 21.10.2026 (87 Reels, 14 Videos analysiert, Apify rund 0,25 USD)
+
+| Kanal | Reels (90 Tage) | Median Aufrufe | Aufrufe je Follower | Länge Median | Auffälligkeit |
+|---|---|---|---|---|---|
+| traderepublic_de | 30 | 196.436 | 0,26 | 73 s | Sehr gleichmäßig (höchstens 1,7× Median). Serie „Was passiert gerade?" (110 bis 118 s, Nachrichten-Überblick mit Quellen in der Caption), Anleitungen („Die 4 wichtigsten Einstellungen", Freistellungsauftrag), Altersvorsorgedepot. Sprecher vor Büro-Kulisse, Titelkarte mit Datum und Logos, keine Schnitte, Wort-Untertitel, Sprache ab 0,0 s bei 178 bis 216 Wörtern/Minute |
+| wirliebenaktien | 27 | 18.731 | 0,20 | 87 s | Kommentar-Wort-Aufruf („Kommentiere Newsletter") bei 13 von 27 Reels: Median 23.162 gegen 17.670 Aufrufe ohne, Kommentare im Median 197 gegen 9. Aufbau: Chart oder Logos oben, roter Titelbalken mit Zahl oder Datum („30. September. Ab da könnte der Markt explodieren!"), Sprecher unten, 6 bis 12 Schnitte |
+| goldeselinvesting | 30 | 30.842 | 0,33 | 69 s | Tägliche Markt-Einordnung („Guten Morgen …", rund 3 Minuten, kaum Schnitte). Stärkstes aktuelles Reel ist ein 29-s-Meme mit Teilen-Aufruf („Schicke das Video einem Leidgenossen") |
+
+Beobachtung zum Thema Altersvorsorgedepot: Trade Republic erzielt mit „Ab 2027 legt dir der Staat auf jeden Euro bis zu 50 Cent obendrauf … bis zu 540 Euro im Jahr" 299.033 Aufrufe (7 Tage alt, 1,5× Median). Das ist dieselbe Aussage wie unsere Zulagenrechnung, mit einem großen Absender und Sprecher.
+
+Was daraus folgt: (1) Serien mit festem Titel und Datum erzeugen gleichmäßige Reichweite (Trade Republic). (2) Zahl und Datum im Titelbalken wirken in jedem der drei Kanäle. (3) Der Kommentar-Wort-Aufruf erhöht Kommentare stark und die Aufrufe moderat. Er braucht einen Gegenwert (Newsletter, Wartelisten-Info) und eine Antwort-Automation, die wir noch nicht haben. (4) Ein Teilen-Aufruf mit konkreter Zielperson funktioniert auch bei kurzen Meme-Reels. (5) Lange Reels (60 bis 110 s) mit Sprecher sind bei etablierten Kanälen normal.

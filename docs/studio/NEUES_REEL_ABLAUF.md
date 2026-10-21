@@ -14,7 +14,7 @@ Zuerst lesen: [README.md](README.md) (Regeln), [REEL_PLAYBOOK.md](REEL_PLAYBOOK.
 
 | # | Schritt | Ergebnis | Freigabe |
 |---|---|---|---|
-| 1 | **Thema finden**: Termine (Zahlen, Gesetze, Ereignisse), Raster 6×5 im Playbook, eigene Daten (Discover, Quant, Förderrechner). Optional Apify-Recherche (Kosten nennen) | 3 Vorschläge mit Hook, Beweis, Format | Owner wählt Thema. Apify-Lauf nach Kostencheck |
+| 1 | **Thema finden**: Termine (Zahlen, Gesetze, Ereignisse), Raster 6×5 im Playbook, eigene Daten (Discover, Quant, Förderrechner). Standard-Kanäle aus REEL_RESEARCH.md Abschnitt 8 prüfen. Optional Apify-Recherche (Kosten nennen) | 3 Vorschläge mit Hook, Beweis, Format | Owner wählt Thema. Apify-Lauf nach Kostencheck |
 | 2 | **Fakten**: Primärquellen lesen, Tabelle Aussage/Beleg/Rechenweg. Zahlen selbst nachrechnen. Quellenstand notieren | Faktentabelle | – |
 | 3 | **Skript**: Hook-Score ab 7, 90 bis 110 Wörter (Stimme etwa 40 bis 48 s), Zahlen ausgeschrieben, Re-Hook in der Mitte, Teilen-Anlass, App-Hinweis. Caption mit Quellen, Rechenweg, Hinweisen | Skript und Caption | Owner prüft Text |
 | 4 | **Stimme** (kostet etwa 0,1 bis 0,15 USD, ein Aufruf, `Idempotency-Key`) | `tts_response.json`, `vo_raw.wav` | Owner gibt Kosten frei |
