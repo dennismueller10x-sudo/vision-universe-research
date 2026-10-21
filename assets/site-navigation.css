@@ -40,7 +40,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
   --vu-premium-ink:var(--vu-text);--vu-premium-muted:var(--vu-muted);
   --vu-premium-accent-text:var(--vu-accent-text);--vu-premium-accent:var(--vu-accent);
   /* VU3 UI-System: Richtung, Charts, Seitenrand. Ein Wert fuer alle Welten. */
-  --vu-up:#1e8433;--vu-down:#d93a30;--vu-warn:#a86400;
+  --vu-up:#1a7330;--vu-down:#b8281f;--vu-warn:#875000;
   --vu-chart-up:#5cc850;--vu-chart-down:#e4382f;--vu-chart-base:#9aa0a6;--vu-chart-axis:var(--vu-muted);
   --vu-gutter:16px;--vu-section-gap:40px;
 }
@@ -131,9 +131,9 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 /* Status: Symbol plus Text, nie nur Farbe. */
 .vu-status{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:3px 11px 3px 9px;border-radius:999px;background:var(--vu-surface);font-size:12.5px;font-weight:800;line-height:1.2;color:var(--vu-text-secondary);white-space:nowrap}
 .vu-status:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
-.vu-status[data-tone=good]{color:var(--vu-up);background:color-mix(in srgb,var(--vu-up) 12%,transparent)}
-.vu-status[data-tone=bad]{color:var(--vu-down);background:color-mix(in srgb,var(--vu-down) 12%,transparent)}
-.vu-status[data-tone=warn]{color:var(--vu-warn);background:color-mix(in srgb,var(--vu-warn) 14%,transparent)}
+.vu-status[data-tone=good]{color:var(--vu-up);background:color-mix(in srgb,var(--vu-up) 10%,transparent)}
+.vu-status[data-tone=bad]{color:var(--vu-down);background:color-mix(in srgb,var(--vu-down) 10%,transparent)}
+.vu-status[data-tone=warn]{color:var(--vu-warn);background:color-mix(in srgb,var(--vu-warn) 10%,transparent)}
 .vu-status[data-tone=accent]{color:var(--vu-accent-text);background:var(--vu-accent-soft)}
 /* Balken: Anteil 0..100 ueber --v (Prozent). */
 .vu-bar{position:relative;height:6px;border-radius:6px;background:var(--vu-line);overflow:hidden}
