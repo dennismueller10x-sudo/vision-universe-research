@@ -70,25 +70,30 @@ export function turtlePart(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, va
     sealed.reference[system] = { metrics: m };
     log(`turtle reference ${system}: trades ${r.positionTrades.length}`);
   }
+  // engine-only lookup coverage: difference of the cumulative provider counters around one runTurtle (review L1)
+  const delta = (a, b) => ({ lookups: b.lookups - a.lookups, resolved: b.resolved - a.resolved, unknown: b.unknown - a.unknown, unknownByReason: Object.fromEntries(Object.keys(b.unknownByReason).map((k) => [k, b.unknownByReason[k] - (a.unknownByReason[k] || 0)]).filter(([, n]) => n > 0)) });
   for (const v of variants) {
+    const anchorCache = new Map(); // shared by the policies of one variant (review L3)
     for (const policy of v.role === 'BASELINE_FOR_COMPARISON' ? ['REPORT_ONLY', 'POOLED_UNKNOWN'] : ['REPORT_ONLY']) {
-      const p = createCorrelationGroupProvider(dataset, v, { unknownPolicy: policy });
+      const p = createCorrelationGroupProvider(dataset, v, { unknownPolicy: policy, anchorCache });
       const key = `${v.id}|${policy}`; pub.variants[key] = { variant: v.id, policy, systems: {} }; sealed.variants[key] = { systems: {} };
       for (const system of ['S1', 'S2']) {
+        const before = p.diagnostics();
         const r = runTurtle(dataset, { ...opts(system), groupsOf: p.groupsOf });
+        const engineLookups = delta(before, p.diagnostics());
         if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${key}:${system}`);
         const conc = concentrationReport(r, p, { calendar: dataset.calendar, from, to });
         const concRef = concentrationReport(ref[system], p, { calendar: dataset.calendar, from, to });
         pub.variants[key].systems[system] = {
           trades: r.positionTrades.length, entries: r.counts.entries, adds: r.counts.adds, rejectCorrelationLimit6: r.counts.rejectCorrelationLimit6, rejectCorrelationLimit10: r.counts.rejectCorrelationLimit10, correlationGroupMissing: r.counts.correlationGroupMissing,
           engineLabel: r.correlationLimits, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger),
-          concentrationWithLimits: conc, concentrationOfReferenceBook: concRef, conformance: p.conformance(r),
+          engineLookups, concentrationWithLimits: conc, concentrationOfReferenceBook: concRef, conformance: { ...p.conformance(r), diagnostics: undefined, diagnosticsNote: 'cumulative provider counters are in variants[*].diagnostics; engine-only coverage is engineLookups' },
         };
         sealed.variants[key].systems[system] = { metrics: computeDiagnosticMetrics({ curve: r.curve, trades: r.positionTrades, ledger: r.ledger, costs: r.counts.costs, spyTR: dataset.spyTR, splitPeriods: [], initialCapital: 100000 }) };
       }
       const st = p.anchorStats(), med = (a) => { const s = a.filter((x) => Number.isFinite(x)).sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };
       pub.variants[key].anchors = { computed: st.length, medianPopulation: med(st.map((s) => s.population)), medianCloselyLargest: med(st.map((s) => s.closely.largest)), maxCloselyLargest: Math.max(0, ...st.map((s) => s.closely.largest)), medianLooselyLargest: med(st.map((s) => s.loosely.largest)), maxLooselyLargest: Math.max(0, ...st.map((s) => s.loosely.largest)), medianShareInClosedGroups: med(st.map((s) => s.closely.shareInMultiMemberGroups)), medianMeanPairCorrelation: med(st.map((s) => s.pairs?.meanCorrelation)), largestByYear: Object.fromEntries(Object.entries(st.reduce((a, s) => { (a[year(s.anchor)] ||= []).push(s.closely.largest); return a; }, {})).map(([y, xs]) => [y, Math.max(...xs)])) };
-      pub.variants[key].diagnostics = p.diagnostics();
+      pub.variants[key].diagnostics = { ...p.diagnostics(), scope: 'CUMULATIVE: S1 + S2 engine lookups and the concentration measurements' };
       log(`turtle ${key}: S1 rej6 ${pub.variants[key].systems.S1.rejectCorrelationLimit6}, S2 rej6 ${pub.variants[key].systems.S2.rejectCorrelationLimit6}`);
     }
   }
@@ -96,7 +101,7 @@ export function turtlePart(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, va
 }
 
 // ---------------------------------------------------------------- WEINSTEIN
-export function weinsteinPart(dataset, { classification, cikCandidates, bench, breadth, log = () => {}, weekStride = 4 } = {}) {
+export function weinsteinPart(dataset, { classification, cikCandidates, bench, breadth, log = () => {}, weekStride = 8 } = {}) {
   const pub = { version: INDUSTRY_STRENGTH_VERSION, variants: {} };
   const benchW = benchmarkWeekly(bench);
   // screen candidates every `weekStride` completed weeks (the screens do not depend on the group variant)

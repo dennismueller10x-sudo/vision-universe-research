@@ -26,7 +26,7 @@
   "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 206,
+  "testsRun": 208,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1682,7 +1682,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 60,
+ "otherTests": 62,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2600,6 +2600,11 @@
    "result": "PASS"
   },
   {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-SHARED-ANCHORS: geteilter Anker-Cache liefert dieselben Gruppen fuer beide Unknown-Politiken",
+   "result": "PASS"
+  },
+  {
    "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
    "name": "SF3-WEIN-GROUP-VARIANTS: Varianten sind deklarierte VU-Stellvertreter, keine Originalregel; Kapitalgewichtung ohne PIT-Aktienzahl DATA_BLOCKED",
    "result": "PASS"
@@ -2632,6 +2637,11 @@
   {
    "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
    "name": "SF3-MARKET-BREADTH: Universums-Breite kausal; NYSE bleibt DATA_BLOCKED",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-GAP (Review M1/M2): Luecke in der Mitgliedschaft wird UNKNOWN; nie eine alte Woche als aktuell, nie eine spaetere Woche",
    "result": "PASS"
   },
   {

@@ -30,7 +30,7 @@ export const MEASUREMENT = Object.freeze({
   NONE: 'NOT_MEASURABLE',
 });
 /** Which parts of research/run-sf3-research.mjs measure a candidate on the snapshot. */
-const SF3_RUNNER_PARTS = Object.freeze({ SF_TURTLE_S1: ['turtle'], SF_TURTLE_S2: ['turtle'], SF_WEINSTEIN_INVESTOR: ['weinstein'], SF_WEINSTEIN_TRADER: ['weinstein'], SF_MINERVINI_SEPA_VCP: ['minervini'], SF_MINERVINI_POWER_PLAY: ['minervini'], SF_DARVAS_BOX: ['context'], SF_KK_BREAKOUT: ['context'], SF_MOKA_POCKET_PIVOT: ['context'], SF_MOKA_BUYABLE_GAP_UP: ['context'] });
+const SF3_RUNNER_PARTS = Object.freeze({ SF_TURTLE_S1: ['turtle'], SF_TURTLE_S2: ['turtle'], SF_WEINSTEIN_INVESTOR: ['weinstein'], SF_WEINSTEIN_TRADER: ['weinstein'], SF_MINERVINI_SEPA_VCP: ['minervini'], SF_MINERVINI_POWER_PLAY: ['minervini'], SF_DARVAS_BOX: ['context: leadership coverage only, no method candidates'], SF_KK_BREAKOUT: ['context: leadership coverage only, no method candidates'], SF_MOKA_POCKET_PIVOT: ['context: leadership coverage only, no method candidates'], SF_MOKA_BUYABLE_GAP_UP: ['context: leadership coverage only, no method candidates'] });
 
 function measurementOf(st, contract) {
   if (st.backtestReadiness === 'DIAGNOSTIC_READY') return { class: MEASUREMENT.FULL, note: st.fullMethodMeasurable ? 'complete engine' : `diagnostic run WITH DATA EXCEPTION (${st.blockingDataRules.join(', ')} not enforced in reference runs)` };
