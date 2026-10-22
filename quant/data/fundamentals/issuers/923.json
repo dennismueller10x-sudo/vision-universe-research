@@ -638,9 +638,9 @@
       "cik": "0001603923",
       "name": "Weatherford International plc",
       "sic": "3533",
-      "rawFacts": 17716,
-      "mappedFacts": 5114,
-      "unmappedFacts": 12451,
+      "rawFacts": 18077,
+      "mappedFacts": 5189,
+      "unmappedFacts": 12794,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -649,14 +649,14 @@
         "WFRD"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
+      "annualPeriods": 15,
       "quarterlyPeriods": 57,
       "firstPeriodEnd": "2011-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 14,
+          "annualPeriods": 13,
           "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
@@ -664,13 +664,13 @@
         },
         "eps_diluted": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "free_cash_flow": {
-          "annualPeriods": 14,
+          "annualPeriods": 13,
           "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
@@ -691,13 +691,13 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 14,
+          "annualPeriods": 13,
           "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
@@ -705,7 +705,7 @@
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -719,14 +719,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -749,46 +749,48 @@
         }
       },
       "quality": {
-        "HIGH": 471,
-        "MEDIUM": 49
+        "HIGH": 475,
+        "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 520,
-        "resolvedValues": 520
+        "datableValues": 523,
+        "resolvedValues": 523
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13202,
+        "total": 13589,
         "by_severity": {
-          "INFO": 12451,
-          "WARNING": 751
+          "INFO": 12794,
+          "WARNING": 795
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 646,
+          "CONCEPT_DISAGREEMENT": 640,
           "RESTATEMENT_CONFLICT": 54,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 12451
+          "UNKNOWN_CONCEPT": 12794,
+          "UNPLACEABLE_PERIOD": 50
         }
       },
       "latestFiling": {
-        "accession": "0001603923-26-000085",
-        "filing_date": "2026-07-22",
+        "accession": "0001603923-26-000122",
+        "filing_date": "2026-10-21",
         "form": "10-Q",
-        "periodic_filings": 50
+        "periodic_filings": 51,
+        "acceptance_datetime": "2026-10-22T00:30:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "6dc82007f87635f0ca25b86188d6dd4ec6c5efbf15e6f101e6d1fcc6d272ae7e",
+      "sourceDigest": "5995bf8ee58c46083a3a6143b5fa951a974933db1e29d5f2697458cb9cce4632",
       "issuerId": "iss_cik_0001603923"
     },
     {

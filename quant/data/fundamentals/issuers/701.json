@@ -319,9 +319,9 @@
       "cik": "0001067701",
       "name": "UNITED RENTALS, INC.",
       "sic": "7359",
-      "rawFacts": 18658,
-      "mappedFacts": 7048,
-      "unmappedFacts": 12028,
+      "rawFacts": 18915,
+      "mappedFacts": 7160,
+      "unmappedFacts": 12298,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -331,9 +331,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
@@ -345,7 +345,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -372,7 +372,7 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -386,28 +386,28 @@
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -430,45 +430,46 @@
         }
       },
       "quality": {
-        "MEDIUM": 60,
-        "HIGH": 601
+        "MEDIUM": 62,
+        "HIGH": 605
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 661,
-        "resolvedValues": 661
+        "datableValues": 667,
+        "resolvedValues": 667
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12518,
+        "total": 12625,
         "by_severity": {
-          "INFO": 12028,
-          "WARNING": 490
+          "INFO": 12298,
+          "WARNING": 327
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 438,
+          "CONCEPT_DISAGREEMENT": 275,
           "RESTATEMENT_CONFLICT": 52,
-          "UNKNOWN_CONCEPT": 12028
+          "UNKNOWN_CONCEPT": 12298
         }
       },
       "latestFiling": {
-        "accession": "0001067701-26-000026",
-        "filing_date": "2026-07-22",
+        "accession": "0001067701-26-000034",
+        "filing_date": "2026-10-21",
         "form": "10-Q",
-        "periodic_filings": 119
+        "periodic_filings": 120,
+        "acceptance_datetime": "2026-10-22T00:21:14.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "1be690ecbe9280c55e8147804129bd14098c4571f31c288e77e6568242780b2d",
+      "sourceDigest": "352138e1036dcb1c0a2e3ece141c49c2440e3446819dffe1a8d0a2cd78728471",
       "issuerId": "iss_cik_0001067701"
     },
     {
