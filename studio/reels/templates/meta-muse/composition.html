@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Meta Muse</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--bg-card:#121519;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+html.ovl,body.ovl{background:transparent!important}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#glow{inset:0;background:radial-gradient(circle at 92% 6%,rgba(200,245,49,.16),rgba(200,245,49,0) 46%)}
+#glow2{left:-300px;top:900px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.07),rgba(200,245,49,0) 62%)}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:230px}
+.lime{color:var(--lime)} .red{color:var(--red)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.86)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+#sub{left:72px;right:72px;top:1330px;height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:56px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.85)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:36px;color:var(--ink-2)}
+.mut{color:var(--muted)}
+.scn{left:72px;top:340px;width:936px;height:1000px;opacity:0}
+svg{overflow:visible}
+.ic{fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.dr{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.pp{color:#3a4048}
+.phone{left:0;top:40px;width:440px;height:880px;border-radius:70px;border:7px solid #2b3037;background:#0d1013;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.bub{border-radius:26px;padding:18px 22px;font-weight:700;font-size:30px;line-height:1.2}
+.tag{font-weight:800;font-size:22px;letter-spacing:.12em;color:var(--muted);border:1.5px solid var(--line-2);border-radius:8px;padding:3px 10px}
+</style></head>
+<body>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="glow" class="abs"></div><div id="glow2" class="abs"></div>
+<div id="bgA" class="abs" style="inset:0;overflow:hidden;opacity:1"><img id="imgA" src="assets/bgA.jpg" style="position:absolute;width:1080px;left:0;top:520px;transform-origin:50% 50%"><div class="abs" style="left:0;right:0;top:520px;height:360px;background:linear-gradient(180deg,#08080a,rgba(8,8,10,0))"></div><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(8,8,10,.92) 0%,rgba(8,8,10,.55) 38%,rgba(8,8,10,.35) 62%,rgba(8,8,10,.8) 100%)"></div></div>
+<div id="bgB" class="abs" style="inset:0;overflow:hidden;opacity:0"><img id="imgB" src="assets/bgB.jpg" style="position:absolute;width:1080px;left:0;top:200px;transform-origin:50% 40%"><div class="abs" style="left:0;right:0;top:200px;height:300px;background:linear-gradient(180deg,#08080a,rgba(8,8,10,0))"></div><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(8,8,10,.9) 0%,rgba(8,8,10,.5) 40%,rgba(8,8,10,.45) 65%,rgba(8,8,10,.85) 100%)"></div></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Meta · Q3 2026</div>
+<div id="cam" class="abs" style="inset:0;transform-origin:540px 900px">
+
+ <!-- S1 HOOK: ab Bild 1 voll sichtbar -->
+ <div id="s1" class="abs scn" style="opacity:1;top:330px">
+  <div style="display:flex;align-items:flex-end;gap:26px;white-space:nowrap">
+   <div id="n10" class="big lime" style="font-size:430px;letter-spacing:-.07em;transform-origin:0 80%">10</div>
+   <div class="big" style="font-size:150px;padding-bottom:62px">Mio.</div>
+  </div>
+  <div style="font-weight:900;font-size:62px;letter-spacing:-.03em;line-height:1.05;margin-top:-4px">haben einen <span class="lime">KI-Agenten</span><br>eingerichtet. In nur 6 Wochen.</div>
+  <div style="display:flex;gap:18px;margin-top:34px;height:80px">
+   <div id="m1" style="opacity:0"><span class="chip" style="font-size:36px;padding:14px 32px 14px 22px">
+     <svg width="92" height="46" viewBox="0 0 120 60" style="color:var(--lime)"><path class="dr" id="loop" pathLength="1" stroke="#c8f531" stroke-width="7" d="M60 30 C48 8 14 8 14 30 C14 52 48 52 60 30 C72 8 106 8 106 30 C106 52 72 52 60 30 Z"/></svg><span style="font-weight:900;letter-spacing:.14em;color:var(--ink)">META</span></span></div>
+   <div id="m2" style="opacity:0"><span class="chip" style="font-size:36px;padding:14px 32px 14px 22px">
+     <svg width="46" height="46" viewBox="0 0 64 64" style="color:var(--lime)"><path class="ic" d="M10 20 H54 L50 56 H14 Z M22 28 V16 C22 6 42 6 42 16 V28"/></svg>Top-Grund: Einkaufen</span></div>
+  </div>
+  <div id="pp" style="display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:40px"></div>
+ </div>
+
+ <!-- S2 Muse / Einkaufen -->
+ <div id="s2" class="abs scn">
+  <div class="phone abs">
+   <div class="abs" style="left:50%;top:14px;width:120px;height:28px;margin-left:-60px;border-radius:20px;background:#000"></div>
+   <div class="abs" style="left:0;right:0;top:62px;text-align:center;font-weight:800;font-size:30px;color:var(--ink-2);display:flex;justify-content:center;align-items:center;gap:10px"><svg width="30" height="30" viewBox="0 0 64 64" style="color:var(--lime)"><path class="ic" d="M32 6 L38 26 L58 32 L38 38 L32 58 L26 38 L6 32 L26 26 Z"/></svg>Muse</div>
+   <div id="u1" class="abs bub" style="right:26px;top:140px;width:310px;background:var(--lime);color:var(--on-lime);opacity:0;border-bottom-right-radius:8px"><span id="u1t"></span></div>
+   <div id="a1" class="abs" style="left:26px;right:26px;top:330px;opacity:0">
+    <div class="bub" style="background:#1a1f25;border-bottom-left-radius:8px;margin-bottom:14px;font-size:28px">Das hier passt:</div>
+    <div class="card" style="padding:22px">
+     <svg width="150" height="90" viewBox="0 0 64 40" style="color:var(--ink);display:block;margin:0 auto 6px"><path class="ic" d="M4 30 V22 C14 22 20 16 24 10 L30 16 C38 18 48 20 58 26 V32 H4 Z M4 32 H58 M24 10 L28 6 M34 20 L38 16 M42 22 L46 18"/></svg>
+     <div style="font-weight:800;font-size:28px;color:var(--ink-2)">Laufschuh Trail</div>
+     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><span style="font-weight:900;font-size:50px;letter-spacing:-.03em">189 $</span><span style="background:var(--lime);color:var(--on-lime);font-weight:900;font-size:28px;border-radius:14px;padding:14px 26px">Kaufen</span></div>
+    </div>
+   </div>
+   <div class="abs tag" style="left:50%;bottom:26px;margin-left:-68px">ILLUSTRATION</div>
+  </div>
+  <div id="r2" class="abs" style="left:520px;top:120px;width:416px;opacity:0">
+   <svg width="190" height="190" viewBox="0 0 64 64" style="color:var(--lime)"><path class="dr" id="cart" pathLength="1" stroke="#c8f531" stroke-width="3.4" d="M4 10 H14 L22 42 H50 L56 20 H17"/><circle class="dr" id="w1" pathLength="1" cx="26" cy="52" r="4" stroke="#c8f531" stroke-width="3.4"/><circle class="dr" id="w2" pathLength="1" cx="46" cy="52" r="4" stroke="#c8f531" stroke-width="3.4"/></svg>
+   <div class="big lime" style="font-size:104px;letter-spacing:-.05em;margin-top:6px;white-space:nowrap">&gt;200&nbsp;$</div>
+   <div class="lab" style="font-size:44px;margin-top:10px">Ø pro Einkauf</div>
+  </div>
+ </div>
+
+ <!-- S3 täglich + Kosten -->
+ <div id="s3" class="abs scn">
+  <div id="t1" style="opacity:0">
+   <div style="display:flex;gap:24px;align-items:flex-end">
+    <svg id="q1" width="130" height="130" viewBox="0 0 64 64" style="color:var(--lime)"><circle class="ic" cx="32" cy="20" r="11" fill="rgba(200,245,49,.25)"/><path class="ic" d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58"/></svg>
+    <svg width="130" height="130" viewBox="0 0 64 64" style="color:#4a515a"><circle class="ic" cx="32" cy="20" r="11"/><path class="ic" d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58"/></svg>
+    <svg width="130" height="130" viewBox="0 0 64 64" style="color:#4a515a"><circle class="ic" cx="32" cy="20" r="11"/><path class="ic" d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58"/></svg>
+    <svg width="130" height="130" viewBox="0 0 64 64" style="color:#4a515a"><circle class="ic" cx="32" cy="20" r="11"/><path class="ic" d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58"/></svg>
+    <div class="big lime" style="font-size:120px;padding-bottom:8px;margin-left:10px">25 %</div>
+   </div>
+   <div class="lab" style="margin-top:12px;font-size:42px">nutzen den Agenten täglich</div>
+  </div>
+  <div id="t2" class="card" style="opacity:0;margin-top:40px;padding:30px 38px;display:flex;align-items:center;gap:32px">
+   <svg width="120" height="120" viewBox="0 0 64 64" style="color:var(--ink);flex:none"><path class="dr" id="chip" pathLength="1" stroke="#f4f5f1" stroke-width="3.2" d="M16 16 H48 V48 H16 Z M24 24 H40 V40 H24 Z M24 8 V16 M32 8 V16 M40 8 V16 M24 48 V56 M32 48 V56 M40 48 V56 M8 24 H16 M8 32 H16 M8 40 H16 M48 24 H56 M48 32 H56 M48 40 H56"/></svg>
+   <div><div class="lab" style="font-size:34px">Investitionen im Quartal</div><div class="big" style="font-size:92px;margin-top:6px">34,9 Mrd. $</div></div>
+  </div>
+  <div id="t3" class="card" style="opacity:0;margin-top:26px;padding:30px 38px;display:flex;align-items:center;gap:32px;border-color:rgba(255,107,94,.5)">
+   <svg width="120" height="120" viewBox="0 0 64 64" style="color:var(--red);flex:none"><path class="dr" id="darr" pathLength="1" stroke="#ff6b5e" stroke-width="4" d="M32 6 V52 M16 36 L32 54 L48 36"/></svg>
+   <div><div class="lab" style="font-size:34px">Freier Cashflow</div><div class="big red" style="font-size:92px;margin-top:6px">−2,1 Mrd. $</div></div>
+  </div>
+ </div>
+
+ <!-- S4 früher Geld verdienen -->
+ <div id="s4" class="abs scn">
+  <div class="big" style="font-size:150px;letter-spacing:-.06em">Geld<br>verdienen:<br><span class="lime" id="frueher">früher.</span></div>
+  <svg width="936" height="360" viewBox="0 0 936 360" style="margin-top:46px">
+   <text x="0" y="40" fill="#8b919a" font-family="Inter" font-weight="800" font-size="34">ÜBLICHER ABLAUF</text>
+   <line x1="0" y1="86" x2="860" y2="86" stroke="#2a2f36" stroke-width="10" stroke-linecap="round"/>
+   <path class="dr" id="tl1" pathLength="1" stroke="#8b919a" stroke-width="10" d="M0 86 H860"/>
+   <circle id="coin1" cx="880" cy="86" r="34" fill="none" stroke="#8b919a" stroke-width="6" opacity="0"/><text id="cs1" x="880" y="98" fill="#8b919a" text-anchor="middle" font-family="Inter" font-weight="900" font-size="38" opacity="0">$</text>
+   <text x="0" y="230" fill="#c8f531" font-family="Inter" font-weight="800" font-size="34">MUSE</text>
+   <line x1="0" y1="276" x2="860" y2="276" stroke="#2a2f36" stroke-width="10" stroke-linecap="round"/>
+   <path class="dr" id="tl2" pathLength="1" stroke="#c8f531" stroke-width="10" d="M0 276 H500"/>
+   <circle id="coin2" cx="540" cy="276" r="34" fill="rgba(200,245,49,.18)" stroke="#c8f531" stroke-width="6" opacity="0"/><text id="cs2" x="540" y="288" fill="#c8f531" text-anchor="middle" font-family="Inter" font-weight="900" font-size="38" opacity="0">$</text>
+  </svg>
+ </div>
+
+ <!-- S5 kein Beweis -->
+ <div id="s5" class="abs scn">
+  <div class="big" style="font-size:190px;letter-spacing:-.06em;position:relative;display:inline-block">Kein<br>Beweis.
+   <svg class="abs" style="left:0;top:350px" width="760" height="40" viewBox="0 0 760 40"><path class="dr" id="scr" pathLength="1" stroke="#c8f531" stroke-width="9" d="M6 22 C120 4 220 38 330 18 S560 6 754 20"/></svg>
+  </div>
+  <div id="loc" style="display:flex;gap:18px;margin-top:70px;opacity:0;flex-wrap:wrap">
+   <span class="chip" style="font-size:40px"><svg width="40" height="40" viewBox="0 0 64 64" style="color:var(--lime)"><path class="ic" d="M32 58 C20 42 14 34 14 25 C14 14 22 6 32 6 C42 6 50 14 50 25 C50 34 44 42 32 58 Z"/><circle class="ic" cx="32" cy="25" r="6"/></svg>USA</span>
+   <span class="chip" style="font-size:40px"><svg width="40" height="40" viewBox="0 0 64 64" style="color:var(--lime)"><path class="ic" d="M32 58 C20 42 14 34 14 25 C14 14 22 6 32 6 C42 6 50 14 50 25 C50 34 44 42 32 58 Z"/><circle class="ic" cx="32" cy="25" r="6"/></svg>Kanada</span>
+   <span class="chip" style="font-size:40px"><svg width="40" height="40" viewBox="0 0 64 64" style="color:var(--lime)"><circle class="ic" cx="32" cy="32" r="24"/><path class="ic" d="M32 16 V32 L44 38"/></svg>6 Wochen</span>
+  </div>
+ </div>
+
+ <!-- S6 CTA -->
+ <div id="s6" class="abs scn" style="top:340px">
+  <div style="margin-bottom:22px"><span class="chip"><b>APP</b> Vision Universe &middot; bald verf&uuml;gbar</span></div>
+  <div class="big" style="font-size:150px;letter-spacing:-.06em">Meta in<br>der <span class="lime">App.</span></div>
+  <div id="p1" class="card" style="margin-top:56px;padding:34px 40px;opacity:0;border-color:rgba(200,245,49,.65)"><div class="big lime" style="font-size:72px">Künstliche Intelligenz</div><div class="lab" style="font-size:38px;margin-top:10px">Chips, Software und Rechenzentren</div></div>
+ </div>
+</div>
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+  <div class="abs lab mut" style="left:0;right:0;top:1040px;text-align:center;font-size:40px">Bald verf&uuml;gbar</div>
+</div>
+<div id="shade" class="abs" style="left:0;right:0;top:1250px;height:670px;background:linear-gradient(to bottom,rgba(8,8,10,0),rgba(8,8,10,.74) 26%,rgba(8,8,10,.74) 100%)"></div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{};
+if(new URLSearchParams(location.search).get("ovl")==="1"){document.documentElement.classList.add("ovl");document.body.classList.add("ovl");}
+const ev=(n,fb)=>EV[n]!=null?EV[n]:fb;
+const PERSON='<svg viewBox="0 0 64 64" width="88" height="88"><circle class="ic" cx="32" cy="20" r="11"/><path class="ic" d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58"/></svg>';
+let pHtml='';for(let i=0;i<10;i++)pHtml+='<div class="pp" id="pe'+i+'" style="display:flex;justify-content:center">'+PERSON+'</div>';$("pp").innerHTML=pHtml;
+function scene(id,t,a,b,first,last){
+  const el=$(id); const fi=first?1:eo(seg(t,a,a+.4)), fo=last?0:eo(seg(t,b-.3,b));
+  el.style.opacity=first?1-seg(t,b-.25,b):(last?seg(t,a,a+.35)*(1-seg(t,b,b+.25)):Math.min(seg(t,a,a+.3),1-seg(t,b-.25,b)));
+  el.style.transform=`translateX(${(1-fi)*70-fo*70}px)`; 
+}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+const draw=(id,t,at,d=.9)=>{$(id).style.strokeDashoffset=1-eo(seg(t,at,at+d));};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  const camId=t<a2?0:t<a3?1:t<a4?2:t<a5?3:t<a6?4:5;
+  const bounds=[[0,a2],[a2,a3],[a3,a4],[a4,a5],[a5,a6],[a6,end]][camId];
+  const p=eio(seg(t,bounds[0],bounds[1]));
+  $("cam").style.transform=`scale(${1+.03*p}) translateY(${-8*p}px)`;
+  scene("s1",t,0,a2,true,false);scene("s2",t,a2,a3);scene("s3",t,a3,a4);scene("s4",t,a4,a5);scene("s5",t,a5,a6);scene("s6",t,a6,end,false,true);
+  // S1 (Zahl ab Bild 1 sichtbar, Personen zünden nacheinander)
+  $("n10").style.transform=`scale(${1+.09*Math.exp(-t*8)})`;
+  for(let i=0;i<10;i++){const on=seg(t,.2+i*.2,.2+i*.2+.18);$("pe"+i).style.color=on>0?'#c8f531':'#3a4048';$("pe"+i).style.transform=`scale(${1+.25*Math.sin(Math.PI*on)})`;}
+  const tw=ev('wo',3.5); pop("m1",t,tw,18); draw("loop",t,tw+.1,1.1);
+  pop("m2",t,ev('fakt',tw+1.5),18);
+  // S2
+  const tc=ev('chat',a2+1.5), tb=ev('buy',tc+1.5), ta=ev('avg',tb+1.5);
+  $("u1").style.opacity=eo(seg(t,tc-.05,tc+.3)); $("u1").style.transform=`translateY(${(1-eo(seg(t,tc-.05,tc+.3)))*30}px)`;
+  const txt="Ich suche Laufschuhe unter 200 $"; $("u1t").textContent=txt.slice(0,Math.round(txt.length*seg(t,tc,tc+1.0)));
+  pop("a1",t,tb,30);
+  pop("r2",t,ta,24); draw("cart",t,ta+.1,.9); draw("w1",t,ta+.7,.3); draw("w2",t,ta+.8,.3);
+  // S3
+  pop("t1",t,ev('daily',a3+.5),26); const pu=seg(t,ev('daily',a3+.5),ev('daily',a3+.5)+.5); $("q1").style.transform=`scale(${1+.18*Math.sin(Math.PI*pu)})`;
+  pop("t2",t,ev('cost',a3+3),30); draw("chip",t,ev('cost',a3+3)+.1,1);
+  pop("t3",t,ev('fcf',a3+7),30); draw("darr",t,ev('fcf',a3+7)+.1,.8);
+  // S4
+  draw("tl1",t,ev('time',a4+.5)+.3,1.6); draw("tl2",t,ev('time',a4+.5)+.5,1.1);
+  const c2=eo(seg(t,ev('time',a4+.5)+1.5,ev('time',a4+.5)+1.8)); $("coin2").style.opacity=c2;$("cs2").style.opacity=c2;
+  const c1=eo(seg(t,ev('time',a4+.5)+1.9,ev('time',a4+.5)+2.2)); $("coin1").style.opacity=c1;$("cs1").style.opacity=c1;
+  // S5
+  draw("scr",t,ev('kein',a5+1.5),.7); pop("loc",t,ev('land',a5+3),24);
+  // S6
+  pop("p1",t,ev('car',a6+2),30);
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=1-seg(t,end,end+.3);$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=(cur&&t<end)?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+  $("shade").style.opacity=t<end?1:0;
+  const fa=1-seg(t,a2-.3,a2); $("bgA").style.opacity=fa; $("imgA").style.transform=`scale(${1+.07*seg(t,0,a2)})`;
+  const fb=Math.min(seg(t,a3,a3+.4),1-seg(t,a4-.3,a4)); $("bgB").style.opacity=fb*.9; $("imgB").style.transform=`scale(${1+.06*seg(t,a3,a4)})`;
+  $("glow2").style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.3)*40}px)`;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>
