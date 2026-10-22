@@ -3,11 +3,13 @@
 // Kaufsignal, keine Order, keine Statusaufwertung.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sepaSetupAt, sepaSetupSeries, powerPlaySetupAt, powerPlaySetupSeries, entryEligibility, fillBuyOrder, validateConfig, REFERENCE_CONFIG, RUN_VARIANTS, MODEL_ASSUMPTIONS, EXIT_POLICIES } from '../source-faithful/research/minervini-lifecycle.mjs';
+import { variantRegistrySha256, sepaSetupAt, sepaSetupSeries, powerPlaySetupAt, powerPlaySetupSeries, entryEligibility, fillBuyOrder, validateConfig, REFERENCE_CONFIG, RUN_VARIANTS, MODEL_ASSUMPTIONS, EXIT_POLICIES } from '../source-faithful/research/minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics, lifecycleMetrics, EQUITY_RESEARCH_PORTFOLIO_POLICY } from '../source-faithful/research/minervini-execution.mjs';
 import { tradeView } from '../source-faithful/research/minervini-trade-view.mjs';
 import { fundamentalEvidence } from '../source-faithful/research/minervini-components.mjs';
 
+// pinned before the first snapshot result of the lifecycle was read (review SF4-S-Q5)
+const PINNED_VARIANT_REGISTRY_SHA256 = 'f13ea35016c5e7e71f7ee3b266cb60812cf24b7efa13eae190983c4fe44cbe75';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, vols = null, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c, vols ? vols[k] : 1e6));
@@ -290,7 +292,11 @@ test('GC-MLC-NOT-A-STRATEGY: Varianten vorregistriert, keine Aktivierung, Konfig
   assert.ok(RUN_VARIANTS.every((v) => validateConfig(v.config).length === 0));
   assert.ok(MODEL_ASSUMPTIONS.every((m) => m.reference && m.why));
   assert.deepEqual(validateConfig({ ...REFERENCE_CONFIG, manualSubstitute: undefined }), ['MANUAL_SUBSTITUTE_REQUIRED']);
-  assert.deepEqual(validateConfig({ ...REFERENCE_CONFIG, riskFraction: 0.05 }), ['RISK_FRACTION_REQUIRED_MAX_2_5_PCT']);
+  assert.deepEqual(validateConfig({ ...REFERENCE_CONFIG, riskFraction: 0.05 }), ['RISK_FRACTION_OUTSIDE_RESEARCH_RANGE']);
+  // no automatic upgrade of manual or data-blocked Power Play setups (MA-MIN-PP-ELIGIBLE-CLASSES)
+  assert.deepEqual(validateConfig({ ...REFERENCE_CONFIG, ppClasses: ['CONFIRMED_MECHANICAL_SETUP', 'MANUAL_REVIEW_SETUP'] }), ['PP_CLASSES_CONFIRMED_ONLY']);
+  // pre-registration: the reference and the variants are frozen; a change needs an owner decision and a new pin
+  assert.equal(variantRegistrySha256(), PINNED_VARIANT_REGISTRY_SHA256);
   assert.ok(Object.keys(EXIT_POLICIES).length === 4);
   const s = { id: 'V', bars: mk(VCP, VOL) };
   assert.throws(() => runMinerviniLifecycle(ds(s), { strategy: 'SEPA', setupIndex: buildSetupIndex(ds(s), 'POWER_PLAY'), config: REFERENCE_CONFIG }), /SETUP_INDEX_STRATEGY_MISMATCH/);

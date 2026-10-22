@@ -22,7 +22,7 @@ export const STATE_LABELS = Object.freeze({
   SETUP_CONFIRMED_MECHANICAL: 'Setup mechanisch bestätigt',
   ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW: 'Einstieg möglich – manuelle Prüfung erforderlich',
   ENTRY_BLOCKED: 'Einstieg blockiert',
-  SIMULATED_OPEN: 'Einstieg erfolgt – nur Research-Simulation',
+  SIMULATED_OPEN: 'Simulierter Einstieg – nur Research-Simulation',
   SIMULATED_CLOSED: 'Simulierte Position geschlossen – nur Research-Simulation',
   OPEN_AT_DATA_END: 'Simulierte Position am Datenende offen – nur Research-Simulation',
   NONE: 'Keine Position',

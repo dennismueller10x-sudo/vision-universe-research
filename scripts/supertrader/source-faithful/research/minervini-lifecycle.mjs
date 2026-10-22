@@ -17,6 +17,7 @@
  * Point in time: a setup is evaluated on the CLOSE of bar i with bars 0..i only; the order it arms is valid for bar
  * i + 1 alone and is re-armed at every close while the setup holds (MA-MIN-SETUP-VALIDITY).
  */
+import crypto from 'node:crypto';
 import { fin, smaSeries, priorMean, eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
 import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
 import { vcpContractions, powerPlayClassify, NOT_A_STRATEGY, COMPONENT_CONVENTIONS } from './minervini-components.mjs';
@@ -61,6 +62,7 @@ export const MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-MIN-STOP-FILL', phase: 'INITIAL_STOP', reference: 'a low at or below the stop exits at min(open, stop) (gap through the stop: the open)', alternatives: [], why: 'MIN-MM-STOP-01 executes the stop regardless of volume; the fill on a daily bar is the sf3 convention (sellEvidence)' },
   { id: 'MA-MIN-COSTS', phase: 'ENTRY_EXECUTION', reference: '10 bps slippage per side, 1 bp commission (research-v1 convention of the snapshot runs)', alternatives: [], why: 'no costs in the sources; identical to the Turtle research runs so that methods stay comparable' },
   { id: 'MA-MIN-ACCOUNTING-RESEARCH-V1', phase: 'TRADE_ACCOUNTING', reference: 'research-v1: orders only on real source bars, stale limit 5 sessions -> SECURITY_UNAVAILABLE, economic delisting by the S0 scenario, dividends on held shares, ledger replay', alternatives: [], why: 'platform accounting (validation/accounting-contract.mjs), not a Minervini rule' },
+  { id: 'MA-MIN-MAX-POSITIONS', phase: 'POSITION_SIZING', reference: 'at most 20 open positions (platform research portfolio policy)', alternatives: [], why: 'MIN-RISK-10 "not more than 20 positions" (2013) is a strong preference, not a hard rule; used as the cap of the platform policy, not as an original rule' },
   { id: 'MA-MIN-RISK-FRACTION', phase: 'POSITION_SIZING', reference: '0.0125 of equity (the boundary shared by MIN-MM-SIZE-03 and MIN-MM-SIZE-04)', alternatives: ['0.0075', '0.025'], why: 'the risk per trade is the reviewer\'s; the printed ranges are context (0.75-1.25 % average, 1.25-2.5 % typical, at most 2.5 %)' },
 ]);
 
@@ -113,13 +115,15 @@ export function validateConfig(cfg) {
   const errs = [];
   if (cfg.manualSubstitute !== 'ACCEPT_AS_MODEL_ASSUMPTION') errs.push('MANUAL_SUBSTITUTE_REQUIRED');
   if (!['VCP_FOOTPRINT_STRICT', 'TREND_TEMPLATE_PIVOT_ONLY'].includes(cfg.sepaSetupProxy)) errs.push('SEPA_SETUP_PROXY');
-  if (!Array.isArray(cfg.ppClasses) || !cfg.ppClasses.every((c) => ['CONFIRMED_MECHANICAL_SETUP', 'MANUAL_REVIEW_SETUP'].includes(c))) errs.push('PP_CLASSES');
+  // MA-MIN-PP-ELIGIBLE-CLASSES: manual or data-blocked Power Play setups are never upgraded to a simulated trade
+  if (!Array.isArray(cfg.ppClasses) || cfg.ppClasses.length !== 1 || cfg.ppClasses[0] !== 'CONFIRMED_MECHANICAL_SETUP') errs.push('PP_CLASSES_CONFIRMED_ONLY');
   if (!['STRUCTURE', 'MAX_PLANNED_LOSS_10'].includes(cfg.stopPlacement)) errs.push('STOP_PLACEMENT');
   if (!['BUY_STOP_LIMIT', 'BUY_STOP_MARKET'].includes(cfg.orderType)) errs.push('ORDER_TYPE');
   if (!['INTRADAY_PRICE_FIRST', 'NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE'].includes(cfg.entryTiming)) errs.push('ENTRY_TIMING');
   if (!['PESSIMISTIC', 'OPTIMISTIC'].includes(cfg.intrabarOrder)) errs.push('INTRABAR_ORDER');
   if (!EXIT_POLICIES[cfg.exitPolicy]) errs.push('EXIT_POLICY');
-  if (!(cfg.riskFraction > 0 && cfg.riskFraction <= 0.025)) errs.push('RISK_FRACTION_REQUIRED_MAX_2_5_PCT'); // MIN-MM-SIZE-04 "at most 2.5 %"
+  // research-range guard of MA-MIN-RISK-FRACTION (the printed ranges of MIN-MM-SIZE-03/04 are context, not a source bound)
+  if (!(cfg.riskFraction > 0 && cfg.riskFraction <= 0.025)) errs.push('RISK_FRACTION_OUTSIDE_RESEARCH_RANGE');
   return errs;
 }
 
@@ -228,6 +232,23 @@ export function powerPlaySetupSeries(security, { P = MIN_PARAMS, from = null } =
 
 // ---------------------------------------------------------------- eligibility
 
+/** Blocker tag of a SEPA setup state that is not SETUP_DETECTED: [rule, class] (review SF4-S-L2). */
+const SEPA_STATE_BLOCKER = Object.freeze({
+  NOT_QUALIFIED: ['MIN-SF-PROCESS (Trend Template 1-7)', CLASS.SOURCE_BOUNDED],
+  DATA_BLOCKED: ['MIN-SF-PROCESS (missing bars)', CLASS.DATA_BLOCKED],
+  VCP_DATA_BLOCKED: ['MIN-SF-VCP (missing bars in the base)', CLASS.DATA_BLOCKED],
+  IPO_SCOPE_REVIEW: ['MIN-MM-IPO-01', CLASS.MANUAL_REVIEW],
+  NO_BASE: ['MA-MIN-SEPA-PIVOT', CLASS.MODEL_ASSUMPTION], PIVOT_NOT_CONFIRMED: ['MA-MIN-SEPA-PIVOT', CLASS.MODEL_ASSUMPTION], PIVOT_ALREADY_EXCEEDED: ['MA-MIN-SEPA-PIVOT', CLASS.MODEL_ASSUMPTION],
+});
+
+/**
+ * Fingerprint of the pre-registered research configuration (REFERENCE_CONFIG and RUN_VARIANTS). Pinned in a test and
+ * written into every snapshot receipt: a change after results exist needs an owner decision (review SF4-S-Q5).
+ */
+export function variantRegistrySha256() {
+  return crypto.createHash('sha256').update(JSON.stringify({ reference: REFERENCE_CONFIG, variants: RUN_VARIANTS.map((v) => ({ id: v.id, strategies: v.strategies ?? null, changes: v.changes })) })).digest('hex');
+}
+
 /** Stop of a setup under MA-MIN-STOP-PLACEMENT. */
 export function stopFor(setup, cfg) {
   if (!setup || !fin(setup.pivot)) return null;
@@ -249,7 +270,7 @@ export function entryEligibility({ strategy, setup, bars, k, cfg = REFERENCE_CON
     else if (setup.state === 'NOT_QUALIFIED') add('NOT_QUALIFIED', 'MIN-SF-PP-RUNUP', CLASS.SOURCE_BOUNDED);
     else if (!cfg.ppClasses.includes(setup.state)) add('MANUAL_REVIEW_SETUP', 'MIN-SF-PP-CORRECTION / MIN-SF-PP-TIGHT', CLASS.MANUAL_REVIEW);
   } else {
-    if (setup.state !== 'SETUP_DETECTED') add(setup.state, 'MIN-SF-PROCESS', setup.state === 'DATA_BLOCKED' || setup.state === 'VCP_DATA_BLOCKED' ? CLASS.DATA_BLOCKED : CLASS.SOURCE_BOUNDED);
+    if (setup.state !== 'SETUP_DETECTED') add(setup.state, ...SEPA_STATE_BLOCKER[setup.state] ?? ['MA-MIN-SEPA-PIVOT', CLASS.MODEL_ASSUMPTION]);
     else if (cfg.sepaSetupProxy === 'VCP_FOOTPRINT_STRICT' && !setup.vcpProxyStrict) add('VCP_PROXY_NOT_MET', 'MA-MIN-SEPA-SETUP-PROXY', CLASS.MODEL_ASSUMPTION);
   }
   const pivot = setup?.pivot, stop = stopFor(setup, cfg);
@@ -258,7 +279,7 @@ export function entryEligibility({ strategy, setup, bars, k, cfg = REFERENCE_CON
     if (!fin(stop) || !(stop > 0) || !(stop < pivot)) add('NO_STOP_BELOW_PIVOT', 'MIN-RISK-01', CLASS.SOURCE_BOUNDED);
     else if (plannedLossAtPivot > MAX_PLANNED_LOSS + 1e-12) add('PLANNED_LOSS_ABOVE_10PCT', 'MIN-MM-STOP-02', CLASS.SOURCE_BOUNDED);
     const prev = bars[k - 1];
-    if (prev && fin(prev.close) && prev.close >= pivot) add('ALREADY_ABOVE_PIVOT', 'MIN-VCP-07', CLASS.SOURCE_BOUNDED);
+    if (prev && fin(prev.close) && prev.close >= pivot) add('ALREADY_ABOVE_PIVOT', 'MA-MIN-ORDER-TYPE (reading of MIN-VCP-07 / MIN-PRICE-01)', CLASS.MODEL_ASSUMPTION);
   }
   if (k < 1 || !eligibleAtPriorSession(bars, k, universe)) add('OUTSIDE_RESEARCH_UNIVERSE', 'VU_TOURNAMENT_UNIVERSE_705 (convention)', CLASS.MODEL_ASSUMPTION);
   if (hasPosition) add('POSITION_OPEN_DUPLICATE_SIGNAL', 'MIN-ADD-01 (adds are manual)', CLASS.MANUAL_REVIEW);

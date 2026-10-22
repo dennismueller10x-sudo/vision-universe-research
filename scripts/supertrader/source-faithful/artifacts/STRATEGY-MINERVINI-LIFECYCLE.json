@@ -150,6 +150,13 @@
    "why": "platform accounting (validation/accounting-contract.mjs), not a Minervini rule"
   },
   {
+   "id": "MA-MIN-MAX-POSITIONS",
+   "phase": "POSITION_SIZING",
+   "reference": "at most 20 open positions (platform research portfolio policy)",
+   "alternatives": [],
+   "why": "MIN-RISK-10 \"not more than 20 positions\" (2013) is a strong preference, not a hard rule; used as the cap of the platform policy, not as an original rule"
+  },
+  {
    "id": "MA-MIN-RISK-FRACTION",
    "phase": "POSITION_SIZING",
    "reference": "0.0125 of equity (the boundary shared by MIN-MM-SIZE-03 and MIN-MM-SIZE-04)",
@@ -761,11 +768,13 @@
      ],
      "pit": "PIT: bars up to the decision close only",
      "mechanical": "MECHANICAL",
-     "class": "SOURCE_BOUNDED",
-     "modelAssumptions": [],
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ORDER-TYPE"
+     ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
-     "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": "translation-unverified wording",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "MIN-PRICE-01 requires price confirmation; the buy stop at the pivot and the already-above block are the model reading (the sources give no order type)",
      "sources": [
       "B12 PDF 256 (HARD, MEDIUM)",
       "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
@@ -1305,11 +1314,12 @@
      "mechanical": "MECHANICAL",
      "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
-      "MA-MIN-SIGNAL-ORDER"
+      "MA-MIN-SIGNAL-ORDER",
+      "MA-MIN-MAX-POSITIONS"
      ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "20 positions is the 2013 upper bound (strong preference); the order of simultaneous fills replaces the manual priority",
+     "note": "20 positions is the 2013 upper bound (strong preference) used as a platform cap; the order of simultaneous fills replaces the manual priority",
      "sources": [
       "B12 PDF 415 (STRONG_PREFERENCE, MEDIUM)",
       "B12 PDF 61 (CONTEXTUAL, MEDIUM)"
@@ -1366,13 +1376,13 @@
      ],
      "pit": "PIT: close, effective next session",
      "mechanical": "MECHANICAL",
-     "class": "SOURCE_BOUNDED",
+     "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
       "MA-MIN-EXIT-POLICY"
      ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "no absolute 3R obligation in the source; part of the reference exit policy, absent in the free-roll variants",
+     "note": "MIN-RISK-05 is a strong preference (\"almost always\", no absolute 3R obligation); the unconditional raise at 3R is the model reading of the reference exit policy, absent in the free-roll variants",
      "sources": [
       "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
      ]
@@ -1715,8 +1725,8 @@
     "sourceFidelity": {
      "byClass": {
       "SOURCE_EXACT": 0,
-      "SOURCE_BOUNDED": 7,
-      "MODEL_ASSUMPTION": 21,
+      "SOURCE_BOUNDED": 5,
+      "MODEL_ASSUMPTION": 23,
       "MANUAL_REVIEW": 14,
       "DATA_BLOCKED": 2,
       "SOURCE_BLOCKED": 0
@@ -1743,8 +1753,8 @@
       },
       "ENTRY_ELIGIBILITY": {
        "rows": 7,
-       "mechanical": 4,
-       "underModelAssumption": 2,
+       "mechanical": 3,
+       "underModelAssumption": 3,
        "evidence": 0,
        "manual": 1,
        "blocked": 0
@@ -1824,6 +1834,7 @@
       "MA-MIN-EXIT-POLICY",
       "MA-MIN-INTRABAR-ORDER",
       "MA-MIN-MANUAL-SUBSTITUTE",
+      "MA-MIN-MAX-POSITIONS",
       "MA-MIN-ORDER-TYPE",
       "MA-MIN-RESEARCH-UNIVERSE",
       "MA-MIN-RISK-FRACTION",
@@ -1988,11 +1999,11 @@
      ],
      "pit": "PIT: bars up to the decision close only",
      "mechanical": "MECHANICAL",
-     "class": "SOURCE_BOUNDED",
+     "class": "MANUAL_REVIEW",
      "modelAssumptions": [],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
-     "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": null,
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "MIN-PP-03 is context: the duration is reported, no minimum is enforced, a consolidation beyond the typical 3-6 weeks goes to review (MANUAL_REVIEW_SETUP)",
      "sources": [
       "B12 PDF 342 (CONTEXTUAL, MEDIUM)"
      ]
@@ -2064,6 +2075,7 @@
      "id": "PP-SQ-NO-FUNDAMENTALS",
      "phase": "SETUP_QUALIFICATION",
      "condition": "a Power Play can be bought without visible strong earnings",
+     "boundedFrom": "MIN-PP-01 removes a requirement (no fundamental input in the Power Play screen); it adds no number",
      "psr709": [
       "MIN-PP-01"
      ],
@@ -2179,11 +2191,13 @@
      ],
      "pit": "PIT: bars up to the decision close only",
      "mechanical": "MECHANICAL",
-     "class": "SOURCE_BOUNDED",
-     "modelAssumptions": [],
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ORDER-TYPE"
+     ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
-     "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": "translation-unverified wording",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "MIN-PRICE-01 requires price confirmation; the buy stop at the pivot and the already-above block are the model reading (the sources give no order type)",
      "sources": [
       "B12 PDF 256 (HARD, MEDIUM)",
       "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
@@ -2715,11 +2729,12 @@
      "mechanical": "MECHANICAL",
      "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
-      "MA-MIN-SIGNAL-ORDER"
+      "MA-MIN-SIGNAL-ORDER",
+      "MA-MIN-MAX-POSITIONS"
      ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "20 positions is the 2013 upper bound (strong preference); the order of simultaneous fills replaces the manual priority",
+     "note": "20 positions is the 2013 upper bound (strong preference) used as a platform cap; the order of simultaneous fills replaces the manual priority",
      "sources": [
       "B12 PDF 415 (STRONG_PREFERENCE, MEDIUM)",
       "B12 PDF 61 (CONTEXTUAL, MEDIUM)"
@@ -2776,13 +2791,13 @@
      ],
      "pit": "PIT: close, effective next session",
      "mechanical": "MECHANICAL",
-     "class": "SOURCE_BOUNDED",
+     "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
       "MA-MIN-EXIT-POLICY"
      ],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "no absolute 3R obligation in the source; part of the reference exit policy, absent in the free-roll variants",
+     "note": "MIN-RISK-05 is a strong preference (\"almost always\", no absolute 3R obligation); the unconditional raise at 3R is the model reading of the reference exit policy, absent in the free-roll variants",
      "sources": [
       "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
      ]
@@ -3125,9 +3140,9 @@
     "sourceFidelity": {
      "byClass": {
       "SOURCE_EXACT": 0,
-      "SOURCE_BOUNDED": 11,
-      "MODEL_ASSUMPTION": 20,
-      "MANUAL_REVIEW": 9,
+      "SOURCE_BOUNDED": 8,
+      "MODEL_ASSUMPTION": 22,
+      "MANUAL_REVIEW": 10,
       "DATA_BLOCKED": 0,
       "SOURCE_BLOCKED": 0
      },
@@ -3144,16 +3159,16 @@
      "phases": {
       "SETUP_QUALIFICATION": {
        "rows": 8,
-       "mechanical": 5,
+       "mechanical": 4,
        "underModelAssumption": 2,
-       "evidence": 1,
+       "evidence": 2,
        "manual": 0,
        "blocked": 0
       },
       "ENTRY_ELIGIBILITY": {
        "rows": 7,
-       "mechanical": 4,
-       "underModelAssumption": 2,
+       "mechanical": 3,
+       "underModelAssumption": 3,
        "evidence": 0,
        "manual": 1,
        "blocked": 0
@@ -3233,6 +3248,7 @@
       "MA-MIN-EXIT-POLICY",
       "MA-MIN-INTRABAR-ORDER",
       "MA-MIN-MANUAL-SUBSTITUTE",
+      "MA-MIN-MAX-POSITIONS",
       "MA-MIN-ORDER-TYPE",
       "MA-MIN-PP-ELIGIBLE-CLASSES",
       "MA-MIN-PP-PIVOT",
@@ -3254,13 +3270,14 @@
     "backtestReadiness": {
      "measurement": "MODEL_LIFECYCLE_STUDY",
      "strategyBacktest": false,
-     "why": "9 manual source decisions; those needed for an entry are substituted by MA-MIN-MANUAL-SUBSTITUTE, so a complete lifecycle run is a model study, never a strategy backtest",
+     "why": "10 manual source decisions; those needed for an entry are substituted by MA-MIN-MANUAL-SUBSTITUTE, so a complete lifecycle run is a model study, never a strategy backtest",
      "snapshotRuns": [],
      "certification": "DIAGNOSTIC_NOT_CERTIFIED"
     },
     "manualReview": {
      "rows": [
       "PP-SQ-START-VOLUME",
+      "PP-SQ-CONSOLIDATION",
       "PP-EL-MANUAL-DECISIONS",
       "PP-EL-DUPLICATE",
       "PP-SZ-EXPOSURE",

@@ -23,7 +23,7 @@ import { codeSha256 as engineCodeSha256 } from '../runner/run-research.mjs';
 import { FOUNDATION } from '../contract.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import { fundamentalEvidence } from './minervini-components.mjs';
-import { RUN_VARIANTS, LIFECYCLE_VERSION } from './minervini-lifecycle.mjs';
+import { RUN_VARIANTS, LIFECYCLE_VERSION, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics, EXECUTION_VERSION } from './minervini-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -115,7 +115,7 @@ async function main() {
   const dataset = datasetFromPit(pit);
   const fundCoverage = attachSecPit(dataset, secPit);
   log(`dataset: ${dataset.securities.length} securities, ${dataset.calendar.length} sessions, sec-pit ${fundCoverage.withFund}`);
-  const receipt = { schema: 'supertrader-sf4-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: researchCodeSha256(), runner: SF4_RUNNER_VERSION, limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf4-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: researchCodeSha256(), runner: SF4_RUNNER_VERSION, variantRegistrySha256: variantRegistrySha256(), limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = lifecyclePart(dataset, { strategies, log });
   const pub = { schema: 'supertrader-sf4-lifecycle-public-1.0.0', receipt, fundCoverage, lifecycle: r.pub };
   const sealed = { receipt, public: pub, lifecycle: r.sealed };

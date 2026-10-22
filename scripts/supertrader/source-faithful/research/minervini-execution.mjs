@@ -5,9 +5,9 @@
  *
  * Two layers are kept apart (mandate phase E):
  *  - ORIGINAL STRATEGY: what research/minervini-lifecycle.mjs derives from #709 (stop before entry, <= 10 % planned loss,
- *    <= 25 % per position, at most 20 positions, stop executed regardless of volume);
+ *    <= 25 % per position, stop executed regardless of volume);
  *  - PLATFORM RESEARCH PORTFOLIO POLICY (EQUITY_RESEARCH_PORTFOLIO_POLICY): cash only, the start capital, costs, the
- *    neutral signal order. These are VU conventions, not Minervini rules.
+ *    neutral signal order, at most 20 open positions (MA-MIN-MAX-POSITIONS). These are VU conventions, not Minervini rules.
  *
  * Day loop (deterministic, one pass over the calendar; information of bar k is used only from bar k on):
  *  1. held positions on bar k: dividend; a pending next-open exit is filled at the open; the stop is executed at
@@ -38,7 +38,7 @@ export const EQUITY_RESEARCH_PORTFOLIO_POLICY = Object.freeze({
   initialCapital: 100000,                    // convention (same as the Turtle research runs)
   cashOnly: true,                            // no margin: MIN-RISK-08 margin use is a reviewer decision
   maxPositionWeight: 0.25,                   // SOURCE_BOUNDED MIN-MM-SIZE-01 (2015 answer)
-  maxOpenPositions: 20,                      // SOURCE_BOUNDED MIN-RISK-10 "not more than 20" (2013, strong preference)
+  maxOpenPositions: 20,                      // MODEL_ASSUMPTION MA-MIN-MAX-POSITIONS (MIN-RISK-10 is a strong preference)
   slippageBps: 10, commissionBps: 1,         // research-v1 execution convention of the snapshot runs
   terminalScenario: 'S0_LAST_PRICE',         // research-v1 baseline terminal scenario
   notModelled: Object.freeze(['exposure build-up from pilot buys (MIN-RISK-02/03, MIN-MM-SIZE-02)', 'risk reduction after poor own results (MIN-RISK-04)', 'margin and exposure in difficult markets (MIN-RISK-07/08)', 'typical 4-6 positions (MIN-RISK-09) and concentration (MIN-TTC-CONCENTRATION): preferences, reported as diagnostics', 'exit liquidity (MIN-MM-LIQ-01): participation is reported, not limited', 'pyramiding (MIN-ADD-01, MIN-MM-ADD-02/03): manual', 'earnings holding (MIN-MM-EARN-HOLD): manual']),
