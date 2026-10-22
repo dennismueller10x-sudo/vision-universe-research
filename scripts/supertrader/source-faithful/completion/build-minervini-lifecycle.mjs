@@ -96,9 +96,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const a = process.argv.slice(2), opt = (k, d) => { const i = a.indexOf(k); return i >= 0 ? path.resolve(a[i + 1]) : d; };
   const out = opt('--out', path.join(SF, 'artifacts')), docs = opt('--docs', path.join(ROOT, 'docs'));
   const art = await buildLifecycleArtifact();
+  if (!art.validation.ok) { process.stderr.write(`minervini lifecycle: validation failed, nothing written: ${art.validation.errors.join(', ')}\n`); process.exit(1); } // review SF4-C-L7
   fs.mkdirSync(out, { recursive: true }); fs.mkdirSync(docs, { recursive: true });
   fs.writeFileSync(path.join(out, 'STRATEGY-MINERVINI-LIFECYCLE.json'), JSON.stringify(art, null, 1) + '\n');
   fs.writeFileSync(path.join(docs, 'SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md'), lifecycleMarkdown(art));
   process.stdout.write(`minervini lifecycle: validation ${art.validation.ok ? 'ok' : art.validation.errors.join(', ')}; rows SEPA ${art.strategies.SEPA.matrix.length}, POWER_PLAY ${art.strategies.POWER_PLAY.matrix.length}\n`);
-  if (!art.validation.ok) process.exitCode = 1;
 }

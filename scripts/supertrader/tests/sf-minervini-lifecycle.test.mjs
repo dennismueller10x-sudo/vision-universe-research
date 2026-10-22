@@ -309,3 +309,38 @@ test('GC-MLC-NOT-A-STRATEGY: Varianten vorregistriert, keine Aktivierung, Konfig
   assert.equal(m.label, 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST'); assert.equal(m.diagnostic.certification, 'DIAGNOSTIC_NOT_CERTIFIED');
   assert.equal(lifecycleMetrics([{ status: 'CLOSED', pnl: -1, rMultiple: -1, exitDate: '2020-01-01', tradeId: 1, heldSessions: 3 }, { status: 'CLOSED', pnl: -2, rMultiple: -1, exitDate: '2020-01-02', tradeId: 2, heldSessions: 3 }]).maxConsecutiveLosses, 2);
 });
+
+test('ADV-SF4-PREFILTER-EXACTNESS: Gleitkomma-Drift (Preisverhaeltnis 1e7) und NaN-Tief nach dem Peak aendern kein Ergebnis', () => {
+  for (const seed of [7, 9, 21]) {
+    const r = rng(seed), closes = [];
+    for (let k = 0; k < 400; k++) closes.push(1e7 * (0.5 + r()));
+    for (let k = 0; k < 600; k++) closes.push(1 + k * 0.004);
+    const bars = closes.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c));
+    const i = bars.length - 1; let s49 = 0; for (let k = i - 49; k < i; k++) s49 += bars[k].close;
+    const c = (s49 / 49) * (1 + 2e-12); bars[i] = bar(i, c, c * 1.002, c * 0.998, c);
+    const s = { id: 'D', bars };
+    assert.deepEqual(sepaSetupSeries(s, { from: bars[i].date }).counts, { [sepaSetupAt(s, i).state]: 1 }, `seed ${seed}`);
+  }
+  const bars = [], add = (c, lo = c * 0.998) => bars.push(bar(bars.length, c, c * 1.002, lo, c));
+  for (let k = 0; k < 60; k++) add(10);
+  for (let k = 0; k < 30; k++) add(10 + k * 0.5);
+  for (let k = 0; k < 5; k++) add(23);
+  add(23, NaN);
+  for (let k = 0; k < 5; k++) add(15);
+  for (let k = 0; k < 100; k++) add(20);
+  const s = { id: 'N', bars }, series = powerPlaySetupSeries(s);
+  for (let i = 0; i < bars.length; i++) { const n = powerPlaySetupAt(s, i); assert.equal(series.setups.has(i), n.state !== 'NOT_QUALIFIED' && Number.isFinite(n.pivot), `bar ${i}`); }
+  // such a setup (NaN correction and stop, a quirk of the unchanged screen) is never traded
+  assert.equal(run(ds(s), 'POWER_PLAY').trades.length, 0);
+});
+
+test('ADV-SF4-LIMIT-ROUNDING-AND-BROKEN-BREAKOUT: Limit nie unter dem Pivot; Stop am Ausbruchsbalken verhindert den Next-Open-Einstieg', () => {
+  const s = { id: 'V', bars: mk(VCP, VOL) };
+  for (const pv of [6.029999999999915, 96.192, 1.1, 33.3]) {
+    const el = entryEligibility({ strategy: 'SEPA', setup: { ...sepaSetupAt(s, ARM), pivot: pv, stopStructure: null }, bars: s.bars, k: ARM + 1, cfg: cfg({ stopPlacement: 'MAX_PLANNED_LOSS_10' }) });
+    if (el.order) { assert.ok(el.order.limit >= el.order.level); assert.equal(fillBuyOrder(bar(0, pv * 0.99, pv * 1.01, pv * 0.985, pv), el.order).basis, 'INTRADAY_PIVOT_TOUCH'); }
+  }
+  const broken = scenario('B', [[95, 97, 90.5, 96.6, 3e6], [96.7, 97.5, 96.5, 97.2]]);
+  const r = run(ds(broken), 'SEPA', { entryTiming: 'NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE' });
+  assert.equal(r.trades.length, 0); assert.equal(r.counts.eligibilityBlockers.STOP_REACHED_ON_BREAKOUT_BAR, 1);
+});

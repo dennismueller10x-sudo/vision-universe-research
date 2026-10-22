@@ -18,7 +18,7 @@
  * i + 1 alone and is re-armed at every close while the setup holds (MA-MIN-SETUP-VALIDITY).
  */
 import crypto from 'node:crypto';
-import { fin, smaSeries, priorMean, eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
+import { fin, smaAt, priorMean, eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
 import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
 import { vcpContractions, powerPlayClassify, NOT_A_STRATEGY, COMPONENT_CONVENTIONS } from './minervini-components.mjs';
 import { isExecutableBar } from '../../validation/accounting-contract.mjs';
@@ -161,25 +161,26 @@ export function sepaSetupFromTrendTemplate(bars, i, tt) {
 export const sepaSetupAt = (security, i) => sepaSetupFromTrendTemplate(security.bars, i, trendTemplate(security.bars, i));
 
 /**
- * SEPA setups for every bar of a security, identical to sepaSetupAt bar by bar (test SF4-SEPA-SERIES-EQUIVALENCE). A
- * rolling-mean prefilter only skips bars whose moving-average criteria fail by a clear margin with every value present;
- * every other bar goes through trendTemplate itself, so no result differs from the unchanged screen.
+ * SEPA setups for every bar of a security, identical to sepaSetupAt bar by bar (test SF4-SEPA-SERIES-EQUIVALENCE). The
+ * prefilter computes the moving averages with smaAt exactly as trendTemplate does (no running sum: review SF4-C-M1,
+ * floating-point drift over long split-adjusted histories) and skips only bars where a moving-average criterion is
+ * false with every value present; trendTemplate would return TREND_TEMPLATE_FAIL for them. All other bars go through
+ * trendTemplate itself.
  */
 export function sepaSetupSeries(security, { P = MIN_PARAMS, from = null } = {}) {
-  const bars = security.bars, n = bars.length, closes = bars.map((b) => b.close);
-  const m50 = smaSeries(closes, P.ma[0]), m150 = smaSeries(closes, P.ma[1]), m200 = smaSeries(closes, P.ma[2]);
+  const bars = security.bars, n = bars.length;
   const miss = new Int32Array(n + 1); for (let k = 0; k < n; k++) miss[k + 1] = miss[k] + (fin(bars[k].high) && fin(bars[k].low) ? 0 : 1);
-  const need = Math.max(P.ma[2] + P.ma200RisingSessions, P.yearSessions), eps = 1e-9;
-  const clearlyBelow = (a, b) => a <= b * (1 - eps); // positive prices: a > b fails by a margin
+  const need = Math.max(P.ma[2] + P.ma200RisingSessions, P.yearSessions);
   const setups = new Map(), counts = {};
   for (let i = 0; i < n; i++) {
     if (from && bars[i].date < from) continue;
     let rec;
     if (i < need - 1) rec = { state: 'IPO_SCOPE_REVIEW' };
     else {
-      const c = closes[i], a = m50[i], b = m150[i], d = m200[i], dp = m200[i - P.ma200RisingSessions];
+      // the same values and comparisons as trendTemplate criteria 1-5 (methods/minervini.mjs)
+      const c = bars[i].close, a = smaAt(bars, i, P.ma[0]), b = smaAt(bars, i, P.ma[1]), d = smaAt(bars, i, P.ma[2]), dp = smaAt(bars, i - P.ma200RisingSessions, P.ma[2]);
       const allKnown = [c, a, b, d, dp].every(fin) && miss[i + 1] - miss[i - P.yearSessions + 1] === 0;
-      if (allKnown && (clearlyBelow(c, b) || clearlyBelow(c, d) || clearlyBelow(b, d) || clearlyBelow(a, b) || clearlyBelow(a, d) || clearlyBelow(c, a) || clearlyBelow(d, dp))) rec = { state: 'NOT_QUALIFIED' };
+      if (allKnown && !(c > b && c > d && b > d && d > dp && a > b && a > d && c > a)) rec = { state: 'NOT_QUALIFIED' };
       else rec = sepaSetupFromTrendTemplate(bars, i, trendTemplate(bars, i, P));
     }
     counts[rec.state] = (counts[rec.state] || 0) + 1;
@@ -203,15 +204,18 @@ export const powerPlaySetupAt = (security, i) => ppSetupFromClassification(secur
  * before), stay strictly above every later finite high and keep every later finite low at or above 75 % of it. Both
  * conditions are monotone, so violated peaks are dropped for good; bars without a surviving peak are classified
  * without the screen (history and missing-bar checks of powerPlayClassify), all others by powerPlayClassify itself.
+ * A non-finite low after a peak makes the screen's correction NaN, which the unchanged screen does not reject (review
+ * SF4-C-M2; reported, not changed here): such a peak is never dropped by a later low, so both paths stay identical.
  */
 export function powerPlaySetupSeries(security, { P = MIN_PARAMS, from = null } = {}) {
   const bars = security.bars, n = bars.length;
   const miss = new Int32Array(n + 1); for (let k = 0; k < n; k++) miss[k + 1] = miss[k] + (fin(bars[k].high) && fin(bars[k].low) ? 0 : 1);
   const setups = new Map(), counts = {};
-  let active = [];
+  let active = []; const poisoned = new Set(); // peaks followed by a non-finite low
   for (let i = 0; i < n; i++) {
     const h = bars[i].high, l = bars[i].low;
-    if (active.length) active = active.filter((p) => !((fin(h) && h >= bars[p].high) || (fin(l) && l < 0.75 * bars[p].high * (1 - 1e-9))));
+    if (!fin(l)) for (const p of active) poisoned.add(p);
+    if (active.length) active = active.filter((p) => !((fin(h) && h >= bars[p].high) || (!poisoned.has(p) && fin(l) && l < 0.75 * bars[p].high * (1 - 1e-9))));
     if (!(from && bars[i].date < from)) {
       let rec;
       if (active.length) rec = ppSetupFromClassification(bars, i, powerPlayClassify(security, i, P));
@@ -288,7 +292,8 @@ export function entryEligibility({ strategy, setup, bars, k, cfg = REFERENCE_CON
   return {
     strategy, asOf: bars[k - 1]?.date ?? null, state: ok ? 'ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW' : 'ENTRY_BLOCKED', blockers, openManualDecisions: manual,
     plannedLossAtPivot, buyDeclarationAllowed: false, ...TRANSL, ...NOT_A_STRATEGY,
-    order: ok ? { type: cfg.orderType, level: pivot, stop, limit: cfg.orderType === 'BUY_STOP_LIMIT' ? stop / (1 - MAX_PLANNED_LOSS) : null, validFor: 'NEXT_SESSION_ONLY', simulatedOnly: true } : null,
+    // limit never below the pivot when the planned loss at the pivot is within the bound (review SF4-C-L3: rounding)
+    order: ok ? { type: cfg.orderType, level: pivot, stop, limit: cfg.orderType === 'BUY_STOP_LIMIT' ? Math.max(stop / (1 - MAX_PLANNED_LOSS), pivot) : null, validFor: 'NEXT_SESSION_ONLY', simulatedOnly: true } : null,
   };
 }
 

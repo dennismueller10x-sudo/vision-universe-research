@@ -196,7 +196,7 @@ export function runMinerviniLifecycle(dataset, { strategy, setupIndex, config, p
     for (const id of [...positions.keys()].sort()) {
       const pos = positions.get(id), x = sec.get(id), t = x.s.terminal;
       if (!t || t.date !== date || t.cause !== 'LISTING_INACTIVE') continue;
-      const i = x.idx.get(date), last = i === undefined ? lastClose.get(id) : x.s.bars[i].close;
+      const i = x.idx.get(date), last = i !== undefined && fin(x.s.bars[i].close) ? x.s.bars[i].close : lastClose.get(id); // review SF4-C-L6
       const net = SCENARIOS[policy.terminalScenario]({ lastClose: last, distress: t.distress, delistClass: t.delistClass }, slip);
       sell(pos, pos.shares, net / (1 - slip), date, 'TERMINAL_DELISTED'); counts.terminalSettlements++;
     }
@@ -217,6 +217,8 @@ export function runMinerviniLifecycle(dataset, { strategy, setupIndex, config, p
         if (el.state !== 'ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW') { for (const bl of el.blockers) counts.eligibilityBlockers[bl.code] = (counts.eligibilityBlockers[bl.code] || 0) + 1; continue; }
         const b = x.s.bars[i], v = breakoutVolumeVs50d(x.s.bars, i);
         if (!(fin(b.high) && b.high >= el.order.level && fin(v) && v > 1)) continue;
+        // the breakout bar itself reached the stop: the structure is broken before the next-open entry (review SF4-C-L4)
+        if (fin(b.low) && b.low <= el.order.stop) { counts.eligibilityBlockers.STOP_REACHED_ON_BREAKOUT_BAR = (counts.eligibilityBlockers.STOP_REACHED_ON_BREAKOUT_BAR || 0) + 1; continue; }
         orders.set(id, { order: { type: 'ON_OPEN', stop: el.order.stop, limit: el.order.limit }, setup: prevSetup, eligibility: el, armedDate: date }); counts.ordersArmed++;
         continue;
       }

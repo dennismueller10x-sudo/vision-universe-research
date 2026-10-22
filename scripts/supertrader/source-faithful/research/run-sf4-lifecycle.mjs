@@ -30,7 +30,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
 export const SF4_RUNNER_VERSION = 'sf4-lifecycle-runner-1.0.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
-const FILES = ['minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'run-sf4-lifecycle.mjs'];
+// every file the lifecycle results depend on, including the unchanged screens and the fundamentals attachment (review SF4-C-L5)
+const FILES = ['../methods/minervini.mjs', '../common/series.mjs', 'run-sf3-research.mjs', 'minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'run-sf4-lifecycle.mjs'];
 export function researchCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }

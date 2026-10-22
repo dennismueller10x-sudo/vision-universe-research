@@ -28,8 +28,8 @@
   "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 235,
-  "testsFailed": 1,
+  "testsRun": 237,
+  "testsFailed": 0,
   "testsSkipped": 2
  },
  "cases": [
@@ -1684,7 +1684,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 89,
+ "otherTests": 91,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -1929,7 +1929,7 @@
   {
    "file": "scripts/supertrader/tests/sf-runner.test.mjs",
    "name": "SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and seals its result",
-   "result": "FAIL"
+   "result": "PASS"
   },
   {
    "file": "scripts/supertrader/tests/sf-runner.test.mjs",
@@ -2839,6 +2839,16 @@
   {
    "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
    "name": "GC-MLC-NOT-A-STRATEGY: Varianten vorregistriert, keine Aktivierung, Konfiguration fail-closed, Kennzeichnung je Ausgabe",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-SF4-PREFILTER-EXACTNESS: Gleitkomma-Drift (Preisverhaeltnis 1e7) und NaN-Tief nach dem Peak aendern kein Ergebnis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-SF4-LIMIT-ROUNDING-AND-BROKEN-BREAKOUT: Limit nie unter dem Pivot; Stop am Ausbruchsbalken verhindert den Next-Open-Einstieg",
    "result": "PASS"
   },
   {
