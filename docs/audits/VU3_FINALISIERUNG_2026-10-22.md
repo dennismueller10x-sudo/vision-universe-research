@@ -4,7 +4,23 @@ Auftrag: Master-Prompt „UI-/UX-Finalisierung und Quant-Verständlichkeit“ vo
 Grundlage: [Visuelle Bestandsaufnahme](VU3_VISUELLE_BESTANDSAUFNAHME_2026-10-21.md), [UI-Refresh-Abschluss](VU3_UI_REFRESH_ABSCHLUSS_2026-10-21.md), [VU3 UI-System](../design/VU3_UI_SYSTEM.md).
 Bilder: [`vu3-finalisierung-2026-10-22/`](vu3-finalisierung-2026-10-22/).
 
-<!-- LIVE-ERGEBNIS -->
+## Ergebnis (live geprüft, Release `248e764` + #855)
+
+- **Karte:** Discover-Aktienkarte ist vollständig klickbar; Umschalter (Chart/Umsatz/Gewinn/Cashflow) behalten ihre Funktion. Live 18/18 Klickziele auf iPhone und Desktop korrekt.
+- **Hintergründe:** alle Welten hell `rgb(255,255,255)`, dunkel `rgb(0,0,0)` – auch die Heros.
+- **Quant:** Ergebnis zuerst, Alltagssprache, Technik im Aufklapper; Erwartungstrend (0 von 6.435 Aktien messbar) nicht mehr in der Übersicht, Grund beim Faktor.
+- **Länge:** Quant PLTR iPhone 12,5 → 8,4 Bildschirme, Discover PLTR 10,6 → 8,0.
+- **Gesondert offen:** E1, E2 (Faktor-Abdeckung), K1, K2 (Kurs im Kopf), C1 (`vu-chart`-Umstellung) – siehe unten.
+
+| Vorher → Nachher | |
+|---|---|
+| Quant-Skalen | ![](vu3-finalisierung-2026-10-22/quant-skalen-iphone__vorher-nachher.jpg) |
+| Quant-Rückblick | ![](vu3-finalisierung-2026-10-22/quant-rueckblick-iphone__vorher-nachher.jpg) |
+| Quant-Start hell | ![](vu3-finalisierung-2026-10-22/quant-start-iphone__vorher-nachher.jpg) |
+| Quant-Start dunkel | ![](vu3-finalisierung-2026-10-22/quant-start-dunkel__vorher-nachher.jpg) |
+| Discover-Karte | ![](vu3-finalisierung-2026-10-22/discover-karte-iphone__vorher-nachher.jpg) |
+| Quant PLTR ganz | ![](vu3-finalisierung-2026-10-22/quant-pltr-iphone-ganz__vorher-nachher.jpg) |
+| Discover PLTR ganz | ![](vu3-finalisierung-2026-10-22/discover-pltr-iphone-ganz__vorher-nachher.jpg) |
 
 ## Pull Requests
 
@@ -17,6 +33,7 @@ Bilder: [`vu3-finalisierung-2026-10-22/`](vu3-finalisierung-2026-10-22/).
 | #852 | Betrieb: täglicher Vorsorge-Neubau scheiterte an zwei neuen ETF-Seiten (BRCE, BRIE) – `main` war seit dem Morgen rot | – |
 | #853 | Quant: Skalen nur gemessen, Rückblick in Alltagssprache, kürzere Aktienseite, Tagesschluss im Technik/Elliott-Kopf, Achse „0“ | Quant CI, vu2-Browser-QA |
 | #854 | Aktienkopf: ein Name je Aktie in allen Welten | Core |
+| #855 | Fix zu #854: Name unter dem Kürzel nachschlagen (Live-QA-Befund) | Core |
 
 Kein Gate wurde abgeschwächt. Zwei Prüfungen wurden an die neue Oberfläche angepasst, ohne ihre Aussage zu ändern: Die vu2-Browser-QA klappt den Rückblick auf, bevor sie Stufe C liest, und die Direktlink-Prüfung zählt zugeklappten Inhalt nicht als „leeren Abschnitt“ (beide #853).
 
@@ -93,7 +110,19 @@ Antworten auf die Fragen des Auftrags:
 
 ## 5 · Kürzere Seiten
 
-<!-- LÄNGEN -->
+Gemessen live, Seitenhöhe ÷ Bildschirmhöhe (iPhone 390×844, Desktop 1440×900):
+
+| Seite | iPhone vorher | iPhone nachher | Desktop vorher | Desktop nachher |
+|---|---|---|---|---|
+| Quant PLTR | 12,5 | **8,4** | 8,9 | **6,1** |
+| Discover PLTR | 10,6 | **8,0** | 9,0 | **7,0** |
+| Quant NVDA | – | 8,6 | – | – |
+| Discover NVDA | – | 7,5 | – | – |
+| Quant AAPL | – | 8,3 | – | – |
+| Discover AAPL | – | 7,8 | – | – |
+| Elliott Profi PLTR | 10,4 | 10,4 (nicht Teil des Auftrags) | – | – |
+
+Quant liegt bei Aktien mit vielen Ereignissen knapp über 8 Bildschirmen; weiteres Kürzen ginge nur über gestrichene Inhalte oder kleinere Schrift und unterbleibt.
 
 Gekürzt wurde ohne Inhaltsverlust, also ohne kleinere Schrift und ohne gestrichene Werte:
 - **Quant:** Setup-Details, gesperrte Lebenszyklus-Stufen, Veränderungs-Details und weitere Anlagestile stehen je in einem Aufklapper. Das Unternehmenskapitel ist zugeklappt (vollständig in Discover). Je Seite ist der stärkste Pro/Contra-Punkt sichtbar. Die Fußzeile ist ein Absatz.
@@ -147,4 +176,13 @@ Gemessen live am 22.10., 11:00 MESZ, PLTR:
 | Wiederholte Quellen | Quant-Fußzeile ohne zweite Quellenzeile, Quellen in „Daten & Methodik“; „Was ist jetzt wichtig?“ wiederholt die Setup-Stufe nur bei neuen Ereignissen |
 | Kritische Warnungen | unverändert sichtbar (veraltete Daten, Zurückhaltung, Aussagekraft) |
 
-<!-- LIVE-QA -->
+## 9 · Live-QA
+
+| Prüfung | Ergebnis |
+|---|---|
+| Hintergründe aller Welten hell/dunkel | `#FFFFFF` / `#000000` |
+| Kartenklick Discover iPhone + Desktop | 18/18 |
+| Aktienkopf PLTR Quant/Technik/Elliott/Fundamental | 201,72 $ · Schlusskurs 21.10. |
+| Aktienkopf PLTR Supertrader während der Sitzung | 198,12 $ · Verzögert 11:30 ET – Quant bleibt in der Sitzung beim Tagesschluss (gehört zu K1) |
+| Anzeigename je Welt | siehe Nachtrag nach #855 |
+| Kontrast/Überlauf (VU3-Regression) | 148 Prüfungen, 0 Befunde |
