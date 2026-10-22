@@ -33,7 +33,7 @@
   function controller(card,ctx,box,stage,chart,compact){
     var uid='v2-stock-view-'+(++serial),detail=null,loaded=false,loading=null,selected=0;
     stage.id=uid;stage.setAttribute('role','tabpanel');stage.setAttribute('aria-label','Chart');
-    var tabs=el('div',{class:'v2-focus-tabs',role:'tablist','aria-label':'Diagramm für '+(card.companyName||card.symbol)});
+    var tabs=el('div',{class:'v2-focus-tabs',role:'tablist','aria-label':'Diagramm für '+(card.companyName||card.symbol),'data-vu-card-ignore':''});
     var buttons=modes.map(function(mode,i){
       var b=el('button',{type:'button',role:'tab',text:mode[1],'aria-selected':String(i===0),tabindex:i===0?'0':'-1','aria-controls':uid});
       tabs.appendChild(b);return b;
@@ -99,11 +99,13 @@
   function spotlightCard(card,ctx){
     var href='#/s/'+ctx.universeId+'/'+encodeURIComponent(card.symbol);
     var plain=D.Cards.klartext(card)||card.plain||{};
-    var box=node('article','v2-focus v2-stock');box.dataset.symbol=card.symbol;
+    /* Die ganze Karte oeffnet die Aktie (data-vu-href, assets/site-navigation.js); der Name ist der Link. */
+    var box=node('article','v2-focus v2-stock');box.dataset.symbol=card.symbol;box.dataset.vuHref=href;
     var top=node('div','v2-focus-top');
-    var identity=node('div','');identity.append(node('span','v2-eyebrow',card.symbol+(card.was?' · '+card.was:'')),node('h3','',card.companyName||card.symbol));
+    var title=node('h3','');title.appendChild(el('a',{href:href,text:card.companyName||card.symbol,'data-vu-card-main':''}));
+    var identity=node('div','');identity.append(node('span','v2-eyebrow',card.symbol+(card.was?' · '+card.was:'')),title);
     if(D.Logos)identity.prepend(D.Logos.mark(card.symbol,{name:card.companyName,size:'md'}));
-    top.append(identity,link('Unternehmensprofil ↗',href,'v2-focus-link'));box.appendChild(top);
+    top.appendChild(identity);box.appendChild(top);
     box.appendChild(why(card));
     if(plain.zahl){var performance=node('div','v2-focus-performance');performance.append(node('strong',plain.zahl.ton||'',plain.zahl.wert),node('span','',plain.zahl.label));box.appendChild(performance);}
     var stage=node('div','v2-focus-stage');box.appendChild(stage);
@@ -119,6 +121,7 @@
   function compactCard(card,ctx,anchor,stage){
     if(card.quantAvailable===false||card.technicalAvailable===false)return anchor;
     var box=node('article','v2-tile-shell');box.dataset.symbol=card.symbol;box.appendChild(anchor);
+    anchor.setAttribute('data-vu-card-main','');box.dataset.vuHref=anchor.getAttribute('href');
     var content=Array.from(stage.childNodes);
     function chart(){stage.append.apply(stage,content);}
     controller(card,ctx,box,stage,chart,true);

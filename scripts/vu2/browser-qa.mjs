@@ -297,7 +297,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
-   {const hist=await page.locator('#historie').innerText();
+   /* VU3-Finalisierung: Stufe C steht in "Einzelheiten und Methodik" - zuerst aufklappen, dann lesen (wie die Faktoren). */
+   {await page.locator('#historie details').evaluateAll(ds=>ds.forEach(d=>{d.open=true;}));
+    const hist=await page.locator('#historie').innerText();
     if(!/C · Zertifizierter Backtest/i.test(hist)||!/kein vollständig zertifizierter Backtest vor/.test(hist)||!/noch keine Zahlen\. Es fehlt unter anderem: .+\(nötig .+, heute .+\)/.test(hist))befund(view,width,'Backtest-Stand fehlt im Rueckblick');}
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
    const first=page.locator('details.qx-factor').first();

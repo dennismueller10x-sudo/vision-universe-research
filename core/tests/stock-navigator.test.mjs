@@ -74,3 +74,13 @@ test("Einbau · Quant laedt Navigator nach identity/stock-context und Stil; Menu
   const sprite = readFileSync(join(ROOT, "assets", "product-icons.svg"), "utf8");
   for (const m of Object.values(NAV.MODULES)) assert.match(sprite, new RegExp('id="' + m.icon + '"'), m.icon);
 });
+
+test("Kopf · Name aus dem Ausschnitt unter dem Kuerzel (nicht unter dem Kontext-Schluessel)", () => {
+  const ctx = SC.fromUs("PLTR");
+  assert.notEqual(SC.key(ctx), "PLTR", "der Kontext-Schluessel ist nicht das Kuerzel - genau daran scheiterte die erste Fassung");
+  const shard = { schema: SC.SCHEMA, modules: {}, names: { PLTR: "Palantir Technologies Class A" } };
+  assert.equal(NAV.shardName(ctx, shard), "Palantir Technologies Class A");
+  assert.equal(NAV.shardName(SC.fromUs("ZZZZ"), shard), null);
+  assert.equal(NAV.shardName(ctx, { schema: SC.SCHEMA, modules: {} }), null);
+  assert.equal(NAV.shardName(ctx, null), null);
+});
