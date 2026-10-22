@@ -33,7 +33,7 @@
   "pass": 116,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 272,
+  "testsRun": 278,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1702,7 +1702,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 125,
+ "otherTests": 131,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2960,6 +2960,16 @@
    "result": "PASS"
   },
   {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-EQUIV-RAISES: Treppen-Boxen mit Stop-Anhebungen und Stopp-Ausstiegen identisch mit der Komponentenstudie",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-NAN-CLOSE-RAISE: eine Box, die auf einem Balken ohne Schluss bestaetigt wird, hebt den Stop trotzdem an (darvasPosition R2-03)",
+   "result": "PASS"
+  },
+  {
    "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
    "name": "GC-SF5-KK-LIFECYCLE: Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even",
    "result": "PASS"
@@ -3015,6 +3025,21 @@
    "result": "PASS"
   },
   {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-HG-READINGS: ADX-Lesart und erste Beruehrung sind vorregistrierte Alternativen; Referenz = Vertragskomponente",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-MOKA-USED-VIOLATION: eine bereits durch Unterschreitung bestaetigte 10DMA-Verletzung kehrt nicht als Ausloeser zurueck (Review SF5-C-M1)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-DELIST-NO-CLOSE-ENTRY: kein Schlusskurs-Einstieg am Delisting-Tag; Teilverkauf rueckt bei fehlendem Schluss auf den naechsten Balken",
+   "result": "PASS"
+  },
+  {
    "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
    "name": "GC-SF5-WEIN-SCREEN-EQUIV: Wochen-Setups und Ausbruchswochen identisch mit investorScreen / traderScreen",
    "result": "PASS"
@@ -3057,6 +3082,11 @@
   {
    "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
    "name": "SF5-LIFECYCLE-MATRIX: Matrix valide, Artefakt und Dokument = frischer Build, keine Statusaufwertung, getrennte Readiness",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+   "name": "SF5-ENGINE-PIT-ALL-ADAPTERS: jede Referenz aller Lifecycles ist praefixstabil (Entscheidungen bis m unabhaengig von spaeteren Balken)",
    "result": "PASS"
   },
   {

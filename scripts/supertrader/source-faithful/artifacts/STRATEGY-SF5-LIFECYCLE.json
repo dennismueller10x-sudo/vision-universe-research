@@ -4,7 +4,7 @@
  "engineVersion": "sf5-lifecycle-engine-1.0.0",
  "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
  "accounting": "RESEARCH_V1",
- "variantRegistrySha256": "00c94bb68ed2ac3fc744619271550465944ed8bf6a8ab1a29d8acbb85cffcefd",
+ "variantRegistrySha256": "947eedb5eb112fd0e2eb5f71e19dc77e86fba579f800d50b09c1466f536c0578",
  "principles": [
   "a mechanically confirmed setup is not an executable trade",
   "a model assumption is not a source rule",
@@ -29,6 +29,7 @@
   "commissionBps": 1,
   "terminalScenario": "S0_LAST_PRICE",
   "notModelled": [
+   "a source cap per position (e.g. KK-001 30 %) is applied at the entry; a held position that grows above it is not trimmed",
    "pyramiding / adds (manual in every source)",
    "exposure scaling by market condition (manual or proprietary)",
    "exit liquidity: participation is reported, not limited",
@@ -110,7 +111,14 @@
      "alternatives": [
       "AFTER_TOP_CONFIRMED"
      ],
-     "why": "start of the bottom search is SOURCE_AMBIGUOUS in #709 (VU-DAR UNRESOLVED); both readings are pre-registered"
+     "why": "start of the bottom search is SOURCE_AMBIGUOUS in #709 (VU-DAR UNRESOLVED); the DAR-Q2 wording (bottom only after the top is established) leans toward AFTER_TOP_CONFIRMED, the contract default keeps already traded lows; both readings are pre-registered"
+    },
+    {
+     "id": "MA-DAR-ATH-AVAILABLE-HISTORY",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "the all-time high (DAR-Q9) is checked against the available split-adjusted history; records flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED are traded",
+     "alternatives": [],
+     "why": "the snapshot starts at the 2015 warm-up, not at the listing date; the contract sends such records to review, the simulation substitutes that review. No listing-date field exists in the snapshot to pre-register a verified-only alternative"
     },
     {
      "id": "MA-DAR-FRACTION",
@@ -236,7 +244,7 @@
     {
      "id": "DAR-SETUP-ATH",
      "phase": "SETUP_QUALIFICATION",
-     "condition": "the breakout must be to an all-time high (within the available history, flagged)",
+     "condition": "the breakout must be to an all-time high; checked within the available history (snapshot from 2015), unverified records are traded in the simulation",
      "psr709": [
       "DAR-Q9"
      ],
@@ -255,10 +263,12 @@
       "listing-to-date history (partial: snapshot starts 2015)"
      ],
      "pit": "PIT: bars up to the decision close only",
-     "class": "SOURCE_DERIVED",
-     "modelAssumptions": [],
-     "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": null,
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-DAR-ATH-AVAILABLE-HISTORY"
+     ],
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "DAR-Q9 is HARD; the contract sends an unverified all-time high to review, the simulation substitutes that review",
      "sources": [
       "B06 PDF 194; printed 182 (HARD, HIGH)"
      ]
@@ -749,9 +759,9 @@
     "sourceFidelity": {
      "byClass": {
       "SOURCE_EXACT": 2,
-      "SOURCE_DERIVED": 5,
+      "SOURCE_DERIVED": 4,
       "SOURCE_BOUNDED": 0,
-      "MODEL_ASSUMPTION": 9,
+      "MODEL_ASSUMPTION": 10,
       "MANUAL_REVIEW": 4,
       "DATA_BLOCKED": 0,
       "SOURCE_BLOCKED": 0
@@ -769,8 +779,8 @@
      "phases": {
       "SETUP_QUALIFICATION": {
        "rows": 4,
-       "mechanical": 2,
-       "underModelAssumption": 2,
+       "mechanical": 1,
+       "underModelAssumption": 3,
        "evidence": 0,
        "manual": 0,
        "blocked": 0
@@ -852,6 +862,7 @@
      "operationalPhases": 9,
      "lifecycle": "MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS",
      "modelAssumptionsUsed": [
+      "MA-DAR-ATH-AVAILABLE-HISTORY",
       "MA-DAR-BOTTOM-START",
       "MA-DAR-COSTS",
       "MA-DAR-FRACTION",
@@ -957,6 +968,12 @@
      }
     },
     {
+     "id": "ALT-EXIT-TRAIL-FROM-ENTRY",
+     "changes": {
+      "exitPolicy": "PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY"
+     }
+    },
+    {
      "id": "ALT-RISK-00025",
      "changes": {
       "sizing": {
@@ -986,7 +1003,7 @@
     {
      "id": "MA-KK-SETUP-PROXY",
      "phase": "SETUP_QUALIFICATION",
-     "reference": "CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising over 5 sessions at the prior close (KK-009)",
+     "reference": "CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising at the prior close (KK-009; the 5-session slope window is a VU convention, as in breakoutEvidence)",
      "alternatives": [
       "CONSOLIDATION_20 (20 sessions)",
       "NO_MA_CONDITION"
@@ -996,7 +1013,7 @@
     {
      "id": "MA-KK-ENTRY-TIMING",
      "phase": "ENTRY_EXECUTION",
-     "reference": "BREAKOUT_DAY_CLOSE: a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day",
+     "reference": "BREAKOUT_DAY_CLOSE (CLOSE_DECISION_USES_FINAL_BAR): a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day",
      "alternatives": [
       "NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally)"
      ],
@@ -1005,11 +1022,12 @@
     {
      "id": "MA-KK-EXIT-POLICY",
      "phase": "POSITION_MANAGEMENT",
-     "reference": "PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest exits at the next open after the first close below the 10-day MA (beginner rule KK-014)",
+     "reference": "PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest (from the partial-sale day on) exits at the next open after the first close below the 10-day MA (beginner rule KK-014); before that day only the low-of-day stop exits",
      "alternatives": [
       "PARTIAL5_HALF_BE_MA10",
       "PARTIAL3_THIRD_BE_MA20",
-      "NO_PARTIAL_MA10"
+      "NO_PARTIAL_MA10 (trail from the entry)",
+      "PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY"
      ],
      "why": "KK-013 / KK-014 are preferences with printed ranges; the reference takes the earliest printed day and the smallest printed fraction; the profit condition prevents a break-even stop above the price"
     },
@@ -1042,10 +1060,9 @@
     {
      "id": "KK-SETUP-PROXY",
      "phase": "SETUP_QUALIFICATION",
-     "condition": "prior move, higher lows, orderly tightening, rising 10 / 20-day MA, breakout level",
+     "condition": "prior move, consolidation length, rising 10 / 20-day MA, breakout level (higher lows and orderly tightening, KK-007, are not modelled)",
      "psr709": [
       "KK-006",
-      "KK-007",
       "KK-008",
       "KK-009",
       "KK-011"
@@ -1075,10 +1092,31 @@
      "note": "KK-MR-SETUP / KK-MR-LEVEL are manual; the proxy uses the printed lower ends as bounds",
      "sources": [
       "W-KK3 Breakouts:criteria1 (PREFERENCE, HIGH)",
-      "W-KK3 Breakouts:criteria2 (STRONG_PREFERENCE, HIGH)",
       "W-KK3 Breakouts:criteria3 (CONTEXTUAL, HIGH)",
       "W-KK3 Breakouts:criteria3 (STRONG_PREFERENCE, HIGH)",
       "W-KK3 HowtoTrade1 (OPTIONAL, HIGH)"
+     ]
+    },
+    {
+     "id": "KK-SETUP-TIGHTENING",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "higher lows, orderly tightening",
+     "psr709": [
+      "KK-007"
+     ],
+     "contractRules": [
+      "KK-SF-BO-SETUP"
+     ],
+     "implemented": null,
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "reported by breakoutEvidence, not part of the simulated proxy",
+     "sources": [
+      "W-KK3 Breakouts:criteria2 (STRONG_PREFERENCE, HIGH)"
      ]
     },
     {
@@ -1187,7 +1225,7 @@
      "data": [
       "daily split-adjusted OHLCV (snapshot)"
      ],
-     "pit": "closing decision with the final close and low (declared); alternative next open",
+     "pit": "CLOSE_DECISION_USES_FINAL_BAR: the closing decision uses the final close and low of the breakout day (declared, small daily-bar lookahead against a real closing order); alternative next open is strictly PIT",
      "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
       "MA-KK-ENTRY-TIMING"
@@ -1526,7 +1564,7 @@
       "SOURCE_DERIVED": 0,
       "SOURCE_BOUNDED": 0,
       "MODEL_ASSUMPTION": 7,
-      "MANUAL_REVIEW": 5,
+      "MANUAL_REVIEW": 6,
       "DATA_BLOCKED": 1,
       "SOURCE_BLOCKED": 0
      },
@@ -1542,10 +1580,10 @@
     "mechanicalCompleteness": {
      "phases": {
       "SETUP_QUALIFICATION": {
-       "rows": 2,
+       "rows": 3,
        "mechanical": 0,
        "underModelAssumption": 1,
-       "evidence": 1,
+       "evidence": 2,
        "manual": 0,
        "blocked": 0
       },
@@ -1652,12 +1690,13 @@
      "dataException": [],
      "strategyBacktest": false,
      "contractMeasurementUnchanged": true,
-     "why": "5 manual source decisions; 3 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
+     "why": "6 manual source decisions; 3 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [],
      "certification": "DIAGNOSTIC_NOT_CERTIFIED"
     },
     "manualReview": {
      "rows": [
+      "KK-SETUP-TIGHTENING",
       "KK-SETUP-MOMENTUM",
       "KK-SIZE-RISK",
       "KK-MGMT-PARTIAL",
@@ -1755,7 +1794,7 @@
      "alternatives": [
       "NONE"
      ],
-     "why": "context is a preference; the 50-day MA is the critical MA the sources name, used as a proxy, never as their rule"
+     "why": "context is a preference; #709 names \"the critical MA\" (MOKAPP-007) and an uptrend (MOKA12-006) without a period: the 50-day MA is a VU choice (the authors' sell guide uses the 10 / 50-day MAs, MOKA12-008); the 200-day support exception of MOKAPP-007 is not modelled"
     },
     {
      "id": "MA-MOKA-ENTRY-TIMING",
@@ -2437,7 +2476,7 @@
      "alternatives": [
       "NONE"
      ],
-     "why": "context is a preference; the 50-day MA is the critical MA the sources name, used as a proxy, never as their rule"
+     "why": "context is a preference; #709 names \"the critical MA\" (MOKAPP-007) and an uptrend (MOKA12-006) without a period: the 50-day MA is a VU choice (the authors' sell guide uses the 10 / 50-day MAs, MOKA12-008); the 200-day support exception of MOKAPP-007 is not modelled"
     },
     {
      "id": "MA-MOKA-ENTRY-TIMING",
@@ -2483,6 +2522,16 @@
      "reference": "stop-market at the gap-day low, whole position",
      "alternatives": [],
      "why": "MOKA12-007 risk reference; MOKASTOP-006 \"generally at least half\" - selling all lies inside the printed rule"
+    },
+    {
+     "id": "MA-MOKA-BGU-VOLWINDOW",
+     "phase": "SETUP_QUALIFICATION",
+     "strategies": [
+      "BUYABLE_GAP_UP"
+     ],
+     "reference": "1.5x the mean volume of the 50 sessions before the gap day (gapUpAt)",
+     "alternatives": [],
+     "why": "the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen's window is run, so the measurement depends on this choice (owner decision)"
     },
     {
      "id": "MA-MOKA-SIZING",
@@ -2578,7 +2627,7 @@
      "pit": "PIT: bars up to the decision close only",
      "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
-      "MA-MOKA-MANUAL-SUBSTITUTE"
+      "MA-MOKA-BGU-VOLWINDOW"
      ],
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
      "note": "1.5x SOURCE_EXACT, the 50-session window SOURCE_AMBIGUOUS (MOKA-MR-VOLWINDOW)",
@@ -3059,6 +3108,7 @@
      "lifecycle": "MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS",
      "modelAssumptionsUsed": [
       "MA-MOKA-BGU-STOP",
+      "MA-MOKA-BGU-VOLWINDOW",
       "MA-MOKA-CONTEXT-PROXY",
       "MA-MOKA-COSTS",
       "MA-MOKA-ENTRY-TIMING",
@@ -3198,9 +3248,9 @@
       "INVESTOR",
       "TRADER"
      ],
-     "reference": "the buy stop prepared from the completed week rests for every session of the following week (re-armed daily), fill max(open, trigger)",
+     "reference": "the buy stop prepared from the completed week rests for every session of the following week (re-armed daily) and is prepared again from every later completed week while the setup holds, fill max(open, trigger)",
      "alternatives": [],
-     "why": "WEIN-ORD prepares a buy stop; its lifetime of one week follows the weekly screen (WEIN-GTC practice is execution judgment)"
+     "why": "WEIN-ORD prepares a buy stop; re-preparing it every week while the setup holds is the good-till-cancelled practice of WEIN-GTC (STRONG_PREFERENCE) on weekly decisions"
     },
     {
      "id": "MA-WEIN-WEEK-END",
@@ -3211,7 +3261,7 @@
      ],
      "reference": "a week is complete at its last session; whether the next session opens a new ISO week is read from the trading calendar, not from prices",
      "alternatives": [],
-     "why": "weeklyBars marks a week complete when a later bar belongs to another week; the lifecycle takes the weekly decision at that close"
+     "why": "weeklyBars marks a week complete when a later bar of the security belongs to another week; the lifecycle takes the weekly decision at that close. Only a security without a bar on the last calendar session of a week (halt) differs: its week is decided at its own last bar"
     },
     {
      "id": "MA-WEIN-INITIAL-STOP",
@@ -3222,7 +3272,7 @@
      ],
      "reference": "one raw cent below the machine proposal of the screen (Investor: lowest weekly low of the base; Trader: lowest weekly low of the consolidation)",
      "alternatives": [
-      "RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide)"
+      "RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide applied without its exceptions for outstanding charts; never a tighter stop, WEIN-STOP2)"
      ],
      "why": "WEIN-STOP2 / WEIN-TR-STOP leave the significant low to the reviewer; WEIN-STOP4 is a guide with exceptions, so only an alternative uses it"
     },
@@ -3241,7 +3291,8 @@
      "id": "MA-WEIN-VOL5-STRENGTH",
      "phase": "EXIT_CONDITIONS",
      "strategies": [
-      "INVESTOR"
+      "INVESTOR",
+      "TRADER"
      ],
      "reference": "volume confirmation is judged at the end of the breakout week by the three printed alternatives (volumeAlternatives); with none holding, the first later daily close above the prior close is the \"first small strength\": exit at the next open",
      "alternatives": [
@@ -3393,12 +3444,15 @@
     {
      "id": "WI-SETUP-STAGE",
      "phase": "SETUP_QUALIFICATION",
-     "condition": "stage classification, volume judgment, RS, overhead resistance",
+     "condition": "stage classification (no Stage 3 / Stage 4 buys), volume judgment, RS (no buy when negative and still poor), overhead resistance",
      "psr709": [
       "WEIN-S1",
       "WEIN-S2",
+      "WEIN-NO3",
+      "WEIN-NO4",
       "WEIN-VOL",
       "WEIN-RS",
+      "WEIN-RSNO",
       "WEIN-OH"
      ],
      "contractRules": [
@@ -3425,8 +3479,11 @@
      "sources": [
       "B09 PDF 47; printed 33 (CONTEXTUAL, HIGH)",
       "B09 PDF 48; printed 34 (CONTEXTUAL, HIGH)",
+      "B09 PDF 52; printed 38 (HARD, HIGH)",
+      "B09 PDF 53; printed 39 (HARD, HIGH)",
       "B09 PDF 117; printed 103 (HARD, HIGH)",
-      "B09 PDF 122; printed 108 (CONTEXTUAL, HIGH)"
+      "B09 PDF 122; printed 108 (CONTEXTUAL, HIGH)",
+      "B09 PDF 124; printed 110 (HARD, HIGH)"
      ]
     },
     {
@@ -3583,6 +3640,79 @@
      ]
     },
     {
+     "id": "WI-EXIT-STAGE4",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "no long hold in Stage 4",
+     "psr709": [
+      "WEIN-NO4"
+     ],
+     "contractRules": [
+      "WEIN-SF-STAGE"
+     ],
+     "implemented": null,
+     "missing": "stage judgment is manual; only the price stop exits a Stage 4 decline in the simulation",
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B09 PDF 53; printed 39 (HARD, HIGH)"
+     ]
+    },
+    {
+     "id": "WI-MGMT-NO-AVG-DOWN",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "never average down; add only on confirmation",
+     "psr709": [
+      "WEIN-AVG"
+     ],
+     "contractRules": [
+      "WEIN-SF-NO-AVG-DOWN"
+     ],
+     "implemented": null,
+     "missing": "adds are manual; the simulation never adds, so it never averages down",
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B09 PDF 186; printed 172 (HARD, HIGH)"
+     ]
+    },
+    {
+     "id": "WI-EXIT-VOL5",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "buy stop filled without volume confirmation: sell into the first small strength (shared rule of C04 / C05)",
+     "psr709": [
+      "WEIN-VOL5"
+     ],
+     "contractRules": [
+      "WEIN-SF-VOL5"
+     ],
+     "implemented": {
+      "code": "research/weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER",
+      "tests": [
+       "sf-sf5-weinstein-lifecycle: GC-SF5-WEIN-VOL5"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-WEIN-VOL5-STRENGTH"
+     ],
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "WEIN-VOL5 is HARD in #709; \"clear confirmation\" and \"first small strength\" need judgment, so the contract keeps the rule manual",
+     "sources": [
+      "B09 PDF 251; printed 237 (HARD, HIGH)"
+     ]
+    },
+    {
      "id": "WI-EXIT-NONTECH",
      "phase": "EXIT_CONDITIONS",
      "condition": "no tax, dividend or P/E exit",
@@ -3728,35 +3858,6 @@
      ]
     },
     {
-     "id": "WI-EXIT-VOL5",
-     "phase": "EXIT_CONDITIONS",
-     "condition": "buy stop filled without volume confirmation: sell into the first small strength",
-     "psr709": [
-      "WEIN-VOL5"
-     ],
-     "contractRules": [
-      "WEIN-SF-VOL5"
-     ],
-     "implemented": {
-      "code": "research/weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER",
-      "tests": [
-       "sf-sf5-weinstein-lifecycle: GC-SF5-WEIN-VOL5"
-      ]
-     },
-     "missing": null,
-     "data": [],
-     "pit": "n/a",
-     "class": "MANUAL_REVIEW",
-     "modelAssumptions": [
-      "MA-WEIN-VOL5-STRENGTH"
-     ],
-     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "WEIN-VOL5 is HARD in #709; the contract keeps it manual because \"clear confirmation\" and \"small strength\" need judgment",
-     "sources": [
-      "B09 PDF 251; printed 237 (HARD, HIGH)"
-     ]
-    },
-    {
      "id": "WI-ACC-RESEARCH-V1",
      "phase": "TRADE_ACCOUNTING",
      "condition": "research-v1: orders only on real source bars, dividends on held shares, stale limit, economic delisting, ledger replay reconciliation",
@@ -3855,7 +3956,7 @@
       "SOURCE_DERIVED": 5,
       "SOURCE_BOUNDED": 0,
       "MODEL_ASSUMPTION": 5,
-      "MANUAL_REVIEW": 7,
+      "MANUAL_REVIEW": 9,
       "DATA_BLOCKED": 2,
       "SOURCE_BLOCKED": 0
      },
@@ -3911,19 +4012,19 @@
        "blocked": 0
       },
       "POSITION_MANAGEMENT": {
-       "rows": 2,
+       "rows": 3,
        "mechanical": 0,
        "underModelAssumption": 1,
        "evidence": 0,
-       "manual": 1,
+       "manual": 2,
        "blocked": 0
       },
       "EXIT_CONDITIONS": {
-       "rows": 2,
+       "rows": 3,
        "mechanical": 1,
        "underModelAssumption": 1,
        "evidence": 0,
-       "manual": 0,
+       "manual": 1,
        "blocked": 0
       },
       "TRADE_ACCOUNTING": {
@@ -3994,26 +4095,28 @@
      ],
      "strategyBacktest": false,
      "contractMeasurementUnchanged": true,
-     "why": "7 manual source decisions; 5 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
+     "why": "9 manual source decisions; 5 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [],
      "certification": "DIAGNOSTIC_NOT_CERTIFIED"
     },
     "manualReview": {
      "rows": [
       "WI-SETUP-STAGE",
+      "WI-EXIT-STAGE4",
+      "WI-MGMT-NO-AVG-DOWN",
+      "WI-EXIT-VOL5",
       "WI-STOP-LEVEL",
       "WI-SIZE",
       "WI-MGMT-TRAIL",
       "WI-MGMT-STAGE3",
-      "WI-EXIT-VOL5",
       "WI-READINESS"
      ],
      "substitutedInSimulation": [
       "WI-SETUP-STAGE",
+      "WI-EXIT-VOL5",
       "WI-STOP-LEVEL",
       "WI-SIZE",
-      "WI-MGMT-TRAIL",
-      "WI-EXIT-VOL5"
+      "WI-MGMT-TRAIL"
      ],
      "required": true
     },
@@ -4037,7 +4140,7 @@
     "dataException": "GROUP_AND_MARKET_NOT_APPLIED",
     "intrabarOrder": "PESSIMISTIC",
     "riskGuide": null,
-    "vol5": false,
+    "vol5": true,
     "trailThreshold": 0.07,
     "sizing": {
      "mode": "WEIGHT",
@@ -4048,6 +4151,12 @@
     {
      "id": "REF",
      "changes": {}
+    },
+    {
+     "id": "ALT-NO-VOL5-EXIT",
+     "changes": {
+      "vol5": false
+     }
     },
     {
      "id": "ALT-RISK-GUIDE-15",
@@ -4086,9 +4195,9 @@
       "INVESTOR",
       "TRADER"
      ],
-     "reference": "the buy stop prepared from the completed week rests for every session of the following week (re-armed daily), fill max(open, trigger)",
+     "reference": "the buy stop prepared from the completed week rests for every session of the following week (re-armed daily) and is prepared again from every later completed week while the setup holds, fill max(open, trigger)",
      "alternatives": [],
-     "why": "WEIN-ORD prepares a buy stop; its lifetime of one week follows the weekly screen (WEIN-GTC practice is execution judgment)"
+     "why": "WEIN-ORD prepares a buy stop; re-preparing it every week while the setup holds is the good-till-cancelled practice of WEIN-GTC (STRONG_PREFERENCE) on weekly decisions"
     },
     {
      "id": "MA-WEIN-WEEK-END",
@@ -4099,7 +4208,7 @@
      ],
      "reference": "a week is complete at its last session; whether the next session opens a new ISO week is read from the trading calendar, not from prices",
      "alternatives": [],
-     "why": "weeklyBars marks a week complete when a later bar belongs to another week; the lifecycle takes the weekly decision at that close"
+     "why": "weeklyBars marks a week complete when a later bar of the security belongs to another week; the lifecycle takes the weekly decision at that close. Only a security without a bar on the last calendar session of a week (halt) differs: its week is decided at its own last bar"
     },
     {
      "id": "MA-WEIN-INITIAL-STOP",
@@ -4110,7 +4219,7 @@
      ],
      "reference": "one raw cent below the machine proposal of the screen (Investor: lowest weekly low of the base; Trader: lowest weekly low of the consolidation)",
      "alternatives": [
-      "RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide)"
+      "RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide applied without its exceptions for outstanding charts; never a tighter stop, WEIN-STOP2)"
      ],
      "why": "WEIN-STOP2 / WEIN-TR-STOP leave the significant low to the reviewer; WEIN-STOP4 is a guide with exceptions, so only an alternative uses it"
     },
@@ -4124,6 +4233,19 @@
      "reference": "PESSIMISTIC",
      "alternatives": [],
      "why": "a daily bar does not show the order of the trigger and a low below the stop"
+    },
+    {
+     "id": "MA-WEIN-VOL5-STRENGTH",
+     "phase": "EXIT_CONDITIONS",
+     "strategies": [
+      "INVESTOR",
+      "TRADER"
+     ],
+     "reference": "volume confirmation is judged at the end of the breakout week by the three printed alternatives (volumeAlternatives); with none holding, the first later daily close above the prior close is the \"first small strength\": exit at the next open",
+     "alternatives": [
+      "NO_VOL5_EXIT"
+     ],
+     "why": "WEIN-VOL5 is HARD; \"clear confirmation\" (WEIN-VOL4) and \"first small strength\" have no numbers"
     },
     {
      "id": "MA-WEIN-TRAIL",
@@ -4267,12 +4389,15 @@
     {
      "id": "WT-SETUP-STAGE",
      "phase": "SETUP_QUALIFICATION",
-     "condition": "stage classification, volume judgment, RS, overhead resistance",
+     "condition": "stage classification (no Stage 3 / Stage 4 buys), volume judgment, RS (no buy when negative and still poor), overhead resistance",
      "psr709": [
       "WEIN-S1",
       "WEIN-S2",
+      "WEIN-NO3",
+      "WEIN-NO4",
       "WEIN-VOL",
       "WEIN-RS",
+      "WEIN-RSNO",
       "WEIN-OH"
      ],
      "contractRules": [
@@ -4299,8 +4424,11 @@
      "sources": [
       "B09 PDF 47; printed 33 (CONTEXTUAL, HIGH)",
       "B09 PDF 48; printed 34 (CONTEXTUAL, HIGH)",
+      "B09 PDF 52; printed 38 (HARD, HIGH)",
+      "B09 PDF 53; printed 39 (HARD, HIGH)",
       "B09 PDF 117; printed 103 (HARD, HIGH)",
-      "B09 PDF 122; printed 108 (CONTEXTUAL, HIGH)"
+      "B09 PDF 122; printed 108 (CONTEXTUAL, HIGH)",
+      "B09 PDF 124; printed 110 (HARD, HIGH)"
      ]
     },
     {
@@ -4454,6 +4582,77 @@
      "note": null,
      "sources": [
       "B09 PDF 197; printed 183 (HARD, HIGH)"
+     ]
+    },
+    {
+     "id": "WT-EXIT-STAGE4",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "no long hold in Stage 4",
+     "psr709": [
+      "WEIN-NO4"
+     ],
+     "contractRules": [
+      "WEIN-SF-STAGE"
+     ],
+     "implemented": null,
+     "missing": "stage judgment is manual; only the price stop exits a Stage 4 decline in the simulation",
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B09 PDF 53; printed 39 (HARD, HIGH)"
+     ]
+    },
+    {
+     "id": "WT-MGMT-NO-AVG-DOWN",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "never average down; add only on confirmation",
+     "psr709": [
+      "WEIN-AVG"
+     ],
+     "contractRules": [
+      "WEIN-SF-NO-AVG-DOWN"
+     ],
+     "implemented": null,
+     "missing": "adds are manual; the simulation never adds, so it never averages down",
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B09 PDF 186; printed 172 (HARD, HIGH)"
+     ]
+    },
+    {
+     "id": "WT-EXIT-VOL5",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "buy stop filled without volume confirmation: sell into the first small strength (shared rule of C04 / C05)",
+     "psr709": [
+      "WEIN-VOL5"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/weinstein-lifecycle.mjs#WEINSTEIN_TRADER_ADAPTER",
+      "tests": [
+       "sf-sf5-weinstein-lifecycle: GC-SF5-WEIN-VOL5"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-WEIN-VOL5-STRENGTH"
+     ],
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "WEIN-VOL5 is HARD in #709; \"clear confirmation\" and \"first small strength\" need judgment, so the contract keeps the rule manual",
+     "sources": [
+      "B09 PDF 251; printed 237 (HARD, HIGH)"
      ]
     },
     {
@@ -4694,7 +4893,7 @@
       "SOURCE_DERIVED": 5,
       "SOURCE_BOUNDED": 0,
       "MODEL_ASSUMPTION": 5,
-      "MANUAL_REVIEW": 6,
+      "MANUAL_REVIEW": 9,
       "DATA_BLOCKED": 2,
       "SOURCE_BLOCKED": 0
      },
@@ -4750,19 +4949,19 @@
        "blocked": 0
       },
       "POSITION_MANAGEMENT": {
-       "rows": 1,
+       "rows": 2,
        "mechanical": 0,
        "underModelAssumption": 1,
        "evidence": 0,
-       "manual": 0,
+       "manual": 1,
        "blocked": 0
       },
       "EXIT_CONDITIONS": {
-       "rows": 2,
+       "rows": 4,
        "mechanical": 1,
-       "underModelAssumption": 0,
+       "underModelAssumption": 1,
        "evidence": 0,
-       "manual": 1,
+       "manual": 2,
        "blocked": 0
       },
       "TRADE_ACCOUNTING": {
@@ -4802,6 +5001,7 @@
       "MA-WEIN-RESEARCH-UNIVERSE",
       "MA-WEIN-SIZING",
       "MA-WEIN-TRAIL",
+      "MA-WEIN-VOL5-STRENGTH",
       "MA-WEIN-WEEK-END"
      ]
     },
@@ -4832,13 +5032,16 @@
      ],
      "strategyBacktest": false,
      "contractMeasurementUnchanged": true,
-     "why": "6 manual source decisions; 4 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
+     "why": "9 manual source decisions; 5 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [],
      "certification": "DIAGNOSTIC_NOT_CERTIFIED"
     },
     "manualReview": {
      "rows": [
       "WT-SETUP-STAGE",
+      "WT-EXIT-STAGE4",
+      "WT-MGMT-NO-AVG-DOWN",
+      "WT-EXIT-VOL5",
       "WT-STOP-LEVEL",
       "WT-SIZE",
       "WT-MGMT-TRAIL",
@@ -4847,6 +5050,7 @@
      ],
      "substitutedInSimulation": [
       "WT-SETUP-STAGE",
+      "WT-EXIT-VOL5",
       "WT-STOP-LEVEL",
       "WT-SIZE",
       "WT-MGMT-TRAIL"
@@ -4871,6 +5075,8 @@
    "referenceConfig": {
     "sourceVariant": "W-RAS97",
     "previousBar": "TOUCH_BAR",
+    "adxReading": "RUN_TO_TOUCH",
+    "touches": "EVERY_TOUCH",
     "intrabarOrder": "PESSIMISTIC",
     "sizing": {
      "mode": "RISK",
@@ -4893,6 +5099,18 @@
      "changes": {
       "intrabarOrder": "OPTIMISTIC"
      }
+    },
+    {
+     "id": "ALT-ADX-AT-IMPULSE-HIGH",
+     "changes": {
+      "adxReading": "AT_IMPULSE_HIGH"
+     }
+    },
+    {
+     "id": "ALT-FIRST-TOUCH-ONLY",
+     "changes": {
+      "touches": "FIRST_TOUCH_ONLY"
+     }
     }
    ],
    "modelAssumptions": [
@@ -4906,18 +5124,36 @@
     {
      "id": "MA-RAS-PREVIOUS-BAR",
      "phase": "ENTRY_EXECUTION",
-     "reference": "TOUCH_BAR: buy stop one raw cent above the high of the bar that touched the 20 EMA, for the next session only",
+     "reference": "TOUCH_BAR: buy stop one raw cent above the high of the bar that touched the 20 EMA, placed after its close for the next session only",
      "alternatives": [
-      "BAR_BEFORE_TOUCH: above the high of the bar before the touch bar"
+      "BAR_BEFORE_TOUCH: above the high of the bar before the touch bar, also for the next session"
      ],
-     "why": "\"the previous bar\" is read from the next session, where the touch bar is the previous bar; the other reading is pre-registered"
+     "why": "the literal real-time reading is a buy stop above the bar before the touch, which can fill on the touch bar itself; that needs intraday data and is DATA_BLOCKED on daily bars. Both daily variants are conventions that place the order after the touch close; the one-session validity is not in the sidebar"
+    },
+    {
+     "id": "MA-RAS-ADX-READING",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "RUN_TO_TOUCH: ADX(14) > 30 on every bar from the start of the run to the bar before the touch (the contract component RAS-SF-PULLBACK); \"rising\" holds where the run crossed 30 upward",
+     "alternatives": [
+      "AT_IMPULSE_HIGH: ADX > 30 on the bar of the impulse high only; the ADX may fall below 30 during the retracement (\"initially\")"
+     ],
+     "why": "W-RAS97 rule 1 says \"initially greater than 30 and rising\" and rule 2 expects a turndown during the retracement; which bars carry the condition is not stated"
+    },
+    {
+     "id": "MA-RAS-MANUAL-SUBSTITUTE",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "EVERY_TOUCH: every touch of the 20 EMA in the setup is taken (strong impulse and first pullback substituted)",
+     "alternatives": [
+      "FIRST_TOUCH_ONLY: only the first touch since the impulse high"
+     ],
+     "why": "RAS04-001 (STRONG_PREFERENCE) strong impulse, first pullback; review flags RAS-MR-IMPULSE / RAS-MR-NOT-FIRST in the contract"
     },
     {
      "id": "MA-RAS-SWING-LOW",
      "phase": "INITIAL_STOP",
-     "reference": "lowest low from the impulse high (highest high since ADX rose above 30) to the touch bar",
+     "reference": "lowest low from the impulse high to the touch bar",
      "alternatives": [],
-     "why": "\"newly formed swing low\" without a swing definition; the pullback low is the low the pattern forms"
+     "why": "\"newly formed swing low\" without a swing definition; the pullback low is the low the pattern forms. A lower low on the fill bar is handled by the same-bar stop (intrabar order), not by moving the stop"
     },
     {
      "id": "MA-RAS-EXIT",
@@ -4982,9 +5218,39 @@
      ]
     },
     {
+     "id": "HG-SETUP-ADX-READING",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "W-RAS97 \"initially greater than 30 and rising\": which bars must carry ADX > 30",
+     "psr709": [
+      "RAS04-002"
+     ],
+     "contractRules": [
+      "RAS-SF-ADX"
+     ],
+     "implemented": {
+      "code": "research/holy-grail-lifecycle.mjs#holyGrailSetupSeries",
+      "tests": [
+       "sf-sf5-kk-moka-lifecycle: GC-SF5-HG-RESEARCH-VARIANT",
+       "sf-sf5-kk-moka-lifecycle: GC-SF5-HG-READINGS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-RAS-ADX-READING"
+     ],
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "W-RAS04 PDF4;ownquote (HARD, HIGH)"
+     ]
+    },
+    {
      "id": "HG-SETUP-PULLBACK",
      "phase": "SETUP_QUALIFICATION",
-     "condition": "pullback to the 20 EMA after a strong impulse",
+     "condition": "touch of the 20 EMA while ADX(14) > 30 (the contract component)",
      "psr709": [
       "RAS04-001"
      ],
@@ -5005,7 +5271,36 @@
      "class": "SOURCE_DERIVED",
      "modelAssumptions": [],
      "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": "impulse strength and \"first\" pullback stay review flags",
+     "note": null,
+     "sources": [
+      "W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)"
+     ]
+    },
+    {
+     "id": "HG-SETUP-IMPULSE-FIRST",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "strong impulse; FIRST pullback to the 20 EMA",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "contractRules": [
+      "RAS-SF-PULLBACK"
+     ],
+     "implemented": {
+      "code": "research/holy-grail-lifecycle.mjs#holyGrailSetupSeries",
+      "tests": [
+       "sf-sf5-kk-moka-lifecycle: GC-SF5-HG-READINGS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-RAS-MANUAL-SUBSTITUTE"
+     ],
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "review flags RAS-MR-IMPULSE / RAS-MR-NOT-FIRST in the contract; substituted in the simulation",
      "sources": [
       "W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)"
      ]
@@ -5290,8 +5585,8 @@
       "SOURCE_EXACT": 1,
       "SOURCE_DERIVED": 1,
       "SOURCE_BOUNDED": 0,
-      "MODEL_ASSUMPTION": 7,
-      "MANUAL_REVIEW": 2,
+      "MODEL_ASSUMPTION": 8,
+      "MANUAL_REVIEW": 3,
       "DATA_BLOCKED": 1,
       "SOURCE_BLOCKED": 1
      },
@@ -5307,9 +5602,9 @@
     "mechanicalCompleteness": {
      "phases": {
       "SETUP_QUALIFICATION": {
-       "rows": 2,
+       "rows": 4,
        "mechanical": 2,
-       "underModelAssumption": 0,
+       "underModelAssumption": 2,
        "evidence": 0,
        "manual": 0,
        "blocked": 0
@@ -5391,9 +5686,11 @@
      "operationalPhases": 9,
      "lifecycle": "INCOMPLETE_LIFECYCLE",
      "modelAssumptionsUsed": [
+      "MA-RAS-ADX-READING",
       "MA-RAS-COSTS",
       "MA-RAS-EXIT",
       "MA-RAS-INTRABAR-ORDER",
+      "MA-RAS-MANUAL-SUBSTITUTE",
       "MA-RAS-PREVIOUS-BAR",
       "MA-RAS-SIZING",
       "MA-RAS-SOURCE-W-RAS97",
@@ -5419,16 +5716,18 @@
      "dataException": [],
      "strategyBacktest": false,
      "contractMeasurementUnchanged": true,
-     "why": "2 manual source decisions; 1 are substituted by declared model assumptions in the simulation; entry and stop come from a source the owner has not accepted (contract status unchanged), so a complete run is a model study, never a strategy backtest",
+     "why": "3 manual source decisions; 2 are substituted by declared model assumptions in the simulation; entry and stop come from a source the owner has not accepted (contract status unchanged), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [],
      "certification": "DIAGNOSTIC_NOT_CERTIFIED"
     },
     "manualReview": {
      "rows": [
+      "HG-SETUP-IMPULSE-FIRST",
       "HG-EXIT-NEW-HIGH",
       "HG-READINESS"
      ],
      "substitutedInSimulation": [
+      "HG-SETUP-IMPULSE-FIRST",
       "HG-EXIT-NEW-HIGH"
      ],
      "required": true

@@ -9,7 +9,7 @@ import { POCKET_PIVOT_ADAPTER, BUYABLE_GAP_UP_ADAPTER, PP_REFERENCE_CONFIG, BGU_
 import { sellGuideEvidence } from '../source-faithful/methods/morales-kacher.mjs';
 import { breakoutStopCheck, adr20 } from '../source-faithful/methods/kullamagi.mjs';
 
-const PINNED_KK_VARIANTS = 'e9a4ba6088244459a29049c25839417f15da8a511d80d6e1a4030552389108ae';
+const PINNED_KK_VARIANTS = '4ce68694eb3182fc6c720297d665077969c7f0d2864dfae39be43d9f1396d491';
 const PINNED_MOKA_VARIANTS = '709c00ac75473dfea9b218e3eb134d8746f756ea0c0b68ee3f31ba0413e3e3ca';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
@@ -181,4 +181,43 @@ test('GC-SF5-HG-RESEARCH-VARIANT: Buy-Stop ueber dem Beruehrungsbalken, Stop am 
   for (const v of HG_RUN_VARIANTS) assert.deepEqual(validateHgConfig(v.config), []);
   assert.equal(W_RAS97.contractStatusUnchanged, true);
   for (const id of ['RAS-SF-ENTRY', 'RAS-SF-STOP', 'RAS-SF-SIZE']) assert.equal(HOLY_GRAIL.rules.find((x) => x.id === id).status, 'SOURCE_AMBIGUOUS');
+});
+
+test('GC-SF5-HG-READINGS: ADX-Lesart und erste Beruehrung sind vorregistrierte Alternativen; Referenz = Vertragskomponente', () => {
+  const s = hgScenario();
+  const ref = holyGrailSetupSeries(s.bars), first = holyGrailSetupSeries(s.bars, { touches: 'FIRST_TOUCH_ONLY' }), atHigh = holyGrailSetupSeries(s.bars, { adxReading: 'AT_IMPULSE_HIGH' });
+  assert.ok(first.size >= 1 && first.size <= ref.size);
+  for (const k of first.keys()) assert.ok(ref.has(k) || atHigh.has(k));
+  assert.equal([...first.keys()][0], [...ref.keys()][0]); // the first touch is in both
+  assert.ok(atHigh.size >= ref.size); // the ADX may fall below 30 during the retracement
+  // reference touches equal the unchanged screen
+  for (const k of ref.keys()) assert.equal(holyGrailScreen(s, { asOfIndex: k }).length, 1);
+});
+
+test('GC-SF5-MOKA-USED-VIOLATION: eine bereits durch Unterschreitung bestaetigte 10DMA-Verletzung kehrt nicht als Ausloeser zurueck (Review SF5-C-M1)', () => {
+  // entry with the 50DMA guide; a 10DMA violation is confirmed while the 50DMA guide is active (no sale); later lows
+  // below that used level with no new close below the MA10 must not trigger a 10DMA exit after the guide flips to 10
+  const bars = [];
+  for (let k = 0; k < 66; k++) { const c = 20 + 0.1 * k; bars.push(bar(k, c, c + 0.1, c - 0.1, c)); }
+  bars[55] = bar(55, 25.4, 25.5, 24.4, 24.5); bars[56] = bar(56, 24.5, 25.6, 24.3, 25.6);
+  bars.push(bar(66, 26.4, 26.5, 25.9, 26.0)); bars.push(bar(67, 26.0, 27.2, 25.8, 27.1));
+  for (let k = 68; k < 76; k++) { const c = 27.1 + 0.05 * (k - 67); bars.push(bar(k, c, c + 0.1, c - 0.1, c)); }
+  const flat = bars.at(-1).close; for (let k = 76; k < 140; k++) bars.push(bar(k, flat, flat + 0.1, k > 110 ? 25.85 : flat - 0.1, flat));
+  const s = { id: 'PP', bars }, guide = sellGuideSeries(bars, 'LATER_DAYS');
+  assert.equal(guide[61], 50); assert.ok(guide.some((g, i) => i > 100 && g === 10));
+  const ctx = { setups: new Map([[60, { i: 60, date: day(60), evidence: {} }]]), bars, guide }; // injected signal: the exit rule is under test
+  const r = runResearchLifecycle(ds(s), { adapter: POCKET_PIVOT_ADAPTER, config: PP_REFERENCE_CONFIG, prepared: new Map([['PP', ctx]]) });
+  const t = r.trades[0];
+  assert.equal(t.entryDate, day(61));
+  assert.ok(!t.events.some((e) => e.type === 'EXIT_TRIGGER_SET' && e.level === 25.9), 'used 10DMA level re-armed');
+  assert.notEqual(t.exitReason, 'MOKA_MA10_VIOLATION');
+  assert.equal(r.reconciliation.pass, true);
+});
+
+test('GC-SF5-KK-DELIST-NO-CLOSE-ENTRY: kein Schlusskurs-Einstieg am Delisting-Tag; Teilverkauf rueckt bei fehlendem Schluss auf den naechsten Balken', () => {
+  const s = kkScenario(), del = { ...s, terminal: { date: day(120), cause: 'LISTING_INACTIVE', distress: false, delistClass: 'MERGER' } };
+  assert.equal(runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(del)).trades.length, 0);
+  const nan = kkScenario(); nan.bars[123] = { ...nan.bars[123], close: NaN };
+  const t = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(nan)).trades[0];
+  assert.ok(t.events.some((e) => e.type === 'EXIT_SCHEDULED_NEXT_OPEN' && e.reason === 'KK_PARTIAL_AFTER_DAYS' && e.date === day(124)));
 });

@@ -30,11 +30,12 @@ export const MOKA_LIFECYCLE_VERSION = 'sf5-moka-lifecycle-1.0.0';
 
 export const MOKA_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-MOKA-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only)', alternatives: [], why: 'base, theme, extension (MOKA-MR-BASE / -THEME / -EXT) and leadership, megacap exception, volume window (MOKA-MR-LEAD / -MEGA / -VOLWINDOW) are the reviewer\'s; a run is a model study' },
-  { id: 'MA-MOKA-CONTEXT-PROXY', phase: 'SETUP_QUALIFICATION', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'Pocket Pivot: close of the signal day above its 50-day MA (MOKAPP-007 "avoid below the critical MA"); BGU: close before the gap day above its 50-day MA (MOKA12-006 uptrend)', alternatives: ['NONE'], why: 'context is a preference; the 50-day MA is the critical MA the sources name, used as a proxy, never as their rule' },
+  { id: 'MA-MOKA-CONTEXT-PROXY', phase: 'SETUP_QUALIFICATION', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'Pocket Pivot: close of the signal day above its 50-day MA (MOKAPP-007 "avoid below the critical MA"); BGU: close before the gap day above its 50-day MA (MOKA12-006 uptrend)', alternatives: ['NONE'], why: 'context is a preference; #709 names "the critical MA" (MOKAPP-007) and an uptrend (MOKA12-006) without a period: the 50-day MA is a VU choice (the authors\' sell guide uses the 10 / 50-day MAs, MOKA12-008); the 200-day support exception of MOKAPP-007 is not modelled' },
   { id: 'MA-MOKA-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'NEXT_OPEN after the signal close (full-day volume known)', alternatives: [], why: 'the authors buy intraday on projected volume (DATA_BLOCKED); a signal-close fill would use the day\'s final volume before it is known' },
   { id: 'MA-MOKA-VIOLATION-READING', phase: 'EXIT_CONDITIONS', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'LATER_DAYS (FAQ, MOKASTOP-002): the highest low of the closes below the guide MA since the entry stays the trigger until undercut', alternatives: ['NEXT_DAY (2012 slide, MOKA12-009): only the session after a close below the MA can confirm'], why: 'MOKA-C2 conflict kept open (MOKA-SF-EXIT-VIOLATION SOURCE_AMBIGUOUS); the dedicated selling source is the reference' },
   { id: 'MA-MOKA-SELL-GUIDE', phase: 'POSITION_MANAGEMENT', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'guide = 10DMA when it was respected for >= 35 sessions (7 weeks x 5) under the same violation reading, else 50DMA, re-evaluated at every close (sellGuideEvidence); the whole position is sold at the undercut (stop-market at the violation-day low)', alternatives: [], why: 'MOKA12-008 / MOKASTOP-001 PREFERENCE; full vs half (MOKASTOP-004) is a reviewer decision' },
   { id: 'MA-MOKA-BGU-STOP', phase: 'INITIAL_STOP', strategies: ['BUYABLE_GAP_UP'], reference: 'stop-market at the gap-day low, whole position', alternatives: [], why: 'MOKA12-007 risk reference; MOKASTOP-006 "generally at least half" - selling all lies inside the printed rule' },
+  { id: 'MA-MOKA-BGU-VOLWINDOW', phase: 'SETUP_QUALIFICATION', strategies: ['BUYABLE_GAP_UP'], reference: '1.5x the mean volume of the 50 sessions before the gap day (gapUpAt)', alternatives: [], why: 'the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen\'s window is run, so the measurement depends on this choice (owner decision)' },
   { id: 'MA-MOKA-SIZING', phase: 'POSITION_SIZING', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'Pocket Pivot: WEIGHT 0.10 (no price stop to size against); BGU: RISK 0.01 to the gap-day low', alternatives: ['PP WEIGHT 0.05 / 0.20', 'BGU RISK 0.005 / 0.02'], why: 'sizing is not specified in #709 (MOKA-SF-PP-SIZE, MOKA-SF-BGU-SIZE manual)' },
   { id: 'MA-MOKA-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'VU_TOURNAMENT_UNIVERSE_705 at the signal session', alternatives: [], why: 'measurement convention shared by every method' },
   { id: 'MA-MOKA-COSTS', phase: 'ENTRY_EXECUTION', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: '10 bps slippage per side, 1 bp commission (platform policy)', alternatives: [], why: 'no costs in the sources' },
@@ -115,7 +116,12 @@ function sellGuideOnClose(pos, ctx, i, api, cfg) {
   for (const k of [10, 50]) {
     const mk = k === n ? m : smaAt(bars, i, k), below = fin(mk) && fin(b.close) && b.close < mk;
     if (cfg.violationReading === 'NEXT_DAY') st.refs[k] = below && fin(b.low) ? b.low : null;
-    else if (below && fin(b.low)) st.refs[k] = st.refs[k] === null ? b.low : Math.max(st.refs[k], b.low);
+    else {
+      // a violation confirmed by this low is used up (sellGuideSeries / sellGuideEvidence reset; review SF5-C-M1); for the
+      // active guide the engine has already sold on this undercut, for the other MA the level must not come back later
+      if (st.refs[k] !== null && fin(b.low) && b.low < st.refs[k]) st.refs[k] = null;
+      if (below && fin(b.low)) st.refs[k] = st.refs[k] === null ? b.low : Math.max(st.refs[k], b.low);
+    }
   }
   const lvl = st.refs[n];
   const cur = pos.trigger;

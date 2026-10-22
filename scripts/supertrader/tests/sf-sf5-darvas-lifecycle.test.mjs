@@ -158,3 +158,51 @@ test('GC-SF5-DAR-VARIANTS: vorregistrierte Varianten gueltig, Referenz unveraend
   const s = { id: 'W', bars: walk(11) };
   assert.ok(darvasBoxSeries(s).boxes > 0 && darvasBoxSeries(s, { bottomSearchStart: 'AFTER_TOP_CONFIRMED' }).boxes > 0);
 });
+
+/** staircase of complete boxes whose breakout bars stay above the stop (open at the top, low at the top), with
+ * occasional failures through the raised stop and a new rise to an all-time high (review SF5-C-M2) */
+function staircase(seed) {
+  let x = seed >>> 0; const rnd = () => { x = (Math.imul(x, 1664525) + 1013904223) >>> 0; return x / 2 ** 32; };
+  const bars = [], add = (o, h, l, c) => bars.push(bar(bars.length, +o.toFixed(4), +h.toFixed(4), +l.toFixed(4), +c.toFixed(4), 2e6));
+  for (let k = 0; k < 30; k++) { const c = 40 + k; add(c - 0.2, c + 0.5, c - 0.5, c); }
+  let H = bars.at(-1).high, maxHigh = H;
+  for (let n = 0; n < 40; n++) {
+    const B = H * (1 - (0.03 + 0.07 * rnd()));
+    add(H - 0.2, H - 0.1, H - 0.6, H - 0.4); add(H - 0.5, H - 0.3, B, B + 0.3); add(B + 0.3, H - 0.2, B + 0.1, B + 0.5);
+    add(B + 0.5, H - 0.25, B + 0.2, B + 0.6); add(B + 0.6, H - 0.3, B + 0.15, B + 0.5); // box (H, B) complete here
+    if (rnd() < 0.2) { // failure: through the bottom (and a raised stop below it), then a new rise above every high
+      add(B, B + 0.1, B - 1.5, B - 1.2);
+      let c = B - 1.2; while (c < maxHigh * 1.03) { c *= 1.02; add(c * 0.995, c * 1.004, c * 0.99, c); }
+      H = bars.at(-1).high; maxHigh = Math.max(maxHigh, H); continue;
+    }
+    const up = H * (1 + 0.02 + 0.06 * rnd());
+    add(H, up, H, up * 0.995); H = up; maxHigh = Math.max(maxHigh, H);
+  }
+  return { id: `ST${seed}`, bars };
+}
+
+test('GC-SF5-DAR-EQUIV-RAISES: Treppen-Boxen mit Stop-Anhebungen und Stopp-Ausstiegen identisch mit der Komponentenstudie', () => {
+  let compared = 0, withRaises = 0, multiSession = 0;
+  for (const seed of [2, 5, 8, 13, 21]) {
+    const s = staircase(seed), comp = darvasComponentTrades(s).filter((t) => t.entryDate >= s.bars[20].date), r = run(ds(s), {}, { policy: ZERO_COST });
+    assert.equal(r.trades.length, comp.length, `seed ${seed}`);
+    r.trades.forEach((t, k) => {
+      const c = comp[k];
+      assert.equal(t.entryDate, c.entryDate); assert.ok(Math.abs(t.entryFill - c.entryFill) < 1e-9); assert.equal(t.exitDate, c.exitDate);
+      if (c.exitFill !== null) assert.ok(Math.abs(t.events.find((e) => e.type === 'SELL').price - c.exitFill) < 1e-9);
+      const raises = t.events.filter((e) => e.type === 'STOP_RAISED').length;
+      assert.equal(raises, c.stopRaises); if (raises > 0) withRaises++; if (c.heldSessions > 1) multiSession++;
+    });
+    compared += comp.length;
+  }
+  assert.ok(withRaises >= 5 && multiSession >= 5, `raises ${withRaises}, multi-session ${multiSession}, compared ${compared}`);
+});
+
+test('GC-SF5-DAR-NAN-CLOSE-RAISE: eine Box, die auf einem Balken ohne Schluss bestaetigt wird, hebt den Stop trotzdem an (darvasPosition R2-03)', () => {
+  const s = textbook();
+  s.bars[41] = { ...s.bars[41], close: NaN };
+  const r = run(ds(s), {}, { policy: ZERO_COST }), t = r.trades[0];
+  assert.ok(t.events.some((e) => e.type === 'STOP_RAISED' && e.date === day(41)));
+  assert.equal(t.exitReason, 'STOP_DAR-SF-STOP-RAISE');
+  assert.deepEqual([t.exitDate], darvasComponentTrades(s).map((c) => c.exitDate));
+});

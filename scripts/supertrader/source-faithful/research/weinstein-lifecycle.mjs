@@ -12,7 +12,8 @@
  *    following week; no long buy at or below a falling 30-week MA (WEIN-MA via maGate);
  *  - the stop is computed before the buy and placed right after it (WEIN-STOP1 HARD); its level is the machine
  *    proposal of the screen (lowest weekly low of the base / consolidation), the significance of the low is manual;
- *  - Investor: a buy stop filled without volume confirmation is sold on the first small strength (WEIN-VOL5 HARD);
+ *  - a buy stop filled without volume confirmation is sold on the first small strength (WEIN-VOL5 HARD; the Trader
+ *    contract lists it as the shared exit rule of C04, so both methods apply it);
  *  - trailing (CONTEXTUAL, printed numbers): Investor raises the stop after an 8-10 % correction and a return to the
  *    prior high, under the correction low and the rising MA (WEIN-TRAIL1 / -2); Trader ignores corrections under 7 % and
  *    raises the stop under the reaction low after a significant correction and recovery, also above the MA (WEIN-TR-TRAIL);
@@ -33,11 +34,11 @@ export const WEIN_DATA_EXCEPTION = Object.freeze(['WEIN-SF-GROUP (industry group
 export const WEIN_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-WEIN-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only): every MA-gated breakout of the screen is taken', alternatives: [], why: 'stage, volume judgment, RS and overhead resistance are the reviewer\'s (WEIN-MR-*); a run with them substituted is a model study' },
   { id: 'MA-WEIN-DATA-EXCEPTION', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'group and market filters NOT applied (DATA_BLOCKED); the run is labelled WITH_DATA_EXCEPTION', alternatives: [], why: 'no point-in-time group stage or NYSE breadth in the snapshot; the SIC proxy and the universe breadth never unblock the rules' },
-  { id: 'MA-WEIN-ORDER-WEEK', phase: 'ENTRY_EXECUTION', strategies: ['INVESTOR', 'TRADER'], reference: 'the buy stop prepared from the completed week rests for every session of the following week (re-armed daily), fill max(open, trigger)', alternatives: [], why: 'WEIN-ORD prepares a buy stop; its lifetime of one week follows the weekly screen (WEIN-GTC practice is execution judgment)' },
-  { id: 'MA-WEIN-WEEK-END', phase: 'SETUP_QUALIFICATION', strategies: ['INVESTOR', 'TRADER'], reference: 'a week is complete at its last session; whether the next session opens a new ISO week is read from the trading calendar, not from prices', alternatives: [], why: 'weeklyBars marks a week complete when a later bar belongs to another week; the lifecycle takes the weekly decision at that close' },
-  { id: 'MA-WEIN-INITIAL-STOP', phase: 'INITIAL_STOP', strategies: ['INVESTOR', 'TRADER'], reference: 'one raw cent below the machine proposal of the screen (Investor: lowest weekly low of the base; Trader: lowest weekly low of the consolidation)', alternatives: ['RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide)'], why: 'WEIN-STOP2 / WEIN-TR-STOP leave the significant low to the reviewer; WEIN-STOP4 is a guide with exceptions, so only an alternative uses it' },
+  { id: 'MA-WEIN-ORDER-WEEK', phase: 'ENTRY_EXECUTION', strategies: ['INVESTOR', 'TRADER'], reference: 'the buy stop prepared from the completed week rests for every session of the following week (re-armed daily) and is prepared again from every later completed week while the setup holds, fill max(open, trigger)', alternatives: [], why: 'WEIN-ORD prepares a buy stop; re-preparing it every week while the setup holds is the good-till-cancelled practice of WEIN-GTC (STRONG_PREFERENCE) on weekly decisions' },
+  { id: 'MA-WEIN-WEEK-END', phase: 'SETUP_QUALIFICATION', strategies: ['INVESTOR', 'TRADER'], reference: 'a week is complete at its last session; whether the next session opens a new ISO week is read from the trading calendar, not from prices', alternatives: [], why: 'weeklyBars marks a week complete when a later bar of the security belongs to another week; the lifecycle takes the weekly decision at that close. Only a security without a bar on the last calendar session of a week (halt) differs: its week is decided at its own last bar' },
+  { id: 'MA-WEIN-INITIAL-STOP', phase: 'INITIAL_STOP', strategies: ['INVESTOR', 'TRADER'], reference: 'one raw cent below the machine proposal of the screen (Investor: lowest weekly low of the base; Trader: lowest weekly low of the consolidation)', alternatives: ['RISK_GUIDE_15: orders whose planned loss exceeds 15 % are not executed (WEIN-STOP4 guide applied without its exceptions for outstanding charts; never a tighter stop, WEIN-STOP2)'], why: 'WEIN-STOP2 / WEIN-TR-STOP leave the significant low to the reviewer; WEIN-STOP4 is a guide with exceptions, so only an alternative uses it' },
   { id: 'MA-WEIN-INTRABAR-ORDER', phase: 'INITIAL_STOP', strategies: ['INVESTOR', 'TRADER'], reference: 'PESSIMISTIC', alternatives: [], why: 'a daily bar does not show the order of the trigger and a low below the stop' },
-  { id: 'MA-WEIN-VOL5-STRENGTH', phase: 'EXIT_CONDITIONS', strategies: ['INVESTOR'], reference: 'volume confirmation is judged at the end of the breakout week by the three printed alternatives (volumeAlternatives); with none holding, the first later daily close above the prior close is the "first small strength": exit at the next open', alternatives: ['NO_VOL5_EXIT'], why: 'WEIN-VOL5 is HARD; "clear confirmation" (WEIN-VOL4) and "first small strength" have no numbers' },
+  { id: 'MA-WEIN-VOL5-STRENGTH', phase: 'EXIT_CONDITIONS', strategies: ['INVESTOR', 'TRADER'], reference: 'volume confirmation is judged at the end of the breakout week by the three printed alternatives (volumeAlternatives); with none holding, the first later daily close above the prior close is the "first small strength": exit at the next open', alternatives: ['NO_VOL5_EXIT'], why: 'WEIN-VOL5 is HARD; "clear confirmation" (WEIN-VOL4) and "first small strength" have no numbers' },
   { id: 'MA-WEIN-TRAIL', phase: 'POSITION_MANAGEMENT', strategies: ['INVESTOR', 'TRADER'], reference: 'weekly: a correction of the weekly lows from the highest weekly high since entry by >= 8 % (Investor, lower printed end of 8-10 %) / >= 7 % (Trader), followed by a weekly high at or above that high, raises the stop one raw cent under the correction low (Investor: under the lower of the correction low and MA30w)', alternatives: ['INVESTOR_10PCT: 10 % (upper printed end)'], why: 'WEIN-TRAIL1/2 and WEIN-TR-TRAIL are CONTEXTUAL; "return near the prior high" has no number, so the stricter reading (at or above) is used' },
   { id: 'MA-WEIN-SIZING', phase: 'POSITION_SIZING', strategies: ['INVESTOR', 'TRADER'], reference: 'equal dollar amounts (WEIN-DIVERS2): planned position 10 % of equity; Investor buys half (5 %) at the breakout and does not add (the pullback half is manual); Trader buys the full 10 % (WEIN-TR-CONT-SIZE)', alternatives: ['INVESTOR_FULL_AT_BREAKOUT (10 %)'], why: 'the amount is the reviewer\'s; the halves follow WEIN-BUY2 / WEIN-TR-CONT-SIZE' },
   { id: 'MA-WEIN-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the fill', alternatives: [], why: 'measurement convention shared by every method' },
@@ -46,7 +47,7 @@ export const WEIN_MODEL_ASSUMPTIONS = Object.freeze([
 
 const BASE = Object.freeze({ manualSubstitute: 'ACCEPT_AS_MODEL_ASSUMPTION', dataException: 'GROUP_AND_MARKET_NOT_APPLIED', intrabarOrder: 'PESSIMISTIC', riskGuide: null });
 export const WEIN_INVESTOR_REFERENCE_CONFIG = Object.freeze({ ...BASE, vol5: true, trailThreshold: 0.08, sizing: Object.freeze({ mode: 'WEIGHT', weight: 0.05 }) });
-export const WEIN_TRADER_REFERENCE_CONFIG = Object.freeze({ ...BASE, vol5: false, trailThreshold: 0.07, sizing: Object.freeze({ mode: 'WEIGHT', weight: 0.10 }) });
+export const WEIN_TRADER_REFERENCE_CONFIG = Object.freeze({ ...BASE, vol5: true, trailThreshold: 0.07, sizing: Object.freeze({ mode: 'WEIGHT', weight: 0.10 }) });
 const variants = (ref, list) => Object.freeze(list.map((v) => Object.freeze({ ...v, config: Object.freeze({ ...ref, ...v.changes }) })));
 export const WEIN_INVESTOR_RUN_VARIANTS = variants(WEIN_INVESTOR_REFERENCE_CONFIG, [
   { id: 'REF', changes: {} },
@@ -57,6 +58,7 @@ export const WEIN_INVESTOR_RUN_VARIANTS = variants(WEIN_INVESTOR_REFERENCE_CONFI
 ]);
 export const WEIN_TRADER_RUN_VARIANTS = variants(WEIN_TRADER_REFERENCE_CONFIG, [
   { id: 'REF', changes: {} },
+  { id: 'ALT-NO-VOL5-EXIT', changes: { vol5: false } },
   { id: 'ALT-RISK-GUIDE-15', changes: { riskGuide: 0.15 } },
 ]);
 
@@ -68,8 +70,7 @@ function validate(cfg, kind) {
   if (cfg.dataException !== 'GROUP_AND_MARKET_NOT_APPLIED') errs.push('DATA_EXCEPTION_MUST_BE_DECLARED');
   if (!['PESSIMISTIC', 'OPTIMISTIC'].includes(cfg.intrabarOrder)) errs.push('INTRABAR_ORDER');
   if (!(cfg.riskGuide === null || cfg.riskGuide === 0.15)) errs.push('RISK_GUIDE');
-  if (kind === 'TRADER' && cfg.vol5) errs.push('VOL5_IS_AN_INVESTOR_RULE');
-  if (![0.07, 0.08, 0.10].includes(cfg.trailThreshold)) errs.push('TRAIL_THRESHOLD_NOT_PRINTED');
+  if (!(kind === 'TRADER' ? [0.07] : [0.08, 0.10]).includes(cfg.trailThreshold)) errs.push('TRAIL_THRESHOLD_NOT_PRINTED');
   if (!(cfg.sizing?.mode === 'WEIGHT' && cfg.sizing.weight > 0 && cfg.sizing.weight <= 0.25)) errs.push('SIZING');
   return errs;
 }
@@ -125,7 +126,7 @@ function makeAdapter(kind, version) {
     },
     onClose(pos, ctx, i, api, cfg) {
       const { weeks, ma, bars } = ctx, W = ctx.weekOf[i], wk = weeks[W], st = pos.state;
-      // WEIN-VOL5 (Investor): unconfirmed breakout -> exit at the next open after the first small strength
+      // WEIN-VOL5: unconfirmed breakout -> exit at the next open after the first small strength
       if (st.vol5 === 'UNCONFIRMED' && i > (st.vol5JudgedAt ?? Infinity) && fin(bars[i].close) && fin(bars[i - 1]?.close) && bars[i].close > bars[i - 1].close) api.scheduleExit(1, 'WEIN_VOL5_FIRST_STRENGTH');
       if (i !== wk.lastIndex || !wk.complete) return; // weekly decisions at the close of a completed week only
       if (st.entryWeek === undefined) { st.entryWeek = ctx.weekOf[pos.entryIndex]; st.peak = -Infinity; st.corrLow = Infinity; }

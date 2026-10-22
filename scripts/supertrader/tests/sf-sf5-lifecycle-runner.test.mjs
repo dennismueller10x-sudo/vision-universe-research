@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { lifecyclePart, sf5ResearchCodeSha256 } from '../source-faithful/research/run-sf5-lifecycle.mjs';
+import { runResearchLifecycle } from '../source-faithful/research/lifecycle-engine.mjs';
 import { researchCodeSha256 as sf4CodeSha256 } from '../source-faithful/research/run-sf4-lifecycle.mjs';
 import { variantRegistrySha256 as minerviniVariants } from '../source-faithful/research/minervini-lifecycle.mjs';
 import { SF5_LIFECYCLES, sf5VariantRegistrySha256 } from '../source-faithful/research/sf5-lifecycles.mjs';
@@ -13,7 +14,7 @@ import { SNAPSHOT_RUNS as SF4_RUNS } from '../source-faithful/completion/build-m
 import { buildSf5Artifact, sf5Markdown, SF5_SNAPSHOT_RUNS } from '../source-faithful/completion/build-sf5-lifecycle.mjs';
 
 // pinned before the first snapshot result of the Supertrader 5.0 lifecycles was read
-const PINNED_SF5_VARIANT_REGISTRY = '00c94bb68ed2ac3fc744619271550465944ed8bf6a8ab1a29d8acbb85cffcefd';
+const PINNED_SF5_VARIANT_REGISTRY = '947eedb5eb112fd0e2eb5f71e19dc77e86fba579f800d50b09c1466f536c0578';
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
 function dataset(n = 30, len = 700) {
@@ -75,7 +76,23 @@ test('SF5-LIFECYCLE-MATRIX: Matrix valide, Artefakt und Dokument = frischer Buil
   assert.equal(fresh.strategies.HOLY_GRAIL_W_RAS97.readiness.backtestReadiness.measurement, 'MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT');
 });
 
+test('SF5-ENGINE-PIT-ALL-ADAPTERS: jede Referenz aller Lifecycles ist praefixstabil (Entscheidungen bis m unabhaengig von spaeteren Balken)', () => {
+  const full = dataset(20, 600);
+  for (const lc of SF5_LIFECYCLES) {
+    const runOn = (d) => runResearchLifecycle(d, { adapter: lc.adapter, config: lc.reference });
+    const a = runOn(full);
+    for (const m of [350, 480]) {
+      const cut = { ...full, calendar: full.calendar.slice(0, m), securities: full.securities.map((s) => ({ ...s, bars: s.bars.slice(0, m) })) }, b = runOn(cut), last = full.calendar[m - 1];
+      const before = (r) => r.trades.filter((t) => t.entryDate < last).map((t) => [t.id, t.entryDate, t.entryFill, t.events.filter((e) => e.date < last).map((e) => [e.date, e.type, e.stop ?? e.level ?? e.price ?? null])]);
+      assert.deepEqual(before(b), before(a), `${lc.key} cut ${m}`);
+      assert.deepEqual(b.curve.slice(0, m - 1), a.curve.slice(0, m - 1), `${lc.key} curve ${m}`);
+    }
+  }
+});
+
 test('SF5-SNAPSHOT-RUN-CURRENT-CODE: ein eingetragener Snapshot-Lauf gilt nur fuer den aktuellen Research-Code', () => {
+  assert.ok(Array.isArray(SF5_SNAPSHOT_RUNS));
+  assert.ok(SF5_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE').length <= 1);
   for (const r of SF5_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) {
     assert.equal(r.researchCodeSha256, sf5ResearchCodeSha256());
     assert.equal(r.variantRegistrySha256, sf5VariantRegistrySha256());

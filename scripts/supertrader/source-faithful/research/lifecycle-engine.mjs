@@ -46,7 +46,7 @@ export const PLATFORM_RESEARCH_PORTFOLIO_POLICY = Object.freeze({
   id: 'VU-SF5-EQUITY-RESEARCH-PORTFOLIO', version: '1.0.0', separateFromOriginalStrategy: true,
   initialCapital: 100000, cashOnly: true, maxPositionWeight: 0.25, maxOpenPositions: 20,
   slippageBps: 10, commissionBps: 1, terminalScenario: 'S0_LAST_PRICE',
-  notModelled: Object.freeze(['pyramiding / adds (manual in every source)', 'exposure scaling by market condition (manual or proprietary)', 'exit liquidity: participation is reported, not limited', 'short side (no borrow history)']),
+  notModelled: Object.freeze(['a source cap per position (e.g. KK-001 30 %) is applied at the entry; a held position that grows above it is not trimmed', 'pyramiding / adds (manual in every source)', 'exposure scaling by market condition (manual or proprietary)', 'exit liquidity: participation is reported, not limited', 'short side (no borrow history)']),
 });
 
 /** Sizing (model assumption of each method): RISK = fraction of equity at risk to the initial stop; WEIGHT = fixed weight. */
@@ -172,18 +172,19 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
       if (!b) continue;
       pos.sessions++;
       if (fin(b.dividend) && b.dividend > 0 && pos.entryDate < date) { const d = pos.shares * b.dividend; cash += d; pos.dividends += d; counts.dividends += d; book({ date, id, side: 'DIVIDEND', shares: pos.shares, price: b.dividend, gross: d, fee: 0, reason: 'EX_DATE_HELD_PREVIOUS_CLOSE', tradeId: pos.tradeId }); }
-      if (AC.isExecutableBar(b, 'open') && fin(b.low)) {
+      if (AC.isExecutableBar(b, 'open')) {
         if (pos.pendingExit) {
           const pe = pos.pendingExit; pos.pendingExit = null;
           sell(pos, pe.fraction >= 1 ? pos.shares : AC.sellQuantity(pos.shares, pe.fraction, 1), b.open, date, pe.reason);
           counts.scheduledExits++; if (pe.fraction < 1) counts.partialExits++;
           if (pos.closed) continue;
         }
-        const hit = protectiveHit(pos, b);
+        const hit = fin(b.low) ? protectiveHit(pos, b) : null;
         if (hit) { sell(pos, pos.shares, hit.fill, date, hit.reason); counts.protectiveExits++; continue; }
       }
-      // a bar without an executable open still informs the close rules (e.g. a box confirmed on it), effective next session
-      if (fin(b.close)) adapter.onClose(pos, x.ctx, i, apiFor(pos, date), config);
+      // every bar of a held security reaches the close rules, also without an executable open or a close (e.g. a box
+      // confirmed from high / low only); adapters guard the fields they read; effective from the next session
+      adapter.onClose(pos, x.ctx, i, apiFor(pos, date), config);
     }
     // 2) pending entries armed at the prior close, in the date-seeded neutral order (minervini-execution#fillRank)
     for (const id of [...orders.keys()].sort((a, c) => fillRank(date, a) - fillRank(date, c) || (a < c ? -1 : a > c ? 1 : 0))) {
@@ -221,6 +222,7 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
     for (const id of ids) {
       const x = sec.get(id); if (!x.ctx) continue;
       const i = x.idx.get(date); if (i === undefined) continue;
+      if (x.s.terminal && x.s.terminal.date <= date) continue; // no new position on or after the terminal date (review SF5-C-L3)
       const setup = adapter.signalAt(x.ctx, i, config); if (!setup) continue;
       counts.setupsSeen++;
       if (positions.has(id)) { counts.duplicateSignalsIgnored++; continue; }

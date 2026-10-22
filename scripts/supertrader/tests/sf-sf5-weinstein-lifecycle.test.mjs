@@ -8,7 +8,7 @@ import { WEINSTEIN_INVESTOR_ADAPTER, WEINSTEIN_TRADER_ADAPTER, WEIN_INVESTOR_REF
 import { investorScreen, traderScreen } from '../source-faithful/methods/weinstein.mjs';
 import { WEINSTEIN_INVESTOR } from '../source-faithful/contracts/weinstein.mjs';
 
-const PINNED_WEIN_VARIANTS = '2747e12e9e7730f1adad82cbc0a0652c20f3d3758887356e0ffc73ee3f039bb5';
+const PINNED_WEIN_VARIANTS = '984733b4fb3669fa94b7fb6b9ff4e320abfb83b620b02bb09f0acf1cb79a80df';
 const day = (k) => new Date(Date.UTC(2019, 0, 7) + k * 864e5).toISOString().slice(0, 10); // 2019-01-07 is a Monday
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const ds = (...secs) => ({ calendar: [...new Set(secs.flatMap((s) => s.bars.map((b) => b.date)))].sort(), securities: secs });
@@ -62,7 +62,12 @@ test('GC-SF5-WEIN-TRADER-LIFECYCLE: volle Position, Anhebung unter das Reaktions
   const t = r.trades[0];
   assert.ok(Math.abs(t.weight - 0.10) < 0.002);
   const raise = t.events.find((e) => e.type === 'STOP_RAISED');
-  assert.equal(raise.rule, 'WEIN-TR-TRAIL'); assert.ok(Math.abs(raise.stop - (Math.min(...stageScenario().bars.slice(470, 495).map((b) => b.low)) - 0.01)) < 0.5);
+  assert.equal(raise.rule, 'WEIN-TR-TRAIL');
+  // the reaction low = lowest weekly low after the peak week before the recovery week, minus one raw cent
+  const set = weinsteinWeeklySetups(stageScenario().bars, 'TRADER'), k = stageScenario().bars.findIndex((b) => b.date === raise.date), W = set.weekOf[k];
+  let peakW = -1, peak = -Infinity; for (let w = set.weekOf[stageScenario().bars.findIndex((b) => b.date === t.entryDate)]; w < W; w++) if (set.weeks[w].high > peak) { peak = set.weeks[w].high; peakW = w; }
+  const low = Math.min(...set.weeks.slice(peakW + 1, W).map((w) => w.low));
+  assert.ok(Math.abs(raise.stop - (low - 0.01)) < 1e-9, `${raise.stop} vs ${low - 0.01}`);
   assert.equal(t.exitReason, 'STOP_WEIN-TR-TRAIL');
 });
 
@@ -71,6 +76,7 @@ test('GC-SF5-WEIN-VOL5: Ausbruch ohne Volumenbestaetigung -> Verkauf zur Eroeffn
   const r = runW('INVESTOR', ds(s)), t = r.trades[0];
   assert.ok(t.events.some((e) => e.type === 'WEIN_VOL5_UNCONFIRMED'));
   assert.equal(t.exitReason, 'WEIN_VOL5_FIRST_STRENGTH');
+  assert.equal(runW('TRADER', ds(s)).trades[0].exitReason, 'WEIN_VOL5_FIRST_STRENGTH'); // shared rule, Trader too
   const n = runW('INVESTOR', ds(s), { vol5: false });
   assert.notEqual(n.trades[0].exitReason, 'WEIN_VOL5_FIRST_STRENGTH');
   // confirmed volume: no VOL5 exit
@@ -93,7 +99,8 @@ test('GC-SF5-WEIN-DATA-EXCEPTION: Gruppe und Markt bleiben DATA_BLOCKED; Variant
   assert.deepEqual(WEINSTEIN_INVESTOR_ADAPTER.dataException.length, 2);
   for (const v of WEIN_INVESTOR_RUN_VARIANTS) assert.deepEqual(validateWeinInvestorConfig(v.config), [], v.id);
   for (const v of WEIN_TRADER_RUN_VARIANTS) assert.deepEqual(validateWeinTraderConfig(v.config), [], v.id);
-  assert.deepEqual(validateWeinTraderConfig({ ...WEIN_TRADER_REFERENCE_CONFIG, vol5: true }), ['VOL5_IS_AN_INVESTOR_RULE']);
+  assert.equal(WEIN_TRADER_REFERENCE_CONFIG.vol5, true); // WEIN-VOL5 is the shared exit rule of C04 / C05 (Trader contract exclusion)
+  assert.deepEqual(validateWeinTraderConfig({ ...WEIN_TRADER_REFERENCE_CONFIG, trailThreshold: 0.08 }), ['TRAIL_THRESHOLD_NOT_PRINTED']);
   assert.deepEqual(validateWeinInvestorConfig({ ...WEIN_INVESTOR_REFERENCE_CONFIG, trailThreshold: 0.05 }), ['TRAIL_THRESHOLD_NOT_PRINTED']);
   assert.deepEqual(validateWeinInvestorConfig({ ...WEIN_INVESTOR_REFERENCE_CONFIG, dataException: 'NONE' }), ['DATA_EXCEPTION_MUST_BE_DECLARED']);
   assert.equal(weinVariantRegistrySha256(), PINNED_WEIN_VARIANTS);

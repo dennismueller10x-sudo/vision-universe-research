@@ -21,16 +21,16 @@
  */
 import crypto from 'node:crypto';
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
-import { adr20, KK_PARAMS, KK_VERSION } from '../methods/kullamagi.mjs';
+import { adr20, breakoutStopCheck, KK_PARAMS, KK_VERSION } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 
 export const KK_LIFECYCLE_VERSION = 'sf5-kk-breakout-lifecycle-1.0.0';
 
 export const KK_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-KK-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only)', alternatives: [], why: 'setup quality (KK-MR-SETUP), the breakout level (KK-MR-LEVEL) and the review priority (KK-MR-PRIORITY) are the reviewer\'s; they are substituted by MA-KK-SETUP-PROXY, so a run is a model study' },
-  { id: 'MA-KK-SETUP-PROXY', phase: 'SETUP_QUALIFICATION', reference: 'CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising over 5 sessions at the prior close (KK-009)', alternatives: ['CONSOLIDATION_20 (20 sessions)', 'NO_MA_CONDITION'], why: 'KK-006..009 are preferences and context; the printed lower ends are used as bounds of a declared proxy, never as Kullamaegi gates' },
-  { id: 'MA-KK-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', reference: 'BREAKOUT_DAY_CLOSE: a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day', alternatives: ['NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally)'], why: 'KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption' },
-  { id: 'MA-KK-EXIT-POLICY', phase: 'POSITION_MANAGEMENT', reference: 'PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest exits at the next open after the first close below the 10-day MA (beginner rule KK-014)', alternatives: ['PARTIAL5_HALF_BE_MA10', 'PARTIAL3_THIRD_BE_MA20', 'NO_PARTIAL_MA10'], why: 'KK-013 / KK-014 are preferences with printed ranges; the reference takes the earliest printed day and the smallest printed fraction; the profit condition prevents a break-even stop above the price' },
+  { id: 'MA-KK-SETUP-PROXY', phase: 'SETUP_QUALIFICATION', reference: 'CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising at the prior close (KK-009; the 5-session slope window is a VU convention, as in breakoutEvidence)', alternatives: ['CONSOLIDATION_20 (20 sessions)', 'NO_MA_CONDITION'], why: 'KK-006..009 are preferences and context; the printed lower ends are used as bounds of a declared proxy, never as Kullamaegi gates' },
+  { id: 'MA-KK-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', reference: 'BREAKOUT_DAY_CLOSE (CLOSE_DECISION_USES_FINAL_BAR): a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day', alternatives: ['NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally)'], why: 'KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption' },
+  { id: 'MA-KK-EXIT-POLICY', phase: 'POSITION_MANAGEMENT', reference: 'PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest (from the partial-sale day on) exits at the next open after the first close below the 10-day MA (beginner rule KK-014); before that day only the low-of-day stop exits', alternatives: ['PARTIAL5_HALF_BE_MA10', 'PARTIAL3_THIRD_BE_MA20', 'NO_PARTIAL_MA10 (trail from the entry)', 'PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY'], why: 'KK-013 / KK-014 are preferences with printed ranges; the reference takes the earliest printed day and the smallest printed fraction; the profit condition prevents a break-even stop above the price' },
   { id: 'MA-KK-RISK-FRACTION', phase: 'POSITION_SIZING', reference: 'RISK 0.005 of equity to the low-of-day stop', alternatives: ['RISK 0.0025', 'RISK 0.01'], why: '0.5 % lies inside both printed context ranges (KK-003 0.25-1 %, KK-025 0.3-0.5 %); the ends are the alternatives' },
   { id: 'MA-KK-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the fill', alternatives: [], why: 'liquidity is reviewed first (KK-048) without a number; the shared research universe is a measurement convention' },
   { id: 'MA-KK-COSTS', phase: 'ENTRY_EXECUTION', reference: '10 bps slippage per side, 1 bp commission (platform policy)', alternatives: [], why: 'no costs in the source' },
@@ -41,6 +41,7 @@ export const KK_EXIT_POLICIES = Object.freeze({
   PARTIAL5_HALF_BE_MA10: Object.freeze({ partialAfter: 5, partialFraction: 1 / 2, trailMa: 10 }),
   PARTIAL3_THIRD_BE_MA20: Object.freeze({ partialAfter: 3, partialFraction: 1 / 3, trailMa: 20 }),
   NO_PARTIAL_MA10: Object.freeze({ partialAfter: null, partialFraction: null, trailMa: 10 }),
+  PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY: Object.freeze({ partialAfter: 3, partialFraction: 1 / 3, trailMa: 10, trailFromEntry: true }),
 });
 export const KK_SETUP_PROXIES = Object.freeze({
   CONSOLIDATION_10: Object.freeze({ window: 10, priorMove: 0.30, priorMoveSessions: 63, maRising: true }),
@@ -58,6 +59,7 @@ export const KK_RUN_VARIANTS = Object.freeze([
   { id: 'ALT-EXIT-PARTIAL5-HALF', changes: { exitPolicy: 'PARTIAL5_HALF_BE_MA10' } },
   { id: 'ALT-EXIT-TRAIL-MA20', changes: { exitPolicy: 'PARTIAL3_THIRD_BE_MA20' } },
   { id: 'ALT-EXIT-NO-PARTIAL', changes: { exitPolicy: 'NO_PARTIAL_MA10' } },
+  { id: 'ALT-EXIT-TRAIL-FROM-ENTRY', changes: { exitPolicy: 'PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY' } },
   { id: 'ALT-RISK-00025', changes: { sizing: { mode: 'RISK', riskFraction: 0.0025 } } },
   { id: 'ALT-RISK-001', changes: { sizing: { mode: 'RISK', riskFraction: 0.01 } } },
 ].map((v) => Object.freeze({ ...v, config: Object.freeze({ ...KK_REFERENCE_CONFIG, ...v.changes }) })));
@@ -108,10 +110,10 @@ export const KK_BREAKOUT_ADAPTER = Object.freeze({
     const b = bars[i], blockers = [];
     if (cfg.entryTiming === 'BREAKOUT_DAY_CLOSE') {
       // KK-012 exactly: entry at the close, stop = final low of the same day, distance <= ADR20 else REJECT (never tightened)
-      const dist = fin(setup.adr20) && b.close > 0 ? ((b.close - b.low) / b.close) * 100 : null;
-      if (!fin(setup.adr20)) blockers.push({ code: 'ADR_NOT_MEASURABLE', rule: 'KK-SF-ADR (KK-031)', class: 'DATA_BLOCKED' });
-      else if (!(b.low < b.close)) blockers.push({ code: 'STOP_NOT_BELOW_ENTRY', rule: 'KK-SF-BO-STOP (KK-012)', class: 'SOURCE_EXACT' });
-      else if (dist > setup.adr20) blockers.push({ code: 'REJECT_WIDE_STOP', rule: 'KK-SF-BO-STOP (KK-012)', class: 'SOURCE_EXACT' });
+      const chk = breakoutStopCheck({ entry: b.close, lowOfDay: b.low, adrPct: setup.adr20 }), dist = chk.distancePct ?? null;
+      if (chk.status === 'INSUFFICIENT_DATA') blockers.push({ code: 'ADR_NOT_MEASURABLE', rule: 'KK-SF-ADR (KK-031)', class: 'DATA_BLOCKED' });
+      else if (chk.status === 'STOP_NOT_BELOW_ENTRY') blockers.push({ code: 'STOP_NOT_BELOW_ENTRY', rule: 'KK-SF-BO-STOP (KK-012)', class: 'SOURCE_EXACT' });
+      else if (chk.status === 'REJECT_WIDE_STOP') blockers.push({ code: 'REJECT_WIDE_STOP', rule: 'KK-SF-BO-STOP (KK-012)', class: 'SOURCE_EXACT' });
       return eligibilityResult({ strategy: 'KK_BREAKOUT', bars, i, blockers, openManualDecisions: KK_OPEN_MANUAL_DECISIONS, order: { type: 'ON_CLOSE', stop: b.low, rule: 'KK-SF-BO-ENTRY daily / KK-SF-BO-STOP' }, extra: { stopDistancePct: dist, adr20: setup.adr20 } });
     }
     // NEXT_OPEN alternative: stop = breakout-day low; the open fill is rejected when it lies more than ADR20 above it
@@ -122,10 +124,13 @@ export const KK_BREAKOUT_ADAPTER = Object.freeze({
   onClose(pos, ctx, i, api, cfg) {
     const P = KK_EXIT_POLICIES[cfg.exitPolicy], bars = ctx.bars, c = bars[i].close;
     const after = i - pos.entryIndex; // sessions after the entry day
-    if (P.partialAfter && !pos.state.partialDone && after === P.partialAfter) {
+    if (!fin(c)) return; // no close: no close rule on this bar (the partial check moves to the next bar with a close)
+    if (P.partialAfter && !pos.state.partialDone && after >= P.partialAfter) {
       pos.state.partialDone = true;
       if (c > pos.entry) { api.scheduleExit(P.partialFraction, 'KK_PARTIAL_AFTER_DAYS'); api.raiseStop(pos.entry, 'KK-013-BREAKEVEN'); }
     }
+    // KK-014 trails the REST: from the partial-sale day on (MA-KK-EXIT-POLICY); without a partial sale from the entry
+    if (P.partialAfter && !P.trailFromEntry && after < P.partialAfter) return;
     const m = smaAt(bars, i, P.trailMa);
     if (fin(m) && c < m) api.scheduleExit(1, `KK_TRAIL_CLOSE_BELOW_MA${P.trailMa}`);
   },
