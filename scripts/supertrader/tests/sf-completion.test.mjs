@@ -132,7 +132,7 @@ test('SF2-SIGNAL-CONTRACT: research signals carry the snapshot provenance; revie
   const sig = r.signals[0], buy = r.ledger.find((x) => x.side === 'BUY');
   const s = researchSignal(TURTLE_S2, { securityId: sig.id, date: sig.date, path: sig.path, trigger: sig.trigger, fill: sig.fill, stop: sig.fill - 20, unitShares: buy.shares, n: 10 }, { provenance: { codeVersion: r.version } });
   assert.deepEqual(validateSignal(s), { ok: true, errors: [] });
-  assert.equal(s.sourceContractVersion, '1.1.0');
+  assert.equal(s.sourceContractVersion, '1.2.0'); // 1.2.0: Supertrader 3.0 research evidence on TUR-SF-LIMIT-CORR (status unchanged)
   assert.ok(s.dataCoverage.missing.includes('TUR-SF-LIMIT-CORR'));
   assert.ok(validateSignal({ ...s, liveActivation: true }).errors.includes('LIVE_ACTIVATION_FORBIDDEN'));
   assert.ok(validateSignal({ ...s, orderRouting: 'BROKER' }).errors.includes('ORDER_ROUTING_FORBIDDEN'));

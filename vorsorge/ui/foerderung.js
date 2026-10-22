@@ -22,7 +22,7 @@
 
   /* ============================================================ FOERDERUNG */
   VS.views.foerderung = function () {
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Förderung</p><h1>Was legt der Staat dazu?</h1><p class="vs-lead">Zulagen für das geförderte Altersvorsorgedepot ab 2027 – gerechnet aus einem versionierten Regelwerk mit Quelle. Altersvorsorge-Angebote der Anbieter vergleichst du im Anbieter-Vergleich.</p>' +
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Förderung</p><h1>Was legt der Staat dazu?</h1><p class="vs-lead">Zulagen für das geförderte Altersvorsorgedepot ab 2027 – aus einem versionierten Regelwerk mit Quelle.</p>' +
       '<div class="vs-tabs"><a class="vs-pill lime" href="#/rechner">Geführter Rechner</a><a class="vs-pill primary" href="#/foerderung">Förderrechner</a><a class="vs-pill" href="#/fruehstart">Frühstart / Kinder</a><a class="vs-pill" href="#/riester">Riester-Analyse</a><a class="vs-pill" href="#/anbieter">Anbieter-Vergleich</a></div></section>' +
       '<section class="vs-section" id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
     VS.rules().then(function (rules) {
@@ -36,11 +36,11 @@
         VS.field("ret", "Rendite vor Kosten", (VS.state.plan.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) + VS.field("cost", "Produktkosten", "0.50", { step: 0.05, unit: "% p.a." }) +
         '<label class="vs-check vs-field full"><input type="checkbox" id="first" checked> Erster geförderter Vertrag (Berufseinsteigerbonus prüfen)</label>' +
         '<label class="vs-check vs-field full"><input type="checkbox" id="spouse"> Nur mittelbar zulageberechtigt (Ehegatte, § 79 Satz 2)</label></div></form><div id="vs-fd-out"></div></div>' +
-        '<div class="vs-grid g3" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Was darf ins Altersvorsorgedepot?</p><p style="margin-top:6px">' + esc(avd.contributionRules.eligibleAssets) + '</p><p class="vs-fine" style="margin-top:8px">Die ETFs in „ETF Intelligence“ sind derzeit US-Listings und damit dort nicht zulässig. Sie zeigen Marktverhalten, keine förderfähigen Produkte.</p></div>' +
+        '<div class="' + (avd.verification && avd.verification.primaryVerified ? "vs-note" : "vs-warnbox") + '" style="margin-top:18px">' + esc(avd.legalStatusNote) + '</div>' +
+        '<details class="vu-more"><summary>Regeln im Detail: Anlagen, Kostendeckel, Auszahlung</summary><div class="vu-more-body"><div class="vs-grid g3"><div class="vs-card"><p class="vs-label">Was darf ins Altersvorsorgedepot?</p><p style="margin-top:6px">' + esc(avd.contributionRules.eligibleAssets) + '</p><p class="vs-fine" style="margin-top:8px">Die ETFs in „ETF Intelligence“ sind derzeit US-Listings und damit dort nicht zulässig. Sie zeigen Marktverhalten, keine förderfähigen Produkte.</p></div>' +
         '<div class="vs-card"><p class="vs-label">Kostendeckel Standarddepot</p><p class="vs-kpi small" style="margin-top:6px">höchstens ' + F.pct(avd.productRules.standardDepotCostCap, 1) + ' Effektivkosten</p><p class="vs-fine" style="margin-top:8px">' + esc(avd.productRules.standardDepot) + '</p></div>' +
         '<div class="vs-card"><p class="vs-label">Auszahlung</p><p style="margin-top:6px">Beginn frühestens mit ' + avd.payoutRules.earliestAge + ', spätestens mit ' + avd.payoutRules.latestStartAge + '. Ein Auszahlungsplan läuft mindestens bis ' + avd.payoutRules.withdrawalPlanUntilAtLeastAge + '.</p><p class="vs-fine" style="margin-top:8px">Bestehende Riester-Verträge behalten ihr altes Recht; ein neuer geförderter Vertrag ab 2027 bringt alle Verträge ins neue Recht (§ 52 Abs. 50a EStG).</p></div></div>' +
-        '<div style="margin-top:14px">' + ruleBox(avd) + '</div>' +
-        '<div class="' + (avd.verification && avd.verification.primaryVerified ? "vs-note" : "vs-warnbox") + '" style="margin-top:14px">' + esc(avd.legalStatusNote) + '</div>';
+        '<div style="margin-top:14px">' + ruleBox(avd) + '</div></div></details>';
       var form = host.querySelector("#vs-fd-form");
       function draw() {
         var n = function (id, f, s) { return VS.readNum(form, id, f, s); };
@@ -50,15 +50,15 @@
         var yearly = r.basicAllowance + r.childAllowance;
         var withF = M.futureValue({ start: r.careerStarterBonus, monthly: (r.ownContribution + yearly) / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
         var without = M.futureValue({ monthly: r.ownContribution / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
-        host.querySelector("#vs-fd-out").innerHTML = '<div class="vs-card">' + (r.eligible ? "" : '<div class="vs-warnbox">' + esc(r.reason) + '</div>') +
-          '<div class="vs-grid g3" style="margin-top:6px"><div><p class="vs-sub">Grundzulage</p><p class="vs-kpi">' + F.eur(r.basicAllowance) + '</p><p class="vs-fine">pro Jahr</p></div>' +
-          '<div><p class="vs-sub">Kinderzulage</p><p class="vs-kpi">' + F.eur(r.childAllowance) + '</p><p class="vs-fine">pro Jahr</p></div>' +
-          '<div><p class="vs-sub">Berufseinsteigerbonus</p><p class="vs-kpi">' + F.eur(r.careerStarterBonus) + '</p><p class="vs-fine">einmalig</p></div></div>' +
-          '<div class="vs-row" style="margin-top:14px"><span>Förderquote auf deinen Eigenbeitrag</span><span class="num">' + F.pct(r.fundingRate || 0, 0) + '</span></div>' +
+        host.querySelector("#vs-fd-out").innerHTML = '<div class="vs-result-block">' + (r.eligible ? "" : '<div class="vu-alert"><span>' + esc(r.reason) + '</span></div>') +
+          '<div class="vu-kpis vs-res-kpis"><div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Zulagen pro Jahr</span><span class="vu-kpi-value">' + F.eur(yearly) + '</span><span class="vu-kpi-sub">Grundzulage ' + F.eur(r.basicAllowance) + ' · Kinder ' + F.eur(r.childAllowance) + '</span></div>' +
+          '<div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Förderquote</span><span class="vu-kpi-value">' + F.pct(r.fundingRate || 0, 0) + '</span><span class="vu-kpi-sub">auf deinen Eigenbeitrag' + (r.careerStarterBonus ? ' · Bonus ' + F.eur(r.careerStarterBonus) + ' einmalig' : "") + '</span></div></div>' +
+          '<h3 style="margin-top:24px">Nach ' + years + ' Jahren (Modellrechnung)</h3><div class="vs-fee-bars vs-cmp-bars"><span><small>Mit Zulagen</small><span class="vu-bar" data-tone="good"><i style="--v:100"></i></span><b class="num">' + F.eurK(withF) + '</b></span>' +
+          '<span><small>Ohne</small><span class="vu-bar"><i style="--v:' + Math.max(1, without / Math.max(1, withF) * 100).toFixed(0) + '"></i></span><b class="num">' + F.eurK(without) + '</b></span></div>' +
+          '<div class="vs-row" style="margin-top:14px"><span>Berufseinsteigerbonus</span><span class="num">' + F.eur(r.careerStarterBonus) + ' einmalig</span></div>' +
           '<div class="vs-row"><span>Gefördert bis Eigenbeitrag</span><span class="num">' + F.eur(avd.contributionRules.maximumSubsidizedOwnContribution) + ' / Jahr</span></div>' +
           '<div class="vs-row"><span>Mindesteigenbeitrag</span><span class="num">' + F.eur(avd.contributionRules.minimumAnnualOwnContribution) + ' / Jahr</span></div>' +
-          '<h3 style="margin-top:18px">Nach ' + years + ' Jahren (Modellrechnung)</h3><div class="vs-grid g2" style="margin-top:8px"><div class="vs-card soft"><p class="vs-label">Mit Zulagen</p><p class="vs-kpi small">' + F.eurK(withF) + '</p></div><div class="vs-card soft"><p class="vs-label">Gleicher Eigenbeitrag ohne Zulagen</p><p class="vs-kpi small">' + F.eurK(without) + '</p></div></div>' +
-          '<p class="vs-fine" style="margin-top:10px">Zulagen als gleichmäßige Monatsbeiträge modelliert, Regeln über die Laufzeit konstant. Steuerliche Wirkung (Sonderausgabenabzug, nachgelagerte Besteuerung) ist nicht modelliert – keine Steuerberatung.</p></div>';
+          '<details class="vu-more"><summary>Wie wird das berechnet?</summary><div class="vu-more-body">Zulagen als gleichmäßige Monatsbeiträge modelliert, Regeln über die Laufzeit konstant. Steuerliche Wirkung (Sonderausgabenabzug, nachgelagerte Besteuerung) ist nicht modelliert – keine Steuerberatung. „Ohne“ = gleicher Eigenbeitrag ohne Zulagen.</div></details></div>';
       }
       form.addEventListener("input", draw); form.addEventListener("submit", function (e) { e.preventDefault(); }); draw();
     }).catch(function (e) { root.querySelector("#vs-fd").innerHTML = VS.pending("Regelwerk nicht erreichbar", String(e.message || e)); });
@@ -144,13 +144,13 @@
 
   /* ============================================================ VERGLEICHEN */
   VS.views.vergleichen = function () {
-    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vergleichen</p><h1>Was unterscheidet sich –<br>und was kostet es?</h1><p class="vs-lead">Vergleiche ETFs, Kosten, Anbieter und bestehende Verträge. Ohne Gewinner-Logik.</p></section>' +
-      '<section class="vs-section"><div class="vs-grid g2">' + [["#/vergleich", "1", "ETF-Vergleich", "2–4 ETFs: Performance, Schwankung, Rückgang, Index, Region – und die größten Unterschiede."],
-        ["#/kosten", "2", "Kostenanalyse", "Was 0,2 % gegenüber 1,5 % laufender Kosten über Jahrzehnte ausmacht."],
-        ["#/anbieter", "3", "Anbieter-Vergleich", "Altersvorsorge-Angebote: Depotgebühr, Auswahl, Effektivkosten, Auszahlung."],
-        ["#/riester", "4", "Riester-Analyse", "Bestehenden Vertrag behalten oder neu ausrichten – zwei Szenarien."]].map(function (c) {
-        return '<a class="vs-card link" href="' + c[0] + '"><span class="vs-num-badge">' + c[1] + '</span><h3>' + esc(c[2]) + '</h3><p class="vs-sub" style="margin-top:6px">' + esc(c[3]) + '</p></a>';
-      }).join("") + '</div></section>');
+    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vergleichen</p><h1>Was unterscheidet sich&nbsp;– und was kostet es?</h1><p class="vs-lead">Vergleiche ETFs, Kosten, Anbieter und bestehende Verträge. Ohne Gewinner-Logik.</p></section>' +
+      '<section class="vs-section"><ul class="vs-linklist">' + [["#/vergleich", "ETF-Vergleich", "2–4 ETFs: Performance, Schwankung, Rückgang – die größten Unterschiede."],
+        ["#/kosten", "Kostenanalyse", "Was 0,2 % gegenüber 1,5 % laufender Kosten über Jahrzehnte ausmacht."],
+        ["#/anbieter", "Anbieter-Vergleich", "Depotgebühr, Auswahl, Effektivkosten, Auszahlung."],
+        ["#/riester", "Riester-Analyse", "Bestehenden Vertrag behalten oder neu ausrichten."]].map(function (c, i) {
+        return '<li><a href="' + c[0] + '"><span class="vs-linklist-n">' + (i + 1) + '</span><span><b>' + esc(c[1]) + '</b><small>' + esc(c[2]) + '</small></span></a></li>';
+      }).join("") + '</ul></section>');
   };
 
   /* ================================================================ WISSEN */
@@ -172,8 +172,8 @@
     ["Altersvorsorgedepot", "Ein ab 2027 geplantes, staatlich gefördertes Depot für die private Altersvorsorge – ein Produkt von Banken und Brokern, das Vision Universe analysiert, nicht anbietet."]
   ];
   VS.views.wissen = function () {
-    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Wissen</p><h1>Vorsorge,<br>einfach erklärt.</h1><p class="vs-lead">Die wichtigsten Begriffe in einem Satz. Ohne Fachchinesisch.</p><div class="vs-tabs"><a class="vs-pill" href="/academy/">Zur Vision Universe Academy</a><a class="vs-pill" href="#/daten">Datenquellen & Qualität</a></div></section>' +
-      '<section class="vs-section"><div class="vs-grid g3">' + GLOSSARY.map(function (g, i) { return '<article class="vs-card"><span class="vs-num-badge">' + (i + 1) + '</span><h3>' + esc(g[0]) + '</h3><p class="vs-sub" style="margin-top:6px;color:var(--ink-2)">' + esc(g[1]) + '</p></article>'; }).join("") + '</div></section>');
+    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Wissen</p><h1>Vorsorge,<br>einfach erklärt.</h1><p class="vs-lead">' + GLOSSARY.length + ' Begriffe, je ein Satz. Tippen zum Aufklappen.</p><div class="vs-tabs"><a class="vs-pill" href="/academy/">Zur Vision Universe Academy</a><a class="vs-pill" href="#/daten">Datenquellen & Qualität</a></div></section>' +
+      '<section class="vs-section vs-glossary">' + GLOSSARY.map(function (g) { return '<details class="vu-more"><summary>' + esc(g[0]) + '</summary><div class="vu-more-body">' + esc(g[1]) + '</div></details>'; }).join("") + '</section>');
   };
 
   /* ================================================================= DATEN */
@@ -203,7 +203,7 @@
   }
 
   VS.views.daten = function () {
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen –<br>und was nicht.</h1><p class="vs-lead">Jede Zahl in Vision Universe Altersvorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen&nbsp;– und was nicht.</h1><p class="vs-lead">Jede Zahl in Vision Universe Altersvorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
     Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master(), VS.getJSON("/vorsorge/data/ucits-coverage.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/data-gaps.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return null; })]).then(function (res) {
       var q = res[0], m = res[1], u = res[2], g = res[3], chg = res[4], host = root.querySelector("#vs-dq");
       var n = function (x) { return x === null || x === undefined ? "–" : Number(x).toLocaleString("de-DE"); };

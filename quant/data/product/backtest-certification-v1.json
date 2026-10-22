@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-21T03:03:44.474Z",
- "asOf": "2026-10-21",
+ "generatedAt": "2026-10-22T03:06:17.764Z",
+ "asOf": "2026-10-22",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 26516 unabhängige Fälle",
+       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 26517 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -805,7 +805,7 @@
       "uniquePeriods": 1839,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 26516,
+      "effectiveN": 26517,
       "designEffect": 3.25
      },
      "returnType": "TOTAL_RETURN",
@@ -814,7 +814,7 @@
       "base": 0.57,
       "delta": -0.0115,
       "ci": [
-       -0.0171,
+       -0.017,
        -0.0059
       ]
      }
@@ -1142,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1834 Wochen, 142 Quartale, effektiv ≈ 11386 unabhängige Fälle",
+       "value": "1834 Wochen, 142 Quartale, effektiv ≈ 11385 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1230,7 +1230,7 @@
       "uniquePeriods": 1834,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 11386,
+      "effectiveN": 11385,
       "designEffect": 4.94
      },
      "returnType": "TOTAL_RETURN",
@@ -1299,7 +1299,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "17 von 17 geprüft",
+     "value": "18 von 18 geprüft",
      "required": null,
      "reason": null
     },
@@ -1317,7 +1317,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 17,
+     "value": 18,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1326,7 +1326,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "40 Tage",
+     "value": "41 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1410,14 +1410,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 17,
+     "value": 18,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "40 Tage",
+     "value": "41 Tage",
      "required": "180 Tage"
     },
     {
@@ -1465,25 +1465,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 103,
-     "date": "2027-03-14"
+     "remaining": 102,
+     "date": "2027-03-13"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 17,
-    "spanDays": 40,
+    "historyDates": 18,
+    "spanDays": 41,
     "transitions": {
-     "SETUP_CONFIRMED": 114,
-     "SETUP_NEW": 1468,
-     "SETUP_WEAKENED": 1867
+     "SETUP_CONFIRMED": 121,
+     "SETUP_NEW": 1542,
+     "SETUP_WEAKENED": 1933
     },
     "completedM6": 0,
-    "contractTradesCompleted": 909
+    "contractTradesCompleted": 969
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "2577/2577",
+    "parity": "2727/2727",
     "mismatches": 0
    }
   },
@@ -1524,7 +1524,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (17 Stände seit 2026-09-23)",
+     "value": "2 (18 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1578,7 +1578,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "2 (17 Stände seit 2026-09-23)",
+     "value": "2 (18 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1590,7 +1590,7 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     },
     "NDX": {
      "snapshots": 5,
@@ -1599,7 +1599,7 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     },
     "DJIA": {
      "snapshots": 5,
@@ -1608,15 +1608,15 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 17,
+    "snapshots": 18,
     "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-10-20",
+    "latest": "2026-10-21",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1628,7 +1628,7 @@
     },
     "factor": {
      "remaining": 22,
-     "date": "2028-08-19"
+     "date": "2028-08-20"
     }
    }
   },
@@ -1728,7 +1728,7 @@
    "eta": {
     "factor": {
      "remaining": 22,
-     "date": "2028-08-19"
+     "date": "2028-08-20"
     }
    }
   }

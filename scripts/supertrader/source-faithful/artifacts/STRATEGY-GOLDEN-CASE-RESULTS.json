@@ -14,14 +14,22 @@
   "scripts/supertrader/tests/sf-turtle-completion.test.mjs",
   "scripts/supertrader/tests/sf-darvas-completion.test.mjs",
   "scripts/supertrader/tests/sf-moka-completion.test.mjs",
-  "scripts/supertrader/tests/sf-completion.test.mjs"
+  "scripts/supertrader/tests/sf-completion.test.mjs",
+  "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+  "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+  "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+  "scripts/supertrader/tests/sf-context-evidence-research.test.mjs",
+  "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
+  "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+  "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+  "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs"
  ],
  "summary": {
-  "goldenCases": 115,
-  "pass": 115,
+  "goldenCases": 116,
+  "pass": 116,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 173,
+  "testsRun": 242,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -527,6 +535,19 @@
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-CORRECTION"
+   ],
+   "psr709": [
+    "MIN-PP-04"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-MISSING-LOW",
    "strategyIds": [
     "SF_MINERVINI_POWER_PLAY"
    ],
@@ -1677,7 +1698,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 27,
+ "otherTests": 95,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2245,6 +2266,11 @@
    "result": "PASS"
   },
   {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-MISSING-LOW: a missing low in the consolidation leaves the correction unmeasured: no record (sf-minervini-1.0.1)",
+   "result": "PASS"
+  },
+  {
    "file": "scripts/supertrader/tests/sf-kullamagi.test.mjs",
    "name": "GC-KK-ADR20: ADR20 = mean of (high / low - 1) x 100 over the 20 sessions before the bar (KK-031)",
    "result": "PASS"
@@ -2542,6 +2568,346 @@
   {
    "file": "scripts/supertrader/tests/sf-completion.test.mjs",
    "name": "SF2-COMPLETION-DOCS: generated completion matrix / data gaps / backtest readiness docs equal a fresh build",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-SOURCE: Quelle nennt kein Mass, kein Fenster, keine Schwelle; jede Variante ist Modellannahme",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-ANCHORS: Monatsende-Anker",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-LINKAGE: Kette A~B, B~C, A!~C: SINGLE verbindet, COMPLETE nicht; Schnitte sind verschachtelt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-GROUPS: Faktorgruppen werden gefunden; unbekannt bleibt unbekannt (REPORT_ONLY / POOLED_UNKNOWN)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-PIT: Gruppen zum Zeitpunkt d aendern sich nicht, wenn Daten nach dem Anker veraendert werden",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-RESIDUAL: Marktgleichlauf allein bildet unter MARKET_RESIDUAL keine Gruppe",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-QUANTILE: Paar-Quantil-Schwelle haelt Gruppen bei marktweitem Gleichlauf klein",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-ENGINE: unveraenderte Engine setzt LIMIT6 mit Korrelationsgruppen durch; ohne Gruppen bitgleich",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-ENGINE-INDEPENDENT: unkorrelierte Titel werden nicht begrenzt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-VERSION: Komponente ist versioniert und deterministisch",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-turtle-correlation-research.test.mjs",
+   "name": "SF3-TUR-CORR-SHARED-ANCHORS: geteilter Anker-Cache liefert dieselben Gruppen fuer beide Unknown-Politiken",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-VARIANTS: Varianten sind deklarierte VU-Stellvertreter, keine Originalregel; Kapitalgewichtung ohne PIT-Aktienzahl DATA_BLOCKED",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-INDEX: gleichgewichteter Kettenindex = Mittel der Mitgliedsrenditen; zu kleine Gruppe bleibt unbekannt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-PIT: SIC-Wechsel nach Handelsschluss gilt erst ab der Folgewoche; Zukunftsdaten aendern fruehere Werte nicht",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-EVIDENCE: Stage-Evidenz, RS, Breite, Volumen und Rotation der Gruppen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-CAP: Kapitalgewichtung nur mit PIT-Aktienzahl; fehlende Gewichte werden gezaehlt, nicht ersetzt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-INTEGRATION: Evidenz wird angehaengt, nie als Gate; Screen und Original-Record bleiben unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-MARKET-BREADTH: Universums-Breite kausal; NYSE bleibt DATA_BLOCKED",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-industry-strength-research.test.mjs",
+   "name": "SF3-WEIN-GROUP-GAP (Review M1/M2): Luecke in der Mitgliedschaft wird UNKNOWN; nie eine alte Woche als aktuell, nie eine spaetere Woche",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-VCP-CONTRACTIONS: drei Kontraktionen 20/10/5 % von links nach rechts, sinkendes Volumen, Pivot am letzten Swing-Hoch",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "ADV-MIN-VCP-EXPANDING: sich ausweitende Kontraktionen bleiben Evidenz (kein Gate, keine erfundene Zaehlregel)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-PIVOT-VOLUME: Pivot-Ausbruch meldet beide Lesarten von \"zunehmendem Volumen\", waehlt keine",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-FUNDAMENTALS-PIT: nur vor dem Tag eingereichte Quartale; YoY-Wachstum, negative Basis, abgeleitetes Q4; keine Schwelle",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-RS-PROXY-PIT: VU-Perzentil des PIT-Universums; nie Gate; spaetere Daten aendern nichts",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-SIZING: Groesse aus Reviewer-Risiko und Stop, Deckel 25 %, 10-%-Flag; kein Default-Risiko",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-STOP-EXECUTION: gesetzter Stop wird unabhaengig vom Volumen ausgefuehrt; 3R und MA50 sind Review-Fragen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-SEPA-CLASSIFY: Trend Template ist Screen, keine Strategie; Komponentenstatus getrennt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-PP-CLASSES: bestaetigt mechanisch / manuell / datenblockiert / nicht qualifiziert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "ADV-MIN-PP-LONG-BASE: Konsolidierung jenseits 3-6 Wochen wird Review, nie Ablehnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-components.test.mjs",
+   "name": "GC-MIN-NOT-A-STRATEGY (Owner 21.10.2026): jede Klassifikation, auch CONFIRMED_MECHANICAL_SETUP, ist keine handelbare Strategie und keine Performance-Aussage",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-context-evidence-research.test.mjs",
+   "name": "SF3-CTX-LEADERSHIP: Rang in der PIT-Gruppe (\"strongest stock of the industry\"), kausal ohne Schlusskurs des Tages",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-context-evidence-research.test.mjs",
+   "name": "SF3-CTX-APPEND: Evidenz an jede Momentum-Methode, Status und Kaufsperre unveraendert, Regel-IDs existieren im Vertrag",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-context-evidence-research.test.mjs",
+   "name": "SF3-CTX-FRONTIER: jede verbleibende Daten- und Quellensperre ist konkret benannt; kein kostenpflichtiger Pfad ohne Freigabe",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
+   "name": "SF3-RUNNER-PARTS: alle Teile laufen; Referenzlauf ohne Gruppen, Varianten abgestimmt; Zahlen statt Renditen oeffentlich",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
+   "name": "SF3-RUNNER-FINGERPRINT: Research-Code hat eigenen Fingerabdruck; der Engine-Fingerabdruck des Acceptance Gates ist unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
+   "name": "SF3-READINESS: sechs Dimensionen getrennt, Artefakt = frischer Build, kein Stellvertreter hebt eine Sperre auf, nichts live",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "GC-MLC-SEPA-LIFECYCLE: VCP-Setup -> Einstieg am Pivot -> Break-even bei 3R -> offen am Datenende; Buchung abgestimmt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "GC-MLC-PP-LIFECYCLE: bestaetigtes Power Play wird nur ueber eigene Eligibility gehandelt; MANUAL_REVIEW_SETUP nie",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-BREAKOUT-NO-VOLUME: Ausbruch ohne Volumenbestaetigung - Referenz kauft auf Preis (MIN-MM-VOL-EX), Volumen-Variante nicht",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-PIVOT-BEFORE-CONTRACTIONS: ein noch nicht bestaetigter Swing ist kein Pivot; ueberschrittener Pivot armiert nichts",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-PLANNED-LOSS: Stop mehr als 10 % unter dem Pivot blockiert (MIN-MM-STOP-02); Stop vor Einstieg Pflicht (MIN-RISK-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-GAP-OVER-ENTRY: Gap ueber Limit nicht ausgefuehrt, Gap im Rahmen zur Eroeffnung, Limit nach Gap, Markt-Variante markiert Risiko",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-GAP-THROUGH-STOP: Eroeffnung unter dem Stop -> Ausstieg zur Eroeffnung (MIN-MM-STOP-01, volumenunabhaengig)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-ENTRY-AND-STOP-SAME-BAR: Intraday-Pivot + Tief unter Stop mehrdeutig (Variante entscheidet); Gap-Fill eindeutig",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-NOT-EXECUTABLE-ORDER: fehlender Balken oder fehlende Eroeffnung -> keine Ausfuehrung, kein Ersatzpreis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-SIZE-ZERO-AND-CAPITAL: Groesse null, unzureichendes Kapital, Positionsgrenze, 25-%-Deckel",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-EXIT-PRECEDENCE: geplanter Ausstieg zur Eroeffnung vor Stop; MA50 erst nach Einstand; Freeroll halbiert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-HALT-AND-MISSING-BARS: Handelsaussetzung -> Bewertung zum letzten Schluss, nach 5 Sitzungen SECURITY_UNAVAILABLE; Luecke im Setup-Fenster blockiert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-DELISTING: wirtschaftliches Delisting zum research-v1-Szenario; Datenluecke ist kein Delisting",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-CORPORATE-ACTION: split-bereinigte Reihe skaliert -> gleiche R-Multiples und Renditen (eine Preiswahrheit)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-DUPLICATE-SIGNALS: offene Position -> kein zweites Signal; doppelte Wertpapier-ID bricht ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-MLC-FUNDAMENTALS-AND-RS: fehlende oder verspaetete Fundamentaldaten und fehlender RS-Proxy werden ausgewiesen, nie ersetzt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "SF4-VIEW-SIMULATED-NOT-A-POSITION: simulierte Trades sind nie Depotpositionen; Ausstiegsgrund lesbar",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "SF4-DETERMINISM: Wiederholung und permutierte Eingabe liefern identische Ledger, Trades und Kurve",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "SF4-NO-LOOKAHEAD: spaetere Balken aendern keine Entscheidung und keine Buchung bis zum Schnitt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "SF4-SEPA-SERIES-EQUIVALENCE: Vorfilter aendert kein Ergebnis gegenueber trendTemplate + vcpContractions je Balken",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "SF4-PP-SERIES-EQUIVALENCE: exakter Power-Play-Vorfilter gleich powerPlayClassify je Balken (inkl. Luecken)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "GC-MLC-NOT-A-STRATEGY: Varianten vorregistriert, keine Aktivierung, Konfiguration fail-closed, Kennzeichnung je Ausgabe",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-SF4-PREFILTER-EXACTNESS: Gleitkomma-Drift (Preisverhaeltnis 1e7) und NaN-Tief nach dem Peak aendern kein Ergebnis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
+   "name": "ADV-SF4-LIMIT-ROUNDING-AND-BROKEN-BREAKOUT: Limit nie unter dem Pivot; Stop am Ausbruchsbalken verhindert den Next-Open-Einstieg",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-RUNNER-PUBLIC-COUNTS-ONLY: oeffentlich nur Zaehlungen und Hashes, Kennzahlen versiegelt; alle Varianten gemessen, Referenz deterministisch",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-RUNNER-FINGERPRINT: eigener Research-Fingerabdruck; AG-3-Engine-Fingerabdruck und sf3-Research-Code unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-LIFECYCLE-MATRIX: Matrix valide, Artefakt und Dokument = frischer Build, keine Statusaufwertung, getrennte Readiness",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "ADV-SF4-MATRIX-NO-UPGRADE: Validator lehnt SOURCE_EXACT, undeklarierte Annahmen, fehlende Tests und Mechanik ohne Code ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-SNAPSHOT-RUN-CURRENT-CODE: der eingetragene maßgebliche Snapshot-Lauf gehoert zum aktuellen Code und zur vorregistrierten Konfiguration",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-RUNNER-PPFIX-PART: Vorher/Nachher-Teil liefert nur Zaehlungen; taeglich und Monatsende konsistent",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
+   "name": "GC-MIN-PP-MISSING-LOW-CLASS: vorher MANUAL_REVIEW_SETUP mit NaN-Korrektur, nachher DATA_BLOCKED_SETUP mit Grund",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
+   "name": "SF4-PPFIX-DAILY-EQUALS-FULL: der gezielte Tagesvergleich ist identisch mit der Vollberechnung beider Fassungen",
    "result": "PASS"
   }
  ]

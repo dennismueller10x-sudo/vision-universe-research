@@ -220,10 +220,26 @@
   /* --------------------------------------------------------------- DOM */
   VS.h = function (html) { var t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; };
   VS.root = function () { return document.getElementById("vs-root"); };
-  VS.render = function (html) { var r = VS.root(); r.innerHTML = html + footer(); return r; };
-  function footer() {
-    return '<p class="vs-disclaimer">' + VS.esc(DISCLAIMER) + ' Vision Universe ist kein Broker, kein Depotanbieter und kein Vermittler: Wir verwahren kein Kapital und eröffnen keine Depots. Die Umsetzung erfolgt bei einem Anbieter deiner Wahl. <a href="#/daten">Datenquellen & Datenqualität</a></p>';
+  /* Seitenende jeder Ansicht (VU3): der Pflichthinweis bleibt als eine kurze Zeile sichtbar; Quellen,
+     Datenstaende, Methodik und die Rolle von Vision Universe stehen gebuendelt in EINEM „Daten & Methodik“.
+     opts.dm: [[Begriff, HTML]] (bereits escaped), opts.asOf: Datenstand (ISO) fuer die Zusammenfassung. */
+  VS.render = function (html, opts) { var r = VS.root(); r.innerHTML = html + footer(opts); return r; };
+  function dmRows(rows) { return (rows || []).map(function (x) { return '<dt>' + VS.esc(x[0]) + '</dt><dd>' + x[1] + '</dd>'; }).join(""); }
+  function footer(opts) {
+    opts = opts || {};
+    return '<details class="vu-dm vs-dm" id="vs-dm"><summary>Daten & Methodik' + (opts.asOf ? ' <small>Stand ' + VS.fmt.date(opts.asOf) + '</small>' : '<small hidden></small>') + '</summary><dl>' +
+      dmRows(opts.dm) + '<dt class="vs-dm-fixed">Rolle</dt><dd>Vision Universe ist kein Broker, kein Depotanbieter und kein Vermittler: Wir verwahren kein Kapital und eröffnen keine Depots. Die Umsetzung erfolgt bei einem Anbieter deiner Wahl.</dd>' +
+      '<dt>Datenquellen</dt><dd><a href="#/daten">Datenquellen & Datenqualität</a></dd></dl></details>' +
+      '<p class="vs-disclaimer vs-legal">' + VS.esc(DISCLAIMER) + '</p>';
   }
+  VS.footer = footer;
+  /** Ergaenzt „Daten & Methodik“ einer bereits gezeigten Ansicht (z. B. Datenstand nach dem Laden). */
+  VS.dm = function (rows, asOf) {
+    var box = document.getElementById("vs-dm"); if (!box) return;
+    var fixed = box.querySelector(".vs-dm-fixed"), t = document.createElement("template"); t.innerHTML = dmRows(rows);
+    box.querySelector("dl").insertBefore(t.content, fixed);
+    if (asOf) { var sm = box.querySelector("summary small"); sm.hidden = false; sm.textContent = "Stand " + VS.fmt.date(asOf); }
+  };
   VS.pending = function (title, text) { return '<div class="vs-pending" role="note"><strong>' + VS.esc(title) + '</strong>' + VS.esc(text) + '</div>'; };
   VS.RETIRE = { STANDARD: "Standard", KOMPLEX: "Komplex", SEHR_KOMPLEX: "Sehr komplex", NICHT_EINORDENBAR: "Nicht einordenbar" };
   VS.STRATEGY = { LEVERAGED: "Hebel", INVERSE: "Short", LEVERAGED_INVERSE: "Hebel + Short", SINGLE_STOCK: "Einzelaktie", OPTION_INCOME: "Optionsprämien",

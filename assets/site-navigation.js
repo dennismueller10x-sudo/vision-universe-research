@@ -254,6 +254,12 @@
     document.querySelectorAll('vu-navigation').forEach(n => n.setAttribute('theme', mode));
     document.dispatchEvent(new Event('vu-theme-change'));
   };
+  /* VU3: Ohne eigene Wahl startete jede Welt mit ihrem eigenen Schema (Discover hell, Quant dunkel) und die
+     Seite sprang beim Wechsel zwischen hell und dunkel. Jetzt haelt die erste besuchte Welt ihr Schema fest;
+     jede weitere Welt liest es vor dem ersten Zeichnen (ihr Inline-Skript liest denselben Schluessel). */
+  if (typeof window !== 'undefined' && document.querySelector('vu-navigation[theme-switch]')) {
+    try { if (!localStorage.getItem(THEME_KEY)) localStorage.setItem(THEME_KEY, currentTheme()); } catch (_) { /* ohne Speicher: je Seite */ }
+  }
   if (typeof window !== 'undefined') {
     window.VUTheme = {key: THEME_KEY, mode: currentTheme, set: m => applyTheme(m === 'dark' ? 'dark' : 'light', true),
       toggle: () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true)};

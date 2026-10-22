@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtUtc": "2026-10-21T01:52:43.519Z",
+  "generatedAtUtc": "2026-10-22T01:56:00.844Z",
   "note": "Praekomputierte SEC- und (wenn veroeffentlicht) Tiingo-basierte Faktor-Rohwerte fuer das Golden Universe (Phase 5). Kein VU Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier Sektoren waere scheinpraezise, keine echte Kennzahl (normalization.js verlangt eine Mindest-Peergroesse von 12). Value/Momentum/Risk nutzen echte Tiingo-EOD-Kurse, wenn quant/data/market/golden-preview/daily/ eine Reihe fuer den Titel enthaelt, sonst bleiben sie UNAVAILABLE statt einen Kurs zu erfinden. beta/relativeStrength bleiben immer UNAVAILABLE: der gleichgewichtete Durchschnitt dieser fuenf Titel ist kein echter Marktindex.",
   "methodologyReference": "quant/methodology/quant-v1.json",
   "source": "providers/sec/adapter.js + quant/data/market/golden-preview/ -> quant/engines/{sec-fact-panel,panel-builder}.js -> quant/engines/factors.js",
   "pricePanel": {
-    "tradingDays": 2967,
+    "tradingDays": 2968,
     "from": "2015-01-02",
-    "to": "2026-10-20",
+    "to": "2026-10-21",
     "benchmark": "synthetic equal-weighted (Golden Five only, kein echter Marktindex)"
   },
   "versions": {
@@ -35,25 +35,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 466823,
         "freeCashFlow": 136683,
         "netIncome": 128930,
-        "marketCap": 4954724.11,
+        "marketCap": 5020251.98,
         "roic": 81.384,
         "grossProfitability": 0.5926,
         "fcfMargin": 29.279,
         "operatingMargin": 33.173,
         "balanceSheetQuality": 82.78,
         "leverage": 0.255,
-        "earningsYield": 2.602,
-        "fcfYield": 2.759,
-        "evToEbitda": 29.754,
-        "evToSales": 10.705,
-        "priceToFcf": 36.25,
+        "earningsYield": 2.568,
+        "fcfYield": 2.723,
+        "evToEbitda": 30.145,
+        "evToSales": 10.846,
+        "priceToFcf": 36.729,
         "revenueGrowth": 14.242,
         "epsGrowth": 32.056,
         "fcfGrowth": 42.106,
@@ -64,18 +64,18 @@
         "_asOfAvailableAt": "2026-07-31",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 339.5,
-        "momentum3m": 4.268,
-        "momentum6m": 27.78,
-        "momentum12m": 35.067,
-        "momentum12m1m": 34.86,
-        "distanceTo52wHigh": 1.153,
-        "priceTo50dma": 3.849,
-        "priceTo200dma": 15.806,
-        "volatility": 24.328,
+        "price": 343.99,
+        "momentum3m": 7.036,
+        "momentum6m": 26.152,
+        "momentum12m": 31.661,
+        "momentum12m1m": 30.038,
+        "distanceTo52wHigh": 0,
+        "priceTo50dma": 4.972,
+        "priceTo200dma": 17.184,
+        "volatility": 24.056,
         "downsideVolatility": 24.385,
         "maxDrawdown": 13.799,
-        "avgDollarVolume": 14254.24
+        "avgDollarVolume": 14162.638
       },
       "coverage": {
         "quality": {
@@ -167,35 +167,35 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 2.602,
+              "value": 2.568,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.759,
+              "value": 2.723,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": true,
-              "value": 29.754,
+              "value": 30.145,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 10.705,
+              "value": 10.846,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 36.25,
+              "value": 36.729,
               "notApplicable": false,
               "reason": null
             },
@@ -216,21 +216,21 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 34.86,
+              "value": 30.038,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 27.78,
+              "value": 26.152,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 4.268,
+              "value": 7.036,
               "notApplicable": false,
               "reason": null
             },
@@ -244,21 +244,21 @@
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 1.153,
+              "value": 0,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 3.849,
+              "value": 4.972,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 15.806,
+              "value": 17.184,
               "notApplicable": false,
               "reason": null
             }
@@ -272,7 +272,7 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 24.328,
+              "value": 24.056,
               "notApplicable": false,
               "reason": null
             },
@@ -340,25 +340,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 331839,
         "freeCashFlow": 66987,
         "netIncome": 133749,
-        "marketCap": 3949424.88,
+        "marketCap": 3957444.47,
         "roic": 26.559,
         "grossProfitability": 0.2973,
         "fcfMargin": 20.187,
         "operatingMargin": 46.781,
         "balanceSheetQuality": 91.98,
         "leverage": 0.102,
-        "earningsYield": 3.387,
-        "fcfYield": 1.696,
-        "evToEbitda": 20.939,
-        "evToSales": 11.96,
-        "priceToFcf": 58.958,
+        "earningsYield": 3.38,
+        "fcfYield": 1.693,
+        "evToEbitda": 20.982,
+        "evToSales": 11.984,
+        "priceToFcf": 59.078,
         "revenueGrowth": 17.789,
         "epsGrowth": 31.492,
         "fcfGrowth": -6.457,
@@ -369,18 +369,18 @@
         "_asOfAvailableAt": "2026-07-29",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 531.87,
-        "momentum3m": 36.516,
-        "momentum6m": 25.904,
-        "momentum12m": 4.418,
-        "momentum12m1m": -1.523,
-        "distanceTo52wHigh": 2.131,
-        "priceTo50dma": 4.963,
-        "priceTo200dma": 22.046,
-        "volatility": 32.837,
+        "price": 532.95,
+        "momentum3m": 39.933,
+        "momentum6m": 23.607,
+        "momentum12m": 3.98,
+        "momentum12m1m": -2.839,
+        "distanceTo52wHigh": 1.932,
+        "priceTo50dma": 5.056,
+        "priceTo200dma": 22.209,
+        "volatility": 32.833,
         "downsideVolatility": 30.085,
         "maxDrawdown": 34.496,
-        "avgDollarVolume": 12988.383
+        "avgDollarVolume": 12898.679
       },
       "coverage": {
         "quality": {
@@ -472,35 +472,35 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.387,
+              "value": 3.38,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 1.696,
+              "value": 1.693,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": true,
-              "value": 20.939,
+              "value": 20.982,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 11.96,
+              "value": 11.984,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 58.958,
+              "value": 59.078,
               "notApplicable": false,
               "reason": null
             },
@@ -521,21 +521,21 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": -1.523,
+              "value": -2.839,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 25.904,
+              "value": 23.607,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 36.516,
+              "value": 39.933,
               "notApplicable": false,
               "reason": null
             },
@@ -549,21 +549,21 @@
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 2.131,
+              "value": 1.932,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 4.963,
+              "value": 5.056,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 22.046,
+              "value": 22.209,
               "notApplicable": false,
               "reason": null
             }
@@ -577,7 +577,7 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 32.837,
+              "value": 32.833,
               "notApplicable": false,
               "reason": null
             },
@@ -645,25 +645,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 302969,
         "freeCashFlow": 127006,
         "netIncome": 192879,
-        "marketCap": 5216927,
+        "marketCap": 5349477,
         "roic": 65.062,
         "grossProfitability": 0.7064,
         "fcfMargin": 41.92,
         "operatingMargin": 65.214,
         "balanceSheetQuality": 78.56,
         "leverage": 0.054,
-        "earningsYield": 3.697,
-        "fcfYield": 2.434,
-        "evToEbitda": 25.975,
-        "evToSales": 17.255,
-        "priceToFcf": 41.076,
+        "earningsYield": 3.606,
+        "fcfYield": 2.374,
+        "evToEbitda": 26.633,
+        "evToSales": 17.693,
+        "priceToFcf": 42.12,
         "revenueGrowth": 83.375,
         "epsGrowth": 124.58,
         "fcfGrowth": 76.341,
@@ -674,18 +674,18 @@
         "_asOfAvailableAt": "2026-08-26",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 216.47,
-        "momentum3m": 2.196,
-        "momentum6m": 8.548,
-        "momentum12m": 18.431,
-        "momentum12m1m": 24.4,
-        "distanceTo52wHigh": 9.518,
-        "priceTo50dma": -2.892,
-        "priceTo200dma": 6.498,
-        "volatility": 37.271,
-        "downsideVolatility": 35.272,
+        "price": 221.97,
+        "momentum3m": 6.45,
+        "momentum6m": 9.866,
+        "momentum12m": 21.826,
+        "momentum12m1m": 25.613,
+        "distanceTo52wHigh": 7.219,
+        "priceTo50dma": -0.465,
+        "priceTo200dma": 9.113,
+        "volatility": 37.349,
+        "downsideVolatility": 35.411,
         "maxDrawdown": 20.215,
-        "avgDollarVolume": 25782.193
+        "avgDollarVolume": 25664.011
       },
       "coverage": {
         "quality": {
@@ -777,35 +777,35 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.697,
+              "value": 3.606,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.434,
+              "value": 2.374,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToEbitda",
               "real": true,
-              "value": 25.975,
+              "value": 26.633,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "evToSales",
               "real": true,
-              "value": 17.255,
+              "value": 17.693,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 41.076,
+              "value": 42.12,
               "notApplicable": false,
               "reason": null
             },
@@ -826,21 +826,21 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 24.4,
+              "value": 25.613,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 8.548,
+              "value": 9.866,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 2.196,
+              "value": 6.45,
               "notApplicable": false,
               "reason": null
             },
@@ -854,21 +854,21 @@
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 9.518,
+              "value": 7.219,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": -2.892,
+              "value": -0.465,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 6.498,
+              "value": 9.113,
               "notApplicable": false,
               "reason": null
             }
@@ -882,14 +882,14 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 37.271,
+              "value": 37.349,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 35.272,
+              "value": 35.411,
               "notApplicable": false,
               "reason": null
             },
@@ -950,21 +950,21 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": null,
         "freeCashFlow": null,
         "netIncome": 65067,
-        "marketCap": 1376220.14,
+        "marketCap": 1375932.79,
         "roic": null,
         "grossProfitability": null,
         "fcfMargin": null,
         "operatingMargin": null,
         "balanceSheetQuality": 63.58,
         "leverage": null,
-        "earningsYield": 4.728,
+        "earningsYield": 4.729,
         "fcfYield": null,
         "evToEbitda": null,
         "evToSales": null,
@@ -979,18 +979,18 @@
         "_asOfAvailableAt": "2026-08-06",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 335.26,
-        "momentum3m": -3.239,
-        "momentum6m": 8.123,
-        "momentum12m": 14.824,
-        "momentum12m1m": 19.973,
-        "distanceTo52wHigh": 8.193,
-        "priceTo50dma": -3.425,
-        "priceTo200dma": 3.966,
-        "volatility": 22.156,
-        "downsideVolatility": 23.865,
+        "price": 335.19,
+        "momentum3m": -3.727,
+        "momentum6m": 8.094,
+        "momentum12m": 12.977,
+        "momentum12m1m": 14.031,
+        "distanceTo52wHigh": 8.212,
+        "priceTo50dma": -3.295,
+        "priceTo200dma": 3.942,
+        "volatility": 22.102,
+        "downsideVolatility": 23.759,
         "maxDrawdown": 15.472,
-        "avgDollarVolume": 2423.332
+        "avgDollarVolume": 2416.387
       },
       "coverage": {
         "quality": {
@@ -1082,7 +1082,7 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 4.728,
+              "value": 4.729,
               "notApplicable": false,
               "reason": null
             },
@@ -1131,21 +1131,21 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 19.973,
+              "value": 14.031,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 8.123,
+              "value": 8.094,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": -3.239,
+              "value": -3.727,
               "notApplicable": false,
               "reason": null
             },
@@ -1159,21 +1159,21 @@
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 8.193,
+              "value": 8.212,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": -3.425,
+              "value": -3.295,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 3.966,
+              "value": 3.942,
               "notApplicable": false,
               "reason": null
             }
@@ -1187,14 +1187,14 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 22.156,
+              "value": 22.102,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "downsideVolatility",
               "real": true,
-              "value": 23.865,
+              "value": 23.759,
               "notApplicable": false,
               "reason": null
             },
@@ -1255,25 +1255,25 @@
       "marketData": {
         "provider": "tiingo",
         "scope": "development_preview",
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "note": "Echter Tiingo-EOD-Schlusskurs, Development Preview (Eigentuemerentscheidung, siehe quant/config/development-preview.json). Momentum/Risk direkt aus der Kursreihe; Value nutzt denselben Schlusskurs fuer die Marktkapitalisierung."
       },
       "fundamentals": {
         "revenue": 334246,
         "freeCashFlow": 18792,
         "netIncome": 25314,
-        "marketCap": 737229.7,
+        "marketCap": 738183.05,
         "roic": null,
         "grossProfitability": null,
         "fcfMargin": 5.622,
         "operatingMargin": null,
         "balanceSheetQuality": 69.91,
         "leverage": null,
-        "earningsYield": 3.434,
-        "fcfYield": 2.549,
+        "earningsYield": 3.429,
+        "fcfYield": 2.546,
         "evToEbitda": null,
         "evToSales": null,
-        "priceToFcf": 39.231,
+        "priceToFcf": 39.282,
         "revenueGrowth": -4.401,
         "epsGrowth": -20.653,
         "fcfGrowth": -33.317,
@@ -1284,18 +1284,18 @@
         "_asOfAvailableAt": "2026-05-04",
         "_restatementStatus": "original",
         "_revisionId": 0,
-        "price": 177.86,
-        "momentum3m": 15.892,
-        "momentum6m": 21.436,
-        "momentum12m": 63.013,
-        "momentum12m1m": 45.086,
-        "distanceTo52wHigh": 0.626,
-        "priceTo50dma": 8.086,
-        "priceTo200dma": 16.796,
-        "volatility": 26.032,
+        "price": 178.09,
+        "momentum3m": 14.237,
+        "momentum6m": 20.666,
+        "momentum12m": 62.558,
+        "momentum12m1m": 44.868,
+        "distanceTo52wHigh": 0.497,
+        "priceTo50dma": 7.985,
+        "priceTo200dma": 16.745,
+        "volatility": 26.031,
         "downsideVolatility": 25.918,
         "maxDrawdown": 20.133,
-        "avgDollarVolume": 2198.108
+        "avgDollarVolume": 2189.825
       },
       "coverage": {
         "quality": {
@@ -1387,14 +1387,14 @@
             {
               "fieldId": "earningsYield",
               "real": true,
-              "value": 3.434,
+              "value": 3.429,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "fcfYield",
               "real": true,
-              "value": 2.549,
+              "value": 2.546,
               "notApplicable": false,
               "reason": null
             },
@@ -1415,7 +1415,7 @@
             {
               "fieldId": "priceToFcf",
               "real": true,
-              "value": 39.231,
+              "value": 39.282,
               "notApplicable": false,
               "reason": null
             },
@@ -1436,21 +1436,21 @@
             {
               "fieldId": "momentum12m1m",
               "real": true,
-              "value": 45.086,
+              "value": 44.868,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum6m",
               "real": true,
-              "value": 21.436,
+              "value": 20.666,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "momentum3m",
               "real": true,
-              "value": 15.892,
+              "value": 14.237,
               "notApplicable": false,
               "reason": null
             },
@@ -1464,21 +1464,21 @@
             {
               "fieldId": "distanceTo52wHigh",
               "real": true,
-              "value": 0.626,
+              "value": 0.497,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo50dma",
               "real": true,
-              "value": 8.086,
+              "value": 7.985,
               "notApplicable": false,
               "reason": null
             },
             {
               "fieldId": "priceTo200dma",
               "real": true,
-              "value": 16.796,
+              "value": 16.745,
               "notApplicable": false,
               "reason": null
             }
@@ -1492,7 +1492,7 @@
             {
               "fieldId": "volatility",
               "real": true,
-              "value": 26.032,
+              "value": 26.031,
               "notApplicable": false,
               "reason": null
             },

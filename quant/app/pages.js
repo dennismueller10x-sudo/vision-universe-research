@@ -310,14 +310,15 @@
       el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
         X.icon("search"), el("span", { text: "Aktie suchen, z. B. Apple oder NVDA …" }), el("i", { "aria-hidden": "true", text: "→" })]),
       el("p", { class: "q-intro-note", text: CLAIM_LEAD }),
-      promiseList()
+      /* VU3: die vier Versprechen sind Erklaerung - sie stehen hinter "Mehr", die Ergebnisse darunter zuerst. */
+      X.more("So arbeitet Quant", function () { return promiseList(); })
     ]));
 
     /* Owner-Auftrag "Quant Daily Usefulness" (01.10.2026): Home zeigt
        zuerst, was heute neu ist - der Radar. Danach erst die Werkzeuge. */
     var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
     var radarHost = el("div", { class: "q-radar-grid q-radar-top" }, [X.loading("Radar wird geladen …")]);
-    page.append(X.world("Heute bei Quant", "Was sich seit dem letzten veröffentlichten Stand verändert hat – gezählt und mit Datum. Jede Karte sagt, was passiert ist, was als Nächstes fehlt und wie es früher lief. Keine Kaufempfehlung.", [kpis, radarHost], { href: X.routes.radar(), label: "Zum Radar" }, "v2-market-today"));
+    page.append(X.world("Heute bei Quant", "Was sich seit dem letzten Stand verändert hat – gezählt und mit Datum. Keine Kaufempfehlung.", [kpis, radarHost], { href: X.routes.radar(), label: "Zum Radar" }, "v2-market-today"));
     var watchHost = el("div"), tiAlertHost = el("div");
     page.append(watchHost, tiAlertHost);
 
@@ -332,7 +333,9 @@
       }), "Deine Aktien")], { href: X.routes.stocks(), label: "Alle ansehen" }));
     }
     page.append(rails);
-    page.append(X.world("Warum Quant mehr ist als ein Screener", "Ein Screener findet Aktien, die deine Bedingungen erfüllen. Quant beobachtet Zustände und Veränderungen – und vergleicht sie mit dem, was früher im ganzen Markt geschah.", [proofHost]));
+    /* VU3: die Abgrenzung zum Screener ist Erklaerung - hinter "Mehr", mit dem echten Beleg aus dem Radar. */
+    page.append(el("details", { class: "qx-more qv-home-more" }, [el("summary", {}, [el("span", { text: "Warum Quant mehr ist als ein Screener" })]),
+      el("div", { class: "qx-more-body" }, [el("p", { class: "qx-small", text: "Ein Screener findet Aktien, die deine Bedingungen erfüllen. Quant beobachtet Zustände und Veränderungen – und vergleicht sie mit dem, was früher im ganzen Markt geschah." }), proofHost])]));
 
     /* Werkzeuge erst nach dem, was heute neu ist (Owner-Reihenfolge 04.10.2026). */
     page.append(X.section("Selbst suchen", null, [doors([
@@ -400,7 +403,7 @@
     }
     if (radarState && radarState.state === "AVAILABLE") {
       tiles = radarSummary(radarState).concat(tiles);
-      radarHost.replaceChildren.apply(radarHost, radarState.cards.slice(0, 6).map(function (c) { return radarCard(ctx, c, { logo: true, compact: true }); }));
+      radarHost.replaceChildren.apply(radarHost, radarState.cards.slice(0, 4).map(function (c) { return radarCard(ctx, c, { logo: true, compact: true }); }));
       var proof = proofCard(radarState);
       if (proof) proofHost.replaceChildren(proof);
       /* Beobachtete Aktien: was der Radar fuer sie meldet. Watchlist ist
@@ -465,7 +468,7 @@
       el("p", { class: "q-kicker", text: "Vision Universe Quant" }),
       el("h1", { class: "qx-h1", text: pro ? "Quant Screener · Profi" : "Quant Screener" }),
       el("p", { class: "q-hero-lead v2-lead qx-lead", text: pro ? "Alle Kennzahlen und Faktoren, frei kombinierbar. Jede Regel ist sichtbar und teilbar." : "Finde datenbasierte Ideen. Prüfe, warum eine Aktie dabei ist. Nutze sie direkt für deine Analyse." }),
-      el("p", { class: "q-note-box" }, [el("span", { text: "Der Screener findet Aktien nach " }), el("b", { text: "deinen" }), el("span", { text: " Bedingungen. Was sich bei Aktien gerade verändert, meldet der " }), el("a", { href: X.routes.radar(), text: "Radar" }), el("span", { text: "." })]),
+      el("p", { class: "q-note-line qx-small" }, [el("span", { text: "Der Screener findet Aktien nach deinen Bedingungen. Was sich gerade verändert, meldet der " }), el("a", { href: X.routes.radar(), text: "Radar" }), el("span", { text: "." })]),
       el("nav", { class: "qx-mode", "aria-label": "Screener-Modus" }, [
         el("a", { href: X.routes.screener(), "aria-current": pro ? null : "page", text: "Einfach" }),
         el("a", { href: X.routes.screenerPro(), "aria-current": pro ? "page" : null, text: "Profi" })])
@@ -506,7 +509,9 @@
     minIn.addEventListener("input", function () { onRange("min"); }); maxIn.addEventListener("input", function () { onRange("max"); });
     minIn.addEventListener("change", custom); maxIn.addEventListener("change", custom);
     function drawRange() { fill.style.left = sel.min + "%"; fill.style.width = (sel.max - sel.min) + "%"; rangeText.textContent = "Min. " + sel.min + " – Max. " + sel.max; }
-    var panel = el("section", { class: "q-filter", "aria-label": "Faktor-Filter" }, [
+    /* VU3: Schnellwahl und Treffer zuerst; der Faktor-Filter (eigene Bedingungen) steht hinter einer Aufklappzeile -
+       offen, wenn die Adresse eigene Bedingungen traegt. Das Ergebnis selbst liegt nie in einem Aufklapper. */
+    var panel = el("details", { class: "qx-more q-filter-more" }, [el("summary", {}, [el("span", { text: "Eigene Bedingungen: Faktoren und Wertebereich" })]), el("section", { class: "q-filter", "aria-label": "Faktor-Filter" }, [
       el("h3", {}, [el("span", { text: "Faktor-Filter" }), el("a", { href: X.routes.method("faktoren"), text: "Alle Faktoren →" })]),
       chipsHost,
       el("div", { class: "q-range" }, [el("div", { class: "q-range-head" }, [el("span", { text: "Wertebereich (0–100) je gewählter Eigenschaft" }), rangeText]),
@@ -517,7 +522,7 @@
           el("label", {}, [el("span", { text: "Stand" }), el("select", { disabled: true, "aria-label": "Stand" }, [el("option", { text: "letzter Lauf" })])])])]),
       el("div", { class: "q-filter-foot" }, [el("span", { class: "qx-small", style: "margin:0", text: "Quant prüft US-Aktien; Region und Universum sind deshalb fest." }),
         el("a", { class: "q-toggle", href: X.routes.screenerPro() }, [el("i", { "aria-hidden": "true" }), el("span", { text: "Pro Modus einschalten" })])])
-    ]);
+    ])]);
     function syncChips() { chipsHost.querySelectorAll("button[data-factor]").forEach(function (b) { b.setAttribute("aria-pressed", sel.factors.indexOf(b.dataset.factor) >= 0 ? "true" : "false"); }); minIn.value = String(sel.min); maxIn.value = String(sel.max); drawRange(); }
     function sync() { list.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", chosen && b.dataset.question === chosen.id ? "true" : "false"); }); syncChips(); }
     function custom() {
@@ -527,6 +532,7 @@
     var sentence = el("p", { class: "qx-sentence", "aria-live": "polite" });
     var out = el("div", { "aria-live": "polite" });
     var results = el("section", { class: "q-results", "aria-label": "Ergebnisse" }, [out]);
+    panel.open = !chosen;
     main.append(el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, sentence, results);
     var run_id = 0;
     async function run() {
@@ -739,7 +745,7 @@
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Strategien" }),
       el("h1", { class: "qx-h1", text: "Welche Art von Unternehmen suchst du?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Jeder Anlagestil sucht eine bestimmte Art von Unternehmen. Quant prüft täglich, welche Aktien alle Bedingungen erfüllen – für jede Aktie mit denselben Regeln." }),
-      el("p", { class: "q-intro-note", text: "„Passt heute“ heißt: die Bedingungen sind heute erfüllt. Wie sich ein Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – neue Treffer meldet der Radar." })]));
+      X.more("Was „passt heute“ heißt", function () { return el("p", { class: "q-intro-note", text: "„Passt heute“ heißt: die Bedingungen sind heute erfüllt. Wie sich ein Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – neue Treffer meldet der Radar." }); })]));
     main.append(el("div", { class: "v2-collection-links qx-strats" }, list.map(function (p) {
       var ix = byId[p.profileId], art = STRATEGY_ART(p.profileId);
       var blocked = ix && ix.availability && ix.availability.state !== "AVAILABLE";
@@ -852,8 +858,10 @@
     var recent = X.recent.list(), watched = X.watch.list();
     var watchValue = el("div", {}, [el("p", { class: "qx-small", text: "Beobachten heißt: Quant verfolgt für dich" }), el("ul", { class: "q-watch-value" }, WATCH_VALUE.map(function (w) { return el("li", { text: w }); })),
       el("p", { class: "qx-small", text: "Du siehst es im Radar und im Verlauf unten. Kein Depot: keine Stückzahl, kein Einstand." })]);
-    if (!watched.length) main.append(X.world("Beobachten", "Tippe auf einer Aktienseite auf „Beobachten“.", [watchValue]));
-    if (watched.length) main.append(X.world("Beobachtet", watched.length + (watched.length === 1 ? " Aktie" : " Aktien") + " beobachtest du.", [watchValue, X.rail(watched.slice(0, 24).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Beobachtet" }); }), "Gemerkt"),
+    /* VU3: was "Beobachten" bedeutet, steht hinter einer Aufklappzeile. */
+    var watchMore = X.more("Was Quant für beobachtete Aktien verfolgt", function () { return watchValue; });
+    if (!watched.length) main.append(X.world("Beobachten", "Tippe auf einer Aktienseite auf „Beobachten“.", [watchMore]));
+    if (watched.length) main.append(X.world("Beobachtet", watched.length + (watched.length === 1 ? " Aktie" : " Aktien") + " beobachtest du.", [watchMore, X.rail(watched.slice(0, 24).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Beobachtet" }); }), "Gemerkt"),
       watched.length > 1 ? X.actions([X.btn("Beobachtete vergleichen", X.routes.compare(watched.slice(0, 4)), "secondary")]) : null]));
     /* Evidenz-Verlauf je beobachteter Aktie: was jetzt gilt, was davor galt,
        was historisch getestet ist, was als Naechstes fehlt. Kein Portfolio. */

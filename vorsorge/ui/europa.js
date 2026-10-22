@@ -155,7 +155,7 @@
           ["Kursanalyse & Performance", "Risiko", "Holdings & ETF X-Ray", "Kosten (TER / laufende Kosten)", "Fondsvolumen", "Replikation", "NAV", "Portfolio-Durchleuchtung"].map(function (t) { return '<span class="vs-badge">' + t + '</span>'; }).join("") +
           '</div><p class="vs-sub" style="margin-top:10px">Für europäische Anteilklassen ist dafür noch keine frei nutzbare Quelle angebunden. Wir zeigen nur, was amtlich belegt ist – nichts davon wird geschätzt.</p>' +
           '<div class="vs-tabs" style="margin-top:12px"><button class="vs-pill" id="vs-eu-watch"></button><a class="vs-pill" href="#/portfolio?add=' + encodeURIComponent(x.isin) + '">Zum Portfolio</a><a class="vs-pill" href="#/europa/vergleich?i=' + encodeURIComponent(x.isin) + '">Vergleichen</a></div></div></section>' +
-        '<p class="vs-disclaimer">' + esc(VS.DISCLAIMER) + '</p>';
+        VS.footer({ asOf: j.asOf, dm: [["Quelle", esc(j.attribution || "ESMA FIRDS, GLEIF")]] });
       // Beobachten: ISIN in der Watchlist (Anzeige dort mit Stammdaten, ohne Kurse)
       var wb = root.querySelector("#vs-eu-watch");
       function wl() { var on = VS.state.watchlist.indexOf(x.isin) >= 0; wb.textContent = on ? "♥ Beobachtet" : "♡ Beobachten"; wb.classList.toggle("primary", on); }

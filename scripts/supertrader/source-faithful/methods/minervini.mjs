@@ -10,7 +10,7 @@
  */
 import { fin, smaAt } from '../common/series.mjs';
 
-export const MINERVINI_VERSION = 'sf-minervini-1.0.0';
+export const MINERVINI_VERSION = 'sf-minervini-1.0.1'; // 1.0.1: a missing low in the Power Play consolidation no longer passes the correction gate
 export const MIN_PARAMS = Object.freeze({
   ma: [50, 150, 200],          // MIN-TT-01..05
   ma200RisingSessions: 21,     // MIN-TT-03 "at least one month" (derivation: 21 sessions)
@@ -106,15 +106,11 @@ export function sepaScreen(security, { asOfIndex = security.bars.length - 1, vuR
 }
 
 /**
- * C07 machine screen on bar i. Peak p = most recent bar that is the highest high of p..i and is preceded, within fewer
- * than 40 sessions, by a low at most half of it (+100 %). Consolidation = p+1..i (>= 1 session, no minimum length).
- * Correction = 1 - lowest low since p / high at p: > 25 % no record; (20 %, 25 %] review flag; <= 10 % TIGHT, else
- * VCP_CHARACTERISTICS_REVIEW. No fundamental input (MIN-PP-01).
+ * C07 Power Play peak on bar i: the MOST RECENT bar p < i with a +100 % run-up from a low j within fewer than 40 sessions
+ * such that p is the highest high of the whole leg j..i (review SF-R2-01: an older, higher peak must not hide a newer
+ * Power Play). Returns { p, j } or null. Bars 0..i only.
  */
-export function powerPlayScreen(security, { asOfIndex = security.bars.length - 1 } = {}, P = MIN_PARAMS) {
-  const bars = security.bars, i = asOfIndex;
-  // peak = the MOST RECENT bar p < i with a +100 % run-up from a low j within fewer than 40 sessions such that p is the
-  // highest high of the whole leg j..i (review SF-R2-01: an older, higher peak must not hide a newer Power Play)
+export function powerPlayPeak(bars, i, P = MIN_PARAMS) {
   let runMax = bars[i].high, best = null;
   for (let p = i - 1; p >= 1 && !best; p--) {
     if (!(bars[p].high > runMax)) continue; // p is the highest high of p..i
@@ -124,8 +120,23 @@ export function powerPlayScreen(security, { asOfIndex = security.bars.length - 1
     let legMax = -Infinity; for (let k = j; k < p; k++) legMax = Math.max(legMax, bars[k].high);
     if (legMax <= bars[p].high) best = { p, j };
   }
+  return best;
+}
+
+/**
+ * C07 machine screen on bar i. Peak p = powerPlayPeak. Consolidation = p+1..i (>= 1 session, no minimum length).
+ * Correction = 1 - lowest low since p / high at p: > 25 % no record; (20 %, 25 %] review flag; <= 10 % TIGHT, else
+ * VCP_CHARACTERISTICS_REVIEW. No fundamental input (MIN-PP-01).
+ * A consolidation with a missing low cannot be measured: the correction gate (MIN-PP-04) is not confirmed and no record
+ * is emitted (fail closed, sf-minervini-1.0.1). Before, the missing low made the correction NaN, which passed every
+ * comparison; research/minervini-components.mjs#powerPlayClassify reports such bars as DATA_BLOCKED_SETUP.
+ */
+export function powerPlayScreen(security, { asOfIndex = security.bars.length - 1 } = {}, P = MIN_PARAMS) {
+  const bars = security.bars, i = asOfIndex;
+  const best = powerPlayPeak(bars, i, P);
   if (!best) return [];
   const { p, j } = best;
+  for (let k = p + 1; k <= i; k++) if (!fin(bars[k].low)) return [];
   let lo = Infinity; for (let k = p + 1; k <= i; k++) lo = Math.min(lo, bars[k].low);
   const correction = 1 - lo / bars[p].high;
   if (correction > P.ppMaxCorrection) return [];

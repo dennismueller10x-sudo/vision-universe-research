@@ -33,6 +33,16 @@
   var HOSTED = !!global.QX_HOST;      // Gast im Elliott-Produkt (siehe Kopf)
 
   /* ---------------------------------------------- Alte Routen -> neue */
+  /* VU3: eine Lage ohne Titel ("Klare Elliott-Strukturen (0)") ist kein nutzbares Angebot. Die Uebersicht
+     (page-chartbild.js#overview) zeichnet jede Reihe als Reiter mit ihrer Zahl; Reiter mit 0 Titeln werden hier
+     ausgeblendet - ausser, die Adresse waehlt genau diese Reihe. Daten und Regeln bleiben unberuehrt. */
+  function hideEmptyLagen(main, params) {
+    var chosen = params && params.get ? params.get("reihe") : null;
+    [].forEach.call(main.querySelectorAll(".cb-chips button[data-id]"), function (b) {
+      if (/\(0\)\s*$/.test(b.textContent || "") && b.dataset.id !== chosen && b.getAttribute("aria-selected") !== "true") { b.hidden = true; b.setAttribute("aria-hidden", "true"); }
+    });
+  }
+
   function legacyRoute(search) {
     var p = new URLSearchParams(search || "");
     var view = p.get("view");
@@ -363,7 +373,7 @@
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
-        case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); break;
+        case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); hideEmptyLagen(main, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;

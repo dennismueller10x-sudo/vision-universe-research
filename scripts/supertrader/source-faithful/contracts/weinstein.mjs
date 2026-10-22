@@ -6,7 +6,7 @@
  * group / market context stay manual or are DATA_BLOCKED. No RS > 0 gate and no "every close below MA30" exit
  * (#709 false hard rules WEIN-RSZERO / WEIN-TRAIL4).
  */
-import { defineContract, EXCLUDE, SF_ROOT } from './define.mjs';
+import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/weinstein.mjs`;
@@ -18,8 +18,8 @@ const shared = () => [
   { id: 'WEIN-SF-STAGE', kind: 'FILTER', psr709: ['WEIN-S1', 'WEIN-S2', 'WEIN-S3', 'WEIN-S4', 'WEIN-NO3', 'WEIN-NO4'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'stage classification (no Stage 3 buys, no Stage 4 buys or holds); the machine reports MA slope and price-to-MA as evidence, the stage is the reviewer\'s call' },
   { id: 'WEIN-SF-VOLUME', kind: 'FILTER', psr709: ['WEIN-VOL', 'WEIN-VOL1', 'WEIN-VOL2', 'WEIN-VOL3', 'WEIN-VOL4', 'WEIN-BASEVOL'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'clear volume confirmation of the breakout; the machine evaluates the three printed alternatives and reports which hold; no single magic multiplier is enforced (WEIN-VOL4)', code: `${CODE}#volumeAlternatives`, tests: [`${T}: GC-WEIN-VOL-A`, `${T}: GC-WEIN-VOL-C`, `${T}: GC-WEIN-VOL-NONE`] },
   { id: 'WEIN-SF-RS', kind: 'FILTER', psr709: ['WEIN-RS', 'WEIN-RSP', 'WEIN-RSZERO', 'WEIN-RSNO'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'relative strength vs a consistent market index: negative AND still poor RS = no buy; below zero but clearly improving may be bought; the machine reports the RS line, its 52-week-normalised level and its recent trend as evidence (no RS > 0 gate)', code: `${CODE}#relativeStrength`, tests: [`${T}: GC-WEIN-RS-BELOW-ZERO-IMPROVING`] },
-  { id: 'WEIN-SF-GROUP', kind: 'FILTER', psr709: ['WEIN-GROUP', 'WEIN-GROUP2'], status: 'DATA_BLOCKED', rule: 'no long buy in a negative industry group; check the group stage first', reason: 'point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented' },
-  { id: 'WEIN-SF-MARKET', kind: 'FILTER', psr709: ['WEIN-MARKET'], status: 'DATA_BLOCKED', rule: 'begin normal long selection only in a positive overall market', reason: 'Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only.', code: `${CODE}#marketEvidence`, tests: [`${T}: GC-WEIN-MARKET-EVIDENCE`] },
+  { id: 'WEIN-SF-GROUP', kind: 'FILTER', psr709: ['WEIN-GROUP', 'WEIN-GROUP2'], status: 'DATA_BLOCKED', rule: 'no long buy in a negative industry group; check the group stage first', reason: 'point-in-time industry group membership and group charts are not in the snapshot (#709 industry PARTIAL); no substitute is invented. Supertrader 3.0: PIT SEC SIC membership and a VU PROXY group chart exist as research evidence (research/industry-strength.mjs: equal-weight chain index, group MA30w relation, group RS, breadth, volume, rotation; cap weighting DATA_BLOCKED without PIT shares); SIC is not Weinstein\'s group list, so the rule stays DATA_BLOCKED and the group stage stays the reviewer\'s call. Owner decision 2026-10-21: SIC3 with at least five members (SIC3-EW-MIN5-400D-WIDE) may be used as a clearly labelled research reference, never as SOURCE_EXACT and never as a binding trading gate', researchEvidence: [sf3Evidence('industry-strength.mjs', 'withIndustryEvidence', [['sf-industry-strength-research', 'SF3-WEIN-GROUP-INTEGRATION'], ['sf-industry-strength-research', 'SF3-WEIN-GROUP-PIT']], 'VU_PROXY_OF_WEINSTEIN_GROUP_CHART')] },
+  { id: 'WEIN-SF-MARKET', kind: 'FILTER', psr709: ['WEIN-MARKET'], status: 'DATA_BLOCKED', rule: 'begin normal long selection only in a positive overall market', reason: 'Weinstein judges the market with stage analysis plus breadth (Momentum Index, new highs / lows, foreign indices); NYSE advance / decline and new-high history is not in the snapshot. The SPY 30-week stage is reported as evidence only; Supertrader 3.0 adds research-universe breadth (research/market-breadth.mjs, labelled VU_UNIVERSE_BREADTH_PROXY_NOT_NYSE).', researchEvidence: [sf3Evidence('market-breadth.mjs', 'buildMarketBreadth', [['sf-industry-strength-research', 'SF3-MARKET-BREADTH']], 'proxy, not NYSE breadth')], code: `${CODE}#marketEvidence`, tests: [`${T}: GC-WEIN-MARKET-EVIDENCE`] },
   { id: 'WEIN-SF-OVERHEAD', kind: 'FILTER', psr709: ['WEIN-OH', 'WEIN-OHAGE'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'avoid strong nearby overhead resistance; the machine reports the nearest higher weekly high in the available history and its age' },
   { id: 'WEIN-SF-ORDER', kind: 'ENTRY', psr709: ['WEIN-ORD'], status: 'SOURCE_DERIVED', rule: 'breakout buy is prepared as a buy-stop order', derivation: 'the candidate record carries the buy-stop level (resistance + one raw cent); WEIN-LIM stop-limit spacing is an execution example (EXAMPLE_ONLY), not modelled', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-INVESTOR-CANDIDATE`, `${T}: GC-WEIN-TRADER-CANDIDATE`] },
   { id: 'WEIN-SF-STOP-PLAN', kind: 'STOP', psr709: ['WEIN-STOP1'], status: 'SOURCE_DERIVED', rule: 'the stop is computed before the buy and placed right after it', derivation: 'every candidate record carries a proposed stop before any decision; the reviewer confirms or replaces it', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-INVESTOR-CANDIDATE`] },
@@ -49,6 +49,7 @@ const sharedExclusions = {
 
 export const WEINSTEIN_INVESTOR = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_INVESTOR',
   candidateId: 'C04',
@@ -88,6 +89,7 @@ export const WEINSTEIN_INVESTOR = defineContract({
 
 export const WEINSTEIN_TRADER = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_TRADER',
   candidateId: 'C05',

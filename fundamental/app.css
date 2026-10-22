@@ -234,3 +234,91 @@ html[data-theme=dark]{--fu-last:var(--vu-accent,#c8f531);--fu-s0:#c8f531;--fu-s1
 @media (max-width:760px){.fu-split{grid-template-columns:1fr}.fu-cmp-grid{grid-template-columns:1fr}.fu-cmp-peers{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.fu-kpis{grid-template-columns:1fr}.fu-grid{grid-template-columns:1fr}.fu-card-wide{grid-column:auto}.fu-how{grid-template-columns:1fr}.fu-dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fu-gtable{font-size:13px}.fu-gtable th,.fu-gtable td{padding:10px 4px}.fu-gcell .fu-dir{font-size:12.5px}.fu-ladder li{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) auto}}
+
+/* VU3 UI-Refresh: flach, grosse Kennzahlen, Abschnitte durch Weissraum und Haarlinie.
+   Karten bleiben nur dort, wo sie eine Interaktion tragen (Entdecken-Kacheln, Vergleichsunternehmen). */
+.fu{padding-bottom:40px}
+.fu-shead{padding-top:14px}
+.fu-hero{padding:clamp(18px,4vw,40px) 0 4px}
+.fu-hero-title h1{font-size:clamp(36px,8.4vw,64px)}
+.fu-hero-icon{width:56px;height:56px;border-radius:16px}
+.fu-lead{margin:10px 0 16px;font-size:clamp(16px,4vw,20px)}
+.fu-hero--sub .fu-hero-title h1{font-size:clamp(32px,7.6vw,52px)}
+.fu-hero--search .fu-input{min-height:60px;font-size:17px;border-color:var(--vu-accent-text);box-shadow:0 0 0 4px var(--vu-accent-soft)}
+.fu-ex-label{margin:26px 0 4px}
+.fu-exlist{list-style:none;margin:0;padding:0;max-width:640px}
+.fu-exlist a{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:52px;border-bottom:1px solid var(--vu-line);text-decoration:none}
+.fu-exlist b{font-size:15px}.fu-exlist span{color:var(--vu-text-secondary)}.fu-exlist i{font-style:normal;color:var(--vu-muted)}
+.fu-howmore{margin-top:var(--vu-section-gap)}
+.fu-howlist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.fu-howlist li{display:grid;grid-template-columns:32px minmax(0,1fr);column-gap:8px}
+.fu-howlist .fu-howsym{grid-row:span 2;font-size:16px}
+.fu-howlist b{color:var(--vu-text)}
+.fu-disc.is-page{padding-top:8px}
+.fu-disc .fu-sub{margin-top:12px}
+.fu-rule{margin-top:18px}
+.fu-rule .vu-more-body p{margin:0 0 6px}
+.fu-section.vu-sec{margin:0}
+.fu-section.vu-sec>.fu-sub{margin-top:-8px}
+.fu-section.vu-sec[id]{scroll-margin-top:72px}
+.fu-kpis.vu-kpis{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));margin:22px 0 4px}
+.fu-kpis .vu-kpi-value{font-size:clamp(30px,8vw,40px)}
+.fu-kpis .vu-kpi.fu-kpi{display:block;padding:0;border:0;border-radius:0;background:none}
+.fu-kpis .vu-kpi-sub>span{display:block}
+.fu-kpis .vu-kpi-sub .fu-dir{font-size:12.5px}
+.fu-jump{margin-top:22px}
+.fu-jump a{background:transparent}
+/* Inhalte ohne Kaesten */
+.fu-card{padding:0;border:0;border-radius:0;background:none;gap:8px}
+.fu-split{gap:32px 40px}
+.fu-grid{gap:32px 32px}
+.fu-grid .fu-card{padding-top:16px;border-top:1px solid var(--vu-line)}
+.fu-card h3{font-size:14px;color:var(--vu-text-secondary)}
+.fu-card-val strong{font-size:26px}
+.fu-big strong{font-size:clamp(32px,8.4vw,44px);line-height:1.02;letter-spacing:-.035em;font-weight:850}
+.fu-big span{font-size:13px}
+.fu-gwrap{padding:0}
+.fu-gwrap h3{margin-bottom:4px}
+.fu-y{background:var(--vu-bg)}
+.fu-gauge-track .mk-self{box-shadow:0 0 0 3px var(--vu-bg)}
+.fu-valkpis.vu-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fu-valkpis .vu-kpi-value.is-none{font-size:15px;font-weight:650;color:var(--vu-text-secondary)}
+.fu-cmp-grid{gap:28px 32px}
+.fu-cmp-grid .fu-card h3{font-size:16px;color:var(--vu-text)}
+.fu-ladder-foot{border-top-color:var(--vu-line)}
+.fu-warn{cursor:help}
+.vu-sec .vu-alert{margin:0 0 18px}
+.fu-card.is-empty{opacity:1}
+.fu-empty{color:var(--vu-text-secondary)}
+/* Daten & Methodik */
+.fu-dm-h{margin:8px 0 8px;font-size:13px;font-weight:750;color:var(--vu-text-secondary)}
+.vu-dm .fu-table-wrap{border:0;border-radius:0}
+.vu-dm .fu-table{font-size:12.5px}
+.vu-dm .fu-table th,.vu-dm .fu-table td{padding:8px 8px 8px 0}
+.vu-dm>p{margin:10px 0 16px}
+.fu .vu-dm a{color:var(--vu-text-secondary)}
+.fu-method{padding-top:24px}
+@media (max-width:640px){
+  .fu-kpis.vu-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 16px}
+  .fu-kpis .vu-kpi:first-child{grid-column:1/-1}
+  .fu-kpis .vu-kpi:first-child .vu-kpi-value{font-size:clamp(40px,11vw,52px)}
+  .fu-kpis .vu-kpi:not(:first-child) .vu-kpi-value{font-size:clamp(24px,7vw,30px)}
+  .fu-hero-icon{width:48px;height:48px}
+  .fu-grid{gap:28px}
+}
+
+/* Vergleich: Gruppen-Umschalter nur schmal */
+.fu-cmp-tabs{display:none}
+@media (max-width:760px){
+  .fu-cmp-tabs{display:flex;gap:4px;margin:4px 0 18px;padding:4px;border-radius:999px;background:var(--vu-surface)}
+  .fu-cmp-tab{flex:1;min-height:40px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:700 13px/1.1 inherit;font-family:inherit;cursor:pointer}
+  .fu-cmp-tab[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+  .fu-cmp-tab:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+  .fu-cmp-grid .fu-card{display:none}
+  .fu-cmp-grid .fu-card.is-on{display:flex}
+  .fu-cmp-gh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+}
+@media (max-width:560px){.fu-tiles{grid-template-columns:minmax(0,1fr)}}
+.fu-hero--sub{padding-bottom:0}
+.fu-hero--sub .fu-lead{margin-bottom:8px}
+.fu-disc.is-page{margin-top:4px}
