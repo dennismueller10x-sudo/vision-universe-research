@@ -22,14 +22,18 @@
   "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
   "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
-  "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs"
+  "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
+  "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+  "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+  "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+  "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs"
  ],
  "summary": {
   "goldenCases": 116,
   "pass": 116,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 242,
+  "testsRun": 272,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1698,7 +1702,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 95,
+ "otherTests": 125,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2908,6 +2912,156 @@
   {
    "file": "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
    "name": "SF4-PPFIX-DAILY-EQUALS-FULL: der gezielte Tagesvergleich ist identisch mit der Vollberechnung beider Fassungen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-LIFECYCLE: Box komplett -> Buy-Stop naechste Sitzung -> Stop unter neuer Box angehoben -> Stopp-Ausstieg; abgestimmt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-ATH-BLOCK: Box unter einem frueheren Hoch wird nicht gehandelt (DAR-SF-ATH)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-ENTRY-BAR-STOP: Ausbruchsbalken mit Tief unter dem Stop - pessimistisch Ausstieg, optimistisch gehalten; Gap-Fill sicher",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-EQUIV-COMPONENT: ohne Kosten und Kapitalgrenze identisch mit der abgenommenen Komponentenstudie (darvasComponentTrades)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-PIT-PREFIX: Entscheidungen bis Sitzung m haengen nicht von spaeteren Balken ab (kein Lookahead)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-ENGINE-FILL: Buy-Stop, Gap, Limit-Ablehnung, Stop am/unter Fill; Schutzstufen nehmen die hoechste erreichte",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-ENGINE-PORTFOLIO: Positionsgrenze, Kapitalgrenze, neutrale Reihenfolge, Determinismus, Abstimmung ueber viele Titel",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-ENGINE-DELIST-STALE: Delisting nach research-v1-Szenario, fehlende Balken nach Stale-Grenze",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
+   "name": "GC-SF5-DAR-VARIANTS: vorregistrierte Varianten gueltig, Referenz unveraendert, Konfiguration ausserhalb des Rahmens abgelehnt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-LIFECYCLE: Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-WIDE-STOP-REJECT: Abstand Schluss-Tagestief > ADR20 lehnt ab, kein engerer Ersatzstop (KK-012)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-TRAIL-MA10: ohne Teilverkauf fuehrt der erste Schluss unter MA10 zum Ausstieg zur naechsten Eroeffnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-NEXT-OPEN: Alternative kauft zur naechsten Eroeffnung; Stop = Ausbruchstag-Tief; Abstand > ADR wird nicht ausgefuehrt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-SETUP-PIT: Setup auf Balken i nutzt nur Balken 0..i (Ergebnis unabhaengig von spaeteren Balken)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-PP-LIFECYCLE: Pocket Pivot -> Kauf naechste Eroeffnung -> kein Preisstop -> Ausstieg bei MA-Verletzung (Unterschreitung)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-MOKA-GUIDE-EQUIV: Fuehrungslinie je Balken identisch mit sellGuideEvidence (beide Lesarten)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-BGU-LIFECYCLE: BGU -> Kauf naechste Eroeffnung -> Stop-Market am Gap-Tagestief (MOKA12-007), Gap durch den Stop zur Eroeffnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-MOKA-NO-SIGNAL-CLOSE-FILL: Einstieg nie am Signaltag (Tagesvolumen erst nach dem Schluss bekannt)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-KK-MOKA-VARIANTS: vorregistrierte Varianten gueltig und festgeschrieben; Rahmen geprueft",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
+   "name": "GC-SF5-HG-RESEARCH-VARIANT: Buy-Stop ueber dem Beruehrungsbalken, Stop am Swing-Tief, Ausstieg nach neuem Hoch; Vertrag unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-SCREEN-EQUIV: Wochen-Setups und Ausbruchswochen identisch mit investorScreen / traderScreen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-INVESTOR-LIFECYCLE: Buy-Stop aus der abgeschlossenen Woche, Stop unter dem Basistief, Anhebung nach 8-%-Korrektur und neuem Hoch unter min(Tief, MA30w)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-TRADER-LIFECYCLE: volle Position, Anhebung unter das Reaktionstief auch ueber der MA (WEIN-TR-TRAIL), Stopp-Ausstieg",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-VOL5: Ausbruch ohne Volumenbestaetigung -> Verkauf zur Eroeffnung nach der ersten kleinen Staerke; Variante ohne VOL5 haelt",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-PIT-PREFIX: Entscheidungen vor dem letzten Balken eines Ausschnitts haengen nicht von spaeteren Balken ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
+   "name": "GC-SF5-WEIN-DATA-EXCEPTION: Gruppe und Markt bleiben DATA_BLOCKED; Varianten gueltig und festgeschrieben",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+   "name": "SF5-RUNNER-PUBLIC-COUNTS-ONLY: oeffentlich nur Zaehlungen und Hashes, Kennzahlen versiegelt; alle Varianten gemessen, Referenz deterministisch",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+   "name": "SF5-RUNNER-FINGERPRINT: eigener Research-Fingerabdruck; AG-3-Engine, sf4-Lifecycle und Minervini-Varianten unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+   "name": "SF5-LIFECYCLE-MATRIX: Matrix valide, Artefakt und Dokument = frischer Build, keine Statusaufwertung, getrennte Readiness",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+   "name": "SF5-SNAPSHOT-RUN-CURRENT-CODE: ein eingetragener Snapshot-Lauf gilt nur fuer den aktuellen Research-Code",
    "result": "PASS"
   }
  ]

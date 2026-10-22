@@ -4,7 +4,7 @@
  * Selection (techno-fundamental), volume judgment, market context, re-entry and sizing stay with a reviewer
  * (#709 C03: "techno-fundamental selection and sizing remain discretionary"). Not a rolling-high breakout.
  */
-import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence } from './define.mjs';
+import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence, sf5Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/darvas.mjs`;
@@ -12,7 +12,7 @@ const T = 'scripts/supertrader/tests/sf-darvas.test.mjs';
 
 export const DARVAS = defineContract({
   implemented: true,
-  sourceContractVersion: '1.2.0',
+  sourceContractVersion: '1.3.0',
   componentBacktest: true,
   plannedIn: 'PR 3 Darvas',
   strategyId: 'SF_DARVAS_BOX',
@@ -70,11 +70,11 @@ export const DARVAS = defineContract({
     { id: 'DAR-SF-SPLITS', gate: false, kind: 'INDICATOR', essential: false, psr709: ['DAR-Q15'], status: 'SOURCE_DERIVED', rule: 'use split-adjusted price history; the number of splits is no buy signal', derivation: 'the snapshot convention (adjustSeries, ADR-002) supplies split-adjusted bars; raw prices only for the one-cent fraction', code: `${CODE}#fractionFor`, tests: [`${T}: GC-DAR-FRACTION`] },
     { id: 'DAR-SF-RESEARCH-POPULATION', kind: 'FILTER', essential: false, gate: true, psr709: [], status: 'SOURCE_DERIVED', rule: 'component study population: research universe protocol of #705 (identical for every method)', derivation: 'measurement convention for the diagnostic component study only; Darvas sets no general volume or liquidity minimum (DAR-Q10); the review screen itself applies no such filter (review SF-R1-05)', code: 'scripts/supertrader/source-faithful/runner/run-research.mjs#componentStudy', tests: ['scripts/supertrader/tests/sf-runner.test.mjs: SF-RUN-COMPONENT'] },
     { id: 'DAR-SF-REVIEW-DATA', kind: 'INDICATOR', essential: false, gate: false, psr709: ['DAR-Q12'], status: 'SOURCE_DERIVED', rule: 'the reviewer gets the data Darvas names: all-time high, high / low of the last 2-3 years, weekly range and volume over 4-6 months', derivation: 'evidence only (STRONG_PREFERENCE, never a gate): 2 and 3 years = 504 / 756 sessions, 4-6 months = 17 / 26 ISO weeks of the available history; the all-time high stays ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED without listing-to-date bars (sf-darvas-1.1.0)', code: `${CODE}#darvasReviewData`, tests: ['scripts/supertrader/tests/sf-darvas-completion.test.mjs: GC-DAR-REVIEW-DATA'] },
-    { id: 'DAR-SF-SELECTION', kind: 'SETUP', psr709: ['DAR-Q12', 'DAR-Q14', 'DAR-B9', 'DAR-B10', 'DAR-B11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'techno-fundamental selection (industry growth, strongest stock of the industry, earning power)', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth')] },
+    { id: 'DAR-SF-SELECTION', kind: 'SETUP', psr709: ['DAR-Q12', 'DAR-Q14', 'DAR-B9', 'DAR-B10', 'DAR-B11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'techno-fundamental selection (industry growth, strongest stock of the industry, earning power)', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth'), sf5Evidence('darvas-lifecycle.mjs', 'DARVAS_ADAPTER', [['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: selection substituted (MA-DAR-MANUAL-SUBSTITUTE); product records stay manual')] },
     { id: 'DAR-SF-VOLUME', kind: 'FILTER', psr709: ['DAR-Q10', 'DAR-B3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'volume relative to the stock\'s own history; the machine reports breakout-day volume against its own prior sessions as evidence' },
     { id: 'DAR-SF-MARKET', kind: 'FILTER', psr709: ['DAR-Q13', 'DAR-B14'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'market trend and industry representatives', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth')] },
-    { id: 'DAR-SF-SIZING', kind: 'SIZING', psr709: ['DAR-B15', 'DAR-B18'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and pilot buys' },
+    { id: 'DAR-SF-SIZING', kind: 'SIZING', psr709: ['DAR-B15', 'DAR-B18'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and pilot buys', researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'plannedShares', [['sf-sf5-darvas-lifecycle', 'GC-SF5-ENGINE-FILL'], ['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-VARIANTS']], 'Supertrader 5.0 MODEL lifecycle: fixed weight 10 % (MA-DAR-SIZING), alternatives pre-registered')] },
     { id: 'DAR-SF-PYRAMID', kind: 'PYRAMIDING', essential: false, psr709: ['DAR-B8'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'further buys while the confirmed up-trend continues (no absolute "every add above every earlier fill", DAR-C3)' },
-    { id: 'DAR-SF-REENTRY', kind: 'ENTRY', essential: false, psr709: ['DAR-Q11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'after a stop-out new all-time highs can allow a re-entry; the machine reports later boxes, the reviewer decides' },
+    { id: 'DAR-SF-REENTRY', kind: 'ENTRY', essential: false, psr709: ['DAR-Q11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'after a stop-out new all-time highs can allow a re-entry; the machine reports later boxes, the reviewer decides', researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'runResearchLifecycle', [['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-EQUIV-COMPONENT']], 'Supertrader 5.0 MODEL lifecycle: later ATH box breakouts are taken again (MA-DAR-REENTRY)')] },
   ],
 });
