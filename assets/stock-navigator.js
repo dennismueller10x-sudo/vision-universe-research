@@ -171,11 +171,17 @@
     if (img) img.addEventListener("error", function () { img.remove(); });
     if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
     host.replaceChildren(wrap);
-    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o);
+    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o), alive = true;
+    /* VU3-Finalisierung: ein Name je Aktie in allen Welten. Der Manifest-Ausschnitt traegt den Anzeigenamen des
+       Security-Masters (company-names.json#displayName, derselbe Name wie in Discover); er ersetzt den Namen der Welt. */
+    loadShard(o.ctx, o.fetch).then(function (m) {
+      var n = m && m.names && m.names[SC.key(o.ctx)], h = wrap.querySelector(".vu-shead-name");
+      if (alive && n && h && h.textContent !== n) h.textContent = n;
+    });
     return {
       el: wrap,
       setPrice: function (p) { wrap.querySelector(".vu-shead-pricebox").innerHTML = priceHtml(p); },
-      dispose: function () { dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+      dispose: function () { alive = false; dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
     };
   }
 

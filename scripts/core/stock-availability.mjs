@@ -98,9 +98,26 @@ export function buildShards(evidence){
  return shards;
 }
 
+/* VU3-Finalisierung: ein Anzeigename je US-Aktie fuer den Aktienkopf aller Welten - aus dem Security-Master
+   (quant/data/market/security-master/company-names.json, Feld displayName; Erzeuger build-company-names.mjs).
+   Nur Kuerzel, die im Ausschnitt ohnehin stehen; fehlt der Name, bleibt der Name der Welt. */
+export function addNames(shards,root){
+ const doc=readJson(root,'quant/data/market/security-master/company-names.json');
+ if(!doc||!Array.isArray(doc.rows))return 0;
+ const names=new Map(doc.rows.filter(r=>r&&r.ticker&&r.displayName&&r.inProductUniverse).map(r=>[r.ticker,r.displayName]));
+ let n=0;
+ for(const doc of Object.values(shards)){
+  const tickers=new Set(Object.values(doc.modules).flatMap(m=>m.US||[]));
+  const out={};for(const t of [...tickers].sort())if(names.has(t)){out[t]=names.get(t);n++;}
+  if(Object.keys(out).length)doc.names=out;
+ }
+ return n;
+}
+
 export function writeAvailability({root,out}){
  const {evidence,skipped}=collectEvidence(resolve(root));
  const shards=buildShards(evidence);
+ const named=addNames(shards,resolve(root));
  mkdirSync(out,{recursive:true});
  for(const [k,doc] of Object.entries(shards)){
   if(!/^[A-Z0-9_]{1,2}$/.test(k))throw Error('AVAILABILITY_SHARD_KEY_INVALID');
@@ -108,7 +125,7 @@ export function writeAvailability({root,out}){
   writeFileSync(join(out,k+'.json'),b);
  }
  const counts=Object.fromEntries(Object.entries(evidence).map(([p,r])=>[p,Object.fromEntries(Object.entries(r).map(([g,l])=>[g,l.length]))]));
- return {schema:SC.SCHEMA,shards:Object.keys(shards).length,counts,skipped};
+ return {schema:SC.SCHEMA,shards:Object.keys(shards).length,counts,named,skipped};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
