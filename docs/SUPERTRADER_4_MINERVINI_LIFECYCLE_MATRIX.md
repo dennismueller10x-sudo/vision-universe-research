@@ -64,7 +64,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 
 ## C07 `SF_MINERVINI_POWER_PLAY`
 
-- Source Fidelity: SOURCE_EXACT 0, SOURCE_BOUNDED 8, MODEL_ASSUMPTION 22, MANUAL_REVIEW 10, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.2.0 (SOURCE_DERIVED 5, MANUAL_REVIEW_REQUIRED 4)
+- Source Fidelity: SOURCE_EXACT 0, SOURCE_BOUNDED 8, MODEL_ASSUMPTION 22, MANUAL_REVIEW 10, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.0 (SOURCE_DERIVED 5, MANUAL_REVIEW_REQUIRED 4)
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert –
 - Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED
@@ -76,7 +76,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | SETUP_QUALIFICATION | PP-SQ-RUNUP | at least +100 % in less than eight weeks | MIN-PP-02 (B12 PDF 342 (HARD, MEDIUM)) | MIN-SF-PP-RUNUP | SOURCE_BOUNDED |  | `methods/minervini.mjs#powerPlayScreen` | 3 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | PP-SQ-START-VOLUME | the run-up begins with strong volume | MIN-PP-02 (B12 PDF 342 (HARD, MEDIUM)) | MIN-SF-PP-RUNUP | MANUAL_REVIEW |  | `research/minervini-components.mjs#powerPlayClassify` | 1 | EVIDENCE_FOR_REVIEWER | ratio measured; "strong" is the reviewer's; without 50 sessions of history DATA_BLOCKED_SETUP |
 | SETUP_QUALIFICATION | PP-SQ-CONSOLIDATION | consolidation usually 3-6 weeks, twelve days printed; no minimum | MIN-PP-03 (B12 PDF 342 (CONTEXTUAL, MEDIUM)) | MIN-SF-PP-DURATION | MANUAL_REVIEW |  | `methods/minervini.mjs#powerPlayScreen` | 2 | EVIDENCE_FOR_REVIEWER | MIN-PP-03 is context: the duration is reported, no minimum is enforced, a consolidation beyond the typical 3-6 weeks goes to review (MANUAL_REVIEW_SETUP) |
-| SETUP_QUALIFICATION | PP-SQ-CORRECTION | correction no more than 20-25 % | MIN-PP-04 (B12 PDF 342 (HARD, MEDIUM)) | MIN-SF-PP-CORRECTION | SOURCE_BOUNDED |  | `methods/minervini.mjs#powerPlayScreen` | 2 | MECHANICAL_IMPLEMENTED | open decision: the point inside 20-25 % (MANUAL_REVIEW_SETUP) |
+| SETUP_QUALIFICATION | PP-SQ-CORRECTION | correction no more than 20-25 % | MIN-PP-04 (B12 PDF 342 (HARD, MEDIUM)) | MIN-SF-PP-CORRECTION | SOURCE_BOUNDED |  | `methods/minervini.mjs#powerPlayScreen` | 4 | MECHANICAL_IMPLEMENTED | open decision: the point inside 20-25 % (MANUAL_REVIEW_SETUP); a missing consolidation low is DATA_BLOCKED_SETUP since sf-minervini-1.0.1 |
 | SETUP_QUALIFICATION | PP-SQ-TIGHTNESS | very tight (at most 10 %) or VCP characteristics | MIN-PP-05 (B12 PDF 342 (HARD, MEDIUM)) | MIN-SF-PP-TIGHT | SOURCE_BOUNDED |  | `methods/minervini.mjs#powerPlayScreen` | 1 | MECHANICAL_IMPLEMENTED | the OR branch "VCP characteristics" is manual |
 | SETUP_QUALIFICATION | PP-SQ-NO-FUNDAMENTALS | a Power Play can be bought without visible strong earnings | MIN-PP-01 (B12 PDF 341 (CONTEXTUAL, MEDIUM)) | MIN-SF-PP-NOFUND | SOURCE_BOUNDED |  | `methods/minervini.mjs#powerPlayScreen` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | PP-SQ-PIVOT | pivot of the consolidation | MIN-VCP-07 (B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)) | MIN-SF-PP-ENTRY | MODEL_ASSUMPTION | MA-MIN-PP-PIVOT | `research/minervini-lifecycle.mjs#powerPlaySetupSeries` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |

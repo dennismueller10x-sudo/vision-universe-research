@@ -121,3 +121,15 @@ test('SF-MIN-PP-NEWER-PEAK: an older higher peak does not hide a newer Power Pla
   const [l] = powerPlayScreen({ id: 'X', bars: bars(long, { range: 0.005 }) });
   assert.ok(l.openQuestions.some((q) => q.flag === 'MIN-MR-PP-LONG-BASE'));
 });
+
+test('GC-MIN-PP-MISSING-LOW: a missing low in the consolidation leaves the correction unmeasured: no record (sf-minervini-1.0.1)', () => {
+  // +100 % run-up, then a consolidation with one missing low and a 35 % correction afterwards, and 100 clean sessions:
+  // before 1.0.1 the missing low made the correction NaN, which passed the 25 % gate
+  const closes = [...Array(60).fill(10), ...Array.from({ length: 30 }, (_, k) => 10 + k * 0.5), ...Array(5).fill(23), 23, ...Array(5).fill(15), ...Array(100).fill(20)];
+  const b = bars(closes, { range: 0.002 }); b[95] = { ...b[95], low: NaN };
+  const s = { id: 'ML', bars: b };
+  for (const i of [150, 200]) assert.deepEqual(powerPlayScreen(s, { asOfIndex: i }), []);
+  // without the gap the 35 % correction rejects the same bars; the gap no longer hides it
+  const clean = { id: 'C', bars: bars(closes, { range: 0.002 }) };
+  assert.deepEqual(powerPlayScreen(clean, { asOfIndex: 150 }), []);
+});

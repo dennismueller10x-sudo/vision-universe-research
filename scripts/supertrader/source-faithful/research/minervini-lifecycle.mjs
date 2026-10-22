@@ -204,8 +204,8 @@ export const powerPlaySetupAt = (security, i) => ppSetupFromClassification(secur
  * before), stay strictly above every later finite high and keep every later finite low at or above 75 % of it. Both
  * conditions are monotone, so violated peaks are dropped for good; bars without a surviving peak are classified
  * without the screen (history and missing-bar checks of powerPlayClassify), all others by powerPlayClassify itself.
- * A non-finite low after a peak makes the screen's correction NaN, which the unchanged screen does not reject (review
- * SF4-C-M2; reported, not changed here): such a peak is never dropped by a later low, so both paths stay identical.
+ * A peak followed by a non-finite low is never dropped by a later low: since sf-minervini-1.0.1 the classification of
+ * such bars is DATA_BLOCKED_SETUP (MISSING_LOW_IN_CONSOLIDATION), which only powerPlayClassify can tell apart.
  */
 export function powerPlaySetupSeries(security, { P = MIN_PARAMS, from = null } = {}) {
   const bars = security.bars, n = bars.length;

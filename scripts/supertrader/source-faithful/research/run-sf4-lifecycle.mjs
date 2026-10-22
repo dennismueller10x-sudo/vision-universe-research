@@ -25,13 +25,14 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { fundamentalEvidence } from './minervini-components.mjs';
 import { RUN_VARIANTS, LIFECYCLE_VERSION, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics, EXECUTION_VERSION } from './minervini-execution.mjs';
+import { transitionsDaily, transitionsAt, PP_FIX_COMPARISON_VERSION } from './pp-missing-low-comparison.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
 export const SF4_RUNNER_VERSION = 'sf4-lifecycle-runner-1.0.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 // every file the lifecycle results depend on, including the unchanged screens and the fundamentals attachment (review SF4-C-L5)
-const FILES = ['../methods/minervini.mjs', '../common/series.mjs', 'run-sf3-research.mjs', 'minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'run-sf4-lifecycle.mjs'];
+const FILES = ['../methods/minervini.mjs', '../common/series.mjs', 'run-sf3-research.mjs', 'minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'pp-missing-low-comparison.mjs', 'run-sf4-lifecycle.mjs'];
 export function researchCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -83,13 +84,23 @@ export function lifecyclePart(dataset, { strategies = ['SEPA', 'POWER_PLAY'], va
   return { pub, sealed };
 }
 
+/**
+ * Before / after evidence of the Power Play missing-low fix (sf-minervini-1.0.1): classification transitions of every
+ * session from the window start (daily) and of the month-end sessions with both versions in full (the sampling of the
+ * sf3 screen statistics). Counts only.
+ */
+export function ppFixPart(dataset, { from = L.WINDOW.from } = {}) {
+  const monthEnds = new Set(dataset.calendar.filter((d, i, a) => i === a.length - 1 || a[i + 1].slice(0, 7) !== d.slice(0, 7)));
+  return { version: PP_FIX_COMPARISON_VERSION, legacy: 'sf-minervini-1.0.0 / sf-minervini-components-1.0.0 (frozen copy)', fixed: 'sf-minervini-1.0.1 / sf-minervini-components-1.0.1', daily: transitionsDaily(dataset, { from }), monthEndFull: transitionsAt(dataset, (s, i) => monthEnds.has(s.bars[i].date)) };
+}
+
 async function main() {
   const argv = process.argv.slice(2), arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   if (arg('--accounting') !== 'research-v1') { console.error('RESEARCH_ACCOUNTING_REQUIRED'); process.exit(2); }
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
-  const LIMIT = Number(arg('--limit', '0')), strategies = arg('--strategies', 'SEPA,POWER_PLAY').split(',');
+  const LIMIT = Number(arg('--limit', '0')), strategies = arg('--strategies', 'SEPA,POWER_PLAY').split(','), parts = new Set(arg('--parts', 'lifecycle,ppfix').split(','));
   if (!strategies.every((s) => ['SEPA', 'POWER_PLAY'].includes(s))) { console.error('UNKNOWN_STRATEGY'); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[sf4 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
@@ -117,8 +128,9 @@ async function main() {
   const fundCoverage = attachSecPit(dataset, secPit);
   log(`dataset: ${dataset.securities.length} securities, ${dataset.calendar.length} sessions, sec-pit ${fundCoverage.withFund}`);
   const receipt = { schema: 'supertrader-sf4-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: researchCodeSha256(), runner: SF4_RUNNER_VERSION, variantRegistrySha256: variantRegistrySha256(), limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  const r = lifecyclePart(dataset, { strategies, log });
+  const r = parts.has('lifecycle') ? lifecyclePart(dataset, { strategies, log }) : { pub: null, sealed: null };
   const pub = { schema: 'supertrader-sf4-lifecycle-public-1.0.0', receipt, fundCoverage, lifecycle: r.pub };
+  if (parts.has('ppfix')) { pub.ppFix = ppFixPart(dataset); log(`pp fix: daily changed ${pub.ppFix.daily.changed}, month-end changed ${pub.ppFix.monthEndFull.changed}`); }
   const sealed = { receipt, public: pub, lifecycle: r.sealed };
   fs.mkdirSync(OUT, { recursive: true });
   const tag = `sf4-lifecycle${LIMIT || verification.smokeStore ? '-smoke' : ''}`;

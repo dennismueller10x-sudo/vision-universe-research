@@ -71,7 +71,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): MIN-SF-TT-8: VU percentile of the PIT research universe; not the IBD rating, never a gate
 - quellenoffen: –; Modellannahmen: –
 
-### C07 `SF_MINERVINI_POWER_PLAY` (Vertrag 1.2.0)
+### C07 `SF_MINERVINI_POWER_PLAY` (Vertrag 1.3.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
 - Research-Komponenten: MIN-SF-PP-ENTRY <- minervini-components.mjs#powerPlayClassify; MIN-SF-PP-ENTRY <- minervini-lifecycle.mjs#entryEligibility; MIN-SF-PP-STOP <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-PP-SIZE <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-PP-EXIT <- minervini-execution.mjs#runMinerviniLifecycle

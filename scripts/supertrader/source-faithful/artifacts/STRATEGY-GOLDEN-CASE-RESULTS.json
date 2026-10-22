@@ -21,14 +21,15 @@
   "scripts/supertrader/tests/sf-context-evidence-research.test.mjs",
   "scripts/supertrader/tests/sf-sf3-runner-research.test.mjs",
   "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs",
-  "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs"
+  "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+  "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs"
  ],
  "summary": {
-  "goldenCases": 115,
-  "pass": 115,
+  "goldenCases": 116,
+  "pass": 116,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 238,
+  "testsRun": 242,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -534,6 +535,19 @@
   },
   {
    "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
+   "strategyIds": [
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-PP-CORRECTION"
+   ],
+   "psr709": [
+    "MIN-PP-04"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-MISSING-LOW",
    "strategyIds": [
     "SF_MINERVINI_POWER_PLAY"
    ],
@@ -1684,7 +1698,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 92,
+ "otherTests": 95,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2249,6 +2263,11 @@
   {
    "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
    "name": "SF-MIN-PP-NEWER-PEAK: an older higher peak does not hide a newer Power Play; a very long base gets a review question (review SF-R2-01 / SF-R2-03)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-minervini.test.mjs",
+   "name": "GC-MIN-PP-MISSING-LOW: a missing low in the consolidation leaves the correction unmeasured: no record (sf-minervini-1.0.1)",
    "result": "PASS"
   },
   {
@@ -2874,6 +2893,21 @@
   {
    "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
    "name": "SF4-SNAPSHOT-RUN-CURRENT-CODE: der eingetragene maßgebliche Snapshot-Lauf gehoert zum aktuellen Code und zur vorregistrierten Konfiguration",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-RUNNER-PPFIX-PART: Vorher/Nachher-Teil liefert nur Zaehlungen; taeglich und Monatsende konsistent",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
+   "name": "GC-MIN-PP-MISSING-LOW-CLASS: vorher MANUAL_REVIEW_SETUP mit NaN-Korrektur, nachher DATA_BLOCKED_SETUP mit Grund",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs",
+   "name": "SF4-PPFIX-DAILY-EQUALS-FULL: der gezielte Tagesvergleich ist identisch mit der Vollberechnung beider Fassungen",
    "result": "PASS"
   }
  ]
