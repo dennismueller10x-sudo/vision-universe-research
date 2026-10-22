@@ -1,81 +1,91 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-10-22T01:14:09.112Z",
+  "checkedAt": "2026-10-22T01:57:57.712Z",
   "target": "repository",
   "market": {
     "state": "CLOSED",
     "localDate": "2026-10-21",
-    "localTime": "21:14:09",
+    "localTime": "21:57:57",
     "lastCompletedSession": "2026-10-21",
     "currentSession": "2026-10-21",
     "expectedIntradaySession": "2026-10-21"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-10-22T01:13:49.664Z",
+    "indexGeneratedAt": "2026-10-21T19:57:02.504Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-10-21",
       "kind": "current",
-      "isRunning": false,
-      "isComplete": true
+      "isRunning": true,
+      "isComplete": false
     },
     "dataSession": {
       "sessionDate": "2026-10-21",
-      "asOf": "2026-10-21T20:55:00.000Z",
-      "asOfLocal": "16:55",
+      "asOf": "2026-10-21T19:55:00.000Z",
+      "asOfLocal": "15:55",
       "regularComplete": false,
-      "snapshots": 5034,
-      "fetchedAfterClose": true,
-      "afterCloseSnapshots": 5033,
-      "finalSlotSnapshots": 4486,
-      "universe": true
+      "snapshots": 1388,
+      "fetchedAfterClose": false,
+      "afterCloseSnapshots": 0,
+      "finalSlotSnapshots": 0,
+      "universe": false
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "sessionCompleteNoLateTrades",
-    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "dataState": "STALE",
+    "dataReason": "closeMissing",
+    "dataLabel": "Heute · Stand 15:55 · nicht aktuell",
     "entries": 1400,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 1388,
-      "STALE": 12,
+      "LAST_SESSION": 0,
+      "STALE": 1400,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "lastCompletedSession": 1359,
-      "sessionCompleteNoLateTrades": 29,
-      "lastSessionMissing": 11,
-      "closeMissing": 1
+      "closeMissing": 1388,
+      "lastSessionMissing": 12
     },
     "staleSample": [
-      "AERT",
-      "BYFC",
-      "CPAC",
-      "FACT",
-      "GIFT",
-      "HBIO",
-      "HBNB",
-      "MGLD",
-      "MSGM",
-      "MTEX",
-      "STEM",
-      "VAI"
+      "A",
+      "AAMI",
+      "AAON",
+      "AAPL",
+      "ABBV",
+      "ABCL",
+      "ABEV",
+      "ABLV",
+      "ABNB",
+      "ABT",
+      "ABTC",
+      "ABX",
+      "ACA",
+      "ACCO",
+      "ACEL",
+      "ACHC",
+      "ACHR",
+      "ACM",
+      "ACMR",
+      "ACN",
+      "ACTG",
+      "ACU",
+      "ADBE",
+      "ADC",
+      "ADI"
     ],
     "universeSessions": [
-      "2026-10-20",
-      "2026-10-21"
+      "2026-10-20"
     ],
-    "universeCoversLastSession": true,
-    "state": "OK"
+    "universeCoversLastSession": false,
+    "state": "STALE"
   },
   "daily": {
-    "universeAsOf": "2026-10-20",
-    "generatedAt": "2026-10-21T01:53:41.374Z",
+    "universeAsOf": "2026-10-21",
+    "generatedAt": "2026-10-22T01:57:51.769Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "closePendingWithinGrace",
-    "label": "Schluss Di., 20.10. · Mittwoch folgt",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Heute",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-10-21",
@@ -88,13 +98,16 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "closePendingWithinGrace": 40
+        "lastCompletedSession": 40
       },
       "staleSample": [],
-      "seriesIndexCount": 6678
+      "seriesIndexCount": 6679
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Intraday STALE: Datenstand 2026-10-21, erwartet 2026-10-21 (closeMissing)",
+    "Universumslauf fehlt: Sitzung 2026-10-21 liegt nur fuer den Discover-Umfang vor (6.0 h nach Schluss)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
