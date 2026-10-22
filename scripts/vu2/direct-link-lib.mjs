@@ -124,7 +124,10 @@ export function pickWithheldProbes(release, {overlay = null} = {}) {
 
 // Laeuft IM Browser. Erhebt nur Tatsachen; die Bewertung steht in verdict().
 export function collectFacts(spec) {
-  const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
+  // Inhalt eines zugeklappten <details> ist nicht sichtbar (Chromium haelt ihm per content-visibility eine Box, innerText ist leer):
+  // ein bewusst zugeklapptes Kapitel ist kein leerer Abschnitt.
+  const folded = el => { const d = el.closest('details:not([open])'); return !!d && !(d.querySelector(':scope > summary') || {contains: () => false}).contains(el); };
+  const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && !folded(el); };
   const main = document.querySelector('#qx-main');
   const facts = {hasMain: !!main, busy: main && main.getAttribute('aria-busy'), gateVisible: !!document.querySelector('#research-access-form') && visible(document.querySelector('#research-access-form'))};
   if (!main) return facts;

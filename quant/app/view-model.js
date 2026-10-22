@@ -110,7 +110,7 @@
   /* Gruende, warum ein Faktor oder eine Komponente keinen Wert hat - in
      Alltagssprache. Kein Code erreicht die Oberflaeche. */
   var REASON = {
-    BLOCKED_EXTERNAL: "Dafür gibt es keine lizenzierte, zeitpunktgenaue Datenquelle. Ein Ersatzwert wäre erfunden und wird nicht gebildet.",
+    BLOCKED_EXTERNAL: "Dafür gibt es keine lizenzierte, zeitpunktgenaue Datenquelle – derzeit ist das für keine Aktie messbar. Ein Ersatzwert wäre erfunden und wird nicht gebildet.",
     INPUT_NOT_MATERIALIZED: "Die Eingangsdaten dafür liegen für diesen Titel nicht vor.",
     INSUFFICIENT_COVERAGE: "Es liegen zu wenige der benötigten Kennzahlen vor, um den Faktor belastbar zu bilden.",
     INSUFFICIENT_HISTORY: "Die Kurshistorie ist noch zu kurz für diese Messung.",
@@ -410,8 +410,14 @@
     var id = u.stufeId;
     var sub = rated.length < 3
       ? (rated.length ? "Nur " + rated.length + " von " + factors.length + " Eigenschaften lassen sich messen – ein dünnes Bild." : "Keine der sieben Eigenschaften lässt sich für diesen Titel messen.")
-      : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld." + unratedNote(factors, rated);
+      : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld.";
+    /* VU3-Finalisierung: Nicht bewertbare Eigenschaften stehen nicht mehr als leere Zeile in der Uebersicht, sondern
+       als eigene Zeile darunter (unrated / unratedText) mit Grund im Faktor-Kapitel. Der Nenner im Satz bleibt die Zahl
+       der gemessenen Eigenschaften. */
+    var off = factors.filter(function (f) { return f.state !== "AVAILABLE"; });
     return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
+      unrated: off.map(function (f) { return { id: f.id, name: f.name || (FACTORS[f.id] && FACTORS[f.id].name) || f.id }; }),
+      unratedText: unratedNote(factors, rated).trim(),
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,
       open: u.luecke, openText: u.luecketext || null };
   }

@@ -155,9 +155,13 @@
      Keine neue Zahl: jeder Wert steht weiter unten mit seinem Beleg. Nicht bewertbare Eigenschaften stehen als Zeile
      "nicht bewertbar" da - sieben Zeilen, der Satz darueber nennt den Nenner. */
   var STRIP_WORD = { good: "stark", neutral: "Mittelfeld", bad: "schwach", unknown: "nicht bewertbar" };
+  /* VU3-Finalisierung: Die Uebersicht zeigt nur gemessene Eigenschaften. Eine Eigenschaft ohne Wert (der
+     Erwartungstrend ist derzeit fuer keine Aktie messbar) steht nicht als leere Skala da, sondern in einer Zeile
+     darunter - mit Weg zum Grund im Faktor-Kapitel (#faktor-<id>). Nichts wird geschaetzt oder als Null gezeigt. */
   function factorBars(vm) {
-    return el("ol", { class: "qv-fbars", "aria-label": "Die sieben Eigenschaften, Wert 0 bis 100" }, vm.factors.map(function (f) {
-      var ok = f.state === "AVAILABLE", t = ok ? f.tone : "unknown";
+    var rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
+    return el("ol", { class: "qv-fbars", "aria-label": rated.length + " gemessene Eigenschaften, Wert 0 bis 100" }, rated.map(function (f) {
+      var ok = true, t = f.tone;
       return el("li", { class: "tone-" + t + (ok ? "" : " is-off") }, [el("a", { href: "#faktor-" + f.id, "aria-label": f.name + ": " + (ok ? Math.round(f.score) + " von 100, " + (f.word || f.label) : "nicht bewertbar") }, [
         el("span", { class: "qv-fb-name", "aria-hidden": "true", text: f.name }),
         el("span", { class: "qv-fb-word", "aria-hidden": "true" }, [el("i", { text: TONE_GLYPH[t] }), document.createTextNode(" " + (ok ? (f.word || STRIP_WORD[t]) : "nicht bewertbar"))]),
@@ -195,6 +199,10 @@
       node.append(el("div", { class: "qx-verdict-top", dataset: { tone: o.tone } }, [
         el("p", { class: "vu-result qv-result" }, [el("i", { class: "qv-dot", "aria-hidden": "true" }), el("span", { text: o.text })]),
         el("p", { class: "qv-sub", text: o.sub })]), factorBars(vm));
+      if (o.unrated && o.unrated.length) node.append(el("p", { class: "qv-unrated" }, [
+        el("span", { text: (o.unrated.length === 1 ? "Nicht bewertbar: " : o.unrated.length + " nicht bewertbar: ") }),
+        el("span", {}, o.unrated.map(function (u, i) { return el("span", {}, [i ? document.createTextNode(", ") : null, el("a", { href: "#faktor-" + u.id, text: u.name })]); })),
+        el("span", { text: " – warum, steht bei der Eigenschaft." })]));
       if (o.rated < 3) node.append(el("ul", { class: "dx-kann qx-open" }, vm.gaps.map(function (g) {
         return el("li", { class: "nein" }, [el("b", { text: g.names.join(", ") }), el("span", { text: " – " + g.text })]);
       })));
@@ -232,9 +240,10 @@
       var art = ART[tone];
       var host = el("div", { class: "dx-waage-spalte dx-waage-spalte--" + art + " qx-pc-col tone-" + tone }, [el("h3", { text: title })]);
       if (!items.length) { host.append(el("p", { class: "qx-pc-empty", text: empty })); return host; }
-      host.append(el("ul", {}, items.slice(0, 2).map(function (i) { return punkt(i, art); })));
-      if (items.length > 2) host.append(el("details", { class: "dx-weitere dx-waage-weitere qx-more" }, [el("summary", { text: "Weitere Punkte (" + (items.length - 2) + ")" }),
-        el("ul", {}, items.slice(2).map(function (i) { return punkt(i, art); }))]));
+      /* VU3-Finalisierung: der staerkste Punkt je Seite sichtbar, alle weiteren dahinter (die Skalen oben zeigen alle). */
+      host.append(el("ul", {}, items.slice(0, 1).map(function (i) { return punkt(i, art); })));
+      if (items.length > 1) host.append(el("details", { class: "dx-weitere dx-waage-weitere qx-more" }, [el("summary", { text: "Weitere Punkte (" + (items.length - 1) + ")" }),
+        el("ul", {}, items.slice(1).map(function (i) { return punkt(i, art); }))]));
       return host;
     }
     var kids = [el("div", { class: "dx-waage" }, [
@@ -244,7 +253,7 @@
     if (pc.middle.length) kids.push(el("p", { class: "qx-middle" }, [el("b", { text: "Im Mittelfeld: " }), el("span", { text: pc.middle.map(function (m) { return m.title.replace(": durchschnittlich", "") + " (" + Math.round(m.score) + ")"; }).join(", ") + "." })]));
     if (pc.open.length) kids.push(el("details", { class: "dx-weitere qx-more" }, [el("summary", { text: "Noch nicht bewertbar (" + pc.open.length + ")" }),
       el("ul", { class: "dx-kann" }, pc.open.map(function (i) { return el("li", { class: "nein" }, [el("b", { text: i.title }), el("span", { text: " – " + i.text })]); }))]));
-    kids.push(foot("Eine Gesamtnote gibt es bewusst nicht: Sie würde den Zielkonflikt verbergen, auf den es ankommt – etwa hohe Qualität bei anspruchsvoller Bewertung. Einordnung im Vergleich zu allen anderen Aktien – keine Empfehlung."));
+    kids.push(foot("Eine Gesamtnote gibt es bewusst nicht: Sie würde Zielkonflikte verbergen, etwa hohe Qualität bei hoher Bewertung. Keine Empfehlung."));
     return kids;
   }
 
@@ -286,17 +295,19 @@
       el("div", { class: "dx-waage-spalte dx-waage-spalte--contra qx-pc-col tone-bad" }, [el("h3", { text: "Nicht erfüllt" }), conditions(b.notMet, "Keine Bedingung verletzt.")])
     ])));
     kids.push(el("a", { class: "qv-link qx-strategy-link", href: X.routes.strategy(b.id) }, [el("span", {}, [el("strong", { text: b.label }), el("small", { text: b.countText })]), el("i", { "aria-hidden": "true", text: "→" })]));
-    if (changeText) kids.push(el("p", { class: "qx-small", text: changeText }));
-    kids.push(X.more("Was dieser Stil bedeutet", function () {
-      return [el("p", { class: "qx-small", text: b.plain }),
+    /* VU3-Finalisierung: ein Zuordnungswechsel ist eine Nachricht und bleibt sichtbar; "nichts geaendert" steht mit
+       Bedeutung des Stils und den anderen Stilen in EINEM Aufklapper. */
+    var changed = change && change.state === "CHANGED";
+    if (changeText && changed) kids.push(el("p", { class: "qx-small", text: changeText }));
+    kids.push(X.more("Was dieser Stil bedeutet – und andere Anlagestile", function () {
+      return [changeText && !changed ? el("p", { class: "qx-small", text: changeText }) : null, el("p", { class: "qx-small", text: b.plain }),
         s.fits ? null : el("p", { class: "qx-small", text: "Das beschreibt die Nähe zu einem Bedingungssatz und keine Prognose." }),
         b.risk ? el("p", { class: "qx-small", text: "Typisches Risiko dieses Stils: " + b.risk }) : null,
         /* Anlagestil heisst "welche Art von Investment passt" - nicht "getestete Strategie". */
         el("p", { class: "q-setup-evidence" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Strategieperformance" }),
-          el("span", { text: " " + (s.fits ? "Der Anlagestil passt aktuell. " : "") + "Wie sich dieser Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – dafür fehlen die historische Index-Zugehörigkeit und eine längere Faktorhistorie." })])];
-    }));
-    kids.push(X.more("Weitere Anlagestile im Vergleich", function () {
-      return [el("div", { class: "qx-list" }, s.others.map(function (o) {
+          el("span", { text: " " + (s.fits ? "Der Anlagestil passt aktuell. " : "") + "Wie sich dieser Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – dafür fehlen die historische Index-Zugehörigkeit und eine längere Faktorhistorie." })]),
+        el("h4", { class: "qx-sub-h", text: "Weitere Anlagestile im Vergleich" }),
+        el("div", { class: "qx-list" }, s.others.map(function (o) {
         return el("a", { class: "qx-row", href: X.routes.strategy(o.id) }, [
           el("div", { class: "qx-row-main" }, [el("div", { class: "qx-row-title" }, [el("span", { class: "qx-row-name", text: o.label })]), el("div", { class: "qx-row-why", text: o.countText })]),
           el("div", { class: "qx-row-side" }, [o.bandLabel ? el("small", { text: o.bandLabel }) : null])]);
@@ -321,31 +332,44 @@
   /* Visual First (VU3): Ueberblick der drei Evidenzstufen vor den Einzelheiten - je Stufe Zeichen, Hauptwert und Bezug
      (Stichprobe, Abstand zum Markt, Evidenzstand), ein Tipp springt zur Stufe. Nur Werte, die die Stufen darunter zeigen.
      Die marktweite Stufe kommt mit der Radar-Karte; bis dahin steht sie als "wird geladen" da. */
+  /* VU3-Finalisierung: zuerst drei Saetze in Alltagssprache - was frueher bei dieser Aktie geschah, was marktweit
+     getestet ist und wie belastbar das ist. Fachbegriffe (beobachtet, getestet, zertifiziert, Point-in-Time) und die
+     Pruefbedingungen stehen in "Einzelheiten und Methodik". Nur Werte, die die Einzelheiten belegen; keine Prognose. */
   function evidenceOverview(vm) {
     var E = global.QXEvidence, same = vm.replay.levels.filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
     var main = same && same.state === "AVAILABLE" ? (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] || (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] : null;
-    /* fill: dieselbe Kachel neu befuellen (die marktweite Stufe kommt spaeter), statt sie auszutauschen */
-    function fill(node, tier, glyph, label, value, rest, off) {
-      node.setAttribute("class", "q-evo-tile tier-" + tier + (off ? " is-off" : ""));
-      node.replaceChildren.apply(node, [el("span", { class: "q-evo-k" }, [el("i", { "aria-hidden": "true", text: glyph }), document.createTextNode(label)]),
-        el("b", { class: "num", text: value })].concat(rest ? [el("small", { text: rest })] : []));
-      return node;
+    var span = function (label) { return String(label || "").replace(/^(\d+) Monate$/, "$1 Monate"); };
+    function row(id, label, kids, off) {
+      var t = el("p", { class: "q-evo-t" }, kids);
+      var li = el("li", { class: "q-evo-row" + (off ? " is-off" : "") }, [el("span", { class: "q-evo-k", text: label }), t,
+        el("a", { class: "q-evo-more", href: "#" + id, "aria-label": label + ": Einzelheiten", text: "Einzelheiten" })]);
+      li.qText = t;
+      return li;
     }
-    function tile(id, tier, glyph, label, value, rest, off) { return fill(el("a", { href: "#" + id }), tier, glyph, label, value, rest, off); }
-    var tested = tile("ev-b", "tested", "▣", "Getestet · marktweit", "…", "wird geladen", true);
-    var node = el("div", { class: "q-evo", role: "group", "aria-label": "Evidenz im Überblick" }, [
-      main ? tile("ev-a", "observed", "◉", "Beobachtet · diese Aktie", (main.positivePct || "–") + " höher", "n " + main.completed + " · Median " + (main.median || "–") + " · " + String(main.label || "").replace(/Monate$/, "Mon."))
-        : tile("ev-a", "observed", "◉", "Beobachtet · diese Aktie", "keine Aussage", same && same.state === "INSUFFICIENT"
-          ? "zu wenige Fälle: n " + (same.episodes || 0) + ", nötig " + (same.minEpisodes || 10) : "keine auswertbare Kurshistorie", true),
-      tested,
-      tile("ev-c", "certified", "✦", "Zertifiziert", "noch nicht", "kein vollständig zertifizierter Backtest", true)]);
+    var share = main && typeof main.positiveRaw === "number" ? main.positiveRaw : main && main.positivePct ? parseFloat(String(main.positivePct).replace(",", ".")) / 100 : null;
+    var stock = main
+      ? row("ev-a", "Diese Aktie früher", [document.createTextNode("In " + main.completed + " ähnlichen Lagen stand der Kurs " + span(main.label) + " später in "),
+          el("b", { class: "num", text: main.positivePct || "–" }), document.createTextNode(" der Fälle höher." + (main.median ? " Typisches Ergebnis: " + main.median + "." : "")),
+          typeof share === "number" && isFinite(share) ? el("span", { class: "vu-bar q-evo-bar", "aria-hidden": "true", style: "--v:" + Math.max(2, Math.min(100, share * 100)).toFixed(0) }, [el("i")]) : null])
+      : row("ev-a", "Diese Aktie früher", [document.createTextNode(same && same.state === "INSUFFICIENT"
+          ? "Zu wenige ähnliche Lagen für einen Rückblick (" + (same.episodes || 0) + " Fälle, nötig " + (same.minEpisodes || 10) + ")."
+          : "Kein Rückblick möglich – die Kurshistorie reicht nicht aus.")], true);
+    var tested = row("ev-b", "Im ganzen Markt", [document.createTextNode("wird geladen …")], true);
+    var why = el("span", { class: "q-evo-why", text: (main ? (main.completed < 30 ? "wenige Fälle dieser Aktie · " : "") : "kein Rückblick dieser Aktie · ") + "noch kein zertifizierter Backtest" });
+    var strength = el("p", { class: "q-evo-strength" }, [el("span", { class: "vu-status q-evo-pill", dataset: { tone: "warn" }, text: "Aussagekraft begrenzt" }), why]);
+    var node = el("div", { class: "q-evo", role: "group", "aria-label": "Rückblick in Kürze" }, [el("ul", { class: "q-evo-rows" }, [stock, tested]), strength]);
     return { node: node, setTested: function (card) {
       var ev = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
+      var t = tested.qText;
       if (ev && E) {
-        var b = ev.backtest, edge = E.edgeOf(b);
-        fill(tested, "tested", "▣", "Getestet · marktweit", typeof b.deltaPositiveShare === "number" ? E.pp(b.deltaPositiveShare) + " ggü. Markt" : E.share1(b.positiveShare) + " höher",
-          [E.EDGE_SHORT[edge.id], "n " + E.int(b.n), "Evidenz " + (E.TRUST_SHORT[b.trust] || "nicht bereit")].filter(Boolean).join(" · "));
-      } else fill(tested, "tested", "▣", "Getestet · marktweit", "kein Signal aktiv", "derzeit löst kein getestetes Signal aus", true);
+        var b = ev.backtest, edge = E.edgeOf(b), word = E.EDGE_SHORT[edge.id];
+        tested.setAttribute("class", "q-evo-row");
+        var d = b.deltaPositiveShare, hasD = typeof d === "number" && isFinite(d);
+        t.replaceChildren(document.createTextNode("Aktien mit demselben getesteten Signal lagen nach 6 Monaten "),
+          el("b", { class: "num", text: hasD ? (d === 0 ? "genauso oft" : E.pp(Math.abs(d)).replace(/^[+±]/, "").replace(" Pp", " Prozentpunkte")) : E.share1(b.positiveShare) }),
+          document.createTextNode(hasD ? (d === 0 ? " im Plus wie der Markt" : (d > 0 ? " häufiger" : " seltener") + " im Plus als der Markt") + (word ? " – " + word : "") + "." : " der Fälle im Plus."));
+        if (b.trust !== "USABLE" && b.trust !== "ROBUST") why.textContent = why.textContent.replace("noch kein", "marktweite Belege " + (E.TRUST_SHORT[b.trust] || "nicht bereit") + " · noch kein");
+      } else t.replaceChildren(document.createTextNode("Derzeit löst bei dieser Aktie kein marktweit getestetes Signal aus."));
     } };
   }
   function replaySection(vm, conditionWords, evidence, signalHost, overview) {
@@ -390,10 +414,12 @@
     if (overview) kids.push(overview.node);
     /* VU3: der Ueberblick oben traegt die Hauptwerte; die Stufen A und B im Einzelnen stehen hinter "Mehr".
        C (Zertifizierung) bleibt sichtbar - es sagt, was noch fehlt. Ein Tipp auf eine Kachel oeffnet die Einzelheiten. */
-    var detail = el("details", { class: "vu-more qv-ev-more" }, [el("summary", { text: "Diese Aktie und der Markt im Einzelnen" }),
-      el("div", { class: "vu-more-body q-ev-levels" }, [el("div", { id: "ev-a" }, a), el("div", { id: "ev-b" }, b)])]);
+    /* VU3-Finalisierung: Stufen A, B und C (Zertifizierung mit den offenen Pruefbedingungen) stehen zusammen in
+       "Einzelheiten und Methodik"; die Kurzfassung oben nennt die begrenzte Aussagekraft bereits. */
+    var detail = el("details", { class: "vu-more qv-ev-more" }, [el("summary", { text: "Einzelheiten und Methodik" }),
+      el("div", { class: "vu-more-body q-ev-levels" }, [el("div", { id: "ev-a" }, a), el("div", { id: "ev-b" }, b), el("div", { class: "is-wide", id: "ev-c" }, c)])]);
     if (overview) overview.node.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("a[href='#ev-a'],a[href='#ev-b']"); if (t) detail.open = true; });
-    kids.push(detail, el("div", { class: "q-ev-levels" }, [el("div", { class: "is-wide", id: "ev-c" }, c)]));
+    kids.push(detail);
     kids.push(foot(r.isNot));
     kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie der Rückblick rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Alle getesteten Signale", X.routes.backtest())]));
     return [el("div", { class: "qx-replay" }, kids)];
@@ -543,10 +569,13 @@
         cell("is-inv", "Ungültig unter", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null),
         cell("is-target", "Zielzonen", targets.length ? targets.map(zone).join(" · ") : null, targets.length ? targets.map(function (t, i) { return "Ziel " + (i + 1); }).join(" · ") : null)
       ])];
+    /* VU3-Finalisierung: Chance/Risiko, Ausloeser und Herkunft der Marken stehen zusammen hinter einem Aufklapper;
+       sichtbar bleiben die Marken und die zwei Fragen (was als Naechstes, was ungueltig macht). */
+    var deep = [];
     if (ts && ts.riskReward && typeof ts.riskReward.low === "number") {
-      kids.push(el("p", { class: "q-rr" }, [el("span", { text: "Chance/Risiko" }),
+      deep.push(el("p", { class: "q-rr" }, [el("span", { text: "Chance/Risiko" }),
         el("b", { class: "num", text: "bis Ziel 1: " + ratio(ts.riskReward.low, ts.riskReward.high) + (typeof ts.riskReward.target2Low === "number" ? " · bis Ziel 2: " + ratio(ts.riskReward.target2Low, ts.riskReward.target2High) : "") })]));
-      if (ts.status === "COMPLETE_LOW_RR") kids.push(el("p", { class: "q-scenario-note", text: "Bis Ziel 1 liegt das Chance-Risiko-Verhältnis zum Teil unter der Mindestschwelle der Methodik." }));
+      if (ts.status === "COMPLETE_LOW_RR") deep.push(el("p", { class: "q-scenario-note", text: "Bis Ziel 1 liegt das Chance-Risiko-Verhältnis zum Teil unter der Mindestschwelle der Methodik." }));
     }
     /* "Bestaetigt wenn": der Ausloeser des Szenarios (Satz der Szenario-
        Engine) und die offenen Bedingungen der naechsten Setup-Stufe. Dazu,
@@ -554,16 +583,17 @@
        der Setup-Kaskade, nichts hinzugedacht. */
     var nx = st.next, inv = st.invalidation;
     var trigger = sc && sc.confirmation ? sc.confirmation : null;
-    if (trigger || (nx && nx.text)) kids.push(el("div", { class: "q-trigger" }, [el("span", { text: "Bestätigt wenn" }),
+    if (trigger || (nx && nx.text)) deep.push(el("div", { class: "q-trigger" }, [el("span", { text: "Bestätigt wenn" }),
       trigger ? el("p", { text: trigger }) : null, nx && nx.text ? el("p", { class: "qx-small", text: nx.text }) : null]));
     var better = nx && nx.conditions ? nx.conditions : [], worse = inv && inv.conditions ? inv.conditions : [];
     if (better.length || worse.length) kids.push(el("div", { class: "q-moves" }, [
       el("div", { class: "is-up" }, [el("b", { text: "Was müsste als Nächstes passieren?" }), condCheck(better, "Keine offene Bedingung für eine höhere Stufe.")]),
       el("div", { class: "is-down" }, [el("b", { text: "Was würde das Setup ungültig machen?" }), condCheck(worse, "Keine tragende Bedingung veröffentlicht.")])]));
-    kids.push(moreText("Wie die Marken entstehen", sc
+    deep.push(el("p", { class: "qx-small", text: sc
       ? "Szenario der technischen Auswertung vom " + X.dateDe(ws.asOf) + " (" + sc.label + ", " + sc.status + "). Die Marken zeigen, wo das Szenario rechnerisch ansetzt, ungültig wird und auf Widerstand trifft – keine Empfehlung, keine Order."
       : technical && technical.state === "AVAILABLE" && technical.fullWorkspace && !ws ? "Die Szenario-Marken werden geladen …"
-      : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.")));
+      : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
+    kids.push(el("details", { class: "vu-more q-setup-more" }, [el("summary", { text: "Chance/Risiko, Auslöser und wie die Marken entstehen" }), el("div", { class: "vu-more-body q-setup-body" }, deep)]));
     var links = [];
     if (technical && technical.fullWorkspace) links.push(X.link("Chartbild öffnen", X.routes.chartbild(ticker)));
     if (links.length) kids.push(el("p", { class: "q-setup-links" }, links));
@@ -597,7 +627,8 @@
     } else if (radar && radar.state === "AVAILABLE") {
       out.push(el("p", { class: "q-now-none", text: "Zum letzten Stand (" + X.dateDe(radar.radarAsOf) + ") meldet Quant für diese Aktie keine neue Veränderung." }));
     }
-    if (lc && lc.state === "AVAILABLE" && lc.current !== "NO_SETUP") {
+    /* VU3-Finalisierung: Ohne neues Ereignis steht die Setup-Stufe schon in der Kennzahl "Setup" direkt darueber. */
+    if (lc && lc.state === "AVAILABLE" && lc.current !== "NO_SETUP" && card && card.events.length) {
       out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Setup: " }), el("span", { text: lifecycleLabel(lc.current) + " · " + (lc.sinceIsLowerBound ? "mindestens seit " : "seit ") + X.dateDe(lc.since) + (lc.previous ? " · vorher: " + lifecycleLabel(lc.previous) : "") })]));
     }
     if (card && card.next && card.next.open && card.next.open.length) {
@@ -630,13 +661,14 @@
     /* entscheidbare Stufen in Reihenfolge: was vor der aktuellen liegt, ist erreicht (is-past) */
     var steps = Radar.LIFECYCLE.filter(function (x) { return x.id !== "NO_SETUP" && x.tier !== "PATH_DEPENDENT"; }).map(function (x) { return x.id; });
     return el("div", { class: "q-lifecycle" }, [
-      el("ol", { "aria-label": "Lebenszyklus eines Setups" }, Radar.LIFECYCLE.filter(function (x) { return x.id !== "NO_SETUP"; }).map(function (x) {
+      /* VU3-Finalisierung: sichtbar sind die entscheidbaren Stufen; die noch nicht freigeschalteten stehen im Aufklapper. */
+      el("ol", { "aria-label": "Lebenszyklus eines Setups" }, Radar.LIFECYCLE.filter(function (x) { return x.id !== "NO_SETUP" && (x.tier !== "PATH_DEPENDENT" || x.id === lc.current); }).map(function (x) {
         var now = x.id === lc.current, past = steps.indexOf(x.id) >= 0 && steps.indexOf(x.id) < steps.indexOf(lc.current);
         return el("li", { class: (now ? "is-now " : past ? "is-past " : "") + (x.tier === "PATH_DEPENDENT" ? "is-closed" : ""), "aria-current": now ? "step" : null }, [el("span", { text: x.label })]);
       })),
       el("p", { class: "qx-small", text: (lc.current === "NO_SETUP" ? "Derzeit kein Setup" : lifecycleLabel(lc.current) + " " + (lc.sinceIsLowerBound ? "mindestens seit " : "seit ") + X.dateDe(lc.since)) +
         (lc.previous ? " · vorher " + lifecycleLabel(lc.previous) + " (" + X.dateDe(lc.previousAsOf) + ")" : "") +
-        "." }), moreText("Warum einige Stufen gedimmt sind", "Die Stufen ab „Trend läuft“ brauchen eine längere Beobachtungsreihe und sind noch nicht freigeschaltet (" + (lc.snapshots || []).length + " veröffentlichte Stichtage).")]);
+        "." }), moreText("Weitere Stufen, noch nicht freigeschaltet", "Die Stufen " + Radar.LIFECYCLE.filter(function (x) { return x.tier === "PATH_DEPENDENT" && x.id !== lc.current; }).map(function (x) { return "„" + x.label + "“"; }).join(", ") + " brauchen eine längere Beobachtungsreihe und sind noch nicht freigeschaltet (" + (lc.snapshots || []).length + " veröffentlichte Stichtage).")]);
   }
 
   /* Daten & Grenzen: ohne eigene Ueberschrift - was fehlt, steht sichtbar; Quellen und Stand in "Daten & Methodik". */
@@ -881,10 +913,15 @@
           return el("span", { class: "tone-" + t[0] + (t[1] ? "" : " is-zero") }, [el("i", { "aria-hidden": "true", text: TONE_GLYPH[t[0]] }), el("b", { class: "num", text: String(t[1]) }), document.createTextNode(" " + t[2])]);
         })),
         moving.length ? el("ul", { class: "qx-changes" }, moving.slice(0, 3).map(changeItem)) : el("p", { class: "qx-small", text: "Keine deutliche Veränderung." }),
-        moving.length > 3 ? X.more("Weitere Veränderungen (" + (moving.length - 3) + ")", function () { return el("ul", { class: "qx-changes" }, moving.slice(3).map(changeItem)); }) : null,
-        still.length ? X.more("Unverändert (" + still.length + ")", function () { return el("ul", { class: "qx-changes" }, still.map(changeItem)); }) : null,
-        vm.change.open.length ? X.more("Nicht messbar (" + vm.change.open.length + ")", function () { return vm.change.open.map(function (x) { return el("p", { class: "qx-small" }, [el("b", { text: x.label + ": " }), el("span", { text: x.text })]); }); }) : null,
-        X.more("Wie die Veränderung gemessen wird", function () { return [el("p", { class: "qx-small", text: vm.change.text + " Stand " + X.dateDe(vm.change.asOf) + "." })].concat(vm.change.items.map(function (i) { return el("p", { class: "qx-small" }, [el("b", { text: i.label + ": " }), el("span", { text: (i.how || "") + (i.from && i.to ? " (" + i.from + " → " + i.to + ")" : "") })]); })); })
+        /* VU3-Finalisierung: weitere, unveraenderte und nicht messbare Punkte und die Messweise in EINEM Aufklapper. */
+        moving.length > 3 || still.length || vm.change.open.length || vm.change.items.length ? X.more("Alle Veränderungen und wie sie gemessen werden", function () {
+          var out = [];
+          if (moving.length > 3) out.push(el("h4", { class: "qx-sub-h", text: "Weitere Veränderungen (" + (moving.length - 3) + ")" }), el("ul", { class: "qx-changes" }, moving.slice(3).map(changeItem)));
+          if (still.length) out.push(el("h4", { class: "qx-sub-h", text: "Unverändert (" + still.length + ")" }), el("ul", { class: "qx-changes" }, still.map(changeItem)));
+          if (vm.change.open.length) out.push(el("h4", { class: "qx-sub-h", text: "Nicht messbar (" + vm.change.open.length + ")" })), out.push.apply(out, vm.change.open.map(function (x) { return el("p", { class: "qx-small" }, [el("b", { text: x.label + ": " }), el("span", { text: x.text })]); }));
+          out.push(el("h4", { class: "qx-sub-h", text: "Wie die Veränderung gemessen wird" }), el("p", { class: "qx-small", text: vm.change.text + " Stand " + X.dateDe(vm.change.asOf) + "." }));
+          return out.concat(vm.change.items.map(function (i) { return el("p", { class: "qx-small" }, [el("b", { text: i.label + ": " }), el("span", { text: (i.how || "") + (i.from && i.to ? " (" + i.from + " → " + i.to + ")" : "") })]); }));
+        }) : null
       ], null, null, "veraenderung"));
     }
     bodyHost.append(X.section("Welche Strategie passt?", null, strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien" }, null, "strategie"));
@@ -935,7 +972,15 @@
       }
     }
     /* Unternehmensmeldungen (Company Intelligence) - eigene Komponente, vor den Unternehmenszahlen. */
-    if (global.VUCompanyIntelligenceStock) { var ciHost = el("div", { class: "qv-ci-host" }); bodyHost.append(ciHost); disposers.push(global.VUCompanyIntelligenceStock.mount(ciHost, ticker)); }
+    /* VU3-Finalisierung: Unternehmensprofil, Meldungen und Geschaeftszahlen (Company Intelligence) sind Discovers
+       Kapitel; in Quant stehen sie vollstaendig, aber zugeklappt. Ohne Freigabe (mount haengt nichts an) entfaellt
+       auch der Aufklapper. */
+    if (global.VUCompanyIntelligenceStock) {
+      var ciHost = el("div", { class: "qv-ci-host" });
+      var ciMore = el("details", { class: "vu-more qv-ci-more" }, [el("summary", { text: "Unternehmen, Meldungen und Geschäftszahlen" }), el("div", { class: "vu-more-body qv-ci-body" }, [ciHost])]);
+      bodyHost.append(ciMore); disposers.push(global.VUCompanyIntelligenceStock.mount(ciHost, ticker));
+      if (!ciHost.firstChild) ciMore.remove();
+    }
     var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
     if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) bodyHost.append(X.section("Wie verdient das Unternehmen – und wie teuer ist die Aktie?", null, figures, null, null, "zahlen"));
 
