@@ -345,7 +345,7 @@
   {
    "candidateId": "C06",
    "strategyId": "SF_MINERVINI_SEPA_VCP",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.0",
    "sourceFidelity": {
     "exact": 0,
     "derived": 9,
@@ -365,10 +365,16 @@
      "MIN-SF-TT-8 <- minervini-components.mjs#createRsPercentileProxy",
      "MIN-SF-FUNDAMENTALS <- minervini-components.mjs#fundamentalEvidence",
      "MIN-SF-VCP <- minervini-components.mjs#vcpContractions",
+     "MIN-SF-VCP <- minervini-lifecycle.mjs#sepaSetupFromTrendTemplate",
      "MIN-SF-PIVOT <- minervini-components.mjs#pivotBreakout",
+     "MIN-SF-PIVOT <- minervini-lifecycle.mjs#entryEligibility",
+     "MIN-SF-PIVOT <- minervini-lifecycle.mjs#fillBuyOrder",
      "MIN-SF-STOP <- minervini-components.mjs#sellEvidence",
+     "MIN-SF-STOP <- minervini-execution.mjs#runMinerviniLifecycle",
      "MIN-SF-SIZE <- minervini-components.mjs#positionSize",
-     "MIN-SF-SELL <- minervini-components.mjs#sellEvidence"
+     "MIN-SF-SIZE <- minervini-execution.mjs#runMinerviniLifecycle",
+     "MIN-SF-SELL <- minervini-components.mjs#sellEvidence",
+     "MIN-SF-SELL <- minervini-execution.mjs#runMinerviniLifecycle"
     ]
    },
    "dataCoverage": {
@@ -415,7 +421,7 @@
   {
    "candidateId": "C07",
    "strategyId": "SF_MINERVINI_POWER_PLAY",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.0",
    "sourceFidelity": {
     "exact": 0,
     "derived": 5,
@@ -432,7 +438,11 @@
     "engine": "MECHANICAL_SCREEN_COMPLETE",
     "acceptanceGate": null,
     "researchComponents": [
-     "MIN-SF-PP-ENTRY <- minervini-components.mjs#powerPlayClassify"
+     "MIN-SF-PP-ENTRY <- minervini-components.mjs#powerPlayClassify",
+     "MIN-SF-PP-ENTRY <- minervini-lifecycle.mjs#entryEligibility",
+     "MIN-SF-PP-STOP <- minervini-execution.mjs#runMinerviniLifecycle",
+     "MIN-SF-PP-SIZE <- minervini-execution.mjs#runMinerviniLifecycle",
+     "MIN-SF-PP-EXIT <- minervini-execution.mjs#runMinerviniLifecycle"
     ]
    },
    "dataCoverage": {
