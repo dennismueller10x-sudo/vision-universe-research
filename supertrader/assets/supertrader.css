@@ -359,12 +359,18 @@ html:not([data-theme=light]) .st-phase[data-p="inv"] { color: #9097a3; }
   .st-lensblock .r1 { row-gap: 4px; }
   .st-lensblock .st-cells .c { padding: 7px 8px; }
   .st-lensblock .st-next { padding: 8px 10px; }
-  .st-lensblock .st-next p { line-height: 1.4; }
-  /* Modellposition: die vierte Zelle (Positionsgroesse) macht das Raster zu 2x2 - der naechste
-     Schritt mit Stop und Ausstiegsregel rueckte unter die Leiste. Mobil steht er deshalb vor dem
-     Raster, der Ausfuehrungshinweis bleibt direkt darunter; Inhalt und Desktop unveraendert. */
-  .st-lensblock > .st-cells.four,
-  .st-lensblock > .st-cells.four ~ :not(.st-next):not(.st-clamp-wrap) { order: 1; }
+  /* Naechster Schritt kompakt: Kennzeile und Datenstand teilen sich eine Zeile, der Text bleibt
+     vollstaendig (lange Halte- und Ausstiegsregeln, z. B. PRSU 22.10.2026: 6 Zeilen). */
+  .st-lensblock .st-next { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: baseline; }
+  .st-lensblock .st-next .k { grid-area: 1 / 1; }
+  .st-lensblock .st-next .r { grid-area: 1 / 2; text-align: right; }
+  .st-lensblock .st-next p { grid-column: 1 / -1; line-height: 1.35; }
+  /* Das Kennzahlraster (Trigger, Stop / Ungueltig, Modelleinstieg, ggf. Positionsgroesse) steht mobil
+     nach dem naechsten Schritt; der Ausfuehrungshinweis bleibt direkt darunter. Zuerst nur fuer die
+     Modellposition (2x2-Raster, IOVA); seit ILMN 22.10.2026 auch fuer vorbereitete Setups (3 Zellen,
+     57 von 340 Seiten ueber der Grenze). Inhalt und Desktop unveraendert. */
+  .st-lensblock > .st-cells,
+  .st-lensblock > .st-cells ~ :not(.st-next):not(.st-clamp-wrap) { order: 1; }
   .st-chips.lens { margin-top: 4px; margin-bottom: 6px; }
 }
 .st-extra[hidden] { display: none; }
