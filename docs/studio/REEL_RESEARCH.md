@@ -75,3 +75,13 @@ Apify: Profil-, Reel- und Hashtag-Scraper (Datensätze vom 15. bis 21.10.2026), 
 | 7 Tage | | | | | | | |
 
 Rückblick auf das Reel (Selbstkritik nach Kallaway-Muster): Hook und Verstärker vorhanden; Re-Hook in der Mitte, Kontrast und Teilen-Aufruf fehlen; viel geliehene Autorität; kein Katalogwert.
+
+### Tesla Robotaxi Q3 (v1, 22.10.2026)
+
+Hook „Fast 2 Mio. Meilen. Ohne Fahrer." mit Lenkrad, das sich zeichnet und durchgestrichen wird. Erstes Reel mit allen Stufen der Formel: Verstärker (8×), eigener Beweis (80 Erdumrundungen), Re-Hook „Aber das kostet", Einordnung „kein Beweis", Teilen-Aufruf mit Papierflieger. Unternehmensfotos aus der Präsentation als Hintergrund. Test für H3 (Re-Hook) und H5 (eigener Beweis) gegen das ARK-Reel. Nach Veröffentlichung hier messen:
+
+| Messpunkt | Reichweite | Ø Wiedergabe | Shares | Saves | Kommentare | Profilbesuche | Follower |
+|---|---|---|---|---|---|---|---|
+| 24 h | | | | | | | |
+| 72 h | | | | | | | |
+| 7 Tage | | | | | | | |
