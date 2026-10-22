@@ -14,7 +14,11 @@ Nichts hier veröffentlicht etwas. Veröffentlicht wird nur im Approval Center d
 | `tools/finalize_audio.sh` | Pegel auf −14,2 LUFS, Spitzenbegrenzung |
 | `tools/render.mjs` | Rendert die Komposition als transparente Bildfolge (Playwright und Chromium) |
 | `tools/compose.sh` | FFmpeg: Hintergrund (Variante `b` mit Clips), Bildfolge, Ton zu MP4 |
+| `tools/build_script.py` | Skript-DSL (`[[s2]]`, `[[e:name]]`, `{gesprochen|Anzeige}`, `**fett**`) zu Sprechtext und Zeitplan |
+| `tools/sfx_events.py` | Effekte aus den Ereignismarken des Skripts (statt fester Wortnummern) |
 | `templates/tesla-ark/` | Referenzreel: Komposition, Zeitberechnung, Stimmentext, Caption |
+| `templates/meta-muse/` | Hook ab Bild 1, Zeichnungen, Handy-Mock-up, Hintergrundbilder |
+| `templates/quartalszahlen/` | datengesteuerte Zahlenvorlage (`data.json`), Beispiel Tesla Q3 |
 
 ## Ablauf in Kürze
 
@@ -51,6 +55,9 @@ bash tools/compose.sh b frames mix.wav out.mp4 timing.json [clip1.mp4 ...]
 Hosting und Karte: HeyGen-Asset-Upload (`create_asset_upload`, PUT, `complete_asset_upload`) liefert eine stabile öffentliche Adresse mit Range-Unterstützung. Danach Workflow **Social Reel vorbereiten** (`social-reel.yml`, `action=prepare`) mit Content-ID, Video-Adresse und Caption.
 
 ## Hinweise
+
+- Das Render-Werkzeug wiederholt Bilder bis zu dreimal. Bricht es dennoch mit `Target crashed` ab: `df -h /tmp` prüfen (Kontingent voll) und fehlende Bilder (`f00000.png` bis `f0NNNN.png`) in Blöcken nachrendern (`i0=… i1=…`).
+- `render.mjs` nimmt `data=data.json` (setzt `window.DATA`) und `ovl=0` (undurchsichtiger Hintergrund).
 
 - `templates/tesla-ark/composition.html` verweist auf zwei Bilddateien (`cab_duo.jpg`, `opt_duo.jpg`), die nicht im Repo liegen (Herkunft und Rechte der Bilder sind Sache des Owners). Für neue Reels diese Szenen durch eigenes Material oder reine Grafik ersetzen.
 - Die Skripte schreiben nur in den Arbeitsordner, nie in `quant/data`, `discover/data` oder andere generierte Artefakte.

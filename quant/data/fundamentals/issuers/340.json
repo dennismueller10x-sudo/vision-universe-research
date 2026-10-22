@@ -486,9 +486,9 @@
       "cik": "0001080340",
       "name": "MANHATTAN BRIDGE CAPITAL, INC",
       "sic": "6798",
-      "rawFacts": 9716,
-      "mappedFacts": 4369,
-      "unmappedFacts": 5663,
+      "rawFacts": 9903,
+      "mappedFacts": 4454,
+      "unmappedFacts": 5891,
       "calendarYears": 17,
       "industry": "REIT",
       "industryMetrics": {
@@ -541,9 +541,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 65,
       "firstPeriodEnd": "2010-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -555,7 +555,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -582,21 +582,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -610,14 +610,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -640,46 +640,47 @@
         }
       },
       "quality": {
-        "HIGH": 546,
+        "HIGH": 552,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 548,
-        "resolvedValues": 548
+        "datableValues": 554,
+        "resolvedValues": 554
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5886,
+        "total": 5921,
         "by_severity": {
-          "INFO": 5663,
-          "WARNING": 223
+          "INFO": 5891,
+          "WARNING": 30
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 206,
+          "CONCEPT_DISAGREEMENT": 13,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 5663
+          "UNKNOWN_CONCEPT": 5891
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-034411",
-        "filing_date": "2026-07-23",
+        "accession": "0001493152-26-047912",
+        "filing_date": "2026-10-21",
         "form": "10-Q",
-        "periodic_filings": 76
+        "periodic_filings": 77,
+        "acceptance_datetime": "2026-10-22T00:30:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "b53b1653638ca5121e5647a37ee6a800f4dac88f4cff99d57dbf63fb7ab93e12",
+      "sourceDigest": "479bbf3ff7d0ee80343ec3c715a8b902903fba4864b138d204ce08fad8492a18",
       "issuerId": "iss_cik_0001080340"
     },
     {

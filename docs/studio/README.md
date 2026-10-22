@@ -29,6 +29,7 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 7. Fakten werden an Primärquellen geprüft. Zahlen und Zielkurse sind „Modell, keine Prognose", keine Anlageberatung.
 8. Meta verlangt die Kennzeichnung fotorealistischer KI-Bilder: Hinweis in der Caption („Teile der Bilder sind KI-generiert"), bei TikTok der KI-Schalter.
 9. Sprache: Deutsch.
+10. **Schlussaufruf:** Vorerst immer die App (Entscheidung des Owners am 21.10.2026). Kein Schick-das-weiter-Satz im Sprechertext und keine Änderung an fertigen Reels (das Riester-Reel bleibt in der letzten Fassung). Teilen und Speichern wirken über den Inhalt, nicht über einen gesprochenen Aufruf.
 
 ## Marke
 
