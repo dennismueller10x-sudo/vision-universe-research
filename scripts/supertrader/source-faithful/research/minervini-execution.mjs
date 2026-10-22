@@ -44,6 +44,16 @@ export const EQUITY_RESEARCH_PORTFOLIO_POLICY = Object.freeze({
   notModelled: Object.freeze(['exposure build-up from pilot buys (MIN-RISK-02/03, MIN-MM-SIZE-02)', 'risk reduction after poor own results (MIN-RISK-04)', 'margin and exposure in difficult markets (MIN-RISK-07/08)', 'typical 4-6 positions (MIN-RISK-09) and concentration (MIN-TTC-CONCENTRATION): preferences, reported as diagnostics', 'exit liquidity (MIN-MM-LIQ-01): participation is reported, not limited', 'pyramiding (MIN-ADD-01, MIN-MM-ADD-02/03): manual', 'earnings holding (MIN-MM-EARN-HOLD): manual']),
 });
 
+/**
+ * MA-MIN-SIGNAL-ORDER: neutral, deterministic order of simultaneous fills: FNV-1a of "date|security id". A plain
+ * security-id order would favour alphabetically early names every day once the book is capital-bound; the hash
+ * changes the order from day to day without any market information.
+ */
+export function fillRank(date, id) {
+  let h = 2166136261; const s = `${date}|${id}`;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
 const median = (a) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
 
@@ -155,8 +165,8 @@ export function runMinerviniLifecycle(dataset, { strategy, setupIndex, config, p
       if (stopCheck(pos, b, date)) continue;
       closeRules(pos, x, i, date);
     }
-    // 2) pending entries (armed at the prior close), in security-id order (MA-MIN-SIGNAL-ORDER)
-    for (const id of [...orders.keys()].sort()) {
+    // 2) pending entries (armed at the prior close), in the date-seeded neutral order (MA-MIN-SIGNAL-ORDER)
+    for (const id of [...orders.keys()].sort((a, b) => fillRank(date, a) - fillRank(date, b) || (a < b ? -1 : a > b ? 1 : 0))) {
       const o = orders.get(id), x = sec.get(id), i = x.idx.get(date), b = i === undefined ? null : x.s.bars[i];
       if (positions.has(id)) continue;
       const f = b ? fillBuyOrder(b, o.order) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };

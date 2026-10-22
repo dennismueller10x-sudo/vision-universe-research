@@ -85,7 +85,7 @@
   {
    "id": "MA-MIN-SIGNAL-ORDER",
    "phase": "POSITION_SIZING",
-   "reference": "SECURITY_ID: simultaneous fills are booked in security-id order",
+   "reference": "DATE_SEEDED_HASH: simultaneous fills are booked in the order of FNV-1a(date|security id) (minervini-execution#fillRank), neutral and deterministic; a plain security-id order would favour alphabetically early names in a capital-bound book",
    "alternatives": [],
    "why": "relative priority is manual (MIN-PROCESS-04); the neutral order is deterministic, capital-constrained rejections are counted so its influence stays visible"
   },

@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { variantRegistrySha256, sepaSetupAt, sepaSetupSeries, powerPlaySetupAt, powerPlaySetupSeries, entryEligibility, fillBuyOrder, validateConfig, REFERENCE_CONFIG, RUN_VARIANTS, MODEL_ASSUMPTIONS, EXIT_POLICIES } from '../source-faithful/research/minervini-lifecycle.mjs';
-import { buildSetupIndex, runMinerviniLifecycle, runMetrics, lifecycleMetrics, EQUITY_RESEARCH_PORTFOLIO_POLICY } from '../source-faithful/research/minervini-execution.mjs';
+import { fillRank, buildSetupIndex, runMinerviniLifecycle, runMetrics, lifecycleMetrics, EQUITY_RESEARCH_PORTFOLIO_POLICY } from '../source-faithful/research/minervini-execution.mjs';
 import { tradeView } from '../source-faithful/research/minervini-trade-view.mjs';
 import { fundamentalEvidence } from '../source-faithful/research/minervini-components.mjs';
 
@@ -142,7 +142,10 @@ test('ADV-MLC-SIZE-ZERO-AND-CAPITAL: Groesse null, unzureichendes Kapital, Posit
   const six = ['A', 'B', 'C', 'D', 'E', 'F'].map((id) => scenario(id, [[95, 97, 94.8, 96.5]]));
   const r = run(ds(...six));
   assert.equal(r.trades.length, 5); assert.equal(r.counts.cappedByCash, 1); assert.equal(r.counts.rejectInsufficientCapital, 1);
-  assert.deepEqual(r.trades.map((t) => t.id), ['A', 'B', 'C', 'D', 'E']); // MA-MIN-SIGNAL-ORDER: security id
+  // MA-MIN-SIGNAL-ORDER: the date-seeded hash decides who is filled first, not the alphabet
+  const order = ['A', 'B', 'C', 'D', 'E', 'F'].sort((x, y) => fillRank(day(ARM + 1), x) - fillRank(day(ARM + 1), y));
+  assert.deepEqual(r.trades.map((t) => t.id), order.slice(0, 5));
+  assert.ok(new Set(Array.from({ length: 30 }, (_, k) => ['A', 'B', 'C', 'D', 'E', 'F'].sort((x, y) => fillRank(day(k), x) - fillRank(day(k), y))[0])).size > 1, 'the first fill must not always be the same name');
   assert.ok(r.trades.every((t) => t.weight <= 0.25 + 1e-12));
   assert.ok(r.curve.every((p) => p.equity > 0)); assert.equal(r.reconciliation.pass, true);
   const lim = run(ds(...six.slice(0, 3)), 'SEPA', {}, { policy: { ...EQUITY_RESEARCH_PORTFOLIO_POLICY, maxOpenPositions: 2 } });
