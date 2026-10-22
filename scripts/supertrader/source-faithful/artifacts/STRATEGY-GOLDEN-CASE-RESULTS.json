@@ -28,7 +28,7 @@
   "pass": 115,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 237,
+  "testsRun": 238,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1684,7 +1684,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 91,
+ "otherTests": 92,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2869,6 +2869,11 @@
   {
    "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
    "name": "ADV-SF4-MATRIX-NO-UPGRADE: Validator lehnt SOURCE_EXACT, undeklarierte Annahmen, fehlende Tests und Mechanik ohne Code ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf4-lifecycle-runner.test.mjs",
+   "name": "SF4-SNAPSHOT-RUN-CURRENT-CODE: der eingetragene maßgebliche Snapshot-Lauf gehoert zum aktuellen Code und zur vorregistrierten Konfiguration",
    "result": "PASS"
   }
  ]

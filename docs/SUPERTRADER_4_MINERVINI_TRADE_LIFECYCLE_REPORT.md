@@ -133,26 +133,45 @@ Dann folgt ein Buy-Stop am Pivot für die nächste Sitzung. Danach gelten Stop, 
 
 **Power Play:** nur `CONFIRMED_MECHANICAL_SETUP`, mit derselben Eligibility. Es gibt keine automatische Hochstufung: `validateConfig` lehnt jede andere Klasse ab.
 
-Snapshot-Lauf 1 (39726911654, Code vor den Review-Fixes; nur öffentliche Zählungen):
-- 9.211 Segmente, 2.701 Sitzungen;
-- Datensatz `EXACT`;
-- PIT-Fundamentals für 6.289 Wertpapiere.
+**Maßgeblicher Snapshot-Lauf 3** ([39729913772](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39729913772), Commit `aad906649`):
+- Research-Code `16dbc24215fd…` ist identisch mit dem aktuellen Code (Test `SF4-SNAPSHOT-RUN-CURRENT-CODE`); Engine `ae2a51ed86ae…`; Varianten-Fingerabdruck `f13ea35016c5…`.
+- 9.211 Segmente, 2.701 Sitzungen, Datensatz `EXACT` (`3ea6443de70c…`), PIT-Fundamentals für 6.289 Wertpapiere.
+- Nur öffentliche Zählungen; die Kennzahlen liegen versiegelt auf `claude/supertrader-validation-results`.
 
 | | SEPA REF | Power Play REF |
 |---|---|---|
 | Setup-Tage (`SETUP_DETECTED` bzw. `CONFIRMED_MECHANICAL_SETUP`) | 1.011.547 | 25.939 |
-| armierte Orders / nicht ausgelöst | 48.379 / 40.908 | 12.654 / 9.871 |
-| simulierte Trades (geschlossen / offen am Datenende) | 978 (960 / 18) | 973 (964 / 9) |
-| Ablehnungen Kapital / Positionsgrenze | 5.528 / 902 | 1.722 / 3 |
-| nicht ausgeführt: über Limit / ohne Quellbalken | 28 / 20 | 40 / 39 |
-| Ausstiege: Initialstop / Einstand+ / MA50 / Delisting / Datenereignis | 647+38 / 17 / 217 / 35 / 6 | 567+146 / 53 / 130 / 58 / 10 |
+| armierte Orders / nicht ausgelöst | 48.306 / 40.838 | 12.622 / 9.856 |
+| simulierte Trades (geschlossen / offen am Datenende) | 954 (937 / 17) | 1.007 (998 / 9) |
+| Ablehnungen Kapital / Positionsgrenze | 4.948 / 1.503 | 1.673 / 1 |
+| nicht ausgeführt: über Limit / ohne Quellbalken | 28 / 20 | 37 / 40 |
+| Ausstiege: Initialstop (inkl. Einstiegstag) / Einstand+ / MA50 / Delisting / Datenereignis | 670 / 15 / 214 / 34 / 4 | 750 / 48 / 133 / 59 / 8 |
+| Stop am Einstiegstag: angenommen / sicher | 21 / 6 | 138 / 28 |
 | Abstimmung, Positionsprüfung, Referenz zweimal identisch | ja, PASS, ja | ja, PASS, ja |
 
-Von den SEPA-Referenzeinstiegen hatten 798 von 978 PIT-Fundamentalevidenz. Alle 21 Varianten sind abgestimmt.
+Von den SEPA-Referenzeinstiegen hatten 762 von 954 PIT-Fundamentalevidenz (vor dem Signaltag eingereicht).
 
-Der SEPA-Lauf ist **kapitalgebunden**: Das Buch ist meist voll. Deshalb wurde die Reihenfolge gleichzeitiger Fills vor dem maßgeblichen Lauf von der Wertpapier-ID auf einen datumsgestreuten Hash umgestellt (siehe Risiken). Die versiegelten Kennzahlen von Lauf 1 wurden dafür nicht gelesen.
+Trades je vorregistrierter Variante (alle abgestimmt, Positionsprüfung PASS):
 
-<!-- RUN3 -->
+| Variante | SEPA | Power Play |
+|---|---|---|
+| REF | 954 | 1.007 |
+| ALT-SETUP-TT-PIVOT | 1.160 | – |
+| ALT-STOP-MAXLOSS10 | 632 | 833 |
+| ALT-ORDER-STOP-MARKET | 988 | 1.005 |
+| ALT-ENTRY-VOLUME-NEXT-OPEN | 738 | 577 |
+| ALT-INTRABAR-OPTIMISTIC | 987 | 929 |
+| ALT-EXIT-STOP-BE3R | 364 | 514 |
+| ALT-EXIT-FREEROLL-2R | 391 | 759 |
+| ALT-EXIT-FREEROLL-3R | 428 | 680 |
+| ALT-RISK-0075 | 1.114 | 1.143 |
+| ALT-RISK-025 | 861 | 787 |
+
+Frühere Läufe, durch Codeänderungen überholt:
+- **Lauf 1** ([39726911654](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39726911654), Code vor den Reviews): SEPA REF 978, Power Play REF 973 Trades. Er zeigte das **kapitalgebundene** SEPA-Buch (5.528 Kapital-, 902 Positionsgrenzen-Ablehnungen). Deshalb wurde die Reihenfolge gleichzeitiger Fills von der Wertpapier-ID auf einen datumsgestreuten Hash umgestellt. Die versiegelten Kennzahlen wurden dafür nicht gelesen.
+- **Lauf 2** (39728252900, nach den Review-Fixes, noch ID-Reihenfolge): nur Zwischenstand, nicht ausgewertet.
+
+Die Setup-Zählungen sind in allen drei Läufen identisch. Die Reihenfolge der Fills ändert nur, welche Signale das kapitalgebundene Buch füllen.
 
 ### 7. Welche Backtests sind methodisch zulässig?
 
@@ -174,20 +193,22 @@ Der SEPA-Lauf ist **kapitalgebunden**: Das Buch ist meist voll. Deshalb wurde di
 | Strukturstop | Tief der letzten Kontraktion | Tief der Konsolidierung (meist < 10 %) |
 | manuell | Priorität, Qualität, VCP-Gültigkeit, RS | Startvolumen, OR-Zweig „VCP-Merkmale“, 20–25 %-Bereich |
 | Datensperren | IBD-RS, Schätzungen/Guidance | keine (Startvolumen ohne 50 Sitzungen Historie: `DATA_BLOCKED_SETUP`) |
-| Eligibility-Hauptblocker (Lauf 1) | VCP-Stellvertreter, geplanter Verlust > 10 % | Klasse `MANUAL_REVIEW_SETUP`, geplanter Verlust > 10 % |
+| Eligibility-Hauptblocker (Lauf 3) | VCP-Stellvertreter, geplanter Verlust > 10 % | Klasse `MANUAL_REVIEW_SETUP`, geplanter Verlust > 10 % |
 | gemeinsam | Ordermodell, Stop, Größe, Exit-Policies, Abrechnung, Produktvertrag | |
 
 ### 9. Welche Tests wurden bestanden?
 
 | Prüfung | Ergebnis |
 |---|---|
-| `node --test "scripts/supertrader/tests/*.test.mjs"` | 554 Tests: 553 bestanden, 1 bestehender Skip, 0 fehlgeschlagen |
-| neue Suiten | `sf-minervini-lifecycle` 24, `sf-sf4-lifecycle-runner` 4 |
-| `rebuild-all` (Golden Record) | 115/115 Golden Cases, 237 SF-Tests, 0 fehlgeschlagen; Artefakte = frischer Build |
+| `node --test "scripts/supertrader/tests/*.test.mjs"` | 555 Tests: 554 bestanden, 1 bestehender Skip, 0 fehlgeschlagen |
+| neue Suiten | `sf-minervini-lifecycle` 24, `sf-sf4-lifecycle-runner` 5 |
+| `rebuild-all` (Golden Record) | 115/115 Golden Cases, 238 SF-Tests, 0 fehlgeschlagen; Artefakte = frischer Build |
 | `core/tests` | 212/212 |
 | `scripts/ci/tests` | 18/18 |
 | Test-Isolation | bestanden |
 | Gate A (`guard-protected-paths.mjs`) | nur Supertrader-Pfade |
+| CI auf #842 (Supertrader Quality Gates) | grün: Gate A, B/D/E, Discovery- und Quant-2.0-Regression, Gate F Browser-QA 390/1280 px, keine Secrets |
+| Snapshot-Lauf 3 (39729913772) | Datensatz `EXACT`, alle 21 Varianten abgestimmt, Positionsprüfung PASS, Referenz deterministisch, Code-Fingerabdruck = aktueller Code |
 | AG-3-Fingerabdruck, sf3-Research-Code | unverändert (`SF4-RUNNER-FINGERPRINT`) |
 
 Adversariale Fälle aus Phase G, je ein Test:
@@ -230,9 +251,9 @@ Adversariale Fälle aus Phase G, je ein Test:
 
 ### 10. Welche offenen Risiken bestehen?
 
-- **Modellabhängigkeit.** Jede Kennzahl hängt an den Annahmen in Abschnitt 5. Am stärksten wirken der Ersatz der manuellen Entscheidungen, der VCP-Stellvertreter und die Exit-Policy: Lauf 1 hatte 978 SEPA-Trades in REF, aber 364 mit nur Stop/3R und 320 mit Freeroll 2R.
+- **Modellabhängigkeit.** Jede Kennzahl hängt an den Annahmen in Abschnitt 5. Am stärksten wirken der Ersatz der manuellen Entscheidungen, der VCP-Stellvertreter und die Exit-Policy: Im maßgeblichen Lauf hat SEPA 954 Trades in REF, aber 364 mit nur Stop/3R und 391 mit Freeroll 2R; der VCP-Stellvertreter allein bewegt sie von 954 auf 1.160.
 - **Kapitalgebundenes SEPA-Buch.** Welche Signale gefüllt werden, entscheidet die neutrale Reihenfolge, nicht Minervinis Priorität. Das ist methodisch unvermeidlich, solange MIN-PROCESS-04 manuell ist.
-- **Intrabar.** 33 (SEPA) bzw. 125 (Power Play) Referenz-Trades endeten mit einem angenommenen Stop am Einstiegstag. Die optimistische Variante zeigt die Spanne.
+- **Intrabar.** 21 (SEPA) bzw. 138 (Power Play) Referenz-Trades endeten mit einem angenommenen Stop am Einstiegstag. Die optimistische Variante zeigt die Spanne.
 - **Screen-Eigenheit (unverändert).** `powerPlayScreen` akzeptiert eine NaN-Korrektur, wenn ein Tief nach dem Peak fehlt und älter als 80 Sitzungen ist. Solche Setups werden nie gehandelt (NaN-Stop). Die Korrektur gehört in einen eigenen Fachmodell-PR.
 - **Daten.** V4-D1 ist offen; IBD-RS und Schätzungen fehlen. Bis dahin ist nichts zertifizierbar.
 - **Übersetzung.** Der Originalwortlaut ist nicht geprüft; jede Grenze kann sich durch die Originalprüfung verschieben.
@@ -259,5 +280,6 @@ Commits in #842, jeweils einzeln prüfbar:
 3. Quellentreue-Review;
 4. Code-Review;
 5. neutrale Fill-Reihenfolge;
-6. Bericht.
+6. Bericht;
+7. maßgeblicher Snapshot-Lauf eingetragen.
 

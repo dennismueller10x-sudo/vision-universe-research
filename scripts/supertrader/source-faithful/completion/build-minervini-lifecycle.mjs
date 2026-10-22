@@ -25,9 +25,12 @@ const CONTRACTS = { SEPA: MINERVINI_SEPA, POWER_PLAY: MINERVINI_POWER_PLAY };
 
 /**
  * Snapshot runs of research/run-sf4-lifecycle.mjs (workflow mode sf4-lifecycle). Public counts only; metrics are sealed
- * on claude/supertrader-validation-results. Empty until a run of the current code has finished.
+ * on claude/supertrader-validation-results. Only a run whose research code fingerprint equals the current code counts
+ * (test SF4-SNAPSHOT-RUN-CURRENT-CODE); earlier runs (39726911654, 39728252900) were superseded by code changes.
  */
-export const SNAPSHOT_RUNS = Object.freeze([]);
+export const SNAPSHOT_RUNS = Object.freeze([
+  Object.freeze({ runId: '39729913772', commit: 'aad9066494d0f73683e22680e01c556ffef919d4', role: 'AUTHORITATIVE', strategies: ['SEPA', 'POWER_PLAY'], snapshotId: 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', datasetVerified: 'EXACT', datasetSha256: '3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454', researchCodeSha256: '16dbc24215fd1740b8f4598c25f806fa3fe5a9c1766ab31ff5ad368712cf87a8', engineCodeSha256: 'ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0', variantRegistrySha256: 'f13ea35016c5e7e71f7ee3b266cb60812cf24b7efa13eae190983c4fe44cbe75', allVariantsReconciled: true, referenceDeterministic: true, referenceTrades: {"SEPA": {"trades": 954, "closed": 937, "openAtDataEnd": 17}, "POWER_PLAY": {"trades": 1007, "closed": 998, "openAtDataEnd": 9}}, tradesByVariant: {"SEPA": {"REF": 954, "ALT-SETUP-TT-PIVOT": 1160, "ALT-STOP-MAXLOSS10": 632, "ALT-ORDER-STOP-MARKET": 988, "ALT-ENTRY-VOLUME-NEXT-OPEN": 738, "ALT-INTRABAR-OPTIMISTIC": 987, "ALT-EXIT-STOP-BE3R": 364, "ALT-EXIT-FREEROLL-2R": 391, "ALT-EXIT-FREEROLL-3R": 428, "ALT-RISK-0075": 1114, "ALT-RISK-025": 861}, "POWER_PLAY": {"REF": 1007, "ALT-STOP-MAXLOSS10": 833, "ALT-ORDER-STOP-MARKET": 1005, "ALT-ENTRY-VOLUME-NEXT-OPEN": 577, "ALT-INTRABAR-OPTIMISTIC": 929, "ALT-EXIT-STOP-BE3R": 514, "ALT-EXIT-FREEROLL-2R": 759, "ALT-EXIT-FREEROLL-3R": 680, "ALT-RISK-0075": 1143, "ALT-RISK-025": 787}}, metrics: 'SEALED (claude/supertrader-validation-results)' }),
+]);
 
 function readinessOf(strategy, rows, contract) {
   const count = (pred) => rows.filter(pred).length;

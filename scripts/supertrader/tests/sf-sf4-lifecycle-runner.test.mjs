@@ -80,3 +80,15 @@ test('ADV-SF4-MATRIX-NO-UPGRADE: Validator lehnt SOURCE_EXACT, undeklarierte Ann
   assert.match(await errs(tamper((r) => ({ ...r, implemented: null }))), /MECHANICAL_WITHOUT_CODE/);
   assert.match(await errs(tamper((r) => ({ ...r, contractRules: ['MIN-SF-INVENTED'] }))), /UNKNOWN_CONTRACT_RULE/);
 });
+
+test('SF4-SNAPSHOT-RUN-CURRENT-CODE: der eingetragene maßgebliche Snapshot-Lauf gehoert zum aktuellen Code und zur vorregistrierten Konfiguration', async () => {
+  const { SNAPSHOT_RUNS } = await import('../source-faithful/completion/build-minervini-lifecycle.mjs');
+  const { variantRegistrySha256 } = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const auth = SNAPSHOT_RUNS.filter((r) => r.role === 'AUTHORITATIVE');
+  assert.equal(auth.length, 1);
+  assert.equal(auth[0].researchCodeSha256, researchCodeSha256());
+  assert.equal(auth[0].engineCodeSha256, codeSha256());
+  assert.equal(auth[0].variantRegistrySha256, variantRegistrySha256());
+  assert.equal(auth[0].datasetVerified, 'EXACT'); assert.equal(auth[0].allVariantsReconciled, true);
+  assert.doesNotMatch(JSON.stringify(auth[0]), METRIC_KEYS);
+});
