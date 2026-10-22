@@ -4,7 +4,7 @@ Auftrag: Master-Prompt „UI-/UX-Finalisierung und Quant-Verständlichkeit“ vo
 Grundlage: [Visuelle Bestandsaufnahme](VU3_VISUELLE_BESTANDSAUFNAHME_2026-10-21.md), [UI-Refresh-Abschluss](VU3_UI_REFRESH_ABSCHLUSS_2026-10-21.md), [VU3 UI-System](../design/VU3_UI_SYSTEM.md).
 Bilder: [`vu3-finalisierung-2026-10-22/`](vu3-finalisierung-2026-10-22/).
 
-## Ergebnis (live geprüft, Release `248e764` + #855)
+## Ergebnis (live geprüft, Release `248e764` und `52303d9`)
 
 - **Karte:** Discover-Aktienkarte ist vollständig klickbar; Umschalter (Chart/Umsatz/Gewinn/Cashflow) behalten ihre Funktion. Live 18/18 Klickziele auf iPhone und Desktop korrekt.
 - **Hintergründe:** alle Welten hell `rgb(255,255,255)`, dunkel `rgb(0,0,0)` – auch die Heros.
@@ -184,5 +184,5 @@ Gemessen live am 22.10., 11:00 MESZ, PLTR:
 | Kartenklick Discover iPhone + Desktop | 18/18 |
 | Aktienkopf PLTR Quant/Technik/Elliott/Fundamental | 201,72 $ · Schlusskurs 21.10. |
 | Aktienkopf PLTR Supertrader während der Sitzung | 198,12 $ · Verzögert 11:30 ET – Quant bleibt in der Sitzung beim Tagesschluss (gehört zu K1) |
-| Anzeigename je Welt | siehe Nachtrag nach #855 |
+| Anzeigename je Welt (nach #855, 22.10. 18:15 MESZ) | PLTR „Palantir Technologies Class A“, NVDA „NVIDIA“ – gleich in allen sieben Welten (vorher drei Varianten) |
 | Kontrast/Überlauf (VU3-Regression) | 148 Prüfungen, 0 Befunde |
