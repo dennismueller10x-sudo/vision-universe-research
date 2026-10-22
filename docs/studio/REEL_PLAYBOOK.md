@@ -39,6 +39,14 @@ Regeln für Hooks: keine Frage ohne Betrag oder Konflikt; keine Superlative, die
 
 Je ein Punkt: (1) Betrag oder Prozent im ersten Satz, (2) Zielgruppe oder „du", (3) Konflikt, Gefahr oder Gegner, (4) Überraschung oder Widerspruch, (5) gesprochen ab 0,2 s, (6) derselbe Satz als Großtext im ersten Bild, (7) nach unter 10 s ein zweiter Spannungspunkt, (8) Re-Hook in der Mitte, (9) eigener Beweis, (10) Teilen- oder Speichern-Anlass. **Unter 7 Punkten wird nicht produziert.**
 
+### Erstes Bild
+
+Die erste Sekunde darf nie leer sein: Großzahl oder Großsatz sind bei t=0 voll da, Icons und Zeichnungen bauen sich danach auf. In der Vorlage `meta-muse` steht „10 Mio." schon im ersten Bild.
+
+### Bildsprache (ab Meta-Reel)
+
+Neben Balken und Zahlen: selbstzeichnende Linien (SVG mit `stroke-dashoffset`), Icons (Person, Chip, Einkaufswagen, Pfeil, Ort, Uhr), Handy-Mock-ups mit Kennzeichnung „ILLUSTRATION", Zeitstrahlen mit Münze, Unterstreichung bei der Kernaussage. Eigene Bilder des Owners als abgedunkelter Hintergrund (vorab zuschneiden und abdunkeln). Fremde Logos nie nachbauen, neutrale Form plus Wort in unserer Schrift.
+
 ### Was wir stoppen
 
 Erklär-Opener ohne Betrag, Logo-Intros, Whip-Pans, Zoom-Effekte, Partikel, Rahmen- und Ring-Effekte, Szenen über 12 Sekunden ohne neuen Punkt, „Folge uns" als einziger Aufruf, reine „bald verfügbar"-Botschaft ohne Nutzen, Reels ohne eigenen Beweis, ungeprüfte Zahlen.
