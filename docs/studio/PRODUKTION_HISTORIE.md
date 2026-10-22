@@ -15,7 +15,7 @@ Stand 2026-10-22. Damit eine neue Sitzung nicht bei null beginnt.
 | Tesla, Q3-Zahlen (v1) | fertig, **nicht veröffentlicht**, Vorlage `quartalszahlen` | 60 s. Owner: Mischung mit dem ARK-Kursziel gefällt nicht, besser getrennte Reels zu den Earnings-Calls |
 | Meta, Muse (v1) | vom Owner am 22.10.2026 veröffentlicht | 44 s, Hook „Wahnsinn. 10 Millionen Menschen haben in sechs Wochen einen KI-Agenten eingerichtet" (Zahl des Owners), Vorlage `meta-muse`. Owner: „Das Video ist sehr gut". Messung nach 72 h nachtragen |
 | Tesla, Robotaxi Q3 (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 44,9 s, Hook „Fast 2 Mio. Meilen. Ohne Fahrer." (Hook-Score 8), Vorlage `tesla-robotaxi`. Ein Gedanke aus dem Q3-Update (PDF des Owners), Bilder aus der Präsentation, eigener Beweis „80-mal um die Erde", Re-Hook „Aber das kostet". Stimme 0,12 USD |
-| Unitree H2-X (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 41 s, Angst-Hook „Ein Mann mit Messer. Nachts. Vor deiner Tür.", Vorlage `fremdclip`. Clip von Unitree (Sek. 30 bis 54) im Vordergrund: **Ausnahme von Regel 4 auf ausdrücklichen Wunsch des Owners**, Quelle im Bild und in der Caption. Kosten: Apify 0,15 USD, Stimme 0,10 USD |
+| Unitree H2-X (v1) | fertig 22.10.2026, vom Owner abgenommen („Das Video ist Weltklasse"), Karte offen | 41 s, Angst-Hook „Ein Mann mit Messer. Nachts. Vor deiner Tür.", Vorlage `fremdclip`. Clip von Unitree (Sek. 30 bis 54) im Vordergrund: **Ausnahme von Regel 4 auf ausdrücklichen Wunsch des Owners**, Quelle im Bild und in der Caption. Kosten: Apify 0,15 USD, Stimme 0,10 USD |
 
 Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studio/reels/`.
 
