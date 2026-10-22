@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-22T12:08:49.708Z",
+ "generatedAt": "2026-10-22T17:22:54.220Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-22T12:08:49.708Z",
+  "generatedAt": "2026-10-22T17:22:54.220Z",
   "dataAsOf": "2026-10-21",
   "previousDataAsOf": "2026-10-20",
   "schedule": {
@@ -847,13 +847,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-10-21",
-   "last": 64621.24,
-   "observations": 19223,
+   "asOf": "2026-10-22",
+   "last": 62907.84,
+   "observations": 19224,
    "changes": {
-    "1M": -0.61,
-    "3M": -2.26,
-    "1Y": 31.03
+    "1M": -3.25,
+    "3M": -5.29,
+    "1Y": 27.58
    },
    "high52w": {
     "date": "2026-06-25",
@@ -863,18 +863,18 @@
     "date": "2025-11-19",
     "value": 48537.7
    },
-   "rangePosition": 67.5,
-   "dist50": -2.51,
-   "dist200": 5.35,
+   "rangePosition": 60.3,
+   "dist50": -5.02,
+   "dist200": 2.45,
    "trend": "MIXED",
-   "drawdown52w": -10.7,
-   "vol20": 28.91,
+   "drawdown52w": -13.07,
+   "vol20": 30,
    "volContext": {
     "median": 18.5,
     "p25": 15.6,
     "p75": 23.8,
-    "samples": 1219,
-    "from": "2021-10-22",
+    "samples": 1220,
+    "from": "2021-10-23",
     "state": "HIGHER"
    },
    "roles": []
@@ -1485,9 +1485,9 @@
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-10-20",
+   "asOf": "2026-10-21",
    "last": 3.88,
-   "observations": 6609,
+   "observations": 6610,
    "changes": {
     "1M": 0,
     "3M": 25,
@@ -1502,8 +1502,8 @@
     "value": 3.62
    },
    "rangePosition": 52,
-   "vs200": 21.8,
-   "vs50": 13.5,
+   "vs200": 21.7,
+   "vs50": 13,
    "roles": []
   },
   "QQQ": {
