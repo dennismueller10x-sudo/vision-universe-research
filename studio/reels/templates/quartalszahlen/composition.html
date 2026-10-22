@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Quartalszahlen (datengesteuert)</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--bg-card:#121519;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+html.ovl,body.ovl{background:transparent!important}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#glow{inset:0;background:radial-gradient(circle at 92% 6%,rgba(200,245,49,.16),rgba(200,245,49,0) 46%)}
+#glow2{left:-300px;top:900px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.07),rgba(200,245,49,0) 62%)}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:262px}
+.hook{font-weight:900;letter-spacing:-.04em;line-height:1.0}
+.lime{color:var(--lime)} .red{color:var(--red)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.86)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+#sub{left:72px;right:72px;top:1330px;height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:56px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.85)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:36px;color:var(--ink-2)}
+.mut{color:var(--muted)}
+.scn{left:72px;top:490px;width:936px;opacity:0}
+.row{display:grid;grid-template-columns:230px 1fr 190px;align-items:center;gap:18px;margin-top:18px}
+.row .n{font-weight:800;font-size:32px;color:var(--ink-2)}
+.row .v{font-weight:900;font-size:50px;text-align:right;letter-spacing:-.03em}
+.track{height:44px;border-radius:12px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:12px;width:0}
+#demo{right:72px;top:262px;opacity:0;font-weight:800;font-size:26px;letter-spacing:.12em;color:#ff6b5e;border:2px solid #ff6b5e;border-radius:8px;padding:4px 14px}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="glow" class="abs"></div><div id="glow2" class="abs"></div>
+<div id="scrim" class="abs" style="inset:0;opacity:0;background:linear-gradient(180deg,rgba(8,8,10,.80) 0%,rgba(8,8,10,.52) 32%,rgba(8,8,10,.46) 58%,rgba(8,8,10,.70) 76%,rgba(8,8,10,.90) 100%)"></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Tesla · Q3 2026</div>
+<div id="demo" class="abs">DEMO-ZAHLEN</div>
+<div id="cam" class="abs" style="inset:0;transform-origin:540px 900px">
+ <!-- S1 Urteil + Gewinn je Aktie -->
+ <div id="s1" class="abs scn" style="top:400px">
+  <div class="kicker" style="font-size:40px;margin-bottom:8px">Quartalszahlen</div>
+  <div id="vd" class="big" style="font-size:132px;white-space:nowrap;letter-spacing:-.05em">&nbsp;</div>
+  <div class="lab" style="font-size:46px;margin-top:14px;color:var(--ink)">Gewinn je Aktie, bereinigt</div>
+  <div id="e1" style="margin-top:34px;opacity:0">
+   <div class="row"><div class="n">Vorjahr</div><div class="track"><div id="b_py" class="fill" style="background:#59606a"></div></div><div class="v" id="v_py"></div></div>
+   <div class="row"><div class="n">Erwartet</div><div class="track"><div id="b_ex" class="fill" style="background:#8b919a"></div></div><div class="v" id="v_ex"></div></div>
+   <div class="row"><div class="n lime" id="n_ac">Tesla</div><div class="track"><div id="b_ac" class="fill"></div></div><div class="v" id="v_ac"></div></div>
+  </div>
+  <div id="ah" style="margin-top:40px;opacity:0"><span class="chip" style="font-size:44px;padding:16px 36px"><b style="font-size:36px">NACHBÖRSLICH</b> <span id="ahv"></span></span></div>
+ </div>
+ <!-- S2 Umsatz -->
+ <div id="s2" class="abs scn">
+  <div style="margin-bottom:22px"><span class="chip"><b>UMSATZ</b> Milliarden US-Dollar</span></div>
+  <div id="e2" style="opacity:0">
+   <div class="row"><div class="n">Vorjahr</div><div class="track"><div id="r_py" class="fill" style="background:#59606a"></div></div><div class="v" id="rv_py"></div></div>
+   <div class="row"><div class="n">Erwartet</div><div class="track"><div id="r_ex" class="fill" style="background:#8b919a"></div></div><div class="v" id="rv_ex"></div></div>
+   <div class="row"><div class="n lime">Tesla</div><div class="track"><div id="r_ac" class="fill" style="background:#c8f531"></div></div><div class="v lime" id="rv_ac"></div></div>
+  </div>
+  <div id="rd" style="margin-top:46px;opacity:0"><div class="big" style="font-size:150px" id="rdv"></div><div class="lab" style="font-size:42px;margin-top:8px">gegenüber der Erwartung</div></div>
+ </div>
+ <!-- S3 Was zählt -->
+ <div id="s3" class="abs scn">
+  <div style="margin-bottom:22px"><span class="chip"><b>WAS ZÄHLT</b></span></div>
+  <div id="i0" class="card" style="padding:26px 34px;opacity:0"><div class="lab" style="font-size:34px" id="ik0"></div><div class="big lime" style="font-size:92px;margin-top:6px" id="iv0"></div><div class="lab mut" style="font-size:32px;margin-top:6px" id="is0"></div></div>
+  <div id="i1" class="card" style="margin-top:20px;padding:26px 34px;opacity:0"><div class="lab" style="font-size:34px" id="ik1"></div><div class="big" style="font-size:92px;margin-top:6px" id="iv1"></div><div class="lab mut" style="font-size:32px;margin-top:6px" id="is1"></div></div>
+  <div id="i2" class="card" style="margin-top:20px;padding:26px 34px;opacity:0"><div class="lab" style="font-size:34px" id="ik2"></div><div class="big" style="font-size:92px;margin-top:6px" id="iv2"></div><div class="lab mut" style="font-size:32px;margin-top:6px" id="is2"></div></div>
+ </div>
+ <!-- S4 ARK -->
+ <div id="s4" class="abs scn">
+  <div style="margin-bottom:22px"><span class="chip"><b>ARK-ZIEL</b> Bull Case 2031</span></div>
+  <div id="a1" class="card" style="padding:30px 38px;opacity:0;border-color:rgba(200,245,49,.65)"><div class="lab" style="font-size:36px;color:var(--lime)">Ziel 2031</div><div class="big lime" style="font-size:140px;margin-top:8px" id="av1"></div></div>
+  <div id="a2" class="card" style="margin-top:22px;padding:30px 38px;opacity:0"><div class="lab" style="font-size:36px">Kurs nach den Zahlen</div><div class="big" style="font-size:140px;margin-top:8px" id="av2"></div></div>
+  <div id="a3" style="margin-top:36px;opacity:0"><span class="chip" style="font-size:44px;padding:16px 36px"><b style="font-size:36px">RENDITE</b> <span id="av3"></span></span></div>
+ </div>
+ <!-- S5 Einordnung -->
+ <div id="s5" class="abs scn" style="top:560px">
+  <div class="hook" style="font-size:150px">Ein<br>Quartal.</div>
+  <div id="kp" class="hook lime" style="font-size:120px;margin-top:20px;opacity:0">Kein<br>Beweis.</div>
+ </div>
+ <!-- S6 CTA -->
+ <div id="s6" class="abs scn" style="top:480px">
+  <div style="margin-bottom:22px"><span class="chip"><b>APP</b> Vision Universe &middot; bald verf&uuml;gbar</span></div>
+  <div class="hook" style="font-size:112px">Tesla in<br>der <span class="lime">App.</span></div>
+  <div id="p1" class="card" style="margin-top:46px;padding:30px 38px;opacity:0"><div class="big" style="font-size:72px">Autonomes Fahren</div><div class="lab" style="font-size:38px;margin-top:10px">Sensorik, Software und Robotaxis</div></div>
+  <div id="p2" class="card" style="margin-top:22px;padding:30px 38px;opacity:0;border-color:rgba(200,245,49,.65)"><div class="big lime" style="font-size:72px">Humanoide Robotik</div><div class="lab" style="font-size:38px;margin-top:10px">Roboter und die KI dahinter</div></div>
+ </div>
+</div>
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+  <div class="abs lab mut" style="left:0;right:0;top:1040px;text-align:center;font-size:40px">Bald verf&uuml;gbar</div>
+</div>
+<div id="shade" class="abs" style="left:0;right:0;top:1250px;height:670px;background:linear-gradient(to bottom,rgba(8,8,10,0),rgba(8,8,10,.74) 26%,rgba(8,8,10,.74) 100%)"></div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{}, D=window.DATA||{};
+if(new URLSearchParams(location.search).get("ovl")==="1"){document.documentElement.classList.add("ovl");document.body.classList.add("ovl");}
+const fmt=(x,d=2)=>(x==null?'–':Number(x).toFixed(d).replace('.',','));
+const ev=(n,fallback)=>EV[n]!=null?EV[n]:fallback;
+// Daten einsetzen
+(function(){
+  const good=D.verdict_good!==false; const col=good?'#c8f531':'#ff6b5e';
+  $("vd").textContent=D.verdict||''; $("vd").style.color=col;
+  $("v_py").textContent=fmt(D.eps_py)+' $'; $("v_ex").textContent=fmt(D.eps_exp)+' $'; $("v_ac").textContent=fmt(D.eps_act)+' $'; $("v_ac").style.color=col;
+  $("b_ac").style.background=col;
+  const emax=Math.max(D.eps_py||0,D.eps_exp||0,D.eps_act||0)*1.1||1; window.__e={py:D.eps_py/emax,ex:D.eps_exp/emax,ac:D.eps_act/emax};
+  $("ahv").textContent=D.after_hours_pct||''; if(!D.after_hours_pct) $("ah").style.display='none'; else $("ahv").style.color=(String(D.after_hours_pct).trim().startsWith('−')||String(D.after_hours_pct).trim().startsWith('-'))?'#ff6b5e':'#c8f531';
+  $("rv_py").textContent=fmt(D.rev_py,1); $("rv_ex").textContent=fmt(D.rev_exp,2); $("rv_ac").textContent=fmt(D.rev_act,2);
+  const rmax=Math.max(D.rev_py||0,D.rev_exp||0,D.rev_act||0)*1.05||1; window.__r={py:D.rev_py/rmax,ex:D.rev_exp/rmax,ac:D.rev_act/rmax};
+  const dl=D.rev_act&&D.rev_exp?(D.rev_act/D.rev_exp-1)*100:null; const flat=dl!=null&&Math.abs(dl)<0.05; $("rdv").textContent=dl==null?'':(flat?'±0,0 %':((dl>=0?'+':'−')+fmt(Math.abs(dl),1)+' %')); $("rdv").style.color=flat?'#f4f5f1':(dl!=null&&dl<0?'#ff6b5e':'#c8f531');
+  (D.items||[]).slice(0,3).forEach((it,i)=>{$("ik"+i).textContent=it.k;$("iv"+i).textContent=it.v;$("is"+i).textContent=it.s||'';});
+  $("av1").textContent=(D.bull_target||5000).toLocaleString('de-DE')+' $';
+  $("av2").textContent=D.price_after?('≈ '+Math.round(D.price_after).toLocaleString('de-DE')+' $'):'–';
+  if(D.price_after){const r=(D.bull_target||5000)/D.price_after-1;$("av3").textContent='+'+Math.round(D.ret_pct||r*100).toLocaleString('de-DE')+' %';} else $("a3").style.display='none';
+  if(D.demo)$("demo").style.opacity=1;
+})();
+function scene(id,t,a,b,first,last){
+  const el=$(id); const fi=first?1:eo(seg(t,a,a+.4)), fo=last?0:eo(seg(t,b-.3,b));
+  el.style.opacity=first?1-seg(t,b-.25,b):(last?seg(t,a,a+.35)*(1-seg(t,b,b+.25)):Math.min(seg(t,a,a+.3),1-seg(t,b-.25,b)));
+  el.style.transform=`translateX(${(1-fi)*70-fo*70}px)`; el.style.filter=`blur(${(1-fi)*6+fo*5}px)`;
+}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  const camId=t<a2?0:t<a3?1:t<a4?2:t<a5?3:t<a6?4:5;
+  const bounds=[[0,a2],[a2,a3],[a3,a4],[a4,a5],[a5,a6],[a6,end]][camId];
+  const p=eio(seg(t,bounds[0],bounds[1]));
+  $("cam").style.transform=`scale(${1+.03*p}) translateY(${-8*p}px)`;
+  scene("s1",t,0,a2,true,false);scene("s2",t,a2,a3);scene("s3",t,a3,a4);scene("s4",t,a4,a5);scene("s5",t,a5,a6);scene("s6",t,a6,end,false,true);
+  // S1
+  const k0=Math.exp(-t*9); $("vd").style.transform=`scale(${1+.1*k0})`; $("vd").style.transformOrigin="0 50%";
+  const te=ev('eps',.9); pop("e1",t,te,24);
+  const w=(id,v,at,d=.8)=>{$(id).style.width=(100*v*eio(seg(t,at,at+d)))+'%';};
+  w("b_py",window.__e.py,te); w("b_ex",window.__e.ex,te+.15); w("b_ac",window.__e.ac,te+.35,1);
+  pop("ah",t,ev('after',te+2.5),22);
+  // S2
+  const tr=ev('rev',a2+.8); pop("e2",t,a2+.5,24);
+  w("r_py",window.__r.py,a2+.6); w("r_ex",window.__r.ex,a2+.75); w("r_ac",window.__r.ac,tr,1);
+  pop("rd",t,tr+.9,24);
+  // S3
+  pop("i0",t,ev('i1',a3+.5),30); pop("i1",t,ev('i2',a3+2),30); pop("i2",t,ev('i3',a3+3.5),30);
+  // S4
+  pop("a1",t,ev('ark',a4+.4),30); pop("a2",t,ev('price',a4+1.6),30); pop("a3",t,ev('ret',a4+2.8),22);
+  // S5
+  pop("kp",t,ev('kein',a5+1.0),30);
+  // S6
+  const q1=eo(seg(t,ev('car',a6+2)-.05,ev('car',a6+2)+.35)),q2=eo(seg(t,ev('robot',a6+4)-.05,ev('robot',a6+4)+.35));
+  $("p1").style.opacity=q1;$("p1").style.transform=`translateX(${(1-q1)*80}px)`;$("p2").style.opacity=q2;$("p2").style.transform=`translateX(${(1-q2)*80}px)`;
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=Math.min(seg(t,0,.4),1-seg(t,end,end+.3));$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=(cur&&t<end)?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+  $("shade").style.opacity=t<end?1:0;
+  const inC=(TM.clips||[]).some(c=>t>=c[0]-.05&&t<c[1]+.05);$("bg").style.opacity=inC?0:1;
+  let scv=0;(TM.clips||[]).forEach(cc=>{scv=Math.max(scv,Math.min(seg(t,cc[0]-.01,cc[0]+.25),1-seg(t,cc[1]-.2,cc[1]+.05)));});
+  $("scrim").style.opacity=scv;$("glow").style.opacity=1-scv*.7;$("glow2").style.opacity=1-scv;
+  $("glow2").style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.3)*40}px)`;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>

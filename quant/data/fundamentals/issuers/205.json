@@ -959,15 +959,15 @@
       "cik": "0001428205",
       "name": "Armour Residential REIT, Inc.",
       "sic": "6798",
-      "rawFacts": 18052,
-      "mappedFacts": 4607,
-      "unmappedFacts": 12745,
+      "rawFacts": 18295,
+      "mappedFacts": 4674,
+      "unmappedFacts": 13040,
       "calendarYears": 17,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -1015,9 +1015,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -1029,7 +1029,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -1056,14 +1056,14 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -1084,14 +1084,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -1114,51 +1114,52 @@
         }
       },
       "quality": {
-        "HIGH": 335,
-        "MEDIUM": 69
+        "HIGH": 339,
+        "MEDIUM": 70
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 404,
-        "resolvedValues": 404
+        "datableValues": 409,
+        "resolvedValues": 409
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13990,
+        "total": 14294,
         "by_severity": {
-          "INFO": 12745,
+          "INFO": 13040,
           "ERROR": 5,
-          "WARNING": 1240
+          "WARNING": 1249
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 484,
+          "CONCEPT_DISAGREEMENT": 493,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 5,
           "NEGATIVE_WHERE_IMPOSSIBLE": 6,
           "PERIOD_MISMATCH": 453,
           "RESTATEMENT_CONFLICT": 139,
           "UNEXPECTED_DURATION": 156,
-          "UNKNOWN_CONCEPT": 12745
+          "UNKNOWN_CONCEPT": 13040
         }
       },
       "latestFiling": {
-        "accession": "0001428205-26-000090",
-        "filing_date": "2026-07-22",
+        "accession": "0001428205-26-000125",
+        "filing_date": "2026-10-21",
         "form": "10-Q",
-        "periodic_filings": 68
+        "periodic_filings": 69,
+        "acceptance_datetime": "2026-10-22T00:20:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "6c45e06955e226321b619eb64f3696953163a97689e6d3de040846e3e4ff9b3f",
+      "sourceDigest": "9986f7f358c70d3f82fae8effa48b6251492eacda180364dac069c5509a52dff",
       "issuerId": "iss_cik_0001428205"
     }
   ]

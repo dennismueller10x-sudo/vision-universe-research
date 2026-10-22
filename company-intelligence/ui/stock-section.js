@@ -116,8 +116,9 @@ function render(host,payload){
  }
  if(vm.recent.length){
   const s=block(host,'Aktuelles');s.append(pill('Letzte 90 Tage'));
-  for(const e of vm.recent.slice(0,3))s.append(story(e,now));
-  if(vm.recent.length>3){const d=details(s,'Mehr anzeigen · '+(vm.recent.length-3));for(const e of vm.recent.slice(3))d.append(story(e,now));}
+  // VU3: zwei Meldungen sichtbar, alle weiteren vollständig hinter "Mehr anzeigen".
+  for(const e of vm.recent.slice(0,2))s.append(story(e,now));
+  if(vm.recent.length>2){const d=details(s,'Mehr anzeigen · '+(vm.recent.length-2));for(const e of vm.recent.slice(2))d.append(story(e,now));}
  }
  if(f?.state==='AVAILABLE'&&vm.metrics.length){
   const s=block(host,'Geschäftszahlen'),meta=node('div',undefined,'ci-section-meta');meta.append(node('p',period(f),'ci-meta'));if(f.stale)meta.append(pill('Veraltete Geschäftszahlen'));s.append(meta);
