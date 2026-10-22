@@ -1,0 +1,3289 @@
+{
+ "schema": "supertrader-sf4-minervini-lifecycle-1.0.0",
+ "matrixVersion": "sf4-minervini-lifecycle-matrix-1.0.0",
+ "lifecycleVersion": "sf4-minervini-lifecycle-1.0.0",
+ "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+ "accounting": "RESEARCH_V1",
+ "principles": [
+  "a mechanically confirmed setup is not an executable trade",
+  "a model assumption is not a source rule",
+  "a lifecycle run with substituted manual decisions is a model study, not a strategy backtest",
+  "the original strategy and the platform research portfolio policy stay separate",
+  "no live activation, no orders, no broker"
+ ],
+ "validation": {
+  "ok": true,
+  "errors": []
+ },
+ "modelAssumptions": [
+  {
+   "id": "MA-MIN-MANUAL-SUBSTITUTE",
+   "phase": "ENTRY_ELIGIBILITY",
+   "reference": "ACCEPT_AS_MODEL_ASSUMPTION (simulation only)",
+   "alternatives": [],
+   "why": "relative priority, earnings quality, VCP validity (SEPA) and the strong-volume judgment (Power Play) are manual by the source; a simulation can only run if they are substituted, so every simulated trade is a MODEL study, never a strategy backtest. Product outputs never substitute (state ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW)."
+  },
+  {
+   "id": "MA-MIN-SEPA-PIVOT",
+   "phase": "SETUP_QUALIFICATION",
+   "reference": "high of the last confirmed swing high of the base (sf3 VCP convention, +-5 sessions)",
+   "alternatives": [],
+   "why": "MIN-VCP-07 names the pivot, not its construction"
+  },
+  {
+   "id": "MA-MIN-SEPA-SETUP-PROXY",
+   "phase": "SETUP_QUALIFICATION",
+   "reference": "VCP_FOOTPRINT_STRICT: >= 2 contractions, contracting left to right, last contraction volume below the 50-day mean",
+   "alternatives": [
+    "TREND_TEMPLATE_PIVOT_ONLY"
+   ],
+   "why": "VCP validity is manual (MIN-MR-VCP); counts and halving are typical, not limits (MIN-VCP-02/03); the strict proxy narrows the source (flat bases MIN-VCP-04 are excluded), the loose one widens it"
+  },
+  {
+   "id": "MA-MIN-STOP-PLACEMENT",
+   "phase": "INITIAL_STOP",
+   "reference": "STRUCTURE: SEPA lowest low of the last contraction, Power Play lowest low of the consolidation",
+   "alternatives": [
+    "MAX_PLANNED_LOSS_10"
+   ],
+   "why": "MIN-RISK-01 requires a stop before the entry and MIN-MM-STOP-02 bounds it at 10 %; the placement inside the bound is the reviewer's"
+  },
+  {
+   "id": "MA-MIN-ORDER-TYPE",
+   "phase": "ENTRY_EXECUTION",
+   "reference": "BUY_STOP_LIMIT: buy stop at the pivot, limit at stop / 0.9 (the price at which the planned loss reaches 10 %)",
+   "alternatives": [
+    "BUY_STOP_MARKET"
+   ],
+   "why": "the sources give no order type; the limit is the consequence of MIN-MM-STOP-02 for a gap; the market variant keeps gap fills and flags the exceeded planned loss"
+  },
+  {
+   "id": "MA-MIN-ENTRY-TIMING",
+   "phase": "ENTRY_EXECUTION",
+   "reference": "INTRADAY_PRICE_FIRST: the buy stop fills on the breakout bar (MIN-MM-VOL-EX)",
+   "alternatives": [
+    "NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE"
+   ],
+   "why": "MIN-VCP-07 \"with increasing volume\" is a strong preference; daily bars cannot know the volume of the breakout bar at the fill, so the volume-confirmed reading enters at the next open (volume above the 50-day mean, one of the two sf3 readings)"
+  },
+  {
+   "id": "MA-MIN-INTRABAR-ORDER",
+   "phase": "ENTRY_EXECUTION",
+   "reference": "PESSIMISTIC: on an intraday pivot fill with a low at or below the stop on the same bar the stop is assumed hit after the fill",
+   "alternatives": [
+    "OPTIMISTIC"
+   ],
+   "why": "a daily bar does not show whether the low came before or after the pivot touch; gap and limit fills are unambiguous and not affected"
+  },
+  {
+   "id": "MA-MIN-SETUP-VALIDITY",
+   "phase": "ENTRY_ELIGIBILITY",
+   "reference": "RE_EVALUATED_EACH_CLOSE: an order is valid for the next session only and is re-armed while the setup holds at the close",
+   "alternatives": [],
+   "why": "no setup lifetime in #709; re-evaluation adds no number and invalidates a setup as soon as its own definition fails (Trend Template, correction, pivot exceeded)"
+  },
+  {
+   "id": "MA-MIN-SIGNAL-ORDER",
+   "phase": "POSITION_SIZING",
+   "reference": "SECURITY_ID: simultaneous fills are booked in security-id order",
+   "alternatives": [],
+   "why": "relative priority is manual (MIN-PROCESS-04); the neutral order is deterministic, capital-constrained rejections are counted so its influence stays visible"
+  },
+  {
+   "id": "MA-MIN-EXIT-POLICY",
+   "phase": "POSITION_MANAGEMENT",
+   "reference": "STOP_BE3R_MA50: initial stop, stop to break-even at 3R on a close (MIN-RISK-05), after break-even a close below MA50 exits at the next open (MIN-TTC-TRAIL / MIN-MM-SELL-02)",
+   "alternatives": [
+    "STOP_BE3R",
+    "FREEROLL_2R",
+    "FREEROLL_3R"
+   ],
+   "why": "sell rules are manual (MIN-SF-SELL); the reference uses only the mechanical parts of the printed sell guides; the free-roll is the OPTIONAL MIN-TTC-FREEROLL example at both printed ends of 2-3R"
+  },
+  {
+   "id": "MA-MIN-STAGE2-TREND-TEMPLATE",
+   "phase": "SETUP_QUALIFICATION",
+   "reference": "the Stage 2 context of a base (MIN-BASE-01) is read as \"Trend Template 1-7 holds on the setup close\"",
+   "alternatives": [],
+   "why": "MIN-BASE-01 names the Stage 2 context without a mechanical test; the Trend Template is the source's own upstream qualification (MIN-PROCESS-01)"
+  },
+  {
+   "id": "MA-MIN-PP-PIVOT",
+   "phase": "SETUP_QUALIFICATION",
+   "reference": "Power Play pivot = run-up high (highest high of the consolidation), as in powerPlayClassify",
+   "alternatives": [],
+   "why": "MIN-PP-02..05 describe run-up and consolidation, not the pivot"
+  },
+  {
+   "id": "MA-MIN-PP-ELIGIBLE-CLASSES",
+   "phase": "ENTRY_ELIGIBILITY",
+   "reference": "only CONFIRMED_MECHANICAL_SETUP is simulated; MANUAL_REVIEW_SETUP and DATA_BLOCKED_SETUP stay blocked",
+   "alternatives": [],
+   "why": "no automatic upgrade of manual or data-blocked setups (owner decision 2026-10-21); a confirmed setup still needs the separate eligibility"
+  },
+  {
+   "id": "MA-MIN-RESEARCH-UNIVERSE",
+   "phase": "ENTRY_ELIGIBILITY",
+   "reference": "VU_TOURNAMENT_UNIVERSE_705 at the prior session (raw close >= 5, 20-day dollar volume >= 1 million)",
+   "alternatives": [],
+   "why": "MIN-MM-LIQ-01 and MIN-MM-PRC-01 are context and preferences without a hard floor; the pre-registered research universe is shared by every source-faithful method"
+  },
+  {
+   "id": "MA-MIN-STOP-FILL",
+   "phase": "INITIAL_STOP",
+   "reference": "a low at or below the stop exits at min(open, stop) (gap through the stop: the open)",
+   "alternatives": [],
+   "why": "MIN-MM-STOP-01 executes the stop regardless of volume; the fill on a daily bar is the sf3 convention (sellEvidence)"
+  },
+  {
+   "id": "MA-MIN-COSTS",
+   "phase": "ENTRY_EXECUTION",
+   "reference": "10 bps slippage per side, 1 bp commission (research-v1 convention of the snapshot runs)",
+   "alternatives": [],
+   "why": "no costs in the sources; identical to the Turtle research runs so that methods stay comparable"
+  },
+  {
+   "id": "MA-MIN-ACCOUNTING-RESEARCH-V1",
+   "phase": "TRADE_ACCOUNTING",
+   "reference": "research-v1: orders only on real source bars, stale limit 5 sessions -> SECURITY_UNAVAILABLE, economic delisting by the S0 scenario, dividends on held shares, ledger replay",
+   "alternatives": [],
+   "why": "platform accounting (validation/accounting-contract.mjs), not a Minervini rule"
+  },
+  {
+   "id": "MA-MIN-RISK-FRACTION",
+   "phase": "POSITION_SIZING",
+   "reference": "0.0125 of equity (the boundary shared by MIN-MM-SIZE-03 and MIN-MM-SIZE-04)",
+   "alternatives": [
+    "0.0075",
+    "0.025"
+   ],
+   "why": "the risk per trade is the reviewer's; the printed ranges are context (0.75-1.25 % average, 1.25-2.5 % typical, at most 2.5 %)"
+  }
+ ],
+ "referenceConfig": {
+  "manualSubstitute": "ACCEPT_AS_MODEL_ASSUMPTION",
+  "sepaSetupProxy": "VCP_FOOTPRINT_STRICT",
+  "ppClasses": [
+   "CONFIRMED_MECHANICAL_SETUP"
+  ],
+  "stopPlacement": "STRUCTURE",
+  "orderType": "BUY_STOP_LIMIT",
+  "entryTiming": "INTRADAY_PRICE_FIRST",
+  "intrabarOrder": "PESSIMISTIC",
+  "exitPolicy": "STOP_BE3R_MA50",
+  "riskFraction": 0.0125
+ },
+ "runVariants": [
+  {
+   "id": "REF",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {}
+  },
+  {
+   "id": "ALT-SETUP-TT-PIVOT",
+   "strategies": [
+    "SEPA"
+   ],
+   "changes": {
+    "sepaSetupProxy": "TREND_TEMPLATE_PIVOT_ONLY"
+   }
+  },
+  {
+   "id": "ALT-STOP-MAXLOSS10",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "stopPlacement": "MAX_PLANNED_LOSS_10"
+   }
+  },
+  {
+   "id": "ALT-ORDER-STOP-MARKET",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "orderType": "BUY_STOP_MARKET"
+   }
+  },
+  {
+   "id": "ALT-ENTRY-VOLUME-NEXT-OPEN",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "entryTiming": "NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE"
+   }
+  },
+  {
+   "id": "ALT-INTRABAR-OPTIMISTIC",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "intrabarOrder": "OPTIMISTIC"
+   }
+  },
+  {
+   "id": "ALT-EXIT-STOP-BE3R",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "exitPolicy": "STOP_BE3R"
+   }
+  },
+  {
+   "id": "ALT-EXIT-FREEROLL-2R",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "exitPolicy": "FREEROLL_2R"
+   }
+  },
+  {
+   "id": "ALT-EXIT-FREEROLL-3R",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "exitPolicy": "FREEROLL_3R"
+   }
+  },
+  {
+   "id": "ALT-RISK-0075",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "riskFraction": 0.0075
+   }
+  },
+  {
+   "id": "ALT-RISK-025",
+   "strategies": [
+    "SEPA",
+    "POWER_PLAY"
+   ],
+   "changes": {
+    "riskFraction": 0.025
+   }
+  }
+ ],
+ "portfolioPolicy": {
+  "id": "VU-MIN-EQUITY-RESEARCH-PORTFOLIO",
+  "version": "1.0.0",
+  "separateFromOriginalStrategy": true,
+  "initialCapital": 100000,
+  "cashOnly": true,
+  "maxPositionWeight": 0.25,
+  "maxOpenPositions": 20,
+  "slippageBps": 10,
+  "commissionBps": 1,
+  "terminalScenario": "S0_LAST_PRICE",
+  "notModelled": [
+   "exposure build-up from pilot buys (MIN-RISK-02/03, MIN-MM-SIZE-02)",
+   "risk reduction after poor own results (MIN-RISK-04)",
+   "margin and exposure in difficult markets (MIN-RISK-07/08)",
+   "typical 4-6 positions (MIN-RISK-09) and concentration (MIN-TTC-CONCENTRATION): preferences, reported as diagnostics",
+   "exit liquidity (MIN-MM-LIQ-01): participation is reported, not limited",
+   "pyramiding (MIN-ADD-01, MIN-MM-ADD-02/03): manual",
+   "earnings holding (MIN-MM-EARN-HOLD): manual"
+  ]
+ },
+ "strategies": {
+  "SEPA": {
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "candidateId": "C06",
+   "matrix": [
+    {
+     "id": "SQ-TREND-TEMPLATE",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "Trend Template criteria 1-7",
+     "psr709": [
+      "MIN-TT-01",
+      "MIN-TT-02",
+      "MIN-TT-03",
+      "MIN-TT-04",
+      "MIN-TT-05",
+      "MIN-TT-06",
+      "MIN-TT-07",
+      "MIN-PROCESS-01"
+     ],
+     "contractRules": [
+      "MIN-SF-TT-1",
+      "MIN-SF-TT-2",
+      "MIN-SF-TT-3",
+      "MIN-SF-TT-4",
+      "MIN-SF-TT-5",
+      "MIN-SF-TT-6",
+      "MIN-SF-TT-7",
+      "MIN-SF-PROCESS"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#trendTemplate",
+      "tests": [
+       "sf-minervini: GC-MIN-TT-1",
+       "sf-minervini-lifecycle: SF4-SEPA-SERIES-EQUIVALENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot) (>= 221 sessions)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "printed thresholds used as bounds; open decision: original English wording (translation-only, MEDIUM)",
+     "sources": [
+      "B12 PDF 114 (HARD, MEDIUM)",
+      "B12 PDF 61 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-RS-IBD",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "IBD RS rating at least 70",
+     "psr709": [
+      "MIN-TT-08",
+      "MIN-TT-08P"
+     ],
+     "contractRules": [
+      "MIN-SF-TT-8"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#createRsPercentileProxy",
+      "tests": [
+       "sf-minervini-components: GC-MIN-RS-PROXY-PIT",
+       "sf-minervini-lifecycle: ADV-MLC-FUNDAMENTALS-AND-RS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "IBD RS rating (proprietary, not available)"
+     ],
+     "pit": "VU percentile PIT; IBD not available",
+     "mechanical": "MECHANICAL",
+     "class": "DATA_BLOCKED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "BLOCKED",
+     "note": "the VU percentile is a proxy, never a gate and never shown as the IBD rating",
+     "sources": [
+      "B12 PDF 115 (HARD, MEDIUM)",
+      "B12 PDF 115 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-FUNDAMENTALS",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "EPS and sales growth, earnings quality",
+     "psr709": [
+      "MIN-EPS-01",
+      "MIN-EPS-02",
+      "MIN-QUALITY-01",
+      "MIN-QUALITY-02",
+      "MIN-QUALITY-03"
+     ],
+     "contractRules": [
+      "MIN-SF-FUNDAMENTALS"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#fundamentalEvidence",
+      "tests": [
+       "sf-minervini-components: GC-MIN-FUNDAMENTALS-PIT",
+       "sf-minervini-lifecycle: ADV-MLC-FUNDAMENTALS-AND-RS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "sec-pit r12 quarterly EPS and revenue (first-filed date)"
+     ],
+     "pit": "PIT: filed strictly before the session",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "no threshold (MIN-EPS-02); never a gate (MIN-PROCESS-15)",
+     "sources": [
+      "B12 PDF 177 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 177 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 196 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 197 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 198 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-ESTIMATES",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "surprises, revisions, guidance",
+     "psr709": [
+      "MIN-EPS-05",
+      "MIN-EPS-06",
+      "MIN-EPS-07",
+      "MIN-EPS-08",
+      "MIN-EPS-09",
+      "MIN-PROCESS-06",
+      "MIN-PROCESS-07",
+      "MIN-PROCESS-08"
+     ],
+     "contractRules": [
+      "MIN-SF-PRIORITY"
+     ],
+     "implemented": null,
+     "missing": null,
+     "data": [
+      "analyst estimates, surprises, guidance history (paid, not in the snapshot)"
+     ],
+     "pit": "not available",
+     "mechanical": "QUALITATIVE",
+     "class": "DATA_BLOCKED",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "BLOCKED",
+     "note": null,
+     "sources": [
+      "B12 PDF 170 (PREFERENCE, MEDIUM)",
+      "B12 PDF 171 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 174 (PREFERENCE, MEDIUM)",
+      "B12 PDF 174 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 62 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-PRIORITY",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "manual relative priority of the remaining names",
+     "psr709": [
+      "MIN-PROCESS-04",
+      "MIN-PROCESS-05",
+      "MIN-PROCESS-09",
+      "MIN-PROCESS-10",
+      "MIN-PROCESS-11"
+     ],
+     "contractRules": [
+      "MIN-SF-PRIORITY"
+     ],
+     "implemented": null,
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 61 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 62 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-STAGE2-BASE",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "the base is judged in an existing Stage 2 uptrend",
+     "psr709": [
+      "MIN-BASE-01"
+     ],
+     "contractRules": [
+      "MIN-SF-VCP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#sepaSetupFromTrendTemplate",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-STAGE2-TREND-TEMPLATE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 262 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-VCP-CONTRACTIONS",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "volatility contraction from left to right (counts and halving typical, flat bases allowed)",
+     "psr709": [
+      "MIN-VCP-01",
+      "MIN-VCP-02",
+      "MIN-VCP-03",
+      "MIN-VCP-04",
+      "MIN-BASE-04"
+     ],
+     "contractRules": [
+      "MIN-SF-VCP"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#vcpContractions",
+      "tests": [
+       "sf-minervini-components: GC-MIN-VCP-CONTRACTIONS",
+       "sf-minervini-components: ADV-MIN-VCP-EXPANDING"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-MIN-SEPA-SETUP-PROXY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "validity is the reviewer's; the simulation uses a declared proxy",
+     "sources": [
+      "B12 PDF 264 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 265 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 266 (PREFERENCE, MEDIUM)",
+      "B12 PDF 266 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 268 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-VCP-VOLUME",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "volume dry-up in the tight areas, last contraction below the 50-day mean, up vs down volume",
+     "psr709": [
+      "MIN-VCP-05",
+      "MIN-VCP-06",
+      "MIN-VCP-10"
+     ],
+     "contractRules": [
+      "MIN-SF-VCP"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#vcpContractions",
+      "tests": [
+       "sf-minervini-components: GC-MIN-VCP-CONTRACTIONS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-MIN-SEPA-SETUP-PROXY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": null,
+     "sources": [
+      "B12 PDF 273 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 301 (PREFERENCE, MEDIUM)",
+      "B12 PDF 291 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-PIVOT",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "pivot of the base (confirmed swing high, not yet exceeded)",
+     "psr709": [
+      "MIN-VCP-07"
+     ],
+     "contractRules": [
+      "MIN-SF-PIVOT"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#sepaSetupFromTrendTemplate",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PIVOT-BEFORE-CONTRACTIONS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SEPA-PIVOT"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-BREAKOUT",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "breakout confirmation over the pivot",
+     "psr709": [
+      "MIN-VCP-07",
+      "MIN-PRICE-01",
+      "MIN-VCP-09"
+     ],
+     "contractRules": [
+      "MIN-SF-PIVOT"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#pivotBreakout",
+      "tests": [
+       "sf-minervini-components: GC-MIN-PIVOT-VOLUME",
+       "sf-minervini-lifecycle: ADV-MLC-BREAKOUT-NO-VOLUME"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ENTRY-TIMING"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 256 (HARD, MEDIUM)",
+      "B12 PDF 285 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-MARKET",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "market context (own setups as barometer, difficult markets)",
+     "psr709": [
+      "MIN-LEAD-01",
+      "MIN-LEAD-02",
+      "MIN-RISK-07"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "no mechanical market filter in #709; not a gate",
+     "data": [
+      "research-universe breadth (market-breadth.mjs, proxy)"
+     ],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 249 (PREFERENCE, MEDIUM)",
+      "B12 PDF 247 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 413 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SQ-CHEAT-PULLBACK",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "3C / cheat entry and pullback entries (optional variants)",
+     "psr709": [
+      "MIN-CHEAT-01",
+      "MIN-CHEAT-02",
+      "MIN-CHEAT-03",
+      "MIN-CHEAT-04",
+      "MIN-MM-PULL-01",
+      "MIN-MM-PULL-02"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "optional variants (contract exclusions); the pause pattern needs judgment; not simulated",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 326–330 (OPTIONAL, MEDIUM)",
+      "B12 PDF 330–332 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 331–332 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 330 (HARD, MEDIUM)",
+      "B07 PDF 65; respective Minervini answer (OPTIONAL, MEDIUM)",
+      "B07 PDF 65; respective Minervini answer (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-PRICE-CONFIRMATION",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "price confirmation before the entry: a buy stop at the pivot, no order when the prior close is already at or above it",
+     "psr709": [
+      "MIN-PRICE-01",
+      "MIN-VCP-07"
+     ],
+     "contractRules": [
+      "MIN-SF-PIVOT"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PIVOT-BEFORE-CONTRACTIONS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "translation-unverified wording",
+     "sources": [
+      "B12 PDF 256 (HARD, MEDIUM)",
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-STOP-BEFORE-ENTRY",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "a stop below the pivot exists before the order (MIN-RISK-01)",
+     "psr709": [
+      "MIN-RISK-01"
+     ],
+     "contractRules": [
+      "MIN-SF-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B12 PDF 61 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-MAX-PLANNED-LOSS",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "planned loss at the pivot at most 10 % (MIN-MM-STOP-02); otherwise blocked",
+     "psr709": [
+      "MIN-MM-STOP-02"
+     ],
+     "contractRules": [
+      "MIN-SF-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS",
+       "sf-minervini: GC-MIN-STOP-10PCT-FLAG"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "the contract keeps the 10 % as a flag of the reviewer stop; the lifecycle uses it as the printed maximum (translation-unverified)",
+     "sources": [
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-SETUP-LIFETIME",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "how long a setup stays valid and when it is invalidated before the execution",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD"
+      ]
+     },
+     "missing": "no setup lifetime in #709 (SOURCE_BLOCKED as a number); re-evaluation at every close adds none",
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "EL-UNIVERSE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "liquidity and price floor of the candidate",
+     "psr709": [
+      "MIN-MM-LIQ-01",
+      "MIN-MM-PRC-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-HALT-AND-MISSING-BARS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)",
+      "raw close and raw volume"
+     ],
+     "pit": "PIT: prior session",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-RESEARCH-UNIVERSE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 18; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 21; respective Minervini answer (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-MANUAL-DECISIONS",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "open manual decisions of the setup (listed on every eligibility)",
+     "psr709": [
+      "MIN-PROCESS-04",
+      "MIN-QUALITY-01",
+      "MIN-VCP-01",
+      "MIN-TT-08"
+     ],
+     "contractRules": [
+      "MIN-SF-PRIORITY",
+      "MIN-SF-FUNDAMENTALS",
+      "MIN-SF-VCP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-NOT-A-STRATEGY"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-MIN-MANUAL-SUBSTITUTE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": "product: ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW; simulation: substituted by the declared model assumption, therefore a MODEL study",
+     "sources": [
+      "B12 PDF 61 (CONTEXTUAL, MEDIUM)",
+      "B12 PDF 196 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 264 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 115 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EL-DUPLICATE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "no second entry while a position is open; adds are manual",
+     "psr709": [
+      "MIN-ADD-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-DUPLICATE-SIGNALS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "the duplicate block is mechanical; the add decision itself stays manual",
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EX-SIGNAL-TIME",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "signal on the setup close, order valid for the next session only",
+     "psr709": [
+      "MIN-VCP-07"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD",
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EX-VOLUME",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "\"with increasing volume\" vs \"buy on price first, judge volume afterwards\"",
+     "psr709": [
+      "MIN-VCP-07",
+      "MIN-MM-VOL-EX",
+      "MIN-MM-VOL-RET",
+      "MIN-MM-VOL-NUM"
+     ],
+     "contractRules": [
+      "MIN-SF-PIVOT"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#breakoutVolumeVs50d",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-BREAKOUT-NO-VOLUME",
+       "sf-minervini-components: GC-MIN-PIVOT-VOLUME"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ENTRY-TIMING"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 44; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 43; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 45; respective Minervini answer (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EX-ORDER-AND-GAP",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "order type and gap over the entry",
+     "psr709": [
+      "MIN-MM-STOP-02"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#fillBuyOrder",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-OVER-ENTRY",
+       "sf-minervini-lifecycle: ADV-MLC-NOT-EXECUTABLE-ORDER"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: the bar of the fill",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ORDER-TYPE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "EX-INTRABAR",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "entry and stop inside the same daily bar",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#fillBuyOrder",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-ENTRY-AND-STOP-SAME-BAR"
+      ]
+     },
+     "missing": "intraday sequence: DATA_BLOCKED for the snapshot; both readings run",
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)",
+      "intraday order (not in the snapshot)"
+     ],
+     "pit": "unknown inside the bar",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-INTRABAR-ORDER"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "EX-COSTS",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "slippage and commission",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#EQUITY_RESEARCH_PORTFOLIO_POLICY",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-COSTS"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "ST-PLACEMENT",
+     "phase": "INITIAL_STOP",
+     "condition": "where the stop is placed inside the 10 % bound",
+     "psr709": [
+      "MIN-RISK-01",
+      "MIN-MM-STOP-02",
+      "MIN-TTC-AVGLOSS"
+     ],
+     "contractRules": [
+      "MIN-SF-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#stopFor",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-STOP-PLACEMENT"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "reviewer decision in the source",
+     "sources": [
+      "B12 PDF 61 (HARD, MEDIUM)",
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)",
+      "B03 PDF 194; printed 187 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "ST-EXECUTION",
+     "phase": "INITIAL_STOP",
+     "condition": "a stop hit exits regardless of the day's volume",
+     "psr709": [
+      "MIN-MM-STOP-01"
+     ],
+     "contractRules": [
+      "MIN-SF-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP",
+       "sf-minervini-components: GC-MIN-STOP-EXECUTION"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: the bar of the exit",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B07 PDF 75; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "ST-GAP-FILL",
+     "phase": "INITIAL_STOP",
+     "condition": "fill when the price gaps through the stop",
+     "psr709": [
+      "MIN-MM-STOP-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-STOP-FILL"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 75; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SZ-RISK",
+     "phase": "POSITION_SIZING",
+     "condition": "shares from the accepted equity risk and the stop distance",
+     "psr709": [
+      "MIN-TTC-SIZING",
+      "MIN-MM-SIZE-03",
+      "MIN-MM-SIZE-04"
+     ],
+     "contractRules": [
+      "MIN-SF-SIZE"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL",
+       "sf-minervini-components: GC-MIN-SIZING"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-RISK-FRACTION"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "the formula is source-bounded (MIN-TTC-SIZING); the risk fraction is the reviewer's",
+     "sources": [
+      "B03 PDF 193; printed 186 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 29; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 70; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SZ-MAX-WEIGHT",
+     "phase": "POSITION_SIZING",
+     "condition": "at most 25 % of equity per position",
+     "psr709": [
+      "MIN-MM-SIZE-01"
+     ],
+     "contractRules": [
+      "MIN-SF-SIZE"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B07 PDF 30; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SZ-CAPITAL",
+     "phase": "POSITION_SIZING",
+     "condition": "available cash, at most 20 open positions, simultaneous signals",
+     "psr709": [
+      "MIN-RISK-10",
+      "MIN-PROCESS-04"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL",
+       "sf-minervini-lifecycle: SF4-DETERMINISM"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SIGNAL-ORDER"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "20 positions is the 2013 upper bound (strong preference); the order of simultaneous fills replaces the manual priority",
+     "sources": [
+      "B12 PDF 415 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 61 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "SZ-EXPOSURE",
+     "phase": "POSITION_SIZING",
+     "condition": "pilot buys, exposure build-up and reduction, margin",
+     "psr709": [
+      "MIN-RISK-02",
+      "MIN-RISK-03",
+      "MIN-RISK-04",
+      "MIN-RISK-08",
+      "MIN-MM-SIZE-02"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "no mechanical rule; not modelled (EQUITY_RESEARCH_PORTFOLIO_POLICY.notModelled)",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 408 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 414 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 31; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PM-BREAKEVEN",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "at about 3R raise the stop at least to break-even (\"almost always\")",
+     "psr709": [
+      "MIN-RISK-05"
+     ],
+     "contractRules": [
+      "MIN-SF-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE",
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: close, effective next session",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "no absolute 3R obligation in the source; part of the reference exit policy, absent in the free-roll variants",
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PM-ADD",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "adds after proof of profit, bringing a starter position to full size",
+     "psr709": [
+      "MIN-ADD-01",
+      "MIN-MM-ADD-02",
+      "MIN-MM-ADD-03"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "no level or size given; not simulated",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 66; respective Minervini answer (OPTIONAL, MEDIUM)",
+      "B07 PDF 86; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PM-TRAIL",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "after break-even a later profit stop just below MA50 (early leaders)",
+     "psr709": [
+      "MIN-TTC-TRAIL",
+      "MIN-MM-SELL-02"
+     ],
+     "contractRules": [
+      "MIN-SF-SELL"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: close, exit next open",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "\"just below\" and \"sometimes wait for the weekly close\" are not mechanised: a daily close below MA50 is the model reading",
+     "sources": [
+      "B03 PDF 221; printed 214 (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 93; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PM-BACKSTOP-EARNINGS",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "backstop on a chosen profit area, holding over earnings",
+     "psr709": [
+      "MIN-TTC-BACKSTOP",
+      "MIN-MM-EARN-HOLD",
+      "MIN-EPS-04"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "reviewer choice; earnings dates are not in the snapshot as a PIT calendar",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B03 PDF 223; printed 216 (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 95; respective Minervini answer (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 178 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "XC-SELL-STRENGTH",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "sell into strength, keep a remainder of early leaders, no universal target",
+     "psr709": [
+      "MIN-RISK-06",
+      "MIN-MM-SELL-01",
+      "MIN-MM-SELL-03",
+      "MIN-TTC-EARLY"
+     ],
+     "contractRules": [
+      "MIN-SF-SELL"
+     ],
+     "implemented": null,
+     "missing": "no mechanical rule (MIN-MM-SELL-03: no fixed target)",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 410 (PREFERENCE, MEDIUM)",
+      "B07 PDF 92; respective Minervini answer (PREFERENCE, MEDIUM)",
+      "B07 PDF 90; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B03 PDF 197; printed 190 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "XC-FREEROLL",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "half at 2-3R with a break-even stop (optional example)",
+     "psr709": [
+      "MIN-TTC-FREEROLL"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "research variants FREEROLL_2R / FREEROLL_3R, not activated",
+     "sources": [
+      "B03 PDF 222; printed 215 (OPTIONAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "XC-BEHAVIOUR",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "accumulating violations, heavy later selling volume",
+     "psr709": [
+      "MIN-MM-SELL-04",
+      "MIN-MM-VOL-RET"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "violations are not enumerated in #709",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B07 PDF 91; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 43; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "XC-REENTRY",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "re-entry after an exit only through a new low-risk setup, no universal lock-out",
+     "psr709": [
+      "MIN-MM-REEN-01",
+      "MIN-MM-REEN-02"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 64; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 65; respective Minervini answer (OPTIONAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "XC-CONFLICT",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "conflicting exit signals on one bar",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "declared precedence: next-open exit > stop > close rules; full exit dominates partial",
+     "sources": []
+    },
+    {
+     "id": "AC-LEDGER",
+     "phase": "TRADE_ACCOUNTING",
+     "condition": "ledger, dividends, dust, reconciliation, realized and unrealized P&L, open position at the data end",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE",
+       "sf-minervini-lifecycle: SF4-DETERMINISM"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "AC-DATA-EVENTS",
+     "phase": "TRADE_ACCOUNTING",
+     "condition": "halts and missing bars, delisting, corporate actions",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-HALT-AND-MISSING-BARS",
+       "sf-minervini-lifecycle: ADV-MLC-DELISTING",
+       "sf-minervini-lifecycle: ADV-MLC-CORPORATE-ACTION"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "snapshot terminal causes",
+      "split-adjusted prices (ADR-002)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "V4-D1 (undeclared reverse splits, about 1 % of security-months) is inherited and open; results stay DIAGNOSTIC_NOT_CERTIFIED",
+     "sources": []
+    },
+    {
+     "id": "BD-MEASUREMENT",
+     "phase": "BACKTEST_DIAGNOSTICS",
+     "condition": "what a snapshot run may be called",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/run-sf4-lifecycle.mjs#lifecyclePart",
+      "tests": [
+       "sf-sf4-lifecycle-runner: SF4-RUNNER-PUBLIC-COUNTS-ONLY"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-MANUAL-SUBSTITUTE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST: manual source rules are substituted, so no run is a strategy backtest",
+     "sources": []
+    },
+    {
+     "id": "RD-PRODUCT",
+     "phase": "STRATEGY_READINESS",
+     "condition": "product states: setup, entry possible / blocked, simulated entry, stop, risk, size, position, exit reason, data quality, manual review",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-trade-view.mjs#tradeView",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-VIEW-SIMULATED-NOT-A-POSITION",
+       "sf-minervini-lifecycle: ADV-MLC-FUNDAMENTALS-AND-RS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "data contract only; no UI change, never a depot position, never a buy",
+     "sources": []
+    }
+   ],
+   "readiness": {
+    "sourceFidelity": {
+     "byClass": {
+      "SOURCE_EXACT": 0,
+      "SOURCE_BOUNDED": 7,
+      "MODEL_ASSUMPTION": 21,
+      "MANUAL_REVIEW": 14,
+      "DATA_BLOCKED": 2,
+      "SOURCE_BLOCKED": 0
+     },
+     "sourceExact": 0,
+     "translationOnlySource": true,
+     "contractVersion": "1.2.0",
+     "contractRuleStatuses": {
+      "SOURCE_DERIVED": 9,
+      "DATA_BLOCKED": 1,
+      "MANUAL_REVIEW_REQUIRED": 7
+     },
+     "statement": "no Minervini rule is SOURCE_EXACT (#709: MEDIUM confidence, wording only via translation); printed numbers are used as bounds"
+    },
+    "mechanicalCompleteness": {
+     "phases": {
+      "SETUP_QUALIFICATION": {
+       "rows": 12,
+       "mechanical": 1,
+       "underModelAssumption": 3,
+       "evidence": 3,
+       "manual": 3,
+       "blocked": 2
+      },
+      "ENTRY_ELIGIBILITY": {
+       "rows": 7,
+       "mechanical": 4,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 1,
+       "blocked": 0
+      },
+      "ENTRY_EXECUTION": {
+       "rows": 5,
+       "mechanical": 0,
+       "underModelAssumption": 5,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "INITIAL_STOP": {
+       "rows": 3,
+       "mechanical": 1,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "POSITION_SIZING": {
+       "rows": 4,
+       "mechanical": 1,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 1,
+       "blocked": 0
+      },
+      "POSITION_MANAGEMENT": {
+       "rows": 4,
+       "mechanical": 0,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 2,
+       "blocked": 0
+      },
+      "EXIT_CONDITIONS": {
+       "rows": 5,
+       "mechanical": 0,
+       "underModelAssumption": 3,
+       "evidence": 0,
+       "manual": 2,
+       "blocked": 0
+      },
+      "TRADE_ACCOUNTING": {
+       "rows": 2,
+       "mechanical": 0,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "BACKTEST_DIAGNOSTICS": {
+       "rows": 1,
+       "mechanical": 0,
+       "underModelAssumption": 1,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "STRATEGY_READINESS": {
+       "rows": 1,
+       "mechanical": 0,
+       "underModelAssumption": 0,
+       "evidence": 1,
+       "manual": 0,
+       "blocked": 0
+      }
+     },
+     "executablePhases": 9,
+     "operationalPhases": 9,
+     "lifecycle": "MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS",
+     "modelAssumptionsUsed": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1",
+      "MA-MIN-COSTS",
+      "MA-MIN-ENTRY-TIMING",
+      "MA-MIN-EXIT-POLICY",
+      "MA-MIN-INTRABAR-ORDER",
+      "MA-MIN-MANUAL-SUBSTITUTE",
+      "MA-MIN-ORDER-TYPE",
+      "MA-MIN-RESEARCH-UNIVERSE",
+      "MA-MIN-RISK-FRACTION",
+      "MA-MIN-SEPA-PIVOT",
+      "MA-MIN-SEPA-SETUP-PROXY",
+      "MA-MIN-SETUP-VALIDITY",
+      "MA-MIN-SIGNAL-ORDER",
+      "MA-MIN-STAGE2-TREND-TEMPLATE",
+      "MA-MIN-STOP-FILL",
+      "MA-MIN-STOP-PLACEMENT"
+     ]
+    },
+    "dataCoverage": {
+     "blocked": [
+      {
+       "row": "SQ-RS-IBD",
+       "data": [
+        "IBD RS rating (proprietary, not available)"
+       ]
+      },
+      {
+       "row": "SQ-ESTIMATES",
+       "data": [
+        "analyst estimates, surprises, guidance history (paid, not in the snapshot)"
+       ]
+      }
+     ],
+     "proxiesNotUnblocking": [
+      "SQ-RS-IBD <- research/minervini-components.mjs#createRsPercentileProxy"
+     ],
+     "knownDataFindings": [
+      "V4-D1 undeclared reverse splits (open, Quant PR)"
+     ]
+    },
+    "backtestReadiness": {
+     "measurement": "MODEL_LIFECYCLE_STUDY",
+     "strategyBacktest": false,
+     "why": "14 manual source decisions; those needed for an entry are substituted by MA-MIN-MANUAL-SUBSTITUTE, so a complete lifecycle run is a model study, never a strategy backtest",
+     "snapshotRuns": [],
+     "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+    },
+    "manualReview": {
+     "rows": [
+      "SQ-FUNDAMENTALS",
+      "SQ-PRIORITY",
+      "SQ-VCP-CONTRACTIONS",
+      "SQ-VCP-VOLUME",
+      "SQ-MARKET",
+      "SQ-CHEAT-PULLBACK",
+      "EL-MANUAL-DECISIONS",
+      "EL-DUPLICATE",
+      "SZ-EXPOSURE",
+      "PM-ADD",
+      "PM-BACKSTOP-EARNINGS",
+      "XC-SELL-STRENGTH",
+      "XC-BEHAVIOUR",
+      "RD-PRODUCT"
+     ],
+     "substitutedInSimulation": [
+      "EL-MANUAL-DECISIONS"
+     ],
+     "required": true
+    },
+    "liveReadiness": {
+     "status": "LIVE_NOT_APPROVED",
+     "tradability": "NOT_A_TRADABLE_STRATEGY",
+     "performanceClaim": "NONE",
+     "liveActivation": false,
+     "orders": false,
+     "brokerConnection": false
+    }
+   }
+  },
+  "POWER_PLAY": {
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "candidateId": "C07",
+   "matrix": [
+    {
+     "id": "PP-SQ-RUNUP",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "at least +100 % in less than eight weeks",
+     "psr709": [
+      "MIN-PP-02"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-RUNUP"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#powerPlayScreen",
+      "tests": [
+       "sf-minervini: GC-MIN-PP-CANDIDATE",
+       "sf-minervini: GC-MIN-PP-SLOW-RUN",
+       "sf-minervini-lifecycle: SF4-PP-SERIES-EQUIVALENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-START-VOLUME",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "the run-up begins with strong volume",
+     "psr709": [
+      "MIN-PP-02"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-RUNUP"
+     ],
+     "implemented": {
+      "code": "research/minervini-components.mjs#powerPlayClassify",
+      "tests": [
+       "sf-minervini-components: GC-MIN-PP-CLASSES"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot) (50 sessions before the run-up)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "ratio measured; \"strong\" is the reviewer's; without 50 sessions of history DATA_BLOCKED_SETUP",
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-CONSOLIDATION",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "consolidation usually 3-6 weeks, twelve days printed; no minimum",
+     "psr709": [
+      "MIN-PP-03"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-DURATION"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#powerPlayScreen",
+      "tests": [
+       "sf-minervini: GC-MIN-PP-SHORT-CONSOLIDATION",
+       "sf-minervini-components: ADV-MIN-PP-LONG-BASE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B12 PDF 342 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-CORRECTION",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "correction no more than 20-25 %",
+     "psr709": [
+      "MIN-PP-04"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-CORRECTION"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#powerPlayScreen",
+      "tests": [
+       "sf-minervini: GC-MIN-PP-DEEP-CORRECTION",
+       "sf-minervini: GC-MIN-PP-CORRECTION-RANGE-FLAG"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "open decision: the point inside 20-25 % (MANUAL_REVIEW_SETUP)",
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-TIGHTNESS",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "very tight (at most 10 %) or VCP characteristics",
+     "psr709": [
+      "MIN-PP-05"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-TIGHT"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#powerPlayScreen",
+      "tests": [
+       "sf-minervini: GC-MIN-PP-WIDE-REVIEW"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "the OR branch \"VCP characteristics\" is manual",
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-NO-FUNDAMENTALS",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "a Power Play can be bought without visible strong earnings",
+     "psr709": [
+      "MIN-PP-01"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-NOFUND"
+     ],
+     "implemented": {
+      "code": "methods/minervini.mjs#powerPlayScreen",
+      "tests": [
+       "sf-minervini: GC-MIN-PP-CANDIDATE"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B12 PDF 341 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-PIVOT",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "pivot of the consolidation",
+     "psr709": [
+      "MIN-VCP-07"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-ENTRY"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#powerPlaySetupSeries",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-PP-LIFECYCLE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-PP-PIVOT"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SQ-CLASSES",
+     "phase": "SETUP_QUALIFICATION",
+     "condition": "four setup classes; a confirmed setup is not an executable trade",
+     "psr709": [
+      "MIN-PP-02",
+      "MIN-PP-04",
+      "MIN-PP-05"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-ENTRY"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-PP-LIFECYCLE",
+       "sf-minervini-components: GC-MIN-NOT-A-STRATEGY"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-PP-ELIGIBLE-CLASSES"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "separate trade eligibility; the 1,469 confirmed setups of sf3 are not upgraded",
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-PRICE-CONFIRMATION",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "price confirmation before the entry: a buy stop at the pivot, no order when the prior close is already at or above it",
+     "psr709": [
+      "MIN-PRICE-01",
+      "MIN-VCP-07"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-ENTRY"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PIVOT-BEFORE-CONTRACTIONS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "translation-unverified wording",
+     "sources": [
+      "B12 PDF 256 (HARD, MEDIUM)",
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-STOP-BEFORE-ENTRY",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "a stop below the pivot exists before the order (MIN-RISK-01)",
+     "psr709": [
+      "MIN-RISK-01"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B12 PDF 61 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-MAX-PLANNED-LOSS",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "planned loss at the pivot at most 10 % (MIN-MM-STOP-02); otherwise blocked",
+     "psr709": [
+      "MIN-MM-STOP-02"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS",
+       "sf-minervini: GC-MIN-STOP-10PCT-FLAG"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "the contract keeps the 10 % as a flag of the reviewer stop; the lifecycle uses it as the printed maximum (translation-unverified)",
+     "sources": [
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-SETUP-LIFETIME",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "how long a setup stays valid and when it is invalidated before the execution",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD"
+      ]
+     },
+     "missing": "no setup lifetime in #709 (SOURCE_BLOCKED as a number); re-evaluation at every close adds none",
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "PP-EL-UNIVERSE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "liquidity and price floor of the candidate",
+     "psr709": [
+      "MIN-MM-LIQ-01",
+      "MIN-MM-PRC-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-HALT-AND-MISSING-BARS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)",
+      "raw close and raw volume"
+     ],
+     "pit": "PIT: prior session",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-RESEARCH-UNIVERSE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 18; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 21; respective Minervini answer (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-MANUAL-DECISIONS",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "open manual decisions of the setup (listed on every eligibility)",
+     "psr709": [
+      "MIN-PP-02"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-ENTRY"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-NOT-A-STRATEGY"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [
+      "MA-MIN-MANUAL-SUBSTITUTE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": "product: ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW; simulation: substituted by the declared model assumption, therefore a MODEL study",
+     "sources": [
+      "B12 PDF 342 (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EL-DUPLICATE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "condition": "no second entry while a position is open; adds are manual",
+     "psr709": [
+      "MIN-ADD-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#entryEligibility",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-DUPLICATE-SIGNALS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": "the duplicate block is mechanical; the add decision itself stays manual",
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EX-SIGNAL-TIME",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "signal on the setup close, order valid for the next session only",
+     "psr709": [
+      "MIN-VCP-07"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD",
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EX-VOLUME",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "\"with increasing volume\" vs \"buy on price first, judge volume afterwards\"",
+     "psr709": [
+      "MIN-VCP-07",
+      "MIN-MM-VOL-EX",
+      "MIN-MM-VOL-RET",
+      "MIN-MM-VOL-NUM"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-ENTRY"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#breakoutVolumeVs50d",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-BREAKOUT-NO-VOLUME",
+       "sf-minervini-components: GC-MIN-PIVOT-VOLUME"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ENTRY-TIMING"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B12 PDF 270 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 44; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 43; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 45; respective Minervini answer (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EX-ORDER-AND-GAP",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "order type and gap over the entry",
+     "psr709": [
+      "MIN-MM-STOP-02"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#fillBuyOrder",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-OVER-ENTRY",
+       "sf-minervini-lifecycle: ADV-MLC-NOT-EXECUTABLE-ORDER"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: the bar of the fill",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ORDER-TYPE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-EX-INTRABAR",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "entry and stop inside the same daily bar",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#fillBuyOrder",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-ENTRY-AND-STOP-SAME-BAR"
+      ]
+     },
+     "missing": "intraday sequence: DATA_BLOCKED for the snapshot; both readings run",
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)",
+      "intraday order (not in the snapshot)"
+     ],
+     "pit": "unknown inside the bar",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-INTRABAR-ORDER"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "PP-EX-COSTS",
+     "phase": "ENTRY_EXECUTION",
+     "condition": "slippage and commission",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#EQUITY_RESEARCH_PORTFOLIO_POLICY",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-COSTS"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "PP-ST-PLACEMENT",
+     "phase": "INITIAL_STOP",
+     "condition": "where the stop is placed inside the 10 % bound",
+     "psr709": [
+      "MIN-RISK-01",
+      "MIN-MM-STOP-02",
+      "MIN-TTC-AVGLOSS"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-lifecycle.mjs#stopFor",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-PLANNED-LOSS"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: bars up to the decision close only",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-STOP-PLACEMENT"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "reviewer decision in the source",
+     "sources": [
+      "B12 PDF 61 (HARD, MEDIUM)",
+      "B07 PDF 72; respective Minervini answer (HARD, MEDIUM)",
+      "B03 PDF 194; printed 187 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-ST-EXECUTION",
+     "phase": "INITIAL_STOP",
+     "condition": "a stop hit exits regardless of the day's volume",
+     "psr709": [
+      "MIN-MM-STOP-01"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP",
+       "sf-minervini-components: GC-MIN-STOP-EXECUTION"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: the bar of the exit",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B07 PDF 75; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-ST-GAP-FILL",
+     "phase": "INITIAL_STOP",
+     "condition": "fill when the price gaps through the stop",
+     "psr709": [
+      "MIN-MM-STOP-01"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-GAP-THROUGH-STOP"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-STOP-FILL"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 75; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SZ-RISK",
+     "phase": "POSITION_SIZING",
+     "condition": "shares from the accepted equity risk and the stop distance",
+     "psr709": [
+      "MIN-TTC-SIZING",
+      "MIN-MM-SIZE-03",
+      "MIN-MM-SIZE-04"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-SIZE"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL",
+       "sf-minervini-components: GC-MIN-SIZING"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-RISK-FRACTION"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "the formula is source-bounded (MIN-TTC-SIZING); the risk fraction is the reviewer's",
+     "sources": [
+      "B03 PDF 193; printed 186 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 29; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 70; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SZ-MAX-WEIGHT",
+     "phase": "POSITION_SIZING",
+     "condition": "at most 25 % of equity per position",
+     "psr709": [
+      "MIN-MM-SIZE-01"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-SIZE"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_IMPLEMENTED",
+     "note": null,
+     "sources": [
+      "B07 PDF 30; respective Minervini answer (HARD, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SZ-CAPITAL",
+     "phase": "POSITION_SIZING",
+     "condition": "available cash, at most 20 open positions, simultaneous signals",
+     "psr709": [
+      "MIN-RISK-10",
+      "MIN-PROCESS-04"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-SIZE-ZERO-AND-CAPITAL",
+       "sf-minervini-lifecycle: SF4-DETERMINISM"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SIGNAL-ORDER"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "20 positions is the 2013 upper bound (strong preference); the order of simultaneous fills replaces the manual priority",
+     "sources": [
+      "B12 PDF 415 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 61 (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-SZ-EXPOSURE",
+     "phase": "POSITION_SIZING",
+     "condition": "pilot buys, exposure build-up and reduction, margin",
+     "psr709": [
+      "MIN-RISK-02",
+      "MIN-RISK-03",
+      "MIN-RISK-04",
+      "MIN-RISK-08",
+      "MIN-MM-SIZE-02"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "no mechanical rule; not modelled (EQUITY_RESEARCH_PORTFOLIO_POLICY.notModelled)",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 408 (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 414 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 31; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-PM-BREAKEVEN",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "at about 3R raise the stop at least to break-even (\"almost always\")",
+     "psr709": [
+      "MIN-RISK-05"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-STOP"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE",
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: close, effective next session",
+     "mechanical": "MECHANICAL",
+     "class": "SOURCE_BOUNDED",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "no absolute 3R obligation in the source; part of the reference exit policy, absent in the free-roll variants",
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-PM-ADD",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "adds after proof of profit, bringing a starter position to full size",
+     "psr709": [
+      "MIN-ADD-01",
+      "MIN-MM-ADD-02",
+      "MIN-MM-ADD-03"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "no level or size given; not simulated",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 409 (STRONG_PREFERENCE, MEDIUM)",
+      "B07 PDF 66; respective Minervini answer (OPTIONAL, MEDIUM)",
+      "B07 PDF 86; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-PM-TRAIL",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "after break-even a later profit stop just below MA50 (early leaders)",
+     "psr709": [
+      "MIN-TTC-TRAIL",
+      "MIN-MM-SELL-02"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-EXIT"
+     ],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "PIT: close, exit next open",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "\"just below\" and \"sometimes wait for the weekly close\" are not mechanised: a daily close below MA50 is the model reading",
+     "sources": [
+      "B03 PDF 221; printed 214 (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 93; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-PM-BACKSTOP-EARNINGS",
+     "phase": "POSITION_MANAGEMENT",
+     "condition": "backstop on a chosen profit area, holding over earnings",
+     "psr709": [
+      "MIN-TTC-BACKSTOP",
+      "MIN-MM-EARN-HOLD",
+      "MIN-EPS-04"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "reviewer choice; earnings dates are not in the snapshot as a PIT calendar",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B03 PDF 223; printed 216 (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 95; respective Minervini answer (STRONG_PREFERENCE, MEDIUM)",
+      "B12 PDF 178 (STRONG_PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-XC-SELL-STRENGTH",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "sell into strength, keep a remainder of early leaders, no universal target",
+     "psr709": [
+      "MIN-RISK-06",
+      "MIN-MM-SELL-01",
+      "MIN-MM-SELL-03",
+      "MIN-TTC-EARLY"
+     ],
+     "contractRules": [
+      "MIN-SF-PP-EXIT"
+     ],
+     "implemented": null,
+     "missing": "no mechanical rule (MIN-MM-SELL-03: no fixed target)",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B12 PDF 410 (PREFERENCE, MEDIUM)",
+      "B07 PDF 92; respective Minervini answer (PREFERENCE, MEDIUM)",
+      "B07 PDF 90; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B03 PDF 197; printed 190 (PREFERENCE, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-XC-FREEROLL",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "half at 2-3R with a break-even stop (optional example)",
+     "psr709": [
+      "MIN-TTC-FREEROLL"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "daily split-adjusted OHLCV (snapshot)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "research variants FREEROLL_2R / FREEROLL_3R, not activated",
+     "sources": [
+      "B03 PDF 222; printed 215 (OPTIONAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-XC-BEHAVIOUR",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "accumulating violations, heavy later selling volume",
+     "psr709": [
+      "MIN-MM-SELL-04",
+      "MIN-MM-VOL-RET"
+     ],
+     "contractRules": [],
+     "implemented": null,
+     "missing": "violations are not enumerated in #709",
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "QUALITATIVE",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "NOT_TESTABLE_BY_MACHINE",
+     "readiness": "MANUAL_NOT_AUTOMATED",
+     "note": null,
+     "sources": [
+      "B07 PDF 91; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 43; respective Minervini answer (CONTEXTUAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-XC-REENTRY",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "re-entry after an exit only through a new low-risk setup, no universal lock-out",
+     "psr709": [
+      "MIN-MM-REEN-01",
+      "MIN-MM-REEN-02"
+     ],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-NO-LOOKAHEAD"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-SETUP-VALIDITY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": [
+      "B07 PDF 64; respective Minervini answer (CONTEXTUAL, MEDIUM)",
+      "B07 PDF 65; respective Minervini answer (OPTIONAL, MEDIUM)"
+     ]
+    },
+    {
+     "id": "PP-XC-CONFLICT",
+     "phase": "EXIT_CONDITIONS",
+     "condition": "conflicting exit signals on one bar",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-EXIT-PRECEDENCE"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-EXIT-POLICY"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "declared precedence: next-open exit > stop > close rules; full exit dominates partial",
+     "sources": []
+    },
+    {
+     "id": "PP-AC-LEDGER",
+     "phase": "TRADE_ACCOUNTING",
+     "condition": "ledger, dividends, dust, reconciliation, realized and unrealized P&L, open position at the data end",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: GC-MLC-SEPA-LIFECYCLE",
+       "sf-minervini-lifecycle: SF4-DETERMINISM"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": null,
+     "sources": []
+    },
+    {
+     "id": "PP-AC-DATA-EVENTS",
+     "phase": "TRADE_ACCOUNTING",
+     "condition": "halts and missing bars, delisting, corporate actions",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-execution.mjs#runMinerviniLifecycle",
+      "tests": [
+       "sf-minervini-lifecycle: ADV-MLC-HALT-AND-MISSING-BARS",
+       "sf-minervini-lifecycle: ADV-MLC-DELISTING",
+       "sf-minervini-lifecycle: ADV-MLC-CORPORATE-ACTION"
+      ]
+     },
+     "missing": null,
+     "data": [
+      "snapshot terminal causes",
+      "split-adjusted prices (ADR-002)"
+     ],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "V4-D1 (undeclared reverse splits, about 1 % of security-months) is inherited and open; results stay DIAGNOSTIC_NOT_CERTIFIED",
+     "sources": []
+    },
+    {
+     "id": "PP-BD-MEASUREMENT",
+     "phase": "BACKTEST_DIAGNOSTICS",
+     "condition": "what a snapshot run may be called",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/run-sf4-lifecycle.mjs#lifecyclePart",
+      "tests": [
+       "sf-sf4-lifecycle-runner: SF4-RUNNER-PUBLIC-COUNTS-ONLY"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MODEL_ASSUMPTION",
+     "modelAssumptions": [
+      "MA-MIN-MANUAL-SUBSTITUTE"
+     ],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
+     "note": "MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST: manual source rules are substituted, so no run is a strategy backtest",
+     "sources": []
+    },
+    {
+     "id": "PP-RD-PRODUCT",
+     "phase": "STRATEGY_READINESS",
+     "condition": "product states: setup, entry possible / blocked, simulated entry, stop, risk, size, position, exit reason, data quality, manual review",
+     "psr709": [],
+     "contractRules": [],
+     "implemented": {
+      "code": "research/minervini-trade-view.mjs#tradeView",
+      "tests": [
+       "sf-minervini-lifecycle: SF4-VIEW-SIMULATED-NOT-A-POSITION",
+       "sf-minervini-lifecycle: ADV-MLC-FUNDAMENTALS-AND-RS"
+      ]
+     },
+     "missing": null,
+     "data": [],
+     "pit": "n/a",
+     "mechanical": "MECHANICAL",
+     "class": "MANUAL_REVIEW",
+     "modelAssumptions": [],
+     "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
+     "readiness": "EVIDENCE_FOR_REVIEWER",
+     "note": "data contract only; no UI change, never a depot position, never a buy",
+     "sources": []
+    }
+   ],
+   "readiness": {
+    "sourceFidelity": {
+     "byClass": {
+      "SOURCE_EXACT": 0,
+      "SOURCE_BOUNDED": 11,
+      "MODEL_ASSUMPTION": 20,
+      "MANUAL_REVIEW": 9,
+      "DATA_BLOCKED": 0,
+      "SOURCE_BLOCKED": 0
+     },
+     "sourceExact": 0,
+     "translationOnlySource": true,
+     "contractVersion": "1.2.0",
+     "contractRuleStatuses": {
+      "SOURCE_DERIVED": 5,
+      "MANUAL_REVIEW_REQUIRED": 4
+     },
+     "statement": "no Minervini rule is SOURCE_EXACT (#709: MEDIUM confidence, wording only via translation); printed numbers are used as bounds"
+    },
+    "mechanicalCompleteness": {
+     "phases": {
+      "SETUP_QUALIFICATION": {
+       "rows": 8,
+       "mechanical": 5,
+       "underModelAssumption": 2,
+       "evidence": 1,
+       "manual": 0,
+       "blocked": 0
+      },
+      "ENTRY_ELIGIBILITY": {
+       "rows": 7,
+       "mechanical": 4,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 1,
+       "blocked": 0
+      },
+      "ENTRY_EXECUTION": {
+       "rows": 5,
+       "mechanical": 0,
+       "underModelAssumption": 5,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "INITIAL_STOP": {
+       "rows": 3,
+       "mechanical": 1,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "POSITION_SIZING": {
+       "rows": 4,
+       "mechanical": 1,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 1,
+       "blocked": 0
+      },
+      "POSITION_MANAGEMENT": {
+       "rows": 4,
+       "mechanical": 0,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 2,
+       "blocked": 0
+      },
+      "EXIT_CONDITIONS": {
+       "rows": 5,
+       "mechanical": 0,
+       "underModelAssumption": 3,
+       "evidence": 0,
+       "manual": 2,
+       "blocked": 0
+      },
+      "TRADE_ACCOUNTING": {
+       "rows": 2,
+       "mechanical": 0,
+       "underModelAssumption": 2,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "BACKTEST_DIAGNOSTICS": {
+       "rows": 1,
+       "mechanical": 0,
+       "underModelAssumption": 1,
+       "evidence": 0,
+       "manual": 0,
+       "blocked": 0
+      },
+      "STRATEGY_READINESS": {
+       "rows": 1,
+       "mechanical": 0,
+       "underModelAssumption": 0,
+       "evidence": 1,
+       "manual": 0,
+       "blocked": 0
+      }
+     },
+     "executablePhases": 9,
+     "operationalPhases": 9,
+     "lifecycle": "MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS",
+     "modelAssumptionsUsed": [
+      "MA-MIN-ACCOUNTING-RESEARCH-V1",
+      "MA-MIN-COSTS",
+      "MA-MIN-ENTRY-TIMING",
+      "MA-MIN-EXIT-POLICY",
+      "MA-MIN-INTRABAR-ORDER",
+      "MA-MIN-MANUAL-SUBSTITUTE",
+      "MA-MIN-ORDER-TYPE",
+      "MA-MIN-PP-ELIGIBLE-CLASSES",
+      "MA-MIN-PP-PIVOT",
+      "MA-MIN-RESEARCH-UNIVERSE",
+      "MA-MIN-RISK-FRACTION",
+      "MA-MIN-SETUP-VALIDITY",
+      "MA-MIN-SIGNAL-ORDER",
+      "MA-MIN-STOP-FILL",
+      "MA-MIN-STOP-PLACEMENT"
+     ]
+    },
+    "dataCoverage": {
+     "blocked": [],
+     "proxiesNotUnblocking": [],
+     "knownDataFindings": [
+      "V4-D1 undeclared reverse splits (open, Quant PR)"
+     ]
+    },
+    "backtestReadiness": {
+     "measurement": "MODEL_LIFECYCLE_STUDY",
+     "strategyBacktest": false,
+     "why": "9 manual source decisions; those needed for an entry are substituted by MA-MIN-MANUAL-SUBSTITUTE, so a complete lifecycle run is a model study, never a strategy backtest",
+     "snapshotRuns": [],
+     "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+    },
+    "manualReview": {
+     "rows": [
+      "PP-SQ-START-VOLUME",
+      "PP-EL-MANUAL-DECISIONS",
+      "PP-EL-DUPLICATE",
+      "PP-SZ-EXPOSURE",
+      "PP-PM-ADD",
+      "PP-PM-BACKSTOP-EARNINGS",
+      "PP-XC-SELL-STRENGTH",
+      "PP-XC-BEHAVIOUR",
+      "PP-RD-PRODUCT"
+     ],
+     "substitutedInSimulation": [
+      "PP-EL-MANUAL-DECISIONS"
+     ],
+     "required": true
+    },
+    "liveReadiness": {
+     "status": "LIVE_NOT_APPROVED",
+     "tradability": "NOT_A_TRADABLE_STRATEGY",
+     "performanceClaim": "NONE",
+     "liveActivation": false,
+     "orders": false,
+     "brokerConnection": false
+    }
+   }
+  }
+ }
+}
