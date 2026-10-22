@@ -502,6 +502,17 @@
     /* Wochenchart: Schluss der letzten Wochenkerze, kein aktueller Kurs - deshalb ausdruecklich "Wochenschluss". */
     return { value: last, currency: "USD", kind: a.timeframe === "1W" ? "Wochenschluss" : "close", at: at, changePct: isNum(prev) && prev > 0 ? (last / prev - 1) * 100 : null, changeLabel: a.timeframe === "1W" ? "zur Vorwoche" : "zum Vortag" };
   }
+  /* VU3-Finalisierung, eine Preiswahrheit im Kopf: Technik und Elliott zeigen denselben veroeffentlichten Tages-
+     schlusskurs wie Quant, Fundamental und Supertrader (Dienst getStockIntelligence, s.price). Der Wochenschluss des
+     Aktienbilds ist ein Analysekurs; er steht bei der Analyse ("Datenstand") und im Kopf nur, wenn kein Tageskurs
+     veroeffentlicht ist. */
+  function dailyClose(s) {
+    if (!s || !s.price || typeof s.price.value !== "number" || s.price.reason === "DISPLAY_NOT_PERMITTED") return null;
+    var bars = s.chart && s.chart.state === "AVAILABLE" ? (s.chart.bars || []) : [];
+    var last = bars.length ? bars[bars.length - 1] : null, prev = bars.length > 1 ? bars[bars.length - 2] : null;
+    return { value: s.price.value, currency: "USD", kind: "close", at: X.dateDe(s.price.asOf || (last && last.date) || s.asOf),
+      changePct: last && prev && prev.close > 0 ? (last.close / prev.close - 1) * 100 : null, changeLabel: "zum Vortag" };
+  }
   function stockHead(host, ctx, ticker, current) {
     var name = (ctx && ctx.names && ctx.names[ticker]) || ticker, SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, sctx = null, api = null;
     try { if (SN && SCX) { sctx = SCX.fromUs(ticker, { name: name }); api = SN.head(host, { ctx: sctx, current: current, name: name }); } } catch (e) { api = null; }
@@ -520,7 +531,8 @@
     var layout = params && /^[abcd]$/.test(params.get("layout") || "") ? params.get("layout") : "d";
     main.append(inElliott ? elliottBar(ctx, ticker) : el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }));
     var headHost = el("div", { class: "cb-head" }); main.append(headHost);
-    var head = stockHead(headHost, ctx, ticker, view === "pro" ? "elliott" : "technik");
+    var head = stockHead(headHost, ctx, ticker, view === "pro" ? "elliott" : "technik"), dailySet = false;
+    if (ctx && ctx.api && ctx.api.getStockIntelligence) ctx.api.getStockIntelligence(ticker).then(function (s) { var p = dailyClose(s); if (p) { dailySet = true; head.setPrice(p); } }).catch(function () { /* Kopf ohne Tageskurs */ });
     var host = el("div", { class: "cb cb-layout-" + layout }, [X.loading("Chartbild wird geladen …")]);
     main.append(host);
     var res = await TI.getAnalysis(ticker);
@@ -553,7 +565,7 @@
         el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")])].filter(Boolean));   // null-Kinder wuerden als Text "null" erscheinen
       return;
     }
-    head.setPrice(headPrice(a));
+    if (!dailySet) head.setPrice(headPrice(a));
     var rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
     var tfLabel = a.timeframe === "1W" ? "Wochenchart" : "Tageschart";
     var scen = a.scenarios || [], kinds = scen.map(function (s) { return s.kind; });

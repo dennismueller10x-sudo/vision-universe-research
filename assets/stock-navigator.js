@@ -154,6 +154,11 @@
     var src = o.logo === false ? null : o.logo || (o.ctx.region === "US" ? "/discover/logos/files/" + encodeURIComponent(o.ctx.ticker) + ".png" : null);
     return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" decoding="async">' : "") + "</span>";
   }
+  /** Anzeigename aus dem Manifest-Ausschnitt. Der Ausschnitt fuehrt US-Namen unter dem Kuerzel (wie seine Modullisten),
+   *  nicht unter dem Kontext-Schluessel (US:ref_<T>); Europa traegt noch keine Namen. */
+  function shardName(ctx, m) {
+    return ctx && ctx.region === "US" && m && m.names && typeof m.names[ctx.ticker] === "string" ? m.names[ctx.ticker] : null;
+  }
   /**
    * Einheitlicher Aktienkopf. o: {ctx, current, name, exchange, logo, price:{value,currency,changePct,changeLabel,kind,at}, back:{href,label}, actions: Node}
    * Zeichnet Kopf + Navigator in host. @returns {{setPrice:function, dispose:function, el:Element}}
@@ -171,11 +176,17 @@
     if (img) img.addEventListener("error", function () { img.remove(); });
     if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
     host.replaceChildren(wrap);
-    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o);
+    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o), alive = true;
+    /* VU3-Finalisierung: ein Name je Aktie in allen Welten. Der Manifest-Ausschnitt traegt den Anzeigenamen des
+       Security-Masters (company-names.json#displayName, derselbe Name wie in Discover); er ersetzt den Namen der Welt. */
+    loadShard(o.ctx, o.fetch).then(function (m) {
+      var n = shardName(o.ctx, m), h = wrap.querySelector(".vu-shead-name");
+      if (alive && n && h && h.textContent !== n) h.textContent = n;
+    });
     return {
       el: wrap,
       setPrice: function (p) { wrap.querySelector(".vu-shead-pricebox").innerHTML = priceHtml(p); },
-      dispose: function () { dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+      dispose: function () { alive = false; dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
     };
   }
 
@@ -186,5 +197,5 @@
     return hit ? mount(host, hit.ctx, hit.product, opts) : null;
   }
 
-  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money });
+  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money, shardName: shardName });
 });

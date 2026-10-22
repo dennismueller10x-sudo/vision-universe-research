@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-21T11:27:49.526Z",
+ "generatedAt": "2026-10-22T11:29:01.225Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -43,15 +43,15 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 3346,
+ "runtimeSec": 3325,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4376,
+   "ABSTAIN": 4375,
    "DATA_INVALID": 448,
-   "WITHHELD": 74,
-   "NO_PROJECTION": 108,
+   "WITHHELD": 77,
+   "NO_PROJECTION": 106,
    "AVAILABLE": 39
   },
   "consumerVisible": 39,
@@ -120,15 +120,15 @@
      "DOWN <50%": 1,
      "UP >1000%": 2,
      "UP 50-100%": 3,
-     "UP 100-250%": 13,
-     "DOWN 50-100%": 2
+     "DOWN 50-100%": 2,
+     "UP 100-250%": 13
     }
    },
    "candidates": {
-    "securities": 3726,
-    "entries": 13059,
+    "securities": 3725,
+    "entries": 13058,
     "perSecurity": {
-     "1": 503,
+     "1": 502,
      "2": 703,
      "3": 726,
      "4": 651,
@@ -137,21 +137,21 @@
     },
     "direction": {
      "DOWN": 6720,
-     "UP": 6339
+     "UP": 6338
     },
     "type": {
-     "WAVE_C": 9786,
+     "WAVE_C": 9785,
      "WAVE_3": 2852,
      "WAVE_5": 421
     },
     "failedSet": {
-     "G3+G4": 1911,
+     "G3+G4": 1910,
      "G2+G5": 184,
      "G3+G4+G5": 567,
      "G2+G3+G4": 3039,
      "G2+G3+G4+G5": 1447,
-     "G2+G3": 1554,
      "G3": 741,
+     "G2+G3": 1554,
      "G3+G5": 482,
      "G2+G4": 692,
      "G4+G5": 236,
@@ -163,7 +163,7 @@
     }
    }
   },
-  "splitResolved": 203,
+  "splitResolved": 202,
   "normalAlternative": 39,
   "motiveAlternative": 27,
   "motiveDOWN": 25,
@@ -178,37 +178,37 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-20",
+   "reference": "2026-10-21",
    "titles": 5040,
    "states": {
     "FRESH": 5,
-    "DELAYED": 4961,
+    "DELAYED": 4958,
     "NON_TRADING": 20,
-    "STALE": 54
+    "STALE": 57
    },
    "reasons": {
-    "REFRESH_STOPPED": 4988,
+    "REFRESH_STOPPED": 4984,
     "SECURITY_INACTIVE": 20,
-    "NO_NEWER_BARS": 27
+    "NO_NEWER_BARS": 31
    },
    "reasonsKnown": 20,
-   "delayedWithNotice": 4961,
+   "delayedWithNotice": 4958,
    "affected": {
-    "titles": 74,
-    "primary": 64,
-    "alternative": 62,
+    "titles": 77,
+    "primary": 65,
+    "alternative": 63,
     "motiveAlternative": 0,
     "exploreHighlights": 6,
-    "exploreCandidates": 115,
+    "exploreCandidates": 116,
     "consumerVisibleProjections": 1
    },
    "ageBuckets": {
-    "0-3": 4979,
+    "0-3": 4975,
     "11-20": 22,
     "21-40": 18,
     ">40": 15,
-    "4-5": 4,
-    "6-10": 2
+    "4-5": 5,
+    "6-10": 5
    },
    "withheldTitles": [
     "ADAMM",
@@ -230,8 +230,8 @@
     "DOMO",
     "EFOR",
     "FBRT",
-    "FBRX",
     "FGNXP",
+    "FBRX",
     "FGNX",
     "FSEA",
     "GBTG",
@@ -242,57 +242,60 @@
     "IWML",
     "IWFL",
     "JUPGF",
-    "LEG",
     "KREF-P-A",
-    "LBRDK",
+    "LEG",
     "LANDP",
     "LBRDA",
     "LBRDP",
+    "LBRDK",
     "LESL",
     "MDV-P-A",
     "MAA-P-I",
     "MDV",
     "MS-P-O",
-    "NCSM",
     "MTUL",
+    "NCSM",
     "NLY-P-I",
     "NSTS",
     "NTZ",
+    "NVNI",
     "OXLCP",
     "PHGE",
+    "PRIF-P-L",
+    "QNCX",
     "QRVO",
     "QULL",
     "PSA-P-Q",
     "RMAX",
     "SAT",
     "RIV-P-A",
-    "RPT",
     "SCDL",
+    "RPT",
     "SF-P-B",
     "SEVN",
     "SNYR",
     "THRD",
     "TALK",
-    "TWO",
-    "TWO-P-B",
     "TWO-P-C",
+    "TWO",
     "TWO-P-A",
+    "TWO-P-B",
     "VRME",
     "WBS",
     "WBS-P-F",
-    "ZTEK",
     "VTAK",
     "WALD",
+    "ZTEK",
     "WBD",
     "WBS-P-G"
    ],
    "systemic": {
-    "share": 0.0147,
+    "share": 0.0153,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 2,
+  "lifecycleEvents": 0,
   "tracked": 444
  }
 }

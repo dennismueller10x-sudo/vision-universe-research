@@ -38,6 +38,11 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
     assert.equal(sapDe.quant, "unavailable");
     /* Supertrader nur mit Seite UND Daten: AAL hat eine Seite, aber keine Daten. */
     assert.equal(state(SC.fromUs("AAL")).supertrader, "unavailable");
+    /* Ein Name je Aktie (VU3-Finalisierung): der Anzeigename des Security-Masters steht im Ausschnitt. */
+    const master = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8")).rows.find((x) => x.ticker === "PLTR");
+    const pl = JSON.parse(readFileSync(join(out, SC.availabilityShard(SC.fromUs("PLTR")) + ".json"), "utf8"));
+    assert.equal(pl.names.PLTR, master.displayName);
+    assert.ok(r.named > 5000, "zu wenige Namen: " + r.named);
   } finally { rmSync(out, { recursive: true, force: true }); }
 });
 

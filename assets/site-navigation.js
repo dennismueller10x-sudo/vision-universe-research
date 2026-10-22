@@ -240,7 +240,7 @@
      schaltet sie; sonst setzt der Kopf <html data-theme> selbst und meldet
      den Wechsel mit dem Ereignis vu-theme-change. */
   const THEME_KEY = 'vu-discover-theme-v1';
-  const BAR = {light: '#ffffff', dark: '#08080a'};
+  const BAR = {light: '#ffffff', dark: '#000000'};
   const currentTheme = () => document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   const applyTheme = (mode, persist) => {
     const engine = window.VUDiscover && window.VUDiscover.theme;
@@ -483,4 +483,30 @@
     }
   }
   customElements.define('vu-navigation', VisionNavigation);
+
+  /* VU3: Die ganze Aktienkarte ist der Einstieg in die Aktie. Eine Karte traegt ihr Ziel in data-vu-href;
+     ein Tippen oder Klick auf jede Flaeche, die kein eigenes Bedienelement ist (Logo, Name, Kennzahlen,
+     Chart, freie Flaeche), oeffnet es. Eigene Bedienelemente in der Karte (Reiter Chart/Umsatz/Gewinn/
+     Cashflow, Links, Knoepfe) behalten ihre Funktion. Tastatur: Der Name ist ein echter Link. Ein markierter
+     Text oeffnet nichts; Strg/Cmd/Mittelklick oeffnen wie bei einem Link einen neuen Tab. */
+  if (typeof document !== 'undefined' && !window.__vuCardLink) {
+    window.__vuCardLink = true;
+    const OWN = 'a[href],button,input,select,textarea,summary,label,[role=tab],[role=button],[role=link],[contenteditable],[data-vu-card-ignore]';
+    const open = (e) => {
+      if (e.defaultPrevented || (e.type === 'click' && e.button !== 0) || (e.type === 'auxclick' && e.button !== 1)) return;
+      const card = e.target.closest && e.target.closest('[data-vu-href]');
+      if (!card) return;
+      const own = e.target.closest(OWN);
+      if (own && card.contains(own)) return;
+      const sel = window.getSelection && window.getSelection();
+      if (sel && !sel.isCollapsed && card.contains(sel.anchorNode)) return;
+      const href = card.getAttribute('data-vu-href');
+      if (!href) return;
+      if (e.type === 'auxclick' || e.metaKey || e.ctrlKey || e.shiftKey) { window.open(href, '_blank', 'noopener'); return; }
+      const name = card.querySelector('a[data-vu-card-main]');
+      if (name) name.click(); else location.assign(href);
+    };
+    document.addEventListener('click', open);
+    document.addEventListener('auxclick', open);
+  }
 })();

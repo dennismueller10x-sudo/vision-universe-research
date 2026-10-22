@@ -1,6 +1,6 @@
 # Produktionshistorie, Entscheidungen, Fehler
 
-Stand 2026-10-21. Damit eine neue Sitzung nicht bei null beginnt.
+Stand 2026-10-22. Damit eine neue Sitzung nicht bei null beginnt.
 
 ## Reels
 
@@ -12,6 +12,8 @@ Stand 2026-10-21. Damit eine neue Sitzung nicht bei null beginnt.
 | „Der teuerste Fehler? Nicht investieren." | veröffentlicht 17.10.2026 | Reichweite 91 nach 3 Tagen, Ø Wiedergabe 5,2 s |
 | Riester („Riester ist vorbei") | fertig als `…riester-hybrid-heygen-v3-helmut-dropbox-musik.mp4`, 31,6 s, −14,3 LUFS | Owner: „Das Video ist gut". Caption und Hashtags geliefert. Karte im Approval Center vor Verwendung prüfen. Hook: „Zumindest für neue Verträge" macht ihn korrekt |
 | Tesla, ARK-Bull-Case (v5) | veröffentlicht vom Owner am 21.10.2026 | 48 s, Hook „Über 1.200 % Rendite", Karte `cand_reel_reel_2026_10_21_tesla_ark_bullcase`. Messung nach 72 h nachtragen (REEL_RESEARCH.md, Abschnitt 7) |
+| Tesla, Q3-Zahlen (v1) | fertig, **nicht veröffentlicht**, Vorlage `quartalszahlen` | 60 s. Owner: Mischung mit dem ARK-Kursziel gefällt nicht, besser getrennte Reels zu den Earnings-Calls |
+| Meta, Muse (v1) | vom Owner am 22.10.2026 veröffentlicht | 44 s, Hook „Wahnsinn. 10 Millionen Menschen haben in sechs Wochen einen KI-Agenten eingerichtet" (Zahl des Owners), Vorlage `meta-muse`. Owner: „Das Video ist sehr gut". Messung nach 72 h nachtragen |
 
 Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studio/reels/`.
 
@@ -25,6 +27,10 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 - Klare Absage an neue Abos und Produktivänderungen. Fremde Reels nur zur Analyse.
 - Riester und Altersvorsorgedepot sind erledigt, danach andere Themen (Tesla).
 - Sprecher von Anfang an (Hook geht sonst verloren), Bull-Case statt Basisfall im Hook, Rendite in Prozent.
+- **Das erste Bild muss sofort tragen:** Eine große Zahl oder ein großer Hook ab Bild 1, nicht erst eine leere Sekunde und dann Aufbau (Owner, 22.10.2026).
+- **Mehr Grafik statt nur Zahlen und Diagramme:** Zeichnungen, Icons, Handy-Mock-ups, eigene Bilder des Owners als abgedunkelter Hintergrund. Fremdlogos nicht nachbauen.
+- **Earnings-Calls statt Zahlen-Mischung:** Je Konzern ein eigenes Reel aus den Aussagen im Call (Tesla und Meta getrennt). Ein Gedanke pro Reel.
+- Der Owner liefert gern den Hook und die Hintergrundbilder selbst. Bilder: in der Caption kennzeichnen („Bildquelle: …").
 
 ## Messdaten und Lehren
 
@@ -38,6 +44,12 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Sprecher sagt „Rieser" oder „Leaster" | Kein `<break>` am Textanfang. „Riester ist vorbei." aus einer guten Aufnahme einsetzen |
 | „Vision Universe" deutsch ausgesprochen | im Text `Wischn Juniwörs`; im Zweifel das Wortpaar aus einer geprüften Aufnahme einsetzen |
 | „2027." falsch betont | Zahl ausschreiben oder umformulieren |
+| Render-Prozess meldet `Target crashed` oder `screenshot Timeout` | Zuerst `df -h /tmp` prüfen: Das Schreibkontingent der Sitzung war voll (27 MB frei), die Abstürze lagen daran. Alte `frames/`-Ordner löschen, dann nur die fehlenden Bilder nachrendern |
+| Große Ebenen mit CSS-`filter`, `mask` oder Blur machen das Rendern langsam und instabil | Hintergrundbilder vorab mit `ffmpeg` abdunkeln und zuschneiden, Übergänge nur mit Deckkraft und Verschiebung |
+| `faster-whisper` meldet `metadata_errors` (zu altes `av`) | Audio per `ffmpeg` nach `f32le` 16 kHz laden und das Array an `transcribe` geben |
+| „Muse" wird nicht englisch gesprochen | im Text `Mjus`, Untertitel `Muse` (Schreibweise `{Mjus|Muse}` im Skript) |
+| Skript-Satzzeichen als eigenes Wort gezählt | `build_script.py` hängt allein stehende Satzzeichen an das vorige Wort |
+| `pkill -f` im selben Befehl beendet die eigene Shell | Prozesse per `pgrep` und Kennung beenden, Namen nicht im Befehlstext wiederholen |
 | Test-WAV am Handy nicht abspielbar | als MP3 oder MP4 senden |
 | Datei mit Sprechertexten nicht zu öffnen | Text direkt in den Chat |
 | ARK-Studie (Primärquelle) nicht abrufbar (403) | Owner schickte das PDF |

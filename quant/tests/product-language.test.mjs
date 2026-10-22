@@ -210,7 +210,7 @@ test("the four layers are actually used: a section leads with meaning and folds 
   assert.match(card, /X\.more\("Rohdaten und Berechnung"/, "the methodology is not folded");
   assert.match(card, /X\.routes\.method\("faktoren"\)/, "the methodology layer does not lead to the methodology");
   /* Methodology stays folded in the other sections too. */
-  assert.match(stockPage, /X\.more\("Wie die Veränderung gemessen wird"/);
+  assert.match(stockPage, /X\.more\("Alle Veränderungen und wie sie gemessen werden"/);
   assert.match(stockPage, /X\.more\("Alle geprüften Bedingungen"/);
   /* X.more ist ein zugeklapptes <details>. */
   assert.match(app["ui.js"], /function more\([\s\S]*?el\("details", \{ class: "[^"]*\bqx-more"/);

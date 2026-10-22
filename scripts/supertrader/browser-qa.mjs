@@ -73,6 +73,11 @@ async function main() {
   if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
   const posSym = Object.values(signals.strategies).flatMap((st) => st.open).find((x) => x.entry)?.symbol;
   if (posSym) routes.push(['lens-position', `/supertrader/stock/${posSym}/`, '.st-lensblock .st-next']);
+  // Vorbereitetes Setup (Plan, noch kein Modelleinstieg) unabhaengig davon, welcher Zustand in 'lens' zuerst steht:
+  // beide Zustaende des Ein-/Ausstiegsblocks werden immer geprueft (ILMN 22.10.2026 lag nur zufaellig in 'lens').
+  const openAll = Object.values(signals.strategies).flatMap((st) => st.open);
+  const prepSym = openAll.find((x) => !x.entry && x.plan && x.plan.trigger && openAll.every((y) => y.symbol !== x.symbol || !y.entry))?.symbol;
+  if (prepSym) routes.push(['lens-prepared', `/supertrader/stock/${prepSym}/`, '.st-lensblock .st-next']);
   const reSym = (() => { for (const id of Object.keys(signals.strategies)) { try { const l = JSON.parse(fs.readFileSync(path.join(SITE, 'supertrader/data/ledger', id + '.json'), 'utf8')); const s = [...l.open, ...l.closed].find((x) => x.discovery?.kind === 'RULE_VERSION_REASSESSMENT'); if (s) return s.symbol; } catch { /* kein Ledger */ } } return null; })();
   if (reSym) routes.push(['lens-reassessed', `/supertrader/stock/${reSym}/`, '.st-tl']);
 
@@ -180,7 +185,7 @@ async function main() {
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
-      if ((name === 'lens' || name === 'lens-position') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
+      if ((name === 'lens' || name === 'lens-position' || name === 'lens-prepared') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
       if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       const shot = path.join(OUT, `${vpName}-${name}.png`);
       await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' });

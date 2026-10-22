@@ -14,3 +14,18 @@ body .ci-company-intelligence h2,body.dv2 .dv2-stock .dx-chapter.ci-company-inte
 .ci-company-intelligence .ci-change-values{display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center}.ci-company-intelligence .ci-change-previous,.ci-company-intelligence .ci-change-arrow{color:var(--ci-muted);font-size:.72rem;font-weight:400}.ci-company-intelligence .ci-change-current{grid-column:1/-1;font-size:1.15rem;font-weight:700;line-height:1.3}.ci-company-intelligence .ci-story-title a{font-variant-emoji:text}
 
 .ci-company-intelligence .ci-actions a::after,.ci-company-intelligence .ci-story-title a::after{content:"";flex-shrink:0;width:6px;height:6px;border-top:1px solid currentColor;border-right:1px solid currentColor;margin-left:9px;align-self:center;transform:translateY(-2px)}
+
+/* VU3-Finalisierung: kein Kasten um das Kapitel und keine Kästen in ihm. Abschnitte trennt eine Haarlinie,
+   Kennzahlen stehen als Raster ohne Rahmen (VU3 UI-System „Weniger Kästen“). Inhalt und Reihenfolge bleiben. */
+body .dx-chapter.ci-company-intelligence,body.dv2 .dv2-stock .dx-chapter.ci-company-intelligence{padding:0;border:0;border-radius:0;background:none}
+.ci-company-intelligence .ci-status{margin:0 0 12px}
+.ci-company-intelligence .ci-block{margin:0;padding:18px 0;border-top:1px solid var(--ci-line)}
+.ci-company-intelligence .ci-company-card{padding:18px 0;border:0;border-top:1px solid var(--ci-line);border-radius:0;background:none}
+.ci-company-intelligence .ci-values{gap:14px 18px}
+.ci-company-intelligence .ci-kpi,.ci-company-intelligence .ci-change{padding:0;border:0;border-radius:0;background:none}
+.ci-company-intelligence .ci-changes{gap:14px 18px}
+.ci-company-intelligence .ci-change-values{margin:4px 0}
+.ci-company-intelligence .ci-event{padding:0;margin:6px 0;border:0;border-radius:0;background:none}
+.ci-company-intelligence .ci-event-date{margin:6px 0 2px}
+.ci-company-intelligence .ci-story{padding:12px 0}
+@media(max-width:600px){body .dx-chapter.ci-company-intelligence,body.dv2 .dv2-stock .dx-chapter.ci-company-intelligence{padding:0;margin:20px 0;border-radius:0}.ci-company-intelligence .ci-company-card,.ci-company-intelligence .ci-kpi,.ci-company-intelligence .ci-event{padding-left:0;padding-right:0}.ci-company-intelligence .ci-values{grid-template-columns:repeat(2,minmax(0,1fr))}}

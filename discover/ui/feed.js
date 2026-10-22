@@ -233,7 +233,7 @@
     var ziel = "#/s/" + universeId + "/" + karte.symbol;
 
     var section = el("section", {
-      class: "dx-feed-screen", "data-world": karte.world || null,
+      class: "dx-feed-screen", "data-world": karte.world || null, "data-vu-href": ziel,
       "data-index": String(index), "data-symbol": karte.symbol,
       "aria-label": (index + 1) + " von " + gesamt + ": " + (karte.companyName || karte.symbol)
     }, [
@@ -243,7 +243,7 @@
           ? el("p", { class: "dx-kicker", text: karte.herkunft })
           : null,
         D.Logos ? D.Logos.mark(karte.symbol, { name: karte.companyName, size: "lg", onlyLogo: true }) : null,
-        el("h2", { class: "dx-feed-name", text: karte.companyName || karte.symbol }),
+        el("h2", { class: "dx-feed-name" }, [el("a", { href: ziel, "data-vu-card-main": "", text: karte.companyName || karte.symbol })]),
         el("p", { class: "dx-feed-meta" }, [karte.symbol, karte.sector]
           .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
         text.zahl ? el("div", { class: "dx-feed-zahl" }, [

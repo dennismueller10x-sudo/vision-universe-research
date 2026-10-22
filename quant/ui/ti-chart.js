@@ -29,7 +29,8 @@
     return n;
   }
   function isNum(v) { return typeof v === "number" && isFinite(v); }
-  function fmt(v) { if (!isNum(v)) return "–"; var d = v < 10 ? 2 : v < 100 ? 1 : 0; return v.toLocaleString("de-DE", { minimumFractionDigits: v < 10 ? d : 0, maximumFractionDigits: d }); }
+  /* Achsenwerte nahe null (Rundungsrest der Teilstriche, z. B. -1e-15) heissen "0" - nie "−0,00". */
+  function fmt(v) { if (!isNum(v)) return "–"; if (Math.abs(v) < 0.005) return "0"; var d = v < 10 ? 2 : v < 100 ? 1 : 0; return v.toLocaleString("de-DE", { minimumFractionDigits: v < 10 ? d : 0, maximumFractionDigits: d }); }
 
   /** Szenario-Sicht aus dem Datenvertrag (overlays) oder einem Szenario-Objekt (Rueckwaertskompatibilitaet). */
   function viewOf(o) {

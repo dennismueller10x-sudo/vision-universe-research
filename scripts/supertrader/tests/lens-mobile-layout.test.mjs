@@ -1,7 +1,8 @@
 // Regression: Ein-/Ausstiegsblock der Strategy Lens muss auf kleinen Handys (iPhone 14, 664 px
 // Viewport minus 64 px Produkt-Leiste, siehe browser-qa.mjs) ohne Scrollen sichtbar bleiben.
 // Die Messung selbst macht browser-qa.mjs im Browser; dieser Test haelt nur die dafuer noetigen
-// Kompaktregeln im mobilen Media-Block fest (CORT lag mit 602 px knapp ueber der Grenze 600 px).
+// Kompaktregeln im mobilen Media-Block fest (CORT lag mit 602 px knapp ueber der Grenze 600 px;
+// ILMN und PRSU 22.10.2026 siehe unten).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -28,16 +29,29 @@ test('Lens mobil: Kopf und Block sind kompakt gesetzt', () => {
   assert.match(m, /\.st-lensblock \.st-cells \.c \{ padding: 7px 8px; \}/);
 });
 
-test('Lens mobil: bei Modellposition (4 Zellen) steht der naechste Schritt vor dem Zellenraster', () => {
+test('Lens mobil: der naechste Schritt steht vor jedem Zellenraster (Position und vorbereitetes Setup)', () => {
   // IOVA 21.10.2026: Positionsgroesse als vierte Zelle -> 2x2-Raster, .st-next unten bei 720 px (Grenze 600 px).
+  // ILMN 22.10.2026: vorbereitetes Setup (3 Zellen) -> .st-next unten bei 619 px; 57 von 340 Setup-Seiten betroffen.
   const m = mobileBlock();
-  assert.match(m, /\.st-lensblock > \.st-cells\.four,\s*\.st-lensblock > \.st-cells\.four ~ :not\(\.st-next\):not\(\.st-clamp-wrap\) \{ order: 1; \}/);
+  assert.match(m, /\.st-lensblock > \.st-cells,\s*\.st-lensblock > \.st-cells ~ :not\(\.st-next\):not\(\.st-clamp-wrap\) \{ order: 1; \}/);
   // nur mobil: ausserhalb des Media-Blocks keine Umordnung
-  assert.equal(css.replace(m, '').includes('.st-cells.four ~'), false);
+  assert.equal(css.replace(m, '').includes('.st-cells ~'), false);
 });
 
-test('Browser-QA prueft den ersten Bildschirm auch fuer die Lens im Positionszustand', () => {
+test('Lens mobil: naechster Schritt kompakt, Text vollstaendig (Kennzeile und Datenstand in einer Zeile)', () => {
+  // PRSU 22.10.2026: Modellposition mit sechszeiliger Halte- und Ausstiegsregel, unten bei 624 px.
+  const m = mobileBlock();
+  assert.match(m, /\.st-lensblock \.st-next \{ display: grid; grid-template-columns: minmax\(0, 1fr\) auto;/);
+  assert.match(m, /\.st-lensblock \.st-next \.r \{ grid-area: 1 \/ 2;/);
+  assert.match(m, /\.st-lensblock \.st-next p \{ grid-column: 1 \/ -1; line-height: 1\.35; \}/);
+  // kein Text wird abgeschnitten oder versteckt
+  assert.equal(/\.st-next[^{]*\{[^}]*(display: none|line-clamp|overflow: hidden|text-overflow)/.test(m), false);
+});
+
+test('Browser-QA prueft den ersten Bildschirm fuer Lens, Position und vorbereitetes Setup', () => {
   const qa = fs.readFileSync(new URL('../browser-qa.mjs', import.meta.url), 'utf8');
-  assert.match(qa, /\(name === 'lens' \|\| name === 'lens-position'\) && isMobile/);
+  assert.match(qa, /\(name === 'lens' \|\| name === 'lens-position' \|\| name === 'lens-prepared'\) && isMobile/);
+  assert.match(qa, /routes\.push\(\['lens-prepared'/);
+  // die Grenze bleibt die volle Viewport-Hoehe minus Produkt-Leiste (keine Lockerung)
+  assert.match(qa, /m\.lensPlanBottom <= vp\.viewport\.height - 64/);
 });
-
