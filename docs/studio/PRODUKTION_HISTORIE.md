@@ -15,6 +15,7 @@ Stand 2026-10-22. Damit eine neue Sitzung nicht bei null beginnt.
 | Tesla, Q3-Zahlen (v1) | fertig, **nicht veröffentlicht**, Vorlage `quartalszahlen` | 60 s. Owner: Mischung mit dem ARK-Kursziel gefällt nicht, besser getrennte Reels zu den Earnings-Calls |
 | Meta, Muse (v1) | vom Owner am 22.10.2026 veröffentlicht | 44 s, Hook „Wahnsinn. 10 Millionen Menschen haben in sechs Wochen einen KI-Agenten eingerichtet" (Zahl des Owners), Vorlage `meta-muse`. Owner: „Das Video ist sehr gut". Messung nach 72 h nachtragen |
 | Tesla, Robotaxi Q3 (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 44,9 s, Hook „Fast 2 Mio. Meilen. Ohne Fahrer." (Hook-Score 8), Vorlage `tesla-robotaxi`. Ein Gedanke aus dem Q3-Update (PDF des Owners), Bilder aus der Präsentation, eigener Beweis „80-mal um die Erde", Re-Hook „Aber das kostet". Stimme 0,12 USD |
+| Unitree H2-X (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 41 s, Angst-Hook „Ein Mann mit Messer. Nachts. Vor deiner Tür.", Vorlage `fremdclip`. Clip von Unitree (Sek. 30 bis 54) im Vordergrund: **Ausnahme von Regel 4 auf ausdrücklichen Wunsch des Owners**, Quelle im Bild und in der Caption. Kosten: Apify 0,15 USD, Stimme 0,10 USD |
 
 Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studio/reels/`.
 
@@ -59,6 +60,8 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Bilder aus einer Unternehmens-Präsentation (PDF) | `pdfimages -j -f 11 -l 22 -p deck.pdf img`, kleine Dateien unter 20 KB löschen: Fotos kommen in voller Auflösung (3.712 × 1.857), nicht als Seiten-Screenshot |
 | Whisper (deutsch) hört „Austin" als „Osten" | Ausschnitt mit `language=en` gegenprüfen: englisches Modell erkennt „Austin", Aussprache ist richtig. „Cybercab" klingt wie „Cybercap" (Auslautverhärtung), akzeptiert |
 | Untertitel-Reste wie „gefahren." oder „Jahr." allein | nach `build_script.py` mit der vorigen Gruppe zusammenführen (Zeilen bis etwa 30 Zeichen, Schrift 52 px) |
+| YouTube-Download aus der Cloud-Sitzung (`yt-dlp`: 403, „Sign in to confirm you're not a bot") | Apify `streamers/youtube-video-downloader`, Ablage im Key-Value-Store; Obergrenze mindestens 0,50 USD, abgerechnet nach MB |
+| Hook-Wahl ohne eigene Messdaten | Owner bevorzugt Angst- und Schutz-Hooks; die Beobachtung stützt das (höchste Share-Rate 3,2 % bei „So stirbst du nicht"). Als Hypothese H9 messen |
 | Apify-Suche (Search-Scraper) Timeouts | Hashtag- und Profil-Scraper nutzen |
 | BMF-Seiten 503 | Bundestag, Bundesrat, BGBl., Bundesregierung als Quelle |
 | Bundesrat-Datum widersprüchlich (24.04. oder 08.05.) | bundesrat.de: 08.05.2026 |

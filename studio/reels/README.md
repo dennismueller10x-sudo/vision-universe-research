@@ -19,6 +19,7 @@ Nichts hier veröffentlicht etwas. Veröffentlicht wird nur im Approval Center d
 | `templates/tesla-ark/` | Referenzreel: Komposition, Zeitberechnung, Stimmentext, Caption |
 | `templates/meta-muse/` | Hook ab Bild 1, Zeichnungen, Handy-Mock-up, Hintergrundbilder |
 | `templates/quartalszahlen/` | datengesteuerte Zahlenvorlage (`data.json`), Beispiel Tesla Q3 |
+| `templates/fremdclip/` | fremdes Video im Vordergrund (nur mit Freigabe des Owners), Grundfilm aus Clip-Abschnitten, Grafikebene darüber |
 | `templates/tesla-robotaxi/` | ein Gedanke aus dem Quartalsbericht, Bilder aus der Präsentation, Route, Globus mit Zähler, Kurve, Uhr, Papierflieger |
 
 ## Ablauf in Kürze

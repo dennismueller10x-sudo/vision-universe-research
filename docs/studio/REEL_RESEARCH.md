@@ -85,3 +85,13 @@ Hook „Fast 2 Mio. Meilen. Ohne Fahrer." mit Lenkrad, das sich zeichnet und dur
 | 24 h | | | | | | | |
 | 72 h | | | | | | | |
 | 7 Tage | | | | | | | |
+
+### Unitree H2-X (v1, 22.10.2026)
+
+Fremdclip im Vordergrund (Ausnahme vom Owner freigegeben), Angst-Hook, Stempel „VORFÜHRUNG" als Re-Hook. Erster Test für H9 (Angst-Hook). Nach Veröffentlichung hier messen:
+
+| Messpunkt | Reichweite | Ø Wiedergabe | Shares | Saves | Kommentare | Profilbesuche | Follower |
+|---|---|---|---|---|---|---|---|
+| 24 h | | | | | | | |
+| 72 h | | | | | | | |
+| 7 Tage | | | | | | | |

@@ -128,6 +128,7 @@ Ausgangswerte (vor Neustart, offizielle Insights): Median Reichweite 12, Ø Wied
 | H6 | Hohe Produktion (Kallaway) schlägt einfache Karten (Finanz-Daten) | je 3 Reels pro Stil |
 | H7 | Person im Bild (Owner) schlägt reine Stimme | 3 Reels mit Person |
 | H8 | Serien und Wiederholung bringen mehr als Einzel-Hits | nach 4 Wochen |
+| H9 | Angst- oder Schutz-Hook schlägt Paradox-Hook | Unitree-Reel (Angst) gegen Fassung mit „Dein nächster Bodyguard will kein Gehalt" |
 
 ## 8. Erfahrungen aus der Entstehung
 

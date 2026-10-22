@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Unitree H2-X</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--bg-card:#121519;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+html.ovl,body.ovl{background:transparent!important}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:210px}
+.lime{color:var(--lime)} .red{color:var(--red)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.9)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+.hd{left:72px;right:60px;top:290px;height:290px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;font-weight:900;letter-spacing:-.045em;line-height:.98;font-size:104px;text-shadow:0 6px 30px rgba(0,0,0,.7)}
+#sub{left:60px;right:60px;top:1236px;height:170px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:52px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.9)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:rgba(18,21,25,.92);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:36px;color:var(--ink-2)}
+.row{left:72px;width:936px;top:1450px;height:330px;opacity:0;display:flex;gap:26px;align-items:stretch}
+.row .card{flex:1;padding:26px 28px;display:flex;flex-direction:column;justify-content:center;gap:12px;opacity:0}
+svg{overflow:visible}
+.ic{fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.dr{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.tag{font-weight:800;font-size:22px;letter-spacing:.12em;color:#fff;background:rgba(8,8,10,.62);border-radius:8px;padding:6px 12px}
+#win{left:0;top:600px;width:1080px;height:608px}
+</style></head>
+<body>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="shT" class="abs" style="left:0;right:0;top:0;height:600px;background:linear-gradient(180deg,rgba(8,8,10,.82),rgba(8,8,10,.62))"></div>
+<div id="shB" class="abs" style="left:0;right:0;top:1208px;bottom:0;background:linear-gradient(180deg,rgba(8,8,10,.7),rgba(8,8,10,.85))"></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Unitree · H2-X</div>
+
+<!-- Clip-Fenster (Video liegt im Grundfilm darunter) -->
+<div id="win" class="abs">
+ <div id="dim" class="abs" style="inset:0;background:#08080a;opacity:0"></div>
+ <div id="flash" class="abs" style="inset:0;background:#fff;opacity:0"></div>
+ <div id="bord" class="abs" style="inset:0"><div class="abs" style="left:0;right:0;top:0;height:4px;background:var(--lime)"></div><div class="abs" style="left:0;right:0;bottom:0;height:4px;background:var(--lime)"></div></div>
+ <div id="src" class="abs tag" style="right:18px;top:20px">VIDEO: UNITREE ROBOTICS</div>
+ <div id="rec" class="abs tag" style="left:18px;top:20px;display:flex;align-items:center;gap:10px"><span id="dot" style="width:14px;height:14px;border-radius:50%;background:var(--red)"></span>VIRAL</div>
+ <div id="stamp" class="abs" style="left:50%;top:50%;opacity:0;transform:translate(-50%,-50%) rotate(-8deg)">
+  <div style="border:8px solid var(--red);color:var(--red);font-weight:900;font-size:120px;letter-spacing:.02em;padding:6px 34px;border-radius:18px;background:rgba(8,8,10,.55);white-space:nowrap">VORFÜHRUNG</div>
+ </div>
+</div>
+
+<!-- Schlagzeilen über dem Clip -->
+<div id="h1" class="abs hd" style="opacity:1">
+ <div>Ein Mann mit <span id="mes" class="red">Messer.</span></div><div style="font-size:82px;margin-top:10px">Nachts. Vor deiner Tür.</div>
+</div>
+<div id="h1b" class="abs hd"><div>Und dann springt</div><div><span class="lime">das hier</span> dazwischen.</div></div>
+<div id="h2" class="abs hd"><div style="font-size:150px;letter-spacing:-.06em"><span class="lime">H2-X</span></div><div style="font-size:66px;margin-top:8px;color:var(--ink-2)">Roboter von Unitree</div></div>
+<div id="h3" class="abs hd"><div>Wirft sich vor</div><div>das <span class="red">Auto.</span></div></div>
+<div id="h4" class="abs hd"><div>Nur eine</div><div class="lime">Vorführung.</div></div>
+<div id="h5" class="abs hd"><div>Roboter können</div><div>nur <span class="lime">tanzen?</span></div></div>
+
+<!-- Icon-Reihen unter dem Clip -->
+<div id="r1" class="abs row">
+ <div id="c1a" class="card" style="border-color:rgba(255,107,94,.5)">
+  <svg width="120" height="80" viewBox="0 0 96 64"><path class="dr" id="knife" pathLength="1" stroke="#ff6b5e" stroke-width="4" d="M6 40 L58 18 C70 14 84 16 90 22 C78 30 66 38 56 42 Z M6 40 L4 48 L16 52 L22 44 M30 34 L34 44"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Angreifer mit Messer</div>
+ </div>
+ <div id="c1b" class="card" style="border-color:rgba(200,245,49,.6)">
+  <svg width="90" height="90" viewBox="0 0 64 64"><path class="dr" id="shield" pathLength="1" stroke="#c8f531" stroke-width="4" d="M32 6 L54 14 V30 C54 44 44 54 32 58 C20 54 10 44 10 30 V14 Z"/><path class="dr" id="chk" pathLength="1" stroke="#c8f531" stroke-width="5" d="M21 32 L29 40 L44 24"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Abgewehrt <span class="lime" style="font-weight:900">mit einem Tritt</span></div>
+ </div>
+</div>
+<div id="r2" class="abs row">
+ <div id="c2a" class="card">
+  <svg width="170" height="100" viewBox="0 0 96 64"><path class="dr" id="carp" pathLength="1" stroke="#f4f5f1" stroke-width="3.6" d="M6 48 V40 C6 36 10 34 16 33 L30 22 C34 19 40 18 48 18 C60 18 68 22 76 32 C84 33 90 36 90 42 V48 H80 M64 48 H32 M16 48 H6 M30 32 H74 M50 19 V32"/><circle class="dr" id="cw1" pathLength="1" cx="24" cy="50" r="8" stroke="#f4f5f1" stroke-width="3.6"/><circle class="dr" id="cw2" pathLength="1" cx="72" cy="50" r="8" stroke="#f4f5f1" stroke-width="3.6"/><path class="dr" id="uarr" pathLength="1" stroke="#c8f531" stroke-width="5" d="M86 16 V-14 M74 -2 L86 -16 L98 -2"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Hebt ein <span class="lime" style="font-weight:900">Auto</span> an</div>
+ </div>
+ <div id="c2b" class="card">
+  <svg width="90" height="90" viewBox="0 0 64 64"><rect class="dr" id="rh" pathLength="1" x="14" y="8" width="36" height="30" rx="12" stroke="#c8f531" stroke-width="4"/><path class="dr" id="rb" pathLength="1" stroke="#c8f531" stroke-width="4" d="M24 22 H28 M36 22 H40 M22 38 V58 M42 38 V58 M14 46 H50"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Humanoid, <span class="lime" style="font-weight:900">zwei Beine</span></div>
+ </div>
+</div>
+<div id="r3" class="abs row">
+ <div id="c3a" class="card" style="border-color:rgba(255,107,94,.5)">
+  <svg width="120" height="90" viewBox="0 0 80 64"><circle class="dr" id="pr1" pathLength="1" cx="40" cy="10" r="6" stroke="#f4f5f1" stroke-width="4"/><path class="dr" id="pr2" pathLength="1" stroke="#f4f5f1" stroke-width="4" d="M40 18 L34 36 L44 46 L42 60 M34 36 L24 52 M38 24 L52 30 M38 24 L26 26"/><path class="dr" id="burst" pathLength="1" stroke="#ff6b5e" stroke-width="4" d="M62 14 L72 6 M64 26 L78 26 M62 38 L72 46"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Stößt den <span class="red" style="font-weight:900">Fußgänger</span> weg</div>
+ </div>
+ <div id="c3b" class="card" style="border-color:rgba(200,245,49,.6)">
+  <svg width="90" height="90" viewBox="0 0 64 64"><path class="dr" id="upa" pathLength="1" stroke="#c8f531" stroke-width="5" d="M10 50 C24 50 30 40 34 30 S44 12 54 10 M42 8 L54 10 L52 22"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Steht <span class="lime" style="font-weight:900">wieder auf</span></div>
+ </div>
+</div>
+<div id="r4" class="abs row">
+ <div id="c4a" class="card">
+  <svg width="110" height="70" viewBox="0 0 96 60"><path class="dr" id="eye" pathLength="1" stroke="#c8f531" stroke-width="4" d="M4 30 C20 6 76 6 92 30 C76 54 20 54 4 30 Z"/><circle class="dr" id="iris" pathLength="1" cx="48" cy="30" r="12" stroke="#c8f531" stroke-width="4"/></svg>
+  <div class="big lime" style="font-size:72px;white-space:nowrap">&gt;<span id="views">300.000</span></div>
+  <div class="lab" style="font-size:32px">Aufrufe an einem Tag</div>
+ </div>
+ <div id="c4b" class="card">
+  <svg width="90" height="90" viewBox="0 0 64 64"><circle class="dr" id="pu1" pathLength="1" cx="32" cy="14" r="9" stroke="#f4f5f1" stroke-width="4"/><path class="dr" id="pu2" pathLength="1" stroke="#f4f5f1" stroke-width="4" d="M32 24 V44 M18 30 H46 M32 44 L22 60 M32 44 L42 60"/><path class="dr" id="pux" pathLength="1" stroke="#ff6b5e" stroke-width="3" d="M28 11 L31 14 M31 11 L28 14 M34 11 L37 14 M37 11 L34 14"/></svg>
+  <div class="lab" style="font-size:36px;color:var(--ink)">Puppen <span class="red" style="font-weight:900">statt</span> Menschen</div>
+ </div>
+</div>
+<div id="r5" class="abs" style="left:72px;width:936px;top:1450px;height:330px;opacity:0">
+ <svg width="936" height="260" viewBox="0 0 936 260">
+  <path class="dr" id="trail" pathLength="1" stroke="rgba(200,245,49,.6)" stroke-width="5" d="M20 220 C200 240 320 100 520 150 S760 160 880 50"/>
+  <g id="plane"><path transform="scale(1.7)" d="M-34 -6 L34 -30 L10 30 L-2 6 Z M-2 6 L34 -30" fill="rgba(200,245,49,.2)" stroke="#c8f531" stroke-width="5" stroke-linejoin="round"/></g>
+ </svg>
+ <div class="abs chip" style="left:0;top:40px;font-size:40px;color:var(--ink)">Schick das weiter <span class="lime" style="font-weight:900">→</span></div>
+</div>
+
+<!-- CTA -->
+<div id="s6" class="abs" style="left:72px;top:330px;width:936px;opacity:0">
+ <div style="margin-bottom:22px"><span class="chip"><b>APP</b> Vision Universe &middot; bald verf&uuml;gbar</span></div>
+ <div class="big" style="font-size:140px;letter-spacing:-.06em">Roboter in<br>der <span class="lime">App.</span></div>
+ <div id="p1" class="card" style="margin-top:300px;padding:34px 40px;opacity:0;border-color:rgba(200,245,49,.65);display:flex;align-items:center;gap:30px">
+  <svg width="110" height="110" viewBox="0 0 64 64" style="flex:none"><rect class="dr" id="ah" pathLength="1" x="12" y="6" width="40" height="34" rx="13" stroke="#c8f531" stroke-width="3.6"/><path class="dr" id="ab" pathLength="1" stroke="#c8f531" stroke-width="3.6" d="M23 22 H27 M37 22 H41 M24 31 H40 M32 40 V48 M16 48 H48 V60 H16 Z"/></svg>
+  <div><div class="big lime" style="font-size:70px">Humanoide Robotik</div><div class="lab" style="font-size:36px;margin-top:10px">Roboter, Sensoren, Antriebe</div></div>
+ </div>
+</div>
+
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+  <div class="abs lab" style="left:0;right:0;top:1040px;text-align:center;font-size:40px;color:var(--muted)">Bald verf&uuml;gbar</div>
+</div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{};
+if(new URLSearchParams(location.search).get("ovl")==="1"){document.documentElement.classList.add("ovl");document.body.classList.add("ovl");$("bg").style.display="none";}
+const ev=(n,fb)=>EV[n]!=null?EV[n]:fb;
+const trail=$("trail"), tLen=trail.getTotalLength();
+// sichtbar von a bis b, mit kurzem Ein- und Ausblenden
+const win=(t,a,b,first)=>first?1-seg(t,b-.2,b):Math.min(seg(t,a,a+.25),1-seg(t,b-.2,b));
+function show(id,t,a,b,first,dx=60){const k=win(t,a,b,first);$(id).style.opacity=k;$(id).style.transform=`translateX(${first?0:(1-eo(seg(t,a,a+.35)))*dx}px)`;}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px) scale(${.92+.08*k})`;return k;};
+const draw=(id,t,at,d=.8)=>{$(id).style.strokeDashoffset=1-eo(seg(t,at,at+d));};
+const de=n=>Math.round(n).toLocaleString("de-DE");
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  const tj=ev('jump',2.9), tk=ev('kick',4.9);
+  // Schlagzeilen
+  show("h1",t,0,tj,true); show("h1b",t,tj,a2); show("h2",t,a2,a3); show("h3",t,a3,a4); show("h4",t,a4,a5); show("h5",t,a5,a6);
+  $("mes").style.textShadow=`0 0 ${30*Math.abs(Math.sin(t*3))}px rgba(255,107,94,.8)`;
+  // Reihe 1
+  show("r1",t,0,a2,true); $("c1a").style.opacity=1; draw("knife",t,0,.6);
+  pop("c1b",t,tk+1.2,24); draw("shield",t,tk+1.3,.6); draw("chk",t,tk+1.8,.35);
+  // Reihe 2
+  show("r2",t,a2,a3); pop("c2b",t,a2+.1,20); draw("rh",t,a2+.2,.6); draw("rb",t,a2+.6,.5);
+  const tl=ev('lift',a2+5.5); pop("c2a",t,ev('car',a2+3)-.1,20); draw("carp",t,ev('car',a2+3),.8); draw("cw1",t,ev('car',a2+3)+.5,.3); draw("cw2",t,ev('car',a2+3)+.6,.3); draw("uarr",t,tl,.5);
+  $("c2a").querySelector("svg").style.transform=`translateY(${-10*Math.sin(Math.PI*seg(t,tl,tl+1.2))}px)`;
+  // Reihe 3
+  show("r3",t,a3,a4); pop("c3a",t,a3+.05,20); draw("pr1",t,a3+.1,.4); draw("pr2",t,a3+.3,.6); draw("burst",t,ev('hit',a3+2.5),.3);
+  pop("c3b",t,ev('up',a3+4.6),20); draw("upa",t,ev('up',a3+4.6)+.1,.6);
+  // Reihe 4
+  show("r4",t,a4,a5); pop("c4b",t,ev('props',a4+2.7)-.05,20); draw("pu1",t,ev('props',a4+2.7),.4); draw("pu2",t,ev('props',a4+2.7)+.2,.5); draw("pux",t,ev('props',a4+2.7)+.6,.3);
+  const tv=ev('views',a4+4.1); pop("c4a",t,tv-.1,20); draw("eye",t,tv,.6); draw("iris",t,tv+.3,.4);
+  $("views").textContent=de(300000*eo(seg(t,tv,tv+1.3)));
+  // Reihe 5: Papierflieger
+  $("r5").style.opacity=win(t,a5,a6);
+  const pp=Math.min(1,seg(t,a5+.2,a5+2.4)); const ppe=pp<.5?2*pp*pp:1-Math.pow(-2*pp+2,2)/2; trail.style.strokeDashoffset=1-ppe;
+  const pl=trail.getPointAtLength(tLen*ppe), pl2=trail.getPointAtLength(Math.min(tLen,tLen*ppe+4));
+  $("plane").setAttribute("transform",`translate(${pl.x},${pl.y}) rotate(${Math.atan2(pl2.y-pl.y,pl2.x-pl.x)*180/Math.PI+20})`);
+  // Clip-Fenster: Abdunkeln, Blitz beim Tritt und Aufprall, Stempel
+  $("dim").style.opacity=Math.max(.32*seg(t,a4,a4+.4), .72*seg(t,a5,a5+.4), .9*seg(t,a6,a6+.4));
+  const fl=k=>Math.max(0,1-Math.abs(t-k)/.12)*.35; $("flash").style.opacity=Math.max(fl(tk+1.85),fl(ev('hit',a3+2.5)+.5));
+  const st=eo(seg(t,a4+1.05,a4+1.35)); $("stamp").style.opacity=st*(1-seg(t,a5-.2,a5)); $("stamp").style.transform=`translate(-50%,-50%) rotate(-8deg) scale(${1.6-.6*st})`;
+  $("dot").style.opacity=.35+.65*(Math.sin(t*6)>0?1:0); $("rec").style.opacity=1-seg(t,a4,a4+.3);
+  $("src").style.opacity=1-seg(t,a6,a6+.3); $("bord").style.opacity=1-seg(t,a6,a6+.3);
+  // CTA
+  $("s6").style.opacity=seg(t,a6,a6+.35)*(1-seg(t,end,end+.25)); pop("p1",t,a6+1.2,30); draw("ah",t,a6+1.3,.7); draw("ab",t,a6+1.8,.6);
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=1-seg(t,end,end+.3);$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=(cur&&t<end)?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>
