@@ -1371,3 +1371,24 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qd .vu-shead{--vu-up:var(--q-up);--vu-down:var(--q-down)}
 .qd .q-results .q-scorebox b{color:#1d2708}.qd .q-results .q-scorebox.down b{color:#7c1d15}.qd .q-results .q-scorebox.warm b{color:#5c4204}.qd .q-results .q-scorebox.none b{color:#5a6068}
 .qd .qv-stock .q-alerts{color:var(--q-text);border:0;border-top:1px solid var(--q-line);border-radius:0;padding:12px 0 0}
+/* VU3-Finalisierung: Rueckblick in Kuerze (page-stock.js#evidenceOverview) - Zeilen statt Kacheln, Wert im Satz,
+   Balken fuer den Anteil, darunter die Aussagekraft. Und die Zeile "Nicht bewertbar" unter den Skalen. */
+.qd .q-evo{display:block;margin:0 0 6px}
+.qd .q-evo-rows{list-style:none;margin:0;padding:0}
+.qd .q-evo-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--q-line)}
+.qd .q-evo-row .q-evo-k{grid-column:1/-1}
+.qd .q-evo-t{margin:0;font-size:16px;line-height:1.45;color:var(--q-text)}
+.qd .q-evo-t b{font-size:18px;font-weight:850}
+.qd .q-evo-row.is-off .q-evo-t{color:var(--q-muted);font-size:15px}
+.qd .q-evo-more{align-self:end;font-size:13px;font-weight:750;color:var(--q-lime-text);text-decoration:none;white-space:nowrap}
+.qd .q-evo-bar{display:block;margin:8px 0 2px;max-width:320px}
+.qd .q-evo-strength{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:12px 0 0;font-size:13px;color:var(--q-muted)}
+.qd .qv-unrated{margin:8px 0 0;font-size:13px;line-height:1.5;color:var(--q-muted)}
+.qd .qv-unrated a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.qd .qx-sub-h{margin:14px 0 4px;font-size:13px;font-weight:800;color:var(--q-text)}
+/* Kursstruktur: der Ausblick ist ein Link, aber kein Kasten im Abschnitt (VU3 "Weniger Kästen"). */
+.qd #technik .cb-teaser{padding:0 0 14px;border:0;border-bottom:1px solid var(--q-line);border-radius:0;background:none}
+/* Setup: die zwei Fragen nebeneinander, auch mobil (je eine kurze Zaehlung mit Zeichen). */
+@media (max-width:640px){.qd .q-moves{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.qd .q-moves>div{padding:10px}}
+/* VU3-Finalisierung: mobil eine Haarlinie und 44 px Luft zwischen den Abschnitten (vorher 64 px). */
+@media (max-width:760px){.qd .qv-stock .qx-section{margin-top:20px;padding-top:24px}}

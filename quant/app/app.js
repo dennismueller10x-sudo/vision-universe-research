@@ -249,9 +249,9 @@
       el("p", {}, [el("a", { href: "/quant/#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/elliott/#/", text: "Zur Elliott-Übersicht" })])
     ]) : el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
-      el("p", { text: "Daten heute. Bessere Entscheidungen für morgen." }),
-      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
-      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
+      /* VU3-Finalisierung: ein Absatz Hinweis statt drei; Quellen und Stichtage stehen je Seite in "Daten & Methodik". */
+      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
+      el("p", {}, [el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
     root.replaceChildren(main, foot);
     var skip = document.querySelector(".qx-skip");
@@ -403,6 +403,8 @@
     if (!target) return;
     e.preventDefault();
     if (target.tagName === "DETAILS" && !target.open) { target.open = true; target.dispatchEvent(new Event("toggle")); }
+    /* Ziele hinter einem zugeklappten Abschnitt (z. B. Einzelheiten des Rueckblicks) oeffnen ihn mit. */
+    for (var up = target.parentElement; up; up = up.parentElement) if (up.tagName === "DETAILS" && !up.open) up.open = true;
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
