@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { lifecyclePart, researchCodeSha256 } from '../source-faithful/research/run-sf4-lifecycle.mjs';
+import { lifecyclePart, ppFixPart, researchCodeSha256 } from '../source-faithful/research/run-sf4-lifecycle.mjs';
 import { researchCodeSha256 as sf3CodeSha256 } from '../source-faithful/research/run-sf3-research.mjs';
 import { RUN_VARIANTS } from '../source-faithful/research/minervini-lifecycle.mjs';
 import { codeSha256 } from '../source-faithful/runner/run-research.mjs';
@@ -91,4 +91,14 @@ test('SF4-SNAPSHOT-RUN-CURRENT-CODE: der eingetragene maßgebliche Snapshot-Lauf
   assert.equal(auth[0].variantRegistrySha256, variantRegistrySha256());
   assert.equal(auth[0].datasetVerified, 'EXACT'); assert.equal(auth[0].allVariantsReconciled, true);
   assert.doesNotMatch(JSON.stringify(auth[0]), METRIC_KEYS);
+});
+
+test('SF4-RUNNER-PPFIX-PART: Vorher/Nachher-Teil liefert nur Zaehlungen; taeglich und Monatsende konsistent', () => {
+  const ds = dataset(12, 500);
+  const r = ppFixPart(ds, { from: day(0) });
+  assert.doesNotMatch(JSON.stringify(r), METRIC_KEYS);
+  assert.equal(r.daily.total, ds.securities.reduce((a, s) => a + s.bars.length, 0));
+  assert.equal(r.daily.unchanged + r.daily.changed, r.daily.total);
+  assert.equal(r.monthEndFull.unchanged + r.monthEndFull.changed, r.monthEndFull.total);
+  for (const k of [...Object.keys(r.daily.transitions), ...Object.keys(r.monthEndFull.transitions)]) assert.match(k, / -> DATA_BLOCKED_SETUP$/);
 });

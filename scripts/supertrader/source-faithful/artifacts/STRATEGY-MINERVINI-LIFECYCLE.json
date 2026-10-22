@@ -2080,7 +2080,9 @@
       "code": "methods/minervini.mjs#powerPlayScreen",
       "tests": [
        "sf-minervini: GC-MIN-PP-DEEP-CORRECTION",
-       "sf-minervini: GC-MIN-PP-CORRECTION-RANGE-FLAG"
+       "sf-minervini: GC-MIN-PP-CORRECTION-RANGE-FLAG",
+       "sf-minervini: GC-MIN-PP-MISSING-LOW",
+       "sf-pp-missing-low-fix: GC-MIN-PP-MISSING-LOW-CLASS"
       ]
      },
      "missing": null,
@@ -2093,7 +2095,7 @@
      "modelAssumptions": [],
      "testability": "GOLDEN_OR_ADVERSARIAL_TEST",
      "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": "open decision: the point inside 20-25 % (MANUAL_REVIEW_SETUP)",
+     "note": "open decision: the point inside 20-25 % (MANUAL_REVIEW_SETUP); a missing consolidation low is DATA_BLOCKED_SETUP since sf-minervini-1.0.1",
      "sources": [
       "B12 PDF 342 (HARD, MEDIUM)"
      ]
@@ -3206,7 +3208,7 @@
      },
      "sourceExact": 0,
      "translationOnlySource": true,
-     "contractVersion": "1.2.0",
+     "contractVersion": "1.3.0",
      "contractRuleStatuses": {
       "SOURCE_DERIVED": 5,
       "MANUAL_REVIEW_REQUIRED": 4

@@ -21,9 +21,9 @@
  * Nothing here declares a buy: every output keeps buyDeclarationAllowed false.
  */
 import { fin, smaAt, eligibleAtPriorSession, RESEARCH_UNIVERSE } from '../common/series.mjs';
-import { trendTemplate, powerPlayScreen, stopCheck, MIN_PARAMS } from '../methods/minervini.mjs';
+import { trendTemplate, powerPlayScreen, powerPlayPeak, stopCheck, MIN_PARAMS } from '../methods/minervini.mjs';
 
-export const MINERVINI_COMPONENTS_VERSION = 'sf-minervini-components-1.0.0';
+export const MINERVINI_COMPONENTS_VERSION = 'sf-minervini-components-1.0.1'; // 1.0.1: missing low in the consolidation -> DATA_BLOCKED_SETUP
 export const COMPONENT_CONVENTIONS = Object.freeze({
   rsLookbackSessions: 252,   // MIN-TT-08 proxy: 12-month price change (VU convention; IBD's formula is proprietary)
   swingSessions: 5,          // VCP evidence: a swing high is the highest high of +-5 sessions (convention)
@@ -213,8 +213,9 @@ export function sepaClassify(security, i, { rsProxy = null, asOfDate = security.
 /**
  * C07 classification on bar i:
  *  - NOT_QUALIFIED: no +100 % run-up in < 8 weeks with the run-up high still the high, or a correction > 25 %;
- *  - DATA_BLOCKED_SETUP: the window cannot be evaluated (missing bars in the last 2 x 40 sessions) or the run-up start
- *    volume evidence (MIN-PP-02 "begins with strong volume") has no 50-session history;
+ *  - DATA_BLOCKED_SETUP: the window cannot be evaluated (missing bars in the last 2 x 40 sessions), a low of the
+ *    consolidation is missing so the correction cannot be measured (MISSING_LOW_IN_CONSOLIDATION, 1.0.1), or the run-up
+ *    start volume evidence (MIN-PP-02 "begins with strong volume") has no 50-session history;
  *  - MANUAL_REVIEW_SETUP: qualified, but a printed range or OR branch needs judgment (correction 20-25 %, not tight ->
  *    VCP characteristics, consolidation beyond the typical 3-6 weeks);
  *  - CONFIRMED_MECHANICAL_SETUP: every machine-decidable component holds unambiguously (run-up, correction <= 20 %,
@@ -227,7 +228,12 @@ export function powerPlayClassify(security, i, P = MIN_PARAMS) {
   if (i < P.ppMaxSessions) return { ...base, classification: 'DATA_BLOCKED_SETUP', reasons: ['INSUFFICIENT_HISTORY'] };
   for (let k = from; k <= i; k++) if (!fin(bars[k].high) || !fin(bars[k].low)) return { ...base, classification: 'DATA_BLOCKED_SETUP', reasons: ['MISSING_BARS_IN_WINDOW'] };
   const [rec] = powerPlayScreen(security, { asOfIndex: i }, P);
-  if (!rec) return { ...base, classification: 'NOT_QUALIFIED' };
+  if (!rec) {
+    // the screen emits nothing when a consolidation low is missing (correction not measurable): data, not a rejection
+    const peak = powerPlayPeak(bars, i, P);
+    if (peak) for (let k = peak.p + 1; k <= i; k++) if (!fin(bars[k].low)) return { ...base, classification: 'DATA_BLOCKED_SETUP', reasons: ['MISSING_LOW_IN_CONSOLIDATION'], dataGaps: ['MISSING_LOW_IN_CONSOLIDATION'], peakDate: bars[peak.p].date };
+    return { ...base, classification: 'NOT_QUALIFIED' };
+  }
   const ev = Object.fromEntries(rec.machineScreenEvidence.map((e) => [e.ruleId, e.value]));
   const run = ev['MIN-SF-PP-RUNUP'], corr = ev['MIN-SF-PP-CORRECTION'], tight = ev['MIN-SF-PP-TIGHT'], dur = ev['MIN-SF-PP-DURATION'];
   const peak = bars.findIndex((b) => b.date === run.peakDate);

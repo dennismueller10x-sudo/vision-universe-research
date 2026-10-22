@@ -114,8 +114,8 @@ test('GC-MIN-SEPA-CLASSIFY: Trend Template ist Screen, keine Strategie; Komponen
   assert.equal(sepaClassify(sec, 100).classification, 'IPO_SCOPE_REVIEW');
   const down = { id: 'D', bars: mk(Array.from({ length: 300 }, (_, k) => 200 - k * 0.3)) };
   assert.equal(sepaClassify(down, 299).classification, 'NOT_QUALIFIED');
-  // the existing screen is unchanged
-  assert.equal(sepaScreen(sec).length, 1); assert.equal(MINERVINI_VERSION, 'sf-minervini-1.0.0');
+  // the SEPA screen is unchanged; 1.0.1 only fixes the owner-approved Power Play missing-low path (GC-MIN-PP-MISSING-LOW)
+  assert.equal(sepaScreen(sec).length, 1); assert.equal(MINERVINI_VERSION, 'sf-minervini-1.0.1');
 });
 
 // Power Play: 100 flat sessions, +120 % in 30 sessions on rising volume, then a consolidation

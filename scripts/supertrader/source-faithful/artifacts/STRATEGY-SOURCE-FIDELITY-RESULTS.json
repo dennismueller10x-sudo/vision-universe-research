@@ -605,8 +605,8 @@
   {
    "strategyId": "SF_MINERVINI_POWER_PLAY",
    "candidateId": "C07",
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "82608805343fc6134ce2c23c0a84e967e246e85a42db95d58fd093c98500470b",
+   "sourceContractVersion": "1.3.0",
+   "contractFingerprint": "8bbda9ce658f9914097dfdf441d9ef87c0e462b79d67fed65188190c802253ca",
    "sourceCoverage": {
     "rulesInScope": 20,
     "hardRules": 6,
@@ -651,7 +651,7 @@
       "MIN-PP-04"
      ],
      "gate": true,
-     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point)"
+     "derivation": "B12 is a machine-like translation: the threshold is used as printed in #709, flagged translationUnverified, and the record goes to review; it is not certified source-exact; the gate uses the outer bound 25 %; corrections in (20 %, 25 %] are flagged for review (printed range, not a point); a missing low in the consolidation leaves the correction unmeasured and the gate unconfirmed: no record (sf-minervini-1.0.1, classification DATA_BLOCKED_SETUP)"
     },
     {
      "ruleId": "MIN-SF-PP-TIGHT",
@@ -663,8 +663,8 @@
     }
    ],
    "goldenCases": {
-    "total": 7,
-    "pass": 7
+    "total": 8,
+    "pass": 8
    },
    "noInventedThreshold": true
   },
@@ -900,12 +900,12 @@
   }
  ],
  "goldenSummary": {
-  "goldenCases": 115,
-  "pass": 115,
+  "goldenCases": 116,
+  "pass": 116,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 238,
-  "testsFailed": 0,
+  "testsRun": 242,
+  "testsFailed": 1,
   "testsSkipped": 2
  }
 }
