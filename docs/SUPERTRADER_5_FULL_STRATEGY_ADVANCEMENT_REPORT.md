@@ -152,7 +152,7 @@ Es wurde **kein neuer Strategie-Backtest** zugelassen. Die Kennzeichnung folgt d
   - Determinismus jeder Referenz (zweifacher Lauf mit identischem Ledger).
   - Präfix-PIT-Test für jeden Lifecycle: Entscheidungen vor einem Schnitt hängen nicht von späteren Balken ab. Zusätzlich hat das Code-Review alle Varianten mit 3 % fehlenden und 1 % synthetischen Balken geprüft.
   - Ledger-Abstimmung in jedem Lauf.
-- **Snapshot**: Abschnitt „Snapshot-Lauf“ unten.
+- **Snapshot**: maßgeblicher Lauf 39770019164 (Abschnitt „Snapshot-Lauf“). Datensatz `EXACT`, aktueller Research-Code, alle Varianten abgestimmt, Referenzen deterministisch.
 
 ### Welche Golden Cases und Tests wurden bestanden?
 
@@ -186,7 +186,44 @@ Eine bewusst offen gelassene Einordnung aus dem Code-Review: Bei Darvas liegt de
 
 ## Snapshot-Lauf
 
-SNAPSHOT_RUN_PLACEHOLDER
+Maßgeblicher Lauf [39770019164](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39770019164), Commit `6a484c59c`, Workflow-Modus `sf5-lifecycle`:
+
+- **Datensatz:** `sts1-134d…`, 9.211 Segmente und 2.701 Sitzungen. Die Prüfung gibt `EXACT` (`3ea6443de70c…`), denselben Datensatz wie der maßgebliche Minervini-Lauf aus 4.0.
+- **Fingerabdrücke:**
+  - Research-Code `4ae0fe32544f…` ist identisch mit dem aktuellen Code (Test `SF5-SNAPSHOT-RUN-CURRENT-CODE`).
+  - Engine (AG-3) `ae2a51ed86ae…` ist unverändert.
+  - Varianten-Fingerabdruck `947eedb5eb11…` wurde vor dem Lauf festgeschrieben.
+- **Prüfungen:** Alle 39 Varianten der 7 Lifecycles sind abgestimmt (Ledger-Replay, Endbestand PASS). Jede Referenz lief zweimal mit identischem Ergebnis.
+- **Kennzahlen:** versiegelt auf `claude/supertrader-validation-results` (Ablage `20261022T121558Z`). Öffentlich sind nur Zählungen; eingetragen in `completion/build-sf5-lifecycle.mjs#SF5_SNAPSHOT_RUNS`.
+
+| Lifecycle | REF-Trades (geschlossen / offen am Datenende) | häufigste Ausstiegsgründe der Referenz | Trades je Variante |
+|---|---|---|---|
+| Darvas | 19.556 (19.555 / 1) | Stop am Einstiegstag angenommen 17.002; sicher 1.772; Initialstop 432; angehobener Stop 321 | ALT-BOTTOM-AFTER-TOP-CONFIRMED 15.385; ALT-INTRABAR-OPTIMISTIC 7.515; Gewicht 5 % 21.965; Gewicht 20 % 14.924; Risiko 1 % 13.773 |
+| Kullamägi Breakout | 6.601 (6.588 / 13) | Initialstop 4.008; Break-even-Stop 1.356; MA10-Trail 1.185 | Konsolidierung 20: 6.335; ohne MA: 7.015; nächste Eröffnung: 9.114; Teilverkauf Tag 5 / ½: 6.374; MA20-Trail: 5.797; ohne Teilverkauf: 5.396; Trail ab Einstieg: 6.583; Risiko 0,25 %: 8.445; Risiko 1 %: 5.573 |
+| Pocket Pivot | 1.872 (1.852 / 20) | 50DMA-Verletzung 1.636; 10DMA-Verletzung 182 | ohne Kontext 2.510; Lesart nächster Tag 1.851; Gewicht 5 % 1.901; Gewicht 20 % 1.827 |
+| Buyable Gap-Up | 3.415 (3.398 / 17) | Gap-Tagestief 1.403; Gap-Tagestief am Einstiegstag (sicher) 1.202; 50DMA 553; 10DMA 190 | ohne Kontext 4.334; Lesart nächster Tag 3.632; Risiko 0,5 % 3.763; Risiko 2 % 3.290 |
+| Weinstein Investor | 1.348 (1.328 / 20) | WEIN-VOL5 1.038; Trailing-Stop 142; Initialstop 124 | ohne VOL5 311; Trailing 10 % 1.184; Risikoleitlinie 15 % 2.252; volle Position 1.230 |
+| Weinstein Trader | 1.808 (1.789 / 19) | WEIN-VOL5 1.175; Initialstop 326; Trailing-Stop 217 | ohne VOL5 515; Risikoleitlinie 15 % 2.580 |
+| Holy Grail (Variante W-RAS97) | 4.025 (4.006 / 19) | Initialstop 2.014; neues Hoch 1.318; Stop am Einstiegstag 633 | Balken vor Berührung 4.098; optimistisch 3.624; ADX am Impulshoch 2.164; nur erste Berührung 4.881 |
+
+Was die Zählungen zeigen (keine Performanceaussage, die Kennzahlen bleiben versiegelt):
+
+- **Darvas misst vor allem die Intrabar-Annahme.**
+  - 87 % der Referenztrades enden am Einstiegstag mit einem angenommenen Stop.
+  - Der Stop liegt einen Cent unter dem Trigger. Mit der optimistischen Lesart halbiert sich die Zahl der Trades (7.515), weil Positionen länger gehalten werden.
+  - Tagesbalken können diese Frage nicht entscheiden. Sie braucht Intraday-Daten oder Ihre Festlegung (Entscheidung 4).
+- **Weinstein wird von WEIN-VOL5 geprägt.**
+  - Die meisten Ausbrüche erfüllen keine der drei gedruckten Volumenalternativen (jeweils mindestens das Doppelte). Sie werden bei der ersten Stärke verkauft, und das frei werdende Kapital erzeugt weitere Einstiege.
+  - Ohne VOL5 bleibt das Buch mit 20 Positionen fast dauerhaft voll (311 bzw. 515 Trades).
+  - Die Regel ist in #709 HARD. Ihre Operationalisierung („erste kleine Stärke“ = erster höherer Schluss) ist Modellannahme MA-WEIN-VOL5-STRENGTH.
+- **Pocket Pivot ist kapazitätsgebunden.**
+  - Ohne Preisstop werden Positionen nur über den Sell-Guide geschlossen. Die 20 Plätze sind fast immer belegt.
+  - Welche Signale gehandelt werden, entscheidet damit die neutrale Fill-Reihenfolge, nicht die Methode.
+  - Das ist eine Folge der Quellenlücke (kein Stop), kein Fehler. Es macht die Modellstudie aber wenig aussagekräftig.
+- **Kullamägi:**
+  - KK-012 lehnte 59.730 Ausbrüche wegen zu weiten Stops ab. Ein engerer Ersatzstop wurde nie gesetzt.
+  - 81 % der geschlossenen Trades enden am Initial- oder Break-even-Stop.
+
 
 ## Geprüft, aber nicht weiterentwickelt (keine künstliche Arbeit)
 
@@ -199,7 +236,7 @@ SNAPSHOT_RUN_PLACEHOLDER
 
 | PR | Inhalt | Zustand |
 |---|---|---|
-| PR_PLACEHOLDER | Gemeinsame Engine, Lifecycles Darvas, Kullamägi Breakout, Pocket Pivot, BGU, Weinstein, Holy-Grail-Variante, Matrix, Readiness, Runner, Workflow-Modus, Bericht | Draft, Tests grün, Reviews eingearbeitet |
+| [#849](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/849) | Gemeinsame Engine, Lifecycles Darvas, Kullamägi Breakout, Pocket Pivot, BGU, Weinstein, Holy-Grail-Variante, Matrix, Readiness, Runner, Workflow-Modus, Bericht | Draft, Tests grün, Reviews eingearbeitet |
 
 Warum ein PR statt der empfohlenen sieben Pakete: Engine, Registry, Matrix, Validator, Readiness-Artefakt und Runner bilden eine technische Einheit. Jede Lifecycle-Ergänzung erzeugt dieselben generierten Artefakte neu (`STRATEGY-*.json`, Golden Record, Readiness-Dokumente). Getrennte PRs würden bei jedem Merge in Artefaktkonflikte laufen. Die Commits sind nach Arbeitspaketen gegliedert.
 
