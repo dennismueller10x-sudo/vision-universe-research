@@ -18,7 +18,7 @@ Keine Formel garantiert Reichweite. Diese ist die stärkste Zusammenfassung dess
 | 4. Re-Hook | bei 40 bis 60 % | Fehlschlag-Finte („Aber heute verkauft Tesla keinen einzigen Roboter an Kunden."). Holt zurück, wenn die Aufmerksamkeit sinkt. | Gibt es in der Mitte eine Wendung? |
 | 5. Eigener Beweis | im Mittelteil | Eine Zahl, Rechnung oder ein Gesetzesverweis, den **wir** liefern (Förderrechner, Discover, Quant, BGBl.). Keine reine geliehene Autorität. | Was belegt das, was nur wir haben? |
 | 6. Einordnung | vor dem Schluss | Kurzer ehrlicher Rahmen („Das ist ein Modell, keine Prognose."). Er senkt das Risiko, ohne den Hook zu töten. | Ist die Aussage so gesagt, dass sie vor einer Prüfung besteht? |
-| 7. Teilen und App | letzte 3 bis 5 s | Ein Anlass zum **Teilen oder Speichern** („Schick das jemandem, der …", „Speichere dir die Rechnung") und der App-Hinweis („bald verfügbar", Endkarte „App"). | Warum sollte jemand das weiterschicken? |
+| 7. App und Anlass | letzte 3 bis 5 s | **App-Hinweis zuerst** („bald verfügbar", Endkarte „App"). Ein gesprochener Aufruf zum Weiterschicken entfällt vorerst (Owner-Entscheidung 21.10.2026). Der Anlass zum Teilen oder Speichern steckt im Inhalt (Rechnung, Tabelle, Warnung). | Würde jemand das ohne Aufruf weiterschicken? |
 
 Grundlagen: Shares erzeugen Views, Saves erzeugen Follower (Kallaway, bestätigt durch Auswertung der Gewinner). Haltezeit entscheidet über die Auslieferung; in den ersten 3 bis 5 Sekunden verlieren wir die meisten (eigene Messung: Ø Wiedergabe 2,6 bis 5,2 s).
 
@@ -37,7 +37,7 @@ Regeln für Hooks: keine Frage ohne Betrag oder Konflikt; keine Superlative, die
 
 ### Hook-Score (vor der Produktion, 0 bis 10)
 
-Je ein Punkt: (1) Betrag oder Prozent im ersten Satz, (2) Zielgruppe oder „du", (3) Konflikt, Gefahr oder Gegner, (4) Überraschung oder Widerspruch, (5) gesprochen ab 0,2 s, (6) derselbe Satz als Großtext im ersten Bild, (7) nach unter 10 s ein zweiter Spannungspunkt, (8) Re-Hook in der Mitte, (9) eigener Beweis, (10) Teilen- oder Speichern-Anlass. **Unter 7 Punkten wird nicht produziert.**
+Je ein Punkt: (1) Betrag oder Prozent im ersten Satz, (2) Zielgruppe oder „du", (3) Konflikt, Gefahr oder Gegner, (4) Überraschung oder Widerspruch, (5) gesprochen ab 0,2 s, (6) derselbe Satz als Großtext im ersten Bild, (7) nach unter 10 s ein zweiter Spannungspunkt, (8) Re-Hook in der Mitte, (9) eigener Beweis, (10) Anlass zum Teilen oder Speichern im Inhalt (ohne gesprochenen Aufruf). **Unter 7 Punkten wird nicht produziert.**
 
 ### Erstes Bild
 
