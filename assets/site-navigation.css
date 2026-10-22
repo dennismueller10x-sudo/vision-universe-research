@@ -189,3 +189,9 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 @media(max-width:760px){.vu-chart--bleed{margin-inline:calc(-1 * var(--vu-gutter) + 4px)}}
 .vu-more>summary:focus-visible,.vu-dm>summary:focus-visible,.vu-ranges button:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.vu-more>summary:after{transition:none}}
+
+/* VU3: ganze Aktienkarte als Einstieg (assets/site-navigation.js, data-vu-href). */
+[data-vu-href]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+[data-vu-href] a[data-vu-card-main]{color:inherit;text-decoration:none}
+[data-vu-href] a[data-vu-card-main]:focus-visible{outline:3px solid var(--vu-focus);outline-offset:3px;border-radius:6px}
+@media(hover:hover){[data-vu-href]:hover a[data-vu-card-main]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}}
