@@ -240,7 +240,7 @@
      schaltet sie; sonst setzt der Kopf <html data-theme> selbst und meldet
      den Wechsel mit dem Ereignis vu-theme-change. */
   const THEME_KEY = 'vu-discover-theme-v1';
-  const BAR = {light: '#ffffff', dark: '#08080a'};
+  const BAR = {light: '#ffffff', dark: '#000000'};
   const currentTheme = () => document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   const applyTheme = (mode, persist) => {
     const engine = window.VUDiscover && window.VUDiscover.theme;
