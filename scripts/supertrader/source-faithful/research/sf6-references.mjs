@@ -14,7 +14,7 @@ import { SF5_LIFECYCLES } from './sf5-lifecycles.mjs';
 /** Reference execution costs of every research run (research-v1 convention): 10 bps slippage per side, 1 bp commission. */
 export const REFERENCE_COSTS = Object.freeze({ slippageBps: 10, commissionBps: 1 });
 
-const norm = (t) => ({ id: t.id, entryDate: t.entryDate, exitDate: t.exitDate ?? null, exitReason: t.exitReason ?? null, shares: t.shares, status: t.status, pnl: t.pnl ?? null, returnPct: t.returnPct ?? null, heldSessions: t.heldSessions ?? null });
+const norm = (t) => ({ id: t.id, signalDate: t.signalDate ?? null, entryDate: t.entryDate, exitDate: t.exitDate ?? null, exitReason: t.exitReason ?? null, shares: t.shares, status: t.status, pnl: t.pnl ?? null, returnPct: t.returnPct ?? null, heldSessions: t.heldSessions ?? null });
 
 function turtle(ds, system, { from, to, costs }) {
   const r = runTurtle(ds, { system, from, to, scenario: 'S0_LAST_PRICE', slippageBps: costs.slippageBps, commissionBps: costs.commissionBps });

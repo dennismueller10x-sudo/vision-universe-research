@@ -106,3 +106,25 @@ test('SF6-VALIDATION-STATS: Trefferquote, Erwartungswert, Profitfaktor, Konzentr
   const before = cls.regime(day(230)); ds.benchmark[230] = { ...ds.benchmark[230], close: 1e9 };
   assert.equal(makeClassifiers(ds).regime(day(230)), before);
 });
+
+test('SF6-MIN-EPS-SPLIT: Vorjahres-EPS ueber einen 2:1-Split wird PIT-genau bereinigt; spaetere Splits aendern nichts', async () => {
+  const { fundamentalEvidenceSf6, splitFactorBetween } = await import('../source-faithful/research/minervini-fundamentals-sf6.mjs');
+  const { fundamentalEvidence } = await import('../source-faithful/research/minervini-components.mjs');
+  // bars: 2:1 split on 2019-06-03 (splitAdj 2 before, 1 after), and a later 1:4 reverse split in 2021 (splitAdj x 0.25 before it)
+  const bars = [];
+  for (let k = 0; k < 1300; k++) { const d = new Date(Date.UTC(2017, 0, 2) + k * 864e5).toISOString().slice(0, 10); const s = (d < '2019-06-03' ? 2 : 1) * (d < '2021-03-01' ? 0.25 : 1); bars.push({ date: d, splitAdj: s }); }
+  assert.equal(splitFactorBetween(bars, '2018-08-01', '2019-08-01'), 2);
+  assert.equal(splitFactorBetween(bars, '2019-08-01', '2020-08-01'), 1, 'der spaetere Reverse-Split kuerzt sich heraus');
+  // quarterly EPS, first filed ~40 days after the quarter end; true EPS grows 20 % y/y, reported pre-split values are doubled
+  const fund = { eps: [['2018-03-31', 2.0, '2018-05-10'], ['2018-06-30', 2.0, '2018-08-09'], ['2018-09-30', 2.0, '2018-11-08'], ['2018-12-31', 2.0, '2019-02-20'], ['2019-03-31', 2.4, '2019-05-09'], ['2019-06-30', 1.2, '2019-08-08'], ['2019-09-30', 1.2, '2019-11-07'], ['2019-12-31', 1.2, '2020-02-20']], rev: [] };
+  const v1 = fundamentalEvidence(fund, '2020-03-02'), v2 = fundamentalEvidenceSf6(fund, '2020-03-02', bars);
+  assert.ok(Math.abs(v1.eps.latestYoy - (-0.4)) < 1e-12, '4.0-Evidenz liest -40 % (Splitbruch)');
+  assert.ok(Math.abs(v2.epsSplitConsistent.latestYoy - 0.2) < 1e-12, 'bereinigt +20 %');
+  assert.equal(v2.epsSplitConsistent.correctedQuarters, 3, 'die drei Quartale nach dem Split');
+  assert.ok(v2.changedVsV1.latestYoy);
+  assert.equal(v2.eps.latestYoy, v1.eps.latestYoy, 'die 4.0-Felder bleiben unveraendert');
+  const noSplit = fundamentalEvidenceSf6(fund, '2019-06-01', bars);
+  assert.equal(noSplit.epsSplitConsistent.correctedQuarters, 0); assert.equal(noSplit.changedVsV1.latestYoy, false);
+  const noBars = fundamentalEvidenceSf6(fund, '2020-03-02', []);
+  assert.equal(noBars.epsSplitConsistent.undeterminableQuarters, 4, 'ohne Kurse keine stille Korrektur');
+});

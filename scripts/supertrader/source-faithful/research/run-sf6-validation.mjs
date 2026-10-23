@@ -8,12 +8,13 @@
  *     - market regime at the prior session: SPY close above / below its 200-session SMA;
  *     - liquidity at the prior session: mean 20-session raw dollar volume in fixed bands (1-5 M, 5-25 M, >= 25 M USD);
  *     - concentration: share of the summed profit carried by the ten largest trades;
- *  3. the Supertrader 6.0 model variants (research/sf6-model-variants.mjs) beside their unchanged sf5 references.
+ *  3. the Supertrader 6.0 model variants (research/sf6-model-variants.mjs) beside their unchanged sf5 references;
+ *  4. the split consistency of the Minervini EPS evidence at the SEPA REF entries (research/minervini-fundamentals-sf6.mjs).
  * No parameter is chosen from these results. The DEV window has been read by many earlier rounds: none of this is an
  * untouched holdout. Public: counts and hashes only; sealed (owner key): metrics and trade statistics.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf6-validation.mjs --snapshot sts1-<id> --accounting research-v1 \
- *        --out <dir> [--references TURTLE_S1,...] [--parts costs,splits,models] [--limit 400 --smoke-snapshot]
+ *        --out <dir> [--references TURTLE_S1,...] [--parts costs,splits,models,fundamentals] [--limit 400 --smoke-snapshot]
  */
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -31,6 +32,7 @@ import { runResearchLifecycle, prepareAll } from './lifecycle-engine.mjs';
 import { SF5_LIFECYCLES } from './sf5-lifecycles.mjs';
 import { SF6_REFERENCES, SF6_REFERENCE_KEYS, REFERENCE_COSTS } from './sf6-references.mjs';
 import { SF6_MODEL_VARIANTS, sf6ModelVariantsSha256 } from './sf6-model-variants.mjs';
+import { fundamentalEvidenceSf6, MIN_FUNDAMENTALS_SF6_VERSION } from './minervini-fundamentals-sf6.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -54,7 +56,7 @@ export const SF6_VALIDATION_PROTOCOL = Object.freeze({
 });
 export function sf6ValidationProtocolSha256() { return crypto.createHash('sha256').update(JSON.stringify(SF6_VALIDATION_PROTOCOL)).digest('hex'); }
 
-const FILES = ['sf6-references.mjs', 'sf6-model-variants.mjs', 'run-sf6-validation.mjs'];
+const FILES = ['sf6-references.mjs', 'sf6-model-variants.mjs', 'minervini-fundamentals-sf6.mjs', 'run-sf6-validation.mjs'];
 export function validationCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -115,8 +117,27 @@ function splitsOf(trades, cls, protocol) {
 const metricsOf = (x, ds, protocol) => computeDiagnosticMetrics({ curve: x.run.curve, trades: x.metricTrades, ledger: x.run.ledger, costs: x.run.counts.costs, spyTR: ds.spyTR, splitPeriods: protocol.splitPeriods, initialCapital: 100000 });
 const pubRun = (x) => ({ trades: x.trades.length, closed: x.trades.filter((t) => t.status === 'CLOSED').length, exitReasons: tally(x.trades, (t) => t.exitReason), reconciliation: x.run.reconciliation.pass, ledgerSha256: sha(x.run.ledger), tradesSha256: sha(x.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) });
 
+/**
+ * MIN-SF-FUNDAMENTALS split consistency at every SEPA REF entry (evidence only, no trade changes): how many entries
+ * carry a year-ago EPS across a split, and where the 4.0 evidence and the split-consistent evidence differ. Counts only.
+ */
+export function fundamentalsComparison(ds, trades) {
+  const byId = new Map(ds.securities.map((s) => [s.id, s])), out = { version: MIN_FUNDAMENTALS_SF6_VERSION, entries: trades.length, withEvidence: 0, withCorrectedQuarter: 0, withUndeterminableQuarter: 0, latestYoyChanged: 0, acceleratingChanged: 0 };
+  for (const t of trades) {
+    const s = byId.get(t.id); if (!s || !t.signalDate) continue;
+    const e = fundamentalEvidenceSf6(s.fund, t.signalDate, s.bars);
+    if (!e.epsSplitConsistent) continue;
+    out.withEvidence++;
+    if (e.epsSplitConsistent.correctedQuarters > 0) out.withCorrectedQuarter++;
+    if (e.epsSplitConsistent.undeterminableQuarters > 0) out.withUndeterminableQuarter++;
+    if (e.changedVsV1.latestYoy) out.latestYoyChanged++;
+    if (e.changedVsV1.accelerating) out.acceleratingChanged++;
+  }
+  return out;
+}
+
 /** Pure part on one dataset. */
-export function validationPart(ds, { keys = SF6_REFERENCE_KEYS, parts = ['costs', 'splits', 'models'], from = L.WINDOW.from, to = L.WINDOW.to, protocol = SF6_VALIDATION_PROTOCOL, log = () => {} } = {}) {
+export function validationPart(ds, { keys = SF6_REFERENCE_KEYS, parts = ['costs', 'splits', 'models', 'fundamentals'], from = L.WINDOW.from, to = L.WINDOW.to, protocol = SF6_VALIDATION_PROTOCOL, log = () => {} } = {}) {
   const pub = { runner: SF6_VALIDATION_RUNNER_VERSION, protocol: protocol.id, protocolSha256: sf6ValidationProtocolSha256(), certification: 'DIAGNOSTIC_NOT_CERTIFIED', holdout: protocol.holdout, window: { from, to }, references: {}, models: {} };
   const sealed = { label: 'DIAGNOSTIC_METRICS_NOT_A_STRATEGY_RETURN', references: {}, models: {} };
   const cls = makeClassifiers(ds, protocol);
@@ -128,6 +149,7 @@ export function validationPart(ds, { keys = SF6_REFERENCE_KEYS, parts = ['costs'
       if (!x.run.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${ref.key}:${c.id}`);
       p.costLevels[c.id] = pubRun(x); s.costLevels[c.id] = { metrics: metricsOf(x, ds, protocol), stats: tradeStats(x.trades) };
       if (c.id === 'REF' && parts.includes('splits')) { const sp = splitsOf(x.trades, cls, protocol); p.splits = sp.pub; s.splits = sp.sealed; }
+      if (c.id === 'REF' && ref.key === 'MINERVINI_SEPA' && parts.includes('fundamentals')) p.fundamentalsSplitConsistency = fundamentalsComparison(ds, x.trades);
       log(`${ref.key} ${c.id}: trades ${x.trades.length}`);
     }
   }
@@ -151,7 +173,7 @@ async function main() {
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
-  const LIMIT = Number(arg('--limit', '0')), keys = arg('--references', SF6_REFERENCE_KEYS.join(',')).split(','), parts = arg('--parts', 'costs,splits,models').split(',');
+  const LIMIT = Number(arg('--limit', '0')), keys = arg('--references', SF6_REFERENCE_KEYS.join(',')).split(','), parts = arg('--parts', 'costs,splits,models,fundamentals').split(',');
   if (!keys.every((k) => SF6_REFERENCE_KEYS.includes(k))) { console.error('UNKNOWN_REFERENCE'); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[sf6-validation +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
