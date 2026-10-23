@@ -4,7 +4,9 @@
  * of methods/kullamagi.mjs; report docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
  *
  * Source-exact mechanics (#709 W-KK3 / W-KKFAQ, HARD, HIGH, original wording checked):
- *  - initial stop = low of the entry day; a stop wider than ADR20 REJECTS the trade, it is never tightened (KK-012);
+ *  - initial stop = low of the entry day; a stop wider than ADR20 REJECTS the trade, it is never tightened (KK-012). Exact
+ *    only in ALT-ENTRY-BREAKOUT-DAY-CLOSE; the next-open reference (owner decision 2026-10-23) applies the derived reading
+ *    stop = breakout-day low, planned loss from the open <= ADR20;
  *  - ADR20 = mean of (high / low - 1) x 100 over the 20 sessions before the bar (KK-031);
  *  - stops are stop-market: a gap through the stop fills at the open (KK-027);
  *  - never more than 30 % of equity in one stock overnight (KK-001; the platform cap 25 % is stricter).
@@ -27,7 +29,7 @@ import { fin, smaAt, priorHigh } from '../common/series.mjs';
 import { adr20, breakoutStopCheck, KK_PARAMS, KK_VERSION } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 
-export const KK_LIFECYCLE_VERSION = 'sf5-kk-breakout-lifecycle-1.0.0';
+export const KK_LIFECYCLE_VERSION = 'sf5-kk-breakout-lifecycle-1.1.0'; // 1.1.0: next-open reference (owner decision 2026-10-23)
 
 export const KK_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-KK-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only)', alternatives: [], why: 'setup quality (KK-MR-SETUP), the breakout level (KK-MR-LEVEL) and the review priority (KK-MR-PRIORITY) are the reviewer\'s; they are substituted by MA-KK-SETUP-PROXY, so a run is a model study' },
@@ -119,7 +121,8 @@ export const KK_BREAKOUT_ADAPTER = Object.freeze({
       else if (chk.status === 'REJECT_WIDE_STOP') blockers.push({ code: 'REJECT_WIDE_STOP', rule: 'KK-SF-BO-STOP (KK-012)', class: 'SOURCE_EXACT' });
       return eligibilityResult({ strategy: 'KK_BREAKOUT', bars, i, blockers, openManualDecisions: KK_OPEN_MANUAL_DECISIONS, order: { type: 'ON_CLOSE', stop: b.low, rule: 'KK-SF-BO-ENTRY daily / KK-SF-BO-STOP' }, extra: { stopDistancePct: dist, adr20: setup.adr20 } });
     }
-    // NEXT_OPEN alternative: stop = breakout-day low; the open fill is rejected when it lies more than ADR20 above it
+    // NEXT_OPEN (research reference since 2026-10-23): stop = breakout-day low; the open fill is rejected when it lies more
+    // than ADR20 above it or at / below it (derived reading of KK-012)
     const adrNext = adr20(bars, i + 1); // the 20 sessions before the fill session: bars i - 19 .. i, known at this close
     if (!fin(adrNext)) blockers.push({ code: 'ADR_NOT_MEASURABLE', rule: 'KK-SF-ADR (KK-031)', class: 'DATA_BLOCKED' });
     return eligibilityResult({ strategy: 'KK_BREAKOUT', bars, i, blockers, openManualDecisions: KK_OPEN_MANUAL_DECISIONS, order: { type: 'ON_OPEN', stop: b.low, maxPlannedLoss: fin(adrNext) ? adrNext / 100 : null, rule: 'MA-KK-ENTRY-TIMING NEXT_OPEN (not KK-012 literally)' } });

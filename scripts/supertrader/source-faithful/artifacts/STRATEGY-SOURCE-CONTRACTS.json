@@ -1521,7 +1521,7 @@
   {
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
-   "sourceContractVersion": "1.3.0",
+   "sourceContractVersion": "1.3.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Nicolas Darvas",
@@ -5323,7 +5323,7 @@
   {
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.2.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
@@ -7824,7 +7824,7 @@
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.2.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Linda Raschke",
@@ -7833,14 +7833,14 @@
     "primary": "MECHANICAL_SCREEN_WITH_MANUAL_LAYER",
     "layers": {
      "MECHANICAL": "ADX(14) > 30, first 20-EMA pullback, 3/10 oscillator evidence (daily)",
-     "MANUAL": "entry order, stop, exit (not disclosed)",
+     "MANUAL": "exit and size (not disclosed); entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97) (not disclosed)",
      "DATA_BLOCKED": "intraday timeframes (5-120 minutes)"
     }
    },
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "timing": {
     "signal": "daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30",
-    "earliestExecutable": "reviewer decision after the close (entry order not disclosed)",
+    "earliestExecutable": "reviewer decision after the close (primary source silent on the entry order; secondary source W-RAS97, D-RAS97)",
     "decisionData": "daily bars up to the close; ADX at the bar before the pullback"
    },
    "entryConditions": [
@@ -7883,7 +7883,7 @@
      "psr709": [
       "RAS04-001"
      ],
-     "question": "entry order, stop and exit are not disclosed",
+     "question": "entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97); exit not disclosed",
      "blocksAutomation": true
     }
    ],
@@ -8043,7 +8043,10 @@
       "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE"
      ],
      "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 (AIQ Opening Bell, August 1997, sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net) states the buy stop above the high of the previous bar; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). Which bar is \"previous\" stays a model assumption (MA-RAS-PREVIOUS-BAR); never SOURCE_EXACT; the lifecycle is not thereby source-conform (no trailing mechanics, size not disclosed)",
-     "reason": null
+     "reason": null,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
     },
     {
      "source": "W-RAS04",
@@ -8065,7 +8068,10 @@
       "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE"
      ],
      "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 states the protective sell stop at the newly formed swing low once filled; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). The swing definition stays a model assumption (MA-RAS-SWING-LOW); never SOURCE_EXACT",
-     "reason": null
+     "reason": null,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
     },
     {
      "source": "W-RAS04",

@@ -378,12 +378,12 @@ Vorkommen je Dimension über alle Kandidaten (eine Regel kann in mehreren Dimens
 | Stop Completeness | PARTIAL | SOURCE_GAP | RAS-SF-STOP | ja | DECLARED | – | primary source silent; research reading from the secondary source W-RAS97 (D-RAS97 2026-10-23): initial stop: protective sell stop at the newly formed swing low |
 | Position Sizing | PARTIAL | SOURCE_GAP | RAS-SF-SIZE | ja | DECLARED | – | not disclosed for the Holy Grail setup |
 | Portfolio Risk Limits | NOT_APPLICABLE | – | – | – | – | – | the source assigns no rule of this kind to the method |
-| Execution Completeness | PARTIAL | MANUAL_DECISION | – | ja | DECLARED | – | no mechanical order: reviewer decision after the close (entry order not disclosed) |
+| Execution Completeness | PARTIAL | MANUAL_DECISION | – | ja | DECLARED | – | no mechanical order: reviewer decision after the close (primary source silent on the entry order; secondary source W-RAS97, D-RAS97) |
 | Required Data Coverage | COMPLETE | – | – | – | – | – |  |
 | Corporate-Action Handling | COMPLETE_WITH_DECLARED_LIMITS | MEASUREMENT_GAP | V4-D1 | nein | DECLARED | – | undeclared reverse splits in about 1 % of security-months of the canonical price core (#705); blocks certification of any historical number, not a diagnostic run; fix belongs to a Quant PR |
 | PIT Integrity | COMPLETE_WITH_DECLARED_LIMITS | MEASUREMENT_GAP | V4-D2 | nein | DECLARED | – | share-class audit of the EW universe open (#705); a security id may combine share classes; no exclusion is applied to improve results |
 | Manual Decision Dependencies | PARTIAL | MANUAL_DECISION | RAS-MR-IMPULSE | ja | DECLARED | – | strong impulse before the pullback? |
-| Manual Decision Dependencies | PARTIAL | MANUAL_DECISION | RAS-MR-EXECUTION | ja | DECLARED | – | entry order, stop and exit are not disclosed |
+| Manual Decision Dependencies | PARTIAL | MANUAL_DECISION | RAS-MR-EXECUTION | ja | DECLARED | – | entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97); exit not disclosed |
 | Backtest Readiness | PARTIAL | MEASUREMENT_GAP | – | ja | DECLARED | – | no diagnostic method backtest: entry, exit or stop is manual, source-ambiguous or data-blocked; a fixed holding period would be invented |
 | Live Readiness | PARTIAL | PRODUCT_GAP | LIVE_NOT_APPROVED | ja | DECLARED | – | no live signal path, no order routing, no model-portfolio change; owner approval required (mandate non-negotiables) |
 | Missing Tests | COMPLETE | – | – | – | – | – |  |

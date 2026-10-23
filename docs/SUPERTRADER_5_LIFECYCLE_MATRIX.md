@@ -2,13 +2,13 @@
 
 Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).
 
-Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `b0e96105ac70…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
+Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `0a1260e9d087…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
 
 Grundsätze: a mechanically confirmed setup is not an executable trade; a model assumption is not a source rule; a lifecycle run with substituted manual decisions is a model study, not a strategy backtest; the original strategy and the platform research portfolio policy stay separate; a research variant from a source the owner has not accepted never changes a contract status; no live activation, no orders, no broker.
 
 ## C03 `SF_DARVAS_BOX` (sf5-darvas-lifecycle-1.0.0)
 
-- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
+- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert –; quellenblockiert –
 - Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
@@ -64,9 +64,9 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | ALT-SIZE-WEIGHT-020 | {"sizing":{"mode":"WEIGHT","weight":0.2}} |
 | ALT-SIZE-RISK-001 | {"sizing":{"mode":"RISK","riskFraction":0.01}} |
 
-## C08 `SF_KK_BREAKOUT` (sf5-kk-breakout-lifecycle-1.0.0)
+## C08 `SF_KK_BREAKOUT` (sf5-kk-breakout-lifecycle-1.1.0)
 
-- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 2, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES
+- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 2, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert KK-EX-ORH; quellenblockiert –
 - Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
@@ -347,7 +347,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 
 ## C13 `SF_RASCHKE_HOLY_GRAIL` (sf5-holy-grail-research-variant-1.0.0)
 
-- Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.2.0; Quellenstatus RESEARCH_VARIANT_SECONDARY_SOURCE
+- Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.2.1; Quellenstatus RESEARCH_VARIANT_SECONDARY_SOURCE
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert HG-EX-INTRADAY; quellenblockiert HG-MGMT-TRAIL
 - Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164

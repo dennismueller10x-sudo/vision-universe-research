@@ -74,6 +74,14 @@ test('GC-SF5-KK-NEXT-OPEN: Referenz (Owner 23.10.2026) kauft zur naechsten Eroef
   const down = kkScenario({ tail: [[30.2, 30.6, 30, 30.5], [30.5, 30.7, 30.3, 30.6]] });
   const d = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(down));
   assert.ok(!d.trades.some((t) => t.signalDate === day(120)));
+  assert.ok(d.rejections.some((x) => x.date === day(121) && x.reason === 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP'));
+  // boundary: an open exactly at the stop is not bought either
+  const eq = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(kkScenario({ tail: [[30.4, 30.8, 30.3, 30.6], [30.6, 30.7, 30.4, 30.6]] })));
+  assert.ok(eq.rejections.some((x) => x.date === day(121) && x.reason === 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP'));
+  // PIT: the decision and the fill use the breakout-day bar and the next open only, nothing else of the fill day
+  const a = r.trades[0], alt = kkScenario(); alt.bars[121] = { ...alt.bars[121], high: 40, close: 39, volume: 1 };
+  const b = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(alt)).trades[0];
+  assert.deepEqual([b.entryDate, b.entryFill, b.initialStop, b.shares], [a.entryDate, a.entryFill, a.initialStop, a.shares]);
 });
 
 test('GC-SF5-KK-SETUP-PIT: Setup auf Balken i nutzt nur Balken 0..i (Ergebnis unabhaengig von spaeteren Balken)', () => {
