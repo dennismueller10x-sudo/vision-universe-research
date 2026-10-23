@@ -162,3 +162,61 @@ test('Scherben: Budget, shardKey aus core/identity.js, Schreiben nur nach --out'
     assert.ok(readdirSync(out).every((n) => /^([A-Z0-9_]{1,2}\.json\.gz|status\.json)$/.test(n)));
   } finally { rmSync(out, { recursive: true, force: true }); }
 });
+
+/* Historisches KGV: nur Jahre mit bestandener Gegenprobe. */
+const peBook = (eps, shares, ni, filed) => C.fromHistory(projectHistory(synth({
+  units: { eps_diluted: 'USD/shares', diluted_weighted_average_shares: 'shares', net_income: 'USD' },
+  annual: {
+    eps_diluted: eps.map((v, i) => row(2021 + i, 'FY', (2021 + i) + '-12-31', v, '0000000001-25-00000' + i, filed[i])),
+    diluted_weighted_average_shares: shares.map((v, i) => row(2021 + i, 'FY', (2021 + i) + '-12-31', v, '0000000001-25-00000' + i, filed[i])),
+    net_income: ni.map((v, i) => row(2021 + i, 'FY', (2021 + i) + '-12-31', v, '0000000001-25-00000' + i, filed[i]))
+  }, quarterly: {}, ttm: {}
+}), 'TEST'), null);
+const longOf = (splits, points) => ({ schemaVersion: 'discover-series-long-1.0.0', priceSeriesType: 'SPLIT_ADJUSTED', dataMode: 'real', points, corporateActions: { source: 'PROVIDER_SPLIT_FACTOR', splits } });
+const pts = [['2021-12-31', 10], ['2022-12-30', 12], ['2023-12-29', 15], ['2024-12-27', 20]];
+
+test('Historisches KGV: nur Splits nach dem Meldedatum werden herausgerechnet', () => {
+  // 2:1-Split am 2023-06-01. 2021 zuletzt 2022 gemeldet (vor dem Split): EPS 2,00 -> 1,00 bereinigt.
+  const b = peBook([2, 1.2, 1.5, 2], [10, 20, 20, 20], [20, 24, 30, 40], ['2022-02-01', '2024-02-01', '2024-02-01', '2025-02-01']);
+  const h = C.historicalPe(b, longOf([['2023-06-01', 2]], pts));
+  assert.equal(h.state, 'AVAILABLE');
+  const r = Object.fromEntries(h.rows.map((x) => [x.fy, x]));
+  assert.equal(r[2021].eps, 1); assert.equal(r[2021].v, 10);
+  assert.equal(r[2022].factor, 1, '2022 zuletzt nach dem Split gemeldet: schon bereinigt');
+  assert.equal(r[2024].v, 10);
+});
+
+test('Historisches KGV: Gegenprobe, Aktienbasis, Verlust und fehlender Kurs sperren das Jahr', () => {
+  // 2022: EPS passt nicht zu Gewinn ÷ Aktien; 2023: Verlust; 2024: kein Kurs innerhalb von 10 Tagen.
+  const b = peBook([1, 3, -1, 2], [10, 10, 10, 10], [10, 10, -10, 20], ['2022-02-01', '2023-02-01', '2024-02-01', '2025-02-01']);
+  const h = C.historicalPe(b, longOf([], pts.slice(0, 3)));
+  assert.deepEqual(h.rows.map((x) => x.reason), [null, 'CHECK_FAILED', 'LOSS', 'NO_PRICE']);
+  // Weder EPS noch Aktien zurueckgerechnet (Sprung ×2 ohne Beleg): Gegenprobe passt, Aktienbasis sperrt.
+  const nr = peBook([2, 2, 1, 1], [10, 10, 20, 20], [20, 20, 20, 20], ['2022-02-01', '2023-02-01', '2024-02-01', '2025-02-01']);
+  const hn = C.historicalPe(nr, longOf([], pts));
+  assert.deepEqual(hn.rows.map((x) => x.reason), [null, 'SHARE_BASIS_JUMP', 'SHARE_BASIS_JUMP', null]);
+  assert.equal(C.historicalPe(b, { ...longOf([], pts), corporateActions: null }).reason, 'NO_SPLIT_EVIDENCE');
+});
+
+test('Historisches KGV echte Daten: NVDA ueber zwei Splits, PLTR-Umstellung beim Boersengang gesperrt', () => {
+  const long = (t) => JSON.parse(readFileSync(new URL('quant/data/market/discover-series-long/ref_' + t + '.json', root)));
+  const nv = C.historicalPe(bookOf('NVDA'), long('NVDA'));
+  assert.ok(nv.rows.filter((r) => r.v != null).length >= 10);
+  const fy26 = nv.rows.find((r) => r.fy === 2026);
+  assert.ok(Math.abs(fy26.eps - 4.9) < 1e-9 && fy26.factor === 1, 'nach dem 10:1-Split gemeldet');
+  const fy21 = nv.rows.find((r) => r.fy === 2021);
+  assert.equal(fy21.factor, 10, 'FY2021 zuletzt vor dem 10:1-Split gemeldet');
+  const pl = C.historicalPe(bookOf('PLTR'), long('PLTR'));
+  assert.equal(pl.rows.find((r) => r.fy === 2021).reason, 'SHARE_BASIS_JUMP');
+});
+
+test('Quartale, die nicht den Jahreswert ergeben, werden nicht gezeigt; der Jahreswert bleibt', () => {
+  const q = (fy, n, v) => row(fy, 'Q' + n, fy + '-' + ['03-31', '06-30', '09-30', '12-31'][n - 1], v, '0000000001-25-00000' + n, '2025-03-01');
+  const ok = synth({ quarterly: { revenue: [1, 2, 3, 4].map((n) => q(2023, n, 30)), net_income: [1, 2, 3, 4].map((n) => q(2024, n, 10)) }, ttm: {} });
+  // Umsatz GJ 2023: 4 × 30 = 120 = Jahreswert; Nettogewinn GJ 2024: 4 × 10 = 40 ≠ 30
+  const b = C.fromHistory(projectHistory(ok, 'TEST'), null);
+  assert.deepEqual(b.mismatch, { net_income: [2024] });
+  assert.equal(b.base.revenue.quarterly.length, 4);
+  assert.equal(b.base.net_income.quarterly.length, 0);
+  assert.equal(C.seriesOf(b, C.BY_ID.net_income, 'annual').find((r) => r.fy === 2024).v, 30);
+});

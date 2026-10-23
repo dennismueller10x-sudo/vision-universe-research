@@ -83,17 +83,23 @@
   function loadAnalysts() { return once('analysts', function () { return fetchJson(C.ANALYST_PATH); }); }
   function loadRow(path) { return state.rows[path] || (state.rows[path] = fetchJson(path).catch(function (e) { delete state.rows[path]; throw e; })); }
   function loadHistory(t) {
-    if (!ID) return Promise.resolve(null);
+    if (!ID) return Promise.resolve({ state: 'NO_IDENTITY', issuer: null });
     return once('h:' + ID.shardKey(t), function () { return fetchGz(C.historyPath(t, ID.shardKey)); })
-      .then(function (shard) { return shard && shard.schema === 'vu-fundamental-history-shard-1.0.0' ? (shard.issuers || {})[t] || null : null; })
-      .catch(function () { return null; });
+      .then(function (shard) {
+        if (!shard || shard.schema !== 'vu-fundamental-history-shard-1.0.0') return { state: 'INVALID_SHARD', issuer: null };
+        var h = (shard.issuers || {})[t] || null;
+        return { state: h ? 'OK' : 'NOT_IN_SHARD', issuer: h };
+      })
+      .catch(function (e) { return { state: e && e.message === 'GZIP_UNSUPPORTED' ? 'GZIP_UNSUPPORTED' : 'SHARD_UNAVAILABLE', issuer: null }; });
   }
   /* Ein Unternehmen: Discover-Aktiendatei (Pflicht) + SEC-Historie (wenn ausgeliefert). */
   function loadCompany(t) {
     return state.cache[t] || (state.cache[t] = fetchJson(M.stockPath(t)).then(function (raw) {
       return loadHistory(t).then(function (h) {
-        var book = C.fromHistory(h, raw) || C.fromDiscover(raw);
-        return { t: t, raw: raw, f: M.fromStock(raw), book: book, name: raw.companyName || raw.legalName || t, quote: quoteFrom(raw), exchange: raw.exchange || null };
+        var hb = C.fromHistory(h.issuer, raw), book = hb || C.fromDiscover(raw);
+        // historyState: OK = volle SEC-Historie; NOT_IN_SHARD = fuer dieses Unternehmen keine SEC-Reihen (kein Fehler);
+        // alles andere = die Auslieferung fehlt oder ist nicht lesbar -> sichtbarer Hinweis, Discover-Auszug.
+        return { t: t, raw: raw, f: M.fromStock(raw), book: book, historyState: hb ? 'OK' : h.issuer ? 'IDENTITY_MISMATCH' : h.state, name: raw.companyName || raw.legalName || t, quote: quoteFrom(raw), exchange: raw.exchange || null };
       });
     }).catch(function (e) { delete state.cache[t]; throw e; }));
   }
@@ -476,17 +482,21 @@
     loadCompany(t).then(function (co) {
       if (M.parseRoute(location.hash).ticker !== t) return;
       setTitle(co.name + ' (' + t + ')' + (sub ? ' · ' + (AREAS[sub] || (VIEWS.filter(function (v) { return v[0] === sub; })[0] || [0, ''])[1] || '') : ''));
-      if (!co.f.available || !co.book) {
+      // Discover kann "verfuegbar" melden, obwohl kein Geschaeftsjahr vorliegt (z. B. neue CIK nach Umstrukturierung): ehrlicher Leerzustand.
+      if (!co.f.available || !co.book || (!co.book.years.length && !co.book.quarters.length)) {
         put(main, stockHead(t, co), el('p', { class: 'vu-empty' }, [el('b', { text: 'Für diese Aktie liegen keine SEC-Geschäftszahlen vor.' }),
           'Typisch für Fonds, ausländische Emittenten ohne US-Jahresbericht oder sehr junge Notierungen.']));
         return done();
       }
+      main.setAttribute('data-fu-source', co.book.source);
       var ctx = { snap: C.snapshot(co.raw, null) };
       var views = { '': overview, kennzahlen: catalogView, kennzahl: metricView, vergleich: compareView, finanzen: financeView, mehr: moreView };
       var fn = views[sub] || (AREAS[sub] ? areaView : overview);
       var content = fn(co, r, ctx);
       var head = sub === '' || !views[sub] && !AREAS[sub] ? stockHead(t, co) : null;
-      var nodes = head ? [head, tabs(t, '')].concat(content) : [content[0], tabs(t, sub)].concat(content.slice(1));
+      var fallback = co.book.source === 'discover' && co.historyState !== 'NOT_IN_SHARD'
+        ? el('p', { class: 'vu-alert', role: 'note', 'data-fu-fallback': co.historyState, text: 'Volle SEC-Historie gerade nicht verfügbar' + (co.historyState === 'GZIP_UNSUPPORTED' ? ' (Browser zu alt)' : '') + ': gezeigt wird der Discover-Auszug ohne Quartale und mit weniger Kennzahlen.' }) : null;
+      var nodes = head ? [head, tabs(t, ''), fallback].concat(content) : [content[0], tabs(t, sub), fallback].concat(content.slice(1));
       put(main, nodes.filter(Boolean));
       var on = main.querySelector('.fu-tabs [aria-current=page]'); if (on && on.parentNode.scrollWidth > on.parentNode.clientWidth) on.parentNode.scrollLeft = Math.max(0, on.offsetLeft - (on.parentNode.clientWidth - on.offsetWidth) / 2);
       done();
@@ -536,7 +546,6 @@
   function overview(co, r, ctx) {
     var b = co.book, f = co.f, t = co.t;
     var stale = f.stale && f.stale.stale;
-    var health = co.raw.fundamentals && co.raw.fundamentals.health, story = co.raw.fundamentals && co.raw.fundamentals.story;
     var rows = C.seriesOf(b, C.BY_ID.revenue, 'annual').slice(-8), ni = C.seriesOf(b, C.BY_ID.net_income, 'annual');
     var niBy = {}; ni.forEach(function (x) { niBy[x.key] = x.v; });
     var kpis = el('div', { class: 'fu-kgrid' }, ['market_cap', 'revenue', 'pe', 'ps', 'net_margin', 'free_cash_flow', 'roe', 'roic'].map(function (id) { return kpiTile(co, id, ctx); }));
@@ -547,18 +556,10 @@
     ];
     // Bewertungskacheln brauchen das Universum (Boersenwert-Fallback, KBV …): nach dem Laden neu zeichnen.
     main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); if (e.detail) put(kpis, ['market_cap', 'revenue', 'pe', 'ps', 'net_margin', 'free_cash_flow', 'roe', 'roic'].map(function (id) { return kpiTile(co, id, ctx); })); });
-    if (health && health.available && health.categories && health.categories.length) {
-      out.push(el('a', { class: 'fu-profile', href: href(t, 'kennzahlen') }, [
-        el('span', { class: 'fu-profile-ico' }, productIcon('fundamental')),
-        el('span', { class: 'fu-profile-body' }, [el('small', { text: 'Fundamental-Profil · ' + health.horizon.from + '–' + health.horizon.to }),
-          el('ul', {}, health.categories.map(function (c) { return el('li', {}, [el('b', { text: c.label.replace('Profitabilitaet', 'Profitabilität') }), el('span', { class: 'fu-grade', 'data-grade': gradeTone(c.grade), text: c.grade }), el('small', { text: c.detail.replace('Geschaeftsjahr', 'Geschäftsjahr').replace('Geschaeftsjahresende', 'Geschäftsjahresende') })]); }))]),
-        glyph('chevron', 'fu-glyph-sm')]));
-    }
+    var dev = development(co);
+    if (dev) out.push(sec('Entwicklung', { sub: 'Erstes und letztes Geschäftsjahr mit Wert, höchstens zehn Jahre' }, [dev]));
     if (rows.length > 1) out.push(sec('Umsatz & Gewinn', { sub: 'Je Geschäftsjahr · ' + fyNote(b), link: [href(t, 'finanzen'), 'Finanzen'] }, [
       el('div', { class: 'fu-card' }, bars(rows.map(function (x) { return { key: x.key, label: x.label, short: x.short, vs: [x.v, isNum(niBy[x.key]) ? niBy[x.key] : null] }; }), { def: C.BY_ID.revenue, currency: cur(co), series: ['Umsatz', 'Nettogewinn'] }))]));
-    if (story && story.available && story.statements && story.statements.length) out.push(sec('Das Wichtigste', {}, [el('ul', { class: 'fu-insights' }, story.statements.slice(0, 4).map(function (s) {
-      return el('li', {}, [glyph('info', 'fu-glyph-sm'), el('span', { text: s.text })]);
-    }))]));
     out.push(sec('In der Branche', { link: [href(t, 'vergleich'), 'Branchenvergleich'] }, [withUniverse(co, function (U) { return branchSummary(co, U); })]));
     out.push(el('div', { class: 'fu-related' }, [el('p', { class: 'vu-eyebrow', text: 'Weiter' }), el('div', { class: 'fu-chips' }, [
       el('a', { class: 'fu-chip', href: href(t, 'finanzen') }, 'Finanzen'), el('a', { class: 'fu-chip', href: href(t, 'mehr') }, 'Dividende, Analysten & mehr'),
@@ -566,7 +567,25 @@
     out.push(dataMethod(co));
     return out;
   }
-  function gradeTone(g) { return /sehr stark|sehr solide/i.test(g) ? 'top' : /stark|solide/i.test(g) ? 'good' : /schwach|angespannt|negativ/i.test(g) ? 'low' : 'mid'; }
+  /* Neutrale Mehrjahresentwicklung: Anfangs- und Endwert, Rate pro Jahr bzw. Veraenderung in Prozentpunkten. Keine Einstufung. */
+  var DEV = ['revenue', 'net_income', 'free_cash_flow', 'eps_diluted', 'operating_margin', 'net_margin'];
+  function development(co) {
+    var b = co.book, cu = cur(co);
+    var rows = DEV.map(function (id) {
+      var def = C.BY_ID[id], have = C.seriesOf(b, def, 'annual').filter(function (x) { return isNum(x.v); });
+      if (have.length < 2) return null;
+      var end = have[have.length - 1], start = have.filter(function (x) { return x.fy >= end.fy - 10; })[0];
+      if (!start || start.fy === end.fy) return null;
+      var n = end.fy - start.fy, change;
+      if (def.kind === 'ratio') change = C.fmt({ kind: 'growth' }, end.v - start.v).replace('%', 'Pp.').replace(' Pp.', ' Pp.');
+      else { var g = C.cagr(b, def, n); change = isNum(g.rate) ? C.fmt({ kind: 'growth' }, g.rate) + ' p. a.' : C.reason(g.reason); if (g.reason === 'SPLIT') return null; }
+      return el('li', {}, el('a', { href: href(co.t, 'kennzahl', '&k=' + id) }, [
+        el('span', { class: 'fu-dev-l' }, [el('b', { text: def.label.replace(/ \(.*\)$/, '') }), el('small', { text: 'GJ ' + start.fy + ' → ' + end.fy })]),
+        el('span', { class: 'fu-dev-v fu-num' }, [el('small', { text: val(def, start.v, cu) + ' → ' }), el('b', { text: val(def, end.v, cu) })]),
+        el('em', { class: 'fu-num', text: change })]));
+    }).filter(Boolean);
+    return rows.length ? el('ul', { class: 'fu-dev' }, rows) : null;
+  }
   function fyNote(b) { var e = C.fiscalYearEnd(b); return e ? (e.calendar ? 'Geschäftsjahr = Kalenderjahr' : 'Geschäftsjahr endet im ' + e.month) : 'Geschäftsjahre laut SEC'; }
   function branchSummary(co, U) {
     if (!U) return notice('Vergleichsdaten gerade nicht verfügbar.');
@@ -660,7 +679,8 @@
     var out = [compactHead(t, co, def.label, def.desc, [href(t, 'kennzahlen', def.cat ? '&t=' + def.cat : ''), 'Kennzahlen']), head];
     if (def.snap) {
       out.push(sec('Im Vergleich', {}, [withUniverse(co, function (U) { paintHead(); return valuationContext(co, def, U, ctx); })]));
-      out.push(notice('Kein historischer Verlauf', 'Bewertungskennzahlen werden nur zum aktuellen Kurs berechnet: Kurse sind splitbereinigt, Gewinne je Aktie wie gemeldet – ein Rückblick wäre über jeden Split falsch. Den Verlauf der Grundlage (Gewinn, Umsatz, Cashflow) zeigen die Kennzahlen dort.'));
+      if (def.id === 'pe') out.push(sec('KGV zum Geschäftsjahresende', { sub: 'Wochenschluss vor GJ-Ende ÷ Gewinn je Aktie des Geschäftsjahres, beides splitbereinigt' }, [peHistory(co)]));
+      else out.push(notice('Kein historischer Verlauf', 'Diese Bewertungskennzahl wird nur zum aktuellen Kurs berechnet. Für einen Rückblick fehlt eine geprüfte, splitbereinigte Grundlage je Aktie; nur das KGV hat sie. Den Verlauf der Grundlage (Gewinn, Umsatz, Cashflow) zeigen die Kennzahlen dort.'));
     } else {
       out.push(el('div', { class: 'fu-ctrl' }, [segP, segR]), chartBox, cagrBox);
       if (def.u) out.push(sec('Im Branchenvergleich', { sub: def.uBasis === 'FY' ? 'Letztes Geschäftsjahr je Unternehmen' : 'Letzte zwölf Monate je Unternehmen' }, [withUniverse(co, function (U) { return peerBars(co, def, U); })]));
@@ -675,6 +695,32 @@
       el('p', { text: 'LTM = letzte zwölf Monate (Summe der letzten vier Quartale).' })]));
     if (related.length) out.push(el('div', { class: 'fu-related' }, [el('p', { class: 'vu-eyebrow', text: 'Verwandte Kennzahlen' }), el('div', { class: 'fu-chips' }, related.map(function (m) { return el('a', { class: 'fu-chip', href: href(t, 'kennzahl', '&k=' + m.id) }, m.label); }))]));
     return out;
+  }
+  /* Historisches KGV (catalog.js#historicalPe): nur Jahre mit bestandener Gegenprobe, sonst Luecke mit Grund. */
+  function peHistory(co) {
+    var box = el('div', {}, skel(200)), path = C.longSeriesPath(co.raw.series && co.raw.series.long && co.raw.series.long.path);
+    var cu = cur(co), ps = { kind: 'perShare' };
+    if (!path) return notice('Kein historisches KGV', 'Für diese Aktie liegt keine lange Kursreihe vor.');
+    if (cu !== 'USD') return notice('Kein historisches KGV', co.name + ' berichtet in ' + cu + ', der Kurs notiert in US-Dollar. Ohne Wechselkurs je Stichtag wäre ein Verhältnis falsch.');
+    once('s:' + path, function () { return fetchJson(path); }).then(function (long) {
+      var h = C.historicalPe(co.book, long);
+      if (h.state !== 'AVAILABLE') { put(box, notice('Kein geprüftes historisches KGV', C.reason(h.reason) + '. Es wird kein ungeprüfter Wert gezeigt.')); return; }
+      var rows = h.rows.slice(-10), ok = rows.filter(function (x) { return isNum(x.v); }).length;
+      put(box, el('div', { class: 'fu-card' }, bars(rows.map(function (x) { return { key: x.key, label: x.label, short: x.short, v: x.v, extra: isNum(x.v) ? 'Kurs ' + C.fmt(ps, x.price, 'USD') + ' am ' + M.dateDe(x.priceDate) : C.reason(x.reason) }; }), { def: C.BY_ID.pe, currency: 'USD', height: 170 })),
+        el('p', { class: 'fu-note', text: ok + ' von ' + rows.length + ' Geschäftsjahren geprüft · Lücken: Verlust, fehlende Gegenprobe oder Kurs.' }),
+        el('div', { class: 'fu-table-wrap' }, el('table', { class: 'fu-table' }, [
+          el('thead', {}, el('tr', {}, [el('th', { text: 'Jahr' }), el('th', { class: 'r', text: 'KGV' }), el('th', { class: 'r', text: 'Kurs' }), el('th', { class: 'r', text: 'EPS' })])),
+          el('tbody', {}, rows.slice().reverse().map(function (x) {
+            return el('tr', {}, [el('th', { scope: 'row' }, [x.label, x.end ? el('small', { text: M.dateDe(x.end) }) : null]),
+              el('td', { class: 'r fu-num' + (isNum(x.v) ? '' : ' is-none'), text: isNum(x.v) ? C.fmt(C.BY_ID.pe, x.v) : C.reason(x.reason) }),
+              el('td', { class: 'r fu-num', text: isNum(x.price) ? C.fmt(ps, x.price, 'USD') : '–' }),
+              el('td', { class: 'r fu-num' }, [isNum(x.eps) ? C.fmt(ps, x.eps, 'USD') : '–', x.factor && x.factor !== 1 ? el('small', { class: 'fu-td-s', text: 'gemeldet ' + C.fmt(ps, x.epsReported, 'USD') + ' ÷ ' + M.multiple(x.factor) }) : null])]);
+          }))])),
+        more('Wie wird das historische KGV geprüft?', [
+          el('p', { text: 'Kurs: letzter Wochenschluss höchstens ' + 10 + ' Tage vor dem Geschäftsjahresende, splitbereinigt auf den heutigen Stand. Gewinn je Aktie: wie gemeldet; eine Meldung enthält alle Splits vor ihrem Meldedatum, herausgerechnet werden nur Splits danach (Split-Beleg des Kursanbieters' + (h.splits.length ? ': ' + h.splits.map(function (x) { return M.dateDe(x[0]) + ' ×' + M.multiple(x[1]); }).join(', ') : ', keine Splits') + ').' }),
+          el('p', { text: 'Gegenprobe je Jahr: Nettogewinn ÷ verwässerte Aktienzahl (ebenso bereinigt) darf höchstens ' + Math.round(C.PE_TOLERANCE * 100) + ' % vom bereinigten Gewinn je Aktie abweichen, und die bereinigte Aktienzahl darf zu den Nachbarjahren nicht in Split-Größe springen. Jahre, die das nicht erfüllen, bleiben leer. Bei Verlust gibt es kein KGV.' })]));
+    }).catch(function () { put(box, notice('Kursreihe gerade nicht verfügbar.')); });
+    return box;
   }
   function peerBars(co, def, U) {
     if (!U) return notice('Vergleichsdaten gerade nicht verfügbar.');
@@ -726,7 +772,7 @@
       if (!g) return notice('Keine Vergleichsgruppe.', 'Für diese Aktie liegt kein SEC-Branchencode vor.');
       var gi = C.peerGroup(U, t, 'industry', 6), gs = C.peerGroup(U, t, 'sector', 6);
       var fxNote = g.self.fx ? el('p', { class: 'vu-alert', role: 'note', text: co.name + ' berichtet in ' + cur(co) + ': Beträge (Umsatz, Cashflow) werden nicht mit Dollarwerten verglichen und bleiben leer.' }) : null;
-      var groupSeg = el('div', { class: 'fu-seg', role: 'group', 'aria-label': 'Vergleichsgruppe' }, [gi && ['', 'Branche: ' + gi.label], gs && ['sektor', 'Sektor: ' + gs.label]].filter(Boolean).map(function (x) {
+      var groupSeg = el('div', { class: 'fu-seg fu-seg-scroll', role: 'group', 'aria-label': 'Vergleichsgruppe' }, [gi && ['', 'Branche: ' + gi.label], gs && ['sektor', 'Sektor: ' + gs.label]].filter(Boolean).map(function (x) {
         return el('a', { class: 'fu-seg-b', href: href(t, 'vergleich', (x[0] ? '&t=' + x[0] : '') + '&k=' + metric), 'aria-current': (x[0] === 'sektor') === (by === 'sector') ? 'page' : null }, x[1]);
       }));
       var chart = el('div', { class: 'fu-card' }), tbl = el('div');
@@ -964,7 +1010,7 @@
     var keepScroll = r.view === 'company' && main.getAttribute('data-ticker') === r.ticker && main.getAttribute('data-sub') === (r.sub || '') && r.sub;
     if (!keepScroll) window.scrollTo(0, 0);
     main.removeAttribute('data-view');
-    if (r.view !== 'company') main.removeAttribute('data-ticker');
+    if (r.view !== 'company') { main.removeAttribute('data-ticker'); main.removeAttribute('data-fu-source'); }
     main.setAttribute('data-sub', r.sub || '');
     if (r.view === 'company') company(r); else if (r.view === 'method') method(); else if (r.view === 'ranking') rankingView(r.id); else if (r.view === 'industry') industryView(r.id); else home(r.focus);
     if (r.focus === 'suche') { var q = document.getElementById('fu-q'); if (q) q.focus({ preventScroll: true }); }

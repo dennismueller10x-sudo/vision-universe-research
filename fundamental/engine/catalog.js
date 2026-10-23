@@ -159,8 +159,10 @@
     var years = {}, quarters = {};
     Object.keys(b.base).forEach(function (m) {
       b.base[m].annual.sort(function (x, y) { return x.fy - y.fy; }).forEach(function (r) { years[r.fy] = true; });
-      b.base[m].quarterly.sort(function (x, y) { return qi(x) - qi(y); }).forEach(function (r) { quarters[qi(r)] = { fy: r.fy, q: r.q, end: r.end }; });
+      b.base[m].quarterly.sort(function (x, y) { return qi(x) - qi(y); });
     });
+    b.mismatch = quarterMismatch(b);
+    Object.keys(b.base).forEach(function (m) { b.base[m].quarterly.forEach(function (r) { quarters[qi(r)] = { fy: r.fy, q: r.q, end: r.end }; }); });
     b.years = Object.keys(years).map(Number).sort(function (x, y) { return x - y; });
     b.quarters = Object.keys(quarters).map(Number).sort(function (x, y) { return x - y; }).map(function (k) { return quarters[k]; });
     b.currency = unitCurrency(b.unitOf.revenue) || unitCurrency(b.unitOf.net_income) || unitCurrency(b.unitOf.total_assets) || 'USD';
@@ -168,6 +170,26 @@
     return b;
   }
   function qi(r) { return r.fy * 4 + (r.q - 1); }
+  /* Jahr gegen Quartale: Ergeben die vier eigenstaendigen Quartale eines Geschaeftsjahres den Jahreswert nicht (±1 %),
+   * passen Quartals- und Jahresmeldung nicht zusammen (anderes Konzept, nachtraeglich angepasster Jahreswert, Fehlmeldung).
+   * Diese Quartale werden nicht gezeigt; der Jahreswert bleibt. Gewinn je Aktie summiert sich nicht (Aktienzahl je Quartal). */
+  var QUARTER_SUM = ['revenue', 'gross_profit', 'operating_income', 'net_income', 'operating_cash_flow', 'capital_expenditures', 'depreciation_and_amortization', 'pretax_income', 'income_tax_expense', 'free_cash_flow', 'ebitda'];
+  var QUARTER_TOL = 0.01;
+  function quarterMismatch(b) {
+    var out = {};
+    QUARTER_SUM.forEach(function (m) {
+      var s = b.base[m]; if (!s || !s.quarterly.length) return;
+      var bad = {};
+      s.annual.forEach(function (a) {
+        var q = s.quarterly.filter(function (r) { return r.fy === a.fy; });
+        if (q.length !== 4 || !isNum(a.v) || a.v === 0) return;
+        var sum = q.reduce(function (x, r) { return x + r.v; }, 0);
+        if (Math.abs(sum - a.v) / Math.abs(a.v) > QUARTER_TOL) bad[a.fy] = true;
+      });
+      if (Object.keys(bad).length) { out[m] = Object.keys(bad).map(Number); s.quarterly = s.quarterly.filter(function (r) { return !bad[r.fy]; }); }
+    });
+    return out;
+  }
 
   /* Sprung der Aktienanzahl zwischen zwei Geschaeftsjahren (Faktor >= 1,8 oder <= 0,55): Split oder Kapitalmassnahme ohne
    * rueckwirkende Bereinigung. Werte je Aktie und Aktienanzahl sind ueber diesen Sprung nicht vergleichbar (wie Discover). */
@@ -207,7 +229,10 @@
     var keys = axis(b, period), prevKey = function (k) { return period === 'quarterly' ? k - 4 : k - 1; };
     var rows = keys.map(function (k) {
       var info = keyInfo(b, period, k), r = null;
-      if (def.base) { var x = baseRow(b, def.base, period, k); r = x ? { v: x.v, filed: x.filed, accn: x.accn, derived: x.derived, end: x.end || info.end } : null; }
+      if (def.base) {
+        var x = baseRow(b, def.base, period, k);
+        r = x ? { v: x.v, filed: x.filed, accn: x.accn, derived: x.derived, end: x.end || info.end } : period === 'quarterly' && (b.mismatch[def.base] || []).indexOf(Math.floor(k / 4)) >= 0 ? { v: null, reason: 'QUARTER_MISMATCH' } : null;
+      }
       else if (def.of) {
         var now = baseRow(b, def.of, period, k), pr = baseRow(b, def.of, period, prevKey(k));
         if (now && pr && pr.v > 0 && isNum(now.v)) {
@@ -313,6 +338,55 @@
     if (gz && !isNum(out.dividendYield)) out.reasons.dividendYield = 'NO_DIVIDEND';
     if (!urow) ['pb', 'ev', 'evSales', 'evEbitda', 'pFcf', 'peg'].forEach(function (k) { out.reasons[k] = 'UNIVERSE_MISSING'; });
     out.priceDate = stock && typeof stock.asOf === 'string' ? stock.asOf.slice(0, 10) : null;
+    return out;
+  }
+
+
+  /* ------------------------------------------------------------------ Historisches KGV (zum Geschaeftsjahresende)
+   * Kurs: Wochenreihe discover-series-long, splitbereinigt auf den juengsten Stand (ADR-002: Bereinigung aus dem
+   * splitFactor des Anbieters, return-series.js#splitFactors). Dieselbe Datei traegt den Beleg aller Split-Tage
+   * (corporate-action-evidence.js, Quelle PROVIDER_SPLIT_FACTOR).
+   * Gewinn je Aktie: wie gemeldet. Eine Meldung bildet alle Splits ab, die vor ihrem Meldedatum wirksam waren (Pflicht zur
+   * rueckwirkenden Darstellung); herausgerechnet werden daher nur Splits NACH dem Meldedatum des Werts.
+   * Veroeffentlicht wird ein Jahr nur, wenn
+   *   1. Gegenprobe: Nettogewinn ÷ ebenso bereinigte verwaesserte Aktienzahl weicht hoechstens 10 % ab,
+   *   2. die bereinigte Aktienzahl zu den Nachbarjahren nicht in Split-Groesse springt (Faktor ≥ 1,8 oder ≤ 0,55) –
+   *      sonst waeren Gewinn je Aktie und Aktienzahl gemeinsam unbereinigt und die Gegenprobe wertlos,
+   *   3. ein Wochenschluss hoechstens 10 Tage vor dem Geschaeftsjahresende vorliegt,
+   *   4. der bereinigte Gewinn je Aktie positiv ist.
+   * Sonst bleibt das Jahr leer, mit Grund. */
+  var PE_TOLERANCE = 0.10, PE_PRICE_DAYS = 10;
+  function splitsAfter(splits, date) { return splits.reduce(function (a, s) { return s[0] > date ? a * s[1] : a; }, 1); }
+  function daysBetween(a, b) { return (Date.parse(b) - Date.parse(a)) / 864e5; }
+  function historicalPe(b, long) {
+    var out = { state: 'UNAVAILABLE', rows: [], reason: null, splits: [] };
+    if (!b || !b.base.eps_diluted || !b.base.eps_diluted.annual.length) { out.reason = 'NO_EPS'; return out; }
+    var ca = long && long.corporateActions;
+    if (!long || long.schemaVersion !== 'discover-series-long-1.0.0' || long.priceSeriesType !== 'SPLIT_ADJUSTED' || long.dataMode !== 'real' || !Array.isArray(long.points)
+      || !ca || ca.source !== 'PROVIDER_SPLIT_FACTOR' || !Array.isArray(ca.splits)) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
+    var splits = ca.splits.filter(function (x) { return Array.isArray(x) && /^\d{4}-\d{2}-\d{2}$/.test(x[0]) && x[1] > 0; });
+    if (splits.length !== ca.splits.length) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
+    out.splits = splits;
+    var get = function (m, fy) { var s = b.base[m]; if (!s) return null; for (var i = 0; i < s.annual.length; i++) if (s.annual[i].fy === fy) return s.annual[i]; return null; };
+    var adjShares = function (fy) { var r = get('diluted_weighted_average_shares', fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
+    var jump = function (a, c) { if (!isNum(a) || !isNum(c)) return false; var f = c / a; return f >= 1.8 || f <= 0.55; };
+    out.rows = b.base.eps_diluted.annual.map(function (e) {
+      var r = { fy: e.fy, key: e.fy, label: 'GJ ' + e.fy, short: String(e.fy), end: e.end, epsReported: e.v, filed: e.filed, accn: e.accn, v: null, reason: null };
+      if (!e.filed || !e.end) { r.reason = 'NO_CHECK'; return r; }
+      r.factor = splitsAfter(splits, e.filed); r.eps = e.v / r.factor;
+      var ni = get('net_income', e.fy), sh = adjShares(e.fy);
+      if (!ni || !isNum(sh)) { r.reason = 'NO_CHECK'; return r; }
+      r.check = ni.v / sh;
+      if (!(Math.abs(r.check) > 0) || Math.abs(r.eps / r.check - 1) > PE_TOLERANCE) { r.reason = 'CHECK_FAILED'; return r; }
+      if (jump(adjShares(e.fy - 1), sh) || jump(sh, adjShares(e.fy + 1))) { r.reason = 'SHARE_BASIS_JUMP'; return r; }
+      var pt = null; for (var i = long.points.length - 1; i >= 0; i--) { if (long.points[i][0] <= e.end) { pt = long.points[i]; break; } }
+      if (!pt || daysBetween(pt[0], e.end) > PE_PRICE_DAYS || !(pt[1] > 0)) { r.reason = 'NO_PRICE'; return r; }
+      r.price = pt[1]; r.priceDate = pt[0];
+      if (!(r.eps > 0)) { r.reason = 'LOSS'; return r; }
+      r.v = r.price / r.eps; return r;
+    });
+    out.state = out.rows.some(function (r) { return isNum(r.v); }) ? 'AVAILABLE' : 'UNAVAILABLE';
+    if (out.state !== 'AVAILABLE') out.reason = 'NO_VERIFIED_YEAR';
     return out;
   }
 
@@ -465,7 +539,7 @@
   }
   var REASON = { LOSS: 'Verlust in den letzten 12 Monaten', SOURCE_MISSING: 'nicht berechenbar', NON_USD_REPORTING: 'Meldung nicht in US-Dollar', FOREIGN_FILER: 'ausländischer Emittent',
     IMPLAUSIBLE_SHARE_BASIS: 'Aktienanzahl nicht plausibel', NO_CURRENT_SHARE_COUNT: 'keine aktuelle Aktienanzahl', UNIVERSE_MISSING: 'Vergleichsdaten gerade nicht geladen', NO_DIVIDEND: 'keine Dividende',
-    SPLIT: 'Aktiensplit ohne Rückrechnung', NOT_POSITIVE: 'Vorwert ≤ 0', TOO_SHORT: 'zu kurze Reihe', NO_DATA: 'keine Angabe' };
+    SPLIT: 'Aktiensplit ohne Rückrechnung', CHECK_FAILED: 'Gegenprobe nicht bestanden', QUARTER_MISMATCH: 'Quartale ergeben nicht den Jahreswert', SHARE_BASIS_JUMP: 'Aktienbasis springt', NO_PRICE: 'kein Kurs zum GJ-Ende', NO_CHECK: 'keine Gegenprobe möglich', NO_SPLIT_EVIDENCE: 'kein Split-Beleg', NO_EPS: 'kein Gewinn je Aktie', NO_VERIFIED_YEAR: 'kein geprüftes Jahr', NOT_POSITIVE: 'Vorwert ≤ 0', TOO_SHORT: 'zu kurze Reihe', NO_DATA: 'keine Angabe' };
   function reason(code) { return REASON[code] || 'keine Angabe'; }
 
   /* Monat des Geschaeftsjahresendes ("endet Ende Januar"), aus dem letzten Jahresstichtag. */
@@ -484,7 +558,7 @@
   function longSeriesPath(p) { return /^\/quant\/data\/market\/discover-series-long\/ref_[A-Z0-9_]{1,24}\.json$/.test(p || '') ? p : null; }
 
   var api = { VERSION: VERSION, CATS: CATS, METRICS: M, BY_ID: BY_ID, FORMULA: FORMULA, RANKINGS: RANKINGS, SIZES: SIZES, HISTORY_BASE: HISTORY_BASE, UNIVERSE_PATH: UNIVERSE_PATH, ANALYST_PATH: ANALYST_PATH,
-    fromHistory: fromHistory, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps,
+    fromHistory: fromHistory, historicalPe: historicalPe, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps,
     universe: universe, peerGroup: peerGroup, position: position, median: median, ranking: ranking, industries: industries, analysts: analysts,
     money: money, fmt: fmt, changeText: changeText, reason: reason, fiscalYearEnd: fiscalYearEnd, historyPath: historyPath, seriesPath: seriesPath, longSeriesPath: longSeriesPath, isNum: isNum };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
