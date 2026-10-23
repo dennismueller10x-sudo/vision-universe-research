@@ -7,8 +7,8 @@
       "name": "PG&E Corp",
       "sic": "4931",
       "rawFacts": 22016,
-      "mappedFacts": 6290,
-      "unmappedFacts": 16014,
+      "mappedFacts": 6282,
+      "unmappedFacts": 16022,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -136,38 +136,39 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16879,
+        "total": 16885,
         "by_severity": {
-          "INFO": 16014,
+          "INFO": 16022,
           "ERROR": 2,
-          "WARNING": 863
+          "WARNING": 861
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 787,
+          "CONCEPT_DISAGREEMENT": 785,
           "EXTREME_VALUE": 24,
           "FUTURE_DATA_LEAK": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 45,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16014
+          "UNKNOWN_CONCEPT": 16022
         }
       },
       "latestFiling": {
-        "accession": "0001004980-26-000048",
-        "filing_date": "2026-07-23",
+        "accession": "0001004980-26-000055",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 129
+        "periodic_filings": 130,
+        "acceptance_datetime": "2026-10-22T04:52:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
       "sourceDigest": "79dd647fb84508b5a536ed3fc16a2a6ed2593bc9de7e15bf662656b4fb6c2a63",

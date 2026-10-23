@@ -6,10 +6,10 @@
       "cik": "0000065312",
       "name": "EVI INDUSTRIES, INC.",
       "sic": "7200",
-      "rawFacts": 13861,
-      "mappedFacts": 5699,
-      "unmappedFacts": 8661,
-      "calendarYears": 17,
+      "rawFacts": 13863,
+      "mappedFacts": 5610,
+      "unmappedFacts": 8784,
+      "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -18,7 +18,7 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 65,
       "firstPeriodEnd": "2010-06-30",
       "lastPeriodEnd": "2026-06-30",
       "historyYears": 16.0,
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2016-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 10.0
@@ -66,7 +66,7 @@
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -117,46 +117,48 @@
         }
       },
       "quality": {
-        "HIGH": 498,
-        "MEDIUM": 87
+        "HIGH": 503,
+        "MEDIUM": 86
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 585,
-        "resolvedValues": 585
+        "datableValues": 589,
+        "resolvedValues": 589
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9075,
+        "total": 9135,
         "by_severity": {
-          "INFO": 8661,
-          "WARNING": 414
+          "INFO": 8784,
+          "WARNING": 351
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 354,
-          "RESTATEMENT_CONFLICT": 47,
+          "CONCEPT_DISAGREEMENT": 306,
+          "RESTATEMENT_CONFLICT": 30,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 8661
+          "UNKNOWN_CONCEPT": 8784,
+          "UNPLACEABLE_PERIOD": 2
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-029759",
-        "filing_date": "2026-09-08",
-        "form": "10-K",
-        "periodic_filings": 83
+        "accession": "0001437749-26-033252",
+        "filing_date": "2026-10-22",
+        "form": "10-K/A",
+        "periodic_filings": 84,
+        "acceptance_datetime": "2026-10-22T23:09:25.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "efdbd4a951c99f4a9cf96bd45dbf78ef6a5935877f3853b1b0f86c93565e55f3",
+      "sourceDigest": "6c489584bf65fb4e2c711f6a9550d54a1ac0e3f2f92aa6c6a487bb61a6968578",
       "issuerId": "iss_cik_0000065312"
     },
     {
