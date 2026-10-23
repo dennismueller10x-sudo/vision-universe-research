@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-22T03:06:17.764Z",
- "asOf": "2026-10-22",
+ "generatedAt": "2026-10-23T02:53:04.884Z",
+ "asOf": "2026-10-23",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -522,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1840 Wochen, 142 Quartale, effektiv ≈ 24455 unabhängige Fälle",
+       "value": "1840 Wochen, 142 Quartale, effektiv ≈ 24457 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -610,7 +610,7 @@
       "uniquePeriods": 1840,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 24455,
+      "effectiveN": 24457,
       "designEffect": 3.64
      },
      "returnType": "TOTAL_RETURN",
@@ -1299,7 +1299,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "18 von 18 geprüft",
+     "value": "19 von 19 geprüft",
      "required": null,
      "reason": null
     },
@@ -1317,7 +1317,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 18,
+     "value": 19,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1326,7 +1326,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "41 Tage",
+     "value": "42 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1410,14 +1410,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 18,
+     "value": 19,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "41 Tage",
+     "value": "42 Tage",
      "required": "180 Tage"
     },
     {
@@ -1465,25 +1465,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 102,
+     "remaining": 101,
      "date": "2027-03-13"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 18,
-    "spanDays": 41,
+    "historyDates": 19,
+    "spanDays": 42,
     "transitions": {
-     "SETUP_CONFIRMED": 121,
-     "SETUP_NEW": 1542,
-     "SETUP_WEAKENED": 1933
+     "SETUP_CONFIRMED": 130,
+     "SETUP_NEW": 1650,
+     "SETUP_WEAKENED": 2042
     },
     "completedM6": 0,
-    "contractTradesCompleted": 969
+    "contractTradesCompleted": 1031
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "2727/2727",
+    "parity": "2877/2877",
     "mismatches": 0
    }
   },
@@ -1524,7 +1524,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (18 Stände seit 2026-09-23)",
+     "value": "2 (19 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1578,7 +1578,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "2 (18 Stände seit 2026-09-23)",
+     "value": "2 (19 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1590,7 +1590,7 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 5
+     "staleDays": 6
     },
     "NDX": {
      "snapshots": 5,
@@ -1599,7 +1599,7 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 5
+     "staleDays": 6
     },
     "DJIA": {
      "snapshots": 5,
@@ -1608,15 +1608,15 @@
      "latest": "2026-10-17",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 5
+     "staleDays": 6
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 18,
+    "snapshots": 19,
     "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-10-21",
+    "latest": "2026-10-22",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1628,7 +1628,7 @@
     },
     "factor": {
      "remaining": 22,
-     "date": "2028-08-20"
+     "date": "2028-08-21"
     }
    }
   },
@@ -1728,7 +1728,7 @@
    "eta": {
     "factor": {
      "remaining": 22,
-     "date": "2028-08-20"
+     "date": "2028-08-21"
     }
    }
   }
