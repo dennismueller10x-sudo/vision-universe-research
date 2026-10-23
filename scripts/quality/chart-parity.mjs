@@ -184,18 +184,21 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
     /* 7 Nahtstelle Tag/Woche */
     if (ds && dl) pairs["DL~DS"] = compareSeam(L, D);
     if (dl && ts) pairs["DL~TS"] = compareSeam(L, ts.points);
-    /* Elliott: Wochenschluss am asOf gegen die Wochenreihe am selben Tag */
-    if (ew && dl) {
-      const w = new Map(L).get(ew.asOf);
-      pairs["EW~DL"] = w === undefined ? { status: "NOT_COMPARABLE", reason: "asOf " + ew.asOf + " nicht in der Wochenreihe" }
-        : Math.abs(ew.close - w) <= tolerance("EW", ew.close, "DL", w) ? { status: "IDENTICAL", compared: 1 }
-        : { status: "DEVIATION", asOf: ew.asOf, elliott: ew.close, weekly: w, ratio: Number((w / ew.close).toPrecision(4)) };
+    /* Elliott: Schluss am asOf gegen die Reihe derselben Aufloesung - Wochenmodus gegen die
+       Wochenreihe, Tagesmodus (Golden-5) gegen die Tagesreihe. */
+    const ewDaily = ew && ew.timeframe === "1D";
+    if (ew && (ewDaily ? ds : dl)) {
+      const key = ewDaily ? "EW~DS" : "EW~DL", ref = ewDaily ? "DS" : "DL";
+      const w = new Map(ewDaily ? D : L).get(ew.asOf);
+      pairs[key] = w === undefined ? { status: "NOT_COMPARABLE", reason: "asOf " + ew.asOf + " nicht in der Reihe" }
+        : Math.abs(ew.close - w) <= tolerance("EW", ew.close, ref, w) ? { status: "IDENTICAL", compared: 1 }
+        : { status: "DEVIATION", asOf: ew.asOf, elliott: ew.close, reference: w, ratio: Number((w / ew.close).toPrecision(4)) };
     }
     row.pairs = pairs;
     for (const [k, c] of Object.entries(pairs)) {
       if (c.status !== "DEVIATION") continue;
-      if (c.levelFactor || c.kind === "LEVEL" || (k === "EW~DL" && Math.abs(c.ratio - 1) > 0.05)) row.issues.push("CORPORATE_ACTION:" + k);
-      else if (c.valueMismatches || c.kind === "POINT" || k === "EW~DL") row.issues.push("VALUE:" + k);
+      if (c.levelFactor || c.kind === "LEVEL" || (k.startsWith("EW~") && Math.abs(c.ratio - 1) > 0.05)) row.issues.push("CORPORATE_ACTION:" + k);
+      else if (c.valueMismatches || c.kind === "POINT" || k.startsWith("EW~")) row.issues.push("VALUE:" + k);
       else row.issues.push("TIMESTAMPS:" + k);
     }
     /* 6/8 Zeitraeume nach Datenlage, je Welt */
@@ -221,9 +224,12 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
 
 function summarize(rows, meta) {
   const has = (r, p) => r.issues.some((i) => i.startsWith(p));
-  const dataDev = rows.filter((r) => has(r, "VALUE") || has(r, "TIMESTAMPS") || has(r, "CORPORATE_ACTION") || has(r, "IDENTITY") || has(r, "DEFINITION"));
+  /* Kursfehler: falscher Wert, falsches Niveau, falsche Identitaet oder Definition.
+     Datenluecke: gleiche Kurse, aber ein Handelstag fehlt in einer Quelle (sichtbar kaum, trotzdem Befund). */
+  const dataDev = rows.filter((r) => has(r, "VALUE") || has(r, "CORPORATE_ACTION") || has(r, "IDENTITY") || has(r, "DEFINITION"));
+  const gaps = rows.filter((r) => has(r, "TIMESTAMPS") && !dataDev.includes(r));
   const cross = rows.filter((r) => r.pairs && Object.values(r.pairs).some((c) => c.status !== "NOT_COMPARABLE"));
-  const parity = cross.filter((r) => !dataDev.includes(r));
+  const parity = cross.filter((r) => !dataDev.includes(r) && !gaps.includes(r));
   const nonComparable = rows.filter((r) => !cross.includes(r) && !has(r, "NO_CHART"));
   const count = (f) => rows.filter(f).length;
   const pairStats = {};
@@ -249,6 +255,7 @@ function summarize(rows, meta) {
       total: rows.length,
       fullParity: parity.length,
       dataDeviations: dataDev.length,
+      dataGaps: gaps.length,
       missingRanges: count((r) => has(r, "RANGES")),
       noChart: count((r) => has(r, "NO_CHART")),
       corporateActionErrors: count((r) => has(r, "CORPORATE_ACTION")),
@@ -259,7 +266,7 @@ function summarize(rows, meta) {
     },
     pairs: pairStats,
     ranges: rangeStats,
-    deviations: dataDev.map((r) => ({ ticker: r.ticker, issues: r.issues, pairs: Object.fromEntries(Object.entries(r.pairs || {}).filter(([, c]) => c.status === "DEVIATION")) })),
+    deviations: dataDev.concat(gaps).map((r) => ({ ticker: r.ticker, issues: r.issues, pairs: Object.fromEntries(Object.entries(r.pairs || {}).filter(([, c]) => c.status === "DEVIATION")) })),
     rows: rows.map((r) => ({ ticker: r.ticker, sources: r.sources, issues: r.issues, lag: r.lag, ranges: r.ranges }))
   };
 }
@@ -275,7 +282,7 @@ if (isMain) {
   const m = r.matrix;
   console.log(`Chart-Paritaet (${r.meta.expected ? "Sitzung " + r.meta.expected : "ohne Kalender"})\n`);
   console.log("| Kennzahl | Ergebnis |\n|---|---|");
-  for (const [k, v] of [["Aktien insgesamt", m.total], ["Aktien mit vollständiger Chart-Parität", m.fullParity], ["Aktien mit Datenabweichungen", m.dataDeviations],
+  for (const [k, v] of [["Aktien insgesamt", m.total], ["Aktien mit vollständiger Chart-Parität", m.fullParity], ["Aktien mit Kursabweichungen", m.dataDeviations], ["Aktien mit Datenlücken (fehlender Handelstag)", m.dataGaps],
     ["Aktien mit fehlenden Zeiträumen (Datenlage)", m.missingRanges], ["Aktien ohne verfügbare Charts", m.noChart], ["Corporate-Action-Fehler", m.corporateActionErrors],
     ["Nicht vergleichbare Aktien", m.nonComparable + " " + JSON.stringify(m.nonComparableCauses)], ["Veraltet (≥ 2 Sitzungen)", m.stale], ["Ohne Supertrader-Bars", m.notInSupertrader]]) console.log(`| ${k} | ${v} |`);
   console.log("\nPaare:"); for (const [k, s] of Object.entries(r.pairs)) console.log(`  ${k.padEnd(6)} ${JSON.stringify(s)}`);
@@ -283,5 +290,5 @@ if (isMain) {
   if (r.deviations.length) { console.log("\nAbweichungen:"); for (const d of r.deviations.slice(0, 40)) console.log(`  ${d.ticker.padEnd(8)} ${d.issues.join(" ")}`); }
   const out = ausgabePfad(root, arg("--out", null));
   if (out) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), ...r }, null, 1) + "\n"); }
-  if (argv.includes("--strict") && m.dataDeviations) process.exit(2);
+  if (argv.includes("--strict") && m.dataDeviations) process.exit(2); /* Datenluecken allein blockieren nicht */
 }
