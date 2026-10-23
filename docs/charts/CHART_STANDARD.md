@@ -104,7 +104,7 @@ Paare: Discover/Quant ↔ Supertrader 5 150/5 152 (2 Datenlücken), Woche ↔ Ta
 - **Fehlender Kurs:** Anzeige in der Börsenwährung mit Hinweis „Euro-Kurs für diesen Tag nicht verfügbar“, keine Umrechnung mit einem zu alten Kurs (Engine: `carryLimitExceeded`).
 - **Präferenz:** ein Schlüssel für alle Welten (heute `VUFx`-Präferenz in Discover); wird beim Wechsel der Produktwelt übernommen.
 - **Quelle:** EZB-Referenzkurse (`quant/data/market/fx/ecb/`), Quellennennung „Wechselkurse: Europäische Zentralbank“. Tiingo-FX bleibt Arbeitsablage (Lizenz).
-- **Befund 23.10.2026:** Die EZB-Reihe endet am **21.09.2026** (Repository wie live). Sie entstand nur in `currency-fx-verify.yml` (Hand/Marke, mit ~54 Tiingo-Anfragen), ohne Zeitplan. Gemessen mit der Engine an NVDA: 255 von 270 Tagespunkten umrechenbar, letzter EUR-Punkt 01.10.; 1T fällt auf USD zurück. **Voraussetzung für EUR als Standard: PR #865** (täglicher EZB-Lauf, eine öffentliche Datei, kein Anbieterkontingent, plus Frischeüberwachung in `domains.json`). Mit aktuellen EZB-Kursen: 270/270 und 1 448/1 448 Punkte tagesgenau.
+- **Befund 23.10.2026:** Die EZB-Reihe endet am **21.09.2026** (Repository wie live). Sie entstand nur in `currency-fx-verify.yml` (Hand/Marke, mit ~54 Tiingo-Anfragen), ohne Zeitplan. Gemessen mit der Engine an NVDA: 255 von 270 Tagespunkten umrechenbar, letzter EUR-Punkt 01.10.; 1T fällt auf USD zurück. **Behoben mit PR #865** (gemergt 23.10.2026: täglicher EZB-Lauf werktags 15:47 UTC, eine öffentliche Datei, kein Anbieterkontingent, plus Frischeüberwachung in `domains.json`). Vor dem Merge geprüft: 135 195 vorhandene Tageswerte in 22 Reihen unverändert, nur 23 neue Tage bis 22.10. ergänzt. Mit aktuellen EZB-Kursen: 270/270 und 1 448/1 448 Punkte tagesgenau.
 
 ---
 
@@ -205,8 +205,8 @@ Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung
 | Schritt | Inhalt | PR-Zuschnitt | Risiko | Prüfung |
 |---|---|---|---|---|
 | M0 ✔ | DQ-PX-4-Reparaturlauf, Chart-Paritätsprüfung | #858, #859 (gemergt) | – | erster Reparaturlauf 23.10. ohne Befund, ohne Schreibzugriff |
-| M0b | EZB-Kurse täglich + Frischeüberwachung | #865 | gering | ein Lauf nach Merge, `system-health` |
-| M0c | Elliott: split-angepasste Ansicht historischer Thesen | #864 (Bericht), danach Erzeuger/Oberfläche | gering | Elliott-Registertests |
+| M0b ✔ | EZB-Kurse täglich + Frischeüberwachung | #865 (gemergt) | – | Lauf nach Merge, `system-health` |
+| M0c ✔ | Elliott: split-angepasste Ansicht historischer Thesen (Bericht) | #864 (gemergt); Einbindung in Erzeuger/Oberfläche offen | gering | Elliott-Registertests |
 | M1 | `chart-ranges.js` / `ChartHistory`: Standardleiste, 1W, Standard 1T als Definition; gemeinsamer Präferenzschlüssel Zeitraum/Währung | Quant/Core | gering | Unit-Tests je Zeitraum |
 | M2 | Supertrader: 1T-Rückfall, 5J/MAX, Standard 1T, EUR-Anzeige inkl. Linien | nur `supertrader/**` (Gate A) | mittel | `browser-qa.mjs`, Vorher/Nachher 390/1280 px |
 | M3 | Discover: 1W, deaktiviert statt ausgeblendet, Umschalter EUR/USD | nur `discover/**` | mittel (Budget-Gate) | `browser-qa.mjs`, Budget |
@@ -222,10 +222,10 @@ Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Pari
 
 ## 8. Noch erforderliche Freigaben
 
-1. **PR #865** (EZB täglich) – Voraussetzung für EUR als Standard.
+1. ~~PR #865~~ gemergt 23.10.2026.
 2. **Supertrader 1T-Rückfall** (6.1) als isolierter Supertrader-PR.
 3. **Echte 1W-Intraday-Reihe** (Abschnitt 4) – Pipeline-Änderung.
-4. **Elliott-Thesen:** Einbindung der split-angepassten Ansicht (#864) in Erzeuger und Oberfläche.
+4. **Elliott-Thesen:** Einbindung der split-angepassten Ansicht (Bericht mit #864 gemergt) in Erzeuger und Oberfläche.
 5. **Supertrader-Wochenkontext** (`engine/weekly.mjs`): Titel mit offenem DQ-PX-4-Befund aussetzen, bis repariert (seit #858 höchstens bis zum nächsten Reparaturlauf).
 6. **Je Produktwelt die UI-Umsetzung M1–M6.**
 
