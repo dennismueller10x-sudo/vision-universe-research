@@ -483,8 +483,9 @@
     head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
-    /* Die FX-Schicht kommt nach (nur auf der Aktienseite); steht sie, wird der Zeitraum neu gezeichnet. */
-    if (std() && std().ensureDisplay) std().ensureDisplay().then(function () { if (!st.disposed && st.range) draw(st.range); });
+    /* Anzeigewaehrung: die Umrechnung oben greift, sobald die Seite eine FX-Schicht hat (VUFx.layer).
+       Quant laedt sie noch nicht nach - das Anfragebudget der Aktienseite (scripts/vu2/resource-budget.mjs,
+       45) reicht fuer Lizenz, EZB-Verzeichnis und Kursreihe nicht. Bis dahin bleibt der Chart in USD. */
 
     return {
       node: node,
