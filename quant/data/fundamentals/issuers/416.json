@@ -6,9 +6,9 @@
       "cik": "0000822416",
       "name": "PULTEGROUP INC/MI/",
       "sic": "1531",
-      "rawFacts": 24048,
-      "mappedFacts": 5782,
-      "unmappedFacts": 18493,
+      "rawFacts": 24382,
+      "mappedFacts": 5872,
+      "unmappedFacts": 18770,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 595,
+        "HIGH": 602,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 616,
-        "resolvedValues": 616
+        "datableValues": 623,
+        "resolvedValues": 623
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 18830,
+        "total": 19110,
         "by_severity": {
-          "INFO": 18493,
-          "WARNING": 337
+          "INFO": 18770,
+          "WARNING": 340
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 308,
+          "CONCEPT_DISAGREEMENT": 311,
           "RESTATEMENT_CONFLICT": 29,
-          "UNKNOWN_CONCEPT": 18493
+          "UNKNOWN_CONCEPT": 18770
         }
       },
       "latestFiling": {
-        "accession": "0000822416-26-000036",
-        "filing_date": "2026-07-22",
+        "accession": "0000822416-26-000043",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 124
+        "periodic_filings": 125,
+        "acceptance_datetime": "2026-10-23T00:05:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "ef5b942069668de8b5defc9a047efe45d1996d00f58ef2c69f94f0a26f6da628",
+      "sourceDigest": "8efd443a7afc204a8196b83b7fd01f7ce1781f7006f91e34cbd71a9b3575f98d",
       "issuerId": "iss_cik_0000822416"
     },
     {

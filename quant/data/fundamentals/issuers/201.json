@@ -7,8 +7,8 @@
       "name": "American Airlines Group Inc.",
       "sic": "4512",
       "rawFacts": 22123,
-      "mappedFacts": 6981,
-      "unmappedFacts": 15680,
+      "mappedFacts": 6971,
+      "unmappedFacts": 15781,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -127,37 +127,38 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 16131,
+        "total": 16221,
         "by_severity": {
           "ERROR": 3,
-          "INFO": 15680,
-          "WARNING": 448
+          "INFO": 15781,
+          "WARNING": 437
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 311,
+          "CONCEPT_DISAGREEMENT": 302,
           "FUTURE_DATA_LEAK": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 117,
+          "RESTATEMENT_CONFLICT": 115,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 15680
+          "UNKNOWN_CONCEPT": 15781
         }
       },
       "latestFiling": {
-        "accession": "0000006201-26-000052",
-        "filing_date": "2026-07-23",
+        "accession": "0000006201-26-000065",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 136
+        "periodic_filings": 137,
+        "acceptance_datetime": "2026-10-22T15:01:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
       "sourceDigest": "cb8b1450b43e8140e27b061786181000273f4f4f02a4a0869ab59c7098a1df44",

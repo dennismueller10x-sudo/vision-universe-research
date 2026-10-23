@@ -6,40 +6,40 @@
       "cik": "0000016058",
       "name": "CACI INTERNATIONAL INC /DE/",
       "sic": "7373",
-      "rawFacts": 21426,
-      "mappedFacts": 7522,
-      "unmappedFacts": 14281,
+      "rawFacts": 21664,
+      "mappedFacts": 7578,
+      "unmappedFacts": 14568,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
-      "fiscalYearEnd": "0630",
+      "fiscalYearEnd": "1231",
       "tickers": [
         "CACI"
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 70,
+      "quarterlyPeriods": 71,
       "firstPeriodEnd": "2008-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0,
@@ -52,56 +52,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "short_term_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 17.0
         },
         "total_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0,
@@ -117,47 +117,48 @@
         }
       },
       "quality": {
-        "HIGH": 685,
-        "MEDIUM": 79
+        "HIGH": 693,
+        "MEDIUM": 80
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 764,
-        "resolvedValues": 764
+        "datableValues": 773,
+        "resolvedValues": 773
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14801,
+        "total": 14907,
         "by_severity": {
-          "INFO": 14281,
+          "INFO": 14568,
           "ERROR": 3,
-          "WARNING": 517
+          "WARNING": 336
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 503,
+          "CONCEPT_DISAGREEMENT": 328,
           "FUTURE_DATA_LEAK": 3,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 14281
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 14568
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054195",
-        "filing_date": "2026-08-06",
-        "form": "10-K",
-        "periodic_filings": 126
+        "accession": "0001628280-26-066827",
+        "filing_date": "2026-10-22",
+        "form": "10-Q",
+        "periodic_filings": 127,
+        "acceptance_datetime": "2026-10-22T19:57:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "258c118c5637be65a5e2ebbd2d5dea7df947c95b3dbf65bb62b9a90d211a43fc",
+      "sourceDigest": "999afe586426f0fe3b07c986add2111678de9d42889aa8615eb7e3aec88dc6d1",
       "issuerId": "iss_cik_0000016058"
     },
     {
