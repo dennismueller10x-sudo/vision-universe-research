@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_49ed4ea774f950db",
+  "content_id": "vu-web-8854f83d5a3bdb8f-20260924",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "The stock market is ‘priced for perfection.’ Here’s what could drive a nearly 20% slump for the S&P 500 next year.",
+  "objective": "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, thematisch passende Bildwelt erzeugen, die als Teil EINES fertigen Markenposts komponiert ist (nicht als spaeter zutextendes Rohbild) — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker. Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "instruction": "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook (siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2)."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "Trading Floor, Kurstafeln, Broker in Bewegung, dynamisches Boersenlicht, Finanzdistrikt bei Nacht. Keine Schrift, kein Logo, kein Wasserzeichen, generoese Freiflaeche fuer eine spaeter aufgesetzte Kopfzeile. Fotorealistisch, hochwertig, kein Diagramm, kein Bildschirmfoto, kein Dashboard.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": "dark, premium editorial, cinematic light",
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5. Reserve calm, uncluttered negative space in exactly three zones for a deterministic brand overlay added afterward: (1) TOP-LEFT corner — small quiet area, no busy detail, for a brand logo; (2) a horizontal band from the upper third to the middle-left — calm, low-contrast background (not behind bright highlights or complex texture) for a bold headline; (3) BOTTOM-RIGHT corner — a modest quiet area for a small brand mascot silhouette, not the visual focal point. The main subject/action occupies the center and right-of-center, calmer toward those three zones. It must still read as ONE cohesive, intentionally composed photograph — not a scene with empty holes cut out of it.",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "The stock market is ‘priced for perfection.’ Here’s what could drive a nearly 20% slump for the S&P 500 next year.",
+      "value": "20",
+      "unit": "%",
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 1",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-24T11:17:00.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "The stock market is ‘priced for perfection.’ Here’s what could drive a nearly 20% slump for the S&P 500 next year.",
+      "value": "500",
+      "unit": null,
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 2",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-24T11:17:00.000Z"
+    },
+    {
+      "id": "ev3",
+      "statement": "Clocktower’s Eric Wallerstein believes stocks are headed for trouble next year, and safety-seeking investors could drive gold to $6,000 an ounce.",
+      "value": "6,000",
+      "unit": null,
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 3",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-24T11:17:00.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-8854f83d5a3bdb8f-20260924/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "grounding_hook_en": "The stock market is ‘priced for perfection.’ Here’s what could drive a nearly 20% slump for the S&P 500 next year.",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-8854f83d5a3bdb8f-20260924",
+    "as_of": "2026-09-24T11:17:00.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "The stock market is ‘priced for perfection.’ Here’s what could drive a nearly 20% slump for the S&P 500 next year.",
+    "link": "https://www.marketwatch.com/story/the-stock-market-is-priced-for-perfection-heres-what-could-drive-a-nearly-20-slump-for-the-s-p-500-next-year-41e78c27?mod=mw_rss_topstories",
+    "source": "MarketWatch Top Stories",
+    "publishedAt": "2026-09-24T11:17:00.000Z"
+  }
+}
