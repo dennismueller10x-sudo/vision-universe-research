@@ -35,7 +35,7 @@
   "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 306,
+  "testsRun": 307,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1732,7 +1732,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 138,
+ "otherTests": 139,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -3262,6 +3262,11 @@
   {
    "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
    "name": "SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie ueber die Grenze; nur 200/404 werden gespeichert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige Abdeckung heisst Stichprobe, nie mehr",
    "result": "PASS"
   }
  ]

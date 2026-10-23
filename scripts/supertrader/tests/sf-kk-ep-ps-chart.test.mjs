@@ -286,3 +286,15 @@ test('SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie 
   const shards = new Set(Array.from({ length: 400 }, (_, n) => shardOf(`T${n}|2021-01-04`)));
   assert.equal(shards.size, CACHE_SHARDS); assert.equal(shardOf('NVDA|2023-05-25'), shardOf('NVDA|2023-05-25'));
 });
+
+test('SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige Abdeckung heisst Stichprobe, nie mehr', () => {
+  const a = buildKkEpPs(), run = KK_SNAPSHOT_RUNS.find((x) => x.role === 'AUTHORITATIVE');
+  assert.ok(run); assert.equal(run.epVariantRegistrySha256, epVariantRegistrySha256()); assert.equal(run.psVariantRegistrySha256, psVariantRegistrySha256());
+  assert.ok(run.coverage.requestsThisRun <= 6000);
+  for (const v of Object.values(run.ep)) assert.equal(v.reconciliation, true);
+  for (const k of ['C09', 'C10']) {
+    const s = a.strategies[k];
+    if (!run.coverage.complete) assert.match(s.researchStage, /_HASH_ORDER_SAMPLE$/);
+    assert.doesNotMatch(s.researchStage, /ORIGINAL|EXECUTABLE|CERTIFIED/); assert.equal(s.liveReadiness, 'LIVE_NOT_APPROVED');
+  }
+});
