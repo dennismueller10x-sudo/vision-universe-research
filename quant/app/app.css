@@ -1392,3 +1392,229 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 @media (max-width:640px){.qd .q-moves{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.qd .q-moves>div{padding:10px}}
 /* VU3-Finalisierung: mobil eine Haarlinie und 44 px Luft zwischen den Abschnitten (vorher 64 px). */
 @media (max-width:760px){.qd .qv-stock .qx-section{margin-top:20px;padding-top:24px}}
+
+/* =====================================================================
+   UI-Konzept 23.10.2026 (Owner-Mockup "Quant – Optimiertes UI Konzept", page-stock.js)
+   Sechs kompakte Bereiche als Karten: Ueberblick & Ergebnis, Quant-Eigenschaften, Staerken & Risiken, Aktuelle
+   Veraenderungen, Setup & Strategie, Historischer Vergleich. Getoente Flaechen tragen die Aussage (gut/schlecht/
+   Mittelfeld/Hinweis), Symbole in Kreisen, grosse Zahlen, Pfeil fuer "mehr". Nur Quant-Tokens, Hell und Dunkel.
+   ===================================================================== */
+.qd .qv-stock{
+  --qv2-card:var(--q-panel); --qv2-ring:0 0 0 1px var(--q-line);
+  --qv2-good:color-mix(in srgb,var(--q-up) 11%,var(--q-panel)); --qv2-bad:color-mix(in srgb,var(--q-down) 9%,var(--q-panel));
+  --qv2-mid:color-mix(in srgb,var(--q-text) 5%,var(--q-panel)); --qv2-warn:color-mix(in srgb,var(--q-warm) 13%,var(--q-panel));
+  --qv2-r:22px;
+}
+html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--qv2-ring:0 0 0 1px #e6e8eb,0 2px 10px -6px rgba(16,18,22,.14)}
+/* Symbol im Kreis, Pfeil "mehr" */
+.qd .qv2-ico{flex:none;display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--qv2-mid);color:var(--q-muted)}
+.qd .qv2-ico svg,.qd .qv2-pt-ico svg,.qd .qv2-panel-ico svg,.qd .qv2-status-ico svg,.qd .qv2-result-ico svg,.qd .qv2-warn-ico svg,.qd .qv2-step-dot svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.qd .qv2-ico.tone-good{background:var(--qv2-good);color:var(--q-up)}.qd .qv2-ico.tone-bad{background:var(--qv2-bad);color:var(--q-down)}.qd .qv2-ico.tone-neutral{background:var(--qv2-warn);color:var(--q-warm)}
+.qd .qv2-chev{flex:none;display:inline-block;width:8px;height:8px;border-right:2px solid var(--q-muted);border-bottom:2px solid var(--q-muted);transform:rotate(-45deg);font-size:0}
+/* Karten der sechs Bereiche */
+.qd .qv2-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:14px}
+.qd .qv2-grid>*{min-width:0}
+@media (min-width:1100px){.qd .qv2-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}}
+.qd .qv-stock .qx-section.qv2-card{margin:0;padding:20px 18px 18px;border:0;border-radius:var(--qv2-r);background:var(--qv2-card);box-shadow:var(--qv2-ring);scroll-margin-top:72px}
+@media (min-width:761px){.qd .qv-stock .qx-section.qv2-card{padding:24px 24px 20px}}
+.qd .qv-stock .qv2-card>.q-sec-head{margin:0}
+.qd .qv-stock .qv2-card>.q-sec-head h2{font-size:clamp(20px,5.2vw,23px);font-weight:850;letter-spacing:-.01em;margin:0}
+.qd .qv-stock .qv2-card>.q-sec-head a{font-size:13px;font-weight:750;color:var(--q-lime-text);text-decoration:none}
+.qd .qv-stock .qv2-card>.q-sec-intro{margin:4px 0 12px;font-size:13.5px;line-height:1.45;color:var(--q-muted)}
+.qd .qv-stock .qx-section.qv2-sub{margin:18px 0 0;padding:16px 0 0;border:0;border-top:1px solid var(--q-line);scroll-margin-top:72px}
+.qd .qv-stock .qv2-sub>.q-sec-head h2{font-size:17px;font-weight:850;margin:0}
+.qd .qv-stock .qv2-sub>.q-sec-head a{font-size:13px;font-weight:750;color:var(--q-lime-text);text-decoration:none}
+.qd .qv-stock .qv2-q{margin:2px 0 12px;font-size:13.5px;color:var(--q-muted)}
+.qd .qv-stock .qv2-card .dx-kapitel-fuss{font-size:12px;color:var(--q-muted);margin:12px 0 0}
+/* Abschnittsleiste: klebt oben, Pillen wie im Mockup */
+.qd .qv-stock .qv2-toc{position:sticky;top:0;z-index:30;display:flex;gap:8px;margin:18px calc(-1 * var(--vu-gutter,16px)) 0;padding:10px var(--vu-gutter,16px);overflow-x:auto;scrollbar-width:none;
+  background:color-mix(in srgb,var(--q-bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border:0}
+.qd .qv-stock .qv2-toc::-webkit-scrollbar{display:none}
+.qd .qv-stock .qv2-toc a{flex:none;min-height:38px;padding:0 15px;border-radius:99px;border:1px solid var(--q-line2);background:var(--q-panel);font-size:13.5px;font-weight:750;color:var(--q-text-soft);text-decoration:none;white-space:nowrap}
+.qd .qv-stock .qv2-toc a[aria-current=true]{background:var(--q-lime);border-color:var(--q-lime);color:var(--q-lime-ink)}
+@media (min-width:980px){.qd .qv-stock .qv2-toc{margin-left:0;margin-right:0;padding-left:0;padding-right:0}}
+/* 1 Ueberblick & Ergebnis */
+.qd .qv-stock .qx-glance.qv2-glance{padding:16px;border-radius:var(--qv2-r);background:var(--qv2-card);box-shadow:var(--qv2-ring)}
+@media (min-width:1100px){.qd .qv-stock .qx-stock-layout .qx-glance.qv2-glance{padding:20px;border-radius:var(--qv2-r);background:var(--qv2-card);box-shadow:var(--qv2-ring)}}
+.qd .qv2-result{display:flex;align-items:flex-start;gap:14px;padding:16px;border-radius:18px;background:var(--qv2-mid)}
+.qd .qv2-result[data-tone=good]{background:var(--qv2-good)}.qd .qv2-result[data-tone=bad]{background:var(--qv2-bad)}.qd .qv2-result[data-tone=neutral]{background:var(--qv2-warn)}
+.qd .qv2-result-ico{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--q-panel);color:var(--q-muted)}
+.qd .qv2-result[data-tone=good] .qv2-result-ico{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qv2-result[data-tone=bad] .qv2-result-ico{background:var(--q-down);color:#fff}
+.qd .qv2-result[data-tone=neutral] .qv2-result-ico{background:var(--q-warm);color:#fff}
+.qd .qv2-result-ico svg{width:24px;height:24px}
+.qd .qv2-result-k{margin:0;font-size:13px;font-weight:750;letter-spacing:0;color:var(--q-text-soft)}
+.qd .qv2-glance .qv-result{display:block;margin:2px 0 0;font-size:clamp(22px,6vw,27px);font-weight:900;letter-spacing:-.02em;line-height:1.15;color:var(--q-text)}
+.qd .qv2-glance .qv-sub{margin:6px 0 0;font-size:13.5px;color:var(--q-text-soft)}
+.qd .qv2-keys{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 0;padding:0}
+.qd .qv2-keys a{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:44px;padding:10px 6px;border-radius:16px;border:1px solid var(--q-line);background:var(--q-panel);color:inherit;text-decoration:none;text-align:center}
+.qd .qv2-key-n{font-size:12.5px;font-weight:700;color:var(--q-text-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.qd .qv2-key-v{font-size:30px;font-weight:900;letter-spacing:-.02em;line-height:1.1;color:var(--q-text)}
+.qd .qv2-key-w{font-size:11.5px;font-weight:700;color:var(--q-muted)}
+.qd .qv2-keys .tone-good .qv2-key-v,.qd .qv2-keys .tone-good .qv2-key-w{color:var(--q-up)}
+.qd .qv2-keys .tone-bad .qv2-key-v,.qd .qv2-keys .tone-bad .qv2-key-w{color:var(--q-down)}
+.qd .qv2-keys .tone-neutral .qv2-key-v,.qd .qv2-keys .tone-neutral .qv2-key-w{color:var(--q-warm)}
+.qd .qv2-cta{display:flex;align-items:center;justify-content:center;gap:12px;min-height:52px;margin-top:12px;border-radius:16px;background:var(--q-lime);color:var(--q-lime-ink);font-size:16px;font-weight:850;text-decoration:none}
+.qd .qv2-cta .qv2-chev{border-color:var(--q-lime-ink)}
+.qd .qv2-glance .qv-limit{margin:10px 0 0;text-align:center}
+/* 2 Die Quant-Eigenschaften */
+.qd .qv-stock .qv2-card .qx-factor>summary.qx-frow{grid-template-columns:38px minmax(0,1fr) auto 10px;grid-template-areas:"i n v c" "i b v c";gap:6px 12px;min-height:66px;padding:10px 0}
+.qd .qv-stock .qv2-card .qx-factor>summary .qv2-ico{grid-area:i;align-self:center}
+.qd .qv-stock .qv2-card .qx-fr-name{grid-area:n;gap:4px 8px}
+.qd .qv-stock .qv2-card .qx-fr-label{font-size:15px}
+.qd .qv-stock .qv2-card .qx-fr-value{grid-area:v;align-self:center;font-size:24px;font-weight:900;min-width:2ch;text-align:right}
+.qd .qv-stock .qv2-card .qv2-fbar,.qd .qv-stock .qv2-card .qx-fr-sub{grid-area:b;align-self:center}
+.qd .qv2-fbar{display:block;height:7px;border-radius:9px;background:var(--q-line);overflow:hidden;max-width:none}
+.qd .qv2-fbar>i{display:block;height:100%;width:calc(var(--v) * 1%);border-radius:inherit;background:var(--q-unknown)}
+.qd .qx-factor.tone-good .qv2-fbar>i{background:var(--q-lime-line)}.qd .qx-factor.tone-bad .qv2-fbar>i{background:var(--q-down)}.qd .qx-factor.tone-neutral .qv2-fbar>i{background:var(--q-warm)}
+.qd .qv-stock .qv2-card .qx-factor>summary .qv2-chev{grid-area:c;align-self:center;transition:transform .15s}
+.qd .qv-stock .qv2-card .qx-factor[open]>summary .qv2-chev{transform:rotate(45deg)}
+.qd .qv-stock .qv2-card .qx-factor:last-child{border-bottom:0}
+.qd .qv2-returns{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:14px 0 0;padding:12px 14px;border-radius:16px;background:var(--qv2-mid)}
+.qd .qv2-returns .qv2-returns-k{flex-basis:100%;font-size:12.5px;font-weight:800;color:var(--q-text-soft)}
+/* 3 Staerken & Risiken */
+.qd .qv-stock .qv2-waage{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:4px 0 0}
+.qd .qv-stock .qv2-panel{padding:12px 14px 6px;border:0;border-radius:18px;background:var(--qv2-mid)}
+.qd .qv-stock .qv2-panel.tone-good{background:var(--qv2-good)}.qd .qv-stock .qv2-panel.tone-bad{background:var(--qv2-bad)}
+.qd .qv-stock .qx-middle.qv2-panel{margin:10px 0 0}
+.qd .qv2-panel-h{display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-areas:"i h" "i s";align-items:center;column-gap:10px}
+.qd .qv2-panel-ico{grid-area:i;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--q-muted);color:var(--q-panel)}
+.qd .qv2-panel.tone-good .qv2-panel-ico{background:var(--q-up)}.qd .qv2-panel.tone-bad .qv2-panel-ico{background:var(--q-down)}
+.qd .qv2-panel-ico svg{width:16px;height:16px;stroke-width:2.6}
+.qd .qv-stock .qv2-panel-h h3{grid-area:h;margin:0;font-size:16px;font-weight:850;color:var(--q-text)}
+.qd .qv2-panel-h small{grid-area:s;font-size:12px;font-weight:700;color:var(--q-muted)}
+.qd .qv-stock .qv2-panel ul{list-style:none;margin:8px 0 0;padding:0}
+.qd .qv-stock .qv2-panel li{display:block;margin:0;padding:0;border-top:1px solid color-mix(in srgb,var(--q-text) 9%,transparent)}
+.qd .qv2-pt{display:grid;grid-template-columns:34px minmax(0,1fr) 10px;align-items:center;gap:12px;min-height:56px;padding:10px 0;color:inherit;text-decoration:none}
+.qd .qv2-pt .dx-waage-marke{display:none}
+.qd .qv2-pt-ico{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--q-panel);color:var(--q-muted)}
+.qd .tone-good .qv2-pt-ico{color:var(--q-up)}.qd .tone-bad .qv2-pt-ico{color:var(--q-down)}.qd .tone-neutral .qv2-pt-ico{color:var(--q-warm)}
+.qd .qv2-pt-ico svg{width:17px;height:17px}
+.qd .qv2-pt-main b{display:block;font-size:14.5px;font-weight:800;color:var(--q-text)}
+.qd .qv2-pt-main span{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:var(--q-muted)}
+.qd .qv-stock .qv2-panel .qx-pc-empty{margin:8px 0;font-size:13px;color:var(--q-muted)}
+.qd .qv-stock .qv2-panel details.qx-more{margin-top:0;border-top:1px solid color-mix(in srgb,var(--q-text) 9%,transparent)}
+/* 4 Aktuelle Veraenderungen */
+.qd .qv2-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+.qd .qv2-chips button{display:inline-flex;align-items:center;gap:5px;min-height:38px;padding:0 14px;border-radius:99px;border:1px solid var(--q-line2);background:var(--q-panel);color:var(--q-text-soft);font-size:13.5px;font-weight:750}
+.qd .qv2-chips button i{font-style:normal;font-size:11px}
+.qd .qv2-chips button.tone-good i{color:var(--q-up)}.qd .qv2-chips button.tone-bad i{color:var(--q-down)}
+.qd .qv2-chips button b{font-weight:750}
+.qd .qv2-chips button[aria-pressed=true]{background:var(--q-lime);border-color:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qv2-chips button[aria-pressed=true] i{color:inherit}
+.qd .qv2-chips button.is-zero{opacity:.6}
+.qd .qv-stock .qv2-card .qx-changes{list-style:none;margin:0;padding:0}
+.qd .qv-stock .qv2-card .qx-change{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--q-line)}
+.qd .qv-stock .qv2-card .qx-change .qx-change-glyph{display:none}
+.qd .qv2-ch-t{display:block;font-size:14.5px;font-weight:800;color:var(--q-text)}
+.qd .qv2-ch-main small{display:block;margin-top:2px;font-size:12.5px;color:var(--q-muted)}
+.qd .qv2-now{margin-top:16px;padding:14px;border:0;border-radius:18px;background:var(--qv2-mid)}
+.qd .qv2-now .qv-now-h{margin:0 0 8px;font-size:15px}
+/* 5 Setup & Strategie */
+.qd .qv-stock .qv2-card .q-setup-head{display:none}
+.qd .qv2-steps{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:4px 0 14px;padding:0}
+.qd .qv2-steps li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;font-weight:700;line-height:1.25;color:var(--q-muted)}
+.qd .qv2-steps li::before{content:"";position:absolute;top:17px;left:-50%;right:50%;height:2px;background:var(--q-line2);z-index:0}
+.qd .qv2-steps li:first-child::before{display:none}
+.qd .qv2-steps li.is-past::before,.qd .qv2-steps li.is-now::before{background:var(--q-lime-line)}
+.qd .qv2-step-dot{position:relative;z-index:1;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--q-line2);background:var(--q-panel);color:var(--q-muted)}
+.qd .qv2-steps li.is-past .qv2-step-dot{border-color:var(--q-lime-line);color:var(--q-up)}
+.qd .qv2-steps li.is-now .qv2-step-dot{border-color:var(--q-lime);background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qv2-steps li.is-now{color:var(--q-text);font-weight:850}
+.qd .qv2-status{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--qv2-mid)}
+.qd .qv2-status.tone-good{background:var(--qv2-good)}.qd .qv2-status.tone-neutral{background:var(--qv2-warn)}
+.qd .qv2-status-ico{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--q-panel);color:var(--q-muted)}
+.qd .qv2-status.tone-good .qv2-status-ico{background:var(--q-up);color:var(--q-panel)}.qd .qv2-status.tone-neutral .qv2-status-ico{background:var(--q-warm);color:var(--q-panel)}
+.qd .qv2-status b{display:block;font-size:16px;font-weight:850;color:var(--q-text)}.qd .qv2-status small{display:block;font-size:12.5px;color:var(--q-text-soft)}
+.qd .qv-stock .q-levels.qv2-levels{display:block;margin:10px 0 0}
+.qd .qv-stock .qv2-levels>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:0 12px;padding:10px 0;border-bottom:1px solid var(--q-line)}
+.qd .qv-stock .qv2-levels>div>span{font-size:13.5px;font-weight:700;color:var(--q-text-soft)}
+.qd .qv-stock .qv2-levels>div>b{grid-column:2;grid-row:1/span 2;align-self:center;text-align:right;font-size:17px;font-weight:850;color:var(--q-text)}
+.qd .qv-stock .qv2-levels>div>small{grid-column:1;font-size:12px;color:var(--q-muted)}
+.qd .qv-stock .qv2-levels>.is-stop>b,.qd .qv-stock .qv2-levels>.is-inv>b{color:var(--q-down)}
+.qd .qv-stock .qv2-levels>.is-target>b{color:var(--q-up)}
+.qd .qv-stock .qv2-levels>.is-missing>b{font-size:13px;font-weight:700;color:var(--q-muted)}
+.qd .qv-stock .qv2-levels>.is-rr>b{grid-row:auto;font-size:14px}
+.qd .qv-stock .qv2-levels>.is-rr>span{grid-row:1/span 2;align-self:center}
+.qd .qv-stock .qv2-card .q-setup-links{margin:10px 0 0;font-size:14px;font-weight:750}
+/* 6 Historischer Vergleich */
+.qd .qv2-seg{display:inline-flex;gap:4px;max-width:100%;margin:2px 0 6px;padding:4px;border-radius:99px;background:var(--qv2-mid)}
+.qd .qv2-seg button{min-height:38px;padding:0 14px;border:0;border-radius:99px;background:none;color:var(--q-text-soft);font-size:13.5px;font-weight:750;white-space:nowrap}
+.qd .qv2-seg button[aria-selected=true]{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qv-stock .qv2-evo .q-evo-rows{display:block}
+.qd .qv-stock .qv2-evpane{display:block;padding:10px 0 4px;border:0}
+.qd .qv-stock .qv2-evpane .q-evo-k{display:none}
+.qd .qv2-ev-big{margin:0}.qd .qv2-ev-big b{font-size:clamp(34px,9vw,44px);font-weight:900;letter-spacing:-.03em;line-height:1.05;color:var(--q-text)}
+.qd .qv2-ev-sub{margin:4px 0 0;font-size:14px;line-height:1.45;color:var(--q-text-soft)}
+.qd .qv2-ev-sub b{font-weight:850;color:var(--q-text)}
+.qd .qv2-evpane .q-evo-more{display:inline-block;margin-top:8px}
+.qd .qv2-hbars{display:flex;align-items:stretch;gap:8px;margin:14px 0 2px}
+.qd .qv2-hbar{flex:1;display:grid;grid-template-rows:auto 96px auto;justify-items:center;gap:4px;min-width:0}
+.qd .qv2-hbar b{font-size:12px;font-weight:800;color:var(--q-text-soft);white-space:nowrap}
+.qd .qv2-hbar i{align-self:end;width:min(34px,80%);height:var(--h);border-radius:7px 7px 3px 3px;background:color-mix(in srgb,var(--q-up) 45%,var(--q-panel))}
+.qd .qv2-hbar.down i{background:color-mix(in srgb,var(--q-down) 55%,var(--q-panel))}
+.qd .qv2-hbar.is-main i{background:var(--q-up)}.qd .qv2-hbar.is-main b{color:var(--q-up)}
+.qd .qv2-hbar.is-start i{background:var(--q-line2)}
+.qd .qv2-hbar small{font-size:11.5px;color:var(--q-muted);white-space:nowrap}
+.qd .qv2-warn{display:flex;align-items:flex-start;gap:12px;margin:12px 0 0;padding:12px 14px;border-radius:16px;background:var(--qv2-warn)}
+.qd .qv2-warn-ico{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--q-warm);color:var(--q-panel)}
+.qd .qv2-warn .q-evo-pill{display:block;padding:0;background:none;font-size:15px;font-weight:850;color:var(--q-warm)}
+.qd .qv2-warn .q-evo-pill::before{display:none}
+.qd .qv2-warn .q-evo-why{display:block;margin-top:2px;font-size:12.5px;color:var(--q-text-soft)}
+/* Weitere Abschnitte unter den Karten: Unternehmenszahlen, Unternehmen, Daten & Methodik */
+.qd .qv-stock .qv2-grid~.qx-section{margin-top:28px}
+/* Feinschliff: Discovers Waage-Regeln (span als Block, Liste mit Abstand, Versal-Ueberschrift) gelten in den Karten nicht. */
+.qd .qv-stock .qv2-panel ul{display:block}
+.qd .qv-stock .qv2-panel li{display:block}
+.qd .qv-stock .qv2-panel .qv2-pt-ico,.qd .qv-stock .qv2-panel .qv2-panel-ico{display:grid;margin:0}
+.qd .qv-stock .qv2-panel .qv2-pt-main{display:block;margin:0;font-size:inherit;color:inherit}
+.qd .qv-stock .qv2-panel-h h3{text-transform:none;letter-spacing:0}
+.qd .qv-stock .qv2-panel .qv2-panel-h small{display:block}
+.qd .qv2-pt-main span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qd .qv-stock .qv2-card .qx-fr-sub{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.4}
+.qd .qv-stock .qv2-card .qx-factor>summary.qx-frow{min-height:60px;padding:8px 0}
+.qd .qv2-ch-main small{font-weight:500}
+.qd .qv2-chips{gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.qd .qv2-chips button{flex:none;padding:0 12px;font-size:13px}
+.qd .qv2-warn.q-evo-strength{flex-wrap:nowrap}
+.qd .qv-stock .qv2-card .q-now .q-events{margin:0}
+/* Kursstruktur und Unternehmenszahlen in den Karten: kompakte Kennzahlen im Raster. */
+.qd .qv-stock .qv2-card .q-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 12px;margin:8px 0 0}
+.qd .qv-stock #zahlen .q-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:600px){.qd .qv-stock #zahlen .q-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.qd .qv-stock .qv2-card .q-stat b{display:block;font-size:18px;font-weight:850;line-height:1.2}
+.qd .qv-stock .qv2-card .q-stat span{display:block;font-size:12px;color:var(--q-muted)}
+.qd .qv-stock .qv2-card .q-stat{padding:10px 12px;border-radius:14px;background:var(--qv2-mid)}
+.qd .qv-stock .qv2-card .qx-actions{margin-top:12px}
+/* Anlagestil als eine Zeile mit Symbol und Pfeil */
+.qd .qv-stock .qv2-strat{display:grid;grid-template-columns:38px minmax(0,1fr) 10px;gap:12px;margin-top:10px;padding:10px 0;border-bottom:0}
+.qd .qv-stock .qv2-strat strong{font-size:15px;font-weight:850}
+/* Radar-Ereignisse ("Was ist jetzt wichtig?") als kompakte Zeilen */
+.qd .qv-stock .qv2-now .q-events{list-style:none;display:block;margin:0;padding:0}
+.qd .qv-stock .qv2-now .q-ev{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;margin:0;padding:9px 0 9px 12px;border:0;border-left:3px solid var(--q-lime-line);border-radius:0;background:none}
+.qd .qv-stock .qv2-now .q-ev+.q-ev{margin-top:6px}
+.qd .qv-stock .qv2-now .q-ev.tone-bad,.qd .qv-stock .qv2-now .q-ev.tone-down{border-left-color:var(--q-down)}
+.qd .qv-stock .qv2-now .q-ev b{grid-column:1;font-size:14px;font-weight:850;color:var(--q-text)}
+.qd .qv-stock .qv2-now .q-ev span{grid-column:1/-1;font-size:12.5px;line-height:1.4;color:var(--q-muted)}
+.qd .qv-stock .qv2-now .q-ev small{grid-column:2;grid-row:1;font-size:11.5px;color:var(--q-muted)}
+.qd .qv-stock .qv2-now .q-now-line{margin:8px 0 0;font-size:13px;line-height:1.45}
+.qd .qv-stock .qv2-now details.vu-more{margin-top:6px}
+/* iPhone: Bereiche 2-6 nebeneinander zum Wischen (page-stock.js#deck). Die Hoehe setzt das Skript auf den sichtbaren
+   Bereich; ohne Skript bleibt sie die des hoechsten. */
+.qd .qv2-grid{position:relative}
+@media (max-width:759px){
+  .qd .qv2-grid{display:flex;align-items:flex-start;gap:12px;margin:12px calc(-1 * var(--vu-gutter,16px)) 0;padding:0 var(--vu-gutter,16px) 4px;
+    overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding:0 var(--vu-gutter,16px);overscroll-behavior-x:contain;scrollbar-width:none;transition:height .2s ease}
+  .qd .qv2-grid::-webkit-scrollbar{display:none}
+  .qd .qv2-grid>.qx-section.qv2-card{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always}
+  .qd .qv-stock .qv2-toc{margin-top:14px}
+}
+@media (max-width:759px) and (prefers-reduced-motion:reduce){.qd .qv2-grid{transition:none}}
+.qd .qv-stock .qv2-panel .qv2-panel-ico{color:var(--q-panel)}
+.qd .qv-stock .qv2-panel .qv2-pt-ico{color:var(--q-muted)}
+.qd .qv-stock .qv2-panel.tone-good .qv2-pt-ico{color:var(--q-up)}.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico{color:var(--q-down)}.qd .qv-stock .qv2-panel.tone-neutral .qv2-pt-ico{color:var(--q-warm)}
+.qd .qv-stock .qv2-levels>.q-rr{margin:0;padding:10px 0;border-radius:0;background:none;border-bottom:1px solid var(--q-line)}
+.qd .qv2-chips button b{font-weight:850}
+@media (max-width:420px){.qd .qv2-chips button{padding:0 11px;font-size:12.5px}}
+.qd .qv-stock .qv2-card>.q-kicker{margin:0 0 4px;font-size:11.5px;letter-spacing:.12em}
+.qd .qv-stock .qv2-card>.q-sec-head{margin-bottom:10px}

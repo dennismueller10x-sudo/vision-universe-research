@@ -289,10 +289,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
    if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Pro/Contra ohne dafuer/dagegen: '+gruppen.join('|'));
-   /* "Was ist jetzt wichtig?" steht neben dem Chart und traegt den Radar-Stand. */
-   const jetzt=await page.locator('.qx-verdict-card').innerText();
-   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt neben dem Chart');
-   await page.locator('.qx-verdict-card .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor();
+   /* Owner-Mockup 23.10.2026: "Was ist jetzt wichtig?" steht bei den Aktuellen Veraenderungen und traegt den Radar-Stand;
+      neben dem Chart steht das Quant-Ergebnis. */
+   if(!await page.locator('.qx-verdict-card').count())befund(view,width,'Quant-Ergebnis fehlt neben dem Chart');
+   const jetzt=await page.locator('#veraenderung').innerText();
+   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt bei den Veraenderungen');
+   await page.locator('#veraenderung .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor({state:'attached'});
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
@@ -319,8 +321,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   /* Reihenfolge nach Owner-Auftrag "Quant Daily Usefulness" (01.10.2026). */
-   const soll=['setup','historie','dafuer','einordnung','veraenderung','strategie','technik','zahlen','grenzen'];
+   /* Reihenfolge nach Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026). */
+   const soll=['einordnung','dafuer','veraenderung','setup','strategie','technik','historie','zahlen','grenzen'];
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));

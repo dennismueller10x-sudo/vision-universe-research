@@ -208,11 +208,12 @@
         buttons[r.id].classList.toggle("is-active", r.id === st.range);
       });
     }
-    /* Masse des gemeinsamen Kurscharts: volle Inhaltsbreite, mobil 240 px,
-       breit 320 px hoch. */
+    /* Masse des gemeinsamen Kurscharts: volle Inhaltsbreite, mobil 180 px,
+       breit 300 px hoch (UI-Konzept 23.10.2026: Kurs, Chart und Quant-Ergebnis
+       in der ersten Bildschirmhoehe). */
     var mobile = function () { return global.innerWidth < 760; };
     function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 24 : 1100))); }
-    function height() { return mobile() ? 240 : 320; }
+    function height() { return mobile() ? 180 : 300; }
     /* Die Flaeche bleibt bis zum ersten Zeichnen leer (Tagesverlauf bis zu 3 s). Ohne
        reservierte Hoehe schob das spaetere SVG alles darunter weg (CLS 0,25 auf NVDA). */
     plot.style.minHeight = height() + "px";
