@@ -72,9 +72,26 @@
       "role": "Wochenschluss MAX/5J aus der dauerhaften Ablage (split-bereinigt).",
       "producer": "scripts/market/publish-long-series.mjs",
       "workflow": "long-series.yml, product-intelligence-materialization.yml",
-      "schedule": "1. Samstag im Monat + nach jeder Materialisierung",
+      "schedule": "Volllauf samstags und 1.-7. des Monats + nach jeder Materialisierung; Reparaturlauf (DQ-PX-4) Di-Sa 04:20 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 840 },
       "consumers": ["Discover (5J/Max)", "Supertrader (Wochencharts)"]
+    },
+    {
+      "id": "fxReference",
+      "label": "FX Reference Rates (ECB)",
+      "layer": "CORE",
+      "group": "Market Data",
+      "critical": false,
+      "artifact": "/quant/data/market/fx/ecb-coverage.json",
+      "timestamp": ["latest"],
+      "records": "daysParsed",
+      "role": "EZB-Referenzkurse je Tag fuer die EUR-Anzeige (quant/engines/fx). Stand = letzter Beobachtungstag der EZB.",
+      "producer": "scripts/market/build-fx-history-ecb.mjs --publish",
+      "workflow": "fx-ecb-daily.yml, currency-fx-verify.yml",
+      "schedule": "werktags 15:47 UTC",
+      "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 168 },
+      "consumers": ["Discover (EUR-Charts, EUR-Kurse)", "Vorsorge", "jede EUR-Anzeige ueber VUFx"],
+      "knownGaps": ["Bis 23.10.2026 ohne Zeitplan: Stand 21.09.2026, EUR-Charts endeten Anfang Oktober, 1T blieb in USD."]
     },
     {
       "id": "intraday",

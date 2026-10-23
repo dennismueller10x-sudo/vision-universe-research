@@ -1,0 +1,77 @@
+name: EZB-Referenzkurse taeglich (EUR-Anzeige)
+
+# Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
+# seines Tages um (quant/engines/fx/, Browser: quant/engines/fx/bootstrap.js
+# laedt /quant/data/market/fx/ecb/). Bisher entstand diese Reihe nur in
+# currency-fx-verify.yml - per Hand oder Commit-Marke, immer zusammen mit
+# ~54 Tiingo-Anfragen - und ohne Zeitplan.
+#
+# Gemessen am 23.10.2026: Stand 21.09.2026, live wie im Repository. Folge:
+# die Engine traegt einen alten Kurs nur begrenzt vor (fx-rates.js,
+# maxCarryDays); danach fallen die Punkte weg. Discover zeigte die EUR-
+# Charts deshalb nur bis Anfang Oktober, 1T blieb in USD.
+#
+# Dieser Lauf holt NUR die EZB: eine oeffentliche XML-Datei
+# (eurofxref-hist.xml, ~12 MB), kein Schluessel, kein Anbieterkontingent.
+# Die EZB gestattet die Wiedergabe unter Quellennennung; die Nennung steht
+# in jeder Reihe. Bleibt die Quelle unveraendert (Wochenende, Feiertag),
+# gibt es nichts zu committen.
+#
+# Zeitplan: werktags 15:47 UTC, nach der Veroeffentlichung (~16:00 MEZ).
+
+on:
+  schedule:
+    - cron: '47 15 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fx-ecb-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: EZB-Referenzkurse holen und in den ausgelieferten Pfad legen
+        run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish
+
+      # Nie eine kuerzere oder aeltere Reihe veroeffentlichen als die vorhandene.
+      - name: Plausibilitaet gegen den bisherigen Stand
+        run: |
+          set -euo pipefail
+          node -e '
+            const fs = require("fs"), { execFileSync } = require("child_process");
+            const f = "quant/data/market/fx/ecb/EURUSD.json";
+            const neu = JSON.parse(fs.readFileSync(f, "utf8"));
+            let alt = null;
+            try { alt = JSON.parse(execFileSync("git", ["show", "HEAD:" + f], { encoding: "utf8", maxBuffer: 64 << 20 })); } catch (e) {}
+            const pts = neu.points || [];
+            for (let i = 1; i < pts.length; i++) if (!(pts[i][0] > pts[i - 1][0]) || !(pts[i][1] > 0)) { console.error("Reihe nicht sortiert/positiv bei " + pts[i][0]); process.exit(1); }
+            if (alt && (pts.length < (alt.points || []).length || neu.asOf < alt.asOf)) { console.error("Neue Reihe kuerzer oder aelter als die vorhandene - nicht veroeffentlicht."); process.exit(1); }
+            console.log("EURUSD " + (alt ? alt.asOf : "-") + " -> " + neu.asOf + ", " + pts.length + " Tage");
+          '
+          node scripts/quality/assert-no-local-fx.mjs
+
+      - name: Commit und Push
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/fx/ecb quant/data/market/fx/ecb-coverage.json
+          if git diff --cached --quiet; then
+            echo "EZB unveraendert."
+            exit 0
+          fi
+          git commit -m "EZB-Referenzkurse: Stand $(node -p 'require("./quant/data/market/fx/ecb/EURUSD.json").asOf') (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
