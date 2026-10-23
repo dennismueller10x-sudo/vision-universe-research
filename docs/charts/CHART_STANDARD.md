@@ -202,7 +202,7 @@ Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung
 
 ### 6.3 Gemeinsamer Baustein
 
-`core/chart-standard.js` (`VUCore.ChartStandard`) ist die eine Stelle für Zeitraumreihenfolge, Startzeitraum (1T, gemerkte Wahl `vu-chart-range-v1`, ohne Tagesverlauf der längste Zeitraum bis 1J), Intraday-Auflösung (`intradayEntry`, Regel aus `live-hub.js#resolveEntry`) und die Anzeige in EUR über die vorhandene FX-Schicht (`displaySeries`, `displaySnapshot`, `displayLevel`). Er rechnet selbst nichts um und ändert keine Kursreihe.
+`core/chart-standard.js` (`VUCore.ChartStandard`) ist die eine Stelle für Zeitraumreihenfolge, Startzeitraum (1T, gemerkte Wahl `vu-chart-range-v1`, ohne Tagesverlauf der längste Zeitraum bis 1J), Intraday-Auflösung (`intradayEntry`, Regel aus `live-hub.js#resolveEntry`) und die Anzeige in EUR über die vorhandene FX-Schicht (`displaySeries`, `displaySnapshot`, `displayLevel`). Er rechnet selbst nichts um und ändert keine Kursreihe. `ensureDisplay()` lädt die FX-Schicht dort nach, wo eine Welt sie nicht selbst einbindet (Supertrader, Quant-Aktienseite), und startet sie einmal.
 
 Fenster schneidet `slice(points, id)` (Kalendertage ab dem letzten Punkt, wie `ChartHistory.sliceRange`), Abdeckung prüft `covers(points, id)` (95-%-Regel) – für alle kanonischen Kennungen einschließlich 1W und YTD. `assets/vu-chart.js` (`mount`) kennt abgeschaltete Zeiträume (`disabled`, Grund im Titel) hält eigene Marken des Aufrufers im Bild (`extent`, `setExtent`) und meldet die Wahl des Nutzers (`onSelect`), damit sie über `rememberRange` in die nächste Welt mitgeht.
 

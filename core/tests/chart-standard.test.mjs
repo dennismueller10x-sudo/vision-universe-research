@@ -104,3 +104,7 @@ test("Fenster: Kalendertage ab dem letzten Punkt, 95-%-Regel wie chart-history.j
   assert.equal(CS.covers(pts, "5J"), false, "knapp drei Jahre decken 5J nicht ab");
   assert.equal(CS.covers(pts, "1T"), false, "1T nie aus Tagesschluessen");
 });
+
+test("ensureDisplay: ohne Browser kein Laden, Ergebnis ist die vorhandene Schicht oder null", async () => {
+  assert.equal(await CS.ensureDisplay(), null);
+});

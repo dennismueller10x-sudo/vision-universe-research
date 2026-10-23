@@ -212,6 +212,36 @@
     return { value: m.display.value, currency: m.display.currency, converted: true, original: orig, fxAsOf: m.fx && m.fx.asOf || null };
   }
 
+  /* Die FX-Schicht in der Reihenfolge, in der Discover sie einbindet (discover/index.html). */
+  var FX_BASE = "/quant/engines/fx/";
+  var FX_SCRIPTS = ["fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry", "currency-class",
+    "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap"];
+  var displayReady = null;
+
+  /**
+   * Browser: stellt die FX-Schicht bereit und startet sie einmal (VUFx.Bootstrap.boot,
+   * idempotent). Was die Seite schon geladen hat, wird nicht noch einmal geholt;
+   * `extra` sind weitere Skripte der Welt (z. B. series-sampling.js). Liefert den
+   * Vertrag oder null - ohne ihn bleibt jede Anzeige in der Boersenwaehrung.
+   */
+  function ensureDisplay(extra) {
+    if (displayReady) return displayReady;
+    var g = typeof globalThis !== "undefined" ? globalThis : null, doc = g && g.document;
+    if (!doc) return Promise.resolve(layerOf(null));
+    var want = (extra || []).concat(FX_SCRIPTS.map(function (n) { return FX_BASE + n + ".js"; }))
+      .filter(function (src) { return !doc.querySelector('script[src="' + src + '"]'); });
+    displayReady = Promise.all(want.map(function (src) {
+      return new Promise(function (ok) {
+        var s = doc.createElement("script"); s.src = src; s.async = false; /* Reihenfolge wie im HTML */
+        s.onload = ok; s.onerror = ok; (doc.head || doc.documentElement).appendChild(s);
+      });
+    })).then(function () {
+      var B = g.VUFx && g.VUFx.Bootstrap;
+      return B ? B.boot().catch(function () { return null; }) : null;
+    }).then(function () { return layerOf(null); });
+    return displayReady;
+  }
+
   /** Bildunterschrift der Waehrung, fuer alle Welten gleich. */
   function currencyNote(currency, nativeCurrency, intraday) {
     if (!currency || currency === nativeCurrency) return "Börsenwährung " + nativeCurrency;
@@ -223,6 +253,6 @@
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
     intradayEntry: intradayEntry, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
-    displayLevel: displayLevel, currencyNote: currencyNote
+    displayLevel: displayLevel, currencyNote: currencyNote, ensureDisplay: ensureDisplay
   };
 });
