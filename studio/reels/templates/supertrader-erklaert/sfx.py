@@ -26,7 +26,7 @@ hit(0.0,1.0)                   # Hook
 for e in SC[1:5]: hit(e,.75)   # Szenenwechsel
 hit(EV["ok"]+.1,.9)                 # Stempel
 hit(EV["app"],.9); hit(EV["list"],.7); hit(EV["hits"],.8)
-hit(EV["save"],.6); hit(EV["money"]+2.2,.95)
+hit(EV["money"]+2.2,.95)
 hit(SC[6]-.05,1.0)             # Endkarte
 R=reverb(I[:n]); fx[:len(R)]+=R[:n]*.8; fx+=I*.5
 for e in [SC[1],SC[3]]: add(riser(.9),e-.9,.35)
