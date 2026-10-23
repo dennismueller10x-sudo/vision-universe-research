@@ -16,8 +16,11 @@
  * The opening-range-high entry (KK-010, his main entry) stays DATA_BLOCKED: no intraday history; this lifecycle is the
  * daily alternative, not the same execution. Momentum ranking (KK-005) and the review priority (KK-048) are not used to
  * select: they are preferences for a reviewer; the neutral fill order of the engine decides capital conflicts.
- * Point in time: the reference enters at the close of the breakout day (closing auction, MA-KK-CLOSE-DECISION): the
- * close and the final low are used at that close; the alternative enters at the next open from the prior close only.
+ * Point in time (owner decision 2026-10-23): the signal is known only after the completed breakout-day bar, so the
+ * research reference enters at the NEXT tradable open (stop = breakout-day low, an open more than ADR20 above it or at /
+ * below it is not executed; never a fill at a price that was no longer reachable at the decision). This is a derived
+ * reading of KK-012, not KK-012 literally. The former reference (closing-auction entry with KK-012 exactly on the final
+ * low, CLOSE_DECISION_USES_FINAL_BAR) stays as the pre-registered alternative ALT-ENTRY-BREAKOUT-DAY-CLOSE.
  */
 import crypto from 'node:crypto';
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
@@ -29,7 +32,7 @@ export const KK_LIFECYCLE_VERSION = 'sf5-kk-breakout-lifecycle-1.0.0';
 export const KK_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-KK-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only)', alternatives: [], why: 'setup quality (KK-MR-SETUP), the breakout level (KK-MR-LEVEL) and the review priority (KK-MR-PRIORITY) are the reviewer\'s; they are substituted by MA-KK-SETUP-PROXY, so a run is a model study' },
   { id: 'MA-KK-SETUP-PROXY', phase: 'SETUP_QUALIFICATION', reference: 'CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising at the prior close (KK-009; the 5-session slope window is a VU convention, as in breakoutEvidence)', alternatives: ['CONSOLIDATION_20 (20 sessions)', 'NO_MA_CONDITION'], why: 'KK-006..009 are preferences and context; the printed lower ends are used as bounds of a declared proxy, never as Kullamaegi gates' },
-  { id: 'MA-KK-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', reference: 'BREAKOUT_DAY_CLOSE (CLOSE_DECISION_USES_FINAL_BAR): a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day', alternatives: ['NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally)'], why: 'KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption' },
+  { id: 'MA-KK-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', reference: 'NEXT_OPEN (owner decision 2026-10-23, strictly PIT): bought at the next open after the breakout-day close; stop = breakout-day low; not executed when the open lies more than ADR20 above the stop or at / below it (derived reading of KK-012, not KK-012 literally)', alternatives: ['BREAKOUT_DAY_CLOSE (former reference, CLOSE_DECISION_USES_FINAL_BAR): bought at the breakout-day close; KK-012 evaluated exactly with the final low of day'], why: 'KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption' },
   { id: 'MA-KK-EXIT-POLICY', phase: 'POSITION_MANAGEMENT', reference: 'PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest (from the partial-sale day on) exits at the next open after the first close below the 10-day MA (beginner rule KK-014); before that day only the low-of-day stop exits', alternatives: ['PARTIAL5_HALF_BE_MA10', 'PARTIAL3_THIRD_BE_MA20', 'NO_PARTIAL_MA10 (trail from the entry)', 'PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY'], why: 'KK-013 / KK-014 are preferences with printed ranges; the reference takes the earliest printed day and the smallest printed fraction; the profit condition prevents a break-even stop above the price' },
   { id: 'MA-KK-RISK-FRACTION', phase: 'POSITION_SIZING', reference: 'RISK 0.005 of equity to the low-of-day stop', alternatives: ['RISK 0.0025', 'RISK 0.01'], why: '0.5 % lies inside both printed context ranges (KK-003 0.25-1 %, KK-025 0.3-0.5 %); the ends are the alternatives' },
   { id: 'MA-KK-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the fill', alternatives: [], why: 'liquidity is reviewed first (KK-048) without a number; the shared research universe is a measurement convention' },
@@ -49,13 +52,13 @@ export const KK_SETUP_PROXIES = Object.freeze({
   NO_MA_CONDITION: Object.freeze({ window: 10, priorMove: 0.30, priorMoveSessions: 63, maRising: false }),
 });
 
-export const KK_REFERENCE_CONFIG = Object.freeze({ manualSubstitute: 'ACCEPT_AS_MODEL_ASSUMPTION', setupProxy: 'CONSOLIDATION_10', entryTiming: 'BREAKOUT_DAY_CLOSE', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', intrabarOrder: 'PESSIMISTIC', sizing: Object.freeze({ mode: 'RISK', riskFraction: 0.005 }) });
+export const KK_REFERENCE_CONFIG = Object.freeze({ manualSubstitute: 'ACCEPT_AS_MODEL_ASSUMPTION', setupProxy: 'CONSOLIDATION_10', entryTiming: 'NEXT_OPEN', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', intrabarOrder: 'PESSIMISTIC', sizing: Object.freeze({ mode: 'RISK', riskFraction: 0.005 }) });
 
 export const KK_RUN_VARIANTS = Object.freeze([
   { id: 'REF', changes: {} },
   { id: 'ALT-SETUP-CONSOLIDATION-20', changes: { setupProxy: 'CONSOLIDATION_20' } },
   { id: 'ALT-SETUP-NO-MA', changes: { setupProxy: 'NO_MA_CONDITION' } },
-  { id: 'ALT-ENTRY-NEXT-OPEN', changes: { entryTiming: 'NEXT_OPEN' } },
+  { id: 'ALT-ENTRY-BREAKOUT-DAY-CLOSE', changes: { entryTiming: 'BREAKOUT_DAY_CLOSE' } },
   { id: 'ALT-EXIT-PARTIAL5-HALF', changes: { exitPolicy: 'PARTIAL5_HALF_BE_MA10' } },
   { id: 'ALT-EXIT-TRAIL-MA20', changes: { exitPolicy: 'PARTIAL3_THIRD_BE_MA20' } },
   { id: 'ALT-EXIT-NO-PARTIAL', changes: { exitPolicy: 'NO_PARTIAL_MA10' } },

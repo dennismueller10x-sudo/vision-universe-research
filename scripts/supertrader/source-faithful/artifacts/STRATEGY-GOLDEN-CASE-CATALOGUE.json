@@ -954,6 +954,34 @@
    "result": "SEE_TEST_RUN"
   },
   {
+   "test": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ENTRY",
+    "RAS-SF-STOP"
+   ],
+   "psr709": [
+    "RAS04-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ENTRY",
+    "RAS-SF-STOP"
+   ],
+   "psr709": [
+    "RAS04-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
    "strategyIds": [
     "SF_TURTLE_S1",

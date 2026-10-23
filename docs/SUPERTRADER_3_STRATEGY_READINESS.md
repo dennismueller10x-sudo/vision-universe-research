@@ -18,7 +18,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 | C10 | `SF_KK_PARABOLIC_SHORT` | 3/0/4/3/0 | MECHANICAL_COMPONENTS_ONLY | KK-SF-PS-BORROW, KK-SF-PS-ENTRY, KK-SF-PS-STOP | NOT_MEASURABLE | 4 | LIVE_NOT_APPROVED |
 | C11 | `SF_MOKA_POCKET_PIVOT` | 1/3/5/0/1 | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 7 | LIVE_NOT_APPROVED |
 | C12 | `SF_MOKA_BUYABLE_GAP_UP` | 2/2/6/0/2 | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 8 | LIVE_NOT_APPROVED |
-| C13 | `SF_RASCHKE_HOLY_GRAIL` | 2/2/2/0/3 | MECHANICAL_COMPONENTS_ONLY | – | NOT_MEASURABLE | 3 | LIVE_NOT_APPROVED |
+| C13 | `SF_RASCHKE_HOLY_GRAIL` | 2/4/2/0/1 | MECHANICAL_COMPONENTS_ONLY | – | NOT_MEASURABLE | 3 | LIVE_NOT_APPROVED |
 
 ## Messklassen
 
@@ -113,7 +113,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: MOKA-SF-BGU-VOLWINDOW, MOKA-SF-EXIT-VIOLATION; Modellannahmen: –
 
-### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.1.0)
+### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.2.0)
 
 - Messung: the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only
 - Research-Komponenten: RAS-SF-ENTRY <- holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER; RAS-SF-STOP <- holy-grail-lifecycle.mjs#holyGrailSetupSeries

@@ -373,9 +373,9 @@ Vorkommen je Dimension über alle Kandidaten (eine Regel kann in mehreren Dimens
 |---|---|---|---|---|---|---|---|
 | Source Rule Coverage | COMPLETE | – | – | – | – | – | 6 #709 rules in scope; HARD 2/2 implemented; 0 excluded with a written reason |
 | Signal Completeness | COMPLETE_WITH_DECLARED_LIMITS | MANUAL_DECISION | RAS-SF-OSC-HIGH | nein | DECLARED | – | best setups with new oscillator momentum highs; reported as evidence |
-| Entry Completeness | PARTIAL | SOURCE_GAP | RAS-SF-ENTRY | ja | DECLARED | – | order sequence not fully disclosed (#709 C13) |
+| Entry Completeness | PARTIAL | SOURCE_GAP | RAS-SF-ENTRY | ja | DECLARED | – | primary source silent; research reading from the secondary source W-RAS97 (D-RAS97 2026-10-23): entry order after the pullback: buy stop above the high of the previous bar |
 | Exit Completeness | PARTIAL | MANUAL_DECISION | RAS-SF-EXIT | ja | DECLARED | – | a new high is an exit opportunity (preference) |
-| Stop Completeness | PARTIAL | SOURCE_GAP | RAS-SF-STOP | ja | DECLARED | – | stop not fully disclosed (#709 C13) |
+| Stop Completeness | PARTIAL | SOURCE_GAP | RAS-SF-STOP | ja | DECLARED | – | primary source silent; research reading from the secondary source W-RAS97 (D-RAS97 2026-10-23): initial stop: protective sell stop at the newly formed swing low |
 | Position Sizing | PARTIAL | SOURCE_GAP | RAS-SF-SIZE | ja | DECLARED | – | not disclosed for the Holy Grail setup |
 | Portfolio Risk Limits | NOT_APPLICABLE | – | – | – | – | – | the source assigns no rule of this kind to the method |
 | Execution Completeness | PARTIAL | MANUAL_DECISION | – | ja | DECLARED | – | no mechanical order: reviewer decision after the close (entry order not disclosed) |

@@ -4,7 +4,7 @@
  "engineVersion": "sf5-lifecycle-engine-1.0.0",
  "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
  "accounting": "RESEARCH_V1",
- "variantRegistrySha256": "f7b0d0812bf18a8af3dc47d96106632d62a5b3a761a24a22eabe81068fc15c03",
+ "variantRegistrySha256": "b0e96105ac70b988df66616ef5aa1dbb905254657651469835f68d492d7d5987",
  "principles": [
   "a mechanically confirmed setup is not an executable trade",
   "a model assumption is not a source rule",
@@ -137,7 +137,7 @@
     {
      "id": "MA-DAR-INTRABAR-ORDER",
      "phase": "INITIAL_STOP",
-     "reference": "PESSIMISTIC: an intraday trigger fill with a low at or below the stop on the same bar exits at the stop",
+     "reference": "PESSIMISTIC (research reference, owner decision 2026-10-23): an intraday trigger fill with a low at or below the stop on the same bar exits at the stop",
      "alternatives": [
       "OPTIMISTIC"
      ],
@@ -153,7 +153,7 @@
     {
      "id": "MA-DAR-SIZING",
      "phase": "POSITION_SIZING",
-     "reference": "WEIGHT 0.10 of equity per position (platform model assumption)",
+     "reference": "WEIGHT 0.10 of equity per position: a platform comparison convention, NOT a Darvas rule; results are reported as the span of all sizing variants (owner decision 2026-10-23)",
      "alternatives": [
       "WEIGHT 0.05",
       "WEIGHT 0.20",
@@ -573,7 +573,7 @@
       "MA-DAR-SIZING"
      ],
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "reviewer decision in the source; fixed weight in the simulation",
+     "note": "reviewer decision in the source; the reference weight is a comparison convention, results are reported as the span of all sizing variants (owner decision 2026-10-23)",
      "sources": [
       "B06 PDF 113; printed 101 (OPTIONAL, HIGH)",
       "B06 PDF 137; printed 125 (CONTEXTUAL, HIGH)"
@@ -888,7 +888,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -1316,6 +1316,45 @@
      ],
      "required": true
     },
+    "ownerDecisions": [
+     {
+      "id": "D-DARVAS-SIZE-INTRABAR",
+      "date": "2026-10-23",
+      "decision": "pessimistic intrabar order stays the research reference; sizing is reported as the span of all variants",
+      "unchanged": "no size is declared a Darvas rule; reference config and trades unchanged"
+     }
+    ],
+    "positionSizing": {
+     "report": "SPAN_OF_ALL_SIZING_VARIANTS",
+     "reference": {
+      "mode": "WEIGHT",
+      "weight": 0.1
+     },
+     "variants": [
+      {
+       "id": "ALT-SIZE-WEIGHT-005",
+       "sizing": {
+        "mode": "WEIGHT",
+        "weight": 0.05
+       }
+      },
+      {
+       "id": "ALT-SIZE-WEIGHT-020",
+       "sizing": {
+        "mode": "WEIGHT",
+        "weight": 0.2
+       }
+      },
+      {
+       "id": "ALT-SIZE-RISK-001",
+       "sizing": {
+        "mode": "RISK",
+        "riskFraction": 0.01
+       }
+      }
+     ],
+     "sourceRule": "NONE (DAR-SF-SIZING is the reviewer's; no size is a Darvas rule)"
+    },
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -1334,7 +1373,7 @@
    "referenceConfig": {
     "manualSubstitute": "ACCEPT_AS_MODEL_ASSUMPTION",
     "setupProxy": "CONSOLIDATION_10",
-    "entryTiming": "BREAKOUT_DAY_CLOSE",
+    "entryTiming": "NEXT_OPEN",
     "exitPolicy": "PARTIAL3_THIRD_BE_MA10",
     "intrabarOrder": "PESSIMISTIC",
     "sizing": {
@@ -1360,9 +1399,9 @@
      }
     },
     {
-     "id": "ALT-ENTRY-NEXT-OPEN",
+     "id": "ALT-ENTRY-BREAKOUT-DAY-CLOSE",
      "changes": {
-      "entryTiming": "NEXT_OPEN"
+      "entryTiming": "BREAKOUT_DAY_CLOSE"
      }
     },
     {
@@ -1429,9 +1468,9 @@
     {
      "id": "MA-KK-ENTRY-TIMING",
      "phase": "ENTRY_EXECUTION",
-     "reference": "BREAKOUT_DAY_CLOSE (CLOSE_DECISION_USES_FINAL_BAR): a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day",
+     "reference": "NEXT_OPEN (owner decision 2026-10-23, strictly PIT): bought at the next open after the breakout-day close; stop = breakout-day low; not executed when the open lies more than ADR20 above the stop or at / below it (derived reading of KK-012, not KK-012 literally)",
      "alternatives": [
-      "NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally)"
+      "BREAKOUT_DAY_CLOSE (former reference, CLOSE_DECISION_USES_FINAL_BAR): bought at the breakout-day close; KK-012 evaluated exactly with the final low of day"
      ],
      "why": "KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption"
     },
@@ -1563,7 +1602,7 @@
     {
      "id": "KK-EL-STOP-WIDTH",
      "phase": "ENTRY_ELIGIBILITY",
-     "condition": "the low-of-day stop may not be wider than ADR20: a wider stop rejects the trade, never tightened",
+     "condition": "the stop may not be wider than ADR20: a wider stop rejects the trade, never tightened. Reference (next open): planned loss from the open to the breakout-day low <= ADR20, derived reading; KK-012 exactly only in ALT-ENTRY-BREAKOUT-DAY-CLOSE",
      "psr709": [
       "KK-012",
       "KK-031"
@@ -1576,6 +1615,7 @@
       "code": "research/kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER",
       "tests": [
        "sf-sf5-kk-moka-lifecycle: GC-SF5-KK-WIDE-STOP-REJECT",
+       "sf-sf5-kk-moka-lifecycle: GC-SF5-KK-NEXT-OPEN",
        "sf-kullamagi: GC-KK-STOP-REJECT-WIDE"
       ]
      },
@@ -1583,11 +1623,11 @@
      "data": [
       "daily split-adjusted OHLCV (snapshot)"
      ],
-     "pit": "PIT: bars up to the decision close only",
-     "class": "SOURCE_EXACT",
+     "pit": "PIT: armed at the close of bar i, filled on session i + 1 only",
+     "class": "SOURCE_DERIVED",
      "modelAssumptions": [],
      "readiness": "MECHANICAL_IMPLEMENTED",
-     "note": null,
+     "note": "owner decision 2026-10-23: next open is the research reference; the deviation from KK-012 is declared",
      "sources": [
       "W-KK3 HowtoTrade2 (HARD, HIGH)",
       "W-KKFAQ ADR formula (HARD, HIGH)"
@@ -1621,9 +1661,9 @@
      ]
     },
     {
-     "id": "KK-EX-DAILY-CLOSE",
+     "id": "KK-EX-NEXT-OPEN",
      "phase": "ENTRY_EXECUTION",
-     "condition": "daily breakout entry at the breakout-day close (written alternative to the ORH)",
+     "condition": "daily breakout (written alternative to the ORH), bought at the next tradable open after the completed breakout-day bar (owner decision 2026-10-23)",
      "psr709": [
       "KK-011"
      ],
@@ -1641,7 +1681,7 @@
      "data": [
       "daily split-adjusted OHLCV (snapshot)"
      ],
-     "pit": "CLOSE_DECISION_USES_FINAL_BAR: the closing decision uses the final close and low of the breakout day (declared, small daily-bar lookahead against a real closing order); alternative next open is strictly PIT",
+     "pit": "PIT: decided at the breakout-day close, filled at the next open; the former closing-auction reference (CLOSE_DECISION_USES_FINAL_BAR) is the alternative ALT-ENTRY-BREAKOUT-DAY-CLOSE",
      "class": "MODEL_ASSUMPTION",
      "modelAssumptions": [
       "MA-KK-ENTRY-TIMING"
@@ -1702,7 +1742,7 @@
     {
      "id": "KK-STOP-LOD",
      "phase": "INITIAL_STOP",
-     "condition": "initial stop = low of the entry day, stop-market",
+     "condition": "initial stop = low of the breakout day (reference, the day before the next-open fill; KK-012 names the low of the entry day, kept exactly in ALT-ENTRY-BREAKOUT-DAY-CLOSE), stop-market",
      "psr709": [
       "KK-012",
       "KK-027"
@@ -1715,6 +1755,7 @@
       "code": "research/lifecycle-engine.mjs#protectiveHit",
       "tests": [
        "sf-sf5-kk-moka-lifecycle: GC-SF5-KK-LIFECYCLE",
+       "sf-sf5-kk-moka-lifecycle: GC-SF5-KK-NEXT-OPEN",
        "sf-sf5-darvas-lifecycle: GC-SF5-ENGINE-FILL"
       ]
      },
@@ -1722,8 +1763,8 @@
      "data": [
       "daily split-adjusted OHLCV (snapshot)"
      ],
-     "pit": "PIT: bars up to the decision close only",
-     "class": "SOURCE_EXACT",
+     "pit": "PIT: armed at the close of bar i, filled on session i + 1 only",
+     "class": "SOURCE_DERIVED",
      "modelAssumptions": [],
      "readiness": "MECHANICAL_IMPLEMENTED",
      "note": null,
@@ -1976,8 +2017,8 @@
    "readiness": {
     "sourceFidelity": {
      "byClass": {
-      "SOURCE_EXACT": 4,
-      "SOURCE_DERIVED": 0,
+      "SOURCE_EXACT": 2,
+      "SOURCE_DERIVED": 2,
       "SOURCE_BOUNDED": 0,
       "MODEL_ASSUMPTION": 7,
       "MANUAL_REVIEW": 6,
@@ -2111,7 +2152,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -2542,6 +2583,14 @@
      ],
      "required": true
     },
+    "ownerDecisions": [
+     {
+      "id": "D-KK-ENTRY",
+      "date": "2026-10-23",
+      "decision": "next tradable open is the research execution reference (the signal is known only after the completed daily bar)",
+      "unchanged": "deviation from KK-012 declared; no fill at a price no longer reachable at the decision; contract statuses unchanged"
+     }
+    ],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -3210,7 +3259,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -3640,6 +3689,7 @@
      ],
      "required": true
     },
+    "ownerDecisions": [],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -3777,7 +3827,7 @@
      "strategies": [
       "BUYABLE_GAP_UP"
      ],
-     "reference": "1.5x the mean volume of the 50 sessions before the gap day (gapUpAt)",
+     "reference": "1.5x the mean volume of the 50 sessions before the gap day (gapUpAt): declared RESEARCH MODEL CONVENTION confirmed by owner decision 2026-10-23, not an original source rule",
      "alternatives": [],
      "why": "the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen's window is run, so the measurement depends on this choice (owner decision)"
     },
@@ -3878,7 +3928,7 @@
       "MA-MOKA-BGU-VOLWINDOW"
      ],
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "1.5x SOURCE_EXACT, the 50-session window SOURCE_AMBIGUOUS (MOKA-MR-VOLWINDOW)",
+     "note": "1.5x SOURCE_EXACT; the 50-session window is a declared research model convention (owner decision 2026-10-23), the source rule stays SOURCE_AMBIGUOUS",
      "sources": [
       "W-MOKAV24 MCDparagraph (HARD, HIGH)"
      ]
@@ -4389,7 +4439,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -4822,6 +4872,14 @@
      ],
      "required": true
     },
+    "ownerDecisions": [
+     {
+      "id": "D-BGU-VOLWINDOW",
+      "date": "2026-10-23",
+      "decision": "50-session volume window confirmed as a declared research model convention",
+      "unchanged": "not an original source rule: MOKA-SF-BGU-VOLWINDOW stays SOURCE_AMBIGUOUS; trades unchanged"
+     }
+    ],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -5783,7 +5841,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -6219,6 +6277,7 @@
      ],
      "required": true
     },
+    "ownerDecisions": [],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -7155,7 +7214,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -7591,6 +7650,7 @@
      ],
      "required": true
     },
+    "ownerDecisions": [],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",
@@ -7605,7 +7665,7 @@
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
    "adapterVersion": "sf5-holy-grail-research-variant-1.0.0",
-   "label": "MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SOURCE_PENDING",
+   "label": "MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SECONDARY_SOURCE",
    "referenceConfig": {
     "sourceVariant": "W-RAS97",
     "previousBar": "TOUCH_BAR",
@@ -7651,7 +7711,7 @@
     {
      "id": "MA-RAS-SOURCE-W-RAS97",
      "phase": "ENTRY_EXECUTION",
-     "reference": "entry order and initial stop read from W-RAS97 (research variant, owner decision pending)",
+     "reference": "entry order and initial stop read from W-RAS97, an explicitly labelled secondary source (owner decision D-RAS97, 2026-10-23); the readings of \"previous bar\" and \"swing low\" stay model assumptions",
      "alternatives": [],
      "why": "the contract source W-RAS04 discloses neither (#709 C13); W-RAS97 is a newsletter sidebar on the author's site"
     },
@@ -7842,7 +7902,7 @@
     {
      "id": "HG-EL-SOURCE",
      "phase": "ENTRY_ELIGIBILITY",
-     "condition": "entry and stop from W-RAS97 (newsletter sidebar on the author's site): owner decision D-RAS97 pending",
+     "condition": "entry and stop from W-RAS97 (newsletter sidebar on the author's site): accepted as explicitly labelled secondary source (D-RAS97, 2026-10-23)",
      "psr709": [
       "RAS04-001"
      ],
@@ -7863,7 +7923,7 @@
       "MA-RAS-SOURCE-W-RAS97"
      ],
      "readiness": "MECHANICAL_UNDER_MODEL_ASSUMPTION",
-     "note": "contract status stays SOURCE_AMBIGUOUS",
+     "note": "contract: SOURCE_DERIVED with sourceBasis SECONDARY_SOURCE, never SOURCE_EXACT; the lifecycle is not source-conform",
      "sources": [
       "W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)"
      ]
@@ -8124,14 +8184,14 @@
       "DATA_BLOCKED": 1,
       "SOURCE_BLOCKED": 1
      },
-     "contractVersion": "1.1.0",
+     "contractVersion": "1.2.0",
      "contractRuleStatuses": {
       "SOURCE_EXACT": 2,
-      "SOURCE_DERIVED": 2,
+      "SOURCE_DERIVED": 4,
       "MANUAL_REVIEW_REQUIRED": 2,
-      "SOURCE_AMBIGUOUS": 3
+      "SOURCE_AMBIGUOUS": 1
      },
-     "sourceStatus": "RESEARCH_VARIANT_SOURCE_PENDING_OWNER_DECISION"
+     "sourceStatus": "RESEARCH_VARIANT_SECONDARY_SOURCE"
     },
     "mechanicalCompleteness": {
      "phases": {
@@ -8255,7 +8315,7 @@
       {
        "runId": "39903861586",
        "commit": "76d391a7eb0f6476ab5b8fffe9907973abecfd5a",
-       "role": "AUTHORITATIVE",
+       "role": "STALE_RESEARCH_CODE_RERUN_PENDING",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -8682,6 +8742,14 @@
      ],
      "required": true
     },
+    "ownerDecisions": [
+     {
+      "id": "D-RAS97",
+      "date": "2026-10-23",
+      "decision": "W-RAS97 (AIQ 1997) accepted as an explicitly labelled secondary source for entry order and initial stop",
+      "unchanged": "never SOURCE_EXACT; measurement class NOT_MEASURABLE; trailing and size undisclosed, the lifecycle is not source-conform; trades unchanged"
+     }
+    ],
     "liveReadiness": {
      "status": "LIVE_NOT_APPROVED",
      "tradability": "NOT_A_TRADABLE_STRATEGY",

@@ -1107,10 +1107,15 @@
      "sourceId": "W-RAS04",
      "edition": "Linda Raschke 2004 interview (web primary PDF), own quotes",
      "role": "authoritative for the disclosed component"
+    },
+    {
+     "sourceId": "W-RAS97",
+     "edition": "AIQ Opening Bell Vol. 6 Issue 8 (August 1997), sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net (sha256 693ce571...)",
+     "role": "SECONDARY SOURCE for entry order and initial stop only (owner decision D-RAS97, 2026-10-23); most likely an editorial summary, not the author's wording"
     }
    ],
-   "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "cff73cff691779f1fed046d1b5dca2d6d2818e5b9ca2fcec4ffac1b42e5e4a40",
+   "sourceContractVersion": "1.2.0",
+   "contractFingerprint": "6541e7b560f7005ce8a7a595d4909007aa45e2ec52f89c61e9ea9485fb3e86bb",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -1154,7 +1159,7 @@
     }
    ],
    "knownLimitations": [
-    "exact stop and order sequence not disclosed (#709 C13); no historical method return can be computed",
+    "the primary source W-RAS04 discloses neither entry order nor stop (#709 C13); both rest on the secondary source W-RAS97 (D-RAS97), trailing and size stay undisclosed, so no historical method return can be computed",
     "intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",

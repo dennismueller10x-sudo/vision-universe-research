@@ -35,7 +35,7 @@ export const MOKA_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-MOKA-VIOLATION-READING', phase: 'EXIT_CONDITIONS', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'LATER_DAYS (FAQ, MOKASTOP-002): the highest low of the closes below the guide MA since the entry stays the trigger until undercut', alternatives: ['NEXT_DAY (2012 slide, MOKA12-009): only the session after a close below the MA can confirm'], why: 'MOKA-C2 conflict kept open (MOKA-SF-EXIT-VIOLATION SOURCE_AMBIGUOUS); the dedicated selling source is the reference' },
   { id: 'MA-MOKA-SELL-GUIDE', phase: 'POSITION_MANAGEMENT', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'guide = 10DMA when it was respected for >= 35 sessions (7 weeks x 5) under the same violation reading, else 50DMA, re-evaluated at every close (sellGuideEvidence); the whole position is sold at the undercut (stop-market at the violation-day low)', alternatives: [], why: 'MOKA12-008 / MOKASTOP-001 PREFERENCE; full vs half (MOKASTOP-004) is a reviewer decision' },
   { id: 'MA-MOKA-BGU-STOP', phase: 'INITIAL_STOP', strategies: ['BUYABLE_GAP_UP'], reference: 'stop-market at the gap-day low, whole position', alternatives: [], why: 'MOKA12-007 risk reference; MOKASTOP-006 "generally at least half" - selling all lies inside the printed rule' },
-  { id: 'MA-MOKA-BGU-VOLWINDOW', phase: 'SETUP_QUALIFICATION', strategies: ['BUYABLE_GAP_UP'], reference: '1.5x the mean volume of the 50 sessions before the gap day (gapUpAt)', alternatives: [], why: 'the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen\'s window is run, so the measurement depends on this choice (owner decision)' },
+  { id: 'MA-MOKA-BGU-VOLWINDOW', phase: 'SETUP_QUALIFICATION', strategies: ['BUYABLE_GAP_UP'], reference: '1.5x the mean volume of the 50 sessions before the gap day (gapUpAt): declared RESEARCH MODEL CONVENTION confirmed by owner decision 2026-10-23, not an original source rule', alternatives: [], why: 'the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen\'s window is run, so the measurement depends on this choice (owner decision)' },
   { id: 'MA-MOKA-SIZING', phase: 'POSITION_SIZING', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'Pocket Pivot: WEIGHT 0.10 (no price stop to size against); BGU: RISK 0.01 to the gap-day low', alternatives: ['PP WEIGHT 0.05 / 0.20', 'BGU RISK 0.005 / 0.02'], why: 'sizing is not specified in #709 (MOKA-SF-PP-SIZE, MOKA-SF-BGU-SIZE manual)' },
   { id: 'MA-MOKA-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: 'VU_TOURNAMENT_UNIVERSE_705 at the signal session', alternatives: [], why: 'measurement convention shared by every method' },
   { id: 'MA-MOKA-COSTS', phase: 'ENTRY_EXECUTION', strategies: ['POCKET_PIVOT', 'BUYABLE_GAP_UP'], reference: '10 bps slippage per side, 1 bp commission (platform policy)', alternatives: [], why: 'no costs in the sources' },
@@ -62,7 +62,9 @@ export const BGU_RUN_VARIANTS = variants(BGU_REFERENCE_CONFIG, [
 ]);
 
 export const PP_OPEN_MANUAL_DECISIONS = Object.freeze(['MOKA-MR-BASE', 'MOKA-MR-THEME', 'MOKA-MR-EXT']);
-export const BGU_OPEN_MANUAL_DECISIONS = Object.freeze(['MOKA-MR-LEAD', 'MOKA-MR-MEGA', 'MOKA-MR-VOLWINDOW']);
+// MOKA-MR-VOLWINDOW: the 50-session window is a declared research convention (owner decision 2026-10-23), so it is no
+// longer an open per-signal question; the contract keeps MOKA-SF-BGU-VOLWINDOW SOURCE_AMBIGUOUS (no source rule).
+export const BGU_OPEN_MANUAL_DECISIONS = Object.freeze(['MOKA-MR-LEAD', 'MOKA-MR-MEGA']);
 
 function validate(cfg, strategy) {
   const errs = [];
