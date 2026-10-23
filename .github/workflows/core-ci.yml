@@ -122,6 +122,15 @@ jobs:
         id: health
         continue-on-error: true
         run: node scripts/core/system-health.mjs --site=https://research.visionuniverse.de --strict
+      # Chart-Paritaet (scripts/quality/chart-parity.mjs): zeigt dieselbe Aktie in
+      # Discover, Quant, Supertrader und Elliott denselben Kurs? Nur Bericht - eine
+      # Abweichung geht ueber DQ-PX-4 und den Reparaturlauf (long-series.yml) bzw.
+      # an den Erzeuger, nicht ueber diesen Schritt.
+      - name: Chart-Paritaet (Bericht)
+        continue-on-error: true
+        run: |
+          node --max-old-space-size=4096 scripts/quality/chart-parity.mjs > "$RUNNER_TEMP/parity.txt"
+          { echo '### Chart-Paritaet'; echo '```'; cat "$RUNNER_TEMP/parity.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Ergebnis
         if: steps.dq.outcome == 'failure' || steps.state.outcome == 'failure' || steps.health.outcome == 'failure'
         run: |
