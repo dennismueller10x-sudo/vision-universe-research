@@ -16,7 +16,7 @@ Stand 23.10.2026.
 | Readiness | `completion/build-kk-ep-ps.mjs` | `artifacts/STRATEGY-KK-EP-PS-CHART.json` |
 | Workflow | `supertrader-validation.yml` | Modi `kk-intraday`, `kk-intraday-count`, `kk-intraday-smoke` |
 
-Die Engine-Erweiterung lässt alle bestehenden Auftragstypen unverändert. Den Beleg liefert der sf5-Lauf auf diesem Zweig: alle bisherigen Referenzen trade-genau gleich.
+Die Engine-Erweiterung lässt alle bestehenden Auftragstypen unverändert. Beleg: sf5-Lauf [39939890956](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39939890956) auf diesem Zweig. Alle 41 SF5-Varianten sind trade-genau gleich dem Lauf 39937731507 (Trades, Ausstiegsgründe, Trade- und Ledger-Hash).
 
 ## 2. Drei Klassen, strikt getrennt
 
