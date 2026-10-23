@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0.0",
+  "created_at_utc": "2026-10-13",
+  "repository_commit_audited": "8f96cbbaf0e18db50423e14008a3fa15b049aec0",
+  "research_scope": "SOURCE RECONSTRUCTION ONLY; no engines/backtests/live changes",
+  "provenance_order": [
+    "BOOK_PRIMARY",
+    "WEB_PRIMARY",
+    "PRIOR_VU_RESEARCH",
+    "SECONDARY",
+    "INFERENCE"
+  ],
+  "scope": "High-confidence disclosed components; not automatically high behavioral coverage.",
+  "components": [
+    {
+      "scope": "PUBLISHED_COMPONENT_NOT_FULL_PERSONAL_REPLICA",
+      "trader": "Original Turtles",
+      "method": "N /units /entries /exits /adds /risk limits",
+      "source_confidence": "HIGH",
+      "component_reproducibility": "HIGH",
+      "evidence_rule_ids": [
+        "TUR-N",
+        "TUR-UNIT",
+        "TUR-S1ENT",
+        "TUR-S2ENT",
+        "TUR-S1EX",
+        "TUR-S2EX",
+        "TUR-ADD"
+      ],
+      "remaining_limit": "Execution preferences, annual discretionary notional reset, failsafe-exit interpretation and futures data.",
+      "provenance": "INFERENCE"
+    },
+    {
+      "scope": "PUBLISHED_COMPONENT_NOT_FULL_PERSONAL_REPLICA",
+      "trader": "Nicolas Darvas",
+      "method": "Later Q&A box confirmation and stop guides",
+      "source_confidence": "HIGH",
+      "component_reproducibility": "HIGH",
+      "evidence_rule_ids": [
+        "DAR-Q1",
+        "DAR-Q2",
+        "DAR-Q4",
+        "DAR-Q5",
+        "DAR-Q6"
+      ],
+      "remaining_limit": "No invented fixed box-height/RS/1%-stop; selection,sizing and historical era remain distinct.",
+      "provenance": "INFERENCE"
+    },
+    {
+      "scope": "PUBLISHED_COMPONENT_NOT_FULL_PERSONAL_REPLICA",
+      "trader": "Stan Weinstein",
+      "method": "Investor/trader structural stop distinctions",
+      "source_confidence": "HIGH",
+      "component_reproducibility": "HIGH",
+      "evidence_rule_ids": [
+        "WEIN-STOP2",
+        "WEIN-TR-STOP",
+        "WEIN-TRAIL4"
+      ],
+      "remaining_limit": "Support and chart-quality judgment need explicit interpretation.",
+      "provenance": "INFERENCE"
+    },
+    {
+      "scope": "PUBLISHED_COMPONENT_NOT_FULL_PERSONAL_REPLICA",
+      "trader": "Gil Morales / Chris Kacher",
+      "method": "Pocket Pivot10-day down-volume test",
+      "source_confidence": "HIGH",
+      "component_reproducibility": "HIGH",
+      "evidence_rule_ids": [
+        "MOKAPP-003"
+      ],
+      "remaining_limit": "Pattern/fundamental context and later exceptions remain discretionary.",
+      "provenance": "INFERENCE"
+    },
+    {
+      "scope": "PUBLISHED_COMPONENT_NOT_FULL_PERSONAL_REPLICA",
+      "trader": "Kristjan Kullamägi",
+      "method": "Written Breakout LoD/ADR constraints and overnight cap",
+      "source_confidence": "HIGH",
+      "component_reproducibility": "HIGH",
+      "evidence_rule_ids": [
+        "KK-012",
+        "KK-001"
+      ],
+      "remaining_limit": "Intraday-known LoD and execution order require adequate data; full setup choice remains discretionary.",
+      "provenance": "INFERENCE"
+    }
+  ]
+}
