@@ -142,11 +142,15 @@ function groupOfAtWeek(built, id, weekKey) {
  * Group-proxy evidence of a setup for order week weekKey: roster of that week (membership known at the session before
  * it) and the group chart of the completed calendar week before it (groupEvidence), both known at the decision close.
  */
+const EVIDENCE_CACHE = new WeakMap();
 export function groupProxyEvidence(built, securityId, weekKey) {
   const g = groupOfAtWeek(built, securityId, weekKey);
   if (!g) return { status: GROUP_STATE.UNKNOWN_MEMBERSHIP, label: null, group: null, week: null };
-  const e = groupEvidence(built, g, weekKey);
-  return { status: e.status, label: e.maRelation?.label ?? null, group: g, week: e.week ?? null, members: e.members ?? null };
+  // one evaluation per (group, order week): every member's setup in that week reads the same group chart
+  let cache = EVIDENCE_CACHE.get(built); if (!cache) EVIDENCE_CACHE.set(built, (cache = new Map()));
+  const k = `${g}|${weekKey}`;
+  if (!cache.has(k)) { const e = groupEvidence(built, g, weekKey); cache.set(k, Object.freeze({ status: e.status, label: e.maRelation?.label ?? null, group: g, week: e.week ?? null, members: e.members ?? null })); }
+  return { ...cache.get(k) };
 }
 
 function makeAdapter(kind, version) {

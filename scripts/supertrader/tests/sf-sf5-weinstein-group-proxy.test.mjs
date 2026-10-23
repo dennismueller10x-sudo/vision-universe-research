@@ -94,3 +94,24 @@ test('SF5-WEIN-GROUP-PROXY-PIT: Gruppenevidenz eines Setups haengt nur von Daten
   }
   assert.ok(checked > 3, `known labels compared: ${checked}`);
 });
+
+test('SF5-WEIN-GROUP-PROXY-PIT-MEMBERSHIP: eine SIC-Aenderung nach dem Entscheidungsschluss aendert die Evidenz nicht', () => {
+  // WEIN moves from a falling group (P1-P5) to a rising group (Q1-Q5) in the middle of its Stage 2
+  const secs = [stock(), ...[1, 2, 3, 4, 5].map((i) => peer(i, -0.0015)), ...[1, 2, 3, 4, 5].map((i) => ({ ...peer(i, 0.002), id: `Q${i}` }))];
+  const switchDate = day(450);
+  const member = (sw) => ({ groupOf: (id, date) => (id.startsWith('Q') ? 'SIC3:200' : id.startsWith('P') ? 'SIC3:100' : date < sw ? 'SIC3:100' : 'SIC3:200') });
+  const full = withProxy(dsOf(secs), member(switchDate));
+  const setups = [...prepareAll(full, WEINSTEIN_INVESTOR_ADAPTER, varOf('INVESTOR')).get('WEIN').setupFor.values()];
+  const groups = new Set(setups.map((s) => s.groupProxy.group));
+  assert.ok(groups.has('SIC3:100') && groups.has('SIC3:200'), 'membership change is visible in the full run');
+  let checked = 0;
+  for (const s of setups.filter((_, n) => n % 2 === 0)) {
+    const decision = full.calendar.filter((d) => isoWeekKey(d) < s.weekKey).at(-1);
+    // a membership that differs only after the decision close (an earlier switch must not leak into the order week)
+    const late = { groupOf: (id, date) => (date <= decision ? member(switchDate).groupOf(id, date) : id === 'WEIN' ? 'SIC3:777' : member(switchDate).groupOf(id, date)) };
+    const builtLate = buildGroupStrength(dsOf(secs), late, { minMembers: WEIN_GROUP_PROXY.minMembers });
+    assert.deepEqual(groupProxyEvidence(builtLate, 'WEIN', s.weekKey), s.groupProxy, `week ${s.weekKey}`);
+    checked++;
+  }
+  assert.ok(checked > 5);
+});

@@ -87,7 +87,8 @@ export function requiredGroupProxies(keys = SF5_KEYS) {
   return [...new Set(SF5_LIFECYCLES.filter((l) => keys.includes(l.key)).flatMap((l) => l.variants.map((v) => v.config.groupProxy).filter(Boolean)))];
 }
 
-/** Status / label tally of the group evidence attached to the prepared weekly setups (public counts only). */
+/** Status / label tally of the group evidence attached to the prepared weekly setups (public counts only; every
+ * prepared setup of the securities, including weeks outside the run window). */
 export function groupProxyCoverage(prepared) {
   const setups = { total: 0, byStatus: {}, byLabel: {} };
   for (const ctx of prepared.values()) for (const s of ctx.setupFor.values()) {
@@ -96,6 +97,14 @@ export function groupProxyCoverage(prepared) {
     if (e.label) setups.byLabel[e.label] = (setups.byLabel[e.label] || 0) + 1;
   }
   return setups;
+}
+
+/** sha256 over index, code list and every issuer shard of the SIC history (sorted file names). */
+export function sicHistorySha256(dir) {
+  const h = crypto.createHash('sha256');
+  const files = ['index.json', 'sic-codes.json', ...fs.readdirSync(path.join(dir, 'issuers')).filter((f) => f.endsWith('.json.gz')).sort().map((f) => `issuers/${f}`)];
+  for (const f of files) if (fs.existsSync(path.join(dir, f))) { h.update(f); h.update(fs.readFileSync(path.join(dir, f))); }
+  return h.digest('hex');
 }
 
 /** PIT SIC group indices for the named proxies (same construction as run-sf3-research.mjs#main). */
@@ -149,12 +158,18 @@ async function main() {
   log(`dataset: ${dataset.securities.length} securities, ${dataset.calendar.length} sessions`);
   let groupProxyReceipt = null;
   if (proxyIds.length) {
-    const { loadSicHistory, DEFAULT_DIR } = await import('../../../core/load-sic-history.mjs');
-    const cikCandidates = cikCandidatesFromSegments(pit.segs, Object.fromEntries(Object.entries(secPit).map(([k, v]) => [k, { cik: v.cik, how: v.how }])));
-    const ciks = new Set([...cikCandidates.values()].flat().map((c) => c.cik));
-    dataset.groupProxies = buildGroupProxies(dataset, { ids: proxyIds, classification: loadSicHistory({ ciks }), cikCandidates });
-    groupProxyReceipt = { ids: proxyIds, sicHistoryIndexSha256: sha(fs.readFileSync(path.join(DEFAULT_DIR, 'index.json'), 'utf8')), ciks: ciks.size, coverage: Object.fromEntries(proxyIds.map((id) => [id, dataset.groupProxies[id].coverage])), sourceStatus: 'VU_PROXY_OF_WEINSTEIN_GROUP_CHART' };
-    log(`group proxies ${proxyIds.join(',')}: ${ciks.size} ciks`);
+    try {
+      const { loadSicHistory, DEFAULT_DIR } = await import('../../../core/load-sic-history.mjs');
+      const cikCandidates = cikCandidatesFromSegments(pit.segs, Object.fromEntries(Object.entries(secPit).filter(([, v]) => v?.cik).map(([k, v]) => [k, { cik: v.cik, how: v.how }])));
+      const ciks = new Set([...cikCandidates.values()].flat().map((c) => c.cik));
+      dataset.groupProxies = buildGroupProxies(dataset, { ids: proxyIds, classification: loadSicHistory({ ciks }), cikCandidates });
+      // the SIC history is repository data (not in the snapshot): pin every file of it in the receipt
+      groupProxyReceipt = { ids: proxyIds, sicHistorySha256: sicHistorySha256(DEFAULT_DIR), ciks: ciks.size, coverage: Object.fromEntries(proxyIds.map((id) => [id, dataset.groupProxies[id].coverage])), setupCoverageScope: 'every prepared weekly setup of the securities, not only the run window', sourceStatus: 'VU_PROXY_OF_WEINSTEIN_GROUP_CHART' };
+      log(`group proxies ${proxyIds.join(',')}: ${ciks.size} ciks`);
+    } catch (e) {
+      console.error(`INPUT_INTEGRITY_FAILURE: GROUP_PROXY_INPUT ${String(e?.message ?? e).slice(0, 200)}`);
+      process.exit(3);
+    }
   }
   const receipt = { schema: 'supertrader-sf5-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: sf5ResearchCodeSha256(), runner: SF5_RUNNER_VERSION, variantRegistrySha256: sf5VariantRegistrySha256(), groupProxy: groupProxyReceipt, limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = lifecyclePart(dataset, { keys, log });
