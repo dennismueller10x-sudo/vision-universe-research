@@ -23,7 +23,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-1.1.0";
+  var VERSION = "vu-chart-1.2.0";
   var NS = "http://www.w3.org/2000/svg";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
@@ -113,8 +113,10 @@
 
   /**
    * Chart mit Zeitraum-Leiste in host.
-   * o.ranges: [{id, label, points?: [[iso, v]], load?: () => Promise<points>, base?, sessionEnd?}]
+   * o.ranges: [{id, label, points?: [[iso, v]], load?: () => Promise<points>, base?, sessionEnd?, disabled?, reason?}]
    * o.initial: id; o.currency; o.label; o.height (Standard: 300 Desktop, 220 mobil); o.onRange(id, geometry)
+   * o.onSelect(id): nur bei einer Wahl des Nutzers (Chartstandard: gemerkter Zeitraum, core/chart-standard.js).
+   * Ein Zeitraum mit `disabled` bleibt an seinem Platz sichtbar und abgeschaltet, `reason` steht im Titel.
    */
   function mount(host, o) {
     if (!host) return { dispose: function () {} };
@@ -130,7 +132,8 @@
     ranges.forEach(function (r) {
       var b = doc.createElement("button"); b.type = "button"; b.textContent = r.label || r.id; b.dataset.range = r.id;
       b.setAttribute("aria-pressed", "false");
-      b.addEventListener("click", function () { show(r.id); });
+      if (r.disabled) { b.disabled = true; if (r.reason) b.title = r.reason; }
+      b.addEventListener("click", function () { if (r.disabled) return; show(r.id); if (o.onSelect) o.onSelect(r.id); });
       bar.appendChild(b);
     });
     function size() { var w = Math.max(280, Math.round(plot.clientWidth || host.clientWidth || 640)); return { w: w, h: o.height || (w < 560 ? 220 : 300) }; }
@@ -147,7 +150,8 @@
       if (o.onRange) o.onRange(r.id, node.__vuGeometry);
     }
     function show(id) {
-      var r = ranges.filter(function (x) { return x.id === id; })[0] || ranges[0];
+      var usable = ranges.filter(function (x) { return !x.disabled; });
+      var r = usable.filter(function (x) { return x.id === id; })[0] || usable[0];
       if (!r) return;
       current = r.id;
       [].forEach.call(bar.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === current)); });
