@@ -1,6 +1,6 @@
 # VU BACKTEST METHODOLOGY
 
-Konfiguration: `quant/methodology/backtest-v1.json` · Engine `vu-backtest-engine-1.0.0`
+Konfiguration: `quant/methodology/backtest-v1.json` · Engine `vu-backtest-engine-1.0.1`
 Implementierung: `quant/engines/backtest.js`
 
 ## Die eine Regel

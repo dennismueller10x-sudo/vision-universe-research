@@ -1,7 +1,7 @@
 {
-  "methodologyVersion": "backtest-v1.0.0",
-  "engineVersion": "vu-backtest-engine-1.0.0",
-  "label": "VU Backtest Engine V1",
+  "methodologyVersion": "backtest-v1.1.0",
+  "engineVersion": "vu-backtest-engine-1.0.1",
+  "label": "VU Backtest Engine V1.1",
   "scope": "Long-only Aktien, Tagesdaten, Cross-Sectional Ranking, monatliches oder quartalsweises Rebalancing.",
   "pointInTime": {
     "rule": "availableAt <= decisionTime",
@@ -50,11 +50,21 @@
   ],
   "riskFreeRateAnnualPct": 2.0,
   "reproduction": {
-    "hashInputs": ["strategyVersionHash", "dataSnapshotId", "engineVersion", "methodologyVersion", "executionAssumptions", "period"],
+    "hashInputs": ["strategyVersionHash", "dataSnapshotId", "engineVersion", "methodologyVersion", "executionAssumptions", "historyEligibility", "period"],
     "note": "Gleiche Eingaben ergeben denselben reproductionHash und dasselbe Ergebnis."
   },
-  "limits": {
-    "maxHistoryStart": "2006-01-01",
-    "note": "Der Mock-Datenbestand beginnt 2006-01-01. Ein frueheres Startdatum wird abgelehnt statt stillschweigend verschoben."
+  "historyEligibility": {
+    "policy": "DEPENDENCY_DERIVED",
+    "periods": {
+      "1Y": { "kind": "CALENDAR_DAYS", "days": 366 },
+      "3Y": { "kind": "CALENDAR_DAYS", "days": 1096 },
+      "5Y": { "kind": "CALENDAR_DAYS", "days": 1827 },
+      "10Y": { "kind": "CALENDAR_DAYS", "days": 3653 },
+      "MAX": { "kind": "ALL_ELIGIBLE_HISTORY" }
+    },
+    "defaultWarmup": { "dependency": "pricePanel", "bars": 252, "reason": "Longest price-factor lookback in factors.js (12 months)." },
+    "requireProviderDependencyDates": true,
+    "unknownDependencyCoverage": "LIMITED",
+    "ineligibleStartDate": "REJECT_WITH_EARLIEST_ELIGIBLE_DATE"
   }
 }

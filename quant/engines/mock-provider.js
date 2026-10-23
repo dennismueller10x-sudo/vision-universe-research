@@ -194,6 +194,35 @@
         }, provenanceFor(opts.to));
       },
 
+      /** Dated inputs for dynamic MAX eligibility. These are mock fixtures,
+          so they can prove execution mechanics but never real-market history. */
+      getBacktestHistoryDependencies: function () {
+        var factDates = Object.create(null), membershipDates = Object.create(null);
+        Object.keys(dataset.financials).forEach(function (id) {
+          (dataset.financials[id] || []).forEach(function (p) {
+            if (p.availableAt) factDates[p.availableAt] = 1;
+          });
+        });
+        (dataset.universeMembership || []).forEach(function (m) {
+          if (m.validFrom) membershipDates[m.validFrom] = 1;
+          if (m.validTo) membershipDates[m.validTo] = 1;
+        });
+        var dates = dataset.tradingDays.slice();
+        var factsAvailableFrom = Object.keys(factDates).sort()[0] || dataset.meta.start;
+        var membershipAvailableFrom = Object.keys(membershipDates).sort()[0] || dataset.meta.start;
+        var benchmarkDates = dataset.benchmark ? dates : [];
+        return [
+          { id: "pricePanel", dates: dates, warmupBars: 252, trailingBars: 0,
+            status: "AVAILABLE", coverageStatus: "LIMITED", source: "synthetic-mock-price-panel" },
+          { id: "benchmark", dates: benchmarkDates, warmupBars: 0, trailingBars: 0,
+            status: dataset.benchmark ? "AVAILABLE" : "MISSING", coverageStatus: "LIMITED", source: "synthetic-mock-benchmark" },
+          { id: "pitFundamentals", dates: dates.filter(function (d) { return d >= factsAvailableFrom; }), warmupBars: 0, trailingBars: 0,
+            status: "AVAILABLE", coverageStatus: "LIMITED", source: "synthetic-mock-fundamentals" },
+          { id: "historicalUniverse", dates: dates.filter(function (d) { return d >= membershipAvailableFrom; }), warmupBars: 0, trailingBars: 0,
+            status: "AVAILABLE", coverageStatus: "LIMITED", source: "synthetic-mock-listing-intervals" }
+        ];
+      },
+
       /* ---------------- FundamentalDataProvider ---------------- */
       getFacts: function (securityId, opts) {
         opts = opts || {};
