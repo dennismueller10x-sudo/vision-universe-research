@@ -1,0 +1,144 @@
+{
+  "schema": "vu-root-cause-provider-matrix-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T09:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39100831867",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39100831867",
+    "rankingRunId": "39100831867",
+    "fingerprints": {
+      "population": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "ranking": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "methods": [
+        "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "providers": {
+    "tiingo": {
+      "plan": "Commercial (owner-declared, quant/config/provider-profiles.json); contract text not in repo (quant/config/development-preview.json:3-4,70)",
+      "rights": "display approved by owner; redistribution vs display unanswered (docs/VU_PROVIDER_LICENSE_CHECKLIST.md:39,45)",
+      "endpoints": "daily prices /tiingo/daily/{sym}/prices (adapter.js:618); meta (:657); IEX (:711,:751)",
+      "corporateActions": "per-bar splitFactor and divCash; no separate split feed; permaTicker not checked (docs/SUPERTRADER_VALIDATION_DATA_PATH.md:33)",
+      "selfConsistency": "adjClose vs own raw: 60,185 of 60,991 dividend/split events consistent (98.7 %), 463 of 3,184 securities with at least one inconsistency (quant/data/providers/return-basis-universe-study.json)",
+      "quota": "UNKNOWN (no quota headers; >= 5,000 req/h observed; quant/data/market/commercial/request-limits.json)",
+      "delisted": "research namespace tiingo-delisted; 21/21 probe listings return prices"
+    },
+    "marketstack": {
+      "plan": "monthlyRequests 100,000 USER_STATED, verifiedAccountPlan false (scripts/marketstack/europe-credits.mjs:112)",
+      "rights": "core/rights/marketstack-display.json: display true, raw redistribution false, scope European identity + unadjusted close",
+      "scope": "Europe only; US MICs refused in code (europe-quality.mjs:38, europe-analytics-series.mjs:20, europe-live-actions-review.mjs:145); one AAPL mapping probe only",
+      "corporateActions": "all 449 split endpoint results empty (docs/reports/europe-integrity-449-20261013/README.md:35); phase 2: 40 split/dividend calls, 0 events (docs/marketstack-europe21/corporate-actions.md:15)",
+      "adjusted": "0 BASIS_CERTIFIED, 32 PARTIAL, 417 CONFLICTING adjusted series; 584 negative adjusted closes in one listing",
+      "sharedUpstream": "no statement in the repo"
+    }
+  },
+  "tiingoVsMarketstack": {
+    "status": "NOT_COMPARABLE",
+    "reason": "no overlapping security/listing/day: Marketstack is Europe-only, US venues refused in code, no US Marketstack data stored",
+    "liveQueriesMade": 0,
+    "fields": {
+      "rawOpen": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "rawHigh": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "rawLow": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "rawClose": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "adjustedClose": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "adjustedOHLC": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "volume": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "splitFactor": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "splitEffectiveDate": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "dividend": {
+        "tiingo": "PER_BAR",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "currency": {
+        "tiingo": "METADATA_OR_RESEARCH_LISTING_TABLE",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "exchange": {
+        "tiingo": "METADATA_OR_RESEARCH_LISTING_TABLE",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "listingIdentity": {
+        "tiingo": "METADATA_OR_RESEARCH_LISTING_TABLE",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      },
+      "delistingStatus": {
+        "tiingo": "METADATA_OR_RESEARCH_LISTING_TABLE",
+        "marketstack": "NO_US_DATA",
+        "comparison": "NOT_POSSIBLE"
+      }
+    }
+  },
+  "tiingoInternalLocusAtEventDays": {
+    "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 674,
+    "PROVIDER_PARTIAL_ADJUSTMENT": 27,
+    "PROVIDER_COLUMNS_DISAGREE_ADJ_CONTINUOUS": 4,
+    "PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS": 2
+  },
+  "locusMeaning": "where a defect would sit IF the event is a defect; not evidence that it is one (review IR-01)",
+  "tiingoLocusOf272": {
+    "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 272
+  },
+  "minimalLiveNeed": {
+    "tiingoPermaTickerCheck": "about one metadata request per event security (~245), within subscription",
+    "marketstackUs": "out of scope (plan/licence decision)"
+  }
+}

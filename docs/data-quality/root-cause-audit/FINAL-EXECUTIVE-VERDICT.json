@@ -1,0 +1,233 @@
+{
+  "schema": "vu-root-cause-verdict-1.0.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T09:30:00Z",
+  "provenance": {
+    "auditVersion": "vu-price-root-cause-audit-1.0.0",
+    "runId": "39100831867",
+    "workflow": ".github/workflows/research-price-root-cause-audit.yml",
+    "captureFingerprint": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+    "frozenTournamentFingerprint": "318c051ff71e9f405d4bf9733284151f15c55bd8658384cce45e7b34a3c372d5",
+    "captureEqualsFrozenTournamentInput": false,
+    "pinned": {
+      "base": "547d604d (#705 head)",
+      "v3": "f8644cf1 (#758 head)",
+      "v2": "0d8e2755 (#737 head)",
+      "mergedSecFinraInputs": "run 39019906367"
+    },
+    "vendorUsed": false,
+    "certifying": false,
+    "performanceNumbers": "DELTAS_AND_DIRECTIONS_ONLY; absolute metrics owner-sealed",
+    "populationRunId": "39100831867",
+    "rankingRunId": "39100831867",
+    "fingerprints": {
+      "population": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "ranking": "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b",
+      "methods": [
+        "862c42420fc7ae5dfa6bab726c8aa96544a924cb25b0445c707d0c19d1bbe95b"
+      ]
+    },
+    "allJobsSameCapture": true
+  },
+  "publicContent": "COUNTS_CORRELATIONS_DELTAS_DIRECTIONS_ONLY",
+  "certifying": false,
+  "outperformanceQuestion": "UNDERPERFORMANCE_REMAINS",
+  "outperformanceDefinition": "CAGR and Sharpe below SPY total return on capture 862c4242 (run 39100831867) in all 54 method x scenario cells; no small-cap benchmark used",
+  "secondaryObservations": [
+    "RANKING_CHANGED only through VU accounting fixes (A->B: 52W and Weinstein swap ranks 2/3 by CAGR and 1/2 by Sharpe); strictly confirmed data corrections change no rank (B->C2 false for all three metrics)",
+    "Strictly confirmed data corrections change CAGR and drawdown by 0.0 pp for all six methods (C2 vs B)",
+    "UNDERPERFORMANCE_REDUCED for Turtle only through VU accounting fixes (+2.0 pp CAGR, B vs A); gap bucket unchanged (>5 pp below SPY)"
+  ],
+  "dataErrorsExplainUnderperformance": false,
+  "answers": {
+    "q01_securitiesProvenAffected": {
+      "value": 17,
+      "basis": "strict class, tournament valid prefix, lower bound under covered channels; identities owner-sealed (run-39100831867/sealed/POPULATION-CASES.owner.sealed.json)",
+      "lenient": 37,
+      "fullDedupedUnionStrict": "UNKNOWN"
+    },
+    "q02_onlyUnresolved": {
+      "upperBound": 287,
+      "basis": "304 securities in event populations minus 17",
+      "includingHoldsAndQuarantines": 670
+    },
+    "q03_barsOrMonthsProvenWrong": {
+      "returnDays": 17,
+      "securityMonths": 8,
+      "levelShiftedBarsAfterConfirmedEvents": "UNKNOWN"
+    },
+    "q04_shareOfUniverse": {
+      "confirmedSecurities": 0.0019,
+      "confirmedSecurityMonths": 0.000016,
+      "anyEventPopulation": 0.0338,
+      "includingHoldsAndQuarantines": 0.0764
+    },
+    "q05_provenTiingo": {
+      "strictlyConfirmedUndeclaredActionsMissingInBothColumns": 17,
+      "providerInternalInconsistentDays": 4,
+      "returnBasisStudySecuritiesWithInconsistency": "463 of 3184",
+      "liveListingTableChangedBetweenCaptures": true
+    },
+    "q06_provenVu": [
+      "VU-01",
+      "A4",
+      "A5",
+      "A8",
+      "VU-05",
+      "VU-06",
+      "VU-07"
+    ],
+    "q07_combined": {
+      "events": 17,
+      "mechanism": "Tiingo omits the split factor; core 1.0.0 raw-jump check runs only without adjClose (VU-01)"
+    },
+    "q08_tiingoVsMarketstack": "NOT_COMPARABLE (no overlapping US security, listing or day)",
+    "q09_yahoo": "UNKNOWN (not used per mandate; not reproducible in the runner, #758 R3-01)",
+    "q10_reverseSplitsMisprocessed": {
+      "atLeast": 16,
+      "basis": "strictly confirmed undeclared UP events",
+      "ofThe23In83": 6,
+      "beyond": "UNKNOWN"
+    },
+    "q11_genuineMovesWronglyBlocked": {
+      "value": "UNKNOWN",
+      "upperBounds": {
+        "tournamentCaContradictedQuarantines": 63,
+        "v3ConflictingHolds": 69
+      }
+    },
+    "q12_calibrationEffect": {
+      "confirmedOnlyEw": "0.145 -> 0.144 (exclude 8 strictly confirmed months; C2 full construction 0.144)",
+      "excludingNotStrictlyConfirmed": 0.965,
+      "excluding83": 0.992,
+      "allVariants": "FAIL"
+    },
+    "q13_methodsEffect": {
+      "strictDataCorrectionsC2vsB_pp": {
+        "momentum": 0,
+        "52w": 0,
+        "lowVol": 0,
+        "turtle": 0,
+        "weinstein": 0,
+        "kullamagi": 0
+      },
+      "vuFixesBvsA_pp": {
+        "momentum": 0.2,
+        "52w": 0.1,
+        "lowVol": 0.1,
+        "turtle": 2,
+        "weinstein": -0.7,
+        "kullamagi": 0
+      },
+      "lenientCorrectionsCvsB_pp": {
+        "turtle": 2,
+        "others": 0
+      }
+    },
+    "q14_cagrDrawdownRankings": {
+      "cagr": "see q13",
+      "maxDrawdownFlatterPpVuFixes": {
+        "turtle": 1.7,
+        "weinstein": 2.8
+      },
+      "rankings": "A->B changed (52W/Weinstein); B->C2 unchanged; drawdown ranks unchanged"
+    },
+    "q15_productsOnAffectedPaths": {
+      "proven": [
+        "Supertrader Research",
+        "scripts/supertrader/house/live.mjs"
+      ],
+      "possibleNotMeasured": [
+        "Quant",
+        "Technical",
+        "Discover",
+        "Screener",
+        "Supertrader Production"
+      ],
+      "notObserved": [
+        "Vorsorge"
+      ]
+    },
+    "q16_provenVuBugs": [
+      "VU-01",
+      "A4",
+      "A5",
+      "A8",
+      "VU-06",
+      "VU-07"
+    ],
+    "q17_unresolved": {
+      "censusEvents": "599 of 616",
+      "extremeMoves272": "253 of 272",
+      "d2DefectDays": "10 of 10 (2 confounded by their declared split)",
+      "securityMonths83": "75 of 83",
+      "v3_194": "UNKNOWN mapping"
+    },
+    "q18_fixFirst": [
+      "port A4/A5/A8 from runner-v4 into the tournament runner (own Supertrader PR with before/after)",
+      "close VU-01 as a HOLD signal, not a repair (own PR)",
+      "widen evidence channels: 2,055 segments without CIK, permaTicker check"
+    ],
+    "q19_withExistingDataAndBudget": [
+      "normalise the 15 strictly confirmed events with a stated ratio; the other 2 can only be held",
+      "Tiingo permaTicker metadata check (~245 requests) within the existing subscription",
+      "A4/A5/A8 need no data"
+    ],
+    "q20_minimalNextStep": "Move the tournament runner onto the V4 infrastructure (scenario B as the new baseline) in its own Supertrader PR, carry undecided events as a hold/sensitivity band, then resume the book-based strategies; data errors are not the bottleneck"
+  },
+  "notCertified": true,
+  "top30": {
+    "question": "Do at most 30 provably problematic securities cause most of the backtest distortion?",
+    "strictlyConfirmed": "17 securities; their correction moves no method (0.0 pp), so there is no confirmed data distortion to concentrate",
+    "lenient": "the only material lenient effect (Turtle +2.0 pp, C vs B) comes from one spanning trade in one security",
+    "directHoldChannelBound": "at most 47 trade records span an event (24/21/1/1/0/0), in at most 69/38/2/10 distinct event securities traded",
+    "french": "83 security-months in 67 securities move EW correlation 0.145 -> 0.992; 55 undeclared raw-jump months alone give 0.992",
+    "exactPerSecurityAttribution": "UNKNOWN (not computed; would need a per-security ablation run)",
+    "answer": "YES for confirmed and lenient effects (<= 1 security); UNKNOWN for the unresolved stress scenario D"
+  },
+  "periodVsSecurityExclusion": {
+    "prefixWithTerminal_B": "baseline",
+    "wholeSecurityRemoval_E_vs_B_pp": {
+      "momentum": 0.1,
+      "52w": 0,
+      "lowVol": 0,
+      "turtle": -1.4,
+      "weinstein": -0.7,
+      "kullamagi": 0
+    },
+    "cutFromEvent_D_vs_C_pp": {
+      "momentum": 0.4,
+      "52w": 0.1,
+      "lowVol": 0,
+      "turtle": -1.4,
+      "weinstein": 0,
+      "kullamagi": 0
+    },
+    "tradesLost_E_vs_B": {
+      "momentum": -342,
+      "52w": -793,
+      "lowVol": -127
+    },
+    "reading": "removing whole securities discards 521 histories and adds survivorship; period-based handling (valid prefix, cut or hold from the event) keeps the data and moves results no more; diagnostic only, no productive deactivation",
+    "resumeAfterHold": "not measured (V3 hold-and-resume policy not accepted, #758 PIT acceptance failed)"
+  },
+  "dataStates": {
+    "comparison": "DATA-STATE-COMPARISON.json",
+    "allJobsOfFinalReplayIdenticalInputs": true,
+    "oldCapturesReproduced": false
+  },
+  "minimalCorrections": [
+    "Port A4/A5/A8 from runner-v4 into the tournament runner (own Supertrader PR with before/after); measured effect Turtle +2.0, Weinstein -0.7 pp CAGR",
+    "Close VU-01 as a HOLD signal (raw-jump check also with adjClose present), no repair (own PR)",
+    "Make captures reproducible: owner-encrypted capture snapshot, archived Tiingo listing bytes, fixed observation date (own PR)"
+  ],
+  "bookStrategiesGo": {
+    "answer": "YES_AFTER_CORRECTION_1",
+    "conditions": [
+      "start on the V4 infrastructure (scenario B) with A4/A5/A8 fixed",
+      "carry the 599 undecided census events as hold/sensitivity band, not as repaired data",
+      "pin each measurement to one persisted capture"
+    ],
+    "dataErrorsBlockStart": false
+  }
+}

@@ -1,0 +1,848 @@
+{
+  "schema": "vu-root-cause-population-public-1.0.0",
+  "version": "vu-price-root-cause-audit-1.0.0",
+  "kind": "DIAGNOSTIC_NOT_CERTIFYING",
+  "runId": "39073148967",
+  "sourceDataFingerprint": "b3ca86814807ca6c290098fa01a702c09513bcbf6a6cd23ea6a8ebced24d167f",
+  "inputs": {
+    "secAvailable": true,
+    "finraAvailable": true,
+    "vendorUsed": false,
+    "v3StagesRunWithoutVendor": true
+  },
+  "census": {
+    "undeclaredRawJump": 10,
+    "declaredResidualStep": 2,
+    "secWindowDays": 10,
+    "finraWindowDays": 10,
+    "strictResidualRatio": 1.25
+  },
+  "denominators": {
+    "universe": {
+      "segmentsListings": 9407,
+      "securityIds": 8995,
+      "companiesCik": 6649,
+      "tickers": 8995
+    },
+    "storeBarsAllHistory": 14842666,
+    "storeBarsTournamentSpan": 14773577,
+    "tournamentCanonicalBars": 14371749,
+    "tournamentCanonicalBarsInMeasurementWindow": 10911133,
+    "tournamentSecurities": 9407,
+    "tournamentQuarantined": 521,
+    "captureRejections": {
+      "CORPORATE_ACTION_CONTRADICTED": 2
+    }
+  },
+  "populations": {
+    "V4_83_SECURITY_MONTHS": {
+      "rows": 83,
+      "segmentsListings": 67,
+      "securityIds": 67,
+      "companiesCik": 54,
+      "tickers": 67,
+      "securityMonths": 83,
+      "byClass": {
+        "UNDECLARED_RAW_JUMP_10X": 55,
+        "DECLARED_SPLIT_IN_MONTH": 28
+      }
+    },
+    "V4_74_HIGH_LEVEL": {
+      "rows": 74,
+      "segmentsListings": 74,
+      "securityIds": 74,
+      "companiesCik": 68,
+      "tickers": 74
+    },
+    "D2_DEFECT_SECURITIES": {
+      "rows": 11,
+      "segmentsListings": 11,
+      "securityIds": 11,
+      "companiesCik": 9,
+      "tickers": 11
+    },
+    "V2_272_EXTREME_MOVES": {
+      "rows": 272,
+      "segmentsListings": 202,
+      "securityIds": 159,
+      "companiesCik": 103,
+      "tickers": 159
+    },
+    "V3_HOLDS": {
+      "rows": 518,
+      "segmentsListings": 376,
+      "securityIds": 305,
+      "companiesCik": 209,
+      "tickers": 305
+    },
+    "V3_CONFLICTING_HOLDS": {
+      "rows": 69,
+      "segmentsListings": 60,
+      "securityIds": 60,
+      "companiesCik": 59,
+      "tickers": 60
+    },
+    "TOURNAMENT_QUARANTINES": {
+      "rows": 521,
+      "segmentsListings": 521,
+      "securityIds": 403,
+      "companiesCik": 279,
+      "tickers": 403
+    },
+    "TOURNAMENT_CENSUS_EVENTS": {
+      "rows": 616,
+      "segmentsListings": 226,
+      "securityIds": 214,
+      "companiesCik": 149,
+      "tickers": 214
+    },
+    "TOURNAMENT_CENSUS_CONFIRMED": {
+      "rows": 42,
+      "segmentsListings": 37,
+      "securityIds": 37,
+      "companiesCik": 37,
+      "tickers": 37
+    }
+  },
+  "overlaps": {
+    "V4_83_SECURITY_MONTHS&V4_74_HIGH_LEVEL": 2,
+    "V4_83_SECURITY_MONTHS&V2_272_EXTREME_MOVES": 28,
+    "V4_83_SECURITY_MONTHS&V3_HOLDS": 31,
+    "V4_83_SECURITY_MONTHS&V3_CONFLICTING_HOLDS": 9,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_QUARANTINES": 4,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_CENSUS_EVENTS": 42,
+    "V4_83_SECURITY_MONTHS&TOURNAMENT_CENSUS_CONFIRMED": 15,
+    "V4_74_HIGH_LEVEL&D2_DEFECT_SECURITIES": 11,
+    "V4_74_HIGH_LEVEL&V2_272_EXTREME_MOVES": 10,
+    "V4_74_HIGH_LEVEL&V3_HOLDS": 10,
+    "V4_74_HIGH_LEVEL&V3_CONFLICTING_HOLDS": 5,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_QUARANTINES": 5,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_CENSUS_EVENTS": 13,
+    "V4_74_HIGH_LEVEL&TOURNAMENT_CENSUS_CONFIRMED": 4,
+    "D2_DEFECT_SECURITIES&V2_272_EXTREME_MOVES": 8,
+    "D2_DEFECT_SECURITIES&V3_HOLDS": 1,
+    "D2_DEFECT_SECURITIES&TOURNAMENT_CENSUS_EVENTS": 10,
+    "D2_DEFECT_SECURITIES&TOURNAMENT_CENSUS_CONFIRMED": 2,
+    "V2_272_EXTREME_MOVES&V3_HOLDS": 111,
+    "V2_272_EXTREME_MOVES&V3_CONFLICTING_HOLDS": 7,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_QUARANTINES": 70,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_CENSUS_EVENTS": 157,
+    "V2_272_EXTREME_MOVES&TOURNAMENT_CENSUS_CONFIRMED": 17,
+    "V3_HOLDS&V3_CONFLICTING_HOLDS": 60,
+    "V3_HOLDS&TOURNAMENT_QUARANTINES": 226,
+    "V3_HOLDS&TOURNAMENT_CENSUS_EVENTS": 126,
+    "V3_HOLDS&TOURNAMENT_CENSUS_CONFIRMED": 22,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_QUARANTINES": 9,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_CENSUS_EVENTS": 13,
+    "V3_CONFLICTING_HOLDS&TOURNAMENT_CENSUS_CONFIRMED": 6,
+    "TOURNAMENT_QUARANTINES&TOURNAMENT_CENSUS_EVENTS": 45,
+    "TOURNAMENT_QUARANTINES&TOURNAMENT_CENSUS_CONFIRMED": 6,
+    "TOURNAMENT_CENSUS_EVENTS&TOURNAMENT_CENSUS_CONFIRMED": 37
+  },
+  "eventStats": {
+    "distinctEvents": 707,
+    "bySourceCombination": {
+      "TOURNAMENT_CENSUS+V2_272": 178,
+      "TOURNAMENT_CENSUS+V2_272+V4_83_DOMINANT_DAY": 20,
+      "V2_272": 64,
+      "D2_DEFECT_DAY+TOURNAMENT_CENSUS+V2_272": 10,
+      "TOURNAMENT_CENSUS": 369,
+      "TOURNAMENT_CENSUS+V4_83_DOMINANT_DAY": 36,
+      "D2_DEFECT_DAY+TOURNAMENT_CENSUS": 3,
+      "V4_83_DOMINANT_DAY": 27
+    },
+    "byProviderLocus": {
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 674,
+      "PROVIDER_PARTIAL_ADJUSTMENT": 27,
+      "PROVIDER_COLUMNS_DISAGREE_ADJ_CONTINUOUS": 4,
+      "PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS": 2
+    },
+    "byIndependentNoVendor": {
+      "UNRESOLVED": 388,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 53,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 57,
+      "INSUFFICIENT_EVIDENCE": 203,
+      "CONFIRMED_EVENT": 6
+    },
+    "byLocusAndIndependent": {
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN|UNRESOLVED": 372,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN|CONFIRMED_BY_INDEPENDENT_SOURCE": 46,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 53,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN|INSUFFICIENT_EVIDENCE": 197,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN|CONFIRMED_EVENT": 6,
+      "PROVIDER_PARTIAL_ADJUSTMENT|UNRESOLVED": 16,
+      "PROVIDER_COLUMNS_DISAGREE_ADJ_CONTINUOUS|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 3,
+      "PROVIDER_PARTIAL_ADJUSTMENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 6,
+      "PROVIDER_PARTIAL_ADJUSTMENT|INSUFFICIENT_EVIDENCE": 4,
+      "PROVIDER_COLUMNS_DISAGREE_ADJ_CONTINUOUS|INSUFFICIENT_EVIDENCE": 1,
+      "PROVIDER_PARTIAL_ADJUSTMENT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byConfirmationChannel": {
+      "SEC_8K": 16,
+      "SEC_SHARES_ONLY": 14,
+      "FINRA": 9,
+      "SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 14
+    },
+    "censusByKindAndChannel": {
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 304,
+      "UNDECLARED_RAW_JUMP_10X|SEC_8K": 14,
+      "DECLARED_SPLIT_RESIDUAL|UNRESOLVED": 16,
+      "UNDECLARED_RAW_JUMP_10X|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 54,
+      "UNDECLARED_RAW_JUMP_10X|INSUFFICIENT_EVIDENCE": 196,
+      "DECLARED_SPLIT_RESIDUAL|SEC_SHARES_ONLY": 5,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY": 8,
+      "UNDECLARED_RAW_JUMP_10X|FINRA": 9,
+      "DECLARED_SPLIT_RESIDUAL|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 1,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 5,
+      "DECLARED_SPLIT_RESIDUAL|INSUFFICIENT_EVIDENCE": 4
+    },
+    "insideTournamentValidPrefix": 643,
+    "byYear": {
+      "2015": 60,
+      "2016": 14,
+      "2017": 74,
+      "2018": 146,
+      "2019": 100,
+      "2020": 59,
+      "2021": 36,
+      "2022": 51,
+      "2023": 24,
+      "2024": 39,
+      "2025": 54,
+      "2026": 50
+    },
+    "byPriorRawPrice": {
+      "5_TO_20": 39,
+      "LT_1": 570,
+      "1_TO_5": 60,
+      "GE_100": 18,
+      "20_TO_100": 20
+    },
+    "byExchange": {
+      "AMEX": 14,
+      "BATS": 3,
+      "NASDAQ": 539,
+      "NYSE MKT": 80,
+      "NYSE": 71
+    },
+    "securitiesWithEvents": {
+      "segmentsListings": 296,
+      "securityIds": 245,
+      "companiesCik": 176,
+      "tickers": 245
+    },
+    "unionOfIssuePopulations": {
+      "segmentsListings": 355,
+      "securityIds": 304,
+      "companiesCik": 231,
+      "tickers": 304
+    },
+    "unionOfEventPopulationsDefinition": "83 + 74 + D2 + 272 + census (holds and quarantines excluded: protective decisions, not findings)",
+    "unionIncludingHoldsAndQuarantines": {
+      "segmentsListings": 837,
+      "securityIds": 687,
+      "companiesCik": 503,
+      "tickers": 687
+    },
+    "byStrictClass": {
+      "UNRESOLVED": 330,
+      "RATIO_DOES_NOT_EXPLAIN_MOVE": 9,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 57,
+      "INSUFFICIENT_EVIDENCE": 203,
+      "NOT_LABELED": 64,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 29,
+      "CONFOUNDED_BY_DECLARED_SPLIT": 14,
+      "CONFLICTING_INDEPENDENT_EVIDENCE": 1
+    },
+    "evidenceCoverage": {
+      "segmentsWithCik": 7352,
+      "segmentsWithShareRows": 7108,
+      "segmentsWithFinraRows": 851,
+      "finraIdentityBasis": "SYMBOL_IN_LISTING_WINDOW (no name check)",
+      "tickersWithMoreThanOneCik": 0
+    }
+  },
+  "bars": {
+    "censusReturnDaysInValidPrefix": 616,
+    "censusLevelShiftedBarsAfterEvent": 327775,
+    "barsAfterQuarantineNotUsed": 401827,
+    "shareOfTournamentBars": {
+      "returnDays": 0,
+      "levelShifted": 0.0228,
+      "lostToQuarantine": 0.0272
+    },
+    "quarantinesByReason": {
+      "CORPORATE_ACTION_CONTRADICTED": 63,
+      "LISTING_DATA_GAP": 434,
+      "DIVIDEND_MISSING": 16,
+      "OHLCV_INVALID": 8
+    },
+    "quarantinesByYear": {
+      "2015": 13,
+      "2016": 82,
+      "2017": 48,
+      "2018": 74,
+      "2019": 54,
+      "2020": 45,
+      "2021": 14,
+      "2022": 18,
+      "2023": 10,
+      "2024": 11,
+      "2025": 22,
+      "2026": 130
+    }
+  },
+  "cases83": {
+    "rows": 83,
+    "byCause": {
+      "GENUINE_PRICE_MOVE": 40,
+      "UNDECLARED_REVERSE_SPLIT": 23,
+      "PROVIDER_SPIKE": 4,
+      "CURRENCY_OR_UNIT": 7,
+      "STALE_PRICE": 2,
+      "UNRESOLVED": 5,
+      "DECLARED_SPLIT_INCONSISTENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "byDefect": {
+      "false": 40,
+      "true": 43
+    },
+    "byIndependent": {
+      "UNRESOLVED": 32,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 8,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 27,
+      "INSUFFICIENT_EVIDENCE": 16
+    },
+    "byCauseAndIndependent": {
+      "GENUINE_PRICE_MOVE|UNRESOLVED": 18,
+      "GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 6,
+      "PROVIDER_SPIKE|UNRESOLVED": 2,
+      "GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "STALE_PRICE|UNRESOLVED": 1,
+      "UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNRESOLVED|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byCauseAndLocus": {
+      "GENUINE_PRICE_MOVE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 37,
+      "UNDECLARED_REVERSE_SPLIT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 23,
+      "PROVIDER_SPIKE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 4,
+      "GENUINE_PRICE_MOVE|PROVIDER_PARTIAL_ADJUSTMENT": 1,
+      "CURRENCY_OR_UNIT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 7,
+      "STALE_PRICE|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 2,
+      "UNRESOLVED|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 5,
+      "DECLARED_SPLIT_INCONSISTENT|PROVIDER_PARTIAL_ADJUSTMENT": 1,
+      "DECLARED_SPLIT_DATE_SHIFT|PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 1,
+      "GENUINE_PRICE_MOVE|PROVIDER_DECLARED_SPLIT_ADJ_CONTINUOUS": 2
+    },
+    "byClassCauseIndependent": {
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|UNRESOLVED": 10,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 11,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 3,
+      "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE|UNRESOLVED": 2,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 3,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|UNRESOLVED": 8,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 10,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "UNDECLARED_RAW_JUMP_10X|PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE|UNRESOLVED": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_RAW_JUMP_10X|GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "DECLARED_SPLIT_IN_MONTH|GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 3,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_IN_MONTH|DECLARED_SPLIT_DATE_SHIFT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_RAW_JUMP_10X|STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byClassAndChannel": {
+      "DECLARED_SPLIT_IN_MONTH|UNRESOLVED": 10,
+      "UNDECLARED_RAW_JUMP_10X|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_RAW_JUMP_10X|SEC_8K": 7,
+      "UNDECLARED_RAW_JUMP_10X|INSUFFICIENT_EVIDENCE": 13,
+      "UNDECLARED_RAW_JUMP_10X|UNRESOLVED": 22,
+      "DECLARED_SPLIT_IN_MONTH|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 3,
+      "DECLARED_SPLIT_IN_MONTH|SEC_8K": 2,
+      "DECLARED_SPLIT_IN_MONTH|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 8,
+      "UNDECLARED_RAW_JUMP_10X|FINRA": 6,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY_DECLARED_SPLIT_NEAR": 1,
+      "UNDECLARED_RAW_JUMP_10X|SEC_SHARES_ONLY": 1,
+      "DECLARED_SPLIT_IN_MONTH|SEC_SHARES_ONLY": 2,
+      "DECLARED_SPLIT_IN_MONTH|INSUFFICIENT_EVIDENCE": 3
+    },
+    "byCauseAndStrict": {
+      "GENUINE_PRICE_MOVE|UNRESOLVED": 18,
+      "GENUINE_PRICE_MOVE|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 5,
+      "UNDECLARED_REVERSE_SPLIT|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 1,
+      "UNDECLARED_REVERSE_SPLIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 7,
+      "GENUINE_PRICE_MOVE|INSUFFICIENT_EVIDENCE": 6,
+      "PROVIDER_SPIKE|UNRESOLVED": 2,
+      "GENUINE_PRICE_MOVE|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "GENUINE_PRICE_MOVE|CONFOUNDED_BY_DECLARED_SPLIT": 9,
+      "CURRENCY_OR_UNIT|UNRESOLVED": 3,
+      "CURRENCY_OR_UNIT|CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|UNRESOLVED": 8,
+      "PROVIDER_SPIKE|INSUFFICIENT_EVIDENCE": 2,
+      "CURRENCY_OR_UNIT|INSUFFICIENT_EVIDENCE": 2,
+      "STALE_PRICE|UNRESOLVED": 1,
+      "UNRESOLVED|INSUFFICIENT_EVIDENCE": 2,
+      "UNDECLARED_REVERSE_SPLIT|INSUFFICIENT_EVIDENCE": 3,
+      "DECLARED_SPLIT_INCONSISTENT|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "UNDECLARED_REVERSE_SPLIT|RATIO_DOES_NOT_EXPLAIN_MOVE": 4,
+      "UNRESOLVED|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "UNRESOLVED|INDEPENDENT_EVIDENCE_AGAINST_SPLIT": 2,
+      "DECLARED_SPLIT_DATE_SHIFT|RATIO_DOES_NOT_EXPLAIN_MOVE": 1,
+      "GENUINE_PRICE_MOVE|CONFIRMED_BY_INDEPENDENT_SOURCE": 1,
+      "STALE_PRICE|INSUFFICIENT_EVIDENCE": 1
+    },
+    "byClassDirectionPrice": {
+      "DECLARED_SPLIT_IN_MONTH|UP|5_TO_20": 10,
+      "UNDECLARED_RAW_JUMP_10X|UP|1_TO_5": 8,
+      "UNDECLARED_RAW_JUMP_10X|UP|LT_1": 40,
+      "DECLARED_SPLIT_IN_MONTH|DOWN|5_TO_20": 2,
+      "UNDECLARED_RAW_JUMP_10X|UP|5_TO_20": 4,
+      "DECLARED_SPLIT_IN_MONTH|UP|1_TO_5": 9,
+      "UNDECLARED_RAW_JUMP_10X|DOWN|LT_1": 3,
+      "DECLARED_SPLIT_IN_MONTH|UP|LT_1": 7
+    },
+    "byIndependentDirectionPrice": {
+      "UNRESOLVED|UP|5_TO_20": 7,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|UP|1_TO_5": 3,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|UP|LT_1": 3,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|LT_1": 16,
+      "INSUFFICIENT_EVIDENCE|UP|1_TO_5": 2,
+      "UNRESOLVED|UP|LT_1": 19,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|DOWN|5_TO_20": 1,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|1_TO_5": 7,
+      "INSUFFICIENT_EVIDENCE|UP|LT_1": 9,
+      "CONFIRMED_BY_INDEPENDENT_SOURCE|UP|5_TO_20": 4,
+      "UNRESOLVED|UP|1_TO_5": 5,
+      "INSUFFICIENT_EVIDENCE|DOWN|LT_1": 1,
+      "UNRESOLVED|DOWN|LT_1": 1,
+      "INSUFFICIENT_EVIDENCE|UP|5_TO_20": 3,
+      "INDEPENDENT_EVIDENCE_AGAINST_SPLIT|DOWN|LT_1": 1,
+      "INSUFFICIENT_EVIDENCE|DOWN|5_TO_20": 1
+    },
+    "dominantDayIsDeclaredSplit": {
+      "false": 79,
+      "true": 4
+    },
+    "v3": {
+      "VALID_STILL_EXTREME": 26,
+      "NOT_VALID": 40,
+      "VALID": 17
+    }
+  },
+  "d2": {
+    "securities": 11,
+    "byCause": {
+      "DECLARED_SPLIT_INCONSISTENT": 2,
+      "UNDECLARED_JUMP_IN_HISTORY": 8,
+      "UNRESOLVED": 1
+    },
+    "dayIndependent": {
+      "CONFIRMED_BY_INDEPENDENT_SOURCE": 2,
+      "UNRESOLVED": 6,
+      "INSUFFICIENT_EVIDENCE": 2
+    },
+    "dayLocus": {
+      "PROVIDER_PARTIAL_ADJUSTMENT": 2,
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 8
+    }
+  },
+  "extreme272": {
+    "rows": 272,
+    "reproducesV3Count": true,
+    "byIndependentNoVendor": {
+      "UNRESOLVED": 253,
+      "CONFIRMED_EVENT": 19
+    },
+    "byV3": {
+      "NOT_IN_VALID_RETURN": 167,
+      "STILL_IN_VALID_RETURN": 97,
+      "ADJUSTED": 8
+    },
+    "byDir": {
+      "DOWN": 149,
+      "UP": 123
+    },
+    "byLocus": {
+      "PROVIDER_NO_EVENT_IN_EITHER_COLUMN": 272
+    }
+  },
+  "holds": {
+    "holds": 518,
+    "byReason": {
+      "CORPORATE_ACTION_CONTRADICTED": 68,
+      "CORPORATE_ACTION_CONFLICT": 39,
+      "UNEXPLAINED_EXTREME_DISCONTINUITY": 67,
+      "SPLIT_SUSPECTED_UNDECLARED": 127,
+      "LISTING_CHANGE_SEMANTIC": 49,
+      "STALE_THEN_EXTREME_JUMP": 45,
+      "LISTING_DISCONTINUITY": 69,
+      "UNDECLARED_SPLIT_SIGNATURE": 26,
+      "DIVIDEND_MISSING": 16,
+      "CURRENCY_OR_UNIT_CHANGE": 12
+    },
+    "courseOnly": 277,
+    "conflicting": 69,
+    "resumedBarsAfterHolds": 120455
+  },
+  "french": {
+    "ewSecurityMonths": 493258,
+    "ewExclusionVariants": {
+      "BASELINE": {
+        "excludedSecurityMonths": 0,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_DATA_SIGNATURE": {
+        "excludedSecurityMonths": 83,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_ALL_ABS_RET_GT_100PCT": {
+        "excludedSecurityMonths": 2200,
+        "correlation": 0.99,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "DIRECTION"
+        ],
+        "holdingCountRatioMean": 1.331
+      },
+      "EXCLUDE_83_FORENSIC_DEFECT_ONLY": {
+        "excludedSecurityMonths": 43,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_FORENSIC_GENUINE_ONLY": {
+        "excludedSecurityMonths": 40,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_INDEPENDENTLY_CONFIRMED_ONLY": {
+        "excludedSecurityMonths": 27,
+        "correlation": 0.146,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_NOT_INDEPENDENTLY_CONFIRMED": {
+        "excludedSecurityMonths": 56,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_CONFIRMED_BY_STATED_RATIO_ONLY": {
+        "excludedSecurityMonths": 15,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_FORENSIC_DEFECT_AND_UNDECLARED": {
+        "excludedSecurityMonths": 41,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_UNDECLARED_NOT_CONFIRMED": {
+        "excludedSecurityMonths": 40,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_STRICTLY_CONFIRMED_ONLY": {
+        "excludedSecurityMonths": 11,
+        "correlation": 0.145,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_NOT_STRICTLY_CONFIRMED": {
+        "excludedSecurityMonths": 72,
+        "correlation": 0.963,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_83_UNDECLARED_CONFIRMED": {
+        "excludedSecurityMonths": 15,
+        "correlation": 0.146,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_UNDECLARED_RAW_JUMP_10X_ONLY": {
+        "excludedSecurityMonths": 55,
+        "correlation": 0.992,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "MEAN_DIFFERENCE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      },
+      "EXCLUDE_DECLARED_SPLIT_IN_MONTH_ONLY": {
+        "excludedSecurityMonths": 28,
+        "correlation": 0.144,
+        "verdict": "FAIL",
+        "failedHardChecks": [
+          "CORRELATION",
+          "MEAN_DIFFERENCE",
+          "TRACKING_ERROR",
+          "VOLATILITY_RELATIVE",
+          "MAX_DRAWDOWN"
+        ],
+        "holdingCountRatioMean": 1.337
+      }
+    },
+    "fullConstructionVariants": {
+      "V4_BASELINE": {
+        "EW_MARKET": {
+          "correlation": 0.145,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.337
+        },
+        "MOM_SPREAD_CORRELATION": 0.038,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "TOURNAMENT_DATA_NO_V4_SANITY": {
+        "EW_MARKET": {
+          "correlation": 0.145,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.337
+        },
+        "MOM_SPREAD_CORRELATION": 0.038,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "C_INDEPENDENT_CORRECTIONS": {
+        "EW_MARKET": {
+          "correlation": 0.146,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.335
+        },
+        "MOM_SPREAD_CORRELATION": 0.034,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.001,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "C2_STRICT_CORRECTIONS": {
+        "EW_MARKET": {
+          "correlation": 0.144,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.336
+        },
+        "MOM_SPREAD_CORRELATION": 0.033,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.002,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "D_CUT_ALL_CENSUS_EVENTS": {
+        "EW_MARKET": {
+          "correlation": 0.992,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "MEAN_DIFFERENCE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.324
+        },
+        "MOM_SPREAD_CORRELATION": 0.824,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.984,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": 0.963,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "D_CUT_ALL_CENSUS_EVENTS_PLUS_V4_SANITY": {
+        "EW_MARKET": {
+          "correlation": 0.992,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "MEAN_DIFFERENCE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.323
+        },
+        "MOM_SPREAD_CORRELATION": 0.823,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.984,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": 0.963,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.994,
+        "VAR_VERDICT": "FAIL"
+      },
+      "E_WHOLE_SERIES_DROP": {
+        "EW_MARKET": {
+          "correlation": 0.146,
+          "verdict": "FAIL",
+          "failedHardChecks": [
+            "CORRELATION",
+            "MEAN_DIFFERENCE",
+            "TRACKING_ERROR",
+            "VOLATILITY_RELATIVE",
+            "MAX_DRAWDOWN"
+          ],
+          "holdingCountRatioMean": 1.314
+        },
+        "MOM_SPREAD_CORRELATION": 0.037,
+        "MOM_MEDIAN_BUCKET_CORRELATION": 0.979,
+        "MOM_VERDICT": "FAIL",
+        "VAR_SPREAD_CORRELATION": -0.009,
+        "VAR_MEDIAN_BUCKET_CORRELATION": 0.993,
+        "VAR_VERDICT": "FAIL"
+      }
+    },
+    "extremeSecurityMonths": 2200,
+    "flagged83": 83,
+    "squaredGapShareInMonthsWithFlaggedCases": 1,
+    "v4PriceSanity": {
+      "affected": 74,
+      "defectQuarantined": 3,
+      "byClass": {
+        "GENUINE_HIGH_NOMINAL_PRICE": 0,
+        "GENUINE_ADJUSTED_LEVEL_SERIAL_REVERSE_SPLITS": 71,
+        "SPLIT_ARTIFACT": 3,
+        "UNIT_ISSUE": 0,
+        "CURRENCY_ISSUE": 0,
+        "STALE_OR_UNADJUSTED": 0,
+        "TICKER_IDENTITY": 0,
+        "SOURCE_ERROR": 0
+      }
+    }
+  },
+  "sealed": {
+    "audience": "owner",
+    "file": "POPULATION-CASES.owner.sealed.json",
+    "plaintextSha256": "db7ff22d4720e8b065e68c9b2bb45d89ca1bca49e8517feaf71d5419fdb7878d",
+    "sealedSha256": "6806ade0c025b4b481ce63a03ecb95b28668b5d88849f955cd0f5fd9bb30822c"
+  },
+  "performanceCalculated": false
+}
