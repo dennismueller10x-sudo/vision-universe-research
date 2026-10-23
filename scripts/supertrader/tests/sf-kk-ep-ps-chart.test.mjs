@@ -5,11 +5,11 @@ import assert from 'node:assert/strict';
 import { runResearchLifecycle } from '../source-faithful/research/lifecycle-engine.mjs';
 import { KK_EP_ADAPTER, EP_REFERENCE_CONFIG, EP_RUN_VARIANTS, EP_CLASS, EP_ORIGINAL_CLASS_ASSIGNABLE, EP_LABEL, validateEpConfig, epChartCandidate, resolveEpDay, epVariantRegistrySha256 } from '../source-faithful/research/kk-ep-lifecycle.mjs';
 import { PS_REFERENCE_CONFIG, PS_RUN_VARIANTS, PS_CLASS, PS_EXECUTABLE_CLASS_ASSIGNABLE, PS_LABEL, validatePsConfig, psChartCandidate, psEntry, runPsCandidate, shortReturn, psVariantRegistrySha256 } from '../source-faithful/research/kk-ps-study.mjs';
-import { toSession, compactSession, expandSession, identityCheck, openingRange, runningVwap, fiveMinuteCandles, sessionMinute } from '../source-faithful/research/kk-intraday.mjs';
+import { toSession, compactSession, expandSession, identityCheck, openIdentityCheck, openingRange, runningVwap, fiveMinuteCandles, sessionMinute } from '../source-faithful/research/kk-intraday.mjs';
 import { KK_EPISODIC_PIVOT, KK_PARABOLIC_SHORT } from '../source-faithful/contracts/kullamagi.mjs';
 
-const PINNED_EP = 'de60e3516d25b7fc3facab7884a3b94145dfa99870bb0dbc0f0c5d4278b0cee2';
-const PINNED_PS = 'a7d13948e713047671e5a2951bb4c58ea0f14f9938944f5d19aca005c9aa1406';
+const PINNED_EP = 'efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00';
+const PINNED_PS = 'e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a';
 const day = (k) => new Date(Date.UTC(2021, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const flat = (k, c) => bar(k, c, c * 1.015, c * 0.985, c);
@@ -152,7 +152,8 @@ test('GC-KK-PS-ORL5-SHORT: Short unter dem 5-Minuten-ORL, Stop ueber dem Tagesho
 test('GC-KK-PS-STOP-FIRST: erreicht eine Minute nach dem Einstieg das Tageshoch, ist es ein Stop (vor jedem Ziel)', () => {
   const s = psScenario(), m = psMinutes(); m[20] = mm(20, 26.6, 27.6, 20, 27.4); // stop and an absurd low in one minute
   const r = runPsCandidate({ bars: s.bars, cand: psChartCandidate(s.bars, 63), minutes: m, cfg: PS_REFERENCE_CONFIG });
-  assert.equal(r.status, 'NOT_EXECUTED_IDENTITY_MISMATCH'); // the absurd low breaks the identity with the daily bar
+  // the absurd low after the entry disagrees with the daily bar: evidence only, never a reason to drop the day (PIT)
+  assert.equal(r.status, 'CLOSED'); assert.deepEqual(r.trade.exitReasons, ['PS_STOP_HOD']); assert.equal(r.trade.dayRangeAgreement, 'IDENTITY_MISMATCH');
   const m2 = psMinutes(); m2[20] = mm(20, 26.6, 27.6, 26.5, 27.4);
   const d = { ...s, bars: s.bars.map((b, k) => (k === 63 ? { ...b, high: 27.6 } : b)) };
   const r2 = runPsCandidate({ bars: d.bars, cand: psChartCandidate(d.bars, 63), minutes: m2, cfg: PS_REFERENCE_CONFIG });
@@ -188,6 +189,10 @@ test('SF-KK-INTRADAY-BLOCKS: Sitzungsminuten, Kompaktformat, Identitaet, Opening
   assert.equal(m.length, 2);
   assert.deepEqual(expandSession(compactSession(m)), m);
   assert.equal(identityCheck(m, { high: 12, low: 9 }, 1).status, 'IDENTITY_OK');
+  assert.equal(openIdentityCheck(m, { open: 10.2 }, 1).status, 'IDENTITY_OK');
+  assert.equal(openIdentityCheck(m, { open: 10.6 }, 1).status, 'IDENTITY_MISMATCH'); // 5.7 % off the official open
+  assert.equal(openIdentityCheck(m.map((x) => ({ ...x, k: x.k + 5 })), { open: 10 }, 1).status, 'IDENTITY_NO_OPENING_PRINT');
+  assert.deepEqual(openingRange(m, 1, 11.5), { high: 11.5, low: 9, bars: 1, minutes: 1 }); // the official open is part of the range
   assert.equal(identityCheck(m, { high: 12, low: 9 }, 2).status, 'IDENTITY_MISMATCH');
   assert.deepEqual(openingRange(m, 1), { high: 11, low: 9, bars: 1, minutes: 1 });
   const { vwap, cum } = runningVwap(m);
@@ -230,4 +235,54 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
   for (const id of ['KK-SF-PS-ENTRY', 'KK-SF-PS-STOP', 'KK-SF-PS-BORROW']) assert.equal(a.strategies.C10.contract.ruleStatuses[id], 'DATA_BLOCKED');
   for (const c of ['C09', 'C10']) { assert.equal(a.strategies[c].liveReadiness, 'LIVE_NOT_APPROVED'); assert.match(a.strategies[c].contract.measurementClassOfTheOriginalMethod, /^NOT_MEASURABLE/); }
   for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.researchCodeSha256, kkCode());
+});
+
+test('SF-KK-PIT-IDENTITY: die Identitaetspruefung kennt nur die Eroeffnung; spaetere Minuten waehlen keinen Tag ab', () => {
+  const s = epScenario(), a = resolveEpDay({ minutes: epMinutes(), bar: s.bars[80], rawFactor: 1, adrPct: 3, iexBaseline: 200000, cfg: EP_REFERENCE_CONFIG });
+  assert.equal(a.status, 'FILLED'); assert.equal(a.evidence.dayRangeAgreement, 'IDENTITY_OK');
+  // a bad print late in the day (after the entry and above the stop) leaves the decision unchanged and is reported
+  const bad = epMinutes().map((x) => (x.k === 300 ? { ...x, high: 60 } : x));
+  const b = resolveEpDay({ minutes: bad, bar: s.bars[80], rawFactor: 1, adrPct: 3, iexBaseline: 200000, cfg: EP_REFERENCE_CONFIG });
+  assert.equal(b.status, 'FILLED'); assert.equal(b.fill, a.fill); assert.equal(b.stop, a.stop); assert.equal(b.evidence.dayRangeAgreement, 'IDENTITY_MISMATCH');
+  // a first print far from the official open (another security under the ticker) is not executed
+  const late = epMinutes().map((x) => ({ ...x, open: x.open * 1.2 }));
+  assert.equal(resolveEpDay({ minutes: late, bar: s.bars[80], rawFactor: 1, adrPct: 3, iexBaseline: 200000, cfg: EP_REFERENCE_CONFIG }).status, 'NOT_EXECUTED_IDENTITY_MISMATCH');
+});
+
+test('SF-KK-EP-OR-OFFICIAL-OPEN: die offizielle Eroeffnung gehoert zur Opening Range (Auktion ist kein IEX-Print)', () => {
+  const s = epScenario(), m = epMinutes();
+  const hi = { ...s.bars[80], open: 23.25, low: 22.95 }; // official open above the first IEX minute high (23.2)
+  const r = resolveEpDay({ minutes: m, bar: hi, rawFactor: 1, adrPct: 3, iexBaseline: 200000, cfg: EP_REFERENCE_CONFIG });
+  assert.equal(r.status, 'FILLED'); assert.ok(r.fill >= 23.26 - 1e-9); assert.equal(r.evidence.entryMinute, 2);
+});
+
+test('SF-KK-EP-VOLUME-BY-20: nach Minute 20 zaehlt das IEX-Volumen der Minuten 0-19, auch wenn Minuten fehlen', () => {
+  const s = epScenario(), cfg = EP_REFERENCE_CONFIG;
+  // no break before minute 25; minutes 0-19 carry 210 000 IEX shares, minute 19 is the last one before 20
+  const m = [mm(0, 23, 23.2, 22.95, 23.1, 100000)];
+  for (let k = 1; k < 20; k++) m.push(mm(k, 23.1, 23.15, 23.05, 23.1, k === 19 ? 101000 : 500));
+  m.push(mm(25, 23.2, 23.5, 23.15, 23.4, 1000));
+  for (let k = 26; k < 390; k++) m.push(mm(k, 23.4, 23.45, 23.35, 23.4, 1000));
+  assert.equal(resolveEpDay({ minutes: m, bar: s.bars[80], rawFactor: 1, adrPct: 3, iexBaseline: 200000, cfg }).status, 'FILLED');
+  assert.equal(resolveEpDay({ minutes: m, bar: s.bars[80], rawFactor: 1, adrPct: 3, iexBaseline: 250000, cfg }).status, 'NOT_TRIGGERED');
+});
+
+import { getJson, hasRoom, definitive, intArg, shardOf, CACHE_SHARDS, MAX_REQUESTS_CAP, EP_BUDGET_SHARE, BASELINE_FREQS } from '../source-faithful/research/run-kk-intraday.mjs';
+test('SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie ueber die Grenze; nur 200/404 werden gespeichert', async () => {
+  let calls = 0;
+  const f429 = async () => { calls++; return { status: 429, text: async () => '' }; };
+  const run = { used: 0, max: 4 }, ep = { used: 0, max: 2 };
+  const r = await getJson('u', 'k', [run, ep], f429, async () => {});
+  assert.equal(r.status, 'BUDGET_EXHAUSTED'); assert.equal(calls, 2); assert.equal(run.used, 2); assert.equal(ep.used, 2);
+  assert.equal(hasRoom([run]), true); assert.equal(hasRoom([run, ep]), false); assert.equal(hasRoom([run], 3), false);
+  const fThrow = async () => { calls++; throw new Error('net'); };
+  calls = 0; const b = { used: 0, max: 10 };
+  assert.equal((await getJson('u', 'k', [b], fThrow, async () => {})).status, 0); assert.equal(calls, 3); assert.equal(b.used, 3);
+  for (const [st, want] of [[200, true], [404, true], [0, false], [429, false], [500, false], [400, false], ['BUDGET_EXHAUSTED', false]]) assert.equal(definitive(st), want, String(st));
+  assert.equal(intArg('6000', 1, MAX_REQUESTS_CAP), 6000); assert.equal(intArg('6001', 1, MAX_REQUESTS_CAP), null);
+  assert.equal(intArg('abc', 1, MAX_REQUESTS_CAP), null); assert.equal(intArg('12.5', 1, MAX_REQUESTS_CAP), null); assert.equal(intArg('', 1, MAX_REQUESTS_CAP), null);
+  assert.equal(MAX_REQUESTS_CAP, 6000); assert.ok(EP_BUDGET_SHARE > 0 && EP_BUDGET_SHARE < 1);
+  assert.deepEqual([...BASELINE_FREQS], ['4hour', '1hour']); // 1day is rejected by the IEX endpoint (Phase 1b)
+  const shards = new Set(Array.from({ length: 400 }, (_, n) => shardOf(`T${n}|2021-01-04`)));
+  assert.equal(shards.size, CACHE_SHARDS); assert.equal(shardOf('NVDA|2023-05-25'), shardOf('NVDA|2023-05-25'));
 });

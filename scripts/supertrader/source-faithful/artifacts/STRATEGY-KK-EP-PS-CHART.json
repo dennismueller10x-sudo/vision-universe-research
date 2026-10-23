@@ -15,14 +15,38 @@
     "opening range 5 / 15 / 30, IEX VWAP (inside the daily range) and relative IEX opening volume computable",
     "Tiingo \"consolidated\" beta endpoint: same prices as IEX, no volume field (as R10)"
    ]
+  },
+  {
+   "runId": "39933893419",
+   "requests": 3,
+   "cases": 1,
+   "withMinutes": 0,
+   "findings": [
+    "IEX range request NVDA 2023-04-24..2023-05-24: resampleFreq=1day rejected (400, \"Min or Hour only\")",
+    "4hour: 23 bars for 23 sessions, all with IEX volume; 1hour: 138 bars, 23 sessions -> the 20-session IEX volume baseline costs one request (4hour, fallback 1hour)"
+   ]
   }
  ],
+ "candidateCounts": {
+  "runId": "39935841797",
+  "commit": "86bf26d9af",
+  "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+  "ep": {
+   "total": 14995,
+   "inIexHistory": 13769
+  },
+  "ps": {
+   "total": 76491,
+   "inIexHistory": 65216
+  },
+  "consequence": "all IEX candidate days would need about 93 000 requests (EP: minutes + baseline, PS: minutes); a run fetches at most 6 000, two thirds for EP, as a deterministic hash-order sample (sha256 of TICKER|date), resumable via the private cache"
+ },
  "strategies": {
   "C09": {
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
-   "version": "kk-ep-chart-lifecycle-1.0.0",
-   "intraday": "kk-intraday-1.0.0",
+   "version": "kk-ep-chart-lifecycle-1.1.0",
+   "intraday": "kk-intraday-1.1.0",
    "label": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT",
    "contract": {
     "implementationStatus": "PARTIAL_DATA_BLOCKED",
@@ -134,7 +158,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "de60e3516d25b7fc3facab7884a3b94145dfa99870bb0dbc0f0c5d4278b0cee2",
+   "variantRegistrySha256": "efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00",
    "modelAssumptions": [
     {
      "id": "MA-EP-CATALYST-NOT-VERIFIED",
@@ -142,6 +166,20 @@
      "reference": "NOT_VERIFIED: no catalyst filter; no setup is an original EP",
      "alternatives": [],
      "why": "owner decision 2026-10-23: chart-first, no news / catalyst history (KK-SF-EP-CATALYST DATA_BLOCKED)"
+    },
+    {
+     "id": "MA-EP-HISTORY",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "a candidate needs 64 prior sessions in the snapshot (63-session range / run evidence + prior close)",
+     "alternatives": [],
+     "why": "the quiet-phase evidence (KK-035) and its alternative read 63 sessions; a shorter history is not screened (IPO gaps are therefore excluded, declared)"
+    },
+    {
+     "id": "MA-EP-IDENTITY",
+     "phase": "ENTRY_ELIGIBILITY",
+     "reference": "first IEX print within the first 5 minutes and within 5 % of the raw official open; otherwise not executed. The whole-day IEX high / low agreement (R9, 1 %) is evidence only",
+     "alternatives": [],
+     "why": "tickers are reused after delistings; the gate must be known at the decision, a whole-day check would select days by their outcome"
     },
     {
      "id": "MA-EP-GAP-SCREEN",
@@ -162,7 +200,7 @@
     {
      "id": "MA-EP-VOLUME-PACE",
      "phase": "ENTRY_ELIGIBILITY",
-     "reference": "PACE_20: before the entry minute k <= 20 the cumulative IEX volume since the open is at least the mean IEX daily volume of the 20 prior sessions x k / 20; after minute 20 only if that average was reached within the first 20 minutes",
+     "reference": "PACE_20: before the entry minute k <= 20 the cumulative IEX volume since the open is at least the mean IEX daily volume of the 20 prior sessions x k / 20; after minute 20 only if the IEX volume of minutes 0-19 reached that average. Baseline: mean over all 20 prior sessions (a session without IEX volume counts 0), only when at least 15 of them have IEX volume, otherwise not executed",
      "alternatives": [
       "NONE: no volume condition (volume reported as evidence)"
      ],
@@ -171,7 +209,7 @@
     {
      "id": "MA-EP-ORH",
      "phase": "ENTRY_EXECUTION",
-     "reference": "ORH_1: buy stop one raw cent above the high of the first session minute, active from minute 1",
+     "reference": "ORH_1: buy stop one raw cent above the opening range of the first session minute (its IEX high and the official open), active from minute 1",
      "alternatives": [
       "ORH_5: above the 5-minute opening range high, active from minute 5 (KK-033)"
      ],
@@ -239,7 +277,8 @@
     "catalyst identity and timestamp (KK-015 / -038 / -039 / -040): DATA_BLOCKED by owner decision (no news database)",
     "consolidated intraday volume: only the IEX venue (1-5 %) is available; KK-016 / -037 read on IEX only",
     "intraday history before 2017 (IEX starts 2017): candidates 2016 are screened, never simulated",
-    "minute cache is private and not frozen in the research snapshot: reproducible via its sha256 in the sealed receipt, not certifiable"
+    "minute cache is private and not frozen in the research snapshot: reproducible via its sha256 in the sealed receipt, not certifiable",
+    "request budget: one run covers a deterministic hash-order sample of the candidate days, not all of them (no mass download)"
    ],
    "runs": [],
    "liveReadiness": "LIVE_NOT_APPROVED",
@@ -248,8 +287,8 @@
   "C10": {
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
-   "version": "kk-ps-chart-short-study-1.0.0",
-   "intraday": "kk-intraday-1.0.0",
+   "version": "kk-ps-chart-short-study-1.1.0",
+   "intraday": "kk-intraday-1.1.0",
    "label": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE",
    "contract": {
     "implementationStatus": "PARTIAL_DATA_BLOCKED",
@@ -347,7 +386,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "a7d13948e713047671e5a2951bb4c58ea0f14f9938944f5d19aca005c9aa1406",
+   "variantRegistrySha256": "e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a",
    "modelAssumptions": [
     {
      "id": "MA-PS-ACCELERATION",
@@ -359,8 +398,20 @@
      "why": "KK-018 \"several strongly accelerated up days\" has no number; KK-019 sizes are examples only. ADR20 (KK-031) scales \"strongly\" to the stock"
     },
     {
+     "id": "MA-PS-HISTORY",
+     "reference": "a candidate needs 31 sessions up to the signal close",
+     "alternatives": [],
+     "why": "ADR20, the 10-day MA and the streak evidence need them; shorter histories are not screened (declared)"
+    },
+    {
+     "id": "MA-PS-IDENTITY",
+     "reference": "first IEX print within the first 5 minutes and within 5 % of the raw official open; the whole-day high / low agreement (R9) is evidence only",
+     "alternatives": [],
+     "why": "ticker reuse; the gate must be known at the decision, never selected by the day's outcome"
+    },
+    {
      "id": "MA-PS-ENTRY",
-     "reference": "ORL_5: short one raw cent below the 5-minute opening range low, active from minute 5",
+     "reference": "ORL_5: short one raw cent below the 5-minute opening range low (IEX lows and the official open), active from minute 5",
      "alternatives": [
       "FIRST_RED_5MIN: below the low of the first completed red 5-minute candle",
       "FAILED_VWAP_RETEST: after a minute closed below the IEX VWAP, the first minute that trades up to the VWAP and closes below it; short at that close"
@@ -419,7 +470,8 @@
     "borrow availability, locates and fees (KK-030): DATA_BLOCKED, every short is hypothetical",
     "no short book on the shared engine: trade-level study only, no portfolio return",
     "consolidated intraday prices and volume: IEX venue only; VWAP is an IEX VWAP",
-    "intraday history before 2017"
+    "intraday history before 2017",
+    "request budget: PS gets the third of a run budget left after EP, a deterministic hash-order sample of 65 216 days"
    ],
    "runs": [],
    "liveReadiness": "LIVE_NOT_APPROVED",

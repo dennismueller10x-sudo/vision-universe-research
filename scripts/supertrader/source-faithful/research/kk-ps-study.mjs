@@ -18,18 +18,21 @@
 import crypto from 'node:crypto';
 import { fin, smaAt, rawTickAdjusted } from '../common/series.mjs';
 import { adr20, parabolicEvidence, KK_VERSION } from '../methods/kullamagi.mjs';
-import { KK_INTRADAY_VERSION, openingRange, runningVwap, fiveMinuteCandles, identityCheck, tickerOf } from './kk-intraday.mjs';
+import { KK_INTRADAY_VERSION, openingRange, runningVwap, fiveMinuteCandles, identityCheck, openIdentityCheck, tickerOf } from './kk-intraday.mjs';
 
-export const KK_PS_STUDY_VERSION = 'kk-ps-chart-short-study-1.0.0';
+export const KK_PS_STUDY_VERSION = 'kk-ps-chart-short-study-1.1.0';
 export const PS_LABEL = 'CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE';
 export const PS_CLASS = Object.freeze({ CHART: 'PS_CHART_CANDIDATE', INTRADAY_CONFIRMED: 'INTRADAY_CONFIRMED_CHART_PS_SETUP', EXECUTABLE: 'BORROW_CONFIRMED_EXECUTABLE_SHORT' });
 export const PS_EXECUTABLE_CLASS_ASSIGNABLE = false; // KK-SF-PS-BORROW DATA_BLOCKED: no historical borrow / locates / fees
 export const PS_FIRST_INTRADAY_DATE = '2017-01-03';
+export const PS_MIN_HISTORY = 31; // 30 sessions before the signal close (ADR20, MA10, streak evidence)
 export const PS_COSTS = Object.freeze({ slippageBps: 10, commissionBps: 1, borrowFee: 'DATA_BLOCKED_NOT_INCLUDED' });
 
 export const PS_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-PS-ACCELERATION', reference: 'STREAK3_ACCEL: at the close before the trade day at least 3 consecutive higher closes, each return >= the one before, their sum >= 3 x ADR20 and the close above the 10-day MA', alternatives: ['STREAK4_ACCEL: at least 4', 'STREAK3_NO_ACCEL: no acceleration condition'], why: 'KK-018 "several strongly accelerated up days" has no number; KK-019 sizes are examples only. ADR20 (KK-031) scales "strongly" to the stock' },
-  { id: 'MA-PS-ENTRY', reference: 'ORL_5: short one raw cent below the 5-minute opening range low, active from minute 5', alternatives: ['FIRST_RED_5MIN: below the low of the first completed red 5-minute candle', 'FAILED_VWAP_RETEST: after a minute closed below the IEX VWAP, the first minute that trades up to the VWAP and closes below it; short at that close'], why: 'KK-020 / KK-021 (OPTIONAL) leave the choice open; "ORL" names no length, 5 minutes matches the 5-minute candle of KK-020' },
+  { id: 'MA-PS-HISTORY', reference: 'a candidate needs 31 sessions up to the signal close', alternatives: [], why: 'ADR20, the 10-day MA and the streak evidence need them; shorter histories are not screened (declared)' },
+  { id: 'MA-PS-IDENTITY', reference: 'first IEX print within the first 5 minutes and within 5 % of the raw official open; the whole-day high / low agreement (R9) is evidence only', alternatives: [], why: 'ticker reuse; the gate must be known at the decision, never selected by the day\'s outcome' },
+  { id: 'MA-PS-ENTRY', reference: 'ORL_5: short one raw cent below the 5-minute opening range low (IEX lows and the official open), active from minute 5', alternatives: ['FIRST_RED_5MIN: below the low of the first completed red 5-minute candle', 'FAILED_VWAP_RETEST: after a minute closed below the IEX VWAP, the first minute that trades up to the VWAP and closes below it; short at that close'], why: 'KK-020 / KK-021 (OPTIONAL) leave the choice open; "ORL" names no length, 5 minutes matches the 5-minute candle of KK-020' },
   { id: 'MA-PS-FILL', reference: 'fill = min(level, open of the first IEX minute whose low reaches the level) (never better than the level)', alternatives: [], why: 'IEX prints can jump; a consolidated fill is not known' },
   { id: 'MA-PS-STOP', reference: 'HOD: buy stop one raw cent above the high of day before the fill minute (official open included), stop-market', alternatives: ['VWAP_RECLAIM: cover at the close of the first minute after the fill that closes above the IEX VWAP (high-of-day stop kept as the hard stop)'], why: 'KK-022 (CONTEXTUAL) names both' },
   { id: 'MA-PS-TARGET', reference: 'MA10: cover the whole position at the 10-day MA of the prior close (limit; an open below it covers at the open)', alternatives: ['MA20', 'HALF_MA10_REST_MA20'], why: 'KK-023 (PREFERENCE) "toward the 10 / 20-day MA, early partials" gives no split' },
@@ -65,7 +68,7 @@ export function validatePsConfig(cfg) {
 /** PS_CHART_CANDIDATE for trade day t, decided at the close of t - 1 from bars 0..t-1 only. */
 export function psChartCandidate(bars, t, cfg = PS_REFERENCE_CONFIG) {
   const i = t - 1;
-  if (i < 30 || !bars[t]) return null;
+  if (t < PS_MIN_HISTORY || !bars[t]) return null;
   const ev = parabolicEvidence(bars, i), adr = adr20(bars, i + 1); // ADR of the 20 sessions up to and including i
   if (!(ev.upStreak >= cfg.streak) || !fin(adr)) return null;
   const rets = ev.streakReturns.slice(-cfg.streak);
@@ -83,7 +86,7 @@ export function psEntry(minutes, bar, cfg, rawFactor) {
   const f = rawFactor > 0 ? rawFactor : 1, tick = rawTickAdjusted(bar) * f, officialOpen = bar.open * f;
   const { vwap } = runningVwap(minutes);
   let high = officialOpen, level = null, from = Infinity, belowVwap = false;
-  if (cfg.entry === 'ORL_5') { const or = openingRange(minutes, 5); if (!or) return { status: 'NO_OPENING_RANGE' }; level = or.low - tick; from = 5; }
+  if (cfg.entry === 'ORL_5') { const or = openingRange(minutes, 5, officialOpen); if (!or) return { status: 'NO_OPENING_RANGE' }; level = or.low - tick; from = 5; }
   if (cfg.entry === 'FIRST_RED_5MIN') {
     const red = fiveMinuteCandles(minutes).find((c) => c.close < c.open);
     if (!red) return { status: 'NO_RED_5MIN_CANDLE' };
@@ -114,7 +117,9 @@ export function runPsCandidate({ bars, cand, minutes, cfg }) {
   if (bar.date < PS_FIRST_INTRADAY_DATE) return { status: 'NOT_EXECUTED_BEFORE_IEX_HISTORY' };
   if (minutes === undefined) return { status: 'NOT_EXECUTED_INTRADAY_NOT_FETCHED' };
   if (!minutes.length) return { status: 'NOT_EXECUTED_NO_INTRADAY_DATA' };
-  if (identityCheck(minutes, bar, f).status !== 'IDENTITY_OK') return { status: 'NOT_EXECUTED_IDENTITY_MISMATCH' };
+  const idc = openIdentityCheck(minutes, bar, f);
+  if (idc.status !== 'IDENTITY_OK') return { status: idc.status === 'IDENTITY_MISMATCH' ? 'NOT_EXECUTED_IDENTITY_MISMATCH' : `NOT_EXECUTED_${idc.status}` };
+  const dayRangeAgreement = identityCheck(minutes, bar, f).status; // evidence only (whole day)
   const e = psEntry(minutes, bar, cfg, f);
   if (e.status !== 'FILLED') return { status: e.status === 'NOT_TRIGGERED' ? 'NOT_TRIGGERED' : `NOT_EXECUTED_${e.status}` };
   const tick = rawTickAdjusted(bar) * f, stopRaw = e.hodBefore + tick;
@@ -145,7 +150,7 @@ export function runPsCandidate({ bars, cand, minutes, cfg }) {
   if (open().length) return { status: 'OPEN_AT_DATA_END', trade: { entryDate: bar.date, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills } };
   const ret = fills.reduce((a, x) => a + x.frac * shortReturn(e.fill / f, x.priceAdj), 0);
   const riskPerUnit = (stopRaw - e.fill) / e.fill;
-  return { status: 'CLOSED', trade: { entryDate: bar.date, entryMinute: minutes[e.minuteIndex].k, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills, exitReasons: fills.map((x) => x.reason), netReturn: ret, rMultiple: riskPerUnit > 0 ? ret / riskPerUnit : null, class: PS_CLASS.INTRADAY_CONFIRMED, borrow: 'DATA_BLOCKED' } };
+  return { status: 'CLOSED', trade: { entryDate: bar.date, entryMinute: minutes[e.minuteIndex].k, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills, exitReasons: fills.map((x) => x.reason), netReturn: ret, rMultiple: riskPerUnit > 0 ? ret / riskPerUnit : null, class: PS_CLASS.INTRADAY_CONFIRMED, borrow: 'DATA_BLOCKED', dayRangeAgreement } };
 }
 
 export function psVariantRegistrySha256() {

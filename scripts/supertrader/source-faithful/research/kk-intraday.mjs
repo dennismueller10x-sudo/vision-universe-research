@@ -12,9 +12,11 @@
  * Nothing here derives a minute from a daily bar: a day without minutes stays without intraday information.
  * Rights: internal, non-displaying research use only; minute values never reach a public output.
  */
-export const KK_INTRADAY_VERSION = 'kk-intraday-1.0.0';
+export const KK_INTRADAY_VERSION = 'kk-intraday-1.1.0';
 export const SESSION_MINUTES = 390;
-export const IDENTITY_TOLERANCE = 0.01; // R9: IEX high / low within 1 % of the raw consolidated daily bar
+export const IDENTITY_TOLERANCE = 0.01; // R9: IEX high / low within 1 % of the raw consolidated daily bar (evidence only)
+export const OPEN_IDENTITY_WINDOW = 5; // the first IEX print must fall into the first 5 session minutes
+export const OPEN_IDENTITY_TOLERANCE = 0.05; // ... and lie within 5 % of the raw official open (ticker reuse is a level jump)
 
 const fin = (x) => typeof x === 'number' && Number.isFinite(x);
 const etParts = (iso) => new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false }).split(':').map(Number);
@@ -43,8 +45,23 @@ export function expandSession(c) {
 }
 
 /**
- * Identity of the minute series with the security of the daily bar (tickers are reused after delistings): IEX high /
- * low within 1 % of the RAW daily high / low (rawFactor = raw / adjusted, snapshot `splitAdj`).
+ * Identity gate, known at the decision (tickers are reused after delistings): the first IEX print of the session must
+ * fall into the first OPEN_IDENTITY_WINDOW minutes and its open must lie within OPEN_IDENTITY_TOLERANCE of the RAW
+ * official open (rawFactor = raw / adjusted, snapshot `splitAdj`). Uses nothing after the first print, so it can never
+ * exclude a day because of what happened later in that day.
+ */
+export function openIdentityCheck(minutes, dailyBar, rawFactor) {
+  if (!minutes.length) return { status: 'NO_INTRADAY_DATA' };
+  const first = minutes[0], official = dailyBar.open * rawFactor;
+  if (!(first.k < OPEN_IDENTITY_WINDOW)) return { status: 'IDENTITY_NO_OPENING_PRINT', firstMinute: first.k };
+  if (!(official > 0)) return { status: 'IDENTITY_NO_OFFICIAL_OPEN' };
+  const openGap = first.open / official - 1;
+  return Math.abs(openGap) <= OPEN_IDENTITY_TOLERANCE ? { status: 'IDENTITY_OK', openGap } : { status: 'IDENTITY_MISMATCH', openGap };
+}
+
+/**
+ * Whole-day agreement (R9): IEX high / low within 1 % of the RAW daily high / low. It reads the full day, so it is a
+ * data-quality EVIDENCE number only and never decides whether a day is simulated (no outcome-dependent selection).
  */
 export function identityCheck(minutes, dailyBar, rawFactor) {
   if (!minutes.length) return { status: 'NO_INTRADAY_DATA' };
@@ -54,11 +71,16 @@ export function identityCheck(minutes, dailyBar, rawFactor) {
   return Math.abs(hg) <= IDENTITY_TOLERANCE && Math.abs(lg) <= IDENTITY_TOLERANCE ? { status: 'IDENTITY_OK', highGap: hg, lowGap: lg } : { status: 'IDENTITY_MISMATCH', highGap: hg, lowGap: lg };
 }
 
-/** Opening range of the first n session minutes (known at minute n): null without a bar in [0, n). */
-export function openingRange(minutes, n) {
+/**
+ * Opening range of the first n session minutes (known at minute n): null without an IEX bar in [0, n). The official
+ * open (raw, from the daily bar; the opening auction is no IEX print) is part of the range when given.
+ */
+export function openingRange(minutes, n, officialOpen = null) {
   let hi = -Infinity, lo = Infinity, bars = 0;
   for (const m of minutes) { if (m.k >= n) break; hi = Math.max(hi, m.high); lo = Math.min(lo, m.low); bars++; }
-  return bars ? { high: hi, low: lo, bars, minutes: n } : null;
+  if (!bars) return null;
+  if (fin(officialOpen) && officialOpen > 0) { hi = Math.max(hi, officialOpen); lo = Math.min(lo, officialOpen); }
+  return { high: hi, low: lo, bars, minutes: n };
 }
 
 /**

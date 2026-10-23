@@ -23,12 +23,15 @@ export const KK_EP_PS_SCHEMA = 'supertrader-kk-ep-ps-chart-readiness-1.0.0';
 /** Phase 1 (budgeted probes, public ratios only; raw data sealed). */
 export const KK_INTRADAY_PROBES = Object.freeze([
   Object.freeze({ runId: '39931778756', requests: 88, cases: 17, withMinutes: 17, findings: Object.freeze(['IEX 1- and 5-minute bars for all 17 EP / PS days (2020-2024, incl. delisted TWTR), 390 minutes each; SNAP IPO day 281 minutes', '5-minute bars equal aggregated 1-minute bars (prices and volume)', 'IEX volume share of the consolidated daily volume 1.0-4.8 %', 'IEX high / low vs consolidated daily bar mostly <= 0.1 %, at most 1.7 % (GME 2021-01-28 low); first IEX print vs official open <= 0.8 %', 'opening range 5 / 15 / 30, IEX VWAP (inside the daily range) and relative IEX opening volume computable', 'Tiingo "consolidated" beta endpoint: same prices as IEX, no volume field (as R10)']) }),
+  Object.freeze({ runId: '39933893419', requests: 3, cases: 1, withMinutes: 0, findings: Object.freeze(['IEX range request NVDA 2023-04-24..2023-05-24: resampleFreq=1day rejected (400, "Min or Hour only")', '4hour: 23 bars for 23 sessions, all with IEX volume; 1hour: 138 bars, 23 sessions -> the 20-session IEX volume baseline costs one request (4hour, fallback 1hour)']) }),
 ]);
+/** Candidate counts of the daily screens (count-only run, no intraday request; widest screen of all variants). */
+export const KK_CANDIDATE_COUNTS = Object.freeze({ runId: '39935841797', commit: '86bf26d9af', snapshotId: 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', ep: Object.freeze({ total: 14995, inIexHistory: 13769 }), ps: Object.freeze({ total: 76491, inIexHistory: 65216 }), consequence: 'all IEX candidate days would need about 93 000 requests (EP: minutes + baseline, PS: minutes); a run fetches at most 6 000, two thirds for EP, as a deterministic hash-order sample (sha256 of TICKER|date), resumable via the private cache' });
 /** Snapshot runs of run-kk-intraday.mjs (public counts of the workflow log). */
 export const KK_SNAPSHOT_RUNS = Object.freeze([]);
 
-const blockersEp = ['catalyst identity and timestamp (KK-015 / -038 / -039 / -040): DATA_BLOCKED by owner decision (no news database)', 'consolidated intraday volume: only the IEX venue (1-5 %) is available; KK-016 / -037 read on IEX only', 'intraday history before 2017 (IEX starts 2017): candidates 2016 are screened, never simulated', 'minute cache is private and not frozen in the research snapshot: reproducible via its sha256 in the sealed receipt, not certifiable'];
-const blockersPs = ['borrow availability, locates and fees (KK-030): DATA_BLOCKED, every short is hypothetical', 'no short book on the shared engine: trade-level study only, no portfolio return', 'consolidated intraday prices and volume: IEX venue only; VWAP is an IEX VWAP', 'intraday history before 2017'];
+const blockersEp = ['catalyst identity and timestamp (KK-015 / -038 / -039 / -040): DATA_BLOCKED by owner decision (no news database)', 'consolidated intraday volume: only the IEX venue (1-5 %) is available; KK-016 / -037 read on IEX only', 'intraday history before 2017 (IEX starts 2017): candidates 2016 are screened, never simulated', 'minute cache is private and not frozen in the research snapshot: reproducible via its sha256 in the sealed receipt, not certifiable', 'request budget: one run covers a deterministic hash-order sample of the candidate days, not all of them (no mass download)'];
+const blockersPs = ['borrow availability, locates and fees (KK-030): DATA_BLOCKED, every short is hypothetical', 'no short book on the shared engine: trade-level study only, no portfolio return', 'consolidated intraday prices and volume: IEX venue only; VWAP is an IEX VWAP', 'intraday history before 2017', 'request budget: PS gets the third of a run budget left after EP, a deterministic hash-order sample of 65 216 days'];
 
 export function buildKkEpPs() {
   const runs = (key) => KK_SNAPSHOT_RUNS.filter((r) => r.strategies?.includes(key));
@@ -50,7 +53,7 @@ export function buildKkEpPs() {
     engine: 'trade-level short study (no portfolio, no borrow cost)', costs: PS_COSTS, reference: PS_REFERENCE_CONFIG, variants: PS_RUN_VARIANTS.map((v) => ({ id: v.id, changes: v.changes })), variantRegistrySha256: psVariantRegistrySha256(), modelAssumptions: PS_MODEL_ASSUMPTIONS, blockers: blockersPs, runs: runs('PS'),
     liveReadiness: 'LIVE_NOT_APPROVED', certification: 'DIAGNOSTIC_NOT_CERTIFIED',
   };
-  return { schema: KK_EP_PS_SCHEMA, ownerDecision: 'chart-first 2026-10-23: no news / catalyst database, no new data provider, IEX minutes of the existing Tiingo access only', probes: KK_INTRADAY_PROBES, strategies: { C09: ep, C10: ps } };
+  return { schema: KK_EP_PS_SCHEMA, ownerDecision: 'chart-first 2026-10-23: no news / catalyst database, no new data provider, IEX minutes of the existing Tiingo access only', probes: KK_INTRADAY_PROBES, candidateCounts: KK_CANDIDATE_COUNTS, strategies: { C09: ep, C10: ps } };
 }
 
 export function writeKkEpPs(outDir = path.join(SF, 'artifacts')) {

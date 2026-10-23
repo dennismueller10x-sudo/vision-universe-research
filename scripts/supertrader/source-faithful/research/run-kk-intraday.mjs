@@ -26,16 +26,20 @@ import { FOUNDATION } from '../contract.mjs';
 import { eligibleAtPriorSession } from '../common/series.mjs';
 import { runResearchLifecycle, runMetricsSF5, prepareAll, ENGINE_VERSION } from './lifecycle-engine.mjs';
 import { toSession, compactSession, expandSession, tickerOf, KK_INTRADAY_VERSION } from './kk-intraday.mjs';
-import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION } from './kk-ep-lifecycle.mjs';
+import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION, IEX_BASELINE_SESSIONS, IEX_BASELINE_MIN_DAYS } from './kk-ep-lifecycle.mjs';
 import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, psChartCandidate, runPsCandidate, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.0.0';
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.1.0';
 export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'run-kk-intraday.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
-export const DEFAULT_MAX_REQUESTS = 6000; // pre-registered per run; the cache makes later runs resume, never re-fetch
-export const BASELINE_FREQS = Object.freeze(['1day', '4hour', '1hour']); // first one that yields per-day IEX volume is used
-export const CACHE_KEYS = Object.freeze({ minutes: '_validation/intraday-kk-epps-v1.json.gz', baseline: '_validation/iex-adv20-kk-epps-v1.json.gz' });
+export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
+export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
+// Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
+export const BASELINE_FREQS = Object.freeze(['4hour', '1hour']);
+export const CACHE_SHARDS = 16; // shard = first hex digit of sha256(key); each shard is one private gzip JSON object
+export const cacheKey = (kind, shard) => `_validation/kk-epps-v2/${kind}-${shard}.json.gz`;
+export const shardOf = (key) => crypto.createHash('sha256').update(key).digest('hex')[0];
 export function kkResearchCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of KK_RESEARCH_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -71,25 +75,39 @@ export function candidateCounts(list, firstIntraday) {
 /** Deterministic fetch order: sha256 of the cache key (no ranking by anything that could relate to an outcome). */
 export const fetchOrder = (keys) => [...new Set(keys)].sort((a, b) => (sha(a) < sha(b) ? -1 : sha(a) > sha(b) ? 1 : 0));
 
-async function getJson(url, key) {
+/** Every budget ({ used, max }) in `budgets` still has room. */
+export const hasRoom = (budgets, n = 1) => budgets.every((b) => b.max - b.used >= n);
+/** Budgeted GET: every attempt (retries included) consumes one unit of each budget in `budgets`; none past a cap. */
+export async function getJson(url, key, budgets, fetchImpl = fetch, pause = (ms) => new Promise((res) => setTimeout(res, ms))) {
   for (let a = 0; a < 3; a++) {
+    if (!hasRoom(budgets)) return { status: 'BUDGET_EXHAUSTED', body: null };
+    for (const b of budgets) b.used++;
     try {
-      const r = await fetch(url, { headers: { Authorization: 'Token ' + key } });
-      if (r.status === 429 || r.status >= 500) { await new Promise((res) => setTimeout(res, 2000 * (a + 1))); continue; }
+      const r = await fetchImpl(url, { headers: { Authorization: 'Token ' + key } });
+      if (r.status === 429 || r.status >= 500) { await pause(2000 * (a + 1)); continue; }
       const t = await r.text(); let b = null; try { b = JSON.parse(t); } catch { b = null; }
       return { status: r.status, body: b };
-    } catch { await new Promise((res) => setTimeout(res, 2000)); }
+    } catch { await pause(2000); }
   }
   return { status: 0, body: null };
 }
+/** Only a definitive answer is cached (200, or 404 = no IEX data); 0 / 429 / 5xx / budget stay open for a later run. */
+export const definitive = (status) => status === 200 || status === 404;
+
+/** Validated numeric argument: an integer in [min, max], else null. */
+export const intArg = (v, min, max) => { const n = Number(v); return Number.isInteger(n) && n >= min && n <= max ? n : null; };
+
 const etDate = (iso) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
-/** Mean IEX daily volume over the given session dates from one range request (null below 15 dates with volume). */
+/**
+ * Mean IEX daily volume over the given session dates from one range request (MA-EP-VOLUME-PACE: mean over all sessions,
+ * a session without IEX volume counts 0; null below IEX_BASELINE_MIN_DAYS sessions with volume).
+ */
 export function iexBaselineFromRange(rangeBars, sessionDates) {
   const per = new Map();
   for (const b of rangeBars || []) { const d = etDate(b.date); if (Number.isFinite(b.volume)) per.set(d, (per.get(d) || 0) + b.volume); }
   const vols = sessionDates.map((d) => per.get(d) ?? 0), withVol = vols.filter((v) => v > 0).length;
-  return withVol >= 15 ? { mean: vols.reduce((a, b) => a + b, 0) / vols.length, days: vols.length, daysWithVolume: withVol } : { mean: null, days: vols.length, daysWithVolume: withVol };
+  return withVol >= IEX_BASELINE_MIN_DAYS ? { mean: vols.reduce((a, b) => a + b, 0) / vols.length, days: vols.length, daysWithVolume: withVol } : { mean: null, days: vols.length, daysWithVolume: withVol };
 }
 
 async function main() {
@@ -98,7 +116,9 @@ async function main() {
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
-  const LIMIT = Number(arg('--limit', '0')), MAX_REQ = Number(arg('--max-requests', String(DEFAULT_MAX_REQUESTS))), COUNT_ONLY = argv.includes('--count-only');
+  const LIMIT = intArg(arg('--limit', '0'), 0, 1e6), MAX_REQ = intArg(arg('--max-requests', String(DEFAULT_MAX_REQUESTS)), 1, MAX_REQUESTS_CAP), COUNT_ONLY = argv.includes('--count-only');
+  if (LIMIT === null) { console.error('LIMIT_INVALID'); process.exit(2); }
+  if (MAX_REQ === null) { console.error(`MAX_REQUESTS_INVALID (integer 1..${MAX_REQUESTS_CAP})`); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[kk +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
   let pit, datasetSha256, verification;
@@ -137,56 +157,86 @@ async function main() {
   };
   if (COUNT_ONLY) { write({}); return; }
 
-  // B: minute cache (private bucket), budgeted and resumable
+  // B: minute cache (private bucket, sharded), budgeted and resumable
   const { createS3DriverFromEnv } = await import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs'));
   const driver = createS3DriverFromEnv(process.env), KEY = process.env.TIINGO_API_KEY || '';
-  const load = async (k) => { pit.budget.consumeClassB(1, `GET ${k}`); const b = await driver.get(pit.mine.seriesPrefix + k); return b ? JSON.parse(zlib.gunzipSync(b).toString('utf8')) : {}; };
-  const save = async (k, obj) => { if (LIMIT) return; pit.budget.consumeClassA(1, `PUT ${k}`); await driver.put(pit.mine.seriesPrefix + k, zlib.gzipSync(Buffer.from(JSON.stringify(obj))), { contentType: 'application/gzip' }); };
-  const minuteCache = await load(CACHE_KEYS.minutes), baseCache = await load(CACHE_KEYS.baseline);
+  const SHARDS = Array.from({ length: CACHE_SHARDS }, (_, n) => n.toString(16));
+  const getShard = async (kind, h) => { pit.budget.consumeClassB(1, `GET ${kind}-${h}`); const b = await driver.get(pit.mine.seriesPrefix + cacheKey(kind, h)); return b ? JSON.parse(zlib.gunzipSync(b).toString('utf8')) : {}; };
+  const loadAll = async (kind) => { const o = {}; for (const h of SHARDS) Object.assign(o, await getShard(kind, h)); return o; };
+  const added = { minutes: new Map(), baseline: new Map() }; // shard -> keys added by this run
+  const mark = (kind, k) => { const h = shardOf(k); if (!added[kind].has(h)) added[kind].set(h, new Set()); added[kind].get(h).add(k); };
+  // re-read a shard before writing it, so entries another run added meanwhile are kept (definitive entries only)
+  const saveDirty = async (kind, cache) => {
+    if (LIMIT) return;
+    for (const [h, keys] of added[kind]) {
+      const merged = await getShard(kind, h);
+      for (const k of keys) merged[k] = cache[k];
+      pit.budget.consumeClassA(1, `PUT ${kind}-${h}`);
+      await driver.put(pit.mine.seriesPrefix + cacheKey(kind, h), zlib.gzipSync(Buffer.from(JSON.stringify(merged))), { contentType: 'application/gzip' });
+    }
+    added[kind].clear();
+  };
+  const minuteCache = await loadAll('minutes'), baseCache = await loadAll('baseline');
   const startMinutes = Object.keys(minuteCache).length, startBase = Object.keys(baseCache).length;
   const sec = new Map(dataset.securities.map((s) => [s.id, s]));
-  const epKeys = cand.ep.filter((c) => c.date >= EP_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`);
-  const psKeys = cand.ps.filter((c) => c.date >= PS_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`);
-  const minuteTodo = fetchOrder([...epKeys, ...psKeys]).filter((k) => !(k in minuteCache));
-  const baseTodo = fetchOrder(epKeys).filter((k) => !(k in baseCache));
-  let requests = 0, baselineFreq = baseCache.__freq ?? null;
+  const epKeys = [...new Set(cand.ep.filter((c) => c.date >= EP_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`))];
+  const psKeys = [...new Set(cand.ps.filter((c) => c.date >= PS_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`))];
+  const budget = { used: 0, max: MAX_REQ }, epBudget = { used: 0, max: Math.floor(MAX_REQ * EP_BUDGET_SHARE) };
   const epByKey = new Map(cand.ep.map((c) => [`${c.ticker}|${c.date}`, c]));
-  for (const k of minuteTodo) {
-    if (requests >= MAX_REQ) break;
+  const httpStatus = {};
+  const fetchMinutes = async (k, b) => {
     const [t, d] = k.split('|');
-    const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, KEY); requests++;
-    if (r.status === 200 || r.status === 404) minuteCache[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : []));
-    if (requests % 500 === 0) { await save(CACHE_KEYS.minutes, minuteCache); log(`minutes fetched ${requests}`); }
-    await new Promise((res) => setTimeout(res, 120));
-  }
-  for (const k of baseTodo) {
-    if (requests >= MAX_REQ) break;
+    const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, KEY, b);
+    bump(httpStatus, `minutes:${r.status}`);
+    if (definitive(r.status)) { minuteCache[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : [])); mark('minutes', k); }
+    return r.status;
+  };
+  const fetchBaseline = async (k, b) => {
     const c = epByKey.get(k), bars = sec.get(c.id).bars;
-    if (c.i < 20) { baseCache[k] = { mean: null, reason: 'HISTORY' }; continue; }
-    const dates = bars.slice(c.i - 20, c.i).map((b) => b.date), [t] = k.split('|');
-    const freqs = baselineFreq ? [baselineFreq] : BASELINE_FREQS;
-    for (const f of freqs) {
-      if (requests >= MAX_REQ) break;
-      const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${dates[0]}&endDate=${dates.at(-1)}&resampleFreq=${f}&columns=volume`, KEY); requests++;
-      const x = iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates);
-      if (r.status === 200 && x.daysWithVolume > 0) { baselineFreq ??= f; baseCache.__freq = baselineFreq; baseCache[k] = { ...x, freq: f }; break; }
-      if (baselineFreq) { baseCache[k] = { ...x, freq: f, status: r.status }; break; }
+    if (c.i < IEX_BASELINE_SESSIONS) { baseCache[k] = { mean: null, reason: 'HISTORY' }; mark('baseline', k); return 'HISTORY'; }
+    const dates = bars.slice(c.i - IEX_BASELINE_SESSIONS, c.i).map((x) => x.date), [t] = k.split('|');
+    for (const f of BASELINE_FREQS) {
+      const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${dates[0]}&endDate=${dates.at(-1)}&resampleFreq=${f}&columns=volume`, KEY, b);
+      bump(httpStatus, `baseline:${f}:${r.status}`);
+      if (r.status === 400) continue; // frequency rejected: next pre-registered frequency
+      if (definitive(r.status)) { baseCache[k] = { ...iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates), freq: f, status: r.status }; mark('baseline', k); }
+      return r.status;
     }
-    if (requests % 500 === 0) { await save(CACHE_KEYS.baseline, baseCache); log(`baseline requests ${requests}`); }
-    await new Promise((res) => setTimeout(res, 120));
+    return 400;
+  };
+  let lastSave = 0;
+  const checkpoint = async () => { if (budget.used - lastSave >= 500) { lastSave = budget.used; await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache); log(`requests ${budget.used}`); } };
+  // EP first (each day needs its baseline and its minutes), deterministic hash order
+  const epB = [budget, epBudget];
+  for (const k of fetchOrder(epKeys)) {
+    const needBase = !(k in baseCache), needMin = !(k in minuteCache);
+    if (!needBase && !needMin) continue;
+    if (!hasRoom(epB, (needBase ? 1 : 0) + (needMin ? 1 : 0))) break; // never start half a day
+    if (needBase) await fetchBaseline(k, epB);
+    if (needMin) await fetchMinutes(k, epB);
+    await checkpoint(); await new Promise((res) => setTimeout(res, 120));
   }
-  await save(CACHE_KEYS.minutes, minuteCache); await save(CACHE_KEYS.baseline, baseCache);
-  const fetched = (keys, cache) => keys.filter((k) => k in cache).length;
+  // PS with the rest of the run budget
+  for (const k of fetchOrder(psKeys)) {
+    if (!hasRoom([budget])) break;
+    if (k in minuteCache) continue;
+    await fetchMinutes(k, [budget]);
+    await checkpoint(); await new Promise((res) => setTimeout(res, 120));
+  }
+  await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache);
+  const requests = budget.used;
   pub.intradayCoverage = {
-    requestsThisRun: requests, maxRequests: MAX_REQ, baselineFreq,
+    requestsThisRun: requests, epRequests: epBudget.used, maxRequests: MAX_REQ, epBudgetShare: EP_BUDGET_SHARE, baselineFreqs: BASELINE_FREQS, httpStatus,
+    sample: 'DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related)',
     minuteCache: { start: startMinutes, end: Object.keys(minuteCache).length, emptyDays: Object.values(minuteCache).filter((v) => !v.k?.length).length },
-    baselineCache: { start: startBase, end: Object.keys(baseCache).length - (baseCache.__freq ? 1 : 0) },
-    ep: { candidateDaysInIexHistory: new Set(epKeys).size, withMinutes: fetched([...new Set(epKeys)], minuteCache), withBaseline: [...new Set(epKeys)].filter((k) => baseCache[k]?.mean > 0).length },
-    ps: { candidateDaysInIexHistory: new Set(psKeys).size, withMinutes: fetched([...new Set(psKeys)], minuteCache) },
-    complete: minuteTodo.every((k) => k in minuteCache) && baseTodo.every((k) => k in baseCache),
+    baselineCache: { start: startBase, end: Object.keys(baseCache).length },
+    ep: { candidateDaysInIexHistory: epKeys.length, withMinutes: epKeys.filter((k) => k in minuteCache).length, withBaseline: epKeys.filter((k) => baseCache[k]?.mean > 0).length, baselineTooFewIexDays: epKeys.filter((k) => k in baseCache && !(baseCache[k].mean > 0)).length },
+    ps: { candidateDaysInIexHistory: psKeys.length, withMinutes: psKeys.filter((k) => k in minuteCache).length },
+    complete: epKeys.every((k) => k in minuteCache && k in baseCache) && psKeys.every((k) => k in minuteCache),
   };
   receipt.minuteCacheSha256 = sha(fetchOrder([...epKeys, ...psKeys]).filter((k) => k in minuteCache).map((k) => [k, minuteCache[k]]));
-  log(`coverage: EP minutes ${pub.intradayCoverage.ep.withMinutes}/${pub.intradayCoverage.ep.candidateDaysInIexHistory}, baselines ${pub.intradayCoverage.ep.withBaseline}; PS minutes ${pub.intradayCoverage.ps.withMinutes}/${pub.intradayCoverage.ps.candidateDaysInIexHistory}; requests ${requests}`);
+  receipt.baselineCacheSha256 = sha(fetchOrder(epKeys).filter((k) => k in baseCache).map((k) => [k, baseCache[k]]));
+  log(`coverage: EP minutes ${pub.intradayCoverage.ep.withMinutes}/${epKeys.length}, baselines ${pub.intradayCoverage.ep.withBaseline}; PS minutes ${pub.intradayCoverage.ps.withMinutes}/${psKeys.length}; requests ${requests}`);
 
   // EP: engine variants
   dataset.kkIntraday = {
@@ -202,7 +252,7 @@ async function main() {
     const r = runResearchLifecycle(dataset, { adapter: KK_EP_ADAPTER, config: v.config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
     if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${v.id}`);
     const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
-    pub.ep.variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, ordersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
+    pub.ep.variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
     sealed.ep[v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), trades: r.trades.map((t) => ({ id: t.id, entryDate: t.entryDate, entryFill: t.entryFill, initialStop: t.initialStop, exitDate: t.exitDate, exitReason: t.exitReason, realizedPnl: t.realizedPnl, intraday: t.intradayEvidence })) };
     log(`EP ${v.id}: trades ${r.trades.length}`);
   }

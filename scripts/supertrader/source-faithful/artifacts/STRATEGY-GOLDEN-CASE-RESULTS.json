@@ -35,7 +35,7 @@
   "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 301,
+  "testsRun": 305,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1732,7 +1732,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 134,
+ "otherTests": 138,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -3237,6 +3237,26 @@
   {
    "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
    "name": "SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer Short nie vergebbar; Vertragsstatus unveraendert; nichts live",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-PIT-IDENTITY: die Identitaetspruefung kennt nur die Eroeffnung; spaetere Minuten waehlen keinen Tag ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-OR-OFFICIAL-OPEN: die offizielle Eroeffnung gehoert zur Opening Range (Auktion ist kein IEX-Print)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-VOLUME-BY-20: nach Minute 20 zaehlt das IEX-Volumen der Minuten 0-19, auch wenn Minuten fehlen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie ueber die Grenze; nur 200/404 werden gespeichert",
    "result": "PASS"
   }
  ]
