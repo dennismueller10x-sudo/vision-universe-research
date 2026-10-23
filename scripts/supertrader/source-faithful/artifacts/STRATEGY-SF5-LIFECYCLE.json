@@ -4,7 +4,7 @@
  "engineVersion": "sf5-lifecycle-engine-1.0.0",
  "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
  "accounting": "RESEARCH_V1",
- "variantRegistrySha256": "947eedb5eb112fd0e2eb5f71e19dc77e86fba579f800d50b09c1466f536c0578",
+ "variantRegistrySha256": "f7b0d0812bf18a8af3dc47d96106632d62a5b3a761a24a22eabe81068fc15c03",
  "principles": [
   "a mechanically confirmed setup is not an executable trade",
   "a model assumption is not a source rule",
@@ -888,7 +888,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -1879,7 +1879,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -2746,7 +2746,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -3693,7 +3693,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -3952,6 +3952,12 @@
        "weight": 0.1
       }
      }
+    },
+    {
+     "id": "ALT-SIC3-GROUP-PROXY",
+     "changes": {
+      "groupProxy": "SIC3-EW-MIN5-400D-WIDE"
+     }
     }
    ],
    "modelAssumptions": [
@@ -4072,6 +4078,19 @@
      "reference": "VU_TOURNAMENT_UNIVERSE_705 at the session before the fill",
      "alternatives": [],
      "why": "measurement convention shared by every method"
+    },
+    {
+     "id": "MA-WEIN-GROUP-PROXY",
+     "phase": "ENTRY_ELIGIBILITY",
+     "strategies": [
+      "INVESTOR",
+      "TRADER"
+     ],
+     "reference": "no group filter (MA-WEIN-DATA-EXCEPTION)",
+     "alternatives": [
+      "SIC3_PROXY_NOT_BELOW_FALLING: skip a buy stop whose SIC3-EW-MIN5-400D-WIDE proxy group closed the completed week before the order week below a falling MA30w; unknown membership or history never blocks"
+     ],
+     "why": "owner decision 2026-10-21: the SIC3 proxy is a clearly labelled research reference, not SOURCE_EXACT and not a trading gate; WEIN-SF-GROUP stays DATA_BLOCKED and the group stage stays the reviewer's (WEIN-RG-GROUP)"
     },
     {
      "id": "MA-WEIN-COSTS",
@@ -4233,7 +4252,7 @@
       "WEIN-SF-GROUP"
      ],
      "implemented": null,
-     "missing": "not applied in the run (MA-WEIN-DATA-EXCEPTION)",
+     "missing": "not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule",
      "data": [
       "PIT industry group stage (missing; SIC proxy never unblocks)"
      ],
@@ -4811,7 +4830,7 @@
        "data": [
         "PIT industry group stage (missing; SIC proxy never unblocks)"
        ],
-       "missing": "not applied in the run (MA-WEIN-DATA-EXCEPTION)"
+       "missing": "not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule"
       },
       {
        "row": "WI-EL-MARKET",
@@ -4836,7 +4855,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -5083,6 +5102,12 @@
      "changes": {
       "riskGuide": 0.15
      }
+    },
+    {
+     "id": "ALT-SIC3-GROUP-PROXY",
+     "changes": {
+      "groupProxy": "SIC3-EW-MIN5-400D-WIDE"
+     }
     }
    ],
    "modelAssumptions": [
@@ -5203,6 +5228,19 @@
      "reference": "VU_TOURNAMENT_UNIVERSE_705 at the session before the fill",
      "alternatives": [],
      "why": "measurement convention shared by every method"
+    },
+    {
+     "id": "MA-WEIN-GROUP-PROXY",
+     "phase": "ENTRY_ELIGIBILITY",
+     "strategies": [
+      "INVESTOR",
+      "TRADER"
+     ],
+     "reference": "no group filter (MA-WEIN-DATA-EXCEPTION)",
+     "alternatives": [
+      "SIC3_PROXY_NOT_BELOW_FALLING: skip a buy stop whose SIC3-EW-MIN5-400D-WIDE proxy group closed the completed week before the order week below a falling MA30w; unknown membership or history never blocks"
+     ],
+     "why": "owner decision 2026-10-21: the SIC3 proxy is a clearly labelled research reference, not SOURCE_EXACT and not a trading gate; WEIN-SF-GROUP stays DATA_BLOCKED and the group stage stays the reviewer's (WEIN-RG-GROUP)"
     },
     {
      "id": "MA-WEIN-COSTS",
@@ -5362,7 +5400,7 @@
       "WEIN-SF-GROUP"
      ],
      "implemented": null,
-     "missing": "not applied in the run (MA-WEIN-DATA-EXCEPTION)",
+     "missing": "not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule",
      "data": [
       "PIT industry group stage (missing; SIC proxy never unblocks)"
      ],
@@ -5932,7 +5970,7 @@
        "data": [
         "PIT industry group stage (missing; SIC proxy never unblocks)"
        ],
-       "missing": "not applied in the run (MA-WEIN-DATA-EXCEPTION)"
+       "missing": "not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule"
       },
       {
        "row": "WT-EL-MARKET",
@@ -5957,7 +5995,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -6825,7 +6863,7 @@
       {
        "runId": "39770019164",
        "commit": "6a484c59cba7c89a218bf80f23e0690238303eed",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_SF5_GROUP_PROXY_VARIANT",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",

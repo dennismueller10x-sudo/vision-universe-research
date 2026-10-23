@@ -9,11 +9,15 @@
  *    positions at the data end, reconciliation, determinism (reference run twice), hashes;
  *  - sealed (owner key): diagnostic metrics per variant (lifecycle-engine#runMetricsSF5) and the reference trades.
  * Engines, screens and the Minervini lifecycle are not changed (AG-3 code fingerprint; run-sf4-lifecycle.mjs).
+ * A variant naming a Weinstein group proxy (ALT-SIC3-GROUP-PROXY) gets the PIT SIC3 group index of
+ * research/industry-strength.mjs, built exactly as the Supertrader 3.0 runner builds it (sec-pit r12 listings of the
+ * snapshot, SIC history of the repository at the run commit); its public block reports the group coverage of the setups.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf5-lifecycle.mjs --snapshot sts1-<id> --accounting research-v1 \
  *        --out <dir> [--strategies DARVAS,KK_BREAKOUT,...] [--limit 400 --smoke-snapshot]
  */
 import fs from 'node:fs';
+import zlib from 'node:zlib';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -22,13 +26,16 @@ import { datasetFromPit } from '../runner/snapshot-input.mjs';
 import { codeSha256 as engineCodeSha256 } from '../runner/run-research.mjs';
 import { FOUNDATION } from '../contract.mjs';
 import { runResearchLifecycle, runMetricsSF5, prepareAll, ENGINE_VERSION } from './lifecycle-engine.mjs';
+import { GROUP_VARIANTS, buildGroupStrength } from './industry-strength.mjs';
+import { makeWeinsteinGroupMembership, cikCandidatesFromSegments } from '../adapters/industry-groups.mjs';
 import { SF5_LIFECYCLES, SF5_KEYS, sf5VariantRegistrySha256 } from './sf5-lifecycles.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
 export const SF5_RUNNER_VERSION = 'sf5-lifecycle-runner-1.0.0';
 // every file the lifecycle results depend on, including the unchanged screens and the reused fill order (fillRank)
-export const SF5_RESEARCH_FILES = Object.freeze(['../methods/darvas.mjs', '../methods/kullamagi.mjs', '../methods/morales-kacher.mjs', '../methods/holy-grail.mjs', '../methods/weinstein.mjs', '../common/series.mjs', '../runner/metrics.mjs', 'minervini-execution.mjs', 'lifecycle-engine.mjs', 'darvas-lifecycle.mjs', 'kk-breakout-lifecycle.mjs', 'moka-lifecycle.mjs', 'holy-grail-lifecycle.mjs', 'weinstein-lifecycle.mjs', 'sf5-lifecycles.mjs', 'run-sf5-lifecycle.mjs']);
+export const SF5_RESEARCH_FILES = Object.freeze(['../methods/darvas.mjs', '../methods/kullamagi.mjs', '../methods/morales-kacher.mjs', '../methods/holy-grail.mjs', '../methods/weinstein.mjs', '../common/series.mjs', '../runner/metrics.mjs', 'minervini-execution.mjs', 'lifecycle-engine.mjs', 'darvas-lifecycle.mjs', 'kk-breakout-lifecycle.mjs', 'moka-lifecycle.mjs', 'holy-grail-lifecycle.mjs', 'weinstein-lifecycle.mjs', 'sf5-lifecycles.mjs', 'run-sf5-lifecycle.mjs', 'industry-strength.mjs', '../adapters/industry-groups.mjs', '../../../core/load-sic-history.mjs', '../../../../core/industry-classification.js']);
+const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // as run-sf3-research.mjs
 export function sf5ResearchCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of SF5_RESEARCH_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -62,7 +69,7 @@ export function lifecyclePart(dataset, { keys = SF5_KEYS, from = L.WINDOW.from, 
       const prepared = prep(v.config);
       const r = runResearchLifecycle(dataset, { adapter: lc.adapter, config: v.config, prepared, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${lc.key}:${v.id}`);
-      ps.variants[v.id] = { changes: v.changes, securitiesWithSignals: prepared.size, ...publicOf(r) };
+      ps.variants[v.id] = { changes: v.changes, securitiesWithSignals: prepared.size, ...publicOf(r), ...(v.config.groupProxy ? { groupProxyCoverage: groupProxyCoverage(prepared) } : {}) };
       ss.variants[v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }) };
       if (v.id === 'REF') {
         const again = runResearchLifecycle(dataset, { adapter: lc.adapter, config: v.config, prepared: prep(v.config), from, to });
@@ -75,6 +82,35 @@ export function lifecyclePart(dataset, { keys = SF5_KEYS, from = L.WINDOW.from, 
   return { pub, sealed };
 }
 
+/** Group proxies named by the selected variants (empty when none is). */
+export function requiredGroupProxies(keys = SF5_KEYS) {
+  return [...new Set(SF5_LIFECYCLES.filter((l) => keys.includes(l.key)).flatMap((l) => l.variants.map((v) => v.config.groupProxy).filter(Boolean)))];
+}
+
+/** Status / label tally of the group evidence attached to the prepared weekly setups (public counts only). */
+export function groupProxyCoverage(prepared) {
+  const setups = { total: 0, byStatus: {}, byLabel: {} };
+  for (const ctx of prepared.values()) for (const s of ctx.setupFor.values()) {
+    setups.total++; const e = s.groupProxy ?? { status: 'NOT_ATTACHED' };
+    setups.byStatus[e.status] = (setups.byStatus[e.status] || 0) + 1;
+    if (e.label) setups.byLabel[e.label] = (setups.byLabel[e.label] || 0) + 1;
+  }
+  return setups;
+}
+
+/** PIT SIC group indices for the named proxies (same construction as run-sf3-research.mjs#main). */
+export function buildGroupProxies(dataset, { ids, classification, cikCandidates }) {
+  const out = {};
+  for (const id of ids) {
+    const v = GROUP_VARIANTS.find((x) => x.id === id);
+    if (!v || v.weighting !== 'EQUAL') throw new Error(`GROUP_PROXY_UNAVAILABLE:${id}`);
+    const membership = makeWeinsteinGroupMembership({ classification, cikCandidates, decision: { ref: v.ref, level: v.level, maxAgeDays: v.maxAgeDays, acceptedIdentityEvidence: v.acceptedIdentityEvidence } });
+    out[id] = buildGroupStrength(dataset, membership, { minMembers: v.minMembers });
+    if (out[id].status !== 'BUILT') throw new Error(`GROUP_PROXY_NOT_BUILT:${id}`);
+  }
+  return out;
+}
+
 async function main() {
   const argv = process.argv.slice(2), arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   if (arg('--accounting') !== 'research-v1') { console.error('RESEARCH_ACCOUNTING_REQUIRED'); process.exit(2); }
@@ -85,7 +121,8 @@ async function main() {
   if (!keys.every((s) => SF5_KEYS.includes(s))) { console.error('UNKNOWN_STRATEGY'); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[sf5 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
-  let pit, datasetSha256, verification;
+  let pit, datasetSha256, verification, secPit = null;
+  const proxyIds = requiredGroupProxies(keys);
   try {
     const { LIVE_IO, loadPitData } = await import('../../validation/analyze-methods.mjs');
     const { createSnapshotStore } = await import('../../snapshot/store.mjs');
@@ -96,7 +133,13 @@ async function main() {
     if (v.codeVersionChanged && !argv.includes('--allow-code-version-change')) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, 'CODE_VERSION_CHANGED');
     datasetSha256 = K.sha256(K.canonicalJson(v.dataset));
     verification = { datasetVerified: v.datasetVerified, codeVersionChanged: v.codeVersionChanged, bytesVerified: opened.verified.bytes, smokeStore: argv.includes('--smoke-snapshot') };
-    log(`snapshot ${snapshotId}: dataset ${v.datasetVerified}`);
+    if (proxyIds.length) {
+      const driver = await opened.io.createDriver();
+      const buf = await driver.get(pit.mine.seriesPrefix + SEC_PIT_KEY);
+      if (!buf) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, 'SEC_PIT_MISSING_FOR_GROUP_PROXY');
+      secPit = JSON.parse(zlib.gunzipSync(buf).toString('utf8'));
+    }
+    log(`snapshot ${snapshotId}: dataset ${v.datasetVerified}${secPit ? `; sec-pit r12 listings ${Object.keys(secPit).length}` : ''}`);
   } catch (e) {
     console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}${e.detail ? ' ' + e.detail : ''}` : `INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR ${e?.code ?? ''}`);
     process.exit(3);
@@ -104,7 +147,16 @@ async function main() {
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
   const dataset = datasetFromPit(pit);
   log(`dataset: ${dataset.securities.length} securities, ${dataset.calendar.length} sessions`);
-  const receipt = { schema: 'supertrader-sf5-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: sf5ResearchCodeSha256(), runner: SF5_RUNNER_VERSION, variantRegistrySha256: sf5VariantRegistrySha256(), limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  let groupProxyReceipt = null;
+  if (proxyIds.length) {
+    const { loadSicHistory, DEFAULT_DIR } = await import('../../../core/load-sic-history.mjs');
+    const cikCandidates = cikCandidatesFromSegments(pit.segs, Object.fromEntries(Object.entries(secPit).map(([k, v]) => [k, { cik: v.cik, how: v.how }])));
+    const ciks = new Set([...cikCandidates.values()].flat().map((c) => c.cik));
+    dataset.groupProxies = buildGroupProxies(dataset, { ids: proxyIds, classification: loadSicHistory({ ciks }), cikCandidates });
+    groupProxyReceipt = { ids: proxyIds, sicHistoryIndexSha256: sha(fs.readFileSync(path.join(DEFAULT_DIR, 'index.json'), 'utf8')), ciks: ciks.size, coverage: Object.fromEntries(proxyIds.map((id) => [id, dataset.groupProxies[id].coverage])), sourceStatus: 'VU_PROXY_OF_WEINSTEIN_GROUP_CHART' };
+    log(`group proxies ${proxyIds.join(',')}: ${ciks.size} ciks`);
+  }
+  const receipt = { schema: 'supertrader-sf5-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: sf5ResearchCodeSha256(), runner: SF5_RUNNER_VERSION, variantRegistrySha256: sf5VariantRegistrySha256(), groupProxy: groupProxyReceipt, limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = lifecyclePart(dataset, { keys, log });
   const pub = { schema: 'supertrader-sf5-lifecycle-public-1.0.0', receipt, lifecycle: r.pub };
   const sealed = { receipt, public: pub, lifecycle: r.sealed };

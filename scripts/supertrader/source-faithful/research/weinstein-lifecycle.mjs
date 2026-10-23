@@ -22,14 +22,29 @@
  * resistance, the pullback half of the Investor position, Stage 3 sales.
  * Point in time: a week is complete at its last session (the next calendar session belongs to another ISO week); every
  * weekly decision is taken at that close and is effective from the next session.
+ *
+ * SIC3 group proxy (research variant ALT-SIC3-GROUP-PROXY, owner decision 2026-10-21 in
+ * docs/SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md section 7): the pre-registered research reference
+ * SIC3-EW-MIN5-400D-WIDE of research/industry-strength.mjs may be used as a clearly labelled research reference, never as
+ * SOURCE_EXACT and never as a trading gate. The variant skips a buy stop whose SIC3 proxy group chart closed the completed
+ * week before the order week BELOW a FALLING 30-week MA (the label that resembles Stage 4, maRelation). The label uses the
+ * same 30-week MA reading as the stock's own MA gate (WEIN-MA); no new threshold. Unknown membership, too few members or
+ * too short a history never block (UNKNOWN is neither negative nor healthy). WEIN-SF-GROUP stays DATA_BLOCKED, the
+ * reference does not apply the proxy, every run keeps the data-exception label, and the group stage stays the
+ * reviewer's call (WEIN-RG-GROUP).
  */
 import crypto from 'node:crypto';
 import { fin, rawTickAdjusted } from '../common/series.mjs';
 import { weeklyBars, ma30w, maGate, baseStart, lastSwingHigh, volumeAlternatives, WEINSTEIN_VERSION } from '../methods/weinstein.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
+import { GROUP_VARIANTS, GROUP_STATE, groupEvidence } from './industry-strength.mjs';
 
 export const WEIN_LIFECYCLE_VERSION = 'sf5-weinstein-lifecycle-1.0.0';
 export const WEIN_DATA_EXCEPTION = Object.freeze(['WEIN-SF-GROUP (industry group stage, DATA_BLOCKED)', 'WEIN-SF-MARKET (market breadth, DATA_BLOCKED)']);
+/** The only group proxy a variant may name: the owner-approved research reference (2026-10-21). */
+export const WEIN_GROUP_PROXY_ID = 'SIC3-EW-MIN5-400D-WIDE';
+export const WEIN_GROUP_PROXY = GROUP_VARIANTS.find((v) => v.id === WEIN_GROUP_PROXY_ID);
+export const WEIN_GROUP_PROXY_NEGATIVE_LABEL = 'BELOW_FALLING_MA30W';
 
 export const WEIN_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-WEIN-MANUAL-SUBSTITUTE', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'ACCEPT_AS_MODEL_ASSUMPTION (simulation only): every MA-gated breakout of the screen is taken', alternatives: [], why: 'stage, volume judgment, RS and overhead resistance are the reviewer\'s (WEIN-MR-*); a run with them substituted is a model study' },
@@ -42,6 +57,7 @@ export const WEIN_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-WEIN-TRAIL', phase: 'POSITION_MANAGEMENT', strategies: ['INVESTOR', 'TRADER'], reference: 'weekly: a correction of the weekly lows from the highest weekly high since entry by >= 8 % (Investor, lower printed end of 8-10 %) / >= 7 % (Trader), followed by a weekly high at or above that high, raises the stop one raw cent under the correction low (Investor: under the lower of the correction low and MA30w)', alternatives: ['INVESTOR_10PCT: 10 % (upper printed end)'], why: 'WEIN-TRAIL1/2 and WEIN-TR-TRAIL are CONTEXTUAL; "return near the prior high" has no number, so the stricter reading (at or above) is used' },
   { id: 'MA-WEIN-SIZING', phase: 'POSITION_SIZING', strategies: ['INVESTOR', 'TRADER'], reference: 'equal dollar amounts (WEIN-DIVERS2): planned position 10 % of equity; Investor buys half (5 %) at the breakout and does not add (the pullback half is manual); Trader buys the full 10 % (WEIN-TR-CONT-SIZE)', alternatives: ['INVESTOR_FULL_AT_BREAKOUT (10 %)'], why: 'the amount is the reviewer\'s; the halves follow WEIN-BUY2 / WEIN-TR-CONT-SIZE' },
   { id: 'MA-WEIN-RESEARCH-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the fill', alternatives: [], why: 'measurement convention shared by every method' },
+  { id: 'MA-WEIN-GROUP-PROXY', phase: 'ENTRY_ELIGIBILITY', strategies: ['INVESTOR', 'TRADER'], reference: 'no group filter (MA-WEIN-DATA-EXCEPTION)', alternatives: ['SIC3_PROXY_NOT_BELOW_FALLING: skip a buy stop whose SIC3-EW-MIN5-400D-WIDE proxy group closed the completed week before the order week below a falling MA30w; unknown membership or history never blocks'], why: 'owner decision 2026-10-21: the SIC3 proxy is a clearly labelled research reference, not SOURCE_EXACT and not a trading gate; WEIN-SF-GROUP stays DATA_BLOCKED and the group stage stays the reviewer\'s (WEIN-RG-GROUP)' },
   { id: 'MA-WEIN-COSTS', phase: 'ENTRY_EXECUTION', strategies: ['INVESTOR', 'TRADER'], reference: '10 bps slippage per side, 1 bp commission (platform policy)', alternatives: [], why: 'no costs in the source (stop-limit spacing WEIN-LIM is an execution example)' },
 ]);
 
@@ -55,11 +71,13 @@ export const WEIN_INVESTOR_RUN_VARIANTS = variants(WEIN_INVESTOR_REFERENCE_CONFI
   { id: 'ALT-TRAIL-10PCT', changes: { trailThreshold: 0.10 } },
   { id: 'ALT-RISK-GUIDE-15', changes: { riskGuide: 0.15 } },
   { id: 'ALT-FULL-AT-BREAKOUT', changes: { sizing: { mode: 'WEIGHT', weight: 0.10 } } },
+  { id: 'ALT-SIC3-GROUP-PROXY', changes: { groupProxy: WEIN_GROUP_PROXY_ID } },
 ]);
 export const WEIN_TRADER_RUN_VARIANTS = variants(WEIN_TRADER_REFERENCE_CONFIG, [
   { id: 'REF', changes: {} },
   { id: 'ALT-NO-VOL5-EXIT', changes: { vol5: false } },
   { id: 'ALT-RISK-GUIDE-15', changes: { riskGuide: 0.15 } },
+  { id: 'ALT-SIC3-GROUP-PROXY', changes: { groupProxy: WEIN_GROUP_PROXY_ID } },
 ]);
 
 export const WEIN_OPEN_MANUAL_DECISIONS = Object.freeze({ INVESTOR: Object.freeze(['WEIN-MR-STAGE', 'WEIN-MR-VOLUME', 'WEIN-MR-RS', 'WEIN-MR-OVERHEAD', 'WEIN-MR-GROUP', 'WEIN-MR-STOP']), TRADER: Object.freeze(['WEIN-MR-STAGE', 'WEIN-MR-VOLUME', 'WEIN-MR-GROUP', 'WEIN-MR-STOP']) });
@@ -72,6 +90,7 @@ function validate(cfg, kind) {
   if (!(cfg.riskGuide === null || cfg.riskGuide === 0.15)) errs.push('RISK_GUIDE');
   if (!(kind === 'TRADER' ? [0.07] : [0.08, 0.10]).includes(cfg.trailThreshold)) errs.push('TRAIL_THRESHOLD_NOT_PRINTED');
   if (!(cfg.sizing?.mode === 'WEIGHT' && cfg.sizing.weight > 0 && cfg.sizing.weight <= 0.25)) errs.push('SIZING');
+  if (!(cfg.groupProxy === undefined || cfg.groupProxy === null || cfg.groupProxy === WEIN_GROUP_PROXY_ID)) errs.push('GROUP_PROXY_NOT_APPROVED');
   return errs;
 }
 
@@ -105,23 +124,58 @@ export function weinsteinWeeklySetups(bars, kind) {
   return { weeks, ma, setupFor, weekOf };
 }
 
+/** id -> group of every roster of a week, built once per week from the group index (built.groupOfAt is a linear scan). */
+const ROSTER_INDEX = new WeakMap();
+function groupOfAtWeek(built, id, weekKey) {
+  let byWeek = ROSTER_INDEX.get(built); if (!byWeek) ROSTER_INDEX.set(built, (byWeek = new Map()));
+  let idx = byWeek.get(weekKey);
+  if (idx === undefined) {
+    const r = built.rosterByWeek.get(weekKey);
+    idx = r ? new Map() : null;
+    if (r) for (const g of r.groups.keys()) for (const m of built.rosterIds(g, weekKey) ?? []) idx.set(m, g);
+    byWeek.set(weekKey, idx);
+  }
+  return idx ? idx.get(id) ?? null : null;
+}
+
+/**
+ * Group-proxy evidence of a setup for order week weekKey: roster of that week (membership known at the session before
+ * it) and the group chart of the completed calendar week before it (groupEvidence), both known at the decision close.
+ */
+export function groupProxyEvidence(built, securityId, weekKey) {
+  const g = groupOfAtWeek(built, securityId, weekKey);
+  if (!g) return { status: GROUP_STATE.UNKNOWN_MEMBERSHIP, label: null, group: null, week: null };
+  const e = groupEvidence(built, g, weekKey);
+  return { status: e.status, label: e.maRelation?.label ?? null, group: g, week: e.week ?? null, members: e.members ?? null };
+}
+
 function makeAdapter(kind, version) {
   const validateConfig = (cfg) => validate(cfg, kind);
   return Object.freeze({
     strategy: `WEINSTEIN_${kind}`, version, methodVersion: WEINSTEIN_VERSION, label: 'MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION_NOT_A_STRATEGY_BACKTEST',
     dataException: WEIN_DATA_EXCEPTION,
     validateConfig,
-    prepareKey: () => kind,
-    prepare(security) { const r = weinsteinWeeklySetups(security.bars, kind); return r.setupFor.size ? { ...r, bars: security.bars } : null; },
+    prepareKey: (cfg) => (cfg?.groupProxy ? `${kind}|${cfg.groupProxy}` : kind),
+    prepare(security, cfg, dataset) {
+      const r = weinsteinWeeklySetups(security.bars, kind); if (!r.setupFor.size) return null;
+      if (cfg?.groupProxy) {
+        // fail closed: a proxy variant never runs without the group index the runner built for it
+        const built = dataset?.groupProxies?.[cfg.groupProxy];
+        if (!built || built.status !== 'BUILT') throw new Error(`GROUP_PROXY_NOT_BUILT:${cfg.groupProxy}`);
+        for (const [w, s] of r.setupFor) r.setupFor.set(w, { ...s, groupProxy: groupProxyEvidence(built, security.id, s.weekKey) });
+      }
+      return { ...r, bars: security.bars };
+    },
     // at the close of bar i: the last bar of week W arms the order for week W + 1; any other bar re-arms week W's order
     signalAt(ctx, i) {
       const W = ctx.weekOf[i], wk = ctx.weeks[W], target = i === wk.lastIndex ? (wk.complete ? W + 1 : null) : W;
       const s = target === null ? null : ctx.setupFor.get(target);
-      return s ? { ...s, i, date: ctx.bars[i].date, evidence: { level: s.level, stopProposal: s.stopProposal, ma30w: s.ma30w, weekKey: s.weekKey } } : null;
+      return s ? { ...s, i, date: ctx.bars[i].date, evidence: { level: s.level, stopProposal: s.stopProposal, ma30w: s.ma30w, weekKey: s.weekKey, ...(s.groupProxy ? { groupProxy: s.groupProxy } : {}) } } : null;
     },
     eligibility({ setup, bars, i, cfg }) {
       const stop = setup.stopProposal - rawTickAdjusted(bars[i]), blockers = [];
       if (!(stop > 0 && stop < setup.trigger)) blockers.push({ code: 'NO_STOP_BELOW_TRIGGER', rule: 'WEIN-SF-STOP-PLAN (WEIN-STOP1)', class: 'SOURCE_DERIVED' });
+      if (cfg.groupProxy && setup.groupProxy?.label === WEIN_GROUP_PROXY_NEGATIVE_LABEL) blockers.push({ code: 'GROUP_PROXY_BELOW_FALLING_MA30W', rule: `WEIN-SF-GROUP via ${cfg.groupProxy} (VU proxy, research variant, not a source rule)`, class: 'RESEARCH_VARIANT_PROXY' });
       return eligibilityResult({ strategy: `WEINSTEIN_${kind}`, bars, i, blockers, openManualDecisions: WEIN_OPEN_MANUAL_DECISIONS[kind], order: { type: 'BUY_STOP', level: setup.trigger, stop, maxPlannedLoss: cfg.riskGuide ?? undefined, rule: 'WEIN-SF-ORDER / WEIN-SF-STOP-PLAN' }, extra: { dataException: WEIN_DATA_EXCEPTION } });
     },
     onClose(pos, ctx, i, api, cfg) {
