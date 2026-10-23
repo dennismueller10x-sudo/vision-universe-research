@@ -11,7 +11,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert –; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 4 Zeilen; in der Simulation ersetzt: DAR-SETUP-SELECTION, DAR-SIZE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -69,7 +69,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 2, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert KK-EX-ORH; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 6 Zeilen; in der Simulation ersetzt: KK-SIZE-RISK, KK-MGMT-PARTIAL, KK-EXIT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -126,7 +126,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 6, MANUAL_REVIEW 5, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert PP-EX-INTRADAY; quellenblockiert PP-STOP
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 5 Zeilen; in der Simulation ersetzt: PP-SETUP-CONTEXT, PP-SIZE, PP-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -175,7 +175,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 7, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert BGU-EX-INTRADAY; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 7 Zeilen; in der Simulation ersetzt: BGU-SETUP-CONTEXT, BGU-STOP-GAPLOW, BGU-SIZE, BGU-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -228,7 +228,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WI-EL-GROUP, WI-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WI-SETUP-STAGE, WI-EXIT-VOL5, WI-STOP-LEVEL, WI-SIZE, WI-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -290,7 +290,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WT-EL-GROUP, WT-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WT-SETUP-STAGE, WT-EXIT-VOL5, WT-STOP-LEVEL, WT-SIZE, WT-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -350,7 +350,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.2.1; Quellenstatus RESEARCH_VARIANT_SECONDARY_SOURCE
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert HG-EX-INTRADAY; quellenblockiert HG-MGMT-TRAIL
-- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39939890956, 39937731507, 39903861586, 39770019164
 - Manuell: 3 Zeilen; in der Simulation ersetzt: HG-SETUP-IMPULSE-FIRST, HG-EXIT-NEW-HIGH
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
