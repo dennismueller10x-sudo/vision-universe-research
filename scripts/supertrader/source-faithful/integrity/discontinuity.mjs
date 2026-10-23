@@ -8,26 +8,34 @@
  * therefore does NOT repair anything and does NOT claim a defect. It flags a SUPERSET of suspicious sessions and cuts
  * the research segment there, so that no signal, indicator, stop or holding period of any lifecycle spans the session.
  *
- * Rule (pre-registered before any Supertrader 6.0 result; thresholds from earlier pre-registered protocols, not chosen
- * on strategy results):
+ * Rule (fixed before any Supertrader 6.0 result; thresholds adopted from earlier data protocols, never from a strategy
+ * result):
  *  - session ratio r_i = (close_i + dividend_i) * splitFactor_i / close_(i-1) on the RAW snapshot bars of one segment
  *    (exactly the total-return relative of validation/lib.mjs#adjustSeries, so a consistent declared split gives r ~ 1);
  *  - flag session i when r_i >= k or r_i <= 1/k;
- *    k = 5: DQ-K5, the conventional-ratio bound of core 1.2.0 (#722, pre-registered there);
- *    k = 3: DQ-K3, the candidate bound of protocol v3 (#758), a sensitivity band;
+ *    k = 5: DQ-K5, the ratio bound of core 1.2.0 (#722). There it was set POST HOC after the 1.1.0 data audit (k = 2/3
+ *           held mostly genuine moves; no strategy result involved) and combined with ratio and volume conditions that
+ *           DQ-K5 does NOT use: DQ-K5 is the bare ratio bound, a wider superset;
+ *    k = 3: DQ-K3, the candidate bound of protocol v3 (#758, a selection bound only), a sensitivity band;
+ *  - undeclared 2:1 / 3:1 splits stay below DQ-K5 (only DQ-K3 sees 3:1; 2:1 is seen by neither): the containment is
+ *    partial by construction and is reported so;
  *  - this catches undeclared splits in both directions, a declared factor on the wrong day or with the wrong ratio,
  *    unit errors and spikes (a spike gives two flags), and also some genuine moves (a +400 % day): a SUPERSET.
  * Causality: the flag of session i uses bars i-1 and i only. The cut makes the bars before i one segment (ending like a
  * data gap: research-v1 DATA event, the same treatment as a gap > MAX_GAP_DAYS) and the bars from i on a new segment
  * with its own warm-up. No decision before i can see bar i; after i no indicator reaches back across the jump.
+ * Effect on the accounting (declared): a held position at a cut ends like a data gap, i.e. it is settled from the last
+ * close BEFORE the flagged session (research-v1 stale / data-event treatment). A GENUINE crash <= 1/k or spike >= k on
+ * that session is therefore removed from the result too; DQ results are a containment sensitivity, biased in both
+ * directions, never a corrected result.
  * Descriptive census fields marked EX_POST (e.g. reversion on the next session) are reported only and never used.
  */
 import { fin } from '../common/series.mjs';
 
 export const DQ_VERSION = 'sf6-discontinuity-quarantine-1.0.0';
 export const DQ_POLICIES = Object.freeze({
-  'DQ-K5': Object.freeze({ id: 'DQ-K5', k: 5, role: 'PRIMARY_CONTAINMENT', origin: '#722 core 1.2.0: conventional split ratio k >= 5 (pre-registered there before any lifecycle result)' }),
-  'DQ-K3': Object.freeze({ id: 'DQ-K3', k: 3, role: 'SENSITIVITY_BAND', origin: '#758 protocol v3: 3:1 candidate bound of discontinuity-semantics (pre-registered there)' }),
+  'DQ-K5': Object.freeze({ id: 'DQ-K5', k: 5, role: 'PRIMARY_CONTAINMENT', origin: '#722 core 1.2.0: ratio bound k >= 5, set there post hoc after the 1.1.0 data audit (no strategy result involved); 1.2.0 adds ratio/volume conditions that DQ-K5 does not use' }),
+  'DQ-K3': Object.freeze({ id: 'DQ-K3', k: 3, role: 'SENSITIVITY_BAND', origin: '#758 protocol v3: 3:1 candidate selection bound of discontinuity-semantics (pre-registered there)' }),
 });
 /** Minimum length of a research segment (validation/analyze-methods.mjs#loadPitData drops shorter ones). */
 export const MIN_SEGMENT_BARS = 30;
