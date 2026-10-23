@@ -142,21 +142,62 @@
    *  zeigen am selben Tag denselben Schlusskurs. Eine Abweichung heisst:
    *  zwei Produkte zeigen fuer dieselbe Aktie verschiedene Kurse. */
   function dailyWeeklyAgreement(pairs, tolerance) {
-    var tol = tolerance || 0.005, fail = [], checked = 0;
+    var fail = [], checked = 0;
     pairs.forEach(function (pair) {
-      var d = {}, worst = null;
-      (pair.daily.points || []).forEach(function (pt) { d[pt[0]] = pt[1]; });
-      (pair.weekly.points || []).forEach(function (pt) {
-        var v = d[pt[0]];
-        if (v === undefined) return;
-        var dev = Math.abs(pt[1] / v - 1);
-        if (dev > tol && (!worst || dev > worst.dev)) worst = { date: pt[0], daily: v, weekly: pt[1], dev: dev };
-      });
+      var c = compareDailyWeekly(pair.daily, pair.weekly, tolerance);
       checked++;
-      if (worst) fail.push(pair.securityId + " " + worst.date + ": Tag " + worst.daily + " / Woche " + worst.weekly + " (" + (worst.dev * 100).toFixed(1) + " %)");
+      if (c.status !== "MISMATCH") return;
+      var w = c.worst;
+      fail.push(pair.securityId + " " + w.date + ": Tag " + w.daily + " / Woche " + w.weekly + " (" + (w.dev * 100).toFixed(1) + " %)" +
+        (c.kind === "LEVEL" ? ", Niveau x" + c.ratio + (c.factor ? " (Faktor ~" + c.factor + ": Split nicht nachgezogen)" : "") : ", " + c.mismatched + "/" + c.compared + " Wochen"));
     });
     return result("DQ-PX-4", "Tages- und Wochenreihe zeigen denselben Schlusskurs", "ERROR", checked, fail,
-      "Typische Ursache: Split nach dem letzten Lauf der Wochenreihe (Bereinigungsstand verschieden).");
+      "Verglichen wird nur an identischen Stichtagen (Wochenschluss = letzter Handelstag der ISO-Woche, der auch in der Tagesreihe steht). " +
+      "Toleranz: eine Rundungseinheit (published-close.js#roundClose). Typische Ursache: Split nach dem letzten Lauf der Wochenreihe; " +
+      "Reparatur: scripts/market/long-series-repair-plan.mjs und long-series.yml (Reparaturlauf).");
+  }
+
+  /* Rundungseinheit eines veroeffentlichten Schlusses (quant/engines/published-close.js#roundClose):
+     ab 1 $ der Cent, darunter vier gueltige Stellen. Eine feste Grenze (0,005 $ oder 0,5 %) ist
+     bei 0,05 $ zu grob und bei 500 $ zu streng. */
+  function closeUnit(v) {
+    if (!(v > 0)) return 0;
+    if (v >= 1) return 0.01;
+    return Math.pow(10, Math.floor(Math.log10(v)) - 3);
+  }
+  var SPLIT_FACTORS = [2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 75, 80, 100, 150, 200, 250, 500, 1000];
+  function nearestFactor(ratio) {
+    var r = ratio >= 1 ? ratio : 1 / ratio;
+    var k = SPLIT_FACTORS.filter(function (f) { return Math.abs(r / f - 1) < 0.03; })[0];
+    return k ? (ratio >= 1 ? String(k) : "1/" + k) : null;
+  }
+
+  /** Vergleich EINER Tages- und Wochenreihe an identischen Stichtagen.
+   *  status: CONSISTENT | MISMATCH | NO_OVERLAP
+   *  kind (bei MISMATCH): LEVEL - die ganze Ueberlappung steht um einen festen Faktor daneben
+   *  (Bereinigungsstand verschieden: Split/Reverse-Split), POINT - einzelne Wochen weichen ab.
+   *  Wochen ohne denselben Tag in der Tagesreihe (Feiertag, Luecke) werden nicht verglichen. */
+  function compareDailyWeekly(daily, weekly, tolerance) {
+    var d = {}, ratios = [], compared = 0, worst = null;
+    ((daily && daily.points) || []).forEach(function (pt) { d[pt[0]] = pt[1]; });
+    ((weekly && weekly.points) || []).forEach(function (pt) {
+      var v = d[pt[0]];
+      if (!(v > 0) || !(pt[1] > 0)) return;
+      compared++;
+      var tol = typeof tolerance === "number" ? Math.abs(v) * tolerance : Math.max(closeUnit(v), closeUnit(pt[1])) + 1e-9;
+      if (Math.abs(pt[1] - v) <= tol) return;
+      ratios.push(v / pt[1]);
+      var dev = Math.abs(pt[1] / v - 1);
+      if (!worst || dev > worst.dev) worst = { date: pt[0], daily: v, weekly: pt[1], dev: dev };
+    });
+    if (!compared) return { status: "NO_OVERLAP", compared: 0, mismatched: 0 };
+    if (!ratios.length) return { status: "CONSISTENT", compared: compared, mismatched: 0 };
+    var sorted = ratios.slice().sort(function (a, b) { return a - b; });
+    var median = sorted[Math.floor(sorted.length / 2)];
+    var stable = ratios.every(function (r) { return Math.abs(r / median - 1) < 0.03; });
+    var level = ratios.length >= Math.max(2, Math.ceil(compared * 0.8)) && stable && Math.abs(median - 1) > 0.05;
+    return { status: "MISMATCH", kind: level ? "LEVEL" : "POINT", compared: compared, mismatched: ratios.length,
+             ratio: Number(median.toPrecision(4)), factor: level ? nearestFactor(median) : null, worst: worst };
   }
 
   /** DQ-PX-5: die Aktienseite (Discover) zeigt den letzten Schlusskurs ihrer Reihe. */
@@ -227,7 +268,8 @@
     VERSION: VERSION,
     idConsistency: idConsistency, universeDuplicates: universeDuplicates, activeSymbolCollisions: activeSymbolCollisions,
     seriesIntegrity: seriesIntegrity, seriesFreshness: seriesFreshness, implausibleJumps: implausibleJumps,
-    dailyWeeklyAgreement: dailyWeeklyAgreement, payloadMatchesSeries: payloadMatchesSeries,
+    dailyWeeklyAgreement: dailyWeeklyAgreement, compareDailyWeekly: compareDailyWeekly, closeUnit: closeUnit,
+    payloadMatchesSeries: payloadMatchesSeries,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve, summarize: summarize
   };

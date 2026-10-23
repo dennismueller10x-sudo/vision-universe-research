@@ -264,7 +264,7 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
 /** Per-security preparation of an adapter (shared by the variants of a run that do not change the setup inputs). */
 export function prepareAll(dataset, adapter, config) {
   const m = new Map();
-  for (const s of dataset.securities) { const c = adapter.prepare(s, config); if (c) m.set(s.id, c); }
+  for (const s of dataset.securities) { const c = adapter.prepare(s, config, dataset); if (c) m.set(s.id, c); }
   return m;
 }
 
