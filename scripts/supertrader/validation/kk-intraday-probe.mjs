@@ -23,7 +23,7 @@ import { etClock } from './intraday-oracle.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const BASE = 'https://api.tiingo.com';
-export const KK_PROBE_VERSION = 'kk-intraday-probe-1.0.0';
+export const KK_PROBE_VERSION = 'kk-intraday-probe-1.1.0';
 export const MAX_REQUESTS = 100;
 
 // EP: grosse Gap-Tage (Ergebnis-/Ereignistage, bewusst ohne Katalysatordaten ausgewaehlt);
@@ -37,6 +37,10 @@ export const PROBE_CASES = Object.freeze([
 ]);
 export const RELVOL_CASES = Object.freeze([['NVDA', '2023-05-25'], ['GME', '2021-01-27'], ['CVNA', '2023-07-19']]);
 export const CONSOLIDATED_CASES = Object.freeze([['NVDA', '2023-05-25'], ['GME', '2021-01-27'], ['APP', '2024-11-07'], ['SNAP', '2017-03-02']]);
+// 1.1.0: can one request return the IEX daily volume of many prior days (venue-consistent volume baseline)?
+export const IEX_RANGE_CASES = Object.freeze([['NVDA', '2023-04-24', '2023-05-24']]);
+export const IEX_RANGE_FREQS = Object.freeze(['1day', '4hour', '1hour']);
+export const MODE_RANGE_ONLY = '--range-only';
 export const SESSION_MINUTES = 390;
 export const OPENING_RANGES = Object.freeze([5, 15, 30]);
 
@@ -141,7 +145,17 @@ async function main() {
   if (!KEY) { console.error('TIINGO_API_KEY fehlt'); process.exit(2); }
   const budget = { used: 0 };
   const results = [], sealed = [];
-  for (const [kind, t, d] of PROBE_CASES) {
+  // IEX multi-day ranges: per-day sums of the bars (date in ET), counted, no prices
+  const ranges = [];
+  for (const [t, from, to] of IEX_RANGE_CASES) for (const f of IEX_RANGE_FREQS) {
+    const r = await getJson(`${BASE}/iex/${t}/prices?startDate=${from}&endDate=${to}&resampleFreq=${f}&columns=open,high,low,close,volume`, KEY, budget); await pause();
+    const days = new Map();
+    for (const b of arr(r)) { const k = new Date(b.date).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); days.set(k, (days.get(k) || 0) + (fin(b.volume) ? b.volume : 0)); }
+    const x = { ticker: t, from, to, freq: f, status: r.status, bars: arr(r).length, days: days.size, daysWithVolume: [...days.values()].filter((v) => v > 0).length, error: Array.isArray(r.body) ? null : String(r.body?.detail ?? '').slice(0, 160) };
+    ranges.push(x); sealed.push({ kind: 'RANGE', ...x, raw: arr(r) });
+    console.log(`RANGE ${t} ${from}..${to} ${f}: ${r.status}, Balken ${x.bars}, Tage ${x.days} (mit Volumen ${x.daysWithVolume})${x.error ? ' ' + x.error : ''}`);
+  }
+  for (const [kind, t, d] of argv.includes(MODE_RANGE_ONLY) ? [] : PROBE_CASES) {
     const m1 = await getJson(iexUrl(t, d, '1min'), KEY, budget); await pause();
     const m5 = await getJson(iexUrl(t, d, '5min'), KEY, budget); await pause();
     const eod = await getJson(eodUrl(t, d), KEY, budget); await pause();
@@ -153,7 +167,7 @@ async function main() {
   }
   // relatives Eroeffnungsvolumen: IEX-Volumen der ersten 30 Minuten gegen den Mittelwert der 10 Vortage (nur IEX-Anteil)
   const relvol = [];
-  for (const [t, d] of RELVOL_CASES) {
+  for (const [t, d] of argv.includes(MODE_RANGE_ONLY) ? [] : RELVOL_CASES) {
     const cal = await getJson(eodUrl(t, shiftDays(d, -21), shiftDays(d, -1)), KEY, budget); await pause();
     const prior = arr(cal).map((x) => String(x.date).slice(0, 10)).slice(-10);
     const vols = [];
@@ -166,7 +180,7 @@ async function main() {
   }
   // konsolidierter Beta-Endpunkt getrennt von IEX (Runde 10: IEX-Werte ohne Volumen)
   const consolidated = [];
-  for (const [t, d] of CONSOLIDATED_CASES) {
+  for (const [t, d] of argv.includes(MODE_RANGE_ONLY) ? [] : CONSOLIDATED_CASES) {
     const r = await getJson(mvUrl(t, d), KEY, budget); await pause();
     const b = arr(r), iex = sealed.find((x) => x.ticker === t && x.date === d)?.bars1m ?? [];
     const byTs = new Map(iex.map((x) => [x.date, x]));
@@ -175,7 +189,7 @@ async function main() {
     consolidated.push(c);
     console.log(`KONSOLIDIERT ${t} ${d}: ${r.status}, Balken ${c.bars}, Volumenfeld ${c.volumeField}, gleiche Hoch/Tief wie IEX ${c.identicalHighLowShare ?? '-'} (${cmp})`);
   }
-  const summary = { version: KK_PROBE_VERSION, requests: budget.used, maxRequests: MAX_REQUESTS, cases: results.length, withMinutes: results.filter((r) => r.bars1m > 0).length, results, relvol, consolidated };
+  const summary = { version: KK_PROBE_VERSION, requests: budget.used, maxRequests: MAX_REQUESTS, cases: results.length, withMinutes: results.filter((r) => r.bars1m > 0).length, results, relvol, consolidated, ranges };
   fs.writeFileSync(path.join(OUT, 'kk-intraday-probe.public.json'), JSON.stringify(summary, null, 1) + '\n');
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   fs.writeFileSync(path.join(OUT, 'kk-intraday-probe.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-kk-intraday-probe-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, summary, raw: sealed }))));

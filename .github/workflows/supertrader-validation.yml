@@ -266,8 +266,12 @@ jobs:
         if: steps.mode.outputs.mode == 'kk-intraday-probe'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          MSG: ${{ github.event.head_commit.message }}
         run: |
-          node scripts/supertrader/validation/kk-intraday-probe.mjs --out "$RUNNER_TEMP/val"
+          set -euo pipefail
+          extra=""
+          case "${MSG:-}" in *"[kk-probe-range-only]"*) extra="--range-only";; esac
+          node scripts/supertrader/validation/kk-intraday-probe.mjs --out "$RUNNER_TEMP/val" $extra
           cat "$RUNNER_TEMP/val"/kk-intraday-probe.public.json
       - name: Intraday-Studie Kauf-Stop-Tage (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday' || steps.mode.outputs.mode == 'intraday-smoke'
