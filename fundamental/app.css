@@ -258,8 +258,8 @@ html[data-theme=dark] .fu-crow-ico[data-cat=bewertung],html[data-theme=dark] .fu
 .fu-tile-head{display:flex;gap:10px;align-items:baseline}.fu-tile-head span{color:var(--vu-text-secondary);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fu-tile-rev{display:flex;gap:8px;align-items:baseline}.fu-tile-rev strong{font-size:20px;font-weight:850}.fu-tile-rev small{font-size:12px;color:var(--vu-text-secondary)}
 .fu-meter{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;font-size:13px}
-.fu-meter-l{color:var(--vu-text-secondary)}.fu-meter b{grid-row:span 2;font-size:14px}.fu-meter b.is-none{font-weight:600;color:var(--vu-muted);font-size:12px}
-.fu-meter-bar{height:6px;border-radius:3px;background:var(--fu-soft);overflow:hidden}
+.fu-meter-l{grid-column:1;grid-row:1;color:var(--vu-text-secondary)}.fu-meter-bar{grid-column:1;grid-row:2}.fu-meter b{grid-column:2;grid-row:1/span 2;font-size:14px}.fu-meter b.is-none{font-weight:600;color:var(--vu-muted);font-size:12px}
+.fu-meter-bar{display:block;height:6px;border-radius:3px;background:var(--fu-soft);overflow:hidden}
 .fu-meter-bar i{display:block;height:100%;background:var(--fu-acc);border-radius:3px}.fu-meter-bar i.is-neg{background:var(--vu-down)}
 .fu-tile-pe{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--vu-line);font-size:13.5px;color:var(--vu-text-secondary)}.fu-tile-pe b{color:var(--vu-text)}
 
