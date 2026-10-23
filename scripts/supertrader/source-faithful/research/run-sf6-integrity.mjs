@@ -3,9 +3,9 @@
  * Supertrader 6.0 – V4-D1 containment run (integrity/discontinuity.mjs) on the frozen research snapshot with research-v1.
  * For every measurable lifecycle reference (Turtle S1 / S2 BASE_S0, Minervini SEPA / Power Play REF, the seven sf5 REF
  * configurations) it runs the UNCHANGED reference configuration on
- *   BASE   the snapshot segments as every earlier run read them,
- *   DQ-K5  the segments cut before every session with a total-return relative >= 5 or <= 1/5 (primary containment),
- *   DQ-K3  the same with k = 3 (sensitivity band),
+ *   BASE         the research dataset as every earlier run read it,
+ *   DQ-K5-BOOK   securities cut at every session with a total-return relative >= 5 or <= 1/5, the flagged bar booked
+ *                (primary containment), DQ-K5-PRIOR the same settled at the close before the flag, DQ-K3-BOOK k = 3,
  * and compares the trades (integrity/discontinuity.mjs#compareTrades). No engine, screen, adapter or configuration is
  * changed; BASE must reproduce the trade hashes of the earlier authoritative runs.
  *  - public (repository log): census of the flagged sessions (counts by year, direction, kind, price band, universe),
@@ -15,7 +15,7 @@
  * DIAGNOSTIC_NOT_CERTIFIED; the quarantine is a containment of a SUPERSET of suspicious sessions, not a data correction.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf6-integrity.mjs --snapshot sts1-<id> --accounting research-v1 \
- *        --out <dir> [--lifecycles TURTLE_S1,...] [--policies DQ-K5,DQ-K3] [--limit 400 --smoke-snapshot]
+ *        --out <dir> [--lifecycles TURTLE_S1,...] [--policies DQ-K5-BOOK,DQ-K5-PRIOR,DQ-K3-BOOK] [--limit 400 --smoke-snapshot]
  */
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -33,11 +33,11 @@ import { RUN_VARIANTS as MIN_VARIANTS } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle } from './minervini-execution.mjs';
 import { runResearchLifecycle, prepareAll } from './lifecycle-engine.mjs';
 import { SF5_LIFECYCLES } from './sf5-lifecycles.mjs';
-import { DQ_POLICIES, DQ_VERSION, quarantineSegments, compareTrades, EXPOSURE_LOOKBACK_DAYS, NOT_A_DEFECT_CLAIM } from '../integrity/discontinuity.mjs';
+import { DQ_POLICIES, DQ_VERSION, PRIMARY_POLICY, quarantineDataset, compareTrades, EXPOSURE_LOOKBACK_DAYS, NOT_A_DEFECT_CLAIM } from '../integrity/discontinuity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF6_INTEGRITY_RUNNER_VERSION = 'sf6-integrity-runner-1.0.0';
+export const SF6_INTEGRITY_RUNNER_VERSION = 'sf6-integrity-runner-1.1.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 /** The pre-registered split periods of the research runner (runner/run-research.mjs SPLIT_PERIODS), reused unchanged. */
 export const SPLIT_PERIODS = Object.freeze([['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOW.to]]);
@@ -81,11 +81,11 @@ function sf5(ds, lc, { from, to }) {
 const norm = (t) => ({ id: t.id, entryDate: t.entryDate, exitDate: t.exitDate ?? null, exitReason: t.exitReason ?? null, shares: t.shares, status: t.status, pnl: t.pnl ?? null });
 
 /**
- * Pure part: runs the selected references on BASE and on each quarantine policy of the given segments.
- * segs: snapshot segments ({ id, raw, endCause, ... }); makeDataset(segs) builds the method input.
+ * Pure part: runs the selected references on BASE and on each quarantine policy of the research dataset (the cut works
+ * on the adjusted securities, so every price level outside a flag stays identical to BASE; review SF6-A M1).
  */
-export function integrityPart(segs, makeDataset, { keys = INTEGRITY_KEYS, policies = Object.keys(DQ_POLICIES), from = L.WINDOW.from, to = L.WINDOW.to, dataEnd = L.WINDOW.to, log = () => {} } = {}) {
-  const pub = { version: DQ_VERSION, runner: SF6_INTEGRITY_RUNNER_VERSION, ...NOT_A_DEFECT_CLAIM, exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, census: {}, lifecycles: {} };
+export function integrityPart(baseDs, { keys = INTEGRITY_KEYS, policies = Object.keys(DQ_POLICIES), from = L.WINDOW.from, to = L.WINDOW.to, dataEnd = L.WINDOW.to, log = () => {} } = {}) {
+  const pub = { version: DQ_VERSION, primaryPolicy: PRIMARY_POLICY, runner: SF6_INTEGRITY_RUNNER_VERSION, ...NOT_A_DEFECT_CLAIM, exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, census: {}, lifecycles: {} };
   const sealed = { label: 'DIAGNOSTIC_METRICS_NOT_A_STRATEGY_RETURN', events: {}, lifecycles: {} };
   const lcs = INTEGRITY_LIFECYCLES.filter((l) => keys.includes(l.key));
   const runAll = (ds, tag) => {
@@ -99,14 +99,14 @@ export function integrityPart(segs, makeDataset, { keys = INTEGRITY_KEYS, polici
     }
     return out;
   };
-  const base = runAll(makeDataset(segs), 'BASE');
+  const base = runAll(baseDs, 'BASE');
   for (const lc of lcs) { pub.lifecycles[lc.key] = { candidateId: lc.candidateId, BASE: base[lc.key].pub }; sealed.lifecycles[lc.key] = { BASE: { metrics: base[lc.key].metrics } }; }
   for (const pid of policies) {
     const policy = DQ_POLICIES[pid]; if (!policy) throw new Error(`UNKNOWN_DQ_POLICY:${pid}`);
-    const q = quarantineSegments(segs, policy);
+    const q = quarantineDataset(baseDs, policy);
     pub.census[pid] = q.census; sealed.events[pid] = q.events;
-    log(`${pid}: flags ${q.census.flags} in ${q.census.segmentsFlagged} segments; pieces ${q.census.piecesAfter}`);
-    const res = runAll(makeDataset(q.segs), pid);
+    log(`${pid}: flags ${q.census.flags} in ${q.census.securitiesFlagged} securities; pieces ${q.census.piecesAfter}`);
+    const res = runAll(q.ds, pid);
     for (const lc of lcs) {
       const cmp = compareTrades(base[lc.key].trades, res[lc.key].trades, q.events, { dataEnd });
       pub.lifecycles[lc.key][pid] = { ...res[lc.key].pub, comparisonWithBase: cmp.public };
@@ -147,10 +147,10 @@ async function main() {
     process.exit(3);
   }
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
-  // same input construction as run-sf4-lifecycle (sec-pit attached for Minervini) for every segment list
-  const makeDataset = (segs) => { const ds = datasetFromPit({ ...pit, segs }); attachSecPit(ds, secPit); return ds; };
+  // same input construction as run-sf4-lifecycle (sec-pit attached for Minervini); the pieces inherit it
+  const ds = datasetFromPit(pit); attachSecPit(ds, secPit);
   const receipt = { schema: 'supertrader-sf6-integrity-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), integrityCodeSha256: integrityCodeSha256(), runner: SF6_INTEGRITY_RUNNER_VERSION, policies: policies.map((p) => DQ_POLICIES[p]), lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  const r = integrityPart(pit.segs, makeDataset, { keys, policies, log });
+  const r = integrityPart(ds, { keys, policies, log });
   const pub = { schema: 'supertrader-sf6-integrity-public-1.0.0', receipt, integrity: r.pub };
   const sealed = { receipt, public: pub, integrity: r.sealed };
   fs.mkdirSync(OUT, { recursive: true });
