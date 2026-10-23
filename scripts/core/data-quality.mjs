@@ -63,7 +63,7 @@ for (const s of daily) {
   const w = maybe(LONG + "/" + s.securityId + ".json");
   if (w) pairs.push({ securityId: s.securityId, daily: s, weekly: w });
 }
-rules.push(DQ.dailyWeeklyAgreement(pairs, 0.005));
+rules.push(DQ.dailyWeeklyAgreement(pairs));
 const byId = new Map(daily.map((s) => [s.securityId, s]));
 const stockIndex = maybe("discover/data/stock-index/US_REAL.json");
 const indexSymbols = stockIndex ? stockIndex.symbols : [];

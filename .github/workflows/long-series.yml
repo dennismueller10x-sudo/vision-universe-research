@@ -18,6 +18,26 @@ name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
 # entsprechend - deshalb monatlich, nicht woechentlich.) Auf
 # Entwicklungsbranches dient ein Push mit der Marke `[long-series]`.
 # Speicherzugang aus den Secrets; ohne ihn kein Lauf.
+#
+# REPARATURLAUF (DQ-PX-4, seit 23.10.2026). Die Tagesreihe traegt einen Split
+# am Morgen danach nach, die Wochenreihe erst beim naechsten Volllauf. In der
+# Zwischenzeit sprangen 5J/Max an der Nahtstelle um den Splitfaktor (22.10.:
+# AMTD x60, DKI x50, CAPS x30 ...), der Supertrader-Wochenchart stand auf dem
+# alten Niveau. Deshalb laeuft dienstags bis samstags nach dem Nachtlauf
+# (Ende gemessen ~03:00 UTC) ein Reparaturlauf:
+#   1. long-series-repair-plan.mjs vergleicht die committeten Reihen an
+#      identischen Stichtagen (kein Abruf, keine Ablage). Nichts gefunden:
+#      Ende, kein Speicherzugriff, kein Commit.
+#   2. Nur die genannten Titel werden aus der Ablage neu gebaut (--only).
+#      Mehr als 40 Titel: kein Split-Nachzug, sondern ein Systemfehler -
+#      dann wird nichts gebaut und der Lauf ist rot.
+#   3. Nachpruefung derselben Titel. Was danach noch abweicht, wird auf den
+#      Stand vor dem Lauf zurueckgesetzt (nie eine neue inkonsistente Reihe
+#      veroeffentlichen) und macht den Lauf rot.
+# Kein workflow_run: der Ausloeser hat auf main nachweislich nie gefeuert
+# (market-data-refresh.yml, 29.09.2026). Der Push des Bots (GITHUB_TOKEN)
+# startet keinen Workflow - keine Schleife. Dieselbe Concurrency-Gruppe wie
+# der Volllauf: nie zwei Schreiber auf discover-series-long.
 
 on:
   workflow_dispatch:
@@ -26,8 +46,16 @@ on:
         description: 'Nur diese Kuerzel neu bauen (kommagetrennt, z. B. NXGL,ZBAO). Leer = alle im Umfang.'
         required: false
         default: ''
+      mode:
+        description: 'full = alle bzw. only; repair = nur Titel, deren Wochenreihe von der Tagesreihe abweicht (DQ-PX-4)'
+        required: false
+        default: 'full'
+        type: choice
+        options: ['full', 'repair']
   schedule:
     - cron: '40 7 1-7 * 6'
+    # Reparaturlauf nach dem Nachtlauf (nur abweichende Titel, siehe oben)
+    - cron: '20 4 * * 2-6'
   push:
     branches:
       - 'claude/**'
@@ -59,7 +87,37 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Art des Laufs und Reparaturplan
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || '' }}
+          INPUT_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
+        run: |
+          set -euo pipefail
+          MODE=full
+          if [ "$EVENT" = "schedule" ] && [ "$SCHEDULE" = "20 4 * * 2-6" ]; then MODE=repair; fi
+          if [ "$INPUT_MODE" = "repair" ]; then MODE=repair; fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          if [ "$MODE" = "repair" ]; then
+            node scripts/market/long-series-repair-plan.mjs --github-output --out="$RUNNER_TEMP/repair-plan.json" > "$RUNNER_TEMP/plan.txt"
+            cat "$RUNNER_TEMP/plan.txt"
+            { echo '### Reparaturplan (DQ-PX-4)'; echo '```'; cat "$RUNNER_TEMP/plan.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            OVERFLOW=$(grep '^overflow=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2)
+            if [ "$OVERFLOW" = "true" ]; then echo "::error::Zu viele abweichende Wochenreihen - kein automatischer Neubau."; exit 1; fi
+            ONLY=$(grep '^tickers=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2)
+            if [ -z "$ONLY" ]; then echo "work=false" >> "$GITHUB_OUTPUT"; echo "Alle Wochenreihen stimmen mit den Tagesreihen ueberein."; exit 0; fi
+          else
+            ONLY="$INPUT_ONLY"
+          fi
+          # Eingabe nur ueber env (ADR-005); nur Kuerzel zulassen.
+          if [ -n "$ONLY" ] && ! printf '%s' "$ONLY" | grep -Eq '^[A-Za-z0-9.,-]+$'; then echo "Ungueltige Kuerzel-Liste."; exit 1; fi
+          echo "only=$ONLY" >> "$GITHUB_OUTPUT"
+          echo "work=true" >> "$GITHUB_OUTPUT"
+
       - name: Zugang zum Speicher vorhanden?
+        if: steps.plan.outputs.work == 'true'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -72,31 +130,61 @@ jobs:
           echo "Zugang vorhanden."
 
       - name: Wochenreihen aus der Historienablage veroeffentlichen
+        if: steps.plan.outputs.work == 'true'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-          ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
+          ONLY: ${{ steps.plan.outputs.only }}
         run: |
-          # Eingabe nur ueber env (ADR-005); nur Kuerzel zulassen.
           if [ -n "$ONLY" ]; then
-            if ! printf '%s' "$ONLY" | grep -Eq '^[A-Za-z0-9.,-]+$'; then echo "Ungueltige Kuerzel-Liste."; exit 1; fi
             node scripts/market/publish-long-series.mjs --only="$ONLY"
           else
             node scripts/market/publish-long-series.mjs
           fi
 
+      # Nachpruefung (DQ-PX-4) der eben gebauten Titel. Eine Reihe, die danach
+      # noch von der Tagesreihe abweicht (Ablage traegt den Split noch nicht),
+      # wird NICHT veroeffentlicht: zurueck auf den Stand vor dem Lauf, Lauf rot.
+      # Beim Volllauf nur Bericht - der Reparaturlauf am naechsten Morgen nimmt
+      # die Reste, ohne 6 000 korrekte Reihen zurueckzuhalten.
+      - name: Nachpruefung Tag gegen Woche
+        id: verify
+        if: steps.plan.outputs.work == 'true'
+        env:
+          ONLY: ${{ steps.plan.outputs.only }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ONLY" ]; then
+            node scripts/market/long-series-repair-plan.mjs --max=100000 --out="$RUNNER_TEMP/verify.json" > "$RUNNER_TEMP/verify.txt"; head -50 "$RUNNER_TEMP/verify.txt"
+            N=$(node -e 'console.log(require(process.argv[1]).affected.length)' "$RUNNER_TEMP/verify.json")
+            if [ "$N" != "0" ]; then echo "::warning::$N Wochenreihen weichen nach dem Volllauf von der Tagesreihe ab (Reparaturlauf uebernimmt)."; fi
+            echo "remaining=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node scripts/market/long-series-repair-plan.mjs --only="$ONLY" --max=100000 --out="$RUNNER_TEMP/verify.json"
+          REST=$(node -e 'console.log(require(process.argv[1]).affected.map(a => a.ticker).join(","))' "$RUNNER_TEMP/verify.json")
+          for ID in $(node -e 'console.log(require(process.argv[1]).affected.map(a => a.securityId).join(" "))' "$RUNNER_TEMP/verify.json"); do
+            F="quant/data/market/discover-series-long/$ID.json"
+            if git cat-file -e "HEAD:$F" 2>/dev/null; then git checkout HEAD -- "$F"; else rm -f "$F"; fi
+            echo "zurueckgesetzt: $F"
+          done
+          echo "remaining=$REST" >> "$GITHUB_OUTPUT"
+
       - name: Abhaengige Discover-Daten neu bauen
+        if: steps.plan.outputs.work == 'true'
         run: |
           node scripts/discover/build-discover-data.mjs
           node scripts/discover/verify-discover-data.mjs
 
       - name: Public-Data-Hygiene
+        if: steps.plan.outputs.work == 'true'
         run: node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Kein Schluessel in den Daten
+        if: steps.plan.outputs.work == 'true'
         env:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
@@ -106,9 +194,11 @@ jobs:
           echo "sauber"
 
       - name: Groesse
+        if: steps.plan.outputs.work == 'true'
         run: du -sh quant/data/market/discover-series-long
 
       - name: Commit und Push
+        if: steps.plan.outputs.work == 'true'
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -134,3 +224,11 @@ jobs:
             # mit Wartezeit erneut versuchen.
             scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
+
+      - name: Ergebnis der Nachpruefung
+        if: steps.plan.outputs.work == 'true' && steps.verify.outputs.remaining != ''
+        env:
+          REST: ${{ steps.verify.outputs.remaining }}
+        run: |
+          echo "::error::Wochenreihe nach dem Neubau weiterhin abweichend und nicht veroeffentlicht: $REST (Ablage pruefen: sync-history-store, Splitfaktor)."
+          exit 1
