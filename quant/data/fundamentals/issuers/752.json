@@ -466,10 +466,10 @@
       "cik": "0001052752",
       "name": "GETTY REALTY CORP /MD/",
       "sic": "6500",
-      "rawFacts": 16760,
-      "mappedFacts": 5211,
-      "unmappedFacts": 11682,
-      "calendarYears": 18,
+      "rawFacts": 17080,
+      "mappedFacts": 5258,
+      "unmappedFacts": 12033,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -478,28 +478,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
-          "annualPeriods": 14,
-          "quarterlyPeriods": 60,
+          "annualPeriods": 15,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -512,28 +512,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -547,14 +547,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -577,48 +577,49 @@
         }
       },
       "quality": {
-        "HIGH": 546,
-        "MEDIUM": 47
+        "HIGH": 559,
+        "MEDIUM": 49
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 593,
-        "resolvedValues": 593
+        "datableValues": 608,
+        "resolvedValues": 608
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 12008,
+        "total": 12342,
         "by_severity": {
-          "INFO": 11682,
-          "WARNING": 326
+          "INFO": 12033,
+          "WARNING": 309
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 202,
-          "FISCAL_PERIOD_CONFLICT": 55,
+          "CONCEPT_DISAGREEMENT": 205,
+          "FISCAL_PERIOD_CONFLICT": 45,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 63,
+          "RESTATEMENT_CONFLICT": 53,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 11682
+          "UNKNOWN_CONCEPT": 12033
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-314247",
-        "filing_date": "2026-07-23",
+        "accession": "0001193125-26-428988",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 112
+        "periodic_filings": 113,
+        "acceptance_datetime": "2026-10-23T00:30:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "32634ae80613cf03446a82a21f4246bf7cc256a38433798c62bd414089cbef18",
+      "sourceDigest": "7933e00ca84bb0c99a51af85fd33dac760ddbab15c0dbb2eed8c53e604ca4473",
       "issuerId": "iss_cik_0001052752"
     },
     {

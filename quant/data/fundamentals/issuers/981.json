@@ -321,9 +321,9 @@
       "cik": "0001482981",
       "name": "Vita Coco Company, Inc.",
       "sic": "2080",
-      "rawFacts": 5556,
-      "mappedFacts": 2043,
-      "unmappedFacts": 3594,
+      "rawFacts": 5799,
+      "mappedFacts": 2146,
+      "unmappedFacts": 3779,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -333,28 +333,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 28,
+      "quarterlyPeriods": 29,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2019-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
-        },
-        "eps_diluted": {
           "annualPeriods": 7,
           "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
+        "eps_diluted": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -374,21 +374,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -402,14 +402,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -432,43 +432,44 @@
         }
       },
       "quality": {
-        "HIGH": 218
+        "HIGH": 225
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 218,
-        "resolvedValues": 218
+        "datableValues": 225,
+        "resolvedValues": 225
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 3713,
+        "total": 3839,
         "by_severity": {
-          "INFO": 3594,
-          "WARNING": 119
+          "INFO": 3779,
+          "WARNING": 60
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 119,
-          "UNKNOWN_CONCEPT": 3594
+          "CONCEPT_DISAGREEMENT": 60,
+          "UNKNOWN_CONCEPT": 3779
         }
       },
       "latestFiling": {
-        "accession": "0001482981-26-000173",
-        "filing_date": "2026-07-23",
+        "accession": "0001482981-26-000185",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 20
+        "periodic_filings": 21,
+        "acceptance_datetime": "2026-10-23T00:20:07.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "8f32a5b2e403d8a021f82c5c318df14db2abf84e31bf925f4ad7c12ff4858380",
+      "sourceDigest": "e20f84379b9d877790892e901581b96c57f48089b02fdcf599de0574e740ad40",
       "issuerId": "iss_cik_0001482981"
     },
     {

@@ -6,10 +6,10 @@
       "cik": "0000949870",
       "name": "BOSTON BEER CO INC",
       "sic": "2082",
-      "rawFacts": 19131,
-      "mappedFacts": 6286,
-      "unmappedFacts": 13032,
-      "calendarYears": 18,
+      "rawFacts": 19461,
+      "mappedFacts": 6401,
+      "unmappedFacts": 13249,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1227",
@@ -17,29 +17,29 @@
         "SAM"
       ],
       "status": "INGESTED",
-      "annualPeriods": 17,
-      "quarterlyPeriods": 67,
-      "firstPeriodEnd": "2009-12-26",
-      "lastPeriodEnd": "2026-06-27",
-      "historyYears": 16.0,
+      "annualPeriods": 18,
+      "quarterlyPeriods": 69,
+      "firstPeriodEnd": "2008-12-26",
+      "lastPeriodEnd": "2026-09-26",
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-26",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 16.0
@@ -86,15 +86,15 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
-          "firstAvailablePeriod": "2009-12-26",
+          "annualPeriods": 18,
+          "quarterlyPeriods": 65,
+          "firstAvailablePeriod": "2008-12-26",
           "lastAvailablePeriod": "2025-12-27",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-25",
           "lastAvailablePeriod": "2025-12-27",
           "historyYears": 15.0
@@ -117,47 +117,48 @@
         }
       },
       "quality": {
-        "HIGH": 533,
-        "MEDIUM": 42
+        "HIGH": 541,
+        "MEDIUM": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 575,
-        "resolvedValues": 575
+        "datableValues": 584,
+        "resolvedValues": 584
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13352,
+        "total": 13569,
         "by_severity": {
-          "INFO": 13032,
+          "INFO": 13249,
           "WARNING": 320
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 293,
+          "CONCEPT_DISAGREEMENT": 295,
           "FISCAL_PERIOD_CONFLICT": 18,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 13032
+          "RESTATEMENT_CONFLICT": 6,
+          "UNKNOWN_CONCEPT": 13249
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-314203",
-        "filing_date": "2026-07-23",
+        "accession": "0001193125-26-428979",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 119
+        "periodic_filings": 120,
+        "acceptance_datetime": "2026-10-23T00:26:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "14e2de163b4e6a2c83e9e6f804356842c7ded2c36fc55e65520b797e97a9048c",
+      "sourceDigest": "eeafd3d6234eaa73d04aac8c699f75771b295d23931532ae6d298c5d4ac41703",
       "issuerId": "iss_cik_0000949870"
     },
     {
