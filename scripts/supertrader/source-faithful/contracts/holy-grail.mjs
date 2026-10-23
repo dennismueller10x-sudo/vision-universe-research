@@ -5,7 +5,7 @@
  * order sequence are not disclosed (#709 C13). RAS04-006 allows several timeframes; the daily timeframe is the one the
  * snapshot holds. Component study, not a personal replica.
  */
-import { defineContract, SF_ROOT } from './define.mjs';
+import { defineContract, SF_ROOT, sf5Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/holy-grail.mjs`;
@@ -13,6 +13,7 @@ const T = 'scripts/supertrader/tests/sf-holy-grail.test.mjs';
 
 export const HOLY_GRAIL = defineContract({
   implemented: true,
+  sourceContractVersion: '1.1.0',
   plannedIn: 'PR 8 Holy Grail',
   strategyId: 'SF_RASCHKE_HOLY_GRAIL',
   candidateId: 'C13',
@@ -39,8 +40,8 @@ export const HOLY_GRAIL = defineContract({
     { id: 'RAS-SF-OSC', kind: 'INDICATOR', essential: false, psr709: ['RAS04-004'], status: 'SOURCE_EXACT', rule: '3/10 oscillator = SMA3 - SMA10 of the close; signal line = SMA16 of the oscillator', code: `${CODE}#oscillator310`, tests: [`${T}: GC-RAS-OSC-310`] },
     { id: 'RAS-SF-OSC-HIGH', kind: 'SETUP', essential: false, psr709: ['RAS04-005'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'best setups with new oscillator momentum highs; reported as evidence' },
     { id: 'RAS-SF-TIMEFRAME', gate: false, kind: 'SETUP', essential: false, psr709: ['RAS04-006'], status: 'SOURCE_DERIVED', rule: 'timeframes are separate; 5 / 15 / 30 / 60 / 120 minutes possible', derivation: 'only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED', code: `${CODE}#holyGrailScreen`, tests: [`${T}: GC-RAS-FIRST-PULLBACK`] },
-    { id: 'RAS-SF-ENTRY', kind: 'ENTRY', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'entry order after the pullback', reason: 'order sequence not fully disclosed (#709 C13)' },
-    { id: 'RAS-SF-STOP', kind: 'STOP', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'initial stop', reason: 'stop not fully disclosed (#709 C13)' },
+    { id: 'RAS-SF-ENTRY', kind: 'ENTRY', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'entry order after the pullback', reason: 'order sequence not fully disclosed (#709 C13)', researchEvidence: [sf5Evidence('holy-grail-lifecycle.mjs', 'HOLY_GRAIL_RESEARCH_ADAPTER', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-HG-RESEARCH-VARIANT']], 'Supertrader 5.0 research variant W-RAS97 (AIQ 1997 sidebar on lindaraschke.net): buy stop above the previous bar; owner decision D-RAS97 pending, status unchanged')] },
+    { id: 'RAS-SF-STOP', kind: 'STOP', psr709: ['RAS04-001'], status: 'SOURCE_AMBIGUOUS', rule: 'initial stop', reason: 'stop not fully disclosed (#709 C13)', researchEvidence: [sf5Evidence('holy-grail-lifecycle.mjs', 'holyGrailSetupSeries', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-HG-RESEARCH-VARIANT']], 'Supertrader 5.0 research variant W-RAS97: protective stop at the newly formed swing low; owner decision D-RAS97 pending, status unchanged')] },
     { id: 'RAS-SF-EXIT', kind: 'EXIT', psr709: ['RAS04-003'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'a new high is an exit opportunity (preference)' },
     { id: 'RAS-SF-SIZE', kind: 'SIZING', psr709: [], status: 'SOURCE_AMBIGUOUS', rule: 'position size', reason: 'not disclosed for the Holy Grail setup' },
   ],

@@ -42,6 +42,13 @@ export const sf3Evidence = (file, fn, tests, note) => Object.freeze({ code: `${S
  */
 export const sf4Evidence = sf3Evidence;
 
+/**
+ * Supertrader 5.0 lifecycle evidence (research/lifecycle-engine.mjs and the method lifecycles): same shape and rule - a
+ * lifecycle runs a rule under declared model assumptions or substitutes a manual decision in a MODEL study; it never
+ * changes the rule status.
+ */
+export const sf5Evidence = sf3Evidence;
+
 /** Shared rule fragments (one definition, referenced by several contracts). */
 export const EXCLUDE = Object.freeze({
   futuresOnly: 'futures-only mechanics (contract month, roll); part of ORIGINAL_FUTURES_REPLICATION, which is DATA_BLOCKED (no futures chains in the snapshot)',

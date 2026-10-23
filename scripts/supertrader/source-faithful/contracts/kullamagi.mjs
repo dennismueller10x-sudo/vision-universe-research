@@ -6,7 +6,7 @@
  * distance at most 1.5 ADR/ATR). Setup quality, catalysts and exits are preferences or need intraday / news / borrow
  * data. The earlier VU ADR clamp that replaced the low-of-day stop (#709 false hard rule) is not repeated.
  */
-import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence } from './define.mjs';
+import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence, sf5Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/kullamagi.mjs`;
@@ -16,12 +16,12 @@ const SOURCES = [
   { sourceId: 'W-KKFAQ', edition: 'Kristjan Kullamaegi, FAQ (qullamaggie.com)', role: 'authoritative' },
   { sourceId: 'W-KKEP', edition: 'Kristjan Kullamaegi, Episodic Pivots article incl. own replies', role: 'authoritative' },
 ];
-const shared = () => [
+const shared = (breakout = false) => [
   { id: 'KK-SF-ADR', kind: 'INDICATOR', essential: false, psr709: ['KK-031'], status: 'SOURCE_EXACT', rule: 'ADR20 = mean over 20 sessions of (high / low - 1) x 100 (the 20 sessions before the bar, so a check on the entry day uses no same-day range)', code: `${CODE}#adr20`, tests: [`${T}: GC-KK-ADR20`] },
   { id: 'KK-SF-CAP', kind: 'SIZING', psr709: ['KK-001'], status: 'SOURCE_EXACT', rule: 'never more than 30 % of equity in one stock or ETF overnight', code: `${CODE}#overnightCap`, tests: [`${T}: GC-KK-CAP-30`] },
   { id: 'KK-SF-STOPMARKET', kind: 'STOP', psr709: ['KK-027'], status: 'SOURCE_EXACT', rule: 'stops are stop-market orders: a gap through the stop fills at the open, never skipped', code: `${CODE}#stopMarketFill`, tests: [`${T}: GC-KK-STOP-MARKET-GAP`] },
   { id: 'KK-SF-PRIORITY', kind: 'SETUP', essential: false, psr709: ['KK-048', 'KK-049'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'relative review priority: liquidity first, then prior move / MA and momentum together, then ADR, then volume and growth together; momentum matters most; no six-fold AND filter', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth')] },
-  { id: 'KK-SF-SIZE', kind: 'SIZING', psr709: ['KK-002', 'KK-003', 'KK-004', 'KK-025', 'KK-026'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap' },
+  { id: 'KK-SF-SIZE', kind: 'SIZING', psr709: ['KK-002', 'KK-003', 'KK-004', 'KK-025', 'KK-026'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and risk per trade are context ranges (era-dependent, KK-C4), the reviewer decides within the 30 % cap', ...(breakout ? { researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'plannedShares', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle (C08 only): 0.5 % risk to the low-of-day stop (MA-KK-RISK-FRACTION), alternatives 0.25 % / 1 %')] } : {}) },
 ];
 const sharedExclusions = {
   'KK-028': 'rare discretionary stop exception; not an automatic override (KK-C3)',
@@ -33,7 +33,7 @@ const sharedExclusions = {
 
 export const KK_BREAKOUT = defineContract({
   implemented: true,
-  sourceContractVersion: '1.1.0',
+  sourceContractVersion: '1.2.0',
   plannedIn: 'PR 7 Kullamaegi',
   strategyId: 'SF_KK_BREAKOUT',
   candidateId: 'C08',
@@ -56,14 +56,14 @@ export const KK_BREAKOUT = defineContract({
   knownLimitations: ['the opening-range-high entry (his main entry) is DATA_BLOCKED; the daily close variant is the written alternative (KK-011), not the same execution', 'the final low of day is unknown during an intraday entry; the daily variant enters at the close so that the stop rule can be evaluated exactly'],
   exclusions: { ...sharedExclusions },
   rules: [
-    ...shared(),
+    ...shared(true),
     { id: 'KK-SF-BO-MOMENTUM', kind: 'SETUP', psr709: ['KK-005', 'KK-054'], status: 'SOURCE_DERIVED', gate: false, rule: 'screen the top 1-2 % by 1, 3 and 6-month performance', derivation: 'cross-sectional percentile of 21 / 63 / 126-session returns among the snapshot universe members trading that day; reported and used to RANK candidates, never to exclude (KK-005 PREFERENCE, KK-048 no AND filter)', code: `${CODE}#momentumRanks`, tests: [`${T}: GC-KK-MOMENTUM-RANK-NOT-GATE`] },
-    { id: 'KK-SF-BO-SETUP', kind: 'SETUP', psr709: ['KK-006', 'KK-007', 'KK-008', 'KK-009'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'prior move 30-100 % in 1-3 months, higher lows, orderly tightening over 2 weeks - 2 months, rising 10 / 20-day MA; the machine reports these measures as evidence', code: `${CODE}#breakoutEvidence`, tests: [`${T}: GC-KK-SETUP-EVIDENCE`] },
-    { id: 'KK-SF-BO-ENTRY', kind: 'ENTRY', psr709: ['KK-011'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'daily breakout entry allowed (anticipation is a harder variant); the level is the reviewer\'s' },
+    { id: 'KK-SF-BO-SETUP', kind: 'SETUP', psr709: ['KK-006', 'KK-007', 'KK-008', 'KK-009'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'prior move 30-100 % in 1-3 months, higher lows, orderly tightening over 2 weeks - 2 months, rising 10 / 20-day MA; the machine reports these measures as evidence', code: `${CODE}#breakoutEvidence`, tests: [`${T}: GC-KK-SETUP-EVIDENCE`], researchEvidence: [sf5Evidence('kk-breakout-lifecycle.mjs', 'kkBreakoutSetupAt', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-SETUP-PIT'], ['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: declared setup proxy (MA-KK-SETUP-PROXY) substitutes KK-MR-SETUP')] },
+    { id: 'KK-SF-BO-ENTRY', kind: 'ENTRY', psr709: ['KK-011'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'daily breakout entry allowed (anticipation is a harder variant); the level is the reviewer\'s', researchEvidence: [sf5Evidence('kk-breakout-lifecycle.mjs', 'KK_BREAKOUT_ADAPTER', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-LIFECYCLE'], ['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-NEXT-OPEN']], 'Supertrader 5.0 MODEL lifecycle: level = 10-session consolidation high, entry at the breakout-day close (MA-KK-ENTRY-TIMING)')] },
     { id: 'KK-SF-BO-ORH', kind: 'ENTRY', essential: false, psr709: ['KK-010'], status: 'DATA_BLOCKED', rule: 'opening range high entry (1 / 5 / 60 minutes)', reason: 'no frozen intraday history in the snapshot (r9b minute cache is live and locked in snapshot mode)' },
     { id: 'KK-SF-BO-STOP', kind: 'STOP', psr709: ['KK-012'], status: 'SOURCE_EXACT', gate: true, rule: 'initial stop = low of the entry day; the distance must be <= ADR (or ATR): a wider stop REJECTS the trade, it is never replaced by a tighter stop', code: `${CODE}#breakoutStopCheck`, tests: [`${T}: GC-KK-STOP-ACCEPT`, `${T}: GC-KK-STOP-REJECT-WIDE`, `${T}: GC-KK-STOP-NO-CLAMP`] },
-    { id: 'KK-SF-BO-PARTIAL', kind: 'EXIT', psr709: ['KK-013'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'after 3-5 days sell 1/3-1/2, rest stop to break-even (preference)' },
-    { id: 'KK-SF-BO-TRAIL', kind: 'EXIT', psr709: ['KK-014'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'trail the rest with the 10 / 20-day MA; beginners: first close below the 10-day MA (preference)' },
+    { id: 'KK-SF-BO-PARTIAL', kind: 'EXIT', psr709: ['KK-013'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'after 3-5 days sell 1/3-1/2, rest stop to break-even (preference)', researchEvidence: [sf5Evidence('kk-breakout-lifecycle.mjs', 'KK_BREAKOUT_ADAPTER', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: day 3, 1/3, break-even (MA-KK-EXIT-POLICY), alternatives pre-registered')] },
+    { id: 'KK-SF-BO-TRAIL', kind: 'EXIT', psr709: ['KK-014'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'trail the rest with the 10 / 20-day MA; beginners: first close below the 10-day MA (preference)', researchEvidence: [sf5Evidence('kk-breakout-lifecycle.mjs', 'KK_BREAKOUT_ADAPTER', [['sf-sf5-kk-moka-lifecycle', 'GC-SF5-KK-TRAIL-MA10']], 'Supertrader 5.0 MODEL lifecycle: first close below the 10-day MA exits at the next open (MA-KK-EXIT-POLICY)')] },
   ],
 });
 

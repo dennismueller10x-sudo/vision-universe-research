@@ -6,7 +6,7 @@
  * group / market context stay manual or are DATA_BLOCKED. No RS > 0 gate and no "every close below MA30" exit
  * (#709 false hard rules WEIN-RSZERO / WEIN-TRAIL4).
  */
-import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence } from './define.mjs';
+import { defineContract, EXCLUDE, SF_ROOT, sf3Evidence, sf5Evidence } from './define.mjs';
 import { OUTPUT_KIND } from '../contract.mjs';
 
 const CODE = `${SF_ROOT}/methods/weinstein.mjs`;
@@ -49,7 +49,7 @@ const sharedExclusions = {
 
 export const WEINSTEIN_INVESTOR = defineContract({
   implemented: true,
-  sourceContractVersion: '1.1.0',
+  sourceContractVersion: '1.2.0',
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_INVESTOR',
   candidateId: 'C04',
@@ -80,16 +80,16 @@ export const WEINSTEIN_INVESTOR = defineContract({
   rules: [
     ...shared(),
     { id: 'WEIN-SF-INV-BREAKOUT', gate: false, kind: 'ENTRY', psr709: ['WEIN-BUY1', 'WEIN-BASE'], status: 'SOURCE_DERIVED', rule: 'early Stage 2 breakout: the week whose high exceeds the resistance of the base', derivation: 'resistance = highest weekly high from the week the MA30w last stopped falling (start of the base) to the prior week; no minimum base length (WEIN-BASE: no fixed ten weeks). The stage judgment itself stays manual (WEIN-SF-STAGE). The breakout is the event that raises a review record; it rejects no stock (no gate on WEIN-BUY1 / WEIN-BASE preferences)', code: `${CODE}#investorScreen`, tests: [`${T}: GC-WEIN-INVESTOR-CANDIDATE`, `${T}: GC-WEIN-INVESTOR-NO-BASE`] },
-    { id: 'WEIN-SF-INV-SIZE', kind: 'SIZING', psr709: ['WEIN-BUY2', 'WEIN-PB', 'WEIN-NOPB', 'WEIN-DIVERS2'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'half of the planned position at the breakout, the other half on a constructive pullback with contracting volume; do not only wait for pullbacks; roughly equal dollar amounts per position' },
-    { id: 'WEIN-SF-INV-STOP', kind: 'STOP', psr709: ['WEIN-STOP2'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'investor stop below a significant correction low; the machine proposes the lowest weekly low of the base, the reviewer decides', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-INVESTOR-CANDIDATE`] },
-    { id: 'WEIN-SF-INV-TRAIL', kind: 'EXIT', psr709: ['WEIN-TRAIL1', 'WEIN-TRAIL2', 'WEIN-TRAIL3', 'WEIN-TRAIL4', 'WEIN-SELL3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'raise the stop after a significant correction and recovery; protect under the rising MA and the relevant low; a slight MA undercut with intact low is no forced sale; sell half in Stage 3' },
-    { id: 'WEIN-SF-VOL5', kind: 'EXIT', essential: false, psr709: ['WEIN-VOL5'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'if the buy stop filled without volume confirmation, sell into the first small strength' },
+    { id: 'WEIN-SF-INV-SIZE', kind: 'SIZING', psr709: ['WEIN-BUY2', 'WEIN-PB', 'WEIN-NOPB', 'WEIN-DIVERS2'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'half of the planned position at the breakout, the other half on a constructive pullback with contracting volume; do not only wait for pullbacks; roughly equal dollar amounts per position', researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'WEINSTEIN_INVESTOR_ADAPTER', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-INVESTOR-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle (data exception): half of a 10 % planned position at the breakout, no add (MA-WEIN-SIZING)')] },
+    { id: 'WEIN-SF-INV-STOP', kind: 'STOP', psr709: ['WEIN-STOP2'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'investor stop below a significant correction low; the machine proposes the lowest weekly low of the base, the reviewer decides', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-INVESTOR-CANDIDATE`], researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'weinsteinWeeklySetups', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-SCREEN-EQUIV'], ['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-INVESTOR-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: one raw cent under the machine proposal (MA-WEIN-INITIAL-STOP)')] },
+    { id: 'WEIN-SF-INV-TRAIL', kind: 'EXIT', psr709: ['WEIN-TRAIL1', 'WEIN-TRAIL2', 'WEIN-TRAIL3', 'WEIN-TRAIL4', 'WEIN-SELL3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'raise the stop after a significant correction and recovery; protect under the rising MA and the relevant low; a slight MA undercut with intact low is no forced sale; sell half in Stage 3', researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'WEINSTEIN_INVESTOR_ADAPTER', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-INVESTOR-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: 8 % correction and new high raise the stop under min(correction low, MA30w) (MA-WEIN-TRAIL); Stage 3 sales stay manual')] },
+    { id: 'WEIN-SF-VOL5', kind: 'EXIT', essential: false, psr709: ['WEIN-VOL5'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'if the buy stop filled without volume confirmation, sell into the first small strength', researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'WEINSTEIN_INVESTOR_ADAPTER', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-VOL5']], 'Supertrader 5.0 MODEL lifecycle: printed volume alternatives at the end of the breakout week; first up close = first small strength (MA-WEIN-VOL5-STRENGTH)')] },
   ],
 });
 
 export const WEINSTEIN_TRADER = defineContract({
   implemented: true,
-  sourceContractVersion: '1.1.0',
+  sourceContractVersion: '1.2.0',
   plannedIn: 'PR 4 Weinstein',
   strategyId: 'SF_WEINSTEIN_TRADER',
   candidateId: 'C05',
@@ -118,8 +118,8 @@ export const WEINSTEIN_TRADER = defineContract({
   rules: [
     ...shared(),
     { id: 'WEIN-SF-TR-CONT', gate: false, kind: 'ENTRY', psr709: ['WEIN-TR-CONT'], status: 'SOURCE_DERIVED', rule: 'continuation buy: breakout over new resistance after a consolidation near a clearly rising 30-week MA', derivation: 'MA30w must have risen over the prior week (clearly rising = MA up this week; no slope threshold added); resistance = the most recent weekly swing high that was followed by at least one lower-high week; the week whose high exceeds it raises a review record; it rejects no stock (no gate on the WEIN-TR-CONT preference)', code: `${CODE}#traderScreen`, tests: [`${T}: GC-WEIN-TRADER-CANDIDATE`, `${T}: GC-WEIN-TRADER-MA-FLAT`] },
-    { id: 'WEIN-SF-TR-SIZE', kind: 'SIZING', psr709: ['WEIN-TR-CONT-SIZE'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'buy the full planned position at the continuation breakout (amount is the reviewer\'s)' },
-    { id: 'WEIN-SF-TR-STOP', kind: 'STOP', psr709: ['WEIN-TR-STOP'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'trader stop below the next relevant reaction low; the machine proposes the consolidation low, the reviewer decides', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-TRADER-CANDIDATE`] },
-    { id: 'WEIN-SF-TR-TRAIL', kind: 'EXIT', psr709: ['WEIN-TR-TRAIL', 'WEIN-TR-EARLY', 'WEIN-TR-SELL3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'ignore corrections under 7 %; after a significant correction and recovery raise the stop under the reaction low; do not wait for the MA break; exit earlier than investors at a Stage 3 top' },
+    { id: 'WEIN-SF-TR-SIZE', kind: 'SIZING', psr709: ['WEIN-TR-CONT-SIZE'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'buy the full planned position at the continuation breakout (amount is the reviewer\'s)', researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'WEINSTEIN_TRADER_ADAPTER', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-TRADER-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle (data exception): full 10 % planned position (MA-WEIN-SIZING)')] },
+    { id: 'WEIN-SF-TR-STOP', kind: 'STOP', psr709: ['WEIN-TR-STOP'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'trader stop below the next relevant reaction low; the machine proposes the consolidation low, the reviewer decides', code: `${CODE}#candidateRecord`, tests: [`${T}: GC-WEIN-TRADER-CANDIDATE`], researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'weinsteinWeeklySetups', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-SCREEN-EQUIV']], 'Supertrader 5.0 MODEL lifecycle: one raw cent under the consolidation low (MA-WEIN-INITIAL-STOP)')] },
+    { id: 'WEIN-SF-TR-TRAIL', kind: 'EXIT', psr709: ['WEIN-TR-TRAIL', 'WEIN-TR-EARLY', 'WEIN-TR-SELL3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'ignore corrections under 7 %; after a significant correction and recovery raise the stop under the reaction low; do not wait for the MA break; exit earlier than investors at a Stage 3 top', researchEvidence: [sf5Evidence('weinstein-lifecycle.mjs', 'WEINSTEIN_TRADER_ADAPTER', [['sf-sf5-weinstein-lifecycle', 'GC-SF5-WEIN-TRADER-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: corrections under 7 % ignored, stop under the reaction low after recovery (MA-WEIN-TRAIL)')] },
   ],
 });

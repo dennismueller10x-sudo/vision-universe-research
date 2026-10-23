@@ -43,24 +43,24 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): TUR-SF-LIMIT-CORR: equity model assumption, never SOURCE_EXACT
 - quellenoffen: –; Modellannahmen: MA-TUR-INTRABAR-ORDER, MA-TUR-HELD-BAR-ORDER
 
-### C03 `SF_DARVAS_BOX` (Vertrag 1.2.0)
+### C03 `SF_DARVAS_BOX` (Vertrag 1.3.0)
 
 - Messung: mechanical signals with their mechanical exit, equal weight, no selection or sizing; not a method return
-- Research-Komponenten: DAR-SF-SELECTION <- context-evidence.mjs#withContextEvidence; DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence
+- Research-Komponenten: DAR-SF-SELECTION <- context-evidence.mjs#withContextEvidence; DAR-SF-SELECTION <- darvas-lifecycle.mjs#DARVAS_ADAPTER; DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence; DAR-SF-SIZING <- lifecycle-engine.mjs#plannedShares; DAR-SF-REENTRY <- lifecycle-engine.mjs#runResearchLifecycle
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: DAR-SF-BOTTOM-START; Modellannahmen: –
 
-### C04 `SF_WEINSTEIN_INVESTOR` (Vertrag 1.1.0)
+### C04 `SF_WEINSTEIN_INVESTOR` (Vertrag 1.2.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence; WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth
+- Research-Komponenten: WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence; WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth; WEIN-SF-INV-SIZE <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER; WEIN-SF-INV-STOP <- weinstein-lifecycle.mjs#weinsteinWeeklySetups; WEIN-SF-INV-TRAIL <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER; WEIN-SF-VOL5 <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER
 - Stellvertreter (heben keine Datensperre auf): WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART; WEIN-SF-MARKET: proxy, not NYSE breadth
 - quellenoffen: –; Modellannahmen: –
 
-### C05 `SF_WEINSTEIN_TRADER` (Vertrag 1.1.0)
+### C05 `SF_WEINSTEIN_TRADER` (Vertrag 1.2.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence; WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth
+- Research-Komponenten: WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence; WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth; WEIN-SF-TR-SIZE <- weinstein-lifecycle.mjs#WEINSTEIN_TRADER_ADAPTER; WEIN-SF-TR-STOP <- weinstein-lifecycle.mjs#weinsteinWeeklySetups; WEIN-SF-TR-TRAIL <- weinstein-lifecycle.mjs#WEINSTEIN_TRADER_ADAPTER
 - Stellvertreter (heben keine Datensperre auf): WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART; WEIN-SF-MARKET: proxy, not NYSE breadth
 - quellenoffen: –; Modellannahmen: –
 
@@ -78,10 +78,10 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: –; Modellannahmen: –
 
-### C08 `SF_KK_BREAKOUT` (Vertrag 1.1.0)
+### C08 `SF_KK_BREAKOUT` (Vertrag 1.2.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence
+- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence; KK-SF-SIZE <- lifecycle-engine.mjs#plannedShares; KK-SF-BO-SETUP <- kk-breakout-lifecycle.mjs#kkBreakoutSetupAt; KK-SF-BO-ENTRY <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER; KK-SF-BO-PARTIAL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER; KK-SF-BO-TRAIL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: –; Modellannahmen: –
 
@@ -99,24 +99,24 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: –; Modellannahmen: –
 
-### C11 `SF_MOKA_POCKET_PIVOT` (Vertrag 1.2.0)
+### C11 `SF_MOKA_POCKET_PIVOT` (Vertrag 1.3.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: MOKA-SF-PP-CONTEXT <- context-evidence.mjs#withContextEvidence; MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence
+- Research-Komponenten: MOKA-SF-PP-CONTEXT <- context-evidence.mjs#withContextEvidence; MOKA-SF-PP-SIZE <- lifecycle-engine.mjs#plannedShares; MOKA-SF-EXIT-MA <- moka-lifecycle.mjs#sellGuideSeries; MOKA-SF-EXIT-VIOLATION <- lifecycle-engine.mjs#protectiveHit; MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: MOKA-SF-EXIT-VIOLATION; Modellannahmen: –
 
-### C12 `SF_MOKA_BUYABLE_GAP_UP` (Vertrag 1.2.0)
+### C12 `SF_MOKA_BUYABLE_GAP_UP` (Vertrag 1.3.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: MOKA-SF-BGU-CONTEXT <- context-evidence.mjs#withContextEvidence; MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence
+- Research-Komponenten: MOKA-SF-BGU-CONTEXT <- context-evidence.mjs#withContextEvidence; MOKA-SF-BGU-SELLGUIDE <- lifecycle-engine.mjs#protectiveHit; MOKA-SF-BGU-SIZE <- lifecycle-engine.mjs#plannedShares; MOKA-SF-EXIT-MA <- moka-lifecycle.mjs#sellGuideSeries; MOKA-SF-EXIT-VIOLATION <- lifecycle-engine.mjs#protectiveHit; MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: MOKA-SF-BGU-VOLWINDOW, MOKA-SF-EXIT-VIOLATION; Modellannahmen: –
 
-### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.0.0)
+### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.1.0)
 
 - Messung: the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only
-- Research-Komponenten: –
+- Research-Komponenten: RAS-SF-ENTRY <- holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER; RAS-SF-STOP <- holy-grail-lifecycle.mjs#holyGrailSetupSeries
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: RAS-SF-ENTRY, RAS-SF-STOP, RAS-SF-SIZE; Modellannahmen: –
 

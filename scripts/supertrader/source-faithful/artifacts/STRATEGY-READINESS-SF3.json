@@ -147,7 +147,7 @@
   {
    "candidateId": "C03",
    "strategyId": "SF_DARVAS_BOX",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.3.0",
    "sourceFidelity": {
     "exact": 3,
     "derived": 10,
@@ -167,7 +167,10 @@
     "acceptanceGate": null,
     "researchComponents": [
      "DAR-SF-SELECTION <- context-evidence.mjs#withContextEvidence",
-     "DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence"
+     "DAR-SF-SELECTION <- darvas-lifecycle.mjs#DARVAS_ADAPTER",
+     "DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence",
+     "DAR-SF-SIZING <- lifecycle-engine.mjs#plannedShares",
+     "DAR-SF-REENTRY <- lifecycle-engine.mjs#runResearchLifecycle"
     ]
    },
    "dataCoverage": {
@@ -207,7 +210,7 @@
   {
    "candidateId": "C04",
    "strategyId": "SF_WEINSTEIN_INVESTOR",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.0",
    "sourceFidelity": {
     "exact": 1,
     "derived": 5,
@@ -225,7 +228,11 @@
     "acceptanceGate": null,
     "researchComponents": [
      "WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence",
-     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth"
+     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth",
+     "WEIN-SF-INV-SIZE <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER",
+     "WEIN-SF-INV-STOP <- weinstein-lifecycle.mjs#weinsteinWeeklySetups",
+     "WEIN-SF-INV-TRAIL <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER",
+     "WEIN-SF-VOL5 <- weinstein-lifecycle.mjs#WEINSTEIN_INVESTOR_ADAPTER"
     ]
    },
    "dataCoverage": {
@@ -277,7 +284,7 @@
   {
    "candidateId": "C05",
    "strategyId": "SF_WEINSTEIN_TRADER",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.0",
    "sourceFidelity": {
     "exact": 1,
     "derived": 5,
@@ -295,7 +302,10 @@
     "acceptanceGate": null,
     "researchComponents": [
      "WEIN-SF-GROUP <- industry-strength.mjs#withIndustryEvidence",
-     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth"
+     "WEIN-SF-MARKET <- market-breadth.mjs#buildMarketBreadth",
+     "WEIN-SF-TR-SIZE <- weinstein-lifecycle.mjs#WEINSTEIN_TRADER_ADAPTER",
+     "WEIN-SF-TR-STOP <- weinstein-lifecycle.mjs#weinsteinWeeklySetups",
+     "WEIN-SF-TR-TRAIL <- weinstein-lifecycle.mjs#WEINSTEIN_TRADER_ADAPTER"
     ]
    },
    "dataCoverage": {
@@ -480,7 +490,7 @@
   {
    "candidateId": "C08",
    "strategyId": "SF_KK_BREAKOUT",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.0",
    "sourceFidelity": {
     "exact": 4,
     "derived": 1,
@@ -497,7 +507,12 @@
     "engine": "MECHANICAL_SCREEN_COMPLETE",
     "acceptanceGate": null,
     "researchComponents": [
-     "KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence"
+     "KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence",
+     "KK-SF-SIZE <- lifecycle-engine.mjs#plannedShares",
+     "KK-SF-BO-SETUP <- kk-breakout-lifecycle.mjs#kkBreakoutSetupAt",
+     "KK-SF-BO-ENTRY <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER",
+     "KK-SF-BO-PARTIAL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER",
+     "KK-SF-BO-TRAIL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER"
     ]
    },
    "dataCoverage": {
@@ -646,7 +661,7 @@
   {
    "candidateId": "C11",
    "strategyId": "SF_MOKA_POCKET_PIVOT",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.3.0",
    "sourceFidelity": {
     "exact": 1,
     "derived": 3,
@@ -666,6 +681,9 @@
     "acceptanceGate": null,
     "researchComponents": [
      "MOKA-SF-PP-CONTEXT <- context-evidence.mjs#withContextEvidence",
+     "MOKA-SF-PP-SIZE <- lifecycle-engine.mjs#plannedShares",
+     "MOKA-SF-EXIT-MA <- moka-lifecycle.mjs#sellGuideSeries",
+     "MOKA-SF-EXIT-VIOLATION <- lifecycle-engine.mjs#protectiveHit",
      "MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence"
     ]
    },
@@ -705,7 +723,7 @@
   {
    "candidateId": "C12",
    "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.3.0",
    "sourceFidelity": {
     "exact": 2,
     "derived": 2,
@@ -726,6 +744,10 @@
     "acceptanceGate": null,
     "researchComponents": [
      "MOKA-SF-BGU-CONTEXT <- context-evidence.mjs#withContextEvidence",
+     "MOKA-SF-BGU-SELLGUIDE <- lifecycle-engine.mjs#protectiveHit",
+     "MOKA-SF-BGU-SIZE <- lifecycle-engine.mjs#plannedShares",
+     "MOKA-SF-EXIT-MA <- moka-lifecycle.mjs#sellGuideSeries",
+     "MOKA-SF-EXIT-VIOLATION <- lifecycle-engine.mjs#protectiveHit",
      "MOKA-SF-EXIT-CONTEXT <- context-evidence.mjs#withContextEvidence"
     ]
    },
@@ -766,7 +788,7 @@
   {
    "candidateId": "C13",
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
-   "sourceContractVersion": "1.0.0",
+   "sourceContractVersion": "1.1.0",
    "sourceFidelity": {
     "exact": 2,
     "derived": 2,
@@ -786,7 +808,10 @@
    "mechanicalCompleteness": {
     "engine": "MECHANICAL_COMPONENTS_ONLY",
     "acceptanceGate": null,
-    "researchComponents": []
+    "researchComponents": [
+     "RAS-SF-ENTRY <- holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER",
+     "RAS-SF-STOP <- holy-grail-lifecycle.mjs#holyGrailSetupSeries"
+    ]
    },
    "dataCoverage": {
     "blockingDataRules": [],
