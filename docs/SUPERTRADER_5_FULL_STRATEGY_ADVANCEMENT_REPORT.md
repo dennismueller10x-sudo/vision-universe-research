@@ -1,6 +1,6 @@
 # Supertrader 5.0 – Full Strategy Advancement: Abschlussbericht
 
-Stand: 22. Oktober 2026. Basis: `main` @ `f3afc8dc1` (nach #842, #844). Zweig: `claude/supertrader-5-lifecycle-engine-darvas`.
+Stand: 22. Oktober 2026, Gesamtabschluss 23. Oktober 2026. Basis: `main` @ `f3afc8dc1` (nach #842, #844); #849 gemergt als `91c2fc87c`. Abschluss-Zweig: `claude/supertrader-5-closeout`.
 Research Snapshot: `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`. Abrechnung: `research-v1`.
 
 Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist live oder handelbar. Es gibt keine Orders, keine Brokeranbindung und keine Performanceaussage. Die Kennzahlen jedes Laufs liegen versiegelt; öffentlich sind nur Zählungen.
@@ -232,13 +232,91 @@ Was die Zählungen zeigen (keine Performanceaussage, die Kennzahlen bleiben vers
 - **Kullamägi Episodic Pivot**: Entry (ORH), Katalysator und Frühvolumen bleiben DATA_BLOCKED. Eine Tagesbalken-Simulation wäre ein unzulässiger Ersatz.
 - **Kullamägi Parabolic Short**: Entry, Stop (VWAP) und Borrow bleiben DATA_BLOCKED. Es gibt keine fiktive Short-Ausführung.
 
+## Gesamtabschluss: Soll-Ist-Abgleich mit dem Masterauftrag
+
+Stand: 23. Oktober 2026, nach dem Merge von #849 (`main` @ `91c2fc87c`). Geprüft wurden der Code auf `main` und die tatsächlichen Laufergebnisse. Es gab keine neue Forschungs- oder Datenkampagne.
+
+### Arbeitspakete des Auftrags (§ 8)
+
+| Paket | Inhalt laut Auftrag | Stand | Wo |
+|---|---|---|---|
+| A | gemeinsame Execution- und Accounting-Komponenten | erledigt: `research/lifecycle-engine.mjs` | #849 (gemergt) |
+| B | Darvas Trade Lifecycle | erledigt | #849 |
+| C | Kullamägi Common Breakout | erledigt | #849 |
+| D | Pocket Pivot / Buyable Gap-Up | erledigt; Pocket Pivot 8/9 Phasen (die Quelle nennt keinen Stop) | #849 |
+| E | Turtle / Weinstein / Minervini, belegbare Ergänzungen | Weinstein-Lifecycle in #849. **Neu:** freigegebene SIC3-Gruppenreferenz als Research-Variante (dieser Abschluss-PR). Turtle und Minervini sind geprüft; es gibt keine belegte Änderung, die Referenzen sind unverändert. | #849, Abschluss-PR |
+| F | daten- und quellenblockierte Strategien | Holy Grail als Research-Variante in #849. Episodic Pivot und Parabolic Short sind geprüft und bleiben blockiert. | #849 |
+| G | Gesamtdiagnostik, Readiness, Abschlussbericht | Bericht in #849; Gesamtabschluss in diesem Abschnitt | #849, Abschluss-PR |
+
+### Neu im Abschluss-PR: Weinstein-Variante `ALT-SIC3-GROUP-PROXY`
+
+- **Grundlage:** Ihre Entscheidung vom 21.10.2026 ([SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md](SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md), Abschnitt 7). `SIC3-EW-MIN5-400D-WIDE` darf als klar gekennzeichnete Research-Referenz verwendet werden.
+- **Lücke:** Der 5.0-Lifecycle hat diese Referenz bisher nicht genutzt. Die Komponente aus 3.0 (`research/industry-strength.mjs`) war fertig, aber im Lifecycle nicht angebunden.
+- **Umsetzung:** eine zusätzliche vorregistrierte Variante für Investor und Trader.
+  - Ein Buy-Stop entfällt, wenn das SIC3-Gruppenchart in der abgeschlossenen Woche vor der Orderwoche **unter einer fallenden MA30w** schloss. Diese Lesart ähnelt Stage 4 und nutzt dieselbe MA30w wie das Gate der Aktie; es gibt keine neue Schwelle.
+  - Eine unbekannte Mitgliedschaft, zu wenige Mitglieder oder zu kurze Historie blockieren nie.
+- **Unverändert:**
+  - die Referenz (setup- und trade-genau, Test);
+  - `WEIN-SF-GROUP` bleibt `DATA_BLOCKED`;
+  - das Label `…WITH_DATA_EXCEPTION`;
+  - die Gruppen-Stage bleibt die Entscheidung des Reviewers (`WEIN-RG-GROUP`).
+- **Prüfung:**
+  - Ein PIT-Test mit veränderten Folgekursen und ein PIT-Test mit einer SIC-Änderung nach dem Entscheidungsschluss. Beide schlagen bei einem eingebauten Vorgriff an (Mutationsprobe).
+  - Fail-closed ohne Gruppenindex.
+  - Unabhängiges Review: 0 CRITICAL, 0 HIGH. Ein MEDIUM- und fünf LOW-Befunde sind behoben.
+- **Snapshot-Lauf:** siehe Abschnitt „Snapshot-Lauf“.
+
+### Konsolidierte Readiness aller 13 Strategien
+
+Legende:
+- **Stufe** = höchste tatsächlich erreichte Research-Fähigkeit.
+- **Phasen** = ausführbare operative Lifecycle-Phasen von 9.
+- **Sperre:** D = Daten, Q = Primärquelle, E = Owner-Entscheidung.
+- Live ist überall `LIVE_NOT_APPROVED`. Keine Strategie ist handelbar, zertifiziert oder originalgetreu vollständig.
+
+| # | Strategie | Vertragsmessklasse (unverändert) | Stufe | Phasen | maßgeblicher Lauf | verbleibende Sperren |
+|---|---|---|---|---|---|---|
+| C01 | Turtle S1 | FULL_DIAGNOSTIC | vollständiger diagnostischer Strategie-Backtest **mit Datenausnahme** | 9/9 (eigene Engine) | Referenzläufe `CURRENT_ENGINE` | D: PIT-Korrelationsgruppen (Limits nur als Research-Variante aus 3.0). Q: offener hypothetischer Breakout und Failsafe-Exit (Original schweigt). |
+| C02 | Turtle S2 | FULL_DIAGNOSTIC | wie S1 | 9/9 | wie S1 | D: PIT-Korrelationsgruppen |
+| C03 | Darvas Box | COMPONENT | Modellstudie (`MODEL_LIFECYCLE_STUDY`) | 9/9 | sf5 | Q: Auswahl und Größe manuell (Modellannahme). D: Allzeithoch nur ab 2015. E: Größe / Intrabar (Entscheidung 4). |
+| C04 | Weinstein Investor | SCREEN | Modellstudie mit Datenausnahme, dazu SIC3-Research-Variante | 9/9 | sf5 | D: PIT-Gruppen-Stage, NYSE-Breite. Q: Stage, Volumenurteil, RS und Overhead manuell. |
+| C05 | Weinstein Trader | SCREEN | wie C04 | 9/9 | sf5 | wie C04 |
+| C06 | Minervini SEPA/VCP | SCREEN | Modellstudie (4.0) | 9/9 | sf4 39746264325 | D: IBD-RS-Rating, Fundamentals- und Schätzungshistorie. Q: englischer Wortlaut nicht frei verfügbar. |
+| C07 | Minervini Power Play | SCREEN | Modellstudie (4.0) | 9/9 | sf4 39746264325 | Q: englischer Wortlaut nicht frei verfügbar |
+| C08 | Kullamägi Breakout | SCREEN | Modellstudie (KK-012 exakt) | 9/9 | sf5 | D: Opening-Range-High intraday. Q: Setup und Größe manuell. E: Referenz-Einstieg (Entscheidung 2). |
+| C09 | Kullamägi Episodic Pivot | NOT_MEASURABLE | Komponenten (Gap-Evidenz, KK-034-Stop) | – | – | D: Katalysator-/News-Historie, Frühvolumen, Opening-Range-High |
+| C10 | Kullamägi Parabolic Short | NOT_MEASURABLE | Komponenten (Evidenz) | – | – | D: Borrow/Locates historisch, Intraday, VWAP |
+| C11 | Pocket Pivot | SCREEN | Modellstudie, unvollständig | 8/9 | sf5 | Q: kein Initialstop in der Quelle. D: Intraday-Volumen. |
+| C12 | Buyable Gap-Up | SCREEN | Modellstudie | 9/9 | sf5 | D: Intraday-Volumen, Megacap-PIT. E: Volumenfenster (Entscheidung 3). |
+| C13 | Raschke Holy Grail | NOT_MEASURABLE | Research-Variante W-RAS97, unvollständig | 8/9 | sf5 | E: Quelle D-RAS97 (Entscheidung 1). Q: Trailing ohne Mechanik. D: Intraday. |
+
+Zusammengefasst:
+- **Vollständiger diagnostischer Strategie-Backtest:** nur Turtle S1/S2, mit Datenausnahme.
+- **Vollständige mechanische Modellstudie (9/9):** Darvas, Kullamägi Breakout, Buyable Gap-Up, Weinstein Investor/Trader, Minervini SEPA und Power Play.
+- **Unvollständige Modellstudie (8/9):** Pocket Pivot (ohne Stop) und Holy Grail (Variante, ohne Trailing).
+- **Nur Komponenten:** Episodic Pivot und Parabolic Short.
+- **Nur Screens:** Keine Strategie ist mehr reiner Screen. Die Vertragsmessklasse bleibt trotzdem wie abgenommen, denn eine Modellstudie hebt sie nicht an.
+
+### Geprüfte Restpunkte ohne Umsetzung (mit Begründung)
+
+| Kandidat | Entscheidung | Grund |
+|---|---|---|
+| Weinstein-Marktfilter über die Universums-Breite (`buildMarketBreadth`) | nicht umgesetzt | Ihre Entscheidung vom 21.10.: die Universums-Breite hebt `WEIN-SF-MARKET` nie auf. Die Quelle nennt keine Schwelle, eine Variante bräuchte eine erfundene. |
+| Kapitalgewichteter Gruppenindex | nicht umgesetzt | Im Snapshot `DATA_BLOCKED`. Ihre Entscheidung: kein neuer Capture. |
+| Darvas „stärkste Aktie“ über die Branchenführung (`industryLeadership`) | nicht umgesetzt | Darvas nennt kein Fenster und keine Rangregel; eine Auswahlregel wäre erfunden. Die Auswahl bleibt manuell (Modellannahme). |
+| Turtle-Korrelationslimits im Referenzlauf | nicht umgesetzt | Bleiben Research-Variante (Auftrag § 3B). Sie sind in 3.0 vorher/nachher gemessen. Die Engine (AG-3) bleibt unverändert. |
+| Minervini | nicht umgesetzt | Es gibt keinen belegten Grund. Die Fingerabdrücke und Snapshot-Referenzen sind per Test gesichert. |
+| Episodic Pivot / Parabolic Short über Tagesbalken | nicht umgesetzt | Der Auftrag schließt unzulässige Daily-Bar-Simulationen und fiktive Short-Ausführungen ausdrücklich aus. |
+| Pocket-Pivot-Stop, Holy-Grail-Trailing | nicht umgesetzt | Sie fehlen in der Quelle, ein Ersatz wäre erfunden. |
+
+**Ergebnis:** Nach dem Abschluss-PR bleibt **keine** klar beauftragte und technisch lösbare Implementierung offen. Jede verbleibende Einschränkung ist eine Daten- oder Quellensperre oder eine der vier Owner-Entscheidungen unten.
+
 ## Draft-PRs zur Freigabe
 
 | PR | Inhalt | Zustand |
 |---|---|---|
-| [#849](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/849) | Gemeinsame Engine, Lifecycles Darvas, Kullamägi Breakout, Pocket Pivot, BGU, Weinstein, Holy-Grail-Variante, Matrix, Readiness, Runner, Workflow-Modus, Bericht | Draft, Tests grün, Reviews eingearbeitet |
-
-Warum ein PR statt der empfohlenen sieben Pakete: Engine, Registry, Matrix, Validator, Readiness-Artefakt und Runner bilden eine technische Einheit. Jede Lifecycle-Ergänzung erzeugt dieselben generierten Artefakte neu (`STRATEGY-*.json`, Golden Record, Readiness-Dokumente). Getrennte PRs würden bei jedem Merge in Artefaktkonflikte laufen. Die Commits sind nach Arbeitspaketen gegliedert.
+| [#849](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/849) | gemeinsame Engine; Lifecycles Darvas, Kullamägi Breakout, Pocket Pivot, BGU, Weinstein und Holy-Grail-Variante; Matrix, Readiness, Runner, Bericht | **gemergt** am 23.10.2026 (`91c2fc87c`); `main`-CI grün |
+| Abschluss-PR (`claude/supertrader-5-closeout`) | Weinstein-Variante `ALT-SIC3-GROUP-PROXY`, neuer maßgeblicher Snapshot-Lauf, Gesamtabschluss | Draft, Freigabe offen |
 
 ## Entscheidungen, die von Ihnen benötigt werden
 
