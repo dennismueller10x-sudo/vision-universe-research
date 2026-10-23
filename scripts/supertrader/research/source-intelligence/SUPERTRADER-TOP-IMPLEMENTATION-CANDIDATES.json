@@ -1,0 +1,1026 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "purpose": "Qualitative Phase2 research admissions, no performance ranking or immediate implementation approval",
+  "candidate_count": 9,
+  "candidates": [
+    {
+      "rank": 1,
+      "candidate_id": "cross_sectional_momentum",
+      "name": "Cross-sectional equity momentum — Jegadeesh–Titman",
+      "why_selected": "Simple, fully specified research portfolio rules and extensive primary evidence; first priority for source-defined equity momentum research.",
+      "important_source_ids": [
+        "jt1993",
+        "jt1993_doi",
+        "french_mom"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "HIGH: Section I and Table I provide deterministic formation protocol; no realized trade ledger.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV / total returns",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "category": "OHLCV / total returns",
+            "status": "PARTIAL",
+            "rights": "Existing VU provider must be checked by lead; public factor returns do not license constituent history. Adjusted prices, dividends, delistings and historical universe are separate requirements."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "short borrow / financing",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "short borrow / financing",
+            "status": "MISSING",
+            "rights": "Historical borrow availability/cost not established; long-only adaptation cannot inherit long-short paper performance."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "historical universe / corporate actions",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "historical universe / corporate actions",
+            "status": "PARTIAL",
+            "rights": "CRSP raw replication data are licensed; free factor series are a validation reference."
+          },
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "LOW",
+      "main_risk": "Historical universe/delisting bias and execution/shorting costs; live VU equity-only variant needs explicit adaptation label.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Klarer erster Referenzfall für Relative Strength: monatliche Rangportfolios mit unabhängig lesbarer Quellenbasis. Auswahl-/Holding-Varianten bleiben bis zum Phase2-Freeze getrennt."
+    },
+    {
+      "rank": 2,
+      "candidate_id": "52_week_high_effect",
+      "name": "52-week-high proximity — George–Hwang",
+      "why_selected": "Transparent distinct ranking signal requiring mainly price data; strong candidate if compared with momentum as a related family.",
+      "important_source_ids": [
+        "gh2004"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "HIGH: core strategy in Tables I–III.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV / total returns",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "category": "OHLCV / total returns",
+            "status": "PARTIAL",
+            "rights": "Existing VU provider must be checked by lead; public factor returns do not license constituent history. Adjusted prices, dividends, delistings and historical universe are separate requirements."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "short borrow / financing",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "short borrow / financing",
+            "status": "MISSING",
+            "rights": "Historical borrow availability/cost not established; long-only adaptation cannot inherit long-short paper performance."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "LOW",
+      "main_risk": "Overlap with generic momentum and VU Trend52 story; high-price definition and corporate actions must be fixed from source.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Eigenständiges Nähe-zum-Jahreshoch-Protokoll; nicht mit einem neuen-52W-Hoch-Breakout oder VU Trend52 verwechseln. OHLCV-basierte, visuell erklärbare Hypothese mit dokumentierter Portfolio-Konstruktion."
+    },
+    {
+      "rank": 3,
+      "candidate_id": "LOW_VOLATILITY",
+      "name": "Low-volatility equity portfolios — Blitz / van Vliet",
+      "why_selected": "Preisbasierte defensive Vielfalt; klarer Portfolio-Oracle, US-VU-Adaptation statt FTSE-Replikation.",
+      "important_source_ids": [
+        "LV-PAPER",
+        "LV-REPOSITORY"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "Inspected source-defined construction protocol; independent manual portfolio cases still required.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": "OHLCV",
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "pit_universe",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [],
+          "source_requirement": "pit_universe",
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "risk_free_rate",
+          "category": "risk_free_rate",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "Official Treasury/FRED sources free; chosen vintage/calendar contract not yet reviewed.",
+          "repo_locators": [],
+          "source_requirement": "risk_free_rate",
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US low-volatility long decile protocol in VU PIT universe; Adaptation of licensed global FTSE study, with no source-return inheritance.",
+      "expected_effort": "LOW",
+      "main_risk": [
+        "Original index membership and Factset data are licensed; VU US universe is a disclosed adaptation.",
+        "Low-risk result does not imply strongest raw return in US; costs omitted."
+      ],
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Defensive methodische Vielfalt mit einfacher Preisbasis und klarer monatlicher Portfoliokonstruktion. Die Quelle trägt vor allem ein Risikoargument, keinen Anspruch auf höchste US-Roh­rendite."
+    },
+    {
+      "rank": 4,
+      "candidate_id": "gross_profitability_novy_marx",
+      "name": "Gross profitability — Novy-Marx annual variant",
+      "why_selected": "Simple specified quality strategy with authoritative author-hosted manuscript, low discretion, limited accounting inputs and clear annual portfolio mechanics. Useful family diversification.",
+      "important_source_ids": [
+        "eq_gp_2012"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "Inspected source-defined construction protocol; independent manual portfolio cases still required.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV and total-return corporate actions",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "data": "OHLCV and total-return corporate actions",
+            "availability": "PARTIAL",
+            "rights": "EXISTING_PROVIDER_RIGHTS_TO_CONFIRM",
+            "note": "Parent must attach repository inventory; original CRSP survivorship/delisting coverage is not presumed available."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "PIT SEC financial statements and original filing timestamps",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "PIT SEC financial statements and original filing timestamps",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "SEC EDGAR is free; standardized historical mappings, amended-vintage handling, delisted universe and deep pre-XBRL coverage are not presumed complete."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Revenue, cost of goods sold and total assets; sector classification",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "Revenue, cost of goods sold and total assets; sector classification",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "Three basic accounting fields; COGS comparability and nonfinancial exclusions need repository field evidence."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Revenue, cost of goods sold and total assets; sector classification",
+          "category": "sector_industry",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE for SIC; third-party classification rights not assumed",
+          "repo_locators": [
+            "docs/VU_FREE_DATA_SOURCE_MAP.md#V",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+          ],
+          "source_requirement": {
+            "data": "Revenue, cost of goods sold and total assets; sector classification",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "Three basic accounting fields; COGS comparability and nonfinancial exclusions need repository field evidence."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Historical borrow availability and costs",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "data": "Historical borrow availability and costs",
+            "availability": "MISSING",
+            "rights": "NOT_AVAILABLE_CONFIRMED",
+            "note": "Long-short research portfolios need borrowing assumptions; long-only adaptation must be named separately."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "LOW",
+      "main_risk": "PIT COGS comparability and exact long-short feasibility; an all-current-survivor universe cannot reproduce paper evidence.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Schlanke, unabhängige Quality-Hypothese statt einer weiteren Chart-Breakout-Variante. Wenige zentrale Accounting-Felder und ein klares jährliches Rangprotokoll; PIT- und Branchenbasis bleiben harte Voraussetzungen."
+    },
+    {
+      "rank": 5,
+      "candidate_id": "piotroski_value_fscore",
+      "name": "Piotroski — original value-conditioned F-score portfolio",
+      "why_selected": "Distinct value/quality family with explicit public accounting score and research construction; A means future research/specification candidate, contingent on VU PIT evidence, not approved engine or promised exact full-history replication.",
+      "important_source_ids": [
+        "eq_piotroski_paper",
+        "eq_piotroski_review"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "Inspected source-defined construction protocol; independent manual portfolio cases still required.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV and total-return corporate actions",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "data": "OHLCV and total-return corporate actions",
+            "availability": "PARTIAL",
+            "rights": "EXISTING_PROVIDER_RIGHTS_TO_CONFIRM",
+            "note": "Parent must attach repository inventory; original CRSP survivorship/delisting coverage is not presumed available."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "PIT SEC financial statements and original filing timestamps",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "PIT SEC financial statements and original filing timestamps",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "SEC EDGAR is free; standardized historical mappings, amended-vintage handling, delisted universe and deep pre-XBRL coverage are not presumed complete."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Common equity issuance evidence; debt, current assets/liabilities, cash flow, gross margin",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "Common equity issuance evidence; debt, current assets/liabilities, cash flow, gross margin",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "No-equity-offering condition must not be replaced silently by weighted-average-share dilution proxy."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Historical borrow availability and costs",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "data": "Historical borrow availability and costs",
+            "availability": "MISSING",
+            "rights": "NOT_AVAILABLE_CONFIRMED",
+            "note": "Long-short research portfolios need borrowing assumptions; long-only adaptation must be named separately."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "MEDIUM",
+      "main_risk": "PIT and common-equity issuance semantics; distressed/small-cap universe capacity.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Transparentes Accounting-Regelwerk mit Wertaktien-Vorfilter und negativer Kontrollgruppe. Erst die Originalportfolio-Definition prüfen; ein universeller F-Score-Screener ist keine Replikation."
+    },
+    {
+      "rank": 6,
+      "candidate_id": "greenblatt_magic_formula",
+      "name": "Greenblatt — Magic Formula",
+      "why_selected": "Clear equal-dollar diversified portfolio and annual exits supported by official sources; MEDIUM reproducibility until accounting appendix is inspected; feasible research with SEC inputs.",
+      "important_source_ids": [
+        "eq_magic_faq",
+        "eq_magic_work",
+        "eq_magic_interview",
+        "eq_magic_book"
+      ],
+      "track_record_evidence": "SELF_REPORTED",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "Inspected source-defined construction protocol; independent manual portfolio cases still required.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "MEDIUM",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV and total-return corporate actions",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "data": "OHLCV and total-return corporate actions",
+            "availability": "PARTIAL",
+            "rights": "EXISTING_PROVIDER_RIGHTS_TO_CONFIRM",
+            "note": "Parent must attach repository inventory; original CRSP survivorship/delisting coverage is not presumed available."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "PIT SEC financial statements and original filing timestamps",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "PIT SEC financial statements and original filing timestamps",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "SEC EDGAR is free; standardized historical mappings, amended-vintage handling, delisted universe and deep pre-XBRL coverage are not presumed complete."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "EBIT, enterprise-value components and tangible-capital inputs",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "data": "EBIT, enterprise-value components and tangible-capital inputs",
+            "availability": "PARTIAL",
+            "rights": "SEC_OFFICIAL_FREE",
+            "note": "Official screener uses accounting adjustments not fully specified online; negative denominators/excess cash/EV definitions require appendix inspection."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US long-only Magic Formula source portfolio; verify exact EBIT/EV/ROC definitions, exclusions and point-in-time fields. Do not inherit book simulation or Gotham fund returns.",
+      "expected_effort": "MEDIUM",
+      "main_risk": "Missing exact accounting normalization and confusion with legendary Gotham track record.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Verständliche Value/Quality-Story und quellendefinierter Long-only-Portfolioansatz. Exakte EV/EBIT/ROC-Definition, Bilanzfelder und Rollierung sind zu schließen; heutiger Legacy-Code hat keinen Vorrang."
+    },
+    {
+      "rank": 7,
+      "candidate_id": "industry_momentum",
+      "name": "Industry momentum — Moskowitz–Grinblatt",
+      "why_selected": "Adds industry allocation and concentration information; deterministic original source avoids invented stock-level chart rules.",
+      "important_source_ids": [
+        "mg1999",
+        "moskowitz_publications"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "HIGH: industry definitions and construction tables.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV / total returns",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "category": "OHLCV / total returns",
+            "status": "PARTIAL",
+            "rights": "Existing VU provider must be checked by lead; public factor returns do not license constituent history. Adjusted prices, dividends, delistings and historical universe are separate requirements."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "short borrow / financing",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "short borrow / financing",
+            "status": "MISSING",
+            "rights": "Historical borrow availability/cost not established; long-only adaptation cannot inherit long-short paper performance."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "sector/industry classification; market equity",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "category": "sector/industry classification; market equity",
+            "status": "PARTIAL",
+            "rights": "SEC SIC and public fundamentals available for recent US stocks; PIT classification/capitalization history and exact paper groups must be checked."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "sector/industry classification; market equity",
+          "category": "sector_industry",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE for SIC; third-party classification rights not assumed",
+          "repo_locators": [
+            "docs/VU_FREE_DATA_SOURCE_MAP.md#V",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6.2"
+          ],
+          "source_requirement": {
+            "category": "sector/industry classification; market equity",
+            "status": "PARTIAL",
+            "rights": "SEC SIC and public fundamentals available for recent US stocks; PIT classification/capitalization history and exact paper groups must be checked."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "MEDIUM",
+      "main_risk": "PIT industry membership, concentrated industry exposure, and overlap with individual momentum.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Gruppenbasierter Mechanismus erweitert reine Einzelaktienranglisten. Historische Branchenzuordnung und Kapitalisierung müssen zunächst belegbar sein."
+    },
+    {
+      "rank": 8,
+      "candidate_id": "residual_momentum",
+      "name": "Residual momentum — Blitz–Huij–Martens",
+      "why_selected": "A genuinely different momentum signal with clear primary specification; suitable research candidate after factor and corporate-action data audit.",
+      "important_source_ids": [
+        "residual2011",
+        "residual2011_record",
+        "french_mom"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "HIGH: manuscript pp.9–12; full-text downloaded after web fetch timeout.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV / total returns",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "category": "OHLCV / total returns",
+            "status": "PARTIAL",
+            "rights": "Existing VU provider must be checked by lead; public factor returns do not license constituent history. Adjusted prices, dividends, delistings and historical universe are separate requirements."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "short borrow / financing",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "short borrow / financing",
+            "status": "MISSING",
+            "rights": "Historical borrow availability/cost not established; long-only adaptation cannot inherit long-short paper performance."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "FF3 factors / risk-free return",
+          "category": "factor_returns",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "Public author factor series; data use/redistribution terms require specific review.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "FF3 factors / risk-free return",
+            "status": "PARTIAL",
+            "rights": "French factor series publicly downloadable; commercial redistribution terms not checked; paper raw CRSP history licensed."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "FF3 factors / risk-free return",
+          "category": "risk_free_rate",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "Official Treasury/FRED sources free; chosen vintage/calendar contract not yet reviewed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "FF3 factors / risk-free return",
+            "status": "PARTIAL",
+            "rights": "French factor series publicly downloadable; commercial redistribution terms not checked; paper raw CRSP history licensed."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "MEDIUM",
+      "main_risk": "Factor availability timing/versioning and delistings; requires more history and model estimation than ordinary momentum.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Klar belegtes alternatives Momentum-Protokoll mit Faktorregression; zusätzliche Daten-/Lizenz- und Modellkomplexität begrenzen die Erstpriorität."
+    },
+    {
+      "rank": 9,
+      "candidate_id": "value_plus_momentum",
+      "name": "Value + momentum — Asness–Moskowitz–Pedersen equity component",
+      "why_selected": "Explicitly evidenced hybrid diversifies research portfolio families and has source-defined single-stock components.",
+      "important_source_ids": [
+        "vm2013",
+        "vm_data",
+        "moskowitz_publications"
+      ],
+      "track_record_evidence": "UNKNOWN",
+      "evidence_kind": "RESEARCH_BACKTEST",
+      "ground_truth": {
+        "real_case_count": 0,
+        "availability": "NONE",
+        "procedural": "HIGH: Sections I.B–C and published author series; no executed trades.",
+        "exception": {
+          "applies": true,
+          "reason": "Systematic protocol is an independent normative oracle, not a real-trade ledger. Explicit exception to behavioral sufficiency only; zero real cases/NONE remain. No exception to minimum source/reproducibility/data ratings.",
+          "phase2_condition": "Independent positive/negative/exit/sizing/rebalance cases before code; complete data and rights gates."
+        }
+      },
+      "reproducibility": "HIGH",
+      "data_availability": "MEDIUM",
+      "data_requirements": [
+        {
+          "requirement": "OHLCV / total returns",
+          "category": "daily_ohlcv",
+          "status": "PARTIAL",
+          "category_capability": "AVAILABLE",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "EXISTING_TIINGO_OWNER_DECLARED_LICENSED_CONTRACT_NOT_IN_REPO; aggregated historical performance publication rights unresolved; AI/model training UNKNOWN",
+          "repo_locators": [
+            "quant/data/market/history/coverage-metrics.json",
+            "quant/config/tiingo-scale.json",
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md",
+            "docs/SUPERTRADER_HOUSE_STRATEGY.md",
+            "scripts/supertrader/validation/lib.mjs"
+          ],
+          "source_requirement": {
+            "category": "OHLCV / total returns",
+            "status": "PARTIAL",
+            "rights": "Existing VU provider must be checked by lead; public factor returns do not license constituent history. Adjusted prices, dividends, delistings and historical universe are separate requirements."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "short borrow / financing",
+          "category": "short_borrow",
+          "status": "MISSING",
+          "category_capability": "MISSING",
+          "requirement_satisfaction": "MISSING",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "No historical locate/borrow/fee feed.",
+          "repo_locators": [],
+          "source_requirement": {
+            "category": "short borrow / financing",
+            "status": "MISSING",
+            "rights": "Historical borrow availability/cost not established; long-only adaptation cannot inherit long-short paper performance."
+          },
+          "in_prospective_scope": false
+        },
+        {
+          "requirement": "fundamentals / market equity / PIT book equity",
+          "category": "fundamentals_pit",
+          "status": "PARTIAL",
+          "category_capability": "PARTIAL",
+          "requirement_satisfaction": "PARTIAL",
+          "satisfaction_note": "Pipeline existence does not certify exact historical universe, total-return adjustment, dates or complete original data. Phase2 must review exact rows.",
+          "rights": "SEC_OFFICIAL_FREE_PUBLIC_DOMAIN; ingestion/normalization not equivalent to validated complete PIT",
+          "repo_locators": [
+            "quant/data/sec/consumer/index.json",
+            "quant/data/sec/canonical_index.json",
+            "scripts/supertrader/validation/sec-pit.mjs#PIT_KEY_R13",
+            "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md#6"
+          ],
+          "source_requirement": {
+            "category": "fundamentals / market equity / PIT book equity",
+            "status": "PARTIAL",
+            "rights": "Recent SEC fundamentals official/free; full historical share counts and PIT book-value coverage require audit. Author returns available; raw CRSP/Compustat data licensed."
+          },
+          "in_prospective_scope": true
+        },
+        {
+          "requirement": "Reviewed historical VU listing universe; no substitution of current survivors",
+          "category": "pit_universe",
+          "status": "PARTIAL",
+          "rights": "Existing private US_PIT_2016_A path; exact original CRSP/FTSE universes licensed, not supplied.",
+          "repo_locators": [
+            "docs/SUPERTRADER_VALIDATION_DATA_PATH.md"
+          ],
+          "in_prospective_scope": true
+        }
+      ],
+      "scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited.",
+      "expected_effort": "MEDIUM",
+      "main_risk": "PIT fundamentals and raw constituent universe gaps; preserve source sleeve composition.",
+      "preconditions": [
+        "Freeze exact era and source variant; identify all VU adaptations without parameter search.",
+        "Independently review manual selection/exit/sizing/portfolio positive and negative cases.",
+        "Validate PIT identities, corporate actions and required financial/event timestamps; Core migration remains a separate blocked track.",
+        "Confirm provider/dataset rights for intended research and later publication.",
+        "User selects Phase2 before implementation and any backtest."
+      ],
+      "implementation_authorized": false,
+      "lead_selection_rationale": "Quellendefinierte Mischung getrennter Value- und Momentum-Sleeves; die belegte Mischung ist kein frei erfundener Filter für billige Gewinner. PIT-Buchwerte und korrekte Sleeve-Konstruktion erhöhen den Aufwand."
+    }
+  ]
+}
