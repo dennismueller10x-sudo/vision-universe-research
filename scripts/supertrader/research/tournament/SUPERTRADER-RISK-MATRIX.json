@@ -1,0 +1,69 @@
+{
+  "schema": "supertrader-public-tournament-projection-1.0.0",
+  "research_only": true,
+  "numerical_metrics": "PRIVATE_ENCRYPTED",
+  "current_security_identifiers": "PRIVATE_ENCRYPTED",
+  "final_review": "PASSED",
+  "methods": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "status": "PASSED",
+      "risk": "DEEPER",
+      "confidence": "MEDIUM"
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "status": "PASSED",
+      "risk": "DEEPER",
+      "confidence": "MEDIUM"
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "status": "PASSED",
+      "risk": "DEEPER",
+      "confidence": "MEDIUM"
+    },
+    {
+      "method_id": "gross_profitability_novy_marx",
+      "status": "BLOCKED",
+      "risk": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE"
+    },
+    {
+      "method_id": "piotroski_value_fscore",
+      "status": "BLOCKED",
+      "risk": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE"
+    },
+    {
+      "method_id": "greenblatt_magic_formula",
+      "status": "BLOCKED",
+      "risk": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE"
+    },
+    {
+      "method_id": "value_plus_momentum",
+      "status": "BLOCKED",
+      "risk": "UNAVAILABLE",
+      "confidence": "UNAVAILABLE"
+    },
+    {
+      "method_id": "TURTLE_S2_EQUITY_DAILY",
+      "status": "PASSED",
+      "risk": "DEEPER",
+      "confidence": "LOW"
+    },
+    {
+      "method_id": "WEINSTEIN_STAGE_DAILY",
+      "status": "PASSED",
+      "risk": "SIMILAR",
+      "confidence": "LOW"
+    },
+    {
+      "method_id": "KULLAMAGI_DAILY_ADAPTATION",
+      "status": "PASSED",
+      "risk": "SHALLOWER",
+      "confidence": "LOW"
+    }
+  ]
+}

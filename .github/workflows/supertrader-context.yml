@@ -1,0 +1,46 @@
+name: Supertrader preregistered benchmark context (private)
+on:
+  push:
+    branches: ['research/supertrader-full-tournament-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  context:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-context:run]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read existing objects only; preserve all predeclared contexts
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node --test scripts/supertrader/tests/auxiliary-context.test.mjs
+          node scripts/supertrader/research/tournament/context-benchmark.mjs --out "$RUNNER_TEMP/context"
+      - name: Encrypted context only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-context-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/context/*status.json
+            ${{ runner.temp }}/context/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30

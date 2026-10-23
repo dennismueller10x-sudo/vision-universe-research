@@ -1,0 +1,469 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "meaning": "High confidence in source protocol/provenance, not VU net outperformance",
+  "candidates": [
+    {
+      "candidate_id": "cross_sectional_momentum",
+      "name": "Cross-sectional equity momentum — Jegadeesh–Titman",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "1965–1989 original main sample",
+            "returns": null,
+            "source_ids": [
+              "jt1993"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "jt1993",
+        "jt1993_doi",
+        "french_mom"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "52_week_high_effect",
+      "name": "52-week-high proximity — George–Hwang",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "July 1963–December 2001",
+            "returns": null,
+            "source_ids": [
+              "gh2004"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "gh2004"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "industry_momentum",
+      "name": "Industry momentum — Moskowitz–Grinblatt",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "July 1963–July 1995",
+            "returns": null,
+            "source_ids": [
+              "mg1999"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "mg1999",
+        "moskowitz_publications"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "residual_momentum",
+      "name": "Residual momentum — Blitz–Huij–Martens",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "Raw sample 1926–2009; postformation portfolio results January 1930–December 2009",
+            "returns": null,
+            "source_ids": [
+              "residual2011"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "residual2011",
+        "residual2011_record",
+        "french_mom"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "time_series_momentum",
+      "name": "Time-series momentum — Moskowitz–Ooi–Pedersen",
+      "group": "B",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "Raw series January 1965–December 2009; principal TSMOM factor January 1985–December 2009",
+            "returns": null,
+            "source_ids": [
+              "tsmom2012"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "tsmom2012",
+        "tsmom_data",
+        "moskowitz_publications"
+      ],
+      "vu_scope": "Original source method/reference; no arbitrary mechanization proposed"
+    },
+    {
+      "candidate_id": "value_plus_momentum",
+      "name": "Value + momentum — Asness–Moskowitz–Pedersen equity component",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "real_account_verified": false,
+        "research_evidence_strength": "HIGH",
+        "realized_historical_performance": null,
+        "cagr": null,
+        "max_drawdown": null,
+        "capital": null,
+        "leverage": null,
+        "competition_results": [],
+        "independent_confirmation": "Peer-reviewed primary research where stated; this verifies published research provenance, not actual trading-account performance.",
+        "records": [
+          {
+            "period": "US stock component January 1972–July 2011; other markets have different windows",
+            "returns": null,
+            "source_ids": [
+              "vm2013"
+            ],
+            "scope": "Published historical simulated portfolio evidence; no return metric reproduced or computed here."
+          }
+        ]
+      },
+      "source_ids": [
+        "vm2013",
+        "vm_data",
+        "moskowitz_publications"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "earnings_momentum_cjl",
+      "name": "Earnings momentum — Chan/Jegadeesh/Lakonishok",
+      "group": "C",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_cjl_1996",
+            "period": "January 1977–January 1993 monthly formation",
+            "summary": "Paper documents distinct earnings and price predictability; precise performance figures not transcribed from scanned tables.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "source_ids": [
+        "eq_cjl_1996",
+        "eq_cjl_nber"
+      ],
+      "vu_scope": "Original source method/reference; no arbitrary mechanization proposed"
+    },
+    {
+      "candidate_id": "piotroski_value_fscore",
+      "name": "Piotroski — original value-conditioned F-score portfolio",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_piotroski_paper",
+            "period": "1976–1996 return formation; 1975–1995 financial firm-years",
+            "summary": "Published mean one-year high-minus-low portfolio spread, not CAGR or audited account.",
+            "numbers": [
+              {
+                "metric": "Mean market-adjusted high F-score minus low F-score one-year portfolio return difference",
+                "value": 23.0,
+                "unit": "percentage points",
+                "locator": "Section 4.2/table 3: 0.134 minus -0.096 as reported by paper"
+              },
+              {
+                "metric": "Mean high F-score improvement versus full high-book-to-market quintile",
+                "value": 7.5,
+                "unit": "percentage points",
+                "locator": "Section 4.2/table 3: author-reported difference"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "source_ids": [
+        "eq_piotroski_paper",
+        "eq_piotroski_review"
+      ],
+      "vu_scope": "US single-stock source-defined long sleeve in reviewed VU PIT universe; explicit VU Adaptation. Original long-short/global universe and paper returns are not inherited."
+    },
+    {
+      "candidate_id": "greenblatt_magic_formula",
+      "name": "Greenblatt — Magic Formula",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "performance": {
+        "class": "SELF_REPORTED",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "SELF_REPORTED",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_magic_interview",
+            "period": "Original 1988–2004 research; 10 years ending September 30, 2009 update mentioned",
+            "summary": "Direct author interview calls the results back-tested; no independently audited Magic Formula account established.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "Do not transfer Gotham Capital special-situations fund record to this retail formula; book promotional returns omitted because methodology appendix was not inspected."
+          }
+        ]
+      },
+      "source_ids": [
+        "eq_magic_faq",
+        "eq_magic_work",
+        "eq_magic_interview",
+        "eq_magic_book"
+      ],
+      "vu_scope": "US long-only Magic Formula source portfolio; verify exact EBIT/EV/ROC definitions, exclusions and point-in-time fields. Do not inherit book simulation or Gotham fund returns."
+    },
+    {
+      "candidate_id": "quality_minus_junk",
+      "name": "Quality Minus Junk — final 2018 specification",
+      "group": "B",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_qmj_final",
+            "period": "US June 1957–December 2016; broad 24-country June 1989–December 2016",
+            "summary": "Published simulated factor evidence across countries; current AQR products are not this exact historical portfolio.",
+            "numbers": [],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "source_ids": [
+        "eq_qmj_final",
+        "eq_qmj_old",
+        "eq_qmj_data"
+      ],
+      "vu_scope": "Original source method/reference; no arbitrary mechanization proposed"
+    },
+    {
+      "candidate_id": "accruals_sloan",
+      "name": "Accruals anomaly — Sloan original balance-sheet variant",
+      "group": "B",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "records": [
+          {
+            "classification": "UNKNOWN",
+            "evidence_kind": "RESEARCH_BACKTEST",
+            "source_id": "eq_sloan_1996",
+            "period": "1962–1991 financial firm-years; first-year returns measured after four-month lag",
+            "summary": "Published mean annual size-adjusted research hedge return; no CAGR implied.",
+            "numbers": [
+              {
+                "metric": "Mean first-year size-adjusted low-minus-high accrual decile hedge return",
+                "value": 10.4,
+                "unit": "percent",
+                "locator": "Section IV/table 6, original p. 306"
+              }
+            ],
+            "cagr": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "competition_result": null,
+            "independent_confirmation": "Publication is documentary support for simulated research, not an audit of live investment returns.",
+            "sanity_check": "No real-account performance implied; theoretical long-short returns are not return on an identified invested capital base."
+          }
+        ]
+      },
+      "source_ids": [
+        "eq_sloan_1996",
+        "eq_sloan_decay"
+      ],
+      "vu_scope": "Original source method/reference; no arbitrary mechanization proposed"
+    },
+    {
+      "candidate_id": "LOW_VOLATILITY",
+      "name": "Low-volatility equity portfolios — Blitz / van Vliet",
+      "group": "A",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "academic_evidence_strength": "HIGH",
+        "records": [
+          {
+            "period": "Portfolio formations Dec 1985–Jan 2006, reported study 1986–2006",
+            "source_id": "LV-PAPER",
+            "return_reported": null,
+            "annualized_return": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "verification_scope": "Published simulated decile portfolios, not a verified real account"
+          }
+        ]
+      },
+      "source_ids": [
+        "LV-PAPER",
+        "LV-REPOSITORY"
+      ],
+      "vu_scope": "US low-volatility long decile protocol in VU PIT universe; Adaptation of licensed global FTSE study, with no source-return inheritance."
+    },
+    {
+      "candidate_id": "SHORT_TERM_REVERSAL",
+      "name": "Short-term equity reversal — Lehmann",
+      "group": "B",
+      "source_coverage": "HIGH",
+      "reproducibility": "MEDIUM",
+      "performance": {
+        "class": "UNKNOWN",
+        "evidence_kind": "RESEARCH_BACKTEST",
+        "academic_evidence_strength": "HIGH",
+        "records": [
+          {
+            "period": "July 1962–December 1986",
+            "source_id": "REV-PAPER",
+            "return_reported": null,
+            "annualized_return": null,
+            "max_drawdown": null,
+            "capital": null,
+            "leverage": null,
+            "verification_scope": "Published statistical arbitrage evidence; profits are not funded-account returns"
+          }
+        ]
+      },
+      "source_ids": [
+        "REV-PAPER"
+      ],
+      "vu_scope": "Original source method/reference; no arbitrary mechanization proposed"
+    }
+  ]
+}

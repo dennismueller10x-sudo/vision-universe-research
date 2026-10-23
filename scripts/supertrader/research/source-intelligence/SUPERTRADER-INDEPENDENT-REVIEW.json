@@ -1,0 +1,279 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "review_stage": "FINAL_INDEPENDENT_REVIEW_COMPLETED",
+  "reviewer": "independent_review",
+  "baseline_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "review_date": "2026-10-11",
+  "scope": "Independent source-intelligence review; no code, backtest or provider refresh",
+  "reviewed_paths": [
+    "/workspace/scratch/academic_momentum.json",
+    "/workspace/scratch/competition.json",
+    "/workspace/scratch/own.json",
+    "/workspace/scratch/legacy.json",
+    "/workspace/scratch/repo_data_audit.json",
+    "/workspace/scratch/growth.json",
+    "/workspace/scratch/earnings_quality.json",
+    "/workspace/scratch/trend_discretion.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-TOP-IMPLEMENTATION-CANDIDATES.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-REPRODUCIBILITY-MATRIX.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-TRACK-RECORD-EVIDENCE.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-TOP5-PRIORITY.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-RESEARCH-BASELINE.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-BEHAVIORAL-CASES.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-SYSTEMATIC-HIGH-CONFIDENCE.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-CANDIDATE-UNIVERSE.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-LEGENDARY-NONREPRODUCIBLE.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-SOURCE-MAP.json",
+    "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-REPO-DATA-AUDIT.json",
+    "/workspace/vision-universe-research/docs/SUPERTRADER_SOURCE_INTELLIGENCE.md"
+  ],
+  "independent_primary_checks": [
+    {
+      "source_id": "jt1993",
+      "artifact": "/workspace/scratch/reviewer/jt.txt",
+      "result": "Core monthly equal-weight overlapping decile construction confirmed; both no-skip and one-week-skip families exist."
+    },
+    {
+      "source_id": "gh2004",
+      "artifact": "/workspace/scratch/reviewer/gh.txt",
+      "result": "Top/bottom 30% proximity ranking, monthly overlapping six-month holdings confirmed."
+    },
+    {
+      "source_id": "LV-PAPER",
+      "artifact": "/workspace/scratch/lowvol.txt",
+      "result": "Source methods independently checked: historical FTSE Developed members, three-year weekly volatility, equal-weight monthly deciles, log excess local risk-free returns, omitted costs."
+    },
+    {
+      "source_id": "G-KACHER-KPMG",
+      "artifact": "/workspace/scratch/growth_sources/kacher-1.png",
+      "result": "Visual first-page confirmed agreed-upon procedures not general audit, own account 1996–2002, monthly Modified Dietz net fees."
+    },
+    {
+      "source_id": "G-ZANGER-AUDIT",
+      "artifact": "/workspace/scratch/growth_sources/effron-01.png",
+      "result": "Visual cover confirms literal 29,223% for one year ending May31,1999 and independent performance measurement; not lifetime audit."
+    },
+    {
+      "source_id": "G-MORALES-AUDIT",
+      "artifact": "/workspace/scratch/growth_sources/morales.txt",
+      "result": "Fulltext confirms opinion on one specific account 1998–2005 under attestation standards, reported 10,904.25% cumulative, actual net commission but hypothetical fund fees."
+    }
+  ],
+  "findings": [
+    {
+      "id": "IR-01",
+      "priority": "HIGH",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "Original long-short source portfolios cannot pass full replication data sufficiency because borrow/financing is MISSING. Group A may only refer to explicitly frozen long-only US adaptations with original replication feasibility LOW.",
+      "evidence_paths": [
+        "/workspace/scratch/academic_momentum.json#/candidates/0/data_required",
+        "/workspace/scratch/repo_data_audit.json#/data_categories"
+      ],
+      "requested_resolution": "Keep original borrow data MISSING; state A target long sleeve, adaptation, no paper performance inheritance."
+    },
+    {
+      "id": "IR-02",
+      "priority": "HIGH",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "Academic portfolios contain zero actual trade cases. Procedural oracle is normative evidence and cannot become HIGH behavioral ground truth.",
+      "evidence_paths": [
+        "/workspace/scratch/academic_momentum.json#/candidates",
+        "/workspace/scratch/own.json#/candidates/1"
+      ],
+      "requested_resolution": "Explicit exception justification for academic A based on exact reproducible protocol; separate real case count=0/behavioral availability=NONE."
+    },
+    {
+      "id": "IR-03",
+      "priority": "MEDIUM",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "Several legacy rows have real case count 0 but ground_truth_availability LOW. If this field is behavioral as user defines, NONE is consistent; normative code and model records need a separate procedural/model field.",
+      "evidence_paths": [
+        "/workspace/scratch/legacy.json#/candidates/0",
+        "/workspace/scratch/legacy.json#/candidates/1",
+        "/workspace/scratch/legacy.json#/candidates/2",
+        "/workspace/scratch/legacy.json#/candidates/3"
+      ],
+      "requested_resolution": "Normalize behavioral GT availability independently of VU code/model or discovered uninspected trader cases."
+    },
+    {
+      "id": "IR-04",
+      "priority": "LOW",
+      "state": "OPEN",
+      "issue": "JT summary omits no-skip versus one-week-skip distinction. Broad universe screen need not choose variant, but era/variant freeze must retain distinction.",
+      "evidence_paths": [
+        "/workspace/scratch/reviewer/jt.txt:194",
+        "/workspace/scratch/academic_momentum.json#/candidates/0/normative"
+      ],
+      "requested_resolution": "Record both source-defined gap variants and prohibit posthoc best-variant selection."
+    },
+    {
+      "id": "IR-05",
+      "priority": "HIGH",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "Local adaptations and anthology containers are not independent external serious methods; multiple identity/setup rows must not inflate universe breadth.",
+      "evidence_paths": [
+        "/workspace/scratch/legacy.json#/candidates/4",
+        "/workspace/scratch/academic_momentum.json#/candidates/7"
+      ],
+      "requested_resolution": "Separate serious external candidate denominator, model/reference-only and rejected/unstandardized hypotheses; explain identity/setup overlap."
+    },
+    {
+      "id": "IR-06",
+      "priority": "HIGH",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "PEAD source cluster proposes B, source Foster-model specification is third-party OCR and actual original release-time/PIT not established. Top5 promotion would contradict quality gate without authoritative primary text plus source-native timing protocol.",
+      "evidence_paths": [
+        "/workspace/scratch/earnings_quality.json#/candidates/0"
+      ],
+      "requested_resolution": "Keep PEAD B/conditional reserve; use Piotroski Top5 fallback, or explicitly record independent primary/timing evidence establishing upgrade."
+    },
+    {
+      "id": "IR-07",
+      "priority": "MEDIUM",
+      "state": "ACKNOWLEDGED_PHASE2_SPECIFICATION_GATE",
+      "issue": "Piotroski university reprint has body-versus-table asset turnover denominator conflict (beginning vs average assets); original exact variant is not frozen.",
+      "evidence_paths": [
+        "/workspace/scratch/earnings_quality.json#/candidates/2/conflicts"
+      ],
+      "requested_resolution": "Preserve conflict and require final-original resolution before phase2; HIGH reproducibility only source protocol conditional, not universal exact rule."
+    },
+    {
+      "id": "IR-08",
+      "priority": "HIGH",
+      "state": "RESOLVED_IN_FINAL_JSON",
+      "issue": "Legendary/nonreproducible list must separate strong verified/partially verified performers from famous references with UNKNOWN account evidence; e.g. Ed Seykota, Larry Hite, Schwartz cannot be called evidence-proven high performers in this screen.",
+      "evidence_paths": [
+        "/workspace/scratch/trend_discretion.json#/candidates"
+      ],
+      "requested_resolution": "Strict strong-performance subset plus separately labeled historically influential references, with evidence classes retained."
+    },
+    {
+      "id": "IR-09",
+      "priority": "BLOCKER",
+      "state": "RESOLVED_IN_REGENERATED_FINAL_JSON",
+      "issue": "Automatic category mapping corrupts candidate requirements: Piotroski gross margin=>futures MISSING; Greenblatt EBIT/tangible capital=>unresolved MISSING; compound sector+financial/price+rate requirements collapse to one component. Original historical floor/tape capability is overstated by current IEX intraday.",
+      "evidence_paths": [
+        "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-CANDIDATE-UNIVERSE.json#/candidates/piotroski_value_fscore/data_requirement_map",
+        "/workspace/vision-universe-research/scripts/supertrader/research/source-intelligence/SUPERTRADER-CANDIDATE-UNIVERSE.json#/candidates/greenblatt_magic_formula/data_requirement_map"
+      ],
+      "requested_resolution": "Use explicit category mapping for accounting requirements, split compound data demands, keep exact original requirement satisfaction separate from broad capability. Regenerate universe/top/matrix files consistently."
+    }
+  ],
+  "positive_controls": [
+    "Competition VERIFIED limited to organizer-checked designated account and reporting year; no CPA lifetime audit claims.",
+    "Uninspected interview chapter labels and paid libraries excluded from actual behavioral case count.",
+    "Academic research backtest evidence does not imply verified actual account performance; all numerical returns withheld.",
+    "Daily OHLCV breadth and current 13F are not confused with full historical PIT capability; source rights and no provider calls preserved.",
+    "Growth actual audit/measurement documents were inspected; Gil/Chris verified scopes differentiated.",
+    "Method-era conflicts and contradictory trade labels are preserved rather than normalized.",
+    "Uninspected ONeil/Ryan/Weinstein book/interview cases remain zero; no fame-based promotion."
+  ],
+  "final_verdict": "PASS_FOR_RESEARCH_ARTIFACTS_ONLY",
+  "final_json_checks": {
+    "candidate_rows": 45,
+    "external_serious": 38,
+    "group_A": 9,
+    "sources": 124,
+    "unique_source_ids": 124,
+    "missing_candidate_source_ids": [],
+    "zero_case_nonNONE": [],
+    "top5": [
+      "cross_sectional_momentum",
+      "52_week_high_effect",
+      "LOW_VOLATILITY",
+      "gross_profitability_novy_marx",
+      "piotroski_value_fscore"
+    ],
+    "in_scope_missing_requirements_GroupA": []
+  },
+  "final_disposition": {
+    "blocking_findings_remaining": 0,
+    "review_summary": "The 38-serious-external/45-row universe, nine conditional research admissions and five initial source-oracle/data priorities are consistent. Fame is not accepted as performance, published simulations not accepted as real accounts, and original missing data not repaired by long-only labels. No implementation or backtest readiness is asserted.",
+    "nine_GroupA_approved_scope": "Research triage only for explicitly disclosed source-defined long sleeves/US adaptations; all implementation_authorized false.",
+    "independent_reviewer_role": "No participation in first-pass research clusters or final-artifact implementation. Review alone, with direct original-method and independently documented account-source checks."
+  },
+  "unresolved_phase2_gates": [
+    {
+      "gate": "SOURCE_VARIANT_FREEZE",
+      "applies_to": "All GroupA; JT no-skip versus one-week-skip family and French month-skip are distinct; LowVol global FTSE versus US adaptation; GrossProfit annual June versus monthly quarter variants",
+      "required_before": "CODE",
+      "note": "Do not select parameters through future results."
+    },
+    {
+      "gate": "NORMATIVE_ORACLE_CASES",
+      "applies_to": "All nine GroupA; zero actual executed cases remain NONE",
+      "required_before": "CODE",
+      "note": "Build independently reviewed positive/negative selection, exit, sizing and rebalance examples from frozen source protocol; procedural cases must retain non-execution labels."
+    },
+    {
+      "gate": "PIT_UNIVERSE_AND_TOTAL_RETURNS",
+      "applies_to": "All nine GroupA",
+      "required_before": "BACKTEST",
+      "note": "Verify raw closes, dividends, splits, delisting payouts, historical listings/ticker reuse. Storage coverage alone does not certify requirement completeness."
+    },
+    {
+      "gate": "SOURCE_ACCOUNTING_SEMANTICS",
+      "applies_to": "Piotroski, GrossProfit, MagicFormula, ValuePlusMomentum",
+      "required_before": "CODE_AND_BACKTEST",
+      "note": "Piotroski body/table asset-turnover denominator conflict and equity-issuance meaning; GP COGS comparability and fiscal-year timestamps; MagicFormula exact EBIT/EV/ROC/exclusions; historical book equity/market shares. Separate Core track remains unchanged/blocked."
+    },
+    {
+      "gate": "INDUSTRY_MEMBERSHIP_VINTAGE",
+      "applies_to": "IndustryMomentum and financial exclusions",
+      "required_before": "BACKTEST",
+      "note": "Current SEC SIC does not prove source-native historical industry membership."
+    },
+    {
+      "gate": "FACTOR_VINTAGES_AND_RIGHTS",
+      "applies_to": "ResidualMomentum",
+      "required_before": "CODE_AND_BACKTEST",
+      "note": "FF3 factor/risk-free series availability, versions and intended-use rights remain to be confirmed."
+    },
+    {
+      "gate": "PROVIDER_DATA_RIGHTS",
+      "applies_to": "All nine GroupA",
+      "required_before": "INTENDED_DATA_USE_AND_PUBLICATION",
+      "note": "Existing Tiingo license owner-declared; public aggregate performance publication rights not established. Academic factor access does not license raw CRSP/Compustat/FTSE constituents."
+    },
+    {
+      "gate": "ORIGINAL_SHORT_BORROW_AND_DOMAIN",
+      "applies_to": "Source-original long-short/global/futures methods",
+      "required_before": "ANY_ORIGINAL_REPLICATION_CLAIM",
+      "note": "Borrow/locate/cost history and derivative histories remain MISSING; research shortlist uses declared long-only US adaptations and forbids inheriting paper returns."
+    },
+    {
+      "gate": "PEAD_AUTHORITATIVE_TEXT_AND_EVENT_TIMING",
+      "applies_to": "PEAD reserve, currently GroupB",
+      "required_before": "GROUPA_PROMOTION",
+      "note": "Readable authoritative Foster-SUE source and actual announcement timestamp/deep quarter-vintage protocol still needed; filing time is not interchangeable."
+    },
+    {
+      "gate": "USER_PHASE2_SELECTION",
+      "applies_to": "Every candidate",
+      "required_before": "IMPLEMENTATION_OR_BACKTEST",
+      "note": "Current user mission ends at completed research and explicitly requires STOP."
+    }
+  ],
+  "report_review": {
+    "path": "/workspace/vision-universe-research/docs/SUPERTRADER_SOURCE_INTELLIGENCE.md",
+    "result": "PASS",
+    "checks": [
+      "38 external serious candidates / 45 total dossiers / 9 GroupA match JSON.",
+      "First five are qualitative research priorities, not performance ranking.",
+      "Organizer verification, accountant opinion, agreed-upon procedures, and performance measurement scopes are distinguished.",
+      "Behavioral cases retain uncertainty/uninspected-source exclusions, Minervini verdict inherited only.",
+      "Scope exceptions, free/official data possibility versus validated availability, PIT and license limitations visible.",
+      "No unproved earnings/trend candidate elevated merely for family diversity."
+    ],
+    "nonblocking_editorial_suggestion": "Preserve chronological wording Ground Truth then Code then Backtest in final-question paragraph."
+  },
+  "lead_resolution_notes": {
+    "IR04": "JT no-skip versus one-week-skip explicitly retained in candidate conflicts. No variant selected.",
+    "chronology": "Report now explicitly says Ground Truth before Implementation and Backtest."
+  }
+}

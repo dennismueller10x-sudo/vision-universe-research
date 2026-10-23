@@ -1,0 +1,203 @@
+{
+  "schema": "FINAL_SOURCE_QC_V1",
+  "status": "PASS_WITH_SOURCE_LIMITATIONS",
+  "scope": "SOURCE_ARTIFACTS_ONLY_NO_HISTORICAL_OUTCOMES",
+  "checks": {
+    "universe_counts": {
+      "status": "PASS",
+      "all_rows": 53,
+      "serious_rows": 49,
+      "external_candidates": 45,
+      "local_serious_rows": 4,
+      "reference_or_excluded_rows": 4
+    },
+    "required_person_coverage": {
+      "status": "PASS",
+      "required": 24,
+      "covered": 24
+    },
+    "baseline_preservation": {
+      "status": "PASS",
+      "scope": "EMBEDDED_PR588_CANONICAL_BASELINE",
+      "baseline_rows": 45,
+      "active_consolidated_rows_enriched": 44,
+      "minervini_active_unchanged": 1,
+      "minervini_legacy_recall_numerator": 3,
+      "minervini_legacy_recall_denominator": 15
+    },
+    "source_inventory": {
+      "status": "PASS",
+      "indexed_records": 142,
+      "unique_nonnull_urls": 134,
+      "inspected_primary_records": 63,
+      "unique_inspected_primary_urls": 62,
+      "unresolved_candidate_source_ids": 0,
+      "missing_required_metadata_keys": 0
+    },
+    "identity_overlap": {
+      "status": "PASS",
+      "duplicate_candidate_ids": 0,
+      "duplicate_source_ids": 0,
+      "declared_person_method_overlap_relations": 6,
+      "independent_strategy_edges_validated": 0,
+      "group_A": 9,
+      "group_B": 37,
+      "group_C": 7,
+      "group_A_real_trader_rows": 0
+    },
+    "competition_scope": {
+      "status": "PASS",
+      "normalized_competition_candidates": 4,
+      "normalized_competition_records": 11,
+      "missing_verification_scope": 0,
+      "legacy_competition_compatibility_exceptions": 1,
+      "legacy_competition_compatibility_ids": [
+        "MINERVINI"
+      ],
+      "personal_account_return_transfer_allowed_count": 0
+    },
+    "behavioral_light_case_inventory": {
+      "status": "PASS_BOUNDED_EPISODES_NOT_BROKERAGE_FILLS",
+      "records": 31,
+      "missing_ticker_count": 12,
+      "missing_source_or_locator_count": 0,
+      "missing_evidence_classification_count": 0,
+      "duplicate_candidate_ordinal_count": 0,
+      "inherited_minervini_cases_not_reopened": 15
+    },
+    "legendary_behavioral_gate": {
+      "status": "WARN_SOURCE_IDEAS_ONLY",
+      "zero_inspected_own_trade_dossier_count": 3,
+      "zero_case_dossier_ids": [
+        "turtle",
+        "stan_weinstein",
+        "kullamagi_breakout"
+      ],
+      "implemented_adaptation_ids": [
+        "TURTLE_S2_EQUITY_DAILY",
+        "WEINSTEIN_STAGE_DAILY",
+        "KULLAMAGI_DAILY_ADAPTATION"
+      ],
+      "replication_claim_allowed_count": 0,
+      "low_source_confidence_exception_ids": [
+        "WEINSTEIN_STAGE_DAILY"
+      ],
+      "source_components_missing_counts": {
+        "TURTLE_S2_EQUITY_DAILY": 7,
+        "WEINSTEIN_STAGE_DAILY": 7,
+        "KULLAMAGI_DAILY_ADAPTATION": 4
+      },
+      "private_appendix_review_status": "NOT_OPENED"
+    },
+    "frozen_participant_admission": {
+      "status": "PASS_SCOPED_BLOCKERS",
+      "implemented_models": 10,
+      "historically_admitted": 6,
+      "implemented_fundamental_data_blocked": 4,
+      "all_data_blocked": 6,
+      "unimplemented_data_blocked": 2,
+      "unimplemented_data_blocked_ids": [
+        "industry_momentum",
+        "residual_momentum"
+      ]
+    },
+    "count_consistency": {
+      "status": "PASS",
+      "detected_count_inconsistencies": 0,
+      "historical_outcome_files_opened": 0
+    }
+  },
+  "source_exceptions": [
+    {
+      "status": "EXPLICIT_INTERNAL_OR_INHERITED_NULL_METADATA",
+      "null_url_count": 4,
+      "null_url_ids": [
+        "SRC-CLENOW-2015",
+        "VU-HOUSE-DOC",
+        "VU-HOUSE-LEDGER",
+        "SRC-INTERNAL-VU"
+      ],
+      "null_accessed_date_count": 2,
+      "null_accessed_date_ids": [
+        "VU-HOUSE-DOC",
+        "VU-HOUSE-LEDGER"
+      ],
+      "counted_as_inspected_primary_count": 0
+    },
+    {
+      "status": "WARN_CANONICAL_ENGINE_CITATIONS_OUTSIDE_CONSOLIDATED_URL_INDEX",
+      "url_count": 3,
+      "urls": [
+        "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf",
+        "https://thepatternsite.com/TradingWeinstein.html",
+        "https://thepatternsite.com/WeinsteinStops.html"
+      ],
+      "affected_method_ids": [
+        "TURTLE_S2_EQUITY_DAILY",
+        "WEINSTEIN_STAGE_DAILY"
+      ],
+      "fresh_primary_read_claim_allowed": "NO"
+    },
+    {
+      "status": "WARN_ENGINE_BODY_INSPECTION_NOT_PROPAGATED_TO_SOURCE_MAP_COUNTS",
+      "affected_method_ids": [
+        "KULLAMAGI_DAILY_ADAPTATION"
+      ],
+      "affected_dossier_ids": [
+        "kullamagi_breakout"
+      ],
+      "inspected_primary_records_for_dossier_in_consolidated_map": 0,
+      "source_id_aliases": [
+        "G-KULLAMAGI-SETUPS",
+        "SRC-KK-SETUPS"
+      ],
+      "count_promotion_allowed_without_inspection_metadata": "NO"
+    },
+    {
+      "status": "WARN_UNREAD_OWN_BOOK_SECONDARY_PRINCIPLES_ONLY",
+      "source_ids": [
+        "G-WEINSTEIN-BOOK"
+      ],
+      "affected_method_ids": [
+        "WEINSTEIN_STAGE_DAILY"
+      ],
+      "original_replication_allowed": "NO",
+      "source_coverage": "LOW",
+      "mechanical_reproducibility": "LOW"
+    },
+    {
+      "status": "PASS_DUPLICATE_URL_ALIASES_EXPLICIT",
+      "duplicate_url_alias_groups": 4
+    }
+  ],
+  "remediation": {
+    "status": "PASS_CITATION_MAPPED_WITH_LIMITED_INSPECTION",
+    "original_warnings_preserved": "YES",
+    "source_records_before": 142,
+    "source_records_after": 142,
+    "unique_inspected_primary_sources_before": 62,
+    "unique_inspected_primary_sources_after": 62,
+    "auxiliary_citation_count": 4,
+    "inherited_exact_url_count": 3,
+    "inherited_exact_urls": [
+      "https://thepatternsite.com/TradingWeinstein.html",
+      "https://thepatternsite.com/WeinsteinStops.html",
+      "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf"
+    ],
+    "inherited_fresh_read_claim_count": 0,
+    "inherited_secondary_citation_count": 2,
+    "existing_primary_reinspection_source_ids": [
+      "G-KULLAMAGI-SETUPS"
+    ],
+    "existing_primary_reinspection_date": "2026-10-11",
+    "agent_documented_tool_reference": "turn445165view1",
+    "reinspection_evidence_review_scope": "METADATA_AND_RESEARCH_AGENT_REPORT_NOT_INDEPENDENT_BROWSER_REOPEN",
+    "exact_datetime_available": "NO",
+    "saved_body_path_available": "NO",
+    "new_distinct_primary_source_count": 0,
+    "new_own_breakout_trade_count": 0,
+    "frozen_rulebooks_modified": "NO",
+    "private_source_appendix_review_status": "NOT_OPENED_PARENT_REPORTED_DISCLOSURE_ADDED",
+    "unread_book_secondary_principle_limitation_status": "UNRESOLVED_EXPLICIT_VU_ADAPTATION_ONLY"
+  }
+}

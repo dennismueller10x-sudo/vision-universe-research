@@ -1,0 +1,95 @@
+{
+  "schema": "supertrader-public-tournament-projection-1.0.0",
+  "research_only": true,
+  "numerical_metrics": "PRIVATE_ENCRYPTED",
+  "current_security_identifiers": "PRIVATE_ENCRYPTED",
+  "final_review": "PASSED",
+  "method_count": 10,
+  "methods": [
+    {
+      "method_id": "cross_sectional_momentum",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "ADMITTED_RESEARCH_ADAPTATION",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "52_week_high_effect",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "ADMITTED_RESEARCH_ADAPTATION",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "industry_momentum",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "NOT_IMPLEMENTED",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "residual_momentum",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "NOT_IMPLEMENTED",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "time_series_momentum",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "NOT_IMPLEMENTED",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "value_plus_momentum",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "BLOCKED_DATA",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "piotroski_value_fscore",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "BLOCKED_DATA",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "quality_minus_junk",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "NOT_IMPLEMENTED",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "accruals_sloan",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "NOT_IMPLEMENTED",
+      "original_paper_returns_inherited": false
+    },
+    {
+      "method_id": "LOW_VOLATILITY",
+      "source_coverage": "HIGH",
+      "reproducibility": "HIGH",
+      "real_trade_ground_truth": "NONE",
+      "historical_admission": "ADMITTED_RESEARCH_ADAPTATION",
+      "original_paper_returns_inherited": false
+    }
+  ],
+  "confidence_scope": "SOURCE_AND_REPRODUCIBILITY_NOT_PROVEN_ALPHA",
+  "tournament_high_confidence_method_ids": [],
+  "tournament_high_confidence_method_count": 0,
+  "clean_pit_validation": "NOT_ESTABLISHED",
+  "historical_confidence_scope": "OBSERVED_PANEL_ONLY_COMPLETE_PIT_UNIVERSE_NOT_ESTABLISHED"
+}

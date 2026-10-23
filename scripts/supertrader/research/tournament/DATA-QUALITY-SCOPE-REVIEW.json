@@ -1,0 +1,139 @@
+{
+  "schema": "supertrader-data-quality-scope-review-1.0.0",
+  "review_stage": "PRE_OUTCOME_DATA_SCOPE_ONLY",
+  "disposition": "SELECTED_PANEL_RESEARCH_WITH_UNRESOLVED_REPRESENTATIVENESS",
+  "reviewed_frozen_code_commit": "418396ca20a12ad85597eed7df30fb4778d92bce",
+  "reviewed_protocol_hash": "f9885c74cbe38c83518656649e2c84b2c1060987979e242a4b78d4faf19b0247",
+  "strategy_results_opened": false,
+  "performance_or_final_tier_decision": "NOT_MADE",
+  "engine_parameters_protocol_rubric_changed": false,
+  "complete_pit_universe_denominator": "NOT_ESTABLISHED",
+  "survivorship_free_market_representativeness": "NOT_ESTABLISHED",
+  "canonical_validation_scope": "OBSERVED_USABLE_PRICE_PREFIXES",
+  "data_quality_confidence": "PENDING_FINAL_INDEPENDENT_REVIEW",
+  "coverage_observation_scope": "PRIOR_CANCELLED_RUN_DATA_READY_ONLY",
+  "coverage_observation_current_final_run_match": "NOT_YET_VERIFIED",
+  "observed_counts": {
+    "supported_provider_rows": 16546,
+    "unsupported_source_identity_rows": 3,
+    "selected_listing_members": 9042,
+    "scheduled_listing_reads": 9042,
+    "input_segments": 9413,
+    "usable_segments": 9411,
+    "canonical_rejected_segments": 2,
+    "quarantined_segments": 521,
+    "segments_with_any_accepted_fundamental_tuple": 7357,
+    "class_or_history_unavailable_exclusions": 6207,
+    "non_stock_product_heuristic_exclusions": 308
+  },
+  "denominator_unit_checks": {
+    "supported_provider_rows": "PROVIDER_ROWS",
+    "selected_listing_members": "LISTING_IDENTITIES",
+    "scheduled_listing_reads": "ATTEMPTED_READ_MEMBERS_NOT_CONFIRMED_HISTORIES",
+    "usable_segments": "GAP_SEPARATED_SEGMENT_IDENTITIES_NOT_ISSUER_COUNT",
+    "contemporaneously_eligible_stock_count": "UNAVAILABLE",
+    "missing_series_or_less_than_two_bar_count": "UNAVAILABLE",
+    "eligible_stock_count_among_class_or_history_unavailable": "UNAVAILABLE",
+    "valid_eligible_stock_coverage_fraction": "NOT_COMPUTABLE_FROM_AVAILABLE_COUNTS"
+  },
+  "scope_findings": [
+    {
+      "id": "DQ01",
+      "status": "UNRESOLVED",
+      "priority": "P1",
+      "issue": "INELIGIBILITY_AND_HISTORY_UNAVAILABILITY_COMBINED",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:145",
+        "scripts/supertrader/research/tournament/data.mjs:149"
+      ]
+    },
+    {
+      "id": "DQ02",
+      "status": "DOCUMENTED",
+      "priority": "P1",
+      "issue": "PROVIDER_LISTING_SEGMENT_AND_ISSUER_UNITS_DIFFER",
+      "source_refs": [
+        "scripts/supertrader/validation/lib.mjs:55",
+        "scripts/supertrader/research/tournament/data.mjs:161",
+        "scripts/supertrader/research/tournament/data.mjs:177"
+      ]
+    },
+    {
+      "id": "DQ03",
+      "status": "UNRESOLVED",
+      "priority": "P1",
+      "issue": "SCHEDULED_READS_NOT_CONFIRMED_HISTORY_AVAILABILITY",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:158",
+        "scripts/supertrader/research/tournament/data.mjs:164",
+        "scripts/supertrader/research/tournament/data.mjs:177"
+      ]
+    },
+    {
+      "id": "DQ04",
+      "status": "UNRESOLVED",
+      "priority": "P1",
+      "issue": "CONTEMPORARY_CLASSIFICATION_NOT_CERTIFIED_HISTORICAL_ELIGIBILITY_VINTAGE",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:114",
+        "scripts/supertrader/research/tournament/data.mjs:147",
+        "scripts/supertrader/research/tournament/data.mjs:150",
+        "quant/data/market/security-master/eligibility.json",
+        "quant/data/market/security-master/company-names.json"
+      ]
+    },
+    {
+      "id": "DQ05",
+      "status": "DOCUMENTED_WITH_RESIDUAL_UNCERTAINTY",
+      "priority": "P1",
+      "issue": "VALID_CAUSAL_PREFIXES_WITH_FUTURE_QUARANTINE_NOT_FULL_WINDOW_COVERAGE",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:268",
+        "scripts/supertrader/research/tournament/data.mjs:280",
+        "scripts/supertrader/research/tournament/runner.mjs:144"
+      ]
+    },
+    {
+      "id": "DQ06",
+      "status": "PENDING_FINAL_REVIEW",
+      "priority": "P1",
+      "issue": "COARSE_FROZEN_DATA_QUALITY_COMPONENT_NOT_COMPLETENESS_CERTIFICATE",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/run.mjs:93",
+        "scripts/supertrader/research/tournament/metrics.mjs:185",
+        "scripts/supertrader/research/tournament/metrics.mjs:198"
+      ]
+    },
+    {
+      "id": "DQ07",
+      "status": "DOCUMENTED",
+      "priority": "P2",
+      "issue": "AVAILABILITY_FLAGS_OR_QUARTERLY_TUPLES_NOT_ANNUAL_PIT_OR_PROCEEDS_COVERAGE",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:179",
+        "scripts/supertrader/research/tournament/data.mjs:197",
+        "scripts/supertrader/research/tournament/data.mjs:332"
+      ]
+    },
+    {
+      "id": "DQ08",
+      "status": "UNRESOLVED",
+      "priority": "P2",
+      "issue": "ADR_REIT_CLASSIFICATION_AND_HISTORICAL_ISSUER_MULTIPLICITY_LIMITS",
+      "source_refs": [
+        "scripts/supertrader/research/tournament/data.mjs:21",
+        "scripts/supertrader/research/tournament/data.mjs:283",
+        "quant/engines/us-security-master.js:457"
+      ]
+    }
+  ],
+  "required_final_review_gates": [
+    "MATCH_FINAL_SHARD_FULL_FREEZE_FINGERPRINT_AND_COVERAGE",
+    "INSPECT_QUARANTINE_TERMINALS_CENSORING_AND_REGIME_SUFFICIENCY",
+    "SEPARATE_OBSERVED_PANEL_PERFORMANCE_FROM_FULL_MARKET_INFERENCE",
+    "KEEP_FROZEN_RUBRIC_AND_PARAMETERS_UNCHANGED",
+    "RECORD_FINAL_INDEPENDENT_CONFIDENCE_AND_TIER_OVERRIDE_REASONS_IF_NEEDED",
+    "NO_ADVERSARIAL_PASS_FROM_FAVORABLE_PERFORMANCE_ALONE"
+  ],
+  "privacy": "ENUMS_COUNTS_CODE_SOURCE_REFERENCES_ONLY"
+}

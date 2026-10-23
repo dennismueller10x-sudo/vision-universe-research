@@ -1,0 +1,97 @@
+name: Supertrader research tournament (private measurements)
+on:
+  push:
+    branches: ['research/supertrader-full-tournament-*']
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [run]
+        default: run
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-tournament-${{ github.ref_name }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  regression:
+    if: contains(github.event.head_commit.message, '[supertrader-tournament:run]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full relevant regression suites; no provider credentials
+        run: node scripts/supertrader/research/tournament/regression-run.mjs --out "$RUNNER_TEMP/regression"
+      - name: Encrypted diagnostics and public pass/fail only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-regression-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/regression/*status.json
+            ${{ runner.temp }}/regression/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30
+  research:
+    if: contains(github.event.head_commit.message, '[supertrader-tournament:run]') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'run')
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [systematic, turtle, weinstein, kullamagi, current]
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/supertrader/
+            /scripts/market/storage/
+            /quant/engines/
+            /quant/config/
+            /quant/data/market/scale/universe-FULL_UNIVERSE.json
+            /quant/data/market/security-master/eligibility.json
+            /quant/data/market/security-master/company-names.json
+            /quant/data/sec/consumer/
+            /core/identity.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Research only; public logs contain status and counts
+        env:
+          GROUP: ${{ matrix.group }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: |
+          set -euo pipefail
+          node --test scripts/supertrader/tests/tournament-*.test.mjs
+          case "$GROUP" in
+            systematic) only=cross_sectional_momentum,52_week_high_effect,LOW_VOLATILITY ;;
+            turtle) only=TURTLE_S2_EQUITY_DAILY ;;
+            weinstein) only=WEINSTEIN_STAGE_DAILY ;;
+            kullamagi) only=KULLAMAGI_DAILY_ADAPTATION ;;
+            current) node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament" --current-only; exit 0 ;;
+            *) exit 1 ;;
+          esac
+          node scripts/supertrader/research/tournament/run.mjs --out "$RUNNER_TEMP/tournament" --only "$only" --skip-current
+      - name: Preserve public status or encrypted owner/session result only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-tournament-${{ github.run_id }}-${{ matrix.group }}
+          path: |
+            ${{ runner.temp }}/tournament/*status.json
+            ${{ runner.temp }}/tournament/*.sealed.json
+          if-no-files-found: error
+          retention-days: 30

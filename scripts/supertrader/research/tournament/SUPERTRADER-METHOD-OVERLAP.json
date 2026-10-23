@@ -1,0 +1,101 @@
+{
+  "schema": "supertrader-public-tournament-projection-1.0.0",
+  "research_only": true,
+  "numerical_metrics": "PRIVATE_ENCRYPTED",
+  "current_security_identifiers": "PRIVATE_ENCRYPTED",
+  "final_review": "PASSED",
+  "pair_count": 15,
+  "pairs": [
+    {
+      "method_a": "cross_sectional_momentum",
+      "method_b": "52_week_high_effect",
+      "redundancy": "MEDIUM",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "cross_sectional_momentum",
+      "method_b": "LOW_VOLATILITY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "cross_sectional_momentum",
+      "method_b": "TURTLE_S2_EQUITY_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "cross_sectional_momentum",
+      "method_b": "WEINSTEIN_STAGE_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "cross_sectional_momentum",
+      "method_b": "KULLAMAGI_DAILY_ADAPTATION",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "52_week_high_effect",
+      "method_b": "LOW_VOLATILITY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "52_week_high_effect",
+      "method_b": "TURTLE_S2_EQUITY_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "52_week_high_effect",
+      "method_b": "WEINSTEIN_STAGE_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "52_week_high_effect",
+      "method_b": "KULLAMAGI_DAILY_ADAPTATION",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "LOW_VOLATILITY",
+      "method_b": "TURTLE_S2_EQUITY_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "LOW_VOLATILITY",
+      "method_b": "WEINSTEIN_STAGE_DAILY",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "LOW_VOLATILITY",
+      "method_b": "KULLAMAGI_DAILY_ADAPTATION",
+      "redundancy": "LOW",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "TURTLE_S2_EQUITY_DAILY",
+      "method_b": "WEINSTEIN_STAGE_DAILY",
+      "redundancy": "MEDIUM",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "TURTLE_S2_EQUITY_DAILY",
+      "method_b": "KULLAMAGI_DAILY_ADAPTATION",
+      "redundancy": "MEDIUM",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    },
+    {
+      "method_a": "WEINSTEIN_STAGE_DAILY",
+      "method_b": "KULLAMAGI_DAILY_ADAPTATION",
+      "redundancy": "MEDIUM",
+      "numerical_overlap": "PRIVATE_ENCRYPTED"
+    }
+  ],
+  "independence_proven": false
+}
