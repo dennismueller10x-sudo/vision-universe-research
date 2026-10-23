@@ -1,0 +1,429 @@
+{
+ "schema": "supertrader-kk-ep-ps-chart-readiness-1.0.0",
+ "ownerDecision": "chart-first 2026-10-23: no news / catalyst database, no new data provider, IEX minutes of the existing Tiingo access only",
+ "probes": [
+  {
+   "runId": "39931778756",
+   "requests": 88,
+   "cases": 17,
+   "withMinutes": 17,
+   "findings": [
+    "IEX 1- and 5-minute bars for all 17 EP / PS days (2020-2024, incl. delisted TWTR), 390 minutes each; SNAP IPO day 281 minutes",
+    "5-minute bars equal aggregated 1-minute bars (prices and volume)",
+    "IEX volume share of the consolidated daily volume 1.0-4.8 %",
+    "IEX high / low vs consolidated daily bar mostly <= 0.1 %, at most 1.7 % (GME 2021-01-28 low); first IEX print vs official open <= 0.8 %",
+    "opening range 5 / 15 / 30, IEX VWAP (inside the daily range) and relative IEX opening volume computable",
+    "Tiingo \"consolidated\" beta endpoint: same prices as IEX, no volume field (as R10)"
+   ]
+  }
+ ],
+ "strategies": {
+  "C09": {
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "candidateId": "C09",
+   "version": "kk-ep-chart-lifecycle-1.0.0",
+   "intraday": "kk-intraday-1.0.0",
+   "label": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT",
+   "contract": {
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "ruleStatuses": {
+     "KK-SF-EP-GAP": "SOURCE_DERIVED",
+     "KK-SF-EP-SIDEWAYS": "MANUAL_REVIEW_REQUIRED",
+     "KK-SF-EP-CATALYST": "DATA_BLOCKED",
+     "KK-SF-EP-VOLUME": "DATA_BLOCKED",
+     "KK-SF-EP-ENTRY": "DATA_BLOCKED",
+     "KK-SF-EP-STOP": "SOURCE_EXACT",
+     "KK-SF-EP-EXIT": "SOURCE_AMBIGUOUS"
+    },
+    "measurementClassOfTheOriginalMethod": "NOT_MEASURABLE (unchanged)"
+   },
+   "classes": [
+    {
+     "id": "CHART_EP_CANDIDATE",
+     "layer": "A_DAILY_SCREEN",
+     "assignable": true
+    },
+    {
+     "id": "INTRADAY_CONFIRMED_CHART_EP_SETUP",
+     "layer": "B_INTRADAY_IEX",
+     "assignable": true
+    },
+    {
+     "id": "CATALYST_CONFIRMED_ORIGINAL_EP",
+     "layer": "CATALYST",
+     "assignable": false,
+     "why": "no verified catalyst data (owner decision 2026-10-23)"
+    }
+   ],
+   "layers": {
+    "A_DAILY_SCREEN": "frozen research snapshot, all history, decided at the official open of the gap day",
+    "B_INTRADAY_IEX": "REAL Tiingo IEX minutes 2017+, decided in time order; no minute derived from a daily bar"
+   },
+   "researchStage": "CHART_EP_IMPLEMENTED_SNAPSHOT_RUN_PENDING",
+   "engine": "shared research engine (research-v1), order type INTRADAY_RESOLVED",
+   "reference": {
+    "catalyst": "NOT_VERIFIED",
+    "gapMin": 0.1,
+    "quietPhase": "NONE",
+    "volumeRule": "PACE_20",
+    "orMinutes": 1,
+    "exitMa": 20,
+    "intrabarOrder": "PESSIMISTIC",
+    "sizing": {
+     "mode": "RISK",
+     "riskFraction": 0.005
+    }
+   },
+   "variants": [
+    {
+     "id": "REF",
+     "changes": {}
+    },
+    {
+     "id": "ALT-ORH-5",
+     "changes": {
+      "orMinutes": 5
+     }
+    },
+    {
+     "id": "ALT-NO-VOLUME-RULE",
+     "changes": {
+      "volumeRule": "NONE"
+     }
+    },
+    {
+     "id": "ALT-QUIET-PRIOR-RUN-50",
+     "changes": {
+      "quietPhase": "PRIOR_RUN_LIMIT_50"
+     }
+    },
+    {
+     "id": "ALT-EXIT-MA10",
+     "changes": {
+      "exitMa": 10
+     }
+    },
+    {
+     "id": "ALT-EXIT-MA50",
+     "changes": {
+      "exitMa": 50
+     }
+    },
+    {
+     "id": "ALT-FILL-MINUTE-OPTIMISTIC",
+     "changes": {
+      "intrabarOrder": "OPTIMISTIC"
+     }
+    },
+    {
+     "id": "ALT-RISK-00025",
+     "changes": {
+      "sizing": {
+       "mode": "RISK",
+       "riskFraction": 0.0025
+      }
+     }
+    },
+    {
+     "id": "ALT-RISK-001",
+     "changes": {
+      "sizing": {
+       "mode": "RISK",
+       "riskFraction": 0.01
+      }
+     }
+    }
+   ],
+   "variantRegistrySha256": "de60e3516d25b7fc3facab7884a3b94145dfa99870bb0dbc0f0c5d4278b0cee2",
+   "modelAssumptions": [
+    {
+     "id": "MA-EP-CATALYST-NOT-VERIFIED",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "NOT_VERIFIED: no catalyst filter; no setup is an original EP",
+     "alternatives": [],
+     "why": "owner decision 2026-10-23: chart-first, no news / catalyst history (KK-SF-EP-CATALYST DATA_BLOCKED)"
+    },
+    {
+     "id": "MA-EP-GAP-SCREEN",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "official open / prior close - 1 >= 10 % (KK-015 printed size as a declared screen convention)",
+     "alternatives": [],
+     "why": "KK-015 is a STRONG_PREFERENCE description; the printed 10 % is the only number the source gives"
+    },
+    {
+     "id": "MA-EP-QUIET-PHASE",
+     "phase": "SETUP_QUALIFICATION",
+     "reference": "NONE: the prior range and run are evidence only (KK-SF-EP-SIDEWAYS manual)",
+     "alternatives": [
+      "PRIOR_RUN_LIMIT_50: prior close at most 50 % above the lowest low of the 63 sessions before the gap (\"without a big prior run\", declared convention)"
+     ],
+     "why": "KK-035 \"ideally 3-6 months sideways\" gives no measure"
+    },
+    {
+     "id": "MA-EP-VOLUME-PACE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "reference": "PACE_20: before the entry minute k <= 20 the cumulative IEX volume since the open is at least the mean IEX daily volume of the 20 prior sessions x k / 20; after minute 20 only if that average was reached within the first 20 minutes",
+     "alternatives": [
+      "NONE: no volume condition (volume reported as evidence)"
+     ],
+     "why": "KK-037 \"ideally the daily average within 15-20 minutes\" read on the IEX venue only (IEX is 1-5 % of the market; never compared with consolidated volume)"
+    },
+    {
+     "id": "MA-EP-ORH",
+     "phase": "ENTRY_EXECUTION",
+     "reference": "ORH_1: buy stop one raw cent above the high of the first session minute, active from minute 1",
+     "alternatives": [
+      "ORH_5: above the 5-minute opening range high, active from minute 5 (KK-033)"
+     ],
+     "why": "KK-032 \"mostly the first 1-minute opening range high\""
+    },
+    {
+     "id": "MA-EP-FILL",
+     "phase": "ENTRY_EXECUTION",
+     "reference": "fill = max(level, open of the first IEX minute whose high reaches the level) (IEX prints can jump; never better than the level)",
+     "alternatives": [],
+     "why": "IEX is one venue; a consolidated fill price is not known"
+    },
+    {
+     "id": "MA-EP-LOD-AT-ENTRY",
+     "phase": "INITIAL_STOP",
+     "reference": "low of day = min(official open, IEX lows of the minutes BEFORE the fill minute)",
+     "alternatives": [],
+     "why": "the opening auction is not an IEX print (R9 A4); the fill minute's own low is not known to precede the fill"
+    },
+    {
+     "id": "MA-EP-FILL-MINUTE-STOP",
+     "phase": "INITIAL_STOP",
+     "reference": "PESSIMISTIC: a fill minute whose low reaches the stop exits at the stop",
+     "alternatives": [
+      "OPTIMISTIC"
+     ],
+     "why": "inside one minute the order of the fill and the low is unknown"
+    },
+    {
+     "id": "MA-EP-EXIT",
+     "phase": "EXIT_CONDITIONS",
+     "reference": "MA20: first daily close below the 20-day MA exits at the next open (plus the low-of-day stop-market)",
+     "alternatives": [
+      "MA10",
+      "MA50"
+     ],
+     "why": "KK-017 names 20 / 50 and later 10 / 20-day MAs (SOURCE_AMBIGUOUS, KK-C2); 20 is named in both readings"
+    },
+    {
+     "id": "MA-EP-SIZING",
+     "phase": "POSITION_SIZING",
+     "reference": "RISK 0.005 of equity to the low-of-day stop, KK-001 cap 30 % (platform 25 %)",
+     "alternatives": [
+      "RISK 0.0025",
+      "RISK 0.01"
+     ],
+     "why": "KK-SF-SIZE is the reviewer's; the printed context ranges KK-003 / KK-025"
+    },
+    {
+     "id": "MA-EP-UNIVERSE",
+     "phase": "ENTRY_ELIGIBILITY",
+     "reference": "VU_TOURNAMENT_UNIVERSE_705 at the session before the gap day",
+     "alternatives": [],
+     "why": "measurement convention shared by every method"
+    },
+    {
+     "id": "MA-EP-COSTS",
+     "phase": "ENTRY_EXECUTION",
+     "reference": "10 bps slippage per side, 1 bp commission (platform policy)",
+     "alternatives": [],
+     "why": "no costs in the source"
+    }
+   ],
+   "blockers": [
+    "catalyst identity and timestamp (KK-015 / -038 / -039 / -040): DATA_BLOCKED by owner decision (no news database)",
+    "consolidated intraday volume: only the IEX venue (1-5 %) is available; KK-016 / -037 read on IEX only",
+    "intraday history before 2017 (IEX starts 2017): candidates 2016 are screened, never simulated",
+    "minute cache is private and not frozen in the research snapshot: reproducible via its sha256 in the sealed receipt, not certifiable"
+   ],
+   "runs": [],
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+  },
+  "C10": {
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "candidateId": "C10",
+   "version": "kk-ps-chart-short-study-1.0.0",
+   "intraday": "kk-intraday-1.0.0",
+   "label": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE",
+   "contract": {
+    "implementationStatus": "PARTIAL_DATA_BLOCKED",
+    "ruleStatuses": {
+     "KK-SF-PS-ACCEL": "MANUAL_REVIEW_REQUIRED",
+     "KK-SF-PS-ENTRY": "DATA_BLOCKED",
+     "KK-SF-PS-STOP": "DATA_BLOCKED",
+     "KK-SF-PS-BORROW": "DATA_BLOCKED",
+     "KK-SF-PS-TARGET": "MANUAL_REVIEW_REQUIRED"
+    },
+    "measurementClassOfTheOriginalMethod": "NOT_MEASURABLE (unchanged)"
+   },
+   "classes": [
+    {
+     "id": "PS_CHART_CANDIDATE",
+     "layer": "A_DAILY_SCREEN",
+     "assignable": true
+    },
+    {
+     "id": "INTRADAY_CONFIRMED_CHART_PS_SETUP",
+     "layer": "B_INTRADAY_IEX",
+     "assignable": true
+    },
+    {
+     "id": "BORROW_CONFIRMED_EXECUTABLE_SHORT",
+     "layer": "BORROW",
+     "assignable": false,
+     "why": "no historical borrow / locate / fee data"
+    }
+   ],
+   "layers": {
+    "A_DAILY_SCREEN": "frozen research snapshot, all history, decided at the close before the trade day",
+    "B_INTRADAY_IEX": "REAL Tiingo IEX minutes 2017+, decided in time order; no minute derived from a daily bar"
+   },
+   "researchStage": "CHART_PS_IMPLEMENTED_SNAPSHOT_RUN_PENDING",
+   "engine": "trade-level short study (no portfolio, no borrow cost)",
+   "costs": {
+    "slippageBps": 10,
+    "commissionBps": 1,
+    "borrowFee": "DATA_BLOCKED_NOT_INCLUDED"
+   },
+   "reference": {
+    "streak": 3,
+    "accel": true,
+    "entry": "ORL_5",
+    "stop": "HOD",
+    "target": "MA10",
+    "borrow": "NOT_MODELLED"
+   },
+   "variants": [
+    {
+     "id": "REF",
+     "changes": {}
+    },
+    {
+     "id": "ALT-STREAK4",
+     "changes": {
+      "streak": 4
+     }
+    },
+    {
+     "id": "ALT-NO-ACCEL",
+     "changes": {
+      "accel": false
+     }
+    },
+    {
+     "id": "ALT-ENTRY-FIRST-RED-5MIN",
+     "changes": {
+      "entry": "FIRST_RED_5MIN"
+     }
+    },
+    {
+     "id": "ALT-ENTRY-FAILED-VWAP-RETEST",
+     "changes": {
+      "entry": "FAILED_VWAP_RETEST"
+     }
+    },
+    {
+     "id": "ALT-STOP-VWAP-RECLAIM",
+     "changes": {
+      "stop": "VWAP_RECLAIM"
+     }
+    },
+    {
+     "id": "ALT-TARGET-MA20",
+     "changes": {
+      "target": "MA20"
+     }
+    },
+    {
+     "id": "ALT-TARGET-HALF-MA10-MA20",
+     "changes": {
+      "target": "HALF_MA10_REST_MA20"
+     }
+    }
+   ],
+   "variantRegistrySha256": "a7d13948e713047671e5a2951bb4c58ea0f14f9938944f5d19aca005c9aa1406",
+   "modelAssumptions": [
+    {
+     "id": "MA-PS-ACCELERATION",
+     "reference": "STREAK3_ACCEL: at the close before the trade day at least 3 consecutive higher closes, each return >= the one before, their sum >= 3 x ADR20 and the close above the 10-day MA",
+     "alternatives": [
+      "STREAK4_ACCEL: at least 4",
+      "STREAK3_NO_ACCEL: no acceleration condition"
+     ],
+     "why": "KK-018 \"several strongly accelerated up days\" has no number; KK-019 sizes are examples only. ADR20 (KK-031) scales \"strongly\" to the stock"
+    },
+    {
+     "id": "MA-PS-ENTRY",
+     "reference": "ORL_5: short one raw cent below the 5-minute opening range low, active from minute 5",
+     "alternatives": [
+      "FIRST_RED_5MIN: below the low of the first completed red 5-minute candle",
+      "FAILED_VWAP_RETEST: after a minute closed below the IEX VWAP, the first minute that trades up to the VWAP and closes below it; short at that close"
+     ],
+     "why": "KK-020 / KK-021 (OPTIONAL) leave the choice open; \"ORL\" names no length, 5 minutes matches the 5-minute candle of KK-020"
+    },
+    {
+     "id": "MA-PS-FILL",
+     "reference": "fill = min(level, open of the first IEX minute whose low reaches the level) (never better than the level)",
+     "alternatives": [],
+     "why": "IEX prints can jump; a consolidated fill is not known"
+    },
+    {
+     "id": "MA-PS-STOP",
+     "reference": "HOD: buy stop one raw cent above the high of day before the fill minute (official open included), stop-market",
+     "alternatives": [
+      "VWAP_RECLAIM: cover at the close of the first minute after the fill that closes above the IEX VWAP (high-of-day stop kept as the hard stop)"
+     ],
+     "why": "KK-022 (CONTEXTUAL) names both"
+    },
+    {
+     "id": "MA-PS-TARGET",
+     "reference": "MA10: cover the whole position at the 10-day MA of the prior close (limit; an open below it covers at the open)",
+     "alternatives": [
+      "MA20",
+      "HALF_MA10_REST_MA20"
+     ],
+     "why": "KK-023 (PREFERENCE) \"toward the 10 / 20-day MA, early partials\" gives no split"
+    },
+    {
+     "id": "MA-PS-SAME-MINUTE",
+     "reference": "PESSIMISTIC: a minute (or daily bar) that reaches both the stop and the target is a stop",
+     "alternatives": [],
+     "why": "the order inside one bar is unknown"
+    },
+    {
+     "id": "MA-PS-BORROW",
+     "reference": "NOT MODELLED: borrow availability, locates and fees are unknown; a trade is a hypothetical short",
+     "alternatives": [],
+     "why": "KK-SF-PS-BORROW DATA_BLOCKED (KK-030); never an executable short"
+    },
+    {
+     "id": "MA-PS-UNIVERSE",
+     "reference": "VU_TOURNAMENT_UNIVERSE_705 at the session before the trade day",
+     "alternatives": [],
+     "why": "measurement convention shared by every method"
+    },
+    {
+     "id": "MA-PS-COSTS",
+     "reference": "10 bps slippage per side, 1 bp commission; no borrow fee (unknown)",
+     "alternatives": [],
+     "why": "platform policy; borrow DATA_BLOCKED"
+    }
+   ],
+   "blockers": [
+    "borrow availability, locates and fees (KK-030): DATA_BLOCKED, every short is hypothetical",
+    "no short book on the shared engine: trade-level study only, no portfolio return",
+    "consolidated intraday prices and volume: IEX venue only; VWAP is an IEX VWAP",
+    "intraday history before 2017"
+   ],
+   "runs": [],
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED"
+  }
+ }
+}

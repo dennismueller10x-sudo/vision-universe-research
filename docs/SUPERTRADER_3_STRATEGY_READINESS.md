@@ -88,15 +88,15 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 ### C09 `SF_KK_EPISODIC_PIVOT` (Vertrag 1.1.0)
 
 - Messung: the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only
-- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence
-- Stellvertreter (heben keine Datensperre auf): –
+- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence; KK-SF-EP-GAP <- kk-ep-lifecycle.mjs#epChartCandidate; KK-SF-EP-SIDEWAYS <- kk-ep-lifecycle.mjs#epChartCandidate; KK-SF-EP-CATALYST <- kk-ep-lifecycle.mjs#EP_ORIGINAL_CLASS_ASSIGNABLE; KK-SF-EP-VOLUME <- kk-ep-lifecycle.mjs#resolveEpDay; KK-SF-EP-ENTRY <- kk-ep-lifecycle.mjs#resolveEpDay; KK-SF-EP-STOP <- kk-ep-lifecycle.mjs#resolveEpDay; KK-SF-EP-EXIT <- kk-ep-lifecycle.mjs#KK_EP_ADAPTER
+- Stellvertreter (heben keine Datensperre auf): KK-SF-EP-CATALYST: owner decision 2026-10-23: no news / catalyst database; CATALYST_CONFIRMED_ORIGINAL_EP is never assigned, the rule stays DATA_BLOCKED; KK-SF-EP-VOLUME: IEX-venue reading (1-5 % of the market, Phase 1 probe): cumulative IEX opening volume against the IEX daily average of 20 sessions, on pace by minute 20 (MA-EP-VOLUME-PACE); not frozen in the snapshot, the rule stays DATA_BLOCKED; KK-SF-EP-ENTRY: first 1-minute ORH on REAL IEX minutes (2017+), decided in time order; venue-limited and not frozen in the snapshot, the rule stays DATA_BLOCKED
 - quellenoffen: KK-SF-EP-EXIT; Modellannahmen: –
 
 ### C10 `SF_KK_PARABOLIC_SHORT` (Vertrag 1.1.0)
 
 - Messung: the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only
-- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence
-- Stellvertreter (heben keine Datensperre auf): –
+- Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence; KK-SF-PS-ACCEL <- kk-ps-study.mjs#psChartCandidate; KK-SF-PS-ENTRY <- kk-ps-study.mjs#psEntry; KK-SF-PS-STOP <- kk-ps-study.mjs#runPsCandidate; KK-SF-PS-BORROW <- kk-ps-study.mjs#PS_EXECUTABLE_CLASS_ASSIGNABLE; KK-SF-PS-TARGET <- kk-ps-study.mjs#runPsCandidate
+- Stellvertreter (heben keine Datensperre auf): KK-SF-PS-ENTRY: ORL-5 / first red 5-minute candle / failed VWAP retest on REAL IEX minutes (2017+); venue-limited, not frozen, the rule stays DATA_BLOCKED; KK-SF-PS-STOP: high of day before the fill (official open included) or an IEX-VWAP reclaim; minute-decided on the entry day, stop-market on later days; KK-SF-PS-BORROW: no borrow / locate / fee history: every short is a hypothetical trade-level model study, never an executable short
 - quellenoffen: –; Modellannahmen: –
 
 ### C11 `SF_MOKA_POCKET_PIVOT` (Vertrag 1.3.0)

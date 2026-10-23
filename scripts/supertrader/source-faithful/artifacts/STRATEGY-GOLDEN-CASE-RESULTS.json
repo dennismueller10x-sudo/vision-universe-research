@@ -27,14 +27,15 @@
   "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
-  "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs"
+  "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+  "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs"
  ],
  "summary": {
   "goldenCases": 118,
   "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 284,
+  "testsRun": 301,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1731,7 +1732,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 117,
+ "otherTests": 134,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -3151,6 +3152,91 @@
   {
    "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
    "name": "SF5-OD-DARVAS: pessimistische Intrabar-Referenz; Groesse als Bandbreite aller Varianten, keine Darvas-Regel",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-CHART-CANDIDATE: Gap der offiziellen Eroeffnung >= 10 % (KK-015, gedruckte Groesse); nur Daten bis zur Eroeffnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-INTRADAY-ENTRY: ORH-1-Bruch mit Volumen-Tempo, Stop = Tagestief vor der Kaufminute (KK-034), Engine-Lifecycle bis MA20",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-VOLUME-PACE: zu wenig IEX-Eroeffnungsvolumen -> kein Einstieg; ohne Volumenregel Einstieg (Variante)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-KK034-REJECT: Tagestief weiter als 1,5 ADR20 unter dem Einstieg lehnt ab, kein engerer Ersatzstop",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-SAME-DAY-STOP: ein spaeteres Minutentief am Stop beendet den Trade am selben Tag, aus Minuten entschieden",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-NO-INVENTED-MINUTES: ohne Minuten, vor 2017 oder bei fremder Identitaet kein Trade (kein Tagesbalken-Ersatz)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-PIT-INTRADAY: Einstieg und Stop haengen nicht von Minuten nach der Kaufminute ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-CLASSES: originaler EP nie vergeben; Katalysator bleibt DATA_BLOCKED; Varianten festgeschrieben",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-CHART-CANDIDATE: beschleunigte Aufwaertstage bis zum Vortag (KK-018), Summe >= 3 ADR20, Schluss ueber MA10; nur Daten bis t-1",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-ORL5-SHORT: Short unter dem 5-Minuten-ORL, Stop ueber dem Tageshoch vor dem Einstieg, Eindeckung am MA10 (KK-020/-022/-023)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-STOP-FIRST: erreicht eine Minute nach dem Einstieg das Tageshoch, ist es ein Stop (vor jedem Ziel)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-ENTRY-READINGS: erste rote 5-Minuten-Kerze und gescheiterter VWAP-Retest sind vorregistrierte Lesarten",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-NO-INVENTED-MINUTES / SF-KK-PS-CLASSES: ohne Minuten kein Trade; ausfuehrbarer Short nie vergeben (Borrow DATA_BLOCKED)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-INTRADAY-BLOCKS: Sitzungsminuten, Kompaktformat, Identitaet, Opening Range, VWAP, 5-Minuten-Kerzen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-SCREEN-AND-ORDER: Kandidaten beider Methoden im Universum; Abrufreihenfolge deterministisch, ergebnisunabhaengig",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-IEX-BASELINE: IEX-Tagesvolumen nur aus IEX-Balken je ET-Datum; unter 15 Tagen mit Volumen keine Basis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer Short nie vergebbar; Vertragsstatus unveraendert; nichts live",
    "result": "PASS"
   }
  ]

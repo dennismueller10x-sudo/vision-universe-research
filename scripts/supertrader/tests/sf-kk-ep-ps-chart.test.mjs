@@ -215,3 +215,19 @@ test('SF-KK-RUNNER-IEX-BASELINE: IEX-Tagesvolumen nur aus IEX-Balken je ET-Datum
   assert.deepEqual(iexBaselineFromRange(bars, dates), { mean: 400, days: 20, daysWithVolume: 20 });
   assert.equal(iexBaselineFromRange(bars.slice(0, 20), dates).mean, null); // 10 days only
 });
+
+// ---------------------------------------------------------------- readiness artifact
+import fs from 'node:fs';
+import { buildKkEpPs, KK_SNAPSHOT_RUNS } from '../source-faithful/completion/build-kk-ep-ps.mjs';
+import { kkResearchCodeSha256 as kkCode } from '../source-faithful/research/run-kk-intraday.mjs';
+
+test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer Short nie vergebbar; Vertragsstatus unveraendert; nichts live', () => {
+  const a = buildKkEpPs();
+  assert.deepEqual(JSON.parse(fs.readFileSync('scripts/supertrader/source-faithful/artifacts/STRATEGY-KK-EP-PS-CHART.json', 'utf8')), JSON.parse(JSON.stringify(a)));
+  assert.equal(a.strategies.C09.classes.find((c) => c.id === EP_CLASS.ORIGINAL).assignable, false);
+  assert.equal(a.strategies.C10.classes.find((c) => c.id === PS_CLASS.EXECUTABLE).assignable, false);
+  for (const id of ['KK-SF-EP-CATALYST', 'KK-SF-EP-VOLUME', 'KK-SF-EP-ENTRY']) assert.equal(a.strategies.C09.contract.ruleStatuses[id], 'DATA_BLOCKED');
+  for (const id of ['KK-SF-PS-ENTRY', 'KK-SF-PS-STOP', 'KK-SF-PS-BORROW']) assert.equal(a.strategies.C10.contract.ruleStatuses[id], 'DATA_BLOCKED');
+  for (const c of ['C09', 'C10']) { assert.equal(a.strategies[c].liveReadiness, 'LIVE_NOT_APPROVED'); assert.match(a.strategies[c].contract.measurementClassOfTheOriginalMethod, /^NOT_MEASURABLE/); }
+  for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.researchCodeSha256, kkCode());
+});
