@@ -48,7 +48,7 @@ test("CTR1 Aktie ohne Dividende: Gesamtrendite = Kursrendite, Anbieter MATCH", (
   for (let i = 1; i < 300; i++) assert.ok(close(r.tr[i], r.priceReturnIndex[i], 1e-6));
   assert.equal(r.crossCheck.state, "MATCH");
   assert.ok(r.crossCheck.maxAbsDailyDiff < 1e-9);
-  assert.equal(r.contract, "canonical-total-return-1.0.0");
+  assert.equal(r.contract, "canonical-total-return-1.2.0");
 });
 
 test("CTR2 normale Dividende: Ex-Tag reinvestiert, Kursrendite ohne Ausschuettung", () => {

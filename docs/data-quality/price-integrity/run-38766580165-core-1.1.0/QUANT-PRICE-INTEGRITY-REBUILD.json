@@ -1,0 +1,132 @@
+{
+  "schema": "quant-price-integrity-rebuild-1.0.0",
+  "stage": "AFTER (canonical-total-return-1.1.0, corporate-action-contract-1.1.0)",
+  "runId": "38766580165",
+  "codeCommit": "2a46e9048e23852990c7c24af1e4a9eb3afe7d49",
+  "capture": {
+    "dataFingerprint": "a96199a3fb26990d48328b4cb0c8bc7ae7fd2432a3b7f51154d277d82b922e0f",
+    "normalizedPartListSha256": "62aff1defb3b4e96a85921dac31e96e245b2f98c71abb2f1cd3054d57badaba5",
+    "normalizedManifestSha256": "e67417d825005660345bc3c32b767bb89fc9657de84ec59ae0b40545be621758",
+    "normalizedInputsSha256": "e80cd6b1d4504b9c8d59b1128de48b0115ef61f7513cbaf8af7c4cfa958d7b94",
+    "sourceObjectSetSha256": "c38a444fc0ed01ac8515f606b41cf1e987269e11b77616127b337b2f71beef93",
+    "securities": 9404,
+    "sameSourceObjectsAsBefore": true,
+    "sameReadReceiptsAsBefore": true
+  },
+  "coverage": {
+    "before": {
+      "securities": 9408,
+      "bars": 14374702,
+      "quarantinesByReason": {
+        "CORPORATE_ACTION_CONTRADICTED": 63,
+        "LISTING_DATA_GAP": 434,
+        "DIVIDEND_MISSING": 16,
+        "OHLCV_INVALID": 8
+      },
+      "terminalsByKind": {
+        "OPEN": 5692,
+        "DATA_QUARANTINE": 521,
+        "DELISTED": 3195
+      },
+      "usableSegments": 9408,
+      "rejections": null
+    },
+    "after": {
+      "securities": 9404,
+      "bars": 14161776,
+      "quarantinesByReason": {
+        "CORPORATE_ACTION_CONTRADICTED": 49,
+        "SPLIT_SUSPECTED_UNDECLARED": 201,
+        "PRICE_SPIKE_REVERTED": 17,
+        "LISTING_DATA_GAP": 384,
+        "DIVIDEND_MISSING": 15,
+        "OHLCV_INVALID": 8
+      },
+      "terminalsByKind": {
+        "OPEN": 5609,
+        "DATA_QUARANTINE": 674,
+        "DELISTED": 3121
+      },
+      "usableSegments": 9404,
+      "rejections": null
+    }
+  },
+  "extremeSecurityMonths": {
+    "after": {
+      "gt100pct": 1945,
+      "gt1000pct": 36,
+      "ltMinus99pct": 7
+    },
+    "afterByDiagnosticClass": {
+      "UNEXPLAINED_PRICE_MOVE": 1280,
+      "SUB_DOLLAR_GENUINE_OR_UNVERIFIED": 621,
+      "DECLARED_SPLIT_IN_MONTH": 24,
+      "UNDECLARED_RAW_JUMP_10X": 20,
+      "LT_MINUS_99PCT": 7
+    }
+  },
+  "known83": {
+    "total": 83,
+    "resolvedBy": {
+      "NEW_HOLD": 40,
+      "NONE": 43
+    },
+    "stillExtremeByCause": {
+      "GENUINE_PRICE_MOVE": 22,
+      "UNRESOLVED": 17,
+      "UNDECLARED_REVERSE_SPLIT": 2,
+      "STALE_PRICE": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    }
+  },
+  "allExtremeFate": {
+    "total": 2213,
+    "resolvedBy": {
+      "NONE": 1951,
+      "NEW_HOLD": 262
+    },
+    "stillExtremeByCause": {
+      "GENUINE_PRICE_MOVE": 1913,
+      "UNRESOLVED": 24,
+      "UNDECLARED_REVERSE_SPLIT": 11,
+      "STALE_PRICE": 1,
+      "UNDECLARED_FORWARD_SPLIT_POSSIBLE": 1,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    }
+  },
+  "newHolds": {
+    "total": 218,
+    "byReason": {
+      "SPLIT_SUSPECTED_UNDECLARED": 201,
+      "PRICE_SPIKE_REVERTED": 17
+    },
+    "byForensicCause": {
+      "UNDECLARED_REVERSE_SPLIT": 185,
+      "STALE_PRICE": 16,
+      "PROVIDER_SPIKE": 16,
+      "DECLARED_SPLIT_DATE_SHIFT": 1
+    },
+    "falsePositiveCandidates": 115
+  },
+  "highLevel": {
+    "total": 74,
+    "presentAfter": 74,
+    "legitimatePresentAfter": 55,
+    "legitimateTotal": 61,
+    "newlyQuarantined": 4
+  },
+  "corporateActionConsistency": {
+    "undeclared10xJumpsInsideCanonicalBars": {
+      "after": 190
+    }
+  },
+  "rawReads": {
+    "ok": 218,
+    "missing": 0,
+    "errors": 0,
+    "lastError": null
+  },
+  "privateSha256": "032ca1934f8e71c64a03151a464072102445d4eec04ac979c5e1449c8b6046a3",
+  "performanceCalculated": false,
+  "calibrationRun": false
+}
