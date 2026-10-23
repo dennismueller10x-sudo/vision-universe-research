@@ -18,7 +18,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 | C10 | `SF_KK_PARABOLIC_SHORT` | 3/0/4/3/0 | MECHANICAL_COMPONENTS_ONLY | KK-SF-PS-BORROW, KK-SF-PS-ENTRY, KK-SF-PS-STOP | NOT_MEASURABLE | 4 | LIVE_NOT_APPROVED |
 | C11 | `SF_MOKA_POCKET_PIVOT` | 1/3/5/0/1 | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 7 | LIVE_NOT_APPROVED |
 | C12 | `SF_MOKA_BUYABLE_GAP_UP` | 2/2/6/0/2 | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 8 | LIVE_NOT_APPROVED |
-| C13 | `SF_RASCHKE_HOLY_GRAIL` | 2/2/2/0/3 | MECHANICAL_COMPONENTS_ONLY | – | NOT_MEASURABLE | 3 | LIVE_NOT_APPROVED |
+| C13 | `SF_RASCHKE_HOLY_GRAIL` | 2/4/2/0/1 | MECHANICAL_COMPONENTS_ONLY | – | NOT_MEASURABLE | 3 | LIVE_NOT_APPROVED |
 
 ## Messklassen
 
@@ -43,7 +43,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): TUR-SF-LIMIT-CORR: equity model assumption, never SOURCE_EXACT
 - quellenoffen: –; Modellannahmen: MA-TUR-INTRABAR-ORDER, MA-TUR-HELD-BAR-ORDER
 
-### C03 `SF_DARVAS_BOX` (Vertrag 1.3.0)
+### C03 `SF_DARVAS_BOX` (Vertrag 1.3.1)
 
 - Messung: mechanical signals with their mechanical exit, equal weight, no selection or sizing; not a method return
 - Research-Komponenten: DAR-SF-SELECTION <- context-evidence.mjs#withContextEvidence; DAR-SF-SELECTION <- darvas-lifecycle.mjs#DARVAS_ADAPTER; DAR-SF-MARKET <- context-evidence.mjs#withContextEvidence; DAR-SF-SIZING <- lifecycle-engine.mjs#plannedShares; DAR-SF-REENTRY <- lifecycle-engine.mjs#runResearchLifecycle
@@ -78,7 +78,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: –; Modellannahmen: –
 
-### C08 `SF_KK_BREAKOUT` (Vertrag 1.2.0)
+### C08 `SF_KK_BREAKOUT` (Vertrag 1.2.1)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
 - Research-Komponenten: KK-SF-PRIORITY <- context-evidence.mjs#withContextEvidence; KK-SF-SIZE <- lifecycle-engine.mjs#plannedShares; KK-SF-BO-SETUP <- kk-breakout-lifecycle.mjs#kkBreakoutSetupAt; KK-SF-BO-ENTRY <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER; KK-SF-BO-PARTIAL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER; KK-SF-BO-TRAIL <- kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER
@@ -113,7 +113,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): –
 - quellenoffen: MOKA-SF-BGU-VOLWINDOW, MOKA-SF-EXIT-VIOLATION; Modellannahmen: –
 
-### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.1.0)
+### C13 `SF_RASCHKE_HOLY_GRAIL` (Vertrag 1.2.1)
 
 - Messung: the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only
 - Research-Komponenten: RAS-SF-ENTRY <- holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER; RAS-SF-STOP <- holy-grail-lifecycle.mjs#holyGrailSetupSeries

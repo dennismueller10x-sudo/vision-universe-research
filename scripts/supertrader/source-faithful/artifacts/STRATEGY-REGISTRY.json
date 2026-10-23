@@ -174,8 +174,8 @@
      "role": "authoritative; Q&A pp. 182-198 for the box rules, chapters for development context"
     }
    ],
-   "sourceContractVersion": "1.3.0",
-   "contractFingerprint": "5a3cd000e46ce7a5937565b4d0878fff4aac0285968aed336fa116874601a2c9",
+   "sourceContractVersion": "1.3.1",
+   "contractFingerprint": "185098191640a3fd05c586276e975de075cef0e16ff6eb5cbe256266d93a517e",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -682,8 +682,8 @@
      "role": "authoritative"
     }
    ],
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "244af9986d71403e7c8ff725ffceb4a2382db881e7732266430b6a9a183fac22",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "7680207d852a8a4a6b0f2a4c2a38daa2ed472c3bc2d5fa278c6fe6d243f90539",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -1107,10 +1107,15 @@
      "sourceId": "W-RAS04",
      "edition": "Linda Raschke 2004 interview (web primary PDF), own quotes",
      "role": "authoritative for the disclosed component"
+    },
+    {
+     "sourceId": "W-RAS97",
+     "edition": "AIQ Opening Bell Vol. 6 Issue 8 (August 1997), sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net (sha256 693ce571...)",
+     "role": "SECONDARY SOURCE for entry order and initial stop only (owner decision D-RAS97, 2026-10-23); most likely an editorial summary, not the author's wording"
     }
    ],
-   "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "cff73cff691779f1fed046d1b5dca2d6d2818e5b9ca2fcec4ffac1b42e5e4a40",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "e9a10425fe7d99c8d477c33a3afed988f9cb6fbcb7d97164b4323f1e29abf01d",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -1135,6 +1140,22 @@
    "backtestReadiness": "NOT_READY",
    "dataBlockedEssentialRules": [],
    "dataPartial": [],
+   "secondarySourceRules": [
+    {
+     "ruleId": "RAS-SF-ENTRY",
+     "status": "SOURCE_DERIVED",
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
+    },
+    {
+     "ruleId": "RAS-SF-STOP",
+     "status": "SOURCE_DERIVED",
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
+    }
+   ],
    "manualReviewRequirements": [
     {
      "id": "RAS-MR-IMPULSE",
@@ -1149,12 +1170,12 @@
      "psr709": [
       "RAS04-001"
      ],
-     "question": "entry order, stop and exit are not disclosed",
+     "question": "entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97); exit not disclosed",
      "blocksAutomation": true
     }
    ],
    "knownLimitations": [
-    "exact stop and order sequence not disclosed (#709 C13); no historical method return can be computed",
+    "the primary source W-RAS04 discloses neither entry order nor stop (#709 C13); both rest on the secondary source W-RAS97 (D-RAS97), trailing and size stay undisclosed, so no historical method return can be computed",
     "intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable"
    ],
    "certification": "DIAGNOSTIC_NOT_CERTIFIED",

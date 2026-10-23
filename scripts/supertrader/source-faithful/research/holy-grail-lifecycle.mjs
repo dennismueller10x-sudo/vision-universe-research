@@ -1,6 +1,8 @@
 /**
  * Supertrader 5.0 – Raschke Holy Grail research variant (C13, contracts/holy-grail.mjs) on the shared research engine.
- * NOT a change of the contract: RAS-SF-ENTRY and RAS-SF-STOP stay SOURCE_AMBIGUOUS until the owner accepts the source.
+ * Owner decision D-RAS97 (2026-10-23): W-RAS97 is accepted as an explicitly labelled SECONDARY source for the entry order
+ * and the initial stop (contract: SOURCE_DERIVED with sourceBasis SECONDARY_SOURCE, never SOURCE_EXACT). The lifecycle
+ * stays a research variant and is not source-conform: trailing and size are not disclosed by any source.
  *
  * Source checked in Supertrader 5.0 (legally free, hosted by the author on her own site):
  *   W-RAS97  AIQ Opening Bell Vol. 6 Issue 8 (August 1997), "Linda Bradford Raschke on Short Term Trading Strategies",
@@ -10,7 +12,7 @@
  *            average, put a buy stop above the high of the previous bar; 4. once filled, a protective sell stop at the
  *            newly formed swing low; trail stops as profits grow.
  *   Caveat: the sidebar is most likely the newsletter's summary of Street Smarts (1995, commercial, not used), not text
- *   written by Raschke; hosting on her site suggests endorsement. Owner decision D-RAS97 (report): accept as source?
+ *   written by Raschke; hosting on her site suggests endorsement. Accepted as secondary source (D-RAS97, 2026-10-23).
  * What this variant runs (every choice the sidebar does not make is a declared model assumption):
  *  - setup on the close of bar i: ADX(14) > 30 at i - 1, +DI > -DI (long side), low of bar i at or below the 20 EMA (the
  *    unchanged component of methods/holy-grail.mjs). "Initially greater than 30 and rising" (W-RAS97 rule 1) holds for
@@ -27,10 +29,10 @@ import { adx, HG_PARAMS, HOLY_GRAIL_VERSION } from '../methods/holy-grail.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 
 export const HG_LIFECYCLE_VERSION = 'sf5-holy-grail-research-variant-1.0.0';
-export const W_RAS97 = Object.freeze({ sourceId: 'W-RAS97', url: 'https://lindaraschke.net/wp-content/uploads/2026/01/august1997.pdf', sha256: '693ce57175bf4cf27057c2c2bd5f775df2a85ca0309b00c73d568488f79e0ffb', provenance: 'WEB_HOSTED_BY_AUTHOR_THIRD_PARTY_SIDEBAR', status: 'PENDING_OWNER_DECISION_D-RAS97', contractStatusUnchanged: true });
+export const W_RAS97 = Object.freeze({ sourceId: 'W-RAS97', url: 'https://lindaraschke.net/wp-content/uploads/2026/01/august1997.pdf', sha256: '693ce57175bf4cf27057c2c2bd5f775df2a85ca0309b00c73d568488f79e0ffb', provenance: 'WEB_HOSTED_BY_AUTHOR_THIRD_PARTY_SIDEBAR', status: 'ACCEPTED_AS_SECONDARY_SOURCE_D-RAS97_2026-10-23', contractStatus: 'SOURCE_DERIVED (sourceBasis SECONDARY_SOURCE)', notSourceExact: true });
 
 export const HG_MODEL_ASSUMPTIONS = Object.freeze([
-  { id: 'MA-RAS-SOURCE-W-RAS97', phase: 'ENTRY_EXECUTION', reference: 'entry order and initial stop read from W-RAS97 (research variant, owner decision pending)', alternatives: [], why: 'the contract source W-RAS04 discloses neither (#709 C13); W-RAS97 is a newsletter sidebar on the author\'s site' },
+  { id: 'MA-RAS-SOURCE-W-RAS97', phase: 'ENTRY_EXECUTION', reference: 'entry order and initial stop read from W-RAS97, an explicitly labelled secondary source (owner decision D-RAS97, 2026-10-23); the readings of "previous bar" and "swing low" stay model assumptions', alternatives: [], why: 'the contract source W-RAS04 discloses neither (#709 C13); W-RAS97 is a newsletter sidebar on the author\'s site' },
   { id: 'MA-RAS-PREVIOUS-BAR', phase: 'ENTRY_EXECUTION', reference: 'TOUCH_BAR: buy stop one raw cent above the high of the bar that touched the 20 EMA, placed after its close for the next session only', alternatives: ['BAR_BEFORE_TOUCH: above the high of the bar before the touch bar, also for the next session'], why: 'the literal real-time reading is a buy stop above the bar before the touch, which can fill on the touch bar itself; that needs intraday data and is DATA_BLOCKED on daily bars. Both daily variants are conventions that place the order after the touch close; the one-session validity is not in the sidebar' },
   { id: 'MA-RAS-ADX-READING', phase: 'SETUP_QUALIFICATION', reference: 'RUN_TO_TOUCH: ADX(14) > 30 on every bar from the start of the run to the bar before the touch (the contract component RAS-SF-PULLBACK); "rising" holds where the run crossed 30 upward', alternatives: ['AT_IMPULSE_HIGH: ADX > 30 on the bar of the impulse high only; the ADX may fall below 30 during the retracement ("initially")'], why: 'W-RAS97 rule 1 says "initially greater than 30 and rising" and rule 2 expects a turndown during the retracement; which bars carry the condition is not stated' },
   { id: 'MA-RAS-MANUAL-SUBSTITUTE', phase: 'SETUP_QUALIFICATION', reference: 'EVERY_TOUCH: every touch of the 20 EMA in the setup is taken (strong impulse and first pullback substituted)', alternatives: ['FIRST_TOUCH_ONLY: only the first touch since the impulse high'], why: 'RAS04-001 (STRONG_PREFERENCE) strong impulse, first pullback; review flags RAS-MR-IMPULSE / RAS-MR-NOT-FIRST in the contract' },
@@ -88,7 +90,7 @@ export function holyGrailSetupSeries(bars, { adxReading = 'RUN_TO_TOUCH', touche
 }
 
 export const HOLY_GRAIL_RESEARCH_ADAPTER = Object.freeze({
-  strategy: 'HOLY_GRAIL_W_RAS97_VARIANT', version: HG_LIFECYCLE_VERSION, methodVersion: HOLY_GRAIL_VERSION, label: 'MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SOURCE_PENDING',
+  strategy: 'HOLY_GRAIL_W_RAS97_VARIANT', version: HG_LIFECYCLE_VERSION, methodVersion: HOLY_GRAIL_VERSION, label: 'MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SECONDARY_SOURCE',
   validateConfig: validateHgConfig,
   prepareKey: (cfg) => `${cfg.adxReading}|${cfg.touches}`,
   prepare(security, cfg) { const setups = holyGrailSetupSeries(security.bars, cfg); return setups.size ? { setups, bars: security.bars } : null; },

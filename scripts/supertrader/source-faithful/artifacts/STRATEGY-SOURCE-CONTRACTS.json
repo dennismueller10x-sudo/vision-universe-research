@@ -1521,7 +1521,7 @@
   {
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
-   "sourceContractVersion": "1.3.0",
+   "sourceContractVersion": "1.3.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Nicolas Darvas",
@@ -5323,7 +5323,7 @@
   {
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.2.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Kristjan Kullamaegi",
@@ -7824,7 +7824,7 @@
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
-   "sourceContractVersion": "1.1.0",
+   "sourceContractVersion": "1.2.1",
    "implemented": true,
    "plannedIn": null,
    "trader": "Linda Raschke",
@@ -7833,24 +7833,24 @@
     "primary": "MECHANICAL_SCREEN_WITH_MANUAL_LAYER",
     "layers": {
      "MECHANICAL": "ADX(14) > 30, first 20-EMA pullback, 3/10 oscillator evidence (daily)",
-     "MANUAL": "entry order, stop, exit (not disclosed)",
+     "MANUAL": "exit and size (not disclosed); entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97) (not disclosed)",
      "DATA_BLOCKED": "intraday timeframes (5-120 minutes)"
     }
    },
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
    "timing": {
     "signal": "daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30",
-    "earliestExecutable": "reviewer decision after the close (entry order not disclosed)",
+    "earliestExecutable": "reviewer decision after the close (primary source silent on the entry order; secondary source W-RAS97, D-RAS97)",
     "decisionData": "daily bars up to the close; ADX at the bar before the pullback"
    },
    "entryConditions": [
-    "RAS-SF-ADX + RAS-SF-PULLBACK (machine), RAS-SF-ENTRY (not disclosed)"
+    "RAS-SF-ADX + RAS-SF-PULLBACK (machine), RAS-SF-ENTRY (secondary source W-RAS97)"
    ],
    "exitConditions": [
     "RAS-SF-EXIT (new high as exit opportunity, preference)"
    ],
    "stops": [
-    "RAS-SF-STOP (not disclosed)"
+    "RAS-SF-STOP (secondary source W-RAS97: newly formed swing low)"
    ],
    "positionSizing": [
     "RAS-SF-SIZE (not disclosed)"
@@ -7883,7 +7883,7 @@
      "psr709": [
       "RAS04-001"
      ],
-     "question": "entry order, stop and exit are not disclosed",
+     "question": "entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97); exit not disclosed",
      "blocksAutomation": true
     }
    ],
@@ -7914,7 +7914,7 @@
     ]
    },
    "knownLimitations": [
-    "exact stop and order sequence not disclosed (#709 C13); no historical method return can be computed",
+    "the primary source W-RAS04 discloses neither entry order nor stop (#709 C13); both rest on the secondary source W-RAS97 (D-RAS97), trailing and size stay undisclosed, so no historical method return can be computed",
     "intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable"
    ],
    "chain": [
@@ -8035,12 +8035,18 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-ENTRY",
      "kind": "ENTRY",
-     "status": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
-     "derivation": null,
-     "reason": "order sequence not fully disclosed (#709 C13)"
+     "code": "scripts/supertrader/source-faithful/research/holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+      "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE"
+     ],
+     "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 (AIQ Opening Bell, August 1997, sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net) states the buy stop above the high of the previous bar; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). Which bar is \"previous\" stays a model assumption (MA-RAS-PREVIOUS-BAR); never SOURCE_EXACT; the lifecycle is not thereby source-conform (no trailing mechanics, size not disclosed)",
+     "reason": null,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
     },
     {
      "source": "W-RAS04",
@@ -8054,12 +8060,18 @@
      "candidate": "C13",
      "executableRule": "RAS-SF-STOP",
      "kind": "STOP",
-     "status": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
-     "code": null,
-     "tests": [],
-     "derivation": null,
-     "reason": "stop not fully disclosed (#709 C13)"
+     "code": "scripts/supertrader/source-faithful/research/holy-grail-lifecycle.mjs#holyGrailSetupSeries",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+      "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE"
+     ],
+     "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 states the protective sell stop at the newly formed swing low once filled; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). The swing definition stays a model assumption (MA-RAS-SWING-LOW); never SOURCE_EXACT",
+     "reason": null,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23"
     },
     {
      "source": "W-RAS04",

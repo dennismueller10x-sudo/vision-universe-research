@@ -49,7 +49,7 @@ export function sourceContractsArtifact(extract) {
           page: pr ? pr.page_location : null,
           ruleId: pid, modal: pr?.modal_strength ?? null, confidence: pr?.confidence ?? null, originalWordingChecked: pr?.original_wording_checked ?? null, clearance: pr?.hard_coding_clearance ?? null,
           candidate: c.candidateId, executableRule: r.id, kind: r.kind, status: r.status, targetStatus: r.targetStatus ?? null,
-          code: r.code ?? r.plannedCode ?? null, tests: r.tests ?? r.plannedTests ?? [], derivation: r.derivation ?? null, reason: r.reason ?? null,
+          code: r.code ?? r.plannedCode ?? null, tests: r.tests ?? r.plannedTests ?? [], derivation: r.derivation ?? null, reason: r.reason ?? null, ...(r.sourceBasis ? { sourceBasis: r.sourceBasis, secondarySource: r.secondarySource ?? null, ownerDecision: r.ownerDecision ?? null } : {}),
         };
       })),
     })),

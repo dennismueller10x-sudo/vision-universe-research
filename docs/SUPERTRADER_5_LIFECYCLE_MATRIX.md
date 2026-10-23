@@ -2,16 +2,16 @@
 
 Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).
 
-Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `f7b0d0812bf1…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
+Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `0a1260e9d087…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
 
 Grundsätze: a mechanically confirmed setup is not an executable trade; a model assumption is not a source rule; a lifecycle run with substituted manual decisions is a model study, not a strategy backtest; the original strategy and the platform research portfolio policy stay separate; a research variant from a source the owner has not accepted never changes a contract status; no live activation, no orders, no broker.
 
 ## C03 `SF_DARVAS_BOX` (sf5-darvas-lifecycle-1.0.0)
 
-- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
+- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert –; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 4 Zeilen; in der Simulation ersetzt: DAR-SETUP-SELECTION, DAR-SIZE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -29,7 +29,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | ENTRY_EXECUTION | DAR-EX-COSTS | slippage and commission |  |  | MODEL_ASSUMPTION | MA-DAR-COSTS | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | INITIAL_STOP | DAR-STOP-INIT | stop placed with the buy, a fraction below the broken top, never inside the box | DAR-B6, DAR-Q5, DAR-Q7 (B06 PDF 68; printed 56 (HARD, HIGH); B06 PDF 200; printed 188 (HARD, HIGH); B06 PDF 205; printed 193 (HARD, HIGH)) | DAR-SF-PROTECT, DAR-SF-STOP-INIT | SOURCE_DERIVED |  | `research/darvas-lifecycle.mjs#DARVAS_ADAPTER` | 1 | MECHANICAL_IMPLEMENTED |  |
 | INITIAL_STOP | DAR-STOP-ENTRY-BAR | a low at or below the stop on the trigger bar: pessimistic by default | DAR-Q5 (B06 PDF 200; printed 188 (HARD, HIGH)) | DAR-SF-STOP-INIT | MODEL_ASSUMPTION | MA-DAR-INTRABAR-ORDER | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
-| POSITION_SIZING | DAR-SIZE | position size and pilot buys | DAR-B15, DAR-B18 (B06 PDF 113; printed 101 (OPTIONAL, HIGH); B06 PDF 137; printed 125 (CONTEXTUAL, HIGH)) | DAR-SF-SIZING | MANUAL_REVIEW | MA-DAR-SIZING | `research/lifecycle-engine.mjs#plannedShares` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | reviewer decision in the source; fixed weight in the simulation |
+| POSITION_SIZING | DAR-SIZE | position size and pilot buys | DAR-B15, DAR-B18 (B06 PDF 113; printed 101 (OPTIONAL, HIGH); B06 PDF 137; printed 125 (CONTEXTUAL, HIGH)) | DAR-SF-SIZING | MANUAL_REVIEW | MA-DAR-SIZING | `research/lifecycle-engine.mjs#plannedShares` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | reviewer decision in the source; the reference weight is a comparison convention, results are reported as the span of all sizing variants (owner decision 2026-10-23) |
 | POSITION_MANAGEMENT | DAR-MGMT-RAISE | stop raised a fraction below the bottom of every later completed box, from the next session, never lowered | DAR-Q6, DAR-Q8 (B06 PDF 202; printed 190 (HARD, HIGH); B06 PDF 209; printed 197 (HARD, HIGH)) | DAR-SF-STOP-RAISE | SOURCE_DERIVED |  | `research/darvas-lifecycle.mjs#DARVAS_ADAPTER` | 2 | MECHANICAL_IMPLEMENTED |  |
 | POSITION_MANAGEMENT | DAR-MGMT-PYRAMID | further buys while the confirmed up-trend continues | DAR-B8 (B06 PDF 71; printed 59 (CONTEXTUAL, HIGH)) | DAR-SF-PYRAMID | MANUAL_REVIEW |  | – | 0 | MANUAL_NOT_AUTOMATED | not modelled (manual) |
 | EXIT_CONDITIONS | DAR-EXIT-STOP-ONLY | no profit target; the exit is the stop (stop-market fill min(open, stop)) | DAR-B7 (B06 PDF 70; printed 58 (STRONG_PREFERENCE, HIGH)) | DAR-SF-STOP-RAISE | SOURCE_DERIVED |  | `research/lifecycle-engine.mjs#protectiveHit` | 2 | MECHANICAL_IMPLEMENTED |  |
@@ -47,9 +47,9 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | MA-DAR-ATH-AVAILABLE-HISTORY | SETUP_QUALIFICATION | the all-time high (DAR-Q9) is checked against the available split-adjusted history; records flagged ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED are traded |  | the snapshot starts at the 2015 warm-up, not at the listing date; the contract sends such records to review, the simulation substitutes that review. No listing-date field exists in the snapshot to pre-register a verified-only alternative |
 | MA-DAR-FRACTION | ENTRY_EXECUTION | one raw cent in the split-adjusted basis of the arming bar (DAR-SF-ENTRY convention) |  | "a fraction" is not quantified (DAR-Q4/Q5); the reviewer may set another fraction per trade (DAR-MR-FRACTION). The level and the stop of an order use the fraction of the bar whose close armed it; the component study uses the fill bar: identical except across a split between the two sessions |
 | MA-DAR-ORDER-VALIDITY | ENTRY_ELIGIBILITY | the buy stop is valid for the next session only and is re-armed at every close while the box stands |  | a resting order is the source (DAR-B5, DAR-Q4); daily re-arming reproduces it without a lifetime number |
-| MA-DAR-INTRABAR-ORDER | INITIAL_STOP | PESSIMISTIC: an intraday trigger fill with a low at or below the stop on the same bar exits at the stop | OPTIMISTIC | a daily bar does not show the order of the trigger and the low; the contract derivation of DAR-SF-STOP-INIT is pessimistic |
+| MA-DAR-INTRABAR-ORDER | INITIAL_STOP | PESSIMISTIC (research reference, owner decision 2026-10-23): an intraday trigger fill with a low at or below the stop on the same bar exits at the stop | OPTIMISTIC | a daily bar does not show the order of the trigger and the low; the contract derivation of DAR-SF-STOP-INIT is pessimistic |
 | MA-DAR-REENTRY | ENTRY_ELIGIBILITY | after a stop-out a later all-time-high box breakout is taken again (DAR-Q11 reading, as the component study) |  | DAR-Q11 (CONTEXTUAL): new all-time highs can allow a re-entry; the decision is the reviewer's (DAR-SF-REENTRY) |
-| MA-DAR-SIZING | POSITION_SIZING | WEIGHT 0.10 of equity per position (platform model assumption) | WEIGHT 0.05; WEIGHT 0.20; RISK 0.01 to the initial stop | no Darvas sizing rule (DAR-SF-SIZING manual; pilot buys DAR-B15 OPTIONAL). The stop one fraction below the top makes risk-based sizing hit the platform weight cap on most fills, so fixed weight is the reference |
+| MA-DAR-SIZING | POSITION_SIZING | WEIGHT 0.10 of equity per position: a platform comparison convention, NOT a Darvas rule; results are reported as the span of all sizing variants (owner decision 2026-10-23) | WEIGHT 0.05; WEIGHT 0.20; RISK 0.01 to the initial stop | no Darvas sizing rule (DAR-SF-SIZING manual; pilot buys DAR-B15 OPTIONAL). The stop one fraction below the top makes risk-based sizing hit the platform weight cap on most fills, so fixed weight is the reference |
 | MA-DAR-RESEARCH-UNIVERSE | ENTRY_ELIGIBILITY | VU_TOURNAMENT_UNIVERSE_705 at the session before the fill |  | DAR-SF-RESEARCH-POPULATION: measurement convention, not a Darvas rule (DAR-Q10: no general minimum) |
 | MA-DAR-COSTS | ENTRY_EXECUTION | 10 bps slippage per side, 1 bp commission (platform policy) |  | no costs in the source; identical to the Turtle and Minervini research runs |
 
@@ -64,12 +64,12 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | ALT-SIZE-WEIGHT-020 | {"sizing":{"mode":"WEIGHT","weight":0.2}} |
 | ALT-SIZE-RISK-001 | {"sizing":{"mode":"RISK","riskFraction":0.01}} |
 
-## C08 `SF_KK_BREAKOUT` (sf5-kk-breakout-lifecycle-1.0.0)
+## C08 `SF_KK_BREAKOUT` (sf5-kk-breakout-lifecycle-1.1.0)
 
-- Source Fidelity: SOURCE_EXACT 4, SOURCE_DERIVED 0, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES
+- Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 2, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.1; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert KK-EX-ORH; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 6 Zeilen; in der Simulation ersetzt: KK-SIZE-RISK, KK-MGMT-PARTIAL, KK-EXIT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -78,12 +78,12 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | SETUP_QUALIFICATION | KK-SETUP-PROXY | prior move, consolidation length, rising 10 / 20-day MA, breakout level (higher lows and orderly tightening, KK-007, are not modelled) | KK-006, KK-008, KK-009, KK-011 (W-KK3 Breakouts:criteria1 (PREFERENCE, HIGH); W-KK3 Breakouts:criteria3 (CONTEXTUAL, HIGH); W-KK3 Breakouts:criteria3 (STRONG_PREFERENCE, HIGH); W-KK3 HowtoTrade1 (OPTIONAL, HIGH)) | KK-SF-BO-SETUP, KK-SF-BO-ENTRY | MODEL_ASSUMPTION | MA-KK-SETUP-PROXY, MA-KK-MANUAL-SUBSTITUTE | `research/kk-breakout-lifecycle.mjs#kkBreakoutSetupAt` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION | KK-MR-SETUP / KK-MR-LEVEL are manual; the proxy uses the printed lower ends as bounds |
 | SETUP_QUALIFICATION | KK-SETUP-TIGHTENING | higher lows, orderly tightening | KK-007 (W-KK3 Breakouts:criteria2 (STRONG_PREFERENCE, HIGH)) | KK-SF-BO-SETUP | MANUAL_REVIEW |  | – | 0 | EVIDENCE_FOR_REVIEWER | reported by breakoutEvidence, not part of the simulated proxy |
 | SETUP_QUALIFICATION | KK-SETUP-MOMENTUM | top 1-2 % by 1 / 3 / 6-month performance and the review priority | KK-005, KK-048 (W-KK3 Breakouts:steps1–3 (PREFERENCE, HIGH); W-KK3 own reply 2021-04-13 16:07 to enumerated six-factor question (PREFERENCE, HIGH)) | KK-SF-BO-MOMENTUM, KK-SF-PRIORITY | MANUAL_REVIEW |  | – | 0 | EVIDENCE_FOR_REVIEWER | ranking evidence (momentumRanks), never used to select in the simulation |
-| ENTRY_ELIGIBILITY | KK-EL-STOP-WIDTH | the low-of-day stop may not be wider than ADR20: a wider stop rejects the trade, never tightened | KK-012, KK-031 (W-KK3 HowtoTrade2 (HARD, HIGH); W-KKFAQ ADR formula (HARD, HIGH)) | KK-SF-BO-STOP, KK-SF-ADR | SOURCE_EXACT |  | `research/kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER` | 2 | MECHANICAL_IMPLEMENTED |  |
+| ENTRY_ELIGIBILITY | KK-EL-STOP-WIDTH | the stop may not be wider than ADR20: a wider stop rejects the trade, never tightened. Reference (next open): planned loss from the open to the breakout-day low <= ADR20, derived reading; KK-012 exactly only in ALT-ENTRY-BREAKOUT-DAY-CLOSE | KK-012, KK-031 (W-KK3 HowtoTrade2 (HARD, HIGH); W-KKFAQ ADR formula (HARD, HIGH)) | KK-SF-BO-STOP, KK-SF-ADR | SOURCE_DERIVED |  | `research/kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER` | 3 | MECHANICAL_IMPLEMENTED | owner decision 2026-10-23: next open is the research reference; the deviation from KK-012 is declared |
 | ENTRY_ELIGIBILITY | KK-EL-UNIVERSE | liquidity first (no number) | KK-048 (W-KK3 own reply 2021-04-13 16:07 to enumerated six-factor question (PREFERENCE, HIGH)) |  | MODEL_ASSUMPTION | MA-KK-RESEARCH-UNIVERSE | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
-| ENTRY_EXECUTION | KK-EX-DAILY-CLOSE | daily breakout entry at the breakout-day close (written alternative to the ORH) | KK-011 (W-KK3 HowtoTrade1 (OPTIONAL, HIGH)) | KK-SF-BO-ENTRY | MODEL_ASSUMPTION | MA-KK-ENTRY-TIMING | `research/lifecycle-engine.mjs#runResearchLifecycle` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
+| ENTRY_EXECUTION | KK-EX-NEXT-OPEN | daily breakout (written alternative to the ORH), bought at the next tradable open after the completed breakout-day bar (owner decision 2026-10-23) | KK-011 (W-KK3 HowtoTrade1 (OPTIONAL, HIGH)) | KK-SF-BO-ENTRY | MODEL_ASSUMPTION | MA-KK-ENTRY-TIMING | `research/lifecycle-engine.mjs#runResearchLifecycle` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | ENTRY_EXECUTION | KK-EX-ORH | opening range high entry (1 / 5 / 60 minutes) | KK-010 (W-KK3 HowtoTrade1 (OPTIONAL, HIGH)) | KK-SF-BO-ORH | DATA_BLOCKED |  | – | 0 | BLOCKED | no frozen intraday history |
 | ENTRY_EXECUTION | KK-EX-COSTS | slippage and commission |  |  | MODEL_ASSUMPTION | MA-KK-COSTS | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
-| INITIAL_STOP | KK-STOP-LOD | initial stop = low of the entry day, stop-market | KK-012, KK-027 (W-KK3 HowtoTrade2 (HARD, HIGH); W-KKFAQ stopmarket question (HARD, HIGH)) | KK-SF-BO-STOP, KK-SF-STOPMARKET | SOURCE_EXACT |  | `research/lifecycle-engine.mjs#protectiveHit` | 2 | MECHANICAL_IMPLEMENTED |  |
+| INITIAL_STOP | KK-STOP-LOD | initial stop = low of the breakout day (reference, the day before the next-open fill; KK-012 names the low of the entry day, kept exactly in ALT-ENTRY-BREAKOUT-DAY-CLOSE), stop-market | KK-012, KK-027 (W-KK3 HowtoTrade2 (HARD, HIGH); W-KKFAQ stopmarket question (HARD, HIGH)) | KK-SF-BO-STOP, KK-SF-STOPMARKET | SOURCE_DERIVED |  | `research/lifecycle-engine.mjs#protectiveHit` | 3 | MECHANICAL_IMPLEMENTED |  |
 | POSITION_SIZING | KK-SIZE-CAP | never more than 30 % of equity in one stock overnight | KK-001 (W-KK3 opening risk note (HARD, HIGH)) | KK-SF-CAP | SOURCE_EXACT |  | `research/lifecycle-engine.mjs#plannedShares` | 2 | MECHANICAL_IMPLEMENTED | the platform cap (25 %) is stricter and applies |
 | POSITION_SIZING | KK-SIZE-RISK | risk per trade inside the printed context ranges | KK-003, KK-025, KK-002, KK-026 (W-KK3 risk note (CONTEXTUAL, HIGH); W-KKFAQ Howmuchrisk (CONTEXTUAL, HIGH); W-KKFAQ position size (CONTEXTUAL, HIGH)) | KK-SF-SIZE | MANUAL_REVIEW | MA-KK-RISK-FRACTION | `research/lifecycle-engine.mjs#plannedShares` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | POSITION_MANAGEMENT | KK-MGMT-PARTIAL | after 3-5 days sell 1/3-1/2, rest to break-even | KK-013 (W-KK3 HowtoTrade3 (PREFERENCE, HIGH)) | KK-SF-BO-PARTIAL | MANUAL_REVIEW | MA-KK-EXIT-POLICY | `research/kk-breakout-lifecycle.mjs#KK_BREAKOUT_ADAPTER` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | printed ranges; the reference uses day 3 and 1/3, alternatives pre-registered |
@@ -100,7 +100,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 |---|---|---|---|---|
 | MA-KK-MANUAL-SUBSTITUTE | ENTRY_ELIGIBILITY | ACCEPT_AS_MODEL_ASSUMPTION (simulation only) |  | setup quality (KK-MR-SETUP), the breakout level (KK-MR-LEVEL) and the review priority (KK-MR-PRIORITY) are the reviewer's; they are substituted by MA-KK-SETUP-PROXY, so a run is a model study |
 | MA-KK-SETUP-PROXY | SETUP_QUALIFICATION | CONSOLIDATION_10: level = highest high of the 10 sessions before the breakout day (2 weeks, KK-008 lower end); prior move >= 30 % from the lowest low of the 63 sessions before the consolidation to its first close (KK-006 lower printed end, 3 months); 10- and 20-day MA rising at the prior close (KK-009; the 5-session slope window is a VU convention, as in breakoutEvidence) | CONSOLIDATION_20 (20 sessions); NO_MA_CONDITION | KK-006..009 are preferences and context; the printed lower ends are used as bounds of a declared proxy, never as Kullamaegi gates |
-| MA-KK-ENTRY-TIMING | ENTRY_EXECUTION | BREAKOUT_DAY_CLOSE (CLOSE_DECISION_USES_FINAL_BAR): a close above the level, bought at that close (closing auction); KK-012 is evaluated exactly with the final low of day | NEXT_OPEN: bought at the next open; stop = breakout-day low, rejected if the open is more than ADR20 above it (not KK-012 literally) | KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption |
+| MA-KK-ENTRY-TIMING | ENTRY_EXECUTION | NEXT_OPEN (owner decision 2026-10-23, strictly PIT): bought at the next open after the breakout-day close; stop = breakout-day low; not executed when the open lies more than ADR20 above the stop or at / below it (derived reading of KK-012, not KK-012 literally) | BREAKOUT_DAY_CLOSE (former reference, CLOSE_DECISION_USES_FINAL_BAR): bought at the breakout-day close; KK-012 evaluated exactly with the final low of day | KK-011 allows the daily breakout entry; the contract timing is the breakout-day close. The close decision uses the final close and low (an order in the closing auction is placed minutes before); the next-open alternative uses the prior close only and measures the sensitivity to that assumption |
 | MA-KK-EXIT-POLICY | POSITION_MANAGEMENT | PARTIAL3_THIRD_BE_MA10: at the close of the 3rd session after the entry day, if the close is above the entry: sell 1/3 at the next open and raise the stop to break-even; the rest (from the partial-sale day on) exits at the next open after the first close below the 10-day MA (beginner rule KK-014); before that day only the low-of-day stop exits | PARTIAL5_HALF_BE_MA10; PARTIAL3_THIRD_BE_MA20; NO_PARTIAL_MA10 (trail from the entry); PARTIAL3_THIRD_BE_MA10_TRAIL_FROM_ENTRY | KK-013 / KK-014 are preferences with printed ranges; the reference takes the earliest printed day and the smallest printed fraction; the profit condition prevents a break-even stop above the price |
 | MA-KK-RISK-FRACTION | POSITION_SIZING | RISK 0.005 of equity to the low-of-day stop | RISK 0.0025; RISK 0.01 | 0.5 % lies inside both printed context ranges (KK-003 0.25-1 %, KK-025 0.3-0.5 %); the ends are the alternatives |
 | MA-KK-RESEARCH-UNIVERSE | ENTRY_ELIGIBILITY | VU_TOURNAMENT_UNIVERSE_705 at the session before the fill |  | liquidity is reviewed first (KK-048) without a number; the shared research universe is a measurement convention |
@@ -113,7 +113,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | REF | {} |
 | ALT-SETUP-CONSOLIDATION-20 | {"setupProxy":"CONSOLIDATION_20"} |
 | ALT-SETUP-NO-MA | {"setupProxy":"NO_MA_CONDITION"} |
-| ALT-ENTRY-NEXT-OPEN | {"entryTiming":"NEXT_OPEN"} |
+| ALT-ENTRY-BREAKOUT-DAY-CLOSE | {"entryTiming":"BREAKOUT_DAY_CLOSE"} |
 | ALT-EXIT-PARTIAL5-HALF | {"exitPolicy":"PARTIAL5_HALF_BE_MA10"} |
 | ALT-EXIT-TRAIL-MA20 | {"exitPolicy":"PARTIAL3_THIRD_BE_MA20"} |
 | ALT-EXIT-NO-PARTIAL | {"exitPolicy":"NO_PARTIAL_MA10"} |
@@ -126,7 +126,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 6, MANUAL_REVIEW 5, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert PP-EX-INTRADAY; quellenblockiert PP-STOP
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 5 Zeilen; in der Simulation ersetzt: PP-SETUP-CONTEXT, PP-SIZE, PP-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -175,14 +175,14 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 7, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert BGU-EX-INTRADAY; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 7 Zeilen; in der Simulation ersetzt: BGU-SETUP-CONTEXT, BGU-STOP-GAPLOW, BGU-SIZE, BGU-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
 | Phase | Zeile | Bedingung | #709 / Quelle | Vertrag | Klasse | Modellannahmen | Code | Tests | Readiness | fehlt / Anmerkung |
 |---|---|---|---|---|---|---|---|---|---|---|
 | SETUP_QUALIFICATION | BGU-SETUP-GAP | gap >= 0.75 x ATR40 | MOKA12-004 (W-MOKA12 PDF35 (HARD, HIGH)) | MOKA-SF-BGU-GAP, MOKA-SF-BGU-GAP-MEASURE | SOURCE_DERIVED |  | `research/moka-lifecycle.mjs#buyableGapUpSignal` | 2 | MECHANICAL_IMPLEMENTED |  |
-| SETUP_QUALIFICATION | BGU-SETUP-VOLUME | standard volume 150 % of the average (window not recorded) | MOKA24-VOL (W-MOKAV24 MCDparagraph (HARD, HIGH)) | MOKA-SF-BGU-VOLUME, MOKA-SF-BGU-VOLWINDOW | MODEL_ASSUMPTION | MA-MOKA-BGU-VOLWINDOW | `research/moka-lifecycle.mjs#buyableGapUpSignal` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION | 1.5x SOURCE_EXACT, the 50-session window SOURCE_AMBIGUOUS (MOKA-MR-VOLWINDOW) |
+| SETUP_QUALIFICATION | BGU-SETUP-VOLUME | standard volume 150 % of the average (window not recorded) | MOKA24-VOL (W-MOKAV24 MCDparagraph (HARD, HIGH)) | MOKA-SF-BGU-VOLUME, MOKA-SF-BGU-VOLWINDOW | MODEL_ASSUMPTION | MA-MOKA-BGU-VOLWINDOW | `research/moka-lifecycle.mjs#buyableGapUpSignal` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION | 1.5x SOURCE_EXACT; the 50-session window is a declared research model convention (owner decision 2026-10-23), the source rule stays SOURCE_AMBIGUOUS |
 | SETUP_QUALIFICATION | BGU-SETUP-EXCEPTION | megacap exception below the standard volume | MOKA24-MEGA (W-MOKAV24 MCDparagraph (CONTEXTUAL, HIGH)) | MOKA-SF-BGU-MEGA | MANUAL_REVIEW |  | – | 0 | MANUAL_NOT_AUTOMATED | exception records are never simulated |
 | SETUP_QUALIFICATION | BGU-SETUP-CONTEXT | leadership / theme, uptrend or constructive consolidation | MOKA12-003, MOKA12-006 (W-MOKA12 PDF35 (PREFERENCE, HIGH); W-MOKA12 PDF35 (STRONG_PREFERENCE, HIGH)) | MOKA-SF-BGU-CONTEXT | MANUAL_REVIEW | MA-MOKA-CONTEXT-PROXY, MA-MOKA-MANUAL-SUBSTITUTE | `research/moka-lifecycle.mjs#buyableGapUpSignal` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | ENTRY_ELIGIBILITY | BGU-EL-UNIVERSE | research population |  |  | MODEL_ASSUMPTION | MA-MOKA-RESEARCH-UNIVERSE | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
@@ -208,7 +208,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | MA-MOKA-VIOLATION-READING | EXIT_CONDITIONS | LATER_DAYS (FAQ, MOKASTOP-002): the highest low of the closes below the guide MA since the entry stays the trigger until undercut | NEXT_DAY (2012 slide, MOKA12-009): only the session after a close below the MA can confirm | MOKA-C2 conflict kept open (MOKA-SF-EXIT-VIOLATION SOURCE_AMBIGUOUS); the dedicated selling source is the reference |
 | MA-MOKA-SELL-GUIDE | POSITION_MANAGEMENT | guide = 10DMA when it was respected for >= 35 sessions (7 weeks x 5) under the same violation reading, else 50DMA, re-evaluated at every close (sellGuideEvidence); the whole position is sold at the undercut (stop-market at the violation-day low) |  | MOKA12-008 / MOKASTOP-001 PREFERENCE; full vs half (MOKASTOP-004) is a reviewer decision |
 | MA-MOKA-BGU-STOP | INITIAL_STOP | stop-market at the gap-day low, whole position |  | MOKA12-007 risk reference; MOKASTOP-006 "generally at least half" - selling all lies inside the printed rule |
-| MA-MOKA-BGU-VOLWINDOW | SETUP_QUALIFICATION | 1.5x the mean volume of the 50 sessions before the gap day (gapUpAt) |  | the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen's window is run, so the measurement depends on this choice (owner decision) |
+| MA-MOKA-BGU-VOLWINDOW | SETUP_QUALIFICATION | 1.5x the mean volume of the 50 sessions before the gap day (gapUpAt): declared RESEARCH MODEL CONVENTION confirmed by owner decision 2026-10-23, not an original source rule |  | the averaging window is SOURCE_AMBIGUOUS (MOKA-SF-BGU-VOLWINDOW); only the screen's window is run, so the measurement depends on this choice (owner decision) |
 | MA-MOKA-SIZING | POSITION_SIZING | Pocket Pivot: WEIGHT 0.10 (no price stop to size against); BGU: RISK 0.01 to the gap-day low | PP WEIGHT 0.05 / 0.20; BGU RISK 0.005 / 0.02 | sizing is not specified in #709 (MOKA-SF-PP-SIZE, MOKA-SF-BGU-SIZE manual) |
 | MA-MOKA-RESEARCH-UNIVERSE | ENTRY_ELIGIBILITY | VU_TOURNAMENT_UNIVERSE_705 at the signal session |  | measurement convention shared by every method |
 | MA-MOKA-COSTS | ENTRY_EXECUTION | 10 bps slippage per side, 1 bp commission (platform policy) |  | no costs in the sources |
@@ -228,7 +228,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WI-EL-GROUP, WI-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WI-SETUP-STAGE, WI-EXIT-VOL5, WI-STOP-LEVEL, WI-SIZE, WI-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -290,7 +290,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WT-EL-GROUP, WT-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WT-SETUP-STAGE, WT-EXIT-VOL5, WT-STOP-LEVEL, WT-SIZE, WT-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -347,10 +347,10 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 
 ## C13 `SF_RASCHKE_HOLY_GRAIL` (sf5-holy-grail-research-variant-1.0.0)
 
-- Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.1.0; Quellenstatus RESEARCH_VARIANT_SOURCE_PENDING_OWNER_DECISION
+- Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.2.1; Quellenstatus RESEARCH_VARIANT_SECONDARY_SOURCE
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert HG-EX-INTRADAY; quellenblockiert HG-MGMT-TRAIL
-- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39937731507, 39903861586, 39770019164
 - Manuell: 3 Zeilen; in der Simulation ersetzt: HG-SETUP-IMPULSE-FIRST, HG-EXIT-NEW-HIGH
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -360,7 +360,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | SETUP_QUALIFICATION | HG-SETUP-ADX-READING | W-RAS97 "initially greater than 30 and rising": which bars must carry ADX > 30 | RAS04-002 (W-RAS04 PDF4;ownquote (HARD, HIGH)) | RAS-SF-ADX | MODEL_ASSUMPTION | MA-RAS-ADX-READING | `research/holy-grail-lifecycle.mjs#holyGrailSetupSeries` | 2 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | SETUP_QUALIFICATION | HG-SETUP-PULLBACK | touch of the 20 EMA while ADX(14) > 30 (the contract component) | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-PULLBACK | SOURCE_DERIVED |  | `research/holy-grail-lifecycle.mjs#holyGrailSetupSeries` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | HG-SETUP-IMPULSE-FIRST | strong impulse; FIRST pullback to the 20 EMA | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-PULLBACK | MANUAL_REVIEW | MA-RAS-MANUAL-SUBSTITUTE | `research/holy-grail-lifecycle.mjs#holyGrailSetupSeries` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | review flags RAS-MR-IMPULSE / RAS-MR-NOT-FIRST in the contract; substituted in the simulation |
-| ENTRY_ELIGIBILITY | HG-EL-SOURCE | entry and stop from W-RAS97 (newsletter sidebar on the author's site): owner decision D-RAS97 pending | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-ENTRY | MODEL_ASSUMPTION | MA-RAS-SOURCE-W-RAS97 | `research/holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | contract status stays SOURCE_AMBIGUOUS |
+| ENTRY_ELIGIBILITY | HG-EL-SOURCE | entry and stop from W-RAS97 (newsletter sidebar on the author's site): accepted as explicitly labelled secondary source (D-RAS97, 2026-10-23) | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-ENTRY | MODEL_ASSUMPTION | MA-RAS-SOURCE-W-RAS97 | `research/holy-grail-lifecycle.mjs#HOLY_GRAIL_RESEARCH_ADAPTER` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION | contract: SOURCE_DERIVED with sourceBasis SECONDARY_SOURCE, never SOURCE_EXACT; the lifecycle is not source-conform |
 | ENTRY_EXECUTION | HG-EX-BUY-STOP | buy stop above the high of the previous bar after the touch | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-ENTRY | MODEL_ASSUMPTION | MA-RAS-PREVIOUS-BAR | `research/lifecycle-engine.mjs#fillOrder` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | ENTRY_EXECUTION | HG-EX-INTRADAY | intraday timeframes (5-120 minutes) | RAS04-006 (W-RAS04 PDF4;ownquote (CONTEXTUAL, HIGH)) | RAS-SF-TIMEFRAME | DATA_BLOCKED |  | – | 0 | BLOCKED | daily timeframe only |
 | INITIAL_STOP | HG-STOP-SWING-LOW | protective stop at the newly formed swing low | RAS04-001 (W-RAS04 PDF4;ownquote (STRONG_PREFERENCE, HIGH)) | RAS-SF-STOP | MODEL_ASSUMPTION | MA-RAS-SWING-LOW, MA-RAS-INTRABAR-ORDER | `research/holy-grail-lifecycle.mjs#holyGrailSetupSeries` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
@@ -376,7 +376,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 
 | ID | Phase | Referenz | Alternativen | Begründung |
 |---|---|---|---|---|
-| MA-RAS-SOURCE-W-RAS97 | ENTRY_EXECUTION | entry order and initial stop read from W-RAS97 (research variant, owner decision pending) |  | the contract source W-RAS04 discloses neither (#709 C13); W-RAS97 is a newsletter sidebar on the author's site |
+| MA-RAS-SOURCE-W-RAS97 | ENTRY_EXECUTION | entry order and initial stop read from W-RAS97, an explicitly labelled secondary source (owner decision D-RAS97, 2026-10-23); the readings of "previous bar" and "swing low" stay model assumptions |  | the contract source W-RAS04 discloses neither (#709 C13); W-RAS97 is a newsletter sidebar on the author's site |
 | MA-RAS-PREVIOUS-BAR | ENTRY_EXECUTION | TOUCH_BAR: buy stop one raw cent above the high of the bar that touched the 20 EMA, placed after its close for the next session only | BAR_BEFORE_TOUCH: above the high of the bar before the touch bar, also for the next session | the literal real-time reading is a buy stop above the bar before the touch, which can fill on the touch bar itself; that needs intraday data and is DATA_BLOCKED on daily bars. Both daily variants are conventions that place the order after the touch close; the one-session validity is not in the sidebar |
 | MA-RAS-ADX-READING | SETUP_QUALIFICATION | RUN_TO_TOUCH: ADX(14) > 30 on every bar from the start of the run to the bar before the touch (the contract component RAS-SF-PULLBACK); "rising" holds where the run crossed 30 upward | AT_IMPULSE_HIGH: ADX > 30 on the bar of the impulse high only; the ADX may fall below 30 during the retracement ("initially") | W-RAS97 rule 1 says "initially greater than 30 and rising" and rule 2 expects a turndown during the retracement; which bars carry the condition is not stated |
 | MA-RAS-MANUAL-SUBSTITUTE | SETUP_QUALIFICATION | EVERY_TOUCH: every touch of the 20 EMA in the setup is taken (strong impulse and first pullback substituted) | FIRST_TOUCH_ONLY: only the first touch since the impulse high | RAS04-001 (STRONG_PREFERENCE) strong impulse, first pullback; review flags RAS-MR-IMPULSE / RAS-MR-NOT-FIRST in the contract |

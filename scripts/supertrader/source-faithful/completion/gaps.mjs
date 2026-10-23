@@ -37,6 +37,10 @@ export const DIMENSIONS = Object.freeze([
 ]);
 
 const CLASS_OF_STATUS = { DATA_BLOCKED: GAP_CLASS.DATA_GAP, MANUAL_REVIEW_REQUIRED: GAP_CLASS.MANUAL_DECISION, SOURCE_AMBIGUOUS: GAP_CLASS.SOURCE_GAP, NOT_IMPLEMENTED: GAP_CLASS.IMPLEMENTATION_GAP };
+// A rule that rests on an explicitly labelled SECONDARY source (owner decision, e.g. D-RAS97) is implemented as a research
+// reading but the primary source stays silent: it remains a SOURCE_GAP whose primary mechanics are not implemented, so no
+// engine state or measurement class rises because of a secondary source.
+const gapClassOf = (r) => (r.sourceBasis === 'SECONDARY_SOURCE' ? GAP_CLASS.SOURCE_GAP : CLASS_OF_STATUS[r.status]);
 const ESSENTIAL_KINDS = new Set(['ENTRY', 'EXIT', 'STOP', 'SIZING', 'SETUP', 'FILTER', 'PYRAMIDING', 'PORTFOLIO']);
 const isEssential = (r) => ESSENTIAL_KINDS.has(r.kind) && r.essential !== false;
 /** The declared research scope of a contract: Turtle reports the equity adaptation, everything else its single scope. */
@@ -46,12 +50,13 @@ const inScope = (r, scope) => !scope || !r.scopes || r.scopes.includes(scope);
 /** One gap record of a non-implemented rule. */
 function ruleGap(r, scope) {
   return {
-    class: CLASS_OF_STATUS[r.status], ruleId: r.id, psr709: r.psr709, kind: r.kind, essential: isEssential(r),
+    class: gapClassOf(r), ruleId: r.id, psr709: r.psr709, kind: r.kind, essential: isEssential(r),
     scope: inScope(r, scope) ? 'DECLARED' : 'ORIGINAL_ONLY',
-    mechanicsImplemented: Boolean(r.code) || r.mechanics === 'IMPLEMENTED',
+    mechanicsImplemented: r.sourceBasis === 'SECONDARY_SOURCE' ? false : Boolean(r.code) || r.mechanics === 'IMPLEMENTED',
+    ...(r.sourceBasis === 'SECONDARY_SOURCE' ? { secondarySource: r.secondarySource, ownerDecision: r.ownerDecision } : {}),
     // a SOURCE_GAP counts as resolved for the engine only when every reading is implemented (review SF2-R1-03)
     allReadingsImplemented: r.status === 'SOURCE_AMBIGUOUS' && Boolean(r.code) && Array.isArray(r.variants) && r.variants.length >= 2,
-    detail: r.reason ?? r.rule,
+    detail: r.sourceBasis === 'SECONDARY_SOURCE' ? `primary source silent; research reading from the secondary source ${r.secondarySource} (${r.ownerDecision}): ${r.rule}` : r.reason ?? r.rule,
   };
 }
 
@@ -111,7 +116,7 @@ const testExists = (idx, t) => { const names = idx[t.file]; return Boolean(names
  */
 export function completionGaps(contract, entry, { testIndex = {} } = {}) {
   const scope = declaredScope(contract), dims = [];
-  const ruleGapsOf = (kinds) => contract.rules.filter((r) => kinds.includes(r.kind) && CLASS_OF_STATUS[r.status]).map((r) => ruleGap(r, scope));
+  const ruleGapsOf = (kinds) => contract.rules.filter((r) => kinds.includes(r.kind) && gapClassOf(r)).map((r) => ruleGap(r, scope));
   const statusOf = (gaps) => {
     if (!gaps.length) return 'COMPLETE';
     const blocking = gaps.filter((g) => g.essential && g.scope === 'DECLARED' && !(g.class === GAP_CLASS.SOURCE_GAP && g.allReadingsImplemented));

@@ -45,7 +45,7 @@ export function testIndex() {
 }
 
 const RISK_KINDS = ['STOP', 'SIZING', 'PORTFOLIO', 'PYRAMIDING'];
-const pick = (r) => ({ ruleId: r.id, kind: r.kind, psr709: r.psr709, status: r.status, essential: r.essential !== false, gate: r.gate ?? null, rule: r.rule, derivation: r.derivation ?? null, reason: r.reason ?? null, code: r.code ?? null, tests: r.tests ?? [] });
+const pick = (r) => ({ ruleId: r.id, kind: r.kind, psr709: r.psr709, status: r.status, essential: r.essential !== false, gate: r.gate ?? null, rule: r.rule, ...(r.sourceBasis ? { sourceBasis: r.sourceBasis, secondarySource: r.secondarySource ?? null, ownerDecision: r.ownerDecision ?? null } : {}), derivation: r.derivation ?? null, reason: r.reason ?? null, code: r.code ?? null, tests: r.tests ?? [] });
 
 export function buildCompletion(outDir = ARTIFACT_DIR) {
   const extract = loadExtract(), registry = buildRegistry(extract), idx = testIndex();
@@ -81,7 +81,7 @@ export function buildCompletion(outDir = ARTIFACT_DIR) {
     'STRATEGY-SOURCE-FIDELITY-RESULTS.json': {
       schema: 'supertrader-sf-source-fidelity-results-1.0.0', rule: 'fidelity per rule status (contract.mjs); SOURCE_EXACT only on HARD / HIGH / original-checked #709 rules; every derivation written down',
       candidates: rows.map((r) => ({ strategyId: r.c.strategyId, candidateId: r.c.candidateId, sourceContractVersion: r.c.sourceContractVersion, contractFingerprint: r.entry.contractFingerprint, sourceCoverage: r.entry.sourceCoverage,
-        derivations: r.c.rules.filter((x) => x.status === 'SOURCE_DERIVED').map((x) => ({ ruleId: x.id, psr709: x.psr709, gate: x.gate ?? null, derivation: x.derivation })),
+        derivations: r.c.rules.filter((x) => x.status === 'SOURCE_DERIVED').map((x) => ({ ruleId: x.id, psr709: x.psr709, gate: x.gate ?? null, ...(x.sourceBasis ? { sourceBasis: x.sourceBasis, secondarySource: x.secondarySource ?? null, ownerDecision: x.ownerDecision ?? null } : {}), derivation: x.derivation })),
         goldenCases: { total: goldenOf(r.c.strategyId).length, pass: goldenOf(r.c.strategyId).filter((x) => x.result === 'PASS').length },
         noInventedThreshold: r.c.rules.every((x) => !x.gate || x.status === 'SOURCE_EXACT' || x.status === 'SOURCE_DERIVED') })),
       goldenSummary: golden.summary,

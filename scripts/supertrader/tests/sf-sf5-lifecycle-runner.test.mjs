@@ -16,7 +16,7 @@ import { SNAPSHOT_RUNS as SF4_RUNS } from '../source-faithful/completion/build-m
 import { buildSf5Artifact, sf5Markdown, SF5_SNAPSHOT_RUNS } from '../source-faithful/completion/build-sf5-lifecycle.mjs';
 
 // pinned before the first snapshot result of the Supertrader 5.0 lifecycles was read
-const PINNED_SF5_VARIANT_REGISTRY = 'f7b0d0812bf18a8af3dc47d96106632d62a5b3a761a24a22eabe81068fc15c03';
+const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
 function dataset(n = 30, len = 700) {
@@ -56,7 +56,7 @@ test('SF5-RUNNER-PUBLIC-COUNTS-ONLY: oeffentlich nur Zaehlungen und Hashes, Kenn
     assert.equal(r.sealed.strategies[lc.key].variants.REF.metrics.diagnostic.certification, 'DIAGNOSTIC_NOT_CERTIFIED');
   }
   for (const k of ['DARVAS', 'KK_BREAKOUT', 'POCKET_PIVOT', 'BUYABLE_GAP_UP', 'WEINSTEIN_INVESTOR', 'WEINSTEIN_TRADER']) assert.ok(r.pub.strategies[k].variants.REF.trades > 0, `${k}: the synthetic universe must produce trades`);
-  assert.equal(r.pub.strategies.HOLY_GRAIL_W_RAS97.sourceStatus, 'RESEARCH_VARIANT_SOURCE_PENDING_OWNER_DECISION');
+  assert.equal(r.pub.strategies.HOLY_GRAIL_W_RAS97.sourceStatus, 'RESEARCH_VARIANT_SECONDARY_SOURCE');
   assert.equal(r.sealed.label, 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN');
 });
 
