@@ -8,7 +8,7 @@ import { WEINSTEIN_INVESTOR_ADAPTER, WEINSTEIN_TRADER_ADAPTER, WEIN_INVESTOR_REF
 import { investorScreen, traderScreen } from '../source-faithful/methods/weinstein.mjs';
 import { WEINSTEIN_INVESTOR } from '../source-faithful/contracts/weinstein.mjs';
 
-const PINNED_WEIN_VARIANTS = '984733b4fb3669fa94b7fb6b9ff4e320abfb83b620b02bb09f0acf1cb79a80df';
+const PINNED_WEIN_VARIANTS = '430967285a2ce7c72b7855903fd06b4c5eb24a15fd5407b9dbad080bf963f528';
 const day = (k) => new Date(Date.UTC(2019, 0, 7) + k * 864e5).toISOString().slice(0, 10); // 2019-01-07 is a Monday
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const ds = (...secs) => ({ calendar: [...new Set(secs.flatMap((s) => s.bars.map((b) => b.date)))].sort(), securities: secs });

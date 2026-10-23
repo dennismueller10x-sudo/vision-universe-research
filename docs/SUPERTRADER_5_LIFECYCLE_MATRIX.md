@@ -2,7 +2,7 @@
 
 Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).
 
-Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `947eedb5eb11…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
+Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `f7b0d0812bf1…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
 
 Grundsätze: a mechanically confirmed setup is not an executable trade; a model assumption is not a source rule; a lifecycle run with substituted manual decisions is a model study, not a strategy backtest; the original strategy and the platform research portfolio policy stay separate; a research variant from a source the owner has not accepted never changes a contract status; no live activation, no orders, no broker.
 
@@ -11,7 +11,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 2, SOURCE_DERIVED 4, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 10, MANUAL_REVIEW 4, DATA_BLOCKED 0, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert –; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 4 Zeilen; in der Simulation ersetzt: DAR-SETUP-SELECTION, DAR-SIZE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -69,7 +69,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 4, SOURCE_DERIVED 0, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 6, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert KK-EX-ORH; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 6 Zeilen; in der Simulation ersetzt: KK-SIZE-RISK, KK-MGMT-PARTIAL, KK-EXIT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -126,7 +126,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 6, MANUAL_REVIEW 5, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert PP-EX-INTRADAY; quellenblockiert PP-STOP
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 5 Zeilen; in der Simulation ersetzt: PP-SETUP-CONTEXT, PP-SIZE, PP-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -175,7 +175,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 0, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 7, MANUAL_REVIEW 7, DATA_BLOCKED 1, SOURCE_BLOCKED 0; Vertrag 1.3.0; Quellenstatus CONTRACT_SOURCES
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert BGU-EX-INTRADAY; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 7 Zeilen; in der Simulation ersetzt: BGU-SETUP-CONTEXT, BGU-STOP-GAPLOW, BGU-SIZE, BGU-MGMT-GUIDE
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -228,7 +228,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WI-EL-GROUP, WI-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WI-SETUP-STAGE, WI-EXIT-VOL5, WI-STOP-LEVEL, WI-SIZE, WI-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -238,7 +238,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | SETUP_QUALIFICATION | WI-SETUP-WEEKLY | weekly bars and the 30-week MA; a week is decided at its last session | WEIN-S2 (B09 PDF 48; printed 34 (CONTEXTUAL, HIGH)) | WEIN-SF-WEEKLY | SOURCE_DERIVED | MA-WEIN-WEEK-END | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | WI-SETUP-MA-GATE | no long buy at or below a falling 30-week MA | WEIN-MA (B09 PDF 143; printed 129 (HARD, HIGH)) | WEIN-SF-MA-GATE | SOURCE_DERIVED |  | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | WI-SETUP-STAGE | stage classification (no Stage 3 / Stage 4 buys), volume judgment, RS (no buy when negative and still poor), overhead resistance | WEIN-S1, WEIN-S2, WEIN-NO3, WEIN-NO4, WEIN-VOL, WEIN-RS, WEIN-RSNO, WEIN-OH (B09 PDF 47; printed 33 (CONTEXTUAL, HIGH); B09 PDF 48; printed 34 (CONTEXTUAL, HIGH); B09 PDF 52; printed 38 (HARD, HIGH); B09 PDF 53; printed 39 (HARD, HIGH); B09 PDF 117; printed 103 (HARD, HIGH); B09 PDF 122; printed 108 (CONTEXTUAL, HIGH); B09 PDF 124; printed 110 (HARD, HIGH)) | WEIN-SF-STAGE, WEIN-SF-VOLUME, WEIN-SF-RS, WEIN-SF-OVERHEAD | MANUAL_REVIEW | MA-WEIN-MANUAL-SUBSTITUTE | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
-| ENTRY_ELIGIBILITY | WI-EL-GROUP | no long buy in a negative industry group | WEIN-GROUP (B09 PDF 94; printed 80 (HARD, HIGH)) | WEIN-SF-GROUP | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the run (MA-WEIN-DATA-EXCEPTION) |
+| ENTRY_ELIGIBILITY | WI-EL-GROUP | no long buy in a negative industry group | WEIN-GROUP (B09 PDF 94; printed 80 (HARD, HIGH)) | WEIN-SF-GROUP | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule |
 | ENTRY_ELIGIBILITY | WI-EL-MARKET | normal long selection only in a positive overall market | WEIN-MARKET (B09 PDF 143; printed 129 (HARD, HIGH)) | WEIN-SF-MARKET | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the run (MA-WEIN-DATA-EXCEPTION) |
 | ENTRY_ELIGIBILITY | WI-EL-UNIVERSE | research population |  |  | MODEL_ASSUMPTION | MA-WEIN-RESEARCH-UNIVERSE | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | ENTRY_EXECUTION | WI-EX-BUY-STOP | breakout buy prepared as a buy stop one raw cent above the resistance, resting through the next week | WEIN-ORD (B09 PDF 79; printed 65 (HARD, HIGH)) | WEIN-SF-ORDER | SOURCE_DERIVED | MA-WEIN-ORDER-WEEK | `research/lifecycle-engine.mjs#fillOrder` | 2 | MECHANICAL_IMPLEMENTED |  |
@@ -271,6 +271,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | MA-WEIN-TRAIL | POSITION_MANAGEMENT | weekly: a correction of the weekly lows from the highest weekly high since entry by >= 8 % (Investor, lower printed end of 8-10 %) / >= 7 % (Trader), followed by a weekly high at or above that high, raises the stop one raw cent under the correction low (Investor: under the lower of the correction low and MA30w) | INVESTOR_10PCT: 10 % (upper printed end) | WEIN-TRAIL1/2 and WEIN-TR-TRAIL are CONTEXTUAL; "return near the prior high" has no number, so the stricter reading (at or above) is used |
 | MA-WEIN-SIZING | POSITION_SIZING | equal dollar amounts (WEIN-DIVERS2): planned position 10 % of equity; Investor buys half (5 %) at the breakout and does not add (the pullback half is manual); Trader buys the full 10 % (WEIN-TR-CONT-SIZE) | INVESTOR_FULL_AT_BREAKOUT (10 %) | the amount is the reviewer's; the halves follow WEIN-BUY2 / WEIN-TR-CONT-SIZE |
 | MA-WEIN-RESEARCH-UNIVERSE | ENTRY_ELIGIBILITY | VU_TOURNAMENT_UNIVERSE_705 at the session before the fill |  | measurement convention shared by every method |
+| MA-WEIN-GROUP-PROXY | ENTRY_ELIGIBILITY | no group filter (MA-WEIN-DATA-EXCEPTION) | SIC3_PROXY_NOT_BELOW_FALLING: skip a buy stop whose SIC3-EW-MIN5-400D-WIDE proxy group closed the completed week before the order week below a falling MA30w; unknown membership or history never blocks | owner decision 2026-10-21: the SIC3 proxy is a clearly labelled research reference, not SOURCE_EXACT and not a trading gate; WEIN-SF-GROUP stays DATA_BLOCKED and the group stage stays the reviewer's (WEIN-RG-GROUP) |
 | MA-WEIN-COSTS | ENTRY_EXECUTION | 10 bps slippage per side, 1 bp commission (platform policy) |  | no costs in the source (stop-limit spacing WEIN-LIM is an execution example) |
 
 ### Vorregistrierte Research-Varianten (nicht aktiviert, nicht nach Ergebnis gewählt)
@@ -282,13 +283,14 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | ALT-TRAIL-10PCT | {"trailThreshold":0.1} |
 | ALT-RISK-GUIDE-15 | {"riskGuide":0.15} |
 | ALT-FULL-AT-BREAKOUT | {"sizing":{"mode":"WEIGHT","weight":0.1}} |
+| ALT-SIC3-GROUP-PROXY | {"groupProxy":"SIC3-EW-MIN5-400D-WIDE"} |
 
 ## C05 `SF_WEINSTEIN_TRADER` (sf5-weinstein-lifecycle-1.0.0)
 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 5, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 5, MANUAL_REVIEW 9, DATA_BLOCKED 2, SOURCE_BLOCKED 0; Vertrag 1.2.0; Quellenstatus CONTRACT_SOURCES_WITH_DATA_EXCEPTION
 - Mechanik: MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS (9/9 operative Phasen ausführbar)
 - Daten: blockiert WT-EL-GROUP, WT-EL-MARKET; quellenblockiert –
-- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_WITH_DATA_EXCEPTION (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 9 Zeilen; in der Simulation ersetzt: WT-SETUP-STAGE, WT-EXIT-VOL5, WT-STOP-LEVEL, WT-SIZE, WT-MGMT-TRAIL
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 
@@ -298,7 +300,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | SETUP_QUALIFICATION | WT-SETUP-WEEKLY | weekly bars and the 30-week MA; a week is decided at its last session | WEIN-S2 (B09 PDF 48; printed 34 (CONTEXTUAL, HIGH)) | WEIN-SF-WEEKLY | SOURCE_DERIVED | MA-WEIN-WEEK-END | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | WT-SETUP-MA-GATE | no long buy at or below a falling 30-week MA | WEIN-MA (B09 PDF 143; printed 129 (HARD, HIGH)) | WEIN-SF-MA-GATE | SOURCE_DERIVED |  | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_IMPLEMENTED |  |
 | SETUP_QUALIFICATION | WT-SETUP-STAGE | stage classification (no Stage 3 / Stage 4 buys), volume judgment, RS (no buy when negative and still poor), overhead resistance | WEIN-S1, WEIN-S2, WEIN-NO3, WEIN-NO4, WEIN-VOL, WEIN-RS, WEIN-RSNO, WEIN-OH (B09 PDF 47; printed 33 (CONTEXTUAL, HIGH); B09 PDF 48; printed 34 (CONTEXTUAL, HIGH); B09 PDF 52; printed 38 (HARD, HIGH); B09 PDF 53; printed 39 (HARD, HIGH); B09 PDF 117; printed 103 (HARD, HIGH); B09 PDF 122; printed 108 (CONTEXTUAL, HIGH); B09 PDF 124; printed 110 (HARD, HIGH)) | WEIN-SF-STAGE, WEIN-SF-VOLUME, WEIN-SF-RS, WEIN-SF-OVERHEAD | MANUAL_REVIEW | MA-WEIN-MANUAL-SUBSTITUTE | `research/weinstein-lifecycle.mjs#weinsteinWeeklySetups` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
-| ENTRY_ELIGIBILITY | WT-EL-GROUP | no long buy in a negative industry group | WEIN-GROUP (B09 PDF 94; printed 80 (HARD, HIGH)) | WEIN-SF-GROUP | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the run (MA-WEIN-DATA-EXCEPTION) |
+| ENTRY_ELIGIBILITY | WT-EL-GROUP | no long buy in a negative industry group | WEIN-GROUP (B09 PDF 94; printed 80 (HARD, HIGH)) | WEIN-SF-GROUP | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the reference run (MA-WEIN-DATA-EXCEPTION); the research variant ALT-SIC3-GROUP-PROXY only shows the owner-approved SIC3 proxy (MA-WEIN-GROUP-PROXY) and never unblocks the rule |
 | ENTRY_ELIGIBILITY | WT-EL-MARKET | normal long selection only in a positive overall market | WEIN-MARKET (B09 PDF 143; printed 129 (HARD, HIGH)) | WEIN-SF-MARKET | DATA_BLOCKED |  | – | 0 | BLOCKED | not applied in the run (MA-WEIN-DATA-EXCEPTION) |
 | ENTRY_ELIGIBILITY | WT-EL-UNIVERSE | research population |  |  | MODEL_ASSUMPTION | MA-WEIN-RESEARCH-UNIVERSE | `research/lifecycle-engine.mjs#runResearchLifecycle` | 1 | MECHANICAL_UNDER_MODEL_ASSUMPTION |  |
 | ENTRY_EXECUTION | WT-EX-BUY-STOP | breakout buy prepared as a buy stop one raw cent above the resistance, resting through the next week | WEIN-ORD (B09 PDF 79; printed 65 (HARD, HIGH)) | WEIN-SF-ORDER | SOURCE_DERIVED | MA-WEIN-ORDER-WEEK | `research/lifecycle-engine.mjs#fillOrder` | 2 | MECHANICAL_IMPLEMENTED |  |
@@ -331,6 +333,7 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | MA-WEIN-TRAIL | POSITION_MANAGEMENT | weekly: a correction of the weekly lows from the highest weekly high since entry by >= 8 % (Investor, lower printed end of 8-10 %) / >= 7 % (Trader), followed by a weekly high at or above that high, raises the stop one raw cent under the correction low (Investor: under the lower of the correction low and MA30w) | INVESTOR_10PCT: 10 % (upper printed end) | WEIN-TRAIL1/2 and WEIN-TR-TRAIL are CONTEXTUAL; "return near the prior high" has no number, so the stricter reading (at or above) is used |
 | MA-WEIN-SIZING | POSITION_SIZING | equal dollar amounts (WEIN-DIVERS2): planned position 10 % of equity; Investor buys half (5 %) at the breakout and does not add (the pullback half is manual); Trader buys the full 10 % (WEIN-TR-CONT-SIZE) | INVESTOR_FULL_AT_BREAKOUT (10 %) | the amount is the reviewer's; the halves follow WEIN-BUY2 / WEIN-TR-CONT-SIZE |
 | MA-WEIN-RESEARCH-UNIVERSE | ENTRY_ELIGIBILITY | VU_TOURNAMENT_UNIVERSE_705 at the session before the fill |  | measurement convention shared by every method |
+| MA-WEIN-GROUP-PROXY | ENTRY_ELIGIBILITY | no group filter (MA-WEIN-DATA-EXCEPTION) | SIC3_PROXY_NOT_BELOW_FALLING: skip a buy stop whose SIC3-EW-MIN5-400D-WIDE proxy group closed the completed week before the order week below a falling MA30w; unknown membership or history never blocks | owner decision 2026-10-21: the SIC3 proxy is a clearly labelled research reference, not SOURCE_EXACT and not a trading gate; WEIN-SF-GROUP stays DATA_BLOCKED and the group stage stays the reviewer's (WEIN-RG-GROUP) |
 | MA-WEIN-COSTS | ENTRY_EXECUTION | 10 bps slippage per side, 1 bp commission (platform policy) |  | no costs in the source (stop-limit spacing WEIN-LIM is an execution example) |
 
 ### Vorregistrierte Research-Varianten (nicht aktiviert, nicht nach Ergebnis gewählt)
@@ -340,13 +343,14 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | REF | {} |
 | ALT-NO-VOL5-EXIT | {"vol5":false} |
 | ALT-RISK-GUIDE-15 | {"riskGuide":0.15} |
+| ALT-SIC3-GROUP-PROXY | {"groupProxy":"SIC3-EW-MIN5-400D-WIDE"} |
 
 ## C13 `SF_RASCHKE_HOLY_GRAIL` (sf5-holy-grail-research-variant-1.0.0)
 
 - Source Fidelity: SOURCE_EXACT 1, SOURCE_DERIVED 1, SOURCE_BOUNDED 0, MODEL_ASSUMPTION 8, MANUAL_REVIEW 3, DATA_BLOCKED 1, SOURCE_BLOCKED 1; Vertrag 1.1.0; Quellenstatus RESEARCH_VARIANT_SOURCE_PENDING_OWNER_DECISION
 - Mechanik: INCOMPLETE_LIFECYCLE (8/9 operative Phasen ausführbar)
 - Daten: blockiert HG-EX-INTRADAY; quellenblockiert HG-MGMT-TRAIL
-- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39770019164
+- Backtest: MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT (Strategie-Backtest: nein), DIAGNOSTIC_NOT_CERTIFIED; Snapshot-Läufe: 39903861586, 39770019164
 - Manuell: 3 Zeilen; in der Simulation ersetzt: HG-SETUP-IMPULSE-FIRST, HG-EXIT-NEW-HIGH
 - Live: LIVE_NOT_APPROVED, NOT_A_TRADABLE_STRATEGY, performanceClaim NONE
 

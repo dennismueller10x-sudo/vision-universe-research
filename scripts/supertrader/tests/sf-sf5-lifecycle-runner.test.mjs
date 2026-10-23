@@ -1,6 +1,8 @@
 // Supertrader 5.0 – Snapshot-Runner und Readiness der Lifecycles auf der gemeinsamen Engine (research/run-sf5-lifecycle.mjs,
 // completion/build-sf5-lifecycle.mjs). Synthetisch; der echte Lauf braucht den Snapshot (Workflow-Modus sf5-lifecycle).
 import test from 'node:test';
+import { buildGroupStrength } from '../source-faithful/research/industry-strength.mjs';
+import { WEIN_GROUP_PROXY_ID, WEIN_GROUP_PROXY } from '../source-faithful/research/weinstein-lifecycle.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { lifecyclePart, sf5ResearchCodeSha256 } from '../source-faithful/research/run-sf5-lifecycle.mjs';
@@ -14,7 +16,7 @@ import { SNAPSHOT_RUNS as SF4_RUNS } from '../source-faithful/completion/build-m
 import { buildSf5Artifact, sf5Markdown, SF5_SNAPSHOT_RUNS } from '../source-faithful/completion/build-sf5-lifecycle.mjs';
 
 // pinned before the first snapshot result of the Supertrader 5.0 lifecycles was read
-const PINNED_SF5_VARIANT_REGISTRY = '947eedb5eb112fd0e2eb5f71e19dc77e86fba579f800d50b09c1466f536c0578';
+const PINNED_SF5_VARIANT_REGISTRY = 'f7b0d0812bf18a8af3dc47d96106632d62a5b3a761a24a22eabe81068fc15c03';
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
 function dataset(n = 30, len = 700) {
@@ -35,7 +37,15 @@ const METRIC_KEYS = /"(cagr|sharpe|sortino|winRate|profitFactor|expectancy|expec
 
 test('SF5-RUNNER-PUBLIC-COUNTS-ONLY: oeffentlich nur Zaehlungen und Hashes, Kennzahlen versiegelt; alle Varianten gemessen, Referenz deterministisch', () => {
   const ds = dataset();
+  // the Weinstein group-proxy variant needs its PIT group index (fail closed otherwise); synthetic SIC3 groups of 10
+  ds.groupProxies = { [WEIN_GROUP_PROXY_ID]: buildGroupStrength(ds, { groupOf: (id) => `SIC3:${Number(id.slice(1)) % 3}` }, { minMembers: WEIN_GROUP_PROXY.minMembers }) };
   const r = lifecyclePart(ds, { from: day(200), to: day(699) });
+  for (const k of ['WEINSTEIN_INVESTOR', 'WEINSTEIN_TRADER']) {
+    const cov = r.pub.strategies[k].variants['ALT-SIC3-GROUP-PROXY'].groupProxyCoverage;
+    assert.ok(cov.total > 0 && cov.byStatus.KNOWN > 0, k);
+    assert.equal(r.pub.strategies[k].variants.REF.groupProxyCoverage, undefined, `${k}: reference carries no group evidence`);
+  }
+  assert.throws(() => lifecyclePart(dataset(), { from: day(200), to: day(699), keys: ['WEINSTEIN_TRADER'] }), /GROUP_PROXY_NOT_BUILT/);
   assert.doesNotMatch(JSON.stringify(r.pub), METRIC_KEYS);
   assert.equal(r.pub.label, 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST');
   for (const lc of SF5_LIFECYCLES) {
