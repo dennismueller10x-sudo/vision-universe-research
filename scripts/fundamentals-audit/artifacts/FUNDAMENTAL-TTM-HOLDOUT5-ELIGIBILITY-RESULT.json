@@ -1,0 +1,136 @@
+{
+ "schema": "vu-fundamental-ttm-holdout5-eligibility-result-1.0.0",
+ "verdict": "HOLDOUT_V5_NOT_ELIGIBLE",
+ "candidate": {
+  "normalizationLogic": "1.22.0",
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v7.json",
+  "freezeCommit": "8e3e62e3692",
+  "codeHash": "22a20323da10e35d8f40977126e8c948b8a6e3a66226fffe9eef4ce0cba830d7"
+ },
+ "spec": "artifacts/FUNDAMENTAL-TTM-HOLDOUT5-ELIGIBILITY-SPEC.json (vor dem Zaehlen committet, 9c1cd81)",
+ "counter": "scripts/fundamentals-audit/ttm_holdout5_eligibility.py (vor dem Zaehlen committet, 1532199)",
+ "exclude": "artifacts/FUNDAMENTAL-TTM-HOLDOUT5-EXCLUDE.json",
+ "blockedRows": "Holdout v1 (ttm/hold116), v2, v3, v4 (je rows.*.jsonl)",
+ "counts": {
+  "schema": "vu-fundamental-ttm-holdout5-eligibility-counts-1.0.0",
+  "universe": 15054,
+  "excluded": 3975,
+  "blockedIssuers": 4349,
+  "blockedWindows": 43777,
+  "issuersWithUnseenCases": 830,
+  "unseenCasesTotal": 5536,
+  "unseenCasesAtMostThreePerIssuer": 2134,
+  "byStratum": {
+   "fy_change": {
+    "issuers": 0,
+    "windows": 0
+   },
+   "same_day": {
+    "issuers": 0,
+    "windows": 0
+   },
+   "stub": {
+    "issuers": 5,
+    "windows": 5
+   },
+   "split_year": {
+    "issuers": 1,
+    "windows": 1
+   },
+   "amendment_chain": {
+    "issuers": 35,
+    "windows": 81
+   },
+   "transition_report": {
+    "issuers": 2,
+    "windows": 7
+   },
+   "short_stub": {
+    "issuers": 4,
+    "windows": 4
+   },
+   "long_stub": {
+    "issuers": 3,
+    "windows": 3
+   },
+   "week52": {
+    "issuers": 77,
+    "windows": 580
+   },
+   "tag_switch": {
+    "issuers": 64,
+    "windows": 301
+   },
+   "custom": {
+    "issuers": 4,
+    "windows": 12
+   },
+   "normal": {
+    "issuers": 696,
+    "windows": 4574
+   }
+  }
+ },
+ "gatedStrata": {
+  "fy_change": {
+   "issuers": 0,
+   "windows": 0,
+   "minimum": 20,
+   "met": false
+  },
+  "same_day": {
+   "issuers": 0,
+   "windows": 0,
+   "minimum": 20,
+   "met": false
+  },
+  "stub": {
+   "issuers": 5,
+   "windows": 5,
+   "minimum": 20,
+   "met": false
+  },
+  "split_year": {
+   "issuers": 1,
+   "windows": 1,
+   "minimum": 20,
+   "met": false
+  },
+  "amendment_chain": {
+   "issuers": 35,
+   "windows": 81,
+   "minimum": 20,
+   "met": true
+  },
+  "transition_report": {
+   "issuers": 2,
+   "windows": 7,
+   "minimum": 20,
+   "met": false
+  }
+ },
+ "totalCases": {
+  "value": 2134,
+  "minimum": 1000,
+  "met": true
+ },
+ "failedStrata": [
+  "fy_change",
+  "same_day",
+  "stub",
+  "split_year",
+  "transition_report"
+ ],
+ "fallback": {
+  "optionA": {
+   "status": "NOT_ELIGIBLE",
+   "evidence": "EDGAR-Tagesindex 2026-10-07..2026-10-09: 35 periodische Einreichungen nach dem Archivstand (24 10-Q, 7 10-K, 2 10-Q/A, 1 10-K/A, 1 20-F), kein 10-KT/10-QT; Geschaeftsjahreswechsel mit vollstaendigen neuen Fenstern brauchen bei ~18 Uebergangs-Filern je Jahr deutlich mehr als ein Jahr neuer Daten"
+  },
+  "optionB": {
+   "status": "NOT_AVAILABLE",
+   "evidence": "companyfacts enthaelt 20.438 CIKs: 15.114 im Rahmen v4, die uebrigen sind Produktuniversum (seit v2 Entwicklungsdaten) oder Exclude; ein bisher nicht analysierter Emittentenrahmen existiert nicht; XBRL vor 2009 gibt es nicht"
+  }
+ },
+ "meaning": "KEIN Core-Fail. Aktuell keine ausreichende ungesehene Datenbasis fuer einen belastbaren Spezialfall-Holdout. Keine Grenzwertsenkung, keine Duplikation, kein Nachsampling. Holdout v5 nicht gestartet.",
+ "disclosure": "Die 375 Emittenten mit Uebergangsberichten wurden in der Nachbarsuche automatisiert verglichen (nur aggregiert); jeder dabei einzeln angezeigte CIK ist ausgeschlossen. Gezaehlt wurden nur Strukturen, keine Werte und keine Kern- oder Wahrheitsergebnisse."
+}

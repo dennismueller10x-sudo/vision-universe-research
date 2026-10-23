@@ -1,0 +1,51 @@
+{
+ "schema": "vu-fundamental-ttm-holdout5-eligibility-spec-1.0.0",
+ "registeredAt": "2026-10-10",
+ "status": "REGISTERED_BEFORE_COUNTING",
+ "purpose": "Vorab festgelegte Mindestzahlen fuer einen Holdout v5 des Kerns 1.22.0 (Freeze v7). Erst danach wird gezaehlt - nur Anzahlen ungesehener Faelle je Schicht, keine Werte, keine Kern- oder Wahrheitsergebnisse.",
+ "candidate": {
+  "normalizationLogic": "1.22.0",
+  "freeze": "artifacts/FUNDAMENTAL-DATA-FREEZE-v7.json (wird vor dem Zaehlen geschrieben)"
+ },
+ "source": {
+  "archive": "SEC companyfacts.zip, Stand 2026-10-07",
+  "sha256": "6d3b6e096457193db30cc72eecb9c2fee0ba6a854d7c048938a58f28449864a9"
+ },
+ "universe": "Rahmen von Holdout v4 (artifacts/FUNDAMENTAL-TTM-HOLDOUT4-FRAME.json, 15.114 CIKs) abzueglich Exclude-Liste v5",
+ "exclusions": {
+  "issuers": "Exclude v4 (Fixtures, GT-Sets, Holdout-v1-Emittenten, Holdout-v3-Fehlerfaelle, Red-Team- und Nachbarsuchfaelle bis 1.21.0) + alle Fixture-CIKs (inkl. OA, DTHERA, SWK) + F-TTM-6-Emittenten (16 + Orbital ATK) + jeder in der Arbeit an 1.22.0 manuell angesehene CIK (Nachbarsuch-Stichprobe, Kollisionsbeispiele, Red Team 1.22.0)",
+  "issuerPeriods": "je Emittent gesperrt: jedes Quartal in [Fensterende - 380 Tage, Fensterende + 7 Tage] jedes gewerteten Falls aus Holdout v1, v2, v3 und v4"
+ },
+ "caseDefinition": "Fall = (Emittent, Fensterende): vier als Kette aufeinanderfolgende gemeldete Dreimonats-EPS (EarningsPerShareDiluted / ...BasicAndDiluted, 77-105 Tage, Formulare = provider.VALUE_FORMS) mit Ende ab 2009-06-01, kein Quartal gesperrt; oder MISSING_QUARTER (vier Berichtsquartale, mindestens einem fehlt das Dreimonats-EPS)",
+ "strataDefinitions": {
+  "fy_change": "ein Quartal des Fensters liegt in [Beginn eines Uebergangszeitraums, dessen Ende + 400 Tage] (fiscal_structure: anderer Zyklus)",
+  "same_day": "in einem Quartal melden zwei verschiedene Einreichungen am selben Tag verschiedene Werte",
+  "stub": "Kette oder Spanne des Fensters bricht (Luecke ausserhalb -3..+8 Tage oder Spanne ausserhalb 357-374 Tage) ODER eine gemeldete EPS-Periode von 20-76 Tagen (short_stub) bzw. 106-150 Tagen (long_stub) endet im Fensterbereich",
+  "split_year": "ein Quartal liegt innerhalb 400 Tagen um ein ergaenztes Jahr auf unveraendertem Zyklus (geteiltes Predecessor/Successor-Jahr)",
+  "amendment_chain": "eine Fassung eines Fensterquartals stammt aus einem Formular mit /A",
+  "transition_report": "eine Fassung eines Fensterquartals stammt aus 10-KT, 10-KT/A, 10-QT oder 10-QT/A",
+  "week52": "Emittent mit 52/53-Wochen-Jahr (gleicher Wochentag der letzten Jahresenden)",
+  "tag_switch": "Fenster mischt EarningsPerShareDiluted und ...BasicAndDiluted",
+  "custom": "Emittent meldet Dreimonats-EPS fuer weniger als 60 % seiner Berichtsquartale",
+  "normal": "keines der Merkmale"
+ },
+ "counting": {
+  "unit": "unabhaengige Emittenten je Schicht: ein Emittent zaehlt in einer Schicht hoechstens einmal, egal wie viele Fenster er dort hat; dazu informativ die Fensterzahl",
+  "noDuplication": "keine Fall-Duplikate, keine Mehrfachzaehlung eines Emittenten, keine Gewichtung"
+ },
+ "minimumIssuersPerGatedStratum": {
+  "fy_change": 20,
+  "same_day": 20,
+  "stub": 20,
+  "split_year": 20,
+  "amendment_chain": 20,
+  "transition_report": 20
+ },
+ "minimumTotalCases": 1000,
+ "rationale": "Mindestens 20 unabhaengige Emittenten je Schicht: ein Fehler entspricht dann 5 % und faellt durch jedes 1-%-Gate; weniger Faelle machen ein Schicht-Gate nicht aussagekraeftig (Holdout v4: 2-7 Faelle). transition_report ist Gate, weil 1.22.0 genau diese Formulare neu als Wertquelle liest. Der Rahmen wurde nicht an Zaehlungen kalibriert; es wurde vorher nicht gezaehlt.",
+ "decisionRule": "ELIGIBLE nur, wenn JEDE Gate-Schicht ihre Mindestzahl erreicht UND mindestens 1.000 Faelle vorhanden sind; sonst HOLDOUT_V5_NOT_ELIGIBLE - keine Senkung der Grenzwerte, keine Duplikation, kein Nachsampling.",
+ "fallbackFrames": {
+  "optionA": "frischer companyfacts-/SEC-Stand nach 2026-10-07, nur Perioden mit Ende nach dem letzten gesperrten Datenstand",
+  "optionB": "neuer, bisher nicht analysierter Emittenten- oder Zeitrahmen innerhalb offizieller SEC-Daten"
+ }
+}

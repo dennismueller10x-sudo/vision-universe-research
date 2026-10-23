@@ -13,16 +13,21 @@ Rules this layer obeys without exception:
   - Every observation carries the concept actually used, its accession, its form
     and when it became publicly available.
 """
+import json
 import logging
 from collections import Counter, defaultdict
+from datetime import timedelta
 
-from .fiscal import FiscalCalendar
+from pathlib import Path
+
+from .fiscal import FY_BOUNDARY_TOLERANCE_DAYS, FiscalCalendar
+from .provider import TRANSITION_FORMS
 from .model import (
     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM,
     UNIT_MISMATCH, PERIOD_MISMATCH,
 )
 from .registry import KIND_DURATION, KIND_INSTANT
-from .restatements import CompanyFactBook, Observation
+from .restatements import SIGN_SLIP_TOLERANCE, CompanyFactBook, Observation, economic_class, sign_slip, to_instant
 from .version import NORMALIZATION_SCHEMA_VERSION, NORMALIZATION_LOGIC_VERSION
 
 LOGGER = logging.getLogger("vu.sec.normalize")
@@ -42,6 +47,72 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
+MINORITY_INTEREST_CONCEPTS = frozenset((
+    "NetIncomeLossAttributableToNoncontrollingInterest",
+    "NetIncomeLossAttributableToNonredeemableNoncontrollingInterest",
+    "NetIncomeLossAttributableToRedeemableNoncontrollingInterest",
+    "MinorityInterestInNetIncomeLossOfConsolidatedEntities",
+))
+ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
+ISSUE_AMBIGUOUS_PERIOD = "AMBIGUOUS_PERIOD"
+# Two period ends in one cell further apart than this are two periods.
+AMBIGUOUS_PERIOD_DAYS = 7
+# 1.22.0 (F-TTM-6): a transition report (10-KT, 10-QT and amendments) enters a
+# cell only with that cell's period: start and end within this many days of the
+# period the fiscal calendar expects. A 10-QT also reports periods on the old
+# fiscal-year basis (Dthera 10-QT 2016: nine months Jan-Sep 2015 next to the new
+# year's Jul-Mar); under 10-K semantics they landed in the new year's cells and,
+# as the newest filing, replaced the right period there. Red Team 1.22.0:
+#  - nothing in a fiscal year the calendar projected FORWARD past its last
+#    observed year end. A 10-QT-only transition quarter (Mastermind Oct-Dec
+#    2023) otherwise matched the old-basis year the calendar extrapolated and
+#    filled its Q1 slot, so a TTM ran over the transition period (H-1).
+#    Backward comparatives stay (8point3 FY2014). A cover-date fact is judged
+#    by the cell it describes, the last closed period (Red Team R2-3).
+#  - the period the regular reports of the cell unanimously give is evidence
+#    too: an equal split of the year misses 16/12/12/12-week quarters
+#    (SpartanNash), and the correction was dropped (M-1). Only regular reports
+#    available by the transition report count (point in time, R2-2); a cell
+#    whose regular reports disagree on the period (F-TTM-7) is none.
+TRANSITION_PERIOD_TOLERANCE_DAYS = 7
+# 1.23.0 (F-TTM-7): every observation carries its fit to the fiscal-calendar slot
+# of its cell (days off the expected start and end); restatements.preferred()
+# chooses among visible versions by economic class, then fit, then recency.
+# Nothing is dropped here: a rule that fixed the cell by its first publication
+# locked misplaced first periods (Eco-Tek, HC2) and let accession order decide
+# same-instant conflicts (Moxian) - red team 1.23.0. A start rule for cumulative
+# cells was dropped too: calendar gaps and first fiscal years from inception are
+# real fiscal periods.
+
+# Which concept is a filing's revenue line when us-gaap:Revenues is smaller
+# than another revenue concept of the same cell? Decided from the filing
+# itself (statement roles, presentation and calculation linkbase), produced by
+# scripts/fundamentals-audit/build_revenue_evidence.py. A size ratio alone
+# does not decide (1.15.0 dropped EQT's total revenue, 29 percent of contract
+# revenue after derivative losses, and kept Escalade's note-only Revenues).
+REVENUE_EVIDENCE_PATH = (Path(__file__).resolve().parents[3] / "quant" / "config"
+                         / "sec-revenue-statement-evidence.json")
+EVIDENCE_TOTAL = "TOTAL"
+EVIDENCE_OTHER = "OTHER"
+_EVIDENCE_CACHE = {}
+
+
+def _parse(value):
+    from datetime import date
+    return date.fromisoformat(str(value)[:10])
+
+
+def load_revenue_evidence(path=None):
+    """{accession: "TOTAL" | "OTHER[:concept]" | "AMBIGUOUS"} (cached)."""
+    path = Path(path or REVENUE_EVIDENCE_PATH)
+    if path not in _EVIDENCE_CACHE:
+        payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        _EVIDENCE_CACHE[path] = payload.get("decisions") or {}
+    return _EVIDENCE_CACHE[path]
+# Same-filing values of the other accepted concepts, kept on the observation as
+# "ALT:<taxonomy>:<concept>=<value>" so a derived quarter can subtract two
+# cumulative points of ONE concept (periods.py). Not a quality signal.
+FLAG_ALTERNATE_PREFIX = "ALT:"
 
 
 def period_end_for_cover_date(cover_date, observed_ends):
@@ -95,11 +166,110 @@ class NormalizationResult:
         self.stats = stats
 
 
+def _currency(unit):
+    """ISO code of a monetary unit ("EUR", "USD/shares" -> "USD"), else None."""
+    if not unit:
+        return None
+    code = unit.split("/", 1)[0] if unit.endswith("/shares") else unit
+    return code if len(code) == 3 and code.isalpha() and code.isupper() else None
+
+
+def _drop_partial_aggregates(entries, definition, accession=None, evidence=None):
+    """An aggregate (us-gaap:Revenues) smaller than another positive concept of
+    the same metric, currency and filing is either the statement total (net of
+    a negative component: UPST, EQT, PXD, FCX) or a partial amount (FLS
+    Revenues = 0, PESI, VTSI, GEN, VRRM, Escalade). The filing decides
+    (REVENUE_EVIDENCE_PATH): TOTAL keeps it, OTHER drops it for the next
+    concept. Without a decision - AMBIGUOUS or no evidence for the filing - the
+    cell has no value: None is returned, never a guess.
+    """
+    if len(entries) < 2:
+        return entries
+    top = entries[0][1]
+    if not definition.is_aggregate(top.taxonomy, top.concept):
+        return entries
+    unit = top.unit
+    larger = [fact for _, fact in entries[1:]
+              if fact.unit == unit and fact.value > 0 and top.value < fact.value]
+    if not larger:
+        return entries
+    decision = (evidence or {}).get(accession) or ""
+    if decision == EVIDENCE_TOTAL:
+        return entries
+    if decision.startswith(EVIDENCE_OTHER):
+        named = decision.partition(":")[2]
+        if named:
+            # The evidence names the statement line: exactly that concept, not
+            # the next one by priority (Escalade 2019: the statement line is
+            # contract revenue including assessed tax, 180.5 million; the next
+            # priority, excluding tax, 203.4 million, is a note).
+            exact = [entry for entry in entries if entry[1].concept == named]
+            return exact or None
+        rest = [entry for entry in entries
+                if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
+        return rest or None
+    return None
+
+
+def _alternate_flags(fact, rivals):
+    seen, flags = {fact.concept}, []
+    for other in rivals:
+        if other.unit != fact.unit or other.concept in seen:
+            continue
+        seen.add(other.concept)
+        flags.append(f"{FLAG_ALTERNATE_PREFIX}{other.taxonomy}:{other.concept}={other.value!r}")
+    return flags
+
+
+def _filing_currencies(raw_facts):
+    """accession -> the currency most of that filing's monetary facts are in."""
+    counts = defaultdict(Counter)
+    for fact in raw_facts:
+        code = _currency(fact.unit)
+        if code:
+            counts[fact.accession][code] += 1
+    return {accession: counter.most_common(1)[0][0] for accession, counter in counts.items()}
+
+
+def _expected_period(calendar, end, fiscal_period):
+    """(start, end) the fiscal calendar expects for the cell (fiscal_period) holding `end`, or None."""
+    previous, fy_end = calendar._boundaries_covering(end)
+    if previous is None or fy_end is None or not fiscal_period:
+        return None
+    if fiscal_period == "FY":
+        return previous + timedelta(days=1), fy_end
+    index = int(fiscal_period[-1])
+    ends = calendar.quarter_ends(previous, fy_end)
+    if fiscal_period.startswith("YTD"):
+        return previous + timedelta(days=1), ends[index - 1]
+    return (previous if index == 1 else ends[index - 2]) + timedelta(days=1), ends[index - 1]
+
+
+def _slot_fit(calendar, fact, fiscal_period):
+    """Days between the fact's period and the period the calendar expects for its cell (None if unknown)."""
+    expected = _expected_period(calendar, fact.end, fiscal_period)
+    if expected is None:
+        return None
+    off = abs((_parse(fact.end) - expected[1]).days)
+    if fact.start:
+        off += abs((_parse(fact.start) - expected[0]).days)
+    return off
+
+
+def _same_period(start, end, other_start, other_end, tolerance=TRANSITION_PERIOD_TOLERANCE_DAYS):
+    if abs((_parse(end) - _parse(other_end)).days) > tolerance:
+        return False
+    if start is None or other_start is None:
+        return start is None and other_start is None
+    return abs((_parse(start) - _parse(other_start)).days) <= tolerance
+
+
 def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
-                      calendar=None):
+                      calendar=None, revenue_evidence=None):
     """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
     raw_facts = list(raw_facts)
     issues = []
+    unplaced = []   # (metric, period_end, available) the calendar could not place (1.20.0)
     availability = build_availability_map(filing_metadata)
 
     if calendar is None:
@@ -110,6 +280,10 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
 
     # (metric, fy, fp, accession) -> list of (priority, RawFact)
     candidates = defaultdict(list)
+    # Non-controlling interests a filing reports per period: they tell a sign slip
+    # from a real class difference (red team 1.23.0 R5 MEDIUM-1).
+    minority = {(fact.accession, fact.start, fact.end): fact.value for fact in raw_facts
+                if fact.concept in MINORITY_INTEREST_CONCEPTS and fact.start and isinstance(fact.value, (int, float))}
     # (fy, fp) -> Counter of the period end dates the company itself reported
     # for that period. A cover-date instant is dated AFTER the period it
     # describes, so it cannot supply its own period end; it borrows the one
@@ -117,6 +291,28 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     observed_period_ends = defaultdict(Counter)
     seen_fact_ids = set()
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
+    filing_currency = _filing_currencies(raw_facts)
+    deferred = []   # transition-report facts, placed once every regular period is known (1.22.0)
+
+    def admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date):
+        targets = [(fiscal_year, fiscal_period)]
+        # A balance sheet dated on the fiscal year end is also the Q4 balance
+        # sheet; emit both so the quarterly series has no artificial hole.
+        if definition.kind == KIND_INSTANT and fiscal_period == "FY":
+            targets.append((fiscal_year, "Q4"))
+
+        for target_year, target_period in targets:
+            candidates[(metric_name, target_year, target_period, fact.accession)].append(
+                (priority, fact)
+            )
+
+        if not is_cover_date and fact.end:
+            # The fiscal year end IS the Q4 end, so an annual fact fixes
+            # both -- otherwise a cover-date share count mirrored onto Q4
+            # would find no measured end date there and keep the cover date.
+            for period in ({fiscal_period, "Q4"} if fiscal_period == "FY"
+                           else {fiscal_period}):
+                observed_period_ends[(fiscal_year, period)][fact.end] += 1
 
     for fact in raw_facts:
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
@@ -166,39 +362,140 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
                 issues.append(_issue(ISSUE_UNPLACEABLE_PERIOD, fact,
                                      "period could not be placed in the company's fiscal calendar",
                                      metric=metric_name))
+                # 1.20.0: an unplaceable period (a quarter of a transition year)
+                # still proves that newer information exists - a trailing window
+                # ending before it is not current (Red Team: e.l.f. Beauty 2019).
+                unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
                 continue
 
-            targets = [(fiscal_year, fiscal_period)]
-            # A balance sheet dated on the fiscal year end is also the Q4 balance
-            # sheet; emit both so the quarterly series has no artificial hole.
-            if definition.kind == KIND_INSTANT and fiscal_period == "FY":
-                targets.append((fiscal_year, "Q4"))
+            if fact.form in TRANSITION_FORMS:
+                deferred.append((metric_name, priority, fact, fiscal_year, fiscal_period, definition,
+                                 is_cover_date))
+                continue
+            admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date)
 
-            for target_year, target_period in targets:
-                candidates[(metric_name, target_year, target_period, fact.accession)].append(
-                    (priority, fact)
-                )
+    # 1.22.0 (F-TTM-6): a transition report's value enters a cell only with the
+    # period the fiscal calendar expects for that cell. Never 10-K semantics on
+    # an old-basis period; a value that does not fit stays out (missing, not wrong).
+    regular_periods = defaultdict(set)
+    for (_, fiscal_year, fiscal_period, _), entries in candidates.items():
+        for _, fact in entries:
+            if not (fact.taxonomy == "dei" and fact.start is None):
+                regular_periods[(fiscal_year, fiscal_period, fact.start is None)].add(
+                    (fact.start, fact.end, str(fact.available_from or fact.filed)))
 
-            if not is_cover_date and fact.end:
-                # The fiscal year end IS the Q4 end, so an annual fact fixes
-                # both -- otherwise a cover-date share count mirrored onto Q4
-                # would find no measured end date there and keep the cover date.
-                for period in ({fiscal_period, "Q4"} if fiscal_period == "FY"
-                               else {fiscal_period}):
-                    observed_period_ends[(fiscal_year, period)][fact.end] += 1
+    def unanimous(periods):
+        periods = list(periods)
+        return bool(periods) and all(_same_period(s, e, periods[0][0], periods[0][1]) for s, e in periods)
+
+    last_observed_end = max(calendar.fy_ends) if calendar.fy_ends else None
+
+    def projected_forward(day):
+        _, fy_end = calendar._boundaries_covering(day)
+        return fy_end is None or last_observed_end is None or (
+            (fy_end - last_observed_end).days > FY_BOUNDARY_TOLERANCE_DAYS)
+
+    def closed_period_end(cover_date):
+        previous, fy_end = calendar._boundaries_covering(cover_date)
+        if previous is None or fy_end is None:
+            return None
+        day = _parse(cover_date)
+        closed = [end for end in calendar.quarter_ends(previous, fy_end) if end <= day]
+        return closed[-1] if closed else previous
+
+    for metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date in deferred:
+        if is_cover_date:
+            closed = closed_period_end(fact.end)
+            fits = closed is not None and not projected_forward(closed)
+        else:
+            observed_year = not projected_forward(fact.end)
+            expected = _expected_period(calendar, fact.end, fiscal_period)
+            known = str(fact.available_from or fact.filed)
+            regular = [(s, e) for s, e, available in
+                       regular_periods.get((fiscal_year, fiscal_period, fact.start is None), ())
+                       if available[:10] <= known[:10]]
+            fits = observed_year and (
+                (expected is not None and _same_period(fact.start, fact.end, expected[0] if fact.start else None,
+                                                       expected[1]))
+                or (unanimous(regular) and _same_period(fact.start, fact.end, *next(iter(regular)))))
+        if not fits:
+            issues.append(_issue(ISSUE_UNPLACEABLE_PERIOD, fact,
+                                 "transition-report period is not the period of its fiscal cell",
+                                 metric=metric_name))
+            unplaced.append((metric_name, fact.end, fact.available_from or fact.filed))
+            continue
+        admit(metric_name, priority, fact, fiscal_year, fiscal_period, definition, is_cover_date)
 
     factbook = CompanyFactBook(cik, calendar=calendar, profile=profile)
     registry_version = registry.version
+    distinct_classes = {}
 
     for (metric_name, fiscal_year, fiscal_period, accession), entries in candidates.items():
-        entries.sort(key=lambda item: item[0])
+        # One filing placing two different periods into one cell (VF Corp 10-K
+        # 2019 after its fiscal-year change: Oct-Dec 2018 and Jan-Mar 2019 both
+        # in FY2019 Q4) cannot say which one the cell is. Keeping the first
+        # published a stale TTM as current (red team, HIGH-2). The cell stays
+        # empty and is marked, so a trailing window does not skip over it.
+        # Durations only: an instant cell legitimately carries a cover date next
+        # to the balance-sheet date (handled below as COVER_DATE_INSTANT).
+        period_ends = sorted({fact.end for _, fact in entries if fact.end and fact.start})
+        if registry.get(metric_name).kind == KIND_DURATION and len(period_ends) > 1 and (_parse(period_ends[-1]) - _parse(period_ends[0])).days > AMBIGUOUS_PERIOD_DAYS:
+            issues.append(_issue(ISSUE_AMBIGUOUS_PERIOD, entries[0][1],
+                                 f"one filing reports {len(period_ends)} periods for this cell; cell left empty"))
+            factbook.mark_ambiguous(metric_name, fiscal_year, fiscal_period, entries[0][1].filed)
+            continue
+        # A filing's statements are in one currency. A fact in another currency
+        # (CECO 10-K FY2025: Revenues 750 million EUR, the same amount in every
+        # filing since 2024, next to 774.4 million USD contract revenue) is a
+        # disclosure, not the statement line, and must not win on concept
+        # priority. Only decides between currencies; within one, priority rules.
+        reporting = filing_currency.get(accession)
+        entries.sort(key=lambda item: (
+            reporting is not None and _currency(item[1].unit) not in (None, reporting),
+            item[0]))
+        candidates_in_filing = entries
+        # 1.23.0 (F-TTM-7): does this filing show two economic classes of the metric
+        # with different values for one period (non-controlling interests, preferred
+        # dividends, discontinued operations)? Then the classes are told apart.
+        # Recorded per pair of classes: preferred dividends tell owners' net income
+        # from income available to common, not from consolidated profit (Mobiquity).
+        # Each pair keeps the availability of the first filing that showed it, so a
+        # point-in-time reading uses only the evidence visible then (red team R3).
+        by_class = {}
+        for _, other in entries:
+            by_class.setdefault(economic_class(other.concept), other.value)
+        shown = entries[0][1].available_from or availability.get(accession) or entries[0][1].filed
+        nci = abs(minority.get((accession, entries[0][1].start, entries[0][1].end), 0.0) or 0.0)
+        for first, a in by_class.items():
+            for second, b in by_class.items():
+                # The same amount with the other sign is a sign slip, not a second
+                # class (SOBR Safe 10-Q/A 2025: NetIncomeLoss +2,505,921 next to
+                # ProfitLoss -2,505,921; Apartment Income REIT Q3 2020) - unless the
+                # same filing reports non-controlling interests of that size for the
+                # period (Santa Fe Financial Q1 FY2018: -84,000 owners, +85,000
+                # consolidated, NCI +169,000).
+                if first < second and abs(a - b) > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(a), abs(b), 1.0) \
+                        and not (sign_slip(a, b) and nci <= SIGN_SLIP_TOLERANCE * max(abs(a), abs(b))):
+                    pairs = distinct_classes.setdefault((metric_name, fiscal_year, fiscal_period), {})
+                    known = pairs.get((first, second))
+                    if known is None or to_instant(shown) < to_instant(known):
+                        pairs[(first, second)] = shown
+        decided = _drop_partial_aggregates(
+            entries, registry.get(metric_name), accession,
+            load_revenue_evidence() if revenue_evidence is None else revenue_evidence)
+        if decided is None:
+            issues.append(_issue(ISSUE_AMBIGUOUS_AGGREGATE, entries[0][1],
+                                 "aggregate smaller than another concept without filing evidence; cell left empty"))
+            continue
+        entries = decided
         best_priority, fact = entries[0]
         flags = []
 
         # More than one accepted concept in the same filing for the same cell:
         # the registry's priority decides, and a material disagreement is
         # reported rather than averaged away.
-        rivals = [other for priority, other in entries[1:]]
+        # A dropped partial aggregate still disagrees and is reported, not hidden.
+        rivals = [other for priority, other in candidates_in_filing if other is not fact]
         if rivals:
             scale = max(abs(fact.value), 1.0)
             if any(abs(other.value - fact.value) / scale > CONCEPT_DISAGREEMENT_TOLERANCE
@@ -246,13 +543,21 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             available_from=provenance.available_from,
             filed=fact.filed,
             quality=QUALITY_MEDIUM if flags else QUALITY_HIGH,
-            flags=flags,
+            flags=flags + _alternate_flags(fact, rivals),
             period_start=fact.start,
             period_end=period_end,
+            fit=0 if fact.taxonomy == "dei" and fact.start is None else _slot_fit(calendar, fact, fiscal_period),
         )
         factbook.add_observation(metric_name, fiscal_year, fiscal_period, observation)
         stats["mapped"] += 1
 
+    for metric_name, period_end, available in unplaced:
+        factbook.note_unplaced(metric_name, period_end, available)
+    # per cell: the classes are told apart for the period whose own filings show
+    # them different (a filer with NCI in 2012 may have none in 2021: Mobiquity's
+    # ProfitLoss restatement of 2021 is a version of its net income)
+    for key, timeline in factbook.timelines.items():
+        timeline.distinguish_classes = distinct_classes.get(key, {})
     stats["timelines"] = len(factbook.timelines)
     stats["issues"] = len(issues)
     LOGGER.info("normalized cik=%s %s", cik, stats)

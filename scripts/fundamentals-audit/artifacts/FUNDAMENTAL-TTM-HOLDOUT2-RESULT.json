@@ -1,0 +1,508 @@
+{
+ "schema": "vu-fundamental-ttm-holdout2-result-1.0.0",
+ "verdict": "FAIL",
+ "gates": {
+  "FALSE_AVAILABLE": {
+   "value": 0.0309,
+   "limit": 0.1,
+   "pass": true
+  },
+  "WRONG_VALUE": {
+   "value": 0.0127,
+   "limit": 0.5,
+   "pass": true
+  },
+  "WRONG_CONCEPT": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass": true
+  },
+  "WRONG_PERIOD": {
+   "value": 0.0382,
+   "limit": 0.1,
+   "pass": true
+  },
+  "FALSE_MISSING": {
+   "value": 16.5303,
+   "limit": 20.0,
+   "pass": true
+  },
+  "CASES": {
+   "value": 6139,
+   "limit": 1000,
+   "pass": true
+  },
+  "EVALUATOR_ERRORS": {
+   "value": 0.0,
+   "limit": 0.5,
+   "pass": true
+  },
+  "STRATA": {
+   "failures": [
+    {
+     "stratum": "fy_change",
+     "gate": "WRONG_PERIOD",
+     "value": 1.1029
+    }
+   ],
+   "limit": 1.0,
+   "pass": false
+  }
+ },
+ "issuers": 3267,
+ "cases": 6139,
+ "evaluations": 15896,
+ "evaluatorErrors": [],
+ "overall": {
+  "counts": {
+   "TRUE_UNAVAILABLE": 6476,
+   "CORRECT": 7853,
+   "FALSE_MISSING": 1556,
+   "WRONG_PERIOD": 3,
+   "NOT_EVALUABLE": 5,
+   "WRONG_VALUE": 1,
+   "FALSE_AVAILABLE": 2
+  },
+  "truthUnavailable": 6478,
+  "truthAvailable": 9413,
+  "coreAndTruthAvailable": 7857,
+  "FALSE_AVAILABLE": 0.0309,
+  "WRONG_VALUE": 0.0127,
+  "WRONG_CONCEPT": 0.0,
+  "WRONG_PERIOD": 0.0382,
+  "FALSE_MISSING": 16.5303
+ },
+ "byStratum": {
+  "normal": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1594,
+    "CORRECT": 2585,
+    "FALSE_MISSING": 324
+   },
+   "truthUnavailable": 1594,
+   "truthAvailable": 2909,
+   "coreAndTruthAvailable": 2585,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 11.1378,
+   "cases": 1594,
+   "underpopulated": false
+  },
+  "tag_switch": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1619,
+    "CORRECT": 2107,
+    "FALSE_MISSING": 568,
+    "WRONG_PERIOD": 1,
+    "NOT_EVALUABLE": 2
+   },
+   "truthUnavailable": 1619,
+   "truthAvailable": 2676,
+   "coreAndTruthAvailable": 2108,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0474,
+   "FALSE_MISSING": 21.2257,
+   "cases": 1490,
+   "underpopulated": false
+  },
+  "split": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 666,
+    "CORRECT": 203,
+    "FALSE_MISSING": 58
+   },
+   "truthUnavailable": 666,
+   "truthAvailable": 261,
+   "coreAndTruthAvailable": 203,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 22.2222,
+   "cases": 326,
+   "underpopulated": false
+  },
+  "custom": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 252,
+    "CORRECT": 117,
+    "FALSE_MISSING": 47
+   },
+   "truthUnavailable": 252,
+   "truthAvailable": 164,
+   "coreAndTruthAvailable": 117,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 28.6585,
+   "cases": 246,
+   "underpopulated": false
+  },
+  "fy_change": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 329,
+    "FALSE_MISSING": 224,
+    "CORRECT": 269,
+    "WRONG_PERIOD": 3
+   },
+   "truthUnavailable": 329,
+   "truthAvailable": 496,
+   "coreAndTruthAvailable": 272,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 1.1029,
+   "FALSE_MISSING": 45.1613,
+   "cases": 301,
+   "underpopulated": false
+  },
+  "week52": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 395,
+    "CORRECT": 589,
+    "FALSE_MISSING": 78
+   },
+   "truthUnavailable": 395,
+   "truthAvailable": 667,
+   "coreAndTruthAvailable": 589,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 11.6942,
+   "cases": 371,
+   "underpopulated": false
+  },
+  "loss": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 3249,
+    "CORRECT": 4734,
+    "FALSE_MISSING": 1195,
+    "WRONG_PERIOD": 1,
+    "NOT_EVALUABLE": 2,
+    "WRONG_VALUE": 1
+   },
+   "truthUnavailable": 3249,
+   "truthAvailable": 5931,
+   "coreAndTruthAvailable": 4736,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0211,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0211,
+   "FALSE_MISSING": 20.1484,
+   "cases": 3218,
+   "underpopulated": false
+  },
+  "profit": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1879,
+    "CORRECT": 3030,
+    "FALSE_MISSING": 340,
+    "WRONG_PERIOD": 2
+   },
+   "truthUnavailable": 1879,
+   "truthAvailable": 3372,
+   "coreAndTruthAvailable": 3032,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.066,
+   "FALSE_MISSING": 10.083,
+   "cases": 1851,
+   "underpopulated": false
+  },
+  "small": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1387,
+    "CORRECT": 1680,
+    "FALSE_MISSING": 536,
+    "WRONG_PERIOD": 1,
+    "NOT_EVALUABLE": 2
+   },
+   "truthUnavailable": 1387,
+   "truthAvailable": 2217,
+   "coreAndTruthAvailable": 1681,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0595,
+   "FALSE_MISSING": 24.1768,
+   "cases": 1284,
+   "underpopulated": false
+  },
+  "large": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 491,
+    "CORRECT": 726,
+    "FALSE_MISSING": 103
+   },
+   "truthUnavailable": 491,
+   "truthAvailable": 829,
+   "coreAndTruthAvailable": 726,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 12.4246,
+   "cases": 457,
+   "underpopulated": false
+  },
+  "foreign": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 160,
+    "CORRECT": 204,
+    "FALSE_MISSING": 45
+   },
+   "truthUnavailable": 160,
+   "truthAvailable": 249,
+   "coreAndTruthAvailable": 204,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 18.0723,
+   "cases": 144,
+   "underpopulated": false
+  },
+  "restated": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 2119,
+    "CORRECT": 2509,
+    "FALSE_MISSING": 744,
+    "WRONG_PERIOD": 1,
+    "WRONG_VALUE": 1
+   },
+   "truthUnavailable": 2119,
+   "truthAvailable": 3255,
+   "coreAndTruthAvailable": 2511,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0398,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0398,
+   "FALSE_MISSING": 22.8571,
+   "cases": 1861,
+   "underpopulated": false
+  },
+  "negative": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1348,
+    "CORRECT": 89,
+    "FALSE_MISSING": 21,
+    "NOT_EVALUABLE": 3,
+    "FALSE_AVAILABLE": 2
+   },
+   "truthUnavailable": 1350,
+   "truthAvailable": 110,
+   "coreAndTruthAvailable": 89,
+   "FALSE_AVAILABLE": 0.1481,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0,
+   "FALSE_MISSING": 19.0909,
+   "cases": 1070,
+   "underpopulated": false
+  }
+ },
+ "byEval": {
+  "early": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 5284,
+    "NOT_EVALUABLE": 1
+   },
+   "truthUnavailable": 5284,
+   "truthAvailable": 0,
+   "coreAndTruthAvailable": 0,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": null,
+   "WRONG_CONCEPT": null,
+   "WRONG_PERIOD": null,
+   "FALSE_MISSING": null
+  },
+  "knownFrom": {
+   "counts": {
+    "CORRECT": 4276,
+    "FALSE_MISSING": 839,
+    "TRUE_UNAVAILABLE": 166,
+    "WRONG_PERIOD": 2,
+    "NOT_EVALUABLE": 1,
+    "WRONG_VALUE": 1
+   },
+   "truthUnavailable": 166,
+   "truthAvailable": 5118,
+   "coreAndTruthAvailable": 4279,
+   "FALSE_AVAILABLE": 0.0,
+   "WRONG_VALUE": 0.0234,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0467,
+   "FALSE_MISSING": 16.3931
+  },
+  "final": {
+   "counts": {
+    "TRUE_UNAVAILABLE": 1026,
+    "CORRECT": 3577,
+    "FALSE_MISSING": 717,
+    "NOT_EVALUABLE": 3,
+    "WRONG_PERIOD": 1,
+    "FALSE_AVAILABLE": 2
+   },
+   "truthUnavailable": 1028,
+   "truthAvailable": 4295,
+   "coreAndTruthAvailable": 3578,
+   "FALSE_AVAILABLE": 0.1946,
+   "WRONG_VALUE": 0.0,
+   "WRONG_CONCEPT": 0.0,
+   "WRONG_PERIOD": 0.0279,
+   "FALSE_MISSING": 16.6938
+  }
+ },
+ "falseMissingReasons": {
+  "TTM_SHARE_BASIS_INCONSISTENT": 912,
+  "TTM_EPS_INCONSISTENT": 410,
+  "INSUFFICIENT_HISTORY": 179,
+  "TTM_CONCEPT_MISMATCH": 31,
+  "TTM_PERIODS_NOT_CONTIGUOUS": 24
+ },
+ "failures": [
+  {
+   "cik": "0001463208",
+   "kind": "WINDOW",
+   "end": "2017-06-30",
+   "eval": "knownFrom",
+   "t": "2018-05-21",
+   "class": "WRONG_PERIOD",
+   "detail": "2017-03-31",
+   "tags": [
+    "fy_change",
+    "loss",
+    "restated",
+    "small",
+    "tag_switch"
+   ],
+   "truth": -0.01,
+   "truthReason": null,
+   "core": 0.0,
+   "coreEnd": "2017-03-31"
+  },
+  {
+   "cik": "0000830916",
+   "kind": "WINDOW",
+   "end": "2015-12-31",
+   "eval": "knownFrom",
+   "t": "2016-02-11",
+   "class": "WRONG_PERIOD",
+   "detail": "2015-09-30",
+   "tags": [
+    "fy_change",
+    "profit"
+   ],
+   "truth": 1.78,
+   "truthReason": null,
+   "core": 2.02,
+   "coreEnd": "2015-09-30"
+  },
+  {
+   "cik": "0000830916",
+   "kind": "WINDOW",
+   "end": "2015-12-31",
+   "eval": "final",
+   "t": "2016-05-05",
+   "class": "WRONG_PERIOD",
+   "detail": "2015-09-30",
+   "tags": [
+    "fy_change",
+    "profit"
+   ],
+   "truth": 1.78,
+   "truthReason": null,
+   "core": 2.02,
+   "coreEnd": "2015-09-30"
+  },
+  {
+   "cik": "0001347523",
+   "kind": "WINDOW",
+   "end": "2012-12-31",
+   "eval": "knownFrom",
+   "t": "2013-03-20",
+   "class": "WRONG_VALUE",
+   "detail": null,
+   "tags": [
+    "loss",
+    "restated"
+   ],
+   "truth": -1.71,
+   "truthReason": null,
+   "core": 0.35000000000000003,
+   "coreEnd": "2012-12-31"
+  },
+  {
+   "cik": "0000945764",
+   "kind": "MISSING_QUARTER",
+   "end": "2021-09-30",
+   "eval": "final",
+   "t": "2022-11-03",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "QUARTER_EPS_NOT_REPORTED",
+   "core": -2.4,
+   "coreEnd": "2021-09-30"
+  },
+  {
+   "cik": "0001532543",
+   "kind": "MISSING_QUARTER",
+   "end": "2012-09-30",
+   "eval": "final",
+   "t": "2014-03-31",
+   "class": "FALSE_AVAILABLE",
+   "detail": "STRUCTURAL",
+   "tags": [
+    "negative"
+   ],
+   "truth": null,
+   "truthReason": "QUARTER_EPS_NOT_REPORTED",
+   "core": -0.44,
+   "coreEnd": "2012-09-30"
+  }
+ ],
+ "prereg": "artifacts/FUNDAMENTAL-TTM-HOLDOUT2-PREREG.json (Commit f3760b2eb46, vor Oeffnung gepusht)",
+ "hashesVerified": {
+  "evaluator": "6fec22173174 (= prereg)",
+  "gates": "156721a2aa6e (= prereg)",
+  "frame": "0d34522b99de (= prereg)"
+ },
+ "deviations": [],
+ "failureAnalysis": {
+  "WRONG_PERIOD (3, Schicht fy_change 1,10 % > 1,0 %)": {
+   "cause": "CORE: nach einem Geschaeftsjahreswechsel beantwortet ttm_ending den Slot eines Wahrheitsendes mit dem Fenster ein Quartal frueher; das gemeldete Periodenende ist korrekt (kein falsch datierter Wert), aber das Fenster ist nicht das erfragte",
+   "cases": [
+    "0000830916 Multi-Fineline 2015-12-31 (Jahresende Sep->Dez 2015): Kern 2,02 bis 2015-09-30, Wahrheit 1,78 bis 2015-12-31",
+    "0001463208 2017-06-30: Kern bis 2017-03-31"
+   ],
+   "finding": "F-TTM-2 (neu, offen)"
+  },
+  "WRONG_VALUE (1)": {
+   "cause": "CORE: zwei Einreichungen am selben Tag mit widerspruechlichem Q3-Wert (10-Q/A +1,03, 10-K -1,03; FY -1,72 bestaetigt -1,03); der Kern nahm +1,03",
+   "cases": [
+    "0001347523 Landmark Apartment Trust 2012-12-31: Kern 0,35, Wahrheit -1,71"
+   ],
+   "finding": "F-TTM-3 (neu, offen)"
+  },
+  "FALSE_AVAILABLE (2)": {
+   "cause": "Grenzfall Wahrheitskonstrukt: Nachfolger-Rumpfperiode nach Fresh-Start/Gruendung (103-104 Tage) zaehlt fuer den Kern als Quartal, fuer die Wahrheit (80-100 Tage) nicht",
+   "cases": [
+    "0000945764 Denbury 2021-09-30 (2020-09-19..12-31)",
+    "0001532543 EveryWare 2012-09-30 (2011-09-19..12-31)"
+   ],
+   "finding": "keine Aenderung nach Oeffnung; als Messgrenze dokumentiert, nicht herausgerechnet"
+  }
+ },
+ "conclusion": "FAIL nach Praeregistrierung (Schicht-Gate fy_change WRONG_PERIOD). Alle Gesamt-Gates bestanden (FALSE_AVAILABLE 0,03 %, WRONG_VALUE 0,01 %, WRONG_CONCEPT 0, WRONG_PERIOD 0,04 %, FALSE_MISSING 16,5 %, 6.139 Faelle, 3.267 Emittenten). Kern bleibt BLOCKED; kein Freeze v5. Naechster Schritt (nicht in diesem Auftrag): F-TTM-2/F-TTM-3 beheben und einen neuen, ungesehenen Holdout praeregistrieren."
+}

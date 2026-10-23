@@ -1,0 +1,36 @@
+{
+  "schema": "vu-fundamental-data-lineage-1.0.0",
+  "auditedCommit": "829b35bdce4 (main, 2026-10-07)",
+  "method": "Read-only code mapping by four parallel agents (SEC ingestion, Quant, Screener/Discover/CI, Supertrader) plus lead verification of normalize.py; every entry proven by file:function. Branch-only code is marked.",
+  "chain": ["SEC companyfacts/submissions (data.sec.gov, bulk companyfacts.zip)", "RAW FACTS (provider.iter_raw_facts; periodic forms only)", "TAG SELECTION", "PERIOD RECONSTRUCTION", "POINT-IN-TIME VISIBILITY", "NORMALIZATION", "STORE", "DERIVED METRICS", "CONSUMERS"],
+  "pipelines": [
+    {"id": "P1_QUANT_SEC_CORE", "onMain": true, "files": ["scripts/quant/sec/provider.py", "normalize.py", "fiscal.py", "periods.py", "restatements.py", "derived.py", "canonical.py", "store.py", "pipeline.py", "daily.py", "quant/config/sec-metric-registry.json"],
+      "steps": {
+        "raw": "SECProvider.iter_raw_facts: companyfacts per CIK or bulk zip; forms 10-K/10-Q/20-F/40-F and /A only (10-KT, 6-K dropped); availability = acceptanceDateTime from submissions, else filing date",
+        "tagSelection": "registry priority per (metric, fiscal year, fiscal period, accession) - normalize.py normalize_company; rival concepts in the same filing flagged CONCEPT_DISAGREEMENT; custom (company-extension) namespaces never mapped (counted unmapped)",
+        "period": "FiscalCalendar learned from annual facts (52/53 weeks), duration buckets Q 75-105, H 160-200, 9M 250-295, FY 330-390 days; PeriodResolver.quarter_grid: Qn = YTDn - YTDn-1, Q4 = FY - YTD3 - applied to EPS as well (per-share not additive)",
+        "pit": "FactTimeline per cell holds every filing as observation; policies AS_OF_LATEST (default), ORIGINAL, LATEST_KNOWN; derived values take the latest availability of inputs",
+        "store": "quant/data/sec/raw + facts (gitignored, R2); committed canonical/* (golden five), inspector*, coverage, pit_gates"
+      },
+      "writerWorkflows": ["sec-fundamentals-daily.yml", "update-sec-fundamentals.yml", "sec-fundamentals-universe.yml"],
+      "tagPriorityAcrossFilings": "NO (normalize.py key includes accession; restatements.py resolves by availability)"},
+    {"id": "P2_QUANT_CONSUMER_BUNDLE", "onMain": true, "files": ["scripts/quant/sec/consumer.py", "scripts/quant/cli.py consumer"],
+      "steps": {"input": "bulk companyfacts.zip; filing_metadata=None (filing-date granularity)", "logic": "reuses P1 normalize/PeriodResolver/derived", "view": "AS_OF_LATEST at build date: ONE latest vintage per cell; row.filed = latest re-reporting filing (often a later comparative)", "store": "quant/data/sec/consumer/CIK*.json (5073, committed), schema vu-consumer-fundamentals-1.0.0, annual 13y, quarterly 8q, TTM"},
+      "writerWorkflows": ["sec-consumer-fundamentals.yml"], "tagPriorityAcrossFilings": "NO (inherits P1)"},
+    {"id": "P3_SEC_CANONICAL_ADAPTER", "onMain": true, "files": ["scripts/quant/sec/canonical.py", "providers/sec/adapter.js", "quant/engines/sec-fact-panel.js", "scripts/quant/build-sec-quant-panel.mjs"],
+      "steps": {"view": "bitemporal revisions (availableAt, revisionId, restatementStatus); golden five only (AAPL, JPM, MSFT, NVDA, XOM); no EPS in METRIC_MAP"}, "tagPriorityAcrossFilings": "NA (reader of P1)"},
+    {"id": "P5_VU2_FUNDAMENTALS_SERVING", "onMain": true, "files": ["scripts/vu2/fundamentals-serving.py", "scripts/vu2/fundamentals-r2-adapter.py"], "steps": {"logic": "delegates to P1 (export_inspector_view, PeriodResolver); policy guards UNSAFE_BACKTEST_POLICY; no runtime caller found in repo"}, "tagPriorityAcrossFilings": "NA"},
+    {"id": "P7_SUPERTRADER_SEC_PIT", "onMain": true, "files": ["scripts/supertrader/validation/sec-pit.mjs", "scripts/supertrader/engine/earnings.mjs"],
+      "steps": {"input": "bulk companyfacts.zip; CIK via company-names / SEC name lookup", "tagSelection": "EPS: ONE tag per company (first in priority with >=4 quarters) incl. EarningsPerShareBasic as fallback (basic/diluted mixing); revenue: per-period tag priority (first tag with any filing for the period wins)", "period": "quarter 80-100d, FY 350-380d, Q4 = FY - 3 quarters with filed = FY filing only", "pit": "earliest filed per tag and period, ANY form (no periodic filter)", "store": "private S3 _validation/sec-pit-r11/r12.json.gz"},
+      "writerWorkflows": ["supertrader-validation.yml modes sec-pit, holdout-sec"], "consumers": ["Minervini 3.0.0 validation (not live)", "analyze-methods, case-study, audit-r14, r15"], "tagPriorityAcrossFilings": "YES (revenue per period; EPS series-level)"},
+    {"id": "P9_MINERVINI_SEC_FACTS", "onMain": false, "branch": "claude/minervini-replication-phase2a (PR #471), claude/minervini-ground-truth (PR #475)", "files": ["scripts/supertrader/replication/minervini/sec-facts.mjs", "build-sec-facts.mjs", "sepa.mjs"],
+      "steps": {"tagSelection": "seriesWithFallback: first tag in priority with any filing for the period wins (EPS, revenue, GP, cost, OI, NI); EPS fallback includes EarningsPerShareBasic", "period": "quarterlyFirst, Q4 = FY - 3 with filed = max(components)", "pit": "earliest filing per tag (original before /A), periodic forms", "store": "private S3 _validation/sec-pit-mrepl-1.json.gz"},
+      "tagPriorityAcrossFilings": "YES"}
+  ],
+  "duplicates": {
+    "quarterReconstruction": ["P1 periods.py quarter_grid", "P7 sec-pit.mjs quarterly", "P9 sec-facts.mjs quarterlyFirst (branch)"],
+    "tagLists": ["P1 sec-metric-registry.json", "P7 sec-pit.mjs EPS_TAGS/REV_TAGS (different order: Revenues first)", "P9 sec-facts.mjs TAGS (branch)"],
+    "consumerDerivations": ["discover/engines/fundamentals.js + unternehmen.js (growth, margins, own TTM growth)", "scripts/screener/build-universe.mjs (EPS growth/CAGR, ROIC, EV multiples)", "scripts/company_intelligence/earnings.py (YoY/QoQ, TTM, margins)", "quant/engines/fundamental-inputs.js (factor raws)"]
+  },
+  "notSecFundamentals": ["scripts/dashboard/fetch_fundamentals.py (FMP)", "scripts/hedgefonds/fetch_edgar_data.py (13F)", "vorsorge N-PORT/RR", "etf/"]
+}
