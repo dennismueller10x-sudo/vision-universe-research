@@ -35,7 +35,7 @@
   "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 307,
+  "testsRun": 308,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1732,7 +1732,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 139,
+ "otherTests": 140,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -3267,6 +3267,11 @@
   {
    "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
    "name": "SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige Abdeckung heisst Stichprobe, nie mehr",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-STATEMENTS: nicht zertifiziert, keine repraesentative Gesamtaussage, IEX-Volumen, hypothetische Shorts, Lizenz",
    "result": "PASS"
   }
  ]

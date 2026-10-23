@@ -57,7 +57,14 @@ export function buildKkEpPs() {
     engine: 'trade-level short study (no portfolio, no borrow cost)', costs: PS_COSTS, reference: PS_REFERENCE_CONFIG, variants: PS_RUN_VARIANTS.map((v) => ({ id: v.id, changes: v.changes })), variantRegistrySha256: psVariantRegistrySha256(), modelAssumptions: PS_MODEL_ASSUMPTIONS, blockers: blockersPs, runs: runs('PS'),
     liveReadiness: 'LIVE_NOT_APPROVED', certification: 'DIAGNOSTIC_NOT_CERTIFIED',
   };
-  return { schema: KK_EP_PS_SCHEMA, ownerDecision: 'chart-first 2026-10-23: no news / catalyst database, no new data provider, IEX minutes of the existing Tiingo access only', probes: KK_INTRADAY_PROBES, candidateCounts: KK_CANDIDATE_COUNTS, strategies: { C09: ep, C10: ps } };
+  const statements = {
+    certification: 'DIAGNOSTIC_NOT_CERTIFIED: model studies, never a strategy backtest or a performance claim',
+    sample: 'deterministic sha256(TICKER|date) prefix of the candidate days, outcome-independent but not stratified: NOT a representative backtest of all candidates and not to be extrapolated',
+    iexVolume: 'IEX venue only (1-5 % of the consolidated volume): compared only with IEX volume, never treated as market volume',
+    shorts: 'every PS trade is a hypothetical one-unit short; borrow, locates and fees unknown (KK-030 DATA_BLOCKED): never a historically executable short sale',
+    license: 'Tiingo IEX minutes for internal, non-displaying use: private cache and owner-encrypted results only; public outputs carry counts and hashes, never minute values',
+  };
+  return { schema: KK_EP_PS_SCHEMA, statements, ownerDecision: 'chart-first 2026-10-23: no news / catalyst database, no new data provider, IEX minutes of the existing Tiingo access only', probes: KK_INTRADAY_PROBES, candidateCounts: KK_CANDIDATE_COUNTS, strategies: { C09: ep, C10: ps } };
 }
 
 export function writeKkEpPs(outDir = path.join(SF, 'artifacts')) {

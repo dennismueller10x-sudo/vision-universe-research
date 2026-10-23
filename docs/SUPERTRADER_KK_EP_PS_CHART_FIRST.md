@@ -53,7 +53,10 @@ Alle IEX-Tage abzurufen hieße rund 93 000 Anfragen. Das ist ein Massenabruf und
 - EP: 2 000 Tage mit Minuten, davon 1 828 mit IEX-Volumenbasis; 172 Tage haben unter 15 Basistage mit IEX-Volumen.
 - PS: 2 065 Tage mit Minuten.
 - 73 der 4 000 abgerufenen Tage waren leer (kein IEX-Handel).
-- Die Abdeckung ist eine deterministische Stichprobe (`HASH_ORDER_SAMPLE`). Weitere Läufe setzen im Cache fort.
+- Die Abdeckung ist eine deterministische Stichprobe (`HASH_ORDER_SAMPLE`): EP 2 000 von 13 769 Tagen (14,5 %), PS 2 065 von 65 216 (3,2 %).
+  - Ausgewählt wird nach sha256(`TICKER|Datum`). Das ist unabhängig vom Ergebnis, aber weder nach Jahr, Marktphase noch Liquidität geschichtet.
+  - **Die Ergebnisse sind kein repräsentativer Gesamtbacktest** und lassen sich nicht auf alle Kandidaten hochrechnen.
+  - Weitere Läufe setzen im Cache fort.
 
 **Grenzen der Daten:**
 - **Volumen:** IEX-Volumen wird nur mit IEX-Volumen verglichen und nie als Marktvolumen behandelt.
@@ -83,6 +86,8 @@ Befund: Rund zwei Drittel der Referenz-Trades enden am Einstiegstag. Ursache sin
 **PS-Varianten (geschlossen):** Serie ≥ 4 Tage 49 · ohne Beschleunigung 1 301 · erste rote 5-Minuten-Kerze 276 · gescheiterter VWAP-Retest 246 · VWAP-Rückeroberung als Stop 239 · MA20 232 · halb MA10/halb MA20 231.
 
 Die Kennzahlen (Rendite, Trefferquote, R-Multiple, Drawdown) liegen verschlüsselt vor. Sie sind Modellstudien auf einer Stichprobe, ohne Leihkosten bei PS, und keine Strategie-Backtests.
+
+**Shorts:** Jeder PS-Trade ist ein hypothetischer Leerverkauf einer Einheit. Ob die Aktie an dem Tag leihbar war, ob ein Locate verfügbar war und was die Leihe gekostet hätte, ist unbekannt (KK-030 `DATA_BLOCKED`). Kein simulierter Short ist als historisch tatsächlich ausführbarer Leerverkauf ausgewiesen; die Klasse `BORROW_CONFIRMED_EXECUTABLE_SHORT` wird nie vergeben.
 
 ## 5. Neue Readiness-Stufen
 

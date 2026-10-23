@@ -298,3 +298,13 @@ test('SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige A
     assert.doesNotMatch(s.researchStage, /ORIGINAL|EXECUTABLE|CERTIFIED/); assert.equal(s.liveReadiness, 'LIVE_NOT_APPROVED');
   }
 });
+
+test('SF-KK-STATEMENTS: nicht zertifiziert, keine repraesentative Gesamtaussage, IEX-Volumen, hypothetische Shorts, Lizenz', () => {
+  const a = buildKkEpPs(), s = a.statements;
+  assert.match(s.certification, /DIAGNOSTIC_NOT_CERTIFIED/); assert.match(s.sample, /NOT a representative/);
+  assert.match(s.iexVolume, /never treated as market volume/); assert.match(s.shorts, /never a historically executable short/);
+  assert.match(s.license, /never minute values/);
+  // public run records carry counts and hashes only: no price or minute arrays
+  const pub = JSON.stringify(KK_SNAPSHOT_RUNS);
+  assert.doesNotMatch(pub, /"(open|high|low|close|o|h|l|c|v|k)":\[/);
+});
