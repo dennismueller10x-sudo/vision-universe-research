@@ -1,0 +1,262 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "brief_id": "brief_c6e30a408ab294b0",
+  "content_id": "vu-post-20261001-2dc13b600e",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "delivery_mode": "COVER_FIRST",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "research": {
+    "web_access": true,
+    "mode_used": "WORK_WEB_RESEARCH",
+    "stories_considered": [
+      {
+        "title": "DAX schließt unter 25.000 Punkten; Öl und Renditen belasten",
+        "url": "https://www.tagesschau.de/wirtschaft/finanzen/marktberichte/marktbericht-dax-dow-jones-inflation-100.html",
+        "decision": "rejected",
+        "reason": "Aktuell und marktbreit relevant, aber der Neuigkeitswert und das story-spezifische visuelle Potenzial sind geringer als bei der ausgewählten Chipdesign-Story."
+      },
+      {
+        "title": "Wall Street kaum verändert; US-Renditen zeitweise auf Mehrjahreshoch",
+        "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-schliesst-kaum-veraendert-oelpreis-steigt/100259034.html",
+        "decision": "rejected",
+        "reason": "Die Rendite-Story wurde laut Brief bereits behandelt und darf nicht erneut Hauptstory sein."
+      },
+      {
+        "title": "Micron meldet Rekordquartal durch KI-Rechenzentren",
+        "url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Fiscal-Fourth-Quarter-and-Full-Year-2026-Results/default.aspx",
+        "decision": "rejected",
+        "reason": "Sehr starke Zahlen und hohe Anlegerrelevanz, aber die gleichzeitig angekündigten Synopsys-Partnerschaften erzählen die überraschendere strukturelle KI-Werkzeug-Story."
+      },
+      {
+        "title": "BIP-gewichteter Welt-ETF halbiert den US-Anteil",
+        "url": "https://www.handelsblatt.com/finanzen/anlagestrategie/fonds-etf/geldanlage-neuer-etf-mit-bip-gewichtung-was-das-anlegern-bringt/100256780.html",
+        "decision": "rejected",
+        "reason": "Nützliches Anlegerthema, aber weniger aktuell und visuell deutlich schwächer."
+      },
+      {
+        "title": "Deutschlands Ökostromanteil erreicht 60,7 Prozent",
+        "url": "https://www.tagesschau.de/wirtschaft/energie/oekostrom-wind-sonne-wasserkraft-rekord-100.html",
+        "decision": "rejected",
+        "reason": "Gut belegt und verständlich, jedoch mit geringerem unmittelbarem Unternehmens- und Kapitalmarktbezug."
+      },
+      {
+        "title": "Synopsys verbindet OpenAI-Modell, Amazon-Chipvertrag und neue Wachstumsziele",
+        "url": "https://www.reuters.com/business/synopsys-shares-jump-robust-growth-outlook-openai-aws-deals-2026-10-01/",
+        "decision": "selected",
+        "reason": "Die Story ist frisch, überraschend, klar anlegerrelevant und visuell stark: KI wird vom Assistenzwerkzeug zum direkten Nutzer professioneller Chipdesign-Software."
+      },
+      {
+        "title": "Trump-Konten für 60 Millionen Kinder",
+        "url": "https://www.marketwatch.com/story/the-treasury-department-started-trump-accounts-for-60-million-kids-but-families-still-have-to-take-this-step-if-they-want-one-003d9282?mod=mw_rss_topstories",
+        "decision": "rejected",
+        "reason": "Der Originalartikel war im Recherchepaket nicht lesbar; die Belegdichte reicht gegenüber der ausgewählten Story nicht aus."
+      }
+    ]
+  },
+  "story": {
+    "title_de": "OpenAI und Synopsys bringen KI direkt ins Chipdesign",
+    "what_happened": "OpenAI und Synopsys haben am 30. September 2026 eine mehrjährige Partnerschaft für GPT-Synopsys angekündigt. Das spezialisierte Modell soll Synopsys-Werkzeuge direkt bedienen, Ergebnisse interpretieren und Chipdesign-Workflows iterativ bearbeiten. Parallel schloss Synopsys mit Amazon einen mehrjährigen Vertrag über mehr als eine Milliarde US-Dollar für anwendungsspezifische Chip-IP und Engineering-Software.",
+    "why_interesting": "Synopsys positioniert seine etablierten Designwerkzeuge als ausführende Ebene für KI-Agenten und verbindet das mit einem gemeinsamen Service- und Umsatzbeteiligungsmodell. Die Marktreaktion zeigt, dass Anleger darin eine strategische Erweiterung des Geschäftsmodells sehen."
+  },
+  "sources": [
+    {
+      "source": "Synopsys Newsroom",
+      "url": "https://news.synopsys.com/2026-09-30-OpenAI-and-Synopsys-Announce-GPT-Synopsys-Frontier-Intelligence-to-Revolutionize-Chip-Design?tags=SocialMedia",
+      "published_at": "2026-09-30",
+      "facts_used": [
+        "OpenAI und Synopsys entwickeln in einer mehrjährigen Partnerschaft GPT-Synopsys.",
+        "Das spezialisierte Modell soll Synopsys-EDA-Werkzeuge direkt für Halbleiter-Designworkflows bedienen.",
+        "Die Vereinbarung umfasst gemeinsame Marktbearbeitung und Umsatzbeteiligung."
+      ],
+      "opened_by_agent": true
+    },
+    {
+      "source": "Synopsys Investor Relations",
+      "url": "https://investor.synopsys.com/news/news-details/2026/Synopsys-and-Amazon-Announce-Strategic-Multi-year-IP-Agreement-for-Custom-Silicon-Collaboration-Also-Extends-to-Cloud-and-AI-Powered-Engineering/default.aspx",
+      "published_at": "2026-09-30",
+      "facts_used": [
+        "Synopsys und Amazon schlossen einen mehrjährigen Vertrag über mehr als eine Milliarde US-Dollar.",
+        "Amazon erweitert die Nutzung von Synopsys-IP, EDA-, Simulations- und KI-Werkzeugen für eigene Chips und AWS-Infrastruktur."
+      ],
+      "opened_by_agent": true
+    },
+    {
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/synopsys-shares-jump-robust-growth-outlook-openai-aws-deals-2026-10-01/",
+      "published_at": "2026-10-01T16:21:52Z",
+      "facts_used": [
+        "Die Synopsys-Aktie stieg am 1. Oktober 2026 nach den Ankündigungen rund zehn Prozent.",
+        "Der Amazon-Vertrag hat einen Wert von mehr als einer Milliarde US-Dollar.",
+        "Synopsys und OpenAI wollen Umsätze aus dem Chipdesign-Modell teilen."
+      ],
+      "opened_by_agent": true
+    }
+  ],
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-carousel-editorial-v1",
+    "hook_type": "carousel_cover_hook_de"
+  },
+  "hook_exploration": [
+    {
+      "direction": "Konsequenz",
+      "text": "KI WIRD ZUM CHIP-DESIGNER.",
+      "rejected_because": "Zu absolut: Das Modell arbeitet weiterhin unter Kontrolle von Ingenieuren und verifizierenden Werkzeugen."
+    },
+    {
+      "direction": "Unternehmenskonflikt",
+      "text": "OPENAI GREIFT NACH DEM CHIP-DESIGN.",
+      "rejected_because": "Klingt konfrontativer als die belegte Partnerschaft und verschiebt den Fokus zu stark auf OpenAI."
+    },
+    {
+      "direction": "Geschäftsmodell",
+      "text": "SYNOPSYS MACHT SEINE SOFTWARE ZUM KI-WERKZEUG.",
+      "rejected_because": "Faktisch tragfähig, aber als Cover zu lang und weniger unmittelbar als die gewählte Lern-Metapher."
+    },
+    {
+      "direction": "Überraschende Erkenntnis",
+      "text": "KI LERNT JETZT CHIP-DESIGN.",
+      "rejected_because": null
+    }
+  ],
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:carousel_cover_hook_de:01",
+      "hook_type": "carousel_cover_hook_de",
+      "text": "KI LERNT JETZT CHIP-DESIGN.",
+      "language": "de",
+      "brief_revision": "80815522e070ab8ea2926319866425118a7e5505",
+      "evidence_refs": [
+        "sources[0]"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:carousel_cover_hook_de:01",
+    "recommendation_reason": "Die Formulierung verdichtet die neue Fähigkeit des spezialisierten Modells in einen kurzen, sofort verständlichen Gedanken, ohne eine konkrete technische Leistung zu übertreiben.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "OpenAI und Synopsys entwickeln gemeinsam GPT-Synopsys: Ein spezialisiertes Modell soll professionelle Chipdesign-Werkzeuge direkt bedienen, Ergebnisse interpretieren und Entwürfe iterativ optimieren – unter Prüfung durch Ingenieure und klassische Verifikation. Für Anleger ist entscheidend, dass Synopsys damit nicht nur Software liefert, sondern einen gemeinsamen Service mit Umsatzbeteiligung aufbaut. Parallel sicherte sich das Unternehmen einen mehrjährigen Amazon-Vertrag über mehr als eine Milliarde US-Dollar für Chip-IP und Engineering-Software. Die Synopsys-Aktie reagierte am 1. Oktober mit rund zehn Prozent Plus. Ob daraus dauerhaft mehr Wachstum entsteht, muss die Umsetzung zeigen. Keine Anlageberatung.",
+  "hashtags": [
+    "KI",
+    "Halbleiter",
+    "Synopsys",
+    "Chipdesign",
+    "Börse"
+  ],
+  "visual_brief": {
+    "visual_strategy": "VU_EDITORIAL_PREMIUM",
+    "format": "portrait_4_5",
+    "narrative": "Ein professionelles KI-System wechselt vom Gesprächspartner zum aktiven Nutzer der Werkzeuge, mit denen moderne Chips entworfen werden.",
+    "cover_composition": "Atlas als ruhiger Host im unteren linken Drittel; rechts und darunter ein großer, fotorealistischer Silizium-Wafer mit präzisen blauen Design-Routen und räumlich aufgebauter Chip-Geometrie. Die Hook steht dominant im oberen Mittelfeld. Das echte Vision-Universe-Logo sitzt oben links mit großzügiger Safe Area.",
+    "aesthetics": "Tiefschwarz, Graphit und gebürstetes Metall; kühles Vision-Universe-Blau als gezielter Akzent; harte, hochwertige Lichtkanten; kontrollierter Negativraum; mobile Lesbarkeit.",
+    "text_on_image": "KI LERNT JETZT CHIP-DESIGN.",
+    "brand_assets": {
+      "logo": "assets/vision-universe-logo.png",
+      "atlas": "assets/atlas.png"
+    },
+    "restrictions": [
+      "Keine Drittanbieterlogos",
+      "Keine Markt- oder Kurszahlen im Bild",
+      "Kein generischer Serverraum",
+      "Keine zusätzliche Bildbeschriftung",
+      "Keine Anlageempfehlung oder Prognose"
+    ]
+  },
+  "carousel_plan": [
+    {
+      "slide_index": 1,
+      "role": "HOOK / COVER",
+      "headline_de": "KI LERNT JETZT CHIP-DESIGN.",
+      "key_content": "Die neue Rolle von KI im Halbleiter-Engineering als überraschender Einstieg.",
+      "visual_concept": "Atlas führt an einem monumentalen, leuchtenden Chip-Wafer durch eine räumliche Design-Struktur; starkes Schwarz-Blau, wenige Elemente, maximale mobile Wirkung.",
+      "atlas": true
+    },
+    {
+      "slide_index": 2,
+      "role": "KEY INSIGHT",
+      "headline_de": "DAS MODELL BEDIENT DIE WERKZEUGE SELBST.",
+      "key_content": "GPT-Synopsys soll Designziele übernehmen, EDA-Werkzeuge ausführen, Ergebnisse interpretieren und Entwürfe bis zur Prüfung durch Ingenieure iterieren.",
+      "visual_concept": "Eine einzelne Chip-Topografie in Draufsicht; klare blaue Routen zeigen den geschlossenen Designzyklus aus Ausführen, Prüfen und Optimieren. Logo oben links, kein Atlas.",
+      "atlas": false
+    },
+    {
+      "slide_index": 3,
+      "role": "EINORDNUNG",
+      "headline_de": "AUS SOFTWARE WIRD EIN KI-SERVICE.",
+      "key_content": "Synopsys und OpenAI planen Umsatzbeteiligung und gemeinsame Vermarktung. Der Amazon-Vertrag über mehr als eine Milliarde US-Dollar zeigt zugleich, wie wertvoll Chip-IP und Designwerkzeuge für kundenspezifisches Silizium werden.",
+      "visual_concept": "Premium-Doppelfokus ohne klassische Infografik: links verifizierte Chip-Geometrie, rechts eine klare Service-Schicht darüber; dezente Verbindungslinie, Logo oben links, kein Atlas.",
+      "atlas": false
+    }
+  ],
+  "slide_count": 3,
+  "editorial_gate": {
+    "story_quality": "PASS",
+    "hook_standalone_quality": "PASS",
+    "caption_standalone_quality": "PASS",
+    "fact_grounding": "PASS"
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:visual:VU_EDITORIAL_PREMIUM:01",
+      "visual_strategy": "VU_EDITORIAL_PREMIUM",
+      "slide_index": 1,
+      "slide_role": "cover",
+      "brief_revision": "80815522e070ab8ea2926319866425118a7e5505",
+      "asset_path": "authoring/requests/vu-post-20261001-2dc13b600e/assets/visual-01.png",
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402,
+      "asset_byte_size": 2324728,
+      "asset_sha256": "55551121683e9e95543f4f8cb1c46a329269447536e14827b4e991b9935df799",
+      "brand_elements": {
+        "includes_logo": true,
+        "includes_atlas": true,
+        "includes_hook_text_de": true
+      }
+    }
+  ],
+  "carousel_checks": {
+    "atlas_only_on_slide_1": true,
+    "logo_on_all_slides": true,
+    "logo_position_consistent": true
+  },
+  "style_references_check": [
+    {
+      "path": "social/brand/style-references/vu-style-ref-01.png",
+      "dominant_text": "VISION UNIVERSE®\n4,1×\nWENIGER CRASHES.\nTESLAS NEUE FSD-ZAHL.\nATLAS CHECK"
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-02.png",
+      "dominant_text": "VISION UNIVERSE®\nEUROPA KÖNNTE\nTESLAS NÄCHSTER\nFSD-HEBEL WERDEN."
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-03.png",
+      "dominant_text": "VISION UNIVERSE®\n100 MIO. KM\n4,1×\nWENIGER KOLLISIONEN*\nALS MANUELLES FAHREN\n5 EU-LÄNDER\n70.000+ NUTZER\n1 MIO. KM TÄGLICH\n*LAUT TESLA – FSD SUPERVISED SICHERHEITSDATEN IN EUROPA."
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-04.png",
+      "dominant_text": "VISION UNIVERSE®\nVISION UNIVERSE EINORDNUNG\nCHANCE\nEU-WEITE FSD-FREIGABE ALS GAME CHANGER.\nRISIKO\nTESLA-DATEN NOCH UMSTRITTEN. VERGLEICHBARKEIT FRAGLICH.\n$TSLA | AUTONOMIE VOR DEM DURCHBRUCH?\nCHANCE NUTZEN ODER ZU FRÜH?"
+    }
+  ],
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "80815522e070ab8ea2926319866425118a7e5505",
+    "brief_revision": "80815522e070ab8ea2926319866425118a7e5505",
+    "processing_key": "brief_c6e30a408ab294b0:vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
