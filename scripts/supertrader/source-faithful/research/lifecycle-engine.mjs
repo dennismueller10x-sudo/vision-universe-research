@@ -66,10 +66,19 @@ export function plannedShares({ sizing, fill, stop, equity, policy, sourceMaxPos
  * Fill of a research buy order on one daily bar. BUY_STOP: open at or above the level fills at the open (gap), else
  * a high at or above the level fills at the level; ON_OPEN fills at the open. A fill at or below the stop is not
  * executed; a planned loss above order.maxPlannedLoss is not executed (rejection, never a tighter stop).
+ * INTRADAY_RESOLVED (Kullamaegi C09, research/kk-ep-lifecycle.mjs): the adapter resolves the day from REAL minute bars
+ * in time order (fill, stop known at the fill minute, same-day stop decided by the later minutes); its own source
+ * checks (e.g. KK-034) are part of the resolution. Any other status is a counted non-execution.
  */
 export function fillOrder(bar, order) {
   if (!AC.isExecutableBar(bar, 'open') || !fin(bar.high) || !fin(bar.low)) return { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
   let fill, basis;
+  if (order.type === 'INTRADAY_RESOLVED') {
+    const r = order.resolve(bar);
+    if (!r || r.status === 'NOT_TRIGGERED') return { status: 'NOT_TRIGGERED', resolution: r ?? null };
+    if (r.status !== 'FILLED') return { status: r.status, resolution: r };
+    return { status: 'FILLED', fill: r.fill, basis: 'INTRADAY_MINUTE', plannedLoss: 1 - r.stop / r.fill, stop: r.stop, sameBarStop: r.sameDayStop ?? null, sameBarExitFill: r.sameDayExitFill ?? null, resolution: r };
+  }
   if (order.type === 'ON_OPEN') { fill = bar.open; basis = 'OPEN'; }
   else if (order.type === 'BUY_STOP') {
     const level = order.levelOnBar ? order.levelOnBar(bar) : order.level;
@@ -157,7 +166,7 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
     book({ date, id, side: 'BUY', shares, price: px, gross, fee: fe, reason: `ENTRY_${f.basis}`, tradeId });
     counts.entries++; if (f.basis === 'OPEN_GAP_AT_OR_ABOVE_LEVEL') counts.gapFills++; if (f.basis === 'CLOSE') counts.closeEntries++;
     const stop = fin(o.order.stop) ? o.order.stop : null, perShare = stop !== null ? f.fill - stop : null;
-    const trade = { tradeId, id, strategy: adapter.strategy, setupDate: o.setup.date, signalDate: o.armedDate, entryDate: date, entryFill: f.fill, entryBasis: f.basis, orderLevel: o.order.level ?? null, initialStop: stop, riskPerShare: perShare, shares, costTotal: gross + fe, initialRiskAmount: perShare !== null ? shares * perShare : null, riskOfEquity: perShare !== null ? (shares * perShare) / equityPrev : null, weight: (shares * f.fill) / equityPrev, plannedLoss: f.plannedLoss, openManualDecisionsSubstituted: o.eligibility.openManualDecisions, setupEvidence: o.setup.evidence ?? null, status: 'OPEN', simulatedResearchOnly: true, ...NOT_A_STRATEGY_SF5 };
+    const trade = { tradeId, id, strategy: adapter.strategy, setupDate: o.setup.date, signalDate: o.armedDate, entryDate: date, entryFill: f.fill, entryBasis: f.basis, orderLevel: o.order.level ?? null, initialStop: stop, riskPerShare: perShare, shares, costTotal: gross + fe, initialRiskAmount: perShare !== null ? shares * perShare : null, riskOfEquity: perShare !== null ? (shares * perShare) / equityPrev : null, weight: (shares * f.fill) / equityPrev, plannedLoss: f.plannedLoss, openManualDecisionsSubstituted: o.eligibility.openManualDecisions, setupEvidence: o.setup.evidence ?? null, ...(f.resolution ? { intradayEvidence: f.resolution.evidence ?? null } : {}), status: 'OPEN', simulatedResearchOnly: true, ...NOT_A_STRATEGY_SF5 };
     trades.push(trade);
     const pos = { id, tradeId, trade, entry: f.fill, entryIndex: i, initialStop: stop, stop, stopReason: 'STOP_INITIAL', trigger: null, shares, costBasis: gross + fe, realized: 0, dividends: 0, sessions: 1, entryDate: date, events: [{ date, type: 'ENTRY', basis: f.basis, fill: f.fill, shares, stop }], pendingExit: null, closed: false, state: {} };
     positions.set(id, pos);
@@ -193,11 +202,13 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
       const f = b ? fillOrder(b, o.order) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
       if (f.status === 'NOT_TRIGGERED') { counts.ordersNotTriggered++; continue; }
       if (f.status !== 'FILLED') {
-        counts[{ NOT_EXECUTED_NO_SOURCE_BAR: 'notExecutedNoSourceBar', NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP: 'notExecutedAtOrBelowStop', NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX: 'notExecutedPlannedLossAboveMax' }[f.status]]++;
+        const known = { NOT_EXECUTED_NO_SOURCE_BAR: 'notExecutedNoSourceBar', NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP: 'notExecutedAtOrBelowStop', NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX: 'notExecutedPlannedLossAboveMax' }[f.status];
+        if (known) counts[known]++; else { counts.notExecutedResolved ??= {}; counts.notExecutedResolved[f.status] = (counts.notExecutedResolved[f.status] || 0) + 1; }
         rejections.push({ id, date, reason: f.status }); continue;
       }
-      const pos = enter(id, x, i, date, f, o, equityPrev); if (!pos) continue;
-      if (f.sameBarStop === 'CERTAIN') { counts.sameBarStopCertain++; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_CERTAIN'); counts.protectiveExits++; continue; }
+      // a resolved intraday fill carries the stop known at its fill minute (the armed order has none)
+      const pos = enter(id, x, i, date, f, fin(f.stop) ? { ...o, order: { ...o.order, stop: f.stop } } : o, equityPrev); if (!pos) continue;
+      if (f.sameBarStop === 'CERTAIN') { counts.sameBarStopCertain++; sell(pos, pos.shares, fin(f.sameBarExitFill) ? f.sameBarExitFill : pos.stop, date, 'STOP_SAME_BAR_CERTAIN'); counts.protectiveExits++; continue; }
       if (f.sameBarStop === 'AMBIGUOUS') {
         if (config.intrabarOrder === 'PESSIMISTIC') { counts.sameBarStopAmbiguousExecuted++; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_ASSUMED'); counts.protectiveExits++; continue; }
         counts.sameBarStopAmbiguousIgnored++; pos.events.push({ date, type: 'SAME_BAR_STOP_IGNORED', rule: 'intrabarOrder OPTIMISTIC' });

@@ -64,9 +64,14 @@ test('SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and
   const y = fs.readFileSync(new URL('../../../.github/workflows/supertrader-validation.yml', import.meta.url), 'utf8');
   assert.match(y, /SF_RESEARCH_REQUIRES_SNAPSHOT_AND_RESEARCH_V1/);
   assert.match(y, /run-research\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
-  assert.match(y, /sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\) ;;/);
+  assert.match(y, /sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\) ;;/);
   // Supertrader 3.0 research runner, 4.0 and 5.0 lifecycle runners: same fail-closed conditions, sealed result
-  assert.match(y, /case "\$MODE" in sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\)\n\s+if \[ -z "\$snap" \] \|\| \[ "\$acc" != research-v1 \]/);
+  assert.match(y, /case "\$MODE" in sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\)\n\s+if \[ -z "\$snap" \] \|\| \[ "\$acc" != research-v1 \]/);
+  // Kullamaegi EP / PS chart-first runner: same fail-closed snapshot conditions, request budget capped, sealed result
+  assert.match(y, /run-kk-intraday\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
+  assert.match(y, /KK_MAX_REQUESTS_ABOVE_6000/);
+  const rk = fs.readFileSync(new URL('../source-faithful/research/run-kk-intraday.mjs', import.meta.url), 'utf8');
+  assert.match(rk, /requireRestoreReceipt: true/); assert.match(rk, /encryptForOwner/);
   assert.match(y, /run-sf5-lifecycle\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
   const r5 = fs.readFileSync(new URL('../source-faithful/research/run-sf5-lifecycle.mjs', import.meta.url), 'utf8');
   assert.match(r5, /requireRestoreReceipt: true/); assert.match(r5, /encryptForOwner/);
