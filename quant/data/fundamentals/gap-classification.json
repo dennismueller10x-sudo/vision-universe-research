@@ -8,8 +8,8 @@
   "denominator": {
     "PRODUCT_TITLES": 6686
   },
-  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4958,
-  "TITLES_WITH_GAP": 1728,
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4959,
+  "TITLES_WITH_GAP": 1727,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
@@ -165,8 +165,8 @@
     },
     {
       "cause": "INSUFFICIENT_HISTORY",
-      "count": 56,
-      "percent": 0.8376,
+      "count": 55,
+      "percent": 0.8226,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -242,7 +242,7 @@
   ],
   "byRecoverability": {
     "SEC_RECOVERABLE": 1,
-    "EXTERNAL_PROVIDER_CANDIDATE": 98,
+    "EXTERNAL_PROVIDER_CANDIDATE": 97,
     "RESOLVES_WITH_TIME": 783,
     "BY_DESIGN": 503,
     "REQUIRES_REVIEW": 343
@@ -250,7 +250,7 @@
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
     "SEC_RECOVERABLE": 1,
-    "EXTERNAL_PROVIDER_CANDIDATE": 98
+    "EXTERNAL_PROVIDER_CANDIDATE": 97
   },
   "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
   "secTickerDirectory": {
@@ -261,7 +261,7 @@
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
     "SEC_RECOVERABLE": 140,
-    "EXTERNAL_PROVIDER_CANDIDATE": 56,
+    "EXTERNAL_PROVIDER_CANDIDATE": 55,
     "RESOLVES_WITH_TIME": 739,
     "BY_DESIGN": 450,
     "REQUIRES_REVIEW": 343
@@ -339,8 +339,8 @@
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 484,
-        "PERCENT": 7.239,
+        "COUNT": 483,
+        "PERCENT": 7.2241,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -348,7 +348,7 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 56
+            "count": 55
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -356,7 +356,7 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 56
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 55
       },
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
@@ -412,5 +412,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-10-22T12:02:46+00:00"
+  "generatedAtUtc": "2026-10-23T11:49:08+00:00"
 }
