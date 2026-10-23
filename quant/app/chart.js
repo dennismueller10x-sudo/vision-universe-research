@@ -289,7 +289,9 @@
       delete box.dataset.direction;
     }
 
-    function drawIntraday() {
+    /* Der Tagesstand (letzter Kurs, Bezug, Quelle) - fuer den 1T-Chart und fuer den Kurs im Kopf der Seite, auch
+       wenn ein anderer Zeitraum gezeigt wird (Start 1J, UI-Konzept 23.10.2026). */
+    function intradayFacts() {
       var p = st.intraday, snap = vortagAusReihe(withLive(p, st.trade), o.adjusted ? eod : null);
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
@@ -297,6 +299,21 @@
       var delta = isNum(last) && isNum(base) && base > 0 ? (last / base - 1) * 100 : null;
       var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: st.trade, now: new Date() }) : null;
       var frozen = !!(q && q.isFrozen) || snap.regularComplete === true;
+      return { p: p, snap: snap, pts: pts, last: last, base: base, delta: delta, q: q, frozen: frozen };
+    }
+    /* Nur ein LAUFENDER Tag aktualisiert den Kurs im Kopf der Seite. Nach
+       Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
+       5-Minuten-Kurs ist kein Schlusskurs. */
+    function reportPrice(f) {
+      if (!o.onPrice || !f || !f.pts.length) return;
+      var snap = f.snap, q = f.q, frozen = f.frozen, time = snap.asOfLocal ? String(snap.asOfLocal).slice(0, 5) : null;
+      o.onPrice({ price: f.last, delta: f.delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE"),
+        kind: q && q.state === "REALTIME" ? "live" : "delayed", at: dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : "") });
+    }
+    function reportIntraday() { if (st.intraday && st.intraday.snapshot && !st.disposed) reportPrice(intradayFacts()); }
+
+    function drawIntraday() {
+      var f = intradayFacts(), p = f.p, snap = f.snap, pts = f.pts, last = f.last, base = f.base, delta = f.delta, q = f.q, frozen = f.frozen;
       /* Ein Stand, der nicht live ist (STALE: Schluss fehlt, Takt steht),
          heisst nicht "heute" - er traegt sein Datum und seine Uhrzeit. */
       var datiert = frozen || !!(q && q.state === "STALE");
@@ -321,12 +338,7 @@
         FINAL_SESSION: "Die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen." };
       note.textContent = (q && q.label ? q.label + ". " : "") + ((q && q.sourceText) || "5-Minuten-Kurse") + " · Uhrzeiten New York · Startlinie: " +
         (isNum(snap.previousClose) ? "Vortagesschluss" : "erster Kurs des Tages") + ". " + ((q && satz[q.state]) || "");
-      /* Nur ein LAUFENDER Tag aktualisiert den Kurs im Kopf der Seite. Nach
-         Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
-         5-Minuten-Kurs ist kein Schlusskurs. */
-      var time = snap.asOfLocal ? String(snap.asOfLocal).slice(0, 5) : null;
-      if (o.onPrice) o.onPrice({ price: last, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE"),
-        kind: q && q.state === "REALTIME" ? "live" : "delayed", at: dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : "") });
+      reportPrice(f);
     }
 
     function drawRange(r) {
@@ -413,7 +425,7 @@
       for (var i = 0; i < order.length; i++) if (available(order[i])) return order[i];
       return "MAX";
     }
-    /* Start: 1T, wenn es einen Tagesverlauf gibt, sonst 1J. Der Hub
+    /* Start: 1J (UI-Konzept 23.10.2026; vorher 1T, wenn es einen Tagesverlauf gab). Der Hub
        antwortet sofort aus dem Cache oder nach einem Abruf; wer nicht
        antwortet, haelt den Chart nicht auf. */
     function start() {
@@ -421,16 +433,18 @@
       if (eod.length < 2 && !(Hub && Hub.enabled && Hub.enabled())) {
         empty("Keine Kursreihe", "Für diesen Titel liegt keine veröffentlichte Kursreihe vor."); syncButtons(); return;
       }
-      var first = true;
+      /* 1J steht sofort aus der Tagesreihe; der Tagesverlauf (Hub) liefert nur den Kurs im Kopf und schaltet 1T frei. */
+      if (eod.length >= 2) draw(startRange());
+      var first = eod.length < 2;
       if (Hub && Hub.enabled && Hub.enabled()) {
         st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
           if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
-          if (first) { first = false; if (!st.touched) draw(available("1D") ? "1D" : startRange()); return; }
-          if (st.range === "1D") draw("1D"); else syncButtons();
+          if (first) { first = false; if (!st.touched) draw(available("1D") && eod.length < 2 ? "1D" : startRange()); reportIntraday(); return; }
+          if (st.range === "1D") draw("1D"); else { syncButtons(); reportIntraday(); }
         });
-        global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw(startRange()); } }, 3000);
-      } else draw(startRange());
+        if (first) global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw(startRange()); } }, 3000);
+      }
     }
 
     /* Live nur bei offener Boerse und laufendem Tag, eine Verbindung je
@@ -448,7 +462,7 @@
           onChange: function (snap) {
             var last = snap && snap.isLive && snap.last;
             st.trade = last ? { fresh: true, price: last.price, at: new Date(last.timestamp).toISOString(), priceType: "TRADE" } : null;
-            if (st.range === "1D" && !st.disposed) draw("1D");
+            if (st.range === "1D" && !st.disposed) draw("1D"); else reportIntraday();
           } });
         st.relay = client;
         client.start();

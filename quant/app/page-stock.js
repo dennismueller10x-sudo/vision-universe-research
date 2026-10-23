@@ -214,7 +214,7 @@
     if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
         el("span", { class: "qv2-result-ico", "aria-hidden": "true" }, [ico(o.tone === "good" ? "up" : o.tone === "bad" ? "down" : "flat")]),
-        el("div", {}, [el("h2", { class: "qv2-result-k", text: "Quant-Ergebnis" }),
+        el("div", {}, [el("h2", { class: "qv2-result-k", text: "Was sagt Quant insgesamt?" }),
           el("p", { class: "vu-result qv-result" }, [el("span", { text: o.text })]),
           el("p", { class: "qv-sub", text: o.sub })])]), keyTiles(vm) || el("span"));
       if (o.rated < 3) node.append(el("ul", { class: "dx-kann qx-open" }, vm.gaps.map(function (g) {
@@ -233,12 +233,13 @@
   }
   /* Kursentwicklung (Kursstaerke und Anlegerrendite) - steht im Abschnitt der Eigenschaften, bei der Kursstaerke. */
   function returnsBlock(vm) {
+    /* Die Kursentwicklung zeigt der Chart (Zeitraum waehlbar) - hier nur der Unterschied Kursstaerke/Anlegerrendite,
+       aufklappbar. Keine zweite Zahlenreihe neben dem Chart. */
     if (!vm.returns || vm.returns.state !== "AVAILABLE") return [];
-    return [el("div", { class: "qv-returns qx-returns qv2-returns", id: "rendite" }, [el("span", { class: "qv2-returns-k", text: "Kursentwicklung" })].concat(vm.returns.rows.map(function (r) {
-        return el("div", {}, [el("span", { text: r.label.replace("12 Monate ohne den letzten", "12 Monate*") }), el("b", { class: "num " + (r.priceRaw > 0 ? "vu-up qv-up" : r.priceRaw < 0 ? "vu-down qv-down" : ""), text: (r.priceRaw > 0 ? "▲ " : r.priceRaw < 0 ? "▼ " : "") + r.price })]);
-      }))), moreText("Kursstärke und Anlegerrendite", vm.returns.rows.map(function (r) { return r.label.replace("12 Monate ohne den letzten", "12 Monate*") + ": Kursstärke " + r.price + ", Anlegerrendite " + r.investor; }).join(" · ") + "." +
+    return [moreText("Kursstärke und Anlegerrendite", vm.returns.rows.map(function (r) { return r.label.replace("12 Monate ohne den letzten", "12 Monate*") + ": Kursstärke " + r.price + ", Anlegerrendite " + r.investor; }).join(" · ") + "." +
         (vm.returns.rows.some(function (r) { return /ohne den letzten/.test(r.label); }) ? " *12 Monate ohne den letzten Monat." : "") + " Kursstärke misst nur den Kurs, die Anlegerrendite rechnet Ausschüttungen mit ein. " + vm.returns.text)];
   }
+
   /* ------------------------------------------------ Die Waage
      Spricht dafuer / dagegen wie Discovers "Was dafür spricht — und was
      dagegen" (dx-waage). Drei Punkte je Seite offen, der Rest dahinter;
@@ -690,29 +691,12 @@
     } else if (radar && radar.state === "AVAILABLE") {
       out.push(el("p", { class: "q-now-none", text: "Zum letzten Stand (" + X.dateDe(radar.radarAsOf) + ") meldet Quant für diese Aktie keine neue Veränderung." }));
     }
-    /* VU3-Finalisierung: Ohne neues Ereignis steht die Setup-Stufe schon in der Kennzahl "Setup" direkt darueber. */
-    if (lc && lc.state === "AVAILABLE" && lc.current !== "NO_SETUP" && card && card.events.length) {
-      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Setup: " }), el("span", { text: lifecycleLabel(lc.current) + " · " + (lc.sinceIsLowerBound ? "mindestens seit " : "seit ") + X.dateDe(lc.since) + (lc.previous ? " · vorher: " + lifecycleLabel(lc.previous) : "") })]));
-    }
     if (card && card.next && card.next.open && card.next.open.length) {
       out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "Für „" + lifecycleLabel(card.next.state) + "“ " + (card.next.open.length === 1 ? "fehlt noch eine von " : "fehlen noch " + card.next.open.length + " von ") + card.next.total + " Bedingungen." })]));
     }
-    /* Historisch: zuerst das marktweit GETESTETE Signal mit der Quote des
-       Markts daneben, dann die nur BEOBACHTETE Vergangenheit dieser Aktie -
-       getrennt beschriftet, nie eine nackte Trefferquote ohne Stufe. */
-    /* UI-Konzept 23.10.2026: die Quoten stehen gross im Historischen Vergleich - hier dahinter, in einem Aufklapper. */
-    var E = global.QXEvidence, hist = [];
-    var tested = card ? (card.events || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0] : null;
-    if (tested && E) {
-      var b = tested.backtest, tl = (Radar && Radar.TYPE[tested.eventType] || {}).label || tested.eventType;
-      hist.push(el("p", { class: "q-now-line" }, [el("b", { text: "Historisch getestet („" + tl + "“, ganzer Markt): " }),
-        el("span", { text: E.share1(b.positiveShare) + " der Fälle lagen nach 6 Monaten höher – der Markt " + E.share1(b.basePositiveShare) + " (" + E.pp(b.deltaPositiveShare) + "). " + E.edgeSentence(b) })]));
-    }
-    if (card && card.replay && card.replay.sufficient) {
-      var rp = card.replay;
-      hist.push(el("p", { class: "q-now-line" }, [el("b", { text: "Bei dieser Aktie beobachtet: " }), el("span", { text: "in derselben Kurslage früher " + Math.round(rp.positiveShare * 100) + " % im Plus, Median " + VM.pct(rp.medianReturn, 1, true) + " nach 6 Monaten (" + rp.completed + " Fälle, ohne Marktvergleich)." })]));
-    }
-    if (hist.length) out.push(el("details", { class: "vu-more qv-more" }, [el("summary", { text: "Was früher in dieser Lage geschah" }), el("div", { class: "vu-more-body qv-more-body" }, hist)]));
+    /* UI-Konzept 23.10.2026: Setup-Stufe und Rueckblick (getestet mit Markt, beobachtet ohne Markt) stehen in ihren
+       Bereichen "Setup & Strategie" und "Historischer Vergleich" - hier keine Doppelnennung. */
+    void lc;
     return out.length ? out : [el("p", { class: "qx-small", text: "Für diese Aktie liegt kein Radar-Stand vor." })];
   }
   function lifecycleLabel(id) {
@@ -742,7 +726,7 @@
   /* UI-Konzept 23.10.2026, iPhone: die Bereiche 2-6 liegen wie im Mockup nebeneinander und werden gewischt (eine Seite,
      keine Unterseiten). Die Pillenleiste darueber springt zum Bereich; die Hoehe folgt dem sichtbaren Bereich, damit
      unter einem kurzen Bereich kein Leerraum steht. Breit (ab 760 px) bleibt das Raster - dort tut diese Funktion nichts. */
-  function deck(grid, tabs) {
+  function deck(grid, onSelect) {
     var mq = global.matchMedia ? global.matchMedia("(max-width: 759px)") : null, active = null, raf = 0;
     var ro = global.ResizeObserver ? new global.ResizeObserver(function () { fit(); }) : null;
     function on() { return !!(mq && mq.matches); }
@@ -756,9 +740,7 @@
       if (best && best !== active) {
         if (active && ro) ro.unobserve(active);
         active = best; if (ro) ro.observe(active);
-        tabs.querySelectorAll("a").forEach(function (a) { a.setAttribute("aria-current", a.dataset.target === best.id ? "true" : "false"); });
-        var tab = tabs.querySelector("a[aria-current=true]");
-        if (tab && tabs.scrollTo) tabs.scrollTo({ left: tab.offsetLeft - 16, behavior: "smooth" });
+        onSelect(best.id);
       }
       fit();
     }
@@ -766,7 +748,7 @@
     grid.addEventListener("scroll", later, { passive: true });
     if (mq && mq.addEventListener) mq.addEventListener("change", later);
     setTimeout(pick, 0);
-    return { on: on, refresh: later, dispose: function () { if (ro) ro.disconnect(); if (mq && mq.removeEventListener) mq.removeEventListener("change", later); } };
+    return { on: on, refresh: later, current: function () { return active ? active.id : null; }, dispose: function () { if (ro) ro.disconnect(); if (mq && mq.removeEventListener) mq.removeEventListener("change", later); } };
   }
 
   /**
@@ -777,6 +759,8 @@
    */
   async function render(main, ticker, ctx) {
     var api = ctx.api, disposers = [];
+    /* Stile der Aktienseite laden parallel zu den Daten (app.js#QXStockCss); gezeichnet wird erst mit ihnen. */
+    var cssReady = global.QXStockCss ? global.QXStockCss() : Promise.resolve(true);
     var page = el("article", { class: "qx-stock q-stock qv-stock" });
     main.append(page);
     var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
@@ -879,6 +863,7 @@
     ]);
     var factors = results[0], setup = results[1], match = results[2], assignment = results[3], technical = results[4], patterns = results[5], cases = results[6], dist = results[7], words = results[8] || {};
     var vm = VM.stock({ ticker: ticker, factors: factors, brief: brief, setup: setup, match: match, cases: cases, patterns: patterns, technical: technical, distribution: dist });
+    await cssReady;
     bodyHost.replaceChildren();
 
     /* ---------------------------------------------------------- Chart */
@@ -905,34 +890,51 @@
        danach Unternehmenszahlen (#zahlen), Unternehmen & Meldungen (zugeklappt) und Daten & Methodik (#grenzen). */
     var hasFactors = vm.factorState === "AVAILABLE";
     var o = vm.overall;
-    var TABS = [["einordnung", !hasFactors || o.rated > 0 ? "Eigenschaften" : null], ["dafuer", hasFactors && o.rated >= 3 ? "Stärken & Risiken" : null], ["veraenderung", "Veränderungen"],
-      ["setup", "Setup & Strategie"], ["historie", "Historie"], ["grenzen", "Daten"]]
+    /* Die sechs Ansichten als nummerierte Pillen (wie im Mockup); der aktive Bereich ist Lime. */
+    var TABS = [["ueberblick", "Überblick"], ["einordnung", !hasFactors || o.rated > 0 ? "Eigenschaften" : null], ["dafuer", hasFactors && o.rated >= 3 ? "Stärken & Risiken" : null], ["veraenderung", "Veränderungen"],
+      ["setup", "Setup & Strategie"], ["historie", "Historie"]]
       .filter(function (t) { return t[1]; });
-    var tabs = el("nav", { class: "q-tabs qx-toc qv-toc qv2-toc", "aria-label": "Abschnitte der Analyse" }, TABS.map(function (t) {
-      return el("a", { href: "#" + t[0], "aria-current": "false", dataset: { target: t[0] }, text: t[1] });
+    var tabs = el("nav", { class: "q-tabs qx-toc qv-toc qv2-toc", "aria-label": "Die Ansichten der Analyse" }, TABS.map(function (t, i) {
+      return el("a", { href: "#" + t[0], "aria-current": i ? "false" : "true", dataset: { target: t[0] } }, [el("span", { class: "qv2-toc-n", "aria-hidden": "true", text: String(i + 1) }), document.createTextNode(t[1])]);
     }));
+    function setCurrent(id) {
+      var hit = null;
+      tabs.querySelectorAll("a").forEach(function (a) { var on = a.dataset.target === id; a.setAttribute("aria-current", on ? "true" : "false"); if (on) hit = a; });
+      if (hit && tabs.scrollWidth > tabs.clientWidth && tabs.scrollTo) tabs.scrollTo({ left: hit.offsetLeft - 16, behavior: "smooth" });
+    }
     if (global.IntersectionObserver) {
       var spy = new global.IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (!e.isIntersecting || (swipe && swipe.on())) return;
-          tabs.querySelectorAll("a").forEach(function (a) {
-            var hit = a.dataset.target === e.target.id; a.setAttribute("aria-current", hit ? "true" : "false");
-            if (hit && a.scrollIntoView && tabs.scrollWidth > tabs.clientWidth) tabs.scrollTo({ left: a.offsetLeft - 16, behavior: "smooth" });
-          });
+          if (!e.isIntersecting) return;
+          /* Mobil liegen 2-6 nebeneinander: dort entscheidet das Wischen (deck), oben nur der Ueberblick. */
+          if (swipe && swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
+          else setCurrent(e.target.id);
         });
       }, { rootMargin: "-30% 0px -60% 0px" });
       disposers.push(function () { spy.disconnect(); });
+      /* Ganz oben (Kurs, Chart, Ergebnis) ist der Ueberblick aktiv - auch dort, wo das Beobachtungsband ihn nicht trifft. */
+      var topRaf = 0, onTop = function () {
+        topRaf = 0;
+        var lay = document.getElementById("ueberblick"); if (!lay || !lay.isConnected) return;
+        if (lay.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
+        else if (swipe && swipe.on() && tabs.querySelector("a[aria-current=true]") && tabs.querySelector("a[aria-current=true]").dataset.target === "ueberblick") setCurrent(swipe.current());
+      };
+      var onScroll = function () { if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
+      global.addEventListener("scroll", onScroll, { passive: true });
+      disposers.push(function () { global.removeEventListener("scroll", onScroll); });
       setTimeout(function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n) spy.observe(n); }); }, 0);
     }
 
     /* 1: Chart und daneben das Quant-Ergebnis. */
     var layout = el("div", { class: "qx-stock-layout" });
+    layout.id = "ueberblick"; layout.classList.add("qv2-overview");
     layout.append(chart.node);
     layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“."));
-    bodyHost.append(layout, tabs);
+    /* Die Pillen stehen ueber dem Chart und kleben beim Scrollen oben: die sechs Ansichten sind jederzeit sichtbar. */
+    bodyHost.append(tabs, layout);
     var grid = el("div", { class: "qv2-grid" });
     bodyHost.append(grid);
-    var swipe = deck(grid, tabs);
+    var swipe = deck(grid, setCurrent);
     disposers.push(swipe.dispose);
 
     /* 2: Die sieben Eigenschaften bis zu den Rohdaten - eine Zeile je Eigenschaft. */
@@ -943,6 +945,15 @@
         { href: X.routes.method("faktoren"), label: "Methodik" }, "Die Quant-Eigenschaften", "einordnung")));
     } else if (!hasFactors) {
       grid.append(card(X.section("Eigenschaften", null, [X.notice("Keine Faktoren", VM.reasonText(factors && factors.reason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht."))], null, "Die Quant-Eigenschaften", "einordnung")));
+    }
+
+    /* Unternehmenszahlen gehoeren zu den Eigenschaften (Profitabilitaet, Wachstum, Bewertung, Risiko in Rohwerten):
+       ein Teil derselben Karte, die Kennzahlen als wischbare Reihe - keine eigene lange Seite danach. */
+    var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
+    var einCard = grid.querySelector("#einordnung");
+    if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) {
+      var zahlen = X.section("Wie verdient das Unternehmen – und wie teuer ist die Aktie?", null, figures, null, "Unternehmenszahlen", "zahlen");
+      if (einCard) einCard.append(sub(zahlen)); else grid.append(card(zahlen));
     }
 
     /* 3: Staerken & Risiken. */
@@ -1098,17 +1109,12 @@
     /* VU3-Finalisierung: Unternehmensprofil, Meldungen und Geschaeftszahlen (Company Intelligence) sind Discovers
        Kapitel; in Quant stehen sie vollstaendig, aber zugeklappt. Ohne Freigabe (mount haengt nichts an) entfaellt
        auch der Aufklapper. */
+    var ciMore = null;
     if (global.VUCompanyIntelligenceStock) {
       var ciHost = el("div", { class: "qv-ci-host" });
-      var ciMore = el("details", { class: "vu-more qv-ci-more" }, [el("summary", { text: "Unternehmen, Meldungen und Geschäftszahlen" }), el("div", { class: "vu-more-body qv-ci-body" }, [ciHost])]);
-      bodyHost.append(ciMore); disposers.push(global.VUCompanyIntelligenceStock.mount(ciHost, ticker));
-      if (!ciHost.firstChild) ciMore.remove();
-    }
-    var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
-    if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) grid.append(card(X.section("Wie verdient das Unternehmen – und wie teuer ist die Aktie?", null, figures, null, "Unternehmenszahlen", "zahlen")));
-    if (document.getElementById("zahlen")) {
-      var dataTab = tabs.querySelector("a[data-target=grenzen]");
-      tabs.insertBefore(el("a", { href: "#zahlen", "aria-current": "false", dataset: { target: "zahlen" }, text: "Zahlen" }), dataTab);
+      ciMore = el("details", { class: "vu-more qv-ci-more" }, [el("summary", { text: "Unternehmen, Meldungen und Geschäftszahlen" }), el("div", { class: "vu-more-body qv-ci-body" }, [ciHost])]);
+      disposers.push(global.VUCompanyIntelligenceStock.mount(ciHost, ticker));
+      if (!ciHost.firstChild) ciMore = null;
     }
     swipe.refresh();
 
@@ -1141,8 +1147,10 @@
         X.link("Vergleichen", X.routes.compare([ticker])), el("span", { text: " · " }), X.link("In Discover ansehen", "/discover/#/s/US_REAL/" + encodeURIComponent(ticker))]),
       creditHost]);
     bodyHost.append(limitsSection([
+      /* Nach den sechs Ansichten EIN kurzer Abschluss: was fehlt (nur wo etwas fehlt), Unternehmen & Meldungen und
+         Daten & Methodik - beides zugeklappt. */
       gapNodes.length ? el("div", { class: "qv-gaps", dataset: { journeyShape: shape.shape || "" } }, [el("h2", { class: "qv-gaps-h", text: "Was fehlt – und warum" }), el("ul", { class: "dx-kann" }, gapNodes)]) : null,
-      dm], "grenzen"));
+      ciMore, dm], "grenzen"));
     /* Urheber und Lizenz des Logos stehen in "Daten & Methodik". Das Verzeichnis
        dahinter ist 1,7 MB gross - es wird erst geladen, wenn der Bereich geoeffnet wird. */
     var L = global.VUDiscover && global.VUDiscover.Logos;

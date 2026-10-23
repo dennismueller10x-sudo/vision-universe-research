@@ -321,8 +321,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   /* Reihenfolge nach Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026). */
-   const soll=['einordnung','dafuer','veraenderung','setup','strategie','technik','historie','zahlen','grenzen'];
+   /* Reihenfolge nach Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026); die Unternehmenszahlen sind Teil der Eigenschaften. */
+   const soll=['einordnung','zahlen','dafuer','veraenderung','setup','strategie','technik','historie','grenzen'];
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
