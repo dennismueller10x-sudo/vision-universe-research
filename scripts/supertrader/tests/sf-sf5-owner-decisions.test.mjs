@@ -82,3 +82,13 @@ test('SF5-OD-DARVAS: pessimistische Intrabar-Referenz; Groesse als Bandbreite al
   const ps = read('STRATEGY-SF5-LIFECYCLE.json').strategies.DARVAS.readiness.positionSizing;
   assert.equal(ps.report, 'SPAN_OF_ALL_SIZING_VARIANTS'); assert.equal(ps.variants.length, 3); assert.match(ps.sourceRule, /NONE/);
 });
+
+test('SF5-OD-NO-READINESS-UPGRADE: Messklassen, Engine-Zustaende und Live-Status aller 13 Kandidaten wie vor den Entscheidungen', () => {
+  const cls = Object.fromEntries(read('STRATEGY-READINESS-SF3.json').candidates.map((c) => [c.candidateId, c.backtestReadiness.measurement.class]));
+  const F = 'FULL_DIAGNOSTIC_STRATEGY_BACKTEST', S = 'SCREEN_STATISTICS', N = 'NOT_MEASURABLE';
+  assert.deepEqual(cls, { C01: F, C02: F, C03: 'MECHANICAL_COMPONENT_STUDY', C04: S, C05: S, C06: S, C07: S, C08: S, C09: N, C10: N, C11: S, C12: S, C13: N });
+  const eng = Object.fromEntries(read('STRATEGY-COMPLETION-STATUS.json').candidates.map((c) => [c.candidateId, c.engine]));
+  const W = 'RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION', M = 'MECHANICAL_SCREEN_COMPLETE', O = 'MECHANICAL_COMPONENTS_ONLY';
+  assert.deepEqual(eng, { C01: W, C02: W, C03: M, C04: M, C05: M, C06: M, C07: M, C08: M, C09: O, C10: O, C11: M, C12: M, C13: O });
+  assert.deepEqual([...new Set(read('STRATEGY-LIVE-READINESS.json').methods.map((m) => m.liveReadiness))], ['LIVE_NOT_APPROVED']);
+});

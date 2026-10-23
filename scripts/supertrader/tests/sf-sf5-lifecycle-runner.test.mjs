@@ -16,7 +16,7 @@ import { SNAPSHOT_RUNS as SF4_RUNS } from '../source-faithful/completion/build-m
 import { buildSf5Artifact, sf5Markdown, SF5_SNAPSHOT_RUNS } from '../source-faithful/completion/build-sf5-lifecycle.mjs';
 
 // pinned before the first snapshot result of the Supertrader 5.0 lifecycles was read
-const PINNED_SF5_VARIANT_REGISTRY = 'b0e96105ac70b988df66616ef5aa1dbb905254657651469835f68d492d7d5987';
+const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
 function dataset(n = 30, len = 700) {

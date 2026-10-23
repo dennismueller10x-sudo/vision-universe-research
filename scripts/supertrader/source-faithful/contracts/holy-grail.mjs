@@ -15,16 +15,16 @@ const T = 'scripts/supertrader/tests/sf-holy-grail.test.mjs';
 
 export const HOLY_GRAIL = defineContract({
   implemented: true,
-  sourceContractVersion: '1.2.0',
+  sourceContractVersion: '1.2.1',
   plannedIn: 'PR 8 Holy Grail',
   strategyId: 'SF_RASCHKE_HOLY_GRAIL',
   candidateId: 'C13',
   trader: 'Linda Raschke',
   method: 'Holy Grail disclosed setup component: first pullback to the 20 EMA after ADX(14) > 30 on the same (daily) timeframe',
   sources: [{ sourceId: 'W-RAS04', edition: 'Linda Raschke 2004 interview (web primary PDF), own quotes', role: 'authoritative for the disclosed component' }, { sourceId: 'W-RAS97', edition: 'AIQ Opening Bell Vol. 6 Issue 8 (August 1997), sidebar "Holy Grail Pattern", hosted on lindaraschke.net (sha256 693ce571...)', role: 'SECONDARY SOURCE for entry order and initial stop only (owner decision D-RAS97, 2026-10-23); most likely an editorial summary, not the author\'s wording' }],
-  scope: { primary: 'MECHANICAL_SCREEN_WITH_MANUAL_LAYER', layers: { MECHANICAL: 'ADX(14) > 30, first 20-EMA pullback, 3/10 oscillator evidence (daily)', MANUAL: 'entry order, stop, exit (not disclosed)', DATA_BLOCKED: 'intraday timeframes (5-120 minutes)' } },
+  scope: { primary: 'MECHANICAL_SCREEN_WITH_MANUAL_LAYER', layers: { MECHANICAL: 'ADX(14) > 30, first 20-EMA pullback, 3/10 oscillator evidence (daily)', MANUAL: 'exit and size (not disclosed); entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97) (not disclosed)', DATA_BLOCKED: 'intraday timeframes (5-120 minutes)' } },
   outputKind: OUTPUT_KIND.MANUAL_REVIEW_CANDIDATE,
-  timing: { signal: 'daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30', earliestExecutable: 'reviewer decision after the close (entry order not disclosed)', decisionData: 'daily bars up to the close; ADX at the bar before the pullback' },
+  timing: { signal: 'daily close of the first bar whose low touches the 20 EMA after ADX(14) > 30', earliestExecutable: 'reviewer decision after the close (primary source silent on the entry order; secondary source W-RAS97, D-RAS97)', decisionData: 'daily bars up to the close; ADX at the bar before the pullback' },
   entryConditions: ['RAS-SF-ADX + RAS-SF-PULLBACK (machine), RAS-SF-ENTRY (secondary source W-RAS97)'],
   exitConditions: ['RAS-SF-EXIT (new high as exit opportunity, preference)'],
   stops: ['RAS-SF-STOP (secondary source W-RAS97: newly formed swing low)'],
@@ -32,7 +32,7 @@ export const HOLY_GRAIL = defineContract({
   requiredData: ['daily split-adjusted OHLC', 'intraday bars for the intraday timeframes (missing)'],
   manualReviewFlags: [
     { id: 'RAS-MR-IMPULSE', psr709: ['RAS04-001'], question: 'strong impulse before the pullback?', blocksAutomation: true },
-    { id: 'RAS-MR-EXECUTION', psr709: ['RAS04-001'], question: 'entry order, stop and exit are not disclosed', blocksAutomation: true },
+    { id: 'RAS-MR-EXECUTION', psr709: ['RAS04-001'], question: 'entry order and stop: primary source silent, secondary source W-RAS97 (D-RAS97); exit not disclosed', blocksAutomation: true },
   ],
   knownLimitations: ['the primary source W-RAS04 discloses neither entry order nor stop (#709 C13); both rest on the secondary source W-RAS97 (D-RAS97), trailing and size stay undisclosed, so no historical method return can be computed', 'intraday timeframes DATA_BLOCKED; the daily component is the disclosed rule on one allowed timeframe (RAS04-006). #712 rated Holy Grail DATA_BLOCKED for the intraday case; the daily case is computable'],
   exclusions: {},

@@ -267,8 +267,8 @@
   {
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
-   "sourceContractVersion": "1.3.0",
-   "contractFingerprint": "5a3cd000e46ce7a5937565b4d0878fff4aac0285968aed336fa116874601a2c9",
+   "sourceContractVersion": "1.3.1",
+   "contractFingerprint": "185098191640a3fd05c586276e975de075cef0e16ff6eb5cbe256266d93a517e",
    "sourceCoverage": {
     "rulesInScope": 35,
     "hardRules": 10,
@@ -671,8 +671,8 @@
   {
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "244af9986d71403e7c8ff725ffceb4a2382db881e7732266430b6a9a183fac22",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "7680207d852a8a4a6b0f2a4c2a38daa2ed472c3bc2d5fa278c6fe6d243f90539",
    "sourceCoverage": {
     "rulesInScope": 36,
     "hardRules": 4,
@@ -859,8 +859,8 @@
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "6541e7b560f7005ce8a7a595d4909007aa45e2ec52f89c61e9ea9485fb3e86bb",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "e9a10425fe7d99c8d477c33a3afed988f9cb6fbcb7d97164b4323f1e29abf01d",
    "sourceCoverage": {
     "rulesInScope": 6,
     "hardRules": 2,
@@ -897,6 +897,9 @@
       "RAS04-001"
      ],
      "gate": false,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23",
      "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 (AIQ Opening Bell, August 1997, sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net) states the buy stop above the high of the previous bar; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). Which bar is \"previous\" stays a model assumption (MA-RAS-PREVIOUS-BAR); never SOURCE_EXACT; the lifecycle is not thereby source-conform (no trailing mechanics, size not disclosed)"
     },
     {
@@ -905,6 +908,9 @@
       "RAS04-001"
      ],
      "gate": false,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23",
      "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 states the protective sell stop at the newly formed swing low once filled; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). The swing definition stays a model assumption (MA-RAS-SWING-LOW); never SOURCE_EXACT"
     }
    ],
@@ -920,7 +926,7 @@
   "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 284,
+  "testsRun": 285,
   "testsFailed": 0,
   "testsSkipped": 2
  }

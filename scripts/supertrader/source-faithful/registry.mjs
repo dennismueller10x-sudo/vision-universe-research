@@ -73,6 +73,7 @@ export function registryEntry(contract, extract) {
     fullyAutomatable,
     sourceCoverage: { rulesInScope: coverage.rulesInScope, hardRules: coverage.hardRules, hardRulesImplemented: coverage.hardRulesImplemented, implementedExact: coverage.implementedExact, implementedDerived: coverage.implementedDerived, manualReview: coverage.manualReview, dataBlocked: coverage.dataBlocked, ambiguous: coverage.ambiguous, notImplemented: coverage.notImplemented, excluded: coverage.unmappedWithExclusion, unmapped: coverage.unmappedWithoutExclusion },
     ...readinessOf(contract),
+    ...(contract.rules.some((r) => r.sourceBasis) ? { secondarySourceRules: contract.rules.filter((r) => r.sourceBasis).map((r) => ({ ruleId: r.id, status: r.status, sourceBasis: r.sourceBasis, secondarySource: r.secondarySource ?? null, ownerDecision: r.ownerDecision ?? null })) } : {}),
     manualReviewRequirements: contract.manualReviewFlags.map((f) => ({ id: f.id, psr709: f.psr709, question: f.question, blocksAutomation: f.blocksAutomation })),
     knownLimitations: contract.knownLimitations,
     certification: FOUNDATION.certification,

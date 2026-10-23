@@ -351,7 +351,7 @@ Zusammengefasst:
    - Die Box ist wahrscheinlich eine Zusammenfassung der Redaktion, also kein Text von Raschke selbst.
    - Bei Annahme würden RAS-SF-ENTRY und RAS-SF-STOP in einem eigenen PR von SOURCE_AMBIGUOUS auf SOURCE_DERIVED gehen.
 2. **Referenz-Einstieg Kullamägi Breakout.**
-   - Heute gilt der Schlusskurs des Ausbruchstags. Das ist das Vertrags-Timing und erlaubt KK-012 exakt, nutzt aber den finalen Schluss und das finale Tief (`CLOSE_DECISION_USES_FINAL_BAR`).
+   - **Entschieden am 23.10.2026:** Research-Referenz ist jetzt die nächste Eröffnung. Bis dahin galt der Schlusskurs des Ausbruchstags; er ist das Vertrags-Timing und erlaubt KK-012 exakt, nutzt aber den finalen Schluss und das finale Tief (`CLOSE_DECISION_USES_FINAL_BAR`). Er läuft als Variante `ALT-ENTRY-BREAKOUT-DAY-CLOSE` weiter.
    - Die Alternative „nächste Eröffnung“ ist streng PIT, setzt KK-012 aber nicht wörtlich um.
    - Beide laufen. Zu entscheiden ist, welche als Referenz gelten soll.
 3. **BGU-Volumenfenster.** Das Mittelungsfenster ist in #709 nicht belegt (SOURCE_AMBIGUOUS). Gemessen wird nur das 50-Sitzungen-Fenster des Screens. Bestätigen Sie das Fenster oder nennen Sie eine Quelle.
