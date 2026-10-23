@@ -947,6 +947,17 @@
     var chart = window.VUChart ? Promise.resolve() : loadScript('/assets/vu-chart.js');
     return Promise.all([core, chart]);
   }
+  /* Chartstandard (core/chart-standard.js, docs/charts/CHART_STANDARD.md): Zeitraeume, Start 1T,
+     Intraday-Aufloesung und Anzeige in der gewaehlten Waehrung (Vorgabe EUR) ueber die vorhandene
+     FX-Schicht - dieselben Bausteine wie Discover und Quant. Signale rechnen weiter in USD. */
+  var STD_P = null;
+  function chartStandard() {
+    if (!STD_P) STD_P = loadScript('/core/chart-standard.js').then(function () {
+      var CS = window.VUCore && VUCore.ChartStandard;
+      return CS ? CS.ensureDisplay(['/quant/engines/series-sampling.js']).then(function () { return CS; }) : null;
+    }).catch(function () { return null; });
+    return STD_P;
+  }
   function companyName(sym, list) {
     var n = '';
     list.forEach(function (x) { var c = x.s.companyName; if (!n && c && c !== sym) n = c; });
@@ -955,19 +966,26 @@
   }
   /* Kurs fuer den Kopf: EIN Kurs mit Art und Zeitbezug. Intraday (IEX, verzoegert) nur, wenn er
      juenger ist als der letzte Tagesschluss; sonst der Schlusskurs. Keine Zahl ohne Datengrundlage. */
-  function headPrice(bars, snap) {
-    var n = bars ? bars.close.length : 0, last = n ? { d: bars.date[n - 1], c: bars.close[n - 1], p: n > 1 ? bars.close[n - 2] : null } : null;
+  function headPrice(bars, snap, CS) {
+    var n = bars ? bars.close.length : 0, last = n ? { d: bars.date[n - 1], c: bars.close[n - 1], p: n > 1 ? bars.close[n - 2] : null, pd: n > 1 ? bars.date[n - 2] : null } : null;
     var pts = (snap && snap.points) || [];
+    // Anzeige in der gewaehlten Waehrung (Chartstandard). Veraenderung aus den angezeigten Werten wie in Discover:
+    // im Tagesverlauf ein Kurs fuer die Sitzung (Prozent wie an der Boerse), zum Vortag je Tag sein EZB-Kurs.
     if (pts.length && (!last || snap.sessionDate > last.d)) {
       var lp = pts[pts.length - 1], prev = isFinite(snap.previousClose) ? snap.previousClose : null;
-      return { value: lp[1], currency: 'USD', changePct: prev ? (lp[1] / prev - 1) * 100 : null, changeLabel: 'heute', kind: snap.regularComplete ? 'intraday' : 'delayed', at: dateShort(snap.sessionDate) + ', ' + lp[0] + ' Uhr ET' };
+      var ds = CS ? CS.displaySnapshot(snap, 'USD') : { snap: snap, currency: 'USD' }, dp = ds.snap.points[ds.snap.points.length - 1];
+      return { value: dp[1], currency: ds.currency, changePct: prev ? (lp[1] / prev - 1) * 100 : null, changeLabel: 'heute', kind: snap.regularComplete ? 'intraday' : 'delayed', at: dateShort(snap.sessionDate) + ', ' + lp[0] + ' Uhr ET' };
     }
     if (!last) return null;
-    return { value: last.c, currency: 'USD', changePct: last.p ? (last.c / last.p - 1) * 100 : null, changeLabel: 'zum Vortag', kind: 'close', at: dateShort(last.d) };
+    var two = last.p ? [[last.pd, last.p], [last.d, last.c]] : [[last.d, last.c], [last.d, last.c]];
+    var dc = CS ? CS.displaySeries(two, 'USD') : { points: two, currency: 'USD' }, dv = dc.points[dc.points.length - 1][1], dp0 = dc.points[0][1];
+    return { value: dv, currency: dc.currency, changePct: last.p && dc.points.length === 2 && dp0 > 0 ? (dv / dp0 - 1) * 100 : null, changeLabel: 'zum Vortag', kind: 'close', at: dateShort(last.d) };
   }
   function intradaySnap(sym) {
     return fetch('/quant/data/market/intraday/index.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (idx) {
-      var e = idx.entries && idx.entries[sym];
+      // Live-Umfang zuerst, sonst die juengste Sitzung aus available (dieselbe Regel wie Discover).
+      var CS = window.VUCore && VUCore.ChartStandard;
+      var e = CS ? CS.intradayEntry(idx, sym) : idx.entries && idx.entries[sym];
       if (!e || !e.path) return null;
       return fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); });
     }).catch(function () { return null; });
@@ -999,21 +1017,61 @@
       gEl.appendChild(ln); gEl.appendChild(tx); svg.appendChild(gEl);
     });
   }
-  function priceChart(host, legend, bars, snap) {
+  /* Kursmarken (USD, wie das Signal sie traegt) in der Anzeigewaehrung des Charts: mit dem juengsten Kurs,
+     der Originalwert steht daneben. [klasse, name, anzeigewert, original|null] */
+  function displayLevels(lv, CS, cur) {
+    return lv.map(function (l) {
+      if (!CS || cur === 'USD') return [l[0], l[1], l[2], null];
+      var d = CS.displayLevel(l[2], 'USD');
+      return d.converted && d.currency === cur ? [l[0], l[1], d.value, l[2]] : null;
+    }).filter(Boolean);
+  }
+  function priceChart(host, legend, bars, snap, weekly, CS) {
     var n = bars ? bars.close.length : 0;
     var all = []; for (var i = 0; i < n; i++) if (isFinite(bars.close[i])) all.push([bars.date[i], bars.close[i]]);
     if (all.length < 2) { host.replaceChildren(h('p', { class: 'vu-empty', text: 'Für diese Aktie liegen keine Tageskurse vor. Es wird kein Ersatzchart gezeichnet.' })); return null; }
-    var ranges = [], pts = (snap && snap.points) || [];
-    if (pts.length > 1 && snap.sessionDate >= all[all.length - 1][0]) ranges.push({ id: '1T', label: '1T', points: pts.map(function (p) { return [snap.sessionDate + 'T' + p[0], p[1]]; }), base: isFinite(snap.previousClose) ? snap.previousClose : undefined, sessionEnd: snap.sessionDate + 'T' + (snap.sessionCloseLocal || '16:00') });
-    [['1M', 21], ['3M', 63], ['6M', 126], ['1J', 252]].forEach(function (r) { if (all.length > r[1] * 0.6 || r[0] === '1J') ranges.push({ id: r[0], label: r[0], points: all.slice(-r[1] - 1) }); });
-    var state = { levels: [], geo: null };
-    var api = window.VUChart.mount(host, { currency: 'USD', initial: all.length > 100 ? '6M' : '1J', ranges: ranges, label: 'Kursverlauf',
+    var lastDay = all[all.length - 1][0], SS = window.VUQuant && VUQuant.SeriesSampling;
+    // Lange Zeitraeume: Wochenreihe vor dem ersten Tagesschluss, wie Discover und Quant (series-sampling.js).
+    var long = weekly && weekly.date && SS && SS.mergeWeeklyWithDaily ? SS.mergeWeeklyWithDaily(weekly.date.map(function (d, k) { return [d, weekly.close[k]]; }), all) : null;
+    if (!long || long.length < 2 || long[0][0] >= all[0][0]) long = null;
+    var pts = (snap && snap.points) || [], hasDay = pts.length > 1 && snap.sessionDate >= lastDay;
+    var state = { levels: [], geo: null }, cur = 'USD';
+    var ranges;
+    if (!CS) {
+      ranges = [{ id: '1J', label: '1J', points: all.slice(-253) }];
+    } else {
+      // Ein Waehrungsentscheid fuer den ganzen Chart: gelingt die Umrechnung der Tagesreihe nicht, bleibt alles in USD.
+      var dAll = CS.displaySeries(all, 'USD'); cur = dAll.currency;
+      var conv = function (p) { if (cur === 'USD') return p; var r = CS.displaySeries(p, 'USD'); return r.currency === cur ? r.points : null; };
+      var dLong = long ? conv(long) : null;
+      var day = null, dayReason = 'Für diese Aktie liegt kein Tagesverlauf vor.';
+      if (pts.length > 1 && !hasDay) dayReason = 'Der letzte Tagesverlauf (' + dateShort(snap.sessionDate) + ') ist älter als der letzte Schlusskurs.';
+      if (hasDay) {
+        var dSnap = cur === 'USD' ? { snap: snap, currency: 'USD' } : CS.displaySnapshot(snap, 'USD');
+        if (dSnap.currency === cur) day = dSnap.snap; else dayReason = 'Für diese Sitzung liegt kein EZB-Referenzkurs vor.';
+      }
+      var ids = CS.order(CS.PRIMARY.concat(['3M', '6M']));
+      ranges = ids.map(function (id) {
+        if (id === '1T') {
+          if (!day) return { id: id, label: id, disabled: true, reason: dayReason };
+          return { id: id, label: id, points: day.points.map(function (p) { return [snap.sessionDate + 'T' + p[0], p[1]]; }), base: isFinite(day.previousClose) ? day.previousClose : undefined, sessionEnd: snap.sessionDate + 'T' + (snap.sessionCloseLocal || '16:00') };
+        }
+        var src = CS.covers(dAll.points, id) || !dLong ? dAll.points : dLong;
+        if (!CS.covers(src, id)) return { id: id, label: id, disabled: true, reason: 'Die Kurshistorie dieser Aktie reicht für ' + id + ' nicht aus.' };
+        return { id: id, label: id, points: CS.slice(src, id) };
+      });
+    }
+    var usable = function (id) { return ranges.some(function (r) { return r.id === id && !r.disabled; }); };
+    var api = window.VUChart.mount(host, { currency: cur, initial: CS ? CS.startRange(usable) : '1J', ranges: ranges, label: 'Kursverlauf',
+      onSelect: function (id) { if (CS) CS.rememberRange(id); },
       onRange: function (id, g) { state.geo = g; drawLevels(host.querySelector('.vu-chart svg'), g, state.levels); } });
     return { api: api, setLevels: function (lv) {
-      state.levels = lv;
-      drawLevels(host.querySelector('.vu-chart svg'), state.geo, lv);
-      legend.replaceChildren.apply(legend, lv.map(function (l) { return h('span', { 'data-k': l[0] }, [h('i', { 'aria-hidden': 'true' }), l[1] + ' ' + num(l[2])]); }));
-      legend.hidden = !lv.length;
+      state.levels = displayLevels(lv, CS, cur);
+      // Marken bleiben in jedem Zeitraum im Bild, auch in 1T (VUChart zeichnet neu und ruft onRange).
+      if (api.setExtent) api.setExtent(state.levels.map(function (l) { return l[2]; }));
+      else drawLevels(host.querySelector('.vu-chart svg'), state.geo, state.levels);
+      legend.replaceChildren.apply(legend, state.levels.map(function (l) { return h('span', { 'data-k': l[0] }, [h('i', { 'aria-hidden': 'true' }), l[1] + ' ' + num(l[2]) + (l[3] ? ' (' + num(l[3]) + ' USD)' : '')]); }));
+      legend.hidden = !state.levels.length;
     } };
   }
 
@@ -1056,9 +1114,13 @@
     }
     // Kurse erst laden, wenn ein Modell die Aktie fuehrt (sonst keine vergebliche Anfrage).
     var prices = kit.catch(function () {}).then(function () {
-      return Promise.all([window.STChart ? STChart.loadBars(shard(), sym).catch(function () { return null; }) : null, intradaySnap(sym)]);
+      return chartStandard().then(function (CS) {
+        var wp = chartRef && chartRef.weeklyPath || (window.VUCore && VUCore.Identity ? '/quant/data/market/discover-series-long/' + VUCore.Identity.securityIdForTicker(sym) + '.json' : null);
+        return Promise.all([window.STChart ? STChart.loadBars(shard(), sym).catch(function () { return null; }) : null, intradaySnap(sym),
+          wp && window.STChart ? STChart.loadWeekly(wp).catch(function () { return null; }) : null, CS]);
+      });
     });
-    prices.then(function (r) { var p = headPrice(r[0], r[1]); return headApi.then(function (hd) { if (hd && p) hd.setPrice(p); }); });
+    prices.then(function (r) { var p = headPrice(r[0], r[1], r[3]); return headApi.then(function (hd) { if (hd && p) hd.setPrice(p); }); });
     // Visual First (VU3): mit Setups steht die Hausstrategie hinter dem Planblock - Ein-/Ausstieg bleibt im ersten Bildschirm.
     if (t52Node && !entries.length) main.appendChild(t52Node);
     var tabs = h('div', { class: 'st-chips lens', role: 'tablist', 'aria-label': 'Methoden für ' + sym });
@@ -1089,7 +1151,7 @@
     chartHost.appendChild(h('div', { class: 'vu-chart-empty', text: 'Kurse werden geladen …' }));
     prices.then(function (r) {
       if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
-      chart = priceChart(chartHost, legend, r[0], r[1]);
+      chart = priceChart(chartHost, legend, r[0], r[1], r[2], r[3]);
       if (chart && current) chart.setLevels(levelsOf(current));
     });
     if (entries.length) { if (t52Node) main.appendChild(t52Node); show(entries[0]); }
