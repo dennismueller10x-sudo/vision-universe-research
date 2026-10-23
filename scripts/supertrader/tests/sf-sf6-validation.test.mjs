@@ -12,7 +12,7 @@ import { sf5VariantRegistrySha256 } from '../source-faithful/research/sf5-lifecy
 
 // pinned before the first snapshot result of Supertrader 6.0 was read
 const PINNED_PROTOCOL = '5baf98a188e2ab88fd0876f12ccb6b8630813005639b01b52f735750f243d6f8';
-const PINNED_MODEL_VARIANTS = '9244826ebc4cdc5212d91b88f40412f11686cf8ba3960edefa266e329ff0b5c4';
+const PINNED_MODEL_VARIANTS = 'f46fada384f7f8ebb761a5933baa69985fc9c41ced4d44409fc40929e095fc38';
 const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
@@ -39,8 +39,13 @@ test('SF6-VALIDATION-PREREGISTERED: Protokoll und Modellvarianten festgeschriebe
   assert.equal(sf6ModelVariantsSha256(), PINNED_MODEL_VARIANTS);
   assert.equal(sf5VariantRegistrySha256(), PINNED_SF5_VARIANT_REGISTRY, 'die Modellvarianten aendern das sf5-Register nicht');
   assert.deepEqual(SF6_VALIDATION_PROTOCOL.costLevels.map((c) => c.id), ['COST-0', 'REF', 'COST-20', 'COST-50']);
-  assert.ok(SF6_MODEL_ASSUMPTIONS.every((m) => m.notASourceRule === true && /SOURCE_BLOCKED/.test(m.sourceStatus)), 'Modellannahmen sind nie Quellenregeln');
-  assert.ok(SF6_MODEL_VARIANTS.every((v) => v.adapter.label === 'MODEL_LIFECYCLE_STUDY_SF6_MODEL_VARIANT'));
+  assert.ok(SF6_MODEL_ASSUMPTIONS.every((m) => m.notASourceRule === true), 'Modellannahmen sind nie Quellenregeln');
+  // a phase is closed only where the source discloses no mechanics; a data-coverage variant closes no phase
+  for (const v of SF6_MODEL_VARIANTS) {
+    const a = SF6_MODEL_ASSUMPTIONS.find((m) => m.id === v.assumption);
+    if (v.phaseClosed) { assert.match(a.sourceStatus, /SOURCE_BLOCKED/, v.id); assert.equal(v.adapter.label, 'MODEL_LIFECYCLE_STUDY_SF6_MODEL_VARIANT'); }
+    else { assert.equal(a.kind, 'DATA_COVERAGE_VARIANT', v.id); assert.equal(v.adapter.label, 'MODEL_LIFECYCLE_STUDY_SF6_DATA_COVERAGE_VARIANT'); }
+  }
 });
 
 test('SF6-VALIDATION-REF-EQUALS-SF5: REF-Kostenstufe ist trade-genau die sf5-Referenz; oeffentlich nur Zaehlungen', () => {
@@ -127,4 +132,18 @@ test('SF6-MIN-EPS-SPLIT: Vorjahres-EPS ueber einen 2:1-Split wird PIT-genau bere
   assert.equal(noSplit.epsSplitConsistent.correctedQuarters, 0); assert.equal(noSplit.changedVsV1.latestYoy, false);
   const noBars = fundamentalEvidenceSf6(fund, '2020-03-02', []);
   assert.equal(noBars.epsSplitConsistent.undeterminableQuarters, 4, 'ohne Kurse keine stille Korrektur');
+});
+
+test('SF6-DATA-DAR-ATH-VERIFIED: nur erste Segmente von Listings ab dem Vorlauf gelten als belegtes Allzeithoch', async () => {
+  const { athVerifiedListing, DARVAS_ATH_VERIFIED_ADAPTER } = await import('../source-faithful/research/sf6-model-variants.mjs');
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02', '2015-01-01'), true);
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2001-05-02', '2015-01-01'), false, 'Listing vor dem Vorlauf: Historie unvollstaendig');
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02#1', '2015-01-01'), false, 'spaeteres Segment');
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02#dq1', '2015-01-01'), false, 'Quarantaene-Stueck');
+  assert.equal(athVerifiedListing('S001', '2015-01-01'), false, 'ohne Listing-Datum nie belegt');
+  const ds = dataset(8, 500);
+  ds.securities[0].id = 'tiingo:NYSE:NEW:2016-01-04';
+  const r = runResearchLifecycle(ds, { adapter: DARVAS_ATH_VERIFIED_ADAPTER, config: (await import('../source-faithful/research/darvas-lifecycle.mjs')).DARVAS_REFERENCE_CONFIG, prepared: prepareAll(ds, DARVAS_ATH_VERIFIED_ADAPTER, (await import('../source-faithful/research/darvas-lifecycle.mjs')).DARVAS_REFERENCE_CONFIG), ...W });
+  assert.ok(r.trades.every((t) => t.id === 'tiingo:NYSE:NEW:2016-01-04'), 'nur das belegte Listing handelt');
+  assert.ok((r.counts.eligibilityBlockers.ATH_UNVERIFIED_LISTING_HISTORY_PARTIAL ?? 0) > 0);
 });
