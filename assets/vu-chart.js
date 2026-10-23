@@ -49,7 +49,8 @@
     var base = isNum(o.base) ? o.base : vals[0];
     /* Kursmarken (Einstieg, Stop, Ziel) liegen im Bild, damit keine Linie am Rand klebt. */
     var levels = (o.levels || []).filter(function (l) { return l && isNum(l.value); });
-    var extra = (isNum(o.base) ? [base] : []).concat(levels.map(function (l) { return l.value; }));
+    /* extent: Werte, die im Bild liegen sollen, ohne gezeichnet zu werden (Marken, die der Aufrufer selbst zeichnet). */
+    var extra = (isNum(o.base) ? [base] : []).concat(levels.map(function (l) { return l.value; }), (o.extent || []).filter(isNum));
     var lo = Math.min.apply(null, vals.concat(extra)), hi = Math.max.apply(null, vals.concat(extra));
     if (lo === hi) { lo -= 1; hi += 1; }
     var log = o.log === true || (o.log !== false && lo > 0 && hi / lo > 15);
@@ -115,6 +116,7 @@
    * Chart mit Zeitraum-Leiste in host.
    * o.ranges: [{id, label, points?: [[iso, v]], load?: () => Promise<points>, base?, sessionEnd?, disabled?, reason?}]
    * o.initial: id; o.currency; o.label; o.height (Standard: 300 Desktop, 220 mobil); o.onRange(id, geometry)
+   * o.extent: Werte, die im Bild bleiben (eigene Marken des Aufrufers); spaeter ueber api.setExtent(werte).
    * o.onSelect(id): nur bei einer Wahl des Nutzers (Chartstandard: gemerkter Zeitraum, core/chart-standard.js).
    * Ein Zeitraum mit `disabled` bleibt an seinem Platz sichtbar und abgeschaltet, `reason` steht im Titel.
    */
@@ -139,7 +141,7 @@
     function size() { var w = Math.max(280, Math.round(plot.clientWidth || host.clientWidth || 640)); return { w: w, h: o.height || (w < 560 ? 220 : 300) }; }
     function draw(r, pts) {
       var s = size();
-      var node = render(pts, { width: s.w, height: s.h, base: r.base, sessionEnd: r.sessionEnd, label: o.label, log: r.log, levels: r.levels || o.levels });
+      var node = render(pts, { width: s.w, height: s.h, base: r.base, sessionEnd: r.sessionEnd, label: o.label, log: r.log, levels: r.levels || o.levels, extent: o.extent });
       if (svg) svg.remove();
       tip.hidden = true;
       if (!node) { svg = doc.createElement("div"); svg.className = "vu-chart-empty"; svg.textContent = "Für diesen Zeitraum liegen keine Kurse vor."; plot.appendChild(svg); box.dataset.direction = "flat"; return; }
@@ -174,7 +176,12 @@
     var ro = root.ResizeObserver ? new root.ResizeObserver(function () { var r = ranges.filter(function (x) { return x.id === current; })[0]; if (r && r.points && svg && Math.abs(size().w - svg.__vuGeometry.w) > 4) draw(r, r.points); }) : null;
     if (ro) ro.observe(plot);
     show(o.initial || (ranges[0] && ranges[0].id));
-    return { show: show, el: box, dispose: function () { alive = false; if (ro) ro.disconnect(); box.remove(); } };
+    function setExtent(values) {
+      o.extent = values || [];
+      var r = ranges.filter(function (x) { return x.id === current; })[0];
+      if (r && r.points) draw(r, r.points);
+    }
+    return { show: show, setExtent: setExtent, el: box, dispose: function () { alive = false; if (ro) ro.disconnect(); box.remove(); } };
   }
 
   return Object.freeze({ VERSION: VERSION, geometry: geometry, render: render, mount: mount, money: money });
