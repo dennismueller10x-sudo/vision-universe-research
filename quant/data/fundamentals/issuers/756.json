@@ -6,9 +6,9 @@
       "cik": "0000073756",
       "name": "OCEANEERING INTERNATIONAL INC",
       "sic": "1389",
-      "rawFacts": 18958,
-      "mappedFacts": 6699,
-      "unmappedFacts": 12739,
+      "rawFacts": 19310,
+      "mappedFacts": 6724,
+      "unmappedFacts": 13067,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -117,47 +117,48 @@
         }
       },
       "quality": {
-        "HIGH": 655,
-        "MEDIUM": 32
+        "HIGH": 665,
+        "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 687,
-        "resolvedValues": 687
+        "datableValues": 695,
+        "resolvedValues": 695
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13136,
+        "total": 13393,
         "by_severity": {
-          "INFO": 12739,
+          "INFO": 13067,
           "ERROR": 10,
-          "WARNING": 387
+          "WARNING": 316
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 347,
+          "CONCEPT_DISAGREEMENT": 294,
           "FUTURE_DATA_LEAK": 10,
-          "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 12739
+          "RESTATEMENT_CONFLICT": 22,
+          "UNKNOWN_CONCEPT": 13067
         }
       },
       "latestFiling": {
-        "accession": "0000073756-26-000136",
-        "filing_date": "2026-07-23",
+        "accession": "0000073756-26-000154",
+        "filing_date": "2026-10-22",
         "form": "10-Q",
-        "periodic_filings": 124
+        "periodic_filings": 125,
+        "acceptance_datetime": "2026-10-23T00:33:58.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "21e2e0444919699b37a6a9d390f59aa81cd27ff69c1b85478da4e3326669f6d7",
+      "sourceDigest": "a17bf16a1afc21f632d53fb4aca343592d40a5be1a24442732c2ea4e0e4cae2a",
       "issuerId": "iss_cik_0000073756"
     },
     {
