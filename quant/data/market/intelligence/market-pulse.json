@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-23T11:52:56.165Z",
+ "generatedAt": "2026-10-23T17:22:34.944Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -84,7 +84,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "label": "Auffällige Bewegungen",
-     "text": "Gold ist deutlich gefallen."
+     "text": "Gold ist deutlich gefallen. Der Euro ist zum Dollar deutlich schwächer."
     }
    ]
   },
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-23T11:52:56.165Z",
+  "generatedAt": "2026-10-23T17:22:34.944Z",
   "dataAsOf": "2026-10-22",
   "previousDataAsOf": "2026-10-21",
   "schedule": {
@@ -458,13 +458,13 @@
    "previousDate": "2026-10-21"
   },
   "CROSS_ASSET": {
-   "value": 1,
+   "value": 2,
    "min": 0,
    "max": 6,
    "unit": "COUNT",
    "context": true,
    "marks": [],
-   "valueText": "1 von 6 Anlageklassen deutlich bewegt",
+   "valueText": "2 von 6 Anlageklassen deutlich bewegt",
    "zones": [
     {
      "from": 0,
@@ -688,7 +688,7 @@
    "id": "CROSS_ASSET",
    "state": "OBSERVED",
    "label": "Auffällige Bewegungen",
-   "summary": "Gold ist deutlich gefallen.",
+   "summary": "Gold ist deutlich gefallen. Der Euro ist zum Dollar deutlich schwächer.",
    "evidence": [
     {
      "key": "EQUITY",
@@ -743,11 +743,11 @@
     {
      "key": "EURUSD",
      "label": "EUR/USD",
-     "text": "−1,8 % · 0,9-fach typisch",
-     "change": -1.786,
-     "ratio": -0.92,
-     "notable": false,
-     "asOf": "2026-09-21",
+     "text": "−2,3 % · 1,1-fach typisch (deutlich)",
+     "change": -2.251,
+     "ratio": -1.13,
+     "notable": true,
+     "asOf": "2026-10-22",
      "kind": "PERCENT"
     }
    ],
@@ -759,6 +759,13 @@
      "text": "Gold ist deutlich gefallen.",
      "symbols": [
       "XAUUSD"
+     ]
+    },
+    {
+     "id": "EUR_DOWN",
+     "text": "Der Euro ist zum Dollar deutlich schwächer.",
+     "symbols": [
+      "EURUSD"
      ]
     }
    ]
@@ -847,13 +854,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-10-22",
-   "last": 62907.84,
-   "observations": 19224,
+   "asOf": "2026-10-23",
+   "last": 62693.16,
+   "observations": 19225,
    "changes": {
-    "1M": -3.25,
-    "3M": -5.29,
-    "1Y": 27.58
+    "1M": -3.58,
+    "3M": -2.97,
+    "1Y": 28.89
    },
    "high52w": {
     "date": "2026-06-25",
@@ -863,18 +870,18 @@
     "date": "2025-11-19",
     "value": 48537.7
    },
-   "rangePosition": 60.3,
-   "dist50": -5.02,
-   "dist200": 2.45,
+   "rangePosition": 59.4,
+   "dist50": -5.26,
+   "dist200": 2,
    "trend": "MIXED",
-   "drawdown52w": -13.07,
-   "vol20": 30,
+   "drawdown52w": -13.37,
+   "vol20": 29.81,
    "volContext": {
     "median": 18.5,
     "p25": 15.6,
     "p75": 23.8,
-    "samples": 1220,
-    "from": "2021-10-23",
+    "samples": 1221,
+    "from": "2021-10-24",
     "state": "HIGHER"
    },
    "roles": []
@@ -1276,42 +1283,42 @@
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-09-21",
-   "last": 1.149,
-   "observations": 7097,
+   "asOf": "2026-10-22",
+   "last": 1.1205,
+   "observations": 7120,
    "changes": {
-    "1M": -1.79,
-    "3M": 0.3,
-    "1Y": -2.1
+    "1M": -2.25,
+    "3M": -1.64,
+    "1Y": -3.3
    },
    "high52w": {
     "date": "2026-01-28",
     "value": 1.1974
    },
    "low52w": {
-    "date": "2026-06-24",
-    "value": 1.134
+    "date": "2026-10-07",
+    "value": 1.1177
    },
-   "rangePosition": 23.7,
-   "dist50": -0.41,
-   "dist200": -1.18,
+   "rangePosition": 3.5,
+   "dist50": -2.12,
+   "dist200": -3.21,
    "trend": "NEGATIVE",
-   "drawdown52w": -4.04,
-   "vol20": 3.53,
+   "drawdown52w": -6.42,
+   "vol20": 5.45,
    "volContext": {
     "median": 6.8,
     "p25": 5.3,
     "p75": 8.6,
-    "samples": 1279,
-    "from": "2021-09-22",
-    "state": "LOWER"
+    "samples": 1280,
+    "from": "2021-10-23",
+    "state": "USUAL"
    },
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −1,8 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,3 % – das 1,1-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
@@ -1485,9 +1492,9 @@
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-10-21",
+   "asOf": "2026-10-22",
    "last": 3.88,
-   "observations": 6610,
+   "observations": 6611,
    "changes": {
     "1M": 0,
     "3M": 25,
@@ -1502,8 +1509,8 @@
     "value": 3.62
    },
    "rangePosition": 52,
-   "vs200": 21.7,
-   "vs50": 13,
+   "vs200": 21.6,
+   "vs50": 12.5,
    "roles": []
   },
   "QQQ": {
@@ -1841,9 +1848,9 @@
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-09-21",
-    "horizon": 21,
-    "samples": 2556
+    "asOf": "2026-10-22",
+    "horizon": 22,
+    "samples": 2558
    }
   },
   "breadth": {
