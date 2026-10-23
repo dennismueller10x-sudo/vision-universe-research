@@ -14,6 +14,7 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:r7-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:r8]  Momentum 3.0.0 + Gegenproben (PREREGISTRATION-R8.json)
 #   [supertrader-validation:intraday-probe]  Zugangsprobe historische IEX-Minuten (Runde 9)
+#   [supertrader-validation:kk-intraday-probe]  Kullamaegi EP/PS: Qualitaetsprobe IEX-Minuten (<= 100 Anfragen, verschluesselt)
 #   [supertrader-validation:r8b]  Darvas/Weinstein 3.0.0 (PREREGISTRATION-R8B.json)
 #   [supertrader-validation:r8-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:sources]  Frei zugaengliche Originalseiten lesen (verschluesselt, sources-r8.json)
@@ -39,7 +40,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [kk-intraday-probe, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
       snapshot:
         description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
@@ -81,7 +82,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sf5-lifecycle-smoke]"*) m=sf5-lifecycle-smoke;; *"[supertrader-validation:sf5-lifecycle]"*) m=sf5-lifecycle;; *"[supertrader-validation:sf4-lifecycle-smoke]"*) m=sf4-lifecycle-smoke;; *"[supertrader-validation:sf4-lifecycle]"*) m=sf4-lifecycle;; *"[supertrader-validation:sf3-research-smoke]"*) m=sf3-research-smoke;; *"[supertrader-validation:sf3-research]"*) m=sf3-research;; *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:kk-intraday-probe]"*) m=kk-intraday-probe;; *"[supertrader-validation:sf5-lifecycle-smoke]"*) m=sf5-lifecycle-smoke;; *"[supertrader-validation:sf5-lifecycle]"*) m=sf5-lifecycle;; *"[supertrader-validation:sf4-lifecycle-smoke]"*) m=sf4-lifecycle-smoke;; *"[supertrader-validation:sf4-lifecycle]"*) m=sf4-lifecycle;; *"[supertrader-validation:sf3-research-smoke]"*) m=sf3-research-smoke;; *"[supertrader-validation:sf3-research]"*) m=sf3-research;; *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Snapshot- und Abrechnungsvertrag (fail closed)
         id: snap
@@ -261,6 +262,13 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/supertrader/validation/intraday-probe.mjs --out "$RUNNER_TEMP/val"
+      - name: Kullamaegi EP/PS Intraday-Qualitaetsprobe (budgetiert, verschluesselt)
+        if: steps.mode.outputs.mode == 'kk-intraday-probe'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/supertrader/validation/kk-intraday-probe.mjs --out "$RUNNER_TEMP/val"
+          cat "$RUNNER_TEMP/val"/kk-intraday-probe.public.json
       - name: Intraday-Studie Kauf-Stop-Tage (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday' || steps.mode.outputs.mode == 'intraday-smoke'
         env:
