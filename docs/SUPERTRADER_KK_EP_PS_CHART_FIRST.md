@@ -14,7 +14,8 @@ Stand 23.10.2026.
 | PS-Modellstudie | `research/kk-ps-study.mjs` | Tagesscreen (beschleunigte Aufwärtstage, KK-018), Short unter dem 5-Minuten-ORL (KK-020), Stop über dem Tageshoch (KK-022), Eindeckung am MA10 (KK-023). Trade-Ebene, kein Short-Portfolio. |
 | Runner | `research/run-kk-intraday.mjs` | Ebene A: Screens auf dem eingefrorenen Snapshot. Ebene B: IEX-Minuten nur für Kandidatentage. Je Lauf höchstens 6 000 HTTP-Versuche, davon 2/3 für EP (Basis und Minuten je Tag). Abrufreihenfolge deterministisch nach sha256(`TICKER|Datum`); privater Cache in 16 Shards, fortsetzbar. |
 | Readiness | `completion/build-kk-ep-ps.mjs` | `artifacts/STRATEGY-KK-EP-PS-CHART.json` |
-| Workflow | `supertrader-validation.yml` | Modi `kk-intraday`, `kk-intraday-count`, `kk-intraday-smoke` |
+| Stichprobe (6.0) | `research/kk-sample.mjs` | saubere Hash-Präfixe je Methode, EP-Gemeinschaftssatz, Schichtung mit gleichem Anteil je Schicht (Abschnitt 8) |
+| Workflow | `supertrader-validation.yml` | Modi `kk-intraday`, `kk-intraday-count`, `kk-intraday-smoke`, `kk-intraday-cache` (6.0) |
 
 Die Engine-Erweiterung lässt alle bestehenden Auftragstypen unverändert. Beleg: sf5-Lauf [39939890956](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39939890956) auf diesem Zweig. Alle 41 SF5-Varianten sind trade-genau gleich dem Lauf 39937731507 (Trades, Ausstiegsgründe, Trade- und Ledger-Hash).
 
@@ -132,3 +133,53 @@ Vollständig im Artefakt (`modelAssumptions`):
 - Kosten 10 bp + 1 bp
 
 Keine davon ist eine Originalregel.
+
+## 8. Supertrader 6.0: saubere Stichprobe, Cache-only, Schichtung
+
+Auftrag: zuerst vorhandene Daten und den Cache nutzen, keine zusätzlichen Abrufe. Die Referenzkonfigurationen von EP und PS bleiben unverändert. Geändert haben sich nur die Tagessätze, die Berichterstattung und der Median.
+
+**Befunde des Reviews (am Code 1.1.0 geprüft):**
+
+| # | Befund | vorher | nachher |
+|---|---|---|---|
+| 1 | PS-Stichprobe verzerrt (`run-kk-intraday.mjs` 1.1.0, Zeilen 215–231) | EP und PS laufen in **derselben** sha256-Reihenfolge, EP zuerst. Die PS-Schleife überspringt bereits gecachte Tage. PS-Tage, die zugleich EP-Kandidaten sind (Gap ≥ 10 %), liegen damit bis zur EP-Grenze (14,5 %) im Cache, alle anderen nur bis zur PS-Grenze (3,1 %). Lauf 39939887192: 65 der 2 065 PS-Tage stammen aus der EP-Schleife, in einem unverzerrten PS-Präfix wären es geschätzt rund 14 (etwa 4,5-fach überrepräsentiert). | PS wird nur auf seinem eigenen Hash-Präfix ausgewertet (`CLEAN`). Gecachte Tage dahinter, die nur über den EP-Pfad kamen, fallen weg und werden gezählt. |
+| 2 | EP-Varianten auf verschiedenen Tagessätzen (`kk-ep-lifecycle.mjs` 1.1.0, Zeile 113) | Ein Tag ohne nutzbare IEX-Basis ist unter PACE_20 `NOT_EXECUTED_NO_IEX_VOLUME_BASELINE` (REF: 103 Tage), unter `ALT-NO-VOLUME-RULE` aber handelbar. Über den PS-Pfad gecachte EP-Tage ohne Basis gab es im Lauf 39939887192 nicht (das PS-Präfix war kürzer als das EP-Präfix), der Code ließ sie aber zu. | Alle EP-Varianten laufen auf einem gemeinsamen Tagessatz: EP-Präfix, Minuten und Basis > 0. Ausgeschlossene Tage werden je Grund gezählt; gecachte Tage außerhalb des Satzes sind für jede Variante `NOT_EVALUATED_OUTSIDE_DAY_SET`. |
+| 3a | Offene PS-Trades (`kk-ps-study.mjs` 1.1.0, Zeile 151; Runner Zeilen 273–278) | `OPEN_AT_DATA_END` (auch Delistings) erscheint nur in der Statuszählung, nie in den Kennzahlen. | Öffentlich gezählt (auch nach Endursache). Versiegelt zwei Kennzahlensätze: `closedOnly` (Referenz, gleiche Population wie bisher) und `withOpenMarked` (offene Shorts zum letzten Schlusskurs mit Ausstiegskosten). |
+| 3b | Überlappende PS-Trades | Aufeinanderfolgende Kandidatentage derselben Serie laufen als unabhängige, überlappende Trades. | Bleibt die Referenz (`INDEPENDENT`). Neu ist die vorregistrierte Berichtsvariante `ONE_POSITION_PER_TICKER`: Ein Kandidat entfällt, solange ein früherer PS-Trade desselben Wertpapiers offen ist (Eindeckung am Kandidatentag zählt als offen). |
+| 4 | Median (`run-kk-intraday.mjs` 1.1.0, Zeile 278) | `rs[floor(n/2)]`, bei gerader Anzahl der obere Median. | Echter Median. Betrifft nur versiegelte Mediane von Varianten mit gerader Trade-Zahl; nichts Festgeschriebenes ändert sich. |
+
+**Saubere Präfixe (Modellannahme `MA-SAMPLE-CLEAN-PREFIX`):**
+- EP: bis zum höchsten Rang eines EP-Tages mit gecachter Basis. Basen ruft nur der EP-Pfad ab.
+- PS: bis zum höchsten Rang eines gecachten PS-Tages, der kein EP-Kandidat ist. Nur der PS-Pfad kann ihn geladen haben.
+- Lücken im Präfix (Anfrage ohne endgültige Antwort) werden gezählt und bleiben „nicht abgerufen“.
+
+**Cache-only (`--cache-only`, Workflow-Modus `kk-intraday-cache`):**
+- Beide Abrufschleifen werden vollständig übersprungen, der Runner prüft 0 Anfragen.
+- Der Workflow übergibt in diesem Modus keinen API-Schlüssel.
+- Wie die anderen kk-Modi nur mit Snapshot und `research-v1`.
+- Der Cache wird nur gelesen, nie geschrieben.
+
+**Auswertungen je Lauf (Tagessätze):**
+- `BEFORE_FIX`: das Verhalten von 1.1.0, nur zum Vorher/Nachher-Vergleich.
+- `CLEAN`: die Referenz.
+- `STRAT_YEAR_X_LIQUIDITY` und `STRAT_YEAR_X_LIQUIDITY_X_REGIME`: geschichtete Stichproben.
+
+**Schichtung (vor jedem 6.0-Ergebnis festgelegt, `research/kk-sample.mjs`):**
+- **Jahr** des Handelstags.
+- **Liquidität:** mittlerer Rohdollarumsatz der 20 Sitzungen vor dem Handelstag. Feste Grenzen 10 Mio. und 100 Mio. USD, nominal. Feste Grenzen statt Terzilen, weil Terzile spätere Kandidaten verwenden würden; die Untergrenze ist das Universum (1 Mio.).
+- **Regime (optional):** SPY-Schluss des Vortags über oder unter seinem 200-Tage-Durchschnitt.
+- Alle Merkmale sind zum Entscheidungszeitpunkt bekannt.
+- **Gleicher Anteil je Schicht:** f = Minimum über die Schichten mit mindestens 100 Kandidaten von (gecachte Präfix-Tage / Kandidaten). Jede dieser Schichten behält ihre ersten ⌊f × Kandidaten⌋ Tage in Hash-Reihenfolge. Kleinere Schichten fallen heraus und werden gezählt.
+- EP: die geschichtete Stichprobe wird zusätzlich mit dem Gemeinschaftssatz geschnitten.
+
+**Was öffentlich ist:** Zählwerte je Schicht (Kandidaten, gecacht, behalten), Tagessatz-Hashes, Status- und Ausstiegszählungen. Kennzahlen je Schicht stehen nur in der verschlüsselten Datei.
+
+**Grenzen:**
+- **Eine deterministische Hash-Stichprobe ist nicht automatisch repräsentativ.** Sie ist ergebnisunabhängig, kann aber zufällig nach Jahr, Liquidität oder Marktphase schief liegen.
+- Die Schichtung gleicht den Anteil je Schicht an. Sie bleibt eine Stichprobe und ersetzt keinen Gesamtbacktest.
+- Alle neuen Schwellen (Liquiditätsgrenzen, SMA 200, Mindestgröße 100) sind gekennzeichnete Forschungskonventionen (`MODEL_ASSUMPTION`), keine Kullamägi-Regeln.
+
+**Festgeschriebene Fingerabdrücke:**
+- Beide Varianten-Register haben neue Hashes: EP 1.2.0 (Tagessatz-Haken), PS 1.2.0 (Überlappungsreferenz und Berichtsvariante im Fingerabdruck).
+- Der Lauf 39939887192 läuft auf dem alten Code. Er ist jetzt `PRE_6_0_REFERENCE` (Vorher-Seite) und nicht mehr `AUTHORITATIVE`.
+- Das Artefakt meldet `CACHE_ONLY_RERUN_PENDING`, bis ein `kk-intraday-cache`-Lauf auf dem aktuellen Code eingetragen ist.

@@ -2,7 +2,7 @@
  "schema": "supertrader-kk-ep-ps-chart-readiness-1.0.0",
  "statements": {
   "certification": "DIAGNOSTIC_NOT_CERTIFIED: model studies, never a strategy backtest or a performance claim",
-  "sample": "deterministic sha256(TICKER|date) prefix of the candidate days, outcome-independent but not stratified: NOT a representative backtest of all candidates and not to be extrapolated",
+  "sample": "deterministic sha256(TICKER|date) prefix of the candidate days, outcome-independent but NOT automatically representative: NOT a representative backtest of all candidates and not to be extrapolated; the Supertrader 6.0 stratified samples equalise the sampling fraction per year x liquidity [x regime] stratum, they remain samples",
   "iexVolume": "IEX venue only (1-5 % of the consolidated volume): compared only with IEX volume, never treated as market volume",
   "shorts": "every PS trade is a hypothetical one-unit short; borrow, locates and fees unknown (KK-030 DATA_BLOCKED): never a historically executable short sale",
   "license": "Tiingo IEX minutes for internal, non-displaying use: private cache and owner-encrypted results only; public outputs carry counts and hashes, never minute values"
@@ -48,11 +48,151 @@
   },
   "consequence": "all IEX candidate days would need about 93 000 requests (EP: minutes + baseline, PS: minutes); a run fetches at most 6 000, two thirds for EP, as a deterministic hash-order sample (sha256 of TICKER|date), resumable via the private cache"
  },
+ "supertrader6": {
+  "runner": "kk-intraday-runner-1.2.0",
+  "status": "CACHE_ONLY_RERUN_PENDING",
+  "fixes": [
+   {
+    "id": "SF6-PS-CLEAN-PREFIX",
+    "finding": "run-kk-intraday.mjs 1.1.0: EP and PS walk the same sha256 order, EP first; the PS loop skipped every cached key, so PS days that are also EP candidates were cached up to the EP frontier, all other PS days only up to the PS frontier",
+    "before": "PS evaluated on every cached PS day (run 39939887192: 2 065 days, 65 of them cached by the EP loop, ~14 expected in an unbiased PS prefix: gap-up PS days ~4.5x over-represented)",
+    "after": "PS evaluated on its clean hash prefix only (CLEAN); keys cached only via the EP path beyond it are dropped and counted; BEFORE_FIX is still computed for the comparison"
+   },
+   {
+    "id": "SF6-EP-COMMON-DAY-SET",
+    "finding": "kk-ep-lifecycle.mjs:113 (1.1.0): a day without IEX baseline is NOT_EXECUTED_NO_IEX_VOLUME_BASELINE under PACE_20 but executable under ALT-NO-VOLUME-RULE",
+    "before": "EP variants on different day sets (run 39939887192: REF 103 days NOT_EXECUTED_NO_IEX_VOLUME_BASELINE, 172 EP days with too few IEX baseline sessions; no EP day was cached via the PS path in that run because the PS prefix was shorter than the EP prefix, but the code allowed it)",
+    "after": "every EP variant on one common day set (EP prefix, minutes and baseline mean > 0); excluded days counted per reason; cached days outside the set are NOT_EVALUATED_OUTSIDE_DAY_SET for every variant"
+   },
+   {
+    "id": "SF6-PS-OPEN-AT-DATA-END",
+    "finding": "kk-ps-study.mjs:151 / run-kk-intraday.mjs:273-278 (1.1.0): OPEN_AT_DATA_END only in the status counts, never in the metrics",
+    "before": "open shorts (incl. delisted securities) silently left out of every metric",
+    "after": "counted publicly (openAtDataEnd, by terminal cause); sealed metrics closedOnly (unchanged population) and withOpenMarked (marked to the last finite close with exit costs)"
+   },
+   {
+    "id": "SF6-PS-MEDIAN",
+    "finding": "run-kk-intraday.mjs:278 (1.1.0): medianNetReturn = rs[floor(n / 2)]",
+    "before": "upper median for an even trade count",
+    "after": "proper median (mean of the two middle values); only sealed medians of even-count variants change, nothing pinned"
+   }
+  ],
+  "additions": {
+   "daySets": [
+    "BEFORE_FIX (1.1.0 behaviour, comparison only)",
+    "CLEAN (reference)",
+    "STRAT_YEAR_X_LIQUIDITY",
+    "STRAT_YEAR_X_LIQUIDITY_X_REGIME"
+   ],
+   "psOverlap": {
+    "reference": "INDEPENDENT",
+    "reportingVariants": [
+     {
+      "id": "ONE_POSITION_PER_TICKER",
+      "overlap": "ONE_POSITION_PER_TICKER",
+      "appliesTo": "EVERY_PS_RUN_VARIANT"
+     }
+    ]
+   },
+   "strata": {
+    "version": "kk-sample-1.0.0",
+    "schemes": [
+     {
+      "id": "YEAR_X_LIQUIDITY",
+      "dims": [
+       "year",
+       "liquidity"
+      ]
+     },
+     {
+      "id": "YEAR_X_LIQUIDITY_X_REGIME",
+      "dims": [
+       "year",
+       "liquidity",
+       "regime"
+      ]
+     }
+    ],
+    "liquidityBoundsUsd": [
+     10000000,
+     100000000
+    ],
+    "liquidityBuckets": [
+     "LIQ_1M_10M",
+     "LIQ_10M_100M",
+     "LIQ_100M_PLUS"
+    ],
+    "minPopulation": 100,
+    "registrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+    "public": "per-stratum counts only",
+    "sealed": "per-stratum metrics"
+   },
+   "cacheOnly": "workflow mode kk-intraday-cache: --cache-only, both fetch loops skipped, no API key, 0 requests asserted (mandate: use the existing cache first, no additional requests)"
+  },
+  "samplingAssumptions": [
+   {
+    "id": "MA-SAMPLE-CLEAN-PREFIX",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "per method the longest hash-order prefix of its own candidate keys that its own fetch path reached: EP up to the highest-ranked EP key with a cached baseline (only the EP path fetches baselines), PS up to the highest-ranked cached PS key that is not an EP candidate (only the PS path can have cached it). Cached keys beyond the prefix are dropped; keys inside it without a definitive answer are reported as holes",
+    "alternatives": [],
+    "why": "review 6.0: the PS loop skipped keys cached by the EP loop, over-representing gap-up PS days"
+   },
+   {
+    "id": "MA-SAMPLE-EP-COMMON-DAY-SET",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "every EP variant runs on one day set: keys in the EP prefix with minutes and an IEX volume baseline (mean > 0); days with too few IEX baseline sessions or too little history are excluded for ALL variants and counted",
+    "alternatives": [],
+    "why": "review 6.0: PACE_20 and NONE ran on different day sets; the baseline is known at the prior close (point in time)"
+   },
+   {
+    "id": "MA-STRAT-YEAR",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "calendar year of the trade day",
+    "alternatives": [],
+    "why": "known at the decision; IEX coverage and market conditions differ by year"
+   },
+   {
+    "id": "MA-STRAT-LIQUIDITY",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "mean raw dollar volume (raw close x raw volume) of the 20 sessions before the trade day, fixed nominal bounds: LIQ_1M_10M < 10 M <= LIQ_10M_100M < 100 M <= LIQ_100M_PLUS (USD); NA if a session is missing",
+    "alternatives": [],
+    "why": "fixed decade bounds chosen before any result, known at the decision (population terciles would use later candidates); same measure as the universe floor (1 M). Nominal, not inflation adjusted"
+   },
+   {
+    "id": "MA-STRAT-REGIME",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "SPY adjusted close of the prior session above its 200-session SMA (SPY_ABOVE_SMA200) or not (SPY_AT_OR_BELOW_SMA200); NA under 200 sessions. Optional dimension (scheme YEAR_X_LIQUIDITY_X_REGIME)",
+    "alternatives": [],
+    "why": "common market-regime convention, known at the prior close"
+   },
+   {
+    "id": "MA-STRAT-MIN-POPULATION",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "a stratum takes part only with at least 100 candidate keys (population); smaller strata are excluded from the stratified evaluation and counted",
+    "alternatives": [],
+    "why": "the common fraction is the minimum over strata; tiny strata would drive it toward zero by chance"
+   },
+   {
+    "id": "MA-STRAT-EQUAL-FRACTION",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "common fraction f = min over eligible strata of (cached keys in the clean prefix / population); each eligible stratum keeps its first floor(f x population) cached prefix keys in hash order",
+    "alternatives": [],
+    "why": "equal sampling fraction per stratum; hash rank inside the stratum stays outcome-independent"
+   }
+  ]
+ },
  "strategies": {
   "C09": {
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
-   "version": "kk-ep-chart-lifecycle-1.1.0",
+   "version": "kk-ep-chart-lifecycle-1.2.0",
    "intraday": "kk-intraday-1.1.0",
    "label": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT",
    "contract": {
@@ -165,7 +305,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00",
+   "variantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
    "modelAssumptions": [
     {
      "id": "MA-EP-CATALYST-NOT-VERIFIED",
@@ -280,6 +420,13 @@
      "why": "measurement convention shared by every method"
     },
     {
+     "id": "MA-EP-COMMON-DAY-SET",
+     "phase": "SAMPLING",
+     "reference": "all variants of one evaluation run on the same day set (research/kk-sample.mjs MA-SAMPLE-EP-COMMON-DAY-SET): a cached day outside it is NOT_EVALUATED_OUTSIDE_DAY_SET for every variant",
+     "alternatives": [],
+     "why": "Supertrader 6.0 review: PACE_20 and NONE ran on different day sets (days without IEX baseline)"
+    },
+    {
      "id": "MA-EP-COSTS",
      "phase": "ENTRY_EXECUTION",
      "reference": "10 bps slippage per side, 1 bp commission (platform policy)",
@@ -298,7 +445,8 @@
     {
      "runId": "39939887192",
      "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-     "role": "AUTHORITATIVE",
+     "role": "PRE_6_0_REFERENCE",
+     "validity": "code before the Supertrader 6.0 fixes (researchCodeSha256 and both variant registries differ from the current code): its counts are the BEFORE side of the comparison; PS sample over-represents gap-up PS days, EP variants on different day sets",
      "strategies": [
       "EP",
       "PS"
@@ -730,7 +878,7 @@
   "C10": {
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
-   "version": "kk-ps-chart-short-study-1.1.0",
+   "version": "kk-ps-chart-short-study-1.2.0",
    "intraday": "kk-intraday-1.1.0",
    "label": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE",
    "contract": {
@@ -829,7 +977,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a",
+   "variantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
    "modelAssumptions": [
     {
      "id": "MA-PS-ACCELERATION",
@@ -913,6 +1061,20 @@
      "reference": "10 bps slippage per side, 1 bp commission; no borrow fee (unknown)",
      "alternatives": [],
      "why": "platform policy; borrow DATA_BLOCKED"
+    },
+    {
+     "id": "MA-PS-OVERLAP",
+     "reference": "INDEPENDENT: every candidate day is its own hypothetical one-unit short, also while an earlier short of the same security (same streak) is still open",
+     "alternatives": [
+      "ONE_POSITION_PER_TICKER (reporting variant): a candidate is skipped while an earlier PS trade of the same security is open; open means its last cover is on or after the candidate day (a cover on the candidate day itself counts as open, conservative), a trade open at the data end blocks every later candidate"
+     ],
+     "why": "Supertrader 6.0 review: consecutive candidate days of one streak ran as overlapping trades; the source says nothing about re-entries"
+    },
+    {
+     "id": "MA-PS-OPEN-AT-DATA-END",
+     "reference": "a short still open at the data end (incl. a delisted security) is counted publicly and, sealed, marked to the last finite daily close of its series with exit costs (closed-only metrics are kept as the reference)",
+     "alternatives": [],
+     "why": "Supertrader 6.0 review: excluding them silently drops the trades that never reached the stop or the target"
     }
    ],
    "blockers": [
@@ -926,7 +1088,8 @@
     {
      "runId": "39939887192",
      "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-     "role": "AUTHORITATIVE",
+     "role": "PRE_6_0_REFERENCE",
+     "validity": "code before the Supertrader 6.0 fixes (researchCodeSha256 and both variant registries differ from the current code): its counts are the BEFORE side of the comparison; PS sample over-represents gap-up PS days, EP variants on different day sets",
      "strategies": [
       "EP",
       "PS"
