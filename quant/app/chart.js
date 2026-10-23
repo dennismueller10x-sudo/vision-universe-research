@@ -49,20 +49,25 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-chart-1.2.0";
+  var VERSION = "quant-chart-1.3.0";
+  /* Reihenfolge und Beschriftung nach dem Chartstandard (core/chart-standard.js,
+     docs/charts/CHART_STANDARD.md): Hauptleiste 1T 1W 1M 1J 5J MAX, die
+     weiteren Zeitraeume dieser Welt dahinter. Die Kennungen bleiben. */
   var RANGES = [
     { id: "1D", label: "1T", word: "heute" },
-    { id: "5D", label: "5T", days: 7, word: "in 5 Tagen" },
+    { id: "5D", label: "1W", days: 7, word: "in 1 Woche" },
     { id: "1M", label: "1M", days: 31, word: "in 1 Monat" },
+    { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
+    { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
+    { id: "MAX", label: "MAX", all: true, word: "seit Beginn der Reihe", long: true },
     { id: "3M", label: "3M", days: 92, word: "in 3 Monaten" },
     { id: "6M", label: "6M", days: 183, word: "in 6 Monaten" },
     { id: "YTD", label: "YTD", ytd: true, word: "seit Jahresbeginn" },
-    { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
     { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
-    { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
-    { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true },
-    { id: "MAX", label: "Max", all: true, word: "seit Beginn der Reihe", long: true }
+    { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true }
   ];
+  function std() { return global.VUCore && global.VUCore.ChartStandard || null; }
+  function byId(id) { return RANGES.filter(function (x) { return x.id === id; })[0] || null; }
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
   function el(tag, attrs, kids) { return global.QuantShell.el(tag, attrs, kids); }
@@ -153,7 +158,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
+    var st = { cur: o.currency || "USD", range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
     /* VU3 (docs/design/VU3_UI_SYSTEM.md, Kurschart): das Bild zeichnet
        assets/vu-chart.js (VUChart.render) - dieselbe Linie, Startlinie,
@@ -181,7 +186,7 @@
     var buttons = {};
     RANGES.forEach(function (r) {
       var b = el("button", { type: "button", class: "qc-range", text: r.label, "aria-pressed": "false",
-        dataset: { range: r.id }, onclick: function () { st.touched = true; draw(r.id); } });
+        dataset: { range: r.id }, onclick: function () { st.touched = true; if (std()) std().rememberRange(r.id); draw(r.id); } });
       buttons[r.id] = b; bar.append(b);
     });
 
@@ -252,7 +257,7 @@
         on = true; node.classList.add("is-scrub");
         cross.setAttribute("x1", best.x.toFixed(1)); cross.setAttribute("x2", best.x.toFixed(1)); cross.style.display = "";
         headPrice.hidden = false;
-        headPrice.textContent = global.QX.money(best.v, o.currency || "USD") + " · " + fmtWhen(best.t);
+        headPrice.textContent = global.QX.money(best.v, st.cur) + " · " + fmtWhen(best.t);
         headPrice.style.left = Math.min(rect.width - 70, Math.max(70, best.x * rect.width / g.w)) + "px";
         var d = isNum(base) && base > 0 ? (best.v / base - 1) * 100 : null;
         headDelta.textContent = arrow(d) + signedPct(d);
@@ -290,6 +295,9 @@
 
     function drawIntraday() {
       var p = st.intraday, snap = vortagAusReihe(withLive(p, st.trade), o.adjusted ? eod : null);
+      /* Anzeigewaehrung (Vorgabe EUR): alle Punkte und der Vortagesschluss mit dem Kurs der Sitzung. */
+      var shown = std() ? std().displaySnapshot(snap, o.currency || "USD") : { snap: snap, currency: o.currency || "USD" };
+      snap = shown.snap; st.cur = shown.currency;
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
       var base = isNum(snap.previousClose) ? snap.previousClose : (pts.length ? pts[0][1] : null);
@@ -324,7 +332,7 @@
          Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
          5-Minuten-Kurs ist kein Schlusskurs. */
       var time = snap.asOfLocal ? String(snap.asOfLocal).slice(0, 5) : null;
-      if (o.onPrice) o.onPrice({ price: last, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE"),
+      if (o.onPrice) o.onPrice({ price: last, currency: st.cur, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE"),
         kind: q && q.state === "REALTIME" ? "live" : "delayed", at: dateDe(snap.sessionDate) + (time ? ", " + time + " Uhr New York" : "") });
     }
 
@@ -339,6 +347,10 @@
         delete plot.dataset.range; delete plot.dataset.grain;
         note.textContent = ""; return;
       }
+      /* Anzeigewaehrung (Vorgabe EUR): jeder Punkt mit dem EZB-Kurs seines Tages; die
+         Veraenderung kommt aus DIESER Reihe, wie in Discover (detail.js, §41). */
+      var shown = std() ? std().displaySeries(pts, o.currency || "USD") : { points: pts, currency: o.currency || "USD" };
+      pts = shown.points; st.cur = shown.currency;
       var first = pts[0][1], last = pts[pts.length - 1][1];
       var delta = first > 0 ? (last / first - 1) * 100 : null;
       /* Die zusammengesetzte lange Reihe ist durchgehend Wochenraster
@@ -358,7 +370,7 @@
       capt.push(r.id === "5D" ? "Tagesschlusskurse der letzten Handelstage (5-Minuten-Kurse werden nur für den aktuellen Tag aufbewahrt)"
         : weekly ? "Wochenschlusskurse, letzter Punkt Tagesschluss vom " + dateDe(pts[pts.length - 1][0]) : "Tagesschlusskurse");
       capt.push(o.adjusted ? "splitbereinigt" + (o.splitEvents ? " (" + o.splitEvents + (o.splitEvents === 1 ? " Split" : " Splits") + " herausgerechnet)" : "") : "nicht splitbereinigt – Splits können als Kurssprung erscheinen");
-      capt.push(o.currency || "USD");
+      capt.push(std() ? std().currencyNote(st.cur, o.currency || "USD", false) : st.cur);
       if (svg.getAttribute("data-scale") === "log") capt.push("logarithmische Kursachse");
       capt.push("ohne Dividenden");
       note.textContent = capt.join(" · ") + ".";
@@ -384,7 +396,7 @@
     function draw(id) {
       if (st.disposed) return;
       plot.style.minHeight = height() + "px";
-      var r = RANGES.filter(function (x) { return x.id === id; })[0] || RANGES[6];
+      var r = byId(id) || byId("1Y");
       st.range = r.id;
       node.dataset.range = r.id;
       syncButtons();
@@ -412,6 +424,17 @@
       for (var i = 0; i < order.length; i++) if (available(order[i])) return order[i];
       return "MAX";
     }
+    /* Start nach dem Chartstandard: die gemerkte Wahl (gilt in allen Welten), sonst
+       1T, sonst der laengste abgedeckte Zeitraum bis 1J. Ein langer Zeitraum, dessen
+       Reihe noch laedt, gilt als verfuegbar. */
+    function pick() {
+      var CS = std();
+      if (!CS) return available("1D") ? "1D" : startRange();
+      var ok = function (c) { var r = RANGES.filter(function (x) { return CS.canonical(x.id) === c; })[0]; return !!r && (available(r.id) || longPending(r)); };
+      var c = CS.startRange(ok);
+      var hit = c && RANGES.filter(function (x) { return CS.canonical(x.id) === c; })[0];
+      return hit ? hit.id : startRange();
+    }
     /* Start: 1T, wenn es einen Tagesverlauf gibt, sonst 1J. Der Hub
        antwortet sofort aus dem Cache oder nach einem Abruf; wer nicht
        antwortet, haelt den Chart nicht auf. */
@@ -425,11 +448,11 @@
         st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
           if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
-          if (first) { first = false; if (!st.touched) draw(available("1D") ? "1D" : startRange()); return; }
+          if (first) { first = false; if (!st.touched) draw(pick()); return; }
           if (st.range === "1D") draw("1D"); else syncButtons();
         });
-        global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw(startRange()); } }, 3000);
-      } else draw(startRange());
+        global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw(pick()); } }, 3000);
+      } else draw(pick());
     }
 
     /* Live nur bei offener Boerse und laufendem Tag, eine Verbindung je
@@ -460,6 +483,8 @@
     head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
+    /* Die FX-Schicht kommt nach (nur auf der Aktienseite); steht sie, wird der Zeitraum neu gezeichnet. */
+    if (std() && std().ensureDisplay) std().ensureDisplay().then(function () { if (!st.disposed && st.range) draw(st.range); });
 
     return {
       node: node,

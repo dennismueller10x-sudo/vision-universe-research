@@ -760,11 +760,27 @@
     }
     /* Laufender Handelstag: der Chart meldet den letzten Kurs. Der Kopf wechselt dann von "Schlusskurs" auf
        "Live"/"Verzögert" mit Uhrzeit - es bleibt EIN Kurs. */
+    var liveShown = false;
     function setLive(p) {
-      var next = { value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when };
+      liveShown = true;
+      var next = { value: p.price, currency: p.currency || "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when };
       if (headApi && headApi.setPrice) headApi.setPrice(next);
-      else if (quote) quote.replaceChildren(el("b", { class: "num", text: X.money(p.price, "USD") }), el("small", { text: p.when + " · USD" }));
+      else if (quote) quote.replaceChildren(el("b", { class: "num", text: X.money(p.price, p.currency || "USD") }), el("small", { text: p.when + " · " + (p.currency || "USD") }));
     }
+    /* Schlusskurs im Kopf in der Anzeigewaehrung (Chartstandard, Vorgabe EUR): Kurs mit dem EZB-Kurs
+       seines Tages, Veraenderung aus den umgerechneten Werten wie im Chart. Ohne Kurs bleibt USD. */
+    var CSd = global.VUCore && global.VUCore.ChartStandard;
+    if (closePrice && headApi && headApi.setPrice && CSd && CSd.ensureDisplay) CSd.ensureDisplay().then(function () {
+      var day = s.price.asOf || (last && last[0]);
+      if (liveShown || !day) return;
+      var two = prev ? [[prev[0], prev[1]], [day, s.price.value]] : [[day, s.price.value], [day, s.price.value]];
+      var d = CSd.displaySeries(two, "USD");
+      if (!d.converted || d.points.length !== 2) return;
+      var next = {}; Object.keys(closePrice).forEach(function (k) { next[k] = closePrice[k]; });
+      next.value = d.points[1][1]; next.currency = d.currency;
+      next.changePct = prev && d.points[0][1] > 0 ? (d.points[1][1] / d.points[0][1] - 1) * 100 : null;
+      headApi.setPrice(next);
+    });
     var idn = VM.identityNote(s);
     if (idn) heroHost.append(el("div", { class: "vu-alert qx-notice qv-alert", role: "note", dataset: { conflict: idn.kind || "" } }, [
       el("div", {}, [el("b", { text: idn.title }), el("p", { text: idn.shown }), el("p", { class: "qx-small", text: idn.why })])]));
