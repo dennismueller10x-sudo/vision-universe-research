@@ -16,6 +16,7 @@ Stand 2026-10-22. Damit eine neue Sitzung nicht bei null beginnt.
 | Meta, Muse (v1) | vom Owner am 22.10.2026 veröffentlicht | 44 s, Hook „Wahnsinn. 10 Millionen Menschen haben in sechs Wochen einen KI-Agenten eingerichtet" (Zahl des Owners), Vorlage `meta-muse`. Owner: „Das Video ist sehr gut". Messung nach 72 h nachtragen |
 | Tesla, Robotaxi Q3 (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 44,9 s, Hook „Fast 2 Mio. Meilen. Ohne Fahrer." (Hook-Score 8), Vorlage `tesla-robotaxi`. Ein Gedanke aus dem Q3-Update (PDF des Owners), Bilder aus der Präsentation, eigener Beweis „80-mal um die Erde", Re-Hook „Aber das kostet". Stimme 0,12 USD |
 | Unitree H2-X (v1) | fertig 22.10.2026, vom Owner abgenommen („Das Video ist Weltklasse"), Karte offen | 41 s, Angst-Hook „Ein Mann mit Messer. Nachts. Vor deiner Tür.", Vorlage `fremdclip`. Clip von Unitree (Sek. 30 bis 54) im Vordergrund: **Ausnahme von Regel 4 auf ausdrücklichen Wunsch des Owners**, Quelle im Bild und in der Caption. Kosten: Apify 0,15 USD, Stimme 0,10 USD |
+| Welt-ETF + Quartalszahlen (v1) | fertig 23.10.2026, **Prüfung durch den Owner offen** | 45,8 s, Hook „Was passiert nächste Woche mit deinem Welt-ETF?" (Owner-Hook), Vorlage `etf-earnings`. Eigene Rechnung: Ø 6 % Kurssprung am Tag nach den Zahlen (SEC 8-K + Tiingo), 16,07 % Gewicht (MSCI-Factsheet), ±100 € bei 10.000 €. Owner: Thema muss aktuell sein; ETF-Thema allein „weiß jeder", erst mit Termin und eigener Rechnung nützlich auch für Experten. KI-Clips abgelehnt („künstlich"). Kosten: Stimme 0,12 USD + Hook-Neuaufnahme |
 
 Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studio/reels/`.
 
@@ -32,6 +33,8 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 - **Das erste Bild muss sofort tragen:** Eine große Zahl oder ein großer Hook ab Bild 1, nicht erst eine leere Sekunde und dann Aufbau (Owner, 22.10.2026).
 - **Mehr Grafik statt nur Zahlen und Diagramme:** Zeichnungen, Icons, Handy-Mock-ups, eigene Bilder des Owners als abgedunkelter Hintergrund. Fremdlogos nicht nachbauen.
 - **Earnings-Calls statt Zahlen-Mischung:** Je Konzern ein eigenes Reel aus den Aussagen im Call (Tesla und Meta getrennt). Ein Gedanke pro Reel.
+- **Themen müssen aktuell sein** (Termin, Ereignis). Allgemeinwissen („Welt-ETF ist konzentriert") nur mit neuem Blickwinkel und eigener Rechnung, damit es auch Experten nützt (23.10.2026).
+- **Keine KI-Szenen als Hintergrund**, wirken künstlich. Lieber echte Charts und Zahlen aus unseren Daten im iPhone-Mock-up (23.10.2026).
 - Der Owner liefert gern den Hook und die Hintergrundbilder selbst. Bilder: in der Caption kennzeichnen („Bildquelle: …").
 
 ## Messdaten und Lehren
@@ -62,6 +65,8 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Untertitel-Reste wie „gefahren." oder „Jahr." allein | nach `build_script.py` mit der vorigen Gruppe zusammenführen (Zeilen bis etwa 30 Zeichen, Schrift 52 px) |
 | YouTube-Download aus der Cloud-Sitzung (`yt-dlp`: 403, „Sign in to confirm you're not a bot") | Apify `streamers/youtube-video-downloader`, Ablage im Key-Value-Store; Obergrenze mindestens 0,50 USD, abgerechnet nach MB |
 | Hook-Wahl ohne eigene Messdaten | Owner bevorzugt Angst- und Schutz-Hooks; die Beobachtung stützt das (höchste Share-Rate 3,2 % bei „So stirbst du nicht"). Als Hypothese H9 messen |
+| „mit deinem" klingt wie „mit einem" (Hook ohne „du") | Wort groß schreiben („DEINEM") und nur den Satz neu aufnehmen, vorne einsetzen |
+| Unklarer Szenario-Satz („laufen alle in dieselbe Richtung …") | Beide Richtungen ausdrücklich als Euro-Betrag nennen (+100 € / −100 €) |
 | Apify-Suche (Search-Scraper) Timeouts | Hashtag- und Profil-Scraper nutzen |
 | BMF-Seiten 503 | Bundestag, Bundesrat, BGBl., Bundesregierung als Quelle |
 | Bundesrat-Datum widersprüchlich (24.04. oder 08.05.) | bundesrat.de: 08.05.2026 |

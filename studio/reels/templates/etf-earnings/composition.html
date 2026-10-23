@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Welt-ETF Earnings</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--bg-card:#121519;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e;--green:#3ddc84}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#glow{inset:0;background:radial-gradient(circle at 92% 6%,rgba(200,245,49,.16),rgba(200,245,49,0) 46%)}
+#glow2{left:-300px;top:900px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.07),rgba(200,245,49,0) 62%)}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:210px}
+.lime{color:var(--lime)} .red{color:var(--red)} .green{color:var(--green)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.9)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+.hd{left:72px;right:60px;top:280px;height:330px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;font-weight:900;letter-spacing:-.045em;line-height:.98;font-size:100px}
+.scn{left:0;top:640px;width:1080px;height:720px;opacity:0}
+#sub{left:60px;right:60px;top:1385px;height:170px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:52px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.9)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:rgba(18,21,25,.92);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:34px;color:var(--ink-2)}
+svg{overflow:visible}
+.ic{fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.dr{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.phone{width:360px;height:720px;border-radius:58px;border:7px solid #2b3037;background:#0d1013;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+.notch{left:50%;top:12px;width:100px;height:26px;margin-left:-50px;border-radius:20px;background:#000;z-index:3}
+.tag{font-weight:800;font-size:18px;letter-spacing:.12em;color:var(--muted);border:1.5px solid var(--line-2);border-radius:8px;padding:2px 8px;background:#0d1013}
+.feed .fc{background:#151a20;border-radius:20px;padding:16px 18px;margin-bottom:14px}
+.tk{font-weight:900;font-size:26px;letter-spacing:.02em}
+.mv{font-weight:900;font-size:24px;border-radius:10px;padding:2px 10px}
+</style></head>
+<body>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="glow" class="abs"></div><div id="glow2" class="abs"></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Welt-ETF · Quartalszahlen</div>
+
+<!-- Schlagzeilen -->
+<div id="h1" class="abs hd" style="opacity:1;font-size:96px"><div>Was passiert</div><div>nächste Woche mit</div><div class="lime">deinem Welt-ETF?</div></div>
+<div id="h2" class="abs hd"><div><span class="lime">4 Firmen.</span></div><div>16 % deines ETFs.</div></div>
+<div id="h3" class="abs hd"><div>Ø <span class="lime">6 %</span> Sprung.</div><div>An einem Tag.</div></div>
+<div id="h4" class="abs hd"><div>Bei <span class="lime">10.000 €</span></div><div>im ETF:</div></div>
+<div id="h5" class="abs hd"><div>Kein</div><div class="lime">Crash-Signal.</div></div>
+<div id="h6" class="abs hd"><div>Schick das</div><div>weiter.</div></div>
+
+<!-- S1: iPhone mit Depot -->
+<div id="s1" class="abs scn" style="opacity:1">
+ <svg class="abs" style="left:150px;top:120px" width="150" height="220" viewBox="0 0 60 90"><path class="dr" id="bolt1" pathLength="1" stroke="#c8f531" stroke-width="4" d="M36 2 L12 48 H30 L22 88 L50 36 H32 Z"/></svg>
+ <svg class="abs" style="left:790px;top:330px" width="120" height="180" viewBox="0 0 60 90"><path class="dr" id="bolt2" pathLength="1" stroke="#ff6b5e" stroke-width="4" d="M36 2 L12 48 H30 L22 88 L50 36 H32 Z"/></svg>
+ <div id="ph1" class="abs phone" style="left:360px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:24px;right:24px;top:62px">
+   <div style="font-weight:800;font-size:22px;color:var(--muted);letter-spacing:.1em">MEIN DEPOT</div>
+   <div style="font-weight:800;font-size:26px;margin-top:22px;color:var(--ink-2)">Welt-ETF</div>
+   <div class="big" style="font-size:44px;margin-top:6px;white-space:nowrap"><span id="dv">10.000,00</span> €</div>
+   <div style="margin-top:10px"><span id="dp" class="mv" style="background:rgba(61,220,132,.18);color:var(--green)">+0,00 €</span></div>
+   <svg width="298" height="200" viewBox="0 0 298 200" style="margin-top:26px"><line x1="0" y1="100" x2="298" y2="100" stroke="#2a2f36" stroke-width="2" stroke-dasharray="4 8"/><path id="dline" d="" fill="none" stroke="#c8f531" stroke-width="5" stroke-linejoin="round"/></svg>
+   <div style="display:flex;justify-content:space-between;margin-top:18px;font-weight:800;font-size:18px;color:var(--muted)"><span>1T</span><span style="color:var(--lime)">1W</span><span>1M</span><span>1J</span><span>MAX</span></div>
+  </div>
+  <div class="abs tag" style="left:50%;bottom:22px;transform:translateX(-50%)">ILLUSTRATION</div>
+ </div>
+</div>
+
+<!-- S2: ETF-Ring, vier Namen -->
+<div id="s2" class="abs scn">
+ <svg class="abs" style="left:60px;top:40px" width="480" height="480" viewBox="-240 -240 480 480">
+  <circle r="180" fill="none" stroke="#1c2128" stroke-width="64"/>
+  <circle class="dr" id="ringAll" pathLength="1" r="180" stroke="#3a4048" stroke-width="64" transform="rotate(-90)" style="stroke-linecap:butt"/>
+  <circle id="ring16" r="180" fill="none" stroke="#c8f531" stroke-width="72" transform="rotate(-90)" pathLength="100" stroke-dasharray="0 100"/>
+  <text x="0" y="22" text-anchor="middle" fill="#f4f5f1" font-family="Inter" font-weight="900" font-size="104" letter-spacing="-4"><tspan id="pct">0</tspan> %</text>
+  <text x="0" y="74" text-anchor="middle" fill="#8b919a" font-family="Inter" font-weight="800" font-size="26">DES MSCI WORLD</text>
+ </svg>
+ <div class="abs" style="left:580px;top:50px;width:440px">
+  <div id="nm1" class="card" style="opacity:0;padding:20px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center"><span class="tk">Microsoft</span><span class="lab" style="font-size:28px">4,00 %</span></div>
+  <div id="nm2" class="card" style="opacity:0;padding:20px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center"><span class="tk">Alphabet</span><span class="lab" style="font-size:28px">3,99 %</span></div>
+  <div id="nm3" class="card" style="opacity:0;padding:20px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center"><span class="tk">Amazon</span><span class="lab" style="font-size:28px">2,67 %</span></div>
+  <div id="nm4" class="card" style="opacity:0;padding:20px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center"><span class="tk">Apple</span><span class="lab" style="font-size:28px">5,41 %</span></div>
+ </div>
+ <div id="cal" class="abs" style="left:580px;top:500px;opacity:0"><span class="chip" style="font-size:30px;padding:12px 24px 12px 18px"><svg width="40" height="40" viewBox="0 0 64 64"><path class="dr" id="calp" pathLength="1" stroke="#c8f531" stroke-width="4" d="M10 16 H54 V56 H10 Z M10 28 H54 M22 8 V20 M42 8 V20 M20 38 H26 M30 38 H36 M40 38 H46 M20 47 H26"/></svg>Zahlen in 10 Tagen</span></div>
+</div>
+
+<!-- S3: iPhone mit echten Kurssprüngen -->
+<div id="s3" class="abs scn">
+ <div id="ph3" class="abs phone" style="left:72px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:0;right:0;top:0;height:110px;background:linear-gradient(#0d1013 70%,rgba(13,16,19,0));z-index:2"><div style="position:absolute;left:24px;top:60px;font-weight:800;font-size:22px;color:var(--muted);letter-spacing:.1em">TAG NACH DEN ZAHLEN</div></div>
+  <div id="feed" class="abs feed" style="left:18px;right:18px;top:110px"></div>
+ </div>
+ <div class="abs" style="left:480px;top:20px;width:540px">
+  <div id="avg" style="opacity:0"><div class="big" style="font-size:190px;letter-spacing:-.06em">±<span class="lime">6 %</span></div><div class="lab" style="margin-top:8px">Ø Ausschlag, letzte 4 Quartale</div></div>
+  <div id="ms" class="card" style="opacity:0;margin-top:44px;padding:28px 32px;border-color:rgba(200,245,49,.6)">
+   <div class="lab" style="font-size:30px">Microsoft · 30.07.2026</div>
+   <div style="display:flex;align-items:center;gap:20px;margin-top:8px"><svg width="80" height="80" viewBox="0 0 64 64"><path class="dr" id="msup" pathLength="1" stroke="#c8f531" stroke-width="5" d="M6 50 L24 32 L34 40 L56 14 M40 14 H56 V30"/></svg><div class="big lime" style="font-size:96px;white-space:nowrap">+15,5 %</div></div>
+  </div>
+ </div>
+</div>
+
+<!-- S4: Waage -->
+<div id="s4" class="abs scn">
+ <svg class="abs" style="left:140px;top:30px" width="800" height="520" viewBox="0 0 800 520">
+  <path class="dr" id="base" pathLength="1" stroke="#c3c7cc" stroke-width="10" d="M400 120 V470 M290 470 H510"/>
+  <circle class="dr" id="pivot" pathLength="1" cx="400" cy="110" r="16" stroke="#c3c7cc" stroke-width="8"/>
+  <g id="beam" style="transform-origin:400px 110px">
+   <path class="dr" id="beamp" pathLength="1" stroke="#c3c7cc" stroke-width="10" d="M110 110 H690"/>
+   <g id="panL"><path class="dr" id="pl" pathLength="1" stroke="#3ddc84" stroke-width="6" d="M110 110 L50 260 M110 110 L170 260 M30 260 H190 C190 300 30 300 30 260"/>
+    <text id="tl" x="110" y="350" text-anchor="middle" fill="#3ddc84" font-family="Inter" font-weight="900" font-size="72" opacity="0">+100 €</text></g>
+   <g id="panR"><path class="dr" id="pr" pathLength="1" stroke="#ff6b5e" stroke-width="6" d="M690 110 L630 260 M690 110 L750 260 M610 260 H770 C770 300 610 300 610 260"/>
+    <text id="tr" x="690" y="350" text-anchor="middle" fill="#ff6b5e" font-family="Inter" font-weight="900" font-size="72" opacity="0">−100 €</text></g>
+  </g>
+ </svg>
+ <div id="inv" class="abs" style="left:72px;top:600px;opacity:0"><span class="chip" style="font-size:30px">davon <span style="color:var(--ink);font-weight:900">1.607 €</span> in den vier Aktien</span></div>
+</div>
+
+<!-- S5: iPhone mit Umsatz und Gewinn -->
+<div id="s5" class="abs scn">
+ <div class="abs" style="left:72px;top:30px;width:520px">
+  <div id="f1" class="card" style="opacity:0;padding:26px 30px;margin-bottom:22px"><div class="lab" style="font-size:30px">Microsoft · Umsatz</div><div class="big green" style="font-size:96px;margin-top:6px">+18 %</div><div class="lab" style="font-size:26px;margin-top:6px;color:var(--muted)">zum Vorjahresquartal</div></div>
+  <div id="f2" class="card" style="opacity:0;padding:26px 30px"><div class="lab" style="font-size:30px">Apple · Umsatz</div><div class="big green" style="font-size:96px;margin-top:6px">+16 %</div><div class="lab" style="font-size:26px;margin-top:6px;color:var(--muted)">zum Vorjahresquartal</div></div>
+ </div>
+ <div id="ph5" class="abs phone" style="left:648px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:0;right:0;top:0;height:110px;background:linear-gradient(#0d1013 70%,rgba(13,16,19,0));z-index:2"><div style="position:absolute;left:24px;top:60px;font-weight:800;font-size:22px;color:var(--muted);letter-spacing:.1em">UMSATZ &amp; GEWINN</div></div>
+  <div id="fund" class="abs feed" style="left:18px;right:18px;top:110px"></div>
+ </div>
+</div>
+
+<!-- S6: Teilen + App -->
+<div id="s6" class="abs scn">
+ <div id="shr" class="abs" style="left:72px;top:0;width:936px;height:300px">
+  <svg width="936" height="280" viewBox="0 0 936 280"><path class="dr" id="trail" pathLength="1" stroke="rgba(200,245,49,.6)" stroke-width="5" d="M20 240 C200 260 320 120 520 170 S760 180 880 60"/>
+   <g id="plane"><path transform="scale(1.7)" d="M-34 -6 L34 -30 L10 30 L-2 6 Z M-2 6 L34 -30" fill="rgba(200,245,49,.2)" stroke="#c8f531" stroke-width="5" stroke-linejoin="round"/></g></svg>
+  <div class="abs chip" style="left:0;top:30px;font-size:36px;color:var(--ink)">An alle, die nervös aufs Depot schauen <span class="lime" style="font-weight:900">→</span></div>
+ </div>
+ <div id="app" class="abs card" style="left:72px;top:360px;width:936px;padding:34px 40px;opacity:0;border-color:rgba(200,245,49,.65);display:flex;align-items:center;gap:30px">
+  <svg width="110" height="110" viewBox="0 0 64 64" style="flex:none"><path class="dr" id="appc" pathLength="1" stroke="#c8f531" stroke-width="3.6" d="M8 54 V10 M8 54 H58 M14 44 L26 30 L36 38 L54 16 M44 16 H54 V26"/></svg>
+  <div><div style="margin-bottom:10px"><span class="chip" style="font-size:24px;padding:6px 16px"><b>APP</b> bald verfügbar</span></div><div class="big lime" style="font-size:64px">Mehr Zahlen</div><div class="lab" style="font-size:34px;margin-top:8px">in der Vision Universe App</div></div>
+ </div>
+</div>
+
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+  <div class="abs lab" style="left:0;right:0;top:1040px;text-align:center;font-size:40px;color:var(--muted)">Bald verf&uuml;gbar</div>
+</div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{}, D=window.DATA||{};
+const ev=(n,fb)=>EV[n]!=null?EV[n]:fb;
+const de2=x=>x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
+// Feed mit echten Kursen (Tiingo), Reihenfolge endet mit Microsoft
+const ORDER=[["AAPL","Apple"],["GOOGL","Alphabet"],["AMZN","Amazon"],["MSFT","Microsoft"]];
+let fh="";
+for(const [tk,nm] of ORDER){const c=D.charts[tk];const W=286,H=150;const lo=Math.min(...c.v),hi=Math.max(...c.v);
+  const P=c.v.map((v,i)=>[i*W/(c.v.length-1),H-8-(v-lo)/(hi-lo)*(H-16)]);
+  const d="M"+P.map(p=>p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" L");
+  const up=c.move>0, col=up?"#3ddc84":"#ff6b5e", e=P[c.evt], e2=P[c.evt+1];
+  fh+=`<div class="fc"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tk">${nm}</span><span class="mv" style="background:${up?"rgba(61,220,132,.18)":"rgba(255,107,94,.18)"};color:${col}">${up?"+":"−"}${Math.abs(c.move).toFixed(1).replace(".",",")} %</span></div>
+  <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="margin-top:8px"><path class="dr fcl" pathLength="1" d="${d}" stroke="#c3c7cc" stroke-width="3.5"/><line x1="${e[0]}" y1="${e[1]}" x2="${e2[0]}" y2="${e2[1]}" stroke="${col}" stroke-width="7" stroke-linecap="round"/><circle cx="${e2[0]}" cy="${e2[1]}" r="8" fill="${col}"/></svg></div>`;}
+$("feed").innerHTML=fh; const FCL=[...document.querySelectorAll("#feed .fcl")];
+// Umsatz und Gewinn (SEC), je 8 Quartale
+let uh="";
+for(const [tk,nm] of [["MSFT","Microsoft"],["AAPL","Apple"]]){const f=D.fund[tk];const mx=Math.max(...f.rev);
+  let bars="";f.rev.forEach((r,i)=>{const h=r/mx*120,n=f.ni[i]/mx*120,x=i*36;bars+=`<rect class="bar" x="${x}" y="${130-h}" width="26" height="${h}" rx="5" fill="#3a4048"/><rect class="bar" x="${x}" y="${130-n}" width="26" height="${n}" rx="5" fill="#c8f531"/>`;});
+  uh+=`<div class="fc" style="padding-bottom:12px"><div class="tk">${nm}</div><div style="font-weight:700;font-size:18px;color:#8b919a;margin-top:4px"><span style="color:#c3c7cc">■</span> Umsatz <span style="color:#c8f531;margin-left:10px">■</span> Gewinn · Mrd. $</div>
+  <svg width="286" height="140" viewBox="0 0 286 140" style="margin-top:10px">${bars}</svg><div style="display:flex;justify-content:space-between;font-weight:800;font-size:20px;margin-top:6px"><span style="color:#8b919a">${f.rev[0].toFixed(1).replace(".",",")}</span><span class="lime">${f.rev[7].toFixed(1).replace(".",",")}</span></div></div>`;}
+$("fund").innerHTML=uh; const BARS=[...document.querySelectorAll("#fund .bar")];
+const trail=$("trail"), tLen=trail.getTotalLength();
+const win=(t,a,b,first)=>first?1-seg(t,b-.2,b):Math.min(seg(t,a,a+.25),1-seg(t,b-.2,b));
+function show(id,t,a,b,first,dx=60){const k=win(t,a,b,first);$(id).style.opacity=k;$(id).style.transform=`translateX(${first?0:(1-eo(seg(t,a,a+.35)))*dx}px)`;}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+const draw=(id,t,at,d=.8)=>{$(id).style.strokeDashoffset=1-eo(seg(t,at,at+d));};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  ["h1","h2","h3","h4","h5","h6"].forEach((h,i)=>show(h,t,SC[i],SC[i+1],i===0));
+  ["s1","s2","s3","s4","s5","s6"].forEach((s,i)=>show(s,t,SC[i],SC[i+1],i===0,80));
+  // S1: Depot schwankt immer stärker
+  const amp=8+70*seg(t,0,a2); const n=40; let dl="";
+  for(let i=0;i<=n;i++){const x=i*298/n;const y=100+Math.sin(i*.9+t*9)*amp*.5*Math.sin(i/n*Math.PI+.3)+Math.sin(i*2.3-t*5)*amp*.3;dl+=(i?" L":"M")+x.toFixed(1)+" "+y.toFixed(1);}
+  $("dline").setAttribute("d",dl);
+  const dv=Math.sin(t*7.3)*60*seg(t,0,a2)+Math.sin(t*3.1)*45*seg(t,0,a2); $("dv").textContent=de2(10000+dv);
+  $("dp").textContent=(dv>=0?"+":"−")+de2(Math.abs(dv))+" €"; $("dp").style.color=dv>=0?"#3ddc84":"#ff6b5e"; $("dp").style.background=dv>=0?"rgba(61,220,132,.18)":"rgba(255,107,94,.18)";
+  $("ph1").style.transform=`rotate(${Math.sin(t*20)*1.2*seg(t,.6,a2)}deg)`;
+  draw("bolt1",t,.5,.35); draw("bolt2",t,1.3,.35);
+  $("bolt1").style.opacity=.4+.6*Math.abs(Math.sin(t*6)); $("bolt2").style.opacity=.4+.6*Math.abs(Math.sin(t*5+1));
+  // S2
+  draw("ringAll",t,a2+.05,.9);
+  const tw=ev('w16',a2+4); const rp=eo(seg(t,tw,tw+.9)); $("ring16").setAttribute("stroke-dasharray",`${16.07*rp} 100`); $("pct").textContent=Math.round(16*rp);
+  ["nm1","nm2","nm3","nm4"].forEach((id,i)=>pop(id,t,ev('n'+(i+1),a2+2+i*.6)-.05,20));
+  pop("cal",t,ev('four',a2+.1)+.2,18); draw("calp",t,ev('four',a2+.1)+.3,.7);
+  // S3: Feed scrollt, Linien zeichnen sich
+  const tc=ev('calc',a3+.1), tm=ev('msft',a3+7.4);
+  const sc=eio(seg(t,tc+.6,tm-.2)); $("feed").style.transform=`translateY(${-sc*3*220}px)`;
+  FCL.forEach((p,i)=>{p.style.strokeDashoffset=1-eo(seg(t,tc+.1+i*1.9,tc+1.1+i*1.9));});
+  pop("avg",t,tc+1.4,24); pop("ms",t,tm-.05,26); draw("msup",t,tm+.1,.6);
+  // S4: Waage
+  draw("base",t,a4+.05,.6); draw("pivot",t,a4+.3,.3); draw("beamp",t,a4+.4,.5); draw("pl",t,a4+.7,.6); draw("pr",t,a4+.8,.6);
+  const tu=ev('up',a4+2.4), td=ev('down',a4+6.3);
+  const tilt=-9*eo(seg(t,tu,tu+.5))+18*eio(seg(t,td,td+.6)); $("beam").style.transform=`rotate(${tilt}deg)`;
+  $("panL").style.transform=`rotate(${-tilt}deg)`; $("panL").style.transformOrigin="110px 110px"; $("panR").style.transform=`rotate(${-tilt}deg)`; $("panR").style.transformOrigin="690px 110px";
+  $("tl").style.opacity=seg(t,tu+.1,tu+.4); $("tr").style.opacity=seg(t,td+.1,td+.4);
+  pop("inv",t,a4+1.0,18);
+  // S5: Umsatz-Feed
+  pop("f1",t,a5+.2,22); pop("f2",t,ev('calm',a5+2.8),22);
+  BARS.forEach((b,i)=>{const k=eo(seg(t,a5+.2+i*.05,a5+.6+i*.05));b.style.transform=`scaleY(${k})`;b.style.transformOrigin="center 130px";b.style.transformBox="fill-box";b.style.transformOrigin="bottom";});
+  $("fund").style.transform=`translateY(${-eio(seg(t,ev('calm',a5+2.8)-.4,ev('calm',a5+2.8)+.6))*262}px)`;
+  // S6
+  const pp=Math.min(1,seg(t,a6+.2,a6+2.4)); const ppe=pp<.5?2*pp*pp:1-Math.pow(-2*pp+2,2)/2; trail.style.strokeDashoffset=1-ppe;
+  const pl=trail.getPointAtLength(tLen*ppe), pl2=trail.getPointAtLength(Math.min(tLen,tLen*ppe+4));
+  $("plane").setAttribute("transform",`translate(${pl.x},${pl.y}) rotate(${Math.atan2(pl2.y-pl.y,pl2.x-pl.x)*180/Math.PI+20})`);
+  pop("app",t,ev('app',a6+3.8)-.1,26); draw("appc",t,ev('app',a6+3.8),.8);
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=1-seg(t,end,end+.3);$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=cur?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+  $("glow2").style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.3)*40}px)`;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>
