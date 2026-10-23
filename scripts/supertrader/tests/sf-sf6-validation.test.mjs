@@ -11,7 +11,7 @@ import { PP_REFERENCE_CONFIG } from '../source-faithful/research/moka-lifecycle.
 import { sf5VariantRegistrySha256 } from '../source-faithful/research/sf5-lifecycles.mjs';
 
 // pinned before the first snapshot result of Supertrader 6.0 was read
-const PINNED_PROTOCOL = 'adb45dca83a09d759d8d80984498019b8f511b2542d15c740e90e92bf7c726fc';
+const PINNED_PROTOCOL = 'c7702e77eb768b718b57691323afa052c949200379ab7a562b2b1d47366f7c25';
 const PINNED_MODEL_VARIANTS = '6f81beb615d4f54427d38c5ac4034f8cf1b593338513ee993014841fe9850ed5';
 const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 
@@ -101,6 +101,10 @@ test('SF6-VALIDATION-STATS: Trefferquote, Erwartungswert, Profitfaktor, Konzentr
   assert.equal(s.closed, 3); assert.ok(Math.abs(s.winRate - 2 / 3) < 1e-12); assert.equal(s.profitFactor, 6); assert.ok(Math.abs(s.expectancyPct - 0.25 / 3) < 1e-12); assert.equal(s.sumPnl, 250);
   const c = concentration([t(100, 0), t(-50, 0), t(200, 0)], 1);
   assert.ok(Math.abs(c.topShareOfPositivePnl - 200 / 300) < 1e-12); assert.equal(c.netPnlWithoutTopN, 50);
+  assert.equal(concentration([t(100, 0), t(-50, 0)], 5).netPnlWithoutTopN, -50, 'nur Gewinner werden entfernt');
+  assert.equal(tradeStats([t(10, 0.1)]).profitFactorUndefined, 'NO_LOSING_TRADES');
+  assert.equal(tradeStats([]).profitFactorUndefined, 'NO_TRADES');
+  assert.equal(SF6_VALIDATION_PROTOCOL.splitPeriods.HOLDOUT[0][0], '2008-01-02', 'Holdout hat eigene Perioden');
   const ds = dataset(2, 260); ds.benchmark = ds.securities[0].bars;
   const cls = makeClassifiers(ds);
   assert.equal(cls.regime(day(100)), 'UNKNOWN', 'vor 200 Sitzungen keine SMA200');

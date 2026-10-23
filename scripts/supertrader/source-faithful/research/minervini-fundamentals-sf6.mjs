@@ -10,6 +10,7 @@
  *   f = splitAdj(filed_prev) / splitAdj(filed_cur),   splitAdj(t) = raw close / split-adjusted close at t
  * (runner/snapshot-input.mjs). splitAdj carries every split after t to the data end; the ratio of two dates cancels all
  * splits after the later date, so f contains only splits between the two filings, both strictly before the decision.
+ * A filing on the ex-date is read with that day's factor (post-split), a declared convention.
  * The year-ago EPS is divided by f. A filing date without a bar uses the last bar at or before it; no bar before it
  * leaves the quarter uncorrected and flagged.
  */
@@ -54,10 +55,10 @@ export function fundamentalEvidenceSf6(fund, asOfDate, bars) {
   const quarters = v1.eps.quarters.map((q) => {
     if (!fin(q.priorYearValue)) return { ...q };
     // a derived Q4 (FY - Q1..Q3) can mix pre- and post-split units inside one value: not correctable, flagged
-    if (q.derivedQ4) { undeterminable++; return { ...q, splitFactor: null, splitStatus: 'UNDETERMINABLE_DERIVED_Q4' }; }
+    if (q.derivedQ4) { undeterminable++; return { ...q, yoy: null, status: 'UNDETERMINABLE_DERIVED_Q4', splitFactor: null, splitStatus: 'UNDETERMINABLE_DERIVED_Q4' }; }
     const prevFiled = priorYearFiled(fund.eps, q.quarterEnd, asOfDate);
     const f = prevFiled ? splitFactorBetween(bars, prevFiled, q.filed) : null;
-    if (f === null) { undeterminable++; return { ...q, splitFactor: null, splitStatus: 'UNDETERMINABLE' }; }
+    if (f === null) { undeterminable++; return { ...q, yoy: null, status: 'UNDETERMINABLE_SPLIT_FACTOR', splitFactor: null, splitStatus: 'UNDETERMINABLE' }; } // never the uncorrected v1 growth (review L3)
     if (Math.abs(f - 1) < 1e-9) return { ...q, splitFactor: 1, splitStatus: 'NO_SPLIT' };
     corrected++;
     const base = q.priorYearValue / f;

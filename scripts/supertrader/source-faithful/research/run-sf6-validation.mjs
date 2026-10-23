@@ -41,18 +41,19 @@ const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 
 /** Pre-registered before the first Supertrader 6.0 result (test SF6-VALIDATION-PREREGISTERED pins it). */
 export const SF6_VALIDATION_PROTOCOL = Object.freeze({
-  id: 'SF6-VALIDATION-PROTOCOL', version: '1.0.0',
+  id: 'SF6-VALIDATION-PROTOCOL', version: '1.1.0',
   costLevels: Object.freeze([
     Object.freeze({ id: 'COST-0', slippageBps: 0, commissionBps: 0, origin: 'frictionless bound' }),
     Object.freeze({ id: 'REF', ...REFERENCE_COSTS, origin: 'research-v1 reference of every earlier run' }),
     Object.freeze({ id: 'COST-20', slippageBps: 20, commissionBps: 2, origin: 'the bps of the COST2 scenario of runner/run-research.mjs (there combined with S1_MINUS_30; only the costs are reused)' }),
     Object.freeze({ id: 'COST-50', slippageBps: 50, commissionBps: 5, origin: 'stress level (small caps, wide spreads)' }),
   ]),
-  splitPeriods: Object.freeze([['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOWS.DEV.to]]),
+  // split periods per window (review SF6-B M2): DEV = the research runner's periods; HOLDOUT = before / after 2011-12-31
+  splitPeriods: Object.freeze({ DEV: Object.freeze([['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOWS.DEV.to]]), HOLDOUT: Object.freeze([[L.WINDOWS.HOLDOUT.from, '2011-12-31'], ['2012-01-01', L.WINDOWS.HOLDOUT.to]]) }),
   regime: Object.freeze({ id: 'SPY_SMA200_PRIOR_SESSION', sma: 200, basis: 'benchmark close vs its 200-session SMA at the session before the entry' }),
   liquidityBandsUsd: Object.freeze([1e6, 5e6, 25e6]), // 1 M = #705 universe floor; 5 M / 25 M are VU reporting bands (no source, set before any result)
   concentrationTopN: 10,
-  holdout: 'NONE in the DEV window: 2016-2026 was read by earlier rounds; the 2008-2015 window (R14) was opened once for other implementations',
+  holdout: 'NONE: the DEV window 2016-2026 was read by earlier rounds; the HOLDOUT window 2008-2015 was opened once in R14 for other implementations (a previously opened window, never an untouched holdout; ticker list incomplete for old delistings)',
 });
 export function sf6ValidationProtocolSha256() { return crypto.createHash('sha256').update(JSON.stringify(SF6_VALIDATION_PROTOCOL)).digest('hex'); }
 
@@ -71,14 +72,15 @@ const median = (a) => { const v = [...a].sort((x, y) => x - y), n = v.length; re
 export function tradeStats(trades) {
   const c = trades.filter((t) => t.status === 'CLOSED' && fin(t.pnl)), r = c.map((t) => t.returnPct).filter(fin);
   const w = c.filter((t) => t.pnl > 0), l = c.filter((t) => t.pnl < 0), gw = w.reduce((a, t) => a + t.pnl, 0), gl = -l.reduce((a, t) => a + t.pnl, 0);
-  return { closed: c.length, winRate: c.length ? w.length / c.length : null, avgWinPct: mean(w.map((t) => t.returnPct).filter(fin)), avgLossPct: mean(l.map((t) => t.returnPct).filter(fin)), expectancyPct: mean(r), medianReturnPct: median(r), profitFactor: gl > 0 ? gw / gl : null, sumPnl: gw - gl, medianHeldSessions: median(c.map((t) => t.heldSessions).filter(fin)) };
+  return { closed: c.length, winRate: c.length ? w.length / c.length : null, avgWinPct: mean(w.map((t) => t.returnPct).filter(fin)), avgLossPct: mean(l.map((t) => t.returnPct).filter(fin)), expectancyPct: mean(r), medianReturnPct: median(r), profitFactor: gl > 0 ? gw / gl : null, profitFactorUndefined: gl > 0 ? null : c.length ? 'NO_LOSING_TRADES' : 'NO_TRADES', sumPnl: gw - gl, medianHeldSessions: median(c.map((t) => t.heldSessions).filter(fin)) };
 }
 
 /** Share of the summed positive profit carried by the topN largest trades, and the net result without them. */
 export function concentration(trades, topN) {
   const c = trades.filter((t) => t.status === 'CLOSED' && fin(t.pnl)).sort((a, b) => b.pnl - a.pnl), pos = c.filter((t) => t.pnl > 0).reduce((a, t) => a + t.pnl, 0);
-  const top = c.slice(0, topN).reduce((a, t) => a + Math.max(0, t.pnl), 0), net = c.reduce((a, t) => a + t.pnl, 0);
-  return { topN, topShareOfPositivePnl: pos > 0 ? top / pos : null, netPnl: net, netPnlWithoutTopN: net - c.slice(0, topN).reduce((a, t) => a + t.pnl, 0) };
+  const topW = c.slice(0, topN).filter((t) => t.pnl > 0), top = topW.reduce((a, t) => a + t.pnl, 0), net = c.reduce((a, t) => a + t.pnl, 0);
+  // only the largest WINNERS are removed (review L5: never a loser when fewer than topN trades won)
+  return { topN, topShareOfPositivePnl: pos > 0 ? top / pos : null, netPnl: net, netPnlWithoutTopN: net - top };
 }
 
 /** Classifiers known at the session before the entry. */
@@ -137,8 +139,9 @@ export function fundamentalsComparison(ds, trades) {
 }
 
 /** Pure part on one dataset. */
-export function validationPart(ds, { keys = SF6_REFERENCE_KEYS, parts = ['costs', 'splits', 'models', 'fundamentals'], from = L.WINDOW.from, to = L.WINDOW.to, protocol = SF6_VALIDATION_PROTOCOL, log = () => {} } = {}) {
-  const pub = { runner: SF6_VALIDATION_RUNNER_VERSION, protocol: protocol.id, protocolSha256: sf6ValidationProtocolSha256(), certification: 'DIAGNOSTIC_NOT_CERTIFIED', holdout: protocol.holdout, window: { from, to }, references: {}, models: {} };
+export function validationPart(ds, { keys = SF6_REFERENCE_KEYS, parts = ['costs', 'splits', 'models', 'fundamentals'], from = L.WINDOW.from, to = L.WINDOW.to, windowName = L.WINDOW_NAME, protocol = SF6_VALIDATION_PROTOCOL, log = () => {} } = {}) {
+  protocol = { ...protocol, splitPeriods: protocol.splitPeriods[windowName] ?? protocol.splitPeriods.DEV };
+  const pub = { runner: SF6_VALIDATION_RUNNER_VERSION, windowName, protocol: protocol.id, protocolSha256: sf6ValidationProtocolSha256(), certification: 'DIAGNOSTIC_NOT_CERTIFIED', holdout: protocol.holdout, window: { from, to }, references: {}, models: {} };
   const sealed = { label: 'DIAGNOSTIC_METRICS_NOT_A_STRATEGY_RETURN', references: {}, models: {} };
   const cls = makeClassifiers(ds, protocol);
   for (const ref of SF6_REFERENCES.filter((r) => keys.includes(r.key))) {
