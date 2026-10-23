@@ -183,3 +183,26 @@ Auftrag: zuerst vorhandene Daten und den Cache nutzen, keine zusätzlichen Abruf
 - Beide Varianten-Register haben neue Hashes: EP 1.2.0 (Tagessatz-Haken), PS 1.2.0 (Überlappungsreferenz und Berichtsvariante im Fingerabdruck).
 - Der Lauf 39939887192 läuft auf dem alten Code. Er ist jetzt `PRE_6_0_REFERENCE` (Vorher-Seite) und nicht mehr `AUTHORITATIVE`.
 - Das Artefakt meldet `CACHE_ONLY_RERUN_PENDING`, bis ein `kk-intraday-cache`-Lauf auf dem aktuellen Code eingetragen ist.
+
+### Maßgeblicher Lauf nach den 6.0-Korrekturen
+
+[40001460163](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001460163), Commit `b4b9d1ead`, Modus `kk-intraday-cache`. Der Lauf stellte **0 Anfragen**: Er las nur den vorhandenen Cache. Der Datensatz ist `EXACT`, der Code identisch mit dem aktuellen. Die Kennzahlen liegen versiegelt.
+
+| Tagesmenge | EP REF | EP ohne Volumenregel | PS REF (abgeschlossen) |
+|---|---|---|---|
+| vor dem Fix (`BEFORE_FIX`) | 611 | 1.106 | 239 |
+| saubere Stichprobe (`CLEAN`, Referenz) | 611 | 1.042 | 228 |
+| geschichtet Jahr × Liquidität | 463 | 818 | 150 |
+| geschichtet Jahr × Liquidität × Regime | 429 | 774 | 126 |
+
+Was die Zählungen zeigen (keine Performanceaussage):
+- **EP-Referenz:** Sie ist unverändert. Die Fixes betreffen nur die Vergleichbarkeit der Varianten.
+- **EP ohne Volumenregel:** 64 Trades (6 %) kamen nur aus der ungleichen Tagesmenge zustande.
+- **Parabolic Short:**
+  - 51 Tage lagen nur über den EP-Abrufpfad im Cache und fallen weg.
+  - Von 474 PS-Kandidaten, die zugleich EP-Kandidaten sind, liegen nur 14 im sauberen Präfix.
+  - Die Referenz sinkt von 239 auf 228 Trades.
+- **Geschichtete Stichproben:**
+  - Bei EP liegt der gleiche Anteil je Schicht bei 33/293 = 11,3 %.
+  - Mehrere Schichten mit hoher Liquidität (≥ 100 Mio. USD) haben weniger als 100 Kandidaten und fallen aus der Schichtung heraus.
+  - Die Stichprobe bleibt eine Stichprobe und ist keine repräsentative Gesamtaussage.
