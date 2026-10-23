@@ -38,8 +38,8 @@
   }
  ],
  "runs": {
-  "integrity": null,
-  "validation": null,
+  "integrity": "40001276389",
+  "validation": "40001421221",
   "holdout": null
  },
  "liveReadiness": "LIVE_NOT_APPROVED",
@@ -69,8 +69,8 @@
     "CC-3-NO-MANUAL": true,
     "CC-4-DATA": false,
     "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -107,16 +107,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PARTIAL",
+     "evidence": "DQ-K5: 15 of 820 reference trades directly exposed (1.83 %); 128 unchanged, 646 removed, 46 changed (knock-on 678)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -128,7 +128,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -152,8 +152,8 @@
     "CC-3-NO-MANUAL": true,
     "CC-4-DATA": false,
     "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -190,16 +190,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PARTIAL",
+     "evidence": "DQ-K5: 11 of 559 reference trades directly exposed (1.97 %); 324 unchanged, 223 removed, 12 changed (knock-on 224)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -211,7 +211,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -234,9 +234,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -273,16 +273,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 20 of 19556 reference trades directly exposed (0.10 %); 18058 unchanged, 88 removed, 1410 changed (knock-on 1493)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -294,7 +294,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -317,9 +317,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -356,16 +356,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 0 of 1348 reference trades directly exposed (0.00 %); 311 unchanged, 121 removed, 916 changed (knock-on 1037)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -377,7 +377,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -400,9 +400,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -439,16 +439,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 4 of 1808 reference trades directly exposed (0.22 %); 373 unchanged, 473 removed, 962 changed (knock-on 1431)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -460,7 +460,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -483,9 +483,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -522,16 +522,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: MIN-SF-TT-8"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 0 of 954 reference trades directly exposed (0.00 %); 901 unchanged, 14 removed, 39 changed (knock-on 53)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -543,7 +543,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -566,9 +566,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -605,16 +605,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 10 of 1007 reference trades directly exposed (0.99 %); 108 unchanged, 128 removed, 771 changed (knock-on 889)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -626,7 +626,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -649,9 +649,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -688,16 +688,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 31 of 9114 reference trades directly exposed (0.34 %); 2809 unchanged, 1521 removed, 4784 changed (knock-on 6278)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -709,7 +709,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -763,8 +763,8 @@
      "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
     },
     "PORTFOLIO_ACCOUNTING": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
     },
     "PIT_DATA_INTEGRITY": {
      "grade": "PARTIAL",
@@ -898,9 +898,9 @@
     "CC-2-LIFECYCLE": false,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -918,7 +918,13 @@
     },
     "STOP_COMPLETENESS": {
      "grade": "PARTIAL",
-     "evidence": "INITIAL_STOP: 1 rows, 0 mechanical, 0 under model assumption, 1 manual, 0 blocked"
+     "evidence": "INITIAL_STOP: 1 rows, 0 mechanical, 0 under model assumption, 1 manual, 0 blocked",
+     "sf6ModelVariant": {
+      "id": "SF6-MODEL-PP-STOP-SIGNAL-DAY-LOW",
+      "assumption": "MA6-PP-STOP-SIGNAL-DAY-LOW",
+      "trades": 4534,
+      "note": "phase closed only by an SF6 model variant (never a source rule); the reference stays without this phase"
+     }
     },
     "POSITION_MANAGEMENT": {
      "grade": "MODEL_ASSUMPTION",
@@ -937,16 +943,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 7 of 1872 reference trades directly exposed (0.37 %); 187 unchanged, 627 removed, 1058 changed (knock-on 1678)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -958,7 +964,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -981,9 +987,9 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -1020,16 +1026,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 15 of 3415 reference trades directly exposed (0.44 %); 1281 unchanged, 647 removed, 1487 changed (knock-on 2121)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -1041,7 +1047,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -1064,9 +1070,9 @@
     "CC-2-LIFECYCLE": false,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": false,
-    "CC-6-REPRODUCIBLE": false,
-    "CC-7-EXECUTION": false,
+    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
     "CC-8-OOS": false
    },
    "dimensions": {
@@ -1088,7 +1094,13 @@
     },
     "POSITION_MANAGEMENT": {
      "grade": "PARTIAL",
-     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 2 rows, 0 mechanical, 1 under model assumption, 1 manual, 0 blocked"
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 2 rows, 0 mechanical, 1 under model assumption, 1 manual, 0 blocked",
+     "sf6ModelVariant": {
+      "id": "SF6-MODEL-HG-TRAIL-SWING-LOWS",
+      "assumption": "MA6-HG-TRAIL-SWING-LOWS",
+      "trades": 2217,
+      "note": "phase closed only by an SF6 model variant (never a source rule); the reference stays without this phase"
+     }
     },
     "EXIT_COMPLETENESS": {
      "grade": "MODEL_ASSUMPTION",
@@ -1103,16 +1115,16 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "no SF6 integrity run recorded"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "DQ-K5: 30 of 4025 reference trades directly exposed (0.75 %); 375 unchanged, 1250 removed, 2400 changed (knock-on 3622)"
     },
     "EXECUTION_REALISM": {
-     "grade": "MODEL_ASSUMPTION",
-     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity not yet measured"
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
     },
     "BACKTEST_REPRODUCIBILITY": {
-     "grade": "NOT_EVIDENCED",
-     "evidence": "-"
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL"
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -1124,7 +1136,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
