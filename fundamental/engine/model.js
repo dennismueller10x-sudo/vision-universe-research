@@ -344,7 +344,21 @@
     // Ziele des Produkt-Docks: Ansichten der Startseite (Abschnitt "Entdecken", Suche mit Fokus)
     if (t === 'ENTDECKEN') return { view: 'home', focus: 'entdecken' };
     if (t === 'SUCHE') return { view: 'home', focus: 'suche' };
-    return validTicker(t) ? { view: 'company', ticker: t } : { view: 'home', invalid: true };
+    // Fundamental 2.0: Ranglisten und Branchen der Startseite (zweiteilig, damit core/stock-context.js sie nicht als Aktie liest)
+    var parts = h.split('?')[0].split('/').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return ''; } });
+    if (t === 'RANGLISTE') return /^[a-z]{3,20}$/.test(parts[1] || '') ? { view: 'ranking', id: parts[1] } : { view: 'home', focus: 'entdecken' };
+    if (t === 'BRANCHE') return /^\d{2}$/.test(parts[1] || '') ? { view: 'industry', id: parts[1] } : { view: 'home', focus: 'entdecken' };
+    if (!validTicker(t)) return { view: 'home', invalid: true };
+    // Unteransichten der Aktie nur im Query-Teil: #/<T>?ansicht=kennzahlen|kennzahl|vergleich|finanzen|mehr|<bereich>&k=<id>
+    var out = { view: 'company', ticker: t }, q = h.indexOf('?') >= 0 ? h.slice(h.indexOf('?') + 1) : '';
+    q.split('&').forEach(function (kv) {
+      var i = kv.indexOf('='), k = i >= 0 ? kv.slice(0, i) : kv, v = i >= 0 ? kv.slice(i + 1) : '';
+      if (k === 'ansicht' && /^[a-z]{3,20}$/.test(v)) out.sub = v;
+      else if (k === 'k' && /^[a-z0-9_]{2,40}$/.test(v)) out.metric = v;
+      else if (k === 't' && /^[a-z]{3,12}$/.test(v)) out.tab = v;
+      else if (k === 'p' && (v === 'q' || v === 'j')) out.period = v === 'q' ? 'quarterly' : 'annual';
+    });
+    return out;
   }
 
   var api = { VERSION: VERSION, METRICS: METRICS, MARGINS: MARGINS, STOCK_BASE: STOCK_BASE, SEARCH_PATH: SEARCH_PATH,

@@ -173,6 +173,12 @@ export async function buildRelease({root,output}){
    await writeFile(resolve(output,HOME_PATH),JSON.stringify(buildHomeFromDir(root)));
   }catch(e){console.warn('ELLIOTT_HOME_SKIPPED',String(e&&e.message||e).slice(0,200));}
  }
+ /* Fundamental: SEC-Historie je shardKey (scripts/fundamental/build-history.mjs), nur in der Auslieferung, eigenes Budget.
+    Faellt sie aus, liest /fundamental/ wie bisher nur die Discover-Aktiendatei; die Website bleibt ausgeliefert. */
+ try{
+  const {writeHistory,HISTORY_DIR}=await import('../fundamental/build-history.mjs');
+  await writeHistory({root,out:resolve(output,HISTORY_DIR),log:()=>{}});
+ }catch(e){console.warn('FUNDAMENTAL_HISTORY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  /* Verfuegbarkeits-Manifest des Aktien-Navigators (scripts/core/stock-availability.mjs, VU3): je shardKey ein kleiner Ausschnitt
     aus den Artefakten dieser Auslieferung, nie committet. Faellt es aus, zeigt der Navigator jedes Modul neutral als "unknown". */
  try{
