@@ -184,9 +184,31 @@ Zwei unabhängige Reviews haben nur den Code gesehen, nicht die Schlussfolgerung
 
 Eine bewusst offen gelassene Einordnung aus dem Code-Review: Bei Darvas liegt der Stop einen Cent unter dem Trigger. Ein intraday ausgelöster Kauf mit einem Tief unter dem Stop am selben Tag ist auf Tagesbalken mehrdeutig. Die Referenz ist pessimistisch, wie in der Vertragsableitung von DAR-SF-STOP-INIT. Ein großer Teil der Darvas-Referenztrades misst daher die Intrabar-Annahme. Die Variante `ALT-INTRABAR-OPTIMISTIC` ist vorregistriert und zeigt die Spannweite.
 
+## Owner-Entscheidungen vom 23.10.2026: Umsetzung und Vorher/Nachher
+
+| ID | Entscheidung | Wirkung |
+|---|---|---|
+| D-RAS97 | AIQ 1997 als gekennzeichnete Sekundärquelle für Holy-Grail-Einstieg und -Stop | `RAS-SF-ENTRY`/`-STOP` werden `SOURCE_DERIVED` mit `sourceBasis: SECONDARY_SOURCE` (W-RAS97). Sie sind nie `SOURCE_EXACT` und für Engine-Zustand und Messklasse weiter eine Quellenlücke. C13 bleibt `NOT_MEASURABLE`; der Lifecycle ist nicht als quellenkonform ausgewiesen. |
+| D-KK-ENTRY | Kullamägi Breakout: Research-Referenz ist die nächste handelbare Eröffnung | Der Schlusskurs des Ausbruchstags läuft als `ALT-ENTRY-BREAKOUT-DAY-CLOSE` weiter. Die Abweichung zu KK-012 ist dokumentiert. |
+| D-BGU-VOLWINDOW | 50-Sitzungen-Volumenfenster ist Research-Modellkonvention | Die Vertragsregel bleibt `SOURCE_AMBIGUOUS`; der Trade-Bestand ist unverändert. |
+| D-DARVAS-SIZE-INTRABAR | Pessimistische Intrabar-Reihenfolge ist die Referenz; Größe als Bandbreite der Varianten | Die Readiness meldet `SPAN_OF_ALL_SIZING_VARIANTS`; keine Größe ist eine Darvas-Regel. |
+
+Von 189 Vertragsregeln ändern genau 2 ihren Status. Messklassen (2/1/7/3), Engine-Zustände und Live-Status aller 13 Kandidaten sind unverändert; der Test `sf-sf5-owner-decisions` schreibt das fest.
+
+**Vorher/Nachher:** Lauf [39903861586](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39903861586) gegen [39937731507](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39937731507) (Commit `197b8d10d`, Datensatz `EXACT`, Research-Code `1274ea98…` = aktueller Code).
+
+- **Darvas, Pocket Pivot, BGU, Weinstein Investor/Trader, Holy Grail:** 31 von 31 Varianten sind trade-genau gleich (Trades, Ausstiegsgründe, Trade- und Ledger-Hash).
+- **Kullamägi-Referenz (nächste Eröffnung):** 9 114 Trades, trade-genau gleich der bisherigen Variante `ALT-ENTRY-NEXT-OPEN`.
+- **`ALT-ENTRY-BREAKOUT-DAY-CLOSE`:** 6 601 Trades, trade-genau gleich der bisherigen Referenz.
+- **Die übrigen 8 Kullamägi-Varianten** ändern sich konstruktionsbedingt: Jede weicht in genau einem Punkt von der Referenz ab, und die Referenz steht jetzt auf der nächsten Eröffnung.
+- **Prüfungen:** Alle 41 Varianten sind abgestimmt, die Referenzen deterministisch (Doppellauf).
+- **Ablage:** Die Kennzahlen liegen verschlüsselt (`20261023T111226Z`).
+
 ## Snapshot-Lauf
 
-Maßgeblicher Lauf seit dem Abschluss-PR: [39903861586](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39903861586), Commit `76d391a7e`, Workflow-Modus `sf5-lifecycle` (23.10.2026).
+Maßgeblicher Lauf seit den Owner-Entscheidungen: [39937731507](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39937731507); siehe Abschnitt oben. Der folgende Abschnitt beschreibt den Vorlauf.
+
+Maßgeblicher Lauf seit dem Abschluss-PR (jetzt `SUPERSEDED_BY_39937731507_OWNER_DECISIONS`): [39903861586](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39903861586), Commit `76d391a7e`, Workflow-Modus `sf5-lifecycle` (23.10.2026).
 
 - **Datensatz:** wieder `EXACT` (`3ea6443de70c…`), derselbe wie unten.
 - **Fingerabdrücke:**
