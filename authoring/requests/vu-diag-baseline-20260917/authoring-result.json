@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "vu-diag-baseline-brief-20260917",
+  "content_id": "vu-diag-baseline-20260917",
+  "fixture_type": "provider_baseline_control",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "strategy_id": "curiosity-gap-system-proof-v2",
+    "hook_type": "curiosity_gap",
+    "instruction": "Formuliere neugierig machende Fragen zum automatischen Text-und-Bild-Roundtrip. Keine Marktbehauptung, keine Renditeaussage und keine alternative Hook-Strategie."
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:curiosity_gap:01",
+      "hook_type": "curiosity_gap",
+      "text": "Was passiert, wenn ein GitHub-Brief selbstständig zu Text und einem echten Bildasset wird?",
+      "brief_revision": "44f45833921758437311fcecf87c288c22b979f6"
+    },
+    {
+      "hook_variant_id": "vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:curiosity_gap:02",
+      "hook_type": "curiosity_gap",
+      "text": "Kann ein einziges PR-Ereignis den vollständigen Creative-Roundtrip auslösen?",
+      "brief_revision": "44f45833921758437311fcecf87c288c22b979f6"
+    },
+    {
+      "hook_variant_id": "vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:curiosity_gap:03",
+      "hook_type": "curiosity_gap",
+      "text": "Wie wird aus strukturierten Vorgaben automatisch ein prüfbares Creative-Ergebnis?",
+      "brief_revision": "44f45833921758437311fcecf87c288c22b979f6"
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:curiosity_gap:01",
+    "recommendation_reason": "Die Variante benennt den vollständigen Text-und-Bild-Roundtrip klar und hält zugleich die vorgegebene Curiosity-Gap-Form ein.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Dieser kontrollierte Proof zeigt den vollständigen Zero-API-Authoring-Roundtrip: Ein strukturierter GitHub-Brief wird automatisch verarbeitet, daraus entstehen Hook-Varianten, Caption und Visual Brief sowie ein echtes Rasterbild. Alle Ergebnisse bleiben auf dem isolierten Request-Branch. Technische Testfixture, keine Marktbehauptung, keine Anlageberatung und keine Veröffentlichung.",
+  "visual_brief": {
+    "visual_strategy": "FUTURE_TECH",
+    "purpose": "Den kontrollierten Weg vom strukturierten Datenmodul über den Creative-Core zum fertigen Bildasset abstrakt visualisieren.",
+    "motif": "Ein präzises, transparentes Datenmodul speist einen leuchtenden, orbitalen Creative-Core, dessen Energie in eine polierte, schwebende Bildfläche übergeht.",
+    "composition": "Quadratische, zentral ausbalancierte Dreistufen-Komposition mit großzügigem Negativraum.",
+    "style": "Premium cinematic 3D technology visualization mit realistischen Glas- und Chrommaterialien.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "lighting": "Kontrolliertes volumetrisches Licht mit cyanfarbenem Energiefluss und dezenten violetten Akzenten.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Aktienkurse",
+      "Keine Renditezahlen",
+      "Keine Marktprognose",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:visual:FUTURE_TECH:01",
+      "visual_strategy": "FUTURE_TECH",
+      "brief_revision": "44f45833921758437311fcecf87c288c22b979f6",
+      "asset_path": "authoring/requests/vu-diag-baseline-20260917/assets/visual-01.png",
+      "asset_sha256": "4cc03f7d0008a35bf183ad0cb477485f8d3fe2570c75e6edb3569c15126e5d3a",
+      "mime_type": "image/png",
+      "width": 1254,
+      "height": 1254
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "brief-hook-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/hook_strategy",
+      "supports": "hook_strategy, hook_type and hook wording boundary"
+    },
+    {
+      "ref_id": "brief-visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "visual_strategy, motif, composition and aesthetics"
+    },
+    {
+      "ref_id": "brief-asset-requirements",
+      "source": "authoring-brief.json",
+      "json_pointer": "/asset_requirements",
+      "supports": "asset count, deterministic path and preferred image format"
+    },
+    {
+      "ref_id": "brief-authoring-requirements",
+      "source": "authoring-brief.json",
+      "json_pointer": "/authoring_requirements",
+      "supports": "variant identities, recommendation scope, image requirement and publishing gate"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_technical_proof",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "hook_strategy_inherited_from_brief": true,
+      "visual_strategy_inherited_from_brief": true,
+      "hook_variant_count_met": true,
+      "hook_ids_bound_to_brief_blob_sha": true,
+      "visual_variant_id_bound_to_brief_blob_sha": true,
+      "canonical_hook_selected": false,
+      "actual_raster_asset_present": true,
+      "asset_hash_matches_binary": true,
+      "contains_productive_market_claims": false,
+      "contains_investment_advice": false,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "44f45833921758437311fcecf87c288c22b979f6",
+    "brief_revision": "44f45833921758437311fcecf87c288c22b979f6",
+    "processing_key": "vu-diag-baseline-brief-20260917:vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
