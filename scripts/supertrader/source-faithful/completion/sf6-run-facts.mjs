@@ -2090,5 +2090,616 @@ export const SF6_RUN_FACTS = Object.freeze({
    }
   }
  },
- "holdout": null
+ "holdout": {
+ "runId": "40007428374",
+ "commit": "d259f2173cc8ac6e705e5a7ef8ecf7f600384acd",
+ "snapshotId": "sts1-85959e4bab0681baa6ed221bee94821e",
+ "snapshotCaptureRun": "39998409317",
+ "datasetVerified": "EXACT",
+ "windowName": "HOLDOUT",
+ "window": {
+  "from": "2008-01-02",
+  "to": "2015-12-31"
+ },
+ "neverOpenedWindow": false,
+ "windowStatus": "PREVIOUSLY_OPENED_ONCE_R14_FOR_OTHER_IMPLEMENTATIONS; SURVIVORSHIP_LIMITED (Tiingo ticker list: 813 of 6 427 listings inactive at the as-of date; 678 delisted segments)",
+ "protocolSha256": "c7702e77eb768b718b57691323afa052c949200379ab7a562b2b1d47366f7c25",
+ "references": {
+  "TURTLE_S1": {
+   "candidateId": "C01",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 713,
+     "reconciliation": true,
+     "tradesSha256": "eab9a0b39dd50a72fffb49aecf565de36e0b4608370dd0dcdc280f54e3376677"
+    },
+    "REF": {
+     "trades": 716,
+     "reconciliation": true,
+     "tradesSha256": "0c53ef4d986d973392302b2d0c89b826f2fdee6818e735f6868b0775fc9c94c3"
+    },
+    "COST-20": {
+     "trades": 801,
+     "reconciliation": true,
+     "tradesSha256": "e1cce47f02a2801b6266edeb93e83f4f237cd4ee3e3cf5bb34294c132832685e"
+    },
+    "COST-50": {
+     "trades": 683,
+     "reconciliation": true,
+     "tradesSha256": "3e96ae73ecbc96e4d812cbdd7605160c3df447b12e9986d7fc8b58ca84ea7dca"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 397,
+     "P2": 319
+    },
+    "byRegime": {
+     "UNKNOWN": 2,
+     "SPY_AT_OR_BELOW_SMA200": 244,
+     "SPY_ABOVE_SMA200": 470
+    },
+    "byLiquidity": {
+     "1M_TO_5M": 270,
+     "5M_TO_25M": 218,
+     "GE_25M": 228
+    },
+    "byYear": {
+     "2008": 117,
+     "2009": 108,
+     "2010": 96,
+     "2011": 76,
+     "2012": 123,
+     "2013": 80,
+     "2014": 60,
+     "2015": 56
+    }
+   }
+  },
+  "TURTLE_S2": {
+   "candidateId": "C02",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 523,
+     "reconciliation": true,
+     "tradesSha256": "d9f4a3ff8c940864462fa21cca5a4a45599f9e33432b12252aa3c9eef7ac5465"
+    },
+    "REF": {
+     "trades": 530,
+     "reconciliation": true,
+     "tradesSha256": "5f90eea423a951f4df8f618747b5a7601219c10827d3fc05a3bc4f853cb8a001"
+    },
+    "COST-20": {
+     "trades": 482,
+     "reconciliation": true,
+     "tradesSha256": "d2507cfe5a3d145f98cbaec47899432e2bcb1ff6deaccd1be53760e53f56d6b1"
+    },
+    "COST-50": {
+     "trades": 391,
+     "reconciliation": true,
+     "tradesSha256": "c0bf577c0a394ee423137e954d5c78f1451f6b51af79728ffc89df57881a8cb4"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 310,
+     "P2": 220
+    },
+    "byRegime": {
+     "UNKNOWN": 2,
+     "SPY_AT_OR_BELOW_SMA200": 192,
+     "SPY_ABOVE_SMA200": 336
+    },
+    "byLiquidity": {
+     "1M_TO_5M": 195,
+     "5M_TO_25M": 181,
+     "GE_25M": 154
+    },
+    "byYear": {
+     "2008": 77,
+     "2009": 87,
+     "2010": 63,
+     "2011": 83,
+     "2012": 82,
+     "2013": 49,
+     "2014": 63,
+     "2015": 26
+    }
+   }
+  },
+  "MINERVINI_SEPA": {
+   "candidateId": "C06",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 543,
+     "reconciliation": true,
+     "tradesSha256": "c20730fa6a1bdab32cfdf62ddead0f466f42e431a12ce2576d450f52804c592d"
+    },
+    "REF": {
+     "trades": 522,
+     "reconciliation": true,
+     "tradesSha256": "9b152403cd480c892dbb4503bed982649bccf13080205d58287059920992feb6"
+    },
+    "COST-20": {
+     "trades": 546,
+     "reconciliation": true,
+     "tradesSha256": "51ad66205c0df89168f52f0d482a62dcb68d05af7f09e74e37aa07b459d83494"
+    },
+    "COST-50": {
+     "trades": 540,
+     "reconciliation": true,
+     "tradesSha256": "185f466471b8d172adde06c3be4fafd8045de05580d693487e68f8e4b2b08e0c"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 255,
+     "P2": 267
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 151,
+     "SPY_ABOVE_SMA200": 371
+    },
+    "byLiquidity": {
+     "GE_25M": 174,
+     "1M_TO_5M": 157,
+     "5M_TO_25M": 191
+    },
+    "byYear": {
+     "2008": 66,
+     "2009": 41,
+     "2010": 68,
+     "2011": 80,
+     "2012": 62,
+     "2013": 53,
+     "2014": 66,
+     "2015": 86
+    }
+   },
+   "fundamentalsSplitConsistency": {
+    "version": "sf6-minervini-fundamentals-split-consistent-1.0.0",
+    "entries": 522,
+    "withEvidence": 278,
+    "withCorrectedQuarter": 7,
+    "withUndeterminableQuarter": 46,
+    "latestYoyChanged": 12,
+    "acceleratingChanged": 15
+   }
+  },
+  "MINERVINI_POWER_PLAY": {
+   "candidateId": "C07",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 427,
+     "reconciliation": true,
+     "tradesSha256": "7317eeb779fa994cad26abba7fce9858769718c2485d38eb15e82d02fcef2629"
+    },
+    "REF": {
+     "trades": 425,
+     "reconciliation": true,
+     "tradesSha256": "0cf093286409d0cb7676dc7f5437079e0c3c673a437524355b039a4205f30e51"
+    },
+    "COST-20": {
+     "trades": 427,
+     "reconciliation": true,
+     "tradesSha256": "94e0e003d8dfa2a6262be8d33a6a1e6af862b44bf6b3b0b4038bd559c4881246"
+    },
+    "COST-50": {
+     "trades": 421,
+     "reconciliation": true,
+     "tradesSha256": "07f474e6cbcb6fffa28468e592460e3a979a5f95db05b6c223d41d720d99ed6c"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 249,
+     "P2": 176
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 156,
+     "SPY_ABOVE_SMA200": 269
+    },
+    "byLiquidity": {
+     "GE_25M": 110,
+     "5M_TO_25M": 153,
+     "1M_TO_5M": 162
+    },
+    "byYear": {
+     "2008": 70,
+     "2009": 87,
+     "2010": 53,
+     "2011": 39,
+     "2012": 23,
+     "2013": 60,
+     "2014": 42,
+     "2015": 51
+    }
+   }
+  },
+  "DARVAS": {
+   "candidateId": "C03",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 11942,
+     "reconciliation": true,
+     "tradesSha256": "c2bfeec708dee93c71f1d8240f2e669ca82b17c2301d91ed03da627c5a46a3de"
+    },
+    "REF": {
+     "trades": 11869,
+     "reconciliation": true,
+     "tradesSha256": "f7805b367114bff72f984a958fb1761e4e5c2deb699bf021e5a0a311ce4397cb"
+    },
+    "COST-20": {
+     "trades": 11300,
+     "reconciliation": true,
+     "tradesSha256": "406905a21bdc29bfc57eda8bd9fd64a31b292271dde9e53167b0a66d01b2bc8b"
+    },
+    "COST-50": {
+     "trades": 6190,
+     "reconciliation": true,
+     "tradesSha256": "f933b2acfe779459e3c8d23d4e0d0be982a8b279372a79c15960446d68b336e3"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 3218,
+     "P2": 8651
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 1384,
+     "SPY_ABOVE_SMA200": 10485
+    },
+    "byLiquidity": {
+     "GE_25M": 5483,
+     "1M_TO_5M": 2234,
+     "5M_TO_25M": 4152
+    },
+    "byYear": {
+     "2008": 679,
+     "2009": 310,
+     "2010": 1035,
+     "2011": 1194,
+     "2012": 1342,
+     "2013": 2927,
+     "2014": 2332,
+     "2015": 2050
+    }
+   }
+  },
+  "KK_BREAKOUT": {
+   "candidateId": "C08",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 5813,
+     "reconciliation": true,
+     "tradesSha256": "3cfd605b19029346dc0f7c1cf267cf1d88258f51a2048b84ecfcdbe84b23e8ea"
+    },
+    "REF": {
+     "trades": 5722,
+     "reconciliation": true,
+     "tradesSha256": "2403f27c2cbc060d621025244474c1a55d23258fd2e72ce4f7b79ec28eafe560"
+    },
+    "COST-20": {
+     "trades": 5331,
+     "reconciliation": true,
+     "tradesSha256": "7b8fbbec6e4d1644a252fcaa3a9fa6f8c09ee1f6a313b70eba19b8bd14bf7704"
+    },
+    "COST-50": {
+     "trades": 3523,
+     "reconciliation": true,
+     "tradesSha256": "47046a9e7e1bc0836ce9977f87675f4a5f282bba370f8b536307608f053a95b5"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 3027,
+     "P2": 2695
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 1661,
+     "SPY_ABOVE_SMA200": 4061
+    },
+    "byLiquidity": {
+     "GE_25M": 1572,
+     "1M_TO_5M": 2091,
+     "5M_TO_25M": 2059
+    },
+    "byYear": {
+     "2008": 748,
+     "2009": 976,
+     "2010": 668,
+     "2011": 635,
+     "2012": 620,
+     "2013": 745,
+     "2014": 661,
+     "2015": 669
+    }
+   }
+  },
+  "POCKET_PIVOT": {
+   "candidateId": "C11",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 1400,
+     "reconciliation": true,
+     "tradesSha256": "41be951bd6018f26953d7448611940664c849d07ad981eed7fd81c98d508fd4f"
+    },
+    "REF": {
+     "trades": 1415,
+     "reconciliation": true,
+     "tradesSha256": "64be0a52b4a42f1b8871181b1e9cb77e2f1a812fb913302baec33154c0ae1256"
+    },
+    "COST-20": {
+     "trades": 1426,
+     "reconciliation": true,
+     "tradesSha256": "ebfb1a5513e0c720f532326b558b74e5db412121aa2217790691404fe3b96ce9"
+    },
+    "COST-50": {
+     "trades": 1396,
+     "reconciliation": true,
+     "tradesSha256": "0a9dafcf6fe257ea14c684bd74e7de961f4edd10d0776cb66091ec924f78a228"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 760,
+     "P2": 655
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 581,
+     "SPY_ABOVE_SMA200": 834
+    },
+    "byLiquidity": {
+     "5M_TO_25M": 462,
+     "GE_25M": 443,
+     "1M_TO_5M": 510
+    },
+    "byYear": {
+     "2008": 257,
+     "2009": 150,
+     "2010": 152,
+     "2011": 201,
+     "2012": 171,
+     "2013": 122,
+     "2014": 172,
+     "2015": 190
+    }
+   }
+  },
+  "BUYABLE_GAP_UP": {
+   "candidateId": "C12",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 2114,
+     "reconciliation": true,
+     "tradesSha256": "e8bfe81bfe11f7ef3b9ca10b54e8396b4c224f0198fc0b234c01248f5da5a0c7"
+    },
+    "REF": {
+     "trades": 2116,
+     "reconciliation": true,
+     "tradesSha256": "2dea46d18f01b61a069c8c46441e63b7819b9790ad8ae76982434137b1464045"
+    },
+    "COST-20": {
+     "trades": 2214,
+     "reconciliation": true,
+     "tradesSha256": "3c7eef3cfffdadf500e541a9f8b790475398ba6fc1fb1eaad7e22099c83fec04"
+    },
+    "COST-50": {
+     "trades": 2178,
+     "reconciliation": true,
+     "tradesSha256": "3f7ceaf7e007a4e6f708b319fc5c4cd58d32ea3cdaa9b62d99ae516eee127b5e"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 1065,
+     "P2": 1051
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 621,
+     "SPY_ABOVE_SMA200": 1495
+    },
+    "byLiquidity": {
+     "1M_TO_5M": 674,
+     "5M_TO_25M": 715,
+     "GE_25M": 727
+    },
+    "byYear": {
+     "2008": 294,
+     "2009": 226,
+     "2010": 286,
+     "2011": 259,
+     "2012": 283,
+     "2013": 218,
+     "2014": 302,
+     "2015": 248
+    }
+   }
+  },
+  "WEINSTEIN_INVESTOR": {
+   "candidateId": "C04",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 989,
+     "reconciliation": true,
+     "tradesSha256": "ef0a731123b57dc43aad992eb7b109cf22f7eb0d16a43b2f73d0baf44d9abd12"
+    },
+    "REF": {
+     "trades": 995,
+     "reconciliation": true,
+     "tradesSha256": "02aadd70b8beebddb5ad00666711156f7f9320860c8f96f65455ee241e7e11a0"
+    },
+    "COST-20": {
+     "trades": 977,
+     "reconciliation": true,
+     "tradesSha256": "ab62186025f05b115a3c1a8b75df11b9d52a4cef03f315c5eb8ac2efeb579171"
+    },
+    "COST-50": {
+     "trades": 1004,
+     "reconciliation": true,
+     "tradesSha256": "44dc902ac46dcbfefc7aec8108f60da1558ebff63ca11bed841e08c1491ebe8a"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 662,
+     "P2": 333
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 591,
+     "SPY_ABOVE_SMA200": 404
+    },
+    "byLiquidity": {
+     "1M_TO_5M": 294,
+     "5M_TO_25M": 327,
+     "GE_25M": 374
+    },
+    "byYear": {
+     "2008": 330,
+     "2009": 154,
+     "2010": 72,
+     "2011": 106,
+     "2012": 96,
+     "2013": 65,
+     "2014": 77,
+     "2015": 95
+    }
+   }
+  },
+  "WEINSTEIN_TRADER": {
+   "candidateId": "C05",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 1397,
+     "reconciliation": true,
+     "tradesSha256": "f95c152901a4b49f2557bcc88dc072631720d896f09ab0a4fb81393ffd2c43fd"
+    },
+    "REF": {
+     "trades": 1296,
+     "reconciliation": true,
+     "tradesSha256": "6788a72eb2fb6bc5f88abb7276fb82f45e5dbe1277f76ab5508b9e1343d36c7d"
+    },
+    "COST-20": {
+     "trades": 1417,
+     "reconciliation": true,
+     "tradesSha256": "e315f573089ce04cca0c9efa1e575117ec67caf2076a4ba8600c11d84625796f"
+    },
+    "COST-50": {
+     "trades": 1377,
+     "reconciliation": true,
+     "tradesSha256": "4b24b01e3461aaec837185df4a259e6698ab5da1b9ad1b19929f429236ec2574"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 842,
+     "P2": 454
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 654,
+     "SPY_ABOVE_SMA200": 642
+    },
+    "byLiquidity": {
+     "5M_TO_25M": 458,
+     "GE_25M": 395,
+     "1M_TO_5M": 443
+    },
+    "byYear": {
+     "2008": 339,
+     "2009": 189,
+     "2010": 145,
+     "2011": 169,
+     "2012": 125,
+     "2013": 94,
+     "2014": 109,
+     "2015": 126
+    }
+   }
+  },
+  "HOLY_GRAIL_W_RAS97": {
+   "candidateId": "C13",
+   "neverOpenedWindow": false,
+   "costLevels": {
+    "COST-0": {
+     "trades": 3336,
+     "reconciliation": true,
+     "tradesSha256": "345cda3f9189efac33f3748ac84506b13104772a06b24406650c7a0c013002be"
+    },
+    "REF": {
+     "trades": 3253,
+     "reconciliation": true,
+     "tradesSha256": "b571ec14825eecd0905f6647036e4f6b875a0db02f347edd83f0ea8193cfda20"
+    },
+    "COST-20": {
+     "trades": 3343,
+     "reconciliation": true,
+     "tradesSha256": "30c8b95b0210d4473e398aa1701288f99513baa30d4d308ae154242f3bc8fdcf"
+    },
+    "COST-50": {
+     "trades": 3067,
+     "reconciliation": true,
+     "tradesSha256": "8a4e609436b8059dc695388426aabc8b34455eaf437f264610feb896e65c9e99"
+    }
+   },
+   "splits": {
+    "byPeriod": {
+     "P1": 1508,
+     "P2": 1745
+    },
+    "byRegime": {
+     "SPY_AT_OR_BELOW_SMA200": 955,
+     "SPY_ABOVE_SMA200": 2298
+    },
+    "byLiquidity": {
+     "5M_TO_25M": 1123,
+     "GE_25M": 901,
+     "1M_TO_5M": 1229
+    },
+    "byYear": {
+     "2008": 498,
+     "2009": 365,
+     "2010": 322,
+     "2011": 323,
+     "2012": 402,
+     "2013": 458,
+     "2014": 444,
+     "2015": 441
+    }
+   }
+  }
+ },
+ "models": {
+  "SF6-MODEL-PP-STOP-SIGNAL-DAY-LOW": {
+   "id": "SF6-MODEL-PP-STOP-SIGNAL-DAY-LOW",
+   "candidateId": "C11",
+   "phaseClosed": "INITIAL_STOP",
+   "trades": 3403,
+   "reconciliation": true
+  },
+  "SF6-MODEL-HG-TRAIL-SWING-LOWS": {
+   "id": "SF6-MODEL-HG-TRAIL-SWING-LOWS",
+   "candidateId": "C13",
+   "phaseClosed": "POSITION_MANAGEMENT",
+   "trades": 1823,
+   "reconciliation": true
+  },
+  "SF6-DATA-DAR-ATH-VERIFIED-LISTING": {
+   "id": "SF6-DATA-DAR-ATH-VERIFIED-LISTING",
+   "candidateId": "C03",
+   "phaseClosed": null,
+   "trades": 3349,
+   "reconciliation": true
+  }
+ }
+}
 });

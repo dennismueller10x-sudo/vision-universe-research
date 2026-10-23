@@ -6,19 +6,19 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 
 | # | Strategie | Abschlusszustand | source fidelity | setup completeness | entry completeness | stop completeness | position management | exit completeness | portfolio accounting | pit data integrity | corporate action integrity | execution realism | backtest reproducibility | out of sample evidence | manual review requirements | certification readiness | live readiness |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| C01 | SF_TURTLE_S1 | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | TEIL | TEIL | PASS* | PASS | NICHT BELEGT | PASS | GESPERRT | GESPERRT |
-| C02 | SF_TURTLE_S2 | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | TEIL | TEIL | PASS* | PASS | NICHT BELEGT | PASS | GESPERRT | GESPERRT |
-| C03 | SF_DARVAS_BOX | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | MA | MA | MA | TEIL | PASS | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C04 | SF_WEINSTEIN_INVESTOR | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C05 | SF_WEINSTEIN_TRADER | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C06 | SF_MINERVINI_SEPA_VCP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | TEIL | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C07 | SF_MINERVINI_POWER_PLAY | RESEARCH_COMPLETE_WITH_EXCEPTIONS | TEIL | TEIL | MA | MA | TEIL | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C08 | SF_KK_BREAKOUT | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | MA | TEIL | PASS | MA | MA | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
+| C01 | SF_TURTLE_S1 | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | TEIL | TEIL | PASS* | PASS | PASS* | PASS | GESPERRT | GESPERRT |
+| C02 | SF_TURTLE_S2 | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS | PASS* | PASS* | PASS* | PASS* | PASS* | PASS* | TEIL | TEIL | PASS* | PASS | PASS* | PASS | GESPERRT | GESPERRT |
+| C03 | SF_DARVAS_BOX | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | MA | MA | MA | TEIL | PASS | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C04 | SF_WEINSTEIN_INVESTOR | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C05 | SF_WEINSTEIN_TRADER | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C06 | SF_MINERVINI_SEPA_VCP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | TEIL | TEIL | MA | MA | TEIL | TEIL | PASS* | TEIL | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C07 | SF_MINERVINI_POWER_PLAY | RESEARCH_COMPLETE_WITH_EXCEPTIONS | TEIL | TEIL | MA | MA | TEIL | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C08 | SF_KK_BREAKOUT | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | MA | TEIL | PASS | MA | MA | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
 | C09 | SF_KK_EPISODIC_PIVOT | VALIDATION_BLOCKED | PASS* | MA | MA | MA | MA | MA | PASS* | TEIL | NICHT BELEGT | MA | PASS* | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
 | C10 | SF_KK_PARABOLIC_SHORT | VALIDATION_BLOCKED | PASS* | MA | MA | MA | MA | MA | TEIL | TEIL | NICHT BELEGT | GESPERRT | PASS* | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C11 | SF_MOKA_POCKET_PIVOT | SOURCE_BLOCKED | PASS* | MA | TEIL | TEIL | MA | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C12 | SF_MOKA_BUYABLE_GAP_UP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | TEIL | MA | MA | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
-| C13 | SF_RASCHKE_HOLY_GRAIL | SOURCE_BLOCKED | PASS* | MA | TEIL | MA | TEIL | MA | PASS* | PASS* | PASS* | PASS* | PASS | NICHT BELEGT | TEIL | GESPERRT | GESPERRT |
+| C11 | SF_MOKA_POCKET_PIVOT | SOURCE_BLOCKED | PASS* | MA | TEIL | TEIL | MA | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C12 | SF_MOKA_BUYABLE_GAP_UP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | PASS* | TEIL | TEIL | MA | MA | TEIL | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
+| C13 | SF_RASCHKE_HOLY_GRAIL | SOURCE_BLOCKED | PASS* | MA | TEIL | MA | TEIL | MA | PASS* | PASS* | PASS* | PASS* | PASS | PASS* | TEIL | GESPERRT | GESPERRT |
 
 ## Evidenz je Strategie
 
@@ -34,8 +34,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: TEIL – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR
 - **CORPORATE_ACTION_INTEGRITY**: TEIL – DQ-K5: 15 of 820 reference trades directly exposed (1.83 %); 128 unchanged, 646 removed, 46 changed (knock-on 678)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 716 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: PASS – none
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -53,8 +53,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: TEIL – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR
 - **CORPORATE_ACTION_INTEGRITY**: TEIL – DQ-K5: 11 of 559 reference trades directly exposed (1.97 %); 324 unchanged, 223 removed, 12 changed (knock-on 224)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 530 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: PASS – none
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -72,8 +72,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 20 of 19556 reference trades directly exposed (0.10 %); 18058 unchanged, 88 removed, 1410 changed (knock-on 1493)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 11869 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 8 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -91,8 +91,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: TEIL – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 0 of 1348 reference trades directly exposed (0.00 %); 311 unchanged, 121 removed, 916 changed (knock-on 1037)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 995 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 14 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -110,8 +110,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: TEIL – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 4 of 1808 reference trades directly exposed (0.22 %); 373 unchanged, 473 removed, 962 changed (knock-on 1431)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 1296 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 12 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -129,8 +129,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: TEIL – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: MIN-SF-TT-8
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 0 of 954 reference trades directly exposed (0.00 %); 901 unchanged, 14 removed, 39 changed (knock-on 53)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 522 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 11 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -148,8 +148,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 10 of 1007 reference trades directly exposed (0.99 %); 108 unchanged, 128 removed, 771 changed (knock-on 889)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 425 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 6 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -167,8 +167,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 31 of 9114 reference trades directly exposed (0.34 %); 2809 unchanged, 1521 removed, 4784 changed (knock-on 6278)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 5722 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 7 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -224,8 +224,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 7 of 1872 reference trades directly exposed (0.37 %); 187 unchanged, 627 removed, 1058 changed (knock-on 1678)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 1415 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 7 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -243,8 +243,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 15 of 3415 reference trades directly exposed (0.44 %); 1281 unchanged, 647 removed, 1487 changed (knock-on 2121)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 2116 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 8 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
@@ -262,8 +262,8 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 - **PIT_DATA_INTEGRITY**: PASS* – snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule
 - **CORPORATE_ACTION_INTEGRITY**: PASS* – DQ-K5: 30 of 4025 reference trades directly exposed (0.75 %); 375 unchanged, 1250 removed, 2400 changed (knock-on 3622)
 - **EXECUTION_REALISM**: PASS* – daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)
-- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the authoritative reference trade hashes: TRADE_COUNT_EQUAL
-- **OUT_OF_SAMPLE_EVIDENCE**: NICHT BELEGT – no untouched holdout; DEV 2016-2026 read by earlier rounds
+- **BACKTEST_REPRODUCIBILITY**: PASS – frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL
+- **OUT_OF_SAMPLE_EVIDENCE**: PASS* – holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 3253 reference trades
 - **MANUAL_REVIEW_REQUIREMENTS**: TEIL – 3 essential manual source decisions substituted by declared model assumptions
 - **CERTIFICATION_READINESS**: GESPERRT – failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS
 - **LIVE_READINESS**: GESPERRT – LIVE_NOT_APPROVED (no live activation, no broker, no orders)
