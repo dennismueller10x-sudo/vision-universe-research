@@ -22,8 +22,11 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const require = createRequire(import.meta.url);
+const BacktestSource = require(join(ROOT, "quant/engines/backtest-artifact-consistency.js"));
 const P = (...p) => join(ROOT, ...p);
 const json = (p) => JSON.parse(readFileSync(P(p), "utf8"));
 const gz = (p) => JSON.parse(gunzipSync(readFileSync(P(p))).toString("utf8"));
@@ -63,6 +66,12 @@ const pattern = existsSync(P("quant/data/product/pattern-research-v1/study.json"
 const patternMethod = json("quant/methodology/pattern-research-v1.json");
 const evidence = json("quant/data/product/evidence-status-v1.json");
 const signal = existsSync(P("quant/data/product/signal-backtest-v1.json")) ? json("quant/data/product/signal-backtest-v1.json") : null;
+const totalReturnQuality = existsSync(P("quant/data/product/total-return-quality-v1.json")) ? json("quant/data/product/total-return-quality-v1.json") : null;
+const signalSource = BacktestSource.signalSourceStatus(signal, totalReturnQuality);
+if (signalSource.state === "INCONSISTENT") throw new Error("Signal- und Total-Return-Qualitätsartefakt passen nicht zusammen: " + signalSource.errors.join(","));
+const signalSurvivorship = signal && signal.survivorshipSensitivity && signal.survivorshipSensitivity.computed
+  ? { reason: "PARTIAL_SENSITIVITY_ONLY", value: "Hauptstudie nutzt heute gelistete Titel; " + signal.survivorshipSensitivity.delistedInVariant + " delistete Listings ab " + signal.survivorshipSensitivity.window.from + " nur in der Sensitivitätsrechnung" }
+  : { reason: "TODAYS_UNIVERSE_ONLY", value: "heute gelistetes Universum, " + longEndedEarly + " früh endende Reihen" };
 const setup = existsSync(P("quant/data/product/setup-backtest-v1.json")) ? json("quant/data/product/setup-backtest-v1.json") : null;
 const returnSemantics = json("quant/methodology/return-semantics-v1.json");
 const backtestModule = returnSemantics.modules.find((m) => m.id === "backtest");
@@ -74,16 +83,26 @@ const assets = [
   { id: "strategyAssignments", label: "Strategie-Zuordnungen und Wechsel", count: strategyHistory.published || 0, from: strategyHistory.from || null, to: strategyHistory.to || null, spanDays: daysBetween(strategyHistory.from, strategyHistory.to) },
   { id: "membershipSnapshots", label: "Index-Zugehörigkeit (historisch)", count: Math.min(...Object.values(membership).map((d) => d.length)), byIndex: Object.fromEntries(Object.entries(membership).map(([k, v]) => [k, v.length])), from: Object.values(membership).flat().sort()[0] || null },
   { id: "priceSplitAdjusted", label: "Kurshistorie splitbereinigt", weekly: { titles: longIndex.count, from: longFirst, grain: "WEEKLY", endedBeforeMarch2026: longEndedEarly }, daily: { titlesFullHistory: golden.length, titlesLastYear: dailyShort } },
-  { id: "priceTotalReturn", label: "Kurshistorie Gesamtrendite", weekly: { titles: 0, reason: "TOTAL_RETURN_SERIES_NOT_PUBLISHED" }, daily: { titles: golden.filter((g) => g.totalReturn).length, tickers: golden.map((g) => g.ticker) } },
+  { id: "priceTotalReturn", label: "Kurshistorie Gesamtrendite", weekly: { unit: signalSource.coverage ? signalSource.coverage.unit : "SECURITY_PRICE_SERIES", titles: signalSource.coverage ? signalSource.coverage.withTotalReturn : 0,
+      eligibleTitles: signalSource.coverage ? signalSource.coverage.titles : 0, share: signalSource.coverage ? signalSource.coverage.share : 0,
+      state: signalSource.state, reason: signalSource.reason, contract: signalSource.contract, asOf: signalSource.asOf, generatedAt: signalSource.generatedAt },
+    daily: { titles: golden.filter((g) => g.totalReturn).length, tickers: golden.map((g) => g.ticker) } },
   { id: "regimeHistory", label: "Marktphasen-Historie", count: regimeDates.length, from: regimeDates[0] || null, derivable: { from: spy.from, source: "SPY täglich (Kurs)" } },
   { id: "patternObservations", label: "Muster-Beobachtungen", studyFindings: pattern ? (pattern.findings || []).length : null, robust: pattern ? (pattern.findings || []).filter((f) => f.verdict === "ROBUST").length : null, matchSnapshots: patternHoldDates.length },
   { id: "technicalStates", label: "Technische Zustände", publishedSnapshots: 1, reconstructible: { titles: golden.length, method: "PIT-Wiederholung der technischen Auswertung" } },
   { id: "levels", label: "Einstieg, Invalidierung, Ziele", publishedSnapshots: setupDates.length, reconstructible: { titles: golden.length } },
   { id: "corporateActions", label: "Corporate Actions", titles: golden.length, splits: golden.reduce((s, g) => s + g.splits, 0), dividends: golden.reduce((s, g) => s + g.dividends, 0), universe: "nur im privaten Historienspeicher" },
-  { id: "benchmark", label: "Vergleichsindex", series: "SPY", from: spy.from, to: spy.to, basis: "SPLIT_ADJUSTED_PRICE", totalReturn: false, reason: (returnSemantics.modules.find((m) => m.id === "benchmark") || {}).activation?.reason || null },
+  { id: "benchmark", label: "Vergleichsindex", series: "SPY",
+    from: signalSource.benchmark ? signalSource.benchmark.from : spy.from,
+    to: signalSource.benchmark ? signalSource.benchmark.to : spy.to,
+    basis: signalSource.benchmark && signalSource.benchmark.state === "TOTAL_RETURN_RECONSTRUCTED" ? "TOTAL_RETURN" : "SPLIT_ADJUSTED_PRICE",
+    totalReturn: !!(signalSource.benchmark && signalSource.benchmark.state === "TOTAL_RETURN_RECONSTRUCTED"),
+    reason: signalSource.benchmark ? signalSource.benchmark.state : ((returnSemantics.modules.find((m) => m.id === "benchmark") || {}).activation?.reason || null) },
   { id: "costs", label: "Kosten und Slippage", roundTripBps: patternMethod.frictions.roundTripBps, slippageBps: patternMethod.frictions.slippageBps },
   { id: "pitFundamentals", label: "Fundamentaldaten point-in-time", ready: fundamentals.BACKTEST_PIT_FUNDAMENTAL_READY, of: fundamentals.denominator.PRODUCT_TITLES },
-  { id: "survivorship", label: "Überlebende-Kontrolle", delistedInUniverse: 0, membershipSnapshots: Math.min(...Object.values(membership).map((d) => d.length)), state: "NOT_CONTROLLED" }
+  { id: "survivorship", label: "Überlebende-Kontrolle", delistedInUniverse: 0, membershipSnapshots: Math.min(...Object.values(membership).map((d) => d.length)), state: "NOT_CONTROLLED",
+    sensitivityDelisted: signal && signal.survivorshipSensitivity ? signal.survivorshipSensitivity.delistedInVariant : 0,
+    sensitivityFrom: signal && signal.survivorshipSensitivity ? signal.survivorshipSensitivity.window.from : null }
 ];
 
 /* ---------- Je Backtest-Art ---------- */
@@ -106,16 +125,21 @@ const kinds = [
   { id: "C", key: "SIGNAL_BACKTEST", label: "Signal-Backtest", returnType: signal ? signal.returnType : null,
     gates: [gate("pit", "Point-in-Time", !!signal && signal.rules.every((r) => r.checks.pit.state === "PASS"), signal ? "abgeschnittene und verfälschte Zukunft je Regel geprüft" : "keine Studie", "PIT_NOT_PROVEN"),
       gate("history", "Wochenhistorie", longIndex.count >= 1000, longIndex.count + " Titel seit " + longFirst, "HISTORY_TOO_SHORT"),
-      gate("totalReturn", "Gesamtrendite", false, "nur splitbereinigter Kurs", "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
-      gate("survivorship", "Überlebende-Kontrolle", false, "heute gelistetes Universum, " + longEndedEarly + " früh endende Reihen", "TODAYS_UNIVERSE_ONLY")],
+      gate("totalReturn", "Gesamtrendite", signalSource.state === "AVAILABLE" && signal && signal.returnType === "TOTAL_RETURN",
+        signalSource.state === "AVAILABLE" ? signalSource.coverage.withTotalReturn + " von " + signalSource.coverage.titles + " Wertpapier-Zeitreihen (" + (signalSource.coverage.share * 100).toFixed(1) + " %), " + signalSource.contract : signalSource.reason,
+        signalSource.reason || "TOTAL_RETURN_NOT_CONFIRMED"),
+      gate("benchmark", "Benchmark auf derselben Renditebasis", signalSource.studyBenchmark.state === "PASS",
+        signalSource.studyBenchmark.id + " · " + signalSource.studyBenchmark.basis + " · " + signalSource.studyBenchmark.asOf, "STUDY_BENCHMARK_NOT_CONFIRMED"),
+      gate("survivorship", "Überlebende-Kontrolle", false, signalSurvivorship.value, signalSurvivorship.reason)],
     rules: ruleSummary(signal) },
   { id: "D", key: "STRATEGY_BACKTEST", label: "Strategie-Backtest", returnType: backtestModule.basis,
     gates: [gate("membership", "historische Index-Zugehörigkeit", membershipMin >= 24, membershipMin + " Stichtage je Index (nötig 24 Monatsstände)", "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"),
-      gate("totalReturn", "Gesamtrendite des Universums", false, "nur " + golden.length + " Titel mit Gesamtrendite", "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
+      gate("totalReturn", "tägliche Gesamtrendite im veröffentlichten Datenbestand", false, golden.length + " Referenztitel im Repository; vollständige Tageshistorie nur im privaten Historienspeicher", "FULL_DAILY_TOTAL_RETURN_NOT_PUBLISHED"),
       gate("pitFactors", "Faktorhistorie point-in-time", factorDates.length >= 24, factorDates.length + " Faktor-Snapshots seit " + factorDates[0], "FACTOR_HISTORY_TOO_SHORT"),
       gate("rebalance", "Rebalancing-Vertrag", rebalance.length > 0, "Profile: " + rebalance.join(", "), "NO_REBALANCE_CONTRACT"),
       gate("costs", "Kosten", true, patternMethod.frictions.roundTripBps + " + " + patternMethod.frictions.slippageBps + " bps", null),
-      gate("benchmark", "Vergleichsindex mit Gesamtrendite", false, "SPY nur als Kurs", "NO_INDEX_LEVEL_SERIES_PUBLISHED")],
+      gate("benchmark", "Vergleichsindex mit Gesamtrendite", !!(signalSource.benchmark && signalSource.benchmark.state === "TOTAL_RETURN_RECONSTRUCTED"),
+        signalSource.benchmark ? signalSource.benchmark.state + ", " + signalSource.benchmark.from + " bis " + signalSource.benchmark.to : "Benchmark nicht bestätigt", "NO_INDEX_LEVEL_SERIES_PUBLISHED")],
     note: "Bleibt geschlossen, bis die Index-Zugehörigkeit historisch vorliegt. Das heutige Universum wird nie eingesetzt." },
   { id: "E", key: "FACTOR_RANKING_BACKTEST", label: "Faktor-/Ranking-Backtest", returnType: "TOTAL_RETURN",
     gates: [gate("factorHistory", "Faktorhistorie", factorDates.length >= 24, factorDates.length + " Snapshots über " + daysBetween(factorDates[0], factorDates.at(-1)) + " Tage", "FACTOR_HISTORY_TOO_SHORT"),
@@ -141,11 +165,17 @@ for (const k of kinds) if (!k.reasons) k.reasons = k.gates.filter((g) => g.state
 
 const out = {
   schemaVersion: "backtest-readiness-2.0.0", generatedAt: new Date().toISOString(),
+  signalStudy: { asOf: signalSource.asOf, generatedAt: signalSource.generatedAt, returnType: signalSource.returnType || null,
+    studySchemaVersion: signalSource.studySchemaVersion || null, studyEngineVersion: signalSource.studyEngineVersion || null,
+    qualitySchemaVersion: signalSource.qualitySchemaVersion || null, contract: signalSource.contract || null,
+    corporateActionContract: signalSource.corporateActionContract || null, benchmarkContract: signalSource.benchmarkContract || null,
+    totalReturn: { state: signalSource.state, reason: signalSource.reason, contract: signalSource.contract, coverage: signalSource.coverage },
+    benchmark: signalSource.benchmark, studyBenchmark: signalSource.studyBenchmark },
   returnContract: { technicalSetupMomentum: "SPLIT_ADJUSTED_PRICE", backtestPortfolioBenchmark: backtestModule.basis, source: "quant/methodology/return-semantics-v1.json" },
   assets, kinds,
   levers: [
     { id: "dailyHistoryInPipeline", plain: "Setup-Wiederholung im Pipeline-Lauf mit dem privaten Historienspeicher (--source .market-cache/tiingo/daily)", unlocks: ["B"] },
-    { id: "weeklyTotalReturn", plain: "Wöchentliche Gesamtrendite-Reihen neben den splitbereinigten veröffentlichen", unlocks: ["C"] },
+    { id: "weeklyTotalReturn", plain: "Kanonische Gesamtrendite-Abdeckung weiter überwachen und qualitätsgeprüft erweitern", unlocks: [] },
     { id: "delistedTitles", plain: "Delistete Titel mit Kurshistorie in das Studienuniversum aufnehmen", unlocks: ["B", "C", "F"] },
     { id: "membershipHistory", plain: "Monatliche historische Index-Zugehörigkeit (≥ 24 Stände)", unlocks: ["D", "E"] }
   ]
