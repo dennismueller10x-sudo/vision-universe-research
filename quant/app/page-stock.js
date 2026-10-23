@@ -759,8 +759,8 @@
    */
   async function render(main, ticker, ctx) {
     var api = ctx.api, disposers = [];
-    /* Stile der Aktienseite laden parallel zu den Daten (app.js#QXStockCss); gezeichnet wird erst mit ihnen. */
-    var cssReady = global.QXStockCss ? global.QXStockCss() : Promise.resolve(true);
+    /* Stile der Aktienseite laden parallel zu den Daten (app.js#QXLoadStockCss); gezeichnet wird erst mit ihnen. */
+    var cssReady = global.QXLoadStockCss ? global.QXLoadStockCss() : Promise.resolve(true);
     var page = el("article", { class: "qx-stock q-stock qv-stock" });
     main.append(page);
     var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
@@ -953,6 +953,9 @@
     var einCard = grid.querySelector("#einordnung");
     if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) {
       var zahlen = X.section("Wie verdient das Unternehmen – und wie teuer ist die Aktie?", null, figures, null, "Unternehmenszahlen", "zahlen");
+      /* Die Kennzahlen sind eine seitlich wischbare Reihe - per Tastatur erreichbar und benannt (axe scrollable-region-focusable). */
+      var row = zahlen.querySelector(".q-stats");
+      if (row) { row.setAttribute("tabindex", "0"); row.setAttribute("role", "group"); row.setAttribute("aria-label", "Unternehmenszahlen – seitlich wischen oder mit den Pfeiltasten blättern"); }
       if (einCard) einCard.append(sub(zahlen)); else grid.append(card(zahlen));
     }
 

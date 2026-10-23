@@ -128,7 +128,7 @@
   global.QXChartbildCss = chartbildCss;
   /* Stile der Aktienseite (UI-Konzept 23.10.2026) - nur dort gebraucht, deshalb nicht im Buendel jeder Ansicht. */
   var STOCK_CSS = "/quant/app/stock.css", stCss = null;
-  global.QXStockCss = function () {
+  global.QXLoadStockCss = function () {
     if (!stCss) stCss = new Promise(function (ok) {
       var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = STOCK_CSS + (own ? "?v=" + own.id : "");
       l.onload = function () { ok(true); }; l.onerror = function () { stCss = null; ok(false); };
