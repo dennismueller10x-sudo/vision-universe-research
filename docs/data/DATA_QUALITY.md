@@ -13,7 +13,7 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-PX-1 | ERROR | Reihen sind sortiert, ohne Doppeldaten, haben nur positive Kurse, und der Kopf (`to`, `barCount`) passt zum Inhalt | CPTAF, DMN mit Kurs 0 |
 | DQ-PX-2 | WARN | Reihen tragen die letzte abgeschlossene Sitzung; Histogramm des Rückstands | 53 Reihen ≥ 5 Sitzungen alt (AVB, LEG, WBS …) |
 | DQ-PX-3 | WARN | kein Tagessprung über ±60 % in split-bereinigten Reihen; ganzzahliger Faktor = Split-Verdacht | AMOD 1,17 → 3,49 (Faktor 3) |
-| DQ-PX-4 | ERROR | Tages- und Wochenreihe zeigen am selben Tag denselben Schluss (eine Preiswahrheit) | – |
+| DQ-PX-4 | ERROR | Tages- und Wochenreihe zeigen am selben Tag denselben Schluss (eine Preiswahrheit). Nur identische Stichtage, Toleranz eine Rundungseinheit (`roundClose`: Cent ab 1 $, vier gültige Stellen darunter); Befund als `LEVEL` (ganze Überlappung um einen Faktor daneben, mit Splitfaktor) oder `POINT` | 22./23.10.2026: AMTD ×60, DKI ×50, CAPS ×30, MBRX ×20, OBAI ×20, FRGT ×10, REVB ×7, EHGO ×5, GP ×5 (Reverse-Splits nach dem Wochenlauf) |
 | DQ-PX-5 | ERROR | die Aktienseite zeigt den letzten Schluss ihrer Reihe | – |
 | DQ-PR-1 | ERROR | Discover-Aktienindex und Aktienseiten sind deckungsgleich | – |
 | DQ-PR-2 | ERROR | jeder ausgelieferte Pfad (Chartreihen, Supertrader-Kartenlinks) existiert | 4 Supertrader-Charts, 11 Kartenlinks |
@@ -33,6 +33,17 @@ WARN   DQ-IX-1 [7/628]
 
 Die ERROR-Befunde sind im Code behoben. Sie verschwinden aus den Daten, sobald die jeweiligen Läufe neu erzeugt haben.
 Deshalb prüft `core-ci.yml` auf PRs nur als Bericht und **streng nur im täglichen Lauf gegen `main`**.
+
+## Reparatur DQ-PX-4 (Wochenreihe nach einem Split)
+
+Ein Split landet am Morgen danach in der Tagesreihe, in der Wochenreihe erst beim nächsten Lauf von `long-series.yml`.
+Deshalb läuft dienstags bis samstags um 04:20 UTC (nach dem Nachtlauf) der **Reparaturlauf**:
+
+1. `node scripts/market/long-series-repair-plan.mjs` vergleicht die committeten Reihen (kein Abruf). Ohne Befund endet der Lauf ohne Speicherzugriff und ohne Commit.
+2. Nur die genannten Titel werden aus der Historienablage neu gebaut (`publish-long-series.mjs --only`). Bei mehr als 40 Titeln baut er nichts und ist rot: das ist ein Systemfehler, kein Split-Nachzug.
+3. Nachprüfung derselben Titel. Was dann noch abweicht, wird auf den Stand vor dem Lauf zurückgesetzt, nicht veröffentlicht, und macht den Lauf rot.
+
+Von Hand: `long-series.yml` → *Run workflow* mit `mode = repair` (findet die Titel selbst) oder `only = AMTD,GP`.
 
 ## Neue Regel hinzufügen
 
