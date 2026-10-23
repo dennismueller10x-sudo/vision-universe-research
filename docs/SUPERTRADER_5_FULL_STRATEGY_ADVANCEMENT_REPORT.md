@@ -186,11 +186,37 @@ Eine bewusst offen gelassene Einordnung aus dem Code-Review: Bei Darvas liegt de
 
 ## Snapshot-Lauf
 
-Maßgeblicher Lauf [39770019164](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39770019164), Commit `6a484c59c`, Workflow-Modus `sf5-lifecycle`:
+Maßgeblicher Lauf seit dem Abschluss-PR: [39903861586](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39903861586), Commit `76d391a7e`, Workflow-Modus `sf5-lifecycle` (23.10.2026).
+
+- **Datensatz:** wieder `EXACT` (`3ea6443de70c…`), derselbe wie unten.
+- **Fingerabdrücke:**
+  - Research-Code `1a8c6823f635…` ist identisch mit dem aktuellen Code.
+  - Engine (AG-3) `ae2a51ed86ae…` ist unverändert.
+  - Varianten-Fingerabdruck `f7b0d0812bf1…` wurde vor dem Lauf festgeschrieben.
+  - Die SIC-Historie der Repository-Daten ist vollständig gehasht (`54d638c742a8…`, 5.758 CIKs).
+- **Prüfungen:**
+  - Alle 41 Varianten sind abgestimmt (Ledger-Replay, Endbestand PASS).
+  - Jede Referenz ist deterministisch.
+  - **Alle 7 Referenzen sind trade-genau gleich wie im Vorlauf 39770019164**: Trades, geschlossen, offen und Ausstiegsgründe.
+  - Alle 39 früheren Varianten haben dieselben Trade-Zahlen.
+  - Neu sind nur die zwei Weinstein-Varianten `ALT-SIC3-GROUP-PROXY`.
+- **Kennzahlen:** versiegelt (Ablage `20261023T062300Z`).
+
+| Weinstein-Variante `ALT-SIC3-GROUP-PROXY` | Investor | Trader |
+|---|---|---|
+| Trades (REF zum Vergleich) | 1.366 (1.348) | 1.773 (1.808) |
+| vorbereitete Wochen-Setups | 1.259.819 | 1.199.500 |
+| davon Gruppe bekannt / unbekannte Mitgliedschaft / zu wenige Mitglieder / zu kurze Historie | 72 % / 20 % / 5 % / 3 % | 70 % / 22 % / 5 % / 3 % |
+| davon Gruppe unter fallender MA30w (gesperrt) | 105.182 (8,3 %) | 103.890 (8,7 %) |
+| Sperrprüfungen `GROUP_PROXY_BELOW_FALLING_MA30W` (je Sitzung der Orderwoche gezählt) | 502.510 | 497.906 |
+
+Was die Zählungen zeigen (keine Performanceaussage): Bei etwa jedem zwölften Setup verhindert der Gruppenfilter den Kauf. Die Zahl der Trades ändert sich trotzdem kaum (Investor +1 %, Trader −2 %), weil das Kapital an die Grenze von 20 Positionen gebunden ist: Frei gebliebene Plätze und das Kapital aus WEIN-VOL5-Verkäufen nutzen andere Setups. Für jedes fünfte Setup ist die Gruppe unbekannt; dort filtert die Variante nicht. Die Variante bleibt eine Research-Referenz und ist keine Regel.
+
+Vorlauf [39770019164](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39770019164), Commit `6a484c59c` (jetzt `SUPERSEDED_BY_39903861586_SAME_REFERENCES`; die folgenden Zahlen gelten unverändert):
 
 - **Datensatz:** `sts1-134d…`, 9.211 Segmente und 2.701 Sitzungen. Die Prüfung gibt `EXACT` (`3ea6443de70c…`), denselben Datensatz wie der maßgebliche Minervini-Lauf aus 4.0.
 - **Fingerabdrücke:**
-  - Research-Code `4ae0fe32544f…` ist identisch mit dem aktuellen Code (Test `SF5-SNAPSHOT-RUN-CURRENT-CODE`).
+  - Research-Code `4ae0fe32544f…` (Stand #849; durch die SIC3-Variante abgelöst).
   - Engine (AG-3) `ae2a51ed86ae…` ist unverändert.
   - Varianten-Fingerabdruck `947eedb5eb11…` wurde vor dem Lauf festgeschrieben.
 - **Prüfungen:** Alle 39 Varianten der 7 Lifecycles sind abgestimmt (Ledger-Replay, Endbestand PASS). Jede Referenz lief zweimal mit identischem Ergebnis.
@@ -264,7 +290,7 @@ Stand: 23. Oktober 2026, nach dem Merge von #849 (`main` @ `91c2fc87c`). Geprüf
   - Ein PIT-Test mit veränderten Folgekursen und ein PIT-Test mit einer SIC-Änderung nach dem Entscheidungsschluss. Beide schlagen bei einem eingebauten Vorgriff an (Mutationsprobe).
   - Fail-closed ohne Gruppenindex.
   - Unabhängiges Review: 0 CRITICAL, 0 HIGH. Ein MEDIUM- und fünf LOW-Befunde sind behoben.
-- **Snapshot-Lauf:** siehe Abschnitt „Snapshot-Lauf“.
+- **Snapshot-Lauf** 39903861586: Alle Referenzen sind trade-genau unverändert. Die Variante sperrt 8,3 % (Investor) bzw. 8,7 % (Trader) der Wochen-Setups; Einzelheiten im Abschnitt „Snapshot-Lauf“.
 
 ### Konsolidierte Readiness aller 13 Strategien
 
