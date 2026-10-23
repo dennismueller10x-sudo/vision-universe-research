@@ -278,7 +278,7 @@ test('SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie 
   const fThrow = async () => { calls++; throw new Error('net'); };
   calls = 0; const b = { used: 0, max: 10 };
   assert.equal((await getJson('u', 'k', [b], fThrow, async () => {})).status, 0); assert.equal(calls, 3); assert.equal(b.used, 3);
-  for (const [st, want] of [[200, true], [404, true], [0, false], [429, false], [500, false], [400, false], ['BUDGET_EXHAUSTED', false]]) assert.equal(definitive(st), want, String(st));
+  for (const [st, body, want] of [[200, [], true], [200, null, false], [200, {}, false], [404, null, true], [0, null, false], [429, null, false], [500, null, false], [400, null, false], ['BUDGET_EXHAUSTED', null, false]]) assert.equal(definitive(st, body), want, String(st));
   assert.equal(intArg('6000', 1, MAX_REQUESTS_CAP), 6000); assert.equal(intArg('6001', 1, MAX_REQUESTS_CAP), null);
   assert.equal(intArg('abc', 1, MAX_REQUESTS_CAP), null); assert.equal(intArg('12.5', 1, MAX_REQUESTS_CAP), null); assert.equal(intArg('', 1, MAX_REQUESTS_CAP), null);
   assert.equal(MAX_REQUESTS_CAP, 6000); assert.ok(EP_BUDGET_SHARE > 0 && EP_BUDGET_SHARE < 1);

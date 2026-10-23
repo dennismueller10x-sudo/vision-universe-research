@@ -182,6 +182,13 @@
      "why": "tickers are reused after delistings; the gate must be known at the decision, a whole-day check would select days by their outcome"
     },
     {
+     "id": "MA-EP-IEX-PRINTS",
+     "phase": "INITIAL_STOP",
+     "reference": "every IEX minute after the fill is taken as printed (no per-minute outlier filter); a single bad print can trigger the same-day stop",
+     "alternatives": [],
+     "why": "a filter would need the day after the decision; the whole-day agreement is reported as evidence (dayRangeAgreement)"
+    },
+    {
      "id": "MA-EP-GAP-SCREEN",
      "phase": "SETUP_QUALIFICATION",
      "reference": "official open / prior close - 1 >= 10 % (KK-015 printed size as a declared screen convention)",
@@ -408,6 +415,12 @@
      "reference": "first IEX print within the first 5 minutes and within 5 % of the raw official open; the whole-day high / low agreement (R9) is evidence only",
      "alternatives": [],
      "why": "ticker reuse; the gate must be known at the decision, never selected by the day's outcome"
+    },
+    {
+     "id": "MA-PS-IEX-PRINTS",
+     "reference": "every IEX minute after the fill is taken as printed (no per-minute outlier filter); a single bad print can trigger the stop or a target",
+     "alternatives": [],
+     "why": "a filter would need the day after the decision; the whole-day agreement is reported per trade (dayRangeAgreement)"
     },
     {
      "id": "MA-PS-ENTRY",

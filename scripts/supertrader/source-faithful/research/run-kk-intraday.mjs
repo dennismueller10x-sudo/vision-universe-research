@@ -38,7 +38,9 @@ export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, 
 // Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
 export const BASELINE_FREQS = Object.freeze(['4hour', '1hour']);
 export const CACHE_SHARDS = 16; // shard = first hex digit of sha256(key); each shard is one private gzip JSON object
-export const cacheKey = (kind, shard) => `_validation/kk-epps-v2/${kind}-${shard}.json.gz`;
+// the baseline value depends on its rule (sessions, minimum days): the rule is part of the key, so a new rule never reuses old means
+export const cacheKey = (kind, shard) => `_validation/kk-epps-v2/${kind === 'baseline' ? `baseline-s${IEX_BASELINE_SESSIONS}m${IEX_BASELINE_MIN_DAYS}` : kind}-${shard}.json.gz`;
+export const CHECKPOINT_REQUESTS = 2000; // shards are rewritten every 2000 requests and at the end (each write re-reads the shard)
 export const shardOf = (key) => crypto.createHash('sha256').update(key).digest('hex')[0];
 export function kkResearchCodeSha256() {
   const h = crypto.createHash('sha256');
@@ -91,8 +93,12 @@ export async function getJson(url, key, budgets, fetchImpl = fetch, pause = (ms)
   }
   return { status: 0, body: null };
 }
-/** Only a definitive answer is cached (200, or 404 = no IEX data); 0 / 429 / 5xx / budget stay open for a later run. */
-export const definitive = (status) => status === 200 || status === 404;
+/**
+ * Only a definitive answer is cached: a 200 with a JSON array, or 404 (no IEX data); 0 / 429 / 5xx / budget and a 200
+ * with an unreadable body stay open for a later run. Concurrent runs: the read-before-write merge narrows, but does not
+ * close, the window in which two runs write the same shard (no conditional put); a lost key is only fetched again.
+ */
+export const definitive = (status, body) => (status === 200 && Array.isArray(body)) || status === 404;
 
 /** Validated numeric argument: an integer in [min, max], else null. */
 export const intArg = (v, min, max) => { const n = Number(v); return Number.isInteger(n) && n >= min && n <= max ? n : null; };
@@ -167,7 +173,7 @@ async function main() {
   const mark = (kind, k) => { const h = shardOf(k); if (!added[kind].has(h)) added[kind].set(h, new Set()); added[kind].get(h).add(k); };
   // re-read a shard before writing it, so entries another run added meanwhile are kept (definitive entries only)
   const saveDirty = async (kind, cache) => {
-    if (LIMIT) return;
+    if (LIMIT || verification.smokeStore) return; // smoke runs never write the shared cache
     for (const [h, keys] of added[kind]) {
       const merged = await getShard(kind, h);
       for (const k of keys) merged[k] = cache[k];
@@ -188,7 +194,7 @@ async function main() {
     const [t, d] = k.split('|');
     const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, KEY, b);
     bump(httpStatus, `minutes:${r.status}`);
-    if (definitive(r.status)) { minuteCache[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : [])); mark('minutes', k); }
+    if (definitive(r.status, r.body)) { minuteCache[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : [])); mark('minutes', k); }
     return r.status;
   };
   const fetchBaseline = async (k, b) => {
@@ -199,19 +205,19 @@ async function main() {
       const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${dates[0]}&endDate=${dates.at(-1)}&resampleFreq=${f}&columns=volume`, KEY, b);
       bump(httpStatus, `baseline:${f}:${r.status}`);
       if (r.status === 400) continue; // frequency rejected: next pre-registered frequency
-      if (definitive(r.status)) { baseCache[k] = { ...iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates), freq: f, status: r.status }; mark('baseline', k); }
+      if (definitive(r.status, r.body)) { baseCache[k] = { ...iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates), freq: f, status: r.status }; mark('baseline', k); }
       return r.status;
     }
     return 400;
   };
   let lastSave = 0;
-  const checkpoint = async () => { if (budget.used - lastSave >= 500) { lastSave = budget.used; await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache); log(`requests ${budget.used}`); } };
+  const checkpoint = async () => { if (budget.used - lastSave >= CHECKPOINT_REQUESTS) { lastSave = budget.used; await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache); log(`requests ${budget.used}`); } };
   // EP first (each day needs its baseline and its minutes), deterministic hash order
   const epB = [budget, epBudget];
   for (const k of fetchOrder(epKeys)) {
     const needBase = !(k in baseCache), needMin = !(k in minuteCache);
     if (!needBase && !needMin) continue;
-    if (!hasRoom(epB, (needBase ? 1 : 0) + (needMin ? 1 : 0))) break; // never start half a day
+    if (!hasRoom(epB, (needBase ? 1 : 0) + (needMin ? 1 : 0))) break; // do not start a day without room for both requests (retries can still leave one for a later run)
     if (needBase) await fetchBaseline(k, epB);
     if (needMin) await fetchMinutes(k, epB);
     await checkpoint(); await new Promise((res) => setTimeout(res, 120));
