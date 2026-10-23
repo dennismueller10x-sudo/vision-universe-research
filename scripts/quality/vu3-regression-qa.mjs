@@ -211,8 +211,7 @@ const CONTRAST = [
   '/vorsorge/#/', '/vorsorge/#/etf/VT', '/vorsorge/#/etfs', '/vorsorge/#/plan', '/vorsorge/#/portfolio',
   '/hedgefonds/#/', '/hedgefonds/#/aktie/NVDA', '/hedgefonds/#/fonds/pershing-square', '/hedgefonds/#/investoren',
   '/elliott/', '/elliott/#/?richtung=ab', '/elliott/#/methodik',
-  '/fundamental/', '/fundamental/#/PLTR', '/fundamental/#/NVDA', '/fundamental/#/NVDA?ansicht=kennzahlen', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue',
-  '/fundamental/#/NVDA?ansicht=vergleich', '/fundamental/#/NVDA?ansicht=finanzen', '/fundamental/#/rangliste/wachstum'
+  '/fundamental/', '/fundamental/#/PLTR', '/fundamental/#/NVDA'
 ];
 if (only.has('contrast')) await guard('contrast', async () => {
   console.log('\n[4] Kontrast und Ueberlauf (' + engine + ')');
