@@ -95,3 +95,32 @@ Fremdclip im Vordergrund (Ausnahme vom Owner freigegeben), Angst-Hook, Stempel �
 | 24 h | | | | | | | |
 | 72 h | | | | | | | |
 | 7 Tage | | | | | | | |
+
+## 8. Lauf vom 23.10.2026: Owner-Kanäle (Apify, 147 Reels, rund 0,38 USD)
+
+**Kanäle des Owners (beobachten):** goldeselinvesting, investfelix, wirliebenaktien, traderepublic, youth.financials, hannahinvestiert. Dazu zum Vergleich: finanzvadda, pascalrudroff, renditesammler, divicircinus, finanzfluss, geheimniskremerei, aktien.analyst. (`goldesel.investing` existiert nicht.) Lauf `bpYjT36iBWpCl35LQ`, Datensatz `ELCN5JD9bKPdeaoPx`, je Konto bis 12 Reels der letzten 3 Monate, ohne angeheftete.
+
+Ausreißer (Aufrufe ÷ Median des Kontos, Median grob aus dem Lauf):
+
+| Konto | Reel | Aufrufe | × Median | Länge | Hook (Caption-Anfang) | Bauart |
+|---|---|---|---|---|---|---|
+| renditesammler | DdmXVLKBYYX | 165.730 | ~38 | 6 s | „Viele denken, ein Welt-ETF im Depot reicht … doch einige Entwicklungen laufen daran vorbei" | Warnung, Lücke |
+| hannahinvestiert | DdWc4YXOMYt | 710.764 | ~23 | 85 s | „Japan ist gerade dabei, die Weltwirtschaft mit dem Yen-Carry-Trade ins Wanken zu bringen" | Angst, Makro |
+| youth.financials | DewtK9Aos8- | 49.353 | ~20 | 143 s | „Diese 10 Aktien haben laut Analysten über 100 % Renditepotenzial" + „Kommentiere Verdoppler" (618 Kommentare) | Betrag + Kommentar-Wort |
+| divicircinus | DeROevth5L4 | 52.547 | ~20 | 8 s | „Wie viel Kapital für 2.500 € netto im Monat aus Dividenden?" | Betrag |
+| pascalrudroff | DecXMDdgBRX | 52.249 | ~12 | 89 s | Mietrechtsreform | Zielgruppe + Gesetz |
+| investfelix | DecMCgbhhy9 | 54.041 | ~11 | 8 s | „MSCI World verkaufen für FTSE All Cap? 🚨 Viele übersehen die Steuer" | Warnung, Schutz |
+| pascalrudroff | Dem02aUgeRE | 34.338 | ~8 | 69 s | „Mütterrente 3: Dein Geld für 2027 kommt erst 2028" | Betrag + Zielgruppe |
+| youth.financials | DeovO0lICIB | 12.617 | ~5 | 111 s | „Kommentiere Pokemon …" (261 Kommentare) | Kommentar-Wort |
+| youth.financials | DeuXiyCoeLJ | 12.368 | ~5 | 98 s | Finanzministerium „eher Richtung Gold ausweiten" | Empörung |
+| finanzfluss | DeweOhXjVUK | 299.073 | ~4 | 155 s | Altersvorsorgedepot, Fragen | Erklär-Q&A |
+| wirliebenaktien | DclU653IEbp | 71.893 | ~3,6 | 102 s | „Kommentiere Newsletter …" (2.068 Kommentare) | Kommentar-Wort |
+| wirliebenaktien | DeXWJjgIwDQ | 43.909 | ~2,2 | 101 s | „Sind Roboter der nächste große Boom?" | Thema Robotik |
+| goldeselinvesting | DezeOLPMKcA | 67.607 | ~2 | 13 s | Depot-Meme zum Tagesgeschehen | Meme, aktuell |
+
+Lehren (Beobachtung, keine Messung):
+1. **Warnung und Angst gewinnen die größten Ausreißer** (38×, 23×, 11×, 5×). Stützt H9. Fast immer mit konkretem Gegenstand (Welt-ETF, Steuer, Yen), nicht abstrakt.
+2. **Kommentar-Wort-Aufruf** („Kommentiere X, ich schicke dir die Liste") treibt Kommentare auf 260 bis 2.068 und damit die Auslieferung. Setzt voraus, dass jemand die Nachrichten verschickt (meist Automatisierung). Neue Hypothese H10.
+3. Betrag-Hooks bleiben stark (2.500 €, Mütterrente).
+4. Zwei Längen gewinnen: 6 bis 13 s Karten und 85 bis 155 s Sprecher. Die Mitte (20 bis 50 s) ist selten unter den Ausreißern.
+5. Robotik ist als Thema anschlussfähig (wirliebenaktien 2,2×, eigenes Unitree-Reel).
