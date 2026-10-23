@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.0.0)
+   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.1.0)
 
    EIN CHARTSTANDARD FUER ALLE PRODUKTWELTEN: ZEITRAEUME, START, WAEHRUNG.
 
@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.0.0";
+  var VERSION = "chart-standard-1.1.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
@@ -118,6 +118,39 @@
     return null;
   }
 
+  /* ------------------------------------------------------------ Fenster */
+
+  var DAY_MS = 86400000;
+  function cutoffOf(points, c) {
+    var last = points[points.length - 1][0], t = Date.parse(String(last).slice(0, 10));
+    if (c === "MAX") return -Infinity;
+    if (c === "YTD") return Date.parse(String(last).slice(0, 4) + "-01-01");
+    return DAYS[c] ? t - DAYS[c] * DAY_MS : null;
+  }
+
+  /**
+   * Deckt eine Tagesreihe [[datum, kurs]] den Zeitraum ab? Dieselbe 95-%-Regel wie
+   * core/chart-history.js, hier fuer alle kanonischen Kennungen (auch 1W und YTD).
+   * 1T ist kein Fenster ueber Tagesschluesse und deckt nie ab.
+   */
+  function covers(points, id) {
+    var c = canonical(id);
+    if (!Array.isArray(points) || points.length < 2 || c === "1T") return false;
+    if (c === "MAX" || c === "YTD") return true;
+    if (!DAYS[c]) return false;
+    var span = (Date.parse(String(points[points.length - 1][0]).slice(0, 10)) - Date.parse(String(points[0][0]).slice(0, 10))) / DAY_MS;
+    return span >= DAYS[c] * 0.95;
+  }
+
+  /** Fenster eines Zeitraums: alle Punkte ab (letzter Tag - Kalendertage), wie core/chart-history.js#sliceRange. */
+  function slice(points, id) {
+    var c = canonical(id);
+    if (!Array.isArray(points) || !points.length) return [];
+    var cut = cutoffOf(points, c);
+    if (cut === null) return [];
+    return points.filter(function (p) { return Date.parse(String(p[0]).slice(0, 10)) >= cut; });
+  }
+
   /* ------------------------------------------------------------ Waehrung */
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
@@ -188,7 +221,7 @@
   return {
     VERSION: VERSION, PRIMARY: PRIMARY, EXTRA: EXTRA, DEFAULT_RANGE: DEFAULT_RANGE, DAYS: DAYS, RANGE_KEY: RANGE_KEY,
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
-    intradayEntry: intradayEntry,
+    intradayEntry: intradayEntry, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
     displayLevel: displayLevel, currencyNote: currencyNote
   };

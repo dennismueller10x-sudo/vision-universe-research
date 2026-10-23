@@ -91,3 +91,16 @@ test("Kein gueltiger Kurs: keine Umrechnung mit altem Kurs, Boersenwaehrung", ()
   const r = CS.displaySeries([["2031-01-02", 10], ["2031-01-03", 11]], "USD", L);
   assert.equal(r.currency, "USD"); assert.equal(r.converted, false);
 });
+
+test("Fenster: Kalendertage ab dem letzten Punkt, 95-%-Regel wie chart-history.js", () => {
+  const H = require("../chart-history.js");
+  const pts = []; for (let d = Date.parse("2024-01-02"); d <= Date.parse("2026-10-22"); d += 86400000) { const w = new Date(d).getUTCDay(); if (w && w < 6) pts.push([new Date(d).toISOString().slice(0, 10), 100 + pts.length]); }
+  for (const [id, old] of [["1M", "1M"], ["1J", "1Y"], ["MAX", "MAX"]]) {
+    assert.deepEqual(CS.slice(pts, id), H.sliceRange(pts, old).points, id + " wie chart-history.js");
+    assert.equal(CS.covers(pts, id), H.available(pts, old), id);
+  }
+  assert.equal(CS.slice(pts, "1W").length, 6, "1W: sieben Kalendertage, sechs Handelstage inkl. Rand");
+  assert.equal(CS.slice(pts, "YTD")[0][0], "2026-01-01", "ab 1. Januar (Testreihe ohne Feiertage)");
+  assert.equal(CS.covers(pts, "5J"), false, "knapp drei Jahre decken 5J nicht ab");
+  assert.equal(CS.covers(pts, "1T"), false, "1T nie aus Tagesschluessen");
+});

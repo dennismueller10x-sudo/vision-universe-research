@@ -204,6 +204,8 @@ Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung
 
 `core/chart-standard.js` (`VUCore.ChartStandard`) ist die eine Stelle für Zeitraumreihenfolge, Startzeitraum (1T, gemerkte Wahl `vu-chart-range-v1`, ohne Tagesverlauf der längste Zeitraum bis 1J), Intraday-Auflösung (`intradayEntry`, Regel aus `live-hub.js#resolveEntry`) und die Anzeige in EUR über die vorhandene FX-Schicht (`displaySeries`, `displaySnapshot`, `displayLevel`). Er rechnet selbst nichts um und ändert keine Kursreihe.
 
+Fenster schneidet `slice(points, id)` (Kalendertage ab dem letzten Punkt, wie `ChartHistory.sliceRange`), Abdeckung prüft `covers(points, id)` (95-%-Regel) – für alle kanonischen Kennungen einschließlich 1W und YTD. `assets/vu-chart.js` (`mount`) kennt abgeschaltete Zeiträume (`disabled`, Grund im Titel) und meldet die Wahl des Nutzers (`onSelect`), damit sie über `rememberRange` in die nächste Welt mitgeht.
+
 ---
 
 ## 7. Migrationsplan
@@ -213,7 +215,7 @@ Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung
 | M0 ✔ | DQ-PX-4-Reparaturlauf, Chart-Paritätsprüfung | #858, #859 (gemergt) | – | erster Reparaturlauf 23.10. ohne Befund, ohne Schreibzugriff |
 | M0b ✔ | EZB-Kurse täglich + Frischeüberwachung | #865 (gemergt) | – | Lauf nach Merge, `system-health` |
 | M0c ✔ | Elliott: split-angepasste Ansicht historischer Thesen (Bericht) | #864 (gemergt); Einbindung in Erzeuger/Oberfläche offen | gering | Elliott-Registertests |
-| M1 | `chart-ranges.js` / `ChartHistory`: Standardleiste, 1W, Standard 1T als Definition; gemeinsamer Präferenzschlüssel Zeitraum/Währung | Quant/Core | gering | Unit-Tests je Zeitraum |
+| M1 | `core/chart-standard.js`: Standardleiste, 1W, Standard 1T als Definition; gemeinsamer Präferenzschlüssel Zeitraum/Währung; `VUChart` mit abgeschalteten Zeiträumen | Core (#870) | gering | Unit-Tests je Zeitraum |
 | M2 | Supertrader: 1T-Rückfall, 5J/MAX, Standard 1T, EUR-Anzeige inkl. Linien | nur `supertrader/**` (Gate A) | mittel | `browser-qa.mjs`, Vorher/Nachher 390/1280 px |
 | M3 | Discover: 1W, deaktiviert statt ausgeblendet, Umschalter EUR/USD | nur `discover/**` | mittel (Budget-Gate) | `browser-qa.mjs`, Budget |
 | M4 | Quant: 5T → 1W, „Mehr“, EUR-Anzeige | Quant | gering–mittel | Quant-Browser-QA |
