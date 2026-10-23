@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "vu-image-trigger-proof-brief-20260917-001",
+  "content_id": "vu-image-trigger-proof-20260917-001",
+  "fixture_type": "automated_text_image_roundtrip_proof",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "zero_classic_openai_api"
+  },
+  "hook_strategy": {
+    "strategy_id": "curiosity-gap-system-proof-v2",
+    "hook_type": "curiosity_gap",
+    "source": "authoring_brief"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:curiosity_gap:01",
+      "hook_type": "curiosity_gap",
+      "text": "Was passiert, wenn ein GitHub-Brief nicht nur Text, sondern ein echtes Bild zurückbringt?",
+      "brief_revision": "54cc68516173cd745674ed837e96e5bbec04bdde"
+    },
+    {
+      "hook_variant_id": "vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:curiosity_gap:02",
+      "hook_type": "curiosity_gap",
+      "text": "Kann ein einziges PR-Ereignis aus strukturierten Daten ein geprüftes Bildasset machen?",
+      "brief_revision": "54cc68516173cd745674ed837e96e5bbec04bdde"
+    },
+    {
+      "hook_variant_id": "vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:curiosity_gap:03",
+      "hook_type": "curiosity_gap",
+      "text": "Wie weit kommt ein Creative Agent ohne klassische API – bis zur fertigen PNG-Datei?",
+      "brief_revision": "54cc68516173cd745674ed837e96e5bbec04bdde"
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:curiosity_gap:01",
+    "recommendation_reason": "Die Formulierung macht den vollständigen Text-und-Bild-Roundtrip unmittelbar verständlich, ohne eine Markt- oder Leistungsbehauptung einzuführen.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Ein kontrollierter Proof: Ein strukturierter GitHub-Brief löst den Creative Agent aus. Er formuliert Varianten innerhalb der vorgegebenen Strategie, erzeugt ein reales Bildasset und schreibt beides auf den isolierten Request-Branch zurück. Keine Veröffentlichung, keine Marktbehauptung, kein Eingriff in produktive Social-Dateien.",
+  "visual_brief": {
+    "visual_strategy": "FUTURE_TECH",
+    "source": "authoring_brief",
+    "motif": "Ein strukturiertes Datenmodul wird über einen leuchtenden Creative-Core in ein fertiges abstraktes Bildpanel überführt.",
+    "composition": "Quadratischer, zentrierter Transformationsfluss mit großzügigem Negativraum und klarer Links-nach-rechts-Lesbarkeit.",
+    "aesthetics": "Premium cinematic 3D technology visualization mit Chrome, Glas, volumetrischem Licht und präziser räumlicher Tiefe.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Marktbehauptung",
+      "Keine Preise oder Renditezahlen",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:visual:FUTURE_TECH:01",
+      "visual_strategy": "FUTURE_TECH",
+      "brief_revision": "54cc68516173cd745674ed837e96e5bbec04bdde",
+      "asset_path": "authoring/requests/vu-image-trigger-proof-20260917-001/assets/visual-01.png",
+      "asset_sha256": "dd2206a97ec20c074bef135d59d1472318f9ed4f88e92940221ae2a900c776aa",
+      "mime_type": "image/png",
+      "width": 1254,
+      "height": 1254
+    }
+  ],
+  "evidence_refs": [
+    {
+      "type": "authoring_brief",
+      "path": "authoring/requests/vu-image-trigger-proof-20260917-001/authoring-brief.json",
+      "blob_sha": "54cc68516173cd745674ed837e96e5bbec04bdde"
+    },
+    {
+      "type": "invocation_ledger",
+      "pull_request": 98,
+      "comment_id": 5712340474,
+      "delivery_id": "a80b2eb0-b27c-11f1-9eb9-28cdbf5447d5"
+    }
+  ],
+  "quality": {
+    "json_valid": true,
+    "brief_contract_valid": true,
+    "hook_strategy_inherited": true,
+    "visual_strategy_inherited": true,
+    "selected_hook_absent": true,
+    "real_raster_asset_generated": true,
+    "asset_metadata_validated": true,
+    "productive_claims_present": false
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "54cc68516173cd745674ed837e96e5bbec04bdde",
+    "brief_revision": "54cc68516173cd745674ed837e96e5bbec04bdde",
+    "processing_key": "vu-image-trigger-proof-brief-20260917-001:vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
