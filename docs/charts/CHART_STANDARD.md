@@ -200,6 +200,12 @@ Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung
 
 ---
 
+### 6.3 Gemeinsamer Baustein
+
+`core/chart-standard.js` (`VUCore.ChartStandard`) ist die eine Stelle für Zeitraumreihenfolge, Startzeitraum (1T, gemerkte Wahl `vu-chart-range-v1`, ohne Tagesverlauf der längste Zeitraum bis 1J), Intraday-Auflösung (`intradayEntry`, Regel aus `live-hub.js#resolveEntry`) und die Anzeige in EUR über die vorhandene FX-Schicht (`displaySeries`, `displaySnapshot`, `displayLevel`). Er rechnet selbst nichts um und ändert keine Kursreihe.
+
+---
+
 ## 7. Migrationsplan
 
 | Schritt | Inhalt | PR-Zuschnitt | Risiko | Prüfung |
