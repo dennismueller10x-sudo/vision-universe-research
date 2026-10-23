@@ -1,10 +1,10 @@
-# Vision Universe Chartstandard (Vorschlag, Stand 23.10.2026)
+# Vision Universe Chartstandard (Entwurf, Stand 23.10.2026, nach Owner-Entscheidungen)
 
-**Status:** Entwurf zur Freigabe. Dieses Dokument ändert keinen Chart. Es beschreibt den Bestand, die gemeinsame Kursdefinition, den Zielstandard und einen Migrationsplan. Produktive UI-Änderungen erst nach ausdrücklicher Freigabe des Eigentümers, je Produktwelt in einem eigenen PR (Gates siehe `CLAUDE.md`).
+**Status:** Entwurf zur Freigabe. Entschieden am 23.10.2026: **1T als Standardzeitraum**, **EUR als Standard-Anzeigewährung mit Umschalter auf die Börsenwährung**, Zeitraumleiste 1T · 1W · 1M · 1J · 5J · MAX, fehlende Zeiträume deaktiviert statt ausgeblendet, split-angepasste Ansicht historischer Elliott-Thesen neben dem Original. Dieses Dokument ändert keinen Chart. Es beschreibt den Bestand, die gemeinsame Kursdefinition, den Zielstandard und einen Migrationsplan. Produktive UI-Änderungen erst nach ausdrücklicher Freigabe des Eigentümers, je Produktwelt in einem eigenen PR (Gates siehe `CLAUDE.md`).
 
 Leitsatz: **Einheitliche Kurswerte. Einheitliche Zeiträume. Einheitliche Bedienung. Unterschiedliche fachliche Analysefunktionen.** Datenqualität hat Vorrang vor Optik; kein funktionierender Chart wird allein der Einheitlichkeit wegen ersetzt.
 
-Mockups (echte NVDA-Daten, hell/dunkel, 390/1280 px): https://claude.ai/artifact/6AKUFFDySim2F6ee1hAE5S (privat, Freigabe über das Teilen-Menü). Paritätsprüfung: `node scripts/quality/chart-parity.mjs`.
+Mockups v2 (echte NVDA-Daten, EZB-Tageskurse, 1T und EUR als Standard, hell/dunkel, 390/1280 px): https://claude.ai/artifact/6AKUFFDySim2F6ee1hAE5S (privat, Freigabe über das Teilen-Menü). Paritätsprüfung: `node scripts/quality/chart-parity.mjs`.
 
 ---
 
@@ -53,26 +53,27 @@ Verwaist/tot (Aufräumen separat): `quant/markt` (Datenpfad `market/daily/` fehl
 
 ---
 
-## 2. Datenidentität (Messung 23.10.2026)
+## 2. Datenidentität (Messung 23.10.2026, `main` 43e882c)
 
-`scripts/quality/chart-parity.mjs`, 6 125 US-Aktien:
+`scripts/quality/chart-parity.mjs` (seit #859 täglich als Bericht in `core-ci.yml`, nicht blockierend), 6 125 US-Aktien:
 
 | Kennzahl | Ergebnis |
 |---|---|
 | Aktien insgesamt | 6 125 |
-| Vollständige Chart-Parität | 5 628 |
-| Datenabweichungen | 8 (6 Elliott-Stand vor Neubau, 2 fehlende Handelstage) |
+| Vollständige Chart-Parität | 5 634 |
+| Kursabweichungen | **0** |
+| Datenlücken (fehlender Handelstag, gleiche Kurse) | 2 (YPF 18.11.2025, ACHL 3 umsatzlose Tage) |
 | Fehlende Zeiträume nach Datenlage | 1 210 (nur 1T, kein Intraday-Snapshot) |
 | Ohne verfügbare Charts | 0 |
-| Corporate-Action-Fehler | 6 (Elliott, selbstheilend beim nächsten Build) |
+| Corporate-Action-Fehler | **0** (die 9 Reverse-Split-Fälle sind repariert, die 6 Elliott-Chartbilder neu gebaut) |
 | Nicht vergleichbar | 489 (nur Tagesreihe, kein Zweitbezug) |
 
-Paare: Discover/Quant ↔ Supertrader 5 150/5 152 identisch (2 mit fehlendem Handelstag), Woche ↔ Tag 5 632/5 632, Golden-5 in allen Quellen identisch. Die neun Split-Fälle vom 22.10. sind repariert (#858).
+Paare: Discover/Quant ↔ Supertrader 5 150/5 152 (2 Datenlücken), Woche ↔ Tag 5 632/5 632, Woche ↔ Supertrader 5 148/5 148, Elliott (Woche) 4 561/4 561, Elliott (Tag, Golden-5) 5/5, Golden-5 in allen Quellen identisch.
 
-**Datenidentität ≠ Darstellung ≠ Verfügbarkeit.** Die Kurswerte sind praktisch überall identisch. Verschieden sind:
-1. **Währung:** Discover zeigt EUR (Tagesumrechnung), Quant und Supertrader USD. Gleicher Basiskurs, andere Anzeige.
-2. **Historientiefe:** Supertrader zeigt nur ~1 Jahr, obwohl die Wochenreihe vorliegt.
-3. **1T:** Supertrader liest nur `entries` (~1 400 Titel); Quant/Discover lösen über `available` (~5 000) auf. Ein Fehler, kein Datenmangel (`supertrader.js#intradaySnap`).
+**Datenidentität ≠ Darstellung ≠ Verfügbarkeit.** Die Kurswerte sind identisch. Verschieden sind:
+1. **Währung:** Discover zeigt EUR, Quant und Supertrader USD. Zusätzlich ist die EZB-Reihe veraltet (Abschnitt 3.1).
+2. **Historientiefe:** Supertrader zeigt ~1 Jahr, obwohl die Wochenreihe vorliegt.
+3. **1T in Supertrader:** 1 395 von 5 651 Titeln, obwohl es für 4 579 einen Snapshot gibt (Abschnitt 6.1).
 4. **Zeitraumlogik:** Kalendertage (Quant, Discover, ChartHistory) gegen Balkenzahl (Supertrader, Karten, Technik) gegen Monate (Vorsorge).
 
 ---
@@ -83,18 +84,27 @@ Paare: Discover/Quant ↔ Supertrader 5 150/5 152 identisch (2 mit fehlendem Han
 |---|---|---|
 | **Close** | Schlusskurs der regulären Sitzung des Listings | Anbieter (Tiingo EOD) |
 | **Open/High/Low** | Anbieterwerte derselben Sitzung, mit demselben Splitfaktor wie Close | `technical-signals-v1`, `golden-preview` |
-| **Splitbereinigung** | rückwärts mit dem kumulierten `splitFactor` (RAW × Faktor), nicht mit `adjClose` | `return-series.js#splitFactors` (ADR-002) |
+| **Splitbereinigung** | rückwärts mit dem kumulierten `splitFactor`, nicht mit `adjClose` | `return-series.js#splitFactors` (ADR-002) |
 | **Dividenden** | im Kurschart **nicht** enthalten | – |
 | **Total Return** | eigene Kennzahl (`return-series.js#totalReturn`), nie als Kurschart; Beschriftung „Gesamtrendite inkl. Dividenden“ | ADR-002 |
-| **Währung** | Preiswahrheit in Listing-Währung (US: USD). Anzeige in EUR ist eine Umrechnung **je Tag** mit dem Kurs dieses Tages und muss so beschriftet sein („in EUR, umgerechnet zum Tageskurs“) | `VUFx` |
+| **Rechenwährung** | Listing-Währung (US: USD). Alle Modelle (Quant, Supertrader, Elliott) rechnen darin | Kursreihen |
+| **Anzeigewährung** | Standard **EUR**, Umschalter auf die Börsenwährung. Reine Darstellungsschicht | `VUFx` (`quant/engines/fx/`) |
 | **Handelskalender** | `quant/config/market-calendar.json` (NYSE) | |
-| **Zeitzone** | Tagesdaten: Börsendatum des Listings; Intraday: Ortszeit der Börse (ET), Anzeige „Stand HH:MM“ | `trading-session.js` |
-| **Wochenschluss** | Schluss des letzten Handelstags der ISO-Woche (Feiertage: Donnerstag usw.) | `series-sampling.js#weeklyPoints` |
-| **Corporate Actions** | Split am Ex-Tag; Tages- und Wochenreihe müssen denselben Bereinigungsstand tragen (DQ-PX-4, Reparaturlauf) | `corporate-action-evidence.js` |
+| **Zeitzone** | Tagesdaten: Börsendatum des Listings; Intraday: Ortszeit der Börse (ET), Anzeige „Stand HH:MM ET“ | `trading-session.js` |
+| **Wochenschluss** | Schluss des letzten Handelstags der ISO-Woche | `series-sampling.js#weeklyPoints` |
+| **Corporate Actions** | Split am Ex-Tag; Tages- und Wochenreihe tragen denselben Bereinigungsstand (DQ-PX-4, Reparaturlauf Di–Sa 04:20 UTC) | `corporate-action-evidence.js` |
 | **Aktualität** | „Stand <Datum>“ am Chart; ≥ 2 Sitzungen zurück = Warnung | DQ-PX-2 |
 | **Rundung** | `roundClose`: 2 Nachkommastellen ab 1, darunter 4 gültige Stellen | `published-close.js` |
 
-Regel: **Zwei Charts, die denselben Kurs behaupten, nutzen dieselbe Definition – sonst steht die Abweichung am Chart.** Konkret: Discover (EUR) und Quant (USD) sind nicht „falsch“, aber nur dann vergleichbar, wenn die Währung sichtbar ist. Entscheidung offen (Abschnitt 8).
+### 3.1 Währungsschicht (EUR als Standard)
+
+- **Historische Punkte:** jeder Tagespunkt mit dem EZB-Referenzkurs **seines** Tages (`DAILY_AT_DATE`), fehlt er, der letzte vorherige innerhalb `maxCarryDays` (`PREVIOUS_AVAILABLE`). Nie der heutige Kurs für die Historie. Wochenpunkte mit dem Kurs ihres Stichtags. Die bestehende Engine leistet das bereits (`currency-contract.js#series`, in Discover über `detail.js#inAnzeigewaehrung`).
+- **1T:** alle Punkte und der Vortagesschluss mit dem Kurs der Sitzung (so rechnet Discover heute, `inAnzeigewaehrungSnapshot`). Die Prozentveränderung bleibt dadurch gleich der in der Börsenwährung.
+- **Overlays:** Trigger, Stops, Zonen, Ziele werden fachlich in der Rechenwährung bestimmt. In EUR mit dem jüngsten Kurs umgerechnet angezeigt, der Originalwert steht daneben („Stop 207,41 € (232,41 $)“), dazu ein Hinweis unter dem Chart. Die Signallogik sieht nie EUR.
+- **Fehlender Kurs:** Anzeige in der Börsenwährung mit Hinweis „Euro-Kurs für diesen Tag nicht verfügbar“, keine Umrechnung mit einem zu alten Kurs (Engine: `carryLimitExceeded`).
+- **Präferenz:** ein Schlüssel für alle Welten (heute `VUFx`-Präferenz in Discover); wird beim Wechsel der Produktwelt übernommen.
+- **Quelle:** EZB-Referenzkurse (`quant/data/market/fx/ecb/`), Quellennennung „Wechselkurse: Europäische Zentralbank“. Tiingo-FX bleibt Arbeitsablage (Lizenz).
+- **Befund 23.10.2026:** Die EZB-Reihe endet am **21.09.2026** (Repository wie live). Sie entstand nur in `currency-fx-verify.yml` (Hand/Marke, mit ~54 Tiingo-Anfragen), ohne Zeitplan. Gemessen mit der Engine an NVDA: 255 von 270 Tagespunkten umrechenbar, letzter EUR-Punkt 01.10.; 1T fällt auf USD zurück. **Voraussetzung für EUR als Standard: PR #865** (täglicher EZB-Lauf, eine öffentliche Datei, kein Anbieterkontingent, plus Frischeüberwachung in `domains.json`). Mit aktuellen EZB-Kursen: 270/270 und 1 448/1 448 Punkte tagesgenau.
 
 ---
 
@@ -104,44 +114,45 @@ Regel: **Zwei Charts, die denselben Kurs behaupten, nutzen dieselbe Definition �
 
 | Taste | Fenster | Auflösung | Quelle | Wenn Daten fehlen |
 |---|---|---|---|---|
-| 1T | letzte (laufende) Sitzung | 5 Min (IEX), live wo verfügbar | `intraday/<Sitzung>/<id>.json`, Relay | deaktiviert: „Kein Tagesverlauf für diese Aktie“ |
+| **1T (Standard)** | laufende bzw. letzte Sitzung | 5 Min (IEX), live wo verfügbar | `intraday/<Sitzung>/<id>.json`, Relay | Ersatzansicht: letzter Schlusskurs mit Datum, Hinweis „Für heute liegt kein Tagesverlauf vor“; Taste bleibt gewählt |
 | 1W | 7 Kalendertage bis zum letzten Punkt | **Tagesschluss** (≈ 5 Punkte) | Tagesreihe | deaktiviert |
 | 1M | 31 Tage | Tag | Tagesreihe | deaktiviert |
 | 1J | 366 Tage | Tag | Tagesreihe | deaktiviert |
-| 5J | 1 827 Tage | Woche, ab Beginn der Tagesreihe Tag; Golden-5 Tag | Wochen- + Tagesreihe | „Aktie kürzer gelistet (seit …)“ bzw. deaktiviert |
-| MAX | gesamte Historie des aktuellen Listings | wie 5J | wie 5J | – |
+| 5J | 1 827 Tage | Woche, im letzten Jahr Tag; Golden-5 Tag | Wochen- + Tagesreihe | „Aktie kürzer gelistet (seit …)“, deaktiviert |
+| MAX | gesamte Historie des aktuellen Listings | wie 5J, Log-Achse ab Faktor 15 | wie 5J | – |
 
-- **Fensterlogik einheitlich:** Kalendertage ab dem letzten Datenpunkt, Abdeckung ≥ 95 % (`core/chart-history.js`). Balkenzahlen nur noch in Analysecharts (Chartbild, Methodenchart), dort fachlich begründet.
-- **Sekundär (nur wo heute vorhanden):** 3M, 6M, YTD, 3J, 10J hinter „Mehr“ – Quant, Discover, Vorsorge. Nichts wird ersatzlos gestrichen.
-- **1W ist keine Wochenkerze**, sondern ein Betrachtungszeitraum mit Tagespunkten. Quants heutiges „5T“ ist genau das und wird zu „1W“ umbenannt.
-- **Echte Intraday-1W fehlt.** Die Ablage hält 2 Sitzungen 5-Min-Bars. Realistischer Vorschlag: 5 Sitzungen als 30-Min-Bars ableiten (aus vorhandenen 5-Min-Snapshots, keine neue Anbieterabfrage; ~65 Punkte/Titel). Erst nach Größenmessung und Freigabe; bis dahin Tagespunkte, beschriftet.
-- **Nicht verfügbare Zeiträume** bleiben an ihrem Platz sichtbar und sind deaktiviert, mit Grund im Tooltip/`aria-disabled`. (Heute: Discover blendet aus, Quant deaktiviert.)
-- **Standard:** 1T bei laufender Sitzung und vorhandenem Tagesverlauf, sonst 1J – in allen Welten (Supertrader heute 6M).
-- **Keine simulierten Kurse:** 1T nie aus Tagesschlüssen; Lücken bleiben Lücken; Wochenpunkte werden nie interpoliert.
+- **Standard 1T** beim ersten Öffnen eines Aktiencharts, in jeder Welt. Außerhalb der Handelszeit zeigt 1T den letzten Handelstag („Letzter Handelstag 22.10.2026, Stand 15:55 ET · verzögert“) – **kein** automatischer Wechsel auf 1J. Wählt der Nutzer einen Zeitraum, gilt er auch in der nächsten Welt (gemeinsamer Präferenzschlüssel, wie die Währung).
+- **Fensterlogik einheitlich:** Kalendertage ab dem letzten Datenpunkt, Abdeckung ≥ 95 % (`core/chart-history.js`). Balkenzahlen nur in Analysecharts (Chartbild, Methodenchart), dort fachlich begründet.
+- **Sekundär:** 3M, 6M, YTD, 3J, 10J hinter „Mehr“, nur wo es sie heute gibt. Nichts wird ersatzlos gestrichen.
+- **1W ist keine Wochenkerze.** Quants „5T“ ist genau 1W und wird umbenannt.
+- **Echte Intraday-1W fehlt (gemessen):** `ingest-intraday.mjs` hält `retentionSessions: 2` und löscht ältere Sitzungen (je ~20 MB, ~5 000 Titel, 78 Punkte à 5 Min). Vorschlag: beim Tageslauf ein abgeleitetes Artefakt mit 30-Min-Werten der letzten 5 Sitzungen (~65 Punkte, ~1 KB je Titel, ~5 MB gesamt), verdichtet aus dem Snapshot vor dessen Löschung. Keine Anbieterabfrage, keine Interpolation. Pipeline-Änderung, braucht Freigabe; bis dahin 1W aus Tagespunkten, beschriftet.
+- **Keine simulierten Kurse:** 1T nie aus Tagesschlüssen; Lücken bleiben Lücken; Wochenpunkte nie interpoliert.
 
 ---
 
 ## 5. Bedienung und Design
 
-Grundlage ist das bestehende VU3-System (`assets/site-navigation.css`: `.vu-chart`, `.vu-ranges`, Tokens `--vu-chart-up/-down/-base`, Inter). Keine neue Bibliothek, keine neue Shell, keine Änderung an Navigation, Produktmenüs oder Dock.
+Grundlage ist das bestehende VU3-System (`assets/site-navigation.css`: `.vu-chart`, `.vu-ranges`, Tokens `--vu-chart-up/-down/-base`, Inter). Keine neue Bibliothek, keine neue Shell, keine Änderung an Navigation, Produktmenüs oder Dock, keine zusätzlichen Textblöcke außer Quellen-/Hinweiszeile.
 
 | Element | Regel |
 |---|---|
-| Zeitraumleiste | `.vu-ranges` (Pillen, aktiv = Textfarbe gefüllt), unter dem Chart, links bündig, horizontal scrollbar auf dem Handy, `min-height:36px`, Tasten `<button aria-pressed>` |
-| Linie | Farbe nach Richtung im Fenster (`--vu-chart-up` / `-down`), gestrichelte Startlinie, Punkt am letzten Kurs |
-| Achse | rechts: Hoch, Tief, Letzter; Log-Achse automatisch bei Hoch/Tief > 15 mit Hinweis „logarithmisch“ |
-| Tooltip/Crosshair | Zeiger und Touch (`pointer`-Ereignisse), senkrechte Linie, Pille mit Datum und Kurs; Kopf zeigt Veränderung bis zum Punkt |
-| Datum | Tag: `22.10.2026`; Intraday: `15:55`; Woche: `KW 43 · 23.10.2026` |
-| Kurs | `de-DE`, 2 Nachkommastellen ab 1, darunter 4 gültige Stellen, Währung immer sichtbar (`221,97 $`, `190,12 €`) |
-| Zoom | keiner (heute in keinem Chart). Kein Pinch-Zoom auf Kurscharts; Zeitraumtasten ersetzen ihn |
-| Tastatur | Zeitraumtasten fokussierbar; neu: Pfeiltasten bewegen den Crosshair, wenn der Chart fokussiert ist |
-| Mobile Safari | `touch-action: pan-y` (Seite scrollt, waagerechtes Wischen scrubbt), keine `100vh`, Mindestgröße der Tasten 44 × 36 px |
-| Laden | Platzhalter in Chart-Höhe (kein Springen), keine Spinner im Chart |
-| Fehler | `.vu-chart-empty` mit Grund in Klartext („Für diese Aktie liegt kein Tagesverlauf vor“), nie ein leerer Kasten |
-| Hell/Dunkel | ausschließlich über Tokens; keine Literalfarben |
-| Quelle/Stand | eine Zeile unter dem Chart: „Schlusskurse, splitbereinigt, ohne Dividenden · USD · Stand 22.10.2026“ |
+| Zeitraumleiste | `.vu-ranges` (Pillen, aktiv = Textfarbe gefüllt), unter dem Chart, links bündig, auf dem Handy horizontal scrollbar, Tasten `<button aria-pressed>`, deaktiviert mit `aria-disabled` und Grund |
+| Währungsumschalter | Segment „EUR · USD“ (bzw. GBP, CHF) rechts im Chartkopf, `min-height:30px`, gilt für alle Charts und Welten |
+| Linie | Farbe nach Richtung im Fenster (`--vu-chart-up` / `-down`), gestrichelte Startlinie (1T: Vortagesschluss), Punkt am letzten Kurs |
+| Achse | rechts: Hoch, Tief, Letzter; Log-Achse automatisch bei Hoch/Tief > 15 mit Hinweis |
+| Tooltip/Crosshair | Zeiger und Touch (`pointer`-Ereignisse), senkrechte Linie, Pille mit Datum und Kurs inkl. Währung; Kopf zeigt Veränderung bis zum Punkt |
+| Datum | Tag `22.10.2026`; Intraday `15:55 ET`; Woche `KW 43 · 23.10.2026` |
+| Kurs | `de-DE`, 2 Nachkommastellen ab 1, darunter 4 gültige Stellen, Währungszeichen immer sichtbar (`189,39 €`, `212,21 $`) |
+| Overlay-Beschriftung | Linienwerte rechts ausgerichtet, Zonen links; bei Abstand < 12 px versetzt; in EUR mit Originalwert in Klammern |
+| Zoom | keiner (heute in keinem Chart); Zeitraumtasten ersetzen ihn |
+| Tastatur | Zeitraum- und Währungstasten fokussierbar; Pfeiltasten bewegen den Crosshair im fokussierten Chart |
+| Mobile Safari | `touch-action: pan-y`, keine `100vh`, Tasten ≥ 44 × 36 px |
+| Laden | Platzhalter in Chart-Höhe, keine Spinner |
+| Fehler | Klartext mit Grund und Ersatz (letzter Kurs), nie ein leerer Kasten |
+| Hell/Dunkel | nur über Tokens |
+| Quelle/Stand | eine Zeile: „Schlusskurse, splitbereinigt, ohne Dividenden · in EUR zum EZB-Referenzkurs des jeweiligen Tages · Quelle Tiingo, EZB“ |
 
-**Produktspezifisch bleibt:** Discover Profi-Ansicht mit Indikatoren; Supertrader Trigger/Einstieg/Stop-Linien und Methodenchart; Elliott Wellen, Zonen, Projektion, Zeitreise, Balkenfenster; Screener-Sparklines (ohne Zeitraumleiste); Vorsorge ETF (eigene Kursart PRICE_RETURN, Originalwährung).
+**Produktspezifisch bleibt:** Discover Profi-Ansicht mit Indikatoren und Kerzen; Quant-Einordnung, Scores, Signalmarkierungen, Benchmark; Supertrader Darvas-Boxen, Trendlinien, Ausbruch, Einstieg, Stop, Ausstieg, Methodenchart; Elliott Wellen, Pivots, Zonen, Ziele, Invalidierung, Zeitreise, Balkenfenster, historische Thesen; Screener-Sparklines (ohne Leiste); Vorsorge-Portfolio/-Plan (keine Kurscharts).
 
 ---
 
@@ -149,13 +160,43 @@ Grundlage ist das bestehende VU3-System (`assets/site-navigation.css`: `.vu-char
 
 | Welt | Wird einheitlich | Bleibt produktspezifisch | Aufwand / Risiko |
 |---|---|---|---|
-| Discover | Leiste 1T·1W·1M·1J·5J·MAX (+ Mehr: 3M, 6M, 3J); deaktiviert statt ausgeblendet; Währungszeile | EUR-Anzeige (Entscheidung), Profi-Indikatoren, Karten-Mikrochart | klein; **Discover-Budget-Gate** (≤ 180 000 Byte, ≤ 12 Requests) beachten |
-| Quant | 5T → 1W; YTD, 3M, 6M, 3J, 10J hinter „Mehr“ | Analyse neben dem Chart, keine Overlays im Kurschart | klein |
-| Supertrader | 1T über `available` (Fehlerbehebung, +~3 600 Titel); 5J/MAX aus vorhandener Wochenreihe; Standard 1J | Setup-Linien; Methodenchart unverändert | mittel; **Gate A**: eigener PR nur unter `supertrader/**` |
-| Elliott | Kopf, Kurszeile, Währung, Datum, Tooltip-Format | Balkenfenster 3M/6M/1J bzw. 1J/3J/5J, Wellen, Zonen, Zeitreise | keine Änderung an Fenstern; nur Formate |
-| Screener | Detail-Tab: Leiste 1M·1J (Datenlage), Tooltip | Sparklines ohne Leiste | klein |
-| Vorsorge | Reihenfolge/Beschriftung (1M … MAX), Tooltip | PRICE_RETURN, Originalwährung, Portfolio/Plan-Diagramme | optional |
-| Fundamental, Macro, Hedgefonds | – | eigene Analysediagramme | nicht betroffen |
+| Discover | Leiste in Standardreihenfolge mit 1W; deaktiviert statt ausgeblendet; Währungsumschalter (EUR bleibt Standard) | Profi-Indikatoren, Kerzen, Karten-Mikrochart | klein; **Discover-Budget-Gate** (≤ 180 000 Byte, ≤ 12 Requests) |
+| Quant | 1T Standard (heute schon, wenn Snapshot da); 5T → 1W; YTD, 3M, 6M, 3J, 10J hinter „Mehr“; EUR-Anzeige über `VUFx` | Einordnung neben dem Chart, Signalmarkierungen, Benchmark; keine News/Fundamentaldaten; Backtest-Gates unverändert | klein–mittel (FX-Bündel laden) |
+| Supertrader | 1T über `available` (+3 184 Titel); 5J/MAX aus Wochenreihe; Standard 1T; EUR-Anzeige inkl. umgerechneter Linien | Signale, Strategien, Engine, Methodenchart unverändert | mittel; **Gate A**: eigener PR nur unter `supertrader/**`, erst nach Freigabe |
+| Elliott | Kopf, Kurszeile, Währung, Datum, Tooltip-Format; Zonen in EUR angezeigt | Balkenfenster, Wellen, Zonen, Zeitreise, Logik | gering |
+| Screener | Detail-Tab: gemeinsame Leiste, Tooltip, Währung | Sparklines ohne Leiste | klein |
+| Vorsorge | ETF-Kurschart: Leiste und Währungslogik | PRICE_RETURN, Portfolio/Plan-Diagramme | optional |
+| Fundamental, Macro, Hedgefonds, Home-Hero | – | eigene Analysediagramme | nicht betroffen |
+
+### 6.1 Supertrader 1T (nur Analyse, isolierter Vorschlag)
+
+Ursache: `supertrader/assets/supertrader.js#intradaySnap` (Zeile ~968) liest nur `index.entries[sym]` (Live-Umfang, 1 404 Titel). Quant und Discover lösen über `discover/ui/live-hub.js#resolveEntry` zusätzlich `index.available[<Sitzung>]` mit `pathPattern`/`idPattern`/`idExceptions` auf (~5 049 Titel). Kein Datenmangel. Gemessen: 1 395 → 4 579 Supertrader-Titel mit 1T (+3 184); 1 072 bleiben ohne Snapshot.
+
+Vorschlag (nur `supertrader/assets/supertrader.js`, keine Engine, keine Signale, keine Pipeline):
+
+```js
+function intradaySnap(sym) {
+  return fetch('/quant/data/market/intraday/index.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (idx) {
+    var e = idx.entries && idx.entries[sym], path = e && e.path;
+    if (!path && idx.available) {                       /* wie live-hub.js#resolveEntry */
+      var dates = Object.keys(idx.available).sort();
+      for (var i = dates.length - 1; i >= 0 && !path; i--) {
+        if ((idx.available[dates[i]] || []).indexOf(sym) === -1) continue;
+        var id = (idx.idExceptions && idx.idExceptions[sym]) || String(idx.idPattern || 'ref_<symbol>').replace('<symbol>', sym);
+        path = String(idx.pathPattern || '/quant/data/market/intraday/<sessionDate>/<securityId>.json').replace('<sessionDate>', dates[i]).replace('<securityId>', id);
+      }
+    }
+    if (!path) return null;
+    return fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); });
+  }).catch(function () { return null; });
+}
+```
+
+Die bestehende Prüfung „Sitzung ≥ letzter Tagesschluss“ bleibt. Umsetzung erst nach Freigabe; der parallele Supertrader-5.0-Auftrag ist mit #863 abgeschlossen.
+
+### 6.2 Supertrader ohne Chart (fachlich, kein Fehler)
+
+973 Titel ohne Supertrader-Bars sind Aufnahmeregeln, keine Lücke: kanonische R2-Tagesdatei vorhanden, gültige OHLC und Splitfaktoren, `TECHNICAL_READY` und **≥ 300 Bars** (`materialize-product-intelligence.mjs`, `minTechnicalBars`), Kalenderprüfung der 270 Anzeigebars, vollständiges Bundle; im Supertrader-Build zusätzlich ohne ETF/ETN/CEF und ≥ 60 Bars. Abgelehnte Titel stehen mit Grund im `unavailable`-Block der Shards. Keine automatische Freischaltung.
 
 ---
 
@@ -163,24 +204,29 @@ Grundlage ist das bestehende VU3-System (`assets/site-navigation.css`: `.vu-char
 
 | Schritt | Inhalt | PR-Zuschnitt | Risiko | Prüfung |
 |---|---|---|---|---|
-| M0 ✔ | DQ-PX-4-Reparaturlauf, Chart-Paritätsprüfung | #858, #859 | gering | Core-Tests, täglicher Bericht |
-| M1 | `chart-ranges.js` / `ChartHistory`: Standardleiste und 1W als Definition (Engine, keine UI) | Quant/Core | gering | Unit-Tests je Zeitraum |
-| M2 | Supertrader: 1T-Auflösung wie LiveHub, 5J/MAX aus Wochenreihe, Standard 1J | nur `supertrader/**` (Gate A) | mittel | `browser-qa.mjs`, Vorher/Nachher-Screenshots 390/1280 px |
-| M3 | Discover: 1W, deaktiviert statt ausgeblendet, Leiste in Standardreihenfolge | nur `discover/**` | mittel (Budget-Gate) | `browser-qa.mjs`, Budget |
-| M4 | Quant: 5T → 1W, Sekundärzeiträume hinter „Mehr“ | Quant | gering | Quant-Browser-QA |
-| M5 | Screener-Detail, Vorsorge (optional) | je Produkt | gering | Produkt-QA |
-| M6 | Elliott: nur Formate | Quant/Elliott | gering | Chartbild-Tests |
-| später | Discover `renderRange` auf `VUChart` zusammenführen (ein Renderer) | eigener PR mit Vorher/Nachher | mittel | Pixelvergleich, Budget |
+| M0 ✔ | DQ-PX-4-Reparaturlauf, Chart-Paritätsprüfung | #858, #859 (gemergt) | – | erster Reparaturlauf 23.10. ohne Befund, ohne Schreibzugriff |
+| M0b | EZB-Kurse täglich + Frischeüberwachung | #865 | gering | ein Lauf nach Merge, `system-health` |
+| M0c | Elliott: split-angepasste Ansicht historischer Thesen | #864 (Bericht), danach Erzeuger/Oberfläche | gering | Elliott-Registertests |
+| M1 | `chart-ranges.js` / `ChartHistory`: Standardleiste, 1W, Standard 1T als Definition; gemeinsamer Präferenzschlüssel Zeitraum/Währung | Quant/Core | gering | Unit-Tests je Zeitraum |
+| M2 | Supertrader: 1T-Rückfall, 5J/MAX, Standard 1T, EUR-Anzeige inkl. Linien | nur `supertrader/**` (Gate A) | mittel | `browser-qa.mjs`, Vorher/Nachher 390/1280 px |
+| M3 | Discover: 1W, deaktiviert statt ausgeblendet, Umschalter EUR/USD | nur `discover/**` | mittel (Budget-Gate) | `browser-qa.mjs`, Budget |
+| M4 | Quant: 5T → 1W, „Mehr“, EUR-Anzeige | Quant | gering–mittel | Quant-Browser-QA |
+| M5 | Screener-Detail, Vorsorge-ETF | je Produkt | gering | Produkt-QA |
+| M6 | Elliott: Formate, Zonen in EUR | Quant/Elliott | gering | Chartbild-Tests |
+| optional | echte 1W-Intraday-Reihe (30 Min, 5 Sitzungen) | Markt-Pipeline | gering | Größenmessung, Hygiene |
+| später | Discover `renderRange` auf `VUChart` zusammenführen | eigener PR | mittel | Pixelvergleich, Budget |
 
-Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, und die Paritätsprüfung unverändert grün.
+Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Paritätsprüfung unverändert ohne Kursabweichung.
 
 ---
 
-## 8. Offene Entscheidungen (Eigentümer)
+## 8. Noch erforderliche Freigaben
 
-1. **Währung:** Bleibt Discover bei EUR (dann Währungszeile Pflicht), oder zeigen alle Welten die Listing-Währung mit optionaler EUR-Umschaltung?
-2. **Standardzeitraum:** 1T während der Sitzung, sonst 1J – überall, auch Supertrader (heute 6M)?
-3. **Nicht verfügbare Zeiträume:** deaktiviert anzeigen (Vorschlag) statt ausblenden?
-4. **Echte 1W-Intraday-Reihe:** 5 Sitzungen 30-Min aus vorhandenen Snapshots vorhalten (Repo-Größe messen) – ja/nein?
-5. **Elliott-Register:** eingefrorene Thesen mit absoluten Zonen werden bei späterem Split nicht umgerechnet (7 Fälle, alle ARCHIVED). Eigener Elliott-PR: These bei Split nach dem Einfrieren auf „durch Kapitalmaßnahme beendet“ setzen oder Zonen mit dem Faktor umrechnen?
-6. **Supertrader-Wochenkontext** (`engine/weekly.mjs`) mischt Wochen- und Tagesreihe; nach einem Split ohne Reparatur entsteht dort eine Naht (DKI, FRGT lagen 19.–23.10. über der Liquiditätsgrenze, ohne Signal). Vorschlag für einen Supertrader-PR: Titel mit DQ-PX-4-Befund im Wochenkontext aussetzen.
+1. **PR #865** (EZB täglich) – Voraussetzung für EUR als Standard.
+2. **Supertrader 1T-Rückfall** (6.1) als isolierter Supertrader-PR.
+3. **Echte 1W-Intraday-Reihe** (Abschnitt 4) – Pipeline-Änderung.
+4. **Elliott-Thesen:** Einbindung der split-angepassten Ansicht (#864) in Erzeuger und Oberfläche.
+5. **Supertrader-Wochenkontext** (`engine/weekly.mjs`): Titel mit offenem DQ-PX-4-Befund aussetzen, bis repariert (seit #858 höchstens bis zum nächsten Reparaturlauf).
+6. **Je Produktwelt die UI-Umsetzung M1–M6.**
+
+Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/audits/GATE_AUDIT_2026-10-23.md`.
