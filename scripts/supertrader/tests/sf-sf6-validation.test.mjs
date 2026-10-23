@@ -11,8 +11,8 @@ import { PP_REFERENCE_CONFIG } from '../source-faithful/research/moka-lifecycle.
 import { sf5VariantRegistrySha256 } from '../source-faithful/research/sf5-lifecycles.mjs';
 
 // pinned before the first snapshot result of Supertrader 6.0 was read
-const PINNED_PROTOCOL = '5baf98a188e2ab88fd0876f12ccb6b8630813005639b01b52f735750f243d6f8';
-const PINNED_MODEL_VARIANTS = 'f46fada384f7f8ebb761a5933baa69985fc9c41ced4d44409fc40929e095fc38';
+const PINNED_PROTOCOL = 'adb45dca83a09d759d8d80984498019b8f511b2542d15c740e90e92bf7c726fc';
+const PINNED_MODEL_VARIANTS = '6f81beb615d4f54427d38c5ac4034f8cf1b593338513ee993014841fe9850ed5';
 const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
@@ -132,6 +132,10 @@ test('SF6-MIN-EPS-SPLIT: Vorjahres-EPS ueber einen 2:1-Split wird PIT-genau bere
   assert.equal(noSplit.epsSplitConsistent.correctedQuarters, 0); assert.equal(noSplit.changedVsV1.latestYoy, false);
   const noBars = fundamentalEvidenceSf6(fund, '2020-03-02', []);
   assert.equal(noBars.epsSplitConsistent.undeterminableQuarters, 4, 'ohne Kurse keine stille Korrektur');
+  const nanBars = bars.map((b) => ({ ...b, splitAdj: NaN }));
+  assert.equal(fundamentalEvidenceSf6(fund, '2020-03-02', nanBars).epsSplitConsistent.undeterminableQuarters, 4, 'fehlender Faktor ist unbestimmbar, nicht NO_SPLIT');
+  const q4 = { ...fund, eps: fund.eps.map((r) => (r[0] === '2019-12-31' ? [...r, 1] : r)) };
+  assert.equal(fundamentalEvidenceSf6(q4, '2020-03-02', bars).epsSplitConsistent.quarters[0].splitStatus, 'UNDETERMINABLE_DERIVED_Q4');
 });
 
 test('SF6-DATA-DAR-ATH-VERIFIED: nur erste Segmente von Listings ab dem Vorlauf gelten als belegtes Allzeithoch', async () => {
@@ -141,6 +145,8 @@ test('SF6-DATA-DAR-ATH-VERIFIED: nur erste Segmente von Listings ab dem Vorlauf 
   assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02#1', '2015-01-01'), false, 'spaeteres Segment');
   assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02#dq1', '2015-01-01'), false, 'Quarantaene-Stueck');
   assert.equal(athVerifiedListing('S001', '2015-01-01'), false, 'ohne Listing-Datum nie belegt');
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02', '2015-01-01', '2016-05-09'), true, '7 Tage Spielraum');
+  assert.equal(athVerifiedListing('tiingo:NASDAQ:ABC:2016-05-02', '2015-01-01', '2016-08-01'), false, 'LATE_START: fruehe Historie fehlt');
   const ds = dataset(8, 500);
   ds.securities[0].id = 'tiingo:NYSE:NEW:2016-01-04';
   const r = runResearchLifecycle(ds, { adapter: DARVAS_ATH_VERIFIED_ADAPTER, config: (await import('../source-faithful/research/darvas-lifecycle.mjs')).DARVAS_REFERENCE_CONFIG, prepared: prepareAll(ds, DARVAS_ATH_VERIFIED_ADAPTER, (await import('../source-faithful/research/darvas-lifecycle.mjs')).DARVAS_REFERENCE_CONFIG), ...W });

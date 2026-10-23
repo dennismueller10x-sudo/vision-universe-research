@@ -45,12 +45,12 @@ export const SF6_VALIDATION_PROTOCOL = Object.freeze({
   costLevels: Object.freeze([
     Object.freeze({ id: 'COST-0', slippageBps: 0, commissionBps: 0, origin: 'frictionless bound' }),
     Object.freeze({ id: 'REF', ...REFERENCE_COSTS, origin: 'research-v1 reference of every earlier run' }),
-    Object.freeze({ id: 'COST-20', slippageBps: 20, commissionBps: 2, origin: 'COST2 scenario of runner/run-research.mjs (existing)' }),
+    Object.freeze({ id: 'COST-20', slippageBps: 20, commissionBps: 2, origin: 'the bps of the COST2 scenario of runner/run-research.mjs (there combined with S1_MINUS_30; only the costs are reused)' }),
     Object.freeze({ id: 'COST-50', slippageBps: 50, commissionBps: 5, origin: 'stress level (small caps, wide spreads)' }),
   ]),
   splitPeriods: Object.freeze([['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOWS.DEV.to]]),
   regime: Object.freeze({ id: 'SPY_SMA200_PRIOR_SESSION', sma: 200, basis: 'benchmark close vs its 200-session SMA at the session before the entry' }),
-  liquidityBandsUsd: Object.freeze([1e6, 5e6, 25e6]),
+  liquidityBandsUsd: Object.freeze([1e6, 5e6, 25e6]), // 1 M = #705 universe floor; 5 M / 25 M are VU reporting bands (no source, set before any result)
   concentrationTopN: 10,
   holdout: 'NONE in the DEV window: 2016-2026 was read by earlier rounds; the 2008-2015 window (R14) was opened once for other implementations',
 });

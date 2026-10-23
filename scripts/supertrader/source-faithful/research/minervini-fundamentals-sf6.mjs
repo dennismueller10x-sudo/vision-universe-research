@@ -34,7 +34,7 @@ export function splitAdjAt(bars, date) {
   while (lo <= hi) { const m = (lo + hi) >> 1; if (bars[m].date <= date) { k = m; lo = m + 1; } else hi = m - 1; }
   if (k < 0) return null;
   const s = bars[k].splitAdj;
-  return fin(s) && s > 0 ? s : 1;
+  return fin(s) && s > 0 ? s : null; // a missing factor is undeterminable, never 'no split' (review)
 }
 
 /** Split factor between two filing dates (a <= b); 1 = no split in between; null = not determinable. */
@@ -53,6 +53,8 @@ export function fundamentalEvidenceSf6(fund, asOfDate, bars) {
   let corrected = 0, undeterminable = 0;
   const quarters = v1.eps.quarters.map((q) => {
     if (!fin(q.priorYearValue)) return { ...q };
+    // a derived Q4 (FY - Q1..Q3) can mix pre- and post-split units inside one value: not correctable, flagged
+    if (q.derivedQ4) { undeterminable++; return { ...q, splitFactor: null, splitStatus: 'UNDETERMINABLE_DERIVED_Q4' }; }
     const prevFiled = priorYearFiled(fund.eps, q.quarterEnd, asOfDate);
     const f = prevFiled ? splitFactorBetween(bars, prevFiled, q.filed) : null;
     if (f === null) { undeterminable++; return { ...q, splitFactor: null, splitStatus: 'UNDETERMINABLE' }; }
