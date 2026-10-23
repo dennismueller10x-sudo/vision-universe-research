@@ -17,6 +17,7 @@ Stand 2026-10-22. Damit eine neue Sitzung nicht bei null beginnt.
 | Tesla, Robotaxi Q3 (v1) | fertig 22.10.2026, **Prüfung durch den Owner offen** | 44,9 s, Hook „Fast 2 Mio. Meilen. Ohne Fahrer." (Hook-Score 8), Vorlage `tesla-robotaxi`. Ein Gedanke aus dem Q3-Update (PDF des Owners), Bilder aus der Präsentation, eigener Beweis „80-mal um die Erde", Re-Hook „Aber das kostet". Stimme 0,12 USD |
 | Unitree H2-X (v1) | fertig 22.10.2026, vom Owner abgenommen („Das Video ist Weltklasse"), Karte offen | 41 s, Angst-Hook „Ein Mann mit Messer. Nachts. Vor deiner Tür.", Vorlage `fremdclip`. Clip von Unitree (Sek. 30 bis 54) im Vordergrund: **Ausnahme von Regel 4 auf ausdrücklichen Wunsch des Owners**, Quelle im Bild und in der Caption. Kosten: Apify 0,15 USD, Stimme 0,10 USD |
 | Welt-ETF + Quartalszahlen (v1) | fertig 23.10.2026, vom Owner abgenommen („Solche Videos sind genial, auch optisch"), Karte offen | 45,8 s, Hook „Was passiert nächste Woche mit deinem Welt-ETF?" (Owner-Hook), Vorlage `etf-earnings`. Eigene Rechnung: Ø 6 % Kurssprung am Tag nach den Zahlen (SEC 8-K + Tiingo), 16,07 % Gewicht (MSCI-Factsheet), ±100 € bei 10.000 €. Owner: Thema muss aktuell sein; ETF-Thema allein „weiß jeder", erst mit Termin und eigener Rechnung nützlich auch für Experten. KI-Clips abgelehnt („künstlich"). Kosten: Stimme 0,12 USD + Hook-Neuaufnahme |
+| Supertrader erklärt, Teil 1: Minervini (v1) | fertig 23.10.2026, **Prüfung durch den Owner offen** | 44,6 s, Hook „+33.500 % in fünf Jahren" (Minervini zugeschrieben) plus geprüfte +334,8 % (2021), „Geheimrezept" = feste Checkliste, App ab Sekunde 14, Vorlage `supertrader-erklaert`. Für den Highlight-Ordner „Supertrader". Stimme 0,13 USD |
 
 Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studio/reels/`.
 
@@ -35,6 +36,8 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 - **Earnings-Calls statt Zahlen-Mischung:** Je Konzern ein eigenes Reel aus den Aussagen im Call (Tesla und Meta getrennt). Ein Gedanke pro Reel.
 - **Themen müssen aktuell sein** (Termin, Ereignis). Allgemeinwissen („Welt-ETF ist konzentriert") nur mit neuem Blickwinkel und eigener Rechnung, damit es auch Experten nützt (23.10.2026).
 - **Keine KI-Szenen als Hintergrund**, wirken künstlich. Lieber echte Charts und Zahlen aus unseren Daten im iPhone-Mock-up (23.10.2026). Owner zum Ergebnis: „Solche Videos sind genial, auch optisch." Vorlage `etf-earnings` ist der Stil-Standard für Zahlen-Reels.
+- **App-Funktionen im Präsens** („die App durchsucht …"), nur die App selbst ist „bald verfügbar". Keine Hinweise nach außen, dass am Produkt noch gearbeitet wird. Grenze: nur Funktionen, die es im Produkt gibt (Doku prüfen), nie Renditen unserer Modelle, immer „keine Empfehlung" (23.10.2026).
+- Selbst berichtete Renditen (z. B. Minervini 33.500 %) nur mit Zuschreibung und möglichst mit einer geprüften Zahl daneben (23.10.2026).
 - Der Owner liefert gern den Hook und die Hintergrundbilder selbst. Bilder: in der Caption kennzeichnen („Bildquelle: …").
 
 ## Messdaten und Lehren
@@ -67,6 +70,7 @@ Die Videodateien liegen nicht im Repo. Die Vorlagen und Skripte liegen in `studi
 | Hook-Wahl ohne eigene Messdaten | Owner bevorzugt Angst- und Schutz-Hooks; die Beobachtung stützt das (höchste Share-Rate 3,2 % bei „So stirbst du nicht"). Als Hypothese H9 messen |
 | „mit deinem" klingt wie „mit einem" (Hook ohne „du") | Wort groß schreiben („DEINEM") und nur den Satz neu aufnehmen, vorne einsetzen |
 | Unklarer Szenario-Satz („laufen alle in dieselbe Richtung …") | Beide Richtungen ausdrücklich als Euro-Betrag nennen (+100 € / −100 €) |
+| End-Silben abgeschnitten nach `tighten.py` („Rendite" → „Rendit", „Checkliste" → „Checklist"), Rohaufnahme sauber | HeyGen-Wortzeiten enden zu früh; `tighten.py … 1.14 0.2` (Nachlauf 0,2 s statt 0,065 s). Immer Rohaufnahme und gekürzte Fassung mit Whisper vergleichen |
 | Apify-Suche (Search-Scraper) Timeouts | Hashtag- und Profil-Scraper nutzen |
 | BMF-Seiten 503 | Bundestag, Bundesrat, BGBl., Bundesregierung als Quelle |
 | Bundesrat-Datum widersprüchlich (24.04. oder 08.05.) | bundesrat.de: 08.05.2026 |

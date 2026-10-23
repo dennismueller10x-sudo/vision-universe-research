@@ -8,7 +8,7 @@ Nichts hier veröffentlicht etwas. Veröffentlicht wird nur im Approval Center d
 
 | Datei | Zweck |
 |---|---|
-| `tools/tighten.py` | Kürzt lange Wortlücken (über 0,26 s auf 0,13 s), hebt das Tempo (atempo), schreibt Wortzeiten |
+| `tools/tighten.py` | Kürzt lange Wortlücken (über 0,26 s auf 0,13 s), hebt das Tempo (atempo), schreibt Wortzeiten; optional Nachlauf am Wortende (`… 1.14 0.2`), wenn End-Silben fehlen |
 | `tools/synth_sfx.py` | Synthetisierte Einschläge, Riser und Ticks aus den Wortzeiten (rechtefrei) |
 | `tools/mix_adv.py` | Stimme, Effekte und Musik mischen, Musik unter der Stimme abgesenkt |
 | `tools/finalize_audio.sh` | Pegel auf −14,2 LUFS, Spitzenbegrenzung |
@@ -19,6 +19,7 @@ Nichts hier veröffentlicht etwas. Veröffentlicht wird nur im Approval Center d
 | `templates/tesla-ark/` | Referenzreel: Komposition, Zeitberechnung, Stimmentext, Caption |
 | `templates/meta-muse/` | Hook ab Bild 1, Zeichnungen, Handy-Mock-up, Hintergrundbilder |
 | `templates/quartalszahlen/` | datengesteuerte Zahlenvorlage (`data.json`), Beispiel Tesla Q3 |
+| `templates/supertrader-erklaert/` | Erklär-Serie für Highlights (Teil 1 Minervini), iPhone-Mock-ups, Checkliste, Markt-Scan mit Platzhalter-Treffern |
 | `templates/etf-earnings/` | eigene Daten im iPhone (echte Kurssprünge, SEC-Umsatz), ETF-Ring, Waage; `earn_moves.py` für Kursbewegungen nach Quartalszahlen |
 | `templates/fremdclip/` | fremdes Video im Vordergrund (nur mit Freigabe des Owners), Grundfilm aus Clip-Abschnitten, Grafikebene darüber |
 | `templates/tesla-robotaxi/` | ein Gedanke aus dem Quartalsbericht, Bilder aus der Präsentation, Route, Globus mit Zähler, Kurve, Uhr, Papierflieger |

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3 -I
-"""Kuerzt lange Wortluecken (>0.26 s auf 0.13 s), danach atempo. Aufruf: tighten.py tts_response.json vo_raw.wav out.wav words_out.json tempo"""
+"""Kuerzt lange Wortluecken (>0.26 s auf 0.13 s), danach atempo. Aufruf: tighten.py tts_response.json vo_raw.wav out.wav words_out.json tempo [nachlauf]
+nachlauf: behaltene Zeit nach dem Wortende in s (Standard 0.065). Enden die HeyGen-Wortzeiten zu frueh, schneidet 0.065 End-Silben ab ('Rendite' -> 'Rendit'); dann 0.2 nehmen."""
 import sys,json,subprocess,numpy as np,wave
 d=json.load(open(sys.argv[1]))['data']; W=[w for w in d['word_timestamps'] if not w['word'].startswith('<')]
-sr=48000; tempo=float(sys.argv[5])
+sr=48000; tempo=float(sys.argv[5]); tail=float(sys.argv[6]) if len(sys.argv)>6 else 0.065
 raw=subprocess.run(["ffmpeg","-v","error","-i",sys.argv[2],"-ac","1","-ar",str(sr),"-f","f32le","-"],capture_output=True).stdout
 x=np.frombuffer(raw,dtype=np.float32)
 keep=[];newW=[];pos=0.0;cursor=0.0  # cursor: Position im Original
@@ -14,7 +15,7 @@ for i,w in enumerate(W):
     if i==0: gap_start=0.0
     gap=s-prev_end
     if i>0 and gap>0.26:
-        segs.append((cursor,prev_end+0.065)); cursor=s-0.065
+        segs.append((cursor,min(prev_end+tail,s-0.065))); cursor=s-0.065
     prev_end=e
 segs.append((cursor,len(x)/sr))
 # Neubau
