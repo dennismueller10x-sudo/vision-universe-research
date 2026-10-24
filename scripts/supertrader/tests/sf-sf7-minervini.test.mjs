@@ -120,3 +120,19 @@ test('SF7-MIN-REGISTRY: 7.0 additions pre-registered and pinned; the 4.0 referen
   for (const v of SF7_VARIANTS) assert.deepEqual(v.config, REFERENCE_CONFIG);
   assert.ok(SF7_MODEL_ASSUMPTIONS.every((m) => m.id.startsWith('MA-MIN7-') && m.why));
 });
+
+test('SF7-MIN-SOURCE-INVENTORY: artifact = fresh build, every contract rule and model assumption classified with a recorded page, all 132 #709 rows used, no book text', async () => {
+  const fs = await import('node:fs');
+  const { buildInventory, ARTIFACT, ARTIFACT_DIR } = await import('../source-faithful/completion/build-minervini-source-inventory.mjs');
+  const fresh = buildInventory();
+  assert.deepEqual(fresh.validation, { ok: true, errors: [] });
+  assert.deepEqual(JSON.parse(fs.readFileSync(`${ARTIFACT_DIR}/${ARTIFACT}`, 'utf8')), JSON.parse(JSON.stringify(fresh)), 'inventory is stale: run completion/build-minervini-source-inventory.mjs');
+  assert.equal(fresh.extraction.rows709, 132); assert.equal(fresh.extraction.rowUse.unused, 0);
+  assert.equal(fresh.extraction.droppedBefore7.count, 9);
+  assert.ok(fresh.sources.filter((s) => /^B/.test(s.sourceId)).every((s) => s.availableToday === 'AVAILABLE_BYTE_IDENTICAL'));
+  // no SOURCE_EXACT except the English staggered-stop rule; no book text in the findings
+  assert.ok(Object.values(fresh.classification).flat().every((c) => c.cls !== 'SOURCE_EXACT'));
+  const findings = JSON.parse(fs.readFileSync(new URL('../source-faithful/evidence/MINERVINI-SF7-FINDINGS.json', import.meta.url), 'utf8'));
+  assert.equal(findings.contentExportedToRepo, false);
+  for (const r of findings.findings) { assert.match(r.quoteSha256, /^[0-9a-f]{64}$/); assert.equal(r.quote_original, undefined); }
+});
