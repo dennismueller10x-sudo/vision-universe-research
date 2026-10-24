@@ -215,7 +215,7 @@
   /* Die FX-Schicht in der Reihenfolge, in der Discover sie einbindet (discover/index.html). */
   var FX_BASE = "/quant/engines/fx/";
   var FX_SCRIPTS = ["fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry", "currency-class",
-    "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap"];
+    "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap", "currency-switch"];
   var displayReady = null;
 
   /**

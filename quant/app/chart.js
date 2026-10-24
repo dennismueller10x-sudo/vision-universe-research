@@ -67,18 +67,18 @@
     { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
     { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true }
   ];
-  /* Gemerkte Wahl des Nutzers, ein Schluessel fuer alle Welten (ChartStandard.RANGE_KEY).
-     Sie wird gelesen, bevor der Chartstandard nachgeladen ist; die Beschriftung ist die
-     kanonische Kennung, daher keine eigene Uebersetzung. */
-  var RANGE_KEY = "vu-chart-range-v1";
+  /* Gemerkte Wahl des Nutzers, ein Schluessel fuer alle Welten (core/chart-history.js#rangeKey,
+     derselbe wie ChartStandard.RANGE_KEY). Sie wird gelesen, bevor der Chartstandard nachgeladen
+     ist; die Beschriftung ist die kanonische Kennung, daher keine eigene Uebersetzung. */
+  function rangeKey() { var H = global.VUCore && global.VUCore.ChartHistory; return H && H.rangeKey; }
   function rememberedRange() {
-    try { var v = global.localStorage && global.localStorage.getItem(RANGE_KEY); return v ? RANGES.filter(function (r) { return r.label === v; })[0] || null : null; }
+    try { var k = rangeKey(), v = k && global.localStorage && global.localStorage.getItem(k); return v ? RANGES.filter(function (r) { return r.label === v; })[0] || null : null; }
     catch (e) { return null; }
   }
   function rememberRange(r) {
     var CS = global.VUCore && global.VUCore.ChartStandard;
     if (CS) { CS.rememberRange(r.label); return; }
-    try { if (global.localStorage) global.localStorage.setItem(RANGE_KEY, r.label); } catch (e) { /* ohne Gedaechtnis weiter */ }
+    try { var k = rangeKey(); if (k && global.localStorage) global.localStorage.setItem(k, r.label); } catch (e) { /* ohne Gedaechtnis weiter */ }
   }
   /* Anzeigewaehrung (Vorgabe EUR) ueber den Chartstandard und die FX-Schicht. Im Release
      bringt EIN Paket beides (globalThis.VUFxPack, scripts/vu2/build-release.mjs), sonst
@@ -208,9 +208,11 @@
     var box = el("div", { class: "vu-chart vu-chart--bleed qc-box" }, [plot]);
     var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
     var note = el("p", { class: "qc-note" });
+    /* Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover). */
+    var fxHost = el("p", { class: "qc-fx" });
     var node = el("section", { class: "qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
       el("h2", { class: "qx-sr", text: "Kursverlauf" }), headNode, box, bar,
-      el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [note])])
+      el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [fxHost, note])])
     ]);
 
     var buttons = {};
@@ -507,7 +509,14 @@
     head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
-    display().then(function (CS) { if (!CS || st.disposed) return; st.std = CS; if (st.range) draw(st.range); });
+    function onCurrency() { if (!st.disposed && st.range) draw(st.range); }
+    display().then(function (CS) {
+      if (!CS || st.disposed) return;
+      st.std = CS; if (st.range) draw(st.range);
+      var F = global.VUFx;
+      if (F && F.Switch && F.layer) { fxHost.replaceChildren(document.createTextNode("Anzeigewährung "), F.Switch.create({ layer: F.layer })); }
+      st.unfx = F && F.layer && F.layer.onDisplayCurrencyChange ? F.layer.onDisplayCurrencyChange(onCurrency) : null;
+    });
 
     return {
       node: node,
@@ -515,6 +524,7 @@
       draw: draw,
       dispose: function () {
         st.disposed = true;
+        if (st.unfx) { st.unfx(); st.unfx = null; }
         global.removeEventListener("resize", onResize);
         if (st.unsub) { try { st.unsub(); } catch (e) { /* bereits gekuendigt */ } st.unsub = null; }
         if (st.relay && st.relay.stop) { try { st.relay.stop("PAGE_LEFT"); } catch (e) { /* bereits zu */ } }
