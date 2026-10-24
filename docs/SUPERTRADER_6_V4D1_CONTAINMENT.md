@@ -69,9 +69,9 @@ Die markierten Sitzungen liegen überwiegend bei Pennystocks außerhalb des Rese
 | Weinstein Trader | 1.808 | 4 (0,22 %) | 2 | 9 (0,50 %) |
 | Holy Grail (W-RAS97) | 4.025 | 30 (0,75 %) | 3 | 103 (2,56 %) |
 
-Das vorab festgelegte Kriterium CC-5 lautet: höchstens 1 % direkt exponiert unter DQ-K5.
-- **Erfüllt:** neun Referenzen.
-- **Nicht erfüllt:** Turtle S1 und S2, bei 1,8 % bzw. 2,0 %.
+Die Kriterien 1.1.0 hatten eine Expositionsschwelle von höchstens 1 % direkt exponiert unter DQ-K5 vorgesehen. Diese Schwelle ist nur noch eine Berichtsgröße: Seit E1 (Kriterien 1.2.0) erfüllt keine Quarantäne-Lesart CC-5, siehe unten.
+- Unter der Berichtsgröße von 1 % liegen neun Referenzen.
+- Darüber liegen Turtle S1 und S2, bei 1,8 % bzw. 2,0 %.
 - Auch dort wurden nur 1 bis 2 Trades tatsächlich über einen Sprung gehalten. Die Exposition entsteht fast nur über den Rückblick der Kanäle.
 
 ### Pfadabhängigkeit (Nebenbefund)
