@@ -864,11 +864,13 @@
     var ctrl = el('div', { class: 'fu-ctrl fu-ctrl-m' }, [def.snap ? null : segP, el('div', { class: 'fu-ctrl-row' }, [segR, segK])]);
     var cmpWrap = el('div', { class: 'fu-cmp' }, [segC, cmpNote]), werte = null;
     var out = [compactHead(t, co, def.label, def.desc, [href(t, 'kennzahlen', def.cat ? '&t=' + def.cat : ''), 'Kennzahlen']), head];
-    if (def.snap) out.push(sec('Im Vergleich', { sub: 'Aktueller Wert zum Schlusskurs' }, [withUniverse(co, function (U) { paintHead(); return valuationContext(co, def, U, ctx); })]));
+    var nowCmp = def.snap ? sec('Im Vergleich', { sub: 'Aktueller Wert zum Schlusskurs' }, [withUniverse(co, function (U) { paintHead(); return valuationContext(co, def, U, ctx); })]) : null;
+    if (def.snap && !def.hist) out.push(nowCmp);
     if (def.snap && !def.hist) out.push(notice('Kein historischer Verlauf', 'Das PEG braucht je Stichtag ein dreijähriges Wachstum des Gewinns je Aktie über Splits hinweg; dafür fehlt die geprüfte Grundlage. Es wird nur zum aktuellen Kurs gezeigt.'));
     else {
       out.push(def.snap ? sec('Zum Geschäftsjahresende', { sub: 'Geprüfter Verlauf: Kurs, Aktienzahl und Bilanz zum selben Stichtag' }, [ctrl, chartBox]) : el('div', {}, [ctrl, chartBox]));
       out.push(cmpWrap, facts, cagrBox);
+      if (nowCmp) out.push(nowCmp);
       if (def.u && !def.snap) out.push(sec('Im Branchenvergleich', { sub: def.uBasis === 'FY' ? 'Letztes Geschäftsjahr je Unternehmen' : 'Letzte zwölf Monate je Unternehmen' }, [withUniverse(co, function (U) { return peerBars(co, def, U); })]));
       out.push(werte = sec('Werte', { sub: fyNote(b) + (histVal ? ' · Kurs: Wochenschluss vor GJ-Ende' : '') }, [table]));
       var sp = (def.perShareSeries || def.shareSeries || def.perShareGrowth) && b.splits.length ? b.splits : [];
