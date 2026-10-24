@@ -129,3 +129,7 @@ test('a failed final release-pointer read is contained as unavailable, never an 
 test('reader rejects unsupported rules/options and malformed selection envelopes',async()=>{
  const api=create();for(const selection of [null,[],{ruleId:'TREND_UP'},{period:'MAX',private:true},{expectedGeneration:['0'.repeat(64)]},{expectedListingId:{toString:()=> 'WRONG'}}]){const r=await api.getRealBacktest('NVDA',selection);assert.equal(r.reason,'INVALID_SELECTION');assert.equal(r.result,undefined);}
 });
+
+test('a release cannot relabel summaries with another numerical runtime',async()=>{
+ const api=create({mutate:(s,p)=>{if(p==='release.json')s.calculationRuntime={nodeVersion:'0.0.0',nodeExecutableHash:'0'.repeat(64)};return s;}});const r=await api.getRealBacktest('NVDA');assert.equal(r.reason,'INVALID_BACKTEST_RUNTIME_BINDING');assert.equal(r.result,undefined);
+});

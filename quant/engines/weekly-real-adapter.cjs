@@ -4,6 +4,17 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const CorporateActions = require('./corporate-action-evidence.js');
 const hash = x => crypto.createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
+// Exact replay requires the numerical runtime as well as prices/code/model.
+// Cache once per process; expose only public runtime metadata, never the report/environment.
+let runtimeMemo=null;
+function calculationRuntime(){
+  if(!runtimeMemo){
+    let glibcVersion=null;try{glibcVersion=process.report?.getReport().header.glibcVersionRuntime||null;}catch{}
+    runtimeMemo=Object.freeze({nodeVersion:process.versions.node,v8Version:process.versions.v8,platform:process.platform,arch:process.arch,glibcVersion,
+      nodeExecutableHash:crypto.createHash('sha256').update(fs.readFileSync(process.execPath)).digest('hex')});
+  }
+  return runtimeMemo;
+}
 function monday(date) { const d = new Date(date+'T00:00:00Z'); const n=d.getUTCDay(); d.setUTCDate(d.getUTCDate()-(n+6)%7); return +d; }
 function validate(doc, identity) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(doc.asOf) || !Number.isFinite(Date.parse(doc.asOf)) || new Date(doc.asOf).toISOString().slice(0,10)!==doc.asOf || doc.asOf>new Date().toISOString().slice(0,10) || doc.instrumentId !== doc.ticker) throw Error('INVALID_SOURCE_METADATA');
@@ -47,4 +58,4 @@ function createLoader(root) {
   return loader;
 }
 function load(root,securityId) { return createLoader(root)(securityId); }
-module.exports={load,createLoader,validate,hash};
+module.exports={load,createLoader,validate,hash,calculationRuntime};

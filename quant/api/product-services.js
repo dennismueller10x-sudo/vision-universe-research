@@ -568,14 +568,9 @@ function create(options){
  }
  /* Existing Quant entry point; private implementation is never bundled into the UI.
     Future UI adapters must call an authorized server transport, never a raw store. */
- let realBacktestReader=null;
- async function getRealBacktest(ticker,selection){
-  const unavailable=reason=>({state:'UNAVAILABLE',reason,certification:'NOT_CERTIFIED',productionApproved:false});
-  if(options.realBacktestPreview?.enabled!==true||options.realBacktestPreview.audience!=='INTERNAL_REVIEW'||!options.realBacktestStore)return unavailable('REAL_BACKTEST_PREVIEW_DISABLED');
-  if(typeof module==='undefined'||!module.exports||typeof require!=='function')return unavailable('PRIVATE_SERVER_READER_REQUIRED');
-  if(!realBacktestReader)realBacktestReader=require('./real-backtest-service.cjs').create({options,identity,config,permission,identityModel});
-  return realBacktestReader.getRealBacktest(ticker,selection);
- }
+ const getRealBacktest=options.realBacktestPreview?.enabled===true&&options.realBacktestPreview.audience==='INTERNAL_REVIEW'&&options.realBacktestStore&&typeof module!=='undefined'&&module.exports&&typeof require==='function'
+  ? require('./real-backtest-service.cjs').create({options,identity,config,permission,identityModel}).getRealBacktest
+  : async()=>({state:'UNAVAILABLE',reason:'REAL_BACKTEST_PREVIEW_DISABLED',certification:'NOT_CERTIFIED',productionApproved:false});
  /* BACKTEST: Signal- und Setup-Studie, Bestandsaufnahme je Art. Jede
   * Studie wird gegen die Vertrauensregel der Engine geprueft; verletzt sie
   * sie, wird sie nicht gezeigt. */

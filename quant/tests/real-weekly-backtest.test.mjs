@@ -40,3 +40,7 @@ test('frozen V4 cutoff retains independently checked capital despite newly appen
  const a=run(data,{asOf:'2026-10-16'});assert.equal(a.input.end,'2026-10-16');assert.equal(a.trades.length,21);assert.ok(Math.abs(a.equity.at(-1).value-4926635.787429842)<1e-6);assert.ok(Math.abs(a.metrics.cagr-.15705035720313631)<1e-12);
  const dir=mkdtempSync(join(tmpdir(),'vu-v4-frozen-'));try{const file=join(dir,'result.json');writeFileSync(file,JSON.stringify(a));assert.equal(JSON.parse(execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root})).state,'PASS');}finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test('numeric runtime is recorded as an immutable input, never hidden behind rounded results',()=>{
+ const r=run(data),runtime=A.calculationRuntime();assert.ok(Object.isFrozen(runtime));assert.equal(r.input.calculationRuntime,runtime);assert.equal(runtime.nodeVersion,process.versions.node);assert.equal(runtime.v8Version,process.versions.v8);assert.match(runtime.nodeExecutableHash,/^[a-f0-9]{64}$/);assert.equal(A.calculationRuntime(),runtime);
+});

@@ -20,7 +20,7 @@ function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=nu
  for(const file of fs.readdirSync(productDirectory).filter(p=>p.endsWith('.json')).sort()){const bytes=fs.readFileSync(path.join(productDirectory,file),'utf8');productShardHashes[file]=A.hash(bytes);for(const i of JSON.parse(bytes).instruments||[]){if(!productRows.has(i.masterMemberId))productRows.set(i.masterMemberId,[]);productRows.get(i.masterMemberId).push(i);}}
  const sources=files.map(f=>({securityId:f.slice(0,-5),sourceHash:A.hash(fs.readFileSync(path.join(directory,f),'utf8'))}));
  const benchmarkInputs=Object.fromEntries([B.SOURCE,'quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json'].map(p=>[p,fs.existsSync(path.join(root,p))?A.hash(fs.readFileSync(path.join(root,p),'utf8')):'MISSING']));
- const snapshot={benchmarkInputs,productShardHashes,schemaVersion:C.VERSION,masterHash:loader.masterHash,model,codes:Object.fromEntries(codes.map(p=>[p,A.hash(fs.readFileSync(path.join(root,p),'utf8'))])),benchmark:benchmark.provenance||benchmark,sources};
+ const snapshot={calculationRuntime:A.calculationRuntime(),benchmarkInputs,productShardHashes,schemaVersion:C.VERSION,masterHash:loader.masterHash,model,codes:Object.fromEntries(codes.map(p=>[p,A.hash(fs.readFileSync(path.join(root,p),'utf8'))])),benchmark:benchmark.provenance||benchmark,sources};
  const generation=A.hash(snapshot),base=path.join(output,generation);fs.mkdirSync(base,{recursive:true});
  const snapshotPath=path.join(base,'snapshot.json');let computedAt=new Date().toISOString();
  if(fs.existsSync(snapshotPath)){const old=JSON.parse(fs.readFileSync(snapshotPath));if(old.generation!==generation||A.hash(old.input)!==generation)throw Error('SNAPSHOT_CORRUPT');computedAt=old.computedAt;}
@@ -42,7 +42,7 @@ function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=nu
    const bytes=fs.readFileSync(path.join(directory,id+'.json'),'utf8');if(A.hash(bytes)!==item.sourceHash)throw Error('SOURCE_CHANGED_DURING_MATERIALIZATION');
    const source=JSON.parse(bytes);let data,result,error,results={};
    const productIdentity=(productRows.get(id)||[]).length===1?C.identityKey(productRows.get(id)[0]):null;
-   const calculationKey=A.hash({id,sourceHash:item.sourceHash,masterHash:loader.masterHash,productIdentity,model,codes:snapshot.codes,benchmarkInputs});
+   const calculationKey=A.hash({calculationRuntime:snapshot.calculationRuntime,id,sourceHash:item.sourceHash,masterHash:loader.masterHash,productIdentity,model,codes:snapshot.codes,benchmarkInputs});
    const cachePath=path.join(output,'.calculation-cache',calculationKey+'.json.gz');
    if(fs.existsSync(cachePath)){
     const packed=fs.readFileSync(cachePath);if(packed.length>2097152)throw Error('CALCULATION_CACHE_TOO_LARGE');
@@ -56,7 +56,7 @@ function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=nu
     const payload={key:calculationKey,id,error:error?.message||null,results};fs.mkdirSync(path.dirname(cachePath),{recursive:true,mode:0o700});fs.writeFileSync(cachePath+'.tmp',zlib.gzipSync(JSON.stringify({...payload,hash:A.hash(payload)})));fs.renameSync(cachePath+'.tmp',cachePath);calculatedListings++;
    }
    const quality=Q.classify({securityId:id,source,sourceHash:item.sourceHash,masterHash:loader.masterHash,identities:byId.get(id)||[],result,error,computedAt});
-   s={schemaVersion:C.VERSION,generation,identity:{sourceSecurityId:id,listingId:quality.listingId,ticker:source.ticker,productIdentity:(productRows.get(id)||[]).length===1?C.identityKey(productRows.get(id)[0]):null},state:quality.state,certification:'NOT_CERTIFIED',returnBasis:'PRICE_RETURN',executionModel:model,computedAt,asOf:source.asOf,quality,availableBacktestKinds:error?[]:['SAME_STOCK_REPLAY','SIGNAL_BACKTEST'],kindScope:'SINGLE_LISTING_WEEKLY_REPLAY_NOT_AGGREGATE_SIGNAL_CERTIFICATION',supportedPeriods:error?[]:C.periods,periods:{}};
+   s={schemaVersion:C.VERSION,generation,calculationRuntime:snapshot.calculationRuntime,identity:{sourceSecurityId:id,listingId:quality.listingId,ticker:source.ticker,productIdentity:(productRows.get(id)||[]).length===1?C.identityKey(productRows.get(id)[0]):null},state:quality.state,certification:'NOT_CERTIFIED',returnBasis:'PRICE_RETURN',executionModel:model,computedAt,asOf:source.asOf,quality,availableBacktestKinds:error?[]:['SAME_STOCK_REPLAY','SIGNAL_BACKTEST'],kindScope:'SINGLE_LISTING_WEEKLY_REPLAY_NOT_AGGREGATE_SIGNAL_CERTIFICATION',supportedPeriods:error?[]:C.periods,periods:{}};
    if(!error)for(const period of C.periods){
     const r=results[period],market={...r.marketBenchmark};delete market.points;
     const detailBase={schemaVersion:C.VERSION,generation,sourceSecurityId:id,listingId:data.listingId,period,resultHash:r.resultHash,returnBasis:'PRICE_RETURN',certification:'NOT_CERTIFIED'};
@@ -82,10 +82,10 @@ function materializeUnlocked({root=path.resolve(__dirname,'../..'),output,ids=nu
   for(const [p,expected] of Object.entries(checks)){const current=fs.existsSync(path.join(root,p))?A.hash(fs.readFileSync(path.join(root,p),'utf8')):'MISSING';if(current!==expected)throw Error('INPUT_CHANGED_DURING_MATERIALIZATION');}
   for(const [key,entries] of Object.entries(shards)){const shard={schemaVersion:C.VERSION,generation,entries};shardHashes[key]=A.hash(shard);atomic(path.join(base,'index',key+'.json'),shard);}
   fs.writeFileSync(path.join(base,'quality.jsonl.gz'),zlib.gzipSync(qualities.map(x=>JSON.stringify(x)).join('\n')+'\n'));
-  const release={schemaVersion:C.VERSION,generation,computedAt,executionModel:model,counts,expected:sources.length,qualityDump: generation+'/quality.jsonl.gz',shards:shardHashes,certification:'NOT_CERTIFIED',publiclyActivated:false};
+  const release={schemaVersion:C.VERSION,generation,calculationRuntime:snapshot.calculationRuntime,computedAt,executionModel:model,counts,expected:sources.length,qualityDump: generation+'/quality.jsonl.gz',shards:shardHashes,certification:'NOT_CERTIFIED',publiclyActivated:false};
   atomic(path.join(base,'release.json'),release);atomic(path.join(output,'release.json'),release);
  }
- const report={schemaVersion:C.VERSION,generation,state:complete?'COMPLETE':'CHECKPOINTED',computedAt,expected:sources.length,processed:qualities.length,counts,reasons,benchmarkStates,calculatedListings,calculationCacheHits,computed,reused,elapsedMs:performance.now()-started,peakRssBytes:Math.max(peak,process.resourceUsage().maxRSS*1024),newDetailBytes:payloadBytes,newDetailGzipBytes:gzipBytes,publiclyActivated:false,certification:'NOT_CERTIFIED'};
+ const report={schemaVersion:C.VERSION,generation,calculationRuntime:snapshot.calculationRuntime,state:complete?'COMPLETE':'CHECKPOINTED',computedAt,expected:sources.length,processed:qualities.length,counts,reasons,benchmarkStates,calculatedListings,calculationCacheHits,computed,reused,elapsedMs:performance.now()-started,peakRssBytes:Math.max(peak,process.resourceUsage().maxRSS*1024),newDetailBytes:payloadBytes,newDetailGzipBytes:gzipBytes,publiclyActivated:false,certification:'NOT_CERTIFIED'};
  atomic(path.join(base,'materialization-report.json'),report);return report;
 }
 // Serialize writers to a private output root. A dead process may be resumed;

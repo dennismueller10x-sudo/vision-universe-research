@@ -7,7 +7,7 @@ const A=require('../../quant/engines/weekly-real-adapter.cjs');
 function fingerprint(root,ids){
  const files=['scripts/quant/contracts/weekly-execution-model-v2.json','quant/data/market/security-master/us-security-master.json','quant/data/market/multi-asset/series/SPY.json','quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json',...ids.map(id=>'quant/data/market/discover-series-long/'+id+'.json')];
  for(const dir of ['quant/engines','quant/api','scripts/quant','quant/data/universe/instruments'])for(const file of fs.readdirSync(path.join(root,dir)).filter(f=>/\.(?:cjs|js|json)$/.test(f)).sort())files.push(dir+'/'+file);
- return A.hash(files.sort().map(p=>[p,fs.existsSync(path.join(root,p))?A.hash(fs.readFileSync(path.join(root,p),'utf8')):'MISSING']));
+ const binary=fs.statSync(process.execPath);return A.hash({runtime:A.calculationRuntime(),executableStamp:[binary.dev,binary.ino,binary.size,binary.mtimeMs,binary.ctimeMs],inputs:files.sort().map(p=>[p,fs.existsSync(path.join(root,p))?A.hash(fs.readFileSync(path.join(root,p),'utf8')):'MISSING'])});
 }
 function scope(output,ids){
  let prior=null;const pointer=path.join(path.resolve(output),'release.json');if(fs.existsSync(pointer)){const release=JSON.parse(fs.readFileSync(pointer));if(!/^[a-f0-9]{64}$/.test(release.generation||''))throw Error('INVALID_RELEASE');const snapshot=JSON.parse(fs.readFileSync(path.join(path.resolve(output),release.generation,'snapshot.json')));if(A.hash(snapshot.input)!==release.generation)throw Error('INVALID_SNAPSHOT');prior=snapshot.input.sources.map(x=>x.securityId).sort();}
