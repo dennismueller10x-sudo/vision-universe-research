@@ -328,6 +328,33 @@ def load_product_universe_ciks(names_file):
     return by_cik, without
 
 
+def load_fiscal_year_end_hints(issuers_dir):
+    """Registered fiscal year end (MMDD) per CIK from the SEC pipeline's issuer shards.
+
+    The SEC pipeline (quant/data/fundamentals/issuers, from SEC submissions)
+    hands the same value to FiscalCalendar (pipeline.py). The consumer did not,
+    so a filer without a 10-K yet - a company after its IPO, reporting only
+    10-Qs - had no fiscal year and an empty bundle although its quarters are in
+    companyfacts. The hint is the filer's own declaration and FiscalCalendar
+    uses it only when no annual filing fixes the year ends.
+    """
+    from pathlib import Path
+    hints = {}
+    directory = Path(issuers_dir)
+    if not directory.is_dir():
+        return hints
+    for path in sorted(directory.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for row in payload.get("issuers") or []:
+            value = str(row.get("fiscalYearEnd") or "").strip()
+            if row.get("cik") and len(value) == 4 and value.isdigit():
+                hints[normalize_cik(row["cik"])] = value
+    return hints
+
+
 def summarize_bundle(bundle):
     cov = bundle["coverage"]
     h = cov["horizons"]
