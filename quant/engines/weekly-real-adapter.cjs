@@ -6,7 +6,7 @@ const CorporateActions = require('./corporate-action-evidence.js');
 const hash = x => crypto.createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
 function monday(date) { const d = new Date(date+'T00:00:00Z'); const n=d.getUTCDay(); d.setUTCDate(d.getUTCDate()-(n+6)%7); return +d; }
 function validate(doc, identity) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(doc.asOf) || !Number.isFinite(Date.parse(doc.asOf)) || doc.instrumentId !== doc.ticker) throw Error('INVALID_SOURCE_METADATA');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(doc.asOf) || !Number.isFinite(Date.parse(doc.asOf)) || new Date(doc.asOf).toISOString().slice(0,10)!==doc.asOf || doc.asOf>new Date().toISOString().slice(0,10) || doc.instrumentId !== doc.ticker) throw Error('INVALID_SOURCE_METADATA');
   if (doc.dataMode !== 'real' || doc.priceSeriesType !== 'SPLIT_ADJUSTED' || doc.grain !== 'weekly') throw Error('REAL_WEEKLY_PRICE_REQUIRED');
   if (!identity || !identity.canonical_id || identity.baseline_security_id !== doc.securityId || identity.ticker !== doc.ticker || identity.currency !== doc.currency || identity.provider !== doc.provider || doc.from < identity.start_date) throw Error('LISTING_IDENTITY_MISMATCH');
   if (identity.active_status !== 'ACTIVE') throw Error('INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED');
