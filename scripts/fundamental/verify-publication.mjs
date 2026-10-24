@@ -67,7 +67,7 @@ export async function check({ want, base = DEFAULT_BASE, fetchImpl = fetch }) {
       const buf = Buffer.from(await (await get('/fundamental/data/history/' + Identity.shardKey(s.ticker) + '.json.gz?t=' + Date.now())).arrayBuffer());
       const h = JSON.parse(gunzipSync(buf)).issuers?.[s.ticker];
       checks.push({ check: 'filing', ticker: s.ticker, form: s.form, filed: s.filed, accession: s.accession, ok: !!h && (h.filings || []).some((f) => f[0] === s.accession) });
-    } catch (e) { checks.push({ check: 'filing', ticker: s.ticker, accession: s.accession, ok: false, error: e.message }); }
+    } catch (e) { checks.push({ check: 'filing', ticker: s.ticker, form: s.form, filed: s.filed, accession: s.accession, ok: false, error: e.message }); }
   }
   return { schema: SCHEMA, checkedAt: new Date().toISOString(), base, consumerAsOf: want.consumerAsOf, adoptedRecently: want.adoptedRecently, ok: checks.length > 0 && checks.every((c) => c.ok), checks };
 }

@@ -78,7 +78,7 @@ Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht
   - Lauf erfolgreich: wartet auf ein erfolgreiches `pages-release.yml` auf `main`, das danach entstanden ist (es startet per `workflow_run` und werktags ohnehin alle 5 Minuten). Kommt binnen 15 Minuten keines, wird es **einmal** per `workflow_dispatch` mit Standard-Eingaben angestoßen.
   - Danach vergleicht `scripts/fundamental/verify-publication.mjs` die Auslieferung mit `main`: `status.json` mit demselben `consumerAsOf` wie die Verbraucherdateien, und für bis zu 8 frisch übernommene 10-Q/10-K (laut `state.json`) muss die ausgelieferte Scherbe genau diese Meldung (Accession) enthalten. Bis zu 6 Versuche im Abstand von 2 Minuten (CDN); sonst roter Lauf.
   - Weder der Erzeuger noch `pages-release.yml` werden dafür verändert; der Wächter schreibt nichts ins Repository.
-- Meldungen, die ein Verbraucherlauf schon hatte und nicht übernommen hat (z. B. ohne verwertbares XBRL in companyfacts), werden nur gemeldet (`notAdopted`), nicht täglich neu angestoßen.
+- Meldungen, die ein Verbraucherlauf schon hatte und nicht übernommen hat, werden nur gemeldet (`notAdopted`), nicht täglich neu angestoßen. Ursachen je Meldung (fehlende SEC-Daten, Verarbeitungsgrenze, nicht unterstützt, sonstige): [FUNDAMENTAL_SEC_GAPS.md](FUNDAMENTAL_SEC_GAPS.md).
 
 ## Branchenmedian je Geschäftsjahr
 
