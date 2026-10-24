@@ -33,12 +33,13 @@ import { runResearchLifecycle, runMetricsSF5, prepareAll, ENGINE_VERSION } from 
 import { toSession, compactSession, expandSession, tickerOf, KK_INTRADAY_VERSION } from './kk-intraday.mjs';
 import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION, IEX_BASELINE_SESSIONS, IEX_BASELINE_MIN_DAYS } from './kk-ep-lifecycle.mjs';
 import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, PS_OVERLAP_POLICIES, psChartCandidate, evaluatePsCandidates, psTradeMetrics, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
+import { SF7_EP_VARIANTS, SF7_EP_EXECUTION_VERSION, sf7EpExecutionVariantsSha256 } from './sf7-ep-execution-variants.mjs';
 import { KK_SAMPLE_VERSION, STRATA_SCHEMES, STRATA_MIN_POPULATION, OUTSIDE_DAY_SET, hashOrder, median, cleanPrefix, epCommonDaySet, regimeByDate, strataFeatures, stratumOf, stratifiedSample, kkSampleRegistrySha256 } from './kk-sample.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.2.1'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2)
-export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'run-kk-intraday.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.3.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2); 1.3.0 (7.0): SF7 EP variant (SF7-D5)
+export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'run-kk-intraday.mjs', 'sf7-ep-execution-variants.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
 export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
 export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
 // Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
@@ -351,6 +352,20 @@ async function main() {
       sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map(epSealedTrade) };
       log(`EP ${setId} ${v.id}: trades ${r.trades.length}`);
     }
+  }
+  // Supertrader 7.0: SF7 EP execution variant (sf7-ep-execution-variants.mjs) beside its unchanged comparison variant
+  pub.ep.sf7Execution = { version: SF7_EP_EXECUTION_VERSION, variantsSha256: sf7EpExecutionVariantsSha256(), variants: {} }; sealed.ep.sf7Execution = {};
+  for (const x of SF7_EP_VARIANTS) {
+    cur = sets.ep[x.daySet];
+    const key = x.adapter.prepareKey(x.config);
+    if (!prepCache.has(key)) prepCache.set(key, prepareAll(dataset, x.adapter, x.config));
+    const r = runResearchLifecycle(dataset, { adapter: x.adapter, config: x.config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
+    if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:SF7:${x.id}`);
+    const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {}), baseV = pub.ep.sets[x.daySet].variants[x.compareTo];
+    const fillMinute = tally((t) => t.intradayEvidence?.fillMinuteStop ?? null);
+    pub.ep.sf7Execution.variants[x.id] = { compareTo: x.compareTo, daySet: x.daySet, revision: x.revision, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), fillMinuteStop: fillMinute, notExecuted: r.counts.notExecutedResolved ?? {}, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])), comparison: { tradesDelta: r.trades.length - baseV.trades, ledgerEqual: sha(r.ledger) === baseV.ledgerSha256 } };
+    sealed.ep.sf7Execution[x.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), trades: r.trades.map(epSealedTrade) };
+    log(`EP SF7 ${x.id} (vs ${x.compareTo}): trades ${r.trades.length}`);
   }
   cur = null;
   // PS: trade-level short studies on each day set, reference overlap (INDEPENDENT) and ONE_POSITION_PER_TICKER

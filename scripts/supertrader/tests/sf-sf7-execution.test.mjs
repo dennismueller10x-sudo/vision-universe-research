@@ -17,6 +17,7 @@ import { DARVAS_ADAPTER } from '../source-faithful/research/darvas-lifecycle.mjs
 
 // pinned before any snapshot result of the Supertrader 7.0 variants exists
 const PINNED_SF7_VARIANTS = '310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a';
+const PINNED_SF7_EP_VARIANTS = '1b48d3cd2a629da14ce8ee57c606ea9b06b51054b6333f075b5c846398489223';
 const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 
 const day = (k) => new Date(Date.UTC(2020, 0, 1) + k * 864e5).toISOString().slice(0, 10);
@@ -225,8 +226,64 @@ test('SF7-RUNNER-BLOCK: der sf5-Runner misst jede SF7-Variante neben ihrer unver
     assert.equal(ref.comparison.ledgerRowsWithChangedReason, ref.comparison.sameBarStopCertainByClose);
     assert.ok(Object.values(x).every((v) => v.reconciliation === true));
     assert.equal(p.variants.REF.ledgerSha256 === ref.ledgerSha256, ref.comparison.sameBarStopCertainByClose === 0);
+    // OPTIMISTIC: a certain stop changes the path (exits move, prices change), never only the labels
+    const opt = x['SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE'], optBase = p.variants['ALT-INTRABAR-OPTIMISTIC'];
+    assert.equal(opt.comparison.tradesDelta, opt.trades - optBase.trades);
+    if (opt.comparison.sameBarStopCertainByClose > 0) { assert.equal(opt.comparison.ledgerWithoutReasonsEqual, false); assert.notEqual(opt.ledgerSha256, optBase.ledgerSha256); }
+    else assert.equal(opt.ledgerSha256, optBase.ledgerSha256);
+    for (const v of Object.values(x)) assert.equal(v.comparison.tradesDelta, v.trades - p.variants[v.compareTo].trades);
     assert.ok(out.sealed.strategies[k].sf7Execution['SF7-REF-CLOSE-RULE'].metrics);
   }
   assert.ok(out.pub.strategies.DARVAS.sf7Execution.variants['SF7-REF-CLOSE-RULE'].comparison.sameBarStopCertainByClose > 0, 'the synthetic universe must show the reclassification');
+  assert.ok(out.pub.strategies.DARVAS.sf7Execution.variants['SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE'].comparison.sameBarStopCertainByClose > 0, 'and the optimistic path change');
   assert.doesNotMatch(JSON.stringify(out.pub), /"(cagr|sharpe|pnl|equity|maxDrawdown|realizedPnl|unrealizedPnl)"/);
+});
+
+test('SF7-RUN-TRANSCRIPTION: eingetragene SF7-Registerhashes der Laeufe = aktueller Code', async () => {
+  const { SF5_SNAPSHOT_RUNS } = await import('../source-faithful/completion/build-sf5-lifecycle.mjs');
+  const auth = SF5_SNAPSHOT_RUNS.find((r) => r.role === 'AUTHORITATIVE');
+  assert.equal(auth.sf7Execution.variantsSha256, sf7ExecutionVariantsSha256());
+  for (const [k, vs] of Object.entries(auth.sf7Execution.variants)) for (const id of Object.keys(vs)) assert.ok(SF7_EXECUTION_VARIANTS.some((v) => v.key === k && v.id === id), `${k}/${id}`);
+});
+
+test('SF7-D4-MINERVINI-CHARACTERIZED: Minervini-Pivot-Beruehrung mit Schluss unter dem Stop gilt als mehrdeutig (offen, Code gepinnt b1d81fb8)', async () => {
+  const { fillBuyOrder } = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const f = fillBuyOrder({ date: '2020-02-03', open: 10.2, high: 10.8, low: 9.9, close: 9.95, volume: 1 }, { type: 'BUY_STOP', level: 10.5, stop: 10.0 });
+  assert.equal(f.status, 'FILLED'); assert.equal(f.basis, 'INTRADAY_PIVOT_TOUCH');
+  // known and listed (SF7-D4): the close below the stop proves the stop traded after the fill; OPTIMISTIC ignores it
+  assert.equal(f.sameBarStop, 'AMBIGUOUS');
+});
+
+/** EP day: official open 23, 1-minute opening range high 23.2 (level 23.21), stop = low before the fill minute (22.95) */
+function epDay(fill) {
+  const mm = (k, o, h, l, c) => ({ k, open: o, high: h, low: l, close: c, volume: 1000 });
+  const m = [mm(0, 23, 23.2, 22.95, 23.1), mm(1, ...fill)];
+  for (let k = 2; k < 390; k++) m.push(mm(k, 23.5, 23.6, 23.4, 23.5));
+  return m;
+}
+test('SF7-D5-EP-FILL-MINUTE: OPTIMISTIC uebergeht ohne Revision einen sicheren Stop in der Fill-Minute; mit Revision sicher (Eroeffnungs-Fill oder Schluss <= Stop)', async () => {
+  const { resolveEpDay, EP_RUN_VARIANTS: EPV, EP_REFERENCE_CONFIG: REF } = await import('../source-faithful/research/kk-ep-lifecycle.mjs');
+  const opt = EPV.find((v) => v.id === 'ALT-FILL-MINUTE-OPTIMISTIC').config, cfg = { ...opt, volumeRule: 'NONE' };
+  const go = (fill, c, rule) => resolveEpDay({ minutes: epDay(fill), bar: { date: '2021-03-01', open: 23, high: 23.6, low: 22.9, close: 23.5, splitAdj: 1 }, rawFactor: 1, adrPct: 10, iexBaseline: null, cfg: c, fillMinuteRule: rule });
+  const atOpen = [23.3, 23.4, 22.9, 23.0], closeBelow = [23.1, 23.3, 22.9, 22.94], ambiguous = [23.1, 23.3, 22.9, 23.1];
+  for (const f of [atOpen, closeBelow]) {
+    const before = go(f, cfg, false), after = go(f, cfg, true);
+    assert.equal(before.status, 'FILLED'); assert.equal(before.sameDayStop, null); // defect: the certain stop is ignored
+    assert.equal(after.sameDayStop, 'CERTAIN'); assert.equal(after.sameDayExitFill, 22.95);
+  }
+  assert.equal(go(atOpen, cfg, true).evidence.fillMinuteStop, 'CERTAIN_FILL_AT_MINUTE_OPEN');
+  assert.equal(go(closeBelow, cfg, true).evidence.fillMinuteStop, 'CERTAIN_MINUTE_CLOSE_AT_OR_BELOW_STOP');
+  assert.equal(go(ambiguous, cfg, true).sameDayStop, null); // the low may precede the fill: still ignored under OPTIMISTIC
+  // REF (PESSIMISTIC) identical with and without the flag
+  const ref = { ...REF, volumeRule: 'NONE' };
+  for (const f of [atOpen, closeBelow, ambiguous]) assert.deepEqual(go(f, ref, true), go(f, ref, false));
+});
+
+test('SF7-D5-EP-VARIANT: Variante nur als Wrapper; EP-Register, Referenzadapter und Konfiguration unveraendert; gepinnt', async () => {
+  const { KK_EP_ADAPTER, EP_RUN_VARIANTS: EPV, epVariantRegistrySha256 } = await import('../source-faithful/research/kk-ep-lifecycle.mjs');
+  const { SF7_EP_VARIANTS, sf7EpExecutionVariantsSha256 } = await import('../source-faithful/research/sf7-ep-execution-variants.mjs');
+  assert.equal(epVariantRegistrySha256(), 'e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f');
+  assert.equal(KK_EP_ADAPTER.fillMinuteRule, undefined); assert.equal(KK_EP_ADAPTER.version, 'kk-ep-chart-lifecycle-1.2.0');
+  assert.equal(sf7EpExecutionVariantsSha256(), PINNED_SF7_EP_VARIANTS);
+  for (const v of SF7_EP_VARIANTS) { assert.deepEqual(v.config, EPV.find((x) => x.id === v.compareTo).config); assert.equal(v.adapter.fillMinuteRule, true); assert.equal(v.adapter.prepareKey(v.config), KK_EP_ADAPTER.prepareKey(v.config)); }
 });
