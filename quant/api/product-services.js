@@ -566,6 +566,47 @@ function create(options){
   if(!r.row.tracking)return {state:'UNAVAILABLE',reason:'TRACKING_NOT_MATERIALIZED'};
   return {state:'AVAILABLE',ticker:r.ticker,radarAsOf:r.shard.radarAsOf,...r.row.tracking,events:(r.row.card&&r.row.card.events)||[]};
  }
+ /* Private real-history reader on the existing service. No default fetch or engine
+  * import. Explicit reviewer wiring is required; production create() is unchanged. */
+ const realBacktestCache=new Map();
+ async function getRealBacktest(ticker,{period='MAX',section='summary'}={}){
+  const unavailable=reason=>({state:'UNAVAILABLE',reason,certification:'NOT_CERTIFIED',productionApproved:false});
+  const preview=options.realBacktestPreview,store=options.realBacktestStore;
+  if(preview?.enabled!==true||preview.audience!=='INTERNAL_REVIEW'||!store)return unavailable('REAL_BACKTEST_PREVIEW_DISABLED');
+  const C=options.realBacktestContract||(typeof module!=='undefined'&&module.exports?require('./real-backtest-contract.js'):g.VURealBacktestContract);
+  if(!C)return unavailable('CONTRACT_NOT_LOADED');
+  if(!C.periods.includes(period)||!C.sections.includes(section)||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_SELECTION');
+  try{
+   const instrument=await identity(ticker);if(!instrument||!C.safeId(instrument.masterMemberId))return unavailable('INVALID_IDENTITY');
+   const configData=await config();if(!permission(configData,ticker).allowed)return unavailable('DISPLAY_NOT_PERMITTED');
+   // Tiny pointer checked on every call; generation changes invalidate all cached summaries.
+   const release=await store.loadJSON('release.json');
+   if(release.schemaVersion!==C.VERSION||release.certification!=='NOT_CERTIFIED'||release.publiclyActivated!==false||!/^[a-f0-9]{64}$/.test(release.generation)||!/^\d{4}-\d{2}-\d{2}T/.test(release.computedAt)||!Number.isFinite(Date.parse(release.computedAt))||Date.parse(release.computedAt)>Date.now())return unavailable('INVALID_BACKTEST_RELEASE');
+   const id=instrument.masterMemberId,key=release.generation+':'+(release.shards?.[C.shard(id)]||'MISSING')+':'+id;
+   let summary=realBacktestCache.get(key);
+   if(!summary){
+    const shardKey=C.shard(id),index=await store.loadJSON(release.generation+'/index/'+shardKey+'.json');
+    if(await C.digest(index)!==release.shards[shardKey]||index.generation!==release.generation||!index.entries[id])return unavailable('BACKTEST_NOT_MATERIALIZED');
+    summary=await store.loadJSON(release.generation+'/listings/'+id+'/summary.json');
+    const {summaryHash,...payload}=summary;
+    if(await C.digest(payload)!==summaryHash||summaryHash!==index.entries[id]||summary.computedAt!==release.computedAt||C.summaryViolations(summary,id,release.generation).length)return unavailable('BACKTEST_CONTRACT_VIOLATED');
+    if(realBacktestCache.size>=32)realBacktestCache.delete(realBacktestCache.keys().next().value);realBacktestCache.set(key,summary);
+   }
+   // Listing join was resolved offline against the hashed security master; ticker
+   // is checked again against today's canonical product directory before delivery.
+   if(summary.state==='BLOCKED'&&!summary.identity.productIdentity)return structuredClone({schemaVersion:C.VERSION,state:'BLOCKED',reason:'HISTORICAL_LISTING_NOT_UNIQUELY_MAPPED_TO_PRODUCT',identity:{sourceSecurityId:id,listingId:summary.identity.listingId,ticker:summary.identity.ticker},requestedIdentity:identityModel(instrument),period,section,returnBasis:'PRICE_RETURN',certification:'NOT_CERTIFIED',productionApproved:false,benchmarkState:'NOT_EVALUATED',generation:release.generation,asOf:summary.asOf,computedAt:summary.computedAt,executionModel:summary.executionModel,quality:summary.quality,availableBacktestKinds:[],supportedPeriods:[],max:null});
+   if(JSON.stringify(summary.identity.productIdentity)!==JSON.stringify(C.identityKey(instrument))||summary.identity.ticker!==ticker||summary.asOf>new Date().toISOString().slice(0,10))return unavailable('INVALID_BACKTEST_IDENTITY_OR_AS_OF');
+   const base={schemaVersion:C.VERSION,state:summary.state,identity:{...identityModel(instrument),sourceSecurityId:id,listingId:summary.identity.listingId},period,section,returnBasis:'PRICE_RETURN',certification:'NOT_CERTIFIED',productionApproved:false,benchmarkState:summary.periods[period]?.marketBenchmark.state||'NOT_EVALUATED',generation:release.generation,asOf:summary.asOf,computedAt:summary.computedAt,executionModel:summary.executionModel,quality:summary.quality,availableBacktestKinds:summary.availableBacktestKinds,supportedPeriods:summary.supportedPeriods,max:summary.periods.MAX?.history||null};
+   // Blocked listings NEVER deliver financial results, even when details were requested.
+   if(summary.state==='BLOCKED'||section==='quality')return structuredClone(base);
+   if(section==='summary')return structuredClone({...base,result:summary.periods[period]});
+   if(section==='trades'&&!permission(configData,ticker,'raw').allowed)return unavailable('RAW_DISPLAY_NOT_PERMITTED');
+   const descriptor=summary.periods[period].details[section];if(descriptor.bytes>2097152||descriptor.gzipBytes>262144)return unavailable('BACKTEST_PAYLOAD_LIMIT');
+   const detail=await store.loadDetail(release.generation+'/listings/'+id+'/'+period+'-'+section+'.json.gz');
+   if(await C.digest(detail)!==descriptor.hash||C.detailViolations(detail,summary,period,section).length)return unavailable('BACKTEST_DETAIL_CONTRACT_VIOLATED');
+   return structuredClone({...base,result:detail});
+  }catch{return unavailable('REAL_BACKTEST_SOURCE_UNAVAILABLE');}
+ }
  /* BACKTEST: Signal- und Setup-Studie, Bestandsaufnahme je Art. Jede
   * Studie wird gegen die Vertrauensregel der Engine geprueft; verletzt sie
   * sie, wird sie nicht gezeigt. */
@@ -1418,7 +1459,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
