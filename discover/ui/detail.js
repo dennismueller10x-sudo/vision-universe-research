@@ -1093,8 +1093,13 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
     S.clear(chartBox); S.clear(paneHost); S.clear(controls);
     var z = VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === state.range; })[0] || VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === "1Y"; })[0];
-    var punkte = z.quelle === "weekly" ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
-    if (z.id === "MAX") punkte = state.weeklyPoints || state.dailyPoints || [];
+    /* Quelle nach derselben Regel wie Quant und Supertrader (Chartstandard): traegt die
+       Tagesreihe den Zeitraum (Golden-Titel: Tageskurse ueber Jahre), bleibt es bei
+       Tagesschluessen - dieselben Stichtage, dieselbe Rendite in jeder Welt. Sonst, und
+       fuer MAX immer, die Wochenreihe. */
+    var wochen = z.id === "MAX" || (z.quelle === "weekly" && !traegt(state.dailyPoints || [], z.id));
+    var punkte = wochen ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
+    var woechentlich = wochen && !!state.weeklyPoints;
     if (!SS || !MC || !MC.renderRange || punkte.length < 2) {
       chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
       return;
@@ -1130,7 +1135,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" && state.weeklyPoints ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
           (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
         frischeTages(state)
@@ -1143,12 +1148,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
-                                                 range: z.id, label: z.wort, grain: z.quelle === "weekly" && state.weeklyPoints ? "weekly" : "daily",
+                                                 range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
     }
-    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle,
+    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": woechentlich ? "weekly" : "daily",
                              "data-direction": svgNode ? svgNode.getAttribute("data-direction") : null });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);

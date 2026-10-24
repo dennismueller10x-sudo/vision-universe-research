@@ -97,7 +97,10 @@
     function y(val) { return LOG ? padT + (Math.log(yMax) - Math.log(Math.max(val, yMin * 1e-3))) / (Math.log(yMax) - Math.log(yMin)) * plotH : padT + (yMax - val) / (yMax - yMin) * plotH; }
     function clampY(val) { return Math.max(padT, Math.min(padT + plotH, y(val))); }
 
-    var root = svg("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", class: "ti-chart" + (o.uncertain ? " is-uncertain" : ""), role: "img", "aria-labelledby": "ti-chart-title ti-chart-desc", preserveAspectRatio: "xMidYMid meet" });
+    /* Barrierefreiheit: Mit antippbaren Wellen (onWave) ist das Bild eine benannte Gruppe - ein role="img"
+       macht seine Kinder zur reinen Darstellung, die Wellen-Knoepfe waeren fuer Bildschirmleser nicht
+       erreichbar (axe nested-interactive). Ohne Wellen bleibt es ein Bild. */
+    var root = svg("svg", { viewBox: "0 0 " + W + " " + H, width: "100%", class: "ti-chart" + (o.uncertain ? " is-uncertain" : ""), role: o.onWave ? "group" : "img", "aria-labelledby": "ti-chart-title ti-chart-desc", preserveAspectRatio: "xMidYMid meet" });
     root.appendChild(svg("title", { id: "ti-chart-title" }, [o.title || "Chartbild"]));
     root.appendChild(svg("desc", { id: "ti-chart-desc" }, [PJ ? describeProjection(PJ) : describe(v, o.uncertain)]));
     var defs = svg("defs", {});
