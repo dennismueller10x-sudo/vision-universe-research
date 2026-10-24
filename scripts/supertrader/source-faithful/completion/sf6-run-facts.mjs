@@ -3,6 +3,9 @@
  * stay sealed with the owner). null = run not yet recorded (the matrix then reports NOT_EVIDENCED).
  * integrity: run-sf6-integrity.mjs 1.1.0. The criteria (sf6-readiness-criteria.mjs) name the policies DQ-K5 / DQ-K3; they
  * are the BOOK treatments (DQ-K5-BOOK primary, DQ-K3-BOOK sensitivity), copied under both names; DQ-K5-PRIOR is reported.
+ * baseMatchesAuthoritative: the BASE level of the integrity run compared HASH BY HASH with the authoritative reference run
+ * (ledgerSha256 = sha(JSON ledger), tradesSha256 = sha([id, entryDate, exitDate, exitReason, shares])); the Turtle runs of
+ * Supertrader 2.0 publish the ledger hash only, so their trade hash is NOT_PUBLISHED_BY_REFERENCE (never inferred from counts).
  */
 export const SF6_RUN_FACTS = Object.freeze({
  "integrity": {
@@ -128,17 +131,92 @@ export const SF6_RUN_FACTS = Object.freeze({
    }
   },
   "baseMatchesAuthoritative": {
-   "TURTLE_S1": "TRADE_COUNT_EQUAL",
-   "TURTLE_S2": "TRADE_COUNT_EQUAL",
-   "MINERVINI_SEPA": "TRADE_COUNT_EQUAL",
-   "MINERVINI_POWER_PLAY": "TRADE_COUNT_EQUAL",
-   "DARVAS": "TRADE_COUNT_EQUAL",
-   "KK_BREAKOUT": "TRADE_COUNT_EQUAL",
-   "POCKET_PIVOT": "TRADE_COUNT_EQUAL",
-   "BUYABLE_GAP_UP": "TRADE_COUNT_EQUAL",
-   "WEINSTEIN_INVESTOR": "TRADE_COUNT_EQUAL",
-   "WEINSTEIN_TRADER": "TRADE_COUNT_EQUAL",
-   "HOLY_GRAIL_W_RAS97": "TRADE_COUNT_EQUAL"
+   "TURTLE_S1": {
+    "authoritativeRunId": "39397517900",
+    "authoritativeVersion": "Supertrader 2.0 Turtle research engine (BASE_S0)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "NOT_PUBLISHED_BY_REFERENCE",
+    "ledgerSha256Value": "884d88cb519426e191e11ad40255faa431b374c190fccaa23bdeff2a41bb8610"
+   },
+   "TURTLE_S2": {
+    "authoritativeRunId": "39397517900",
+    "authoritativeVersion": "Supertrader 2.0 Turtle research engine (BASE_S0)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "NOT_PUBLISHED_BY_REFERENCE",
+    "ledgerSha256Value": "67169e865384b866f2e51203dda75baff4778d125c5e1f60b67cb642c63b01f0"
+   },
+   "MINERVINI_SEPA": {
+    "authoritativeRunId": "39746264325",
+    "authoritativeVersion": "Supertrader 4.0 Minervini lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "1ca5239107bd8bf1da18dfe730329878d21f9d8d2e6233e0ab5645d1f32d3326",
+    "tradeCount": "EQUAL"
+   },
+   "MINERVINI_POWER_PLAY": {
+    "authoritativeRunId": "39746264325",
+    "authoritativeVersion": "Supertrader 4.0 Minervini lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "877ceb333831fdcbc25b34b81b254bbdf9845dcc89966d26cb93e595490d0fb3",
+    "tradeCount": "EQUAL"
+   },
+   "DARVAS": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "2be4ed71c1d208d4396655d6419d1c3b6824ce86a4ab97eac0a9e63fd7b08656",
+    "tradeCount": "EQUAL"
+   },
+   "KK_BREAKOUT": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "8b4dfb91b0c1f2b1779cac16da58b3c9a3c187c476ea9f5ce067e8c869c02ba6",
+    "tradeCount": "EQUAL"
+   },
+   "POCKET_PIVOT": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "6cafafc74084ee1504cac4bb10af1becdaecdc316dd95069c518fd976816468a",
+    "tradeCount": "EQUAL"
+   },
+   "BUYABLE_GAP_UP": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "2ad276dfcbbbfa2111248f6634f1e247ec35a6c4986637b49c849f24add20174",
+    "tradeCount": "EQUAL"
+   },
+   "WEINSTEIN_INVESTOR": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "153ea35d1da59fa9a74be96f6278a6bda2d6a29782a75dfefe97bd4257a6fb15",
+    "tradeCount": "EQUAL"
+   },
+   "WEINSTEIN_TRADER": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "0d869af00104d8402329d4888e0b0b3c29354e955f7c92d51847db5842a662e9",
+    "tradeCount": "EQUAL"
+   },
+   "HOLY_GRAIL_W_RAS97": {
+    "authoritativeRunId": "39939890956",
+    "authoritativeVersion": "Supertrader 5.0 lifecycle (REF)",
+    "ledgerSha256": "EQUAL",
+    "tradesSha256": "EQUAL",
+    "ledgerSha256Value": "875cda8c3a884c7615e9ea59e00d35ae1d1017a9b2f36766c6a4c3b1089aa434",
+    "tradeCount": "EQUAL"
+   }
   },
   "lifecycles": {
    "TURTLE_S1": {

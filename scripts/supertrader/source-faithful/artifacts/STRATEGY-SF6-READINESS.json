@@ -1,7 +1,7 @@
 {
- "schema": "supertrader-sf6-readiness-1.0.0",
- "criteriaVersion": "sf6-readiness-criteria-1.1.0",
- "criteriaSha256": "469ea7d127899a5245eb3be2ade27b7c241a9f74b9d7f6a9b0efd799a3935d82",
+ "schema": "supertrader-sf6-readiness-1.1.0",
+ "criteriaVersion": "sf6-readiness-criteria-1.2.0",
+ "criteriaSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342",
  "criteria": [
   {
    "id": "CC-1-SOURCE",
@@ -17,12 +17,11 @@
   },
   {
    "id": "CC-4-DATA",
-   "test": "no essential rule of the reference is DATA_BLOCKED (proxies do not unblock)"
+   "test": "no essential rule of the reference is DATA_BLOCKED (proxies do not unblock; the SIC-based Turtle correlation groups stay a research proxy, E4)"
   },
   {
    "id": "CC-5-CORPORATE-ACTIONS",
-   "test": "V4-D1 containment: under DQ-K5 at most 1 % of the reference trades are directly exposed to a flagged session, and the DQ-K3 sensitivity is reported (undeclared 2:1 splits stay invisible to both: the dimension can never be better than PASS_WITH_DECLARED_LIMITS)",
-   "threshold": 0.01
+   "test": "V4-D1 RESOLVED for the reference: every flagged session behind a reference trade verified by corporate-action evidence (CONFIRMED_UNDECLARED_SPLIT corrected in a versioned data PR, or CONFIRMED_GENUINE_MOVE) and the reference recomputed. The DQ-K5 / DQ-K3 quarantine is a diagnostic containment only and never satisfies this criterion (owner decision E1, 2026-10-24)"
   },
   {
    "id": "CC-6-REPRODUCIBLE",
@@ -34,9 +33,43 @@
   },
   {
    "id": "CC-8-OOS",
-   "test": "out-of-sample evidence on a window that was NEVER opened before the reference was fixed. A previously opened window (e.g. 2008-2015, opened once in R14) FAILS this criterion; it can at most earn PASS_WITH_DECLARED_LIMITS in the OUT_OF_SAMPLE_EVIDENCE dimension"
+   "test": "out-of-sample evidence from the prospective paper validation protocol SF6-PAPER-2027 (window from 2027-01-01, fixed before it opens; owner decision E2). No historical window qualifies: 2008-2015 (opened once in R14, survivorship-limited) and 2016-2026 (development data) FAIL this criterion and can at most earn PASS_WITH_DECLARED_LIMITS in the OUT_OF_SAMPLE_EVIDENCE dimension"
   }
  ],
+ "ownerDecisions": [
+  {
+   "id": "E1",
+   "decision": "V4-D1 stays a genuine data-integrity blocker; no quarantine reading is a final solution or a certification exception; existing Tiingo / Marketstack corporate-action data and verifiable public filings may be checked in a targeted way, without new costs and without bulk requests"
+  },
+  {
+   "id": "E2",
+   "decision": "a versioned prospective paper validation protocol from 2027-01-01 (SF6-PAPER-2027); no historical data are called an untouched holdout; no permanent scheduler, no live trading"
+  },
+  {
+   "id": "E3",
+   "decision": "the Pocket Pivot stop and the Holy Grail trailing stay explicit research variants, never original rules; no automatic upgrade of measurement classes"
+  },
+  {
+   "id": "E4",
+   "decision": "SIC-based Turtle correlation groups stay research proxies; no certification on their basis"
+  },
+  {
+   "id": "E5",
+   "decision": "no additional EP / PS intraday requests; only a prioritised plan for better stratified coverage within the existing budget"
+  },
+  {
+   "id": "E6",
+   "decision": "evaluation by metrics and distributions, not by the identity of single trades; numerical reproducibility, trade stability and robustness are reported separately and the sensitivity of the portfolio studies stays visible"
+  }
+ ],
+ "paperProtocol": {
+  "id": "SF6-PAPER-2027",
+  "version": "1.0.0",
+  "start": "2027-01-01",
+  "status": "PREPARED_NOT_ACTIVE",
+  "activation": "NOT_ACTIVATED",
+  "sha256": "c90c30bcf0186549aeb672ffc124b3b24d7b321288f0e78798a3a0cfc3bd5e8f"
+ },
  "runs": {
   "integrity": "40001276389",
   "validation": "40001421221",
@@ -108,7 +141,7 @@
     },
     "CORPORATE_ACTION_INTEGRITY": {
      "grade": "PARTIAL",
-     "evidence": "DQ-K5: 15 of 820 reference trades directly exposed (1.83 %); 128 unchanged, 646 removed, 46 changed (knock-on 678)"
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 15 of 820 reference trades directly exposed (1.83 %, above the reported bound of 1 %); 128 unchanged, 646 removed, 46 changed (knock-on 678)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -116,11 +149,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39397517900: ledger hash EQUAL, trade hash NOT_PUBLISHED_BY_REFERENCE",
+     "e6": {
+      "numericalReproducibility": "LEDGER_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "128 of 820 trades unchanged (16 %)",
+       "underCost50": "820 -> 923 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 716 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 716 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PASS",
@@ -191,7 +232,7 @@
     },
     "CORPORATE_ACTION_INTEGRITY": {
      "grade": "PARTIAL",
-     "evidence": "DQ-K5: 11 of 559 reference trades directly exposed (1.97 %); 324 unchanged, 223 removed, 12 changed (knock-on 224)"
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 11 of 559 reference trades directly exposed (1.97 %, above the reported bound of 1 %); 324 unchanged, 223 removed, 12 changed (knock-on 224)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -199,11 +240,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39397517900: ledger hash EQUAL, trade hash NOT_PUBLISHED_BY_REFERENCE",
+     "e6": {
+      "numericalReproducibility": "LEDGER_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "324 of 559 trades unchanged (58 %)",
+       "underCost50": "559 -> 466 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 530 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 530 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PASS",
@@ -234,7 +283,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -273,8 +322,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 20 of 19556 reference trades directly exposed (0.10 %); 18058 unchanged, 88 removed, 1410 changed (knock-on 1493)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 20 of 19556 reference trades directly exposed (0.10 %); 18058 unchanged, 88 removed, 1410 changed (knock-on 1493)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -282,11 +331,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "18058 of 19556 trades unchanged (92 %)",
+       "underCost50": "19556 -> 7343 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 11869 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 11869 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -294,7 +351,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -317,7 +374,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -356,8 +413,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 0 of 1348 reference trades directly exposed (0.00 %); 311 unchanged, 121 removed, 916 changed (knock-on 1037)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 0 of 1348 reference trades directly exposed (0.00 %); 311 unchanged, 121 removed, 916 changed (knock-on 1037)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -365,11 +422,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "311 of 1348 trades unchanged (23 %)",
+       "underCost50": "1348 -> 1339 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 995 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 995 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -377,7 +442,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -400,7 +465,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -439,8 +504,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 4 of 1808 reference trades directly exposed (0.22 %); 373 unchanged, 473 removed, 962 changed (knock-on 1431)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 4 of 1808 reference trades directly exposed (0.22 %); 373 unchanged, 473 removed, 962 changed (knock-on 1431)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -448,11 +513,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "373 of 1808 trades unchanged (21 %)",
+       "underCost50": "1808 -> 1859 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 1296 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 1296 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -460,7 +533,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -483,7 +556,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": false,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -522,8 +595,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: MIN-SF-TT-8"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 0 of 954 reference trades directly exposed (0.00 %); 901 unchanged, 14 removed, 39 changed (knock-on 53)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 0 of 954 reference trades directly exposed (0.00 %); 901 unchanged, 14 removed, 39 changed (knock-on 53)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -531,11 +604,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "901 of 954 trades unchanged (94 %)",
+       "underCost50": "954 -> 983 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 522 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 522 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -543,7 +624,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -566,7 +647,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -605,8 +686,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 10 of 1007 reference trades directly exposed (0.99 %); 108 unchanged, 128 removed, 771 changed (knock-on 889)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 10 of 1007 reference trades directly exposed (0.99 %); 108 unchanged, 128 removed, 771 changed (knock-on 889)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -614,11 +695,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "108 of 1007 trades unchanged (11 %)",
+       "underCost50": "1007 -> 971 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 425 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 425 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -626,7 +715,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -649,7 +738,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -688,8 +777,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 31 of 9114 reference trades directly exposed (0.34 %); 2809 unchanged, 1521 removed, 4784 changed (knock-on 6278)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 31 of 9114 reference trades directly exposed (0.34 %); 2809 unchanged, 1521 removed, 4784 changed (knock-on 6278)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -697,11 +786,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "2809 of 9114 trades unchanged (31 %)",
+       "underCost50": "9114 -> 5064 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 5722 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 5722 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -709,7 +806,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -780,7 +877,12 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)"
+     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)",
+     "e6": {
+      "numericalReproducibility": "NOT_EVIDENCED",
+      "tradeStability": "NOT_EVIDENCED",
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -863,7 +965,12 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)"
+     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)",
+     "e6": {
+      "numericalReproducibility": "NOT_EVIDENCED",
+      "tradeStability": "NOT_EVIDENCED",
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "NOT_EVIDENCED",
@@ -898,7 +1005,7 @@
     "CC-2-LIFECYCLE": false,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -943,8 +1050,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 7 of 1872 reference trades directly exposed (0.37 %); 187 unchanged, 627 removed, 1058 changed (knock-on 1678)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 7 of 1872 reference trades directly exposed (0.37 %); 187 unchanged, 627 removed, 1058 changed (knock-on 1678)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -952,11 +1059,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "187 of 1872 trades unchanged (10 %)",
+       "underCost50": "1872 -> 1845 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 1415 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 1415 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -964,7 +1079,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -987,7 +1102,7 @@
     "CC-2-LIFECYCLE": true,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -1026,8 +1141,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 15 of 3415 reference trades directly exposed (0.44 %); 1281 unchanged, 647 removed, 1487 changed (knock-on 2121)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 15 of 3415 reference trades directly exposed (0.44 %); 1281 unchanged, 647 removed, 1487 changed (knock-on 2121)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -1035,11 +1150,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "1281 of 3415 trades unchanged (38 %)",
+       "underCost50": "3415 -> 3467 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 2116 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 2116 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -1047,7 +1170,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",
@@ -1070,7 +1193,7 @@
     "CC-2-LIFECYCLE": false,
     "CC-3-NO-MANUAL": false,
     "CC-4-DATA": true,
-    "CC-5-CORPORATE-ACTIONS": true,
+    "CC-5-CORPORATE-ACTIONS": false,
     "CC-6-REPRODUCIBLE": true,
     "CC-7-EXECUTION": true,
     "CC-8-OOS": false
@@ -1115,8 +1238,8 @@
      "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
     },
     "CORPORATE_ACTION_INTEGRITY": {
-     "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "DQ-K5: 30 of 4025 reference trades directly exposed (0.75 %); 375 unchanged, 1250 removed, 2400 changed (knock-on 3622)"
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 30 of 4025 reference trades directly exposed (0.75 %); 375 unchanged, 1250 removed, 2400 changed (knock-on 3622)"
     },
     "EXECUTION_REALISM": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
@@ -1124,11 +1247,19 @@
     },
     "BACKTEST_REPRODUCIBILITY": {
      "grade": "PASS",
-     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE reproduces the trade COUNT of the authoritative reference run (hashes not compared): TRADE_COUNT_EQUAL"
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "375 of 4025 trades unchanged (9 %)",
+       "underCost50": "4025 -> 4041 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
     },
     "OUT_OF_SAMPLE_EVIDENCE": {
      "grade": "PASS_WITH_DECLARED_LIMITS",
-     "evidence": "holdout 2008-2015 (opened once in R14 for other implementations; ticker list incomplete for old delistings): 3253 reference trades"
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 3253 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
     },
     "MANUAL_REVIEW_REQUIREMENTS": {
      "grade": "PARTIAL",
@@ -1136,7 +1267,7 @@
     },
     "CERTIFICATION_READINESS": {
      "grade": "BLOCKED",
-     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-8-OOS"
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
     },
     "LIVE_READINESS": {
      "grade": "BLOCKED",

@@ -1,6 +1,6 @@
 # Supertrader 6.0 – Strategy Completion & Certification Readiness: Abschlussbericht
 
-Stand: 23. Oktober 2026.
+Stand: 24. Oktober 2026 (Eigentümerentscheidungen E1–E6 eingearbeitet).
 - **Basis:** `main` @ `cfecc0a3e` (nach #868).
 - **Research Snapshots:**
   - DEV `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d` (2016–2026, unverändert);
@@ -11,7 +11,8 @@ Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist 
 
 Maschinenlesbar und generiert:
 - [SUPERTRADER_6_READINESS_MATRIX.md](SUPERTRADER_6_READINESS_MATRIX.md) und `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`. Sie enthalten 13 Strategien × 15 Dimensionen mit Evidenz je Zelle und werden vom Builder aus Artefakten und Lauf-Belegen erzeugt. Keine Note ist von Hand gesetzt.
-- Die Kriterien stehen in `completion/sf6-readiness-criteria.mjs` (1.1.0). Sie wurden festgeschrieben, bevor ein 6.0-Ergebnis gelesen war.
+- Die Kriterien stehen in `completion/sf6-readiness-criteria.mjs`. Version 1.1.0 wurde festgeschrieben, bevor ein 6.0-Ergebnis gelesen war. Version 1.2.0 setzt die Eigentümerentscheidungen E1–E6 um und macht dabei jedes Kriterium nur strenger.
+- Das prospektive Paper-Protokoll steht in `completion/sf6-paper-protocol-2027.mjs`, erläutert in [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md).
 - Die Laufdaten stehen in `completion/sf6-run-facts.mjs`.
 
 ---
@@ -21,9 +22,9 @@ Maschinenlesbar und generiert:
 **Was funktioniert jetzt**
 - **Alle 11 messbaren Strategie-Referenzen laufen reproduzierbar** auf dem eingefrorenen Snapshot: Turtle S1/S2, Darvas, Weinstein Investor/Trader, Minervini SEPA und Power Play, Kullamägi Breakout, Pocket Pivot, Buyable Gap-Up, Holy Grail.
   - Jede Referenz läuft unter vier Kostenstufen (0/10/20/50 bps), in zwei Zeitfenstern (2016–2026 und 2008–2015) und unter drei Quarantäne-Lesarten für Kurssprünge.
-  - Alle 11 trafen in zwei unabhängigen DEV-Läufen (Integrität, Validierung) dieselbe Tradezahl wie die maßgeblichen Referenzen aus 2.0 bis 5.0.
+  - Alle 11 sind **ledger-hash-identisch** mit den maßgeblichen Referenzläufen aus 2.0 bis 5.0. Bei den 9 Nicht-Turtle-Referenzen sind auch die Trade-Hashes identisch; die Turtle-Läufe veröffentlichen nur den Ledger-Hash. Gleiche Tradezahlen werden dabei nie als Hash-Identität gezählt.
   - Jeder Lauf ist abgestimmt (Ledger-Replay).
-- **Der Reverse-Split-Blocker V4-D1 ist erstmals strategiebezogen eingegrenzt.**
+- **Der Reverse-Split-Blocker V4-D1 ist erstmals strategiebezogen eingegrenzt, aber nicht gelöst.** Er bleibt ein echter Datenintegritätsblocker (E1).
   - Es gibt 1.210 verdächtige Kurssprünge ≥ 5× in 454 Wertpapieren, zu 72 % bei Kursen unter 1 $.
   - Direkt exponiert sind je Strategie 0 bis 2 % der Trades. Über einen Sprung gehalten wurden höchstens 3 Trades je Strategie.
 - **Ein zweiter Zeitraum (2008–2015) ist erstmals für alle buchgetreuen Lifecycles gemessen.** Er ist kein unberührter Holdout: Er wurde in R14 einmal für andere Implementierungen geöffnet, und für ältere Delistings ist die Tickerliste lückenhaft.
@@ -49,9 +50,11 @@ Maschinenlesbar und generiert:
 
 **Was ist zuverlässig messbar**
 - Zählungen, Abstimmung, Reproduzierbarkeit, Expositionsgrad gegenüber Datenfehlern sowie die Kostensensitivität auf Kennzahlenebene (versiegelt).
-- **Nicht belastbar ist die Identität einzelner Trades:**
-  - In den kapazitätsgebundenen Modellstudien ändern sich nach kleinen Eingabeänderungen rund 70 bis über 90 % der Trades durch Knock-on. Betroffen sind Kullamägi, Turtle S1, Pocket Pivot und Holy Grail.
-  - Belastbar sind nur Verteilungs- und Kennzahlaussagen.
+- **Drei Aussagen, die getrennt bleiben (E6):**
+  - **Numerische Reproduzierbarkeit: belegt.** Gleiche Eingaben und gleicher Code ergeben bitgleiche Ledger.
+  - **Trade-Stabilität: gering.** In den kapazitätsgebundenen Modellstudien ändern sich nach kleinen Eingabeänderungen rund 70 bis über 90 % der Trades durch Knock-on. Betroffen sind Kullamägi, Turtle S1, Pocket Pivot und Holy Grail. Diese hohe Sensitivität der Portfoliostudien ist ein eigener Befund.
+  - **Robustheit: nicht belegt.** Die Kennzahlen sind versiegelt und nicht bewertet, und ein unberührter Zeitraum fehlt.
+  - Bewertet wird nur auf Ebene von Kennzahlen und Verteilungen, nie über die Identität einzelner Trades.
 
 **Wo die Datenbasis nicht reicht**
 - Der Holdout ist stark survivorship-verzerrt: Nur 813 von 6.427 Listings sind inaktiv.
@@ -61,28 +64,28 @@ Maschinenlesbar und generiert:
 
 **Höchste Certification Readiness**
 - Keine Strategie ist `CERTIFICATION_CANDIDATE`. Die acht harten Kriterien wurden vor den Ergebnissen festgelegt.
+- Nach E1, E2 und E4 ist CC-5 für alle Strategien offen, bis V4-D1 durch belegte Kapitalmaßnahmen aufgelöst ist. CC-8 bleibt offen bis zur Auswertung von SF6-PAPER-2027, frühestens Ende 2027.
 - Am nächsten liegen:
-  - **Turtle S2**: Es fehlen nur Korrelationsdaten, die V4-D1-Exposition (2,0 %) und ein nie geöffneter Holdout.
-  - **Kullamägi Breakout**: Es fehlen nur manuelle Quellenentscheidungen und der Holdout.
+  - **Turtle S2**: Es fehlen echte PIT-Korrelationsgruppen (der SIC-Proxy zählt nicht), die V4-D1-Auflösung und die Paper-Evidenz.
+  - **Kullamägi Breakout**: Es fehlen die manuellen Quellenentscheidungen, die V4-D1-Auflösung und die Paper-Evidenz.
   - **Turtle S1**: zusätzlich eine mehrdeutige Quellenregel.
 
-**Die fünf nächsten Schritte mit dem größten Fortschritt**
-1. **Eigentümerentscheidung zu V4-D1:** DQ-K5-BOOK als Research-Konvention annehmen, mit DQ-K3 und DQ-K5-PRIOR als Pflicht-Sensitivitäten. Alternativ eine lizenzierte Corporate-Action-Quelle. Das würde CC-5 für 9 von 11 Referenzen formal erfüllen.
-2. **Einen echten, nie geöffneten Holdout festlegen.** Ein Fenster in der Zukunft, z. B. ab 1.1.2027 als Paper-Forward-Period, ist der einzige Weg zu CC-8. Die Vergangenheit ist verbraucht.
-3. **PIT-Korrelationsgruppen für Turtle aus SEC-SIC** als Research-Variante zulassen oder als Datenkauf entscheiden. Das ist der kürzeste Weg zu einem ersten Zertifizierungskandidaten.
-4. **Für Kullamägi Breakout die manuellen Auswahlregeln** (Setup-Stellvertreter, Größe) als feste Research-Konventionen beschließen. Dann wäre CC-3 für eine benannte Konvention auswertbar.
-5. **Die versiegelten Kennzahlen** von BASE, DQ und Holdout vom Eigentümer prüfen lassen. Erst dann lässt sich entscheiden, ob eine Strategie überhaupt einen Zertifizierungsaufwand rechtfertigt.
+**Was nach der Integration offen bleibt** (keine 7.0-Phase; jeder Punkt braucht eine eigene Freigabe)
+1. **V4-D1 gezielt prüfen (E1):** ≤ ~260 Kandidaten hinter Referenz-Trades. Quellen in dieser Reihenfolge: vorhandene Tiingo-Felder, Marketstack im bestehenden Zugang, SEC-8-K/10-Q. Keine Massenabrufe, keine neuen Kosten. Plan in [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md), nicht ausgeführt.
+2. **SF6-PAPER-2027 aktivieren (E2):** erst nach Ihrer Freigabe eines eigenen PRs mit Aufzeichnung und Aufbewahrung. Bis dahin ist das Protokoll nur festgeschrieben.
+3. **Die versiegelten Kennzahlen** von BASE, DQ und Holdout prüfen, auf Ebene von Kennzahlen und Verteilungen (E6).
+4. **EP/PS-Stichprobe (E5):** Nur der priorisierte Plan im Rahmen des bestehenden Budgets ist dokumentiert. Es gibt keine Abrufe.
 
 ---
 
-## 1. Was gebaut wurde: fünf Draft-PRs
+## 1. Was gebaut wurde: vier Draft-PRs
 
 | Workstream | Zweig | Inhalt | Maßgeblicher Lauf |
 |---|---|---|---|
 | A – Datenintegrität (#878) | `claude/supertrader-6-data-integrity` | `integrity/discontinuity.mjs` (kausaler Sprung-Detektor, Quarantäne 1.1.0 mit BOOK/PRIOR), `research/run-sf6-integrity.mjs`, Modus `sf6-integrity`, [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md) | [40001276389](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001276389) |
 | B/C/D – Validierung, Modellvarianten (#879) | `claude/supertrader-6-validation` | `research/sf6-references.mjs`, `research/run-sf6-validation.mjs` (Protokoll 1.1.0), `research/sf6-model-variants.mjs` (PP-Stop, HG-Trailing, Darvas-Allzeithoch belegt), `research/minervini-fundamentals-sf6.mjs`, Holdout-Snapshot-Modi, Modi `sf6-validation(-holdout)` | DEV [40001421221](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001421221), Holdout-Capture [39998409317](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39998409317), Holdout [40007428374](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007428374) |
 | E – EP/PS-Stichprobe (#880) | `claude/supertrader-6-ep-ps-sample` | `research/kk-sample.mjs` (saubere Präfixe, Schichtung), Cache-only-Modus `kk-intraday-cache`, PS offene Trades und Überlappung, Median-Fix | [40001460163](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001460163) (0 Anfragen) |
-| F – Readiness (#881) | `claude/supertrader-6-readiness` | Kriterien 1.1.0, Matrix-Builder, Laufdaten, dieser Bericht | – |
+| F – Readiness (#881) | `claude/supertrader-6-readiness` | Kriterien 1.2.0 (E1–E6), Paper-Protokoll SF6-PAPER-2027 (nicht aktiviert), Matrix-Builder mit E6-Aufteilung, Laufdaten mit Hash-Abgleich, dieser Bericht | – |
 
 Alle Zweige sind auf Supertrader-Pfade beschränkt (Gate A). Die Testisolation ist sauber. Die Supertrader-Testsuite ist je Zweig grün: 642 bis 646 bestanden, 0 fehlgeschlagen, 1 vorbestehend übersprungen.
 
@@ -119,7 +122,7 @@ In der eigenen 6.0-Arbeit fanden zwei unabhängige Reviews vor jedem Ergebnis 4 
   - nicht erklärte 2:1-Splits, die keine Schwelle sieht;
   - 3:1- bis 5:1-Splits in der K5-Lesart;
   - die Frage, ob ein Sprung ein Fehler oder eine echte Bewegung war. Dafür braucht es eine zweite Corporate-Action-Quelle.
-- **Wie es weitergeht:** Zur Entsperrung gibt es zwei Wege, die Eigentümerentscheidung E1 oder einen Datenkauf. Das ist keine globale Freigabe: CC-5 besteht für 9 von 11 Referenzen, aber nicht für Turtle.
+- **Wie es weitergeht (E1):** V4-D1 bleibt ein echter Datenintegritätsblocker. Keine Quarantäne-Lesart ist eine endgültige Lösung oder eine Zertifizierungsausnahme. CC-5 ist daher für keine Referenz erfüllt, und die Dimension Kapitalmaßnahmen steht höchstens auf TEIL. Aufgelöst wird V4-D1 nur durch gezielt geprüfte Kapitalmaßnahmen aus vorhandenen Quellen.
 
 ## 4. Wie zuverlässig sind die historischen Daten?
 
@@ -158,8 +161,11 @@ Kein Lauf ist ein zertifizierter Strategie-Backtest. Die Vertragsmessklassen sin
 ## 6. Reproduzierbarkeit und methodische Belastbarkeit
 
 **Reproduziert**
-- Alle 11 Referenzen sind in beiden 6.0-DEV-Läufen tradezahlgenau gleich den maßgeblichen Läufen aus 2.0 bis 5.0 (Turtle 39397517900, Minervini 39746264325, sf5 39937731507).
-- Die REF-Kostenstufe des Validierungslaufs hat denselben Trade-Hash wie BASE im Integritätslauf.
+- Alle 11 Referenzen sind **Hash für Hash** mit den maßgeblichen Läufen aus 2.0 bis 5.0 verglichen (Turtle 39397517900, Minervini 39746264325, sf5 39939890956):
+  - Ledger-Hash: 11 von 11 identisch.
+  - Trade-Hash: 9 von 9 identisch, wo die Referenz ihn veröffentlicht. Für Turtle ist er `NOT_PUBLISHED_BY_REFERENCE` und wird nicht aus Zählungen abgeleitet.
+  - Die Ergebnisse stehen je Referenz in `sf6-run-facts.mjs` (`baseMatchesAuthoritative`).
+- Die REF-Kostenstufe des Validierungslaufs hat denselben Trade- und Ledger-Hash wie BASE im Integritätslauf (11 von 11).
 - Alle Läufe sind abgestimmt.
 
 **Methodisch belastbar**
@@ -176,7 +182,7 @@ Kein Lauf ist ein zertifizierter Strategie-Backtest. Die Vertragsmessklassen sin
 - **Einzeltrade-Aussagen:** Siehe die Pfadabhängigkeit in Abschnitt 3 des V4-D1-Berichts.
 
 **Nicht belastbar**
-- Jede Aussage über einen „Vorteil“ einer Strategie. Die Kennzahlen sind versiegelt und wurden in diesem Bericht nicht gelesen oder bewertet. Keine Kennzahl hat eine Regel oder Variante ausgewählt.
+- Die Identität einzelner Trades (Trade-Stabilität gering, E6) und jede Aussage über einen „Vorteil“ einer Strategie (Robustheit nicht belegt). Die Kennzahlen sind versiegelt und wurden in diesem Bericht nicht gelesen oder bewertet. Keine Kennzahl hat eine Regel oder Variante ausgewählt.
 
 Zählungen aus DEV (öffentlich) zur Einordnung, ohne Performanceaussage:
 - **Kostenabhängigkeit:**
@@ -246,7 +252,7 @@ Ohne erfundene Originalregeln und ohne Datenkauf ist Minervini technisch fertig.
   - Borrow-Historie (PS);
   - konsolidiertes Intraday-Volumen (EP, PS, Pocket Pivot, BGU);
   - zweite Corporate-Action-Quelle (alle);
-  - ein nie geöffneter Holdout (alle).
+  - Evidenz aus dem prospektiven Paper-Fenster SF6-PAPER-2027 (alle).
 
 ## 11. Unabhängige Reviews
 
@@ -275,49 +281,79 @@ Eine bewusst offene Einordnung: Bei Darvas misst die Referenz weiterhin vor alle
    - EP/PS-Stichprobe mit Cache-only-Modus und Schichtung;
    - Readiness-Matrix mit 15 Dimensionen.
 3. **Welche Fehler wurden behoben?** Siehe Abschnitt 2 für die bestehenden Fehler und Abschnitt 11 für die Review-Befunde der 6.0-Arbeit.
-4. **V4-D1?** Eingegrenzt, nicht gelöst (Abschnitt 3).
+4. **V4-D1?** Eingegrenzt, nicht gelöst. Er bleibt ein echter Datenintegritätsblocker (E1, Abschnitt 3).
 5. **Datenzuverlässigkeit?** Siehe Abschnitt 4.
 6. **Vollständige Research-Lifecycles?**
    - Neun Strategien mit 9/9 Phasen (inklusive Turtle).
    - Pocket Pivot und Holy Grail mit 8/9 Phasen, 9/9 nur als Modellvariante.
    - EP als Intraday-Modellstudie, PS als hypothetische Studie.
 7. **Vollständige diagnostische Backtests?** Nur Turtle S1/S2, mit Datenausnahme.
-8. **Reproduzierbar?** Alle 11 Referenzen, dazu die Läufe für EP/PS (Abschnitt 6).
+8. **Reproduzierbar?** Numerisch ja: Alle 11 Referenzen sind ledger-hash-identisch, dazu kommen die Läufe für EP/PS (Abschnitt 6). Die Trade-Stabilität ist gering, die Robustheit nicht belegt (E6).
 9. **Methodisch belastbar?** Kosten-, Perioden-, Regime- und Liquiditätsaufteilung sowie die V4-D1-Exposition. Der Holdout ist nur eingeschränkt belastbar (Abschnitt 6).
 10. **Quellenlücken?** Siehe Abschnitt 7.
 11. **Minervini?** Technisch fertig. Blocker sind Quelle, manuelle Entscheidungen und RS (Abschnitt 8).
 12. **EP/PS?** Charttechnisch ausgebaut auf einer bereinigten, geschichteten Stichprobe. Sie bleiben Modellstudie bzw. hypothetisch (Abschnitt 9).
 13. **Manuelle Entscheidungen?** Alle Strategien außer Turtle (Abschnitt 10).
 14. **Fehlende Daten für eine Zertifizierung?** Siehe Abschnitt 10.
-15. **Als Nächstes zertifizierbar?** Turtle S2, dann Kullamägi Breakout und Turtle S1 (Management Summary).
+15. **Als Nächstes zertifizierbar?** Am nächsten liegen Turtle S2, dann Kullamägi Breakout und Turtle S1. Vor 2028 ist keine Strategie zertifizierbar: CC-5 braucht die V4-D1-Auflösung, CC-8 die Paper-Evidenz (Management Summary).
 16. **Was fehlt vor einer Produktintegration?**
     - mindestens ein `CERTIFICATION_CANDIDATE`;
-    - eine Entscheidung zu V4-D1;
-    - ein Forward-Holdout;
+    - die Auflösung von V4-D1;
+    - die ausgewertete Paper-Validierung SF6-PAPER-2027;
     - die Bewertung der versiegelten Kennzahlen durch den Eigentümer;
     - eine Live-Daten- und Ausführungsprüfung.
 
     Nichts davon ist in 6.0 vorgesehen. Es gibt keine UI- oder Menüänderung.
-17. **Zur Merge-Freigabe bereite Draft-PRs?** Die fünf PRs aus Abschnitt 1, alle getestet und reviewt. Die Merge-Reihenfolge steht in Abschnitt 13.
-18. **Entscheidungen des Eigentümers?** Siehe Abschnitt 14.
+17. **Zur Merge-Freigabe bereite Draft-PRs?** Die vier PRs aus Abschnitt 1, alle getestet und reviewt. Die Merge-Reihenfolge steht in Abschnitt 13, die Freigabevorlage in Abschnitt 16.
+18. **Entscheidungen des Eigentümers?** E1–E6 sind am 24.10.2026 getroffen und umgesetzt (Abschnitt 14).
 
 ## 13. Merge-Reihenfolge
 
-1. **A (Integrität)** und **E (EP/PS)** sind voneinander unabhängig.
-2. **B/C/D (Validierung)** danach.
-   - Alle drei ändern dieselben Zeilen in `supertrader-validation.yml` (Modusliste) und in `sf-runner.test.mjs`.
-   - Der zweite und dritte Merge muss die Modusliste zusammenführen, so wie in 5.0 bei #866/#868.
-3. **F (Readiness)** zuletzt. Der Zweig liest die Artefakte von `main` und die Laufdaten aus `sf6-run-facts.mjs`. Nach den Merges ist `build-sf6-readiness.mjs` neu auszuführen; der Test prüft, dass Artefakt und Builder übereinstimmen.
+1. **#878 A (Integrität)**: zuerst. Basis ist `main`, ohne Konflikt.
+2. **#880 E (EP/PS)**: danach. Konflikt nur in der Modusliste von `.github/workflows/supertrader-validation.yml` und im Moduslisten-Test `scripts/supertrader/tests/sf-runner.test.mjs`; beide Modi bleiben (`sf6-integrity` und `kk-intraday-cache`).
+3. **#879 B/C/D (Validierung)**: danach. Derselbe Moduslisten-Konflikt, dazu die Snapshot-Modi `capture-holdout` / `restore-holdout`; alle Modi bleiben. So war es auch in 5.0 bei #866/#868.
+4. **#881 F (Readiness)**: zuletzt. Der Zweig enthält nur Readiness-Dateien und Dokumente. Nach den drei Merges wird `node scripts/supertrader/source-faithful/completion/build-sf6-readiness.mjs` auf dem Zweig ausgeführt. Der Matrix-Test prüft, dass Artefakt und Builder übereinstimmen.
 
-## 14. Entscheidungen, die von Ihnen benötigt werden
+Die Konflikte löse ich vor jedem Merge auf dem jeweiligen Zweig mit einem Merge-Commit von `main`, ohne Rebase. Danach laufen die Tests, Gate A und die Testisolation erneut.
 
-- **E1 – V4-D1:** Soll DQ-K5-BOOK als Research-Konvention für zertifizierungsfähige Messungen gelten, mit DQ-K3 und DQ-K5-PRIOR als Pflicht-Sensitivitäten? Oder soll eine lizenzierte Corporate-Action-Quelle geprüft werden? Das wäre kostenpflichtig und nicht beauftragt.
-- **E2 – Holdout:** Soll ein Forward-Fenster als einziger unberührter Holdout festgelegt werden, z. B. ab 1.1.2027, als Paper-Beobachtung ohne Orders?
-- **E3 – Modellvarianten:**
-  - Pocket-Pivot-Stop am Tief des Signaltags und Holy-Grail-Trailing über Swing-Tiefs bleiben reine Research-Varianten. Ohne Ihre Entscheidung werden sie nie Referenz.
-  - Soll eine davon Referenz einer benannten VU-Modellstudie werden, ausdrücklich nicht quellenkonform?
-- **E4 – Turtle-Korrelationsgruppen:** Soll die SIC-basierte Research-Variante aus 3.0 als zulässige Datenausnahme für einen Turtle-Zertifizierungsversuch gelten?
-- **E5 – EP/PS-Stichprobe:**
-  - Soll die Stichprobe im Rahmen des bestehenden Budgets (≤ 6.000 Anfragen je Lauf, keine Erhöhung) gezielt in die unterbesetzten Schichten erweitert werden, also Jahre und hohe Liquidität?
-  - Ohne Freigabe gibt es keine weiteren Abrufe.
-- **E6 – Pfadabhängigkeit:** Sollen künftige Bewertungen nur auf Verteilungs- und Kennzahlebene erfolgen und nie einzelne Trades kapazitätsgebundener Modellstudien heranziehen? Empfehlung: ja.
+## 14. Eigentümerentscheidungen vom 24.10.2026 und ihre Umsetzung
+
+| | Entscheidung | Umsetzung |
+|---|---|---|
+| E1 | V4-D1 bleibt ein echter Datenintegritätsblocker; keine Quarantäne-Lesart als Lösung oder Ausnahme; gezielte Prüfung vorhandener CA-Daten ohne neue Kosten und ohne Massenabrufe | Kriterien 1.2.0: CC-5 nur bei belegter Auflösung, `CC5.satisfiesCriterion = false`, Dimension höchstens TEIL; Prüfplan in #878, nicht ausgeführt |
+| E2 | versioniertes, prospektives Paper-Protokoll ab 01.01.2027; kein Scheduler, kein Live-Handel; keine rückwirkende Holdout-Bezeichnung | `SF6-PAPER-2027` 1.0.0, Fingerabdruck gepinnt, Status `PREPARED_NOT_ACTIVE`; CC-8 nur aus diesem Protokoll; Holdout 2008–2015 als bereits genutzt und survivorship-belastet gekennzeichnet |
+| E3 | PP-Stop und HG-Trailing bleiben Forschungsvarianten; keine Aufwertung der Messklassen | Referenzen bei 8/9 Phasen; Varianten zählen nie für CC-2; Messklassen unverändert (#879) |
+| E4 | SIC-Korrelationsgruppen bleiben Research-Proxys | CC-4 schließt sie ausdrücklich aus; die Turtle-Referenzen laufen ohne Korrelationslimits |
+| E5 | keine zusätzlichen EP/PS-Intraday-Abrufe; nur ein priorisierter Plan | Plan in #880 (insgesamt ≈ 2.760 Anfragen im bestehenden Budget), nicht ausgeführt; 0 Abrufe in 6.0 |
+| E6 | Bewertung über Kennzahlen und Verteilungen; Sensitivität sichtbar; Reproduzierbarkeit, Trade-Stabilität und Robustheit getrennt | Matrix-Zeile „E6“ je Strategie; Tabelle in [SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md](SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md) Abschnitt 5; Management Summary |
+
+## 15. Prüfungen vor der Merge-Freigabe
+
+| # | Prüfung | Ergebnis | Beleg |
+|---|---|---|---|
+| 1 | Die vier HIGH-Befunde sind behoben und durch Regressionstests abgesichert. | **ja** | H1 → `SF6-DQ-SETTLE`, H2 → `SF6-DQ-CUT`, k = 5 post hoc → `SF6-DQ-PROVENANCE` (#878); CC-8 mit geöffnetem Fenster → Matrix-Test (#881). Mutationsprobe: Mit zurückgesetzter Korrektur schlagen SETTLE/CUT (H1) bzw. CUT (H2) fehl, ebenso LEVELS für M1. |
+| 2 | Die BASE-Referenzen sind mit den maßgeblichen Versionen abgeglichen, ohne Tradezahl-Gleichheit als Hash-Identität zu werten. | **ja** | Ledger-Hash 11/11 identisch, Trade-Hash 9/9 identisch, Turtle-Trade-Hash `NOT_PUBLISHED_BY_REFERENCE`; je Referenz in `sf6-run-facts.mjs`; der Test verlangt den Hash-Abgleich in der Evidenz. |
+| 3 | Die Minervini-EPS-Korrektur ändert nur historisch belegbare Fälle, und die 405 ungeklärten Fälle bleiben sichtbar. | **ja** | Korrigiert wird nur bei einem in den Kursdaten deklarierten Split zwischen beiden Einreichungen (DEV 29, Holdout 7). Ungeklärte Fälle stehen auf `null` mit Grund (DEV 405, Holdout 46). Die 4.0-Werte bleiben erhalten, kein Trade ändert sich (#879). |
+| 4 | Der Holdout 2008–2015 ist als bereits genutzt und survivorship-belastet gekennzeichnet. | **ja** | Validierungsbericht Abschnitt 1, Matrix-Evidenz „NOT an untouched holdout“, Paper-Protokoll; erfüllt CC-8 nie. |
+| 5 | Alle vier PRs sind auf dem finalen Stand grün und konfliktfrei. | siehe Freigabevorlage | Stand der Checks bei Abgabe; die erwarteten Moduslisten-Konflikte werden in der Merge-Reihenfolge aufgelöst (Abschnitt 13). |
+
+## 16. Freigabevorlage
+
+> **Freigabe Supertrader 6.0 (technischer Entwicklungsauftrag)**
+>
+> Ich gebe die Draft-PRs #878, #880, #879 und #881 in dieser Reihenfolge zum Merge frei. Die Moduslisten-Konflikte werden jeweils per Merge-Commit aufgelöst, und vor #881 wird die Matrix neu gebaut.
+>
+> Bestätigt:
+> - V4-D1 ist eingegrenzt, nicht gelöst (E1).
+> - SF6-PAPER-2027 ist festgeschrieben, nicht aktiviert (E2).
+> - Modellvarianten und SIC-Proxys sind keine Originalregeln (E3, E4).
+> - Es gab keine neuen Intraday-Abrufe (E5).
+> - Bewertet wird über Verteilungen, die Sensitivität bleibt sichtbar (E6).
+> - 0 von 13 Strategien sind `CERTIFICATION_CANDIDATE`. Alle bleiben `LIVE_NOT_APPROVED` und `DIAGNOSTIC_NOT_CERTIFIED`.
+> - Keine Live-Aktivierung, keine Broker-Orders, keine neuen Datenanbieter, keine Änderung der Produktoberfläche, keine Änderung an Gates oder Branch Protection.
+>
+> Mit dem Merge ist Supertrader 6.0 abgeschlossen. Eine Phase 7.0 wird nicht gestartet. Die Aktivierung von SF6-PAPER-2027 und die V4-D1-Prüfung brauchen je eine eigene Freigabe.
+
+## 17. Abschluss
+
+Mit der Integration der vier PRs ist Supertrader 6.0 als technischer Entwicklungsauftrag abgeschlossen. Es folgt keine eigenständige Supertrader-7.0-Phase. Die offenen Punkte aus der Management Summary (V4-D1-Prüfung, Aktivierung von SF6-PAPER-2027, Prüfung der versiegelten Kennzahlen, EP/PS-Plan) starten nur nach einer gesonderten Freigabe des Eigentümers.
