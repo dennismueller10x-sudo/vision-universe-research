@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "quant-backtest-v51-validation-1.0.0",
+  "observedAt": "2026-10-24T17:43:46.839640+00:00",
+  "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "testedImplementationCommit": "2ba9c8fb51044d9177de894d9c15b6433afe611f",
+  "branch": "codex/quant-backtest-v51-consolidation",
+  "publicActivation": false,
+  "automaticMerge": false,
+  "previewImplemented": false,
+  "tests": {
+    "quantLatestMain": {
+      "command": "node --test --test-concurrency=4 'quant/tests/*.test.mjs'",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/latest-main-quant.log",
+      "logSha256": "ee011b1905b9dac2956849304a1034fed151a197d87c441dd22f713423b24454",
+      "tests": 2871,
+      "pass": 2871,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 455846.267672
+    },
+    "quantBeforeLastSECDataOnlyRebase": {
+      "command": "node --test --test-concurrency=4 'quant/tests/*.test.mjs'",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/accepted-full-quant.log",
+      "logSha256": "0bd025faa339a15e52017e7bd3dff73a8d3320fe2b5cea8e0e7178b27809807f",
+      "tests": 2871,
+      "pass": 2871,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 544341.281321
+    },
+    "quantDefaultRunnerBeforeRollbackAddition": {
+      "command": "node --test 'quant/tests/*.test.mjs'",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/rebased-full-quant.log",
+      "logSha256": "f9610297826ebf136a7ebd0fd90390b97f3139e99154de60907d70490bd9b226",
+      "tests": 2870,
+      "pass": 2870,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 1306225.120827
+    },
+    "core": {
+      "command": "node --test 'core/tests/*.test.mjs' quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/latest-core.log",
+      "logSha256": "008ad2963caebd4f39f02d3b13dc4a527926822222a9923a77a861abf5dfaf52",
+      "tests": 260,
+      "pass": 260,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 206289.064938
+    },
+    "shellNavigationBudget": {
+      "command": "node --test core/tests/shell-navigation.test.mjs quant/tests/site-navigation.test.mjs scripts/vu2/resource-budget.test.mjs",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/latest-shell.log",
+      "logSha256": "58b246f5d8c7f98cf3449dbc860eb0904beb7d8de942b9539fa469bcbafdb56d",
+      "tests": 18,
+      "pass": 18,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 1498.917976
+    },
+    "targeted": {
+      "command": null,
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/final-targeted.log",
+      "logSha256": "0af94fcf4d9ed1b46ea18f8bba96f1edffa71de36218e6045e6e7e50e819b88c",
+      "tests": 108,
+      "pass": 108,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 33488.43306,
+      "scope": "Targeted real-history, read, adapter, ledger, refresh and contract tests; overlapping subset of full suite"
+    },
+    "rollbackRegression": {
+      "command": "node --test quant/tests/backtest-refresh.test.mjs",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/rollback-after-fix.log",
+      "logSha256": "32cd2cc3aca137451bad94d8d343ab195cd938793d9177b8570da553608e6559",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 16098.704213
+    },
+    "relayConsumers": {
+      "command": "node --test worker/tests/*.test.mjs discover/tests/live-stream.test.mjs discover/tests/live-hub.test.mjs",
+      "state": "PASS",
+      "log": "/workspace/scratch/backtest-v51/rebased-relay.log",
+      "logSha256": "86b3711e78cc6fc9d3b4179eb57514b4d8eb94198a766aa140fe3b6b016e0b8b",
+      "tests": 66,
+      "pass": 66,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 1316.441128
+    }
+  },
+  "python": {
+    "secExporterAndPITProjection": {
+      "command": "python3 -m unittest discover -s scripts/vu2 -p 'test*.py'",
+      "passed": 32,
+      "state": "PASS"
+    },
+    "consumerFiscalYearHint": {
+      "command": "PYTHONPATH=scripts python3 -m unittest quant.tests.test_consumer_year_end_hint",
+      "passed": 4,
+      "state": "PASS"
+    },
+    "realMath": {
+      "state": "PASS",
+      "periods": [
+        "1Y",
+        "3Y",
+        "5Y",
+        "10Y",
+        "MAX"
+      ],
+      "assertions": "Independent cash/units ledger, signal timing, entries/exits, costs, equity, drawdown and benchmarks; deterministic JS input/result hashes also checked twice under recorded runtime."
+    }
+  },
+  "browser": {
+    "mainForRebuiltArtifact": "6d55ddab641403588f9ba220b468de0a34a23174",
+    "mainForDirectLinkChecks": "2c675af8a485bc8455b46bdfc382937eb403a6aa",
+    "directLinkInputNote": "No UI or public bundle changes in final SEC-only rebase; final browser and budget checks independently repeated on final Main",
+    "quantChecks": 96,
+    "findings": 0,
+    "resourceBudgetsPassed": 8,
+    "automatedAccessibilityPages": 84,
+    "automatedAccessibilityViolations": 0,
+    "directChromium": {
+      "checks": 12,
+      "state": "PASS",
+      "seed": 5001
+    },
+    "directWebKit": {
+      "checks": 7,
+      "state": "PASS",
+      "seed": 7797,
+      "engine": "Genuine Playwright WebKit 2248, local user-space runtime loader; no gate/assertion changes"
+    },
+    "journeySurfaces": {
+      "checks": 12,
+      "state": "PASS",
+      "viewports": [
+        1440,
+        390
+      ]
+    },
+    "source": "browser.json and retained local QA outputs"
+  },
+  "hygiene": {
+    "syntaxFiles": 37,
+    "jsonFilesBeforeLastSECRebase": 32309,
+    "quantShellPages": 14,
+    "secrets": "PASS",
+    "publicProviderData": "PASS",
+    "semanticsParity": "PASS",
+    "adjustmentGatePositiveAndNegative": "PASS",
+    "gitDiffCheck": "PASS",
+    "jsonFilesOnLatestMain": 32309
+  },
+  "dataGeneration": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+  "rollBackRedGreen": {
+    "before": {
+      "pass": 15,
+      "fail": 1,
+      "reason": "Missing expected exception for inconsistent rollback root"
+    },
+    "after": {
+      "pass": 16,
+      "fail": 0
+    }
+  },
+  "branchProtectionRead": {
+    "protectionApi": "HTTP_403_RESOURCE_NOT_ACCESSIBLE_BY_INTEGRATION",
+    "branchRulesApi": [],
+    "requiredChecksOrReviewsBypassed": false
+  },
+  "notExecuted": [
+    "No production refresh, workflow_dispatch, provider fetch, backfill or deployment",
+    "No public/personal authentication endpoint or frontend integration implemented",
+    "Remote PR checks are recorded separately and do not inherit local PASS status"
+  ]
+}

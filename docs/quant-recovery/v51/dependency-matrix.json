@@ -1,0 +1,1420 @@
+{
+  "observedAt": "2026-10-24T16:59:50.825256+00:00",
+  "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "sourcePRsStillOpen": true,
+  "prs": [
+    {
+      "number": 862,
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "dbe3ffa2f1d1302965442975e836a15f7bfc0787",
+      "headRefName": "codex/quant-p0-status-consistency",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/862",
+      "included": "Source consistency engine, tests, producers, derived status artifacts, methodology fingerprint",
+      "excluded": "Old UI page-evidence changes; new UI remains authoritative",
+      "disposition": "Technical work superseded after reviewed consolidation; do not merge its conflicting old artifacts.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:23:08Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579350/job/120272386562",
+          "name": "experience",
+          "startedAt": "2026-10-23T06:17:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:17:10Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910562170/job/120272331849",
+          "name": "materialize",
+          "startedAt": "2026-10-23T06:17:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:23:34Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579200/job/120272386223",
+          "name": "core",
+          "startedAt": "2026-10-23T06:17:24Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:18:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272386331",
+          "name": "contract",
+          "startedAt": "2026-10-23T06:17:24Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:24:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120272385933",
+          "name": "package",
+          "startedAt": "2026-10-23T06:17:24Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:24:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579184/job/120272385362",
+          "name": "test",
+          "startedAt": "2026-10-23T06:17:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:25:18Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579159/job/120272385536",
+          "name": "validate",
+          "startedAt": "2026-10-23T06:17:23Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:46:45Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579253/job/120272386075",
+          "name": "shell",
+          "startedAt": "2026-10-23T06:17:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Shell Quality Gates"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:57:47Z",
+          "conclusion": "CANCELLED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579253/job/120272386411",
+          "name": "vu3-regression",
+          "startedAt": "2026-10-23T06:17:24Z",
+          "status": "COMPLETED",
+          "workflowName": "Shell Quality Gates"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:17:20Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579200/job/120272387869",
+          "name": "live",
+          "startedAt": "2026-10-23T06:17:21Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:24:08Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120274536292",
+          "name": "deploy",
+          "startedAt": "2026-10-23T06:24:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:17:26Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272385943",
+          "name": "marker",
+          "startedAt": "2026-10-23T06:17:23Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:17:26Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272419249",
+          "name": "measure",
+          "startedAt": "2026-10-23T06:17:26Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:24:08Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120274536396",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-23T06:24:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:19:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/48688bf9-35bb-40d7-b756-44a462a09534",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-23T06:19:09Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-23T06:20:59Z",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/8wBwyyWwQNY7MBEdQ8gc3pDZwaQ9"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T06:21:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://vercel.com/github",
+          "name": "Vercel Preview Comments",
+          "startedAt": "2026-10-23T06:21:00Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 1,
+        "conflictingFiles": [
+          "quant/data/product/backtest-certification-v1.json",
+          "quant/data/product/backtest-readiness-v2.json",
+          "quant/data/product/backtest-signal-intelligence-v1.json"
+        ],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 1
+    },
+    {
+      "number": 872,
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "0a57295f5a1ddffb8bf125646428ce29e9ba281e",
+      "headRefName": "codex/quant-historical-max-recovery",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/872",
+      "included": "Shared MAX resolver, legacy engine/provider dependency contract and tests; minimal versioned history metadata",
+      "excluded": "Draft certification methodology, old UI/methodology page and static capability dump",
+      "disposition": "Technical backend superseded; retain or explicitly archive the excluded methodology draft as a separate review task before closing the entire PR.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:22:42Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996673/job/120580179529",
+          "name": "experience",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:16:46Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001963621/job/120580147379",
+          "name": "materialize",
+          "startedAt": "2026-10-23T18:16:47Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:22:25Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996702/job/120580181645",
+          "name": "core",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:17:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580180248",
+          "name": "contract",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:26:28Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120580180432",
+          "name": "package",
+          "startedAt": "2026-10-23T18:16:55Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:23:35Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996759/job/120580180331",
+          "name": "test",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:24:48Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996731/job/120580180689",
+          "name": "validate",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:16:51Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996702/job/120580183437",
+          "name": "live",
+          "startedAt": "2026-10-23T18:16:51Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:26:28Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120584687988",
+          "name": "deploy",
+          "startedAt": "2026-10-23T18:26:29Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:16:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580180592",
+          "name": "marker",
+          "startedAt": "2026-10-23T18:16:54Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:16:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580243915",
+          "name": "measure",
+          "startedAt": "2026-10-23T18:16:59Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:26:28Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120584688355",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-23T18:26:29Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-23T18:16:39Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-23T18:18:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/e90a10b6-142b-4d51-bc34-1e4380801bad",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-23T18:18:50Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 0,
+        "conflictingFiles": [],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 2
+    },
+    {
+      "number": 882,
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "f3233d46f60cb48f939f21dd53cda4b21702bd50",
+      "headRefName": "codex/quant-real-weekly-backtest",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/882",
+      "included": "Real weekly adapter, execution ledger, independent Python reference and regressions",
+      "excluded": "Obsolete reference reports",
+      "disposition": "Superseded after reviewed consolidation.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:36:16Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562236/job/120790944010",
+          "name": "core",
+          "startedAt": "2026-10-24T05:31:08Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:35:59Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562237/job/120790943875",
+          "name": "experience",
+          "startedAt": "2026-10-24T05:31:08Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:37:02Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562316/job/120790944218",
+          "name": "test",
+          "startedAt": "2026-10-24T05:31:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:36:17Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562304/job/120790944317",
+          "name": "validate",
+          "startedAt": "2026-10-24T05:31:09Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:30:47Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066539887/job/120790878587",
+          "name": "materialize",
+          "startedAt": "2026-10-24T05:30:47Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:32:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790944092",
+          "name": "contract",
+          "startedAt": "2026-10-24T05:31:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:38:27Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120790944211",
+          "name": "package",
+          "startedAt": "2026-10-24T05:31:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:31:05Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562236/job/120790945926",
+          "name": "live",
+          "startedAt": "2026-10-24T05:31:06Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:38:27Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120792372243",
+          "name": "deploy",
+          "startedAt": "2026-10-24T05:38:28Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:31:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790943896",
+          "name": "marker",
+          "startedAt": "2026-10-24T05:31:08Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:31:11Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790965113",
+          "name": "measure",
+          "startedAt": "2026-10-24T05:31:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:38:27Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120792372635",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-24T05:38:28Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:32:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/614f6df3-5cdb-4f42-99fd-93fb4bcae30b",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-24T05:32:15Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-24T05:32:19Z",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/F8KrbCXZT8CkrKMMMCWYEuSmukUT"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T05:32:20Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://vercel.com/github",
+          "name": "Vercel Preview Comments",
+          "startedAt": "2026-10-24T05:32:20Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 0,
+        "conflictingFiles": [],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 1
+    },
+    {
+      "number": 894,
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "f354c647cb8cb7d471fb014590e8f69b3531b86a",
+      "headRefName": "codex/quant-weekly-benchmark-batch",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/894",
+      "included": "Execution costs V2, verified price SPY, deterministic batch",
+      "excluded": "Stale batch reference artifacts",
+      "disposition": "Superseded after reviewed consolidation.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:26:26Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308156/job/120811222584",
+          "name": "core",
+          "startedAt": "2026-10-24T07:21:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:24:03Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308139/job/120811222209",
+          "name": "experience",
+          "startedAt": "2026-10-24T07:18:15Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:13:00Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073255535/job/120811065473",
+          "name": "materialize",
+          "startedAt": "2026-10-24T07:13:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:24:25Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811222378",
+          "name": "contract",
+          "startedAt": "2026-10-24T07:23:21Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:30:09Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120811222184",
+          "name": "package",
+          "startedAt": "2026-10-24T07:24:06Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:23:12Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308064/job/120811221928",
+          "name": "test",
+          "startedAt": "2026-10-24T07:16:22Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:30:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308118/job/120811222137",
+          "name": "validate",
+          "startedAt": "2026-10-24T07:22:13Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:13:47Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308156/job/120811223323",
+          "name": "live",
+          "startedAt": "2026-10-24T07:13:48Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:30:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120814509466",
+          "name": "deploy",
+          "startedAt": "2026-10-24T07:30:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:16:39Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811222180",
+          "name": "marker",
+          "startedAt": "2026-10-24T07:16:35Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:16:39Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811797982",
+          "name": "measure",
+          "startedAt": "2026-10-24T07:16:39Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:30:09Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120814509724",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-24T07:30:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-24T07:13:00Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T07:14:23Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/dbf962ab-017a-437b-8d39-13d0e3774111",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-24T07:14:23Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 0,
+        "conflictingFiles": [],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 2
+    },
+    {
+      "number": 895,
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "53e7ba9e1821b040cc39d2c062d1354f9d438072",
+      "headRefName": "codex/quant-backtest-v3-read-service",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/895",
+      "included": "Private Quant reader, quality, stored generation contract and validation",
+      "excluded": "Old audit payloads",
+      "disposition": "Superseded; V5.1 additionally fixes context/runtime/generation issues.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:02:06Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913734/job/120842848726",
+          "name": "experience",
+          "startedAt": "2026-10-24T09:56:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:55:33Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083874673/job/120842738034",
+          "name": "materialize",
+          "startedAt": "2026-10-24T09:55:34Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:57:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913701/job/120842848655",
+          "name": "Master pruefen (ohne Netz)",
+          "startedAt": "2026-10-24T09:56:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:01:50Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913721/job/120842848796",
+          "name": "core",
+          "startedAt": "2026-10-24T09:56:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:57:08Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842849060",
+          "name": "contract",
+          "startedAt": "2026-10-24T09:56:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:03:02Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120842848911",
+          "name": "package",
+          "startedAt": "2026-10-24T09:56:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:00:44Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913665/job/120842848559",
+          "name": "test",
+          "startedAt": "2026-10-24T09:56:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:04:22Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913691/job/120842848561",
+          "name": "validate",
+          "startedAt": "2026-10-24T09:56:12Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:57:18Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913701/job/120843052545",
+          "name": "Universum synchronisieren (mit Zugang)",
+          "startedAt": "2026-10-24T09:57:18Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:56:08Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913721/job/120842849802",
+          "name": "live",
+          "startedAt": "2026-10-24T09:56:09Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:03:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120844138371",
+          "name": "deploy",
+          "startedAt": "2026-10-24T10:03:02Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:56:37Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842849275",
+          "name": "marker",
+          "startedAt": "2026-10-24T09:56:34Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:56:37Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842933096",
+          "name": "measure",
+          "startedAt": "2026-10-24T09:56:37Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T10:03:02Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120844138567",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-24T10:03:02Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-24T09:55:33Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T09:56:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/5d287a0b-d62b-4a95-a02d-2091fbe81802",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-24T09:56:58Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 0,
+        "conflictingFiles": [],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 4
+    },
+    {
+      "number": 896,
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "7a6d729bf89872a50956fc9f0e3082483b462ee4",
+      "headRefName": "codex/quant-backtest-v4-protected-preview",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/896",
+      "included": "Atomic generation, writer lock, refresh, rollback and freshness checks",
+      "excluded": "Local preview HTTP transport, renderer and its access UI",
+      "disposition": "Backend superseded; preview is no longer required, retain old PR only until replacement accepted.",
+      "reviewCount": 0,
+      "commentCount": 2,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:50:17Z",
+          "conclusion": "FAILURE",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153828/job/120863926243",
+          "name": "experience",
+          "startedAt": "2026-10-24T11:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:44:01Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091075726/job/120863728613",
+          "name": "materialize",
+          "startedAt": "2026-10-24T11:44:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:46:26Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153854/job/120863925670",
+          "name": "Master pruefen (ohne Netz)",
+          "startedAt": "2026-10-24T11:45:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:50:14Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153861/job/120863925919",
+          "name": "core",
+          "startedAt": "2026-10-24T11:45:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:46:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863925899",
+          "name": "contract",
+          "startedAt": "2026-10-24T11:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:51:59Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120863925849",
+          "name": "package",
+          "startedAt": "2026-10-24T11:45:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:52:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153859/job/120863926443",
+          "name": "test",
+          "startedAt": "2026-10-24T11:45:14Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:52:24Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153870/job/120863925834",
+          "name": "validate",
+          "startedAt": "2026-10-24T11:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:46:26Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153854/job/120864171011",
+          "name": "Universum synchronisieren (mit Zugang)",
+          "startedAt": "2026-10-24T11:46:27Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:45:11Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153861/job/120863927142",
+          "name": "live",
+          "startedAt": "2026-10-24T11:45:12Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:51:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120865251973",
+          "name": "deploy",
+          "startedAt": "2026-10-24T11:51:59Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:45:19Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863926032",
+          "name": "marker",
+          "startedAt": "2026-10-24T11:45:15Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:45:19Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863952687",
+          "name": "measure",
+          "startedAt": "2026-10-24T11:45:19Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:51:59Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120865252594",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-24T11:52:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:45:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/48802d66-b767-4614-aac8-80331b6593e3",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-24T11:45:17Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-24T11:45:11Z",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/76eSWDHg77YWfrYkGnP8S6C3t53x"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T11:45:16Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://vercel.com/github",
+          "name": "Vercel Preview Comments",
+          "startedAt": "2026-10-24T11:45:16Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 0,
+        "conflictingFiles": [],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 7
+    },
+    {
+      "number": 897,
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "1200d865b1f51985e85051e255dca7f5a6ed3153",
+      "headRefName": "codex/quant-backtest-v5-integrated-preview",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/897",
+      "included": "Pinned selections, current-data regression lessons and UI isolation approach",
+      "excluded": "Both old frontend hooks, preview integration JS, preview routes/hosting",
+      "disposition": "Do not merge old UI; superseded backend, future UI work starts from current refresh.",
+      "reviewCount": 0,
+      "commentCount": 3,
+      "checks": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:57:00Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100328411/job/120890983160",
+          "name": "materialize",
+          "startedAt": "2026-10-24T13:57:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Product Intelligence Materialization"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:58:11Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331858/job/120890992322",
+          "name": "Master pruefen (ohne Netz)",
+          "startedAt": "2026-10-24T13:57:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:02:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331925/job/120891189315",
+          "name": "core",
+          "startedAt": "2026-10-24T13:58:02Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:58:00Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331941/job/120890992567",
+          "name": "contract",
+          "startedAt": "2026-10-24T13:57:06Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:05:33Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331887/job/120891192710",
+          "name": "package",
+          "startedAt": "2026-10-24T13:58:04Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:11:15Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331932/job/120890992343",
+          "name": "experience",
+          "startedAt": "2026-10-24T13:57:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant Browser QA"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:01:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100332025/job/120890992609",
+          "name": "test",
+          "startedAt": "2026-10-24T13:57:05Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:03:33Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331885/job/120890992207",
+          "name": "validate",
+          "startedAt": "2026-10-24T13:57:05Z",
+          "status": "COMPLETED",
+          "workflowName": "SEC Fundamentals CI"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:28:36Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331918/job/120891190787",
+          "name": "shell",
+          "startedAt": "2026-10-24T13:58:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Shell Quality Gates"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:58:11Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331858/job/120891228567",
+          "name": "Universum synchronisieren (mit Zugang)",
+          "startedAt": "2026-10-24T13:58:11Z",
+          "status": "COMPLETED",
+          "workflowName": "Company Master \u2014 Universum, Suchindex, CIK"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:58:00Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331925/job/120891190017",
+          "name": "live",
+          "startedAt": "2026-10-24T13:58:00Z",
+          "status": "COMPLETED",
+          "workflowName": "Core - Tests, Datenqualitaet, Systemzustand"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:05:33Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331887/job/120892811971",
+          "name": "deploy",
+          "startedAt": "2026-10-24T14:05:34Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:57:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331941/job/120890992817",
+          "name": "marker",
+          "startedAt": "2026-10-24T13:57:06Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:16:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331918/job/120891191004",
+          "name": "vu3-regression",
+          "startedAt": "2026-10-24T13:58:03Z",
+          "status": "COMPLETED",
+          "workflowName": "Shell Quality Gates"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:57:10Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331941/job/120891020646",
+          "name": "measure",
+          "startedAt": "2026-10-24T13:57:10Z",
+          "status": "COMPLETED",
+          "workflowName": "Currency & FX \u2014 Capability- und Datennachweis"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T14:05:33Z",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40100331887/job/120892812301",
+          "name": "company-intelligence-live",
+          "startedAt": "2026-10-24T14:05:34Z",
+          "status": "COMPLETED",
+          "workflowName": "Quant 2.0 Production Pages"
+        },
+        {
+          "__typename": "StatusContext",
+          "context": "Vercel",
+          "startedAt": "2026-10-24T13:57:00Z",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-24T13:58:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/656b3ebd-5386-4ba5-a9df-93c5d2b67057",
+          "name": "Cloudflare Pages",
+          "startedAt": "2026-10-24T13:58:10Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "localMergeAnalysis": {
+        "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+        "returnCode": 1,
+        "conflictingFiles": [
+          "quant/app/page-stock.js"
+        ],
+        "worktreeOrBranchesChanged": false
+      },
+      "headAlreadyAncestorOfMain": false,
+      "includedSourcePRHeads": [],
+      "commitsNotOnCurrentMain": 11
+    }
+  ],
+  "mergeOrder": "Merged UI #892/#893/#873 -> review and required checks for V5.1 -> owner closes superseded technical PRs. No sequential duplicate merges. Methodology proposal and later UI binding are separate.",
+  "existingPRBranchesModified": false,
+  "automaticMerge": false,
+  "latestMain": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "priorCheckedMain": "864cd303d89593e3a1bd2dfcd17ecf0126740bdd",
+  "consolidationPolicy": "Selective backend file/contract integration; ancestor chains are not independent cherry-pick sets. No existing source head is merged automatically.",
+  "duplicateStablePatches": [
+    {
+      "patchId": "21ddbe1f6c27742c16bc002a6aa699247653232e",
+      "occurrences": [
+        {
+          "pr": 882,
+          "commit": "f3233d46f60cb48f939f21dd53cda4b21702bd50"
+        },
+        {
+          "pr": 894,
+          "commit": "a4f526098a56998017fbce46afab6beea6dc2661"
+        },
+        {
+          "pr": 895,
+          "commit": "b6aed13a5082d938041d725a3f0f99d7dbfd9bd2"
+        },
+        {
+          "pr": 896,
+          "commit": "5831a54267ff98790702e5741a2600838a12016e"
+        },
+        {
+          "pr": 897,
+          "commit": "b6aae055d6a100783d794afeb085c2618597429c"
+        }
+      ]
+    },
+    {
+      "patchId": "6d1349f1f518034a63d7296e77a29d2da45955a9",
+      "occurrences": [
+        {
+          "pr": 894,
+          "commit": "f354c647cb8cb7d471fb014590e8f69b3531b86a"
+        },
+        {
+          "pr": 895,
+          "commit": "d786a1be4990663e6cd74f7d2a3664272d55cb8f"
+        },
+        {
+          "pr": 896,
+          "commit": "375db6a97540b43160050f1916334211a311a059"
+        },
+        {
+          "pr": 897,
+          "commit": "bd0c0952db9b76a5cf82afca1b6c29dfe7567ad9"
+        }
+      ]
+    },
+    {
+      "patchId": "e154faade0e8d97d373efbe2b9b1653a66f37dd7",
+      "occurrences": [
+        {
+          "pr": 895,
+          "commit": "53e7ba9e1821b040cc39d2c062d1354f9d438072"
+        },
+        {
+          "pr": 896,
+          "commit": "60875ffc59e12edaa10aeb982a300934e4b5321b"
+        },
+        {
+          "pr": 897,
+          "commit": "4036f8ef1be475fc00bfebfd3fb05e667f8176c6"
+        }
+      ]
+    },
+    {
+      "patchId": "7f6363caa4cc7f9f37b9d57c3b1df92771486932",
+      "occurrences": [
+        {
+          "pr": 895,
+          "commit": "f9d3bc25237e5b71de349e42a571301293f90728"
+        },
+        {
+          "pr": 896,
+          "commit": "4de186abbd9aed202022b922c1a70465dc0929f9"
+        },
+        {
+          "pr": 897,
+          "commit": "35a09fcb80ba61cabdcabbbe4caa29e2b2406989"
+        }
+      ]
+    },
+    {
+      "patchId": "d3a2d23c4cd357d7eb5b251bfe0abcf8266af6dc",
+      "occurrences": [
+        {
+          "pr": 896,
+          "commit": "7a6d729bf89872a50956fc9f0e3082483b462ee4"
+        },
+        {
+          "pr": 897,
+          "commit": "326ace7baedbf4fdafa173625395fea8adb1abb7"
+        }
+      ]
+    },
+    {
+      "patchId": "20822f53d1da3105c658fadc4d8bf9a4f30a8a10",
+      "occurrences": [
+        {
+          "pr": 896,
+          "commit": "f2060329d0628b5f213c586d5b413d6a38cea724"
+        },
+        {
+          "pr": 897,
+          "commit": "39cc0c478ca41bca10b945d95a4adba691a325d7"
+        }
+      ]
+    },
+    {
+      "patchId": "7d64e8911a6233aa1739f3a3db19b08e442aa9cb",
+      "occurrences": [
+        {
+          "pr": 896,
+          "commit": "21dc2f197638537d116e526ae13a18a523059a5c"
+        },
+        {
+          "pr": 897,
+          "commit": "6154cf403d1f42cb1cbfcb168817feec05c38b84"
+        }
+      ]
+    }
+  ],
+  "duplicatePatchNote": "Stable git patch IDs compare commit diffs. Similar cumulative file content and later fixes still require semantic review; absence of a duplicate ID is not independence.",
+  "statusObservedAt": "2026-10-24T17:30:07.281614+00:00"
+}
