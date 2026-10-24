@@ -198,7 +198,7 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
 export function compareWithSf6(pubLifecycles) {
   const out = {};
   for (const [k, v] of Object.entries(pubLifecycles)) {
-    const ledger = SF6_RUN_FACTS.baseMatchesAuthoritative?.[k]?.ledgerSha256Value ?? null, trades = SF6_RUN_FACTS.integrity?.lifecycles?.[k]?.BASE?.tradesSha256 ?? null, n = SF6_RUN_FACTS.integrity?.lifecycles?.[k]?.BASE?.trades ?? null;
+    const ledger = SF6_RUN_FACTS.integrity?.baseMatchesAuthoritative?.[k]?.ledgerSha256Value ?? null, trades = SF6_RUN_FACTS.integrity?.lifecycles?.[k]?.BASE?.tradesSha256 ?? null, n = SF6_RUN_FACTS.integrity?.lifecycles?.[k]?.BASE?.trades ?? null;
     out[k] = { ledgerSha256: ledger === null ? 'NOT_RECORDED' : ledger === v.BASE.ledgerSha256 ? 'EQUAL' : 'DIFFERENT', tradesSha256: trades === null ? 'NOT_RECORDED' : trades === v.BASE.tradesSha256 ? 'EQUAL' : 'DIFFERENT', trades: n === null ? 'NOT_RECORDED' : n === v.BASE.trades ? 'EQUAL' : 'DIFFERENT' };
   }
   out.allEqual = Object.values(out).every((x) => x.ledgerSha256 === 'EQUAL' && x.tradesSha256 === 'EQUAL' && x.trades === 'EQUAL');

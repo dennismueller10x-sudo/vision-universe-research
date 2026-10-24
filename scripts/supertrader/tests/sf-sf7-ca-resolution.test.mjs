@@ -235,3 +235,15 @@ test('SF7-CA-CLEAN: ohne Markierung ist jede Lesart trade-genau BASE und das Ove
   for (const k of INTEGRITY_KEYS) for (const t of ['CA', 'CA-Q-K5', 'CA-Q-K3']) assert.equal(r.pub.lifecycles[k][t].ledgerSha256, r.pub.lifecycles[k].BASE.ledgerSha256);
   assert.ok(Object.values(r.pub.lifecycles).some((x) => x.BASE.trades > 0), 'die Synthese erzeugt Trades');
 });
+
+test('SF7-CA-REGRESSION: fuer jede Referenz liegen die 6.0-Hashes vor; der Abgleich erkennt Gleichheit und Abweichung', async () => {
+  const { compareWithSf6 } = await import('../source-faithful/research/run-sf7-ca-resolution.mjs');
+  const { SF6_RUN_FACTS } = await import('../source-faithful/completion/sf6-run-facts.mjs');
+  const same = Object.fromEntries(INTEGRITY_KEYS.map((k) => [k, { BASE: { ledgerSha256: SF6_RUN_FACTS.integrity.baseMatchesAuthoritative[k].ledgerSha256Value, tradesSha256: SF6_RUN_FACTS.integrity.lifecycles[k].BASE.tradesSha256, trades: SF6_RUN_FACTS.integrity.lifecycles[k].BASE.trades } }]));
+  const c = compareWithSf6(same);
+  assert.equal(c.allEqual, true);
+  for (const k of INTEGRITY_KEYS) assert.deepEqual(c[k], { ledgerSha256: 'EQUAL', tradesSha256: 'EQUAL', trades: 'EQUAL' }, k);
+  const off = structuredClone(same); off.DARVAS.BASE.ledgerSha256 = '0'.repeat(64);
+  assert.equal(compareWithSf6(off).allEqual, false);
+  assert.equal(compareWithSf6(off).DARVAS.ledgerSha256, 'DIFFERENT');
+});
