@@ -34,6 +34,13 @@ const profiles=JSON.parse(await readFile(resolve(root,'quant/methodology/strateg
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
+// Der Aktienkopf zeigt den Anzeigenamen des Security-Masters, wo der ausgelieferte
+// Verfuegbarkeits-Ausschnitt ihn traegt (assets/stock-navigator.js#head/shardName,
+// VU3: ein Name je Aktie in allen Welten - im Release "NVIDIA"), sonst den Namen des
+// Verzeichnisses. Erwartet wird, was dieselbe Quelle liefert; gelesen, nicht abgeschrieben.
+const StockContext=require(resolve(root,'core/stock-context.js'));
+const nvdaShard=await readFile(resolve(root,'.'+StockContext.availabilityUrl(StockContext.fromUs('NVDA'))),'utf8').then(JSON.parse).catch(()=>null);
+const nvdaHeadName=typeof nvdaShard?.names?.NVDA==='string'?nvdaShard.names.NVDA:nvdaName;
 const nvdaEod=(universeIndex.entries||[]).find(e=>e.s==='NVDA');
 // Explicit stale-data scenario, retaining actual source files and all freshness assertions.
 const staleClock=new Date(Date.parse(nvdaEod.d+'T22:00:00Z')+7*86400000);
@@ -332,7 +339,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Elliott nur im Chartbild: keine V1-Zaehlung ("Validierte Zaehlung", "Method Fit") auf der Aktienseite. */
    if(/Validierte Zählung|Method Fit|Elliott-Wellen\b/.test(await page.locator('#technik').innerText()))befund(view,width,'V1-Elliott auf der Aktienseite');
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
-   if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
+   /* Barrierefreier Name der Seitenueberschrift (Rolle heading, Ebene 1) gegen den vorgesehenen Namen. */
+   if(!await page.locator('.qx-stock-hero').getByRole('heading',{level:1,name:nvdaHeadName,exact:true}).count())befund(view,width,'Name weicht vom Verzeichnis ab');
   }
   if(view==='radar'){
    /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
