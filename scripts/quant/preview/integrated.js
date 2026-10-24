@@ -5,7 +5,7 @@
  const base='/quant/internal-backtest/';
  let lease=0,generation=null,epoch=0;
  const hosts=new Set();
- async function request(route,options){const r=await fetch(base+route,{credentials:'same-origin',cache:'no-store',...options});const d=await r.json();if(!r.ok)throw Error(d.state||'PREVIEW_UNAVAILABLE');return d;}
+ async function request(route,options){const r=await fetch(base+route,{credentials:'same-origin',cache:'no-store',...options});const d=await r.json();if(r.status===401)clear('Sitzung beendet – erneut anmelden.');if(!r.ok)throw Error(d.state||'PREVIEW_UNAVAILABLE');return d;}
  function clear(message){epoch++;for(const h of hosts){h.replaceChildren(g.QX.notice('Interne Vorschau',message||'Sitzung beendet – erneut anmelden.'),g.QX.el('a',{href:base,text:'Zur internen Anmeldung'}));}lease=0;}
  const usd=n=>Number.isFinite(n)?g.QX.money(n,'USD'):'Nicht verfügbar';
  const price=n=>Number.isFinite(n)?n.toLocaleString('de-DE',{maximumFractionDigits:6})+' USD':'—';
@@ -26,14 +26,14 @@
    const logout=el('button',{class:'qx-btn v2-pill-ghost',type:'button',text:'Interne Sitzung beenden'});logout.onclick=async()=>{clear();await request('logout',{method:'POST'}).catch(()=>{});};
    controls.append(el('label',{},[el('span',{class:'qx-small',text:'Aktie '}),ticker]),el('label',{},[el('span',{class:'qx-small',text:'Zeitraum '}),period]),logout);host.append(controls,content);
    let revision=0;
-   async function load(){const turn=++revision,authEpoch=epoch;content.replaceChildren(g.QX.loading('Echte Ergebnisgeneration wird geladen …'));
+   async function load(){const turn=++revision,authEpoch=epoch;delete host.dataset.ticker;delete host.dataset.period;host.dataset.state='LOADING';content.replaceChildren(g.QX.loading('Echte Ergebnisgeneration wird geladen …'));
     try{const s=await request('data?'+new URLSearchParams({ticker:ticker.value,period:period.value}));if(turn!==revision||authEpoch!==epoch||!host.isConnected)return;
      if(s.certification!=='NOT_CERTIFIED'||s.productionApproved!==false||s.returnBasis!=='PRICE_RETURN')throw Error('CONTRACT_REJECTED');
      const pinned={ticker:ticker.value,period:period.value,generation:s.generation,listingId:s.identity?.listingId};
      generation=s.generation;host.dataset.generation=s.generation;host.dataset.ticker=ticker.value;host.dataset.period=period.value;host.dataset.state=s.state;
      content.replaceChildren(el('p',{class:'q-flags'},[el('span',{class:'q-flag is-limited',text:'PRICE_RETURN · Dividenden ausgeschlossen'}),el('span',{class:'q-flag is-limited',text:'NOT_CERTIFIED'}),el('span',{class:'q-flag is-limited',text:'Datenqualität '+(s.quality?.class||'nicht verfügbar')})]));
      const stand=el('p',{class:'qx-small','data-freshness':'',text:'Datenstand '+g.QX.dateDe(s.asOf)+' · '+(s.delivery?.state||'nicht geprüft')});content.append(stand);
-     if(s.state!=='AVAILABLE_LIMITED'){content.append(g.QX.notice('Backtest blockiert',(s.quality?.exclusionReasons||[s.reason||s.state]).join(' · ')));return;}
+     if(s.state!=='AVAILABLE_LIMITED'){const reasons={CORPORATE_ACTION:'Corporate Action ungeklärt',TERMINAL_LISTING_VALUE:'Terminaler Listingwert nicht belegt',WARMUP:'Nicht genug Historie für den Warm-up',DATA_GAPS:'Historische Wochenkurse fehlen',IDENTITY:'Listing-Identität nicht eindeutig',INSTRUMENT_CLASS:'Instrumentklasse nicht geeignet'};content.append(g.QX.notice('Backtest blockiert',(s.quality?.exclusionReasons||[s.reason||s.state]).map(x=>reasons[x]||x).join(' · ')),kv([['Historisches Listing',s.identity?.listingId],['Angefragte Produkt-ID',s.requestedIdentity?.securityId||s.identity?.securityId||s.identity?.sourceSecurityId],['Identitätsstatus',s.reason||s.quality?.identityStatus]]));return;}
      const r=s.result,m=r.metrics,start=r.endCapital/(1+m.totalReturn);
      if(!Number.isFinite(start))throw Error('CONTRACT_REJECTED');
      const tiles=[['Startkapital',usd(start)],['Endkapital',usd(r.endCapital)],['Kumulative Preisrendite',pct(m.totalReturn)],['CAGR',pct(m.cagr)],['Max. wöchentlicher Drawdown',pct(m.maxDrawdown)],['Abgeschlossene Trades',m.completedTrades],['Offene Positionen',r.openPositions],['Gebühren',usd(m.fees)],['Slippage',usd(m.slippage)]];
