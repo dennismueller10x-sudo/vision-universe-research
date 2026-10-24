@@ -28,14 +28,15 @@
   "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
   "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
-  "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs"
+  "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+  "scripts/supertrader/tests/sf-sf7-minervini.test.mjs"
  ],
  "summary": {
-  "goldenCases": 118,
-  "pass": 118,
+  "goldenCases": 120,
+  "pass": 120,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 308,
+  "testsRun": 321,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -657,7 +658,9 @@
     "MIN-RISK-01",
     "MIN-MM-STOP-01",
     "MIN-MM-STOP-02",
-    "MIN-RISK-05"
+    "MIN-RISK-05",
+    "MIN-W18-7",
+    "MIN-W18-8"
    ],
    "result": "PASS"
   },
@@ -1016,6 +1019,33 @@
    ],
    "psr709": [
     "RAS04-001"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-PRICE-CONFIRM",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-PRICE-CONFIRM"
+   ],
+   "psr709": [
+    "MIN-W18-5"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP",
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-STAGGER"
+   ],
+   "psr709": [
+    "MIN-W18-1"
    ],
    "result": "PASS"
   },
@@ -3272,6 +3302,71 @@
   {
    "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
    "name": "SF-KK-STATEMENTS: nicht zertifiziert, keine repraesentative Gesamtaussage, IEX-Volumen, hypothetische Shorts, Lizenz",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-STAGGER: staggered stops redistribute, never increase the planned risk (MIN-W18-1, English answer recorded by #709)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-FLAT-BASE: flat base <= 15 % with pivot at the base high (B12 PDF 306); the 4.0 strict proxy does not trade it, the variant does",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "ADV-SF7-MIN-FLAT-BASE-DEEP: a base deeper than 15 % is no flat base; a base shorter than 15 sessions neither",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-FLAT-BASE-KEEPS-REF: a strict 4.0 VCP setup is kept unchanged; the variant reproduces the reference trade",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-FLAT-BASE-PIT: the flat-base setup on close i uses bars 0..i only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-TT6-25: the 25 % reading of the 52-week-low criterion (B03 PDF 143) qualifies closes the 30 % reference rejects; superset of the reference",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-RS-LINE: setups are kept only while the RS line rose over 6 weeks (B03 PDF 143); not measurable -> removed",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-LARGEST-DECLINE: the first post-entry decline larger than every decline since the Stage 2 start is reported (B12 PDF 130), diagnostic only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-HALF-AVG-GAIN: planned loss compared with half the PIT average gain and with 10 % (B12 PDF 398-399), counts only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-PRICE-CONFIRM: no fill without the price crossing the pivot, whatever the fundamentals (MIN-W18-5, MIN-PRICE-01)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-REGISTRY: 7.0 additions pre-registered and pinned; the 4.0 reference registry is unchanged",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-SOURCE-INVENTORY: artifact = fresh build, every contract rule and model assumption classified with a recorded page, all 132 #709 rows used, no book text",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on the same dataset; public part has counts and hashes only; code pinned",
    "result": "PASS"
   }
  ]

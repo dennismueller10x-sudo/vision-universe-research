@@ -14,7 +14,7 @@ import { ARTIFACT_DIR } from './build-artifacts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
-export const SF_TEST_FILES = Object.freeze(['sf-foundation', 'sf-turtle', 'sf-runner', 'sf-darvas', 'sf-weinstein', 'sf-morales-kacher', 'sf-minervini', 'sf-kullamagi', 'sf-holy-grail', 'sf-turtle-completion', 'sf-darvas-completion', 'sf-moka-completion', 'sf-completion', 'sf-turtle-correlation-research', 'sf-industry-strength-research', 'sf-minervini-components', 'sf-context-evidence-research', 'sf-sf3-runner-research', 'sf-minervini-lifecycle', 'sf-sf4-lifecycle-runner', 'sf-pp-missing-low-fix', 'sf-sf5-darvas-lifecycle', 'sf-sf5-kk-moka-lifecycle', 'sf-sf5-weinstein-lifecycle', 'sf-sf5-lifecycle-runner', 'sf-sf5-owner-decisions', 'sf-kk-ep-ps-chart'].map((f) => `scripts/supertrader/tests/${f}.test.mjs`));
+export const SF_TEST_FILES = Object.freeze(['sf-foundation', 'sf-turtle', 'sf-runner', 'sf-darvas', 'sf-weinstein', 'sf-morales-kacher', 'sf-minervini', 'sf-kullamagi', 'sf-holy-grail', 'sf-turtle-completion', 'sf-darvas-completion', 'sf-moka-completion', 'sf-completion', 'sf-turtle-correlation-research', 'sf-industry-strength-research', 'sf-minervini-components', 'sf-context-evidence-research', 'sf-sf3-runner-research', 'sf-minervini-lifecycle', 'sf-sf4-lifecycle-runner', 'sf-pp-missing-low-fix', 'sf-sf5-darvas-lifecycle', 'sf-sf5-kk-moka-lifecycle', 'sf-sf5-weinstein-lifecycle', 'sf-sf5-lifecycle-runner', 'sf-sf5-owner-decisions', 'sf-kk-ep-ps-chart', 'sf-sf7-minervini'].map((f) => `scripts/supertrader/tests/${f}.test.mjs`));
 
 /** Parses TAP top-level results: [{ file, name, ok }]. */
 export function parseTap(text, file) {
