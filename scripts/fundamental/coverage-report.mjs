@@ -54,7 +54,7 @@ export async function coverage({ root, universe }) {
     const stock = JSON.parse(await readFile(join(root, 'discover/data/stocks/US_REAL', t + '.json'), 'utf8'));
     const b = C.fromHistory(h, stock); if (!b) continue;
     depth.years.push(b.years.length); depth.quarters.push(b.quarters.length);
-    // Gepruefte Bewertung zum GJ-Ende (wie die Seite nach dem Laden der Wochenreihe)
+    // Gepruefte Bewertung nach jedem Jahresbericht (wie die Seite nach dem Laden der Wochenreihe)
     const lp = stock.series && stock.series.long && C.longSeriesPath(stock.series.long.path);
     const long = lp && existsSync(join(root, lp.slice(1))) ? JSON.parse(await readFile(join(root, lp.slice(1)), 'utf8')) : null;
     const hv = long ? C.attachValuation(b, long) : null;
@@ -114,7 +114,7 @@ export function markdown(r) {
   L.push('| Kennzahl | aktueller Wert | Jahre (Median) | auch quartalsweise |', '|---|---:|---:|---:|');
   for (const m of C.METRICS) {
     const p = r.per[m.id];
-    L.push('| ' + LABEL[m.id] + ' | ' + pct(p.cur, r.issuers) + ' | ' + (m.snap && !m.hist ? 'nur aktuell' : (quant(p.years, 0.5) ?? '–') + (m.hist ? ' (geprüft, GJ-Ende)' : '')) + ' | ' + (m.q ? pct(p.quarterly, r.issuers) : '–') + ' |');
+    L.push('| ' + LABEL[m.id] + ' | ' + pct(p.cur, r.issuers) + ' | ' + (m.snap && !m.hist ? 'nur aktuell' : (quant(p.years, 0.5) ?? '–') + (m.hist ? ' (geprüft, je Jahresbericht)' : '')) + ' | ' + (m.q ? pct(p.quarterly, r.issuers) : '–') + ' |');
   }
   L.push('', '## Konsistenz Jahr gegen Quartale', '');
   L.push('Geschäftsjahre, für die alle vier eigenständigen Quartale vorliegen: Summe der Quartale gegen den Jahreswert, Toleranz ' + Math.round(C.QUARTER_TOL * 100) + ' %. Unstimmige Geschäftsjahre werden in Fundamental nicht quartalsweise gezeigt (`catalog.js#quarterMismatch`, Grund „Quartale ergeben nicht den Jahreswert“); der Jahreswert bleibt.', '');
@@ -122,11 +122,11 @@ export function markdown(r) {
   for (const [m, k] of Object.entries(r.cons)) L.push('| ' + LABEL[m] + ' | ' + k.years + ' | ' + pct(k.ok, k.years) + ' | ' + k.blocked + ' | ' + k.issuers + ' |');
   L.push('', 'LTM-Umsatz gegen Summe der letzten vier Quartale (Toleranz 0,5 %): ' + pct(r.ttm.ok, r.ttm.checked) + ' von ' + r.ttm.checked + ' Unternehmen stimmig.', '');
   L.push('## Historisches KGV', '');
-  L.push('Regel: `fundamental/engine/catalog.js#historicalPe` (Split-Beleg des Kursanbieters, Bereinigung nur für Splits nach dem Meldedatum, Gegenprobe Nettogewinn ÷ bereinigte Aktienzahl ±' + Math.round(C.PE_TOLERANCE * 100) + ' %, keine Aktienbasis-Sprünge, Wochenschluss ≤ 10 Tage vor GJ-Ende, positiver Gewinn).', '');
+  L.push('Regel: `fundamental/engine/catalog.js#historicalPe` (Split-Beleg des Kursanbieters, Bereinigung nur für Splits nach dem Meldedatum, Gegenprobe Nettogewinn ÷ bereinigte Aktienzahl ±' + Math.round(C.PE_TOLERANCE * 100) + ' %, keine Aktienbasis-Sprünge, erster Wochenschluss ≤ 10 Tage nach dem 10-K, positiver Gewinn).', '');
   L.push('| | Wert |', '|---|---:|', '| Unternehmen mit Kursreihe (USD-Bericht) | ' + r.pe.issuers + ' |', '| davon mindestens ein geprüftes Jahr | ' + r.pe.withYear + ' (' + pct(r.pe.withYear, r.pe.issuers) + ') |', '| Geschäftsjahre gesamt | ' + r.pe.years + ' |', '| mit veröffentlichtem KGV | ' + r.pe.verified + ' (' + pct(r.pe.verified, r.pe.years) + ') |');
   for (const [k, v] of Object.entries(r.pe.reasons).sort((a, b) => b[1] - a[1])) L.push('| leer: ' + C.reason(k) + ' | ' + v + ' |');
-  L.push('', '## Bewertung zum Geschäftsjahresende', '');
-  L.push('Regel: `fundamental/engine/catalog.js#historicalValuation`. Alles zum selben Stichtag: Wochenschluss ≤ 10 Tage vor GJ-Ende (splitbereinigt), ausstehende Aktien und Bilanz dieses Geschäftsjahres, Umsatz/EBITDA/Free Cashflow/Dividenden des Geschäftsjahres. Aktienzahl nur um Splits nach ihrem Meldedatum bereinigt; Gegenprobe gegen die bereinigte verwässerte Durchschnittszahl ±' + Math.round(C.SHARE_TOLERANCE * 100) + ' %, kein Sprung in Split-Größe. Unternehmenswert = Börsenwert + Finanzschulden − Zahlungsmittel. Nur USD-Berichte.', '');
+  L.push('', '## Bewertung nach jedem Jahresbericht', '');
+  L.push('Regel: `fundamental/engine/catalog.js#historicalValuation`. Kurs = erster Wochenschluss nach Einreichung des 10-K (≤ 10 Tage danach, splitbereinigt), also ohne Kenntnis späterer Zahlen; ausstehende Aktien und Bilanz dieses Geschäftsjahres, Umsatz/EBITDA/Free Cashflow/Dividenden des Geschäftsjahres. Aktienzahl nur um Splits nach ihrem Meldedatum bereinigt; Gegenprobe gegen die bereinigte verwässerte Durchschnittszahl ±' + Math.round(C.SHARE_TOLERANCE * 100) + ' %, kein Sprung in Split-Größe. Unternehmenswert = Börsenwert + Finanzschulden − Zahlungsmittel. Nur USD-Berichte.', '');
   L.push('| Kennzahl | Unternehmen geprüft | mit ≥ 1 Jahr | Geschäftsjahre | mit Wert | häufigste Gründe für Lücken |', '|---|---:|---:|---:|---:|---|');
   for (const [id, k] of Object.entries(r.val)) {
     const top = Object.entries(k.reasons).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, n]) => C.reason(c) + ' (' + n + ')').join(', ');

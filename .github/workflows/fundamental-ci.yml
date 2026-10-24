@@ -4,9 +4,9 @@ name: Fundamental CI
 on:
   push:
     branches: [main]
-    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml']
+    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml', '.github/workflows/fundamental-sec-freshness.yml']
   pull_request:
-    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml']
+    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml', '.github/workflows/fundamental-sec-freshness.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,5 +28,6 @@ jobs:
           node --check fundamental/engine/catalog.js
           node --check fundamental/app.js
           node --check scripts/fundamental/build-history.mjs
+          node --check scripts/fundamental/sec-freshness.mjs
       - name: Model and data tests
         run: node --test "fundamental/tests/*.test.mjs"

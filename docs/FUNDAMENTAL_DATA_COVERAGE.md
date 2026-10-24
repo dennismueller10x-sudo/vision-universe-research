@@ -71,16 +71,16 @@ Aktueller Wert = LTM, letztes Geschäftsjahr oder Kurs; Jahre = Geschäftsjahre 
 | Gezahlte Dividenden | 41,4 % | 12 | – |
 | Dividende je Aktie (gezahlt) | 38,8 % | 10 | – |
 | Ausschüttungsquote | 38,1 % | 9 | – |
-| Dividendenrendite | 28,0 % | 9 (geprüft, GJ-Ende) | – |
-| Marktkapitalisierung | 78,1 % | 8 (geprüft, GJ-Ende) | – |
-| Unternehmenswert (EV) | 29,1 % | 5 (geprüft, GJ-Ende) | – |
-| KGV | 41,1 % | 8 (geprüft, GJ-Ende) | – |
-| KUV | 68,1 % | 8 (geprüft, GJ-Ende) | – |
-| KBV | 62,3 % | 8 (geprüft, GJ-Ende) | – |
-| EV / Umsatz | 29,0 % | 5 (geprüft, GJ-Ende) | – |
-| EV / EBITDA | 19,0 % | 6 (geprüft, GJ-Ende) | – |
+| Dividendenrendite | 28,0 % | 9 (geprüft, je Jahresbericht) | – |
+| Marktkapitalisierung | 78,1 % | 8 (geprüft, je Jahresbericht) | – |
+| Unternehmenswert (EV) | 29,1 % | 5 (geprüft, je Jahresbericht) | – |
+| KGV | 41,1 % | 7 (geprüft, je Jahresbericht) | – |
+| KUV | 68,1 % | 8 (geprüft, je Jahresbericht) | – |
+| KBV | 62,3 % | 8 (geprüft, je Jahresbericht) | – |
+| EV / Umsatz | 29,0 % | 5 (geprüft, je Jahresbericht) | – |
+| EV / EBITDA | 19,0 % | 6 (geprüft, je Jahresbericht) | – |
 | PEG | 16,4 % | nur aktuell | – |
-| Free-Cashflow-Rendite | 71,9 % | 8 (geprüft, GJ-Ende) | – |
+| Free-Cashflow-Rendite | 71,9 % | 8 (geprüft, je Jahresbericht) | – |
 
 ## Konsistenz Jahr gegen Quartale
 
@@ -99,35 +99,36 @@ LTM-Umsatz gegen Summe der letzten vier Quartale (Toleranz 0,5 %): 100,0 % von 2
 
 ## Historisches KGV
 
-Regel: `fundamental/engine/catalog.js#historicalPe` (Split-Beleg des Kursanbieters, Bereinigung nur für Splits nach dem Meldedatum, Gegenprobe Nettogewinn ÷ bereinigte Aktienzahl ±10 %, keine Aktienbasis-Sprünge, Wochenschluss ≤ 10 Tage vor GJ-Ende, positiver Gewinn).
+Regel: `fundamental/engine/catalog.js#historicalPe` (Split-Beleg des Kursanbieters, Bereinigung nur für Splits nach dem Meldedatum, Gegenprobe Nettogewinn ÷ bereinigte Aktienzahl ±10 %, keine Aktienbasis-Sprünge, erster Wochenschluss ≤ 10 Tage nach dem 10-K, positiver Gewinn).
 
 | | Wert |
 |---|---:|
 | Unternehmen mit Kursreihe (USD-Bericht) | 4384 |
-| davon mindestens ein geprüftes Jahr | 2741 (62,5 %) |
+| davon mindestens ein geprüftes Jahr | 2759 (62,9 %) |
 | Geschäftsjahre gesamt | 35361 |
-| mit veröffentlichtem KGV | 19618 (55,5 %) |
-| leer: Verlust im Geschäftsjahr | 7512 |
+| mit veröffentlichtem KGV | 19473 (55,1 %) |
+| leer: Verlust im Geschäftsjahr | 7498 |
 | leer: Gegenprobe nicht bestanden | 3771 |
 | leer: Aktienbasis springt | 2403 |
-| leer: kein Kurs zum GJ-Ende | 1227 |
+| leer: kein Datum des Jahresberichts | 1109 |
 | leer: keine Gegenprobe möglich | 830 |
+| leer: kein Kurs nach dem Jahresbericht | 277 |
 
-## Bewertung zum Geschäftsjahresende
+## Bewertung nach jedem Jahresbericht
 
-Regel: `fundamental/engine/catalog.js#historicalValuation`. Alles zum selben Stichtag: Wochenschluss ≤ 10 Tage vor GJ-Ende (splitbereinigt), ausstehende Aktien und Bilanz dieses Geschäftsjahres, Umsatz/EBITDA/Free Cashflow/Dividenden des Geschäftsjahres. Aktienzahl nur um Splits nach ihrem Meldedatum bereinigt; Gegenprobe gegen die bereinigte verwässerte Durchschnittszahl ±10 %, kein Sprung in Split-Größe. Unternehmenswert = Börsenwert + Finanzschulden − Zahlungsmittel. Nur USD-Berichte.
+Regel: `fundamental/engine/catalog.js#historicalValuation`. Kurs = erster Wochenschluss nach Einreichung des 10-K (≤ 10 Tage danach, splitbereinigt), also ohne Kenntnis späterer Zahlen; ausstehende Aktien und Bilanz dieses Geschäftsjahres, Umsatz/EBITDA/Free Cashflow/Dividenden des Geschäftsjahres. Aktienzahl nur um Splits nach ihrem Meldedatum bereinigt; Gegenprobe gegen die bereinigte verwässerte Durchschnittszahl ±10 %, kein Sprung in Split-Größe. Unternehmenswert = Börsenwert + Finanzschulden − Zahlungsmittel. Nur USD-Berichte.
 
 | Kennzahl | Unternehmen geprüft | mit ≥ 1 Jahr | Geschäftsjahre | mit Wert | häufigste Gründe für Lücken |
 |---|---:|---:|---:|---:|---|
-| KGV | 3498 | 2741 (78,4 %) | 37481 | 19618 (52,3 %) | Verlust im Geschäftsjahr (6973), kein Gewinn je Aktie (4804), Gegenprobe nicht bestanden (3134) |
-| Marktkapitalisierung | 3498 | 3199 (91,5 %) | 37481 | 23944 (63,9 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
-| Unternehmenswert (EV) | 3498 | 1756 (50,2 %) | 37481 | 10794 (28,8 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
-| KUV | 3498 | 2799 (80,0 %) | 37481 | 21051 (56,2 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
-| KBV | 3498 | 3106 (88,8 %) | 37481 | 22810 (60,9 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
-| EV / Umsatz | 3498 | 1644 (47,0 %) | 37481 | 10067 (26,9 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
-| EV / EBITDA | 3498 | 1243 (35,5 %) | 37481 | 7677 (20,5 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
-| Free-Cashflow-Rendite | 3498 | 2889 (82,6 %) | 37481 | 21440 (57,2 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
-| Dividendenrendite | 3498 | 1552 (44,4 %) | 37481 | 12424 (33,1 %) | keine Dividende gemeldet (10807), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
+| KGV | 3539 | 2759 (78,0 %) | 37714 | 19473 (51,6 %) | Verlust im Geschäftsjahr (6985), kein Gewinn je Aktie (4877), Gegenprobe nicht bestanden (3158) |
+| Marktkapitalisierung | 3539 | 3240 (91,6 %) | 37714 | 23884 (63,3 %) | keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339), keine Gegenprobe möglich (2901) |
+| Unternehmenswert (EV) | 3539 | 1764 (49,8 %) | 37714 | 10786 (28,6 %) | Schulden oder Kasse fehlen (13098), keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339) |
+| KUV | 3539 | 2828 (79,9 %) | 37714 | 21040 (55,8 %) | keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339), keine Gegenprobe möglich (2901) |
+| KBV | 3539 | 3129 (88,4 %) | 37714 | 22736 (60,3 %) | keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339), keine Gegenprobe möglich (2901) |
+| EV / Umsatz | 3539 | 1651 (46,7 %) | 37714 | 10065 (26,7 %) | Schulden oder Kasse fehlen (13098), keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339) |
+| EV / EBITDA | 3539 | 1250 (35,3 %) | 37714 | 7672 (20,3 %) | Schulden oder Kasse fehlen (13098), keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339) |
+| Free-Cashflow-Rendite | 3539 | 2921 (82,5 %) | 37714 | 21424 (56,8 %) | keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339), keine Gegenprobe möglich (2901) |
+| Dividendenrendite | 3539 | 1552 (43,9 %) | 37714 | 12366 (32,8 %) | keine Dividende gemeldet (10804), keine Aktienzahl (5369), Aktienzahl-Gegenprobe nicht bestanden (4339) |
 
 Nicht berechnet: PEG (braucht je Stichtag ein dreijähriges, splitfestes Wachstum des Gewinns je Aktie) und Verhältnisse für Berichte in anderer Währung als US-Dollar (kein Wechselkurs je Stichtag in der Auslieferung).
 

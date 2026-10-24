@@ -16,7 +16,7 @@
 import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { gzipSync } from 'node:zlib';
+import { gzipSync, gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -35,6 +35,7 @@ export const INDUSTRY_SCHEMA = Catalog.INDUSTRY_SCHEMA, INDUSTRY_DIR = 'industry
 export const INDUSTRY_METRICS = Catalog.INDUSTRY_METRICS;
 /* Ein Median braucht mindestens so viele Unternehmen mit Wert im selben Geschaeftsjahr. */
 export const INDUSTRY_MIN = 5;
+export const PEERS_SCHEMA = 'vu-fundamental-peers-1.0.0';
 const LONG_PATH = /^\/quant\/data\/market\/discover-series-long\/ref_[A-Z0-9_]{1,24}\.json$/;
 const COLUMNS = ['fy', 'fp', 'end', 'v', 'filed', 'accn', 'derived'];
 
@@ -96,8 +97,9 @@ export async function buildHistory({ root }) {
   root = resolve(root);
   const stockDir = join(root, 'discover/data/stocks/US_REAL'), consumerDir = join(root, 'quant/data/sec/consumer');
   if (!existsSync(consumerDir)) throw Error('CONSUMER_SOURCE_MISSING');
-  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0 };
+  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0 };
   const sic = await sicByTicker(root), members = [];
+  const tenK = await annualReportDates(root), sec = await secProcessed(root);
   const names = (await readdir(stockDir)).filter((n) => /^[A-Z0-9.-]+\.json$/.test(n)).sort();
   for (const name of names) {
     stats.stocks++;
@@ -111,12 +113,70 @@ export async function buildHistory({ root }) {
     if (!projected || projected.cik !== f.cik) { stats.invalid++; continue; }
     const key = Identity.shardKey(ticker);
     if (!/^[A-Z0-9_]{1,2}$/.test(key)) { stats.invalid++; continue; }
+    const sic4 = sic.get(ticker) || null;
+    projected.published = publicationDates(projected, tenK.get(f.cik));
+    projected.secLatest = sec.get(f.cik) || null;
+    projected.sic4 = sic4;
+    if (Object.keys(projected.published).length) stats.published++;
+    if (pendingFiling(projected)) stats.pending++;
     (shards[key] ||= { schema: SHARD_SCHEMA, shard: key, issuers: {} }).issuers[ticker] = projected;
     stats.projected++;
-    const sic4 = sic.get(ticker);
-    if (sic4) members.push({ ticker, sic2: sic4.slice(0, 2), sector: sectorFromSic(sic4), values: await issuerValues(root, projected, doc) });
+    if (sic4) members.push({ ticker, sic4, sic2: sic4.slice(0, 2), sector: sectorFromSic(sic4), values: await issuerValues(root, projected, doc) });
   }
-  return { shards, stats, industry: industryMedians(members) };
+  return { shards, stats, industry: industryMedians(members), peers: await peerIndex(root, sic) };
+}
+
+/* Erstveroeffentlichung der Jahreszahlen: Annahmezeitpunkt des ersten 10-K nach dem Geschaeftsjahresende.
+ * Quelle: SIC-Verlauf der SEC-Pipeline (quant/data/sec/sic-history, FSDS sub.txt und Filing-Header: jedes 10-K/10-Q mit
+ * Annahmezeitpunkt), ergaenzt um die Meldedaten der Jahreswerte selbst (nur 10-K liefern Jahreswerte) fuer Berichte,
+ * die nach dem letzten Lauf des SIC-Verlaufs eingingen. Ohne Datum gibt es keine Bewertung zum Veroeffentlichungstag. */
+export const PUBLICATION_WINDOW_DAYS = 400;
+export async function annualReportDates(root) {
+  const out = new Map(), dir = join(root, 'quant/data/sec/sic-history/issuers');
+  if (!existsSync(dir)) return out;
+  for (const n of (await readdir(dir)).filter((x) => /^\d{3}\.json\.gz$/.test(x))) {
+    let doc; try { doc = JSON.parse(gunzipSync(await readFile(join(dir, n)))); } catch { continue; }
+    for (const [cik, o] of Object.entries(doc.issuers || {})) {
+      const d = (o.observations || []).filter((x) => /^10-K(T|405)?$/.test(x[3] || '') && isDate(String(x[0]).slice(0, 10))).map((x) => String(x[0]).slice(0, 10));
+      if (d.length) out.set(cik, d);
+    }
+  }
+  return out;
+}
+export function publicationDates(projected, tenKDates) {
+  const ends = {}, filed = new Set(tenKDates || []);
+  for (const rows of Object.values(projected.annual || {})) for (const r of rows) { ends[r[0]] ||= r[1]; const f = projected.filings[r[3]]; if (f) filed.add(f[1]); }
+  const dates = [...filed].sort(), out = {};
+  for (const [fy, end] of Object.entries(ends)) {
+    const limit = new Date(Date.parse(end) + PUBLICATION_WINDOW_DAYS * 864e5).toISOString().slice(0, 10);
+    const d = dates.find((x) => x > end && x <= limit);
+    if (d) out[fy] = d;
+  }
+  return out;
+}
+/* Letzte von der taeglichen SEC-Pipeline verarbeitete Meldung je Emittent (quant/data/fundamentals/daily/state.json). */
+async function secProcessed(root) {
+  const out = new Map(), path = join(root, 'quant/data/fundamentals/daily/state.json');
+  if (!existsSync(path)) return out;
+  let st; try { st = JSON.parse(await readFile(path, 'utf8')); } catch { return out; }
+  for (const [cik, x] of Object.entries(st.ISSUER_LAST_PROCESSED || {})) {
+    if (/^\d{10}$/.test(cik) && isDate(x?.LATEST_FILED_AT) && isAccn(x?.LATEST_ACCESSION)) out.set(cik, { form: String(x.LATEST_FORM || ''), filed: x.LATEST_FILED_AT, accn: x.LATEST_ACCESSION });
+  }
+  return out;
+}
+/** Liegt bei der SEC eine neuere Quartals- oder Jahresmeldung vor als die neueste in den ausgelieferten Werten? */
+export function pendingFiling(h) {
+  const s = h && h.secLatest; if (!s || !/^(10-K|10-Q|20-F|40-F)/.test(s.form)) return null;
+  const latest = (h.filings || []).reduce((a, f) => (f[1] > a ? f[1] : a), '');
+  return s.filed > latest && !(h.filings || []).some((f) => f[0] === s.accn) ? s : null;
+}
+/* Engere Vergleichsgruppe: gleicher vierstelliger SEC-SIC-Code (offizielle Bezeichnung aus sic-history/sic-codes.json). */
+async function peerIndex(root, sic) {
+  const groups = {}, labels = {}, codes = join(root, 'quant/data/sec/sic-history/sic-codes.json');
+  for (const [t, s4] of sic) (groups[s4] ||= []).push(t);
+  let doc = null; try { doc = existsSync(codes) ? JSON.parse(await readFile(codes, 'utf8')) : null; } catch { doc = null; }
+  for (const s4 of Object.keys(groups)) { groups[s4].sort(); const d = doc?.codes?.[s4]?.description; if (d) labels[s4] = d; }
+  return { schema: PEERS_SCHEMA, source: 'quant/data/product/sic-peer-taxonomy-v1.json (SIC4) + quant/data/sec/sic-history/sic-codes.json', groups, labels };
 }
 
 /* SIC-Code je Kuerzel aus derselben Quelle wie das Screener-Universum (quant/data/product/sic-peer-taxonomy-v1.json). */
@@ -150,7 +210,7 @@ const round = (v) => Number(v.toPrecision(5));
 /** Median je Gruppe (SIC-Hauptgruppe, Sektor), Kennzahl und Geschaeftsjahr: [GJ, Median, Anzahl, Unternehmen der Gruppe]. */
 export function industryMedians(members) {
   const groups = {};
-  for (const m of members) for (const key of [m.sic2 && 'sic-' + m.sic2, m.sector && 'sec-' + m.sector]) if (key) (groups[key] ||= []).push(m);
+  for (const m of members) for (const key of [m.sic4 && 'sic4-' + m.sic4, m.sic2 && 'sic-' + m.sic2, m.sector && 'sec-' + m.sector]) if (key) (groups[key] ||= []).push(m);
   const out = {};
   for (const [key, list] of Object.entries(groups)) {
     const metrics = {};
@@ -167,7 +227,7 @@ export function industryMedians(members) {
 
 /** Schreibt die Scherben als .json.gz nach out; Budget je Scherbe und gesamt. */
 export async function writeHistory({ root, out, log = console.log }) {
-  const { shards, stats, industry } = await buildHistory({ root });
+  const { shards, stats, industry, peers } = await buildHistory({ root });
   await mkdir(out, { recursive: true });
   let bytes = 0;
   for (const [key, payload] of Object.entries(shards)) {
@@ -184,6 +244,10 @@ export async function writeHistory({ root, out, log = console.log }) {
     bytes += json.length;
     await writeFile(join(out, INDUSTRY_DIR, key + '.json'), json);
   }
+  const peersJson = JSON.stringify(peers);
+  if (peersJson.length > SHARD_BUDGET) throw Error('FUNDAMENTAL_PEERS_BUDGET_EXCEEDED');
+  bytes += peersJson.length;
+  await writeFile(join(out, 'peers.json'), peersJson);
   if (bytes > TOTAL_BUDGET) throw Error('FUNDAMENTAL_HISTORY_BUDGET_EXCEEDED');
   const report = { schema: SCHEMA, state: 'AVAILABLE', shards: Object.keys(shards).length, industryGroups: Object.keys(industry).length, bytes, ...stats };
   await writeFile(join(out, 'status.json'), JSON.stringify(report));

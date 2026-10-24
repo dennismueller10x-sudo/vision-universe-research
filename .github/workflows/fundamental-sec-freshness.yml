@@ -1,0 +1,72 @@
+name: Fundamental SEC-Aktualitaet
+# Neue Quartals- und Jahresberichte (10-Q/10-K) sollen nicht bis zum naechsten Wochenlauf warten.
+# Die taegliche SEC-Pipeline (sec-fundamentals-daily.yml) erkennt neue Meldungen und haelt sie in
+# quant/data/fundamentals/daily/state.json fest. Fundamental baut seine Historie aber aus den
+# Verbraucherdateien (quant/data/sec/consumer), deren Erzeuger sec-consumer-fundamentals.yml nur
+# woechentlich laeuft. Dieser Waechter vergleicht beides (scripts/fundamental/sec-freshness.mjs) und
+# stoesst den bestehenden Erzeuger per workflow_dispatch an, wenn seit dessen letztem Lauf neue
+# periodische Meldungen eingegangen sind. Er schreibt keine Datei ins Repository; die Daten erzeugt
+# und committet weiterhin allein der Erzeuger, das Release baut danach die Fundamental-Historie neu.
+on:
+  workflow_run:
+    workflows: ["SEC Fundamentals — Daily Incremental"]
+    types: [completed]
+  schedule:
+    # Rueckfall, falls der taegliche Lauf kein Ereignis liefert (nach dessen Zeitfenster).
+    - cron: '40 14 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: fundamental-sec-freshness-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Neue SEC-Meldungen gegen die Verbraucherdaten
+        id: fresh
+        run: |
+          set -euo pipefail
+          node scripts/fundamental/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
+          node -e 'const r=require(process.argv[1]); console.log("decision="+r.decision); console.log("pending="+r.pending)' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_OUTPUT"
+      - name: Erzeuger anstossen (nur wenn noetig und nicht schon unterwegs)
+        if: steps.fresh.outputs.decision == 'REFRESH_CONSUMER'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          busy=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --limit 20 --json status --jq '[.[] | select(.status != "completed")] | length')
+          last=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --limit 1 --json createdAt --jq '.[0].createdAt // ""')
+          recent=0
+          if [ -n "$last" ]; then
+            age=$(( $(date -u +%s) - $(date -u -d "$last" +%s) ))
+            # Hoechstens ein Lauf je 18 Stunden: das SEC-Sammelarchiv wird naechtlich erneuert.
+            if [ "$age" -lt 64800 ]; then recent=1; fi
+          fi
+          if [ "$busy" != "0" ]; then echo "Erzeuger laeuft bereits ($busy)."; exit 0; fi
+          if [ "$recent" = "1" ]; then echo "Erzeuger lief vor weniger als 18 Stunden ($last)."; exit 0; fi
+          gh workflow run sec-consumer-fundamentals.yml --ref "$REF"
+          echo "Erzeuger angestossen."
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          [ -f "$RUNNER_TEMP/freshness.json" ] || exit 0
+          node -e '
+            const r=require(process.argv[1]);
+            const L=["### Fundamental SEC-Aktualitaet","","| | |","|---|---|",
+              "| Verbraucherdaten Stand | "+r.consumerAsOf+" |","| SEC-Pipeline zuletzt | "+r.secLastRun+" |",
+              "| neu seit dem letzten Lauf | "+r.pending+" Unternehmen |","| aelter, nicht uebernommen | "+r.notAdopted+" |","| Entscheidung | "+r.decision+" |","",
+              "| CIK | Formular | eingereicht | in den Verbraucherdaten bis |","|---|---|---|---|"];
+            for (const x of r.items.slice(0,40)) L.push("| "+x.cik+" | "+x.form+" | "+x.filed+" | "+(x.consumerFiled||"–")+" |");
+            console.log(L.join("\n"));' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_STEP_SUMMARY"

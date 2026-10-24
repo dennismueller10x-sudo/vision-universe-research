@@ -181,7 +181,7 @@ const VISUAL = [
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-bc.is-last .fu-b', 'Verlauf je Geschaeftsjahr als Balken'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=finanzen', '.fu-stmt', 'Finanzen: GuV je Geschaeftsjahr'],
   ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-gauge .mk-self', 'KGV im Marktvergleich'],
-  ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV zum Geschaeftsjahresende als Linie'],
+  ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV nach jedem Jahresbericht als Linie'],
   ['Fundamental', '/fundamental/#/KO?ansicht=vergleich', '.fu-bc.is-self .fu-b', 'Branchenvergleich: eigener Balken neben Vergleichsunternehmen'],
   ['Fundamental', '/fundamental/', '.fu-entry-list li', 'Start: Ranglisten-Einstiege mit Unternehmen'],
   ['Fundamental', '/fundamental/#/entdecken', '.fu-tile .fu-meter-bar i', 'Entdecken: Discover-Kacheln mit Kennzahlbalken']
