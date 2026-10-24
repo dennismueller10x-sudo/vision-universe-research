@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "real-weekly-backtest-2.0.0",
+  "input": {
+    "corporateActionCodeHash": "6c17d2c9d77b126b9d88608005c26dcac53c60fbefd677c2c225092a3893d09d",
+    "costModel": "PER_SIDE_NOTIONAL",
+    "benchmarkFailure": null,
+    "benchmarkProvenance": {
+      "sourcePath": "quant/data/market/multi-asset/series/SPY.json",
+      "sourceBytesHash": "d04094822a68804e34d0f56778cf4d49517982950b2004a9927d6b86ba87442f",
+      "catalogHash": "572ca8b6a058b3cc8788ca960e5cb2f1bd08c270d09a94ccbaeb5f83bae04c11",
+      "instrumentId": "vu_1c32c969ced1ff",
+      "source": "tiingo-equity",
+      "from": "1995-01-03",
+      "to": "2026-10-23",
+      "returnBasis": "PRICE_RETURN",
+      "currency": "USD",
+      "verification": "CATALOG_IDENTITY_AND_PUBLISHER_SPLIT_ADJUSTED_PRICE_CONTRACT",
+      "overlap": {
+        "sourcePath": "quant/data/market/discover-series/ref_SPY.json",
+        "sourceBytesHash": "2971ed3c845b0dd4cec851ea1ef37ca02d546152bc1e1f2ddab0704bedd679f5",
+        "observations": 270,
+        "toleranceAbsoluteUSD": 0.005000001,
+        "independentProvider": false
+      }
+    },
+    "benchmarkCodeHash": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+    "adapterCodeHash": "dc9c071ab568d48f2c8045745e155f9284d1c6120994a6f074450aa8e00d59ec",
+    "historyCodeHash": "f7c276e80d1111809d438e99d53e951dc93bb0f536e7d437e67eeac015ab3fd7",
+    "initialCapital": 100000,
+    "currency": "USD",
+    "horizonWeeks": 26,
+    "historyResolverVersion": "backtest-history-eligibility-1.0.0",
+    "signalCodeHash": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+    "executionCodeHash": "4ae4d6798c6b5030dff377d286640134409550f52cd89845c2b6a906cb3d2435",
+    "version": "real-weekly-ledger-2.0.0",
+    "sourceHash": "bb7f081e63f736e6bb34789b1569b6033377adc15be5b7d556646671ca0385f2",
+    "sourceBytesHash": "bb7f081e63f736e6bb34789b1569b6033377adc15be5b7d556646671ca0385f2",
+    "identityHash": "4e9dd7dd4d4ce2dd1a7b05fcc0c9a09cfcc8d85d6c472893331d35dc57122bcd",
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "ruleId": "NEW_52W_HIGH",
+    "ruleVersion": "1.0.0",
+    "params": {
+      "weeks": 52
+    },
+    "signalEngineVersion": "signal-backtest-2.0.0",
+    "period": "MAX",
+    "asOf": "2026-10-16",
+    "start": "2000-01-28",
+    "end": "2026-10-16",
+    "warmup": 53,
+    "cooldown": 13,
+    "entry": "NEXT_WEEK_CLOSE",
+    "exit": "ENTRY_PLUS_26_WEEK_CLOSE",
+    "overlap": "SKIP_WHILE_OPEN",
+    "costs": {
+      "roundTripBps": 20,
+      "slippageBps": 10
+    },
+    "returnBasis": "PRICE_RETURN"
+  },
+  "inputHash": "9dc42a21b9cf870e38752837c459043adae160e28e2b46551331820efe1c6ddd",
+  "resultHash": "401e6121a121a87a72153b3ea59174fae9c85f8cf5b4e28170ce97fbee52140f",
+  "history": {
+    "schemaVersion": "backtest-history-eligibility-1.0.0",
+    "state": "AVAILABLE",
+    "earliestAvailableDataDate": "1999-01-22",
+    "earliestEligibleBacktestDate": "2000-01-28",
+    "latestEligibleBacktestDate": "2026-10-09",
+    "warmupRequirement": [
+      {
+        "dependency": "weeklyPrices",
+        "bars": 53
+      }
+    ],
+    "limitingDataDependencies": [
+      "weeklyPrices"
+    ],
+    "coverageStatus": "LIMITED",
+    "dependencies": [
+      {
+        "id": "weeklyPrices",
+        "required": true,
+        "earliestAvailableDataDate": "1999-01-22",
+        "latestAvailableDataDate": "2026-10-16",
+        "earliestEligibleDate": "2000-01-28",
+        "latestEligibleDate": "2026-10-09",
+        "warmupBars": 53,
+        "trailingBars": 1,
+        "status": "LIMITED",
+        "exclusionReasons": [],
+        "source": "bb7f081e63f736e6bb34789b1569b6033377adc15be5b7d556646671ca0385f2"
+      }
+    ],
+    "exclusionReasons": [],
+    "window": {
+      "state": "AVAILABLE",
+      "period": "MAX",
+      "requestedWindowDays": null,
+      "startDate": "2000-01-28",
+      "endDate": "2026-10-09",
+      "complete": true
+    },
+    "firstEligibleTradeDate": "2000-02-04",
+    "latestTradeDate": "2026-10-16",
+    "latestCompletedM6EntryDate": "2026-04-17",
+    "latestCompletedM6SignalDate": "2026-04-10"
+  },
+  "metrics": {
+    "completedTrades": 21,
+    "totalReturn": 48.26635787429842,
+    "cagr": 0.15705035720313631,
+    "maxDrawdown": -0.8021817392455223,
+    "fees": 36559.165326245806,
+    "slippage": 18279.582663122903
+  },
+  "endCapital": 4926635.787429842,
+  "openPositions": 1,
+  "firstTrade": {
+    "entryGross": 99850.2246630055,
+    "entryFees": 99.8502246630055,
+    "entrySlippage": 49.92511233150275,
+    "signalDate": "2000-02-11",
+    "entryDate": "2000-02-18",
+    "entryIndex": 56,
+    "exitIndex": 82,
+    "entryPrice": 0.1404,
+    "entryCapital": 100000,
+    "units": 711183.9363461931,
+    "exitDate": "2000-08-18",
+    "exitPrice": 0.3208,
+    "grossExitValue": 228147.8067798587,
+    "exitFees": 228.1478067798587,
+    "exitSlippage": 114.07390338992936,
+    "fees": 327.9980314428642,
+    "slippage": 163.9990157214321,
+    "netExitValue": 227805.58506968894,
+    "netReturn": 1.2780558506968895,
+    "completed": true
+  },
+  "lastCompletedTrade": {
+    "entryGross": 3863978.9480657564,
+    "entryFees": 3863.9789480657564,
+    "entrySlippage": 1931.9894740328782,
+    "signalDate": "2025-06-27",
+    "entryDate": "2025-07-03",
+    "entryIndex": 1380,
+    "exitIndex": 1406,
+    "entryPrice": 159.34,
+    "entryCapital": 3869774.9164878544,
+    "units": 24249.89925985789,
+    "exitDate": "2026-01-02",
+    "exitPrice": 188.85,
+    "grossExitValue": 4579593.475224162,
+    "exitFees": 4579.593475224163,
+    "exitSlippage": 2289.7967376120814,
+    "fees": 8443.57242328992,
+    "slippage": 4221.78621164496,
+    "netExitValue": 4572724.085011326,
+    "netReturn": 0.18165117705643152,
+    "completed": true
+  },
+  "benchmark": {
+    "id": "SAME_LISTING_BUY_AND_HOLD",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0,
+    "totalReturn": 2748.486389316897,
+    "cagr": 0.3450281811025617,
+    "maxDrawdown": -0.8830920372285419,
+    "endCapital": 274948638.93168974,
+    "excessTotalReturn": -2700.2200314425986,
+    "excessCagr": -0.1879778238994254,
+    "excessEndCapital": -270022003.14425987
+  },
+  "marketBenchmark": {
+    "id": "SPY_BUY_AND_HOLD",
+    "state": "AVAILABLE",
+    "returnBasis": "PRICE_RETURN",
+    "currency": "USD",
+    "costsBps": 0,
+    "from": "2000-01-28",
+    "to": "2026-10-16",
+    "provenance": {
+      "sourcePath": "quant/data/market/multi-asset/series/SPY.json",
+      "sourceBytesHash": "d04094822a68804e34d0f56778cf4d49517982950b2004a9927d6b86ba87442f",
+      "catalogHash": "572ca8b6a058b3cc8788ca960e5cb2f1bd08c270d09a94ccbaeb5f83bae04c11",
+      "instrumentId": "vu_1c32c969ced1ff",
+      "source": "tiingo-equity",
+      "from": "1995-01-03",
+      "to": "2026-10-23",
+      "returnBasis": "PRICE_RETURN",
+      "currency": "USD",
+      "verification": "CATALOG_IDENTITY_AND_PUBLISHER_SPLIT_ADJUSTED_PRICE_CONTRACT",
+      "overlap": {
+        "sourcePath": "quant/data/market/discover-series/ref_SPY.json",
+        "sourceBytesHash": "2971ed3c845b0dd4cec851ea1ef37ca02d546152bc1e1f2ddab0704bedd679f5",
+        "observations": 270,
+        "toleranceAbsoluteUSD": 0.005000001,
+        "independentProvider": false
+      }
+    },
+    "endCapital": 561729.5308187673,
+    "totalReturn": 4.617295308187672,
+    "cagr": 0.06673083298954152,
+    "maxDrawdown": -0.5591377214865989,
+    "excessTotalReturn": 43.64906256611075,
+    "excessCagr": 0.09031952421359479,
+    "excessEndCapital": 4364906.256611075
+  }
+}

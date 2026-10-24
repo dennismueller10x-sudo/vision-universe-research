@@ -1,0 +1,57 @@
+/* Loaded ONLY by the authenticated local server into the existing Quant release.
+   Production has neither this script nor an enabled reader. No engine/browser data store. */
+(function(g){
+ 'use strict';
+ const base='/quant/internal-backtest/';
+ let lease=0,generation=null,epoch=0;
+ const hosts=new Set();
+ async function request(route,options){const r=await fetch(base+route,{credentials:'same-origin',cache:'no-store',...options});const d=await r.json();if(r.status===401)clear('Sitzung beendet – erneut anmelden.');if(!r.ok)throw Error(d.state||'PREVIEW_UNAVAILABLE');return d;}
+ function clear(message){epoch++;for(const h of hosts){h.replaceChildren(g.QX.notice('Interne Vorschau',message||'Sitzung beendet – erneut anmelden.'),g.QX.el('a',{href:base,text:'Zur internen Anmeldung'}));}lease=0;}
+ const usd=n=>Number.isFinite(n)?g.QX.money(n,'USD'):'Nicht verfügbar';
+ const price=n=>Number.isFinite(n)?n.toLocaleString('de-DE',{maximumFractionDigits:6})+' USD':'—';
+ const pct=n=>Number.isFinite(n)?(n*100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' %':'Nicht verfügbar';
+ const el=(t,a,k)=>g.QX.el(t,a,k);
+ function kv(rows){return el('dl',{class:'qx-kv'},rows.flatMap(([k,v])=>[el('dt',{text:k}),el('dd',{text:String(v??'Nicht verfügbar')})]));}
+ function table(title,columns,rows){return el('div',{class:'q-bt-table',role:'region','aria-label':title,tabindex:'0'},[el('table',{},[el('caption',{class:'qx-small',text:title}),el('thead',{},[el('tr',{},columns.map(c=>el('th',{scope:'col',text:c})))]),el('tbody',{},rows.map(row=>el('tr',{},row.map(v=>el('td',{class:'num',text:String(v??'—')})))))])]);}
+ async function mount(parent,fixedTicker){
+  if(!parent.isConnected)return;
+  for(const h of hosts)if(!h.isConnected)hosts.delete(h);
+  const host=g.QX.section('Historischer Einzelaktien-Backtest','NEW_52W_HIGH · historische Modellrechnung; keine marktweite Signalstudie.',[],null,null,'real-backtest-preview');hosts.add(host);parent.append(host);
+  try{
+   const auth=await request('session');if(!host.isConnected)return;lease=auth.expiresAt;generation=auth.generation;
+   if(fixedTicker&&!auth.allowedTickers.includes(fixedTicker)){host.append(g.QX.notice('Keine interne Berechtigung','Für dieses Listing werden keine privaten Ergebnisse geladen.'));return;}
+   const controls=el('div',{class:'qx-actions'}),ticker=el('select',{'aria-label':'Backtest-Aktie'}),period=el('select',{'aria-label':'Backtest-Zeitraum'}),content=el('div',{'aria-live':'polite'});
+   for(const t of fixedTicker?[fixedTicker]:auth.allowedTickers)ticker.append(el('option',{value:t,text:t}));
+   for(const [v,label] of [['1Y','1 Jahr'],['3Y','3 Jahre'],['5Y','5 Jahre'],['10Y','10 Jahre'],['MAX','MAX']])period.append(el('option',{value:v,text:label}));period.value='MAX';
+   const logout=el('button',{class:'qx-btn v2-pill-ghost',type:'button',text:'Interne Sitzung beenden'});logout.onclick=async()=>{clear();await request('logout',{method:'POST'}).catch(()=>{});};
+   controls.append(el('label',{},[el('span',{class:'qx-small',text:'Aktie '}),ticker]),el('label',{},[el('span',{class:'qx-small',text:'Zeitraum '}),period]),logout);host.append(controls,content);
+   let revision=0;
+   async function load(){const turn=++revision,authEpoch=epoch;delete host.dataset.ticker;delete host.dataset.period;host.dataset.state='LOADING';content.replaceChildren(g.QX.loading('Echte Ergebnisgeneration wird geladen …'));
+    try{const s=await request('data?'+new URLSearchParams({ticker:ticker.value,period:period.value}));if(turn!==revision||authEpoch!==epoch||!host.isConnected)return;
+     if(s.certification!=='NOT_CERTIFIED'||s.productionApproved!==false||s.returnBasis!=='PRICE_RETURN')throw Error('CONTRACT_REJECTED');
+     const pinned={ticker:ticker.value,period:period.value,generation:s.generation,listingId:s.identity?.listingId};
+     generation=s.generation;host.dataset.generation=s.generation;host.dataset.ticker=ticker.value;host.dataset.period=period.value;host.dataset.state=s.state;
+     content.replaceChildren(el('p',{class:'q-flags'},[el('span',{class:'q-flag is-limited',text:'PRICE_RETURN · Dividenden ausgeschlossen'}),el('span',{class:'q-flag is-limited',text:'NOT_CERTIFIED'}),el('span',{class:'q-flag is-limited',text:'Datenqualität '+(s.quality?.class||'nicht verfügbar')})]));
+     const stand=el('p',{class:'qx-small','data-freshness':'',text:'Datenstand '+g.QX.dateDe(s.asOf)+' · '+(s.delivery?.state||'nicht geprüft')});content.append(stand);
+     if(s.state!=='AVAILABLE_LIMITED'){const reasons={CORPORATE_ACTION:'Corporate Action ungeklärt',TERMINAL_LISTING_VALUE:'Terminaler Listingwert nicht belegt',WARMUP:'Nicht genug Historie für den Warm-up',DATA_GAPS:'Historische Wochenkurse fehlen',IDENTITY:'Listing-Identität nicht eindeutig',INSTRUMENT_CLASS:'Instrumentklasse nicht geeignet'};content.append(g.QX.notice('Backtest blockiert',(s.quality?.exclusionReasons||[s.reason||s.state]).map(x=>reasons[x]||x).join(' · ')),kv([['Historisches Listing',s.identity?.listingId],['Angefragte Produkt-ID',s.requestedIdentity?.securityId||s.identity?.securityId||s.identity?.sourceSecurityId],['Identitätsstatus',s.reason||s.quality?.identityStatus]]));return;}
+     const r=s.result,m=r.metrics,start=r.endCapital/(1+m.totalReturn);
+     if(!Number.isFinite(start))throw Error('CONTRACT_REJECTED');
+     const tiles=[['Startkapital',usd(start)],['Endkapital',usd(r.endCapital)],['Kumulative Preisrendite',pct(m.totalReturn)],['CAGR',pct(m.cagr)],['Max. wöchentlicher Drawdown',pct(m.maxDrawdown)],['Abgeschlossene Trades',m.completedTrades],['Offene Positionen',r.openPositions],['Gebühren',usd(m.fees)],['Slippage',usd(m.slippage)]];
+     content.append(el('div',{class:'q-evidence','data-real-metrics':''},tiles.map(([label,value])=>el('div',{class:'q-ev-tile'},[el('b',{class:'num',text:String(value),'data-metric':label}),el('span',{text:label})]))),el('p',{class:'qx-small',text:'Bewertung '+g.QX.dateDe(r.from)+' – '+g.QX.dateDe(r.to)+(r.complete?'':' · angeforderter Zeitraum nicht vollständig verfügbar; tatsächliche Abdeckung oben.')}));
+     content.append(table('Buy-and-Hold · gleiche Bewertungsperiode · PRICE_RETURN · ohne Transaktionskosten',['Vergleich','Endkapital','CAGR','Max. Drawdown'],[[ticker.value,usd(r.buyAndHold.endCapital),pct(r.buyAndHold.cagr),pct(r.buyAndHold.maxDrawdown)],['SPY',r.marketBenchmark.state==='AVAILABLE'?usd(r.marketBenchmark.endCapital):'BENCHMARK_UNAVAILABLE',pct(r.marketBenchmark.cagr),pct(r.marketBenchmark.maxDrawdown)]]));
+     const detail=async section=>{const d=await request('data?'+new URLSearchParams({...pinned,section}));if(turn!==revision||authEpoch!==epoch||!host.isConnected)return null;if(d.generation!==s.generation||d.certification!=='NOT_CERTIFIED')throw Error('GENERATION_CHANGED');return d.result;};
+     function lazy(label,section,render){return g.QX.more(label,()=>{const target=el('div',{},[g.QX.loading('Details werden geladen …')]);detail(section).then(d=>{if(d)target.replaceChildren(...render(d));}).catch(e=>{if(turn===revision&&authEpoch===epoch){if(e.message==='GENERATION_CHANGED')load();else target.replaceChildren(g.QX.notice('Details nicht verfügbar',e.message));}});return target;});}
+     content.append(lazy('Kapitalverlauf: Strategie, Aktie und SPY','equity',d=>{const p=d.equity,market=d.marketBenchmarkEquity;return [['Strategie und Aktie Buy-and-Hold',p.map(x=>x.benchmark)],...(market?[['Strategie und SPY Buy-and-Hold',market.map(x=>x.value)]]:[])].flatMap(([title,values])=>[el('h3',{class:'qx-sub',text:title}),el('p',{class:'q-bt-legend',text:'Durchgezogen: Strategie · gestrichelt: Buy-and-Hold · Achse in Mio. USD'}),g.QuantCharts.lineChart({title,width:Math.max(300,Math.min(840,content.clientWidth||640)),height:260,yFormat:n=>(n/1000000).toLocaleString('de-DE',{maximumFractionDigits:1}),dates:p.map(x=>x.date),series:[{values:p.map(x=>x.value),className:'line-primary'},{values,className:'line-benchmark'}]})]);}));
+     content.append(lazy('Trades und offene Positionen','trades',d=>{const out=[table('Modellierte Transaktionen · Nettorendite nach Kosten',['Signal','Einstieg','Ausstieg','Wochen','Einstiegspreis','Ausstiegspreis','Gebühren','Slippage','Nettorendite'],d.trades.map(t=>[t.signalDate,t.entryDate,t.exitDate,t.exitIndex-t.entryIndex,price(t.entryPrice),price(t.exitPrice),usd(t.fees),usd(t.slippage),pct(t.netReturn)]))];if(d.openPosition){const o=d.openPosition;out.push(kv([['Offener Einstieg',o.entryDate],['Signal',o.signalDate],['Einstiegspreis',price(o.entryPrice)],['Bewertet',o.markDate],['Positionswert',usd(o.value)],['Bezahlte Einstiegskosten',usd(o.entryFees+o.entrySlippage)],['M6-Ausgang','Nicht abgeschlossen']]));}return out;}));
+     content.append(g.QX.more('Datenqualität, Identität und Modellannahmen',()=>[kv([['Listing-ID',s.identity.listingId],['Security-ID',s.identity.securityId||s.identity.sourceSecurityId],['Quelle',r.source.provider],['Quellversion',r.source.version],['As-of',s.asOf],['Berechnet',s.computedAt],['Generation',s.generation],['Strategie',r.strategy.id+' / '+r.strategy.version],['Ausführungsmodell',r.modelVersion],['Historie ab',r.history.earliestAvailableDataDate],['MAX ab',r.history.earliestEligibleBacktestDate],['Letzter zulässiger Signalzeitpunkt',r.history.latestEligibleBacktestDate],['Erster zulässiger Handel',r.history.firstEligibleTradeDate],['Letzte Bewertung',r.history.latestTradeDate],['Benchmark',s.benchmarkState],['Ergebnishash',r.resultHash]]),el('p',{class:'qx-small',text:'Modellierter Folgewochenschluss: erst nachträglich beobachteter Preis, kein garantierter Live-Fill. 26 Wochen Haltedauer; 10 bp Gebühr und 5 bp Slippage je Kauf/Verkauf. Dividenden fehlen. Historische Ergebnisse sind keine Zukunftsprognose oder Kaufempfehlung. Die validierte Mechanik ist keine zertifizierte Strategie.'}),el('ul',{},(s.quality?.limitations||[]).map(x=>el('li',{text:x}))) ]));
+    }catch(e){if(turn===revision&&authEpoch===epoch)content.replaceChildren(g.QX.notice('Interne Ergebnisse nicht verfügbar',e.message));}
+   }
+   ticker.onchange=period.onchange=load;await load();
+  }catch{if(host.isConnected)host.append(g.QX.notice('Geschützte interne Vorschau','Anmeldung im lokalen Preview-Harness erforderlich.'),el('a',{href:base,text:'Zur internen Anmeldung'}));}
+ }
+ addEventListener('pagehide',()=>clear());
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)clear('Sitzung erneut prüfen: Seite neu laden.');});
+ setInterval(()=>{if(lease&&Date.now()>=lease)clear('Sitzung abgelaufen – erneut anmelden.');},250);
+ setInterval(async()=>{if(!lease||document.hidden)return;const e=epoch;try{const s=await request('session');if(e!==epoch)return;if(s.generation!==generation){clear('Neue Ergebnisgeneration verfügbar – Seite neu laden.');return;}for(const h of hosts){if(!h.isConnected||h.dataset.state!=='AVAILABLE_LIMITED')continue;const q=await request('data?'+new URLSearchParams({ticker:h.dataset.ticker,period:h.dataset.period,section:'quality',generation:h.dataset.generation}));if(e!==epoch)return;if(q.generation!==generation){clear('Neue Ergebnisgeneration verfügbar – Seite neu laden.');return;}const status=h.querySelector('[data-freshness]');if(status)status.textContent='Datenstand '+g.QX.dateDe(q.asOf)+' · '+q.delivery?.state;}}catch{if(e===epoch)clear('Sitzung oder Generation nicht mehr verfügbar – erneut laden/anmelden.');}},15000);
+ g.QXRealBacktestPreview={mount};
+})(window);

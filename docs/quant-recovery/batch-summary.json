@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "weekly-batch-summary-1.0.0",
+  "manifestHash": "dd79834eaef912198f541155f199de8460e80bca7aa98d8ae89d8dae985b1c3c",
+  "state": "COMPLETE",
+  "expected": 6174,
+  "processed": 6174,
+  "counts": {
+    "EXECUTABLE_WITH_LIMITATIONS": 4445,
+    "BLOCKED_WARMUP": 431,
+    "BLOCKED_DATA_GAPS": 218,
+    "BLOCKED_CORPORATE_ACTION": 598,
+    "BLOCKED_INSTRUMENT_CLASS": 295,
+    "BLOCKED_IDENTITY": 183,
+    "BLOCKED_DELISTING_VALUE": 4
+  },
+  "benchmarkStates": {
+    "AVAILABLE": 3609,
+    "BENCHMARK_UNAVAILABLE": 836
+  },
+  "sourceFrom": "1990-01-05",
+  "eligibleFrom": "1991-01-11",
+  "to": "2026-10-23",
+  "completedTrades": 42748,
+  "noTradeRuns": 462,
+  "distributionScope": "RUNS_WITH_AT_LEAST_ONE_POSITION",
+  "distributions": {
+    "totalReturn": {
+      "n": 3983,
+      "min": -0.9996422251132051,
+      "p10": -0.6518297475212866,
+      "median": 0.09931199485640763,
+      "p90": 3.2886318290873016,
+      "max": 115.44815246759748
+    },
+    "cagr": {
+      "n": 3983,
+      "min": -0.9855071187719829,
+      "p10": -0.1243608000634796,
+      "median": 0.009314742486940863,
+      "p90": 0.0943927233877575,
+      "max": 6.7401086710019324
+    },
+    "maxDrawdown": {
+      "n": 3983,
+      "min": -0.999828740151951,
+      "p10": -0.8537240971184596,
+      "median": -0.5723300608696797,
+      "p90": -0.22520189104673105,
+      "max": -0.001497753369944843
+    }
+  },
+  "resultHash": "1685440682ff1244aace27b573b2897f62cdcba28eda3b6a5e2774a39d3fe172",
+  "interpretation": "DESCRIPTIVE_STORED_LISTING_SAMPLE_NOT_HISTORICAL_UNIVERSE_OR_INDEPENDENT_OBSERVATIONS",
+  "certification": "NOT_CERTIFIED"
+}

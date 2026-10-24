@@ -1,0 +1,38 @@
+{
+  "state": "BASELINE_BROWSER_FAILURE_REPRODUCED",
+  "main": "741dea5a4",
+  "mainFindings": [
+    {
+      "view": "aktie-nvda",
+      "width": 1440,
+      "finding": "Name weicht vom Verzeichnis ab"
+    },
+    {
+      "view": "aktie-nvda",
+      "width": 390,
+      "finding": "Name weicht vom Verzeichnis ab"
+    }
+  ],
+  "branchFindings": [
+    {
+      "view": "aktie-nvda",
+      "width": 1440,
+      "finding": "Name weicht vom Verzeichnis ab"
+    },
+    {
+      "view": "aktie-nvda",
+      "width": 390,
+      "finding": "Name weicht vom Verzeichnis ab"
+    }
+  ],
+  "identicalFindings": true,
+  "mainChecks": 96,
+  "branchChecks": 96,
+  "budgetChecks": 8,
+  "budgetsPass": true,
+  "accessibilityPages": 84,
+  "accessibilityViolations": 0,
+  "parallelFix": 892,
+  "uiModified": false,
+  "scope": "Exact release browser journey/layout checks; final reader cache refinements are additionally covered by service tests and do not activate UI"
+}
