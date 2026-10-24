@@ -1,0 +1,77 @@
+{
+  "sourceMain": "741dea5a4",
+  "implementationCommit": "f9d3bc252",
+  "observedAt": "2026-10-24T09:52:40.211414+00:00",
+  "fullQuant": {
+    "command": "node --test 'quant/tests/*.test.mjs'",
+    "runtime": "v22.23.4",
+    "tests": 2833,
+    "pass": 2833,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 537587.717648
+  },
+  "focused": {
+    "runtime": "v22.23.4",
+    "tests": 40,
+    "pass": 40,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 3031.663087
+  },
+  "coreCI": {
+    "tests": 260,
+    "pass": 260,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 114187.240067
+  },
+  "shellNavigationBudget": {
+    "tests": 23,
+    "pass": 23,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 677.197917
+  },
+  "baseline": {
+    "tests": 67,
+    "pass": 67,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 8118.052205
+  },
+  "independentVerification": "ALL_FIVE_NVDA_PERIODS_PYTHON_PASS_AND_NODE22_NODE24_FULL_REPORT_DEEP_EQUAL",
+  "readerCoverage": {
+    "checked": 6174,
+    "states": {
+      "AVAILABLE_LIMITED": 4445,
+      "BLOCKED": 1729
+    },
+    "reasons": {
+      "HISTORICAL_LISTING_NOT_UNIQUELY_MAPPED_TO_PRODUCT": 6
+    },
+    "servedResults": 4445,
+    "financialDataOnBlockedResponses": 0
+  },
+  "browser": "BASELINE_FAILURE_TWO_IDENTICAL_NAMES_MAIN_AND_BRANCH_96_CHECKS_8_BUDGETS_84_AXE_PAGES",
+  "notRunLocally": [
+    "Separate full Shell/direct-link browser suites (Chromium/WebKit); no shell or route changes. Quant browser QA Chromium was executed."
+  ],
+  "fixedRegressions": [
+    "Internal execution model incorrectly entered published methodology catalog (2 tests); moved private, no test exceptions.",
+    "Early As-of must satisfy existing next-week warm-up admission before valuation window."
+  ],
+  "syntax": "PASS",
+  "json": "PASS",
+  "diffCheck": "PASS",
+  "certification": "NOT_CERTIFIED",
+  "publiclyActivated": false,
+  "remoteChecks": "DRAFT_PR_CHECKS_AND_REVIEW_REQUIRED_NO_RELEASE_APPROVAL",
+  "productionDataOrPipelinesChanged": false,
+  "uiDesignChanged": false
+}
