@@ -760,11 +760,22 @@
     }
     /* Laufender Handelstag: der Chart meldet den letzten Kurs. Der Kopf wechselt dann von "Schlusskurs" auf
        "Live"/"Verzögert" mit Uhrzeit - es bleibt EIN Kurs. */
+    /* Anzeigewaehrung (Chartstandard, Vorgabe EUR) ueber die FX-Schicht des Charts (VUQuantChart.display):
+       ChartStandard.displayHead - Schluss mit dem Kurs seines Tages, laufender Kurs mit dem juengsten. */
+    var liveShown = null;
+    function inAnzeige(fn) { var Q = global.VUQuantChart; if (Q && Q.display) Q.display().then(function (CS) { if (CS) fn(CS); }); }
     function setLive(p) {
+      liveShown = p;
       var next = { value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when };
-      if (headApi && headApi.setPrice) headApi.setPrice(next);
+      if (headApi && headApi.setPrice) { headApi.setPrice(next); inAnzeige(function (CS) { headApi.setPrice(CS.displayHead(next)); }); }
       else if (quote) quote.replaceChildren(el("b", { class: "num", text: X.money(p.price, "USD") }), el("small", { text: p.when + " · USD" }));
     }
+    function showClose() {
+      var day = s.price && (s.price.asOf || (last && last[0]));
+      if (closePrice && headApi && headApi.setPrice && day) inAnzeige(function (CS) { if (!liveShown) headApi.setPrice(CS.displayHead(closePrice, prev, day)); });
+    }
+    showClose();
+    inAnzeige(function (CS) { disposers.push(CS.currencyControl(null, function () { if (liveShown) setLive(liveShown); else showClose(); })); });
     var idn = VM.identityNote(s);
     if (idn) heroHost.append(el("div", { class: "vu-alert qx-notice qv-alert", role: "note", dataset: { conflict: idn.kind || "" } }, [
       el("div", {}, [el("b", { text: idn.title }), el("p", { text: idn.shown }), el("p", { class: "qx-small", text: idn.why })])]));
