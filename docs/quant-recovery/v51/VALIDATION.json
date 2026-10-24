@@ -1,7 +1,7 @@
 {
   "schemaVersion": "quant-backtest-v51-validation-1.0.0",
   "observedAt": "2026-10-24T17:43:46.839640+00:00",
-  "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "main": "332bc587deeb42cb202fda3eddcd80ac817c9b8c",
   "testedImplementationCommit": "2ba9c8fb51044d9177de894d9c15b6433afe611f",
   "branch": "codex/quant-backtest-v51-consolidation",
   "publicActivation": false,
@@ -199,5 +199,14 @@
     "No production refresh, workflow_dispatch, provider fetch, backfill or deployment",
     "No public/personal authentication endpoint or frontend integration implemented",
     "Remote PR checks are recorded separately and do not inherit local PASS status"
-  ]
+  ],
+  "mainForFullNodeSuite": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "finalRebaseNote": "Only SEC successor Python/config/test changes from owner PR #901; Node suite code/data/UI verified byte-identical to the fully tested snapshot. Affected consumer tests (31) and boundary/selection (9) repeated after rebase; no full-suite pass falsely attributed to another execution.",
+  "postLateRebase": {
+    "pythonConsumerTests": 31,
+    "boundaryAndSelectionTests": 9,
+    "state": "PASS",
+    "newSecConfigJSON": "PASS"
+  },
+  "draftPR": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/906"
 }

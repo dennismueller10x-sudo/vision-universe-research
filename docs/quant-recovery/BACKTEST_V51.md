@@ -6,7 +6,9 @@ Der reale, deterministische Einzelaktien-Wochenbacktest ist über den bestehende
 
 Die Einschränkungen sind ausdrücklich Bestandteil des Vertrags: PRICE_RETURN / NOT_CERTIFIED, eingeschränkte Datenqualität, modellierte Ausführung, unvollständige historische Universen und fehlende Daten anderer Backtest-Arten. Der noch erforderliche autorisierte Auslieferungs-/UI-Pfad wird hier nicht aktiviert.
 
-Aktuelle Main-Basis: `6d55ddab641403588f9ba220b468de0a34a23174`. Gestartet wurde auf `a97a9f034` nach Merge des verbindlichen UI-Refreshs #873; zunächst wurde auf `864cd303d` und abschließend nach #869/#900/#903 konfliktfrei auf den aktuellen Main rebasiert. Quant-Suite, Core, Datenverträge und Build-/Browser-Prüfungen wurden auf dieser Basis erneut ausgeführt; konkrete Abschlusswerte stehen in [VALIDATION.json](v51/VALIDATION.json). Der abschließende SEC-Datenlauf `6d55ddab6` wurde ebenfalls konfliktfrei übernommen: null geänderte eingefrorene Backtest-Abhängigkeiten und null geschützte UI-Dateien. Die fremden Produktänderungen werden unverändert geerbt, nicht Teil des Konsolidierungsdiffs. Branch: `codex/quant-backtest-v51-consolidation`.
+Aktuelle Main-Basis: `332bc587deeb42cb202fda3eddcd80ac817c9b8c`. Gestartet wurde auf `a97a9f034` nach Merge des verbindlichen UI-Refreshs #873; zunächst wurde auf `864cd303d` und abschließend nach #869/#900/#903 konfliktfrei auf den aktuellen Main rebasiert. Quant-Suite, Core, Datenverträge und Build-/Browser-Prüfungen wurden auf dieser Basis erneut ausgeführt; konkrete Abschlusswerte stehen in [VALIDATION.json](v51/VALIDATION.json). Der abschließende SEC-Datenlauf `6d55ddab6` wurde ebenfalls konfliktfrei übernommen: null geänderte eingefrorene Backtest-Abhängigkeiten und null geschützte UI-Dateien. Die fremden Produktänderungen werden unverändert geerbt, nicht Teil des Konsolidierungsdiffs. Branch: `codex/quant-backtest-v51-consolidation`. Draft-PR: [#906](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/906).
+
+Der letzte Main-Merge #901 enthält ausschließlich den SEC-Nachfolge-CIK-Consumer (Python, Konfiguration und dessen Tests). Nach dessen kontrolliertem Rebase bestehen 31 Consumer-Tests sowie neun Boundary-/Selection-Tests. Code, Daten und UI-Eingaben der zuvor vollständig ausgeführten Node-Suite und des Browserlaufs auf `6d55ddab6` sind bytegleich geblieben; [latest-main-impact.json](v51/latest-main-impact.json) führt die verglichenen Pfade auf. Kein anderer vollständiger Lauf wird nachträglich als auf einem anderen Commit ausgeführt ausgegeben.
 
 ## 1. Implementiert und konsolidiert
 
@@ -154,6 +156,8 @@ Private Referenzartefakte: `/workspace/scratch/backtest-v51/all-listings`. Die �
 ## 8. PR-Konsolidierung und Release
 
 Die vorhandenen Aufrufe sind kompatibel; alte gespeicherte Generationen ohne die neue Scope-Bindung müssen vor Verwendung durch diesen Reader neu materialisiert werden. Keine synthetische Nachbeschriftung. Die geprüfte vollständige Generation ist `d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e`.
+
+Remote-Stand nach PR-Erstellung: GitHub-CI läuft noch; Vercel meldet das bestehende Build-Ratenlimit. Pflichtchecks und Reviews bleiben offen. Die Protection-API ist mit der Integration nicht vollständig lesbar (HTTP 403); keine Umgehung.
 
 Die sieben bisherigen PRs sind zum Prüfstichtag weiterhin offen, mit null eingetragenen menschlichen Reviews. Sieben identische stabile Git-Patch-IDs kommen in mehreren PR-Strängen vor; die Matrix führt die betroffenen Commit-SHAs auf. Keine Quelle ist als vollständiger Kopf bereits Vorfahr des geprüften Main. Ihre unveränderten Kopf-SHAs, Checks, aufgenommenen/ausgelassenen Teile und lokale Merge-Analysen stehen in [dependency-matrix.json](v51/dependency-matrix.json).
 

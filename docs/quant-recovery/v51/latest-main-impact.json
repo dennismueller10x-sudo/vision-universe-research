@@ -7,5 +7,34 @@
   "changedProtectedUIFiles": [],
   "generationRetained": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
   "scope": "Scheduled SEC consumer/derived data update; no backend code or UI change",
-  "finalFullSuiteLog": "latest-main-quant.log"
+  "finalFullSuiteLog": "latest-main-quant.log",
+  "priorFullyTestedMain": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "finalMain": "332bc587deeb42cb202fda3eddcd80ac817c9b8c",
+  "lateMainMerge": 901,
+  "lateChangedFiles": [
+    "quant/config/sec-successor-issuers.json",
+    "scripts/quant/cli.py",
+    "scripts/quant/sec/consumer.py",
+    "scripts/quant/tests/test_consumer_successor.py"
+  ],
+  "unchangedNodeSuiteCodeDataAndUIAgainstTestedCommit": "2ba9c8fb5",
+  "changedFilesInVerifiedScopes": [],
+  "verifiedScopes": [
+    "quant/api",
+    "quant/engines",
+    "quant/tests",
+    "quant/data",
+    "quant/methodology",
+    "quant/config/development-preview.json",
+    "quant/config/feature-gates.json",
+    "core",
+    "quant/app",
+    "quant/ui"
+  ],
+  "postLateRebase": {
+    "pythonConsumerTests": 31,
+    "boundaryAndSelectionTests": 9,
+    "state": "PASS",
+    "newSecConfigJSON": "PASS"
+  }
 }
