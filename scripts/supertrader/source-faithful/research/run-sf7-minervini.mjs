@@ -27,7 +27,14 @@ import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlat
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.0.0';
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.1.0';
+/** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
+const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs'];
+export function sf7CodeSha256() {
+  const h = crypto.createHash('sha256');
+  for (const f of SF7_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
+  return h.digest('hex');
+}
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 /** authoritative REF ledger hashes (completion/sf6-run-facts.mjs; run 39746264325) */
 export const AUTHORITATIVE_REF_LEDGER = Object.freeze({ SEPA: '1ca5239107bd8bf1da18dfe730329878d21f9d8d2e6233e0ab5645d1f32d3326', POWER_PLAY: '877ceb333831fdcbc25b34b81b254bbdf9845dcc89966d26cb93e595490d0fb3' });
@@ -55,7 +62,7 @@ export function diffTrades(ref, alt) {
 }
 
 /** REF + 7.0 variants + diagnostics for one dataset. */
-export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {} } = {}) {
+export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false } = {}) {
   const pub = { version: SF7_MINERVINI_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
@@ -67,10 +74,11 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     ps.ref.matchesAuthoritativeLedger = ps.ref.ledgerSha256 === AUTHORITATIVE_REF_LEDGER[strategy];
     const ss = (sealed.strategies[strategy] = { ref: runMetrics(ref, { spyTR: dataset.spyTR }), variants: {} });
     log(`${strategy} REF: trades ${ref.trades.length}, ledger ${ps.ref.matchesAuthoritativeLedger ? 'EQUAL' : 'DIFFERENT'}`);
+    if (requireAuthoritativeRef && !ps.ref.matchesAuthoritativeLedger) throw new Error(`REF_NOT_REPRODUCED:${strategy}`); // fail before the variants run
     // diagnostics on the reference trades (never a gate, never a variant choice)
     const decl = ref.trades.map((t) => largestDeclineSignal(byId.get(t.id).bars, t));
     ps.diagnostics = {
-      largestDeclineSignal: { ...tally(decl, (x) => x.status), signalStrictlyBeforeExit: decl.filter((x) => x.status === 'SIGNAL' && x.sessionsBeforeExit > 0).length, rule: 'B12 PDF 130 (MA-MIN7-STAGE2-START)' },
+      largestDeclineSignal: { ...tally(decl, (x) => x.status), signalStrictlyBeforeExit: decl.filter((x) => x.status === 'SIGNAL' && x.sessionsBeforeExit > 0).length, openTrades: decl.filter((x) => /OPEN_TRADE$/.test(x.status)).length, rule: 'B12 PDF 130 (MA-MIN7-STAGE2-START)' },
       halfAverageGainStop: { ...halfAverageGainStopCheck(ref.trades), rule: 'B12 PDF 398-399 (MA-MIN7-AVG-GAIN)' },
     };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
@@ -116,10 +124,9 @@ async function main() {
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
   // same input construction as run-sf4-lifecycle (sec-pit attached; the lifecycle does not use it as a gate)
   const dataset = datasetFromPit(pit); attachSecPit(dataset, secPit);
-  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  const r = sf7Part(dataset, { log });
+  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const full = !LIMIT && !smoke;
-  if (full) for (const s of ['SEPA', 'POWER_PLAY']) if (!r.pub.strategies[s].ref.matchesAuthoritativeLedger) throw new Error(`REF_NOT_REPRODUCED:${s}`);
+  const r = sf7Part(dataset, { log, requireAuthoritativeRef: full });
   const pub = { schema: 'supertrader-sf7-minervini-public-1.0.0', receipt, minervini: r.pub };
   fs.mkdirSync(OUT, { recursive: true });
   const tag = `sf7-minervini${full ? '' : '-smoke'}`;

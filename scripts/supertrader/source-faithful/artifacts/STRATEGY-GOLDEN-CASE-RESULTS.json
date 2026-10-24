@@ -36,7 +36,7 @@
   "pass": 120,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 320,
+  "testsRun": 321,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -1036,7 +1036,7 @@
    "result": "PASS"
   },
   {
-   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER-EXACT",
+   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER",
    "strategyIds": [
     "SF_MINERVINI_SEPA_VCP",
     "SF_MINERVINI_POWER_PLAY"
@@ -3306,7 +3306,7 @@
   },
   {
    "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
-   "name": "SF7-MIN-STAGGER-EXACT: staggered stops redistribute, never increase the planned risk (MIN-W18-1, English original)",
+   "name": "SF7-MIN-STAGGER: staggered stops redistribute, never increase the planned risk (MIN-W18-1, English answer recorded by #709)",
    "result": "PASS"
   },
   {
@@ -3362,6 +3362,11 @@
   {
    "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
    "name": "SF7-MIN-SOURCE-INVENTORY: artifact = fresh build, every contract rule and model assumption classified with a recorded page, all 132 #709 rows used, no book text",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on the same dataset; public part has counts and hashes only; code pinned",
    "result": "PASS"
   }
  ]

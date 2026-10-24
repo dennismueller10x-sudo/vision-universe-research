@@ -33,7 +33,7 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:sf5-lifecycle]       Supertrader-5.0-Lifecycles auf der gemeinsamen Engine (source-faithful/research/run-sf5-lifecycle.mjs),
 #   [supertrader-validation:sf5-lifecycle-smoke] gleiche Bedingungen; Modellstudien, keine Strategierendite, keine Orders
 #   [supertrader-validation:sf7-minervini]       Supertrader-7.0-Minervini-Quellenvervollstaendigung (source-faithful/research/run-sf7-minervini.mjs):
-#   [supertrader-validation:sf7-minervini-smoke] REF muss die 4.0-Ledger reproduzieren; Varianten Flat Base (B12 S. 306) und PP mit VCP (B12 S. 341)
+#   [supertrader-validation:sf7-minervini-smoke] REF muss die 4.0-Ledger reproduzieren; SEPA-Varianten Flat Base (B12 S. 306), TT6 25 % und RS-Linie (B03 S. 143)
 #   [supertrader-validation:sf6-integrity]       Supertrader-6.0-V4-D1-Eingrenzung (source-faithful/research/run-sf6-integrity.mjs):
 #   [supertrader-validation:sf6-integrity-smoke] Referenzen auf BASE / DQ-K5 / DQ-K3, gleiche Bedingungen, keine Datenkorrektur
 #   [supertrader-validation:sf6-validation]         Supertrader-6.0-Validierung (source-faithful/research/run-sf6-validation.mjs): Kostenstufen,
@@ -290,7 +290,7 @@ jobs:
           [ "$MODE" = sf5-lifecycle-smoke ] && extra="--smoke-snapshot"
           node scripts/supertrader/source-faithful/research/run-sf5-lifecycle.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
           cat "$RUNNER_TEMP/val"/*.public.json
-      - name: Supertrader 7.0 Minervini-Quellenvervollstaendigung (REF + Flat-Base / PP-VCP), diagnostisch (Snapshot + research-v1, verschluesselt)
+      - name: Supertrader 7.0 Minervini-Quellenvervollstaendigung (REF + Flat Base / TT6-25 / RS-Linie), diagnostisch (Snapshot + research-v1, verschluesselt)
         if: steps.mode.outputs.mode == 'sf7-minervini' || steps.mode.outputs.mode == 'sf7-minervini-smoke'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}

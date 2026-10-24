@@ -11,7 +11,7 @@
    "sha256": "ad332a52d3e9bfa4d9e34aa11123a994a16a15956dba3fe3d93c97d066ba16d2",
    "rows709": 8,
    "findings7": 95,
-   "availableToday": "AVAILABLE_BYTE_IDENTICAL"
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
   },
   {
    "sourceId": "B07",
@@ -22,7 +22,7 @@
    "sha256": "d3fd7f0f1724e6f3ee214a6b2bd5ae40b98cb9da85c273057642638aaab1118a",
    "rows709": 25,
    "findings7": 73,
-   "availableToday": "AVAILABLE_BYTE_IDENTICAL"
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
   },
   {
    "sourceId": "B12",
@@ -33,7 +33,7 @@
    "sha256": "2ba966edc23215a897f4529e616c0c0c4f99b242eafae9826dfbbd0c45a54697",
    "rows709": 90,
    "findings7": 178,
-   "availableToday": "AVAILABLE_BYTE_IDENTICAL"
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
   },
   {
    "sourceId": "W-MIN18",
@@ -104,7 +104,14 @@
   "MIN-SF-STAGGER": [
    {
     "cls": "SOURCE_PRESENT_ENGLISH",
-    "why": "staggered stops redistribute, never increase the planned risk (English, original wording checked): SOURCE_EXACT",
+    "why": "staggered stops redistribute, never increase the planned risk (English answer recorded by #709); SOURCE_DERIVED, because the wording is not re-verifiable here and no quote hash is held",
+    "evidence": [
+     "MIN-W18-1"
+    ]
+   },
+   {
+    "cls": "PROJECT_AVAILABILITY",
+    "why": "W-MIN18 page not re-fetchable from the project (HTTP 403, archive unreachable)",
     "evidence": [
      "MIN-W18-1"
     ]
@@ -337,7 +344,7 @@
   "MIN-SF-STOP": [
    {
     "cls": "SOURCE_PRESENT_ENGLISH",
-    "why": "maximum about 8-10 %, no volatility-widened stops (English)",
+    "why": "generally about 8-10 % as the maximum (STRONG_PREFERENCE), no volatility-widened stops (English answer)",
     "evidence": [
      "MIN-W18-7",
      "MIN-W18-8"
@@ -742,6 +749,7 @@
  },
  "classCounts": {
   "SOURCE_PRESENT_ENGLISH": 6,
+  "PROJECT_AVAILABILITY": 1,
   "OPERATIONALIZATION_OPEN": 20,
   "SOURCE_PRESENT_TRANSLATION": 21,
   "SOURCE_CONFLICT_TRANSLATION": 1,
@@ -840,7 +848,7 @@
    "source": "B03 PDF 143"
   }
  ],
- "statusChange": "no reference rule changes status; SOURCE_EXACT only MIN-SF-STAGGER (W-MIN18); every book rule stays translation-only (CC-1 unchanged)",
+ "statusChange": "no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)",
  "validation": {
   "ok": true,
   "errors": []

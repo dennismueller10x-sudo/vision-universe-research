@@ -791,15 +791,15 @@
      "psr709": [
       "MIN-W18-1"
      ],
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "essential": false,
      "gate": true,
      "rule": "staggered stops redistribute the planned risk and never increase it: the planned loss of all tranches is at most the planned loss of the single-stop plan, and the tranches cover the position",
-     "derivation": null,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
      "reason": null,
      "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
      "tests": [
-      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER-EXACT"
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
      ]
     },
     {
@@ -866,15 +866,15 @@
      "psr709": [
       "MIN-W18-1"
      ],
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "essential": false,
      "gate": true,
      "rule": "staggered stops redistribute the planned risk and never increase it: the planned loss of all tranches is at most the planned loss of the single-stop plan, and the tranches cover the position",
-     "derivation": null,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
      "reason": null,
      "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
      "tests": [
-      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER-EXACT"
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
      ]
     },
     {

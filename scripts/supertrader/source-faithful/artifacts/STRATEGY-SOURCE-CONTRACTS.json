@@ -4149,7 +4149,7 @@
     ]
    },
    "knownLimitations": [
-    "translation-only source wording for every book rule; English original wording only for the nine W-MIN18 answers (MIN-SF-STAGGER is SOURCE_EXACT, it does not touch the reference lifecycle)",
+    "translation-only source wording: no rule is SOURCE_EXACT; English corroboration only from the nine W-MIN18 answers recorded by #709 (not re-verifiable from the project today)",
     "Trend Template criterion 8 (IBD RS >= 70) is DATA_BLOCKED; a VU percentile is not the IBD rating",
     "SEPA selection is manual by design (MIN-PROCESS-04); the full method cannot be measured on history"
    ],
@@ -4166,13 +4166,13 @@
      "candidate": "C06",
      "executableRule": "MIN-SF-STAGGER",
      "kind": "STOP",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
      "tests": [
-      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER-EXACT"
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
      ],
-     "derivation": null,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
      "reason": null
     },
     {
@@ -5223,13 +5223,13 @@
      "candidate": "C07",
      "executableRule": "MIN-SF-STAGGER",
      "kind": "STOP",
-     "status": "SOURCE_EXACT",
+     "status": "SOURCE_DERIVED",
      "targetStatus": null,
      "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
      "tests": [
-      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER-EXACT"
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
      ],
-     "derivation": null,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
      "reason": null
     },
     {

@@ -23,7 +23,8 @@ Maschinenlesbar und generiert:
   - Aus *Think & Trade Like a Champion* (272 Seiten) kamen nur 8 Zeilen, alle von den Seiten 193–232.
   - Die Neulesung ergibt 346 relevante Befunde. 154 davon deckt keine #709-Zeile ab, 190 nur teilweise.
 - **Was sich dadurch ändert:**
-  - Eine Regel ist erstmals `SOURCE_EXACT`: Gestaffelte Stops erhöhen das geplante Risiko nie (englischer Originalwortlaut).
+  - Die neun englischen W-MIN18-Antworten stützen jetzt Stop, Positionsgröße, Verkauf und Kursbestätigung. Neu ist die Prüfregel für gestaffelte Stops: Sie erhöhen das geplante Risiko nie.
+  - Keine Regel wird `SOURCE_EXACT`. Nach dem unabhängigen Review bleibt auch die Staffel-Stop-Regel `SOURCE_DERIVED`, weil der englische Wortlaut heute nicht erneut prüfbar ist und kein Zitat-Hash vorliegt.
   - Drei Quellendifferenzen sind präzise belegt; eine davon ist zugunsten der Referenz aufgelöst.
   - Drei neue, quellengestützte Forschungsvarianten und zwei Diagnosen kommen hinzu.
   - Kein Regelstatus der Referenz wird aufgewertet. Die Buchregeln bleiben übersetzungsabhängig. CC-1 ist weiterhin nicht erfüllt, weil der englische Buchwortlaut im Projekt fehlt.
@@ -95,15 +96,15 @@ Ich habe jeden Befund, der eine Vertragsregel, Variante oder Diagnose verändert
 
 | Regel | vorher | jetzt | Beleg |
 |---|---|---|---|
-| Gestaffelte Stops (neu `MIN-SF-STAGGER`) | – | **SOURCE_EXACT**: Staffeln verteilen das geplante Risiko um, erhöhen es nie | W-MIN18 (englisch, HIGH) |
-| Maximaler Stop 10 % (`MIN-SF-STOP`, `-PP-STOP`) | nur Übersetzung | **englisch bestätigt** („generally 8–10 %“, keine volatilitätsweiten Stops). Dieselbe Grenze steht in B12 (S. 370, 399), B07 (S. 72, 74) und B03 | W-MIN18, B12, B07 |
+| Gestaffelte Stops (neu `MIN-SF-STAGGER`) | – | **SOURCE_DERIVED, englisch belegt**: Staffeln verteilen das geplante Risiko um, erhöhen es nie. Nicht `SOURCE_EXACT`, solange der Wortlaut nicht erneut mit Hash geprüft ist | W-MIN18 (englisch, HIGH, in #709 geprüft) |
+| Maximaler Stop 10 % (`MIN-SF-STOP`, `-PP-STOP`) | nur Übersetzung | **englisch gestützt**: etwa 8–10 % als allgemeine Obergrenze (Präferenz), keine volatilitätsweiten Stops. Die absolute 10 %-Grenze selbst steht in B12 (S. 370, 399), B07 (S. 72, 74) und B03 und bleibt übersetzungsabhängig | W-MIN18, B12, B07 |
 | Positionsgröße / Risiko je Trade (`MIN-SF-SIZE`) | Kontext | 1,25–2,5 % „sollte nicht überschreiten“ (B03 S. 193); Pilotpositionen und progressive Exposure englisch belegt | B03, W-MIN18 |
 | Trend Template 1–4, 7, 8 | eine Übersetzung | **zwei unabhängige Übersetzungen zweier Bücher** (B12 2013, B03 2017) mit identischen Zahlen | B12 S. 114, B03 S. 143 |
 | Trend Template „über dem 52-Wochen-Tief“ | 30 % | **Übersetzungs- bzw. Ausgabendifferenz belegt**: B12 30 %, B03 25 %, B12 S. 101 „25 bis 30 %“. Referenz bleibt 30 %, Variante `ALT-SEPA-TT6-25` | B12, B03 |
 | Relative Stärke (TT-8) | DATA_BLOCKED | IBD-Rating bleibt gesperrt (Daten). Minervinis **eigene RS-Linien-Bedingung** ist berechenbar: nicht im Abwärtstrend, ≥ 6 Wochen steigend. Variante `ALT-SEPA-RS-LINE` | B03 S. 143, 168 |
 | Power Play: Enge ≤ 10 % oder VCP (`MIN-SF-PP-TIGHT`) | Übersetzung | **Konflikt aufgelöst**: B12 S. 341 verlangt VCP-Merkmale, B03 S. 189 nimmt Basen ≤ 10 % Tiefe davon aus. Das ist genau die Referenzlesart; keine Variante nötig | B12, B03 |
 | Power Play: Korrektur 20–25 % | Spanne | B03: höchstens 20 %, bei niedrigpreisigen Titeln etwa 25 %. „Niedrigpreisig“ ist nicht beziffert | B03 S. 189 |
-| VCP / Flat Base | Flat Bases ausgeschlossen (strikter Proxy) | Flat Base ohne eigenen Pivot: Kauf über dem Basishoch bei ≤ 10–15 % Korrektur. Variante `ALT-SEPA-FLAT-BASE` | B12 S. 306 |
+| VCP / Flat Base | Flat Bases ausgeschlossen (strikter Proxy) | Flat Base ohne eigenen Pivot: Kauf über dem Basishoch bei ≤ 10–15 % Korrektur. Variante `ALT-SEPA-FLAT-BASE` erkennt bis 15 %, handelt aber nur bis 10 %: Der Stop liegt am Basistief, und die unveränderte 10 %-Grenze des geplanten Verlusts gilt (gezählt als `flatBaseAboveStopBound`) | B12 S. 306 |
 | Einstand / Stop-Anhebung | 3R | 2–3R (B12 S. 410); B03 S. 126: bei 3R anheben, bei 2R mindestens Einstand (Übersetzungsmarkierung). Die bestehenden Varianten FREEROLL-2R/3R decken beide Enden ab | B12, B03 |
 | Verkauf | manuell | konkrete Signale belegt: größter Tages- oder Wochenrückgang seit Stage-2-Beginn (B12 S. 130), Verstoßliste (B07 S. 91, B03 S. 47–51), 2–6R (B07 S. 90). Diagnose `largestDeclineSignal` | B12, B07, B03 |
 | Fundamentals bestätigen nur mit Kurs (`MIN-SF-PRICE-CONFIRM`) | Übersetzung | englisch belegt; maschinell abgeleitet: kein Einstieg ohne Pivot-Durchbruch | W-MIN18 |
@@ -115,7 +116,8 @@ Jede Vertragsregel und jede Modellannahme ist einer Klasse zugeordnet (Artefakt 
 | Klasse | Anzahl | Bedeutung |
 |---|---|---|
 | SOURCE_PRESENT_TRANSLATION | 21 | Regel steht vollständig in den Büchern; nur der englische Wortlaut fehlt im Projekt |
-| SOURCE_PRESENT_ENGLISH | 6 | Regel steht in Minervinis eigenen englischen Worten (W-MIN18) |
+| SOURCE_PRESENT_ENGLISH | 6 | Regel ist in Minervinis englischen Antworten (W-MIN18, Paraphrase aus #709) belegt |
+| PROJECT_AVAILABILITY | 1 | Material existiert, ist hier aber nicht abrufbar (W-MIN18-Seite) |
 | SOURCE_CONFLICT_TRANSLATION | 1 | Übersetzungen drucken verschiedene Werte (52-Wochen-Tief) |
 | OPERATIONALIZATION_OPEN | 20 | Regel vorhanden, mathematische Definition fehlt |
 | METHOD_DISCRETION | 12 | Minervini beschreibt den Schritt selbst als Urteil |
@@ -169,7 +171,7 @@ Weitere Bausteine:
 - **Diagnosen auf den REF-Trades** (nur Zählung, nie Gate):
   - größter Tagesrückgang seit Stage-2-Beginn (B12 S. 130);
   - geplanter Verlust gegenüber der Hälfte des PIT-Durchschnittsgewinns (B12 S. 398–399).
-- **Modellannahmen** `MA-MIN7-*` sind vor jedem 7.0-Ergebnis festgeschrieben (Registry `a69ea6f4…`, Test).
+- **Modellannahmen** `MA-MIN7-*` sind vor dem Lesen jedes 7.0-Ergebnisses festgeschrieben (Registry `4404f759…`, Code-Fingerabdruck `e2604be2…`, beide im Test gepinnt). Die Version 1.1.0 setzt die Befunde des unabhängigen Reviews um (siehe Abschnitt 9).
 - **Lauf `sf7-minervini`:** REF muss die maßgeblichen 4.0-Ledger-Hashes reproduzieren, sonst bricht der Lauf ab. Ergebnis: siehe Abschlussbericht 7.0.
 
 ## 8. Was bleibt
@@ -177,3 +179,18 @@ Weitere Bausteine:
 - **CC-1 für SEPA und Power Play:** Der englische Buchwortlaut fehlt im Projekt. Entweder stellen Sie rechtmäßig eine englische Ausgabe bereit, oder Sie entscheiden ausdrücklich, ob zwei übereinstimmende Übersetzungen als Beleg genügen. Ich habe diese Entscheidung nicht vorweggenommen.
 - **CC-3:** Die manuellen Entscheidungen bleiben Ermessen der Methode.
 - **CC-4:** Das IBD-RS-Rating bleibt gesperrt. Die RS-Linie ist eine Forschungsvariante, kein Ersatz.
+
+## 9. Unabhängiges Review (Code, ohne Kenntnis dieses Berichts)
+
+| Befund | Schwere | Umsetzung |
+|---|---|---|
+| Staffel-Stop als SOURCE_EXACT ohne heute prüfbaren Beleg | HIGH | auf SOURCE_DERIVED mit englischer Bestätigung zurückgenommen; kein Minervini-Regelstatus ist SOURCE_EXACT; Test prüft das |
+| Flat-Base-Variante handelt faktisch nur bis 10 % | MEDIUM | dokumentiert; Zähler `flatBaseAboveStopBound` |
+| Rückgangs-Diagnose las über einen Ausstieg ohne Balken hinaus; offene Trades falsch gezählt | MEDIUM | Suche endet am letzten Balken bis zum Ausstiegsdatum; offene Trades getrennt; Tests |
+| Lauf-Beleg ohne Fingerabdruck des 7.0-Codes | MEDIUM | `sf7CodeSha256` im Beleg, im Test gepinnt |
+| Runner ohne Test | MEDIUM | Test: REF = 4.0-`lifecyclePart`-REF, öffentlicher Teil nur Zählungen und Hashes |
+| 10 %-Grenze als englisch verifiziert markiert | MEDIUM | wieder `translationUnverified`; englisch nur „etwa 8–10 % allgemein“ |
+| Rückübersetzte Formulierungen in Anführungszeichen | MEDIUM | als Paraphrase gekennzeichnet, Anführungszeichen entfernt |
+| RS-Linie über 30 eigene Balken statt 30 Börsentage; Einstiegstag ungeprüft; Break-even-Tranche abgelehnt; Workflow-Text; Testaussagen | LOW | alle behoben |
+
+Offen sind keine HIGH- und keine MEDIUM-Befunde.

@@ -209,7 +209,7 @@ SEPA: Trend Template qualification and VCP evidence as a machine screen, then ma
 
 | Quelle | Ausgabe | Seite | #709-Regel | Modalität/Conf./geprüft | Ausführbare Regel | Status | Code | Tests (Ergebnis) |
 |---|---|---|---|---|---|---|---|---|
-| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_EXACT | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER-EXACT (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_DERIVED | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER (PASS) |
 | W-MIN18 | Min ervin i own interview 2018 | fundamentals answer | MIN-W18-5 | HARD/HIGH/ja | MIN-SF-PRICE-CONFIRM | SOURCE_DERIVED | `research/minervini-lifecycle.mjs#fillBuyOrder` | SF7-MIN-PRICE-CONFIRM (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 66 | MIN-PROCESS-15 | STRONG_PREFERENCE/MEDIUM/nein | MIN-SF-SIMPLE | SOURCE_DERIVED | `methods/minervini.mjs#sepaScreen` | GC-MIN-SEPA-NO-FUNDAMENTAL-GATE (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 61 | MIN-PROCESS-01 | HARD/MEDIUM/nein | MIN-SF-PROCESS | SOURCE_DERIVED | `methods/minervini.mjs#sepaScreen` | GC-MIN-SEPA-CANDIDATE (PASS) |
@@ -264,7 +264,7 @@ Power Play: >= 100 % in under eight weeks starting on strong volume, then a tigh
 
 | Quelle | Ausgabe | Seite | #709-Regel | Modalität/Conf./geprüft | Ausführbare Regel | Status | Code | Tests (Ergebnis) |
 |---|---|---|---|---|---|---|---|---|
-| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_EXACT | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER-EXACT (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_DERIVED | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 341 | MIN-PP-01 | CONTEXTUAL/MEDIUM/nein | MIN-SF-PP-NOFUND | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-CANDIDATE (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 342 | MIN-PP-03 | CONTEXTUAL/MEDIUM/nein | MIN-SF-PP-DURATION | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-SHORT-CONSOLIDATION (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 342 | MIN-PP-02 | HARD/MEDIUM/nein | MIN-SF-PP-RUNUP | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-CANDIDATE (PASS)<br>GC-MIN-PP-SLOW-RUN (PASS) |

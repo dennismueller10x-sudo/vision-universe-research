@@ -62,11 +62,8 @@ test('SF4-LIFECYCLE-MATRIX: Matrix valide, Artefakt und Dokument = frischer Buil
     assert.equal(rd.manualReview.required, true);
     assert.equal(rd.mechanicalCompleteness.lifecycle, 'MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS');
   }
-  // the contracts keep every rule status (no upgrade by the lifecycle); the one SOURCE_EXACT rule is the 7.0 source
-  // inventory's MIN-SF-STAGGER (W-MIN18, English original), a reviewer-plan check outside the lifecycle
-  assert.equal(fresh.strategies.SEPA.readiness.sourceFidelity.contractRuleStatuses.SOURCE_EXACT, 1);
-  const { MINERVINI_SEPA } = await import('../source-faithful/contracts/minervini.mjs');
-  assert.deepEqual(MINERVINI_SEPA.rules.filter((r) => r.status === 'SOURCE_EXACT').map((r) => [r.id, r.psr709]), [['MIN-SF-STAGGER', ['MIN-W18-1']]]);
+  // the contracts keep every rule status (no upgrade by the lifecycle)
+  assert.equal(fresh.strategies.SEPA.readiness.sourceFidelity.contractRuleStatuses.SOURCE_EXACT, undefined);
   assert.equal(fresh.strategies.SEPA.readiness.sourceFidelity.contractRuleStatuses.DATA_BLOCKED, 1);
 });
 

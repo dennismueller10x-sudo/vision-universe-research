@@ -33,7 +33,7 @@ test('SF5-OD-REGISTRY: genau die vier Entscheidungen, je mit Wirkung und Grenze'
 
 test('SF5-OD-NO-OTHER-STATUS-CHANGE: ausser RAS-SF-ENTRY / RAS-SF-STOP ist jeder Regelstatus unveraendert', () => {
   // Supertrader 7.0 adds three Minervini rules (source inventory); every pre-existing status stays covered by the hash
-  const SF7_ADDED = ['C06|MIN-SF-PRICE-CONFIRM|SOURCE_DERIVED', 'C06|MIN-SF-STAGGER|SOURCE_EXACT', 'C07|MIN-SF-STAGGER|SOURCE_EXACT'];
+  const SF7_ADDED = ['C06|MIN-SF-PRICE-CONFIRM|SOURCE_DERIVED', 'C06|MIN-SF-STAGGER|SOURCE_DERIVED', 'C07|MIN-SF-STAGGER|SOURCE_DERIVED'];
   const all = CONTRACTS.flatMap((c) => c.rules.map((r) => `${c.candidateId}|${r.id}|${r.status}`)).sort();
   assert.deepEqual(all.filter((p) => /\|MIN-SF-(STAGGER|PRICE-CONFIRM)\|/.test(p)), SF7_ADDED);
   const pairs = all.filter((p) => !SF7_ADDED.includes(p));

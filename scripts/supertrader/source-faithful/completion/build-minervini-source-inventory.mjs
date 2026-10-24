@@ -42,7 +42,7 @@ const C = (cls, why, evidence) => Object.freeze({ cls, why, evidence });
  * "B12 PDF n" / "B07 PDF n" / "B03 PDF n" (each must be a 7.0 finding or a #709 row page) or #709 rule ids / W-MIN18 ids.
  */
 export const CLASSIFICATION = Object.freeze({
-  'MIN-SF-STAGGER': [C('SOURCE_PRESENT_ENGLISH', 'staggered stops redistribute, never increase the planned risk (English, original wording checked): SOURCE_EXACT', ['MIN-W18-1'])],
+  'MIN-SF-STAGGER': [C('SOURCE_PRESENT_ENGLISH', 'staggered stops redistribute, never increase the planned risk (English answer recorded by #709); SOURCE_DERIVED, because the wording is not re-verifiable here and no quote hash is held', ['MIN-W18-1']), C('PROJECT_AVAILABILITY', 'W-MIN18 page not re-fetchable from the project (HTTP 403, archive unreachable)', ['MIN-W18-1'])],
   'MIN-SF-PRICE-CONFIRM': [C('SOURCE_PRESENT_ENGLISH', 'fundamentals need confirming chart action (English)', ['MIN-W18-5', 'MIN-PRICE-01']), C('OPERATIONALIZATION_OPEN', '"confirming chart action" is broader than a pivot crossing; the machine part is derived', ['B12 PDF 306'])],
   'MIN-SF-SIMPLE': [C('SOURCE_PRESENT_TRANSLATION', 'simple separate screens', ['MIN-PROCESS-15'])],
   'MIN-SF-PROCESS': [C('SOURCE_PRESENT_TRANSLATION', 'Trend Template as the qualification; B12 and B03 both: a stock failing it is not considered', ['MIN-PROCESS-01', 'B12 PDF 114', 'B03 PDF 142'])],
@@ -58,7 +58,7 @@ export const CLASSIFICATION = Object.freeze({
   'MIN-SF-FUNDAMENTALS': [C('METHOD_DISCRETION', 'no universal threshold: 20-25 % is a common minimum, higher in bull markets, single non-accelerating quarters tolerated', ['MIN-EPS-02', 'B12 PDF 177', 'B12 PDF 185']), C('DATA_MISSING', 'estimates, surprises, guidance; derived Q4 values not split-correctable (6.0: 405 cases)', ['MIN-EPS-05', 'MIN-EPS-09'])],
   'MIN-SF-VCP': [C('METHOD_DISCRETION', 'counts and halving are typical, flat bases allowed; validity is judged', ['MIN-VCP-02', 'MIN-VCP-03', 'MIN-VCP-04']), C('OPERATIONALIZATION_OPEN', 'footprint notation (6W 32/6 3T), depth bands (10-35 %, rarely after 60 %) and the flat-base bound (10-15 %) are printed, the contraction measurement is not; variant ALT-SEPA-FLAT-BASE', ['B12 PDF 297', 'B12 PDF 280', 'B12 PDF 306'])],
   'MIN-SF-PIVOT': [C('OPERATIONALIZATION_OPEN', 'buy over the pivot with rising volume, never before it, not chasing more than "a few percentage points" - no number for the chase or the volume', ['MIN-VCP-07', 'B12 PDF 297', 'B12 PDF 306', 'B07 PDF 67', 'B07 PDF 87']), C('METHOD_DISCRETION', 'he waits for 5-20 cents over the pivot and says there is no magic number', ['B07 PDF 40'])],
-  'MIN-SF-STOP': [C('SOURCE_PRESENT_ENGLISH', 'maximum about 8-10 %, no volatility-widened stops (English)', ['MIN-W18-7', 'MIN-W18-8']), C('SOURCE_PRESENT_TRANSLATION', 'absolute maximum 10 % in B12 / B07 / B03; cut at half the average gain', ['MIN-MM-STOP-02', 'B12 PDF 370', 'B12 PDF 399']), C('OPERATIONALIZATION_OPEN', 'placement inside the bound (technical level vs percent) is the reviewer\'s; half-average-gain needs the trader\'s own history (diagnostic only)', ['B07 PDF 74', 'B12 PDF 398'])],
+  'MIN-SF-STOP': [C('SOURCE_PRESENT_ENGLISH', 'generally about 8-10 % as the maximum (STRONG_PREFERENCE), no volatility-widened stops (English answer)', ['MIN-W18-7', 'MIN-W18-8']), C('SOURCE_PRESENT_TRANSLATION', 'absolute maximum 10 % in B12 / B07 / B03; cut at half the average gain', ['MIN-MM-STOP-02', 'B12 PDF 370', 'B12 PDF 399']), C('OPERATIONALIZATION_OPEN', 'placement inside the bound (technical level vs percent) is the reviewer\'s; half-average-gain needs the trader\'s own history (diagnostic only)', ['B07 PDF 74', 'B12 PDF 398'])],
   'MIN-SF-SIZE': [C('SOURCE_PRESENT_ENGLISH', 'pilot positions, progressive exposure, examples only (English)', ['MIN-W18-3', 'MIN-W18-4']), C('SOURCE_PRESENT_TRANSLATION', 'risk per trade should not exceed 1.25-2.5 %, at most 25 % per position', ['MIN-MM-SIZE-01', 'B03 PDF 193']), C('METHOD_DISCRETION', 'the exact risk inside the range and the progression are the trader\'s', ['B03 PDF 123'])],
   'MIN-SF-SELL': [C('METHOD_DISCRETION', 'selling is more subjective than buying (English)', ['MIN-W18-2', 'MIN-MM-SELL-03']), C('OPERATIONALIZATION_OPEN', 'concrete signals are printed (largest decline since the Stage 2 start, climax run, close below MA20 after a breakout, 2-6R sales) but not ranked into a rule set; diagnostic largestDeclineSignal', ['B12 PDF 130', 'B07 PDF 90', 'B07 PDF 91'])],
   'MIN-SF-PP-NOFUND': [C('SOURCE_PRESENT_TRANSLATION', 'no visible fundamentals required', ['MIN-PP-01', 'B12 PDF 341'])],
@@ -148,7 +148,7 @@ export function buildInventory() {
   return {
     schema: 'supertrader-sf7-minervini-source-inventory-1.0.0',
     question: 'Which Minervini material was supplied, what is available today, what reached the contracts, and why is each rule not SOURCE_EXACT?',
-    sources: lib.map((s) => ({ sourceId: s.source_id, title: s.title, language: s.document_language ?? null, provenance: s.provenance, originalWordingChecked: s.original_wording_checked === true, sha256: s.sha256 ?? null, rows709: bySource(s.source_id), findings7: f.findings.filter((r) => r.source === s.source_id).length, availableToday: s.source_id === 'W-MIN18' ? 'RECORDED_NOT_REFETCHABLE_HERE' : (f.books[s.source_id] ? 'AVAILABLE_BYTE_IDENTICAL' : 'UNKNOWN') })),
+    sources: lib.map((s) => ({ sourceId: s.source_id, title: s.title, language: s.document_language ?? null, provenance: s.provenance, originalWordingChecked: s.original_wording_checked === true, sha256: s.sha256 ?? null, rows709: bySource(s.source_id), findings7: f.findings.filter((r) => r.source === s.source_id).length, availableToday: s.source_id === 'W-MIN18' ? 'RECORDED_NOT_REFETCHABLE_HERE' : (f.books[s.source_id]?.pdfSha256 === s.sha256 ? 'PDF_SHA256_MATCHED_AT_FINDINGS_BUILD' : 'UNKNOWN') })),
     extraction: {
       rows709: rows.length,
       rowsInExtractBefore7: rows.length - bySource('W-MIN18'),
@@ -164,7 +164,7 @@ export function buildInventory() {
     dataOnlyProblems: DATA_ONLY_PROBLEMS,
     projectAvailability: PROJECT_AVAILABILITY,
     variants7: SF7_VARIANTS.map((v) => ({ id: v.id, strategy: v.strategy, source: v.source })),
-    statusChange: 'no reference rule changes status; SOURCE_EXACT only MIN-SF-STAGGER (W-MIN18); every book rule stays translation-only (CC-1 unchanged)',
+    statusChange: 'no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)',
     validation: { ok: errors.length === 0, errors },
   };
 }
