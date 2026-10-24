@@ -158,7 +158,7 @@ Geschätzter Engineering-Aufwand nach bereitgestellten Bindungen: **1–3 Arbeit
 
 | Prüfung | Ergebnis |
 |---|---|
-| Vollständige Quant-Suite, Node 22.23.4 | **2.858 ausgeführt; 2.851 PASS, 7 FAIL, 0 übersprungen**, 714.760 ms |
+| Vollständige Quant-Suite, Node 22.23.4 | **2.858 ausgeführt; 2.851 PASS, 7 FAIL, 0 übersprungen**, zwei vollständige Läufe (714.760 und 450.750 ms) |
 | Unveränderter Main, gezielter Gegenlauf | exakt dieselben 7 Elliott-Registry-Fehler reproduziert, Main-SHA oben |
 | Core-CI-Testbefehl | 260 / 260 PASS |
 | Real-Data-/Reader-/Security-/Refresh-/Integrationsprüfungen | 56 / 56 PASS |
@@ -174,7 +174,7 @@ Geschätzter Engineering-Aufwand nach bereitgestellten Bindungen: **1–3 Arbeit
 
 Die sieben Main-Fehler sind M11-P3 bis M11-P9 in `elliott-registry-product-view.test.mjs`: Tests verwenden aktualisierte Langreihen gegen einen älteren veröffentlichten Produktstand; die Identitätsprüfung vergleicht null Fälle und verweigert die Registrierung. Reproduziert in einer separaten unveränderten Main-Arbeitskopie. Keine Elliott-Registry-/UI-Reparatur und keine abgeschwächte Assertion in V5.
 
-Die öffentliche Browser-QA meldet `Name weicht vom Verzeichnis ab` auf NVDA bei 1440 und 390 Pixeln. PR #892 behandelt diesen separaten Befund; V5 ändert die Namen nicht. Für den öffentlichen Browservergleich wurde der normale Workflow-Build einschließlich Whitespace-Minifizierung verwendet. Seine Bundle-Bytes stimmen mit dem abschließend gebauten Release überein: SHA256 `de73b23449256accc5f7e1394a4007234382c13158089d5006d268aa70a8e45d`. Nicht bestandene Pflichtchecks bleiben Merge-Blocker.
+Die öffentliche Browser-QA meldet `Name weicht vom Verzeichnis ab` auf NVDA bei 1440 und 390 Pixeln: die Seite zeigt „NVIDIA“, das Verzeichnis „NVIDIA Corporation“. Dies wurde zusätzlich mit dem per `git show` exakt rekonstruierten Main-Frontend ohne V3-Servicecode oder V5-Adapter reproduziert ([Main-Browsernachweis](v5/main-browser-proof.json)). PR #892 behandelt diesen separaten Befund; V5 ändert die Namen nicht. Für den öffentlichen Browservergleich wurde der normale Workflow-Build einschließlich Whitespace-Minifizierung verwendet. Seine Bundle-Bytes stimmen mit dem abschließend gebauten Release überein: SHA256 `de73b23449256accc5f7e1394a4007234382c13158089d5006d268aa70a8e45d`. Nicht bestandene Pflichtchecks bleiben Merge-Blocker.
 
 Browser-QA nutzt die reale bestehende Quant-Anwendung, keine Ersatzseite. Der Vergleich ohne internen Adapter behält dieselben Navigationslinks und enthält keinen privaten Ergebnisbereich. Keine CSS-/Shell-/Chartdatei wurde verändert. WebKit ist der echte Playwright-WebKit-Browser mit iPhone-Geräteprofil; dies ist **keine Prüfung auf einem physischen iPhone**. Die V4-dokumentierte lokale WebKit-Runtime mit echten Debian-Bibliotheken wurde wiederverwendet. Für Accessibility wird axe ausschließlich über die Test-/DevTools-Verbindung ausgewertet; die Produktions-CSP wird nicht deaktiviert.
 
@@ -197,6 +197,9 @@ node scripts/quant/validate-real-backtest-read.cjs /tmp/vu-v5/results
 NODE_PATH=/path/to/qa/node_modules node scripts/quant/qa/integrated-preview-browser.cjs \
   --directory /tmp/vu-v5/results --public-directory /tmp/vu-v5/public --output /tmp/vu-v5/screenshots
 node scripts/quant/qa/preview-delivery-check.cjs /tmp/vu-v5/results /tmp/vu-v5/delivery.json
+NODE_PATH=/path/to/qa/node_modules node scripts/quant/qa/prove-main-browser-baseline.cjs \
+  --main 304f9179433ae24de65936742f44d85782658b2f \
+  --public-directory /tmp/vu-v5/public --output /tmp/vu-v5/main-browser-proof.json
 ```
 
 `CHROMIUM_PATH` und `WEBKIT_PATH` können die installierten echten Browser auswählen. Der vollständige Bestandslauf ist separat mit `materialize-real-backtest-read.cjs --output PRIVATE_EMPTY_DIRECTORY` reproduzierbar; ohne `--ids` werden alle gespeicherten Reihen geprüft.
@@ -204,6 +207,8 @@ node scripts/quant/qa/preview-delivery-check.cjs /tmp/vu-v5/results /tmp/vu-v5/d
 Gemessen auf diesem gleichzeitig belasteten Worker: kalte Materialisierung aller 6.190 Listings **238,15 s**, Peak-RSS **397.357.056 Bytes**. Keine behauptete Geschwindigkeitsverbesserung gegenüber V4, da andere Inputs und Last. 20 parallele echte HTTP-Summary-Abrufe: p50 **47,60 ms**, p95 **54,31 ms**, anonymes Replay nach warmem Cache 401. Dies ist kein Internet-/Produktions-SLA. Größte Roh-Summary über alle fünf Perioden 25.336 Bytes, größtes Detail 210.825 Bytes, gzip 48.547 Bytes; keine Budgetüberschreitung. Der Browser lädt nur den ausgewählten Summary und bei Bedarf einzelne Details, niemals alle 22.255 Periodenergebnisse.
 
 ## 8. PR-Konsolidierung und Freigabereihenfolge
+
+Neuer Draft: [PR #897](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/897). Implementierungscommits: `89d13479a` und `b676785d2`; Dokumentation `13b0e3a0a`. Kein Auto-Merge.
 
 Alle sechs Ausgangs-PRs waren bei der Prüfung **OPEN**, keine menschlichen Reviews eingetragen. Vollständige Kopf-SHAs, Checks, Reviewstatus und dateiweise Inhaltsvergleiche stehen in [repository-baseline.json](v5/repository-baseline.json). Ein offener PR gilt nicht als gemergt, selbst wenn einzelne Dateien schon anderweitig vorhanden sind.
 

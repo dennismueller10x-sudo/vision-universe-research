@@ -5,7 +5,7 @@
     "pass": 2851,
     "fail": 7,
     "skipped": 0,
-    "durationMs": 714759.973827,
+    "durationMs": 450750.393221,
     "failures": [
       "M11-P3 Abweichung vom veroeffentlichten Produkt → nichts registriert",
       "M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pruefung",
@@ -16,7 +16,27 @@
       "M11-P9 Vollvergleich des Datenstands ist standardmaessig scharf: fehlen Produkttitel im Register-Eingang, wird nichts registriert (freshnessTickers begrenzt nur ausdruecklich)"
     ],
     "sameFailuresReproducedOnUnchangedMain": true,
-    "mainProof": "Node 22 --test --test-name-pattern=M11-P[3-9] quant/tests/elliott-registry-product-view.test.mjs; all seven reproduced. Full V5 suite was not filtered."
+    "mainProof": "Node 22 --test --test-name-pattern=M11-P[3-9] quant/tests/elliott-registry-product-view.test.mjs; all seven reproduced. Full V5 suite was not filtered.",
+    "regressionRuns": [
+      {
+        "tests": 2858,
+        "pass": 2851,
+        "fail": 7,
+        "skipped": 0,
+        "durationMs": 714759.973827
+      },
+      {
+        "tests": 2858,
+        "pass": 2851,
+        "fail": 7,
+        "skipped": 0,
+        "durationMs": 450750.393221
+      }
+    ],
+    "finalImplementationCommits": [
+      "89d13479a",
+      "b676785d2"
+    ]
   },
   "core": {
     "tests": 260,
@@ -43,7 +63,8 @@
     "resourceBudgets": 8,
     "resourceBudgetsPass": 8,
     "accessibilityPages": 84,
-    "accessibilityViolations": 0
+    "accessibilityViolations": 0,
+    "sameFindingsReproducedFromExactMainFrontend": true
   },
   "independentPython": {
     "periods": [
@@ -80,5 +101,6 @@
     "cspErrors": 0,
     "automatedAccessibilityViolations": 0,
     "physicalIPhoneTested": false
-  }
+  },
+  "draftPR": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/897"
 }
