@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.1.0)
+   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.2.0)
 
    EIN CHARTSTANDARD FUER ALLE PRODUKTWELTEN: ZEITRAEUME, START, WAEHRUNG.
 
@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.1.0";
+  var VERSION = "chart-standard-1.2.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
@@ -223,12 +223,15 @@
    * idempotent). Was die Seite schon geladen hat, wird nicht noch einmal geholt;
    * `extra` sind weitere Skripte der Welt (z. B. series-sampling.js). Liefert den
    * Vertrag oder null - ohne ihn bleibt jede Anzeige in der Boersenwaehrung.
+   * Hat ein FX-Paket die Schicht schon mitgebracht (VUFx.PACK: Lizenz und Reihen,
+   * scripts/vu2/build-release.mjs), wird nichts nachgeladen und mit dem Paket gestartet.
    */
   function ensureDisplay(extra) {
     if (displayReady) return displayReady;
     var g = typeof globalThis !== "undefined" ? globalThis : null, doc = g && g.document;
     if (!doc) return Promise.resolve(layerOf(null));
-    var want = (extra || []).concat(FX_SCRIPTS.map(function (n) { return FX_BASE + n + ".js"; }))
+    var fx = g.VUFx || {}, packed = !!(fx.Bootstrap && fx.Contract && fx.Rates);
+    var want = (extra || []).concat(packed ? [] : FX_SCRIPTS.map(function (n) { return FX_BASE + n + ".js"; }))
       .filter(function (src) { return !doc.querySelector('script[src="' + src + '"]'); });
     displayReady = Promise.all(want.map(function (src) {
       return new Promise(function (ok) {
@@ -236,8 +239,9 @@
         s.onload = ok; s.onerror = ok; (doc.head || doc.documentElement).appendChild(s);
       });
     })).then(function () {
-      var B = g.VUFx && g.VUFx.Bootstrap;
-      return B ? B.boot().catch(function () { return null; }) : null;
+      var B = g.VUFx && g.VUFx.Bootstrap, pack = g.VUFx && g.VUFx.PACK;
+      var opts = pack ? { license: pack.license || undefined, preload: pack.series || [] } : undefined;
+      return B ? B.boot(opts).catch(function () { return null; }) : null;
     }).then(function () { return layerOf(null); });
     return displayReady;
   }
