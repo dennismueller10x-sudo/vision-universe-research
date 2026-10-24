@@ -823,6 +823,18 @@ function applyValuationContext(universe) {
 function fundamentalsDetail(universe, stock) {
   const model = stock.fundamentalModel;
   if (!model) {
+    /* KEIN CIK IST EIN STRUKTURELLER GRUND, KEIN LOCH.
+       Der Konsum-Lauf der SEC misst, welche Titel des Produktuniversums
+       keine CIK in der Namensschicht haben (consumer_coverage.json,
+       withoutCikTickers). Der Core-Vertrag (core/client.js#getFundamentals)
+       unterscheidet NO_CIK von FUNDAMENTALS_MISSING genau an `cik: null`;
+       ohne das Feld wurden am 24.10.2026 alle 958 Titel ohne CIK als
+       fehlende Fundamentals gemeldet (REPX auf der Startseite). Titel mit
+       CIK, aber ohne Bundle, bleiben ohne das Feld - das ist ein echtes Loch. */
+    if (FUNDAMENTALS_NO_CIK.has(stock.symbol)) {
+      return { available: false, reason: "SOURCE_MISSING", cik: null,
+               message: "Für diesen Titel liegen keine Geschäftszahlen der SEC vor: Die Namensschicht ordnet ihm keinen CIK zu." };
+    }
     return { available: false, reason: "SOURCE_MISSING",
              message: "Für diesen Titel liegen keine Geschäftszahlen der SEC vor (kein CIK, keine XBRL-Fakten oder nicht im Companyfacts-Archiv)." };
   }
@@ -1704,6 +1716,15 @@ function consumerFundamentalsIndex() {
   return map;
 }
 
+/* Die vom SEC-Konsum-Lauf gemessenen Titel ohne CIK (leer, wenn die Datei fehlt:
+   dann bleibt jeder fehlende Block ohne Angabe, wie vorher). */
+function consumerWithoutCik() {
+  const file = join(root, "quant", "data", "sec", "consumer_coverage.json");
+  if (!existsSync(file)) return new Set();
+  const list = readJSON(file).withoutCikTickers;
+  return new Set(Array.isArray(list) ? list : []);
+}
+
 function geschaeftszahlen(stock, secFakten, fundamentalsByTicker) {
   const model = fundamentalsByTicker && fundamentalsByTicker.get(stock.symbol);
   if (model) {
@@ -1928,6 +1949,7 @@ mkdirSync(OUT, { recursive: true });
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");
 const nameMap = buildNameMap();
 const FUNDAMENTALS = consumerFundamentalsIndex();
+const FUNDAMENTALS_NO_CIK = consumerWithoutCik();
 console.log(`     Fundamentals (SEC Consumer): ${FUNDAMENTALS.size} Titel`);
 const goldenBars = loadGoldenPreviewBars();
 const compact = discoverSeriesIndex();
