@@ -8,12 +8,14 @@ async function validate(directory){
  const root=path.resolve(__dirname,'../..'),store=Store.create({directory}),loadJSON=async p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
  const service=Service.create({loadJSON,displayPolicy:require('../../quant/engines/display-policy.js'),queryEngine:require('../../quant/engines/query.js'),realBacktestPreview:{enabled:true,audience:'INTERNAL_REVIEW'},realBacktestStore:store});
  const release=await store.loadJSON('release.json'),cases=[],benchmark=B.load(root),counts={A:0,B:0,C:0},reasons={},ids=[];let completedTrades=0,earliest=null,latest=null;
+ const readerCoverage={checked:0,states:{},reasons:{},servedResults:0,financialDataOnBlockedResponses:0};
  const start=performance.now(),payloadStats={summaries:0,summaryBytes:0,maxSummaryBytes:0,periodResults:0,detailBytes:0,gzipDetailBytes:0,maxDetailBytes:0,maxGzipDetailBytes:0,overLimitDetails:0};
  for(const key of Object.keys(release.shards).sort()){
   const index=await store.loadJSON(release.generation+'/index/'+key+'.json');assert.equal(await C.digest(index),release.shards[key]);
   for(const id of Object.keys(index.entries).sort()){
    const s=await store.loadJSON(release.generation+'/listings/'+id+'/summary.json'),{summaryHash,...payload}=s;assert.equal(A.hash(payload),summaryHash);assert.equal(summaryHash,index.entries[id]);assert.deepEqual(C.summaryViolations(s,id,release.generation),[]);counts[s.quality.class]++;ids.push(id);const size=Buffer.byteLength(JSON.stringify(s));payloadStats.summaries++;payloadStats.summaryBytes+=size;payloadStats.maxSummaryBytes=Math.max(payloadStats.maxSummaryBytes,size);for(const r of Object.values(s.periods)){payloadStats.periodResults++;for(const d of Object.values(r.details)){payloadStats.detailBytes+=d.bytes;payloadStats.gzipDetailBytes+=d.gzipBytes;payloadStats.maxDetailBytes=Math.max(payloadStats.maxDetailBytes,d.bytes);payloadStats.maxGzipDetailBytes=Math.max(payloadStats.maxGzipDetailBytes,d.gzipBytes);if(d.bytes>2097152||d.gzipBytes>262144)payloadStats.overLimitDetails++;}}
    for(const r of s.quality.exclusionReasons)reasons[r]=(reasons[r]||0)+1;
+   const delivered=await service.getRealBacktest(s.identity.ticker);readerCoverage.checked++;readerCoverage.states[delivered.state]=(readerCoverage.states[delivered.state]||0)+1;if(delivered.reason)readerCoverage.reasons[delivered.reason]=(readerCoverage.reasons[delivered.reason]||0)+1;assert.equal(delivered.certification,'NOT_CERTIFIED');if(delivered.state==='AVAILABLE_LIMITED'){readerCoverage.servedResults++;assert.equal(delivered.identity.sourceSecurityId,id);assert.equal(delivered.result.resultHash,s.periods.MAX.resultHash);}else{if(delivered.result)readerCoverage.financialDataOnBlockedResponses++;assert.equal(delivered.result,undefined);}
    if(s.state!=='BLOCKED'){completedTrades+=s.periods.MAX.metrics.completedTrades;const from=s.periods.MAX.from,to=s.periods.MAX.to;earliest=earliest===null||from<earliest?from:earliest;latest=latest===null||to>latest?to:latest;}
   }
  }
@@ -33,7 +35,7 @@ async function validate(directory){
   independent.push({period,...JSON.parse(execFileSync('python3',[path.join(root,'scripts/quant/verify-real-weekly-backtest.py'),file],{encoding:'utf8'}))});
  }
  const qbytes=fs.readFileSync(path.join(directory,release.qualityDump)),qualityRows=zlib.gunzipSync(qbytes).toString().trim().split('\n');assert.equal(qualityRows.length,release.expected);
- const result={payloadStats,runtime:process.version,schemaVersion:'real-backtest-read-validation-1.0.0',generation:release.generation,classified:ids.length,counts,reasons,completedTrades,eligibleFrom:earliest,to:latest,qualityDumpHash:A.hash(qbytes),qualityDumpGzipBytes:qbytes.length,independent,cases,elapsedMs:performance.now()-start,peakRssBytes:process.resourceUsage().maxRSS*1024,publiclyActivated:false,certification:'NOT_CERTIFIED'};
+ const result={readerCoverage,payloadStats,runtime:process.version,schemaVersion:'real-backtest-read-validation-1.0.0',generation:release.generation,classified:ids.length,counts,reasons,completedTrades,eligibleFrom:earliest,to:latest,qualityDumpHash:A.hash(qbytes),qualityDumpGzipBytes:qbytes.length,independent,cases,elapsedMs:performance.now()-start,peakRssBytes:process.resourceUsage().maxRSS*1024,publiclyActivated:false,certification:'NOT_CERTIFIED'};
  fs.writeFileSync(path.join(directory,'read-validation.json'),JSON.stringify(result,null,2)+'\n');return result;
 }
 if(require.main===module)validate(process.argv[2]).then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e);process.exitCode=1;});
