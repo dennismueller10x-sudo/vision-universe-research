@@ -1,5 +1,7 @@
 # Real weekly backtest: validation, benchmarks and stored-listing batch
 
+Historical V2 checkpoint from PR #894. V3 source validation, window semantics, current hashes and private reader acceptance are documented in [BACKTEST_V3.md](BACKTEST_V3.md); the older validation JSON files preserve their original run evidence.
+
 Source Main: `1e14b5db7` (24 October 2026). PRs #862/#872/#882 were OPEN, not merged. This branch selectively inherits #882 commit f3233d46f; it does not merge or modify those PRs. Navigation, UI, Discover, Supertrader, Fundamental and refresh workflows are unchanged. No provider request or paid operation was performed.
 
 ## Reproduce
