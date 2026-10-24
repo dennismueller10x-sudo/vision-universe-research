@@ -28,8 +28,9 @@ test('constant split-unit rebasing preserves financial results',()=>{
  const rebased=structuredClone(data);rebased.points.forEach(p=>p[1]*=10);const a=run(data),b=run(rebased);
  assert.equal(a.trades.length,b.trades.length);for(const key of ['totalReturn','cagr','maxDrawdown','fees','slippage'])assert.ok(Math.abs(a.metrics[key]-b.metrics[key])<1e-6,key);
 });
-test('shared adapter executes other real long, split and recent listing histories',()=>{
- for(const id of ['ref_AAPL','ref_XOM','ref_ARM']){const r=run(A.load(root,id));assert.ok(r.equity.length>0);assert.equal(r.provenance.securityId,id);assert.equal(r.certification,'NOT_CERTIFIED');}
+test('shared adapter executes eligible real histories and retains the existing AAPL corporate-action hold',()=>{
+ for(const id of ['ref_XOM','ref_ARM']){const r=run(A.load(root,id));assert.ok(r.equity.length>0);assert.equal(r.provenance.securityId,id);assert.equal(r.certification,'NOT_CERTIFIED');}
+ assert.throws(()=>A.load(root,'ref_AAPL'),/CORPORATE_ACTION_UNRESOLVED/);
 });
 test('independent checker detects a corrupted execution price',()=>{
  const r=run(data);r.trades[0].exitPrice*=2;const dir=mkdtempSync(join(tmpdir(),'vu-corrupt-'));try{const file=join(dir,'result.json');writeFileSync(file,JSON.stringify(r));assert.throws(()=>execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root,stdio:'pipe'}));}finally{rmSync(dir,{recursive:true,force:true});}

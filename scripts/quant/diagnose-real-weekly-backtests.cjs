@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 const fs=require('node:fs'),path=require('node:path');
+const Benchmark=require('../../quant/engines/weekly-benchmark.cjs');
 const A=require('../../quant/engines/weekly-real-adapter.cjs'),{run}=require('./run-real-weekly-backtest.cjs');
 const root=path.resolve(__dirname,'../..'),dir=path.join(root,'quant/data/market/discover-series-long');
+let benchmark;try{benchmark=Benchmark.load(root);}catch(e){benchmark={error:e.message};}
 const master=JSON.parse(fs.readFileSync(path.join(root,'quant/data/market/security-master/us-security-master.json')));
 const available=new Set(fs.readdirSync(dir));
 const cases=[['NVDA','reference'],['AAPL','long history and multiple splits'],['XOM','dividend payer: price return excludes distributions'],['ARM','shorter listing history']].map(([ticker,reason])=>({securityId:'ref_'+ticker,reason}));
@@ -16,5 +18,5 @@ for(const name of [...available].sort()) {if(!name.startsWith('ref_')||!name.end
 }
 if(short)cases.push({securityId:short,reason:'insufficient weekly warm-up'});
 if(gap)cases.push({securityId:gap,reason:'observed missing weekly interval'});
-const results=cases.map(c=>{const raw=JSON.parse(fs.readFileSync(path.join(dir,c.securityId+'.json')));try{const data=A.load(root,c.securityId),start=performance.now(),r=run(data);return {...c,state:'EXECUTED',sourceFrom:raw.from,sourceTo:raw.to,sourceHash:data.sourceHash,inputHash:r.inputHash,resultHash:r.resultHash,history:r.history,metrics:r.metrics,runMs:performance.now()-start};}catch(e){return {...c,state:'BLOCKED',sourceFrom:raw.from,sourceTo:raw.to,reasonCode:e.message};}});
+const results=cases.map(c=>{const raw=JSON.parse(fs.readFileSync(path.join(dir,c.securityId+'.json')));try{const data=A.load(root,c.securityId),start=performance.now(),r=run(data,{benchmark});return {...c,state:'EXECUTED',costModel:r.input.costModel,benchmarkState:r.marketBenchmark.state,sourceFrom:raw.from,sourceTo:raw.to,sourceHash:data.sourceHash,inputHash:r.inputHash,resultHash:r.resultHash,history:r.history,metrics:r.metrics,runMs:performance.now()-start};}catch(e){return {...c,state:'BLOCKED',sourceFrom:raw.from,sourceTo:raw.to,reasonCode:e.message};}});
 console.log(JSON.stringify({schemaVersion:'real-weekly-diagnostics-1.0.0',cases:results},null,2));
