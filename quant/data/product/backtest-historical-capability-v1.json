@@ -1,0 +1,1472 @@
+{
+  "schemaVersion": "backtest-historical-capability-1.0.0",
+  "diagnosticOnly": true,
+  "generatedAt": "2026-10-23T18:14:43.293Z",
+  "sourceArtifactsLatestGeneratedAt": "2026-10-23T02:53:04.884Z",
+  "repositoryMainAsOf": "2026-10-23",
+  "note": "Repository-only inspection. No provider calls, backfill, private runner store, or production mutation. codeCanExecute means an execution path exists; it does not mean the real historical data contract is complete or the result is certified.",
+  "sourceArtifacts": {
+    "certification": {
+      "path": "quant/data/product/backtest-certification-v1.json",
+      "schemaVersion": "backtest-certification-1.0.0",
+      "generatedAt": "2026-10-23T02:53:04.884Z",
+      "asOf": "2026-10-23"
+    },
+    "readiness": {
+      "path": "quant/data/product/backtest-readiness-v2.json",
+      "schemaVersion": "backtest-readiness-2.0.0",
+      "generatedAt": "2026-10-23T02:53:05.665Z"
+    },
+    "signalStudy": {
+      "path": "quant/data/product/signal-backtest-v1.json",
+      "schemaVersion": "signal-backtest-study-2.0.0",
+      "engineVersion": "signal-backtest-2.0.0",
+      "generatedAt": "2026-10-23T02:50:40.442Z",
+      "asOf": "2026-10-16"
+    },
+    "totalReturn": {
+      "path": "quant/data/product/total-return-quality-v1.json",
+      "contract": "canonical-total-return-1.0.0",
+      "generatedAt": "2026-10-23T02:50:40.442Z",
+      "asOf": "2026-10-16"
+    },
+    "setupStudy": {
+      "path": "quant/data/product/setup-backtest-v1.json",
+      "engineVersion": "signal-backtest-2.0.0",
+      "generatedAt": "2026-10-23T02:45:23.892Z",
+      "asOf": "2026-10-22"
+    }
+  },
+  "historicMaximum": {
+    "universeSeries": {
+      "fileCount": 6174,
+      "validatedRealSplitAdjustedSeries": 6174,
+      "invalidSeries": 0,
+      "duplicateOrUnorderedObservations": 0,
+      "nonPositivePriceObservations": 0,
+      "earliestDate": "1990-01-05",
+      "latestDate": "2026-10-22",
+      "frequency": "weekly",
+      "fieldsAvailable": [
+        "date",
+        "split_adjusted_close"
+      ],
+      "fieldsAbsent": [
+        "OHLC",
+        "volume",
+        "intraday",
+        "historical_provider_vintage"
+      ],
+      "manifestHash": "sha256:d81be178d6f06e04c570e0fc558a263a87b8048ef7170caa0defc257d272369a"
+    },
+    "nvda": {
+      "securityId": "ref_NVDA",
+      "ticker": "NVDA",
+      "provider": "tiingo",
+      "dataMode": "real",
+      "priceSeriesType": "SPLIT_ADJUSTED",
+      "from": "1999-01-22",
+      "to": "2026-10-16",
+      "bars": 1448,
+      "splitEvents": 6,
+      "sourceBars": 6977,
+      "sourceFirst": "1999-01-22",
+      "sourceLast": "2026-10-16",
+      "priceOnlySignalEligibility": {
+        "earliestAvailableDataDate": "1999-01-22",
+        "earliestEligibleBacktestDate": "2000-01-28",
+        "latestEligibleBacktestDate": "2026-04-10",
+        "exclusionReasons": []
+      },
+      "existingSignalEngineSmokeRun": [
+        {
+          "ruleId": "MOMENTUM_IMPROVED",
+          "ruleVersion": "1.0.0",
+          "occurrences": 22,
+          "completedM6": 22,
+          "firstSignalDate": "2001-04-12",
+          "lastSignalDate": "2026-04-10",
+          "medianM6NetPriceReturnAfterEngineCosts": 0.23625522508867436,
+          "positiveShare": 0.8181818181818182,
+          "returnBasis": "SPLIT_ADJUSTED_PRICE",
+          "roundTripFrictionsBps": 30,
+          "interpretation": "single-stock diagnostic only; no dividends, benchmark, PIT universe, or certification"
+        },
+        {
+          "ruleId": "MOMENTUM_DETERIORATED",
+          "ruleVersion": "1.0.0",
+          "occurrences": 22,
+          "completedM6": 22,
+          "firstSignalDate": "2000-12-01",
+          "lastSignalDate": "2026-03-20",
+          "medianM6NetPriceReturnAfterEngineCosts": 0.32104678740455195,
+          "positiveShare": 0.7272727272727273,
+          "returnBasis": "SPLIT_ADJUSTED_PRICE",
+          "roundTripFrictionsBps": 30,
+          "interpretation": "single-stock diagnostic only; no dividends, benchmark, PIT universe, or certification"
+        },
+        {
+          "ruleId": "TREND_UP",
+          "ruleVersion": "1.0.0",
+          "occurrences": 23,
+          "completedM6": 23,
+          "firstSignalDate": "2001-03-16",
+          "lastSignalDate": "2026-04-10",
+          "medianM6NetPriceReturnAfterEngineCosts": 0.22089696169088513,
+          "positiveShare": 0.7391304347826086,
+          "returnBasis": "SPLIT_ADJUSTED_PRICE",
+          "roundTripFrictionsBps": 30,
+          "interpretation": "single-stock diagnostic only; no dividends, benchmark, PIT universe, or certification"
+        },
+        {
+          "ruleId": "TREND_DOWN",
+          "ruleVersion": "1.0.0",
+          "occurrences": 23,
+          "completedM6": 23,
+          "firstSignalDate": "2000-11-24",
+          "lastSignalDate": "2026-03-20",
+          "medianM6NetPriceReturnAfterEngineCosts": 0.27057405281285885,
+          "positiveShare": 0.6521739130434783,
+          "returnBasis": "SPLIT_ADJUSTED_PRICE",
+          "roundTripFrictionsBps": 30,
+          "interpretation": "single-stock diagnostic only; no dividends, benchmark, PIT universe, or certification"
+        },
+        {
+          "ruleId": "NEW_52W_HIGH",
+          "ruleVersion": "1.0.0",
+          "occurrences": 28,
+          "completedM6": 26,
+          "firstSignalDate": "2000-02-11",
+          "lastSignalDate": "2026-09-04",
+          "medianM6NetPriceReturnAfterEngineCosts": 0.19456397371556178,
+          "positiveShare": 0.7692307692307693,
+          "returnBasis": "SPLIT_ADJUSTED_PRICE",
+          "roundTripFrictionsBps": 30,
+          "interpretation": "single-stock diagnostic only; no dividends, benchmark, PIT universe, or certification"
+        }
+      ],
+      "returnBasis": "SPLIT_ADJUSTED_PRICE; dividends are not included",
+      "note": "Lange Reihe fuer Discover (5J, Max): Schlusskurs des letzten Handelstags jeder ISO-Woche, split-bereinigt, 1448 Wochen ab 1999-01-22. Kein Intraday, keine Volumina, keine OHLC, nichts interpoliert."
+    },
+    "periodDefinitions": {
+      "1Y": 366,
+      "3Y": 1096,
+      "5Y": 1827,
+      "10Y": 3653,
+      "MAX": "all eligible observations after dependency warm-up"
+    }
+  },
+  "dataQuality": {
+    "totalReturnSignalCoverage": {
+      "titles": 6174,
+      "withTotalReturn": 6036,
+      "share": 0.978,
+      "contract": "canonical-total-return-1.0.0",
+      "corporateActionContract": "corporate-action-contract-1.0.0",
+      "basis": "CANONICAL_TOTAL_RETURN",
+      "TOTAL_RETURN_CONFIRMED_BEFORE": 5637,
+      "TOTAL_RETURN_RECONSTRUCTED": 6036,
+      "TOTAL_RETURN_CONFIRMED_AFTER": 6036,
+      "REJECTED_DIVIDEND_GAP": 35,
+      "REJECTED_SPLIT_GAP": 2,
+      "REJECTED_IDENTITY": 0,
+      "REJECTED_OTHER": 101,
+      "reasons": {
+        "CORPORATE_ACTION_CONTRADICTED": 101,
+        "DIVIDEND_MISSING": 35,
+        "SPLIT_MISSING": 2
+      },
+      "listingSegmentCuts": 70,
+      "legacyAdjustedColumnPresent": 6174,
+      "beforeContract": "total-return-contract-1.0.0",
+      "minimumShare": 0.95
+    },
+    "totalReturnRejected": {
+      "columns": [
+        "securityId",
+        "reason",
+        "date"
+      ],
+      "rows": [
+        [
+          "ref_ACCS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2011-10-31"
+        ],
+        [
+          "ref_ACHV",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2008-08-21"
+        ],
+        [
+          "ref_AEON",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-02-26"
+        ],
+        [
+          "ref_AGYS",
+          "DIVIDEND_MISSING",
+          "2009-01-13"
+        ],
+        [
+          "ref_AIMD",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-08-09"
+        ],
+        [
+          "ref_ALAR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2018-08-15"
+        ],
+        [
+          "ref_ALRS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2001-03-21"
+        ],
+        [
+          "ref_AMPG",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-02-17"
+        ],
+        [
+          "ref_AMRC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-07-26"
+        ],
+        [
+          "ref_AP",
+          "DIVIDEND_MISSING",
+          null
+        ],
+        [
+          "ref_APD",
+          "DIVIDEND_MISSING",
+          "2016-10-03"
+        ],
+        [
+          "ref_ARBK",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-12-12"
+        ],
+        [
+          "ref_AREB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-02-02"
+        ],
+        [
+          "ref_ASTI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-01-31"
+        ],
+        [
+          "ref_ASUR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2009-12-29"
+        ],
+        [
+          "ref_ASYS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1993-06-07"
+        ],
+        [
+          "ref_ATI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1999-12-02"
+        ],
+        [
+          "ref_AWRE",
+          "DIVIDEND_MISSING",
+          "1996-12-09"
+        ],
+        [
+          "ref_AXGN",
+          "DIVIDEND_MISSING",
+          "1990-04-03"
+        ],
+        [
+          "ref_BC",
+          "DIVIDEND_MISSING",
+          "2023-01-03"
+        ],
+        [
+          "ref_BOSC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2003-05-29"
+        ],
+        [
+          "ref_BRBS",
+          "DIVIDEND_MISSING",
+          "2012-01-06"
+        ],
+        [
+          "ref_BRTX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-10-27"
+        ],
+        [
+          "ref_BTI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1998-09-08"
+        ],
+        [
+          "ref_CARE",
+          "DIVIDEND_MISSING",
+          "2013-04-12"
+        ],
+        [
+          "ref_CATG",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-08-06"
+        ],
+        [
+          "ref_CETX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2023-01-23"
+        ],
+        [
+          "ref_CLWT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2001-09-10"
+        ],
+        [
+          "ref_CMCT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-09-03"
+        ],
+        [
+          "ref_COSM",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-12-16"
+        ],
+        [
+          "ref_CWBC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2003-01-21"
+        ],
+        [
+          "ref_CX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1999-09-21"
+        ],
+        [
+          "ref_DGII",
+          "DIVIDEND_MISSING",
+          "1992-04-01"
+        ],
+        [
+          "ref_DOC",
+          "DIVIDEND_MISSING",
+          "2023-02-13"
+        ],
+        [
+          "ref_DUKR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-03-06"
+        ],
+        [
+          "ref_DVXE",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-08-31"
+        ],
+        [
+          "ref_EASY",
+          "DIVIDEND_MISSING",
+          "2026-03-31"
+        ],
+        [
+          "ref_ESOA",
+          "DIVIDEND_MISSING",
+          "2016-06-14"
+        ],
+        [
+          "ref_F",
+          "DIVIDEND_MISSING",
+          "2023-01-03"
+        ],
+        [
+          "ref_FLUX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2009-02-11"
+        ],
+        [
+          "ref_FMBH",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2001-11-19"
+        ],
+        [
+          "ref_FSOL",
+          "DIVIDEND_MISSING",
+          "2026-06-23"
+        ],
+        [
+          "ref_FTFT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2008-06-10"
+        ],
+        [
+          "ref_GBR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2002-02-04"
+        ],
+        [
+          "ref_GGG",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1996-02-08"
+        ],
+        [
+          "ref_GJO",
+          "DIVIDEND_MISSING",
+          null
+        ],
+        [
+          "ref_GJT",
+          "DIVIDEND_MISSING",
+          null
+        ],
+        [
+          "ref_GNRC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-02-12"
+        ],
+        [
+          "ref_GOCOQ",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-07-21"
+        ],
+        [
+          "ref_GOVX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2020-01-24"
+        ],
+        [
+          "ref_GPUS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2024-11-29"
+        ],
+        [
+          "ref_GROM",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-05-19"
+        ],
+        [
+          "ref_GTIM",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-12-31"
+        ],
+        [
+          "ref_GYRO",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2013-12-31"
+        ],
+        [
+          "ref_HELE",
+          "DIVIDEND_MISSING",
+          "1992-10-02"
+        ],
+        [
+          "ref_HNNA",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2005-03-10"
+        ],
+        [
+          "ref_HUBC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2023-03-01"
+        ],
+        [
+          "ref_INDV",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-10-11"
+        ],
+        [
+          "ref_IOR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1996-07-01"
+        ],
+        [
+          "ref_JAGX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-10-16"
+        ],
+        [
+          "ref_JBIO",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-04-29"
+        ],
+        [
+          "ref_JCI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2007-07-02"
+        ],
+        [
+          "ref_KEX",
+          "SPLIT_MISSING",
+          "2006-06-02"
+        ],
+        [
+          "ref_KTN",
+          "DIVIDEND_MISSING",
+          null
+        ],
+        [
+          "ref_LIVE",
+          "DIVIDEND_MISSING",
+          "2005-04-13"
+        ],
+        [
+          "ref_LOGI",
+          "DIVIDEND_MISSING",
+          "2026-09-21"
+        ],
+        [
+          "ref_LSCC",
+          "DIVIDEND_MISSING",
+          "1993-07-07"
+        ],
+        [
+          "ref_MCK",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1994-12-01"
+        ],
+        [
+          "ref_MCO",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1996-11-04"
+        ],
+        [
+          "ref_MHH",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2013-12-02"
+        ],
+        [
+          "ref_MOG_B",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2001-09-24"
+        ],
+        [
+          "ref_MOVE",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2026-04-07"
+        ],
+        [
+          "ref_MRDN",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2015-10-15"
+        ],
+        [
+          "ref_MTZ",
+          "DIVIDEND_MISSING",
+          "2000-06-19"
+        ],
+        [
+          "ref_NC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2017-10-02"
+        ],
+        [
+          "ref_NCPL",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2020-11-11"
+        ],
+        [
+          "ref_NCRA",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-08-11"
+        ],
+        [
+          "ref_NEUP",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2024-12-27"
+        ],
+        [
+          "ref_NSPR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2011-04-15"
+        ],
+        [
+          "ref_NTRB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-07-25"
+        ],
+        [
+          "ref_NTWK",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2003-08-18"
+        ],
+        [
+          "ref_NVEC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2002-11-22"
+        ],
+        [
+          "ref_OBT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2018-02-26"
+        ],
+        [
+          "ref_OCGN",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-09-30"
+        ],
+        [
+          "ref_ODYS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-08-11"
+        ],
+        [
+          "ref_OPHC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-11-08"
+        ],
+        [
+          "ref_OPTT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2007-05-02"
+        ],
+        [
+          "ref_ORRF",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2004-02-11"
+        ],
+        [
+          "ref_PLAB",
+          "DIVIDEND_MISSING",
+          "1995-03-21"
+        ],
+        [
+          "ref_PLXS",
+          "DIVIDEND_MISSING",
+          "1992-03-23"
+        ],
+        [
+          "ref_PMCB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-07-12"
+        ],
+        [
+          "ref_PMT",
+          "DIVIDEND_MISSING",
+          "2023-01-03"
+        ],
+        [
+          "ref_POCI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2008-12-11"
+        ],
+        [
+          "ref_PPCB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-06-24"
+        ],
+        [
+          "ref_PUK",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2000-07-03"
+        ],
+        [
+          "ref_QHUOY",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2022-08-12"
+        ],
+        [
+          "ref_QXO",
+          "DIVIDEND_MISSING",
+          "2023-01-03"
+        ],
+        [
+          "ref_RCAT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-08-01"
+        ],
+        [
+          "ref_RDCM",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2008-06-16"
+        ],
+        [
+          "ref_RDGT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-04-14"
+        ],
+        [
+          "ref_RDI",
+          "SPLIT_MISSING",
+          "1993-04-26"
+        ],
+        [
+          "ref_REED",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2023-01-26"
+        ],
+        [
+          "ref_REFR",
+          "DIVIDEND_MISSING",
+          "1994-02-16"
+        ],
+        [
+          "ref_RGC",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-06-16"
+        ],
+        [
+          "ref_RILYN",
+          "DIVIDEND_MISSING",
+          "2019-10-11"
+        ],
+        [
+          "ref_RNTX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1990-08-15"
+        ],
+        [
+          "ref_SBT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-04-01"
+        ],
+        [
+          "ref_SCKT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2008-10-14"
+        ],
+        [
+          "ref_SMBK",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2004-09-15"
+        ],
+        [
+          "ref_SOBR",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2020-06-08"
+        ],
+        [
+          "ref_STKE",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2016-11-18"
+        ],
+        [
+          "ref_SUZ",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2010-05-26"
+        ],
+        [
+          "ref_SVA",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-07-08"
+        ],
+        [
+          "ref_TAOP",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2006-10-03"
+        ],
+        [
+          "ref_TAP_A",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2007-10-04"
+        ],
+        [
+          "ref_TBI",
+          "DIVIDEND_MISSING",
+          "1999-07-12"
+        ],
+        [
+          "ref_TCI",
+          "DIVIDEND_MISSING",
+          "1996-03-04"
+        ],
+        [
+          "ref_TCRT",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2005-08-25"
+        ],
+        [
+          "ref_TEVA",
+          "DIVIDEND_MISSING",
+          "2006-11-10"
+        ],
+        [
+          "ref_TGL",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-12-05"
+        ],
+        [
+          "ref_TOPS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2017-06-23"
+        ],
+        [
+          "ref_TSRI",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1996-11-15"
+        ],
+        [
+          "ref_TTE",
+          "DIVIDEND_MISSING",
+          "2008-05-30"
+        ],
+        [
+          "ref_TV",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1993-12-15"
+        ],
+        [
+          "ref_TVE",
+          "DIVIDEND_MISSING",
+          null
+        ],
+        [
+          "ref_TWOD",
+          "DIVIDEND_MISSING",
+          "2025-08-01"
+        ],
+        [
+          "ref_TXMD",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2009-07-27"
+        ],
+        [
+          "ref_USB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1993-02-25"
+        ],
+        [
+          "ref_UVSP",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2003-03-03"
+        ],
+        [
+          "ref_VYX",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2005-01-21"
+        ],
+        [
+          "ref_WBUY",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2025-04-10"
+        ],
+        [
+          "ref_WFCF",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2020-12-07"
+        ],
+        [
+          "ref_WFG",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2014-01-14"
+        ],
+        [
+          "ref_WHR",
+          "DIVIDEND_MISSING",
+          "2023-01-03"
+        ],
+        [
+          "ref_WKEY",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-11-18"
+        ],
+        [
+          "ref_WKSP",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2019-03-29"
+        ],
+        [
+          "ref_WLYB",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "1995-10-20"
+        ],
+        [
+          "ref_ZWS",
+          "CORPORATE_ACTION_CONTRADICTED",
+          "2021-10-05"
+        ]
+      ]
+    },
+    "survivorship": {
+      "available": true,
+      "source": "privater Delisting-Abruf (R2, intern; Owner-Freigabe 01.10.2026)",
+      "asOf": "2026-10-01",
+      "listingsInManifest": 7893,
+      "statusCount": {
+        "SKIPPED_CLASS": 3840,
+        "OK": 3574,
+        "PARTIAL": 146,
+        "UNFETCHABLE_REUSED": 253,
+        "EMPTY": 79
+      },
+      "excludedClass": 3916,
+      "activeListings": 248,
+      "delistedListings": 3728,
+      "classes": {
+        "A": 3257,
+        "B": 68,
+        "C": 79,
+        "D": 178,
+        "E": 0,
+        "F": 146
+      },
+      "usableForStudy": 3082,
+      "tickerChangeDuplicates": 159,
+      "totalReturn": {
+        "TOTAL_RETURN_CONFIRMED": 3058,
+        "TOTAL_RETURN_REJECTED_CORPORATE_ACTION_CONTRADICTED": 19,
+        "TOTAL_RETURN_REJECTED_DIVIDEND_MISSING": 5
+      },
+      "window": {
+        "from": "2015-01-01",
+        "note": "Der Abruf reicht ab 2015; vor 2015/16 führt die Quelle Delistings nur lückenhaft (scripts/supertrader/probe/results-2026-10-01.json)."
+      },
+      "unfetchableReusedShare": 0.048
+    },
+    "historicalListingCoverage": {
+      "sources": [
+        {
+          "id": "SECURITY_MASTER_SNAPSHOT",
+          "path": "quant/data/market/security-master/us-security-master.json",
+          "rows": 8021,
+          "inactive": 191,
+          "snapshots": 1,
+          "note": "ein Stand; Listing-Start und -Ende je Zeile"
+        },
+        {
+          "id": "TIINGO_LISTING_TABLE",
+          "path": "privat (R2-Manifest)",
+          "rows": 7893,
+          "from": "2015-01-01",
+          "note": "Listings mit Ende ab 2015; volle Liste ist LEGAL_REVIEW_REQUIRED und liegt nicht im Repository"
+        },
+        {
+          "id": "UNIVERSE_BEFORE_EXPANSION",
+          "path": "quant/data/market/security-master/universe-FULL_UNIVERSE.before-expansion.json",
+          "snapshots": 1,
+          "note": "ein früherer Universumsstand, ohne Delistings"
+        },
+        {
+          "id": "INDEX_MEMBERSHIP",
+          "path": "quant/data/market/index-membership/history",
+          "snapshots": 2,
+          "note": "zwei Stichtage im September 2026"
+        },
+        {
+          "id": "CIK_MAP",
+          "path": "quant/data/universe/cik-map.json",
+          "snapshots": 1,
+          "note": "heutige Emittenten; keine historischen CIK-Zuordnungen"
+        }
+      ],
+      "delistedCoverageByEndYear": {
+        "2015": {
+          "endedIncluded": 246,
+          "usable": 237,
+          "share": 0.963,
+          "tickerListEndedAllTypes": 298
+        },
+        "2016": {
+          "endedIncluded": 304,
+          "usable": 295,
+          "share": 0.97,
+          "tickerListEndedAllTypes": 427
+        },
+        "2017": {
+          "endedIncluded": 373,
+          "usable": 354,
+          "share": 0.949,
+          "tickerListEndedAllTypes": 611
+        },
+        "2018": {
+          "endedIncluded": 395,
+          "usable": 351,
+          "share": 0.889,
+          "tickerListEndedAllTypes": 609
+        },
+        "2019": {
+          "endedIncluded": 297,
+          "usable": 289,
+          "share": 0.973,
+          "tickerListEndedAllTypes": 550
+        },
+        "2020": {
+          "endedIncluded": 238,
+          "usable": 229,
+          "share": 0.962,
+          "tickerListEndedAllTypes": 538
+        },
+        "2021": {
+          "endedIncluded": 335,
+          "usable": 323,
+          "share": 0.964,
+          "tickerListEndedAllTypes": 884
+        },
+        "2022": {
+          "endedIncluded": 298,
+          "usable": 286,
+          "share": 0.96,
+          "tickerListEndedAllTypes": 1001
+        },
+        "2023": {
+          "endedIncluded": 357,
+          "usable": 345,
+          "share": 0.966,
+          "tickerListEndedAllTypes": 1167
+        },
+        "2024": {
+          "endedIncluded": 220,
+          "usable": 215,
+          "share": 0.977,
+          "tickerListEndedAllTypes": 601
+        },
+        "2025": {
+          "endedIncluded": 227,
+          "usable": 219,
+          "share": 0.965,
+          "tickerListEndedAllTypes": 434
+        },
+        "2026": {
+          "endedIncluded": 238,
+          "usable": 182,
+          "share": 0.765,
+          "tickerListEndedAllTypes": null
+        }
+      },
+      "before2016": "nicht abgedeckt: weder Listing-Tabelle noch Kursreihen delisteter Titel vor 2015",
+      "plain": "Ab 2016 ist das damalige Universum aus Listing-Fenstern und Kursreihen rekonstruierbar, mit Ausnahme der Alt-Listings später neu vergebener Kürzel. Davor nicht."
+    },
+    "historicalIndexMembership": {
+      "snapshots": 15,
+      "dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-26",
+        "2026-09-26",
+        "2026-09-26",
+        "2026-10-03",
+        "2026-10-03",
+        "2026-10-03",
+        "2026-10-10",
+        "2026-10-10",
+        "2026-10-10",
+        "2026-10-17",
+        "2026-10-17",
+        "2026-10-17"
+      ],
+      "latestPublishedCurrentIndexAsOf": "2026-10-17",
+      "limitation": "Repository history directory has only a small recent snapshot set; full historical adds/removes are not established."
+    },
+    "factorHistory": {
+      "methodologySeries": {
+        "vu-factor-evidence-2.0.0": [
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-30",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-09",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15",
+          "2026-10-16",
+          "2026-10-19",
+          "2026-10-20",
+          "2026-10-21",
+          "2026-10-22"
+        ]
+      },
+      "totalSnapshots": 19,
+      "earliest": "2026-09-23",
+      "latest": "2026-10-22",
+      "maxPermittedGapDays": 45
+    },
+    "regimeHistory": {
+      "snapshots": 19,
+      "from": "2026-09-10",
+      "to": "2026-10-22",
+      "existingPathRequirements": "12 ordered observations over 90 days",
+      "regimeTransitionsCertified": false
+    }
+  },
+  "backtestKinds": [
+    {
+      "id": "SAME_STOCK_REPLAY",
+      "label": "Rückblick derselben Aktie",
+      "enginePath": "quant/engines/historical-cases.js",
+      "relatedEnginePaths": [
+        "quant/engines/pattern-research.js"
+      ],
+      "producerPath": "scripts/quant/build-evidence-status.mjs",
+      "relatedProducerPaths": [],
+      "producerDescription": null,
+      "executionScope": "conditional single-stock replay; survivor-by-construction",
+      "dataInputs": [
+        "discover-series-long/* (weekly, split-adjusted price)",
+        "historical-cases uses pattern-research.js"
+      ],
+      "executionPathPresent": true,
+      "directTests": [
+        "quant/tests/frontend-transformation.test.mjs",
+        "quant/tests/pattern-research.test.mjs"
+      ],
+      "status": "LIMITED",
+      "readiness": "NOT_READY",
+      "reason": "SURVIVOR_BY_CONSTRUCTION",
+      "gates": {
+        "pit": {
+          "state": "PASS",
+          "reason": null
+        },
+        "survivorship": {
+          "state": "FAIL",
+          "reason": "SURVIVOR_BY_CONSTRUCTION"
+        },
+        "ruleTest": {
+          "state": "FAIL",
+          "reason": "DESCRIPTIVE_NOT_A_TEST"
+        }
+      },
+      "historicalCoverage": {
+        "earliestAvailableDataDate": "1990-01-05",
+        "latestAvailableDataDate": "2026-10-22",
+        "universeSeries": 6174,
+        "basis": "SPLIT_ADJUSTED_PRICE",
+        "frequency": "weekly"
+      }
+    },
+    {
+      "id": "PATTERN_EVIDENCE",
+      "label": "Marktweite Muster",
+      "enginePath": "quant/engines/pattern-research.js",
+      "relatedEnginePaths": [],
+      "producerPath": "scripts/quant/build-pattern-research.mjs",
+      "relatedProducerPaths": [],
+      "producerDescription": null,
+      "executionScope": "market-wide descriptive pattern study",
+      "dataInputs": [
+        "discover-series-long/*",
+        "current/repository universe"
+      ],
+      "executionPathPresent": true,
+      "directTests": [
+        "quant/tests/pattern-research.test.mjs",
+        "quant/tests/pattern-research-volume.test.mjs"
+      ],
+      "status": "LIMITED",
+      "readiness": "NOT_READY",
+      "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+      "gates": {
+        "pit": {
+          "state": "PASS",
+          "reason": null
+        },
+        "oos": {
+          "state": "PASS",
+          "reason": null
+        },
+        "survivorship": {
+          "state": "FAIL",
+          "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART"
+        },
+        "returnBasis": {
+          "state": "FAIL",
+          "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+        },
+        "certifiedAsBacktest": {
+          "state": "FAIL",
+          "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+        }
+      },
+      "historicalCoverage": {
+        "earliestAvailableDataDate": "1990-01-05",
+        "latestAvailableDataDate": "2026-10-22",
+        "universeSeries": 6174,
+        "basis": "SPLIT_ADJUSTED_PRICE",
+        "frequency": "weekly"
+      }
+    },
+    {
+      "id": "SIGNAL_BACKTEST",
+      "label": "Signal-Backtest",
+      "enginePath": "quant/engines/signal-backtest.js",
+      "relatedEnginePaths": [],
+      "producerPath": "scripts/quant/build-signal-backtest.mjs",
+      "relatedProducerPaths": [],
+      "producerDescription": null,
+      "executionScope": "weekly signal event study",
+      "dataInputs": [
+        "discover-series-long/* for detection",
+        "canonical daily working-store series for Total Return when --work-dir is supplied"
+      ],
+      "executionPathPresent": true,
+      "directTests": [
+        "quant/tests/signal-backtest.test.mjs"
+      ],
+      "status": "LIMITED",
+      "readiness": "NOT_READY",
+      "reason": "PARTIAL_SENSITIVITY_ONLY",
+      "gates": {
+        "pit": {
+          "state": "PASS",
+          "reason": null
+        },
+        "lookahead": {
+          "state": "PASS",
+          "reason": null
+        },
+        "survivorship": {
+          "state": "FAIL",
+          "reason": "PARTIAL_SENSITIVITY_ONLY"
+        },
+        "returnBasis": {
+          "state": "PASS",
+          "reason": null
+        },
+        "ruleCertified": {
+          "state": "FAIL",
+          "reason": "NO_RULE_CERTIFIED"
+        }
+      },
+      "historicalCoverage": {
+        "from": "1990-01-05",
+        "to": "2026-10-16",
+        "globalWeeks": 1920,
+        "testedSeries": 6036,
+        "warmupWeeks": 53,
+        "returnType": "TOTAL_RETURN",
+        "totalReturnCoverage": {
+          "titles": 6174,
+          "withTotalReturn": 6036,
+          "share": 0.978,
+          "contract": "canonical-total-return-1.0.0",
+          "corporateActionContract": "corporate-action-contract-1.0.0",
+          "basis": "CANONICAL_TOTAL_RETURN",
+          "TOTAL_RETURN_CONFIRMED_BEFORE": 5637,
+          "TOTAL_RETURN_RECONSTRUCTED": 6036,
+          "TOTAL_RETURN_CONFIRMED_AFTER": 6036,
+          "REJECTED_DIVIDEND_GAP": 35,
+          "REJECTED_SPLIT_GAP": 2,
+          "REJECTED_IDENTITY": 0,
+          "REJECTED_OTHER": 101,
+          "reasons": {
+            "CORPORATE_ACTION_CONTRADICTED": 101,
+            "DIVIDEND_MISSING": 35,
+            "SPLIT_MISSING": 2
+          },
+          "listingSegmentCuts": 70,
+          "legacyAdjustedColumnPresent": 6174,
+          "beforeContract": "total-return-contract-1.0.0",
+          "minimumShare": 0.95
+        }
+      }
+    },
+    {
+      "id": "SETUP_BACKTEST",
+      "label": "Setup-Backtest",
+      "enginePath": "quant/engines/setup-engine.js",
+      "relatedEnginePaths": [],
+      "producerPath": "scripts/quant/replay-setup-history.mjs",
+      "relatedProducerPaths": [
+        "scripts/quant/build-setup-backtest.mjs"
+      ],
+      "producerDescription": null,
+      "executionScope": "published PIT setup replay and completed outcomes",
+      "dataInputs": [
+        "setup-replay-v1 snapshots",
+        "runner-private daily source for broad replay",
+        "published limited output"
+      ],
+      "executionPathPresent": true,
+      "directTests": [
+        "quant/tests/setup-engine.test.mjs",
+        "quant/tests/setup-state-contract.test.mjs",
+        "quant/tests/setup-stale-bundles.test.mjs"
+      ],
+      "status": "COLLECTING_HISTORY",
+      "readiness": "NOT_READY",
+      "reason": "SETUP_HISTORY_TOO_SHORT",
+      "gates": {
+        "publishedOnly": {
+          "state": "PASS",
+          "reason": null
+        },
+        "pit": {
+          "state": "PASS",
+          "reason": null
+        },
+        "lookahead": {
+          "state": "PASS",
+          "reason": null
+        },
+        "historyDates": {
+          "state": "FAIL",
+          "reason": "SETUP_HISTORY_TOO_SHORT"
+        },
+        "historySpan": {
+          "state": "FAIL",
+          "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
+        },
+        "completedOutcomes": {
+          "state": "FAIL",
+          "reason": "COMPLETED_OUTCOMES_TOO_FEW"
+        },
+        "titles": {
+          "state": "FAIL",
+          "reason": "TOO_FEW_TITLES"
+        },
+        "independence": {
+          "state": "FAIL",
+          "reason": "EVENTS_CLUSTERED_IN_TIME"
+        },
+        "returnBasis": {
+          "state": "FAIL",
+          "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN"
+        },
+        "survivorship": {
+          "state": "PASS",
+          "reason": null
+        },
+        "entryVariant": {
+          "state": "FAIL",
+          "reason": "VARIANTS_NOT_MEASURABLE_YET"
+        },
+        "oos": {
+          "state": "FAIL",
+          "reason": "OOS_NOT_MEASURABLE_YET"
+        }
+      },
+      "historicalCoverage": {
+        "replayFilesInRepository": 160,
+        "studyTitlesWithValidatedTotalReturn": 157,
+        "publishedTitleEntries": 157,
+        "earliestPublishedSeries": "1991-03-08",
+        "latestPublishedSeries": "2026-10-22",
+        "privateHistoryRequired": "FULL_DAILY_HISTORY_ONLY_IN_PRIVATE_HISTORY_STORE"
+      }
+    },
+    {
+      "id": "STRATEGY_BACKTEST",
+      "label": "Strategie-Backtest",
+      "enginePath": "quant/engines/backtest.js",
+      "relatedEnginePaths": [],
+      "producerPath": null,
+      "relatedProducerPaths": [],
+      "producerDescription": "POST /v1/backtests uses quant/engines/mock-provider.js in the local test path",
+      "executionScope": "strategy portfolio simulation; published real-data membership/factor history not wired",
+      "dataInputs": [
+        "mock-provider price/fact/universe panels"
+      ],
+      "executionPathPresent": true,
+      "directTests": [
+        "quant/tests/backtest.test.mjs",
+        "quant/tests/strategy-history.test.mjs"
+      ],
+      "status": "COLLECTING_HISTORY",
+      "readiness": "NOT_READY",
+      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "gates": {
+        "contract": {
+          "state": "PASS",
+          "reason": null
+        },
+        "pitGuards": {
+          "state": "PASS",
+          "reason": null
+        },
+        "membershipHistory": {
+          "state": "FAIL",
+          "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+        },
+        "factorHistory": {
+          "state": "FAIL",
+          "reason": "FACTOR_HISTORY_TOO_SHORT"
+        },
+        "continuity": {
+          "state": "PASS",
+          "reason": null
+        },
+        "returnBasis": {
+          "state": "PASS",
+          "reason": null
+        },
+        "survivorship": {
+          "state": "PASS",
+          "reason": null
+        }
+      },
+      "historicalCoverage": {
+        "providerMode": "MOCK_ONLY_IN_REPO_EXECUTION_PATH",
+        "maxStartIsDependencyDerivedInThisBranch": true,
+        "realHistoricalMembership": {
+          "snapshots": 15,
+          "from": "2026-09-15",
+          "to": "2026-10-17"
+        },
+        "factorSnapshots": 19,
+        "factorFrom": "2026-09-23",
+        "factorTo": "2026-10-22"
+      }
+    },
+    {
+      "id": "FACTOR_RANKING_BACKTEST",
+      "label": "Faktor-/Ranking-Backtest",
+      "enginePath": "quant/engines/profile-backtest.js",
+      "relatedEnginePaths": [],
+      "producerPath": null,
+      "relatedProducerPaths": [],
+      "producerDescription": "profile-backtest.run / profile-backtest.quintiles",
+      "executionScope": "PIT contract exists; real history gates closed",
+      "dataInputs": [
+        "factor-evidence-history/*",
+        "index-membership/history/*",
+        "total-return price series"
+      ],
+      "executionPathPresent": true,
+      "directTests": [],
+      "status": "COLLECTING_HISTORY",
+      "readiness": "NOT_READY",
+      "reason": "FACTOR_HISTORY_TOO_SHORT",
+      "gates": {
+        "contract": {
+          "state": "PASS",
+          "reason": null
+        },
+        "pitGuards": {
+          "state": "PASS",
+          "reason": null
+        },
+        "factorHistory": {
+          "state": "FAIL",
+          "reason": "FACTOR_HISTORY_TOO_SHORT"
+        },
+        "completedForward": {
+          "state": "FAIL",
+          "reason": "FORWARD_OUTCOMES_TOO_FEW"
+        },
+        "membershipHistory": {
+          "state": "FAIL",
+          "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+        },
+        "noRetroactive": {
+          "state": "PASS",
+          "reason": null
+        }
+      },
+      "historicalCoverage": {
+        "factorSnapshots": 19,
+        "factorFrom": "2026-09-23",
+        "factorTo": "2026-10-22",
+        "membershipSnapshots": 15,
+        "membershipFrom": "2026-09-15",
+        "membershipTo": "2026-10-17"
+      }
+    }
+  ],
+  "limits": [
+    "Weekly price series are split-adjusted price, not total return.",
+    "Listing series do not reconstruct a complete historical all-tradeable universe.",
+    "The published strategy engine execution path is synthetic/mock; real PIT factor and membership history are not wired into its data provider.",
+    "Private runner-only history was not read.",
+    "This dump is diagnostic, not a certification artifact."
+  ]
+}

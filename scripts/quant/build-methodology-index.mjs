@@ -66,7 +66,8 @@ const BEGRIFF = {
 /* Feste Nutzerueberschriften fuer Vertraege ohne Woerterbuchbegriff. Vorher von Hand in index.html nachgetragen und beim
    naechsten Erzeugen verloren (Mission IV); jetzt hier, damit die erzeugte Seite sie behaelt. */
 const UEBERSCHRIFT = {
-  "technical-method-evidence.json": "Wie belastbar jede Chart-Methode ist"
+  "technical-method-evidence.json": "Wie belastbar jede Chart-Methode ist",
+  "backtest-certification-methodology-v1.0.0.json": "Gemeinsame Backtest-Zertifizierungsmethodik V1"
 };
 
 const escape = (value) => String(value == null ? "" : value)
