@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Quant</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e;--green:#3ddc84;--amber:#ffb347}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#glow{inset:0;background:radial-gradient(circle at 92% 6%,rgba(200,245,49,.16),rgba(200,245,49,0) 46%)}
+#glow2{left:-300px;top:900px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(200,245,49,.07),rgba(200,245,49,0) 62%)}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:210px}
+.lime{color:var(--lime)} .red{color:var(--red)} .green{color:var(--green)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.9)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+.hd{left:72px;right:60px;top:280px;height:330px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;font-weight:900;letter-spacing:-.045em;line-height:.98;font-size:100px}
+.scn{left:0;top:640px;width:1080px;height:720px;opacity:0}
+#sub{left:60px;right:60px;top:1385px;height:170px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:52px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.9)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:rgba(18,21,25,.92);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:34px;color:var(--ink-2)}
+svg{overflow:visible}
+.dr{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.phone{width:360px;height:720px;border-radius:58px;border:7px solid #2b3037;background:#0d1013;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+.notch{left:50%;top:12px;width:100px;height:26px;margin-left:-50px;border-radius:20px;background:#000;z-index:3}
+.tile{width:34px;height:34px;border-radius:8px;background:#1a1f26}
+.ntf{display:flex;align-items:center;gap:14px;background:#151a20;border-radius:18px;padding:16px 16px;margin-bottom:14px;opacity:0}
+.ni{width:46px;height:46px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px}
+.ph-h{font-weight:800;font-size:22px;color:var(--muted);letter-spacing:.1em}
+</style></head>
+<body>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="glow" class="abs"></div><div id="glow2" class="abs"></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Quant</div>
+
+<!-- Schlagzeilen -->
+<div id="h1" class="abs hd" style="opacity:1"><div style="display:flex;align-items:flex-end;gap:44px"><span id="n166" class="lime" style="font-size:230px;letter-spacing:-.03em;transform-origin:0 80%;display:inline-block">166</span><span style="font-size:70px;padding-bottom:30px;line-height:1">neue<br>Jahreshochs.</span></div><div style="font-size:66px;margin-top:6px">An einem einzigen Tag.</div></div>
+<div id="h2" class="abs hd"><div>Über <span class="lime">6.000</span></div><div>US-Aktien.</div></div>
+<div id="h2b" class="abs hd"><div class="lime" style="font-size:150px;letter-spacing:-.06em">Quant</div><div>schon.</div></div>
+<div id="h3" class="abs hd"><div><span class="lime">7</span> Eigenschaften.</div><div>Jeden Tag.</div></div>
+<div id="h4" class="abs hd"><div>Was sich</div><div class="lime">verändert.</div></div>
+<div id="h5" class="abs hd"><div>Besser als</div><div>der <span class="lime">Markt?</span></div></div>
+<div id="h6" class="abs hd"><div class="lime" style="font-size:150px;letter-spacing:-.06em">Quant.</div><div>In der App.</div></div>
+
+<!-- S1: Feld aus Pfeilen nach oben -->
+<div id="s1" class="abs scn" style="opacity:1"><div id="arrows" class="abs" style="left:72px;top:20px;width:936px;height:620px"></div>
+ <div id="q" class="abs" style="left:72px;top:560px;opacity:0"><span class="chip" style="font-size:38px;color:var(--ink)"><svg width="40" height="40" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#c8f531" stroke-width="5"/><path d="M24 24 C24 14 40 14 40 24 C40 32 32 32 32 40 M32 48 V50" fill="none" stroke="#c8f531" stroke-width="5" stroke-linecap="round"/></svg>Hast du eins gesehen?</span></div>
+</div>
+
+<!-- S2: Wand + iPhone fliegt ein -->
+<div id="s2" class="abs scn">
+ <div id="wall" class="abs" style="left:72px;top:10px;width:936px"><div id="tiles" style="display:grid;grid-template-columns:repeat(20,1fr);gap:10px"></div></div>
+ <div id="ph2" class="abs phone" style="left:360px;top:0;opacity:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:22px;right:22px;top:60px">
+   <div class="ph-h">VISION UNIVERSE</div>
+   <div class="big lime" style="font-size:64px;margin-top:10px">Quant</div>
+   <div style="font-weight:700;font-size:20px;color:var(--muted);margin-top:8px">6.000+ US-Aktien · täglich</div>
+   <svg width="302" height="302" viewBox="-151 -151 302 302" style="margin-top:30px"><circle r="120" fill="none" stroke="#1f252d" stroke-width="3"/><circle r="80" fill="none" stroke="#1f252d" stroke-width="3"/><circle r="40" fill="none" stroke="#1f252d" stroke-width="3"/><path id="sw" d="M0 0 L0 -120" stroke="#c8f531" stroke-width="5" stroke-linecap="round"/><circle id="b1" cx="60" cy="-50" r="7" fill="#c8f531" opacity="0"/><circle id="b2" cx="-70" cy="30" r="7" fill="#c8f531" opacity="0"/><circle id="b3" cx="20" cy="85" r="7" fill="#c8f531" opacity="0"/></svg>
+  </div>
+ </div>
+</div>
+
+<!-- S3: Radar mit 7 Eigenschaften -->
+<div id="s3" class="abs scn">
+ <div id="ph3" class="abs phone" style="left:72px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:22px;right:22px;top:60px">
+   <div class="ph-h">AKTIE A · 7 EIGENSCHAFTEN</div>
+   <svg width="302" height="302" viewBox="-151 -151 302 302" style="margin-top:40px">
+    <g id="web"></g>
+    <path id="shape" d="" fill="rgba(200,245,49,.22)" stroke="#c8f531" stroke-width="4" stroke-linejoin="round"/>
+   </svg>
+   <div id="bars" style="margin-top:20px"></div>
+  </div>
+ </div>
+ <div class="abs" style="left:480px;top:20px;width:540px" id="flist"></div>
+</div>
+
+<!-- S4: Meldungen -->
+<div id="s4" class="abs scn">
+ <div id="ph4" class="abs phone" style="left:360px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:18px;right:18px;top:60px">
+   <div class="ph-h" style="margin:0 0 18px 6px">HEUTE BEI QUANT</div>
+   <div id="m1" class="ntf"><div class="ni" style="background:rgba(61,220,132,.18);color:var(--green)">↑</div><div><div style="font-weight:900;font-size:22px">Aktie B</div><div style="font-weight:700;font-size:18px;color:#8b919a">Neues 52-Wochen-Hoch</div></div></div>
+   <div id="m2" class="ntf"><div class="ni" style="background:rgba(200,245,49,.18);color:var(--lime)">✓</div><div><div style="font-weight:900;font-size:22px">Aktie C</div><div style="font-weight:700;font-size:18px;color:#8b919a">Setup bestätigt</div></div></div>
+   <div id="m3" class="ntf"><div class="ni" style="background:rgba(255,107,94,.18);color:var(--red)">!</div><div><div style="font-weight:900;font-size:22px">Aktie D</div><div style="font-weight:700;font-size:18px;color:#8b919a">Risiko steigt</div></div></div>
+   <div id="m4" class="ntf"><div class="ni" style="background:rgba(61,220,132,.18);color:var(--green)">↑</div><div><div style="font-weight:900;font-size:22px">Aktie E</div><div style="font-weight:700;font-size:18px;color:#8b919a">Wachstum verbessert</div></div></div>
+  </div>
+ </div>
+ <svg class="abs" style="left:140px;top:120px" width="150" height="150" viewBox="0 0 64 64"><path class="dr" id="bell" pathLength="1" stroke="#c8f531" stroke-width="4" d="M16 44 V28 C16 18 24 12 32 12 C40 12 48 18 48 28 V44 L54 50 H10 Z M26 54 C26 60 38 60 38 54"/></svg>
+</div>
+
+<!-- S5: Signal gegen Markt -->
+<div id="s5" class="abs scn">
+ <div id="ph5" class="abs phone" style="left:72px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:22px;right:22px;top:60px">
+   <div class="ph-h">WAS GESCHAH FRÜHER?</div>
+   <div style="font-weight:800;font-size:24px;margin-top:22px;line-height:1.25">Wie oft lag die Aktie<br>danach höher?</div>
+   <div style="margin-top:40px">
+    <div style="font-weight:800;font-size:20px;color:var(--lime)">Signal</div>
+    <div style="height:44px;background:#1a1f26;border-radius:10px;margin-top:8px;overflow:hidden"><div id="bs" style="height:100%;width:0;background:var(--lime);border-radius:10px"></div></div>
+    <div style="font-weight:800;font-size:20px;color:var(--muted);margin-top:24px">ganzer Markt</div>
+    <div style="height:44px;background:#1a1f26;border-radius:10px;margin-top:8px;overflow:hidden"><div id="bm" style="height:100%;width:0;background:#5b626b;border-radius:10px"></div></div>
+   </div>
+   <div id="ev" style="margin-top:34px;opacity:0;display:flex;gap:10px;flex-wrap:wrap"><span style="font-weight:800;font-size:18px;border:1.5px solid #3a4048;border-radius:999px;padding:6px 14px;color:#c3c7cc">beobachtet</span><span style="font-weight:800;font-size:18px;border:1.5px solid #c8f531;border-radius:999px;padding:6px 14px;color:#c8f531">getestet</span><span style="font-weight:800;font-size:18px;border:1.5px solid #3a4048;border-radius:999px;padding:6px 14px;color:#c3c7cc">zertifiziert</span></div>
+  </div>
+ </div>
+ <div class="abs" style="left:480px;top:60px;width:540px">
+  <div id="vs" class="card" style="opacity:0;padding:30px 34px"><div class="lab" style="font-size:30px">Jedes Signal</div><div class="big" style="font-size:84px;margin-top:8px">gegen den</div><div class="big lime" style="font-size:84px">Markt.</div></div>
+  <div id="pr" style="opacity:0;margin-top:36px;display:flex;align-items:center;gap:22px"><svg width="96" height="96" viewBox="0 0 64 64"><circle class="dr" id="pc" pathLength="1" cx="32" cy="32" r="26" stroke="#c8f531" stroke-width="5"/><path class="dr" id="pk" pathLength="1" d="M20 33 L29 42 L45 24" stroke="#c8f531" stroke-width="6"/></svg><div class="big" style="font-size:52px;line-height:1.05">Beweis statt<br>Bauchgefühl.</div></div>
+ </div>
+</div>
+
+<!-- S6: App -->
+<div id="s6" class="abs scn">
+ <div id="app" class="abs card" style="left:72px;top:60px;width:936px;padding:34px 40px;opacity:0;border-color:rgba(200,245,49,.65);display:flex;align-items:center;gap:30px">
+  <svg width="110" height="110" viewBox="0 0 64 64" style="flex:none"><path class="dr" id="appc" pathLength="1" stroke="#c8f531" stroke-width="3.6" d="M8 54 V10 M8 54 H58 M14 44 L26 30 L36 38 L54 16 M44 16 H54 V26"/></svg>
+  <div><div style="margin-bottom:10px"><span class="chip" style="font-size:24px;padding:6px 16px"><b>APP</b> Vision Universe</span></div><div class="big lime" style="font-size:80px">Quant</div><div class="lab" style="font-size:34px;margin-top:8px">in der Vision Universe App</div></div>
+ </div>
+</div>
+
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+</div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{};
+const ev=(n,fb)=>EV[n]!=null?EV[n]:fb;
+// S1: 166 Pfeile in zufälliger, fester Anordnung
+let rs=7;const rnd=()=>{rs=(rs*16807)%2147483647;return rs/2147483647;};
+let ah="";const AR=[];for(let i=0;i<166;i++){const x=rnd()*900,y=rnd()*520,d=rnd()*3.4-.5,s=.6+rnd()*.7;AR.push(d);ah+=`<svg id="a${i}" class="abs" style="left:${x}px;top:${y}px;opacity:0" width="${36*s}" height="${36*s}" viewBox="0 0 36 36"><path d="M18 32 V6 M8 16 L18 5 L28 16" fill="none" stroke="#3ddc84" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+$("arrows").innerHTML=ah;
+// S2: Kachelwand
+let th="";for(let i=0;i<240;i++)th+=`<div class="tile" id="t${i}"></div>`; $("tiles").innerHTML=th;
+// S3: Radar 7 Achsen, Werte als Illustration
+const F=["Qualität","Wachstum","Kursstärke","Bewertung","Profitabilität","Erwartung","Risiko"], VAL=[.72,.86,.78,.48,.68,.62,.55];
+const ang=i=>-Math.PI/2+i*2*Math.PI/7;
+let wh="";[40,80,120].forEach(r=>{wh+=`<polygon points="${F.map((_,i)=>`${r*Math.cos(ang(i))},${r*Math.sin(ang(i))}`).join(" ")}" fill="none" stroke="#1f252d" stroke-width="2"/>`;});
+F.forEach((_,i)=>{wh+=`<line x1="0" y1="0" x2="${120*Math.cos(ang(i))}" y2="${120*Math.sin(ang(i))}" stroke="#1f252d" stroke-width="2"/>`;}); $("web").innerHTML=wh;
+let fl="";F.forEach((f,i)=>{fl+=`<div class="card" id="fx${i}" style="opacity:0;padding:12px 22px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:800;font-size:30px">${f}</span><span style="width:120px;height:12px;border-radius:6px;background:#1a1f26;overflow:hidden;display:inline-block"><span id="fb${i}" style="display:block;height:100%;width:0;background:#c8f531"></span></span></div>`;}); $("flist").innerHTML=fl;
+const HL={1:'f1',3:'f2',6:'f3'};
+const win=(t,a,b,first)=>first?1-seg(t,b-.2,b):Math.min(seg(t,a,a+.25),1-seg(t,b-.2,b));
+function show(id,t,a,b,first,dx=60){const k=win(t,a,b,first);$(id).style.opacity=k;$(id).style.transform=`translateX(${first?0:(1-eo(seg(t,a,a+.35)))*dx}px)`;}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+const draw=(id,t,at,d=.8)=>{$(id).style.strokeDashoffset=1-eo(seg(t,at,at+d));};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  const tq=ev('quant',a2+4);
+  show("h1",t,0,a2,true); show("h2",t,a2,tq); show("h2b",t,tq,a3); show("h3",t,a3,a4); show("h4",t,a4,a5); show("h5",t,a5,a6); show("h6",t,a6,end);
+  ["s1","s2","s3","s4","s5","s6"].forEach((s,i)=>show(s,t,SC[i],SC[i+1],i===0,80));
+  // S1
+  $("n166").style.transform=`scale(${1+.08*Math.exp(-t*7)})`;
+  for(let i=0;i<166;i++){const k=eo(seg(t,AR[i],AR[i]+.3));const el=$("a"+i);el.style.opacity=k;el.style.transform=`translateY(${(1-k)*30}px)`;}
+  pop("q",t,ev('q',5),18);
+  // S2
+  for(let i=0;i<240;i++){const k=seg(t,a2+(i%20)*.03+Math.floor(i/20)*.02,a2+.3+(i%20)*.03+Math.floor(i/20)*.02);$("t"+i).style.opacity=k*(1-.6*seg(t,tq,tq+.4));}
+  const fly=eo(seg(t,tq-.1,tq+.5)); $("ph2").style.opacity=fly; $("ph2").style.transform=`translateY(${(1-fly)*500}px) rotate(${(1-fly)*8}deg)`;
+  $("sw").setAttribute("transform",`rotate(${(t-tq)*220})`); ["b1","b2","b3"].forEach((b,i)=>{$(b).style.opacity=seg(t,tq+.5+i*.2,tq+.6+i*.2);});
+  // S3
+  const ts=ev('seven',a3+2.3); const rk=eo(seg(t,ts,ts+1.0));
+  $("shape").setAttribute("d","M"+F.map((_,i)=>{const r=120*VAL[i]*rk;return `${r*Math.cos(ang(i))} ${r*Math.sin(ang(i))}`;}).join(" L")+" Z");
+  F.forEach((_,i)=>{pop("fx"+i,t,a3+.2+i*.12+0*ts,14);$("fb"+i).style.width=(100*VAL[i]*eo(seg(t,ts+i*.08,ts+.8+i*.08)))+"%";
+    const h=HL[i]?ev(HL[i],ts+1+i*.3):null; const on=h?seg(t,h,h+.2):0; $("fx"+i).style.borderColor=on>0?`rgba(200,245,49,${on})`:"rgba(255,255,255,.09)"; $("fx"+i).style.background=on>0?`rgba(200,245,49,${.12*on})`:"rgba(18,21,25,.92)";});
+  // S4
+  draw("bell",t,ev('feed',a4+.1),.7); const tb=ev('m1',a4+2.3); $("bell").style.transform=`rotate(${(t>tb?1:0)*Math.sin((t-tb)*18)*10*Math.max(0,1-(t-tb)/1.4)}deg)`; $("bell").style.transformOrigin="32px 12px";
+  pop("m1",t,ev('m1',a4+2.3)-.1,18); pop("m2",t,ev('m2',a4+3.1)-.1,18); pop("m3",t,ev('m3',a4+3.9)-.1,18); pop("m4",t,ev('m3',a4+3.9)+.6,18);
+  // S5
+  const tc=ev('cmp',a5+1); pop("vs",t,tc-.1,22);
+  $("bs").style.width=(78*eo(seg(t,tc+.5,tc+1.6)))+"%"; $("bm").style.width=(64*eo(seg(t,tc+.9,tc+2.0)))+"%";
+  pop("ev",t,tc+2.4,14);
+  const tp=ev('proof',a5+5); pop("pr",t,tp-.1,20); draw("pc",t,tp,.5); draw("pk",t,tp+.3,.35);
+  // S6
+  pop("app",t,ev('app',a6+.1),26); draw("appc",t,ev('app',a6+.1)+.1,.8);
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=1-seg(t,end,end+.3);$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=cur?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+  $("glow2").style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.3)*40}px)`;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>
