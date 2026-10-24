@@ -324,8 +324,11 @@ jobs:
           extra="--sec-fetch-max 150"
           # Probelauf auf dem massgeblichen Snapshot (der Smoke-Snapshot traegt einen aelteren Code-Fingerabdruck): 400 Reihen
           [ "$MODE" = sf7-ca-resolution-smoke ] && extra="--limit 400 --sec-fetch-max 5"
-          node scripts/supertrader/source-faithful/research/run-sf7-ca-resolution.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
-          cat "$RUNNER_TEMP/val"/*.public.json
+          rc=0
+          node scripts/supertrader/source-faithful/research/run-sf7-ca-resolution.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra || rc=$?
+          # die oeffentliche Ausgabe auch bei einem BASE-Regressionsbefund (Exit 5) zeigen
+          cat "$RUNNER_TEMP/val"/*.public.json 2>/dev/null || true
+          exit "$rc"
       - name: Supertrader 6.0 Validierung (Kosten, Perioden, Regime, Modellvarianten), diagnostisch (Snapshot + research-v1, verschluesselt)
         if: steps.mode.outputs.mode == 'sf6-validation' || steps.mode.outputs.mode == 'sf6-validation-holdout'
         env:

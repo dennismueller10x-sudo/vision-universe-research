@@ -259,6 +259,7 @@ async function main() {
   const r = await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: secFetchMax ? fetchFilings : null, secFetchMax, keys, snapshotId, evidenceInputs, log });
   const authoritative = snapshotId === SF6_RUN_FACTS.integrity.snapshotId && !LIMIT && !smoke && keys.length === INTEGRITY_KEYS.length;
   r.pub.baseVsSf6 = authoritative ? compareWithSf6(r.pub.lifecycles) : { skipped: 'NOT_THE_AUTHORITATIVE_FULL_RUN' };
+  if (authoritative) for (const [k, v] of Object.entries(r.pub.baseVsSf6)) if (k !== 'allEqual') log(`BASE vs 6.0 ${k}: ledger ${v.ledgerSha256}, trades ${v.tradesSha256}, count ${v.trades}`);
   const pub = { schema: 'supertrader-sf7-ca-resolution-public-1.0.0', receipt, resolution: r.pub };
   const sealed = { receipt, public: pub, resolution: r.sealed };
   fs.mkdirSync(OUT, { recursive: true });
