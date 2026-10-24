@@ -174,6 +174,36 @@ Weitere Bausteine:
 - **Modellannahmen** `MA-MIN7-*` sind vor dem Lesen jedes 7.0-Ergebnisses festgeschrieben (Registry `4404f759…`, Code-Fingerabdruck `e2604be2…`, beide im Test gepinnt). Die Version 1.1.0 setzt die Befunde des unabhängigen Reviews um (siehe Abschnitt 9).
 - **Lauf `sf7-minervini`:** REF muss die maßgeblichen 4.0-Ledger-Hashes reproduzieren, sonst bricht der Lauf ab. Ergebnis: siehe Abschlussbericht 7.0.
 
+## 7a. Maßgeblicher Lauf (öffentliche Zählungen, Kennzahlen versiegelt)
+
+[40103766418](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40103766418):
+- Commit `5f46d479e`, Snapshot `sts1-134d…`, Datensatz `EXACT`, research-v1.
+- Code-Fingerabdrücke: 4.0 `b1d81fb8…` (unverändert), 7.0 `e2604be2…`.
+- Registries: 4.0 `f13ea350…`, 7.0 `4404f759…`.
+- Alle Läufe sind abgestimmt (Ledger-Replay).
+
+| | Trades | gegenüber REF unverändert / geändert / entfallen / neu | Index-Änderung |
+|---|---|---|---|
+| SEPA REF | 954 | Ledger **identisch** mit 4.0 (39746264325) | – |
+| ALT-SEPA-FLAT-BASE | 824 | 24 / 249 / 681 / 551 | 98.878 Flat-Base-Setups neu, 175.013 ersetzen nicht strikte; 150.893 tiefer als 10 % (nicht handelbar) |
+| ALT-SEPA-TT6-25 | 982 | 123 / 558 / 273 / 301 | Kriterium 25 % |
+| ALT-SEPA-RS-LINE | 890 | 50 / 400 / 504 / 440 | 278.881 Setups ohne steigende RS-Linie entfernt, 178 nicht messbar |
+| Power Play REF | 1.007 | Ledger **identisch** mit 4.0 | – |
+
+Die vielen geänderten Trades sind Knock-on in einem kapazitätsgebundenen Portfolio, wie in 6.0 beschrieben (E6). Bewertet wird nur über versiegelte Kennzahlen und Verteilungen, nicht über einzelne Trades.
+
+**Diagnosen auf den REF-Trades:**
+
+| | SEPA | Power Play |
+|---|---|---|
+| größter Tagesrückgang seit Stage-2-Beginn vor dem Ausstieg (geschlossene Trades) | 613 von 937 | 563 von 998 |
+| geplanter Verlust ≤ halber PIT-Durchschnittsgewinn | 875 von 902 bewertbar | 957 von 957 |
+| geplanter Verlust > 10 % | 0 | 0 |
+
+Einordnung ohne Performanceaussage:
+- Die Stop-Struktur der Referenz hält Minervinis Faustregel „höchstens halber Durchschnittsgewinn“ fast immer ein.
+- Das Rückgangssignal träte bei zwei Dritteln der Trades vor dem modellierten Ausstieg auf. Ob es als Ausstiegsregel taugt, zeigt nur eine eigene, vorregistrierte Variante. Die ist nicht gebaut: Das wäre eine Änderung der 4.0-Ausführungsengine und braucht Ihre Entscheidung.
+
 ## 8. Was bleibt
 
 - **CC-1 für SEPA und Power Play:** Der englische Buchwortlaut fehlt im Projekt. Entweder stellen Sie rechtmäßig eine englische Ausgabe bereit, oder Sie entscheiden ausdrücklich, ob zwei übereinstimmende Übersetzungen als Beleg genügen. Ich habe diese Entscheidung nicht vorweggenommen.
