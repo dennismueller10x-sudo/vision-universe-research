@@ -574,9 +574,9 @@
       "cik": "0001811414",
       "name": "QuantumScape Corp",
       "sic": "3690",
-      "rawFacts": 7647,
-      "mappedFacts": 1865,
-      "unmappedFacts": 5781,
+      "rawFacts": 7962,
+      "mappedFacts": 1955,
+      "unmappedFacts": 6004,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -586,28 +586,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 28,
+      "quarterlyPeriods": 29,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -627,14 +627,14 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -655,14 +655,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -685,46 +685,47 @@
         }
       },
       "quality": {
-        "HIGH": 199
+        "HIGH": 205
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 199,
-        "resolvedValues": 199
+        "datableValues": 205,
+        "resolvedValues": 205
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5832,
+        "total": 6054,
         "by_severity": {
-          "INFO": 5781,
-          "WARNING": 51
+          "INFO": 6004,
+          "WARNING": 50
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 5,
+          "CONCEPT_DISAGREEMENT": 2,
           "FISCAL_PERIOD_CONFLICT": 7,
-          "RESTATEMENT_CONFLICT": 29,
+          "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 5781
+          "UNKNOWN_CONCEPT": 6004
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-316073",
-        "filing_date": "2026-07-24",
+        "accession": "0001193125-26-430428",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 28
+        "periodic_filings": 29,
+        "acceptance_datetime": "2026-10-23T20:07:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "20fc5114c96308f3a2848f12e48761c5ed93b051d7dd5e9d969f0758f7db5723",
+      "sourceDigest": "541326fefb54bc2417bf581d572a570d9151c46ec38dce3a607d4d1187bf1e64",
       "issuerId": "iss_cik_0001811414"
     },
     {

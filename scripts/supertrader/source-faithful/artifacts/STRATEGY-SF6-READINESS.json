@@ -1,0 +1,1279 @@
+{
+ "schema": "supertrader-sf6-readiness-1.1.0",
+ "criteriaVersion": "sf6-readiness-criteria-1.2.0",
+ "criteriaSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342",
+ "criteria": [
+  {
+   "id": "CC-1-SOURCE",
+   "test": "no essential rule of the reference lifecycle is SOURCE_BLOCKED or SOURCE_AMBIGUOUS, no reference rule rests on a secondary source only, and the source wording of the reference rules is available (not translation-only)"
+  },
+  {
+   "id": "CC-2-LIFECYCLE",
+   "test": "all nine operational phases run in the reference (no phase missing; a phase closed only by an SF6 model variant does not count)"
+  },
+  {
+   "id": "CC-3-NO-MANUAL",
+   "test": "no essential manual source decision is substituted by a model assumption in the reference (manual review requirement = none)"
+  },
+  {
+   "id": "CC-4-DATA",
+   "test": "no essential rule of the reference is DATA_BLOCKED (proxies do not unblock; the SIC-based Turtle correlation groups stay a research proxy, E4)"
+  },
+  {
+   "id": "CC-5-CORPORATE-ACTIONS",
+   "test": "V4-D1 RESOLVED for the reference: every flagged session behind a reference trade verified by corporate-action evidence (CONFIRMED_UNDECLARED_SPLIT corrected in a versioned data PR, or CONFIRMED_GENUINE_MOVE) and the reference recomputed. The DQ-K5 / DQ-K3 quarantine is a diagnostic containment only and never satisfies this criterion (owner decision E1, 2026-10-24)"
+  },
+  {
+   "id": "CC-6-REPRODUCIBLE",
+   "test": "the reference ran on the frozen snapshot with research-v1, reconciled, deterministic, current code"
+  },
+  {
+   "id": "CC-7-EXECUTION",
+   "test": "entry and stop are executable point in time on the data used (no fill at a price unknown at the decision; no hypothetical short without borrow data); cost sensitivity measured"
+  },
+  {
+   "id": "CC-8-OOS",
+   "test": "out-of-sample evidence from the prospective paper validation protocol SF6-PAPER-2027 (window from 2027-01-01, fixed before it opens; owner decision E2). No historical window qualifies: 2008-2015 (opened once in R14, survivorship-limited) and 2016-2026 (development data) FAIL this criterion and can at most earn PASS_WITH_DECLARED_LIMITS in the OUT_OF_SAMPLE_EVIDENCE dimension"
+  }
+ ],
+ "ownerDecisions": [
+  {
+   "id": "E1",
+   "decision": "V4-D1 stays a genuine data-integrity blocker; no quarantine reading is a final solution or a certification exception; existing Tiingo / Marketstack corporate-action data and verifiable public filings may be checked in a targeted way, without new costs and without bulk requests"
+  },
+  {
+   "id": "E2",
+   "decision": "a versioned prospective paper validation protocol from 2027-01-01 (SF6-PAPER-2027); no historical data are called an untouched holdout; no permanent scheduler, no live trading"
+  },
+  {
+   "id": "E3",
+   "decision": "the Pocket Pivot stop and the Holy Grail trailing stay explicit research variants, never original rules; no automatic upgrade of measurement classes"
+  },
+  {
+   "id": "E4",
+   "decision": "SIC-based Turtle correlation groups stay research proxies; no certification on their basis"
+  },
+  {
+   "id": "E5",
+   "decision": "no additional EP / PS intraday requests; only a prioritised plan for better stratified coverage within the existing budget"
+  },
+  {
+   "id": "E6",
+   "decision": "evaluation by metrics and distributions, not by the identity of single trades; numerical reproducibility, trade stability and robustness are reported separately and the sensitivity of the portfolio studies stays visible"
+  }
+ ],
+ "paperProtocol": {
+  "id": "SF6-PAPER-2027",
+  "version": "1.0.0",
+  "start": "2027-01-01",
+  "status": "PREPARED_NOT_ACTIVE",
+  "activation": "NOT_ACTIVATED",
+  "sha256": "c90c30bcf0186549aeb672ffc124b3b24d7b321288f0e78798a3a0cfc3bd5e8f"
+ },
+ "runs": {
+  "integrity": "40001276389",
+  "validation": "40001421221",
+  "holdout": "40007428374"
+ },
+ "liveReadiness": "LIVE_NOT_APPROVED",
+ "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+ "summary": {
+  "byPrimaryState": {
+   "RESEARCH_COMPLETE_WITH_EXCEPTIONS": 9,
+   "VALIDATION_BLOCKED": 2,
+   "SOURCE_BLOCKED": 2
+  },
+  "certificationCandidates": []
+ },
+ "candidates": [
+  {
+   "candidateId": "C01",
+   "strategyId": "SF_TURTLE_S1",
+   "lifecycleKey": "TURTLE_S1",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": true,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.2.0: 7 exact, 13 derived (0 from a secondary source), 0 manual, 2 data-blocked, 2 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 15 of 820 reference trades directly exposed (1.83 %, above the reported bound of 1 %); 128 unchanged, 646 removed, 46 changed (knock-on 678)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39397517900: ledger hash EQUAL, trade hash NOT_PUBLISHED_BY_REFERENCE",
+     "e6": {
+      "numericalReproducibility": "LEDGER_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "128 of 820 trades unchanged (16 %)",
+       "underCost50": "820 -> 923 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 716 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PASS",
+     "evidence": "none"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C02",
+   "strategyId": "SF_TURTLE_S2",
+   "lifecycleKey": "TURTLE_S2",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": true,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": true,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS",
+     "evidence": "contract 1.2.0: 7 exact, 12 derived (0 from a secondary source), 0 manual, 2 data-blocked, 0 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "RESEARCH_ENGINE_COMPLETE_WITH_DATA_EXCEPTION; acceptance gate AG-1..AG-7; data exception TUR-SF-LIMIT-CORR"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: TUR-SF-LIMIT-CORR"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 11 of 559 reference trades directly exposed (1.97 %, above the reported bound of 1 %); 324 unchanged, 223 removed, 12 changed (knock-on 224)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39397517900: ledger hash EQUAL, trade hash NOT_PUBLISHED_BY_REFERENCE",
+     "e6": {
+      "numericalReproducibility": "LEDGER_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "324 of 559 trades unchanged (58 %)",
+       "underCost50": "559 -> 466 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 530 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PASS",
+     "evidence": "none"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C03",
+   "strategyId": "SF_DARVAS_BOX",
+   "lifecycleKey": "DARVAS",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "MECHANICAL_COMPONENT_STUDY",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.3.1: 3 exact, 10 derived (0 from a secondary source), 6 manual, 0 data-blocked, 1 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 8 rows, 2 mechanical, 6 under model assumption, 0 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 3 rows, 1 mechanical, 1 under model assumption, 1 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PASS",
+     "evidence": "EXIT_CONDITIONS: 1 rows, 1 mechanical, 0 under model assumption, 0 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 20 of 19556 reference trades directly exposed (0.10 %); 18058 unchanged, 88 removed, 1410 changed (knock-on 1493)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "18058 of 19556 trades unchanged (92 %)",
+       "underCost50": "19556 -> 7343 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 11869 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "8 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C04",
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "lifecycleKey": "WEINSTEIN_INVESTOR",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": true,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 9 manual, 2 data-blocked, 0 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 7 rows, 3 mechanical, 2 under model assumption, 0 manual, 2 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 4 rows, 0 mechanical, 2 under model assumption, 2 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 3 rows, 1 mechanical, 1 under model assumption, 1 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 0 of 1348 reference trades directly exposed (0.00 %); 311 unchanged, 121 removed, 916 changed (knock-on 1037)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "311 of 1348 trades unchanged (23 %)",
+       "underCost50": "1348 -> 1339 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 995 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "14 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C05",
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "lifecycleKey": "WEINSTEIN_TRADER",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": true,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 8 manual, 2 data-blocked, 0 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 7 rows, 3 mechanical, 2 under model assumption, 0 manual, 2 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 3 rows, 0 mechanical, 2 under model assumption, 1 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 4 rows, 1 mechanical, 1 under model assumption, 2 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: WEIN-SF-GROUP, WEIN-SF-MARKET"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 4 of 1808 reference trades directly exposed (0.22 %); 373 unchanged, 473 removed, 962 changed (knock-on 1431)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "373 of 1808 trades unchanged (21 %)",
+       "underCost50": "1808 -> 1859 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 1296 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "12 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C06",
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "lifecycleKey": "MINERVINI_SEPA",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PARTIAL",
+     "evidence": "contract 1.2.0: 0 exact, 9 derived (0 from a secondary source), 7 manual, 1 data-blocked, 0 ambiguous; wording only via translation"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 19 rows, 4 mechanical, 6 under model assumption, 4 manual, 2 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "ENTRY_EXECUTION: 5 rows, 0 mechanical, 5 under model assumption, 0 manual, 0 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 3 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 8 rows, 1 mechanical, 4 under model assumption, 3 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 5 rows, 0 mechanical, 3 under model assumption, 2 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: MIN-SF-TT-8"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 0 of 954 reference trades directly exposed (0.00 %); 901 unchanged, 14 removed, 39 changed (knock-on 53)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "901 of 954 trades unchanged (94 %)",
+       "underCost50": "954 -> 983 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 522 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "11 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C07",
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "lifecycleKey": "MINERVINI_POWER_PLAY",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PARTIAL",
+     "evidence": "contract 1.3.0: 0 exact, 5 derived (0 from a secondary source), 4 manual, 0 data-blocked, 0 ambiguous; wording only via translation"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 15 rows, 7 mechanical, 5 under model assumption, 1 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "ENTRY_EXECUTION: 5 rows, 0 mechanical, 5 under model assumption, 0 manual, 0 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 3 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 8 rows, 1 mechanical, 4 under model assumption, 3 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 5 rows, 0 mechanical, 3 under model assumption, 2 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 10 of 1007 reference trades directly exposed (0.99 %); 108 unchanged, 128 removed, 771 changed (knock-on 889)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "108 of 1007 trades unchanged (11 %)",
+       "underCost50": "1007 -> 971 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 425 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "6 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C08",
+   "strategyId": "SF_KK_BREAKOUT",
+   "lifecycleKey": "KK_BREAKOUT",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": true,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.2.1: 4 exact, 1 derived (0 from a secondary source), 6 manual, 1 data-blocked, 0 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 5 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "ENTRY_EXECUTION: 3 rows, 0 mechanical, 2 under model assumption, 0 manual, 1 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "PASS",
+     "evidence": "INITIAL_STOP: 1 rows, 1 mechanical, 0 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 3 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "EXIT_CONDITIONS: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 31 of 9114 reference trades directly exposed (0.34 %); 2809 unchanged, 1521 removed, 4784 changed (knock-on 6278)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "2809 of 9114 trades unchanged (31 %)",
+       "underCost50": "9114 -> 5064 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 5722 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "7 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C09",
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "lifecycleKey": null,
+   "primaryState": "VALIDATION_BLOCKED",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": null,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": false,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": false,
+    "CC-7-EXECUTION": false,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.1.0: 4 exact, 1 derived (0 from a secondary source), 3 manual, 3 data-blocked, 1 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: KK-SF-EP-CATALYST, KK-SF-EP-VOLUME, KK-SF-EP-ENTRY"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "NOT_EVIDENCED",
+     "evidence": "not a snapshot lifecycle (EP / PS candidate days come from the same snapshot; not separately contained)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "IEX venue minutes only (1-5 % of consolidated volume); buy stop resolved in time order"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)",
+     "e6": {
+      "numericalReproducibility": "NOT_EVIDENCED",
+      "tradeStability": "NOT_EVIDENCED",
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "NOT_EVIDENCED",
+     "evidence": "IEX minutes start 2017: no second period"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "2 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C10",
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "lifecycleKey": null,
+   "primaryState": "VALIDATION_BLOCKED",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": null,
+   "certificationCriteria": {
+    "CC-1-SOURCE": true,
+    "CC-2-LIFECYCLE": false,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": false,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": false,
+    "CC-7-EXECUTION": false,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.1.0: 3 exact, 0 derived (0 from a secondary source), 4 manual, 3 data-blocked, 0 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PARTIAL",
+     "evidence": "hypothetical one-unit short single-trade study; no portfolio"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); data-blocked rules: KK-SF-PS-BORROW, KK-SF-PS-ENTRY, KK-SF-PS-STOP"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "NOT_EVIDENCED",
+     "evidence": "not a snapshot lifecycle (EP / PS candidate days come from the same snapshot; not separately contained)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "BLOCKED",
+     "evidence": "short execution hypothetical: no historical borrow, locates or fees"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot + private IEX cache (not frozen in the snapshot)",
+     "e6": {
+      "numericalReproducibility": "NOT_EVIDENCED",
+      "tradeStability": "NOT_EVIDENCED",
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "NOT_EVIDENCED",
+     "evidence": "IEX minutes start 2017: no second period"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "4 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C11",
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "lifecycleKey": "POCKET_PIVOT",
+   "primaryState": "SOURCE_BLOCKED",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 8,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": false,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.3.0: 1 exact, 3 derived (0 from a secondary source), 5 manual, 0 data-blocked, 1 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 3 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 0 mechanical, 1 under model assumption, 0 manual, 1 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "INITIAL_STOP: 1 rows, 0 mechanical, 0 under model assumption, 1 manual, 0 blocked",
+     "sf6ModelVariant": {
+      "id": "SF6-MODEL-PP-STOP-SIGNAL-DAY-LOW",
+      "assumption": "MA6-PP-STOP-SIGNAL-DAY-LOW",
+      "trades": 4534,
+      "note": "phase closed only by an SF6 model variant (never a source rule); the reference stays without this phase"
+     }
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 2 rows, 0 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 2 rows, 0 mechanical, 1 under model assumption, 1 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 7 of 1872 reference trades directly exposed (0.37 %); 187 unchanged, 627 removed, 1058 changed (knock-on 1678)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "187 of 1872 trades unchanged (10 %)",
+       "underCost50": "1872 -> 1845 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 1415 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "7 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C12",
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "lifecycleKey": "BUYABLE_GAP_UP",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": true,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.3.0: 2 exact, 2 derived (0 from a secondary source), 6 manual, 0 data-blocked, 2 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 5 rows, 1 mechanical, 3 under model assumption, 1 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 0 mechanical, 1 under model assumption, 0 manual, 1 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 1 rows, 0 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 2 rows, 0 mechanical, 2 under model assumption, 0 manual, 0 blocked"
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "EXIT_CONDITIONS: 2 rows, 0 mechanical, 1 under model assumption, 1 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 15 of 3415 reference trades directly exposed (0.44 %); 1281 unchanged, 647 removed, 1487 changed (knock-on 2121)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "1281 of 3415 trades unchanged (38 %)",
+       "underCost50": "3415 -> 3467 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 2116 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "8 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  },
+  {
+   "candidateId": "C13",
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "lifecycleKey": "HOLY_GRAIL_W_RAS97",
+   "primaryState": "SOURCE_BLOCKED",
+   "technicallyComplete": true,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": 8,
+   "certificationCriteria": {
+    "CC-1-SOURCE": false,
+    "CC-2-LIFECYCLE": false,
+    "CC-3-NO-MANUAL": false,
+    "CC-4-DATA": true,
+    "CC-5-CORPORATE-ACTIONS": false,
+    "CC-6-REPRODUCIBLE": true,
+    "CC-7-EXECUTION": true,
+    "CC-8-OOS": false
+   },
+   "dimensions": {
+    "SOURCE_FIDELITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "contract 1.2.1: 2 exact, 4 derived (2 from a secondary source), 2 manual, 0 data-blocked, 1 ambiguous"
+    },
+    "SETUP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 5 rows, 2 mechanical, 3 under model assumption, 0 manual, 0 blocked"
+    },
+    "ENTRY_COMPLETENESS": {
+     "grade": "PARTIAL",
+     "evidence": "ENTRY_EXECUTION: 2 rows, 0 mechanical, 1 under model assumption, 0 manual, 1 blocked"
+    },
+    "STOP_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "INITIAL_STOP: 1 rows, 0 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "POSITION_MANAGEMENT": {
+     "grade": "PARTIAL",
+     "evidence": "POSITION_SIZING+POSITION_MANAGEMENT: 2 rows, 0 mechanical, 1 under model assumption, 1 manual, 0 blocked",
+     "sf6ModelVariant": {
+      "id": "SF6-MODEL-HG-TRAIL-SWING-LOWS",
+      "assumption": "MA6-HG-TRAIL-SWING-LOWS",
+      "trades": 2217,
+      "note": "phase closed only by an SF6 model variant (never a source rule); the reference stays without this phase"
+     }
+    },
+    "EXIT_COMPLETENESS": {
+     "grade": "MODEL_ASSUMPTION",
+     "evidence": "EXIT_CONDITIONS: 1 rows, 0 mechanical, 1 under model assumption, 0 manual, 0 blocked"
+    },
+    "PORTFOLIO_ACCOUNTING": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "research-v1 ledger replay reconciled in every snapshot run; platform portfolio policy VU-SF5 / VU-MIN (not an original rule)"
+    },
+    "PIT_DATA_INTEGRITY": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "snapshot sts1 incl. inactive listings (survivorship: Tiingo ticker list); causal indicators (prefix tests); no data-blocked essential rule"
+    },
+    "CORPORATE_ACTION_INTEGRITY": {
+     "grade": "PARTIAL",
+     "evidence": "V4-D1 CONTAINED, NOT RESOLVED (owner decision E1: open data-integrity blocker); DQ-K5 diagnostic: 30 of 4025 reference trades directly exposed (0.75 %); 375 unchanged, 1250 removed, 2400 changed (knock-on 3622)"
+    },
+    "EXECUTION_REALISM": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "daily bars: PIT entry (next open / resting buy stop), pessimistic intrabar order declared; cost sensitivity 0 / 10 / 20 / 50 bps measured (sealed)"
+    },
+    "BACKTEST_REPRODUCIBILITY": {
+     "grade": "PASS",
+     "evidence": "frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL",
+     "e6": {
+      "numericalReproducibility": "LEDGER_AND_TRADE_HASH_IDENTICAL",
+      "tradeStability": {
+       "underQuarantine": "375 of 4025 trades unchanged (9 %)",
+       "underCost50": "4025 -> 4041 trades"
+      },
+      "robustness": "NOT_ESTABLISHED (metrics sealed and not assessed; holdout historically used and survivorship-burdened; untouched window only SF6-PAPER-2027)"
+     }
+    },
+    "OUT_OF_SAMPLE_EVIDENCE": {
+     "grade": "PASS_WITH_DECLARED_LIMITS",
+     "evidence": "historical test period 2008-2015, NOT an untouched holdout (already used: opened once in R14; survivorship-burdened: ticker list incomplete for old delistings, results biased upwards): 3253 reference trades; untouched window only SF6-PAPER-2027 from 2027-01-01 (NOT_ACTIVATED)"
+    },
+    "MANUAL_REVIEW_REQUIREMENTS": {
+     "grade": "PARTIAL",
+     "evidence": "3 essential manual source decisions substituted by declared model assumptions"
+    },
+    "CERTIFICATION_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "failed: CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS"
+    },
+    "LIVE_READINESS": {
+     "grade": "BLOCKED",
+     "evidence": "LIVE_NOT_APPROVED (no live activation, no broker, no orders)"
+    }
+   }
+  }
+ ]
+}

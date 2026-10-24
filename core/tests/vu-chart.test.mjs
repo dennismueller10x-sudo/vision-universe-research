@@ -54,3 +54,11 @@ test("Achse · letzter Kurs nah am Hoch: nur eine Zahl, kein Uebereinanderdruck"
     assert.deepEqual(labels.sort(), ["100,00", "199,39"], "letzter Kurs bleibt, das Hoch daneben entfaellt");
   } finally { globalThis.document = prev; }
 });
+
+test("Geometrie · extent haelt eigene Marken im Bild, ohne sie zu zeichnen", () => {
+  const pts = [["2026-10-22T09:30", 88], ["2026-10-22T15:55", 87.6]];
+  const g = C.geometry(pts, { extent: [99.79, 73.32, NaN] });
+  assert.equal(g.hi, 99.79); assert.equal(g.lo, 73.32);
+  assert.equal(g.levels.length, 0, "extent zeichnet keine Linie");
+  assert.equal(C.geometry(pts, {}).hi, 88, "ohne extent unveraendert");
+});

@@ -735,9 +735,9 @@
       "cik": "0001300514",
       "name": "LAS VEGAS SANDS CORP",
       "sic": "7011",
-      "rawFacts": 24219,
-      "mappedFacts": 7234,
-      "unmappedFacts": 16856,
+      "rawFacts": 24581,
+      "mappedFacts": 7346,
+      "unmappedFacts": 17235,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -747,28 +747,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 72,
+      "quarterlyPeriods": 73,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -788,21 +788,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -816,14 +816,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -846,48 +846,49 @@
         }
       },
       "quality": {
-        "HIGH": 522,
+        "HIGH": 529,
         "MEDIUM": 106
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 628,
-        "resolvedValues": 628
+        "datableValues": 635,
+        "resolvedValues": 635
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17982,
+        "total": 18212,
         "by_severity": {
-          "INFO": 16856,
+          "INFO": 17235,
           "ERROR": 9,
-          "WARNING": 1117
+          "WARNING": 968
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 931,
+          "CONCEPT_DISAGREEMENT": 780,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 128,
+          "RESTATEMENT_CONFLICT": 130,
           "UNEXPECTED_DURATION": 58,
-          "UNKNOWN_CONCEPT": 16856
+          "UNKNOWN_CONCEPT": 17235
         }
       },
       "latestFiling": {
-        "accession": "0001300514-26-000085",
-        "filing_date": "2026-07-24",
+        "accession": "0001300514-26-000103",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 88
+        "periodic_filings": 89,
+        "acceptance_datetime": "2026-10-23T20:09:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "d47b562007bf39a0b2bd3bf7db6a2ee90faf6d558e5accef1546edd9d6c6add6",
+      "sourceDigest": "c4becb12a703d2d712ef62db48ce876fce938f52d0e5ed14b948845e9818f47a",
       "issuerId": "iss_cik_0001300514"
     },
     {

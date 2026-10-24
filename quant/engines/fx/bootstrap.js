@@ -94,6 +94,18 @@
    * "fuer diese Waehrung gibt es keine Kurse" ist ein normaler Zustand
    * des Produkts (fuenf Titel im Universum), kein Fehler.
    */
+  /* Eine bereits mitgelieferte Reihe (options.preload, z. B. das FX-Paket der
+     Quant-Aktienseite, scripts/vu2/build-release.mjs) wird genauso uebernommen
+     wie eine geholte - derselbe Weg in den Store, kein zweiter. */
+  function ingestDoc(d) {
+    if (!d || !d.base || !d.quote || !Array.isArray(d.points) || !d.points.length) return false;
+    state.store.ingest(d.base, d.quote, d.points,
+      VUFx.Providers.ingestMeta(d.source || "ecb", { frequency: d.frequency || "DAILY" }));
+    if (d.attribution) state.attributions[d.attribution] = true;
+    if (d.base === "EUR") state.loaded[String(d.quote).toUpperCase()] = true;
+    return true;
+  }
+
   function ensureCurrency(code) {
     var c = (code || "").toUpperCase();
     if (!c || c === "EUR") return Promise.resolve(true);
@@ -106,13 +118,7 @@
       });
       if (!entry) { state.loaded[c] = false; return false; }
       return json(state.basePath + entry.file).then(function (d) {
-        if (!d || !Array.isArray(d.points) || !d.points.length) {
-          state.loaded[c] = false;
-          return false;
-        }
-        state.store.ingest(d.base, d.quote, d.points,
-          VUFx.Providers.ingestMeta(d.source || "ecb", { frequency: d.frequency || "DAILY" }));
-        if (d.attribution) state.attributions[d.attribution] = true;
+        if (!ingestDoc(d)) { state.loaded[c] = false; return false; }
         state.loaded[c] = true;
         return true;
       });
@@ -195,6 +201,9 @@
         try { VUFx.Providers.configure(cfg); }
         catch (err) { log("Lizenzkonfiguration nicht lesbar", err); }
       }
+      (options.preload || []).forEach(function (d) {
+        try { ingestDoc(d); } catch (err) { log("mitgelieferte Reihe nicht lesbar", err); }
+      });
       return Promise.all((options.eager || EAGER).map(ensureCurrency));
     });
     return vorgeladen.then(function (ok) {

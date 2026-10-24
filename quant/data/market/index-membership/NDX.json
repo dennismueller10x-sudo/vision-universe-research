@@ -10,9 +10,9 @@
   "url": "https://api.nasdaq.com/api/quote/list-type/nasdaq100",
   "format": "NASDAQ_API_JSON"
  },
- "asOf": "2026-10-17",
+ "asOf": "2026-10-24",
  "asOfSource": "FETCH_DATE",
- "fetchedAt": "2026-10-17T11:39:57.055Z",
+ "fetchedAt": "2026-10-24T12:03:28.697Z",
  "holdingsCount": 101,
  "memberCount": 100,
  "unmatchedCount": 1,
@@ -926,14 +926,14 @@
   }
  ],
  "changes": {
-  "previousAsOf": "2026-10-10",
+  "previousAsOf": "2026-10-17",
   "added": [],
   "removed": []
  },
- "note": "NASDAQ-100: Mitgliedschaft laut Liste des Indexeigentuemers (Nasdaq, Inc. (Indexeigentuemer, Quote-API)) zum Stichtag 2026-10-17. Zuordnung zum Company Master ueber den Ticker (Trennzeichen ignoriert, nur bei Eindeutigkeit). Keine Ticker-Heuristik ueber die Mitgliedschaft selbst; nicht zuordenbare Bestandszeilen stehen unter unmatched. Indexnamen sind Marken ihrer Eigentuemer; die Datei nennt einen Fondsbestand, keine offizielle Indexliste.",
+ "note": "NASDAQ-100: Mitgliedschaft laut Liste des Indexeigentuemers (Nasdaq, Inc. (Indexeigentuemer, Quote-API)) zum Stichtag 2026-10-24. Zuordnung zum Company Master ueber den Ticker (Trennzeichen ignoriert, nur bei Eindeutigkeit). Keine Ticker-Heuristik ueber die Mitgliedschaft selbst; nicht zuordenbare Bestandszeilen stehen unter unmatched. Indexnamen sind Marken ihrer Eigentuemer; die Datei nennt einen Fondsbestand, keine offizielle Indexliste.",
  "sourcesTried": [
   "QQQ: HTTP 406 (?, 0 Bytes) https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ :: ",
-  "QQQM: Kopfzeile nicht gefunden (holding ticker, weight) [text/html;charset=utf-8, 426046 Bytes; Anfang: \"<!--\\n* This file is created specifically to update\\n* lang attribute in html tag and\\n* data-language attribute body tag\\n* based on the country and language\\n* in SPA pages\\n-->\\n<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n  <head><scri\"]"
+  "QQQM: Kopfzeile nicht gefunden (holding ticker, weight) [text/html;charset=utf-8, 425432 Bytes; Anfang: \"<!--\\n* This file is created specifically to update\\n* lang attribute in html tag and\\n* data-language attribute body tag\\n* based on the country and language\\n* in SPA pages\\n-->\\n<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n  <head><scri\"]"
  ],
  "shortLabel": "NASDAQ-100",
  "sourceFile": null

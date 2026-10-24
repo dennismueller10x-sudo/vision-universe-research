@@ -588,10 +588,10 @@
       "cik": "0001788230",
       "name": "IP STRATEGY HOLDINGS, INC.",
       "sic": "2080",
-      "rawFacts": 2534,
-      "mappedFacts": 703,
-      "unmappedFacts": 1840,
-      "calendarYears": 4,
+      "rawFacts": 2908,
+      "mappedFacts": 828,
+      "unmappedFacts": 2111,
+      "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -599,29 +599,29 @@
         "IPST"
       ],
       "status": "INGESTED",
-      "annualPeriods": 4,
-      "quarterlyPeriods": 13,
+      "annualPeriods": 5,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2021-06-30",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -634,28 +634,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -668,15 +668,15 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2023-12-31",
+          "annualPeriods": 4,
+          "quarterlyPeriods": 14,
+          "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
+          "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -699,45 +699,46 @@
         }
       },
       "quality": {
-        "HIGH": 97,
-        "MEDIUM": 6
+        "HIGH": 111,
+        "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 103,
-        "resolvedValues": 103
+        "datableValues": 118,
+        "resolvedValues": 118
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 1898,
+        "total": 2177,
         "by_severity": {
-          "INFO": 1840,
-          "WARNING": 58
+          "INFO": 2111,
+          "WARNING": 66
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 33,
-          "RESTATEMENT_CONFLICT": 25,
-          "UNKNOWN_CONCEPT": 1840
+          "RESTATEMENT_CONFLICT": 33,
+          "UNKNOWN_CONCEPT": 2111
         }
       },
       "latestFiling": {
-        "accession": "0001788230-26-000068",
-        "filing_date": "2026-05-20",
+        "accession": "0001788230-26-000085",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 9
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-10-23T20:08:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "79e2a238701a39871812afc965e51af7fc3855aef50c442bb11c0d9cc483b7c4",
+      "sourceDigest": "71f87683b1895ee1ab47bff3396dd6ade22e1f8d26433bf6ad56bd18b5b2352c",
       "issuerId": "iss_cik_0001788230"
     },
     {

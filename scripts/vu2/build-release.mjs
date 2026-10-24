@@ -230,7 +230,7 @@ export async function buildRelease({root,output}){
  // Concatenate classic scripts in their existing document order. Original
  // modules remain available to every other workspace, including Discover.
  // The canonical Quant product lives at /quant/ (quant/index.html).
- async function bundlePage(page,bundlePath){
+ async function bundlePage(page,bundlePath,tail=''){
   const html=await readFile(resolve(root,page),'utf8');
   const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
   // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
@@ -243,6 +243,7 @@ export async function buildRelease({root,output}){
    if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
    chunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
   }
+  if(tail)chunks.push(tail);
   const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
   await writeFile(resolve(output,bundlePath),bundle);
   let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
@@ -250,7 +251,30 @@ export async function buildRelease({root,output}){
   await writeFile(resolve(output,page),bundled);
   return bundleVersion;
  }
- const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js');
+ /* FX-Paket der Quant-Aktienseite (Chartstandard, docs/charts/CHART_STANDARD.md): der
+    Chartstandard, die FX-Schicht, soweit sie nicht im Buendel steht, die Lizenzkonfiguration
+    und die EZB-Reihe EUR/USD in EINER Datei, nachgeladen nur auf der Aktienseite. Einzeln
+    waeren es elf Abrufe; die Startseite traegt nichts davon (ihr Byte-Budget). Alles aus
+    den unveraenderten Quelldateien dieses Commits, keine zweite Fassung im Repository. */
+ const quantHtml=await readFile(resolve(root,'quant/index.html'),'utf8');
+ const FX_PACK=['core/chart-standard.js'].concat(['fx-provider-registry','fx-rates','fx-freshness','currency-registry','currency-class',
+  'currency-engine','money-format','currency-preference','currency-contract','bootstrap','currency-switch'].map(n=>'quant/engines/fx/'+n+'.js'))
+  .filter(p=>!quantHtml.includes('src="/'+p+'"'));
+ const FX_DATA=['quant/config/fx-license.json','quant/data/market/fx/ecb/EURUSD.json'];
+ // Fehlt eine Quelle (z. B. ein Ausschnitt in Tests), kein Paket: die Seite laedt die Schicht dann einzeln.
+ const withPack=FX_PACK.concat(FX_DATA).every(p=>paths.includes(p)&&permitted(p));
+ const packChunks=[];
+ if(withPack)for(const p of FX_PACK)packChunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
+ const packData=!withPack?null:{license:JSON.parse(await readFile(resolve(root,'quant/config/fx-license.json'),'utf8')),
+  series:[JSON.parse(await readFile(resolve(root,'quant/data/market/fx/ecb/EURUSD.json'),'utf8'))]};
+ let packTail='';
+ if(withPack){
+  packChunks.push('(function(g){var F=g.VUFx=g.VUFx||{};F.PACK='+JSON.stringify(packData)+';})(typeof globalThis!=="undefined"?globalThis:this);');
+  const pack=packChunks.join('\n;\n'),packVersion=createHash('sha256').update(pack).digest('hex').slice(0,16);
+  await writeFile(resolve(output,'quant/fx-pack.js'),pack);
+  packTail='globalThis.VUFxPack="/quant/fx-pack.js?v='+packVersion+'";';
+ }
+ const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js',packTail);
  // Former entries (/vu2/, /Quant/) are one hop to the canonical product.
  // The query string travels along; /quant/ maps ?view=... to its routes.
  const legacyEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><link rel="canonical" href="/quant/"><title>Vision Universe® Quant</title><script>location.replace("/quant/"+location.search+location.hash)</script></head><body><p><a href="/quant/">Vision Universe® Quant öffnen</a></p></body></html>';
