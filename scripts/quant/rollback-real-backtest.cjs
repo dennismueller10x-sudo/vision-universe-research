@@ -8,12 +8,17 @@ function rollback({output,generation}={}){
  return withWriterLock({output},()=>{
   const base=path.join(path.resolve(output),generation),release=JSON.parse(fs.readFileSync(path.join(base,'release.json')));
   if(release.generation!==generation||release.schemaVersion!==C.VERSION||release.certification!=='NOT_CERTIFIED'||release.publiclyActivated!==false)throw Error('INVALID_ROLLBACK_RELEASE');
+  const snapshot=JSON.parse(fs.readFileSync(path.join(base,'snapshot.json')));
+  if(snapshot.generation!==generation||A.hash(snapshot.input)!==generation)throw Error('INVALID_ROLLBACK_SNAPSHOT');
+  const same=(a,b)=>JSON.stringify(a||null)===JSON.stringify(b||null);
+  if(snapshot.computedAt!==release.computedAt||!same(snapshot.input.model,release.executionModel)||!same(snapshot.input.calculationRuntime,release.calculationRuntime))throw Error('INVALID_ROLLBACK_BINDING');
   let count=0;
   for(const [key,hash] of Object.entries(release.shards)){
    if(!/^[A-Z0-9._-]{2}$/.test(key))throw Error('INVALID_SHARD');const shard=JSON.parse(fs.readFileSync(path.join(base,'index',key+'.json')));if(A.hash(shard)!==hash)throw Error('INVALID_SHARD_HASH');
    for(const [id,expected] of Object.entries(shard.entries)){
     if(!C.safeId(id))throw Error('INVALID_SECURITY_ID');const folder=path.join(base,'listings',id),s=JSON.parse(fs.readFileSync(path.join(folder,'summary.json'))),{summaryHash,...raw}=s;
     if(A.hash(raw)!==summaryHash||summaryHash!==expected||C.summaryViolations(s,id,generation).length)throw Error('INVALID_ROLLBACK_SUMMARY');
+    if(s.computedAt!==release.computedAt||!same(s.executionModel,release.executionModel)||!same(s.calculationRuntime,release.calculationRuntime))throw Error('INVALID_ROLLBACK_BINDING');
     for(const [period,r] of Object.entries(s.periods))for(const section of ['equity','trades']){const bytes=fs.readFileSync(path.join(folder,period+'-'+section+'.json.gz'));if(bytes.length>262144)throw Error('PAYLOAD_LIMIT');const detail=JSON.parse(zlib.gunzipSync(bytes,{maxOutputLength:2097152}));if(A.hash(detail)!==r.details[section].hash||C.detailViolations(detail,s,period,section).length)throw Error('INVALID_ROLLBACK_DETAIL');}count++;
    }
   }

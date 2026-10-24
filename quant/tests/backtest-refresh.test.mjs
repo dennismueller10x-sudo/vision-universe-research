@@ -99,3 +99,13 @@ test('exact reproduction validator refuses a mismatched numerical runtime instea
  const prior=ptr(),release=JSON.parse(prior);release.calculationRuntime.nodeExecutableHash='0'.repeat(64);fs.writeFileSync(join(output,'release.json'),JSON.stringify(release));
  try{await assert.rejects(require('../../scripts/quant/validate-real-backtest-read.cjs').validate(output),/CALCULATION_RUNTIME_MISMATCH/);}finally{fs.writeFileSync(join(output,'release.json'),prior);}
 });
+
+test('rollback rejects inconsistent runtime, model or snapshot bindings without replacing the valid pointer',()=>{
+ const prior=ptr(),file=join(output,first.generation,'release.json'),saved=fs.readFileSync(file),snapshotFile=join(output,first.generation,'snapshot.json'),snapshotBytes=fs.readFileSync(snapshotFile);
+ try{
+  for(const alter of [r=>{r.calculationRuntime.nodeExecutableHash='0'.repeat(64);},r=>{r.executionModel.validation+=' / inconsistent root';},r=>{r.computedAt='2000-01-01T00:00:00.000Z';}]){
+   const r=JSON.parse(saved);alter(r);fs.writeFileSync(file,JSON.stringify(r));assert.throws(()=>rollback({output,generation:first.generation}),/INVALID_ROLLBACK_BINDING/);assert.equal(ptr(),prior);
+  }
+  fs.writeFileSync(file,saved);const snapshot=JSON.parse(snapshotBytes);snapshot.input.model.validation+=' / corrupt snapshot';fs.writeFileSync(snapshotFile,JSON.stringify(snapshot));assert.throws(()=>rollback({output,generation:first.generation}),/INVALID_ROLLBACK_SNAPSHOT/);assert.equal(ptr(),prior);
+ }finally{fs.writeFileSync(file,saved);fs.writeFileSync(snapshotFile,snapshotBytes);fs.writeFileSync(join(output,'release.json'),prior);}
+});
