@@ -18,9 +18,10 @@
 import crypto from 'node:crypto';
 import { fin, smaAt, rawTickAdjusted } from '../common/series.mjs';
 import { adr20, parabolicEvidence, KK_VERSION } from '../methods/kullamagi.mjs';
+import { median } from './kk-sample.mjs';
 import { KK_INTRADAY_VERSION, openingRange, runningVwap, fiveMinuteCandles, identityCheck, openIdentityCheck, tickerOf } from './kk-intraday.mjs';
 
-export const KK_PS_STUDY_VERSION = 'kk-ps-chart-short-study-1.1.0';
+export const KK_PS_STUDY_VERSION = 'kk-ps-chart-short-study-1.2.0'; // 1.2.0 (Supertrader 6.0): open trades marked, overlap reporting variant
 export const PS_LABEL = 'CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE';
 export const PS_CLASS = Object.freeze({ CHART: 'PS_CHART_CANDIDATE', INTRADAY_CONFIRMED: 'INTRADAY_CONFIRMED_CHART_PS_SETUP', EXECUTABLE: 'BORROW_CONFIRMED_EXECUTABLE_SHORT' });
 export const PS_EXECUTABLE_CLASS_ASSIGNABLE = false; // KK-SF-PS-BORROW DATA_BLOCKED: no historical borrow / locates / fees
@@ -41,6 +42,8 @@ export const PS_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-PS-BORROW', reference: 'NOT MODELLED: borrow availability, locates and fees are unknown; a trade is a hypothetical short', alternatives: [], why: 'KK-SF-PS-BORROW DATA_BLOCKED (KK-030); never an executable short' },
   { id: 'MA-PS-UNIVERSE', reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the trade day', alternatives: [], why: 'measurement convention shared by every method' },
   { id: 'MA-PS-COSTS', reference: '10 bps slippage per side, 1 bp commission; no borrow fee (unknown)', alternatives: [], why: 'platform policy; borrow DATA_BLOCKED' },
+  { id: 'MA-PS-OVERLAP', reference: 'INDEPENDENT: every candidate day is its own hypothetical one-unit short, also while an earlier short of the same security (same streak) is still open', alternatives: ['ONE_POSITION_PER_TICKER (reporting variant): a candidate is skipped while an earlier PS trade of the same security is open; open means its last cover is on or after the candidate day (a cover on the candidate day itself counts as open, conservative), a trade open at the data end blocks every later candidate'], why: 'Supertrader 6.0 review: consecutive candidate days of one streak ran as overlapping trades; the source says nothing about re-entries' },
+  { id: 'MA-PS-OPEN-AT-DATA-END', reference: 'a short still open at the data end (incl. a delisted security) is counted publicly and, sealed, marked to the last finite daily close of its series with exit costs (closed-only metrics are kept as the reference)', alternatives: [], why: 'Supertrader 6.0 review: excluding them silently drops the trades that never reached the stop or the target' },
 ]);
 
 export const PS_REFERENCE_CONFIG = Object.freeze({ streak: 3, accel: true, entry: 'ORL_5', stop: 'HOD', target: 'MA10', borrow: 'NOT_MODELLED' });
@@ -54,6 +57,10 @@ export const PS_RUN_VARIANTS = Object.freeze([
   { id: 'ALT-TARGET-MA20', changes: { target: 'MA20' } },
   { id: 'ALT-TARGET-HALF-MA10-MA20', changes: { target: 'HALF_MA10_REST_MA20' } },
 ].map((v) => Object.freeze({ ...v, config: Object.freeze({ ...PS_REFERENCE_CONFIG, ...v.changes }) })));
+/** Overlap policy (MA-PS-OVERLAP): the reference keeps the 1.1.0 behaviour; the alternative is a reporting variant applied to every run variant. */
+export const PS_OVERLAP_REFERENCE = 'INDEPENDENT';
+export const PS_REPORTING_VARIANTS = Object.freeze([Object.freeze({ id: 'ONE_POSITION_PER_TICKER', overlap: 'ONE_POSITION_PER_TICKER', appliesTo: 'EVERY_PS_RUN_VARIANT' })]);
+export const PS_OVERLAP_POLICIES = Object.freeze([PS_OVERLAP_REFERENCE, ...PS_REPORTING_VARIANTS.map((v) => v.overlap)]);
 
 export function validatePsConfig(cfg) {
   const e = [];
@@ -148,13 +155,61 @@ export function runPsCandidate({ bars, cand, minutes, cfg }) {
     if (b.high >= sAdj) { for (const x of open()) close(x, Math.max(sAdj, b.open) * f, b.open >= sAdj ? 'PS_STOP_HOD_GAP_OPEN' : 'PS_STOP_HOD', b.date); break; }
     for (const x of open()) { const lv = smaAt(bars, d - 1, x.ma); if (fin(lv) && b.low <= lv) close(x, Math.min(lv, b.open) * f, `PS_TARGET_MA${x.ma}`, b.date); }
   }
-  if (open().length) return { status: 'OPEN_AT_DATA_END', trade: { entryDate: bar.date, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills } };
-  const ret = fills.reduce((a, x) => a + x.frac * shortReturn(e.fill / f, x.priceAdj), 0);
   const riskPerUnit = (stopRaw - e.fill) / e.fill;
+  if (open().length) {
+    // MA-PS-OPEN-AT-DATA-END: marked to the last finite daily close of the series (sealed metrics only)
+    let last = -1; for (let d = bars.length - 1; d >= t; d--) if (fin(bars[d].close)) { last = d; break; }
+    const markAdj = last >= 0 ? bars[last].close : null;
+    const marked = markAdj === null ? null : fills.reduce((a, x) => a + x.frac * shortReturn(e.fill / f, x.priceAdj), 0) + open().reduce((a, x) => a + x.frac * shortReturn(e.fill / f, markAdj), 0);
+    return { status: 'OPEN_AT_DATA_END', trade: { entryDate: bar.date, entryMinute: minutes[e.minuteIndex].k, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills, exitReasons: fills.map((x) => x.reason), openFraction: open().reduce((a, x) => a + x.frac, 0), markDate: last >= 0 ? bars[last].date : null, markAdj, seriesLastDate: bars.at(-1).date, netReturnMarked: marked, rMultipleMarked: marked !== null && riskPerUnit > 0 ? marked / riskPerUnit : null, class: PS_CLASS.INTRADAY_CONFIRMED, borrow: 'DATA_BLOCKED', dayRangeAgreement } };
+  }
+  const ret = fills.reduce((a, x) => a + x.frac * shortReturn(e.fill / f, x.priceAdj), 0);
   return { status: 'CLOSED', trade: { entryDate: bar.date, entryMinute: minutes[e.minuteIndex].k, entryAdj: e.fill / f, stopAdj: stopRaw / f, fills, exitReasons: fills.map((x) => x.reason), netReturn: ret, rMultiple: riskPerUnit > 0 ? ret / riskPerUnit : null, class: PS_CLASS.INTRADAY_CONFIRMED, borrow: 'DATA_BLOCKED', dayRangeAgreement } };
 }
 
+/** Last cover date of a trade (the date its position is flat again). */
+const lastCoverDate = (trade) => trade.fills.reduce((d, x) => (x.date > d ? x.date : d), trade.entryDate);
+
+/**
+ * Evaluates the PS candidates of one run variant (candidates in chronological order per security).
+ * `minutesOf(c)` -> minutes | [] | undefined; `inDaySet(c)` -> false for a cached day outside the evaluation's day set
+ * (status NOT_EVALUATED_OUTSIDE_DAY_SET, never simulated); `overlap` one of PS_OVERLAP_POLICIES.
+ * Returns { statuses, closed: [trade], open: [trade] } (trades carry the candidate's security id and ticker key).
+ * `screen` / `run` default to psChartCandidate / runPsCandidate (injectable for tests only).
+ */
+export function evaluatePsCandidates({ cands, barsOf, minutesOf, inDaySet = () => true, cfg, overlap = PS_OVERLAP_REFERENCE, from = '0000', to = '9999', outsideStatus = 'NOT_EVALUATED_OUTSIDE_DAY_SET', screen = psChartCandidate, run = runPsCandidate }) {
+  if (!PS_OVERLAP_POLICIES.includes(overlap)) throw new Error(`PS_OVERLAP_POLICY:${overlap}`);
+  const statuses = {}, closed = [], open = [], busyUntil = new Map(), bump = (k) => { statuses[k] = (statuses[k] || 0) + 1; };
+  for (const c of cands) {
+    const bars = barsOf(c), pc = screen(bars, c.i, cfg); if (!pc) continue;
+    if (c.date < from || c.date > to) continue;
+    if (overlap === 'ONE_POSITION_PER_TICKER' && busyUntil.has(c.id) && busyUntil.get(c.id) >= c.date) { bump('SKIPPED_EARLIER_TRADE_OPEN'); continue; }
+    const minutes = minutesOf(c);
+    if (minutes !== undefined && !inDaySet(c)) { bump(outsideStatus); continue; }
+    const res = run({ bars, cand: pc, minutes, cfg });
+    bump(res.status);
+    if (res.status === 'CLOSED') { closed.push({ id: c.id, key: `${c.ticker}|${c.date}`, ...res.trade }); busyUntil.set(c.id, lastCoverDate(res.trade)); }
+    if (res.status === 'OPEN_AT_DATA_END') { open.push({ id: c.id, key: `${c.ticker}|${c.date}`, ...res.trade }); busyUntil.set(c.id, '9999-12-31'); }
+  }
+  return { statuses, closed, open };
+}
+
+const summary = (rets, rs) => ({ trades: rets.length, meanNetReturn: rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null, medianNetReturn: median(rets), hitRate: rets.length ? rets.filter((x) => x > 0).length / rets.length : null, meanR: rs.length ? rs.reduce((a, b) => a + b, 0) / rs.length : null });
+/**
+ * Sealed trade-level metrics: `closedOnly` (the reference population of 1.1.0; median now the proper median) and
+ * `withOpenMarked` (closed plus the shorts open at the data end, marked to their last close, MA-PS-OPEN-AT-DATA-END).
+ */
+export function psTradeMetrics(closed, open = []) {
+  const fr = (a) => a.filter(Number.isFinite);
+  const marked = open.filter((t) => Number.isFinite(t.netReturnMarked));
+  return {
+    label: 'TRADE_LEVEL_SHORT_MODEL_STUDY_NO_BORROW_COST',
+    closedOnly: summary(closed.map((t) => t.netReturn), fr(closed.map((t) => t.rMultiple))),
+    withOpenMarked: { ...summary([...closed.map((t) => t.netReturn), ...marked.map((t) => t.netReturnMarked)], fr([...closed.map((t) => t.rMultiple), ...marked.map((t) => t.rMultipleMarked)])), openIncluded: marked.length, openNotMarkable: open.length - marked.length },
+  };
+}
+
 export function psVariantRegistrySha256() {
-  return crypto.createHash('sha256').update(JSON.stringify({ version: KK_PS_STUDY_VERSION, reference: PS_REFERENCE_CONFIG, variants: PS_RUN_VARIANTS.map((v) => ({ id: v.id, changes: v.changes })), costs: PS_COSTS })).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify({ version: KK_PS_STUDY_VERSION, reference: PS_REFERENCE_CONFIG, variants: PS_RUN_VARIANTS.map((v) => ({ id: v.id, changes: v.changes })), costs: PS_COSTS, overlapReference: PS_OVERLAP_REFERENCE, reportingVariants: PS_REPORTING_VARIANTS })).digest('hex');
 }
 export { tickerOf, KK_VERSION, KK_INTRADAY_VERSION };
