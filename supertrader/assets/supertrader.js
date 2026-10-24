@@ -28,6 +28,19 @@
   }
   function getJSON(name) { return fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }); }
   function num(v, d) { if (v === null || v === undefined || !isFinite(v)) return '–'; return Number(v).toLocaleString('de-DE', { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }); }
+  /* Kursmarke des Plans (Trigger, Stop, Einstieg, Schluss) mit Waehrung: Signale rechnen in USD; angezeigt wird
+     wie im Kurschart in der gewaehlten Waehrung (Chartstandard, Vorgabe EUR) mit dem juengsten EZB-Kurs.
+     Ohne FX-Schicht oder mit USD gewaehlt: der Originalwert in USD. pxOrig nennt das Original, wenn umgerechnet. */
+  function pxShown(v) {
+    var CS = window.VUCore && window.VUCore.ChartStandard;
+    return CS && window.VUFx && window.VUFx.layer && isFinite(v) ? CS.displayLevel(v, 'USD') : null;
+  }
+  function px(v) {
+    if (v === null || v === undefined || !isFinite(v)) return '–';
+    var d = pxShown(v);
+    return d && d.converted ? num(d.value) + ' ' + (d.currency === 'EUR' ? '€' : d.currency) : num(v) + ' $';
+  }
+  function pxOrig(v) { var d = pxShown(v); return d && d.converted ? num(v) + ' USD' : ''; }
   function pct(v, d, signed) { if (v === null || v === undefined || !isFinite(v)) return '–'; var s = num(v * 100, d === undefined ? 1 : d) + ' %'; return signed && v > 0 ? '+' + s : s; }
   function dateDe(d) { if (!d) return '–'; var p = String(d).slice(0, 10).split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
   function dateShort(d) { if (!d) return '–'; var p = String(d).slice(0, 10).split('-'); return p[2] + '.' + p[1] + '.'; }
@@ -132,9 +145,9 @@
     if (s.entry && isFinite(s.stop)) {
       var lo = Math.min(s.stop, last, s.entry.price), hi = Math.max(s.stop, last, s.entry.price) * 1.02;
       var pos = function (v) { return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100)); };
-      return h('div', { class: 'st-bar2 pos', role: 'img', 'aria-label': 'Stop ' + num(s.stop) + ', Einstieg ' + num(s.entry.price) + ', Schlusskurs ' + num(last) }, [
+      return h('div', { class: 'st-bar2 pos', role: 'img', 'aria-label': 'Stop ' + px(s.stop) + ', Einstieg ' + px(s.entry.price) + ', Schlusskurs ' + px(last) }, [
         h('div', { class: 'track' }, [h('i', { class: 'm stop', style: { left: pos(s.stop) + '%' } }), h('i', { class: 'm entry', style: { left: pos(s.entry.price) + '%' } }), h('i', { class: 'm now', style: { left: pos(last) + '%' } })]),
-        h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Stop ' + num(s.stop) }), h('span', { text: 'Einstieg ' + num(s.entry.price) }), h('span', { class: 'now', text: 'Schluss ' + num(last) })]),
+        h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Stop ' + px(s.stop) }), h('span', { text: 'Einstieg ' + px(s.entry.price) }), h('span', { class: 'now', text: 'Schluss ' + px(last) })]),
         riskRow(last, s.stop, s.entry.price),
       ]);
     }
@@ -144,9 +157,9 @@
     var span = hi2 - lo2 || 1;
     var at = Math.max(0, Math.min(100, (last - lo2) / span * 100));
     var toTrig = trig / last - 1, toInv = inv / last - 1;
-    return h('div', { class: 'st-bar2', role: 'img', 'aria-label': 'Schlusskurs ' + num(last) + ', Trigger ' + num(trig) + ' (' + pct(toTrig, 1, true) + '), Ungültig unter ' + num(inv) }, [
+    return h('div', { class: 'st-bar2', role: 'img', 'aria-label': 'Schlusskurs ' + px(last) + ', Trigger ' + px(trig) + ' (' + pct(toTrig, 1, true) + '), Ungültig unter ' + px(inv) }, [
       h('div', { class: 'track' }, [h('i', { class: 'fill', style: { width: at + '%' } }), h('i', { class: 'm now', style: { left: at + '%' } })]),
-      h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + num(inv) }), h('span', { class: 'now', text: s.state === 'TRIGGERED' ? 'Einstieg zur nächsten Eröffnung' : toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + num(trig) })]),
+      h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + px(inv) }), h('span', { class: 'now', text: s.state === 'TRIGGERED' ? 'Einstieg zur nächsten Eröffnung' : toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + px(trig) })]),
     ]);
   }
 
@@ -1070,7 +1083,7 @@
       // Marken bleiben in jedem Zeitraum im Bild, auch in 1T (VUChart zeichnet neu und ruft onRange).
       if (api.setExtent) api.setExtent(state.levels.map(function (l) { return l[2]; }));
       else drawLevels(host.querySelector('.vu-chart svg'), state.geo, state.levels);
-      legend.replaceChildren.apply(legend, state.levels.map(function (l) { return h('span', { 'data-k': l[0] }, [h('i', { 'aria-hidden': 'true' }), l[1] + ' ' + num(l[2]) + (l[3] ? ' (' + num(l[3]) + ' USD)' : '')]); }));
+      legend.replaceChildren.apply(legend, state.levels.map(function (l) { return h('span', { 'data-k': l[0] }, [h('i', { 'aria-hidden': 'true' }), l[1] + ' ' + num(l[2]) + (cur === 'EUR' ? ' €' : cur === 'USD' ? ' $' : ' ' + cur) + (l[3] ? ' (' + num(l[3]) + ' USD)' : '')]); }));
       legend.hidden = !state.levels.length;
     } };
   }
@@ -1149,10 +1162,28 @@
     // Kursverlauf: dieselben Tageskurse wie Discover und Quant (technische Materialisierung), dazu der Tagesverlauf.
     main.appendChild(sec('Kursverlauf', [chartHost, legend, methodMore]));
     chartHost.appendChild(h('div', { class: 'vu-chart-empty', text: 'Kurse werden geladen …' }));
-    prices.then(function (r) {
-      if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
+    // Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover), unter "Daten & Methodik".
+    var fxHost = h('span', { class: 'st-fx', text: 'Börsenwährung USD' });
+    function drawPrices(r) {
       chart = priceChart(chartHost, legend, r[0], r[1], r[2], r[3]);
       if (chart && current) chart.setLevels(levelsOf(current));
+      // Die FX-Schicht steht jetzt: der Plan zeigt seine Kursmarken in derselben Waehrung wie der Chart.
+      if (r[3] && current && current.kind === 'sig') panel.replaceChildren(lensBlock(current.s, S[current.id], D));
+    }
+    prices.then(function (r) {
+      if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
+      drawPrices(r);
+      var F = window.VUFx;
+      if (!r[3] || !F || !F.layer) return;
+      (F.Switch ? Promise.resolve() : loadScript('/quant/engines/fx/currency-switch.js')).then(function () {
+        if (F.Switch) fxHost.replaceChildren(F.Switch.create({ layer: F.layer }));
+      }).catch(function () { /* ohne Umschalter bleibt die gewaehlte Waehrung */ });
+      // Wechsel: Chart, Plan und Kurs im Kopf neu - alles in derselben Waehrung.
+      F.layer.onDisplayCurrencyChange(function () {
+        drawPrices(r);
+        var p = headPrice(r[0], r[1], r[3]);
+        headApi.then(function (hd) { if (hd && p) hd.setPrice(p); });
+      });
     });
     if (entries.length) { if (t52Node) main.appendChild(t52Node); show(entries[0]); }
     var hist = history.concat(entries.filter(function (e) { return e.kind === 'sig' && e.s.transitions; }));
@@ -1163,6 +1194,7 @@
       main.appendChild(sec('Protokoll', [tl, rest], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
     }
     entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
+    dmAdd('Anzeigewährung', fxHost);
     dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
     main.appendChild(disclaimer(sig));
   }
@@ -1176,15 +1208,15 @@
     kids.push(setupBar(s));
     if (p) {
       var cells = [
-        ['Trigger', num(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'geplant · Kauf-Stop darüber' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
-        p.stop ? ['Stop', num(p.stop.value), 'aktueller Stop'] : ['Ungültig', num(p.invalidation.value), 'geplant · ' + (p.invalidation.basis === 'LOW' ? 'Tagestief' : 'Schluss') + ' darunter'],
-        p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') + (p.entry.evidence === 'INTRADAY_1MIN' ? ' · IEX-Minuten geprüft' : ' · angenommen') : ' zur Eröffnung')] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
+        ['Trigger', px(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'geplant · Kauf-Stop darüber' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber', p.trigger.value],
+        p.stop ? ['Stop', px(p.stop.value), 'aktueller Stop', p.stop.value] : ['Ungültig', px(p.invalidation.value), 'geplant · ' + (p.invalidation.basis === 'LOW' ? 'Tagestief' : 'Schluss') + ' darunter', p.invalidation.value],
+        p.entry ? ['Modelleinstieg', px(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') + (p.entry.evidence === 'INTRADAY_1MIN' ? ' · IEX-Minuten geprüft' : ' · angenommen') : ' zur Eröffnung'), p.entry.price] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
       ];
       var pc = D && portfolioCell(D, s); if (pc) cells.push(pc);
-      kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] })]); })));
+      kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] + (pxOrig(c[3]) ? ' · ' + pxOrig(c[3]) : '') })]); })));
       // Visual First (VU3): der Ausfuehrungshinweis steht unter dem naechsten Schritt - der Plan bleibt im ersten Bildschirm.
       var en = evidenceNote(p, strat);
-      var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
+      var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + px(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
       kids.push(h('div', { class: 'st-next', title: p.nextAction.text }, [h('span', { class: 'k', text: 'Nächster Schritt des Modells' }), h('p', { text: nxt }), h('span', { class: 'r', title: p.nextAction.ruleId, text: 'Kursdaten vom ' + dateDe(p.nextAction.dataAsOf) })]));
       if (en) kids.push(en);
     } else {
