@@ -69,3 +69,33 @@ test('corporate-action corruption invalidates exactly its listing and cannot del
  const before=ptr(),full=fs.readFileSync(source),doc=JSON.parse(full);assert.ok(doc.corporateActions.splits.length);doc.corporateActions.splits[0][1]=-1;fs.writeFileSync(source,JSON.stringify(doc));
  try{const invalid=build();assert.equal(invalid.calculatedListings,1);assert.equal(invalid.calculationCacheHits,7);assert.notEqual(ptr(),before);const row=JSON.parse(fs.readFileSync(join(output,invalid.generation,'listings/ref_NVDA/summary.json')));assert.equal(row.state,'BLOCKED');assert.ok(row.quality.exclusionReasons.includes('CORPORATE_ACTION'));assert.deepEqual(row.periods,{});}finally{fs.writeFileSync(source,full);build();}
 });
+
+test('snapshot, release, cache key and reader retain the actual calculation runtime',async()=>{
+ const runtime=require('../engines/weekly-real-adapter.cjs').calculationRuntime(),release=JSON.parse(ptr()),snapshot=JSON.parse(fs.readFileSync(join(output,release.generation,'snapshot.json')));
+ assert.deepEqual(snapshot.input.calculationRuntime,runtime);assert.deepEqual(release.calculationRuntime,runtime);
+ const reader=require('../../server/quant-backtest-reader.cjs').create({directory:output,root:fixture,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:['NVDA']});const r=await reader.getRealBacktest('NVDA');assert.deepEqual(r.calculationRuntime,runtime);assert.equal(r.state,'AVAILABLE_LIMITED');
+});
+
+test('identity and access changes invalidate cached reader context without leaking or changing other products',async()=>{
+ const Reader=require('../../server/quant-backtest-reader.cjs'),Policy=require('../engines/display-policy.js'),policyBefore=JSON.stringify(Policy.list()),product=join(fixture,'quant/data/universe/instruments/NV.json'),config=join(fixture,'quant/config/development-preview.json'),productBytes=fs.readFileSync(product),configBytes=fs.readFileSync(config);
+ const reader=Reader.create({directory:output,root:fixture,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:['NVDA']});assert.equal((await reader.getRealBacktest('NVDA')).state,'AVAILABLE_LIMITED');
+ try{
+  const revoked=JSON.parse(configBytes);revoked.grants=[];fs.writeFileSync(config,JSON.stringify(revoked));const denied=await reader.getRealBacktest('NVDA');assert.equal(denied.reason,'DISPLAY_NOT_PERMITTED');assert.equal(denied.result,undefined);
+  fs.writeFileSync(config,configBytes);assert.equal((await reader.getRealBacktest('NVDA')).state,'AVAILABLE_LIMITED');
+  const revised=JSON.parse(productBytes);revised.instruments.find(i=>i.symbol==='NVDA').generation='isolated identity revision';fs.writeFileSync(product,JSON.stringify(revised));const stale=await reader.getRealBacktest('NVDA');assert.equal(stale.state,'UNAVAILABLE');assert.equal(stale.result,undefined);
+  build();const current=await reader.getRealBacktest('NVDA');assert.equal(current.state,'AVAILABLE_LIMITED');assert.equal(current.delivery.state,'CURRENT_INPUT_SNAPSHOT');
+  assert.equal(JSON.stringify(Policy.list()),policyBefore,'private policy state must not alter another product registry');
+ }finally{fs.writeFileSync(product,productBytes);fs.writeFileSync(config,configBytes);build();}
+});
+
+test('access revocation during a detail read is rechecked before any financial response',async()=>{
+ const Reader=require('../../server/quant-backtest-reader.cjs'),config=join(fixture,'quant/config/development-preview.json'),bytes=fs.readFileSync(config),reader=Reader.create({directory:output,root:fixture,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:['NVDA']});const summary=await reader.getRealBacktest('NVDA');assert.equal(summary.state,'AVAILABLE_LIMITED');
+ const promises=require('node:fs/promises'),original=promises.open;let revoked=false;
+ promises.open=async function(file,...args){const handle=await original.call(this,file,...args);if(String(file).endsWith('/MAX-trades.json.gz')){const read=handle.readFile.bind(handle);handle.readFile=async(...opts)=>{const b=await read(...opts);if(!revoked){revoked=true;const changed=JSON.parse(bytes);changed.grants=[];fs.writeFileSync(config,JSON.stringify(changed));}return b;};}return handle;};
+ try{const r=await reader.getRealBacktest('NVDA',{section:'trades',expectedGeneration:summary.generation,expectedListingId:summary.identity.listingId});assert.equal(revoked,true);assert.equal(r.reason,'BACKTEST_ACCESS_CONTEXT_CHANGED');assert.equal(r.result,undefined);}finally{promises.open=original;fs.writeFileSync(config,bytes);}
+});
+
+test('exact reproduction validator refuses a mismatched numerical runtime instead of tolerating a hash difference',async()=>{
+ const prior=ptr(),release=JSON.parse(prior);release.calculationRuntime.nodeExecutableHash='0'.repeat(64);fs.writeFileSync(join(output,'release.json'),JSON.stringify(release));
+ try{await assert.rejects(require('../../scripts/quant/validate-real-backtest-read.cjs').validate(output),/CALCULATION_RUNTIME_MISMATCH/);}finally{fs.writeFileSync(join(output,'release.json'),prior);}
+});

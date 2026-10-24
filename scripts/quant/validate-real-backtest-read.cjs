@@ -7,7 +7,7 @@ const {run}=require('./run-real-weekly-backtest.cjs');
 async function validate(directory){
  const root=path.resolve(__dirname,'../..'),store=Store.create({directory}),loadJSON=async p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
  const service=Service.create({loadJSON,displayPolicy:require('../../quant/engines/display-policy.js'),queryEngine:require('../../quant/engines/query.js'),realBacktestPreview:{enabled:true,audience:'INTERNAL_REVIEW'},realBacktestStore:store});
- const release=await store.loadJSON('release.json'),cases=[],benchmark=B.load(root),counts={A:0,B:0,C:0},reasons={},ids=[];let completedTrades=0,earliest=null,latest=null;
+ const release=await store.loadJSON('release.json');assert.deepEqual(release.calculationRuntime,A.calculationRuntime(),'CALCULATION_RUNTIME_MISMATCH: use the recorded Node executable/runtime for exact result-hash reproduction');const cases=[],benchmark=B.load(root),counts={A:0,B:0,C:0},reasons={},ids=[];let completedTrades=0,earliest=null,latest=null;
  const readerCoverage={checked:0,states:{},reasons:{},servedResults:0,financialDataOnBlockedResponses:0};
  const start=performance.now(),payloadStats={summaries:0,summaryBytes:0,maxSummaryBytes:0,periodResults:0,detailBytes:0,gzipDetailBytes:0,maxDetailBytes:0,maxGzipDetailBytes:0,overLimitDetails:0};
  for(const key of Object.keys(release.shards).sort()){
@@ -35,7 +35,7 @@ async function validate(directory){
   independent.push({period,...JSON.parse(execFileSync('python3',[path.join(root,'scripts/quant/verify-real-weekly-backtest.py'),file],{encoding:'utf8'}))});
  }
  const qbytes=fs.readFileSync(path.join(directory,release.qualityDump)),qualityRows=zlib.gunzipSync(qbytes).toString().trim().split('\n');assert.equal(qualityRows.length,release.expected);
- const result={readerCoverage,payloadStats,runtime:process.version,schemaVersion:'real-backtest-read-validation-1.0.0',generation:release.generation,classified:ids.length,counts,reasons,completedTrades,eligibleFrom:earliest,to:latest,qualityDumpHash:A.hash(qbytes),qualityDumpGzipBytes:qbytes.length,independent,cases,elapsedMs:performance.now()-start,peakRssBytes:process.resourceUsage().maxRSS*1024,publiclyActivated:false,certification:'NOT_CERTIFIED'};
+ const result={readerCoverage,payloadStats,runtime:process.version,schemaVersion:'real-backtest-read-validation-1.0.0',calculationRuntime:release.calculationRuntime,generation:release.generation,classified:ids.length,counts,reasons,completedTrades,eligibleFrom:earliest,to:latest,qualityDumpHash:A.hash(qbytes),qualityDumpGzipBytes:qbytes.length,independent,cases,elapsedMs:performance.now()-start,peakRssBytes:process.resourceUsage().maxRSS*1024,publiclyActivated:false,certification:'NOT_CERTIFIED'};
  fs.writeFileSync(path.join(directory,'read-validation.json'),JSON.stringify(result,null,2)+'\n');return result;
 }
 if(require.main===module)validate(process.argv[2]).then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e);process.exitCode=1;});

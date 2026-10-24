@@ -12,6 +12,7 @@ function summaryViolations(s,id,generation){
  if(!s||s.schemaVersion!==VERSION||s.generation!==generation||s.identity?.sourceSecurityId!==id) return ['INVALID_SUMMARY_IDENTITY_OR_VERSION'];
  if(s.certification!=='NOT_CERTIFIED'||s.returnBasis!=='PRICE_RETURN'||s.executionModel?.schemaVersion!=='weekly-execution-model-2.0.0'||s.executionModel?.strategyCertification!=='NOT_CERTIFIED'||s.executionModel?.returnBasis!=='PRICE_RETURN'||s.executionModel?.state!=='VALIDATED_EXECUTION_MODEL'||s.executionModel?.scope!=='EXECUTION_MECHANICS_ONLY'||s.executionModel?.productionApproved!==false||s.executionModel?.rule!=='NEW_52W_HIGH'||s.executionModel?.costModel!=='PER_SIDE_NOTIONAL'||s.executionModel?.feeBpsPerSide!==10||s.executionModel?.slippageBpsPerSide!==5)fail('INVALID_RELEASE_STATUS');
  if(s.quality?.schemaVersion!==QUALITY||s.quality.certification!=='NOT_CERTIFIED'||s.quality.sourceSecurityId!==id||s.quality.listingId!==s.identity.listingId)fail('INVALID_QUALITY');
+ if(s.calculationRuntime!==undefined&&(!/^[0-9]+\.[0-9]+\.[0-9]+/.test(s.calculationRuntime?.nodeVersion||'')||!/^[a-f0-9]{64}$/.test(s.calculationRuntime?.nodeExecutableHash||'')))fail('INVALID_CALCULATION_RUNTIME');
  if(s.kindScope!=='SINGLE_LISTING_WEEKLY_REPLAY_NOT_AGGREGATE_SIGNAL_CERTIFICATION')fail('INVALID_KIND_SCOPE');
  if(!['AVAILABLE_LIMITED','BLOCKED'].includes(s.state)||!s.periods||!Array.isArray(s.supportedPeriods))fail('INVALID_EXECUTION_STATE');
  if(s.state==='BLOCKED'){
