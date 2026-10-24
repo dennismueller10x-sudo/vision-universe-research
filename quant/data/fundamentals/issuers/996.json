@@ -706,8 +706,8 @@
       "name": "KILROY REALTY CORP",
       "sic": "6798",
       "rawFacts": 22819,
-      "mappedFacts": 6081,
-      "unmappedFacts": 16174,
+      "mappedFacts": 6073,
+      "unmappedFacts": 16285,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
@@ -869,35 +869,36 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 17356,
+        "total": 17464,
         "by_severity": {
-          "INFO": 16174,
-          "WARNING": 1182
+          "INFO": 16285,
+          "WARNING": 1179
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1122,
+          "CONCEPT_DISAGREEMENT": 1121,
           "FISCAL_PERIOD_CONFLICT": 7,
           "PERIOD_MISMATCH": 10,
-          "RESTATEMENT_CONFLICT": 41,
+          "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16174
+          "UNKNOWN_CONCEPT": 16285
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-050215",
-        "filing_date": "2026-07-28",
+        "accession": "0001628280-26-067051",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-10-24T00:14:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
       "sourceDigest": "fc089f0df1b485cdcbcd179a53e107a0ad1c2e1d27169c86f9fa8ad33ddb86f8",

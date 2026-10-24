@@ -946,9 +946,9 @@
       "cik": "0001751788",
       "name": "DOW INC.",
       "sic": "2821",
-      "rawFacts": 16076,
-      "mappedFacts": 3151,
-      "unmappedFacts": 12534,
+      "rawFacts": 16577,
+      "mappedFacts": 3185,
+      "unmappedFacts": 12971,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -958,9 +958,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 9,
-      "quarterlyPeriods": 34,
+      "quarterlyPeriods": 35,
       "firstPeriodEnd": "2017-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
@@ -972,7 +972,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -999,7 +999,7 @@
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -1013,7 +1013,7 @@
         },
         "revenue": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -1027,14 +1027,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -1057,46 +1057,47 @@
         }
       },
       "quality": {
-        "HIGH": 208,
-        "MEDIUM": 117
+        "HIGH": 211,
+        "MEDIUM": 119
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 325,
-        "resolvedValues": 325
+        "datableValues": 330,
+        "resolvedValues": 330
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13226,
+        "total": 13649,
         "by_severity": {
-          "INFO": 12534,
-          "WARNING": 692
+          "INFO": 12971,
+          "WARNING": 678
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 647,
-          "RESTATEMENT_CONFLICT": 44,
+          "CONCEPT_DISAGREEMENT": 636,
+          "RESTATEMENT_CONFLICT": 41,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12534
+          "UNKNOWN_CONCEPT": 12971
         }
       },
       "latestFiling": {
-        "accession": "0001751788-26-000147",
-        "filing_date": "2026-07-24",
+        "accession": "0001751788-26-000160",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 30
+        "periodic_filings": 31,
+        "acceptance_datetime": "2026-10-23T15:44:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "ccd0beb083b8c7a0bda69e19abbe988ac23c0d11833d9aa5235e0d37e3fd580a",
+      "sourceDigest": "d8339531de586b643f4a292d2d8f86c7b8ae1262f55d83a61ae6a54b46bbd2ab",
       "issuerId": "iss_cik_0001751788"
     },
     {

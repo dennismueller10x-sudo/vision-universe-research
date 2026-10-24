@@ -796,15 +796,15 @@
       "cik": "0001518621",
       "name": "Orchid Island Capital, Inc.",
       "sic": "6798",
-      "rawFacts": 12117,
-      "mappedFacts": 3986,
-      "unmappedFacts": 7927,
+      "rawFacts": 12400,
+      "mappedFacts": 4062,
+      "unmappedFacts": 8238,
       "calendarYears": 15,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -851,9 +851,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 60,
+      "quarterlyPeriods": 61,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -892,14 +892,14 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -920,14 +920,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -950,47 +950,48 @@
         }
       },
       "quality": {
-        "HIGH": 340
+        "HIGH": 344
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 340,
-        "resolvedValues": 340
+        "datableValues": 344,
+        "resolvedValues": 344
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 8418,
+        "total": 8733,
         "by_severity": {
-          "INFO": 7927,
+          "INFO": 8238,
           "ERROR": 22,
-          "WARNING": 469
+          "WARNING": 473
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 157,
+          "CONCEPT_DISAGREEMENT": 160,
           "FUTURE_DATA_LEAK": 22,
           "RESTATEMENT_CONFLICT": 80,
-          "UNEXPECTED_DURATION": 232,
-          "UNKNOWN_CONCEPT": 7927
+          "UNEXPECTED_DURATION": 233,
+          "UNKNOWN_CONCEPT": 8238
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-024400",
-        "filing_date": "2026-07-24",
+        "accession": "0001437749-26-033373",
+        "filing_date": "2026-10-23",
         "form": "10-Q",
-        "periodic_filings": 58
+        "periodic_filings": 59,
+        "acceptance_datetime": "2026-10-23T21:38:42.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.6.0"
         }
       },
-      "sourceDigest": "ab7ec68692e76dfbe0633c34d51dedde185afc94088c3648980403b52d5a6ba3",
+      "sourceDigest": "d86c6a73336ac0cffb0ff4f943a574291343aaa30b466e09511fc5e039a236b7",
       "issuerId": "iss_cik_0001518621"
     },
     {
