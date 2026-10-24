@@ -229,8 +229,11 @@ test("the stock experience answers its questions in the order a person asks them
      getestet, 5 Pro/Contra, 6 Faktoren (mit Veraenderung), 7 Anlagestil,
      8 Technik, 9 Daten & Grenzen. Faktorwerte sind nicht mehr die
      Hauptgeschichte. Geprueft wird weiterhin die Reihenfolge der Fragen. */
-  const order = ["verdictCard(vm", '"setup"))', '"historie"))', '"dafuer"))', '"einordnung"))',
-    '"veraenderung"))', '"strategie"))', '"grenzen"))'];
+  /* Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026): 1 Ueberblick & Ergebnis (verdictCard),
+     2 Quant-Eigenschaften, 3 Staerken & Risiken, 4 Aktuelle Veraenderungen, 5 Setup & Strategie,
+     6 Historischer Vergleich, danach Daten & Grenzen. */
+  const order = ["verdictCard(vm", '"einordnung"))', '"dafuer"))', '"veraenderung"))', '"setup"))',
+    '"strategie"))', '"historie"))', '"grenzen"))'];
   let cursor = -1;
   for (const marker of order) {
     const at = render.indexOf(marker, cursor + 1);
