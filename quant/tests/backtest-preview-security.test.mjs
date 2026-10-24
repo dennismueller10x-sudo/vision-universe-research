@@ -14,7 +14,7 @@ const call=(route,{cookie,method='GET',body,headers={}}={})=>fetch(url+route,{me
 async function login(){const res=await call('login',{method:'POST',body:{key}});assert.equal(res.status,200);return res.headers.get('set-cookie').split(';')[0];}
 test.after(async()=>{await app.close();rmSync(out,{recursive:true,force:true});});
 test('loopback binding, no embedded secrets, no unauthenticated inventory or data',async()=>{
- assert.equal(app.server.address().address,'127.0.0.1');const page=await call('');const text=await page.text();assert.equal(text.includes(key),false);assert.equal(text.includes('4926635'),false);
+ assert.equal(app.server.address().address,'127.0.0.1');const page=await call('');const text=await page.text();assert.match(text,/<form[^>]*method="post"[^>]*action="\/quant\/internal-backtest\/login"/);assert.equal(text.includes(key),false);assert.equal(text.includes('4926635'),false);
  for(const route of ['session','data?ticker=NVDA','data?ticker=NVDA&section=trades','../private/summary.json'])assert.equal((await call(route)).status,401);
 });
 test('explicit session, HttpOnly/SameSite cookie, real NVDA and lazy pinned details',async()=>{
