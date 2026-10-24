@@ -1,6 +1,45 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-24T03:01:03.547Z",
+ "generatedAt": "2026-10-24T16:05:39.280Z",
+ "signalStudy": {
+  "asOf": "2026-10-23",
+  "generatedAt": "2026-10-24T02:58:38.859Z",
+  "returnType": "TOTAL_RETURN",
+  "studySchemaVersion": "signal-backtest-study-2.0.0",
+  "studyEngineVersion": "signal-backtest-2.0.0",
+  "qualitySchemaVersion": "total-return-quality-2.0.0",
+  "contract": "canonical-total-return-1.0.0",
+  "corporateActionContract": "corporate-action-contract-1.0.0",
+  "benchmarkContract": "benchmark-contract-1.0.0",
+  "totalReturn": {
+   "state": "AVAILABLE",
+   "reason": null,
+   "contract": "canonical-total-return-1.0.0",
+   "coverage": {
+    "unit": "SECURITY_PRICE_SERIES",
+    "titles": 6174,
+    "withTotalReturn": 6036,
+    "share": 0.978,
+    "minimumShare": 0.95
+   }
+  },
+  "benchmark": {
+   "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+   "state": "TOTAL_RETURN_RECONSTRUCTED",
+   "role": "BENCHMARK_REFERENCE",
+   "contract": "benchmark-contract-1.0.0",
+   "from": "1993-01-29",
+   "to": "2026-10-23",
+   "weeks": 1660,
+   "gaps": 0
+  },
+  "studyBenchmark": {
+   "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+   "state": "PASS",
+   "basis": "TOTAL_RETURN",
+   "asOf": "2026-10-23"
+  }
+ },
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -39,11 +78,11 @@
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 5,
+   "count": 6,
    "byIndex": {
-    "SP500": 5,
-    "NDX": 5,
-    "DJIA": 5
+    "SP500": 6,
+    "NDX": 6,
+    "DJIA": 6
    },
    "from": "2026-09-15"
   },
@@ -51,7 +90,7 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6174,
+    "titles": 6190,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
@@ -65,8 +104,15 @@
    "id": "priceTotalReturn",
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
-    "titles": 0,
-    "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+    "unit": "SECURITY_PRICE_SERIES",
+    "titles": 6036,
+    "eligibleTitles": 6174,
+    "share": 0.978,
+    "state": "AVAILABLE",
+    "reason": null,
+    "contract": "canonical-total-return-1.0.0",
+    "asOf": "2026-10-23",
+    "generatedAt": "2026-10-24T02:58:38.859Z"
    },
    "daily": {
     "titles": 5,
@@ -94,7 +140,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 163,
    "robust": 96,
-   "matchSnapshots": 8
+   "matchSnapshots": 9
   },
   {
    "id": "technicalStates",
@@ -125,11 +171,11 @@
    "id": "benchmark",
    "label": "Vergleichsindex",
    "series": "SPY",
-   "from": "1995-01-03",
+   "from": "1993-01-29",
    "to": "2026-10-23",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "totalReturn": false,
-   "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+   "basis": "TOTAL_RETURN",
+   "totalReturn": true,
+   "reason": "TOTAL_RETURN_RECONSTRUCTED"
   },
   {
    "id": "costs",
@@ -147,8 +193,10 @@
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 5,
-   "state": "NOT_CONTROLLED"
+   "membershipSnapshots": 6,
+   "state": "NOT_CONTROLLED",
+   "sensitivityDelisted": 3058,
+   "sensitivityFrom": "2016-01-08"
   }
  ],
  "kinds": [
@@ -162,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6174 Titel seit 1990-01-05",
+     "value": "6190 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -269,22 +317,29 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6174 Titel seit 1990-01-05",
+     "value": "6190 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
-     "state": "FAIL",
-     "value": "nur splitbereinigter Kurs",
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+     "state": "PASS",
+     "value": "6036 von 6174 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
+     "reason": null
+    },
+    {
+     "id": "benchmark",
+     "label": "Benchmark auf derselben Renditebasis",
+     "state": "PASS",
+     "value": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE) · TOTAL_RETURN · 2026-10-23",
+     "reason": null
     },
     {
      "id": "survivorship",
      "label": "Überlebende-Kontrolle",
      "state": "FAIL",
-     "value": "heute gelistetes Universum, 0 früh endende Reihen",
-     "reason": "TODAYS_UNIVERSE_ONLY"
+     "value": "Hauptstudie nutzt heute gelistete Titel; 3058 delistete Listings ab 2016-01-08 nur in der Sensitivitätsrechnung",
+     "reason": "PARTIAL_SENSITIVITY_ONLY"
     }
    ],
    "rules": [
@@ -332,8 +387,7 @@
    "decision": "PUBLISHED",
    "trust": "LIMITED",
    "reasons": [
-    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-    "TODAYS_UNIVERSE_ONLY"
+    "PARTIAL_SENSITIVITY_ONLY"
    ]
   },
   {
@@ -346,15 +400,15 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "5 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "6 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {
      "id": "totalReturn",
-     "label": "Gesamtrendite des Universums",
+     "label": "tägliche Gesamtrendite im veröffentlichten Datenbestand",
      "state": "FAIL",
-     "value": "nur 5 Titel mit Gesamtrendite",
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+     "value": "5 Referenztitel im Repository; vollständige Tageshistorie nur im privaten Historienspeicher",
+     "reason": "FULL_DAILY_TOTAL_RETURN_NOT_PUBLISHED"
     },
     {
      "id": "pitFactors",
@@ -380,18 +434,17 @@
     {
      "id": "benchmark",
      "label": "Vergleichsindex mit Gesamtrendite",
-     "state": "FAIL",
-     "value": "SPY nur als Kurs",
-     "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+     "state": "PASS",
+     "value": "TOTAL_RETURN_RECONSTRUCTED, 1993-01-29 bis 2026-10-23",
+     "reason": null
     }
    ],
    "note": "Bleibt geschlossen, bis die Index-Zugehörigkeit historisch vorliegt. Das heutige Universum wird nie eingesetzt.",
    "decision": "WITHHELD",
    "reasons": [
     "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-    "FACTOR_HISTORY_TOO_SHORT",
-    "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+    "FULL_DAILY_TOTAL_RETURN_NOT_PUBLISHED",
+    "FACTOR_HISTORY_TOO_SHORT"
    ]
   },
   {
@@ -475,10 +528,8 @@
   },
   {
    "id": "weeklyTotalReturn",
-   "plain": "Wöchentliche Gesamtrendite-Reihen neben den splitbereinigten veröffentlichen",
-   "unlocks": [
-    "C"
-   ]
+   "plain": "Kanonische Gesamtrendite-Abdeckung weiter überwachen und qualitätsgeprüft erweitern",
+   "unlocks": []
   },
   {
    "id": "delistedTitles",

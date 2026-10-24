@@ -1,7 +1,7 @@
 {
-  "methodologyVersion": "backtest-v1.0.0",
-  "engineVersion": "vu-backtest-engine-1.0.0",
-  "label": "VU Backtest Engine V1",
+  "methodologyVersion": "backtest-v1.1.0",
+  "engineVersion": "vu-backtest-engine-1.0.1",
+  "label": "VU Backtest Engine V1.1",
   "scope": "Long-only Aktien, Tagesdaten, Cross-Sectional Ranking, monatliches oder quartalsweises Rebalancing.",
   "pointInTime": {
     "rule": "availableAt <= decisionTime",
@@ -10,7 +10,10 @@
   },
   "execution": {
     "defaultTiming": "next_open",
-    "allowedTimings": ["next_open", "next_close"],
+    "allowedTimings": [
+      "next_open",
+      "next_close"
+    ],
     "rule": "Ein auf dem Schlusskurs von T berechnetes Signal wird fruehestens zum naechsten zulaessigen Handelszeitpunkt (T+1) ausgefuehrt."
   },
   "costs": {
@@ -22,19 +25,29 @@
   },
   "constraints": {
     "defaultMaxPositionWeight": 0.08,
-    "defaultMaxSectorWeight": 0.30,
+    "defaultMaxSectorWeight": 0.3,
     "defaultMinDollarVolumeM": 5,
     "defaultMinMarketCapM": 300,
     "maxPositions": 200,
     "minPositions": 5
   },
   "rebalance": {
-    "allowed": ["monthly", "quarterly"],
+    "allowed": [
+      "monthly",
+      "quarterly"
+    ],
     "default": "quarterly",
     "note": "Taegliches oder woechentliches Umschichten ist in V1 bewusst nicht erlaubt: bei Fundamentalstrategien erzeugt es vor allem Kosten und Overfitting-Spielraum."
   },
   "corporateActions": {
-    "handled": ["split", "dividend", "special_dividend", "delisting", "merger", "symbol_change"],
+    "handled": [
+      "split",
+      "dividend",
+      "special_dividend",
+      "delisting",
+      "merger",
+      "symbol_change"
+    ],
     "priceBasis": "adjustedClose",
     "delistingRule": "Eine delistete Position wird zum letzten verfuegbaren Kurs des Delisting-Tages glattgestellt; der Erloes bleibt im Portfolio. Die Security bleibt im historischen Universum."
   },
@@ -44,17 +57,39 @@
     "description": "Gleichgewichteter Index aller zum jeweiligen Zeitpunkt gelisteten Mock-Securities inkl. spaeter delisteter Titel."
   },
   "metrics": [
-    "cagr", "totalReturn", "benchmarkCagr", "benchmarkTotalReturn", "excessReturn",
-    "volatility", "maxDrawdown", "sharpe", "sortino", "calmar",
-    "bestYear", "worstYear", "recoveryDays", "turnover", "hitRate", "averageHoldings"
+    "cagr",
+    "totalReturn",
+    "benchmarkCagr",
+    "benchmarkTotalReturn",
+    "excessReturn",
+    "volatility",
+    "maxDrawdown",
+    "sharpe",
+    "sortino",
+    "calmar",
+    "bestYear",
+    "worstYear",
+    "recoveryDays",
+    "turnover",
+    "hitRate",
+    "averageHoldings"
   ],
   "riskFreeRateAnnualPct": 2.0,
   "reproduction": {
-    "hashInputs": ["strategyVersionHash", "dataSnapshotId", "engineVersion", "methodologyVersion", "executionAssumptions", "period"],
+    "hashInputs": [
+      "strategyVersionHash",
+      "dataSnapshotId",
+      "engineVersion",
+      "methodologyVersion",
+      "executionAssumptions",
+      "period",
+      "historyWindow"
+    ],
     "note": "Gleiche Eingaben ergeben denselben reproductionHash und dasselbe Ergebnis."
   },
-  "limits": {
-    "maxHistoryStart": "2006-01-01",
-    "note": "Der Mock-Datenbestand beginnt 2006-01-01. Ein frueheres Startdatum wird abgelehnt statt stillschweigend verschoben."
+  "historyEligibility": {
+    "contract": "backtest-history-eligibility-1.0.0",
+    "policy": "DEPENDENCY_DERIVED",
+    "unknownDependencyCoverage": "LIMITED"
   }
 }
