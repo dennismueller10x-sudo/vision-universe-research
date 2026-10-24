@@ -23,8 +23,21 @@
 import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 
-export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.0.0';
-export const CLASSES = Object.freeze({ SPLIT: 'CONFIRMED_UNDECLARED_SPLIT', GENUINE: 'CONFIRMED_GENUINE_MOVE', UNRESOLVED: 'UNRESOLVED' });
+/**
+ * 1.1.0 (Supertrader 7.0, registered before its first snapshot run, after the 1.0.0 run 40104626083): adds
+ *  - CONFIRMED_MISDATED_DECLARED_SPLIT: the provider declared a split factor f on session j, the price moved by the same
+ *    factor on a session i within misdatedMaxSessions of j, and session j itself shows no such move; the correction moves
+ *    the DECLARED factor from j to i (never a new factor). Both flags of the pair (i: the jump, j: the declared factor
+ *    without a jump) get the same result;
+ *  - balance-sheet share counts (us-gaap CommonStockSharesOutstanding, source 'bs', sec-pit r14) as a second kind of
+ *    reference date. A balance-sheet count can be restated for a split that happened after the balance-sheet date but
+ *    before the filing (SAB Topic 4C), so a 'bs' count is used BEFORE the session only when it was filed before it.
+ * 1.0.0 results are unchanged for every flag without a declared split nearby when the share series has no 'bs' rows.
+ */
+export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.1.0';
+export const CLASSES = Object.freeze({ SPLIT: 'CONFIRMED_UNDECLARED_SPLIT', MISDATED: 'CONFIRMED_MISDATED_DECLARED_SPLIT', GENUINE: 'CONFIRMED_GENUINE_MOVE', UNRESOLVED: 'UNRESOLVED' });
+/** Share-count sources accepted as a reference date: dei cover page (r13 and r14) and the balance sheet (r14). */
+export const SHARE_SOURCES = Object.freeze(['dei', 'bs']);
 
 /** Standard split ratios N (1:N reverse or N:1 forward). A share or price ratio must snap to exactly one of them. */
 export const STANDARD_RATIOS = Object.freeze([2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 16, 20, 25, 30, 35, 40, 50, 60, 70, 75, 80, 100, 120, 125, 150, 200, 250, 300, 400, 500, 1000]);
@@ -44,12 +57,17 @@ export const STANDARD_RATIOS = Object.freeze([2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15
  *  standardFactorNear a "genuine" relative within 2 % of a standard ratio stays UNRESOLVED (ADS ratio change or unit
  *                    error suspicion: the issuer's share count would not show either);
  *  unitErrorRatios   relatives near 100 / 1/100 (cents vs dollars) are never genuine;
- *  filingWindow      SEC filings in [d - 45, d + 15] calendar days are searched for a corporate action.
+ *  filingWindow      SEC filings in [d - 45, d + 15] calendar days are searched for a corporate action;
+ *  misdatedMaxSessions (1.1.0) a declared split and the jump it belongs to are at most 5 sessions apart; the pair
+ *                    must be the only declared split within maxBracketDays and the only flags within 5 sessions of it;
+ *                    the declared session's raw relative lies within priceRatioTol of 1 (no move there), the jump's
+ *                    raw close and open relatives within priceRatioTol of the declared price factor, its raw volume
+ *                    as for an undeclared split.
  */
 export const TOLERANCES = Object.freeze({
   shareRatioTol: 1.10, priceRatioTol: 1.35, volumeRatioTol: 4, maxBracketDays: 135, adjCloseTol: 1.10, reversalK: 3,
   standardFactorNear: 1.02, unitErrorRatios: Object.freeze([100]), volumePreBars: 20, volumePostBars: 10, volumeMinBars: 5,
-  filingWindowDays: Object.freeze([-45, 15]),
+  filingWindowDays: Object.freeze([-45, 15]), misdatedMaxSessions: 5,
 });
 /** 8-K items that are a corporate action for this purpose: 2.01 acquisition / disposition (spin-off, merger), 3.03 modification of holders' rights, 5.03 amendment of articles (reverse split). */
 export const CA_8K_ITEMS = Object.freeze(['2.01', '3.03', '5.03']);
@@ -68,16 +86,22 @@ export function snapStandard(x, tol) { return fin(x) && x > 0 ? SIGNED.filter((c
 export const ratioLabel = (c) => (c >= 1 ? `1:${Math.round(c)}` : `${Math.round(1 / c)}:1`);
 
 /**
- * Bracketing SEC share counts around session date d: the last dei cover-page count dated before d and the first dated
- * after d, each within maxBracketDays. shares rows are [asOf, value, firstFiled, source] (validation/sec-pit.mjs).
+ * Bracketing SEC share counts around session date d (or the span d .. dEnd of a pair): the last accepted count dated
+ * before d and the first dated after dEnd, each within maxBracketDays. shares rows are [asOf, value, firstFiled, source]
+ * (validation/sec-pit.mjs). Accepted sources: 'dei' (cover page); 'bs' (balance sheet, r14) – as the count BEFORE the
+ * session only when first filed before d (a later filing may already be restated for the split). The reason
+ * SEC_SHARES_NOT_DEI (kept from 1.0.0) means: no row of an accepted source.
  */
-export function bracketShares(shares, d, tol = TOLERANCES) {
-  const rows = (shares || []).filter((r) => Array.isArray(r) && r[3] === 'dei' && fin(r[1]) && r[1] > 0 && typeof r[0] === 'string');
+export function bracketShares(shares, d, tol = TOLERANCES, dEnd = d) {
+  const rows = (shares || []).filter((r) => Array.isArray(r) && SHARE_SOURCES.includes(r[3]) && fin(r[1]) && r[1] > 0 && typeof r[0] === 'string');
   if (!rows.length) return { ok: false, reason: (shares || []).length ? 'SEC_SHARES_NOT_DEI' : 'SEC_SHARES_MISSING' };
   let before = null, after = null;
-  for (const r of rows) { if (r[0] < d) { if (!before || r[0] > before[0]) before = r; } else if (r[0] > d) { if (!after || r[0] < after[0]) after = r; } }
+  for (const r of rows) {
+    if (r[0] < d) { if (r[3] === 'bs' && !(typeof r[2] === 'string' && r[2] < d)) continue; if (!before || r[0] > before[0]) before = r; }
+    else if (r[0] > dEnd) { if (!after || r[0] < after[0]) after = r; }
+  }
   if (!before || !after) return { ok: false, reason: 'SEC_SHARES_NOT_BRACKETING' };
-  const gapBefore = daysBetween(before[0], d), gapAfter = daysBetween(d, after[0]);
+  const gapBefore = daysBetween(before[0], d), gapAfter = daysBetween(dEnd, after[0]);
   if (gapBefore > tol.maxBracketDays || gapAfter > tol.maxBracketDays) return { ok: false, reason: 'SEC_BRACKET_TOO_WIDE', gapBefore, gapAfter };
   return { ok: true, before, after, gapBefore, gapAfter, q: before[1] / after[1] };
 }
@@ -122,6 +146,50 @@ export function filingEvidence(sub, d, tol = TOLERANCES) {
 }
 
 const unresolved = (reason, evidence = {}) => ({ cls: CLASSES.UNRESOLVED, reason, evidence });
+const rawRelative = (raw, k) => { const p = raw[k - 1]?.close, c = raw[k]?.close; return fin(p) && p > 0 && fin(c) ? (c + (fin(raw[k].dividend) ? raw[k].dividend : 0)) / p : null; };
+const declaredAt = (raw, k) => fin(raw[k]?.splitFactor) && raw[k].splitFactor > 0 && raw[k].splitFactor !== 1;
+
+/**
+ * 1.1.0: a declared split on the wrong session. For the flag at x it finds the pair (j: the declared session, i: the
+ * jump), canonically from j, so both flags of a pair get the same answer. Returns a CONFIRMED_MISDATED_DECLARED_SPLIT
+ * result, an UNRESOLVED result with a specific reason, or null (no candidate pair: the caller reports
+ * DECLARED_SPLIT_NEARBY). The price factor c of a declared splitFactor s is 1/s (1:10 reverse: s = 0.1, c = 10).
+ */
+export function misdatedDeclaredSplit({ raw, bars, i: x, sec, identity = {}, otherFlagDates = [], tol = TOLERANCES }) {
+  const N = tol.misdatedMaxSessions, d = bars[x].date;
+  const lo = new Date(Date.parse(`${d}T00:00:00Z`) - tol.maxBracketDays * 864e5).toISOString().slice(0, 10), hi = new Date(Date.parse(`${d}T00:00:00Z`) + tol.maxBracketDays * 864e5).toISOString().slice(0, 10);
+  const declared = []; for (let k = 1; k < raw.length; k++) if (raw[k].date >= lo && raw[k].date <= hi && declaredAt(raw, k)) declared.push(k);
+  if (declared.length !== 1) return declared.length > 1 ? unresolved('MULTIPLE_DECLARED_SPLITS_NEARBY', { date: d }) : null;
+  const j = declared[0], s = raw[j].splitFactor, c = 1 / s;
+  if (Math.abs(j - x) > N) return null;
+  // the jump: the unique session within N of j (not j) whose raw close relative matches c
+  const jumps = []; for (let k = Math.max(1, j - N); k <= Math.min(raw.length - 1, j + N); k++) if (k !== j && within(rawRelative(raw, k) / c, tol.priceRatioTol)) jumps.push(k);
+  if (jumps.length !== 1) return jumps.length > 1 ? unresolved('MISDATED_JUMP_AMBIGUOUS', { date: d }) : null;
+  const i = jumps[0];
+  if (x !== i && x !== j) return null;
+  const ev = { date: d, pairJumpDate: raw[i].date, pairDeclaredDate: raw[j].date, declaredSplitFactor: s, factor: c, sessionsApart: i - j };
+  const rj = rawRelative(raw, j); ev.declaredSessionRawRelative = rj;
+  if (!within(rj, tol.priceRatioTol)) return unresolved('DECLARED_SESSION_MOVES', ev);
+  const b = raw[i], p = raw[i - 1], openRel = fin(b.open) && b.open > 0 && fin(p?.close) && p.close > 0 ? b.open / p.close : null; ev.openRelative = openRel;
+  if (!within(openRel / c, tol.priceRatioTol)) return unresolved('OPEN_RATIO_OFF_FACTOR', ev);
+  const v = volumeRelative(raw, i, tol); ev.volumeRelative = v;
+  if (v === null) return unresolved('VOLUME_EVIDENCE_MISSING', ev);
+  if (!(c > 1 ? v < 1 : v > 1) || !within(v * c, tol.volumeRatioTol)) return unresolved('VOLUME_INCONSISTENT_WITH_FACTOR', ev);
+  const a = Math.min(i, j), z = Math.max(i, j), wLo = raw[Math.max(0, a - N)].date, wHi = raw[Math.min(raw.length - 1, z + N)].date;
+  if (otherFlagDates.some((y) => y !== raw[i].date && y !== raw[j].date && y >= wLo && y <= wHi)) return unresolved('MULTIPLE_JUMPS_NEAR_PAIR', ev);
+  // SEC share counts, where usable, must show the same factor (never contradict it)
+  ev.secCorroborates = false;
+  if (sec && !identity.cikSharedAtSession && identity.instrumentClass !== 'ADR' && sec.taxonomy !== 'ifrs-full') {
+    const br = bracketShares(sec.shares, raw[a].date, tol, raw[z].date);
+    if (br.ok) {
+      Object.assign(ev, { sharesBefore: br.before[1], sharesBeforeAsOf: br.before[0], sharesAfter: br.after[1], sharesAfterAsOf: br.after[0], sharesBeforeSource: br.before[3], sharesAfterSource: br.after[3], q: br.q });
+      const snap = snapStandard(br.q, tol.shareRatioTol);
+      if (!(snap.length === 1 && snap[0] === c)) return unresolved('SEC_CONTRADICTS_DECLARED_FACTOR', ev);
+      ev.secCorroborates = true;
+    }
+  }
+  return { cls: CLASSES.MISDATED, reason: 'DECLARED_FACTOR_ON_WRONG_SESSION', factor: c, splitFactor: s, label: ratioLabel(c), overlay: { date: raw[i].date, splitFactor: s, moveFromDate: raw[j].date }, evidence: ev };
+}
 
 /**
  * Classifies one flagged session i of a snapshot segment.
@@ -142,7 +210,10 @@ export function classifyFlag({ raw, bars, i, sec, identity = {}, otherFlagDates 
   // declared corporate actions of the provider anywhere in the 135-day neighbourhood: the flag is a residual of a
   // declared event (wrong day / ratio) or competes with it -> out of the undeclared scope
   const lo = new Date(Date.parse(`${d}T00:00:00Z`) - tol.maxBracketDays * 864e5).toISOString().slice(0, 10), hi = new Date(Date.parse(`${d}T00:00:00Z`) + tol.maxBracketDays * 864e5).toISOString().slice(0, 10);
-  if (raw.some((x) => x.date >= lo && x.date <= hi && fin(x.splitFactor) && x.splitFactor !== 1)) return unresolved('DECLARED_SPLIT_NEARBY', ev);
+  if (raw.some((x) => x.date >= lo && x.date <= hi && fin(x.splitFactor) && x.splitFactor !== 1)) {
+    const m = misdatedDeclaredSplit({ raw, bars, i, sec, identity, otherFlagDates, tol });
+    return m || unresolved('DECLARED_SPLIT_NEARBY', ev);
+  }
   // a spike (the next session reverts) is a bad print, neither a split nor a level move
   const next = i + 1 < bars.length ? sessionRatio(bars, i + 1) : null;
   if (fin(next) && (r > 1 ? next <= 1 / tol.reversalK : next >= tol.reversalK)) return unresolved('SPIKE_REVERSAL', ev);
@@ -152,7 +223,7 @@ export function classifyFlag({ raw, bars, i, sec, identity = {}, otherFlagDates 
   if (identity.cikSharedAtSession) return unresolved('CIK_SHARED_BY_LIVE_LISTINGS', ev);
   const br = bracketShares(sec.shares, d, tol);
   if (!br.ok) return unresolved(br.reason, { ...ev, gapBefore: br.gapBefore ?? null, gapAfter: br.gapAfter ?? null });
-  Object.assign(ev, { sharesBefore: br.before[1], sharesBeforeAsOf: br.before[0], sharesAfter: br.after[1], sharesAfterAsOf: br.after[0], q: br.q });
+  Object.assign(ev, { sharesBefore: br.before[1], sharesBeforeAsOf: br.before[0], sharesAfter: br.after[1], sharesAfterAsOf: br.after[0], sharesBeforeSource: br.before[3], sharesAfterSource: br.after[3], q: br.q });
   if (otherFlagDates.some((x) => x !== d && x > br.before[0] && x < br.after[0])) return unresolved('MULTIPLE_JUMPS_IN_BRACKET', ev);
   const adj = adjCloseImplied(raw, i); ev.adjCloseImplied = adj;
   const openRel = fin(b.open) && b.open > 0 && fin(p.close) && p.close > 0 ? b.open / p.close : null; ev.openRelative = openRel;

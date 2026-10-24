@@ -9,8 +9,10 @@
  *  3. classification (integrity/ca-resolution.mjs) from the snapshot Tiingo fields and the SEC share counts of the
  *     existing private artifact _validation/sec-pit-r13.json.gz (read once, SHA-256 recorded). Only reference-exposed
  *     candidates that pass every share test of a genuine move get ONE request of the public EDGAR submissions index of
- *     the issuer (budget --sec-fetch-max, default 0 = none); everything else stays UNRESOLVED;
- *  4. a generated, hashed overlay manifest (integrity/ca-overlay.mjs) of the CONFIRMED_UNDECLARED_SPLIT sessions;
+ *     the issuer (budget --sec-fetch-max, default 0 = none); everything else stays UNRESOLVED. --sec-shares r14 reads
+ *     _validation/sec-pit-r14.json.gz instead (adds balance-sheet share counts; r12 / r13 unchanged);
+ *  4. a generated, hashed overlay manifest (integrity/ca-overlay.mjs) of the CONFIRMED_UNDECLARED_SPLIT sessions and
+ *     (1.1.0) the CONFIRMED_MISDATED_DECLARED_SPLIT pairs (the provider's factor moved to the jump session);
  *  5. the references again on CA (overlay), CA-Q-K5 (overlay + quarantine of the UNRESOLVED DQ-K5 sessions, BOOK) and
  *     CA-Q-K3 (UNRESOLVED DQ-K3 sessions), each reconciled (ledger replay) and compared trade by trade with BASE.
  *  - public (repository log): counts per class and reason, exposure counts, trade counts and comparisons, hashes;
@@ -39,9 +41,10 @@ import { SF6_RUN_FACTS } from '../completion/sf6-run-facts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_CA_RUNNER_VERSION = 'sf7-ca-resolution-runner-1.0.0';
+export const SF7_CA_RUNNER_VERSION = 'sf7-ca-resolution-runner-1.1.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // Minervini fundamentals exactly as 6.0 (BASE identity)
-const SEC_SHARES_KEY = '_validation/sec-pit-r13.json.gz'; // share counts (evidence only, never attached to a security)
+// share counts (evidence only, never attached to a security): r13 (dei, fallback weighted diluted) or r14 (+ balance sheet)
+export const SEC_SHARES_KEYS = Object.freeze({ r13: '_validation/sec-pit-r13.json.gz', r14: '_validation/sec-pit-r14.json.gz' });
 const FILES = ['../integrity/discontinuity.mjs', '../integrity/ca-resolution.mjs', '../integrity/ca-overlay.mjs', 'run-sf7-ca-resolution.mjs'];
 export function caCodeSha256() {
   const h = crypto.createHash('sha256');
@@ -146,7 +149,7 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   for (const level of ['K5', 'K3']) {
     const rows = cands.filter((c) => level === 'K3' || c.level === 'K5');
     const block = (xs) => ({ flags: xs.length, byClass: tally(xs, (c) => c.result.cls), byReason: tally(xs, (c) => c.result.reason), securities: new Set(xs.map((c) => c.segmentId)).size });
-    census[`DQ-${level}`] = { ...block(rows), byClassDirection: tally(rows, (c) => `${c.result.cls}|${c.direction}`), byClassPriorRawCloseBand: tally(rows, (c) => `${c.result.cls}|${c.priorRawCloseBand}`), byKind: tally(rows, (c) => c.kind), splitFactors: tally(rows.filter((c) => c.result.cls === CLASSES.SPLIT), (c) => c.result.label), secMapping: tally(rows, (c) => sharesByListing.get(c.listing)?.how ?? 'NONE'),
+    census[`DQ-${level}`] = { ...block(rows), byClassDirection: tally(rows, (c) => `${c.result.cls}|${c.direction}`), byClassPriorRawCloseBand: tally(rows, (c) => `${c.result.cls}|${c.priorRawCloseBand}`), byKind: tally(rows, (c) => c.kind), splitFactors: tally(rows.filter((c) => c.result.cls === CLASSES.SPLIT), (c) => c.result.label), misdatedFactors: tally(rows.filter((c) => c.result.cls === CLASSES.MISDATED), (c) => c.result.label), misdatedSecCorroborated: rows.filter((c) => c.result.cls === CLASSES.MISDATED && c.result.evidence?.secCorroborates).length, shareSourcesUsed: tally(rows.filter((c) => c.result.evidence?.sharesBeforeAsOf), (c) => `${c.result.evidence.sharesBeforeSource ?? '?'}>${c.result.evidence.sharesAfterSource ?? '?'}`), secMapping: tally(rows, (c) => sharesByListing.get(c.listing)?.how ?? 'NONE'),
       researchUniverseAtPriorSession: block(rows.filter((c) => c.universe)), referenceExposed: block(rows.filter((c) => c.exposedRefs.length)), heldAcrossByReference: block(rows.filter((c) => c.heldRefs.length)),
       e1Candidates: block(rows.filter((c) => c.universe || c.exposedRefs.length)) };
   }
@@ -158,16 +161,16 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   const manifest = buildOverlayManifest(cands.map((c) => ({ ...c.result, segmentId: c.segmentId, date: c.date })), { snapshotId, classifierVersion: CA_RESOLUTION_VERSION, evidenceInputs });
   const ca = correctedDataset(baseDs, segs, manifest);
   for (const e of manifest.entries) {
-    const s = ca.ds.securities.find((x) => x.id === e.segmentId), i = s.bars.findIndex((b) => b.date === e.date);
-    if (flagDiscontinuities(s.bars, K3).includes(i)) throw new Error('CA_OVERLAY_SESSION_STILL_FLAGGED');
+    const s = ca.ds.securities.find((x) => x.id === e.segmentId), fl = new Set(flagDiscontinuities(s.bars, K3));
+    for (const d of [e.date, e.moveFromDate].filter(Boolean)) if (fl.has(s.bars.findIndex((b) => b.date === d))) throw new Error('CA_OVERLAY_SESSION_STILL_FLAGGED');
   }
-  pub.overlay = { entries: manifest.entries.length, patchedSegments: ca.patchedSegments, manifestSha256: manifest.manifestSha256, unchangedSecurities: ca.ds.securities.filter((s, j) => s === baseDs.securities[j]).length, securities: ca.ds.securities.length };
+  pub.overlay = { entries: manifest.entries.length, byKind: tally(manifest.entries, (e) => e.kind), patchedSegments: ca.patchedSegments, manifestSha256: manifest.manifestSha256, unchangedSecurities: ca.ds.securities.filter((s, j) => s === baseDs.securities[j]).length, securities: ca.ds.securities.length };
   log(`overlay: ${manifest.entries.length} sessions in ${ca.patchedSegments} segments, manifest ${manifest.manifestSha256.slice(0, 12)}`);
 
   // 5. CA, CA-Q-K5, CA-Q-K3
   const unresolvedDates = (level) => { const m = new Map(); for (const c of cands) if (c.result.cls === CLASSES.UNRESOLVED && (level === 'K3' || c.level === 'K5')) { if (!m.has(c.segmentId)) m.set(c.segmentId, []); m.get(c.segmentId).push(c.date); } return m; };
   const datasets = {
-    CA: { ds: ca.ds, events: cands.filter((c) => c.result.cls === CLASSES.SPLIT), quarantine: null },
+    CA: { ds: ca.ds, events: cands.filter((c) => c.result.cls === CLASSES.SPLIT || c.result.cls === CLASSES.MISDATED), quarantine: null },
     'CA-Q-K5': { ...(() => { const q = quarantineUnresolved(ca.ds, unresolvedDates('K5'), { ...DQ_POLICIES['DQ-K5-BOOK'], id: 'CA-Q-K5' }); return { ds: q.ds, quarantine: { cuts: q.cuts, droppedBars: q.droppedBars, pieces: q.ds.securities.length } }; })(), events: cands.filter((c) => c.level === 'K5' && c.result.cls !== CLASSES.GENUINE) },
     'CA-Q-K3': { ...(() => { const q = quarantineUnresolved(ca.ds, unresolvedDates('K3'), { ...DQ_POLICIES['DQ-K3-BOOK'], id: 'CA-Q-K3' }); return { ds: q.ds, quarantine: { cuts: q.cuts, droppedBars: q.droppedBars, pieces: q.ds.securities.length } }; })(), events: cands.filter((c) => c.result.cls !== CLASSES.GENUINE) },
   };
@@ -211,7 +214,9 @@ async function main() {
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
-  const LIMIT = Number(arg('--limit', '0')), keys = arg('--lifecycles', INTEGRITY_KEYS.join(',')).split(','), secFetchMax = Number(arg('--sec-fetch-max', '0'));
+  const LIMIT = Number(arg('--limit', '0')), keys = arg('--lifecycles', INTEGRITY_KEYS.join(',')).split(','), secFetchMax = Number(arg('--sec-fetch-max', '0')), sharesVersion = arg('--sec-shares', 'r13');
+  if (!SEC_SHARES_KEYS[sharesVersion]) { console.error('SEC_SHARES_R13_OR_R14'); process.exit(2); }
+  const SEC_SHARES_KEY = SEC_SHARES_KEYS[sharesVersion];
   if (!keys.every((k) => INTEGRITY_KEYS.includes(k))) { console.error('UNKNOWN_LIFECYCLE'); process.exit(2); }
   if (!(Number.isInteger(secFetchMax) && secFetchMax >= 0 && secFetchMax <= 300)) { console.error('SEC_FETCH_MAX_0_TO_300'); process.exit(2); }
   const smoke = argv.includes('--smoke-snapshot');
@@ -234,11 +239,11 @@ async function main() {
     secPit = buf ? JSON.parse(zlib.gunzipSync(buf).toString('utf8')) : {};
     // sec-pit-r13 is not part of the frozen snapshot: read once from the private store, identified by its hash
     const sbuf = await live.get(pit.mine.seriesPrefix + SEC_SHARES_KEY);
-    if (!sbuf) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, 'SEC_PIT_R13_MISSING');
+    if (!sbuf) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, `SEC_PIT_${sharesVersion.toUpperCase()}_MISSING`);
     sharesSha256 = crypto.createHash('sha256').update(sbuf).digest('hex');
     const r13 = JSON.parse(zlib.gunzipSync(sbuf).toString('utf8'));
     shares = new Map(Object.entries(r13).filter(([, x]) => Array.isArray(x?.shares) && x.shares.length).map(([id, x]) => [id, { cik: x.cik, how: x.how, taxonomy: x.taxonomy ?? null, shares: x.shares }]));
-    log(`snapshot ${snapshotId}: dataset ${v.datasetVerified}; sec-pit r12 listings ${Object.keys(secPit).length}; r13 listings with shares ${shares.size} (sha ${sharesSha256.slice(0, 12)})`);
+    log(`snapshot ${snapshotId}: dataset ${v.datasetVerified}; sec-pit r12 listings ${Object.keys(secPit).length}; ${sharesVersion} listings with shares ${shares.size} (sha ${sharesSha256.slice(0, 12)})`);
   } catch (e) {
     console.error(e instanceof K.SnapshotError ? `${K.REASON.INPUT_INTEGRITY_FAILURE}: ${e.code}${e.detail ? ' ' + e.detail : ''}` : `INPUT_INTEGRITY_FAILURE: UNEXPECTED_ERROR ${e?.code ?? ''}`);
     process.exit(3);
@@ -254,8 +259,8 @@ async function main() {
     const j = await r.json(), rec = j?.filings?.recent || {};
     return { form: [...(rec.form || [])], filingDate: [...(rec.filingDate || [])], items: [...(rec.items || [])] };
   };
-  const evidenceInputs = { secPitR13Sha256: sharesSha256, datasetSha256, snapshotId };
-  const receipt = { schema: 'supertrader-sf7-ca-resolution-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), runner: SF7_CA_RUNNER_VERSION, classifier: CA_RESOLUTION_VERSION, overlay: CA_OVERLAY_VERSION, secPitR13Key: SEC_SHARES_KEY, secPitR13Sha256: sharesSha256, secFetchMax, lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const evidenceInputs = { secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, datasetSha256, snapshotId };
+  const receipt = { schema: 'supertrader-sf7-ca-resolution-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), runner: SF7_CA_RUNNER_VERSION, classifier: CA_RESOLUTION_VERSION, overlay: CA_OVERLAY_VERSION, secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, secFetchMax, lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: secFetchMax ? fetchFilings : null, secFetchMax, keys, snapshotId, evidenceInputs, log });
   const authoritative = snapshotId === SF6_RUN_FACTS.integrity.snapshotId && !LIMIT && !smoke && keys.length === INTEGRITY_KEYS.length;
   r.pub.baseVsSf6 = authoritative ? compareWithSf6(r.pub.lifecycles) : { skipped: 'NOT_THE_AUTHORITATIVE_FULL_RUN' };

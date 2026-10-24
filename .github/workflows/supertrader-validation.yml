@@ -37,6 +37,7 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:sf7-ca-resolution]       Supertrader-7.0-V4-D1-Aufloesung (source-faithful/research/run-sf7-ca-resolution.mjs):
 #   [supertrader-validation:sf7-ca-resolution-smoke] DQ-Kandidaten mit Tiingo-Feldern + sec-pit-r13 klassifiziert, erzeugtes CA-Overlay,
 #                                                    Referenzen auf BASE / CA / CA-Q-K5 / CA-Q-K3 (hoechstens 150 bzw. 5 EDGAR-Indexabrufe)
+#   [supertrader-validation:sec-pit-r14]             SEC-Aktienzahlen mit Bilanzwerten (sec-pit.mjs --r14, privater Eimer, nur fuer sf7-ca-resolution)
 #   [supertrader-validation:sf6-validation]         Supertrader-6.0-Validierung (source-faithful/research/run-sf6-validation.mjs): Kostenstufen,
 #   [supertrader-validation:sf6-validation-holdout] Perioden/Regime/Liquiditaet, Modellvarianten; -holdout liest einen Holdout-Snapshot (ST_WINDOW=HOLDOUT)
 #   [supertrader-validation:kk-intraday-count]   Kullamaegi EP/PS chart-first: nur Tagesscreens zaehlen (kein Abruf)
@@ -51,7 +52,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [sf7-ca-resolution, sf7-ca-resolution-smoke, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [sf7-ca-resolution, sf7-ca-resolution-smoke, sec-pit-r14, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
       snapshot:
         description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
@@ -93,7 +94,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sf7-ca-resolution-smoke]"*) m=sf7-ca-resolution-smoke;; *"[supertrader-validation:sf7-ca-resolution]"*) m=sf7-ca-resolution;; *"[supertrader-validation:sf6-integrity-smoke]"*) m=sf6-integrity-smoke;; *"[supertrader-validation:sf6-integrity]"*) m=sf6-integrity;; *"[supertrader-validation:sf6-validation-holdout]"*) m=sf6-validation-holdout;; *"[supertrader-validation:sf6-validation]"*) m=sf6-validation;; *"[supertrader-validation:kk-intraday-probe]"*) m=kk-intraday-probe;; *"[supertrader-validation:kk-intraday-count]"*) m=kk-intraday-count;; *"[supertrader-validation:kk-intraday-smoke]"*) m=kk-intraday-smoke;; *"[supertrader-validation:kk-intraday-cache]"*) m=kk-intraday-cache;; *"[supertrader-validation:kk-intraday]"*) m=kk-intraday;; *"[supertrader-validation:sf5-lifecycle-smoke]"*) m=sf5-lifecycle-smoke;; *"[supertrader-validation:sf5-lifecycle]"*) m=sf5-lifecycle;; *"[supertrader-validation:sf4-lifecycle-smoke]"*) m=sf4-lifecycle-smoke;; *"[supertrader-validation:sf4-lifecycle]"*) m=sf4-lifecycle;; *"[supertrader-validation:sf3-research-smoke]"*) m=sf3-research-smoke;; *"[supertrader-validation:sf3-research]"*) m=sf3-research;; *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:sec-pit-r14]"*) m=sec-pit-r14;; *"[supertrader-validation:sf7-ca-resolution-smoke]"*) m=sf7-ca-resolution-smoke;; *"[supertrader-validation:sf7-ca-resolution]"*) m=sf7-ca-resolution;; *"[supertrader-validation:sf6-integrity-smoke]"*) m=sf6-integrity-smoke;; *"[supertrader-validation:sf6-integrity]"*) m=sf6-integrity;; *"[supertrader-validation:sf6-validation-holdout]"*) m=sf6-validation-holdout;; *"[supertrader-validation:sf6-validation]"*) m=sf6-validation;; *"[supertrader-validation:kk-intraday-probe]"*) m=kk-intraday-probe;; *"[supertrader-validation:kk-intraday-count]"*) m=kk-intraday-count;; *"[supertrader-validation:kk-intraday-smoke]"*) m=kk-intraday-smoke;; *"[supertrader-validation:kk-intraday-cache]"*) m=kk-intraday-cache;; *"[supertrader-validation:kk-intraday]"*) m=kk-intraday;; *"[supertrader-validation:sf5-lifecycle-smoke]"*) m=sf5-lifecycle-smoke;; *"[supertrader-validation:sf5-lifecycle]"*) m=sf5-lifecycle;; *"[supertrader-validation:sf4-lifecycle-smoke]"*) m=sf4-lifecycle-smoke;; *"[supertrader-validation:sf4-lifecycle]"*) m=sf4-lifecycle;; *"[supertrader-validation:sf3-research-smoke]"*) m=sf3-research-smoke;; *"[supertrader-validation:sf3-research]"*) m=sf3-research;; *"[supertrader-validation:sf-research-smoke]"*) m=sf-research-smoke;; *"[supertrader-validation:sf-research]"*) m=sf-research;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Snapshot- und Abrechnungsvertrag (fail closed)
         id: snap
@@ -321,9 +322,9 @@ jobs:
           MODE: ${{ steps.mode.outputs.mode }}
         run: |
           set -euo pipefail
-          extra="--sec-fetch-max 150"
+          extra="--sec-fetch-max 150 --sec-shares r14"
           # Probelauf auf dem massgeblichen Snapshot (der Smoke-Snapshot traegt einen aelteren Code-Fingerabdruck): 400 Reihen
-          [ "$MODE" = sf7-ca-resolution-smoke ] && extra="--limit 400 --sec-fetch-max 5"
+          [ "$MODE" = sf7-ca-resolution-smoke ] && extra="--limit 400 --sec-fetch-max 5 --sec-shares r14"
           rc=0
           node scripts/supertrader/source-faithful/research/run-sf7-ca-resolution.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra || rc=$?
           # die oeffentliche Ausgabe auch bei einem BASE-Regressionsbefund (Exit 5) zeigen
@@ -431,9 +432,10 @@ jobs:
         if: steps.mode.outputs.mode == 'r15-delist-cases'
         run: node scripts/supertrader/validation/delist-cases-r15.mjs --out "$RUNNER_TEMP/val"
       - name: SEC-Gewinnhistorie zum damaligen Stand (Runde 11, privat + verschluesselt)
-        if: steps.mode.outputs.mode == 'sec-pit' || steps.mode.outputs.mode == 'holdout-sec'
+        if: steps.mode.outputs.mode == 'sec-pit' || steps.mode.outputs.mode == 'holdout-sec' || steps.mode.outputs.mode == 'sec-pit-r14'
         env:
           ST_WINDOW: ${{ steps.mode.outputs.mode == 'holdout-sec' && 'HOLDOUT' || 'DEV' }}
+          MODE: ${{ steps.mode.outputs.mode }}
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -441,7 +443,12 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/sec-pit.mjs --out "$RUNNER_TEMP/val"
+        run: |
+          set -euo pipefail
+          extra=""
+          # Supertrader 7.0: r14 = r13 plus Bilanz-Aktienzahl, eigener Schluessel, ohne Delisting-Einzelabrufe
+          [ "$MODE" = sec-pit-r14 ] && extra="--r14"
+          node scripts/supertrader/validation/sec-pit.mjs --out "$RUNNER_TEMP/val" $extra
       - name: Universumspruefung Nicht-Aktien (Runde 10, verschluesselt)
         if: steps.mode.outputs.mode == 'universe-audit'
         env:

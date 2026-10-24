@@ -247,3 +247,97 @@ test('SF7-CA-REGRESSION: fuer jede Referenz liegen die 6.0-Hashes vor; der Abgle
   assert.equal(compareWithSf6(off).allEqual, false);
   assert.equal(compareWithSf6(off).DARVAS.ledgerSha256, 'DIFFERENT');
 });
+
+// ---- 1.1.0: declared split on the wrong session, balance-sheet share counts (registered before the 1.1.0 run)
+const misdated = (seed, { jumpAt = 400, declAt = 402, price = 10, decl = 0.1, volume = 0.1 } = {}) => {
+  const raw = series(700, seed, [{ at: jumpAt, price, volume }]);
+  raw[declAt].splitFactor = decl;
+  return raw;
+};
+
+test('SF7-CA-MISDATED: erklaerter Faktor am falschen Tag wird fuer beide Markierungen gleich bestaetigt und verschoben, nie erfunden', () => {
+  const raw = misdated(31), s = secOf(raw);
+  assert.deepEqual(flagDiscontinuities(s.bars, 5), [400, 402], 'Sprungpaar: der Sprung und der Faktor ohne Sprung');
+  const a = classify(raw, 400, null), b = classify(raw, 402, null);
+  for (const c of [a, b]) { assert.equal(c.cls, CLASSES.MISDATED, c.reason); assert.equal(c.splitFactor, 0.1); assert.deepEqual(c.overlay, { date: day(400), splitFactor: 0.1, moveFromDate: day(402) }); }
+  assert.equal(a.evidence.secCorroborates, false, 'ohne SEC-Daten zulaessig, aber als nicht durch SEC bestaetigt vermerkt');
+  const m = buildOverlayManifest([{ ...a, segmentId: 'X', date: day(400) }, { ...b, segmentId: 'X', date: day(402) }]);
+  assert.equal(m.entries.length, 1, 'ein Eintrag je Paar'); assert.equal(m.entries[0].kind, 'MOVE_DECLARED');
+  const fixed = correctedDataset(dsOf([seg('X', raw)]), [seg('X', raw)], m).ds.securities[0];
+  const truth = series(700, 31, [{ at: 400, price: 10, volume: 0.1, declared: true }]), want = secOf(truth);
+  for (let k = 0; k < 700; k++) for (const f of ['open', 'close', 'volume', 'rawClose']) assert.ok(Math.abs(fixed.bars[k][f] - want.bars[k][f]) <= 1e-9 * Math.max(1, Math.abs(want.bars[k][f])), `${k} ${f}`);
+  assert.deepEqual(flagDiscontinuities(fixed.bars, 3), []);
+  assert.equal(raw[402].splitFactor, 0.1, 'Snapshot-Rohdaten unveraendert');
+  // SEC, where usable, must show the same factor
+  assert.equal(classify(raw, 400, SEC([[330, 50e6], [460, 5e6]])).evidence.secCorroborates, true);
+  assert.equal(classify(raw, 400, SEC([[330, 50e6], [460, 50e6]])).reason, 'SEC_CONTRADICTS_DECLARED_FACTOR');
+  assert.equal(classify(raw, 402, SEC([[330, 50e6], [460, 50e6]])).reason, 'SEC_CONTRADICTS_DECLARED_FACTOR', 'beide Markierungen gleich');
+  // the moved factor is the provider's: a manifest claiming another factor fails closed
+  const bad = buildOverlayManifest([{ ...a, splitFactor: 0.05, overlay: { ...a.overlay, splitFactor: 0.05 }, segmentId: 'X', date: day(400) }]);
+  assert.throws(() => applyOverlayToSegments([seg('X', raw)], bad), /DECLARED_FACTOR_MISMATCH/);
+});
+
+test('SF7-CA-MISDATED-ADVERSARIAL: echter Absturz neben korrektem Split, zwei Splits, falsches Verhaeltnis, zu weit entfernt', () => {
+  // a correct 5:1 forward split at 400 and a genuine -80 % crash at 402 (same factor): the declared session moves -> UNRESOLVED
+  const crash = series(700, 32, [{ at: 400, price: 0.2, volume: 5, declared: true }, { at: 402, price: 0.2, volume: 3 }]);
+  assert.deepEqual(flagDiscontinuities(secOf(crash).bars, 3), [402]);
+  assert.equal(classify(crash, 402, null).reason, 'DECLARED_SESSION_MOVES');
+  // a correct 1:10 reverse split and a fake +900 % move two sessions later
+  const up = series(700, 33, [{ at: 400, price: 10, volume: 0.1, declared: true }, { at: 402, price: 10, volume: 0.1 }]);
+  assert.equal(classify(up, 402, null).reason, 'DECLARED_SESSION_MOVES');
+  // two declared splits within the bracket window
+  const two = misdated(34); two[450].splitFactor = 0.5;
+  assert.equal(classify(two, 400, null).reason, 'MULTIPLE_DECLARED_SPLITS_NEARBY');
+  // ratio mismatch: the price moved 5x, the provider declared 1:10
+  const mis = misdated(35, { price: 5, volume: 0.2 });
+  assert.equal(classify(mis, 400, null).reason, 'DECLARED_SPLIT_NEARBY');
+  assert.equal(classify(mis, 402, null).reason, 'DECLARED_SPLIT_NEARBY');
+  // farther than misdatedMaxSessions
+  assert.equal(TOLERANCES.misdatedMaxSessions, 5);
+  assert.equal(classify(misdated(36, { declAt: 406 }), 400, null).reason, 'DECLARED_SPLIT_NEARBY');
+  // the volume did not fall with the consolidation
+  assert.equal(classify(misdated(37, { volume: 1 }), 400, null).reason, 'VOLUME_INCONSISTENT_WITH_FACTOR');
+  // another jump next to the pair
+  const extra = misdated(38); for (let k = 404; k < 700; k++) for (const f of ['open', 'high', 'low', 'close']) extra[k][f] *= 4;
+  assert.equal(classify(extra, 400, null).reason, 'MULTIPLE_JUMPS_NEAR_PAIR');
+});
+
+test('SF7-SEC-PIT-R14: Aktienzahl je Stichtag dei vor Bilanz vor gewichteter Zahl, jede Zeile mit Quelle; r13-Reihe unveraendert', async () => {
+  const { sharesSeries, sharesSeriesR14, extractFactsR12, PIT_KEY_R13, PIT_KEY_R14 } = await import('../validation/sec-pit.mjs');
+  assert.notEqual(PIT_KEY_R14, PIT_KEY_R13);
+  const cf = { facts: {
+    dei: { EntityCommonStockSharesOutstanding: { units: { shares: [{ end: '2018-05-01', val: 50e6, filed: '2018-05-10', accn: 'a1' }] } } },
+    'us-gaap': {
+      CommonStockSharesOutstanding: { units: { shares: [{ end: '2018-03-31', val: 49e6, filed: '2018-05-10' }, { end: '2018-03-31', val: 4.9e6, filed: '2019-03-01' }, { end: '2018-05-01', val: 1, filed: '2018-05-10' }, { end: '2018-09-30', val: 5e6, filed: '2018-11-05' }] } },
+      WeightedAverageNumberOfDilutedSharesOutstanding: { units: { shares: [{ start: '2018-01-01', end: '2018-03-31', val: 48e6, filed: '2018-05-10' }] } },
+    } } };
+  assert.deepEqual(sharesSeriesR14(cf), [['2018-03-31', 49e6, '2018-05-10', 'bs'], ['2018-05-01', 50e6, '2018-05-10', 'dei'], ['2018-09-30', 5e6, '2018-11-05', 'bs']], 'erste Einreichung je Bilanzstichtag, dei hat Vorrang');
+  assert.deepEqual(sharesSeries(cf), [['2018-05-01', 50e6, '2018-05-10', 'dei']], 'r13-Logik unveraendert');
+  assert.deepEqual(extractFactsR12(cf).shares, sharesSeries(cf));
+  assert.deepEqual(extractFactsR12(cf, { r14: true }).shares, sharesSeriesR14(cf));
+  const onlyW = { facts: { 'us-gaap': { WeightedAverageNumberOfDilutedSharesOutstanding: cf.facts['us-gaap'].WeightedAverageNumberOfDilutedSharesOutstanding } } };
+  assert.deepEqual(sharesSeriesR14(onlyW), sharesSeries(onlyW), 'gewichtete Zahl nur als letzter Rueckfall');
+  assert.equal(sharesSeriesR14(onlyW)[0][3], 'wadso');
+});
+
+test('SF7-CA-MISDATED-RUN: der Lauf verschiebt den Faktor im Overlay, beide Sitzungen verschwinden, kein Schnitt', async () => {
+  const segs = Array.from({ length: 6 }, (_, s) => seg(`tiingo:NYSE:M${s}:2010-01-01`, s === 1 ? misdated(41) : series(700, s + 50)));
+  const r = await caResolutionPart(dsOf(segs), segs, { keys: ['TURTLE_S1'], from: day(0), to: day(699), dataEnd: day(699) });
+  assert.deepEqual(r.pub.census['DQ-K5'].byClass, { CONFIRMED_MISDATED_DECLARED_SPLIT: 2 });
+  assert.deepEqual(r.pub.overlay.byKind, { MOVE_DECLARED: 1 });
+  assert.equal(r.manifest.entries[0].moveFromDate, day(402));
+  assert.equal(r.pub.datasets['CA-Q-K3'].quarantine.cuts, 0);
+  assert.ok(r.pub.lifecycles.TURTLE_S1['CA-Q-K3'].reconciliation);
+});
+
+test('SF7-CA-BS-SHARES: Bilanz-Aktienzahl zaehlt vor der Sitzung nur, wenn vor ihr eingereicht (moegliche Split-Rueckrechnung)', () => {
+  const bs = (k, v, filedK) => [day(k), v, day(filedK), 'bs'];
+  assert.equal(bracketShares([bs(330, 50e6, 360), bs(460, 5e6, 480)], day(400)).q, 10, 'vor der Sitzung eingereicht: gueltig');
+  assert.equal(bracketShares([bs(330, 5e6, 420), bs(460, 5e6, 480)], day(400)).reason, 'SEC_SHARES_NOT_BRACKETING', 'nach der Sitzung eingereicht: kein Vorher-Wert');
+  const mixed = bracketShares([[day(300), 50e6, day(310), 'dei'], bs(380, 50e6, 395), bs(460, 5e6, 480), [day(470), 5e6, day(480), 'wadso']], day(400));
+  assert.equal(mixed.before[3], 'bs'); assert.equal(mixed.after[3], 'bs');
+  assert.equal(bracketShares([[day(330), 50e6, day(340), 'wadso'], [day(460), 5e6, day(470), 'wadso']], day(400)).reason, 'SEC_SHARES_NOT_DEI');
+  // balance-sheet counts (r14) let an undeclared split be confirmed where the cover page is missing
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]);
+  assert.equal(classify(raw, 400, { cik: '1', how: 'KNOWN', taxonomy: 'us-gaap', shares: [bs(330, 50e6, 360), bs(460, 5e6, 480)] }).cls, CLASSES.SPLIT);
+});

@@ -24,17 +24,29 @@ import crypto from 'node:crypto';
 import { securityFromSegment } from '../runner/snapshot-input.mjs';
 import { MIN_SEGMENT_BARS, DQ_VERSION, flagDiscontinuities } from './discontinuity.mjs';
 
-export const CA_OVERLAY_VERSION = 'sf7-ca-overlay-1.0.0';
+// 1.1.0: an entry may carry moveFromDate (CONFIRMED_MISDATED_DECLARED_SPLIT): the provider's declared factor is moved
+// from that session to the jump session; the factor itself is never changed or invented.
+export const CA_OVERLAY_VERSION = 'sf7-ca-overlay-1.1.0';
 const sha = (x) => crypto.createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
 
 /** Canonical overlay manifest from classified sessions (only CONFIRMED_UNDECLARED_SPLIT entries are taken). */
 export function buildOverlayManifest(classified, { snapshotId = null, classifierVersion = null, evidenceInputs = {} } = {}) {
-  const entries = classified.filter((c) => c.cls === 'CONFIRMED_UNDECLARED_SPLIT').map((c) => {
-    if (!(c.splitFactor > 0) || c.splitFactor === 1 || typeof c.segmentId !== 'string' || typeof c.date !== 'string') throw new Error('CA_OVERLAY_ENTRY_INVALID');
-    return { segmentId: c.segmentId, date: c.date, splitFactor: c.splitFactor, label: c.label, evidenceSha256: sha(c.evidence) };
+  const all = classified.filter((c) => c.cls === 'CONFIRMED_UNDECLARED_SPLIT' || c.cls === 'CONFIRMED_MISDATED_DECLARED_SPLIT').map((c) => {
+    const date = c.cls === 'CONFIRMED_MISDATED_DECLARED_SPLIT' ? c.overlay?.date : c.date, moveFromDate = c.cls === 'CONFIRMED_MISDATED_DECLARED_SPLIT' ? c.overlay?.moveFromDate : null;
+    if (!(c.splitFactor > 0) || c.splitFactor === 1 || typeof c.segmentId !== 'string' || typeof date !== 'string' || (c.cls === 'CONFIRMED_MISDATED_DECLARED_SPLIT' && (typeof moveFromDate !== 'string' || moveFromDate === date || c.overlay.splitFactor !== c.splitFactor))) throw new Error('CA_OVERLAY_ENTRY_INVALID');
+    // the evidence of a misdated pair is the pair (identical for both flags), so both flags give one identical entry
+    const e = { segmentId: c.segmentId, date, splitFactor: c.splitFactor, label: c.label, evidenceSha256: sha(moveFromDate ? { pair: [moveFromDate, date], factor: c.factor } : c.evidence) };
+    return moveFromDate ? { ...e, moveFromDate, kind: 'MOVE_DECLARED' } : { ...e, kind: 'ADD_UNDECLARED' };
   }).sort((a, b) => (a.segmentId === b.segmentId ? a.date.localeCompare(b.date) : a.segmentId.localeCompare(b.segmentId)));
-  const seen = new Set();
-  for (const e of entries) { const k = `${e.segmentId}|${e.date}`; if (seen.has(k)) throw new Error('CA_OVERLAY_DUPLICATE'); seen.add(k); }
+  const byKey = new Map();
+  for (const e of all) {
+    const k = `${e.segmentId}|${e.date}`, prev = byKey.get(k);
+    if (prev && JSON.stringify(prev) !== JSON.stringify(e)) throw new Error('CA_OVERLAY_DUPLICATE');
+    byKey.set(k, e);
+  }
+  const entries = [...byKey.values()];
+  const touched = new Set();
+  for (const e of entries) for (const d of [e.date, e.moveFromDate].filter(Boolean)) { const k = `${e.segmentId}|${d}`; if (touched.has(k)) throw new Error('CA_OVERLAY_SESSION_TOUCHED_TWICE'); touched.add(k); }
   const body = { schema: 'supertrader-ca-overlay-manifest-1.0.0', version: CA_OVERLAY_VERSION, snapshotId, classifierVersion, evidenceInputs, entries };
   return { ...body, manifestSha256: sha(body) };
 }
@@ -60,8 +72,14 @@ export function applyOverlayToSegments(segs, manifest) {
     const k = raw.findIndex((b) => b.date === e.date);
     if (k < 1) throw new Error('CA_OVERLAY_SESSION_MISSING');
     if (Number.isFinite(raw[k].splitFactor) && raw[k].splitFactor !== 1) throw new Error('CA_OVERLAY_SESSION_ALREADY_DECLARED');
+    if (e.moveFromDate) {
+      const m = raw.findIndex((b) => b.date === e.moveFromDate);
+      if (m < 1) throw new Error('CA_OVERLAY_SESSION_MISSING');
+      if (raw[m].splitFactor !== e.splitFactor) throw new Error('CA_OVERLAY_DECLARED_FACTOR_MISMATCH'); // never invent: the moved factor is the provider's
+      raw[m].splitFactor = 1;
+    }
     raw[k].splitFactor = e.splitFactor;
-    out.set(e.segmentId, { ...src, raw, caOverlay: [...(src.caOverlay || []), { date: e.date, splitFactor: e.splitFactor, version: CA_OVERLAY_VERSION }] });
+    out.set(e.segmentId, { ...src, raw, caOverlay: [...(src.caOverlay || []), { date: e.date, splitFactor: e.splitFactor, moveFromDate: e.moveFromDate || null, version: CA_OVERLAY_VERSION }] });
   }
   return out;
 }
