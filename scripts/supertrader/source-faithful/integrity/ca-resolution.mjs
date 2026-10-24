@@ -23,15 +23,26 @@
  * Every rule and tolerance is part of RULESET (hashed and pinned in a test). A result is a data audit, never a trading
  * decision: the classifier reads bars after d on purpose; the correction is standard back-adjustment (ca-overlay.mjs).
  *
- * Versions: 1.0.0 (run 40104626083). 1.1.0, registered before its first snapshot run: misdated declared splits,
- * balance-sheet share counts, and the fixes of the independent review of #902 (HIGH-1 factor grid, HIGH-2 genuine-move
- * guards, MEDIUM-1 filing check for splits, MEDIUM-2 KNOWN CIK for both confirmed classes, MEDIUM-4 domestic filer).
+ * Versions: 1.0.0 (run 40104626083). 1.1.0 (run 40111713883): misdated declared splits, balance-sheet share counts,
+ * fixes of the review of #902 (HIGH-1 factor grid, HIGH-2 genuine-move guards, MEDIUM-1 filing check for splits,
+ * MEDIUM-2 KNOWN CIK, MEDIUM-4 domestic filer). 1.2.0, registered before its first snapshot run, fixes of the
+ * re-review (Nachpruefung) at 585d4fb:
+ *  - HIGH: ordinary issuance moves q into the window of N - 1 and the close check cannot separate N from N +- 1. A split
+ *    now needs the share ratio AND the overnight open relative to select the same grid value g independently, a tight
+ *    share residual |ln(q/g)| <= min(0.2 x log-gap, ln 1.02), and - for g >= 10, where the log-gap is <= ln 1.10 and
+ *    issuance can cross a neighbour - a second source: adjClose knows the factor, or an 8-K 5.03 / 3.03 in the window;
+ *  - MEDIUM: a misdated declared split needs the jump and open relatives within ln 1.10 of the declared factor and a
+ *    second source (SEC shares show the factor, or adjClose knows it at the jump);
+ *  - LOW: unit-error and same-factor tolerances in TOLERANCES; an 8-K without items near a split blocks; a share
+ *    bracket must use ONE source on both sides (dei-dei or bs-bs), a mixed bracket is UNRESOLVED.
+ * The inverse volume test of 1.1.0 makes CONFIRMED_GENUINE_MOVE almost unreachable for crashes with high volume; this
+ * is intended (conservative): a crash with a split-like volume shift is not separable from a forward split.
  */
 import crypto from 'node:crypto';
 import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 
-export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.1.0';
+export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.2.0';
 export const CLASSES = Object.freeze({ SPLIT: 'CONFIRMED_UNDECLARED_SPLIT', MISDATED: 'CONFIRMED_MISDATED_DECLARED_SPLIT', GENUINE: 'CONFIRMED_GENUINE_MOVE', UNRESOLVED: 'UNRESOLVED' });
 /** Share-count sources accepted as a reference date: dei cover page (r13, r14) and balance sheet (r14). */
 export const SHARE_SOURCES = Object.freeze(['dei', 'bs']);
@@ -67,7 +78,11 @@ export const TOLERANCES = Object.freeze({
   shareRatioTol: 1.10, gridGapShare: 0.45, priceRatioTol: 1.35, volumeRatioTol: 4, maxBracketDays: 135, adjCloseTol: 1.10, reversalK: 3,
   standardFactorNear: 1.02, unitErrorRatios: Object.freeze([100]), largeDistribution: 0.25, distributionSessions: 5,
   volumePreBars: 20, volumePostBars: 10, volumeMinBars: 5, filingWindowDays: Object.freeze([-45, 15]), misdatedMaxSessions: 5,
+  // 1.2.0
+  shareResidualGapShare: 0.2, shareResidualMax: 1.02, secondSourceMinFactor: 10, misdatedPriceTol: 1.10, unitErrorTol: 1.5, sameFactorLogTol: 1e-3,
 });
+/** 8-K items that serve as a second source of a reverse / forward split (1.2.0). */
+export const SPLIT_SECOND_SOURCE_8K_ITEMS = Object.freeze(['5.03', '3.03']);
 /** 8-K items that are a corporate action for a genuine move; for a split only 2.01 (merger / disposition) blocks. */
 export const CA_8K_ITEMS = Object.freeze(['2.01', '3.03', '5.03', '5.07', '8.01']);
 export const SPLIT_BLOCKING_8K_ITEMS = Object.freeze(['2.01']);
@@ -79,7 +94,7 @@ export const DOMESTIC_FORMS = Object.freeze(['10-Q', '10-K', '10-Q/A', '10-K/A',
 export const FOREIGN_FORMS = Object.freeze(['6-K', '20-F', '40-F', '6-K/A', '20-F/A', '40-F/A']);
 
 /** The full rule set; its SHA-256 is pinned in a test (any change is a new, versioned rule set). */
-export const RULESET = Object.freeze({ version: CA_RESOLUTION_VERSION, classes: CLASSES, shareSources: SHARE_SOURCES, factorGrid: FACTOR_GRID, standardRatios: STANDARD_RATIOS, tolerances: TOLERANCES, ca8kItems: CA_8K_ITEMS, splitBlocking8kItems: SPLIT_BLOCKING_8K_ITEMS, mergerForms: MERGER_FORMS, proxyForms: PROXY_FORMS, domesticForms: DOMESTIC_FORMS, foreignForms: FOREIGN_FORMS });
+export const RULESET = Object.freeze({ version: CA_RESOLUTION_VERSION, classes: CLASSES, shareSources: SHARE_SOURCES, factorGrid: FACTOR_GRID, standardRatios: STANDARD_RATIOS, tolerances: TOLERANCES, ca8kItems: CA_8K_ITEMS, splitBlocking8kItems: SPLIT_BLOCKING_8K_ITEMS, splitSecondSource8kItems: SPLIT_SECOND_SOURCE_8K_ITEMS, mergerForms: MERGER_FORMS, proxyForms: PROXY_FORMS, domesticForms: DOMESTIC_FORMS, foreignForms: FOREIGN_FORMS });
 export const rulesetSha256 = () => crypto.createHash('sha256').update(JSON.stringify(RULESET)).digest('hex');
 
 const ln = Math.log;
@@ -93,6 +108,13 @@ const GRID_WINDOWS = Object.freeze(FACTOR_GRID.map((g, k) => {
   const prev = k ? FACTOR_GRID[k - 1] : 1, next = FACTOR_GRID[k + 1] ?? Infinity;
   return [g, Math.min(ln(TOLERANCES.shareRatioTol), TOLERANCES.gridGapShare * ln(g / prev), TOLERANCES.gridGapShare * ln(next / g))];
 }));
+/** Smallest log-gap from grid value g (>= 1) to a grid neighbour (1 below the grid). */
+export function gridLogGap(g) {
+  const x = g >= 1 ? g : 1 / g, k = FACTOR_GRID.findIndex((y) => Math.abs(y - x) < 1e-9);
+  if (k < 0) return null;
+  const prev = k ? FACTOR_GRID[k - 1] : 1, next = FACTOR_GRID[k + 1] ?? Infinity;
+  return Math.min(ln(x / prev), ln(next / x));
+}
 /** Signed grid values whose window contains q: g (1:g reverse, price up) or 1/g (g:1 forward). At most one by construction. */
 export function snapFactor(q) {
   if (!(fin(q) && q > 0)) return [];
@@ -104,7 +126,7 @@ export function snapFactor(q) {
 export function snapStandard(x, tol) { return fin(x) && x > 0 ? STANDARD_RATIOS.flatMap((n) => [n, 1 / n]).filter((c) => within(x / c, tol)) : []; }
 /** Label of a price factor c: 10 -> '1:10' (reverse), 0.5 -> '2:1', 1/1.5 -> '1.5:1'. */
 export const ratioLabel = (c) => { const g = c >= 1 ? c : 1 / c, n = Math.abs(g - Math.round(g)) < 1e-6 ? `${Math.round(g)}` : g.toFixed(1); return c >= 1 ? `1:${n}` : `${n}:1`; };
-const sameFactor = (a, b) => fin(a) && fin(b) && a > 0 && b > 0 && Math.abs(ln(a / b)) < 1e-3;
+const sameFactor = (a, b) => fin(a) && fin(b) && a > 0 && b > 0 && Math.abs(ln(a / b)) < TOLERANCES.sameFactorLogTol;
 
 /**
  * Bracketing SEC share counts around session date d (or the span d .. dEnd of a pair): the last accepted count dated
@@ -115,6 +137,12 @@ const sameFactor = (a, b) => fin(a) && fin(b) && a > 0 && b > 0 && Math.abs(ln(a
 export function bracketShares(shares, d, tol = TOLERANCES, dEnd = d) {
   const rows = (shares || []).filter((r) => Array.isArray(r) && SHARE_SOURCES.includes(r[3]) && fin(r[1]) && r[1] > 0 && typeof r[0] === 'string');
   if (!rows.length) return { ok: false, reason: (shares || []).length ? 'SEC_SHARES_NOT_DEI' : 'SEC_SHARES_MISSING' };
+  // 1.2.0: one source on both sides (cover page and balance sheet can count differently); dei first, then bs
+  for (const src of SHARE_SOURCES) { const b = bracketRows(rows.filter((r) => r[3] === src), d, tol, dEnd); if (b.ok) return b; }
+  const mixed = bracketRows(rows, d, tol, dEnd);
+  return mixed.ok ? { ok: false, reason: 'SEC_MIXED_SOURCE_BRACKET' } : mixed;
+}
+function bracketRows(rows, d, tol, dEnd) {
   let before = null, after = null;
   for (const r of rows) {
     if (r[0] < d) { if (r[3] === 'bs' && !(typeof r[2] === 'string' && r[2] < d)) continue; if (!before || r[0] > before[0]) before = r; }
@@ -186,7 +214,7 @@ export function misdatedDeclaredSplit({ raw, bars, i: x, sec, identity = {}, oth
   if (declared.length !== 1) return declared.length > 1 ? unresolved('MULTIPLE_DECLARED_SPLITS_NEARBY', { date: d }) : null;
   const j = declared[0], s = raw[j].splitFactor, c = 1 / s;
   if (Math.abs(j - x) > N) return null;
-  const jumps = []; for (let k = Math.max(1, j - N); k <= Math.min(raw.length - 1, j + N); k++) if (k !== j && within(rawRelative(raw, k) / c, tol.priceRatioTol)) jumps.push(k);
+  const jumps = []; for (let k = Math.max(1, j - N); k <= Math.min(raw.length - 1, j + N); k++) if (k !== j && within(rawRelative(raw, k) / c, tol.misdatedPriceTol)) jumps.push(k);
   if (jumps.length !== 1) return jumps.length > 1 ? unresolved('MISDATED_JUMP_AMBIGUOUS', { date: d }) : null;
   const i = jumps[0];
   if (x !== i && x !== j) return null;
@@ -194,7 +222,7 @@ export function misdatedDeclaredSplit({ raw, bars, i: x, sec, identity = {}, oth
   const rj = rawRelative(raw, j); ev.declaredSessionRawRelative = rj;
   if (!within(rj, tol.priceRatioTol)) return unresolved('DECLARED_SESSION_MOVES', ev);
   const b = raw[i], p = raw[i - 1], openRel = fin(b.open) && b.open > 0 && fin(p?.close) && p.close > 0 ? b.open / p.close : null; ev.openRelative = openRel;
-  if (!within(openRel / c, tol.priceRatioTol)) return unresolved('OPEN_RATIO_OFF_FACTOR', ev);
+  if (!within(openRel / c, tol.misdatedPriceTol)) return unresolved('OPEN_RATIO_OFF_FACTOR', ev);
   const v = volumeRelative(raw, i, tol); ev.volumeRelative = v;
   if (v === null) return unresolved('VOLUME_EVIDENCE_MISSING', ev);
   if (!volumeLikeSplit(v, c, tol)) return unresolved('VOLUME_INCONSISTENT_WITH_FACTOR', ev);
@@ -211,6 +239,11 @@ export function misdatedDeclaredSplit({ raw, bars, i: x, sec, identity = {}, oth
       ev.secCorroborates = true;
     }
   }
+  // 1.2.0: a second source must show the factor at the jump (a phantom declared factor next to a genuine crash
+  // would otherwise erase the crash): SEC shares (above) or the provider's adjClose
+  const adj = adjCloseImplied(raw, i); ev.adjCloseImplied = adj;
+  ev.adjCloseCorroborates = adj !== null && within(adj * c, tol.adjCloseTol);
+  if (!ev.secCorroborates && !ev.adjCloseCorroborates) return unresolved('MISDATED_NEEDS_SECOND_SOURCE', ev);
   return { cls: CLASSES.MISDATED, reason: 'DECLARED_FACTOR_ON_WRONG_SESSION', factor: c, splitFactor: s, label: ratioLabel(c), overlay: { date: raw[i].date, splitFactor: s, moveFromDate: raw[j].date }, evidence: ev };
 }
 
@@ -253,6 +286,11 @@ export function classifyFlag({ raw, bars, i, sec, identity = {}, otherFlagDates 
     if ((c > 1) !== (r > 1)) return unresolved('SHARE_AND_PRICE_DIRECTION_CONFLICT', ev);
     if (!within(r / c, tol.priceRatioTol)) return unresolved('PRICE_RATIO_OFF_FACTOR', ev);
     if (!within(openRel / c, tol.priceRatioTol)) return unresolved('OPEN_RATIO_OFF_FACTOR', ev);
+    // 1.2.0: the overnight open relative selects the same grid value independently; the share residual is tight
+    const gap = gridLogGap(c); ev.gridLogGap = gap; ev.shareResidual = Math.abs(ln(br.q / c));
+    const openSnap = snapFactor(openRel); ev.openSnap = openSnap[0] ?? null;
+    if (!(openSnap.length === 1 && sameFactor(openSnap[0], c))) return unresolved('OPEN_SELECTS_OTHER_FACTOR', ev);
+    if (ev.shareResidual > Math.min(tol.shareResidualGapShare * gap, ln(tol.shareResidualMax)) + 1e-12) return unresolved('SHARE_RESIDUAL_TOO_LARGE', ev);
     if (v === null) return unresolved('VOLUME_EVIDENCE_MISSING', ev);
     if (!volumeLikeSplit(v, c, tol)) return unresolved('VOLUME_INCONSISTENT_WITH_FACTOR', ev);
     const adjKnowsFactor = adj !== null && within(adj * c, tol.adjCloseTol), adjNeutral = adj !== null && within(adj, tol.adjCloseTol);
@@ -264,13 +302,18 @@ export function classifyFlag({ raw, bars, i, sec, identity = {}, otherFlagDates 
     if (filings === undefined) return needsFilings(CLASSES.SPLIT, ev);
     if (!filings.covered) return unresolved(filings.reason, ev);
     if (filings.hits.some(blocksSplit)) return unresolved('MERGER_OR_DISPOSITION_FILING_NEAR_SPLIT', { ...ev, filings: filings.hits });
+    if (filings.unknownItems.length) return unresolved('8K_ITEMS_UNKNOWN_NEAR_SPLIT', { ...ev, filings: filings.hits });
+    // 1.2.0: where ordinary issuance can cross a grid neighbour (factor >= 10: log-gap <= ln 1.10), a second source is required
+    const item8k = filings.hits.some((h) => h[3] === 'ITEM' && h[2].split(',').some((x) => SPLIT_SECOND_SOURCE_8K_ITEMS.includes(x)));
+    ev.secondSource = adjKnowsFactor ? 'ADJCLOSE' : item8k ? '8K_ITEM' : null;
+    if (Math.max(c, 1 / c) >= tol.secondSourceMinFactor - 1e-9 && !ev.secondSource) return unresolved('LARGE_FACTOR_NEEDS_SECOND_SOURCE', ev);
     return { cls: CLASSES.SPLIT, reason: 'SHARES_PRICE_VOLUME_SAME_FACTOR', factor: c, splitFactor: 1 / c, label: ratioLabel(c), evidence: { ...ev, filingWindow: filings.window, filings: filings.hits } };
   }
   // ---- genuine: share count unchanged
   if (!within(br.q, tol.shareRatioTol)) return unresolved('SHARE_RATIO_NO_MATCH', ev);
   if (!(typeof br.before[2] === 'string' && br.before[2] < d)) return unresolved('GENUINE_BEFORE_COUNT_FILED_AFTER_SESSION', ev);
   if (adj !== null && !within(adj, tol.adjCloseTol)) return unresolved('TIINGO_ADJCLOSE_CONFLICT', ev);
-  if (tol.unitErrorRatios.some((u) => within(r / u, 1.5) || within(r * u, 1.5))) return unresolved('UNIT_ERROR_SUSPECT', ev);
+  if (tol.unitErrorRatios.some((u) => within(r / u, tol.unitErrorTol) || within(r * u, tol.unitErrorTol))) return unresolved('UNIT_ERROR_SUSPECT', ev);
   if (snapStandard(r, tol.standardFactorNear).length) return unresolved('PRICE_RATIO_AT_STANDARD_FACTOR', ev);
   if (v === null) return unresolved('VOLUME_EVIDENCE_MISSING', ev);
   if (volumeLikeSplit(v, r, tol)) return unresolved('VOLUME_CONSISTENT_WITH_SPLIT', ev);
