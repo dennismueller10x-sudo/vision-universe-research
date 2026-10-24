@@ -1,0 +1,544 @@
+{
+ "schema": "supertrader-sf7-completion-1.0.0",
+ "version": "sf7-completion-matrix-1.0.0",
+ "basis": {
+  "readinessCriteria": "sf6-readiness-criteria-1.2.0",
+  "readinessSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342"
+ },
+ "evidence": {
+  "PR899": "Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418)",
+  "PR898": "Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache)",
+  "PR902": "Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution)",
+  "INV": "docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md",
+  "EXE": "docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md",
+  "CA": "docs/SUPERTRADER_7_V4D1_RESOLUTION.md"
+ },
+ "statusChange": "Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED",
+ "candidates": [
+  {
+   "candidateId": "C01",
+   "strategyId": "SF_TURTLE_S1",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 16,
+    "confirmedGenuine": 0,
+    "unresolved": 16
+   },
+   "changed7": "Unit-, Korrelationsgruppen- und Failsafe-Logik neu geprüft, kein Fehler in der Referenz; SF7-D3 (OPTIMISTIC-Alternative übersieht einen sicheren Stop am Einstiegstag) charakterisiert, offen",
+   "technical": "9/9 Phasen, vollständiger diagnostischer Backtest (Aktien-Adaption)",
+   "original": "Original Turtle Rules (W-TUR, englisch); die Failsafe-Lesart ist im Original mehrdeutig, beide Lesarten laufen",
+   "assumptions": "Aktien statt Futures, Units auf Eigenkapital, keine PIT-Korrelationsgruppen (SIC-Proxy nur Research, E4)",
+   "simulation": "ja",
+   "backtest": "ja, FULL_DIAGNOSTIC mit Datenausnahme",
+   "reliable": "DEV-Snapshot 2016–2026 EXACT; Holdout survivorship-belastet",
+   "blocked": "PIT-Korrelationsgruppen; V4-D1-Rest",
+   "execution": "Tagesbalken, Stop intraday, pessimistische Reihenfolge am selben Tag",
+   "manual": "keine",
+   "next": "Eigentümerentscheidung zu SF7-D3 (Turtle-Code gepinnt); Quelle für PIT-Korrelationsgruppen",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C02",
+   "strategyId": "SF_TURTLE_S2",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "FULL_DIAGNOSTIC_STRATEGY_BACKTEST",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 14,
+    "confirmedGenuine": 0,
+    "unresolved": 14
+   },
+   "changed7": "wie C01 (gemeinsame Engine): kein Fehler in der Referenz",
+   "technical": "9/9 Phasen, vollständiger diagnostischer Backtest",
+   "original": "Original Turtle Rules (W-TUR, englisch)",
+   "assumptions": "Aktien-Adaption, keine PIT-Korrelationsgruppen",
+   "simulation": "ja",
+   "backtest": "ja, FULL_DIAGNOSTIC mit Datenausnahme",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "PIT-Korrelationsgruppen; V4-D1-Rest",
+   "execution": "Tagesbalken, pessimistisch",
+   "manual": "keine",
+   "next": "Quelle für PIT-Korrelationsgruppen; V4-D1-Rest; SF6-PAPER-2027",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C03",
+   "strategyId": "SF_DARVAS_BOX",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "MECHANICAL_COMPONENT_STUDY",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-2-LIFECYCLE",
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 15,
+    "confirmedGenuine": 1,
+    "unresolved": 14
+   },
+   "changed7": "SF7-D1: 8.596 von 17.002 angenommenen Stops am Einstiegstag sind sicher (Schluss am oder unter dem Stop); als Variante, Referenz unverändert",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "How I Made $2,000,000 (B06, englisch); Box-Konstruktion teils mehrdeutig",
+   "assumptions": "Box-Beginn, Auswahl, Größe (8 manuelle Entscheidungen ersetzt)",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "V4-D1-Rest",
+   "execution": "Tagesbalken; die Referenz misst die pessimistische Intrabar-Annahme (Eigentümerentscheidung D-DARVAS-SIZE-INTRABAR)",
+   "manual": "8 essenzielle Entscheidungen",
+   "next": "Eigentümerentscheidungen zu den manuellen Darvas-Regeln; V4-D1-Rest",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C04",
+   "strategyId": "SF_WEINSTEIN_INVESTOR",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-3-NO-MANUAL",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 0,
+    "confirmedGenuine": 0,
+    "unresolved": 0
+   },
+   "changed7": "SF7-D1 gezählt (1 sicherer Ausstieg), nur Variante",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "Weinstein 1988 (B09, englisch)",
+   "assumptions": "Stage-Urteil, Volumen, RS, Overhead Supply (14 manuelle Entscheidungen); SIC3-Gruppenstärke als Research-Proxy",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "PIT-Branchen-Stage, NYSE-Breite",
+   "execution": "Wochenschlüsse, tägliche Ausführung",
+   "manual": "14 essenzielle Entscheidungen",
+   "next": "PIT-Branchenhistorie; Eigentümerentscheidung, ob V4-D1-Exposition 0 für CC-5 genügt",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C05",
+   "strategyId": "SF_WEINSTEIN_TRADER",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-3-NO-MANUAL",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 4,
+    "confirmedGenuine": 1,
+    "unresolved": 3
+   },
+   "changed7": "SF7-D1 gezählt (4 sichere Ausstiege), nur Variante",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "Weinstein 1988 (B09, englisch)",
+   "assumptions": "12 manuelle Entscheidungen ersetzt",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "PIT-Branchen-Stage, NYSE-Breite; V4-D1-Rest",
+   "execution": "Wochenschlüsse, tägliche Ausführung",
+   "manual": "12 essenzielle Entscheidungen",
+   "next": "PIT-Branchenhistorie; V4-D1-Rest",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C06",
+   "strategyId": "SF_MINERVINI_SEPA_VCP",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-2-LIFECYCLE",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-3-NO-MANUAL",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 0,
+    "confirmedGenuine": 0,
+    "unresolved": 0
+   },
+   "changed7": "Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), 2 Diagnosen; REF ledger-identisch (Lauf 40103766418)",
+   "technical": "9/9 Phasen als Modellstudie (4.0-Engine unverändert)",
+   "original": "Bücher vollständig im Projekt, nur Übersetzungen (B12 id, B07 id, B03 vi); englische Bestätigung nur über W-MIN18; Trend-Template-Zahlen in zwei Übersetzungen gleich",
+   "assumptions": "19 Lifecycle- und 6 sf7-Modellannahmen, jede klassifiziert (Inventur)",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT; PIT-EPS split-korrigiert, wo belegbar",
+   "blocked": "IBD-RS-Historie, Schätzungen / Überraschungen / Guidance",
+   "execution": "Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) offen, gepinnt",
+   "manual": "11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS)",
+   "next": "Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); ob V4-D1-Exposition 0 für CC-5 genügt; SF7-D4",
+   "evidence": [
+    "PR899",
+    "INV",
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C07",
+   "strategyId": "SF_MINERVINI_POWER_PLAY",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-2-LIFECYCLE",
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 12,
+    "confirmedGenuine": 2,
+    "unresolved": 10
+   },
+   "changed7": "VCP-Differenz B12 / B03 zugunsten der Referenz aufgelöst; Korrekturspanne präzisiert (20 %, niedrigpreisig etwa 25 %); REF ledger-identisch",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "Bücher nur als Übersetzung; englische Bestätigung für Stop und Größe (W-MIN18)",
+   "assumptions": "Pivot, Urteil zum Startvolumen, Schwelle „niedrigpreisig“",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "V4-D1-Rest",
+   "execution": "wie SEPA; SF7-D4 offen",
+   "manual": "6 essenzielle Entscheidungen",
+   "next": "CC-1-Entscheidung wie SEPA; V4-D1-Rest",
+   "evidence": [
+    "PR899",
+    "INV",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C08",
+   "strategyId": "SF_KK_BREAKOUT",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 27,
+    "confirmedGenuine": 4,
+    "unresolved": 23
+   },
+   "changed7": "neu geprüft (Einstieg zur Eröffnung: keine Mehrdeutigkeit am Einstiegstag); keine technisch lösbare Lücke",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "Kullamägi-Webprimärquellen (englisch)",
+   "assumptions": "Setup-Qualität, Größe (7 manuelle Entscheidungen)",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "V4-D1-Rest",
+   "execution": "nächste Eröffnung / Stop; geringe Trade-Stabilität durch Knock-on (E6)",
+   "manual": "7 essenzielle Entscheidungen",
+   "next": "Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C09",
+   "strategyId": "SF_KK_EPISODIC_PIVOT",
+   "primaryState": "VALIDATION_BLOCKED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": null,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": null,
+   "changed7": "SF7-D2: versiegelte EP-Trade-Kennzahlen waren leer (Feld pnl) – behoben; SF7-D5: sicherer Stop in der Füll-Minute unter der optimistischen Minutenregel – Variante; Cache-Lauf mit 0 Abrufen, EP-Referenz identisch",
+   "technical": "chartbasierte Intraday-Modellstudie auf einer Stichprobe",
+   "original": "Kullamägi-EP-Artikel (englisch); Katalysator nicht prüfbar",
+   "assumptions": "Gap-Screen, ORH-Einstieg, IEX-Volumentempo",
+   "simulation": "Stichprobenstudie",
+   "backtest": "als Strategie nicht messbar",
+   "reliable": "IEX-Minuten ab 2017 (Cache)",
+   "blocked": "Katalysator-/News-Historie, konsolidiertes Intraday-Volumen",
+   "execution": "nur IEX-Minuten; Stop am selben Tag nur gegen IEX-Tiefs geprüft (offenes Risiko)",
+   "manual": "2 essenzielle Entscheidungen",
+   "next": "Budgetentscheidung für eine größere Stichprobe (E5); Katalysatorkalender aus SEC-8-K-Zeitstempeln",
+   "evidence": [
+    "PR898"
+   ]
+  },
+  {
+   "candidateId": "C10",
+   "strategyId": "SF_KK_PARABOLIC_SHORT",
+   "primaryState": "VALIDATION_BLOCKED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": null,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-1-SOURCE"
+   ],
+   "certificationMissing": [
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-4-DATA",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": null,
+   "changed7": "Stichprobencode neu geprüft, kein Fehler",
+   "technical": "hypothetische Einzeltrade-Studie",
+   "original": "Kullamägi-Webprimärquellen",
+   "assumptions": "Kontexturteil (4 manuelle Entscheidungen)",
+   "simulation": "hypothetisch",
+   "backtest": "nicht ausführbar: keine Borrow-/Locate-Historie",
+   "reliable": "IEX-Minuten ab 2017",
+   "blocked": "Borrow-, Locate-, Leihgebühr-Historie; Uptick-Rule-Modell",
+   "execution": "nur hypothetische Shorts",
+   "manual": "4 essenzielle Entscheidungen",
+   "next": "Quelle für Borrow-Historie (Lizenz-/Kostenentscheidung)",
+   "evidence": [
+    "PR898"
+   ]
+  },
+  {
+   "candidateId": "C11",
+   "strategyId": "SF_MOKA_POCKET_PIVOT",
+   "primaryState": "SOURCE_BLOCKED",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 8,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 9,
+    "confirmedGenuine": 0,
+    "unresolved": 9
+   },
+   "changed7": "neu geprüft; keine technisch lösbare Lücke (Stop bleibt SOURCE_BLOCKED, Modellvariante nach E3)",
+   "technical": "8/9 Phasen; 9/9 nur als Modellvariante",
+   "original": "Morales/Kacher-Webprimärquellen; Initialstop nicht in der Quelle",
+   "assumptions": "7 manuelle Entscheidungen; Stop am Signaltagstief als Variante",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "Stopregel (Quelle); konsolidiertes Intraday-Volumen",
+   "execution": "Schluss / nächste Eröffnung",
+   "manual": "7 essenzielle Entscheidungen",
+   "next": "Quelle für die Stopregel",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C12",
+   "strategyId": "SF_MOKA_BUYABLE_GAP_UP",
+   "primaryState": "RESEARCH_COMPLETE_WITH_EXCEPTIONS",
+   "measurementClass": "SCREEN_STATISTICS",
+   "executablePhases": 9,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-2-LIFECYCLE",
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 14,
+    "confirmedGenuine": 1,
+    "unresolved": 13
+   },
+   "changed7": "neu geprüft; 50-Sitzungen-Fenster bleibt deklarierte Konvention",
+   "technical": "9/9 Phasen als Modellstudie",
+   "original": "Morales/Kacher-Webprimärquellen; Volumenfenster mehrdeutig",
+   "assumptions": "8 manuelle Entscheidungen; D-BGU-VOLWINDOW",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "V4-D1-Rest",
+   "execution": "Eröffnungs-/Gap-Füllungen",
+   "manual": "8 essenzielle Entscheidungen",
+   "next": "Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  },
+  {
+   "candidateId": "C13",
+   "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+   "primaryState": "SOURCE_BLOCKED",
+   "measurementClass": "NOT_MEASURABLE",
+   "executablePhases": 8,
+   "liveReadiness": "LIVE_NOT_APPROVED",
+   "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+   "certificationMet": [
+    "CC-4-DATA",
+    "CC-6-REPRODUCIBLE",
+    "CC-7-EXECUTION"
+   ],
+   "certificationMissing": [
+    "CC-1-SOURCE",
+    "CC-2-LIFECYCLE",
+    "CC-3-NO-MANUAL",
+    "CC-5-CORPORATE-ACTIONS",
+    "CC-8-OOS"
+   ],
+   "corporateActions7": {
+    "dqK5Exposed": 29,
+    "confirmedGenuine": 5,
+    "unresolved": 24
+   },
+   "changed7": "SF7-D1 gezählt (127 sichere Ausstiege), nur Variante",
+   "technical": "8/9 Phasen; Trailing nur als Modellvariante",
+   "original": "Einstieg/Stop aus der gekennzeichneten Sekundärquelle W-RAS97; Trailing und Größe nicht in den Quellen",
+   "assumptions": "3 manuelle Entscheidungen; Trailing über Swing-Tiefs als Variante (E3)",
+   "simulation": "ja",
+   "backtest": "nur Modellstudie",
+   "reliable": "DEV-Snapshot EXACT",
+   "blocked": "Trailing-Regel (Quelle)",
+   "execution": "Tagesbalken, pessimistisch",
+   "manual": "3 essenzielle Entscheidungen",
+   "next": "Primärquelle für Trailing / Größe",
+   "evidence": [
+    "PR898",
+    "PR902"
+   ]
+  }
+ ]
+}
