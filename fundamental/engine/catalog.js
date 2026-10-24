@@ -7,8 +7,8 @@
  *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger scripts/screener/build-universe.mjs) –
  *     Branche (SIC), Bewertung, Renditen; dieselben Werte wie im Screener.
  * Abgeleitete Kennzahlen folgen den Formeln in FORMULA (Renditen wie im Screener). Ein Wert fehlt, wenn eine Eingabe fehlt.
- * Bewertungskennzahlen gibt es nur zum aktuellen Kurs: Kurse sind splitbereinigt, Gewinne je Aktie wie gemeldet – eine
- * historische Division waere ueber jeden Split falsch. */
+ * Bewertungskennzahlen: aktueller Wert zum Schlusskurs; der Verlauf zum Geschaeftsjahresende nur aus geprueften Stichtagswerten
+ * (historicalValuation: splitbereinigter Kurs, Aktienzahl und Gewinn je Aktie mit Split-Beleg und Gegenprobe). */
 (function (global) {
   'use strict';
   var VERSION = 'fundamental-catalog-2.0.0';
@@ -93,20 +93,20 @@
     { id: 'dividends_paid', label: 'Gezahlte Dividenden', cat: 'aktie', kind: 'money', base: 'dividends_paid', flow: true, desc: 'An die Aktionäre ausgezahlte Dividenden.' },
     { id: 'dividends_per_share', label: 'Dividende je Aktie (gezahlt)', cat: 'aktie', kind: 'perShare', perShareSeries: true, deps: ['dividends_paid', 'diluted_weighted_average_shares'], calc: function (g) { var s = g('diluted_weighted_average_shares'), d = g('dividends_paid'); return s > 0 && d > 0 ? d / s : null; }, formula: 'Gezahlte Dividenden ÷ verwässerte Aktienanzahl (Durchschnitt) – berechnet, nicht die beschlossene Dividende', desc: 'Ausgezahlte Dividenden je Aktie.' },
     { id: 'payout_ratio', label: 'Ausschüttungsquote', cat: 'aktie', kind: 'ratio', deps: ['dividends_paid', 'net_income'], calc: function (g) { var n = g('net_income'), d = g('dividends_paid'); return n > 0 && d > 0 ? d / n : null; }, formula: 'Gezahlte Dividenden ÷ Nettogewinn (nur bei Gewinn)', desc: 'Anteil des Gewinns, der als Dividende ausgezahlt wird.' },
-    { id: 'dividend_yield', label: 'Dividendenrendite', cat: 'aktie', kind: 'ratio', snap: 'dividendYield', desc: 'Dividende der letzten zwölf Monate im Verhältnis zum Kurs.' },
-    // Bewertung (nur aktuell)
-    { id: 'market_cap', label: 'Marktkapitalisierung', cat: 'bewertung', kind: 'money', snap: 'mcap', u: 'mcap', desc: 'Kurs × ausstehende Aktien.' },
-    { id: 'enterprise_value', label: 'Unternehmenswert (EV)', cat: 'bewertung', kind: 'money', snap: 'ev', u: 'ev', desc: 'Marktkapitalisierung plus Finanzschulden minus Kasse.' },
-    { id: 'pe', label: 'KGV', cat: 'bewertung', kind: 'multiple', snap: 'pe', u: 'pe', desc: 'Kurs-Gewinn-Verhältnis: Kurs ÷ Gewinn je Aktie der letzten zwölf Monate.' },
-    { id: 'ps', label: 'KUV', cat: 'bewertung', kind: 'multiple', snap: 'ps', u: 'ps', desc: 'Kurs-Umsatz-Verhältnis: Börsenwert ÷ Umsatz der letzten zwölf Monate.' },
-    { id: 'pb', label: 'KBV', cat: 'bewertung', kind: 'multiple', snap: 'pb', u: 'pb', desc: 'Kurs-Buchwert-Verhältnis: Börsenwert ÷ Eigenkapital.' },
-    { id: 'p_fcf', label: 'Kurs / Free Cashflow', cat: 'bewertung', kind: 'multiple', snap: 'pFcf', u: 'pFcf', desc: 'Börsenwert ÷ Free Cashflow der letzten zwölf Monate.' },
-    { id: 'ev_sales', label: 'EV / Umsatz', cat: 'bewertung', kind: 'multiple', snap: 'evSales', u: 'evSales', desc: 'Unternehmenswert ÷ Umsatz der letzten zwölf Monate.' },
-    { id: 'ev_ebitda', label: 'EV / EBITDA', cat: 'bewertung', kind: 'multiple', snap: 'evEbitda', u: 'evEbitda', desc: 'Unternehmenswert ÷ EBITDA.' },
+    { id: 'dividend_yield', label: 'Dividendenrendite', cat: 'aktie', kind: 'ratio', snap: 'dividendYield', hist: true, desc: 'Dividende der letzten zwölf Monate im Verhältnis zum Kurs. Im Verlauf: gezahlte Dividenden des Geschäftsjahres ÷ Börsenwert zum GJ-Ende.' },
+    // Bewertung: aktueller Wert zum Schlusskurs; Verlauf zum Geschaeftsjahresende, wo die Pruefung es traegt (historicalValuation)
+    { id: 'market_cap', label: 'Marktkapitalisierung', cat: 'bewertung', kind: 'money', snap: 'mcap', u: 'mcap', hist: true, desc: 'Kurs × ausstehende Aktien.' },
+    { id: 'enterprise_value', label: 'Unternehmenswert (EV)', cat: 'bewertung', kind: 'money', snap: 'ev', u: 'ev', hist: true, desc: 'Marktkapitalisierung plus Finanzschulden minus Kasse.' },
+    { id: 'pe', label: 'KGV', cat: 'bewertung', kind: 'multiple', snap: 'pe', u: 'pe', hist: true, desc: 'Kurs-Gewinn-Verhältnis: Kurs ÷ Gewinn je Aktie der letzten zwölf Monate.' },
+    { id: 'ps', label: 'KUV', cat: 'bewertung', kind: 'multiple', snap: 'ps', u: 'ps', hist: true, desc: 'Kurs-Umsatz-Verhältnis: Börsenwert ÷ Umsatz der letzten zwölf Monate.' },
+    { id: 'pb', label: 'KBV', cat: 'bewertung', kind: 'multiple', snap: 'pb', u: 'pb', hist: true, desc: 'Kurs-Buchwert-Verhältnis: Börsenwert ÷ Eigenkapital.' },
+    { id: 'ev_sales', label: 'EV / Umsatz', cat: 'bewertung', kind: 'multiple', snap: 'evSales', u: 'evSales', hist: true, desc: 'Unternehmenswert ÷ Umsatz der letzten zwölf Monate.' },
+    { id: 'ev_ebitda', label: 'EV / EBITDA', cat: 'bewertung', kind: 'multiple', snap: 'evEbitda', u: 'evEbitda', hist: true, desc: 'Unternehmenswert ÷ EBITDA.' },
     { id: 'peg', label: 'PEG', cat: 'bewertung', kind: 'multiple', snap: 'peg', u: 'peg', desc: 'KGV ÷ jährliches Wachstum des Gewinns je Aktie über 3 Jahre (historisch, keine Schätzung).' },
-    { id: 'fcf_yield', label: 'Free-Cashflow-Rendite', cat: 'bewertung', kind: 'ratio', snap: 'fcfYield', u: 'fcfYield', desc: 'Free Cashflow der letzten zwölf Monate ÷ Börsenwert.' },
-    { id: 'earnings_yield', label: 'Gewinnrendite', cat: 'bewertung', kind: 'ratio', snap: 'earningsYield', desc: 'Kehrwert des KGV: Gewinn je Aktie ÷ Kurs.' }
+    { id: 'fcf_yield', label: 'Free-Cashflow-Rendite', cat: 'bewertung', kind: 'ratio', snap: 'fcfYield', u: 'fcfYield', hist: true, desc: 'Free Cashflow der letzten zwölf Monate ÷ Börsenwert.' }
   ];
+  /* Bewusst nicht im Katalog: Gewinnrendite (= 1 ÷ KGV) und Kurs / Free Cashflow (= 1 ÷ Free-Cashflow-Rendite) –
+   * Kehrwerte mit derselben Aussage. */
   var BY_ID = {}; M.forEach(function (d) { BY_ID[d.id] = d; });
   var FORMULA = {}; M.forEach(function (d) { if (d.formula) FORMULA[d.id] = d.formula; });
 
@@ -224,6 +224,7 @@
   /** Reihe einer Kennzahl ueber die ganze Achse; fehlende Werte bleiben Luecken {v:null}. */
   function seriesOf(b, def, period) {
     period = period === 'quarterly' ? 'quarterly' : 'annual';
+    if (b && def.snap && def.hist && period === 'annual' && b.valuation && b.valuation.series[def.id]) return b.valuation.series[def.id];
     if (!b || def.snap) return [];
     if (period === 'quarterly' && !def.q) return [];
     var keys = axis(b, period), prevKey = function (k) { return period === 'quarterly' ? k - 4 : k - 1; };
@@ -355,39 +356,151 @@
    *   3. ein Wochenschluss hoechstens 10 Tage vor dem Geschaeftsjahresende vorliegt,
    *   4. der bereinigte Gewinn je Aktie positiv ist.
    * Sonst bleibt das Jahr leer, mit Grund. */
-  var PE_TOLERANCE = 0.10, PE_PRICE_DAYS = 10;
+  var PE_TOLERANCE = 0.10, PE_PRICE_DAYS = 10, SHARE_TOLERANCE = 0.10;
   function splitsAfter(splits, date) { return splits.reduce(function (a, s) { return s[0] > date ? a * s[1] : a; }, 1); }
   function daysBetween(a, b) { return (Date.parse(b) - Date.parse(a)) / 864e5; }
+  function splitEvidence(long) {
+    var ca = long && long.corporateActions;
+    if (!long || long.schemaVersion !== 'discover-series-long-1.0.0' || long.priceSeriesType !== 'SPLIT_ADJUSTED' || long.dataMode !== 'real' || !Array.isArray(long.points)
+      || !ca || ca.source !== 'PROVIDER_SPLIT_FACTOR' || !Array.isArray(ca.splits)) return null;
+    var splits = ca.splits.filter(function (x) { return Array.isArray(x) && /^\d{4}-\d{2}-\d{2}$/.test(x[0]) && x[1] > 0; });
+    return splits.length === ca.splits.length ? splits : null;
+  }
+  function annualRow(b, m, fy) { var s = b.base[m]; if (!s) return null; for (var i = 0; i < s.annual.length; i++) if (s.annual[i].fy === fy) return s.annual[i]; return null; }
+  function closeAt(long, end) {
+    var pt = null; for (var i = long.points.length - 1; i >= 0; i--) { if (long.points[i][0] <= end) { pt = long.points[i]; break; } }
+    return pt && daysBetween(pt[0], end) <= PE_PRICE_DAYS && pt[1] > 0 ? pt : null;
+  }
   function historicalPe(b, long) {
     var out = { state: 'UNAVAILABLE', rows: [], reason: null, splits: [] };
     if (!b || !b.base.eps_diluted || !b.base.eps_diluted.annual.length) { out.reason = 'NO_EPS'; return out; }
-    var ca = long && long.corporateActions;
-    if (!long || long.schemaVersion !== 'discover-series-long-1.0.0' || long.priceSeriesType !== 'SPLIT_ADJUSTED' || long.dataMode !== 'real' || !Array.isArray(long.points)
-      || !ca || ca.source !== 'PROVIDER_SPLIT_FACTOR' || !Array.isArray(ca.splits)) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
-    var splits = ca.splits.filter(function (x) { return Array.isArray(x) && /^\d{4}-\d{2}-\d{2}$/.test(x[0]) && x[1] > 0; });
-    if (splits.length !== ca.splits.length) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
+    var splits = splitEvidence(long);
+    if (!splits) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
     out.splits = splits;
-    var get = function (m, fy) { var s = b.base[m]; if (!s) return null; for (var i = 0; i < s.annual.length; i++) if (s.annual[i].fy === fy) return s.annual[i]; return null; };
-    var adjShares = function (fy) { var r = get('diluted_weighted_average_shares', fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
+    var adjShares = function (fy) { var r = annualRow(b, 'diluted_weighted_average_shares', fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
     var jump = function (a, c) { if (!isNum(a) || !isNum(c)) return false; var f = c / a; return f >= 1.8 || f <= 0.55; };
     out.rows = b.base.eps_diluted.annual.map(function (e) {
       var r = { fy: e.fy, key: e.fy, label: 'GJ ' + e.fy, short: String(e.fy), end: e.end, epsReported: e.v, filed: e.filed, accn: e.accn, v: null, reason: null };
       if (!e.filed || !e.end) { r.reason = 'NO_CHECK'; return r; }
       r.factor = splitsAfter(splits, e.filed); r.eps = e.v / r.factor;
-      var ni = get('net_income', e.fy), sh = adjShares(e.fy);
+      var ni = annualRow(b, 'net_income', e.fy), sh = adjShares(e.fy);
       if (!ni || !isNum(sh)) { r.reason = 'NO_CHECK'; return r; }
       r.check = ni.v / sh;
       if (!(Math.abs(r.check) > 0) || Math.abs(r.eps / r.check - 1) > PE_TOLERANCE) { r.reason = 'CHECK_FAILED'; return r; }
       if (jump(adjShares(e.fy - 1), sh) || jump(sh, adjShares(e.fy + 1))) { r.reason = 'SHARE_BASIS_JUMP'; return r; }
-      var pt = null; for (var i = long.points.length - 1; i >= 0; i--) { if (long.points[i][0] <= e.end) { pt = long.points[i]; break; } }
-      if (!pt || daysBetween(pt[0], e.end) > PE_PRICE_DAYS || !(pt[1] > 0)) { r.reason = 'NO_PRICE'; return r; }
+      var pt = closeAt(long, e.end);
+      if (!pt) { r.reason = 'NO_PRICE'; return r; }
       r.price = pt[1]; r.priceDate = pt[0];
-      if (!(r.eps > 0)) { r.reason = 'LOSS'; return r; }
+      if (!(r.eps > 0)) { r.reason = 'LOSS_FY'; return r; }
       r.v = r.price / r.eps; return r;
     });
     out.state = out.rows.some(function (r) { return isNum(r.v); }) ? 'AVAILABLE' : 'UNAVAILABLE';
     if (out.state !== 'AVAILABLE') out.reason = 'NO_VERIFIED_YEAR';
     return out;
+  }
+
+  /* ------------------------------------------------------------------ Historische Bewertung zum Geschaeftsjahresende
+   * Alles zum selben Stichtag: Wochenschluss hoechstens 10 Tage vor dem GJ-Ende (wie beim KGV), Aktienzahl, Eigenkapital,
+   * Finanzschulden und Kasse aus der Bilanz dieses Geschaeftsjahres, Umsatz, EBITDA und Free Cashflow des Geschaeftsjahres.
+   * Boersenwert = Kurs × ausstehende Aktien. Die Aktienzahl ist wie gemeldet und wird – wie der Gewinn je Aktie – nur um
+   * Splits NACH ihrem Meldedatum bereinigt (Split-Beleg des Kursanbieters). Gegenprobe je Jahr: bereinigte ausstehende
+   * Aktien und bereinigte verwaesserte Durchschnittszahl weichen hoechstens 10 % voneinander ab (faengt Teilmengen wie
+   * eine einzelne Aktiengattung ab); zu den Nachbarjahren kein Sprung in Split-Groesse.
+   * Unternehmenswert = Boersenwert + Finanzschulden − Zahlungsmittel (Definition wie im Screener; Wertpapiere zaehlen
+   * nicht zur Kasse). Fehlt eine Eingabe, bleibt der Wert leer – nie aus heutigem Kurs und alten Zahlen. Nur USD-Berichte. */
+  var HIST_VAL = {
+    pe: { from: 'pe' },
+    market_cap: { calc: function (x) { return x.mcap; } },
+    enterprise_value: { calc: function (x) { return x.ev; }, needs: 'ev' },
+    ps: { calc: function (x) { return x.revenue > 0 ? x.mcap / x.revenue : null; }, miss: function (x) { return isNum(x.revenue) ? 'NOT_POSITIVE_BASE' : 'NO_BASE'; } },
+    pb: { calc: function (x) { return x.equity > 0 ? x.mcap / x.equity : null; }, miss: function (x) { return isNum(x.equity) ? 'NEGATIVE_EQUITY' : 'NO_BASE'; } },
+    ev_sales: { needs: 'ev', calc: function (x) { return x.ev > 0 && x.revenue > 0 ? x.ev / x.revenue : null; }, miss: function (x) { return !(x.ev > 0) ? 'NEGATIVE_EV' : isNum(x.revenue) ? 'NOT_POSITIVE_BASE' : 'NO_BASE'; } },
+    ev_ebitda: { needs: 'ev', calc: function (x) { return x.ev > 0 && x.ebitda > 0 ? x.ev / x.ebitda : null; }, miss: function (x) { return !(x.ev > 0) ? 'NEGATIVE_EV' : isNum(x.ebitda) ? 'NOT_POSITIVE_BASE' : 'NO_BASE'; } },
+    fcf_yield: { calc: function (x) { return isNum(x.fcf) ? x.fcf / x.mcap : null; }, miss: function () { return 'NO_BASE'; } },
+    dividend_yield: { calc: function (x) { return x.dividends > 0 ? x.dividends / x.mcap : null; }, miss: function (x) { return isNum(x.dividends) ? 'NO_DIVIDEND' : 'NO_DIVIDEND_REPORTED'; } }
+  };
+  function historicalValuation(b, long) {
+    var out = { state: 'UNAVAILABLE', reason: null, years: [], series: {}, full: {}, missing: {}, splits: [] };
+    if (!b) { out.reason = 'NO_DATA'; return out; }
+    if (b.currency !== 'USD') { out.reason = 'NON_USD_REPORTING'; return out; }
+    var splits = splitEvidence(long);
+    if (!splits) { out.reason = 'NO_SPLIT_EVIDENCE'; return out; }
+    out.splits = splits;
+    var adj = function (m, fy) { var r = annualRow(b, m, fy); return r && r.v > 0 && r.filed ? r.v * splitsAfter(splits, r.filed) : null; };
+    var jump = function (a, c) { if (!isNum(a) || !isNum(c)) return false; var f = c / a; return f >= 1.8 || f <= 0.55; };
+    var pe = historicalPe(b, long), peBy = {}; pe.rows.forEach(function (r) { peBy[r.fy] = r; });
+    out.years = b.years.map(function (fy) {
+      var info = keyInfo(b, 'annual', fy), so = annualRow(b, 'shares_outstanding', fy);
+      var x = { fy: fy, end: info.end, reason: null, shares: null, price: null, mcap: null, ev: null };
+      var val = function (m) { var r = annualRow(b, m, fy); return r ? r.v : null; };
+      x.revenue = val('revenue'); x.equity = val('stockholders_equity'); x.ebitda = val('ebitda'); x.fcf = val('free_cash_flow'); x.dividends = val('dividends_paid');
+      x.debt = val('total_debt'); x.cash = val('cash_and_equivalents');
+      x.src = annualRow(b, 'revenue', fy) || so || null;
+      if (!info.end) { x.reason = 'NO_CHECK'; return x; }
+      var pt = closeAt(long, info.end);
+      if (pt) { x.price = pt[1]; x.priceDate = pt[0]; }
+      var s = adj('shares_outstanding', fy), d = adj('diluted_weighted_average_shares', fy);
+      if (!isNum(s)) x.reason = 'NO_SHARES';
+      else if (!isNum(d)) x.reason = 'NO_CHECK';
+      else if (Math.abs(s / d - 1) > SHARE_TOLERANCE) x.reason = 'SHARE_CHECK_FAILED';
+      else if (jump(adj('shares_outstanding', fy - 1), s) || jump(s, adj('shares_outstanding', fy + 1))) x.reason = 'SHARE_BASIS_JUMP';
+      else if (!pt) x.reason = 'NO_PRICE';
+      if (isNum(s)) { x.shares = s; x.sharesReported = so.v; x.sharesFactor = splitsAfter(splits, so.filed); }
+      if (x.reason) return x;
+      x.mcap = x.price * s;
+      x.ev = isNum(x.debt) && isNum(x.cash) ? x.mcap + x.debt - x.cash : null;
+      return x;
+    });
+    Object.keys(HIST_VAL).forEach(function (id) {
+      var h = HIST_VAL[id];
+      out.series[id] = out.years.map(function (x) {
+        var r = { key: x.fy, fy: x.fy, label: 'GJ ' + x.fy, short: String(x.fy), end: x.end, v: null, reason: null, price: x.price, priceDate: x.priceDate, mcap: x.mcap, ev: x.ev,
+          filed: x.src ? x.src.filed : null, accn: x.src ? x.src.accn : null };
+        if (h.from === 'pe') { var p = peBy[x.fy]; if (!p) { r.reason = 'NO_EPS'; return r; } r.v = p.v; r.reason = p.reason; r.price = p.price; r.priceDate = p.priceDate; r.eps = p.eps; r.epsReported = p.epsReported; r.factor = p.factor; r.filed = p.filed; r.accn = p.accn; return r; }
+        if (x.reason) { r.reason = x.reason; return r; }
+        if (h.needs === 'ev' && !isNum(x.ev)) { r.reason = 'NO_DEBT_DATA'; return r; }
+        var v = h.calc(x);
+        if (isNum(v)) r.v = v; else r.reason = h.miss ? h.miss(x) : 'NO_BASE';
+        return r;
+      });
+      // Nur die Spanne mit Werten (wie seriesOf); Luecken dazwischen bleiben mit Grund sichtbar.
+      var rows = out.series[id], first = -1, last = -1, why = {};
+      out.full[id] = rows;
+      rows.forEach(function (r, i) { if (isNum(r.v)) { if (first < 0) first = i; last = i; } else if (r.reason) why[r.reason] = (why[r.reason] || 0) + 1; });
+      // Haeufigster Grund, falls kein Jahr besteht (fuer die Anzeige "kein gepruefter Verlauf: <Grund>")
+      if (first < 0) out.missing[id] = Object.keys(why).sort(function (a, b) { return why[b] - why[a]; })[0] || 'NO_DATA';
+      out.series[id] = first < 0 ? [] : rows.slice(first, last + 1);
+    });
+    out.state = Object.keys(out.series).some(function (k) { return out.series[k].some(function (r) { return isNum(r.v); }); }) ? 'AVAILABLE' : 'UNAVAILABLE';
+    if (out.state !== 'AVAILABLE') out.reason = 'NO_VERIFIED_YEAR';
+    return out;
+  }
+  /* Haengt die gepruefte Bewertung ans Buch: seriesOf liefert sie dann fuer die Bewertungskennzahlen (Jahreswerte). */
+  function attachValuation(b, long) { if (b) b.valuation = historicalValuation(b, long); return b ? b.valuation : null; }
+
+  /** Veraenderung eines Werts zum Vorzeitraum (lag 1 = Vorjahr bzw. Vorquartal, 4 = Vorjahresquartal); ueber einen Split
+   * ohne Rueckrechnung keine Veraenderung bei Werten je Aktie und Aktienzahlen. */
+  function stepChange(b, def, rows, key, lag, period) {
+    var now = null, prev = null;
+    rows.forEach(function (r) { if (r.key === key) now = r; if (r.key === key - lag) prev = r; });
+    if (!now || !prev || !isNum(now.v) || !isNum(prev.v)) return null;
+    if ((def.perShareSeries || def.shareSeries) && !def.hist && b) {
+      var fy = function (k) { return period === 'quarterly' ? Math.floor(k / 4) : k; };
+      if (fy(prev.key) !== fy(now.key) && splitBetween(b, fy(prev.key), fy(now.key))) return { reason: 'SPLIT' };
+    }
+    return changeOf(def, prev.v, now.v);
+  }
+  /* Branchenmedian je Geschaeftsjahr (Release, scripts/fundamental/build-history.mjs#industryMedians). */
+  var INDUSTRY_METRICS = ['revenue_growth', 'net_income_growth', 'gross_margin', 'operating_margin', 'ebitda_margin', 'net_margin', 'fcf_margin',
+    'roe', 'roa', 'roic', 'tax_rate', 'rd_ratio', 'capex_ratio', 'equity_ratio', 'debt_to_equity', 'net_debt_ebitda', 'payout_ratio',
+    'pe', 'ps', 'pb', 'ev_sales', 'ev_ebitda', 'fcf_yield', 'dividend_yield'];
+  var INDUSTRY_SCHEMA = 'vu-fundamental-industry-1.0.0';
+  function industryPath(key) { return /^(sic-\d{2}|sec-[a-z]{2,16})$/.test(key || '') ? HISTORY_BASE + 'industry/' + key + '.json' : null; }
+  /** Medianreihe einer Kennzahl aus der Branchendatei: {fy: {v, n}} oder null. */
+  function industrySeries(doc, id) {
+    if (!doc || doc.schema !== INDUSTRY_SCHEMA || !doc.metrics || !Array.isArray(doc.metrics[id])) return null;
+    var out = {}; doc.metrics[id].forEach(function (r) { if (Array.isArray(r) && isNum(r[0]) && isNum(r[1]) && isNum(r[2])) out[r[0]] = { v: r[1], n: r[2] }; });
+    return Object.keys(out).length ? out : null;
   }
 
   /** Durchschnittliche jaehrliche Rate ueber genau n Geschaeftsjahre (positive Endpunkte, kein Split dazwischen bei Werten je Aktie). */
@@ -409,6 +522,12 @@
       var qrows = b && def.q ? seriesOf(b, def, 'quarterly') : [];
       return { def: def, cur: cur, rows: rows, quarterly: have(qrows).length > 1, available: isNum(cur.v) || have(rows).length > 0 };
     });
+  }
+
+  /** Zaehlung fuer die Kopfzeile: definiert im Katalog, mit Wert fuer dieses Unternehmen, mit Verlauf. */
+  function catalogCounts(list) {
+    return { defined: M.length, available: list.filter(function (x) { return x.available; }).length,
+      withHistory: list.filter(function (x) { return have(x.rows).length > 1; }).length, missing: list.filter(function (x) { return !x.available; }).length };
   }
 
   /* ------------------------------------------------------------------ Querschnitt (Screener-Universum) */
@@ -440,23 +559,41 @@
     if (!v.length) return null;
     return v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
   }
-  /** Vergleichsgruppe: gleiche Branche (SIC-Hauptgruppe) oder gleicher Sektor; die groessten nach Boersenwert (sonst Umsatz). */
-  function peerGroup(U, ticker, by, n) {
+  /** Vergleichsgruppe: gleiche Branche (SIC-Hauptgruppe) oder gleicher Sektor.
+   * mode 'groesste': die groessten nach Boersenwert (sonst Umsatz); mode 'aehnlich': die naechsten nach Boersenwert
+   * (logarithmischer Abstand), damit ein kleiner Wert nicht nur mit Branchenriesen verglichen wird. */
+  var PEER_MODES = { groesste: 'die größten nach Börsenwert', aehnlich: 'die nach Börsenwert ähnlichsten' };
+  function peerGroup(U, ticker, by, n, mode) {
     var self = U.get(ticker); if (!self) return null;
     var key = by === 'sector' ? 'sec' : 'sic2', val = self[key]; if (!val) return null;
-    var c = U.raw.cols, members = U.rows(function (cc, i) { return cc[key][i] === val; });
+    n = n || 6; mode = mode === 'aehnlich' && isNum(self.mcap) ? 'aehnlich' : 'groesste';
+    var members = U.rows(function (cc, i) { return cc[key][i] === val; });
     var size = function (r) { return isNum(r.mcap) ? r.mcap : -1; };
     var sorted = members.filter(function (r) { return isNum(r.mcap) || isNum(r.revenue); }).sort(function (a, b) { return size(b) - size(a) || (b.revenue || 0) - (a.revenue || 0); });
-    var top = sorted.slice(0, n || 6);
-    if (!top.some(function (r) { return r.s === ticker; })) top = top.slice(0, (n || 6) - 1).concat([self]);
-    void c;
-    return { by: by, key: val, label: by === 'sector' ? U.sectorLabel(val) : U.industryLabel(val), members: members, peers: top, self: self };
+    var top;
+    if (mode === 'aehnlich') {
+      top = sorted.filter(function (r) { return isNum(r.mcap) && r.mcap > 0 && r.s !== ticker; })
+        .map(function (r) { return { r: r, d: Math.abs(Math.log(r.mcap / self.mcap)) }; }).sort(function (a, b) { return a.d - b.d; }).slice(0, n - 1).map(function (x) { return x.r; })
+        .concat([self]).sort(function (a, b) { return size(b) - size(a); });
+    } else {
+      top = sorted.slice(0, n);
+      if (!top.some(function (r) { return r.s === ticker; })) top = top.slice(0, n - 1).concat([self]);
+    }
+    return { by: by, key: val, mode: mode, rule: (by === 'sector' ? 'gleicher Sektor' : 'gleiche SEC-Branche (SIC ' + val + ')') + ', ' + PEER_MODES[mode],
+      label: by === 'sector' ? U.sectorLabel(val) : U.industryLabel(val), members: members, peers: top, self: self, file: by === 'sector' ? 'sec-' + val : 'sic-' + val };
   }
   /** Lage eines Werts in der Gruppe: Median, Rang (hoechster = 1), Anzahl. */
   function position(members, col, v) {
     var vals = members.map(function (r) { return r[col]; }).filter(isNum);
     if (!vals.length) return null;
     return { median: median(vals), count: vals.length, rank: isNum(v) ? vals.filter(function (x) { return x > v; }).length + 1 : null, pct: isNum(v) ? vals.filter(function (x) { return x < v; }).length / vals.length : null };
+  }
+  /* Lage ohne Wertung: Anteil der Gruppe mit niedrigerem Wert. "Hoeher" ist bei Bewertung und Verschuldung kein "besser". */
+  function positionText(p) {
+    if (!p || !isNum(p.pct) || p.count < 2) return null;
+    if (p.rank === 1) return 'höchster Wert der Gruppe';
+    if (p.pct === 0) return 'niedrigster Wert der Gruppe';
+    return 'höher als ' + Math.round(p.pct * 100) + ' % der Gruppe';
   }
 
   /* ------------------------------------------------------------------ Ranglisten der Startseite
@@ -539,7 +676,9 @@
   }
   var REASON = { LOSS: 'Verlust in den letzten 12 Monaten', SOURCE_MISSING: 'nicht berechenbar', NON_USD_REPORTING: 'Meldung nicht in US-Dollar', FOREIGN_FILER: 'ausländischer Emittent',
     IMPLAUSIBLE_SHARE_BASIS: 'Aktienanzahl nicht plausibel', NO_CURRENT_SHARE_COUNT: 'keine aktuelle Aktienanzahl', UNIVERSE_MISSING: 'Vergleichsdaten gerade nicht geladen', NO_DIVIDEND: 'keine Dividende',
-    SPLIT: 'Aktiensplit ohne Rückrechnung', CHECK_FAILED: 'Gegenprobe nicht bestanden', QUARTER_MISMATCH: 'Quartale ergeben nicht den Jahreswert', SHARE_BASIS_JUMP: 'Aktienbasis springt', NO_PRICE: 'kein Kurs zum GJ-Ende', NO_CHECK: 'keine Gegenprobe möglich', NO_SPLIT_EVIDENCE: 'kein Split-Beleg', NO_EPS: 'kein Gewinn je Aktie', NO_VERIFIED_YEAR: 'kein geprüftes Jahr', NOT_POSITIVE: 'Vorwert ≤ 0', TOO_SHORT: 'zu kurze Reihe', NO_DATA: 'keine Angabe' };
+    SPLIT: 'Aktiensplit ohne Rückrechnung', CHECK_FAILED: 'Gegenprobe nicht bestanden', QUARTER_MISMATCH: 'Quartale ergeben nicht den Jahreswert', SHARE_BASIS_JUMP: 'Aktienbasis springt', NO_PRICE: 'kein Kurs zum GJ-Ende', NO_CHECK: 'keine Gegenprobe möglich', NO_SPLIT_EVIDENCE: 'kein Split-Beleg', NO_EPS: 'kein Gewinn je Aktie', NO_VERIFIED_YEAR: 'kein geprüftes Jahr', NOT_POSITIVE: 'Vorwert ≤ 0', TOO_SHORT: 'zu kurze Reihe', NO_DATA: 'keine Angabe',
+    NO_SHARES: 'keine Aktienzahl', SHARE_CHECK_FAILED: 'Aktienzahl-Gegenprobe nicht bestanden', NO_DEBT_DATA: 'Schulden oder Kasse fehlen', NEGATIVE_EV: 'Unternehmenswert ≤ 0',
+    NEGATIVE_EQUITY: 'Eigenkapital ≤ 0', LOSS_FY: 'Verlust im Geschäftsjahr', NO_DIVIDEND_REPORTED: 'keine Dividende gemeldet', NOT_POSITIVE_BASE: 'Bezugsgröße ≤ 0', NO_BASE: 'Bezugsgröße fehlt' };
   function reason(code) { return REASON[code] || 'keine Angabe'; }
 
   /* Monat des Geschaeftsjahresendes ("endet Ende Januar"), aus dem letzten Jahresstichtag. */
@@ -558,7 +697,8 @@
   function longSeriesPath(p) { return /^\/quant\/data\/market\/discover-series-long\/ref_[A-Z0-9_]{1,24}\.json$/.test(p || '') ? p : null; }
 
   var api = { VERSION: VERSION, CATS: CATS, METRICS: M, BY_ID: BY_ID, FORMULA: FORMULA, RANKINGS: RANKINGS, SIZES: SIZES, HISTORY_BASE: HISTORY_BASE, UNIVERSE_PATH: UNIVERSE_PATH, ANALYST_PATH: ANALYST_PATH,
-    fromHistory: fromHistory, historicalPe: historicalPe, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps,
+    fromHistory: fromHistory, historicalPe: historicalPe, historicalValuation: historicalValuation, attachValuation: attachValuation, stepChange: stepChange, changeOf: changeOf, positionText: positionText, PEER_MODES: PEER_MODES,
+    INDUSTRY_METRICS: INDUSTRY_METRICS, INDUSTRY_SCHEMA: INDUSTRY_SCHEMA, industryPath: industryPath, industrySeries: industrySeries, HIST_VAL: HIST_VAL, SHARE_TOLERANCE: SHARE_TOLERANCE, catalogCounts: catalogCounts, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps,
     universe: universe, peerGroup: peerGroup, position: position, median: median, ranking: ranking, industries: industries, analysts: analysts,
     money: money, fmt: fmt, changeText: changeText, reason: reason, fiscalYearEnd: fiscalYearEnd, historyPath: historyPath, seriesPath: seriesPath, longSeriesPath: longSeriesPath, isNum: isNum };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

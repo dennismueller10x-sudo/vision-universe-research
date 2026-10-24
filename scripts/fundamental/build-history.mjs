@@ -21,12 +21,21 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Identity = require('../../core/identity.js');
+const Catalog = require('../../fundamental/engine/catalog.js');
+import { sectorFromSic } from '../screener/sic.mjs';
 
 export const SCHEMA = 'vu-fundamental-history-1.0.0';
 export const SHARD_SCHEMA = 'vu-fundamental-history-shard-1.0.0';
 export const HISTORY_DIR = 'fundamental/data/history/';
 /* Eigenes Budget, getrennt vom SEC-Auslieferungsbudget der Quant-Projektionen. */
 export const SHARD_BUDGET = 256 * 1024, TOTAL_BUDGET = 40 * 1024 * 1024;
+export const INDUSTRY_SCHEMA = Catalog.INDUSTRY_SCHEMA, INDUSTRY_DIR = 'industry/';
+/* Branchenmedian je Geschaeftsjahr nur fuer Quoten, Renditen, Wachstum und Bewertungsverhaeltnisse (keine Betraege:
+ * deren Median sagt nichts und mischt Waehrungen). Bewertung nur aus der geprueften Bewertung zum GJ-Ende. */
+export const INDUSTRY_METRICS = Catalog.INDUSTRY_METRICS;
+/* Ein Median braucht mindestens so viele Unternehmen mit Wert im selben Geschaeftsjahr. */
+export const INDUSTRY_MIN = 5;
+const LONG_PATH = /^\/quant\/data\/market\/discover-series-long\/ref_[A-Z0-9_]{1,24}\.json$/;
 const COLUMNS = ['fy', 'fp', 'end', 'v', 'filed', 'accn', 'derived'];
 
 const isDate = (d) => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && Number.isFinite(Date.parse(d));
@@ -88,6 +97,7 @@ export async function buildHistory({ root }) {
   const stockDir = join(root, 'discover/data/stocks/US_REAL'), consumerDir = join(root, 'quant/data/sec/consumer');
   if (!existsSync(consumerDir)) throw Error('CONSUMER_SOURCE_MISSING');
   const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0 };
+  const sic = await sicByTicker(root), members = [];
   const names = (await readdir(stockDir)).filter((n) => /^[A-Z0-9.-]+\.json$/.test(n)).sort();
   for (const name of names) {
     stats.stocks++;
@@ -103,13 +113,61 @@ export async function buildHistory({ root }) {
     if (!/^[A-Z0-9_]{1,2}$/.test(key)) { stats.invalid++; continue; }
     (shards[key] ||= { schema: SHARD_SCHEMA, shard: key, issuers: {} }).issuers[ticker] = projected;
     stats.projected++;
+    const sic4 = sic.get(ticker);
+    if (sic4) members.push({ ticker, sic2: sic4.slice(0, 2), sector: sectorFromSic(sic4), values: await issuerValues(root, projected, doc) });
   }
-  return { shards, stats };
+  return { shards, stats, industry: industryMedians(members) };
+}
+
+/* SIC-Code je Kuerzel aus derselben Quelle wie das Screener-Universum (quant/data/product/sic-peer-taxonomy-v1.json). */
+async function sicByTicker(root) {
+  const out = new Map(), path = join(root, 'quant/data/product/sic-peer-taxonomy-v1.json');
+  if (!existsSync(path)) return out;
+  const tax = JSON.parse(await readFile(path, 'utf8')), c = tax.rowColumns || [];
+  const t = c.indexOf('ticker'), s = c.indexOf('sic4');
+  for (const r of tax.rows || []) if (r[t] && /^\d{3,4}$/.test(String(r[s] ?? ''))) out.set(r[t], String(r[s]).padStart(4, '0'));
+  return out;
+}
+
+/** Jahreswerte eines Emittenten fuer den Branchenmedian: dieselbe Rechnung wie auf der Seite (fundamental/engine/catalog.js). */
+export async function issuerValues(root, projected, stock) {
+  const book = Catalog.fromHistory(projected, stock);
+  if (!book) return {};
+  const lp = stock?.series?.long?.path;
+  if (LONG_PATH.test(lp || '') && existsSync(join(root, lp))) {
+    try { Catalog.attachValuation(book, JSON.parse(await readFile(join(root, lp), 'utf8'))); } catch { /* ohne Kursreihe keine Bewertung */ }
+  }
+  const out = {};
+  for (const id of INDUSTRY_METRICS) {
+    const rows = Catalog.seriesOf(book, Catalog.BY_ID[id], 'annual').filter((r) => Number.isFinite(r.v));
+    if (rows.length) out[id] = rows.map((r) => [r.fy, r.v]);
+  }
+  return out;
+}
+
+function median(v) { const s = v.slice().sort((a, b) => a - b), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; }
+const round = (v) => Number(v.toPrecision(5));
+/** Median je Gruppe (SIC-Hauptgruppe, Sektor), Kennzahl und Geschaeftsjahr: [GJ, Median, Anzahl, Unternehmen der Gruppe]. */
+export function industryMedians(members) {
+  const groups = {};
+  for (const m of members) for (const key of [m.sic2 && 'sic-' + m.sic2, m.sector && 'sec-' + m.sector]) if (key) (groups[key] ||= []).push(m);
+  const out = {};
+  for (const [key, list] of Object.entries(groups)) {
+    const metrics = {};
+    for (const id of INDUSTRY_METRICS) {
+      const byFy = {};
+      for (const m of list) for (const [fy, v] of m.values[id] || []) (byFy[fy] ||= []).push(v);
+      const rows = Object.keys(byFy).map(Number).sort((a, b) => a - b).filter((fy) => byFy[fy].length >= INDUSTRY_MIN).map((fy) => [fy, round(median(byFy[fy])), byFy[fy].length]);
+      if (rows.length) metrics[id] = rows;
+    }
+    out[key] = { schema: INDUSTRY_SCHEMA, group: key, members: list.length, min: INDUSTRY_MIN, metrics };
+  }
+  return out;
 }
 
 /** Schreibt die Scherben als .json.gz nach out; Budget je Scherbe und gesamt. */
 export async function writeHistory({ root, out, log = console.log }) {
-  const { shards, stats } = await buildHistory({ root });
+  const { shards, stats, industry } = await buildHistory({ root });
   await mkdir(out, { recursive: true });
   let bytes = 0;
   for (const [key, payload] of Object.entries(shards)) {
@@ -119,7 +177,15 @@ export async function writeHistory({ root, out, log = console.log }) {
     if (bytes > TOTAL_BUDGET) throw Error('FUNDAMENTAL_HISTORY_BUDGET_EXCEEDED');
     await writeFile(join(out, key + '.json.gz'), gz);
   }
-  const report = { schema: SCHEMA, state: 'AVAILABLE', shards: Object.keys(shards).length, bytes, ...stats };
+  await mkdir(join(out, INDUSTRY_DIR), { recursive: true });
+  for (const [key, payload] of Object.entries(industry)) {
+    const json = JSON.stringify(payload);
+    if (json.length > SHARD_BUDGET) throw Error('FUNDAMENTAL_INDUSTRY_BUDGET_EXCEEDED:' + key);
+    bytes += json.length;
+    await writeFile(join(out, INDUSTRY_DIR, key + '.json'), json);
+  }
+  if (bytes > TOTAL_BUDGET) throw Error('FUNDAMENTAL_HISTORY_BUDGET_EXCEEDED');
+  const report = { schema: SCHEMA, state: 'AVAILABLE', shards: Object.keys(shards).length, industryGroups: Object.keys(industry).length, bytes, ...stats };
   await writeFile(join(out, 'status.json'), JSON.stringify(report));
   log(JSON.stringify(report));
   return report;

@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { createRequire } from 'node:module';
-import { projectHistory, writeHistory, SCHEMA } from '../../scripts/fundamental/build-history.mjs';
+import { projectHistory, writeHistory, industryMedians, SCHEMA, INDUSTRY_MIN } from '../../scripts/fundamental/build-history.mjs';
 const require = createRequire(import.meta.url);
 const C = require('../engine/catalog.js');
 const M = require('../engine/model.js');
@@ -124,9 +124,13 @@ test('Branchenvergleich und Ranglisten: Median, Rang, sichtbare Plausibilitaetsg
   assert.ok(C.RANKINGS.every((r) => r.rule && r.sub));
 });
 
-test('Bewertung nur zum aktuellen Kurs: kein historischer Verlauf', () => {
+test('Bewertung: ohne gepruefte Bewertung kein Verlauf; aktueller Wert zum Schlusskurs', () => {
   const b = bookOf('NVDA');
   C.METRICS.filter((m) => m.cat === 'bewertung').forEach((m) => assert.deepEqual(C.seriesOf(b, m, 'annual'), [], m.id));
+  C.attachValuation(b, JSON.parse(readFileSync(new URL('quant/data/market/discover-series-long/ref_NVDA.json', root))));
+  assert.ok(C.seriesOf(b, C.BY_ID.ps, 'annual').length > 5, 'nach der Pruefung: Verlauf zum GJ-Ende');
+  assert.deepEqual(C.seriesOf(b, C.BY_ID.peg, 'annual'), [], 'PEG bleibt nur aktuell');
+  assert.deepEqual(C.seriesOf(b, C.BY_ID.ps, 'quarterly'), [], 'kein Quartalsverlauf der Bewertung');
   const snap = C.snapshot(stock('NVDA'), null);
   assert.equal(C.current(b, C.BY_ID.pe, { snap }).v, stock('NVDA').fundamentals.valuation.pe.value);
   assert.equal(C.current(b, C.BY_ID.pb, { snap }).reason, 'UNIVERSE_MISSING');
@@ -159,7 +163,13 @@ test('Scherben: Budget, shardKey aus core/identity.js, Schreiben nur nach --out'
     const shard = JSON.parse(gunzipSync(readFileSync(join(out, 'NV.json.gz'))));
     assert.equal(shard.shard, 'NV');
     assert.ok(shard.issuers.NVDA && shard.issuers.NVDA.cik === stock('NVDA').fundamentals.cik);
-    assert.ok(readdirSync(out).every((n) => /^([A-Z0-9_]{1,2}\.json\.gz|status\.json)$/.test(n)));
+    assert.ok(readdirSync(out).every((n) => /^([A-Z0-9_]{1,2}\.json\.gz|status\.json|industry)$/.test(n)));
+    assert.ok(readdirSync(join(out, 'industry')).every((n) => /^(sic-\d{2}|sec-[a-z]+)\.json$/.test(n)));
+    const semi = JSON.parse(readFileSync(join(out, 'industry', 'sic-36.json')));
+    assert.equal(semi.schema, C.INDUSTRY_SCHEMA);
+    assert.ok(Object.keys(semi.metrics).every((k) => C.INDUSTRY_METRICS.includes(k)), 'nur Quoten und Verhaeltnisse, keine Betraege');
+    assert.ok(semi.metrics.gross_margin.every(([fy, v, n]) => Number.isInteger(fy) && Number.isFinite(v) && n >= INDUSTRY_MIN));
+    assert.equal(report.industryGroups, readdirSync(join(out, 'industry')).length);
   } finally { rmSync(out, { recursive: true, force: true }); }
 });
 
@@ -190,7 +200,7 @@ test('Historisches KGV: Gegenprobe, Aktienbasis, Verlust und fehlender Kurs sper
   // 2022: EPS passt nicht zu Gewinn ÷ Aktien; 2023: Verlust; 2024: kein Kurs innerhalb von 10 Tagen.
   const b = peBook([1, 3, -1, 2], [10, 10, 10, 10], [10, 10, -10, 20], ['2022-02-01', '2023-02-01', '2024-02-01', '2025-02-01']);
   const h = C.historicalPe(b, longOf([], pts.slice(0, 3)));
-  assert.deepEqual(h.rows.map((x) => x.reason), [null, 'CHECK_FAILED', 'LOSS', 'NO_PRICE']);
+  assert.deepEqual(h.rows.map((x) => x.reason), [null, 'CHECK_FAILED', 'LOSS_FY', 'NO_PRICE']);
   // Weder EPS noch Aktien zurueckgerechnet (Sprung ×2 ohne Beleg): Gegenprobe passt, Aktienbasis sperrt.
   const nr = peBook([2, 2, 1, 1], [10, 10, 20, 20], [20, 20, 20, 20], ['2022-02-01', '2023-02-01', '2024-02-01', '2025-02-01']);
   const hn = C.historicalPe(nr, longOf([], pts));
@@ -219,4 +229,105 @@ test('Quartale, die nicht den Jahreswert ergeben, werden nicht gezeigt; der Jahr
   assert.equal(b.base.revenue.quarterly.length, 4);
   assert.equal(b.base.net_income.quarterly.length, 0);
   assert.equal(C.seriesOf(b, C.BY_ID.net_income, 'annual').find((r) => r.fy === 2024).v, 30);
+});
+
+/* Historische Bewertung zum Geschaeftsjahresende: alles zum selben Stichtag, gepruefte Aktienbasis. */
+const valBook = (over = {}) => C.fromHistory(projectHistory(synth({
+  units: { revenue: 'USD', net_income: 'USD', eps_diluted: 'USD/shares', diluted_weighted_average_shares: 'shares', shares_outstanding: 'shares', stockholders_equity: 'USD', total_debt: 'USD', cash_and_equivalents: 'USD', ebitda: 'USD', free_cash_flow: 'USD', dividends_paid: 'USD' },
+  annual: Object.fromEntries(Object.entries({
+    revenue: [100, 120, 150], net_income: [10, 12, 15], eps_diluted: [1, 1.2, 1.5], diluted_weighted_average_shares: [10, 10, 10], shares_outstanding: [10, 10, 10],
+    stockholders_equity: [50, -5, 80], total_debt: [20, 20, 20], cash_and_equivalents: [5, 5, 5], ebitda: [25, 0, 30], free_cash_flow: [8, -2, 12], dividends_paid: [3, 3, 3], ...over
+  }).filter(([, v]) => v).map(([k, v]) => [k, v.map((x, i) => x == null ? null : row(2022 + i, 'FY', (2022 + i) + '-12-31', x, '0000000001-25-00000' + i, '2025-02-01')).filter(Boolean)])),
+  quarterly: {}, ttm: {}
+}), 'TEST'), null);
+const vpts = [['2022-12-30', 10], ['2023-12-29', 12], ['2024-12-27', 15]];
+
+test('Historische Bewertung: Boersenwert, EV und Verhaeltnisse aus Werten desselben Geschaeftsjahres', () => {
+  const v = C.historicalValuation(valBook(), longOf([], vpts));
+  assert.equal(v.state, 'AVAILABLE');
+  const at = (id, fy) => v.series[id].find((r) => r.fy === fy);
+  assert.equal(at('market_cap', 2022).v, 100, 'Kurs 10 × 10 Aktien');
+  assert.equal(at('enterprise_value', 2022).v, 115, '100 + Schulden 20 − Kasse 5');
+  assert.equal(at('ps', 2023).v, 1, 'Boersenwert 120 ÷ Umsatz 120');
+  assert.equal(at('pb', 2023).reason, 'NEGATIVE_EQUITY');
+  assert.equal(at('ev_ebitda', 2023).reason, 'NOT_POSITIVE_BASE');
+  assert.equal(at('fcf_yield', 2023).v, -2 / 120, 'negative Rendite bleibt sichtbar');
+  assert.equal(at('dividend_yield', 2024).v, 3 / 150);
+  assert.equal(at('pe', 2024).v, 10);
+});
+
+test('Historische Bewertung: Aktienbasis, Kurs, Waehrung und fehlende Schulden sperren', () => {
+  // 2023: ausstehende Aktien weichen 30 % von der verwaesserten Zahl ab (z. B. nur eine Aktiengattung)
+  const a = C.historicalValuation(valBook({ shares_outstanding: [10, 7, 10] }), longOf([], vpts));
+  assert.equal(a.series.ps.find((r) => r.fy === 2023).reason, 'SHARE_CHECK_FAILED');
+  assert.equal(a.series.pe.find((r) => r.fy === 2023).v, 10, 'das KGV hat seine eigene Gegenprobe');
+  // Kein Kurs innerhalb von 10 Tagen vor dem GJ-Ende: Jahr leer, kein heutiger Kurs
+  const b = C.historicalValuation(valBook(), longOf([], vpts.slice(0, 2)));
+  assert.equal(b.series.market_cap.find((r) => r.fy === 2024), undefined, 'Spanne endet beim letzten geprueften Jahr');
+  assert.equal(b.years.find((x) => x.fy === 2024).reason, 'NO_PRICE');
+  // Ohne Finanzschulden kein Unternehmenswert (fehlend ist nicht null)
+  const c = C.historicalValuation(valBook({ total_debt: null }), longOf([], vpts));
+  assert.deepEqual(c.series.ev_ebitda, []); assert.equal(c.missing.ev_ebitda, 'NO_DEBT_DATA');
+  // Split nach dem Meldedatum: Aktienzahl wird wie der Gewinn je Aktie bereinigt
+  const d = C.historicalValuation(valBook(), longOf([['2025-06-01', 2]], vpts));
+  assert.equal(d.series.market_cap.find((r) => r.fy === 2022).v, 200, 'Kurs (heutige Basis) × 20 bereinigte Aktien');
+  const eur = valBook(); eur.currency = 'EUR';
+  assert.equal(C.historicalValuation(eur, longOf([], vpts)).reason, 'NON_USD_REPORTING');
+});
+
+test('Historische Bewertung echte Daten: Apple und NVIDIA plausibel, JPM ohne EV', () => {
+  const long = (t) => JSON.parse(readFileSync(new URL('quant/data/market/discover-series-long/ref_' + t + '.json', root)));
+  const ap = C.historicalValuation(bookOf('AAPL'), long('AAPL'));
+  const mc = ap.series.market_cap.find((r) => r.fy === 2025);
+  assert.ok(mc.v > 3e12 && mc.v < 4.5e12, 'Apple Ende Sept. 2025: rund 3,8 Bio. $');
+  assert.ok(ap.series.ps.filter((r) => r.v != null).length >= 10);
+  const nv = C.historicalValuation(bookOf('NVDA'), long('NVDA'));
+  assert.ok(nv.series.ps.find((r) => r.fy === 2021).v > 10, 'ueber den 4:1- und 10:1-Split dieselbe Basis');
+  const jp = C.historicalValuation(bookOf('JPM'), long('JPM'));
+  assert.deepEqual(jp.series.ev_ebitda, []);
+  assert.ok(jp.series.pb.filter((r) => r.v != null).length >= 8, 'Bank: KBV ja, EV nein');
+});
+
+test('Branchenmedian je Geschaeftsjahr: Mindestanzahl, Median, keine Betraege', () => {
+  const m = (sic2, v) => ({ ticker: 'X', sic2, sector: 'tech', values: { net_margin: [[2024, v], [2025, v * 2]] } });
+  const out = industryMedians([0.1, 0.2, 0.3, 0.4, 0.5].map((v) => m('36', v)).concat([m('28', 0.9)]));
+  assert.deepEqual(out['sic-36'].metrics.net_margin, [[2024, 0.3, 5], [2025, 0.6, 5]]);
+  assert.equal(out['sic-28'].metrics.net_margin, undefined, 'unter 5 Unternehmen kein Median');
+  assert.equal(out['sec-tech'].members, 6);
+  assert.deepEqual(C.industrySeries(out['sic-36'], 'net_margin'), { 2024: { v: 0.3, n: 5 }, 2025: { v: 0.6, n: 5 } });
+  assert.equal(C.industryPath('sic-36'), '/fundamental/data/history/industry/sic-36.json');
+  assert.equal(C.industryPath('../x'), null);
+});
+
+test('Vergleichsgruppe: groesste oder aehnliche Groesse, Lage ohne Wertung', () => {
+  const cols = { s: ['A', 'B', 'C', 'D', 'E'], vq: ['OK', 'OK', 'OK', 'OK', 'OK'], sic2: ['36', '36', '36', '36', '36'], sec: ['tech', 'tech', 'tech', 'tech', 'tech'],
+    mcap: [1e12, 5e11, 2e10, 1.8e10, 2.2e10], revenue: [1, 1, 1, 1, 1], pe: [40, 30, 20, 10, 25] };
+  const U = C.universe({ schema: 'vu-screener-universe-1.0.0', columns: Object.keys(cols), cols, dict: {} });
+  assert.deepEqual(C.peerGroup(U, 'C', 'industry', 3, 'groesste').peers.map((r) => r.s), ['A', 'B', 'C']);
+  const g = C.peerGroup(U, 'C', 'industry', 3, 'aehnlich');
+  assert.deepEqual(g.peers.map((r) => r.s), ['E', 'C', 'D'], 'naechste nach Boersenwert');
+  assert.match(g.rule, /ähnlichsten/);
+  assert.equal(C.positionText(C.position(g.members, 'pe', 20)), 'höher als 20 % der Gruppe');
+  assert.equal(C.positionText(C.position(g.members, 'pe', 40)), 'höchster Wert der Gruppe');
+});
+
+test('Katalog: keine Kehrwert-Dubletten, Zaehlung trennt definiert, verfuegbar und Verlauf', () => {
+  const ids = C.METRICS.map((m) => m.id);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.ok(!ids.includes('earnings_yield') && !ids.includes('p_fcf'), 'Kehrwerte von KGV und FCF-Rendite');
+  const b = bookOf('NVDA'), snap = C.snapshot(stock('NVDA'), null), list = C.catalogFor(b, { snap });
+  const k = C.catalogCounts(list);
+  assert.equal(k.defined, C.METRICS.length);
+  assert.equal(k.available + k.missing, k.defined);
+  assert.ok(list.filter((x) => !x.available).every((x) => x.cur.v == null && !x.rows.some((r) => r.v != null)), 'fehlende Werte zaehlen nicht als verfuegbar');
+});
+
+test('Veraenderung zum Vorzeitraum: Prozent, Prozentpunkte, kein Wert ueber einen Split', () => {
+  const b = bookOf('NVDA'), rows = C.seriesOf(b, C.BY_ID.revenue, 'annual');
+  const c = C.stepChange(b, C.BY_ID.revenue, rows, 2026, 1, 'annual');
+  assert.ok(c.pct > 0.5 && c.dir === 'up');
+  const m = C.seriesOf(b, C.BY_ID.net_margin, 'annual');
+  assert.ok('pp' in C.stepChange(b, C.BY_ID.net_margin, m, 2026, 1, 'annual'));
+  const e = C.seriesOf(b, C.BY_ID.eps_diluted, 'annual'), sp = b.splits[0];
+  if (sp) assert.equal(C.stepChange(b, C.BY_ID.eps_diluted, e, sp.to, 1, 'annual').reason, 'SPLIT');
 });

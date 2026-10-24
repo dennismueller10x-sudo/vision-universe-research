@@ -604,16 +604,19 @@ for(const width of [1440,390]){
  }
 
  /* FUNDAMENTAL: liest die SEC-Historie der Auslieferung (fundamental/data/history, scripts/fundamental/build-history.mjs)
-    und faellt NICHT still auf den Discover-Auszug zurueck. Geprueft: Quelle der Seite, Quartale, geprueftes historisches KGV. */
+    und faellt NICHT still auf den Discover-Auszug zurueck. Geprueft: Quelle der Seite, Quartale, gepruefte Bewertung zum GJ-Ende
+    (KGV, KUV), Branchenmediane je Geschaeftsjahr. */
  if(!ONLY||'/fundamental/'.includes(ONLY)||ONLY.includes('fundamental')){
   const bad=[];
   const fertig=async(sel)=>page.waitForFunction(s=>{const m=document.querySelector('main#fu-main');return m&&m.getAttribute('aria-busy')!=='true'&&!m.querySelector('.fu-boot')&&(!s||document.querySelector(s));},sel,{timeout:20000});
   const status=await readFile(resolve(root,'fundamental/data/history/status.json'),'utf8').then(JSON.parse).catch(()=>null);
   if(!status||status.state!=='AVAILABLE'||!(status.projected>1000))bad.push('HISTORIE_FEHLT:'+JSON.stringify(status&&{state:status.state,projected:status.projected}));
+  if(!(status&&status.industryGroups>50))bad.push('BRANCHENMEDIANE_FEHLEN:'+(status&&status.industryGroups));
   for(const [view,sel,check] of [
    ['/fundamental/#/NVDA','.fu-k .fu-k-v',async()=>{const src=await page.getAttribute('main#fu-main','data-fu-source');if(src!=='history')bad.push('QUELLE:'+src);if(await page.$('[data-fu-fallback]'))bad.push('FALLBACK_HINWEIS');}],
    ['/fundamental/#/NVDA?ansicht=kennzahl&k=revenue&p=q','.fu-bars .fu-bc',async()=>{const n=await page.$$eval('.fu-bc .fu-b:not(.fu-b-gap)',x=>x.length);if(n<4)bad.push('QUARTALE:'+n);}],
-   ['/fundamental/#/NVDA?ansicht=kennzahl&k=pe','.fu-table tbody tr',async()=>{const n=await page.$$eval('.fu-table tbody tr td:nth-child(2)',x=>x.filter(t=>/^\d/.test(t.textContent.trim())).length);if(n<5)bad.push('KGV_JAHRE:'+n);}]
+   ['/fundamental/#/NVDA?ansicht=kennzahl&k=pe','.fu-table tbody tr',async()=>{const n=await page.$$eval('.fu-table tbody tr td:nth-child(2)',x=>x.filter(t=>/^\d/.test(t.textContent.trim())).length);if(n<5)bad.push('KGV_JAHRE:'+n);}],
+   ['/fundamental/#/NVDA?ansicht=kennzahl&k=ps','.fu-table tbody tr',async()=>{const n=await page.$$eval('.fu-table tbody tr td:nth-child(2)',x=>x.filter(t=>/^\d/.test(t.textContent.trim())).length);if(n<5)bad.push('KUV_JAHRE:'+n);}]
   ]){
    errors.length=0;
    await page.goto('about:blank');await page.goto(origin+view);
