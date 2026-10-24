@@ -57,6 +57,7 @@ const Schema = require(join(engines, "schema.js"));
 const Factors = require(join(engines, "factors.js"));
 const SecFactPanel = require(join(engines, "sec-fact-panel.js"));
 const PanelBuilder = require(join(engines, "panel-builder.js"));
+const PublishedClose = require(join(engines, "published-close.js"));
 const SecAdapterModule = require(join(root, "providers", "sec", "adapter.js"));
 const SecAdapter = SecAdapterModule.createSecProvider();
 
@@ -212,6 +213,15 @@ function buildSecurity(entry, pricePanel) {
   const periods = SecFactPanel.factsToPeriods(facts);
   const fundamentals = Factors.fundamentalMetrics(periods, pm ? pm.price : null);
   if (pm) Object.assign(fundamentals, pm);
+  /* DER VEROEFFENTLICHTE KURS FOLGT DEM KURSVERTRAG (ADR-002).
+     `price` ist das Kursniveau, das Liste und Aktienseite zeigen. Die
+     Aktienseite nennt den veroeffentlichten Schluss der Reihe
+     (published-close.js#roundClose: Cent ab 1 $), dieses Panel nannte den
+     rohen Anbieterschluss - am 23.10.2026 bei AAPL 347,725 gegen 347,73.
+     Gerundet wird nur das veroeffentlichte Niveau, mit derselben Regel wie
+     die Reihen; Momentum, Abstaende und Bewertung bleiben auf dem Rohschluss
+     gerechnet und aendern sich nicht. */
+  if (pm && isNum(fundamentals.price)) fundamentals.price = PublishedClose.roundClose(fundamentals.price);
 
   const coverage = {};
   Object.keys(FACTOR_FIELDS).forEach((factorId) => {
