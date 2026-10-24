@@ -73,6 +73,28 @@ jobs:
           if [ "$recent" = "1" ]; then echo "Erzeuger lief vor weniger als 18 Stunden ($last)."; exit 0; fi
           gh workflow run sec-consumer-fundamentals.yml --ref "$REF"
           echo "Erzeuger angestossen."
+      - name: Alarm bei veralteten SEC-Daten
+        # Rot (GitHub meldet gescheiterte Laeufe dem Eigentuemer), wenn eine neue 10-Q/10-K
+        # seit mehr als 3 Tagen nicht uebernommen ist oder der Erzeuger seit 8 Tagen keinen
+        # erfolgreichen Lauf hatte. Aeltere Luecken, die companyfacts selbst nicht enthaelt
+        # (notAdopted, docs/FUNDAMENTAL_SEC_GAPS.md), loesen keinen Alarm aus.
+        if: always() && steps.fresh.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          oldest=$(node -e 'console.log(require(process.argv[1]).oldestPending || "")' "$RUNNER_TEMP/freshness.json")
+          lastok=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --status success --limit 1 --json createdAt --jq '.[0].createdAt // ""')
+          now=$(date -u +%s); fail=0
+          if [ -n "$oldest" ] && [ $(( now - $(date -u -d "$oldest" +%s) )) -gt 259200 ]; then
+            echo "::error::Neue SEC-Meldungen seit $oldest (mehr als 3 Tage) nicht in den Verbraucherdaten."; fail=1
+          fi
+          if [ -z "$lastok" ] || [ $(( now - $(date -u -d "$lastok" +%s) )) -gt 691200 ]; then
+            echo "::error::Kein erfolgreicher Lauf von sec-consumer-fundamentals.yml seit 8 Tagen (zuletzt: ${lastok:-nie})."; fail=1
+          fi
+          echo "Aeltester offener Eingang: ${oldest:-keiner}; letzter erfolgreicher Erzeugerlauf: ${lastok:-nie}"
+          exit "$fail"
       - name: Zusammenfassung
         if: always()
         run: |

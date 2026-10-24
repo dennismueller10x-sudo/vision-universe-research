@@ -448,6 +448,8 @@ test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgelief
   assert.deepEqual(stale.checks.map((c) => c.ok), [false, false]);
   const wf = readFileSync(new URL('.github/workflows/fundamental-sec-freshness.yml', root), 'utf8');
   assert.match(wf, /verify-publication\.mjs/);
+  assert.match(wf, /Alarm bei veralteten SEC-Daten/);
+  assert.match(wf, /259200/, 'Alarm nach 3 Tagen ohne Uebernahme');
   assert.match(wf, /gh workflow run pages-release\.yml --ref main/);
   assert.match(wf, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
   assert.doesNotMatch(wf, /\$\{\{ inputs\./, 'Eingaben nie im Shell-Text');
