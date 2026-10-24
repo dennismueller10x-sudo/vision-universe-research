@@ -1,58 +1,58 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-23T02:53:28.042Z",
- "asOf": "2026-10-22",
+ "generatedAt": "2026-10-24T03:01:26.550Z",
+ "asOf": "2026-10-23",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 2202,
+  "RADAR_EVENTS_TOTAL": 914,
   "RADAR_EVENTS_BY_TYPE": {
-   "SETUP_CONFIRMED": 9,
-   "SETUP_NEW": 108,
-   "STRATEGY_MATCH_NEW": 31,
-   "NEW_52W_HIGH": 232,
-   "MOMENTUM_IMPROVED": 159,
-   "TREND_UP": 138,
-   "PATTERN_MATCH_NEW": 921,
-   "FACTOR_CHANGED": 212,
-   "RISK_RISING": 11,
-   "SETUP_WEAKENED": 109,
+   "SETUP_CONFIRMED": 7,
+   "SETUP_NEW": 78,
+   "STRATEGY_MATCH_NEW": 19,
+   "NEW_52W_HIGH": 191,
+   "MOMENTUM_IMPROVED": 63,
+   "TREND_UP": 58,
+   "PATTERN_MATCH_NEW": 0,
+   "FACTOR_CHANGED": 168,
+   "RISK_RISING": 8,
+   "SETUP_WEAKENED": 88,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 37,
-   "MOMENTUM_DETERIORATED": 102,
-   "TREND_DOWN": 133,
-   "EVIDENCE_CHANGED": 0
+   "STRATEGY_MATCH_LOST": 22,
+   "MOMENTUM_DETERIORATED": 112,
+   "TREND_DOWN": 99,
+   "EVIDENCE_CHANGED": 1
   },
-  "SETUPS_TRACKED": 1181,
-  "SETUP_TRANSITIONS": 5442,
-  "SETUP_TRANSITIONS_LATEST": 336,
+  "SETUPS_TRACKED": 1183,
+  "SETUP_TRANSITIONS": 5677,
+  "SETUP_TRANSITIONS_LATEST": 235,
   "BACKTEST_ELIGIBLE_RULES": 96,
   "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5651,
+   "universe": 5655,
    "covered": 5296,
    "available": 4448,
    "sufficient": {
-    "m1": 2145,
-    "m3": 2063,
-    "m6": 1987,
-    "m12": 1879
+    "m1": 2146,
+    "m3": 2064,
+    "m6": 1988,
+    "m12": 1880
    },
    "broad": {
     "m6": 689
    },
    "reasons": {
-    "NOT_COVERED": 355,
+    "NOT_COVERED": 359,
     "NO_PRICE_CONDITION_TODAY": 774,
     "NO_COMPARABLE_CASE": 74
    }
   },
-  "WATCHLIST_TRACKABLE_TITLES": 5571,
-  "ALERT_READY_EVENTS": 2202
+  "WATCHLIST_TRACKABLE_TITLES": 5574,
+  "ALERT_READY_EVENTS": 914
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1761 Karten aus 2202 Ereignissen"
+   "measured": "771 Karten aus 914 Ereignissen"
   },
   {
    "question": "warum",
@@ -62,7 +62,7 @@
   {
    "question": "welches Setup vorliegt",
    "pass": true,
-   "measured": "5571 Titel mit Setup-Zustand"
+   "measured": "5574 Titel mit Setup-Zustand"
   },
   {
    "question": "wo Trigger / Invalidation / Ziele liegen",
@@ -72,12 +72,12 @@
   {
    "question": "wie sich der Zustand verändert",
    "pass": true,
-   "measured": "5442 gemessene Setup-Wechsel, 336 zum letzten Stand"
+   "measured": "5677 gemessene Setup-Wechsel, 235 zum letzten Stand"
   },
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "1987 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "1988 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -94,7 +94,9 @@
   {
    "ticker": "NVDA",
    "kind": "Großwert",
-   "radarEvents": [],
+   "radarEvents": [
+    "STRATEGY_MATCH_LOST"
+   ],
    "setup": {
     "state": "WATCH",
     "since": "2026-10-13",
@@ -111,7 +113,7 @@
     "targets": [
      [
       261,
-      268
+      267
      ],
      [
       281,
@@ -121,7 +123,7 @@
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
     "rr": {
      "low": 1.29,
-     "high": 2.88,
+     "high": 2.81,
      "target2Low": 2.13,
      "target2High": 4.25
     },
@@ -140,7 +142,6 @@
    "ticker": "AAPL",
    "kind": "Großwert",
    "radarEvents": [
-    "SETUP_WEAKENED",
     "NEW_52W_HIGH"
    ],
    "setup": {
@@ -158,20 +159,20 @@
     "invalidation": 297,
     "targets": [
      [
-      394,
-      401
+      398,
+      404
      ],
      [
-      422,
-      432
+      428,
+      438
      ]
     ],
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
     "rr": {
-     "low": 0.87,
-     "high": 1.26,
-     "target2Low": 1.4,
-     "target2High": 1.93
+     "low": 0.94,
+     "high": 1.33,
+     "target2Low": 1.52,
+     "target2High": 2.07
     },
     "direction": "BULLISH"
    },
@@ -322,9 +323,7 @@
   {
    "ticker": "AMD",
    "kind": "Großwert",
-   "radarEvents": [
-    "SETUP_WEAKENED"
-   ],
+   "radarEvents": [],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-22",
@@ -333,27 +332,27 @@
    },
    "levels": {
     "entry": [
-     522,
-     536
+     514,
+     527
     ],
-    "stop": 426,
-    "invalidation": 426,
+    "stop": 427,
+    "invalidation": 427,
     "targets": [
      [
-      578,
+      558,
       596
      ],
      [
-      868,
-      910
+      859,
+      900
      ]
     ],
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
     "rr": {
-     "low": 0.38,
-     "high": 0.77,
-     "target2Low": 3.02,
-     "target2High": 4.04
+     "low": 0.31,
+     "high": 0.94,
+     "target2Low": 3.32,
+     "target2High": 4.44
     },
     "direction": "BULLISH"
    },
@@ -369,10 +368,7 @@
   {
    "ticker": "META",
    "kind": "Großwert",
-   "radarEvents": [
-    "SETUP_WEAKENED",
-    "MOMENTUM_DETERIORATED"
-   ],
+   "radarEvents": [],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-22",
@@ -389,19 +385,19 @@
     "targets": [
      [
       704,
-      738
+      735
      ],
      [
-      1019,
-      1060
+      737,
+      759
      ]
     ],
     "trigger": "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.",
     "rr": {
      "low": 0.46,
-     "high": 1.02,
-     "target2Low": 3.02,
-     "target2High": 4.06
+     "high": 0.99,
+     "target2Low": 0.73,
+     "target2High": 1.22
     },
     "direction": "BULLISH"
    },
@@ -417,13 +413,7 @@
   {
    "ticker": "DXPE",
    "kind": "Small Cap",
-   "radarEvents": [
-    "TREND_DOWN",
-    "MOMENTUM_DETERIORATED",
-    "STRATEGY_MATCH_LOST",
-    "FACTOR_CHANGED",
-    "FACTOR_CHANGED"
-   ],
+   "radarEvents": [],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-20",
@@ -432,7 +422,7 @@
    },
    "levels": {
     "entry": [
-     173,
+     170,
      180
     ],
     "stop": 203,
@@ -449,9 +439,9 @@
     ],
     "trigger": "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.",
     "rr": {
-     "low": 0.63,
+     "low": 0.48,
      "high": 1.52,
-     "target2Low": 1.03,
+     "target2Low": 0.85,
      "target2High": 1.96
     },
     "direction": "BEARISH"
@@ -566,19 +556,19 @@
     "invalidation": 108,
     "targets": [
      [
-      45,
-      49
+      46,
+      48
      ],
      [
       39,
-      44
+      43
      ]
     ],
     "trigger": "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.",
     "rr": {
-     "low": 0.69,
-     "high": 1.25,
-     "target2Low": 0.83,
+     "low": 0.71,
+     "high": 1.21,
+     "target2Low": 0.86,
      "target2High": 1.46
     },
     "direction": "BEARISH"

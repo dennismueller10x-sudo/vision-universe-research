@@ -22,6 +22,13 @@
      |a - b| <= (Einheit(a) + Einheit(b)) / 2 + 1e-9.
    Eine Woche wird nur mit demselben Handelstag verglichen (Feiertage, Luecken).
 
+   Dazu, nicht blockierend (Chartstandard, docs/charts/CHART_STANDARD.md):
+     Stand      letzter Tag je Welt (DS, TS, GP) - verschiedene Staende = STAND_DIFF
+     Waehrung   wird der juengste Kurs in EUR angezeigt? Derselbe Weg wie die Oberflaeche
+                (ChartStandard.displaySeries ueber die FX-Schicht); sonst EUR_FALLBACK
+     Intraday   Sitzung des Snapshots (ChartStandard.intradayEntry) gegen den letzten
+                Tagesschluss; aelter = INTRADAY_OLDER (1T abgeschaltet)
+
    Liest nur committete Artefakte, ruft keinen Anbieter, schreibt nur mit --out.
 
      node scripts/quality/chart-parity.mjs                    Matrix auf der Konsole
@@ -43,6 +50,9 @@ const DQ = require(join(REPO_ROOT, "core", "data-quality.js"));
 const History = require(join(REPO_ROOT, "core", "chart-history.js"));
 const RS = require(join(REPO_ROOT, "quant", "engines", "return-series.js"));
 const TSn = require(join(REPO_ROOT, "quant", "engines", "realtime", "trading-session.js"));
+const CS = require(join(REPO_ROOT, "core", "chart-standard.js"));
+const FxRates = require(join(REPO_ROOT, "quant", "engines", "fx", "fx-rates.js"));
+const FxContract = require(join(REPO_ROOT, "quant", "engines", "fx", "currency-contract.js"));
 
 /* Einheit einer Quelle fuer einen Wert. */
 const PROVIDER_UNIT = 0.0001;
@@ -142,6 +152,17 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
   const intraSession = intra && intra.dataSession && intra.dataSession.sessionDate;
   const intraAll = new Set(intra && intraSession && intra.available && intra.available[intraSession] || []);
   const intraEntries = new Set(Object.keys((intra && intra.entries) || {}));
+  /* Anzeigewaehrung wie im Browser: EZB-Reihe, Vorgabe EUR. */
+  const ecbPath = P("quant", "data", "market", "fx", "ecb", "EURUSD.json");
+  const ecb = existsSync(ecbPath) ? readJson(ecbPath) : null;
+  let fxLayer = null;
+  if (ecb && ecb.points && ecb.points.length) {
+    const store = FxRates.createStore();
+    store.ingest("EUR", "USD", ecb.points, { source: "ecb", frequency: "DAILY" });
+    const mem = { m: {}, getItem(k) { return this.m[k] || null; }, setItem(k, v) { this.m[k] = String(v); } };
+    fxLayer = FxContract.createLayer({ store, storage: mem });
+  }
+  const ecbTo = ecb && ecb.points && ecb.points.length ? ecb.points[ecb.points.length - 1][0] : null;
 
   const stockDir = P("discover", "data", "stocks", "US_REAL");
   const tickers = readdirSync(stockDir).filter((n) => n.endsWith(".json")).map((n) => n.slice(0, -5)).filter((t) => !only || only.has(t)).sort();
@@ -195,6 +216,19 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
         : { status: "DEVIATION", asOf: ew.asOf, elliott: ew.close, reference: w, ratio: Number((w / ew.close).toPrecision(4)) };
     }
     row.pairs = pairs;
+    /* Rendite: dieselbe Fensterregel (ChartStandard.slice) auf der Quant-Tagesreihe (GP) und der
+       Discover-Tagesreihe (TI); letzter / erster Punkt - 1. Gleiche Kurse muessen gleiche Renditen geben. */
+    if (gp && ti) {
+      const ret = (pts, id) => { const w = CS.slice(pts, id); return w.length >= 2 && w[0][1] > 0 ? { from: w[0][0], to: w[w.length - 1][0], value: w[w.length - 1][1] / w[0][1] - 1 } : null; };
+      const adj = RS.splitAdjustedColumn(gp.bars, "close"), q = gp.bars.map((b, i) => [b.date, adj[i]]);
+      const d = ti.bars.timestamps.map((t, i) => [String(t).slice(0, 10), ti.bars.close[i]]);
+      row.returns = {};
+      for (const id of ["1J", "5J"]) {
+        const a = ret(q, id), b = ret(d, id);
+        row.returns[id] = { quant: a, discover: b, same: !!(a && b && a.from === b.from && a.to === b.to && Math.abs(a.value - b.value) < 1e-6) };
+        if (a && b && !row.returns[id].same) row.issues.push("RETURN:" + id);
+      }
+    }
     for (const [k, c] of Object.entries(pairs)) {
       if (c.status !== "DEVIATION") continue;
       if (c.levelFactor || c.kind === "LEVEL" || (k.startsWith("EW~") && Math.abs(c.ratio - 1) > 0.05)) row.issues.push("CORPORATE_ACTION:" + k);
@@ -207,11 +241,27 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
     const longest = gp ? gp.bars.map((b) => [b.date, b.close]) : D;
     /* Datenlage gemeinsam (was irgendeine Welt aus vorhandenen Artefakten zeichnen koennte) und je Welt,
        wie sie heute laedt: Supertrader nur die 270 Bars des Shards, 1T nur ueber entries (supertrader.js#intradaySnap). */
+    /* Stand je Welt, Tagesverlauf und Anzeigewaehrung (nicht blockierend). */
+    const last = (pts) => (pts && pts.length ? pts[pts.length - 1][0] : null);
+    row.stands = { DS: ds ? ds.to || last(D) : null, TS: ts ? last(ts.points) : null, GP: gp && gp.bars.length ? gp.bars[gp.bars.length - 1].date : null };
+    if (new Set(Object.values(row.stands).filter(Boolean)).size > 1) row.issues.push("STAND_DIFF");
+    const ie = intra ? CS.intradayEntry(intra, ticker) : null;
+    row.intraday = ie ? { session: ie.sessionDate, derived: ie.derived, olderThanDaily: !!(asOf && ie.sessionDate && ie.sessionDate < asOf) } : null;
+    if (row.intraday && row.intraday.olderThanDaily) row.issues.push("INTRADAY_OLDER");
+    row.currency = fxLayer && asOf ? (CS.displaySeries([[asOf, 1], [asOf, 1]], "USD", fxLayer).converted ? "EUR" : "USD") : "USD";
+    if (row.currency !== "EUR") row.issues.push("EUR_FALLBACK");
+    /* 1T je Welt nach der Regel ihrer Seite, beide ueber ChartStandard.intradayEntry (dieselbe
+       Aufloesung wie discover/ui/live-hub.js#resolveEntry): Discover und Quant zeigen den gefundenen
+       Tagesverlauf mit seinem Datum, Supertrader nur, wenn er nicht aelter ist als der letzte Schluss. */
+    const dayAny = !!row.intraday, dayOk = !!(row.intraday && !row.intraday.olderThanDaily);
+    if (row.intraday) row.intraday.current = !!(intraSession && row.intraday.session === intraSession);
     row.ranges = {
-      data: rangeAvailability({ daily: longest, long: L, intraday: intraAll.has(ticker) || intraEntries.has(ticker), listedSince, asOf }),
-      discover: rangeAvailability({ daily: ti ? D : D, long: L, intraday: intraAll.has(ticker) || intraEntries.has(ticker), listedSince, asOf }),
-      quant: rangeAvailability({ daily: longest, long: L, intraday: intraAll.has(ticker) || intraEntries.has(ticker), listedSince, asOf }),
-      supertrader: ts ? rangeAvailability({ daily: ts.points, long: null, intraday: intraEntries.has(ticker), listedSince, asOf }) : null
+      data: rangeAvailability({ daily: longest, long: L, intraday: dayAny, listedSince, asOf }),
+      discover: rangeAvailability({ daily: ti ? D : D, long: L, intraday: dayAny, listedSince, asOf }),
+      quant: rangeAvailability({ daily: longest, long: L, intraday: dayAny, listedSince, asOf }),
+      /* Supertrader nach dem Chartstandard: Tagesverlauf ueber intradayEntry (entries, sonst available),
+         5J/MAX mit der Wochenreihe (supertrader.js#priceChart). */
+      supertrader: ts ? rangeAvailability({ daily: ts.points, long: L, intraday: dayOk, listedSince, asOf }) : null
     };
     if (Object.values(row.ranges.data).includes("MISSING")) row.issues.push("RANGES");
     /* 9 Aktualitaet */
@@ -219,7 +269,7 @@ export function audit({ root = REPO_ROOT, only = null, now = new Date() } = {}) 
     if (row.lag !== null && row.lag >= 2) row.issues.push("STALE");
     if (!ts) row.issues.push("NOT_IN_SUPERTRADER");
   }
-  return summarize(rows, { expected, intraSession, intraAll: intraAll.size, intraEntries: intraEntries.size, root });
+  return summarize(rows, { expected, intraSession, intraAll: intraAll.size, intraEntries: intraEntries.size, ecbTo, root });
 }
 
 function summarize(rows, meta) {
@@ -262,12 +312,21 @@ function summarize(rows, meta) {
       nonComparable: nonComparable.length,
       nonComparableCauses: nonCompCauses,
       stale: count((r) => has(r, "STALE")),
-      notInSupertrader: count((r) => has(r, "NOT_IN_SUPERTRADER"))
+      notInSupertrader: count((r) => has(r, "NOT_IN_SUPERTRADER")),
+      /* Chartstandard, nicht blockierend */
+      standDiff: count((r) => has(r, "STAND_DIFF")),
+      eurFallback: count((r) => has(r, "EUR_FALLBACK") && !has(r, "NO_CHART")),
+      intradayOlder: count((r) => has(r, "INTRADAY_OLDER")),
+      intradayDerived: count((r) => r.intraday && r.intraday.derived),
+      intradayCurrent: count((r) => r.intraday && r.intraday.current),
+      returnsCompared: count((r) => !!r.returns),
+      returnMismatch: count((r) => has(r, "RETURN")),
+      intradayPrevious: count((r) => r.intraday && !r.intraday.current)
     },
     pairs: pairStats,
     ranges: rangeStats,
     deviations: dataDev.concat(gaps).map((r) => ({ ticker: r.ticker, issues: r.issues, pairs: Object.fromEntries(Object.entries(r.pairs || {}).filter(([, c]) => c.status === "DEVIATION")) })),
-    rows: rows.map((r) => ({ ticker: r.ticker, sources: r.sources, issues: r.issues, lag: r.lag, ranges: r.ranges }))
+    rows: rows.map((r) => ({ ticker: r.ticker, sources: r.sources, issues: r.issues, lag: r.lag, ranges: r.ranges, stands: r.stands, intraday: r.intraday, currency: r.currency, returns: r.returns }))
   };
 }
 
@@ -284,7 +343,11 @@ if (isMain) {
   console.log("| Kennzahl | Ergebnis |\n|---|---|");
   for (const [k, v] of [["Aktien insgesamt", m.total], ["Aktien mit vollständiger Chart-Parität", m.fullParity], ["Aktien mit Kursabweichungen", m.dataDeviations], ["Aktien mit Datenlücken (fehlender Handelstag)", m.dataGaps],
     ["Aktien mit fehlenden Zeiträumen (Datenlage)", m.missingRanges], ["Aktien ohne verfügbare Charts", m.noChart], ["Corporate-Action-Fehler", m.corporateActionErrors],
-    ["Nicht vergleichbare Aktien", m.nonComparable + " " + JSON.stringify(m.nonComparableCauses)], ["Veraltet (≥ 2 Sitzungen)", m.stale], ["Ohne Supertrader-Bars", m.notInSupertrader]]) console.log(`| ${k} | ${v} |`);
+    ["Nicht vergleichbare Aktien", m.nonComparable + " " + JSON.stringify(m.nonComparableCauses)], ["Veraltet (≥ 2 Sitzungen)", m.stale], ["Ohne Supertrader-Bars", m.notInSupertrader],
+    ["Welten auf verschiedenem Stand (DS/TS/GP)", m.standDiff], ["Ohne EUR-Anzeige (kein EZB-Kurs, EZB bis " + r.meta.ecbTo + ")", m.eurFallback],
+    ["Tagesverlauf älter als letzter Schluss (1T aus)", m.intradayOlder], ["Tagesverlauf über available (nicht Live-Umfang)", m.intradayDerived],
+    ["Renditen 1J/5J verglichen (Quant-Tagesreihe gegen Discover-Tagesreihe) / abweichend", m.returnsCompared + " / " + m.returnMismatch],
+    ["Tagesverlauf aus der laufenden / letzten Sitzung (" + (r.meta.intraSession || "–") + ")", m.intradayCurrent + " / " + m.intradayPrevious]]) console.log(`| ${k} | ${v} |`);
   console.log("\nPaare:"); for (const [k, s] of Object.entries(r.pairs)) console.log(`  ${k.padEnd(6)} ${JSON.stringify(s)}`);
   console.log("\nZeitraeume nach Datenlage:"); for (const [w, s] of Object.entries(r.ranges)) console.log(`  ${w.padEnd(11)} ` + RANGES.map((k) => `${k} ${s[k] ? s[k].OK + "/" + s[k].SHORT + "/" + s[k].MISSING : "-"}`).join("  ") + "   (OK/kurz/fehlt)");
   if (r.deviations.length) { console.log("\nAbweichungen:"); for (const d of r.deviations.slice(0, 40)) console.log(`  ${d.ticker.padEnd(8)} ${d.issues.join(" ")}`); }

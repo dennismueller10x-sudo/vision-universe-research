@@ -131,7 +131,12 @@
 // Schriften, die in CI dazukommen). Wer sie wieder anhebt, hat den Ausschnitt abgeschaltet.
 export const budgets=Object.freeze({
  home:{decodedBytes:1820000,requests:45,history:false},
- stock:{decodedBytes:3300000,requests:45,history:true},
+ // stock 45 -> 46 Anfragen (Owner-Freigabe 24.10.2026, Chart-Harmonisierung): EUR als
+ // Anzeigewaehrung braucht auf der Aktienseite EIN FX-Paket (quant/fx-pack.js aus
+ // scripts/vu2/build-release.mjs: Chartstandard, FX-Schicht, Lizenz, EZB-Reihe EUR/USD -
+ // einzeln elf Abrufe, ins Buendel gelegt ueber dem Byte-Budget der Startseite). Mit dem
+ // Seitenumbau #873 (stock.css) stand die Seite bei 45. Nur diese eine Grenze, Bytes unveraendert.
+ stock:{decodedBytes:3300000,requests:46,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:30500000,requests:30,history:false},

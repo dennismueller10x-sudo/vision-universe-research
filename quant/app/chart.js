@@ -49,20 +49,45 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-chart-1.2.0";
+  var VERSION = "quant-chart-1.3.0";
+  /* Reihenfolge und Beschriftung nach dem Chartstandard (core/chart-standard.js,
+     docs/charts/CHART_STANDARD.md): Hauptleiste 1T 1W 1M 1J 5J MAX, die weiteren
+     Zeitraeume dieser Welt dahinter. Die Beschriftung IST die kanonische Kennung;
+     die Kennungen (id) bleiben. */
   var RANGES = [
     { id: "1D", label: "1T", word: "heute" },
-    { id: "5D", label: "5T", days: 7, word: "in 5 Tagen" },
+    { id: "5D", label: "1W", days: 7, word: "in 1 Woche" },
     { id: "1M", label: "1M", days: 31, word: "in 1 Monat" },
+    { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
+    { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
+    { id: "MAX", label: "MAX", all: true, word: "seit Beginn der Reihe", long: true },
     { id: "3M", label: "3M", days: 92, word: "in 3 Monaten" },
     { id: "6M", label: "6M", days: 183, word: "in 6 Monaten" },
     { id: "YTD", label: "YTD", ytd: true, word: "seit Jahresbeginn" },
-    { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
     { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
-    { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
-    { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true },
-    { id: "MAX", label: "Max", all: true, word: "seit Beginn der Reihe", long: true }
+    { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true }
   ];
+  /* Gemerkte Wahl des Nutzers, ein Schluessel fuer alle Welten (core/chart-history.js#rangeKey,
+     derselbe wie ChartStandard.RANGE_KEY). Sie wird gelesen, bevor der Chartstandard nachgeladen
+     ist; die Beschriftung ist die kanonische Kennung, daher keine eigene Uebersetzung. */
+  function memo(v) {
+    try { var H = global.VUCore.ChartHistory, k = H.rangeKey; if (v) global.localStorage.setItem(k, v); else v = global.localStorage.getItem(k); } catch (e) { return null; }
+    return RANGES.filter(function (r) { return r.label === v; })[0] || null;
+  }
+  /* Anzeigewaehrung (Vorgabe EUR) ueber den Chartstandard und die FX-Schicht. Im Release
+     bringt EIN Paket beides (globalThis.VUFxPack, scripts/vu2/build-release.mjs), sonst
+     laedt der Chartstandard die Schicht selbst. Ohne Schicht bleibt die Boersenwaehrung. */
+  var displayReady = null;
+  function display() {
+    if (displayReady) return displayReady;
+    var doc = global.document, std = function () { return global.VUCore && global.VUCore.ChartStandard; };
+    if (!doc || !doc.head) return Promise.resolve(null); /* ohne Browser (Tests): Boersenwaehrung */
+    displayReady = new Promise(function (ok) {
+      if (std()) return ok();
+      var s = doc.createElement("script"); s.src = global.VUFxPack || "/core/chart-standard.js"; s.onload = s.onerror = ok; doc.head.appendChild(s);
+    }).then(function () { var CS = std(); return CS ? CS.ensureDisplay().then(function () { return CS; }) : null; }).catch(function () { return null; });
+    return displayReady;
+  }
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
   function el(tag, attrs, kids) { return global.QuantShell.el(tag, attrs, kids); }
@@ -153,7 +178,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
+    var st = { std: null, cur: o.currency || "USD", range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
     /* VU3 (docs/design/VU3_UI_SYSTEM.md, Kurschart): das Bild zeichnet
        assets/vu-chart.js (VUChart.render) - dieselbe Linie, Startlinie,
@@ -173,15 +198,17 @@
     var box = el("div", { class: "vu-chart vu-chart--bleed qc-box" }, [plot]);
     var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
     var note = el("p", { class: "qc-note" });
+    /* Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover). */
+    var fxHost = el("p", { class: "qc-fx" });
     var node = el("section", { class: "qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
       el("h2", { class: "qx-sr", text: "Kursverlauf" }), headNode, box, bar,
-      el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [note])])
+      el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [fxHost, note])])
     ]);
 
     var buttons = {};
     RANGES.forEach(function (r) {
       var b = el("button", { type: "button", class: "qc-range", text: r.label, "aria-pressed": "false",
-        dataset: { range: r.id }, onclick: function () { st.touched = true; draw(r.id); } });
+        dataset: { range: r.id }, onclick: function () { st.touched = true; memo(r.label); draw(r.id); } });
       buttons[r.id] = b; bar.append(b);
     });
 
@@ -220,7 +247,13 @@
     /* Zeichnen: der gemeinsame Kurschart (VUChart.render). Fehlt er (Tests
        ohne Browser), zeichnet Discovers Komponente dieselben Punkte. */
     function paint(pts, opt) {
-      var VC = global.VUChart;
+      var VC = global.VUChart, CS = st.std;
+      /* Tagesverlauf: alle Punkte und der Vortagesschluss mit dem Kurs der Sitzung. */
+      if (CS && opt.intraday && opt.snap) {
+        var ds = CS.displaySnapshot(opt.snap, o.currency || "USD");
+        st.cur = ds.currency;
+        if (ds.converted) { pts = pts.map(function (p) { return [p[0], p[1] * ds.rate]; }); opt = Object.assign({}, opt, { base: isNum(opt.base) ? opt.base * ds.rate : opt.base }); }
+      }
       if (VC && VC.render) return VC.render(pts, { width: width(), height: height(), base: opt.base, sessionEnd: opt.sessionEnd, label: o.ticker });
       if (!MC) return null;
       if (opt.intraday) return MC.renderIntraday ? MC.renderIntraday(opt.snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: opt.label }) : null;
@@ -252,9 +285,10 @@
         on = true; node.classList.add("is-scrub");
         cross.setAttribute("x1", best.x.toFixed(1)); cross.setAttribute("x2", best.x.toFixed(1)); cross.style.display = "";
         headPrice.hidden = false;
-        headPrice.textContent = global.QX.money(best.v, o.currency || "USD") + " · " + fmtWhen(best.t);
+        headPrice.textContent = global.QX.money(best.v, st.cur) + " · " + fmtWhen(best.t);
         headPrice.style.left = Math.min(rect.width - 70, Math.max(70, best.x * rect.width / g.w)) + "px";
-        var d = isNum(base) && base > 0 ? (best.v / base - 1) * 100 : null;
+        var b = isNum(g.base) ? g.base : base;
+        var d = isNum(b) && b > 0 ? (best.v / b - 1) * 100 : null;
         headDelta.textContent = arrow(d) + signedPct(d);
         headDelta.className = "num qc-delta " + dirClass(d);
         headWord.textContent = " bis " + fmtWhen(best.t);
@@ -339,6 +373,10 @@
         delete plot.dataset.range; delete plot.dataset.grain;
         note.textContent = ""; return;
       }
+      /* Anzeigewaehrung (Vorgabe EUR): jeder Punkt mit dem EZB-Kurs seines Tages; die
+         Veraenderung kommt aus DIESER Reihe, wie in Discover (detail.js, §41). */
+      if (st.std) { var shown = st.std.displaySeries(pts, o.currency || "USD"); pts = shown.points; st.cur = shown.currency; }
+      else st.cur = o.currency || "USD";
       var first = pts[0][1], last = pts[pts.length - 1][1];
       var delta = first > 0 ? (last / first - 1) * 100 : null;
       /* Die zusammengesetzte lange Reihe ist durchgehend Wochenraster
@@ -358,7 +396,7 @@
       capt.push(r.id === "5D" ? "Tagesschlusskurse der letzten Handelstage (5-Minuten-Kurse werden nur für den aktuellen Tag aufbewahrt)"
         : weekly ? "Wochenschlusskurse, letzter Punkt Tagesschluss vom " + dateDe(pts[pts.length - 1][0]) : "Tagesschlusskurse");
       capt.push(o.adjusted ? "splitbereinigt" + (o.splitEvents ? " (" + o.splitEvents + (o.splitEvents === 1 ? " Split" : " Splits") + " herausgerechnet)" : "") : "nicht splitbereinigt – Splits können als Kurssprung erscheinen");
-      capt.push(o.currency || "USD");
+      capt.push(st.std ? st.std.currencyNote(st.cur, o.currency || "USD", false) : st.cur);
       if (svg.getAttribute("data-scale") === "log") capt.push("logarithmische Kursachse");
       capt.push("ohne Dividenden");
       note.textContent = capt.join(" · ") + ".";
@@ -408,6 +446,7 @@
        nicht (junge Titel), beim laengsten abgedeckten kuerzeren Zeitraum,
        sonst bei der ganzen Reihe. */
     function startRange() {
+      var mine = memo(); if (mine && (available(mine.id) || longPending(mine))) return mine.id;
       var order = ["1Y", "6M", "3M", "1M"];
       for (var i = 0; i < order.length; i++) if (available(order[i])) return order[i];
       return "MAX";
@@ -460,6 +499,8 @@
     head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
+    function redraw() { if (!st.disposed && st.range) draw(st.range); }
+    display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
 
     return {
       node: node,
@@ -467,6 +508,7 @@
       draw: draw,
       dispose: function () {
         st.disposed = true;
+        if (st.unfx) { st.unfx(); st.unfx = null; }
         global.removeEventListener("resize", onResize);
         if (st.unsub) { try { st.unsub(); } catch (e) { /* bereits gekuendigt */ } st.unsub = null; }
         if (st.relay && st.relay.stop) { try { st.relay.stop("PAGE_LEFT"); } catch (e) { /* bereits zu */ } }
@@ -475,5 +517,5 @@
     };
   }
 
-  global.VUQuantChart = { VERSION: VERSION, RANGES: RANGES, create: create, withLive: withLive, slice: slice, covered: covered };
+  global.VUQuantChart = { VERSION: VERSION, RANGES: RANGES, create: create, withLive: withLive, slice: slice, covered: covered, display: display };
 })(window);

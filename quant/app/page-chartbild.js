@@ -23,6 +23,10 @@
   function isNum(v) { return typeof v === "number" && isFinite(v); }
   function fmt(v) { return Ex ? Ex.fmt(v) : String(v); }
   function zoneText(z) { return z ? fmt(z.zoneLow) + "–" + fmt(z.zoneHigh) : "–"; }
+  /* Kursmarken der Szenarien mit Einheit: die Wellenanalyse rechnet und zeigt in der Boersenwaehrung
+     (USD, wie Kurs im Kopf und Chart dieser Seite); ohne Einheit war das nicht erkennbar. */
+  var UNIT = " $";
+  function withUnit(t) { return /[$€]|USD|EUR/.test(String(t)) ? t : t + UNIT; }
   function pct(v) { return isNum(v) ? Math.round(v * 100) + " %" : "–"; }
   function readView() { try { return global.localStorage.getItem(VIEW_KEY) === "pro" ? "pro" : "simple"; } catch (e) { return "simple"; } }
   function writeView(v) { try { global.localStorage.setItem(VIEW_KEY, v); } catch (e) { /* privat */ } }
@@ -80,14 +84,14 @@
       s.status ? el("p", { class: "cb-sc-status", text: statusText(s) }) : null
     ];
     var dl = el("dl", { class: "cb-sc-dl" });
-    function row(k, v) { if (v) dl.append(el("dt", { text: k }), el("dd", { class: "num", text: v })); }
+    function row(k, v) { if (v) dl.append(el("dt", { text: k }), el("dd", { class: "num", text: v === "–" ? v : v + UNIT })); }
     if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Einstiegszone", zoneText(s.entryZone));
     (s.targets || []).forEach(function (z, q) { row("Zielzone " + (q + 1), zoneText(z)); });
     if (s.invalidation) row(s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price));
     if (s.range) { row("Untergrenze", zoneText(s.range.support)); row("Obergrenze", zoneText(s.range.resistance)); }
     kids.push(dl);
-    if (s.confirmation && isNum(s.confirmation.price)) kids.push(el("p", { class: "cb-sc-note", text: "Bestätigt bei Schluss " + (s.direction === "BEARISH" ? "unter " : "über ") + fmt(s.confirmation.price) }));
-    if (s.trigger && isNum(s.trigger.price)) kids.push(el("p", { class: "cb-sc-note", text: "Tritt in den Vordergrund, wenn " + fmt(s.trigger.price) + " per Schlusskurs " + (s.direction === "BEARISH" ? "unterschritten" : "überschritten") + " wird." }));
+    if (s.confirmation && isNum(s.confirmation.price)) kids.push(el("p", { class: "cb-sc-note", text: "Bestätigt bei Schluss " + (s.direction === "BEARISH" ? "unter " : "über ") + fmt(s.confirmation.price) + UNIT }));
+    if (s.trigger && isNum(s.trigger.price)) kids.push(el("p", { class: "cb-sc-note", text: "Tritt in den Vordergrund, wenn " + fmt(s.trigger.price) + UNIT + " per Schlusskurs " + (s.direction === "BEARISH" ? "unterschritten" : "überschritten") + " wird." }));
     if (s.expectedStructure) kids.push(el("p", { class: "cb-sc-note", text: "Erwartete Struktur: " + s.expectedStructure }));
     if (s.elliottAlternative) kids.push(el("p", { class: "cb-sc-note", text: "Alternative Wellenzählung: " + s.elliottAlternative.pattern + ", Welle " + s.elliottAlternative.wave }));
     if (s.note) kids.push(el("p", { class: "cb-sc-note", text: s.note }));
@@ -109,7 +113,7 @@
   function dirWord(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "aufwärts" : d === "DOWN" || d === "BEARISH" || d < 0 ? "abwärts" : "seitwärts"; }
   function dirArrow(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "↗" : d === "DOWN" || d === "BEARISH" || d < 0 ? "↘" : "→"; }
   function dirTone(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "up" : d === "DOWN" || d === "BEARISH" || d < 0 ? "down" : "flat"; }
-  function boundText(b) { return b ? "Schluss " + (b.direction === "below" ? "unter " : "über ") + fmt(b.price) : null; }
+  function boundText(b) { return b ? "Schluss " + (b.direction === "below" ? "unter " : "über ") + fmt(b.price) + UNIT : null; }
   function proTile(label, value, sub, tone) {
     return el("div", { class: "cb-pt" + (tone ? " cb-pt-" + tone : "") }, [el("span", { class: "cb-pt-k", text: label }), el("strong", { class: "cb-pt-v", text: value }), sub ? el("span", { class: "cb-pt-s", text: sub }) : null]);
   }
@@ -163,7 +167,7 @@
       el("p", { class: "cb-count-stand", text: stand }),
       el("div", { class: "cb-count-bound" }, [el("span", { class: "cb-bound-icon", "aria-hidden": "true" }), kv([kill, killRule, rev, !kill && !rev ? ["Grenze", "keine harte Grenze in Reichweite"] : null])]),
       X.more("Wellen und Zonen (" + c.waves.length + ")", function () {
-        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Ziel)") + " · " + (z.relations || []).slice(0, 2).join("; ") })]); });
+        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) + UNIT }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Ziel)") + " · " + (z.relations || []).slice(0, 2).join("; ") })]); });
         return [el("ol", { class: "cb-waves" }, c.waves.map(function (x) {
           return el("li", { class: x.status === "DEVELOPING" ? "is-dev" : "" }, [el("b", { text: x.notation || x.label }), el("span", { class: "num", text: " " + X.dateDe(x.fromTime) + " → " + (x.status === "DEVELOPING" ? "läuft" : X.dateDe(x.toTime)) + " · " + fmt(x.fromPrice) + " → " + fmt(x.toPrice) }),
             x.subdivision && x.subdivision.count > 1 ? el("small", { text: " · " + x.subdivision.count + " Unterwellen" + (x.subdivision.pattern ? " (" + x.subdivision.pattern + ")" : "") }) : null]);
@@ -629,10 +633,10 @@
       levels.replaceChildren();
       if (!s) return;
       if (s.range) { levels.append(levelTile("range", "Untergrenze", zoneText(s.range.support)), levelTile("range", "Obergrenze", zoneText(s.range.resistance))); return; }
-      if (s.entryZone) levels.append(levelTile("entry", s.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone", zoneText(s.entryZone), statusText(s)));
+      if (s.entryZone) levels.append(levelTile("entry", s.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone", zoneText(s.entryZone) + UNIT, statusText(s)));
       var t = s.targets || [];
-      if (t.length) levels.append(levelTile("target", "Zielbereich", t.length > 1 ? fmt(t[0].zoneLow) + "–" + fmt(t[t.length > 1 ? 1 : 0].zoneHigh) : zoneText(t[0]), t.length > 1 ? "Zone 1 ab " + fmt(t[0].zoneLow) : null));
-      if (s.invalidation) levels.append(levelTile("invalid", s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price), "per Schlusskurs"));
+      if (t.length) levels.append(levelTile("target", "Zielbereich", (t.length > 1 ? fmt(t[0].zoneLow) + "–" + fmt(t[t.length > 1 ? 1 : 0].zoneHigh) : zoneText(t[0])) + UNIT, t.length > 1 ? "Zone 1 ab " + fmt(t[0].zoneLow) + UNIT : null));
+      if (s.invalidation) levels.append(levelTile("invalid", s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price) + UNIT, "per Schlusskurs"));
     }
 
     // ---------------------------------------------- Chart
@@ -954,7 +958,7 @@
       el("div", { class: "cb-pj-why" }, [el("p", { class: "cb-pj-why-h", text: (t.exploreStatus ? t.exploreStatus.text : "Nicht als reguläre Alternative freigegeben") + ":" }),
         el("ul", { class: "cb-pj-why-l" }, (t.qualityGates ? t.qualityGates.reasons : []).map(function (r) { return el("li", {}, [el("b", { text: r.title }), el("span", { text: " – " + r.text })]); }))]),
       pjLadder(t, null),
-      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: t.invalidation.displayText || fmt(t.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
       t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Noch nicht bestätigt – Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [b]),
       X.more("Was diese Lesart stärken würde", function () { return el("div", { class: "cb-pj-roads" }, [el("div", {}, [el("p", { class: "cb-pj-road-h", text: "Elliott-Anforderung" }), pjRoad(t.roadmap.elliott)]), el("div", {}, [el("p", { class: "cb-pj-road-h", text: "VU-Bestätigung (unabhängig)" }), pjRoad(t.roadmap.vu)])]); })
@@ -979,7 +983,7 @@
       kv([["Muster", (t.patternName || t.pattern) + (t.variant ? " (" + t.variant + ")" : "")], ["Richtung", dirWord(t.direction)], ["Rang im Pool", t.pool ? "Rang " + (t.pool.rank + 1) + " von " + t.pool.size : "–"],
           ["Verfehlte Leitplanken", G.failed.map(function (g) { var r = G.results && G.results[g]; return g + (r && r.value !== null && r.value !== undefined ? " (" + String(r.value).replace(".", ",") + ")" : ""); }).join(", ") || "–"],
           ["Kein Highlight, weil", why.join("; ") || "–"],
-          t.invalidation ? ["Ungültig " + (t.invalidation.direction === "below" ? "unter" : "über"), t.invalidation.displayText || fmt(t.invalidation.price)] : null,
+          t.invalidation ? ["Ungültig " + (t.invalidation.direction === "below" ? "unter" : "über"), withUnit(t.invalidation.displayText || fmt(t.invalidation.price))] : null,
           t.confirmation ? ["Bestätigung", (t.confirmation.passed ? "erfüllt" : "bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price))] : null,
           t.structure ? ["Marktstruktur", t.structure.label] : null]),
       el("ul", { class: "cb-pj-clad num" }, zl.map(function (x) { return el("li", { text: x }); })),
@@ -996,7 +1000,7 @@
       el("p", { class: "cb-pj-sub", text: (m.patternName || "") + " · Richtung " + dirWord(m.direction) + " · Strukturklarheit: " + (m.clarity ? m.clarity.label : "Niedrig") + " · Experimentell" }),
       m.clarity ? el("p", { class: "cb-small", text: m.clarity.text }) : null,
       pjLadder(m, p.close),
-      m.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: m.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: m.invalidation.displayText || fmt(m.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: m.invalidation.text })]) : null,
+      m.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: m.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(m.invalidation.displayText || fmt(m.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: m.invalidation.text })]) : null,
       m.revision ? el("p", { class: "cb-small" }, [el("b", { text: "Neubewertung: " }), el("span", { text: "Schluss " + (m.revision.direction === "below" ? "unter " : "über ") + fmt(m.revision.price) + " – dann wäre die Vorwelle noch nicht beendet." })]) : null,
       m.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: m.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (m.direction === "DOWN" ? "unter " : "über ") + fmt(m.confirmation.price) + ": " }), el("span", { text: m.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [b]),
@@ -1061,7 +1065,7 @@
       el("p", { class: "cb-pj-sub", text: (t.source === "HIGHER_DEGREE" ? "Höherer Grad: " : "") + (t.patternName || "") + " · Richtung " + dirWord(t.direction) + " · Hauptlesart (derzeit bevorzugt, nicht „die richtige Zählung“)" }),
       el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
       pjLadder(t, p.close),
-      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: t.invalidation.displayText || fmt(t.invalidation.price) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
       t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [(function () { var b = el("button", { type: "button", class: "cb-pj-btn", text: "Projektion im Chart zeigen" }); b.addEventListener("click", function () { onChart("primary"); }); return b; })()]),
       el("h3", { class: "cb-pj-h3", text: "Was als Nächstes passieren muss" }),
