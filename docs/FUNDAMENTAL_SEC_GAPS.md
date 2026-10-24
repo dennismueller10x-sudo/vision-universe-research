@@ -4,6 +4,22 @@ Stand: 24.10.2026. Verbraucherdaten `quant/data/sec/consumer` vom 19.10.2026, Me
 
 Die Analyse ändert keine Daten. Nichts wird pauschal übernommen oder korrigiert; die Verbraucherdaten erzeugt weiterhin allein `sec-consumer-fundamentals.yml` (Quant).
 
+## Stand nach den Korrekturen (24.10.2026, abends)
+
+| Klasse | Meldungen | Stand |
+|---|---:|---|
+| Verarbeitungsgrenze: kein 10-K, kein Geschäftsjahr (167) | 167 | **behoben** mit #900. Der Consumer nutzt jetzt das bei der SEC registrierte Geschäftsjahresende. Alle 167 Verbraucherdateien haben Quartale (Lauf 40113600754). |
+| XOM, Nachfolge-CIK (1) | 1 | **behoben** mit #901. Die Historie der Vorgänger-CIK 0000034088 wird zusammengeführt. Live: GJ 2014–2025 und Q2 2026 (Lauf 40116913517). |
+| Fehlende Daten (SEC companyfacts) | 230 | offen. Diese Fälle kommen automatisch, sobald die SEC nachliefert; der tägliche Wächter übernimmt sie. |
+| Nicht unterstützt / sonstige | 26 | nicht relevant (siehe unten) |
+
+Die Fundamental-Historie im Release ist dadurch von 4.882 auf 5.051 Unternehmen gestiegen. Als ungültig verworfen werden nur noch 11 statt 180.
+
+**Weiterer Befund außerhalb der Lückenliste (Quant-Zuordnung, nicht behoben):** Bei Vermietern erfasst die Umsatzzeile teils nur den Umsatz aus Kundenverträgen (`RevenueFromContractWithCustomerExcludingAssessedTax`) statt des Gesamtumsatzes (`Revenues`).
+
+- Beispiel United Rentals (URI), Q3 2026: 1,068 Mrd. statt 4,893 Mrd. $; die Mieterlöse fehlen.
+- Die Korrektur betrifft die Konzeptpriorität in der Quant-Registry. Sie gehört in einen eigenen Quant-PR mit Vorher/Nachher-Vergleich.
+
 ## Vorgehen je Meldung
 
 1. **SEC companyfacts** (`data.sec.gov/api/xbrl/companyfacts/CIK….json`, abgerufen am 24.10.2026 mit dem User-Agent der SEC-Pipeline, höchstens 4 Anfragen/s): Gibt es Fakten mit genau dieser Accession, und aus welcher Taxonomie (`us-gaap`, `ifrs-full`, nur `dei`/`srt`)?
