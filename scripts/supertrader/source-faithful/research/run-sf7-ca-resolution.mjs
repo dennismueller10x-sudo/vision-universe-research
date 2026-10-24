@@ -35,7 +35,8 @@ import { FOUNDATION } from '../contract.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import { INTEGRITY_LIFECYCLES, INTEGRITY_KEYS, SPLIT_PERIODS } from './run-sf6-integrity.mjs';
 import { flagDiscontinuities, describeFlag, compareTrades, EXPOSURE_LOOKBACK_DAYS, DQ_POLICIES } from '../integrity/discontinuity.mjs';
-import { classifyFlag, filingEvidence, CLASSES, CA_RESOLUTION_VERSION, TOLERANCES, STANDARD_RATIOS } from '../integrity/ca-resolution.mjs';
+import { classifyFlag, filingEvidence, CLASSES, CA_RESOLUTION_VERSION, TOLERANCES, STANDARD_RATIOS, rulesetSha256 } from '../integrity/ca-resolution.mjs';
+import { classifyFlag as classifyFlagV100, CLASSES as CLASSES_V100 } from '../integrity/ca-resolution-1.0.0.mjs';
 import { buildOverlayManifest, correctedDataset, quarantineUnresolved, CA_OVERLAY_VERSION } from '../integrity/ca-overlay.mjs';
 import { SF6_RUN_FACTS } from '../completion/sf6-run-facts.mjs';
 
@@ -45,7 +46,7 @@ export const SF7_CA_RUNNER_VERSION = 'sf7-ca-resolution-runner-1.1.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // Minervini fundamentals exactly as 6.0 (BASE identity)
 // share counts (evidence only, never attached to a security): r13 (dei, fallback weighted diluted) or r14 (+ balance sheet)
 export const SEC_SHARES_KEYS = Object.freeze({ r13: '_validation/sec-pit-r13.json.gz', r14: '_validation/sec-pit-r14.json.gz' });
-const FILES = ['../integrity/discontinuity.mjs', '../integrity/ca-resolution.mjs', '../integrity/ca-overlay.mjs', 'run-sf7-ca-resolution.mjs'];
+const FILES = ['../integrity/discontinuity.mjs', '../integrity/ca-resolution.mjs', '../integrity/ca-resolution-1.0.0.mjs', '../integrity/ca-overlay.mjs', 'run-sf7-ca-resolution.mjs'];
 export function caCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -93,7 +94,7 @@ function exposureIndex(base, keys, dataEnd) {
 export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map(), listingPeriods = new Map(), fetchFilings = null, secFetchMax = 0, keys = INTEGRITY_KEYS, from = L.WINDOW.from, to = L.WINDOW.to, dataEnd = L.WINDOW.to, snapshotId = null, evidenceInputs = {}, log = () => {} } = {}) {
   if (segs.length !== baseDs.securities.length || segs.some((s, j) => s.id !== baseDs.securities[j].id)) throw new Error('SEGMENT_ORDER_MISMATCH');
   const lcs = INTEGRITY_LIFECYCLES.filter((l) => keys.includes(l.key));
-  const pub = { version: CA_RESOLUTION_VERSION, overlayVersion: CA_OVERLAY_VERSION, runner: SF7_CA_RUNNER_VERSION, certification: 'DIAGNOSTIC_NOT_CERTIFIED', tolerances: TOLERANCES, standardRatios: STANDARD_RATIOS, exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, lifecycles: {} };
+  const pub = { version: CA_RESOLUTION_VERSION, overlayVersion: CA_OVERLAY_VERSION, runner: SF7_CA_RUNNER_VERSION, certification: 'DIAGNOSTIC_NOT_CERTIFIED', tolerances: TOLERANCES, standardRatios: STANDARD_RATIOS, rulesetSha256: rulesetSha256(), exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, lifecycles: {} };
   const sealed = { label: 'DIAGNOSTIC_METRICS_NOT_A_STRATEGY_RETURN', classified: [], lifecycles: {} };
 
   // 1. BASE
@@ -104,10 +105,13 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   const exposure = exposureIndex(base, lcs.map((l) => l.key), dataEnd);
   const cikListings = new Map();
   for (const [id, v] of sharesByListing) if (v?.cik) { if (!cikListings.has(v.cik)) cikListings.set(v.cik, []); cikListings.get(v.cik).push(id); }
-  const cands = [];
+  const cands = [], flagsBySec = baseDs.securities.map((s) => flagDiscontinuities(s.bars, K3));
+  // review L3: the other flags of a session are those of its LISTING (all '#n' segments), not only of its segment
+  const datesByListing = new Map();
+  baseDs.securities.forEach((s, j) => { if (!flagsBySec[j].length) return; const l = listingOf(s.id); if (!datesByListing.has(l)) datesByListing.set(l, []); datesByListing.get(l).push(...flagsBySec[j].map((i) => s.bars[i].date)); });
   baseDs.securities.forEach((s, j) => {
-    const flags = flagDiscontinuities(s.bars, K3); if (!flags.length) return;
-    const listing = listingOf(s.id), dates = flags.map((i) => s.bars[i].date);
+    const flags = flagsBySec[j]; if (!flags.length) return;
+    const listing = listingOf(s.id), dates = [...new Set(datesByListing.get(listing))].sort();
     for (const i of flags) {
       const f = describeFlag(s.bars, i, K3), r = f.ratio, level = r >= K5 || r <= 1 / K5 ? 'K5' : 'K3';
       cands.push({ j, i, segmentId: s.id, listing, date: f.date, ratio: r, level, direction: f.direction, kind: f.kind, priorRawCloseBand: f.priorRawCloseBand, universe: f.researchUniverseAtPriorSession, otherFlagDates: dates, ...exposure(listing, f.date) });
@@ -115,7 +119,8 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   });
   log(`candidates: ${cands.length} DQ-K3 flags (${cands.filter((c) => c.level === 'K5').length} DQ-K5)`);
 
-  // 3. classification; the filing check only for reference-exposed candidates that passed every share test
+  // 3. classification; the filing check (one EDGAR index request per issuer, budget secFetchMax) for every split
+  //    candidate that passed all share tests and for reference-exposed genuine candidates (K5 first)
   const identityOf = (c) => {
     const sec = sharesByListing.get(c.listing);
     const shared = !!sec?.cik && (cikListings.get(sec.cik) || []).some((other) => {
@@ -129,7 +134,8 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   const classify = (c, filings) => { const { sec, identity } = identityOf(c); return classifyFlag({ raw: segs[c.j].raw, bars: baseDs.securities[c.j].bars, i: c.i, sec, identity, otherFlagDates: c.otherFlagDates, filings }); };
   const pending = [];
   for (const c of cands) { c.result = classify(c); if (c.result.stage === 'NEEDS_FILING_CHECK') pending.push(c); }
-  const order = pending.filter((c) => c.exposedRefs.length).sort((a, b) => (a.level === b.level ? 0 : a.level === 'K5' ? -1 : 1) || b.exposedRefs.length - a.exposedRefs.length);
+  const rank = (c) => (c.result.pendingClass === CLASSES.SPLIT ? 0 : c.level === 'K5' ? 1 : 2);
+  const order = pending.filter((c) => c.result.pendingClass === CLASSES.SPLIT || c.exposedRefs.length).sort((a, b) => rank(a) - rank(b) || b.exposedRefs.length - a.exposedRefs.length || (a.segmentId < b.segmentId ? -1 : a.segmentId > b.segmentId ? 1 : a.date.localeCompare(b.date)));
   for (const c of order) {
     const cik = sharesByListing.get(c.listing).cik;
     if (!filingCache.has(cik)) {
@@ -141,8 +147,10 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
     }
     c.result = classify(c, filingEvidence(filingCache.get(cik), c.date));
   }
-  for (const c of pending) if (c.result.stage === 'NEEDS_FILING_CHECK') c.result = { cls: CLASSES.UNRESOLVED, reason: c.exposedRefs.length ? 'FILING_CHECK_BUDGET_EXHAUSTED' : 'FILING_CHECK_NOT_RUN_NO_REFERENCE_EXPOSURE', evidence: c.result.evidence };
+  for (const c of pending) if (c.result.stage === 'NEEDS_FILING_CHECK') c.result = { cls: CLASSES.UNRESOLVED, reason: c.result.pendingClass === CLASSES.SPLIT || c.exposedRefs.length ? 'FILING_CHECK_BUDGET_EXHAUSTED' : 'FILING_CHECK_NOT_RUN_NO_REFERENCE_EXPOSURE', evidence: c.result.evidence };
   log(`classified; filing lookups ${requests} (${requestsOk} ok)`);
+  // review HIGH-1 before/after: the 1.0.0 split rule on the same inputs (only its dei rows), against the 1.1.0 class
+  for (const c of cands) { const { sec, identity } = identityOf(c); const o = classifyFlagV100({ raw: segs[c.j].raw, bars: baseDs.securities[c.j].bars, i: c.i, sec: sec ? { ...sec, shares: (sec.shares || []).filter((r) => r[3] !== 'bs') } : null, identity, otherFlagDates: c.otherFlagDates.filter((x) => baseDs.securities[c.j].bars.some((b) => b.date === x)) }); c.v100 = o.cls === CLASSES_V100.SPLIT ? o.label : null; }
 
   // public census (counts only)
   const census = {};
@@ -154,6 +162,9 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
       e1Candidates: block(rows.filter((c) => c.universe || c.exposedRefs.length)) };
   }
   pub.census = census;
+  pub.v100SplitsNow = tally(cands.filter((c) => c.v100), (c) => `${c.v100} -> ${c.result.cls}${c.result.label ? ' ' + c.result.label : ''} (${c.result.reason})`);
+  // review MEDIUM-3: the EDGAR index is live and not reproducible: the entries that were read are sealed (owner only)
+  sealed.filingIndex = Object.fromEntries([...filingCache].sort((a, b) => (a[0] < b[0] ? -1 : 1)));
   pub.secEvidence = { listingsWithShares: sharesByListing.size, filingLookups: requests, filingLookupsOk: requestsOk, filingLookupBudget: secFetchMax, filingIndexSha256: sha([...filingCache].sort((a, b) => (a[0] < b[0] ? -1 : 1))) };
   sealed.classified = cands.map((c) => ({ segmentId: c.segmentId, date: c.date, ratio: c.ratio, level: c.level, direction: c.direction, kind: c.kind, universe: c.universe, exposedRefs: c.exposedRefs, heldRefs: c.heldRefs, cik: sharesByListing.get(c.listing)?.cik ?? null, cls: c.result.cls, reason: c.result.reason, factor: c.result.factor ?? null, label: c.result.label ?? null, evidence: c.result.evidence }));
 
@@ -254,13 +265,13 @@ async function main() {
   const { UA } = await import('../../validation/sec-pit.mjs');
   const fetchFilings = async (cik) => {
     await new Promise((res) => setTimeout(res, 150));
-    const r = await fetch(`https://data.sec.gov/submissions/CIK${String(cik).padStart(10, '0')}.json`, { headers: { 'User-Agent': UA } });
+    const r = await fetch(`https://data.sec.gov/submissions/CIK${String(cik).padStart(10, '0')}.json`, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(30000) });
     if (!r.ok) return null;
     const j = await r.json(), rec = j?.filings?.recent || {};
     return { form: [...(rec.form || [])], filingDate: [...(rec.filingDate || [])], items: [...(rec.items || [])] };
   };
   const evidenceInputs = { secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, datasetSha256, snapshotId };
-  const receipt = { schema: 'supertrader-sf7-ca-resolution-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), runner: SF7_CA_RUNNER_VERSION, classifier: CA_RESOLUTION_VERSION, overlay: CA_OVERLAY_VERSION, secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, secFetchMax, lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf7-ca-resolution-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), runner: SF7_CA_RUNNER_VERSION, classifier: CA_RESOLUTION_VERSION, rulesetSha256: rulesetSha256(), overlay: CA_OVERLAY_VERSION, secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, secFetchMax, lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: secFetchMax ? fetchFilings : null, secFetchMax, keys, snapshotId, evidenceInputs, log });
   const authoritative = snapshotId === SF6_RUN_FACTS.integrity.snapshotId && !LIMIT && !smoke && keys.length === INTEGRITY_KEYS.length;
   r.pub.baseVsSf6 = authoritative ? compareWithSf6(r.pub.lifecycles) : { skipped: 'NOT_THE_AUTHORITATIVE_FULL_RUN' };

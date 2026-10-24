@@ -7,7 +7,7 @@ import { datasetFromPit } from '../source-faithful/runner/snapshot-input.mjs';
 import { runResearchLifecycle, prepareAll } from '../source-faithful/research/lifecycle-engine.mjs';
 import { SF5_LIFECYCLES } from '../source-faithful/research/sf5-lifecycles.mjs';
 import { DQ_POLICIES, flagDiscontinuities, quarantineSecurity, sessionRatio } from '../source-faithful/integrity/discontinuity.mjs';
-import { classifyFlag, filingEvidence, bracketShares, snapStandard, CLASSES, TOLERANCES } from '../source-faithful/integrity/ca-resolution.mjs';
+import { classifyFlag, filingEvidence, bracketShares, snapStandard, snapFactor, CLASSES, TOLERANCES, FACTOR_GRID, rulesetSha256 } from '../source-faithful/integrity/ca-resolution.mjs';
 import { buildOverlayManifest, verifyOverlayManifest, applyOverlayToSegments, correctedDataset, quarantineAtSessions, quarantineUnresolved } from '../source-faithful/integrity/ca-overlay.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
 import { integrityPart, INTEGRITY_KEYS } from '../source-faithful/research/run-sf6-integrity.mjs';
@@ -34,7 +34,8 @@ const secOf = (raw) => dsOf([seg('X', raw)]).securities[0];
 const dei = (pairs) => pairs.map(([k, v]) => [day(k), v, day(k + 20), 'dei']);
 const SEC = (pairs, how = 'KNOWN', extra = {}) => ({ cik: '0000000001', how, taxonomy: 'us-gaap', shares: dei(pairs), ...extra });
 const NO_CA_FILINGS = { form: ['10-Q', '8-K', '10-K', '10-Q'], filingDate: [day(0), day(395), day(500), day(600)], items: ['', '2.02,9.01', '', ''] };
-const classify = (raw, i, sec, more = {}) => { const s = secOf(raw); return classifyFlag({ raw, bars: s.bars, i, sec, otherFlagDates: flagDiscontinuities(s.bars, 3).map((j) => s.bars[j].date), ...more }); };
+/** Classifies with a clean domestic filing index unless { noFilings: true } (filing check not yet run). */
+const classify = (raw, i, sec, more = {}) => { const s = secOf(raw), { noFilings, ...rest } = more; return classifyFlag({ raw, bars: s.bars, i, sec, otherFlagDates: flagDiscontinuities(s.bars, 3).map((j) => s.bars[j].date), filings: noFilings ? undefined : filingEvidence(NO_CA_FILINGS, s.bars[i].date), ...rest }); };
 
 test('SF7-CA-SPLIT: echter nicht erklaerter 1:10-Reverse-Split wird bestaetigt (Faktor und Sitzung) und korrigiert wie ein erklaerter', () => {
   const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]);
@@ -54,10 +55,10 @@ test('SF7-CA-SPLIT: echter nicht erklaerter 1:10-Reverse-Split wird bestaetigt (
 });
 
 test('SF7-CA-GENUINE: echter -85-%-Absturz mit unveraenderter Aktienzahl wird NICHT korrigiert; ohne Meldungspruefung bleibt er UNRESOLVED', () => {
-  const raw = series(700, 5, [{ at: 400, price: 0.15, volume: 4 }]);
+  const raw = series(700, 5, [{ at: 400, price: 0.15, volume: 1.2 }]);
   assert.deepEqual(flagDiscontinuities(secOf(raw).bars, 5), [400]);
   const sec = SEC([[330, 20e6], [460, 20.6e6]]);
-  const pending = classify(raw, 400, sec);
+  const pending = classify(raw, 400, sec, { noFilings: true });
   assert.equal(pending.cls, CLASSES.UNRESOLVED); assert.equal(pending.stage, 'NEEDS_FILING_CHECK');
   const g = classify(raw, 400, sec, { filings: filingEvidence(NO_CA_FILINGS, day(400)) });
   assert.equal(g.cls, CLASSES.GENUINE, g.reason);
@@ -74,9 +75,11 @@ test('SF7-CA-DILUTION: Kapitalerhoehung mit Absturz wird nicht als Split (oder e
   const raw = series(700, 7, [{ at: 400, price: 0.2, volume: 8 }]);
   const c = classify(raw, 400, SEC([[330, 10e6], [460, 50e6]]));
   assert.equal(c.cls, CLASSES.UNRESOLVED); assert.equal(c.reason, 'FORWARD_SPLIT_NEEDS_SECOND_SOURCE');
-  // 1.6x more shares and -80 %: neither a factor nor unchanged
+  // 1.8x more shares and -80 %: neither a grid factor nor unchanged
   const raw2 = series(700, 8, [{ at: 400, price: 0.2, volume: 3 }]);
-  assert.equal(classify(raw2, 400, SEC([[330, 10e6], [460, 16e6]])).reason, 'SHARE_RATIO_NO_MATCH');
+  assert.equal(classify(raw2, 400, SEC([[330, 10e6], [460, 18e6]])).reason, 'SHARE_RATIO_NO_MATCH');
+  // 1.6x more shares snaps to the 3:2 grid value, the -80 % price does not agree
+  assert.equal(classify(raw2, 400, SEC([[330, 10e6], [460, 16e6]])).reason, 'PRICE_RATIO_OFF_FACTOR');
   // a reverse merger after a consolidation: shares / 10 then new issuance -> ratio off any factor
   const raw3 = series(700, 9, [{ at: 400, price: 10, volume: 0.1 }]);
   assert.equal(classify(raw3, 400, SEC([[330, 50e6], [460, 3.7e6]])).reason, 'SHARE_RATIO_NO_MATCH');
@@ -109,7 +112,7 @@ test('SF7-CA-MISSING: fehlende oder unklare SEC-Daten, Identitaetszweifel und Au
   assert.equal(classify(two, 400, SEC([[330, 50e6], [460, 1.25e6]])).reason, 'MULTIPLE_JUMPS_IN_BRACKET');
   assert.equal(bracketShares(dei([[400, 5e6]]), day(400)).reason, 'SEC_SHARES_NOT_BRACKETING', 'ein Stichtag am Sprungtag ist mehrdeutig');
   assert.equal(snapStandard(8.5, 1.1).length, 2, '8 und 9 liegen beide in der Toleranz um 8,5 (mehrdeutig)');
-  assert.equal(classify(raw, 400, SEC([[330, 50e6], [460, 50e6 / 8.5]])).reason, 'SHARE_RATIO_AMBIGUOUS_FACTOR');
+  assert.equal(classify(raw, 400, SEC([[330, 50e6], [460, 50e6 / 8.5]])).reason, 'SHARE_RATIO_NO_MATCH', '8,5 liegt zwischen den Rasterfenstern von 8 und 9');
 });
 
 test('SF7-CA-TOLERANCES: vorregistrierte Toleranzen sind eng und eingefroren', () => {
@@ -198,7 +201,7 @@ const METRIC_KEYS = /"(cagr|sharpe|sortino|winRate|profitFactor|expectancy|pnl|e
 
 test('SF7-CA-RUN: BASE gleich 6.0-Pfad; Split korrigiert, echte Bewegung ungeschnitten, UNRESOLVED in Quarantaene; oeffentlich nur Zaehlungen', async () => {
   const ids = (s) => `tiingo:NYSE:S${String(s).padStart(3, '0')}:2010-01-01`;
-  const segs = Array.from({ length: 16 }, (_, s) => seg(ids(s), series(700, s + 21, s === 2 ? [{ at: 400, price: 10, volume: 0.1 }] : s === 5 ? [{ at: 300, price: 0.15, volume: 4 }] : s === 9 ? [{ at: 500, price: 12, volume: 0.08 }] : [])));
+  const segs = Array.from({ length: 16 }, (_, s) => seg(ids(s), series(700, s + 21, s === 2 ? [{ at: 400, price: 10, volume: 0.1 }] : s === 5 ? [{ at: 300, price: 0.15, volume: 1.2 }] : s === 9 ? [{ at: 500, price: 12, volume: 0.08 }] : [])));
   const ds = dsOf(segs);
   const shares = new Map([[ids(2), SEC([[330, 50e6], [460, 5e6]])], [ids(5), { ...SEC([[230, 20e6], [360, 20.2e6]]), cik: '0000000005' }]]);
   let calls = 0;
@@ -212,8 +215,9 @@ test('SF7-CA-RUN: BASE gleich 6.0-Pfad; Split korrigiert, echte Bewegung ungesch
   const g = byDate[`${ids(5)}|${day(300)}`];
   assert.ok(g.exposedRefs.length > 0, 'die Synthese exponiert Referenztrades');
   assert.equal(g.cls, CLASSES.GENUINE, g.reason);
-  assert.equal(calls, 1, 'genau eine Meldungsabfrage (nur der exponierte Kandidat mit bestandenen Aktienzahl-Tests)');
-  assert.equal(r.pub.secEvidence.filingLookups, 1);
+  assert.equal(calls, 2, 'je eine Indexabfrage: der Split-Kandidat und der exponierte Kandidat einer echten Bewegung');
+  assert.equal(r.pub.secEvidence.filingLookups, 2);
+  assert.deepEqual(Object.keys(r.sealed.filingIndex).sort(), ['0000000001', '0000000005'], 'gelesene Indexeintraege versiegelt (MEDIUM-3)');
   for (const k of INTEGRITY_KEYS) assert.equal(r.pub.lifecycles[k].exposure['DQ-K5'].allConfirmed, (r.pub.lifecycles[k].exposure['DQ-K5'].byClass.UNRESOLVED ?? 0) === 0);
   assert.equal(r.manifest.entries.length, 1); assert.equal(r.pub.overlay.patchedSegments, 1); assert.equal(r.pub.overlay.unchangedSecurities, 15);
   assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 1, 'nur die ungeklaerte Sitzung wird geschnitten');
@@ -224,6 +228,7 @@ test('SF7-CA-RUN: BASE gleich 6.0-Pfad; Split korrigiert, echte Bewegung ungesch
   }
   assert.equal(r.pub.census['DQ-K5'].flags, 3);
   assert.deepEqual(r.pub.census['DQ-K5'].splitFactors, { '1:10': 1 });
+  assert.deepEqual(r.pub.v100SplitsNow, { '1:10 -> CONFIRMED_UNDECLARED_SPLIT 1:10 (SHARES_PRICE_VOLUME_SAME_FACTOR)': 1 }, 'Vorher/Nachher der 1.0.0-Bestaetigungen');
   assert.doesNotMatch(JSON.stringify(r.pub), METRIC_KEYS);
   assert.doesNotMatch(JSON.stringify(r.pub), /tiingo:/, 'keine Wertpapier-IDs oeffentlich');
 });
@@ -340,4 +345,99 @@ test('SF7-CA-BS-SHARES: Bilanz-Aktienzahl zaehlt vor der Sitzung nur, wenn vor i
   // balance-sheet counts (r14) let an undeclared split be confirmed where the cover page is missing
   const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]);
   assert.equal(classify(raw, 400, { cik: '1', how: 'KNOWN', taxonomy: 'us-gaap', shares: [bs(330, 50e6, 360), bs(460, 5e6, 480)] }).cls, CLASSES.SPLIT);
+});
+
+// ---- independent review of #902 (head bba505a): every finding has a test that fails on the 1.0.0 behaviour
+const reverse = (seed, n, extra = {}) => series(700, seed, [{ at: 400, price: n, volume: 1 / n, ...extra }]);
+const withForms = (forms) => ({ form: ['10-Q', ...forms.map((f) => f[0]), '10-K'], filingDate: [day(0), ...forms.map((f) => day(f[1])), day(600)], items: ['', ...forms.map((f) => f[2] ?? ''), ''] });
+
+test('SF7-REVIEW-L2: der vollstaendige Regelsatz ist versioniert und sein Hash festgeschrieben', () => {
+  assert.equal(rulesetSha256(), '4233cea8b64f5eae9d87df0271cca044ef3da2351a33461624c2ba8d54e9cd47', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz');
+});
+
+test('SF7-REVIEW-HIGH-1: Faktor aus dem Aktienverhaeltnis auf dem Raster 2..1000; 1:24 bleibt 1:24, N und N+1 ueberlappen nie', () => {
+  for (let q = 1.3; q < 1100; q *= 1.0007) { assert.ok(snapFactor(q).length <= 1, `q=${q}`); assert.ok(snapFactor(1 / q).length <= 1); }
+  assert.ok(FACTOR_GRID.includes(24) && FACTOR_GRID.includes(1.5) && FACTOR_GRID.includes(2.5) && FACTOR_GRID.at(-1) === 1000);
+  const c = classify(reverse(61, 24), 400, SEC([[330, 48e6], [460, 2e6]]));
+  assert.equal(c.cls, CLASSES.SPLIT, c.reason); assert.equal(c.factor, 24); assert.equal(c.splitFactor, 1 / 24); assert.equal(c.label, '1:24');
+  assert.equal(classify(reverse(61, 24), 400, SEC([[330, 50e6], [460, 2e6]])).factor, 25, 'ein echtes 1:25 bleibt 1:25');
+  for (const n of [15, 16, 70, 75, 80, 120, 125]) { const x = classify(reverse(62, n), 400, SEC([[330, n * 1e6], [460, 1e6]])); assert.equal(x.cls, CLASSES.SPLIT, `${n} ${x.reason}`); assert.equal(x.factor, n); }
+  assert.equal(classify(reverse(61, 24), 400, SEC([[330, 48e6], [460, 48e6 / 23.5]])).reason, 'SHARE_RATIO_NO_MATCH', 'zwischen 1:23 und 1:24: kein Faktor');
+});
+
+test('SF7-REVIEW-HIGH-2: echte Bewegung nur mit Vorher-Zahl vor d eingereicht, ohne split-artiges Volumen, ohne Proxy / 5.07 / 8.01', () => {
+  const raw = series(700, 5, [{ at: 400, price: 0.15, volume: 1.2 }]), sec = SEC([[330, 20e6], [460, 20.6e6]]);
+  assert.equal(classify(raw, 400, sec).cls, CLASSES.GENUINE);
+  const late = { ...sec, shares: [[day(330), 20e6, day(410), 'dei'], [day(460), 20.6e6, day(480), 'dei']] };
+  assert.equal(classify(raw, 400, late).reason, 'GENUINE_BEFORE_COUNT_FILED_AFTER_SESSION', 'eine nach d eingereichte Zahl kann schon nach dem Split stehen');
+  const vol = series(700, 5, [{ at: 400, price: 0.15, volume: 6 }]);
+  assert.equal(classify(vol, 400, sec).reason, 'VOLUME_CONSISTENT_WITH_SPLIT');
+  for (const f of [['DEF 14A', 380], ['PRE 14C', 390], ['8-K', 398, '5.07'], ['8-K', 401, '8.01,9.01'], ['8-K', 399, '2.01'], ['S-4', 370]]) assert.equal(classify(raw, 400, sec, { filings: filingEvidence(withForms([f]), day(400)) }).reason, 'CA_FILING_IN_WINDOW', f.join(' '));
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence(withForms([['8-K', 398, '']]), day(400)) }).reason, '8K_ITEMS_UNKNOWN_IN_WINDOW');
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence(withForms([['8-K', 300, '5.03']]), day(400)) }).cls, CLASSES.GENUINE, 'ausserhalb des Fensters zaehlt nicht');
+});
+
+test('SF7-REVIEW-MEDIUM-1/2: Split nur mit KNOWN-CIK und gepruefter Meldungslage; Fusion / Abgang blockiert, 5.03 und Proxy nicht', () => {
+  const raw = reverse(3, 10), sec = SEC([[330, 50e6], [460, 5e6]]);
+  assert.equal(classify(raw, 400, sec, { noFilings: true }).stage, 'NEEDS_FILING_CHECK');
+  assert.equal(classify(raw, 400, sec, { noFilings: true }).pendingClass, CLASSES.SPLIT);
+  assert.equal(classify(raw, 400, { ...sec, how: 'NAME_MATCH' }).reason, 'SPLIT_REQUIRES_KNOWN_CIK');
+  for (const f of [['8-K', 399, '2.01,9.01'], ['S-4', 380], ['DEFM14A', 390], ['425', 401]]) assert.equal(classify(raw, 400, sec, { filings: filingEvidence(withForms([f]), day(400)) }).reason, 'MERGER_OR_DISPOSITION_FILING_NEAR_SPLIT', f.join(' '));
+  for (const f of [['8-K', 399, '5.03'], ['DEF 14A', 380], ['8-K', 401, '3.03,8.01']]) assert.equal(classify(raw, 400, sec, { filings: filingEvidence(withForms([f]), day(400)) }).cls, CLASSES.SPLIT, f.join(' '));
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence({ form: ['8-K'], filingDate: [day(398)], items: ['5.03'] }, day(400)) }).reason, 'SEC_FILINGS_NOT_COVERED');
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence(null, day(400)) }).reason, 'SEC_FILINGS_UNAVAILABLE');
+});
+
+test('SF7-REVIEW-MEDIUM-4: auslaendischer Emittent (6-K, kein 10-Q/10-K) besteht die Meldungspruefung nie', () => {
+  const raw = series(700, 5, [{ at: 400, price: 0.15, volume: 1.2 }]), sec = SEC([[330, 20e6], [460, 20.6e6]]);
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence({ form: ['6-K', '6-K', '20-F'], filingDate: [day(0), day(395), day(500)], items: ['', '', ''] }, day(400)) }).reason, 'NOT_A_DOMESTIC_FILER');
+  assert.equal(classify(raw, 400, sec, { filings: filingEvidence({ form: ['10-Q', '6-K'], filingDate: [day(0), day(500)], items: ['', ''] }, day(400)) }).reason, 'NOT_A_DOMESTIC_FILER');
+});
+
+test('SF7-REVIEW-L1: jede Schutzbedingung ist wirksam (Mutanten der Klassifikator-Waechter)', () => {
+  const sec10 = SEC([[330, 50e6], [460, 5e6]]), same = SEC([[330, 20e6], [460, 20.2e6]]);
+  // split guards
+  const intraday = reverse(3, 10); intraday[400].open = intraday[399].close; // opened at the old level: not an overnight split
+  assert.equal(classify(intraday, 400, sec10).reason, 'OPEN_RATIO_OFF_FACTOR');
+  const adj3 = reverse(3, 10); adj3.forEach((b, k) => { b.adjClose = k < 400 ? b.close * 10 / 3 : b.close; });
+  assert.equal(classify(adj3, 400, sec10).reason, 'TIINGO_ADJCLOSE_CONFLICT');
+  const adjKnows = reverse(3, 10); adjKnows.forEach((b, k) => { b.adjClose = k < 400 ? b.close * 10 : b.close; });
+  const k = classify(adjKnows, 400, sec10); assert.equal(k.cls, CLASSES.SPLIT); assert.equal(k.evidence.tiingoAdjCloseCorroborates, true);
+  const noVol = reverse(3, 10); for (let j = 380; j < 700; j++) noVol[j].volume = 0;
+  assert.equal(classify(noVol, 400, sec10).reason, 'VOLUME_EVIDENCE_MISSING');
+  assert.equal(classify(reverse(3, 10), 400, SEC([[330, 5e6], [460, 50e6]])).reason, 'SHARE_AND_PRICE_DIRECTION_CONFLICT');
+  // genuine guards
+  const g = (seed, ev) => series(700, seed, [{ at: 400, volume: 1.2, ...ev }]);
+  const adjG = g(71, { price: 0.15 }); adjG.forEach((b, j) => { b.adjClose = j < 400 ? b.close * 0.5 : b.close; });
+  assert.equal(classify(adjG, 400, same).reason, 'TIINGO_ADJCLOSE_CONFLICT');
+  assert.equal(classify(g(72, { price: 0.01 }), 400, same).reason, 'UNIT_ERROR_SUSPECT');
+  assert.equal(classify(g(73, { price: 0.2 }), 400, same).reason, 'PRICE_RATIO_AT_STANDARD_FACTOR');
+  const div = g(74, { price: 0.15 }); div[402].dividend = 0.3 * div[401].close;
+  assert.equal(classify(div, 400, same).reason, 'LARGE_DISTRIBUTION_NEARBY');
+  assert.equal(classify(g(75, { price: 0.15 }), 400, SEC([[330, 20e6], [460, 23e6]])).reason, 'SHARE_RATIO_NO_MATCH', '15 % mehr Aktien ist nicht unveraendert');
+  // a count dated exactly on d is neither before nor after (strict < d and > d)
+  assert.equal(bracketShares(dei([[400, 5e6], [460, 5e6]]), day(400)).reason, 'SEC_SHARES_NOT_BRACKETING');
+  assert.equal(bracketShares(dei([[340, 5e6], [400, 5e6]]), day(400)).reason, 'SEC_SHARES_NOT_BRACKETING');
+  assert.equal(bracketShares(dei([[265, 5e6], [460, 5e6]]), day(400)).ok, true, '135 Tage sind zulaessig');
+  assert.equal(bracketShares(dei([[264, 5e6], [460, 5e6]]), day(400)).reason, 'SEC_BRACKET_TOO_WIDE');
+});
+
+test('SF7-REVIEW-L1-IDENTITY / L3: geteilte CIK, ADR-Segment und Markierungen aller Segmente eines Listings', async () => {
+  const W = { keys: ['TURTLE_S1'], from: day(0), to: day(699), dataEnd: day(699) };
+  const ids = (s) => `tiingo:NYSE:I${s}:2010-01-01`;
+  const segs = [seg(ids(0), reverse(3, 10)), seg(ids(1), series(700, 81)), seg(ids(2), reverse(82, 10), { cls: 'ADR' }), seg(ids(3), series(700, 83))];
+  const filings = async () => NO_CA_FILINGS;
+  const base = new Map([[ids(0), SEC([[330, 50e6], [460, 5e6]])], [ids(2), { ...SEC([[330, 50e6], [460, 5e6]]), cik: '0000000002' }]]);
+  const run = async (shares, periods) => { const r = await caResolutionPart(dsOf(segs), segs, { ...W, sharesByListing: shares, listingPeriods: periods, fetchFilings: filings, secFetchMax: 10 }); return Object.fromEntries(r.sealed.classified.map((c) => [c.segmentId, c.reason])); };
+  const live = new Map([[ids(3), { startDate: '2010-01-01', listEnd: null }]]), ended = new Map([[ids(3), { startDate: '2010-01-01', listEnd: day(100) }]]);
+  const shared = new Map([...base, [ids(3), { ...SEC([[330, 1e6], [460, 1e6]]), cik: '0000000001' }]]);
+  assert.equal((await run(shared, live))[ids(0)], 'CIK_SHARED_BY_LIVE_LISTINGS');
+  assert.equal((await run(shared, ended))[ids(0)], 'SHARES_PRICE_VOLUME_SAME_FACTOR', 'ein vor d beendetes Listing teilt die CIK nicht');
+  assert.equal((await run(shared, new Map()))[ids(0)], 'CIK_SHARED_BY_LIVE_LISTINGS', 'unbekannte Laufzeit gilt als geteilt');
+  assert.equal((await run(base, live))[ids(2)], 'ADR_OR_FOREIGN_FILER');
+  // L3: a flag in the sibling segment '#1' of the same listing lies inside the share bracket
+  const s0 = reverse(3, 10).slice(0, 421), s1 = series(300, 84, [{ at: 10, price: 4, volume: 0.25 }]).map((b, j) => ({ ...b, date: day(430 + j) }));
+  const segs2 = [seg(ids(5), s0), seg(`${ids(5)}#1`, s1), seg(ids(6), series(700, 85))];
+  const r2 = await caResolutionPart(dsOf(segs2, segs2[2].raw), segs2, { ...W, sharesByListing: new Map([[ids(5), SEC([[330, 50e6], [460, 5e6]])]]), fetchFilings: filings, secFetchMax: 10 });
+  assert.equal(r2.sealed.classified.find((c) => c.segmentId === ids(5)).reason, 'MULTIPLE_JUMPS_IN_BRACKET');
 });
