@@ -1,0 +1,64 @@
+{
+  "state": "BASELINE_PUBLIC_BROWSER_FAILURE",
+  "findings": [
+    {
+      "view": "aktie-nvda",
+      "width": 1440,
+      "finding": "Name weicht vom Verzeichnis ab"
+    },
+    {
+      "view": "aktie-nvda",
+      "width": 390,
+      "finding": "Name weicht vom Verzeichnis ab"
+    }
+  ],
+  "checks": 96,
+  "budgets": [
+    {
+      "view": "home",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "view": "screener",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "view": "screenerPro",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "view": "stock",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "view": "home",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "view": "screener",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "view": "screenerPro",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "view": "stock",
+      "width": 390,
+      "pass": true
+    }
+  ],
+  "allBudgetsPass": true,
+  "accessibilityPages": 84,
+  "accessibilityViolations": 0,
+  "uiChanged": false,
+  "separateFixPR": 892,
+  "artifact": "CI_EQUIVALENT_WHITESPACE_MINIFICATION"
+}

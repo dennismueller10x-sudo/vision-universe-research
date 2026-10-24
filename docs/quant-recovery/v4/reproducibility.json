@@ -1,0 +1,92 @@
+{
+  "generation": "1d5e224c438303d67bb911f7951806d223b711060756077bfc62a193bd59b4a7",
+  "classified": 6174,
+  "counts": {
+    "A": 0,
+    "B": 4445,
+    "C": 1729
+  },
+  "reasons": {
+    "WARMUP": 431,
+    "DATA_GAPS": 218,
+    "CORPORATE_ACTION": 598,
+    "INSTRUMENT_CLASS": 295,
+    "IDENTITY": 183,
+    "TERMINAL_LISTING_VALUE": 4
+  },
+  "completedTrades": 42748,
+  "eligibleFrom": "1991-01-11",
+  "to": "2026-10-23",
+  "qualityDumpHash": "a221ea6832c32ed6f3cdaeb54e0d5cdb559165e745120c00f4f9e412e229e35f",
+  "qualityDumpGzipBytes": 660162,
+  "independent": [
+    {
+      "period": "1Y",
+      "state": "PASS",
+      "independentlyCheckedTrades": 0,
+      "equityObservations": 53,
+      "benchmark": "AVAILABLE",
+      "costModel": "PER_SIDE_NOTIONAL",
+      "resultHash": "bb5cae205f044b678356edf312de70a6854d9b278a466f9e5aaab6928819124a"
+    },
+    {
+      "period": "3Y",
+      "state": "PASS",
+      "independentlyCheckedTrades": 2,
+      "equityObservations": 157,
+      "benchmark": "AVAILABLE",
+      "costModel": "PER_SIDE_NOTIONAL",
+      "resultHash": "f4de8c3cb84ab614aa4d26fe7d5c4e68ecf991d02243582ffb543c77dd5382a1"
+    },
+    {
+      "period": "5Y",
+      "state": "PASS",
+      "independentlyCheckedTrades": 3,
+      "equityObservations": 262,
+      "benchmark": "AVAILABLE",
+      "costModel": "PER_SIDE_NOTIONAL",
+      "resultHash": "f4c1949a4240e208822fc8220bc40cf6d36d582f87890eabf70402d9f7179880"
+    },
+    {
+      "period": "10Y",
+      "state": "PASS",
+      "independentlyCheckedTrades": 7,
+      "equityObservations": 522,
+      "benchmark": "AVAILABLE",
+      "costModel": "PER_SIDE_NOTIONAL",
+      "resultHash": "0f1e05c8574b1f14627a13228ed8b152b2ba766531e01d88c466b575fc29091b"
+    },
+    {
+      "period": "MAX",
+      "state": "PASS",
+      "independentlyCheckedTrades": 21,
+      "equityObservations": 1395,
+      "benchmark": "AVAILABLE",
+      "costModel": "PER_SIDE_NOTIONAL",
+      "resultHash": "21bbe57b20dec3befb10b88b809910b9cd7293cd3fb476d92125d06a6cf42fd2"
+    }
+  ],
+  "readerCoverage": {
+    "checked": 6174,
+    "states": {
+      "AVAILABLE_LIMITED": 4445,
+      "BLOCKED": 1729
+    },
+    "reasons": {
+      "HISTORICAL_LISTING_NOT_UNIQUELY_MAPPED_TO_PRODUCT": 6
+    },
+    "servedResults": 4445,
+    "financialDataOnBlockedResponses": 0
+  },
+  "payloadStats": {
+    "summaries": 6174,
+    "summaryBytes": 108783749,
+    "maxSummaryBytes": 25337,
+    "periodResults": 22225,
+    "detailBytes": 886059440,
+    "gzipDetailBytes": 200548261,
+    "maxDetailBytes": 210698,
+    "maxGzipDetailBytes": 48505,
+    "overLimitDetails": 0
+  }
+}
