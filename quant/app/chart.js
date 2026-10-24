@@ -70,15 +70,9 @@
   /* Gemerkte Wahl des Nutzers, ein Schluessel fuer alle Welten (core/chart-history.js#rangeKey,
      derselbe wie ChartStandard.RANGE_KEY). Sie wird gelesen, bevor der Chartstandard nachgeladen
      ist; die Beschriftung ist die kanonische Kennung, daher keine eigene Uebersetzung. */
-  function rangeKey() { var H = global.VUCore && global.VUCore.ChartHistory; return H && H.rangeKey; }
-  function rememberedRange() {
-    try { var k = rangeKey(), v = k && global.localStorage && global.localStorage.getItem(k); return v ? RANGES.filter(function (r) { return r.label === v; })[0] || null : null; }
-    catch (e) { return null; }
-  }
-  function rememberRange(r) {
-    var CS = global.VUCore && global.VUCore.ChartStandard;
-    if (CS) { CS.rememberRange(r.label); return; }
-    try { var k = rangeKey(); if (k && global.localStorage) global.localStorage.setItem(k, r.label); } catch (e) { /* ohne Gedaechtnis weiter */ }
+  function memo(v) {
+    try { var H = global.VUCore.ChartHistory, k = H.rangeKey; if (v) global.localStorage.setItem(k, v); else v = global.localStorage.getItem(k); } catch (e) { return null; }
+    return RANGES.filter(function (r) { return r.label === v; })[0] || null;
   }
   /* Anzeigewaehrung (Vorgabe EUR) ueber den Chartstandard und die FX-Schicht. Im Release
      bringt EIN Paket beides (globalThis.VUFxPack, scripts/vu2/build-release.mjs), sonst
@@ -86,16 +80,12 @@
   var displayReady = null;
   function display() {
     if (displayReady) return displayReady;
-    var doc = global.document;
-    if (!doc || !doc.head || !doc.createElement) return Promise.resolve(null); /* ohne Browser (Tests): Boersenwaehrung */
-    var load = function (src) {
-      return new Promise(function (ok) { var s = doc.createElement("script"); s.src = src; s.onload = ok; s.onerror = ok; doc.head.appendChild(s); });
-    };
-    var CS0 = global.VUCore && global.VUCore.ChartStandard;
-    displayReady = (CS0 ? Promise.resolve() : load(global.VUFxPack || "/core/chart-standard.js")).then(function () {
-      var CS = global.VUCore && global.VUCore.ChartStandard;
-      return CS ? CS.ensureDisplay().then(function () { return CS; }) : null;
-    }).catch(function () { return null; });
+    var doc = global.document, std = function () { return global.VUCore && global.VUCore.ChartStandard; };
+    if (!doc || !doc.head) return Promise.resolve(null); /* ohne Browser (Tests): Boersenwaehrung */
+    displayReady = new Promise(function (ok) {
+      if (std()) return ok();
+      var s = doc.createElement("script"); s.src = global.VUFxPack || "/core/chart-standard.js"; s.onload = s.onerror = ok; doc.head.appendChild(s);
+    }).then(function () { var CS = std(); return CS ? CS.ensureDisplay().then(function () { return CS; }) : null; }).catch(function () { return null; });
     return displayReady;
   }
 
@@ -218,7 +208,7 @@
     var buttons = {};
     RANGES.forEach(function (r) {
       var b = el("button", { type: "button", class: "qc-range", text: r.label, "aria-pressed": "false",
-        dataset: { range: r.id }, onclick: function () { st.touched = true; rememberRange(r); draw(r.id); } });
+        dataset: { range: r.id }, onclick: function () { st.touched = true; memo(r.label); draw(r.id); } });
       buttons[r.id] = b; bar.append(b);
     });
 
@@ -456,7 +446,7 @@
        nicht (junge Titel), beim laengsten abgedeckten kuerzeren Zeitraum,
        sonst bei der ganzen Reihe. */
     function startRange() {
-      var mine = rememberedRange(); if (mine && (available(mine.id) || longPending(mine))) return mine.id;
+      var mine = memo(); if (mine && (available(mine.id) || longPending(mine))) return mine.id;
       var order = ["1Y", "6M", "3M", "1M"];
       for (var i = 0; i < order.length; i++) if (available(order[i])) return order[i];
       return "MAX";
@@ -509,14 +499,8 @@
     head(eod.length ? eod[eod.length - 1][1] : null, null, "", "");
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
-    function onCurrency() { if (!st.disposed && st.range) draw(st.range); }
-    display().then(function (CS) {
-      if (!CS || st.disposed) return;
-      st.std = CS; if (st.range) draw(st.range);
-      var F = global.VUFx;
-      if (F && F.Switch && F.layer) { fxHost.replaceChildren(document.createTextNode("Anzeigewährung "), F.Switch.create({ layer: F.layer })); }
-      st.unfx = F && F.layer && F.layer.onDisplayCurrencyChange ? F.layer.onDisplayCurrencyChange(onCurrency) : null;
-    });
+    function redraw() { if (!st.disposed && st.range) draw(st.range); }
+    display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
 
     return {
       node: node,

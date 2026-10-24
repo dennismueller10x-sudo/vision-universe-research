@@ -246,6 +246,39 @@
     return displayReady;
   }
 
+  /**
+   * Kurs im Kopf einer Aktienseite (VUStockNavigator.setPrice-Objekt) in der Anzeigewaehrung.
+   * Schlusskurs (`prev` = [datum, kurs] des Vortags, `day`): mit dem EZB-Kurs seines Tages, die
+   * Veraenderung zum Vortag aus den umgerechneten Werten. Laufender Kurs (ohne `day`): mit dem
+   * juengsten Kurs (waehrend der Sitzung der Kurs der Sitzung). Ohne Umrechnung das Original.
+   */
+  function displayHead(price, prev, day, layer) {
+    if (!price || !isNum(price.value)) return price;
+    var nat = price.currency || "USD", out = {};
+    Object.keys(price).forEach(function (k) { out[k] = price[k]; });
+    if (!day) {
+      var l = displayLevel(price.value, nat, layer);
+      if (l.converted) { out.value = l.value; out.currency = l.currency; }
+      return out;
+    }
+    var two = prev ? [[prev[0], prev[1]], [day, price.value]] : [[day, price.value], [day, price.value]];
+    var d = displaySeries(two, nat, layer);
+    if (!d.converted || d.points.length !== 2) return price;
+    out.value = d.points[1][1]; out.currency = d.currency;
+    out.changePct = prev && d.points[0][1] > 0 ? (d.points[1][1] / d.points[0][1] - 1) * 100 : null;
+    return out;
+  }
+
+  /** Den vorhandenen Umschalter (VUFx.Switch) in `host` setzen; `fn` bei jedem Wechsel. Liefert die Abmeldung. */
+  function currencyControl(host, fn, layer) {
+    var g = typeof globalThis !== "undefined" ? globalThis : null, L = layerOf(layer), S = g && g.VUFx && g.VUFx.Switch;
+    if (host && S && L && host.ownerDocument) {
+      var sw = S.create({ layer: L });
+      if (sw) host.replaceChildren(host.ownerDocument.createTextNode("Anzeigewährung "), sw);
+    }
+    return L && L.onDisplayCurrencyChange && fn ? L.onDisplayCurrencyChange(fn) : function () {};
+  }
+
   /** Bildunterschrift der Waehrung, fuer alle Welten gleich. */
   function currencyNote(currency, nativeCurrency, intraday) {
     if (!currency || currency === nativeCurrency) return "Börsenwährung " + nativeCurrency;
@@ -257,6 +290,7 @@
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
     intradayEntry: intradayEntry, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
-    displayLevel: displayLevel, currencyNote: currencyNote, ensureDisplay: ensureDisplay
+    displayLevel: displayLevel, displayHead: displayHead, currencyControl: currencyControl,
+    currencyNote: currencyNote, ensureDisplay: ensureDisplay
   };
 });

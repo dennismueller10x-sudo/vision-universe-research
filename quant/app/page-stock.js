@@ -760,37 +760,22 @@
     }
     /* Laufender Handelstag: der Chart meldet den letzten Kurs. Der Kopf wechselt dann von "Schlusskurs" auf
        "Live"/"Verzögert" mit Uhrzeit - es bleibt EIN Kurs. */
-    /* Anzeigewaehrung (Chartstandard, Vorgabe EUR): derselbe Kurs, ueber die FX-Schicht des Charts
-       (VUQuantChart.display). Ohne Schicht bleibt USD stehen. Der laufende Kurs nimmt den juengsten
-       EZB-Kurs - waehrend einer Sitzung der Kurs der Sitzung, wie der 1T-Chart. */
+    /* Anzeigewaehrung (Chartstandard, Vorgabe EUR) ueber die FX-Schicht des Charts (VUQuantChart.display):
+       ChartStandard.displayHead - Schluss mit dem Kurs seines Tages, laufender Kurs mit dem juengsten. */
     var liveShown = null;
     function inAnzeige(fn) { var Q = global.VUQuantChart; if (Q && Q.display) Q.display().then(function (CS) { if (CS) fn(CS); }); }
     function setLive(p) {
       liveShown = p;
       var next = { value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when };
-      if (headApi && headApi.setPrice) {
-        headApi.setPrice(next);
-        inAnzeige(function (CS) { var d = CS.displayLevel(p.price, "USD"); if (d.converted) headApi.setPrice(Object.assign({}, next, { value: d.value, currency: d.currency })); });
-      } else if (quote) quote.replaceChildren(el("b", { class: "num", text: X.money(p.price, "USD") }), el("small", { text: p.when + " · USD" }));
+      if (headApi && headApi.setPrice) { headApi.setPrice(next); inAnzeige(function (CS) { headApi.setPrice(CS.displayHead(next)); }); }
+      else if (quote) quote.replaceChildren(el("b", { class: "num", text: X.money(p.price, "USD") }), el("small", { text: p.when + " · USD" }));
     }
-    /* Schlusskurs: mit dem EZB-Kurs seines Tages; die Veraenderung zum Vortag aus den umgerechneten
-       Werten (je Tag sein Kurs), wie Discover und Supertrader. In der Boersenwaehrung das Original. */
     function showClose() {
-      if (!closePrice || !headApi || !headApi.setPrice) return;
-      inAnzeige(function (CS) {
-        var day = s.price.asOf || (last && last[0]);
-        if (liveShown || !day) return;
-        var two = prev ? [[prev[0], prev[1]], [day, s.price.value]] : [[day, s.price.value], [day, s.price.value]];
-        var d = CS.displaySeries(two, "USD");
-        if (!d.converted || d.points.length !== 2) { headApi.setPrice(closePrice); return; }
-        headApi.setPrice(Object.assign({}, closePrice, { value: d.points[1][1], currency: d.currency,
-          changePct: prev && d.points[0][1] > 0 ? (d.points[1][1] / d.points[0][1] - 1) * 100 : null }));
-      });
+      var day = s.price && (s.price.asOf || (last && last[0]));
+      if (closePrice && headApi && headApi.setPrice && day) inAnzeige(function (CS) { if (!liveShown) headApi.setPrice(CS.displayHead(closePrice, prev, day)); });
     }
     showClose();
-    /* Wechsel der Anzeigewaehrung (Umschalter unter "Ueber diesen Chart" oder in einer anderen Welt): Kopf neu. */
-    function onCurrency() { if (liveShown) setLive(liveShown); else showClose(); }
-    inAnzeige(function () { var L = global.VUFx && global.VUFx.layer; if (L && L.onDisplayCurrencyChange) disposers.push(L.onDisplayCurrencyChange(onCurrency)); });
+    inAnzeige(function (CS) { disposers.push(CS.currencyControl(null, function () { if (liveShown) setLive(liveShown); else showClose(); })); });
     var idn = VM.identityNote(s);
     if (idn) heroHost.append(el("div", { class: "vu-alert qx-notice qv-alert", role: "note", dataset: { conflict: idn.kind || "" } }, [
       el("div", {}, [el("b", { text: idn.title }), el("p", { text: idn.shown }), el("p", { class: "qx-small", text: idn.why })])]));
