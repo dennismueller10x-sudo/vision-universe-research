@@ -1,0 +1,27 @@
+{
+  "sourceMain": "1e14b5db7",
+  "returnBasis": "PRICE_RETURN",
+  "totalReturnArtifact": {
+    "path": "quant/data/product/total-return-quality-v1.json",
+    "hash": "375d6566d237143d560c588c5ba84c4d0310d404448d802f72e1405bf88ef4b5",
+    "schemaVersion": "total-return-quality-2.0.0",
+    "asOf": "2026-10-23",
+    "listingCount": 6174,
+    "totalReturnConfirmed": 6036,
+    "admissionToPriceReplay": "NOT_IMPLIED_BY_TOTAL_RETURN_COUNT"
+  },
+  "survivorshipArtifact": {
+    "path": "quant/data/product/survivorship-control-v1.json",
+    "hash": "edc1f312dc01f1ce927c02724774bed46849e81e53d74cb22f8132f9ae0a4826",
+    "schemaVersion": "survivorship-control-1.0.0",
+    "asOf": "2026-10-24",
+    "outcome": {
+      "state": "UNKNOWN",
+      "treatment": "CENSORED",
+      "plain": "Ob ein Titel wegen Insolvenz, Übernahme oder Rückzug endete, ist lokal nicht belegt. Fälle, deren Zeitraum über das Ende der Reihe reicht, werden nicht gewertet (zensiert) - keine pauschale Annahme von 0 % oder -100 %."
+    },
+    "privateInventoryUsedInThisBatch": false,
+    "historicalUniverseReconstructed": false
+  },
+  "certification": "NOT_CERTIFIED"
+}

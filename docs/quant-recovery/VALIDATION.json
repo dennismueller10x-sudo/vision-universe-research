@@ -1,0 +1,12 @@
+{
+  "sourceMain": "1e14b5db7",
+  "baseline": {"tests": 19, "pass": 19, "fail": 0, "scope": "real-weekly, history, universe-list"},
+  "fullQuantSuite": {"command": "node --test 'quant/tests/*.test.mjs'", "tests": 2812, "pass": 2812, "fail": 0, "durationMs": 449940.038316},
+  "finalFocusedTests": {"tests": 17, "pass": 17, "fail": 0},
+  "nvdaIndependentPython": {"state": "PASS", "completedTrades": 21, "equityObservations": 1395, "costModels": ["PER_SIDE_NOTIONAL", "LEGACY_EXIT_NOTIONAL"], "spy": "AVAILABLE"},
+  "batchIndependentPython": {"state": "PASS", "listingCount": 20},
+  "batch": {"expected": 6174, "processed": 6174, "executedWithLimitations": 4445, "blocked": 1729, "resumeReused": 6174, "identicalSummaryOnResume": true},
+  "priorMainRoundingFailure": "Resolved in current Main; universe-list baseline passes. This branch does not modify that product code.",
+  "mergeReadiness": "PENDING_REMOTE_CHECKS_AND_REVIEW",
+  "certification": "NOT_CERTIFIED"
+}
