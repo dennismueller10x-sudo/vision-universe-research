@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-24T03:01:27.040Z",
+ "generatedAt": "2026-10-24T15:32:56.801Z",
  "radarAsOf": "2026-10-23",
  "signalAsOf": "2026-10-23",
  "setupAsOf": "2026-10-23",
@@ -22,18 +22,55 @@
    "decision": "PUBLISHED",
    "trust": "LIMITED",
    "reasons": [
-    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-    "TODAYS_UNIVERSE_ONLY"
+    "PARTIAL_SENSITIVITY_ONLY"
    ]
+  },
+  "SIGNAL_STUDY_SOURCE": {
+   "asOf": "2026-10-23",
+   "generatedAt": "2026-10-24T02:58:38.859Z",
+   "returnType": "TOTAL_RETURN",
+   "studySchemaVersion": "signal-backtest-study-2.0.0",
+   "studyEngineVersion": "signal-backtest-2.0.0",
+   "qualitySchemaVersion": "total-return-quality-2.0.0",
+   "contract": "canonical-total-return-1.0.0",
+   "corporateActionContract": "corporate-action-contract-1.0.0",
+   "benchmarkContract": "benchmark-contract-1.0.0",
+   "totalReturn": {
+    "state": "AVAILABLE",
+    "reason": null,
+    "contract": "canonical-total-return-1.0.0",
+    "coverage": {
+     "unit": "SECURITY_PRICE_SERIES",
+     "titles": 6174,
+     "withTotalReturn": 6036,
+     "share": 0.978,
+     "minimumShare": 0.95
+    }
+   },
+   "benchmark": {
+    "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+    "state": "TOTAL_RETURN_RECONSTRUCTED",
+    "role": "BENCHMARK_REFERENCE",
+    "contract": "benchmark-contract-1.0.0",
+    "from": "1993-01-29",
+    "to": "2026-10-23",
+    "weeks": 1660,
+    "gaps": 0
+   },
+   "studyBenchmark": {
+    "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+    "state": "PASS",
+    "basis": "TOTAL_RETURN",
+    "asOf": "2026-10-23"
+   }
   },
   "STRATEGY_BACKTEST_READY": {
    "ready": false,
    "decision": "WITHHELD",
    "reasons": [
     "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-    "FACTOR_HISTORY_TOO_SHORT",
-    "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+    "FULL_DAILY_TOTAL_RETURN_NOT_PUBLISHED",
+    "FACTOR_HISTORY_TOO_SHORT"
    ]
   },
   "BACKTEST_RULES_TOTAL": 16,

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-24T03:01:02.775Z",
+ "generatedAt": "2026-10-24T15:32:56.564Z",
  "asOf": "2026-10-24",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
@@ -101,9 +101,9 @@
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
      "state": "FAIL",
-     "value": "Kursrendite",
+     "value": "Diese Musterstudie verwendet Kursrendite",
      "required": null,
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+     "reason": "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN"
     },
     {
      "id": "certifiedAsBacktest",
@@ -136,8 +136,8 @@
     {
      "id": "returnBasis",
      "category": "STRUCTURAL",
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-     "value": "Kursrendite",
+     "reason": "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+     "value": "Diese Musterstudie verwendet Kursrendite",
      "required": null
     },
     {
@@ -186,7 +186,7 @@
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
      "state": "PASS",
-     "value": "Gesamtrendite",
+     "value": "Gesamtrendite (canonical-total-return-1.0.0)",
      "required": null,
      "reason": null
     },
@@ -1245,6 +1245,40 @@
      }
     }
    ],
+   "source": {
+    "asOf": "2026-10-23",
+    "generatedAt": "2026-10-24T02:58:38.859Z",
+    "returnType": "TOTAL_RETURN",
+    "studySchemaVersion": "signal-backtest-study-2.0.0",
+    "studyEngineVersion": "signal-backtest-2.0.0",
+    "qualitySchemaVersion": "total-return-quality-2.0.0",
+    "returnContract": "canonical-total-return-1.0.0",
+    "corporateActionContract": "corporate-action-contract-1.0.0",
+    "benchmarkContract": "benchmark-contract-1.0.0",
+    "totalReturnCoverage": {
+     "unit": "SECURITY_PRICE_SERIES",
+     "titles": 6174,
+     "withTotalReturn": 6036,
+     "share": 0.978,
+     "minimumShare": 0.95
+    },
+    "benchmark": {
+     "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+     "state": "TOTAL_RETURN_RECONSTRUCTED",
+     "role": "BENCHMARK_REFERENCE",
+     "contract": "benchmark-contract-1.0.0",
+     "from": "1993-01-29",
+     "to": "2026-10-23",
+     "weeks": 1660,
+     "gaps": 0
+    },
+    "studyBenchmark": {
+     "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
+     "state": "PASS",
+     "basis": "TOTAL_RETURN",
+     "asOf": "2026-10-23"
+    }
+   },
    "collecting": [
     {
      "eventType": "SETUP_NEW",
@@ -1515,7 +1549,7 @@
      "label": "Monate mit Index-Zugehörigkeit",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (5 Stände seit 2026-09-15)",
+     "value": "2 (6 Stände seit 2026-09-15)",
      "required": 24,
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
@@ -1571,7 +1605,7 @@
      "id": "membershipHistory",
      "category": "HISTORY",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-     "value": "2 (5 Stände seit 2026-09-15)",
+     "value": "2 (6 Stände seit 2026-09-15)",
      "required": 24
     },
     {
@@ -1584,31 +1618,31 @@
    ],
    "membership": {
     "SP500": {
-     "snapshots": 5,
+     "snapshots": 6,
      "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-10-17",
+     "latest": "2026-10-24",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 7
+     "staleDays": 0
     },
     "NDX": {
-     "snapshots": 5,
+     "snapshots": 6,
      "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-10-17",
+     "latest": "2026-10-24",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 7
+     "staleDays": 0
     },
     "DJIA": {
-     "snapshots": 5,
+     "snapshots": 6,
      "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-10-17",
+     "latest": "2026-10-24",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 7
+     "staleDays": 0
     }
    },
    "factor": {
@@ -1624,7 +1658,7 @@
    "eta": {
     "membership": {
      "remaining": 22,
-     "date": "2028-08-16"
+     "date": "2028-08-23"
     },
     "factor": {
      "remaining": 22,
