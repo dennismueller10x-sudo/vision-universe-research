@@ -8,7 +8,7 @@ Helmut (siehe HEYGEN_API.md). Nach jeder Aufnahme:
 
 1. Pausen über 0,26 s auf 0,13 s kürzen, Tempo 1,14 (`studio/reels/tools/tighten.py`). Das spart etwa 15 bis 18 % Länge. Höhere Tempi klingen künstlich.
 2. Whisper (`faster-whisper small`) gegenprüfen. Typische Fehler: „Riester" wird „Rieser" oder „Leaster" (besonders nach `<break>`), „Vision Universe" wird deutsch gesprochen, „Ark" wird „Ag". Abhilfe: das betroffene Wortpaar aus einer früheren geprüften Aufnahme als Ausschnitt einsetzen (mit 12 ms Überblendung) und die Wortzeiten verschieben. Das hat bei „Riester ist vorbei." und bei „Wischn Juniwörs" und „Ark Invest" funktioniert.
-3. **„Vision Universe" (ab 23.10.2026):** im englischen Sprachmodus aufnehmen (`language: "en"`, Text „Vision Universe.") und in den deutschen Satz einsetzen. Der Owner fand die deutsche Lesart (`Wischn Juniwörs`) zu deutsch.
+3. **„Vision Universe" (ab 24.10.2026):** im Sprechtext einfach normal schreiben („in der Vision Universe App") und den **ganzen Text in einem Durchgang** aufnehmen. Eingesetzte Schnipsel (englischer Modus, Wortpaar aus anderen Aufnahmen) klingen abgehackt, der Owner lehnte sie ab. Getestet und alle vom Owner als gut befunden: normal, in Anführungszeichen, `Wischen Juniwörs`, mit Regieanweisung `[English accent]`.
 4. Zahlen ausschreiben. „2027." wurde als Datum falsch betont, deshalb „zweitausendsiebenundzwanzig" oder umformulieren.
 
 ## Musik
