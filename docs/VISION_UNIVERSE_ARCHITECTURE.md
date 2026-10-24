@@ -98,7 +98,7 @@ Bei Abweichung gilt die Registry; ein Test prüft, dass jedes eingetragene Artef
 | Intraday | `quant/data/market/intraday/index.json` + `<Sitzung>/<securityId>.json` | `ingest-intraday.mjs` · intraday-pacemaker/-snapshots/-watchdog | Discover, Quant, Markets, `api/intraday` |
 | Splits/Dividenden | im Rohbalken (`splitFactor`, `divCash`); Probe `listing-continuity-v1.json` | im Refresh | Split-Bereinigung, `canonical-total-return.js` |
 | Fundamentals (SEC) | `quant/data/fundamentals/` (nicht ausgeliefert) | `cli.py daily` · sec-fundamentals-daily · täglich 06:15 | Discover-Geschäftszahlen, Quant, Supertrader |
-| Fundamentals Consumer | `quant/data/sec/consumer*` (nicht ausgeliefert) | `cli.py consumer` · sec-consumer-fundamentals · Mo 07:30 | Discover, Screener |
+| Fundamentals Consumer | `quant/data/sec/consumer*` (nicht ausgeliefert; Release-Projektion `fundamental/data/history/`, siehe [FUNDAMENTAL.md](FUNDAMENTAL.md)) | `cli.py consumer` · sec-consumer-fundamentals · Mo 07:30 | Discover, Screener, Fundamental |
 | Index Membership | `quant/data/market/index-membership/` | `build-index-membership.mjs` · index-membership · Sa 07:20 | Discover, Screener |
 | Faktoren | `quant/data/market/factors/factors-FULL_UNIVERSE.json` | `build-market-factors.mjs` · Refresh | Discover, Screener, Quant |
 | Quant-Produktdaten | `quant/data/product/**` | Materialisierung (aus dem Refresh) | Quant 2.0 |
