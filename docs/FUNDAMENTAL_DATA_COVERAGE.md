@@ -107,7 +107,7 @@ Regel: `fundamental/engine/catalog.js#historicalPe` (Split-Beleg des Kursanbiete
 | davon mindestens ein geprüftes Jahr | 2741 (62,5 %) |
 | Geschäftsjahre gesamt | 35361 |
 | mit veröffentlichtem KGV | 19618 (55,5 %) |
-| leer: Verlust in den letzten 12 Monaten | 7512 |
+| leer: Verlust im Geschäftsjahr | 7512 |
 | leer: Gegenprobe nicht bestanden | 3771 |
 | leer: Aktienbasis springt | 2403 |
 | leer: kein Kurs zum GJ-Ende | 1227 |
@@ -119,7 +119,7 @@ Regel: `fundamental/engine/catalog.js#historicalValuation`. Alles zum selben Sti
 
 | Kennzahl | Unternehmen geprüft | mit ≥ 1 Jahr | Geschäftsjahre | mit Wert | häufigste Gründe für Lücken |
 |---|---:|---:|---:|---:|---|
-| KGV | 3498 | 2741 (78,4 %) | 37481 | 19618 (52,3 %) | Verlust in den letzten 12 Monaten (6973), kein Gewinn je Aktie (4804), Gegenprobe nicht bestanden (3134) |
+| KGV | 3498 | 2741 (78,4 %) | 37481 | 19618 (52,3 %) | Verlust im Geschäftsjahr (6973), kein Gewinn je Aktie (4804), Gegenprobe nicht bestanden (3134) |
 | Marktkapitalisierung | 3498 | 3199 (91,5 %) | 37481 | 23944 (63,9 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
 | Unternehmenswert (EV) | 3498 | 1756 (50,2 %) | 37481 | 10794 (28,8 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
 | KUV | 3498 | 2799 (80,0 %) | 37481 | 21051 (56,2 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
@@ -127,7 +127,7 @@ Regel: `fundamental/engine/catalog.js#historicalValuation`. Alles zum selben Sti
 | EV / Umsatz | 3498 | 1644 (47,0 %) | 37481 | 10067 (26,9 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
 | EV / EBITDA | 3498 | 1243 (35,5 %) | 37481 | 7677 (20,5 %) | Schulden oder Kasse fehlen (13150), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
 | Free-Cashflow-Rendite | 3498 | 2889 (82,6 %) | 37481 | 21440 (57,2 %) | keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307), keine Gegenprobe möglich (2872) |
-| Dividendenrendite | 3498 | 1552 (44,4 %) | 37481 | 12424 (33,1 %) | Bezugsgröße fehlt (10807), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
+| Dividendenrendite | 3498 | 1552 (44,4 %) | 37481 | 12424 (33,1 %) | keine Dividende gemeldet (10807), keine Aktienzahl (5274), Aktienzahl-Gegenprobe nicht bestanden (4307) |
 
 Nicht berechnet: PEG (braucht je Stichtag ein dreijähriges, splitfestes Wachstum des Gewinns je Aktie) und Verhältnisse für Berichte in anderer Währung als US-Dollar (kein Wechselkurs je Stichtag in der Auslieferung).
 
