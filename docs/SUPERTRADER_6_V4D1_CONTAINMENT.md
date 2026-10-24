@@ -97,6 +97,31 @@ Daraus folgt: **Die einzelnen Trades der kapazitätsgebundenen Modellstudien sin
   - ebenso nicht erklärte 3:1- bis 5:1-Splits in der K5-Lesart;
   - reine Niveaufehler ohne Sprung.
 
-Voraussetzungen für eine Entsperrung:
-- eine zweite, lizenzierte Corporate-Action-Quelle mit Historie, also eine Eigentümerentscheidung zu einem kostenpflichtigen Anbieter, oder
-- eine Eigentümerentscheidung, die DQ-K5-BOOK als Research-Konvention für zertifizierungsfähige Messungen annimmt, mit DQ-K3 und DQ-K5-PRIOR als Pflicht-Sensitivitäten.
+## Eigentümerentscheidung E1 (24.10.2026)
+
+**V4-D1 bleibt ein echter Datenintegritätsblocker.**
+- Die Quarantäne ist eine diagnostische Sensitivität, keine Lösung. Weder DQ-K5-BOOK noch DQ-K5-PRIOR noch DQ-K3-BOOK gilt als endgültige Lesart oder als Zertifizierungsausnahme.
+- In der Readiness-Matrix (Kriterien 1.2.0) erfüllt deshalb **keine** Referenz das Kriterium CC-5. Dafür ist der belegte Ausschluss der Datenfehler nötig, nicht ihre Eingrenzung.
+- Die Dimension „Corporate-Action Integrity“ steht für alle 11 Referenzen höchstens auf „teilweise“.
+
+**Zulässiger nächster Schritt:** eine gezielte Prüfung mit vorhandenen Kapitalmaßnahmen-Daten, ohne neue Kosten und ohne Massenabrufe. Sie wurde in 6.0 vorbereitet, aber nicht ausgeführt.
+
+1. **Kandidatenmenge:**
+   - Nur die 109 markierten Sitzungen, die am Vortag im Research-Universum lagen (DQ-K5).
+   - Dazu die markierten Sitzungen hinter den direkt exponierten Referenztrades (Turtle S1 15, Turtle S2 11, alle übrigen zusammen 117 Trades). Die Liste liegt versiegelt im Ergebnis von Lauf 40001276389.
+   - Alle anderen Markierungen liegen außerhalb jeder Referenz und bleiben ungeprüft.
+2. **Quellen in dieser Reihenfolge:**
+   - (a) die vorhandenen Tiingo-Felder `splitFactor`, `divCash` und `adjClose` derselben Reihe; ohne neuen Abruf, der Snapshot enthält sie;
+   - (b) vorhandene Marketstack-Kapitalmaßnahmen, nur soweit bestehender Zugang und bestehendes Budget US-Listings abdecken; das ist vor jedem Abruf zu prüfen, ein Abruf je Kandidat;
+   - (c) öffentliche SEC-Meldungen zum Kandidaten: 8-K Item 5.03 / 3.03 und die Aktienzahl im nächsten 10-Q.
+3. **Ergebnis je Sitzung:**
+   - `CONFIRMED_UNDECLARED_SPLIT` (Faktor und Datum belegt),
+   - `CONFIRMED_GENUINE_MOVE` (Aktienzahl unverändert, Meldung ohne Kapitalmaßnahme) oder
+   - `UNRESOLVED`.
+
+   Nur `CONFIRMED_UNDECLARED_SPLIT` mit Faktor und Datum dürfte in einem eigenen, versionierten Quant-PR als deklarierter Split nachgetragen werden. Keine Korrektur ist still, keine Kapitalmaßnahme erfunden.
+4. **Umfang:**
+   - höchstens rund 260 Kandidaten, je höchstens ein Abruf pro Quelle;
+   - keine Massenabrufe, kein dauerhafter Sammler.
+
+Entsperrt ist V4-D1 erst, wenn alle Kandidaten mit Referenzexposition `CONFIRMED_*` sind und die Referenzen auf dem korrigierten Datensatz neu gerechnet wurden. Das geschieht in einer neuen Snapshot-Generation mit Vorher/Nachher.

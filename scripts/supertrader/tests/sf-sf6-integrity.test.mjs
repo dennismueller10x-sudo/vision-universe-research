@@ -179,3 +179,12 @@ test('SF6-INTEGRITY-JUMP: nach der Quarantaene ueberspannt kein Rueckblick den m
     }
   }
 });
+
+test('SF6-DQ-PROVENANCE (Quellentreue-Review HIGH): Herkunft der Schwellen ehrlich, keine Quarantaene ist eine Korrektur', () => {
+  assert.match(DQ_POLICIES['DQ-K5-BOOK'].origin, /post hoc/, 'k = 5 wurde in #722 nachtraeglich gesetzt, nicht vorregistriert');
+  assert.doesNotMatch(DQ_POLICIES['DQ-K5-BOOK'].origin, /pre-registered/);
+  assert.match(DQ_POLICIES['DQ-K3-BOOK'].origin, /#758/);
+  for (const p of Object.values(DQ_POLICIES)) assert.notEqual(p.role, 'CORRECTION');
+  const c = quarantineDataset(pit(4, 200), K5).census;
+  assert.equal(c.correction, 'NONE'); assert.match(c.claim, /NOT_A_DEFECT_FINDING/); assert.equal(c.certification, 'DIAGNOSTIC_NOT_CERTIFIED');
+});
