@@ -28,7 +28,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 const Store = require(path.join(root, 'quant/engines/history-store.js'));
 const Guard = require(path.join(root, 'quant/engines/zero-cost-guard.js'));
 const Master = require(path.join(root, 'quant/engines/us-security-master.js'));
-const UA = 'VisionUniverse-Research/1.0 (method fidelity review; info@visionuniverse.de)';
+export const UA = 'VisionUniverse-Research/1.0 (method fidelity review; info@visionuniverse.de)';
 export const PIT_KEY = '_validation/sec-pit-r11.json.gz';
 // Runde 12: erweiterte Fassung (IFRS, weitere EPS-/Umsatzkennzahlen, Ursachen fehlender Reihen); r11 bleibt unveraendert.
 export const PIT_KEY_R12 = '_validation/sec-pit-r12.json.gz';
