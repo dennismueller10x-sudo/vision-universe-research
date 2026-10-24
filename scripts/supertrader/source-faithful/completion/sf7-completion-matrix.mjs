@@ -21,16 +21,16 @@ export const SF7_COMPLETION_VERSION = 'sf7-completion-matrix-1.0.0';
 export const SF7_EVIDENCE = Object.freeze({
   PR899: 'Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418)',
   PR898: 'Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache)',
-  PR902: 'Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution)',
+  PR902: 'Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution)',
   INV: 'docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md',
   EXE: 'docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md',
   CA: 'docs/SUPERTRADER_7_V4D1_RESOLUTION.md',
 });
 
-/** V4-D1 exposure after the 7.0 classification (DQ-K5: exposed / confirmed genuine / unresolved), from PR902. */
+/** V4-D1 exposure after the 7.0 classification, rule set 1.1.0 (DQ-K5: exposed / confirmed genuine / unresolved), from PR902 run 40111713883. */
 export const CA7 = Object.freeze({
-  TURTLE_S1: [16, 0, 16], TURTLE_S2: [14, 0, 14], MINERVINI_SEPA: [0, 0, 0], MINERVINI_POWER_PLAY: [12, 2, 10], DARVAS: [15, 1, 14], KK_BREAKOUT: [27, 4, 23],
-  POCKET_PIVOT: [9, 0, 9], BUYABLE_GAP_UP: [14, 1, 13], WEINSTEIN_INVESTOR: [0, 0, 0], WEINSTEIN_TRADER: [4, 1, 3], HOLY_GRAIL_W_RAS97: [29, 5, 24],
+  TURTLE_S1: [16, 0, 16], TURTLE_S2: [14, 0, 14], MINERVINI_SEPA: [0, 0, 0], MINERVINI_POWER_PLAY: [12, 0, 12], DARVAS: [15, 0, 15], KK_BREAKOUT: [27, 0, 27],
+  POCKET_PIVOT: [9, 0, 9], BUYABLE_GAP_UP: [14, 0, 14], WEINSTEIN_INVESTOR: [0, 0, 0], WEINSTEIN_TRADER: [4, 0, 4], HOLY_GRAIL_W_RAS97: [29, 0, 29],
 });
 
 const S = (o) => Object.freeze(o);
@@ -62,7 +62,7 @@ export function buildSf7Completion() {
 }
 
 export function sf7CompletionMarkdown(a) {
-  let md = `# Supertrader 7.0 – Abschlussmatrix der 13 Strategien\n\nGeneriert von \`scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs\` (${a.version}). Maschinelle Felder aus \`STRATEGY-SF6-READINESS.json\` (Kriterien ${a.basis.readinessCriteria}); keine Note ist von Hand gesetzt. ${a.statusChange}.\n\nV4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation (Draft-PR #902).\n\n`;
+  let md = `# Supertrader 7.0 – Abschlussmatrix der 13 Strategien\n\nGeneriert von \`scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs\` (${a.version}). Maschinelle Felder aus \`STRATEGY-SF6-READINESS.json\` (Kriterien ${a.basis.readinessCriteria}); keine Note ist von Hand gesetzt. ${a.statusChange}.\n\nV4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.1.0 (Draft-PR #902).\n\n`;
   md += '| | Strategie | Zustand | Messklasse | Phasen | erfüllt | fehlt | V4-D1 (exponiert / echt / ungeklärt) | Live |\n|---|---|---|---|---|---|---|---|---|\n';
   for (const c of a.candidates) md += `| ${c.candidateId} | \`${c.strategyId}\` | ${c.primaryState} | ${c.measurementClass} | ${c.executablePhases ?? '–'} | ${c.certificationMet.map((x) => x.split('-').slice(0, 2).join('-')).join(', ') || '–'} | ${c.certificationMissing.map((x) => x.split('-').slice(0, 2).join('-')).join(', ')} | ${c.corporateActions7 ? `${c.corporateActions7.dqK5Exposed} / ${c.corporateActions7.confirmedGenuine} / ${c.corporateActions7.unresolved}` : '–'} | ${c.liveReadiness} |\n`;
   const Q = [['changed7', 'Was hat sich in 7.0 geändert?'], ['technical', 'Technisch vollständig'], ['original', 'Nachgewiesene Originalregeln'], ['assumptions', 'Modellannahmen'], ['simulation', 'Vollständige Research-Simulation'], ['backtest', 'Vollständiger diagnostischer Backtest'], ['reliable', 'Belastbare Daten'], ['blocked', 'Gesperrte Daten'], ['execution', 'Ausführungsrealismus'], ['manual', 'Manuelle Prüfung'], ['next', 'Nächster konkreter Schritt']];

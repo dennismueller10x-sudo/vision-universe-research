@@ -2,23 +2,23 @@
 
 Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.0.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
 
-V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation (Draft-PR #902).
+V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.1.0 (Draft-PR #902).
 
 | | Strategie | Zustand | Messklasse | Phasen | erfüllt | fehlt | V4-D1 (exponiert / echt / ungeklärt) | Live |
 |---|---|---|---|---|---|---|---|---|
 | C01 | `SF_TURTLE_S1` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | FULL_DIAGNOSTIC_STRATEGY_BACKTEST | 9 | CC-2, CC-3, CC-6, CC-7 | CC-1, CC-4, CC-5, CC-8 | 16 / 0 / 16 | LIVE_NOT_APPROVED |
 | C02 | `SF_TURTLE_S2` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | FULL_DIAGNOSTIC_STRATEGY_BACKTEST | 9 | CC-1, CC-2, CC-3, CC-6, CC-7 | CC-4, CC-5, CC-8 | 14 / 0 / 14 | LIVE_NOT_APPROVED |
-| C03 | `SF_DARVAS_BOX` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | MECHANICAL_COMPONENT_STUDY | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 15 / 1 / 14 | LIVE_NOT_APPROVED |
+| C03 | `SF_DARVAS_BOX` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | MECHANICAL_COMPONENT_STUDY | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 15 / 0 / 15 | LIVE_NOT_APPROVED |
 | C04 | `SF_WEINSTEIN_INVESTOR` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-1, CC-2, CC-6, CC-7 | CC-3, CC-4, CC-5, CC-8 | 0 / 0 / 0 | LIVE_NOT_APPROVED |
-| C05 | `SF_WEINSTEIN_TRADER` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-1, CC-2, CC-6, CC-7 | CC-3, CC-4, CC-5, CC-8 | 4 / 1 / 3 | LIVE_NOT_APPROVED |
+| C05 | `SF_WEINSTEIN_TRADER` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-1, CC-2, CC-6, CC-7 | CC-3, CC-4, CC-5, CC-8 | 4 / 0 / 4 | LIVE_NOT_APPROVED |
 | C06 | `SF_MINERVINI_SEPA_VCP` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-6, CC-7 | CC-1, CC-3, CC-4, CC-5, CC-8 | 0 / 0 / 0 | LIVE_NOT_APPROVED |
-| C07 | `SF_MINERVINI_POWER_PLAY` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 12 / 2 / 10 | LIVE_NOT_APPROVED |
-| C08 | `SF_KK_BREAKOUT` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-1, CC-2, CC-4, CC-6, CC-7 | CC-3, CC-5, CC-8 | 27 / 4 / 23 | LIVE_NOT_APPROVED |
+| C07 | `SF_MINERVINI_POWER_PLAY` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 12 / 0 / 12 | LIVE_NOT_APPROVED |
+| C08 | `SF_KK_BREAKOUT` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-1, CC-2, CC-4, CC-6, CC-7 | CC-3, CC-5, CC-8 | 27 / 0 / 27 | LIVE_NOT_APPROVED |
 | C09 | `SF_KK_EPISODIC_PIVOT` | VALIDATION_BLOCKED | NOT_MEASURABLE | – | – | CC-1, CC-2, CC-3, CC-4, CC-5, CC-6, CC-7, CC-8 | – | LIVE_NOT_APPROVED |
 | C10 | `SF_KK_PARABOLIC_SHORT` | VALIDATION_BLOCKED | NOT_MEASURABLE | – | CC-1 | CC-2, CC-3, CC-4, CC-5, CC-6, CC-7, CC-8 | – | LIVE_NOT_APPROVED |
 | C11 | `SF_MOKA_POCKET_PIVOT` | SOURCE_BLOCKED | SCREEN_STATISTICS | 8 | CC-4, CC-6, CC-7 | CC-1, CC-2, CC-3, CC-5, CC-8 | 9 / 0 / 9 | LIVE_NOT_APPROVED |
-| C12 | `SF_MOKA_BUYABLE_GAP_UP` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 14 / 1 / 13 | LIVE_NOT_APPROVED |
-| C13 | `SF_RASCHKE_HOLY_GRAIL` | SOURCE_BLOCKED | NOT_MEASURABLE | 8 | CC-4, CC-6, CC-7 | CC-1, CC-2, CC-3, CC-5, CC-8 | 29 / 5 / 24 | LIVE_NOT_APPROVED |
+| C12 | `SF_MOKA_BUYABLE_GAP_UP` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 14 / 0 / 14 | LIVE_NOT_APPROVED |
+| C13 | `SF_RASCHKE_HOLY_GRAIL` | SOURCE_BLOCKED | NOT_MEASURABLE | 8 | CC-4, CC-6, CC-7 | CC-1, CC-2, CC-3, CC-5, CC-8 | 29 / 0 / 29 | LIVE_NOT_APPROVED |
 
 ## C01 `SF_TURTLE_S1`
 
@@ -36,7 +36,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | keine |
 | Nächster konkreter Schritt | Eigentümerentscheidung zu SF7-D3 (Turtle-Code gepinnt); Quelle für PIT-Korrelationsgruppen |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C02 `SF_TURTLE_S2`
 
@@ -54,7 +54,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | keine |
 | Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen; V4-D1-Rest; SF6-PAPER-2027 |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C03 `SF_DARVAS_BOX`
 
@@ -72,7 +72,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 8 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Darvas-Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C04 `SF_WEINSTEIN_INVESTOR`
 
@@ -90,7 +90,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 14 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | PIT-Branchenhistorie; Eigentümerentscheidung, ob V4-D1-Exposition 0 für CC-5 genügt |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C05 `SF_WEINSTEIN_TRADER`
 
@@ -108,7 +108,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 12 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | PIT-Branchenhistorie; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C06 `SF_MINERVINI_SEPA_VCP`
 
@@ -126,7 +126,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS) |
 | Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); ob V4-D1-Exposition 0 für CC-5 genügt; SF7-D4 |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C07 `SF_MINERVINI_POWER_PLAY`
 
@@ -144,7 +144,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 6 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | CC-1-Entscheidung wie SEPA; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C08 `SF_KK_BREAKOUT`
 
@@ -162,7 +162,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 7 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C09 `SF_KK_EPISODIC_PIVOT`
 
@@ -216,7 +216,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 7 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Quelle für die Stopregel |
 | Zertifizierung erfüllt / fehlt | CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C12 `SF_MOKA_BUYABLE_GAP_UP`
 
@@ -234,7 +234,7 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 8 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
 
 ## C13 `SF_RASCHKE_HOLY_GRAIL`
 
@@ -252,4 +252,4 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | Manuelle Prüfung | 3 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Primärquelle für Trailing / Größe |
 | Zertifizierung erfüllt / fehlt | CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.1.0, Läufe 40110748496 sec-pit-r14, 40111713883 sf7-ca-resolution) |
