@@ -1861,7 +1861,7 @@
      "title": "Source Rule Coverage",
      "status": "COMPLETE",
      "gaps": [],
-     "note": "118 #709 rules in scope; HARD 8/16 implemented; 77 excluded with a written reason"
+     "note": "127 #709 rules in scope; HARD 10/18 implemented; 79 excluded with a written reason"
     },
     {
      "id": "D02_SIGNAL",
@@ -1971,7 +1971,8 @@
         "MIN-MM-SELL-01",
         "MIN-MM-SELL-02",
         "MIN-MM-SELL-03",
-        "MIN-MM-SELL-04"
+        "MIN-MM-SELL-04",
+        "MIN-W18-2"
        ],
        "kind": "EXIT",
        "essential": true,
@@ -1994,7 +1995,9 @@
         "MIN-RISK-01",
         "MIN-MM-STOP-01",
         "MIN-MM-STOP-02",
-        "MIN-RISK-05"
+        "MIN-RISK-05",
+        "MIN-W18-7",
+        "MIN-W18-8"
        ],
        "kind": "STOP",
        "essential": true,
@@ -2015,7 +2018,9 @@
        "ruleId": "MIN-SF-SIZE",
        "psr709": [
         "MIN-TTC-SIZING",
-        "MIN-MM-SIZE-01"
+        "MIN-MM-SIZE-01",
+        "MIN-W18-3",
+        "MIN-W18-4"
        ],
        "kind": "SIZING",
        "essential": true,
@@ -2244,7 +2249,7 @@
      "title": "Source Rule Coverage",
      "status": "COMPLETE",
      "gaps": [],
-     "note": "20 #709 rules in scope; HARD 3/6 implemented; 11 excluded with a written reason"
+     "note": "29 #709 rules in scope; HARD 4/8 implemented; 15 excluded with a written reason"
     },
     {
      "id": "D02_SIGNAL",
@@ -2303,7 +2308,9 @@
        "psr709": [
         "MIN-RISK-01",
         "MIN-MM-STOP-01",
-        "MIN-MM-STOP-02"
+        "MIN-MM-STOP-02",
+        "MIN-W18-7",
+        "MIN-W18-8"
        ],
        "kind": "STOP",
        "essential": true,
@@ -2324,7 +2331,9 @@
        "ruleId": "MIN-SF-PP-SIZE",
        "psr709": [
         "MIN-MM-SIZE-01",
-        "MIN-TTC-SIZING"
+        "MIN-TTC-SIZING",
+        "MIN-W18-3",
+        "MIN-W18-4"
        ],
        "kind": "SIZING",
        "essential": true,

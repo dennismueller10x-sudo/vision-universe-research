@@ -11,8 +11,8 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 | C03 | `SF_DARVAS_BOX` | 3/10/6/0/1 | MECHANICAL_SCREEN_COMPLETE | – | MECHANICAL_COMPONENT_STUDY | 8 | LIVE_NOT_APPROVED |
 | C04 | `SF_WEINSTEIN_INVESTOR` | 1/5/9/2/0 | MECHANICAL_SCREEN_COMPLETE | WEIN-SF-GROUP, WEIN-SF-MARKET | SCREEN_STATISTICS | 14 | LIVE_NOT_APPROVED |
 | C05 | `SF_WEINSTEIN_TRADER` | 1/5/8/2/0 | MECHANICAL_SCREEN_COMPLETE | WEIN-SF-GROUP, WEIN-SF-MARKET | SCREEN_STATISTICS | 12 | LIVE_NOT_APPROVED |
-| C06 | `SF_MINERVINI_SEPA_VCP` | 0/9/7/1/0 (nur Übersetzung) | MECHANICAL_SCREEN_COMPLETE | MIN-SF-TT-8 | SCREEN_STATISTICS | 11 | LIVE_NOT_APPROVED |
-| C07 | `SF_MINERVINI_POWER_PLAY` | 0/5/4/0/0 (nur Übersetzung) | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 6 | LIVE_NOT_APPROVED |
+| C06 | `SF_MINERVINI_SEPA_VCP` | 0/11/7/1/0 (nur Übersetzung) | MECHANICAL_SCREEN_COMPLETE | MIN-SF-TT-8 | SCREEN_STATISTICS | 11 | LIVE_NOT_APPROVED |
+| C07 | `SF_MINERVINI_POWER_PLAY` | 0/6/4/0/0 (nur Übersetzung) | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 6 | LIVE_NOT_APPROVED |
 | C08 | `SF_KK_BREAKOUT` | 4/1/6/1/0 | MECHANICAL_SCREEN_COMPLETE | – | SCREEN_STATISTICS | 7 | LIVE_NOT_APPROVED |
 | C09 | `SF_KK_EPISODIC_PIVOT` | 4/1/3/3/1 | MECHANICAL_COMPONENTS_ONLY | KK-SF-EP-CATALYST, KK-SF-EP-VOLUME, KK-SF-EP-ENTRY | NOT_MEASURABLE | 2 | LIVE_NOT_APPROVED |
 | C10 | `SF_KK_PARABOLIC_SHORT` | 3/0/4/3/0 | MECHANICAL_COMPONENTS_ONLY | KK-SF-PS-BORROW, KK-SF-PS-ENTRY, KK-SF-PS-STOP | NOT_MEASURABLE | 4 | LIVE_NOT_APPROVED |
@@ -64,14 +64,14 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART; WEIN-SF-MARKET: proxy, not NYSE breadth
 - quellenoffen: –; Modellannahmen: –
 
-### C06 `SF_MINERVINI_SEPA_VCP` (Vertrag 1.2.0)
+### C06 `SF_MINERVINI_SEPA_VCP` (Vertrag 1.3.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
-- Research-Komponenten: MIN-SF-TT-8 <- minervini-components.mjs#createRsPercentileProxy; MIN-SF-FUNDAMENTALS <- minervini-components.mjs#fundamentalEvidence; MIN-SF-VCP <- minervini-components.mjs#vcpContractions; MIN-SF-VCP <- minervini-lifecycle.mjs#sepaSetupFromTrendTemplate; MIN-SF-PIVOT <- minervini-components.mjs#pivotBreakout; MIN-SF-PIVOT <- minervini-lifecycle.mjs#entryEligibility; MIN-SF-PIVOT <- minervini-lifecycle.mjs#fillBuyOrder; MIN-SF-STOP <- minervini-components.mjs#sellEvidence; MIN-SF-STOP <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SIZE <- minervini-components.mjs#positionSize; MIN-SF-SIZE <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SELL <- minervini-components.mjs#sellEvidence; MIN-SF-SELL <- minervini-execution.mjs#runMinerviniLifecycle
-- Stellvertreter (heben keine Datensperre auf): MIN-SF-TT-8: VU percentile of the PIT research universe; not the IBD rating, never a gate
+- Research-Komponenten: MIN-SF-TT-6 <- minervini-sf7.mjs#withTrendTemplateLow25; MIN-SF-TT-8 <- minervini-components.mjs#createRsPercentileProxy; MIN-SF-TT-8 <- minervini-sf7.mjs#withRsLineRising; MIN-SF-FUNDAMENTALS <- minervini-components.mjs#fundamentalEvidence; MIN-SF-VCP <- minervini-components.mjs#vcpContractions; MIN-SF-VCP <- minervini-lifecycle.mjs#sepaSetupFromTrendTemplate; MIN-SF-VCP <- minervini-sf7.mjs#withFlatBaseSetups; MIN-SF-PIVOT <- minervini-components.mjs#pivotBreakout; MIN-SF-PIVOT <- minervini-lifecycle.mjs#entryEligibility; MIN-SF-PIVOT <- minervini-lifecycle.mjs#fillBuyOrder; MIN-SF-STOP <- minervini-components.mjs#sellEvidence; MIN-SF-STOP <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-STOP <- minervini-sf7.mjs#halfAverageGainStopCheck; MIN-SF-SIZE <- minervini-components.mjs#positionSize; MIN-SF-SIZE <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SELL <- minervini-components.mjs#sellEvidence; MIN-SF-SELL <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SELL <- minervini-sf7.mjs#largestDeclineSignal
+- Stellvertreter (heben keine Datensperre auf): MIN-SF-TT-8: VU percentile of the PIT research universe; not the IBD rating, never a gate; MIN-SF-TT-8: research variant ALT-SEPA-RS-LINE: Minervini's own RS-line condition (B03 PDF 143, paraphrase: not in a downtrend, preferably rising >= 6 weeks) - computable, but not the IBD rating; the IBD criterion stays DATA_BLOCKED
 - quellenoffen: –; Modellannahmen: –
 
-### C07 `SF_MINERVINI_POWER_PLAY` (Vertrag 1.3.0)
+### C07 `SF_MINERVINI_POWER_PLAY` (Vertrag 1.4.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
 - Research-Komponenten: MIN-SF-PP-ENTRY <- minervini-components.mjs#powerPlayClassify; MIN-SF-PP-ENTRY <- minervini-lifecycle.mjs#entryEligibility; MIN-SF-PP-STOP <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-PP-SIZE <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-PP-EXIT <- minervini-execution.mjs#runMinerviniLifecycle
