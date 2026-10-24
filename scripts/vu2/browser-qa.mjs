@@ -319,7 +319,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* EIN CHART: elf Zeitraeume, Max und zurueck. */
    if(await page.locator('section.qc-chart').count()!==1)befund(view,width,'nicht genau ein Chart');
    if(await page.locator('.qx-quote').count()!==1)befund(view,width,'nicht genau ein Kurs im Kopf');
-   await page.locator('section.qc-chart').getByRole('button',{name:'Max',exact:true}).click();
+   await page.locator('section.qc-chart').getByRole('button',{name:'MAX',exact:true}).click();
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='MAX');
    if(!await page.locator('section.qc-chart .qc-plot svg').count())befund(view,width,'MAX chart missing');
    await page.locator('section.qc-chart').getByRole('button',{name:'1J',exact:true}).click();

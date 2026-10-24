@@ -108,3 +108,16 @@ test("Fenster: Kalendertage ab dem letzten Punkt, 95-%-Regel wie chart-history.j
 test("ensureDisplay: ohne Browser kein Laden, Ergebnis ist die vorhandene Schicht oder null", async () => {
   assert.equal(await CS.ensureDisplay(), null);
 });
+
+test("Kopfpreis: Schluss mit dem Kurs seines Tages, Veraenderung aus umgerechneten Werten; Boersenwaehrung = Original", () => {
+  const { L, ecb } = layer();
+  const price = { value: 212.21, currency: "USD", changePct: -4.4, kind: "close" };
+  const r = CS.displayHead(price, ["2026-10-21", 221.97], "2026-10-22", L);
+  assert.equal(r.currency, "EUR");
+  assert.ok(Math.abs(r.value - 212.21 / ecb.get("2026-10-22")) < 1e-9);
+  const eurPct = ((212.21 / ecb.get("2026-10-22")) / (221.97 / ecb.get("2026-10-21")) - 1) * 100;
+  assert.ok(Math.abs(r.changePct - eurPct) < 1e-9);
+  assert.equal(price.value, 212.21, "Original unveraendert");
+  const usd = layer("USD").L;
+  assert.equal(CS.displayHead(price, ["2026-10-21", 221.97], "2026-10-22", usd), price);
+});

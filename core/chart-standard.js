@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.1.0)
+   VISION UNIVERSE CORE — chart-standard.js            (chart-standard-1.2.0)
 
    EIN CHARTSTANDARD FUER ALLE PRODUKTWELTEN: ZEITRAEUME, START, WAEHRUNG.
 
@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.1.0";
+  var VERSION = "chart-standard-1.2.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
@@ -215,7 +215,7 @@
   /* Die FX-Schicht in der Reihenfolge, in der Discover sie einbindet (discover/index.html). */
   var FX_BASE = "/quant/engines/fx/";
   var FX_SCRIPTS = ["fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry", "currency-class",
-    "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap"];
+    "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap", "currency-switch"];
   var displayReady = null;
 
   /**
@@ -223,12 +223,15 @@
    * idempotent). Was die Seite schon geladen hat, wird nicht noch einmal geholt;
    * `extra` sind weitere Skripte der Welt (z. B. series-sampling.js). Liefert den
    * Vertrag oder null - ohne ihn bleibt jede Anzeige in der Boersenwaehrung.
+   * Hat ein FX-Paket die Schicht schon mitgebracht (VUFx.PACK: Lizenz und Reihen,
+   * scripts/vu2/build-release.mjs), wird nichts nachgeladen und mit dem Paket gestartet.
    */
   function ensureDisplay(extra) {
     if (displayReady) return displayReady;
     var g = typeof globalThis !== "undefined" ? globalThis : null, doc = g && g.document;
     if (!doc) return Promise.resolve(layerOf(null));
-    var want = (extra || []).concat(FX_SCRIPTS.map(function (n) { return FX_BASE + n + ".js"; }))
+    var fx = g.VUFx || {}, packed = !!(fx.Bootstrap && fx.Contract && fx.Rates);
+    var want = (extra || []).concat(packed ? [] : FX_SCRIPTS.map(function (n) { return FX_BASE + n + ".js"; }))
       .filter(function (src) { return !doc.querySelector('script[src="' + src + '"]'); });
     displayReady = Promise.all(want.map(function (src) {
       return new Promise(function (ok) {
@@ -236,10 +239,44 @@
         s.onload = ok; s.onerror = ok; (doc.head || doc.documentElement).appendChild(s);
       });
     })).then(function () {
-      var B = g.VUFx && g.VUFx.Bootstrap;
-      return B ? B.boot().catch(function () { return null; }) : null;
+      var B = g.VUFx && g.VUFx.Bootstrap, pack = g.VUFx && g.VUFx.PACK;
+      var opts = pack ? { license: pack.license || undefined, preload: pack.series || [] } : undefined;
+      return B ? B.boot(opts).catch(function () { return null; }) : null;
     }).then(function () { return layerOf(null); });
     return displayReady;
+  }
+
+  /**
+   * Kurs im Kopf einer Aktienseite (VUStockNavigator.setPrice-Objekt) in der Anzeigewaehrung.
+   * Schlusskurs (`prev` = [datum, kurs] des Vortags, `day`): mit dem EZB-Kurs seines Tages, die
+   * Veraenderung zum Vortag aus den umgerechneten Werten. Laufender Kurs (ohne `day`): mit dem
+   * juengsten Kurs (waehrend der Sitzung der Kurs der Sitzung). Ohne Umrechnung das Original.
+   */
+  function displayHead(price, prev, day, layer) {
+    if (!price || !isNum(price.value)) return price;
+    var nat = price.currency || "USD", out = {};
+    Object.keys(price).forEach(function (k) { out[k] = price[k]; });
+    if (!day) {
+      var l = displayLevel(price.value, nat, layer);
+      if (l.converted) { out.value = l.value; out.currency = l.currency; }
+      return out;
+    }
+    var two = prev ? [[prev[0], prev[1]], [day, price.value]] : [[day, price.value], [day, price.value]];
+    var d = displaySeries(two, nat, layer);
+    if (!d.converted || d.points.length !== 2) return price;
+    out.value = d.points[1][1]; out.currency = d.currency;
+    out.changePct = prev && d.points[0][1] > 0 ? (d.points[1][1] / d.points[0][1] - 1) * 100 : null;
+    return out;
+  }
+
+  /** Den vorhandenen Umschalter (VUFx.Switch) in `host` setzen; `fn` bei jedem Wechsel. Liefert die Abmeldung. */
+  function currencyControl(host, fn, layer) {
+    var g = typeof globalThis !== "undefined" ? globalThis : null, L = layerOf(layer), S = g && g.VUFx && g.VUFx.Switch;
+    if (host && S && L && host.ownerDocument) {
+      var sw = S.create({ layer: L });
+      if (sw) host.replaceChildren(host.ownerDocument.createTextNode("Anzeigewährung "), sw);
+    }
+    return L && L.onDisplayCurrencyChange && fn ? L.onDisplayCurrencyChange(fn) : function () {};
   }
 
   /** Bildunterschrift der Waehrung, fuer alle Welten gleich. */
@@ -253,6 +290,7 @@
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
     intradayEntry: intradayEntry, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
-    displayLevel: displayLevel, currencyNote: currencyNote, ensureDisplay: ensureDisplay
+    displayLevel: displayLevel, displayHead: displayHead, currencyControl: currencyControl,
+    currencyNote: currencyNote, ensureDisplay: ensureDisplay
   };
 });
