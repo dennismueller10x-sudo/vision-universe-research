@@ -20,6 +20,9 @@ on:
   workflow_run:
     workflows: ["SEC Fundamentals — Daily Incremental", "SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)"]
     types: [completed]
+    # Nur Laeufe auf main: der Erzeuger startet auch bei jedem Push auf claude/** und wird dort
+    # uebersprungen; diese Laeufe sind keine Datenlaeufe und duerfen keinen Alarm ausloesen.
+    branches: [main]
   schedule:
     # Rueckfall, falls der taegliche Lauf kein Ereignis liefert (nach dessen Zeitfenster).
     - cron: '40 14 * * *'
@@ -131,6 +134,9 @@ jobs:
           set -euo pipefail
           if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
             conclusion="$EV_CONCLUSION"; updated="$EV_UPDATED"; url="$EV_URL"
+            if [ "$conclusion" = skipped ]; then
+              echo "Lauf des Erzeugers uebersprungen ($url) - kein Datenlauf."; echo "relevant=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
           else
             last=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow sec-consumer-fundamentals.yml --branch main --status completed --limit 1 --json conclusion,updatedAt,url --jq '.[0] // {} | [.conclusion // "", .updatedAt // "", .url // ""] | @tsv')
             IFS=$'\t' read -r conclusion updated url <<< "$last"
