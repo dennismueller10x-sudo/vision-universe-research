@@ -1,0 +1,285 @@
+{
+  "schemaVersion": "real-weekly-diagnostics-1.0.0",
+  "cases": [
+    {
+      "securityId": "ref_NVDA",
+      "reason": "reference",
+      "state": "EXECUTED",
+      "sourceFrom": "1999-01-22",
+      "sourceTo": "2026-10-16",
+      "sourceHash": "bb7f081e63f736e6bb34789b1569b6033377adc15be5b7d556646671ca0385f2",
+      "inputHash": "a75ede4fdd0a05aca7ec42579bbeb8f72278d2410afcd65d6dda82eca6e82cf4",
+      "resultHash": "a4221dd0bc583b4bb56db297c4869b0de274683eff13e7611cd0655e300c66cf",
+      "history": {
+        "schemaVersion": "backtest-history-eligibility-1.0.0",
+        "state": "AVAILABLE",
+        "earliestAvailableDataDate": "1999-01-22",
+        "earliestEligibleBacktestDate": "2000-01-28",
+        "latestEligibleBacktestDate": "2026-10-09",
+        "warmupRequirement": [
+          {
+            "dependency": "weeklyPrices",
+            "bars": 53
+          }
+        ],
+        "limitingDataDependencies": [
+          "weeklyPrices"
+        ],
+        "coverageStatus": "LIMITED",
+        "dependencies": [
+          {
+            "id": "weeklyPrices",
+            "required": true,
+            "earliestAvailableDataDate": "1999-01-22",
+            "latestAvailableDataDate": "2026-10-16",
+            "earliestEligibleDate": "2000-01-28",
+            "latestEligibleDate": "2026-10-09",
+            "warmupBars": 53,
+            "trailingBars": 1,
+            "status": "LIMITED",
+            "exclusionReasons": [],
+            "source": "bb7f081e63f736e6bb34789b1569b6033377adc15be5b7d556646671ca0385f2"
+          }
+        ],
+        "exclusionReasons": [],
+        "window": {
+          "state": "AVAILABLE",
+          "period": "MAX",
+          "requestedWindowDays": null,
+          "startDate": "2000-01-28",
+          "endDate": "2026-10-09",
+          "complete": true
+        },
+        "firstEligibleTradeDate": "2000-02-04",
+        "latestTradeDate": "2026-10-16",
+        "latestCompletedM6EntryDate": "2026-04-17",
+        "latestCompletedM6SignalDate": "2026-04-10"
+      },
+      "metrics": {
+        "completedTrades": 21,
+        "totalReturn": 48.335587962740426,
+        "cagr": 0.15711117401293806,
+        "maxDrawdown": -0.8021826307649749,
+        "fees": 36566.005427046104,
+        "slippage": 18283.002713523052
+      },
+      "runMs": 8.851628000000005
+    },
+    {
+      "securityId": "ref_AAPL",
+      "reason": "long history and multiple splits",
+      "state": "EXECUTED",
+      "sourceFrom": "1990-01-05",
+      "sourceTo": "2026-10-16",
+      "sourceHash": "ee370e751e04d9c652d98e2251cbf35afbd665d49e6d32741f02225658394bb6",
+      "inputHash": "dfcaf747257a47ed69326d385ed9a0530d424ce7511c29ffb4d1aca1674b51d2",
+      "resultHash": "c8b715067fa5f3017fb2c05a2071bf499009fe77b67634522989e270474f9ded",
+      "history": {
+        "schemaVersion": "backtest-history-eligibility-1.0.0",
+        "state": "AVAILABLE",
+        "earliestAvailableDataDate": "1990-01-05",
+        "earliestEligibleBacktestDate": "1991-01-11",
+        "latestEligibleBacktestDate": "2026-10-09",
+        "warmupRequirement": [
+          {
+            "dependency": "weeklyPrices",
+            "bars": 53
+          }
+        ],
+        "limitingDataDependencies": [
+          "weeklyPrices"
+        ],
+        "coverageStatus": "LIMITED",
+        "dependencies": [
+          {
+            "id": "weeklyPrices",
+            "required": true,
+            "earliestAvailableDataDate": "1990-01-05",
+            "latestAvailableDataDate": "2026-10-16",
+            "earliestEligibleDate": "1991-01-11",
+            "latestEligibleDate": "2026-10-09",
+            "warmupBars": 53,
+            "trailingBars": 1,
+            "status": "LIMITED",
+            "exclusionReasons": [],
+            "source": "ee370e751e04d9c652d98e2251cbf35afbd665d49e6d32741f02225658394bb6"
+          }
+        ],
+        "exclusionReasons": [],
+        "window": {
+          "state": "AVAILABLE",
+          "period": "MAX",
+          "requestedWindowDays": null,
+          "startDate": "1991-01-11",
+          "endDate": "2026-10-09",
+          "complete": true
+        },
+        "firstEligibleTradeDate": "1991-01-18",
+        "latestTradeDate": "2026-10-16",
+        "latestCompletedM6EntryDate": "2026-04-17",
+        "latestCompletedM6SignalDate": "2026-04-10"
+      },
+      "metrics": {
+        "completedTrades": 28,
+        "totalReturn": 10.54505555068329,
+        "cagr": 0.07079651729092218,
+        "maxDrawdown": -0.7708752259910043,
+        "fees": 19403.84247134255,
+        "slippage": 9701.921235671274
+      },
+      "runMs": 5.063151000000005
+    },
+    {
+      "securityId": "ref_XOM",
+      "reason": "dividend payer: price return excludes distributions",
+      "state": "EXECUTED",
+      "sourceFrom": "1990-01-05",
+      "sourceTo": "2026-10-16",
+      "sourceHash": "5d2982cb2d3f7763d84b14c7f378bee788846c862d0a55af20146427aed521fa",
+      "inputHash": "2f28a3c9d0dc58e454003593e56fe92f0eb771606cd488f6fdd897ea91f10ff2",
+      "resultHash": "9cab83794d2c3633910759b993b2bee4fec8f0750c784009d934a6a2239d8651",
+      "history": {
+        "schemaVersion": "backtest-history-eligibility-1.0.0",
+        "state": "AVAILABLE",
+        "earliestAvailableDataDate": "1990-01-05",
+        "earliestEligibleBacktestDate": "1991-01-11",
+        "latestEligibleBacktestDate": "2026-10-09",
+        "warmupRequirement": [
+          {
+            "dependency": "weeklyPrices",
+            "bars": 53
+          }
+        ],
+        "limitingDataDependencies": [
+          "weeklyPrices"
+        ],
+        "coverageStatus": "LIMITED",
+        "dependencies": [
+          {
+            "id": "weeklyPrices",
+            "required": true,
+            "earliestAvailableDataDate": "1990-01-05",
+            "latestAvailableDataDate": "2026-10-16",
+            "earliestEligibleDate": "1991-01-11",
+            "latestEligibleDate": "2026-10-09",
+            "warmupBars": 53,
+            "trailingBars": 1,
+            "status": "LIMITED",
+            "exclusionReasons": [],
+            "source": "5d2982cb2d3f7763d84b14c7f378bee788846c862d0a55af20146427aed521fa"
+          }
+        ],
+        "exclusionReasons": [],
+        "window": {
+          "state": "AVAILABLE",
+          "period": "MAX",
+          "requestedWindowDays": null,
+          "startDate": "1991-01-11",
+          "endDate": "2026-10-09",
+          "complete": true
+        },
+        "firstEligibleTradeDate": "1991-01-18",
+        "latestTradeDate": "2026-10-16",
+        "latestCompletedM6EntryDate": "2026-04-17",
+        "latestCompletedM6SignalDate": "2026-04-10"
+      },
+      "metrics": {
+        "completedTrades": 28,
+        "totalReturn": 1.6578596431802324,
+        "cagr": 0.027710651733054537,
+        "maxDrawdown": -0.3212687969204602,
+        "fees": 10219.124456764936,
+        "slippage": 5109.562228382468
+      },
+      "runMs": 5.5268199999999865
+    },
+    {
+      "securityId": "ref_ARM",
+      "reason": "shorter listing history",
+      "state": "EXECUTED",
+      "sourceFrom": "2023-09-15",
+      "sourceTo": "2026-10-16",
+      "sourceHash": "2df97057be7033b8ba820aaeae26f961acf7e11c20afca86b95db9ac4b4600a6",
+      "inputHash": "f3b8ff2e4f26b8532a10c9ab0542ed248cdb21d60bd09d55fb011f0d15700c53",
+      "resultHash": "da8af3cb22db3dcd6ffdf29067bb45d6318acba6f50df2405bfa82fb80db77ab",
+      "history": {
+        "schemaVersion": "backtest-history-eligibility-1.0.0",
+        "state": "AVAILABLE",
+        "earliestAvailableDataDate": "2023-09-15",
+        "earliestEligibleBacktestDate": "2024-09-20",
+        "latestEligibleBacktestDate": "2026-10-09",
+        "warmupRequirement": [
+          {
+            "dependency": "weeklyPrices",
+            "bars": 53
+          }
+        ],
+        "limitingDataDependencies": [
+          "weeklyPrices"
+        ],
+        "coverageStatus": "LIMITED",
+        "dependencies": [
+          {
+            "id": "weeklyPrices",
+            "required": true,
+            "earliestAvailableDataDate": "2023-09-15",
+            "latestAvailableDataDate": "2026-10-16",
+            "earliestEligibleDate": "2024-09-20",
+            "latestEligibleDate": "2026-10-09",
+            "warmupBars": 53,
+            "trailingBars": 1,
+            "status": "LIMITED",
+            "exclusionReasons": [],
+            "source": "2df97057be7033b8ba820aaeae26f961acf7e11c20afca86b95db9ac4b4600a6"
+          }
+        ],
+        "exclusionReasons": [],
+        "window": {
+          "state": "AVAILABLE",
+          "period": "MAX",
+          "requestedWindowDays": null,
+          "startDate": "2024-09-20",
+          "endDate": "2026-10-09",
+          "complete": true
+        },
+        "firstEligibleTradeDate": "2024-09-27",
+        "latestTradeDate": "2026-10-16",
+        "latestCompletedM6EntryDate": "2026-04-17",
+        "latestCompletedM6SignalDate": "2026-04-10"
+      },
+      "metrics": {
+        "completedTrades": 1,
+        "totalReturn": 0.4795513645767342,
+        "cagr": 0.208353707393085,
+        "maxDrawdown": -0.4816365539525781,
+        "fees": 275.1464729318022,
+        "slippage": 137.5732364659011
+      },
+      "runMs": 0.7509530000000382
+    },
+    {
+      "securityId": "ref_BGC",
+      "reason": "inactive listing: terminal value must be evidenced",
+      "state": "BLOCKED",
+      "sourceFrom": "1999-12-10",
+      "sourceTo": "2026-10-16",
+      "reasonCode": "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED"
+    },
+    {
+      "securityId": "ref_AAAC",
+      "reason": "insufficient weekly warm-up",
+      "state": "BLOCKED",
+      "sourceFrom": "2025-12-12",
+      "sourceTo": "2026-10-16",
+      "reasonCode": "INSUFFICIENT_HISTORY"
+    },
+    {
+      "securityId": "ref_AACT",
+      "reason": "observed missing weekly interval",
+      "state": "BLOCKED",
+      "sourceFrom": "2023-06-16",
+      "sourceTo": "2026-10-16",
+      "reasonCode": "MISSING_WEEKS:[{\"after\":\"2025-09-24\",\"before\":\"2026-02-06\"}]"
+    }
+  ]
+}
