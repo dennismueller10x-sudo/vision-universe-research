@@ -35,3 +35,8 @@ test('shared adapter executes eligible real histories and retains the existing A
 test('independent checker detects a corrupted execution price',()=>{
  const r=run(data);r.trades[0].exitPrice*=2;const dir=mkdtempSync(join(tmpdir(),'vu-corrupt-'));try{const file=join(dir,'result.json');writeFileSync(file,JSON.stringify(r));assert.throws(()=>execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root,stdio:'pipe'}));}finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test('frozen V4 cutoff retains independently checked capital despite newly appended weeks',()=>{
+ const a=run(data,{asOf:'2026-10-16'});assert.equal(a.input.end,'2026-10-16');assert.equal(a.trades.length,21);assert.ok(Math.abs(a.equity.at(-1).value-4926635.787429842)<1e-6);assert.ok(Math.abs(a.metrics.cagr-.15705035720313631)<1e-12);
+ const dir=mkdtempSync(join(tmpdir(),'vu-v4-frozen-'));try{const file=join(dir,'result.json');writeFileSync(file,JSON.stringify(a));assert.equal(JSON.parse(execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root})).state,'PASS');}finally{rmSync(dir,{recursive:true,force:true});}
+});

@@ -9,9 +9,10 @@ async function credential(file){
  const stat=await fs.lstat(file);if(!stat.isFile()||stat.isSymbolicLink()||stat.size>512||(stat.mode&0o077))throw Error('PRIVATE_CREDENTIAL_FILE_REQUIRED');
  const key=(await fs.readFile(file,'utf8')).trim();if(!/^[a-f0-9]{64}$/.test(key))throw Error('INVALID_CREDENTIAL_FILE');return key;
 }
-function create({directory,credentialKey,root=path.resolve(__dirname,'..'),allowedTickers=['NVDA'],ttlMs=600000,maxResponseBytes=262144,clock=Date.now}={}){
+function create({directory,credentialKey,root=path.resolve(__dirname,'..'),allowedTickers=['NVDA'],ttlMs=600000,maxResponseBytes=262144,clock=Date.now,publicDirectory=null}={}){
  if(!/^[a-f0-9]{64}$/.test(credentialKey||'')||!Number.isInteger(ttlMs)||ttlMs<100||ttlMs>900000||!Number.isInteger(maxResponseBytes)||maxResponseBytes<256||maxResponseBytes>2097152)throw Error('INVALID_PREVIEW_CONFIGURATION');
  if(!allowedTickers.length||allowedTickers.length>32||allowedTickers.some(t=>!/^[A-Z0-9.-]{1,12}$/.test(t)))throw Error('INVALID_PREVIEW_ALLOW_LIST');
+ const integrated=publicDirectory?require('./quant-backtest-preview-site.cjs').create({directory:publicDirectory,privateDirectory:directory,root}):null;
  const grants=new Set(allowedTickers),store=Store.create({directory,repositoryRoot:root}),sessions=new Map(),secret=crypto.createHash('sha256').update(credentialKey).digest();
  const freshness=require('./quant-backtest-freshness.cjs').create({root,directory,clock});
  const loadJSON=async p=>JSON.parse(await fs.readFile(path.join(root,p.replace(/^\//,'')),'utf8'));
@@ -35,7 +36,9 @@ function create({directory,credentialKey,root=path.resolve(__dirname,'..'),allow
   try{
    if(!origin||req.headers.host!==new URL(origin).host||req.headers.origin&&req.headers.origin!==origin||req.headers['sec-fetch-site']&&!['same-origin','none'].includes(req.headers['sec-fetch-site']))return deny(res,403,'ORIGIN_NOT_ALLOWED');
    const url=new URL(req.url,origin);
-   if(url.pathname===PREFIX&&req.method==='GET'&&!url.search){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(await fs.readFile(path.join(root,'scripts/quant/preview/index.html')));return;}
+   if(integrated&&req.method==='GET'){const served=await integrated(req,res,{authenticated:!!session(req),prefix:PREFIX});if(served)return;}
+
+   if(url.pathname===PREFIX&&req.method==='GET'&&!url.search){res.setHeader('Content-Type','text/html; charset=utf-8');const html=await fs.readFile(path.join(root,'scripts/quant/preview/index.html'),'utf8');res.end(integrated?html.replace('</main>','<p><a href="/quant/#/aktie/NVDA">Bestehende Quant-Ansicht mit realem Backtest öffnen</a></p></main>'):html);return;}
    if(assets.has(url.pathname)&&req.method==='GET'&&!url.search){const [file,type]=assets.get(url.pathname);res.setHeader('Content-Type',type);res.end(await fs.readFile(path.join(root,file)));return;}
    if(url.pathname===PREFIX+'login'&&req.method==='POST'&&!url.search){
     if(req.headers.origin!==origin||req.headers['content-type']!=='application/json')return deny(res,403);
@@ -46,10 +49,10 @@ function create({directory,credentialKey,root=path.resolve(__dirname,'..'),allow
     if(!crypto.timingSafeEqual(secret,supplied)){failures++;if(failures>=5){failureUntil=clock()+60000;failures=0;}return deny(res);}
     for(const [t,s] of sessions)if(s.expiresAt<=clock())sessions.delete(t);if(sessions.size>=32)return deny(res,429,'SESSION_LIMIT');
     failures=0;const token=crypto.randomBytes(32).toString('hex'),expiresAt=clock()+ttlMs;sessions.set(token,{expiresAt});
-    res.setHeader('Set-Cookie',COOKIE+'='+token+'; HttpOnly; SameSite=Strict; Path='+PREFIX+'; Max-Age='+Math.ceil(ttlMs/1000));return json(res,200,{state:'AUTHORIZED',expiresAt});
+    res.setHeader('Set-Cookie',COOKIE+'='+token+'; HttpOnly; SameSite=Strict; Path='+(integrated?'/':PREFIX)+'; Max-Age='+Math.ceil(ttlMs/1000));return json(res,200,{state:'AUTHORIZED',expiresAt});
    }
    const auth=session(req);if(!auth)return deny(res);
-   if(url.pathname===PREFIX+'logout'&&req.method==='POST'&&!url.search){if(req.headers.origin!==origin)return deny(res,403);sessions.delete(auth.token);res.setHeader('Set-Cookie',COOKIE+'=; HttpOnly; SameSite=Strict; Path='+PREFIX+'; Max-Age=0');return json(res,200,{state:'SIGNED_OUT'});}
+   if(url.pathname===PREFIX+'logout'&&req.method==='POST'&&!url.search){if(req.headers.origin!==origin)return deny(res,403);sessions.delete(auth.token);res.setHeader('Set-Cookie',COOKIE+'=; HttpOnly; SameSite=Strict; Path='+(integrated?'/':PREFIX)+'; Max-Age=0');return json(res,200,{state:'SIGNED_OUT'});}
    if(req.method!=='GET')return deny(res,405,'METHOD_NOT_ALLOWED');
    if(url.pathname===PREFIX+'session'&&!url.search){const release=await store.loadJSON('release.json');return json(res,200,{state:'AUTHORIZED',expiresAt:auth.expiresAt,generation:release.generation,allowedTickers:[...grants]});}
    if(url.pathname!==PREFIX+'data')return deny(res,404,'NOT_FOUND');

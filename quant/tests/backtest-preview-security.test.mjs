@@ -7,8 +7,10 @@ import {join,resolve} from 'node:path';
 import {request as httpRequest} from 'node:http';
 import {randomBytes} from 'node:crypto';
 const require=createRequire(import.meta.url),Preview=require('../../server/quant-backtest-preview.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
+const A=require('../engines/weekly-real-adapter.cjs'),B=require('../engines/weekly-benchmark.cjs'),{run}=require('../../scripts/quant/run-real-weekly-backtest.cjs');
 const root=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-preview-security-')),key=randomBytes(32).toString('hex');
 materialize({root,output:out,ids:['ref_NVDA','ref_MSFT','ref_XOM','ref_ARM','ref_AAPL','ref_BGC','ref_AAAC','ref_AACT']});
+const expected=run(A.load(root,'ref_NVDA'),{benchmark:B.load(root)});
 let now=Date.now();const app=Preview.create({directory:out,credentialKey:key,clock:()=>now,ttlMs:1000,allowedTickers:['NVDA','MSFT','XOM','ARM','AAPL','BGC','AAAC','AACT']}),url=await app.listen(),origin=new URL(url).origin;
 const call=(route,{cookie,method='GET',body,headers={}}={})=>fetch(url+route,{method,headers:{...(cookie?{Cookie:cookie}:{}),...(body?{'Content-Type':'application/json',Origin:origin}:{}),...headers},body:body===undefined?undefined:typeof body==='string'?body:JSON.stringify(body)});
 async function login(){const res=await call('login',{method:'POST',body:{key}});assert.equal(res.status,200);return res.headers.get('set-cookie').split(';')[0];}
@@ -19,8 +21,8 @@ test('loopback binding, no embedded secrets, no unauthenticated inventory or dat
 });
 test('explicit session, HttpOnly/SameSite cookie, real NVDA and lazy pinned details',async()=>{
  const response=await call('login',{method:'POST',body:{key}});assert.equal(response.status,200);assert.match(response.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);const cookie=response.headers.get('set-cookie').split(';')[0];
- const res=await call('data?ticker=NVDA',{cookie});assert.equal(res.status,200);assert.match(res.headers.get('cache-control'),/private, no-store/);assert.equal(res.headers.get('etag'),null);const s=await res.json();assert.equal(s.certification,'NOT_CERTIFIED');assert.equal(s.result.metrics.completedTrades,21);assert.ok(Math.abs(s.result.endCapital-4926635.787429842)<1e-6);
- const params=new URLSearchParams({ticker:'NVDA',section:'equity',generation:s.generation,listingId:s.identity.listingId});const d=await call('data?'+params,{cookie});assert.equal(d.status,200);assert.equal((await d.json()).result.equity.length,1395);
+ const res=await call('data?ticker=NVDA',{cookie});assert.equal(res.status,200);assert.match(res.headers.get('cache-control'),/private, no-store/);assert.equal(res.headers.get('etag'),null);const s=await res.json();assert.equal(s.certification,'NOT_CERTIFIED');assert.equal(s.result.metrics.completedTrades,21);assert.ok(Math.abs(s.result.endCapital-expected.equity.at(-1).value)<1e-6);
+ const params=new URLSearchParams({ticker:'NVDA',section:'equity',generation:s.generation,listingId:s.identity.listingId});const d=await call('data?'+params,{cookie});assert.equal(d.status,200);assert.equal((await d.json()).result.equity.length,expected.equity.length);
  params.set('section','trades');const t=await (await call('data?'+params,{cookie})).json();assert.equal(t.result.trades.length,21);assert.equal(t.result.openPosition.completed,false);
 });
 test('missing, wrong and expired authority cannot bypass through cached/conditional detail URLs',async()=>{

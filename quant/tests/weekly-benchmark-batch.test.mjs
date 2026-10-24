@@ -9,7 +9,7 @@ const require=createRequire(import.meta.url),A=require('../engines/weekly-real-a
 const root=resolve(import.meta.dirname,'../..'),data=A.load(root,'ref_NVDA'),benchmark=B.load(root);
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
 test('legacy NVDA reference is preserved, per-side costs charge purchases and open entry',()=>{
- const legacy=run(data,{costModel:'LEGACY_EXIT_NOTIONAL',benchmark}),r=run(data,{benchmark});
+ const legacy=run(data,{costModel:'LEGACY_EXIT_NOTIONAL',benchmark,asOf:'2026-10-16'}),r=run(data,{benchmark});
  near(legacy.equity.at(-1).value,4933558.796274043);assert.equal(legacy.trades.length,21);
  for(const t of [...r.trades,r.openPosition].filter(Boolean)){
   near(t.entryCapital,t.entryGross+t.entryFees+t.entrySlippage);near(t.units*t.entryPrice,t.entryGross);
@@ -22,7 +22,7 @@ test('legacy NVDA reference is preserved, per-side costs charge purchases and op
 test('real SPY aligns every exact equity date, independent Python verifies both cost models',()=>{
  const dir=mkdtempSync(join(tmpdir(),'weekly-reference-'));
  try{for(const costModel of ['PER_SIDE_NOTIONAL','LEGACY_EXIT_NOTIONAL']){
- const r=run(data,{benchmark,costModel});assert.equal(r.marketBenchmark.state,'AVAILABLE');assert.equal(r.marketBenchmark.points.length,r.equity.length);assert.equal(r.marketBenchmark.from,r.equity[0].date);assert.equal(r.marketBenchmark.to,r.equity.at(-1).date);
+ const r=run(data,{benchmark,costModel,asOf:'2026-10-16'});assert.equal(r.marketBenchmark.state,'AVAILABLE');assert.equal(r.marketBenchmark.points.length,r.equity.length);assert.equal(r.marketBenchmark.from,r.equity[0].date);assert.equal(r.marketBenchmark.to,r.equity.at(-1).date);
  const file=join(dir,'run.json');writeFileSync(file,JSON.stringify(r));assert.equal(JSON.parse(execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root,encoding:'utf8'})).state,'PASS');
  }}finally{rmSync(dir,{recursive:true,force:true});}
 });
@@ -30,7 +30,7 @@ test('missing SPY dates or currency mismatch remain separate from executable str
  const sparse={...benchmark,byDate:new Map(benchmark.byDate)};sparse.byDate.delete('2000-01-28');
  const r=run(data,{benchmark:sparse});assert.equal(r.marketBenchmark.state,'BENCHMARK_UNAVAILABLE');assert.equal(r.trades.length,21);
  assert.equal(B.compare(benchmark,r.equity,r.metrics,'EUR').reason,'CURRENCY_MISMATCH');
- const poison={...benchmark,byDate:new Map(benchmark.byDate)};poison.byDate.set('2099-01-01',1e12);near(run(data,{benchmark:poison}).marketBenchmark.cagr,run(data,{benchmark}).marketBenchmark.cagr);
+ const poison={...benchmark,byDate:new Map(benchmark.byDate)};poison.byDate.set('2099-01-01',1e12);near(run(data,{benchmark:poison,asOf:'2026-10-16'}).marketBenchmark.cagr,run(data,{benchmark,asOf:'2026-10-16'}).marketBenchmark.cagr);
 });
 test('benchmark identity and Total Return cannot masquerade as PRICE_RETURN',()=>{
  const raw=JSON.parse(readFileSync(join(root,B.SOURCE))),catalog=JSON.parse(readFileSync(join(root,'quant/data/market/multi-asset/instruments.json')));
@@ -50,4 +50,12 @@ test('stored instrument class and unresolved corporate actions cannot bypass ada
  assert.throws(()=>A.validate(raw,{...id,instrument_type:'PREFERRED'}),/INELIGIBLE_EQUITY/);
  assert.throws(()=>A.validate({...raw,priceSeriesType:'TOTAL_RETURN'},id),/REAL_WEEKLY_PRICE_REQUIRED/);
  const unsupported=structuredClone(raw);unsupported.corporateActions=null;assert.throws(()=>A.validate(unsupported,id),/CORPORATE_ACTION_UNRESOLVED/);
+});
+
+test('MAX beyond stored SPY coverage is not shortened or filled',()=>{
+ const r=run(data,{benchmark});
+ assert.equal(r.input.end,data.points.at(-1)[0]);
+ const missing=r.equity.filter(p=>!benchmark.byDate.has(p.date));
+ assert.equal(r.marketBenchmark.state,missing.length?'BENCHMARK_UNAVAILABLE':'AVAILABLE');
+ if(missing.length){assert.equal(r.marketBenchmark.cagr,undefined);assert.equal(r.marketBenchmark.points,undefined);}
 });
