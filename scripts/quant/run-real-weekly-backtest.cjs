@@ -16,7 +16,10 @@ function run(data,{period='MAX',asOf=data.asOf,costModel='PER_SIDE_NOTIONAL',ben
   if(asOf>data.asOf) throw Error('AS_OF_AFTER_SOURCE');
   const points=data.points.filter(p=>p[0]<=asOf), dates=points.map(p=>p[0]), close=points.map(p=>p[1]);
   const eligibility=History.resolve([{id:'weeklyPrices',dates,warmupBars:Signal.WARMUP_WEEKS,trailingBars:1,coverageStatus:'LIMITED',source:data.sourceHash}],{asOf});
-  const window=History.windowFor(period,eligibility,dates.at(-1));
+  if(eligibility.state!=='AVAILABLE') throw Error('HISTORY_UNAVAILABLE');
+  // Signal eligibility reserves the following execution week; valuation windows end at the last actual mark.
+  const valuationEligibility=History.resolve([{id:'weeklyPrices',dates,warmupBars:Signal.WARMUP_WEEKS,trailingBars:0,coverageStatus:'LIMITED',source:data.sourceHash}],{asOf});
+  const window=History.windowFor(period,valuationEligibility,dates.at(-1));
   if(window.state!=='AVAILABLE') throw Error('HISTORY_UNAVAILABLE');
   const start=dates.findIndex(d=>d>=window.startDate), end=dates.length-1;
   const rule=Signal.RULE_BY_ID.NEW_52W_HIGH, events=Signal.detectEvents(close,rule);

@@ -55,7 +55,9 @@ def verify(report, root):
         return dict(endCapital=values[-1], totalReturn=values[-1]/100000-1, cagr=(values[-1]/100000)**(1/years)-1, maxDrawdown=worst)
     for key,value in statistics(curve).items():
         if key in report['metrics']: near(value,report['metrics'][key])
-    for actual,value in zip(report['equity'],curve): near(actual['value'],value)
+    for actual,value,expected_date in zip(report['equity'],curve,dates[start:]):
+        assert actual['date'] == expected_date
+        near(actual['value'],value)
     near(sum(c[0] for c in charges),report['metrics']['fees'])
     near(sum(c[1] for c in charges),report['metrics']['slippage'])
     buy_hold = [100000*p/prices[start] for p in prices[start:]]
