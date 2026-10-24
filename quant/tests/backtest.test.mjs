@@ -271,6 +271,21 @@ test("Ein Startdatum vor dem Datenbestand wird abgelehnt statt verschoben", () =
   }), /Datenbestand/);
 });
 
+test("MAX beginnt nach dem tatsächlich verfügbaren Warm-up statt an einem fixen Kalenderdatum", () => {
+  const definition = JSON.parse(JSON.stringify(qualityMomentum.versions[0].definition));
+  definition.execution.timing = "next_close";
+  const maxRun = Backtest.runBacktest({
+    definition, endDate: "2010-01-02", period: "MAX", provider,
+    dataSnapshotId: dataset.meta.dataSnapshotId
+  });
+  assert.ok(maxRun.historyWindow.earliestAvailableDataDate === dataset.tradingDays[0]);
+  assert.ok(maxRun.historyWindow.earliestEligibleBacktestDate > dataset.tradingDays[0]);
+  assert.ok(maxRun.startDate >= maxRun.historyWindow.earliestEligibleBacktestDate);
+  assert.equal(maxRun.historyWindow.requestedPeriod, "MAX");
+  assert.equal(maxRun.capabilities.historicalCoverageStatus, "LIMITED", "synthetische Historie ist keine reale Marktvalidierung");
+  assert.ok(maxRun.warnings.some((w) => w.code === "historical_coverage_limited"));
+});
+
 test("Kennzahlen sind vollstaendig und plausibel (§42)", () => {
   const m = run.metrics;
   for (const key of ["cagr", "totalReturn", "volatility", "maxDrawdown", "sharpe", "sortino", "calmar", "turnover"]) {

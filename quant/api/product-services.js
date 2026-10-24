@@ -566,6 +566,16 @@ function create(options){
   if(!r.row.tracking)return {state:'UNAVAILABLE',reason:'TRACKING_NOT_MATERIALIZED'};
   return {state:'AVAILABLE',ticker:r.ticker,radarAsOf:r.shard.radarAsOf,...r.row.tracking,events:(r.row.card&&r.row.card.events)||[]};
  }
+ /* Existing Quant entry point; private implementation is never bundled into the UI.
+    Future UI adapters must call an authorized server transport, never a raw store. */
+ let realBacktestReader=null;
+ async function getRealBacktest(ticker,selection){
+  const unavailable=reason=>({state:'UNAVAILABLE',reason,certification:'NOT_CERTIFIED',productionApproved:false});
+  if(options.realBacktestPreview?.enabled!==true||options.realBacktestPreview.audience!=='INTERNAL_REVIEW'||!options.realBacktestStore)return unavailable('REAL_BACKTEST_PREVIEW_DISABLED');
+  if(typeof module==='undefined'||!module.exports||typeof require!=='function')return unavailable('PRIVATE_SERVER_READER_REQUIRED');
+  if(!realBacktestReader)realBacktestReader=require('./real-backtest-service.cjs').create({options,identity,config,permission,identityModel});
+  return realBacktestReader.getRealBacktest(ticker,selection);
+ }
  /* BACKTEST: Signal- und Setup-Studie, Bestandsaufnahme je Art. Jede
   * Studie wird gegen die Vertrauensregel der Engine geprueft; verletzt sie
   * sie, wird sie nicht gezeigt. */
@@ -1418,7 +1428,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
