@@ -1,0 +1,11 @@
+{
+  "sourceMain": "b4e7ecfaa4f9fa6c1b9470a7d31abd035c15d8c2",
+  "baselineSignalAndCertification": {"tests": 26, "pass": 26, "fail": 0},
+  "fullQuantSuite": {"command": "node --test 'quant/tests/*.test.mjs'", "tests": 2801, "pass": 2800, "fail": 1, "durationMs": 417915.369547},
+  "finalFocusedTests": {"tests": 11, "pass": 11, "fail": 0},
+  "unchangedMainCountercheck": {"command": "node --test quant/tests/universe-list.test.mjs", "tests": 8, "pass": 7, "fail": 1, "failure": "AAPL overview price 347.725 vs stock page 347.73", "worktree": "/workspace/quant-weekly-main-baseline"},
+  "independentPythonReplay": {"state": "PASS", "trades": 21, "equityObservations": 1395},
+  "byteIdenticalRepeatedRun": true,
+  "mergeReadiness": "BLOCKED_BY_EXISTING_MAIN_TEST_FAILURE_AND_PENDING_REMOTE_CHECKS",
+  "certification": "NOT_CERTIFIED"
+}
