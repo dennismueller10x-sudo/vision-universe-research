@@ -190,6 +190,19 @@ test('SF7-EX-MAXDD: Drawdown ueber die Kurve inklusive Startkapital, Spitze vor 
   assert.equal(maxDrawdown([{ date: day(0), equity: 100 }]), 0);
 });
 
+test('SF7-D3-TURTLE-OPTIMISTIC-CHARACTERIZED: Turtle-Alternative OPTIMISTIC uebergeht auch nach einem Eroeffnungs-Fill den Stop desselben Balkens (offen, Engine gepinnt); Referenz PESSIMISTIC stoppt', async () => {
+  const { runTurtle } = await import('../source-faithful/methods/turtle.mjs');
+  const bars = flat(70);
+  bars.push(bar(70, 11, 11.1, 9.0, 9.5)); // gap above the 55-day high: entry at the open, then the low runs through every stop
+  for (let k = 71; k < 80; k++) bars.push(bar(k, 9.5, 9.6, 9.4, 9.5));
+  const d = ds({ id: 'A', bars });
+  const ref = runTurtle(d, { system: 'S2', universe: OPEN_UNIVERSE, slippageBps: 0, commissionBps: 0 });
+  const opt = runTurtle(d, { system: 'S2', universe: OPEN_UNIVERSE, slippageBps: 0, commissionBps: 0, entryBarOrder: 'OPTIMISTIC' });
+  assert.equal(ref.positionTrades[0].entryDate, day(70)); assert.equal(ref.positionTrades[0].exitDate, day(70));
+  // known and listed (docs SUPERTRADER_7 SF7-D3): the open fill came first, the stop is certain, OPTIMISTIC still holds it
+  assert.equal(opt.positionTrades[0].exitDate > day(70), true);
+});
+
 test('SF7-RUNNER-BLOCK: der sf5-Runner misst jede SF7-Variante neben ihrer unveraenderten Vergleichsvariante; oeffentlich nur Zaehlungen', async () => {
   const { lifecyclePart } = await import('../source-faithful/research/run-sf5-lifecycle.mjs');
   const r0 = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
