@@ -97,7 +97,7 @@ export async function buildHistory({ root }) {
   root = resolve(root);
   const stockDir = join(root, 'discover/data/stocks/US_REAL'), consumerDir = join(root, 'quant/data/sec/consumer');
   if (!existsSync(consumerDir)) throw Error('CONSUMER_SOURCE_MISSING');
-  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0 };
+  const shards = {}, stats = { stocks: 0, projected: 0, noFundamentals: 0, noSource: 0, invalid: 0, published: 0, pending: 0, consumerAsOf: null };
   const sic = await sicByTicker(root), members = [];
   const tenK = await annualReportDates(root), sec = await secProcessed(root);
   const names = (await readdir(stockDir)).filter((n) => /^[A-Z0-9.-]+\.json$/.test(n)).sort();
@@ -119,6 +119,7 @@ export async function buildHistory({ root }) {
     projected.sic4 = sic4;
     if (Object.keys(projected.published).length) stats.published++;
     if (pendingFiling(projected)) stats.pending++;
+    if (!stats.consumerAsOf || projected.asOf > stats.consumerAsOf) stats.consumerAsOf = projected.asOf;
     (shards[key] ||= { schema: SHARD_SCHEMA, shard: key, issuers: {} }).issuers[ticker] = projected;
     stats.projected++;
     if (sic4) members.push({ ticker, sic4, sic2: sic4.slice(0, 2), sector: sectorFromSic(sic4), values: await issuerValues(root, projected, doc) });

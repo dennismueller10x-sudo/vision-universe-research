@@ -29,5 +29,6 @@ jobs:
           node --check fundamental/app.js
           node --check scripts/fundamental/build-history.mjs
           node --check scripts/fundamental/sec-freshness.mjs
+          node --check scripts/fundamental/verify-publication.mjs
       - name: Model and data tests
         run: node --test "fundamental/tests/*.test.mjs"

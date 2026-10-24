@@ -46,7 +46,7 @@ Keine Identität außerhalb von `core/identity.js`: Scherben über `shardKey`, K
 
 ## Historische Bewertung (nach jedem Jahresbericht)
 
-`catalog.js#historicalValuation`, nur in USD berichtende Unternehmen. Jeder Wert ist gebaut wie der aktuelle (Kurs ÷ zuletzt gemeldete Jahres- bzw. LTM-Zahl), nur zu einem früheren Datum – **ohne Kenntnis späterer Zahlen** und nie mit heutigem Kurs:
+`catalog.js#historicalValuation`, nur in USD berichtende Unternehmen. Jeder Wert ist gebaut wie der aktuelle (Kurs ÷ zuletzt gemeldete Jahres- bzw. LTM-Zahl), nur zu einem früheren Datum – mit dem **Kurs nach der Veröffentlichung** und nie mit heutigem Kurs (zu später korrigierten Jahreszahlen siehe „Grenze“ unten):
 
 1. **Datum:** Einreichung des Jahresberichts (10-K) bei der SEC. Quelle: SIC-Verlauf der SEC-Pipeline (`quant/data/sec/sic-history`, jedes 10-K/10-Q mit Annahmezeitpunkt), für Berichte nach dessen letztem Lauf das Meldedatum der Jahreswerte selbst (`build-history.mjs#publicationDates`). Ohne Datum kein Wert (`NO_PUBLICATION_DATE`).
 2. **Kurs:** erster Wochenschluss **nach** diesem Datum (höchstens 10 Tage danach) aus der splitbereinigten Wochenreihe (ADR-002). Ein Kurs vor der Veröffentlichung würde einen damals unbekannten Gewinn verwenden (Look-ahead) – das KGV „am GJ-Ende“ wurde deshalb ersetzt.
@@ -58,7 +58,7 @@ Keine Identität außerhalb von `core/identity.js`: Scherben über `shardKey`, K
 
 **Vergleichbarkeit:** Aktuelles KGV (Discover = Screener) = Schlusskurs ÷ verwässerter Gewinn je Aktie der letzten zwölf Monate laut letztem 10-Q/10-K; Querschnittsmedian aus denselben Werten (nur Unternehmen mit Gewinn). Historisches KGV und sein Branchenmedian folgen derselben Rechnung zum Tag des Jahresberichts. Beispiel NVIDIA: aktuell 212,21 $ (22.10.2026) ÷ 7,91 $ = 26,8; GJ 2026 nach dem 10-K vom 25.02.2026: 177,19 $ (27.02.2026) ÷ 4,90 $ = 36,2.
 
-**Grenze:** Werte stammen aus der jeweils neuesten Meldung (`as_of_latest`); spätere Korrekturen eines Jahreswerts (Restatements) sind darin enthalten. Die ursprünglich gemeldeten Fassungen liegen in der Auslieferung nicht vor.
+**Grenze (Restatements):** Werte stammen aus der jeweils neuesten Meldung (`as_of_latest` der Verbraucherdaten). Hat ein Unternehmen einen Jahreswert später korrigiert (10-K/A oder Vorjahresspalte des nächsten 10-K), steht im Verlauf der korrigierte Wert – zum Kurs nach dem *ursprünglichen* 10-K. Der Kurs ist damit look-ahead-frei, die Kennzahl im betroffenen Jahr nicht zwingend: sie kann vom am Meldetag sichtbaren Wert abweichen. Die ursprünglich gemeldeten Fassungen liegen in der Auslieferung nicht vor; companyfacts unterscheidet eine unveränderte Wiederholung in einer späteren Meldung nicht von einer Korrektur, deshalb wird kein Jahr als „korrigiert“ markiert. In der Oberfläche steht diese Einschränkung bei jeder historischen Bewertungskennzahl und in der Methodik.
 
 Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht berechnet:** PEG und Verhältnisse für Berichte in anderer Währung.
 
@@ -73,6 +73,11 @@ Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht
 - Jede Aktienseite zeigt den neuesten Berichtszeitraum und das Datum der letzten verarbeiteten SEC-Meldung.
 - Liegt bei der SEC bereits ein neuerer 10-Q/10-K vor (`quant/data/fundamentals/daily/state.json` der täglichen SEC-Pipeline), steht dort sichtbar, dass er in den verarbeiteten Daten noch fehlt. Zahlen aus Ergebnismitteilungen (Pressemitteilung, 8-K) werden nicht übernommen; maßgeblich sind die eingereichten 10-Q/10-K.
 - **Ablauf:** tägliche SEC-Pipeline (`sec-fundamentals-daily.yml`, 06:15 UTC) erkennt neue Meldungen → Wächter `fundamental-sec-freshness.yml` (`scripts/fundamental/sec-freshness.mjs`) vergleicht mit den Verbraucherdateien und stößt bei neuen periodischen Meldungen den bestehenden Erzeuger `sec-consumer-fundamentals.yml` an (höchstens einmal je 18 Stunden; sonst wöchentlich montags) → dieser committet Verbraucher- und Discover-Daten → das Release (`pages-release.yml`, ausgelöst durch den Erzeuger) baut die Fundamental-Historie neu. Kein Code-Merge nötig.
+- **Veröffentlichung prüfen:** Nach jedem Lauf des Erzeugers startet der Job `publish` desselben Wächters (Rückfall: täglich 19:50 UTC für den jüngsten Lauf der letzten 26 Stunden).
+  - Lauf gescheitert (z. B. in der eigenen Regressionsprüfung des Erzeugers): nichts wurde committet → roter Lauf mit Hinweis, keine Wiederholung.
+  - Lauf erfolgreich: wartet auf ein erfolgreiches `pages-release.yml` auf `main`, das danach entstanden ist (es startet per `workflow_run` und werktags ohnehin alle 5 Minuten). Kommt binnen 15 Minuten keines, wird es **einmal** per `workflow_dispatch` mit Standard-Eingaben angestoßen.
+  - Danach vergleicht `scripts/fundamental/verify-publication.mjs` die Auslieferung mit `main`: `status.json` mit demselben `consumerAsOf` wie die Verbraucherdateien, und für bis zu 8 frisch übernommene 10-Q/10-K (laut `state.json`) muss die ausgelieferte Scherbe genau diese Meldung (Accession) enthalten. Bis zu 6 Versuche im Abstand von 2 Minuten (CDN); sonst roter Lauf.
+  - Weder der Erzeuger noch `pages-release.yml` werden dafür verändert; der Wächter schreibt nichts ins Repository.
 - Meldungen, die ein Verbraucherlauf schon hatte und nicht übernommen hat (z. B. ohne verwertbares XBRL in companyfacts), werden nur gemeldet (`notAdopted`), nicht täglich neu angestoßen.
 
 ## Branchenmedian je Geschäftsjahr

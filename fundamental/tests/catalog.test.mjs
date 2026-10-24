@@ -9,6 +9,7 @@ import { gunzipSync } from 'node:zlib';
 import { createRequire } from 'node:module';
 import { projectHistory, writeHistory, industryMedians, publicationDates, annualReportDates, pendingFiling, SCHEMA, INDUSTRY_MIN, PEERS_SCHEMA } from '../../scripts/fundamental/build-history.mjs';
 import { pendingIssuers, consumerLatest, classify } from '../../scripts/fundamental/sec-freshness.mjs';
+import { check as checkPublication } from '../../scripts/fundamental/verify-publication.mjs';
 const require = createRequire(import.meta.url);
 const C = require('../engine/catalog.js');
 const M = require('../engine/model.js');
@@ -429,4 +430,25 @@ test('SEC-Aktualitaet: neue Meldungen seit dem letzten Verbraucherlauf loesen ih
   assert.match(wf, /gh workflow run sec-consumer-fundamentals\.yml/);
   assert.match(wf, /contents: read/);
   assert.doesNotMatch(wf, /git (commit|push)/, 'der Waechter schreibt nichts ins Repository');
+});
+
+test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgeliefert sein', async () => {
+  const { gzipSync } = await import('node:zlib');
+  const Identity = require('../../core/identity.js');
+  const want = { consumerAsOf: '2026-10-26', adoptedRecently: 1, sample: [{ ticker: 'META', form: '10-Q', filed: '2026-10-22', accession: '0001628280-26-066773' }] };
+  const site = (asOf, accn) => async (url) => {
+    const path = url.replace(/^https?:\/\/[^/]+/, '').split('?')[0];
+    if (path === '/fundamental/data/history/status.json') return new Response(JSON.stringify({ state: 'AVAILABLE', consumerAsOf: asOf }));
+    if (path === '/fundamental/data/history/' + Identity.shardKey('META') + '.json.gz') return new Response(gzipSync(JSON.stringify({ issuers: { META: { filings: [[accn, '2026-10-22']] } } })));
+    return new Response('', { status: 404 });
+  };
+  assert.equal((await checkPublication({ want, fetchImpl: site('2026-10-26', '0001628280-26-066773') })).ok, true);
+  const stale = await checkPublication({ want, fetchImpl: site('2026-10-19', '0001628280-26-040000') });
+  assert.equal(stale.ok, false);
+  assert.deepEqual(stale.checks.map((c) => c.ok), [false, false]);
+  const wf = readFileSync(new URL('.github/workflows/fundamental-sec-freshness.yml', root), 'utf8');
+  assert.match(wf, /verify-publication\.mjs/);
+  assert.match(wf, /gh workflow run pages-release\.yml --ref main/);
+  assert.match(wf, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
+  assert.doesNotMatch(wf, /\$\{\{ inputs\./, 'Eingaben nie im Shell-Text');
 });
