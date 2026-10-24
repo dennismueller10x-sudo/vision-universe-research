@@ -1162,12 +1162,28 @@
     // Kursverlauf: dieselben Tageskurse wie Discover und Quant (technische Materialisierung), dazu der Tagesverlauf.
     main.appendChild(sec('Kursverlauf', [chartHost, legend, methodMore]));
     chartHost.appendChild(h('div', { class: 'vu-chart-empty', text: 'Kurse werden geladen …' }));
-    prices.then(function (r) {
-      if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
+    // Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover), unter "Daten & Methodik".
+    var fxHost = h('span', { class: 'st-fx', text: 'Börsenwährung USD' });
+    function drawPrices(r) {
       chart = priceChart(chartHost, legend, r[0], r[1], r[2], r[3]);
       if (chart && current) chart.setLevels(levelsOf(current));
       // Die FX-Schicht steht jetzt: der Plan zeigt seine Kursmarken in derselben Waehrung wie der Chart.
       if (r[3] && current && current.kind === 'sig') panel.replaceChildren(lensBlock(current.s, S[current.id], D));
+    }
+    prices.then(function (r) {
+      if (!window.VUChart) { chartHost.replaceChildren(h('p', { class: 'vu-empty', text: 'Der Kurschart ist gerade nicht verfügbar.' })); return; }
+      drawPrices(r);
+      var F = window.VUFx;
+      if (!r[3] || !F || !F.layer) return;
+      (F.Switch ? Promise.resolve() : loadScript('/quant/engines/fx/currency-switch.js')).then(function () {
+        if (F.Switch) fxHost.replaceChildren(F.Switch.create({ layer: F.layer }));
+      }).catch(function () { /* ohne Umschalter bleibt die gewaehlte Waehrung */ });
+      // Wechsel: Chart, Plan und Kurs im Kopf neu - alles in derselben Waehrung.
+      F.layer.onDisplayCurrencyChange(function () {
+        drawPrices(r);
+        var p = headPrice(r[0], r[1], r[3]);
+        headApi.then(function (hd) { if (hd && p) hd.setPrice(p); });
+      });
     });
     if (entries.length) { if (t52Node) main.appendChild(t52Node); show(entries[0]); }
     var hist = history.concat(entries.filter(function (e) { return e.kind === 'sig' && e.s.transitions; }));
@@ -1178,6 +1194,7 @@
       main.appendChild(sec('Protokoll', [tl, rest], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
     }
     entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
+    dmAdd('Anzeigewährung', fxHost);
     dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
     main.appendChild(disclaimer(sig));
   }
