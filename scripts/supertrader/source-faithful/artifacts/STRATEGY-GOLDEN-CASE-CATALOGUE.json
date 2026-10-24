@@ -619,7 +619,9 @@
     "MIN-RISK-01",
     "MIN-MM-STOP-01",
     "MIN-MM-STOP-02",
-    "MIN-RISK-05"
+    "MIN-RISK-05",
+    "MIN-W18-7",
+    "MIN-W18-8"
    ],
    "result": "SEE_TEST_RUN"
   },
@@ -978,6 +980,33 @@
    ],
    "psr709": [
     "RAS04-001"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-PRICE-CONFIRM",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP"
+   ],
+   "rules": [
+    "MIN-SF-PRICE-CONFIRM"
+   ],
+   "psr709": [
+    "MIN-W18-5"
+   ],
+   "result": "SEE_TEST_RUN"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER",
+   "strategyIds": [
+    "SF_MINERVINI_SEPA_VCP",
+    "SF_MINERVINI_POWER_PLAY"
+   ],
+   "rules": [
+    "MIN-SF-STAGGER"
+   ],
+   "psr709": [
+    "MIN-W18-1"
    ],
    "result": "SEE_TEST_RUN"
   },
@@ -2815,6 +2844,12 @@
     "action": "CHART_EXAMPLE",
     "category": "EDUCATIONAL_EXAMPLE",
     "source": "B03 PDF 221"
+   },
+   {
+    "caseId": "MIN-AMZN1997",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-MIN18 Amazon answer"
    }
   ],
   "SF_MINERVINI_POWER_PLAY": [
@@ -2973,6 +3008,12 @@
     "action": "CHART_EXAMPLE",
     "category": "EDUCATIONAL_EXAMPLE",
     "source": "B03 PDF 221"
+   },
+   {
+    "caseId": "MIN-AMZN1997",
+    "action": "BUY",
+    "category": "PERSONAL_TRADE_CONFIRMED",
+    "source": "W-MIN18 Amazon answer"
    }
   ],
   "SF_KK_BREAKOUT": [

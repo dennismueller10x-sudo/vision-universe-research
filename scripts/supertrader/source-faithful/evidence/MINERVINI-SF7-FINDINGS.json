@@ -1,0 +1,5676 @@
+{
+ "schema": "supertrader-sf7-minervini-findings-1.0.0",
+ "books": {
+  "B12": {
+   "title": "Trade Like a Stock Market Wizard (2013), Indonesian machine-like translation",
+   "pdfSha256": "2ba966edc23215a897f4529e616c0c0c4f99b242eafae9826dfbbd0c45a54697",
+   "dropboxContentHash": "7c988844d9531143c6048c69d471c7c9cba04c1256a3f24dceaff9e53d820a2f",
+   "pages": 442,
+   "text": "pdftotext -layout (text layer)"
+  },
+  "B07": {
+   "title": "Momentum Masters (2015), unofficial Indonesian translation",
+   "pdfSha256": "d3fd7f0f1724e6f3ee214a6b2bd5ae40b98cb9da85c273057642638aaab1118a",
+   "dropboxContentHash": "a7fde043270895ddaf53767f93073b2010c0aec1ac5683f483ddc116531dc0ed",
+   "pages": 113,
+   "text": "Dropbox text extraction (page markers \"Halm. N dari 113\")"
+  },
+  "B03": {
+   "title": "Think & Trade Like a Champion (2017), licensed Vietnamese translation",
+   "pdfSha256": "ad332a52d3e9bfa4d9e34aa11123a994a16a15956dba3fe3d93c97d066ba16d2",
+   "dropboxContentHash": "ca3d56ae603a9e9abb105ecd3a1c4fcc546e477ec0a3ad03a4359a160134aa08",
+   "pages": 272,
+   "text": "tesseract 5 OCR, language vie, 200 dpi (image-only PDF; digits OCR-sensitive)"
+  }
+ },
+ "method": "four independent readers (one per book or half book) against the 132 #709 Minervini rows; every quote machine-checked as an exact substring of its page; translation and OCR doubts tagged TRANSLATION; paraphrases in German; human verification of every finding that changes a contract, a variant or a diagnostic (docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md section 4)",
+ "contentExportedToRepo": false,
+ "counts": {
+  "findings": 346,
+  "bySource": {
+   "B12": 178,
+   "B07": 73,
+   "B03": 95
+  },
+  "notCoveredBy709": 154,
+  "partiallyCovered": 190,
+  "translationFlags": 23
+ },
+ "findings": [
+  {
+   "source": "B03",
+   "pdfPage": 33,
+   "printedPage": "26",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Zeitstop-Gedanke: Erfüllt der Trade den erwarteten 'Fahrplan' nicht, nicht monatelang seitwärts halten, wenn bessere Chancen da sind.",
+   "coveredBy": "NONE",
+   "novelty": "Zeitbasierte Exit-Logik ohne feste Frist fehlt.",
+   "quoteSha256": "2b82b15e98d243016f01d770b03e4576d2eee172d3d091b84181926aed54762b",
+   "quoteChars": 202,
+   "id": "F7-B03-033-001"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 35,
+   "printedPage": "28",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Vor dem Kauf wird der maximale Verlustausstieg festgelegt, an dem die gesamte Position verlassen wird; wird er berührt, wird ohne Nachdenken verkauft.",
+   "coveredBy": "PARTIAL:MIN-RISK-01",
+   "novelty": "Ergänzt, dass beim Berühren des Stops die gesamte Position ohne Ermessen verkauft wird (Komplettausstieg, kein Abwägen).",
+   "quoteSha256": "4d99093109b8222a1e01164b10688380498fca36aec94b3ffed638ec244c8847",
+   "quoteChars": 225,
+   "id": "F7-B03-035-002"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 35,
+   "printedPage": "28",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2-3 Versuche",
+   "paraphraseDe": "Der erste Trade kann scheitern; manchmal braucht es zwei oder sogar drei Versuche, um einen starken Gewinner zu erwischen.",
+   "coveredBy": "PARTIAL:MIN-MM-REEN-01",
+   "novelty": "Explizite Zahl von zwei bis drei Einstiegsversuchen pro Kandidat fehlt.",
+   "quoteSha256": "661953fa2d3b9ec2b9595e879a51206efe355ac22bfa03bd2c2cd12e26506ac4",
+   "quoteChars": 152,
+   "id": "F7-B03-035-003"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 35,
+   "printedPage": "28",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Nach einem Stop-out ist das zweite Kaufsignal sehr oft sogar stärker als das erste, weil schwache Hände ausgeschüttelt wurden; ausgestoppte Titel nicht von der Watchlist streichen.",
+   "coveredBy": "PARTIAL:MIN-MM-REEN-01",
+   "novelty": "Bestehende Zeile nennt Re-entry nach neuem Setup, aber nicht die Aussage, dass das zweite Signal oft stärker ist und der Titel Kandidat bleibt.",
+   "quoteSha256": "985129fcb9bbe93a50da00dfc8fa211760b1886a8e0e00fd7ffb7939f3156096",
+   "quoteChars": 141,
+   "id": "F7-B03-035-004"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 36,
+   "printedPage": "29",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "7%, 20%",
+   "paraphraseDe": "Beispiel: 7% Anfangsrisiko; bei 20% Gewinn (ein Vielfaches des Anfangsrisikos) darf der Trade nie wieder zum Verlust werden – Stop auf Einstand oder Trailing-Stop.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Konkretes Zahlenbeispiel 7% Stop / 20% Gewinn und das Verbot, einen großen Gewinn zum Verlust werden zu lassen, fehlen.",
+   "quoteSha256": "1bb850b6df9113e3c94eecabf0dd1305e2349a3f48c97f3fba27c45bded8d9a9",
+   "quoteChars": 337,
+   "id": "F7-B03-036-005"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 37,
+   "printedPage": "30",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Prioritätenfolge: (a) Verlust begrenzen, (b) Kapital schützen: Stop nahe Einstand anheben, typischerweise nachdem die erste natürliche Korrektur vorbei ist und die Aktie ein neues Hoch macht, (c) große Gewinne per Trailing-Stop schützen.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Zeitpunkt der Einstandsanhebung (nach erster natürlicher Korrektur und neuem Hoch) statt nur 3R fehlt.",
+   "quoteSha256": "46e28fbf23d83d3f713e941191ea67517696a707021a03e33fb545419726dcec",
+   "quoteChars": 207,
+   "id": "F7-B03-037-006"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 38,
+   "printedPage": "31",
+   "questions": [
+    "Q6"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nach dem Ausbruch aus einer Basis will er zuerst mehrere aufeinanderfolgende Tage mit Anschlusskäufen (Follow-through) sehen, je mehr desto besser.",
+   "coveredBy": "NONE",
+   "novelty": "Post-Breakout-Follow-through als Bestätigungskriterium ist in keiner Zeile erfasst.",
+   "quoteSha256": "fc30ee20544928b74a3e678f207dd0ea0e2be91d6b73517135e9e380b9cc7419",
+   "quoteChars": 166,
+   "id": "F7-B03-038-007"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 40,
+   "printedPage": "33",
+   "questions": [
+    "TRANSLATION",
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "P=(H+L+C)/3",
+   "paraphraseDe": "Übersetzerfußnote definiert den Pivot als Floor-Trader-Pivot (H+L+C)/3 des Vortags/-woche/-monats.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzungsproblem: Minervinis Pivot ist der Kaufpunkt am Hoch der letzten engen Kontraktion, nicht (H+L+C)/3; diese Fußnote darf nicht als Pivot-Definition übernommen werden.",
+   "quoteSha256": "5a8f2a8bf6b0c6fc440b6666c46023e90765d57caf3848c9873df6cd19cd019c",
+   "quoteChars": 200,
+   "id": "F7-B03-040-008"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 40,
+   "printedPage": "33",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2-5 Tage, 1-2 Wochen",
+   "paraphraseDe": "Tennisball-Verhalten: Die erste Korrektur nach dem Ausbruch dauert typischerweise 2–5 Tage, höchstens 1–2 Wochen, danach steigt die Aktie über das letzte Hoch; Volumen soll in der Korrektur schrumpfen und beim neuen Hoch steigen.",
+   "coveredBy": "NONE",
+   "novelty": "Dauer der normalen Nach-Ausbruch-Korrektur als Haltekriterium fehlt.",
+   "quoteSha256": "bfe3da63628ee82cb2d151eba788feb8c790a8d9d44de3023855ac633e0ffd2e",
+   "quoteChars": 168,
+   "id": "F7-B03-040-009"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 40,
+   "printedPage": "33",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "40%-50%, 1-2 Wochen",
+   "paraphraseDe": "In 40–50% der Fälle fällt die Aktie nach dem Kaufpunkt leicht unter den ursprünglichen Ausbruchspunkt zurück; das ist normal, sofern sie sich binnen Tagen bis 1–2 Wochen erholt.",
+   "coveredBy": "NONE",
+   "novelty": "Häufigkeit leichter Pullbacks unter den Pivot (40–50%) als Normalfall ist nicht erfasst; relevant gegen zu frühe Failed-Breakout-Klassifikation.",
+   "quoteSha256": "e10118704aed1e5dddcf897b4735ffccf61abd191b70f4f3f74b66334c45a910",
+   "quoteChars": 219,
+   "id": "F7-B03-040-010"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 41,
+   "printedPage": "34",
+   "questions": [
+    "Q6",
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1-2 Wochen; 3/4; 6/8; 7-8",
+   "paraphraseDe": "In den ersten 1–2 Wochen nach dem Ausbruch sollen Aufwärtstage überwiegen: z. B. 3 von 4 oder 6 von 8 Tagen, ideal 7–8 Aufwärtstage in Folge.",
+   "coveredBy": "NONE",
+   "novelty": "Zählregel Auf- vs. Abwärtstage nach dem Ausbruch fehlt vollständig.",
+   "quoteSha256": "668c044614c5203def554d5fabf421da77d8896b6dba52de20293d6e125da2af",
+   "quoteChars": 306,
+   "id": "F7-B03-041-011"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 43,
+   "printedPage": "36",
+   "questions": [
+    "Q6"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "In der ersten Anstiegsphase sollen Tage mit Schluss in der oberen Tageshälfte (gute Schlüsse) überwiegen; Ausnahme: sehr enge Basis mit stark geschrumpftem Volumen und sehr geringer Basistiefe.",
+   "coveredBy": "NONE",
+   "novelty": "Close-in-range-Kriterium (obere/untere Tageshälfte) samt Ausnahme ist nicht erfasst.",
+   "quoteSha256": "a2fc64b7e940bda49c8dc106f574c5890447811d4eaa73f49bf4e5cb0a7a6d0f",
+   "quoteChars": 331,
+   "id": "F7-B03-043-012"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 43,
+   "printedPage": "36",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": ">10%",
+   "paraphraseDe": "(David Ryan) 'Extended' = mehr als 10% über der letzten Konsolidierung; solche Aktien kauft er nie, sondern wartet auf Pullback oder neue Basis.",
+   "coveredBy": "NONE",
+   "novelty": "Quantitative Chase-Grenze (>10% über letzter Konsolidierung = extended, nicht kaufen) fehlt; Aussage stammt von David Ryan, nicht Minervini selbst.",
+   "quoteSha256": "b843aa92f083af27ffeba76c1827838bd20cb98f4b8163a0ec9bf47930c8d2a9",
+   "quoteChars": 147,
+   "id": "F7-B03-043-013"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 45,
+   "printedPage": "38",
+   "questions": [
+    "Q6",
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "12/15; 25%; 20%; 15 Tage; 20 Tage",
+   "paraphraseDe": "MVP-Indikator (David Ryan): Momentum = 12 von 15 Tagen steigend; Volumen +25% oder mehr über 15 Tage; Kurs +20% oder mehr in 15 Tagen. Kann umgekehrt als Verkaufssignal bei extendierter Aktie dienen.",
+   "coveredBy": "NONE",
+   "novelty": "MVP-Kriterien mit exakten Schwellen sind nicht erfasst; Fremdindikator (Ryan), nicht Minervinis Kernregel.",
+   "quoteSha256": "d1ee4f31ffe9d72ad5d54d32dcb54128b2e91fc974a75b47a356dd1d70b5ea41",
+   "quoteChars": 226,
+   "id": "F7-B03-045-014"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 47,
+   "printedPage": "40",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3 lower lows",
+   "paraphraseDe": "Drei tiefere Tiefs direkt nach dem Ausbruch mit steigendem Volumen sind ein rotes Warnsignal; schließt die Aktie am dritten Tief jedoch auf hohem Volumen im Plus oder in der oberen Tageshälfte, kann gehalten werden.",
+   "coveredBy": "NONE",
+   "novelty": "Three-lower-lows-Verletzung samt Ausnahme am dritten Tag fehlt.",
+   "quoteSha256": "1953c16864c46c70e1cc5205223ab0234c87f9f27c413cb34b4f96638b5c048a",
+   "quoteChars": 285,
+   "id": "F7-B03-047-015"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 47,
+   "printedPage": "40",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "MA20; 1/2; MA50",
+   "paraphraseDe": "Schließt die Aktie unmittelbar nach einem VCP-Ausbruch unter dem MA20, ist ein Trendbruch wahrscheinlich: Position halbieren. Schlusskurs unter MA50 mit hohem Volumen ist ein sehr schlechtes Signal.",
+   "coveredBy": "NONE",
+   "novelty": "MA20-Schluss direkt nach Ausbruch als Halbierungsregel fehlt; MA20 allein (später im Trend) ist laut Text kein starkes Signal.",
+   "quoteSha256": "dbabd35361fecf5ab83cb18f5c769abe020e13dfc5da3f83a7d8fc5ddb8872ac",
+   "quoteChars": 261,
+   "id": "F7-B03-047-016"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 48,
+   "printedPage": "41",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": ">=3",
+   "paraphraseDe": "Leichter Rückgang mit tieferen Tiefs auf niedrigem Volumen ist kein Problem; drei oder mehr tiefere Tiefs auf hohem Volumen sind ein klares Verletzungssignal.",
+   "coveredBy": "NONE",
+   "novelty": "Volumenabhängigkeit der Lower-Low-Regel fehlt.",
+   "quoteSha256": "8977e79dca5bd1a14320cbd0a8d8f99d6bf8381411582893a8324fe42c34fd25",
+   "quoteChars": 243,
+   "id": "F7-B03-048-017"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 49,
+   "printedPage": "42",
+   "questions": [
+    "Q6",
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Bei frühem Intraday-Kauf ist das Tagesvolumen unbekannt; dann entscheidet das Folgeverhalten (kein Hochvolumen-Rückfall, Anschlusskäufe) über Halten.",
+   "coveredBy": "PARTIAL:MIN-MM-VOL-EX",
+   "novelty": "Bestätigt aus B03 die Intraday-Unsicherheit beim Volumen; keine Hochrechnungsregel genannt.",
+   "quoteSha256": "5953d612694dc57389c5544145839b473cba0d1deb5b551bbd4952d50de45722",
+   "quoteChars": 177,
+   "id": "F7-B03-049-018"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 49,
+   "printedPage": "42",
+   "questions": [
+    "Q6",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Ausbruch mit niedrigem Volumen und anschließende Umkehr nach unten mit hohem Volumen ('low volume out, high volume in') ist ein ernstes Warnsignal.",
+   "coveredBy": "PARTIAL:MIN-MM-VOL-RET",
+   "novelty": "Bestehende Zeile sagt nur, dass niedriges Ausbruchsvolumen allein keinen Verkauf erzwingt; die Kombination mit anschließendem Hochvolumen-Rückfall als Problem fehlt.",
+   "quoteSha256": "96d88d89f039972fc4ef0f56b90b4734ddfe7b7d0239a3e8ead5091601eff559",
+   "quoteChars": 155,
+   "id": "F7-B03-049-019"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 49,
+   "printedPage": "42",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Wird der Stop erreicht, wird um jeden Preis verkauft.",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-01",
+   "novelty": "Bestätigt aus B03 die ausnahmslose Stop-Ausführung.",
+   "quoteSha256": "a8d53f9a5345070d1f55461ca4af1eee73176c15a14dd514ce814014fd8d7d2f",
+   "quoteChars": 75,
+   "id": "F7-B03-049-020"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 49,
+   "printedPage": "42",
+   "questions": [
+    "Q11",
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Je mehr Verletzungen (Niedrigvolumen-Ausbruch ohne Folgetage, drei tiefere Tiefs, Hochvolumen-Schluss unter MA20), desto wahrscheinlicher das Scheitern; bei mehreren wird sicher verkauft, auch vor dem Stop, je nach Schwere teilweise oder ganz.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-04",
+   "novelty": "Benennt die konkreten Verletzungen und die Wahl Teil- vs. Komplettverkauf nach Schwere.",
+   "quoteSha256": "dceb07104f0566e480c4923561ef48c79e0143123013002f0e0f4fee947bf9e6",
+   "quoteChars": 169,
+   "id": "F7-B03-049-021"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 51,
+   "printedPage": "44",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3-4 lower lows; MA20; MA50",
+   "paraphraseDe": "Checkliste der Verletzungen nach dem Ausbruch: Niedrigvolumen-Ausbruch mit Hochvolumen-Rückfall, drei oder vier tiefere Tiefs ohne Unterstützung, mehr Ab- als Auftage, mehr schlechte als gute Schlüsse, Schluss unter MA20, Schluss unter MA50, vollständige Aufgabe eines großen Gewinns.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-04",
+   "novelty": "Vollständige, operationalisierbare Liste der Post-Breakout-Verletzungen fehlt in den bestehenden Zeilen.",
+   "quoteSha256": "6e7935ba941a61492ca501045da8b186e6f67219b23112e171a0141e0d326fe8",
+   "quoteChars": 313,
+   "id": "F7-B03-051-022"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 51,
+   "printedPage": "44",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Squat-Definition: Aktie bricht über den Pivot, fällt aber schnell in die Spanne zurück und schließt deutlich unter dem Tageshoch; er verkauft dann nicht sofort.",
+   "coveredBy": "NONE",
+   "novelty": "Definition des Squat (Ausbruch über Pivot, Schluss tief in der Tagesrange) ist nicht erfasst.",
+   "quoteSha256": "cc2c4a6c5cebe02f2e9a954a4505bdb0bd7e94fc064019ad258913ece33cc73e",
+   "quoteChars": 141,
+   "id": "F7-B03-051-023"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 52,
+   "printedPage": "45",
+   "questions": [
+    "Q12",
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1-2 Wochen",
+   "paraphraseDe": "Nach dem Kauf ein bis zwei Wochen normale Schwankungen innerhalb des Stops zulassen; bei Squat nicht in Panik verkaufen, solange Stop nicht ausgelöst und keine mehrfachen Verletzungen vorliegen.",
+   "coveredBy": "NONE",
+   "novelty": "Haltebedingung nach Squat (Stop intakt, keine Mehrfachverletzung) fehlt.",
+   "quoteSha256": "4c56d419ae61b0e68b739a28494365764b17b3a6c27687b34cf3fd46c44b949b",
+   "quoteChars": 349,
+   "id": "F7-B03-052-024"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 52,
+   "printedPage": "45",
+   "questions": [
+    "Q12",
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1-2 Tage; 10 Tage",
+   "paraphraseDe": "Nach einem Squat wartet er mindestens ein bis zwei Tage, teils einige Wochen, auf eine Reversal Recovery; manchmal dauert sie bis zu 10 Tage. Ausdrücklich keine starre Regel.",
+   "coveredBy": "NONE",
+   "novelty": "Wartefenster für Reversal Recovery (bis ~10 Tage) und ausdrücklicher Nicht-Regel-Charakter fehlen.",
+   "quoteSha256": "ff005febaac88cb6bc811c38656a195db1bf01d2a707993bb0883fef35d79939",
+   "quoteChars": 270,
+   "id": "F7-B03-052-025"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 60,
+   "printedPage": "53",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "10%",
+   "paraphraseDe": "Stop höchstens etwa 10%; der Durchschnittsverlust liegt deutlich darunter (Begründung: Verluste wirken geometrisch, 50% Verlust braucht 100% Gewinn).",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-02",
+   "novelty": "B03-Beleg für 10%-Obergrenze inklusive Break-even-Tabelle (5%→5,26%, 10%→11%, 40%→67%, 50%→100%, 90%→900%).",
+   "quoteSha256": "1deae6ad7da7729fec955b9ea9ddbb1a59a0441b6b26abee0c6008346cccfa7d",
+   "quoteChars": 55,
+   "id": "F7-B03-060-026"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 60,
+   "printedPage": "53",
+   "questions": [
+    "TRANSLATION",
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "7%-8%",
+   "paraphraseDe": "Übersetzerfußnote ergänzt O'Neils 7–8%-Stop direkt neben Minervinis 10%-Regel.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzerzusatz, nicht Minervini; darf nicht als Minervini-Stopregel extrahiert werden.",
+   "quoteSha256": "f692d29154d404797d5d889464624fca0ca4be72fe554afcf17b96270de557a3",
+   "quoteChars": 95,
+   "id": "F7-B03-060-027"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 61,
+   "printedPage": "54",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Zu volatile Aktien ('wilde Pferde') meiden, weil kein ausreichend enger Stop möglich ist; einen weiten Stop zu setzen erhöht das Risiko – lieber andere Kandidaten suchen.",
+   "coveredBy": "PARTIAL:MIN-W18-8",
+   "novelty": "Konsequenz 'Kandidat verwerfen statt Stop weiten' ist nicht als Auswahlregel erfasst.",
+   "quoteSha256": "4f30f6f7abe8dc4bdc6917dac29330b105b21c0a675663dd6fe4027e21e18c91",
+   "quoteChars": 133,
+   "id": "F7-B03-061-028"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 62,
+   "printedPage": "55",
+   "questions": [
+    "Q5",
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Er kauft nur, wenn die Aktie einen risikoarmen Einstiegspunkt bietet; der Stop ist Teil der Titelauswahl.",
+   "coveredBy": "NONE",
+   "novelty": "Explizite Kaufbedingung 'nur bei risikoarmem Einstieg' fehlt.",
+   "quoteSha256": "8fc900bf972a37831d291ebcdaa8119b984653e9f1a2ee02c5172b73d6f585c5",
+   "quoteChars": 128,
+   "id": "F7-B03-062-029"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 63,
+   "printedPage": "56",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nahe am 'Gefahrenpunkt' kaufen: Stop so legen, dass normale Schwankungen absorbiert werden, aber nahe genug am technischen Gefahrenpunkt, um wenig Risiko zu tragen; Prozent-Stop ab Ausbruch ist nur ein guter Anfang.",
+   "coveredBy": "NONE",
+   "novelty": "Technischer Stop am Gefahrenpunkt statt reiner Prozentstop ist nicht erfasst.",
+   "quoteSha256": "a3f03429b5b9a06dfac4931035d9aa09db8fd4f398a9c6aa224d21c3a695f48f",
+   "quoteChars": 195,
+   "id": "F7-B03-063-030"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 69,
+   "printedPage": "62",
+   "questions": [
+    "Q7",
+    "TRANSLATION"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "8%-10%; 4.5-5% (OCR unsicher)",
+   "paraphraseDe": "Er lässt Verluste selten über 8–10% laufen; Durchschnittsverlust etwa die Hälfte, ca. 4,5–5% (OCR '4⁄4-5%' wohl '4½–5%').",
+   "coveredBy": "PARTIAL:MIN-W18-7",
+   "novelty": "OCR-Ziffer unsicher ('4⁄4' vermutlich 4½); bestätigt aus B03 die Relation Max-Stop zu Durchschnittsverlust.",
+   "quoteSha256": "2374fa2670eb69509dd0589affd788d61805b2046d04d6ba13d39d98fa34b17c",
+   "quoteChars": 109,
+   "id": "F7-B03-069-031"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 70,
+   "printedPage": "63",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Verlust ist eine Funktion des Gewinns: niemals mehr riskieren als der erzielbare (durchschnittliche) Gewinn.",
+   "coveredBy": "PARTIAL:MIN-TTC-AVGLOSS",
+   "novelty": "Harte Regel Risiko < erwarteter Gewinn mit Expectancy-Herleitung fehlt.",
+   "quoteSha256": "8c42cf46fc79b7acddf0a6368d71cdf9360d4093b58250b6ba7a348f59aa88b5",
+   "quoteChars": 102,
+   "id": "F7-B03-070-032"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 71,
+   "printedPage": "64",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "ATR",
+   "paraphraseDe": "Er lehnt es entschieden ab, den Stop nach Volatilität (z. B. ATR) zu weiten; in volatilen, schwierigen Märkten sinken Gewinne und Trefferquote, also müssen Verluste kleiner werden.",
+   "coveredBy": "PARTIAL:MIN-W18-8",
+   "novelty": "B03-Beleg mit Begründung (Trefferquote <50% in schwierigen Phasen → negative Expectancy).",
+   "quoteSha256": "7b3be62361a366c4053d6e17dc59ed4ef1d2863e61618beca7ecf6568971b287",
+   "quoteChars": 111,
+   "id": "F7-B03-071-033"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 73,
+   "printedPage": "66",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "40%; 20%/10%; 50%; 48%/24%",
+   "paraphraseDe": "Bei 40% Trefferquote ist das optimale Gewinn/Verlust-Paar 20%/10%; größere oder kleinere Paare (bei gleichem 2:1) bringen weniger; bei 50% Trefferquote nähert sich das Optimum 48%/24%.",
+   "coveredBy": "NONE",
+   "novelty": "Optimale Stop-Gewinn-Paare je Trefferquote sind nicht erfasst.",
+   "quoteSha256": "001659322c2a0735bba46cb2a043f492a553f85a57408fc6eab77c9a721ef614",
+   "quoteChars": 206,
+   "id": "F7-B03-073-034"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 73,
+   "printedPage": "66",
+   "questions": [
+    "Q7",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "7%-8% → 5%-6% (OCR '§'=8); 15%-20% → 10%-12%",
+   "paraphraseDe": "In schwierigen Märkten: Stop von üblich 7–8% auf 5–6% verengen; Gewinnziele von 15–20% auf 10–12% senken; Margin sofort eliminieren; Positionsgrößen reduzieren; erst bei besserer Trefferquote wieder normalisieren.",
+   "coveredBy": "PARTIAL:MIN-RISK-07",
+   "novelty": "Konkrete Zahlen für Stop- und Zielverengung in schwierigen Märkten fehlen; OCR '§' steht für 8.",
+   "quoteSha256": "3d06242ee638e4b80d9aca4319e69f6a06c660e8358ba5416f37de34ef77e1d8",
+   "quoteChars": 100,
+   "id": "F7-B03-073-035"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 76,
+   "printedPage": "69",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "40%; 20%; 10%; 2R",
+   "paraphraseDe": "Stops nach realisierten Ergebnissen (RBA) statt nach theoretischen Kurszielen (TBA) setzen: 40% erwartetes Potenzial rechtfertigt keinen 20%-Stop, wenn der reale Durchschnittsgewinn nur 10% ist.",
+   "coveredBy": "PARTIAL:MIN-TTC-AVGLOSS",
+   "novelty": "RBA-vs.-TBA-Prinzip (Stop aus tatsächlichem Durchschnittsgewinn) fehlt.",
+   "quoteSha256": "42d12c34837767cddb87f069983679adef6bb33bf5908522b1c240b94edc8db3",
+   "quoteChars": 221,
+   "id": "F7-B03-076-036"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 78,
+   "printedPage": "71",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "HARD",
+   "numbers": "3R; 50/47.5/57.5 $",
+   "paraphraseDe": "Wenn der Gewinn ein Vielfaches des Anfangsstops und größer als der Durchschnittsgewinn ist, darf der Trade nie zum Verlust werden; bei 3R über Durchschnittsgewinn Stop mindestens auf Einstand (Beispiel 50 $ Kauf, 47,5 $ Stop, bei 57,5 $ Stop auf 50 $).",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "B03 formuliert als 'nie/immer' und koppelt an den Durchschnittsgewinn; B12-Zeile ist 'fast immer'.",
+   "quoteSha256": "c26703dc5f271d3f16605d8da9138b6685871c8aa84641525cb19fc630b92dd4",
+   "quoteChars": 180,
+   "id": "F7-B03-078-037"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 79,
+   "printedPage": "72",
+   "questions": [
+    "Q9"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1000@16.5, Stop 15.5; +1000@17.5, Stop 16.5; Risiko 1000 $",
+   "paraphraseDe": "Pyramidisieren ohne Risikoerhöhung: 1.000 Stück bei 16,5 $ mit Stop 15,5 $; Zukauf von 1.000 Stück erst an einem neuen Kaufpunkt (17,5 $) und Stop für alle 2.000 auf 16,5 $ – Position verdoppelt, Risiko bleibt 1.000 $.",
+   "coveredBy": "PARTIAL:MIN-ADD-01",
+   "novelty": "Mechanik 'Zukauf nur an neuem Kaufpunkt, Stop nachziehen, Gesamtrisiko konstant' fehlt.",
+   "quoteSha256": "adfbc19e577d6938141f533bb7961ab6109269d6087b630f74491fe7d227eb39",
+   "quoteChars": 320,
+   "id": "F7-B03-079-038"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 92,
+   "printedPage": "85",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "15%; 2:1; 7.5%",
+   "paraphraseDe": "Beispiel: Durchschnittsgewinn 15% und Ziel 2:1 → Stop darf 7,5% nicht übersteigen; der Durchschnittsgewinn ist die wichtigste Kennzahl zur Risikobemessung.",
+   "coveredBy": "PARTIAL:MIN-TTC-AVGLOSS",
+   "novelty": "Formelhafte Ableitung Stop ≤ Durchschnittsgewinn/2 fehlt.",
+   "quoteSha256": "2aaa89a58399967d3790182594452df5e55eb8e22d4d0f49579a4be5e2605e7a",
+   "quoteChars": 144,
+   "id": "F7-B03-092-039"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 95,
+   "printedPage": "88",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Durchschnittsgewinn und Trefferquote laufend tracken; verschlechtern sich die Zahlen, wird der Stop sofort angepasst (verengt).",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Regelkopplung Statistikverschlechterung → sofortige Stopanpassung fehlt.",
+   "quoteSha256": "91abe5f1ec42af078d244ad6003a7a2dad353a597847d2b46e90ee7c1430e671",
+   "quoteChars": 82,
+   "id": "F7-B03-095-040"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 98,
+   "printedPage": "91",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "-10%",
+   "paraphraseDe": "-10% ist 'die Mauer' (Maximalverlust, nicht Durchschnitt); Ziel ist, sie nie zu überschreiten, gelegentliche Überschreitungen durch Gaps/Slippage sind unvermeidlich.",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-02",
+   "novelty": "Unterscheidung Maximalverlust ('Wall') vs. Durchschnittsverlust und Toleranz für Gap-Ausreißer.",
+   "quoteSha256": "76d01067b9c1053732c6939fe87ad77e28ee774939af037047780d7c39986349",
+   "quoteChars": 207,
+   "id": "F7-B03-098-041"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 101,
+   "printedPage": "94",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "20%; 10%; 7%; 50%",
+   "paraphraseDe": "Regel 'die Hälfte verkaufen': bei +20% (2× Durchschnittsgewinn 10%, ~3× Anfangsrisiko 7%) und Unentschlossenheit halbe Position verkaufen; genau 50%, nicht 75% oder 25%, um Reue zu neutralisieren.",
+   "coveredBy": "PARTIAL:MIN-TTC-FREEROLL",
+   "novelty": "Begründung mit Durchschnittsgewinn und genau-50%-Quote fehlt.",
+   "quoteSha256": "c780fcc7c5fe966321bcb98abb641c397cef690eeb9a9fdbc408f12ad59d7d61",
+   "quoteChars": 133,
+   "id": "F7-B03-101-042"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 102,
+   "printedPage": "95",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Halbverkauf gilt nicht im Verlust: Wird der Stop erreicht, sofort komplett aussteigen, nicht die Hälfte behalten und auf Erholung hoffen.",
+   "coveredBy": "NONE",
+   "novelty": "Verbot des Teilverkaufs im Verlust bei Stop-Treffer fehlt.",
+   "quoteSha256": "5c5d0254d06c9541023da7af260c3010011b8d8acd3c1c40b2e13193c7dfe4b8",
+   "quoteChars": 163,
+   "id": "F7-B03-102-043"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 103,
+   "printedPage": "96",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "25%; 40%; 14%; 7%; 46%; 60; 30; 120",
+   "paraphraseDe": "RBA-Projektion: Bei 25% Positionsgröße, 14% Ø-Gewinn, 7% Ø-Verlust, 46% Trefferquote braucht es ~60 Trades für 40%; 50% Positionsgröße → 30 Trades, 12,5% → 120 Trades.",
+   "coveredBy": "NONE",
+   "novelty": "Rechenbeispiel zur Kopplung von Positionsgröße, Trade-Anzahl und Statistik.",
+   "quoteSha256": "d059c85086a8709b64b5cc21534f85a720d4ba357b029833dd96fa05b5241ef8",
+   "quoteChars": 247,
+   "id": "F7-B03-103-044"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 111,
+   "printedPage": "104",
+   "questions": [
+    "Q9"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Nie verbilligen: Eine Position im Verlust (besonders direkt nach dem Kauf) ist ein Fehler; Nachkaufen ist 'Geld in Fehler werfen' ('losers average losers').",
+   "coveredBy": "PARTIAL:MIN-MM-ADD-03",
+   "novelty": "Ausdrückliches Average-Down-Verbot aus B03 fehlt als harte Regel.",
+   "quoteSha256": "357d50d92f1bbd0a3ec273ecea8f23bb79831db05b95c67a55da93ddac529143",
+   "quoteChars": 132,
+   "id": "F7-B03-111-045"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 114,
+   "printedPage": "107",
+   "questions": [
+    "Q11",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "50/80; 80%; 50%; ~70%",
+   "paraphraseDe": "50/80-Regel: Nach einem großen Top fällt ein Marktführer mit 50% Wahrscheinlichkeit um 80% und mit 80% Wahrscheinlichkeit um 50%; im Mittel etwa 70%.",
+   "coveredBy": "NONE",
+   "novelty": "Statistik zum Verhalten von Leadern nach dem Top fehlt (relevant gegen Bottom-Fishing und für Exit-Disziplin).",
+   "quoteSha256": "2cca64d8ae09633ddd8b1b7657c7141f072ce780abc341d42e68fec637f37542",
+   "quoteChars": 142,
+   "id": "F7-B03-114-046"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 119,
+   "printedPage": "112",
+   "questions": [
+    "Q3",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "15%",
+   "paraphraseDe": "Schlägt eine Firma die Schätzungen, fällt die Aktie aber 15% auf dem höchsten Volumen des Jahres, wird nicht gekauft – auch nicht bei Top-Kandidaten ('differential disclosure').",
+   "coveredBy": "PARTIAL:MIN-QUALITY-05",
+   "novelty": "Konkrete Ausschlussregel 'gute Zahlen + großer Hochvolumen-Rückgang = kein Kauf' fehlt.",
+   "quoteSha256": "10aaa4e6df3a195816ed950ed0fb0b49f610fe5f98a153d29cb7d5243a259b3c",
+   "quoteChars": 317,
+   "id": "F7-B03-119-047"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 122,
+   "printedPage": "115",
+   "questions": [
+    "Q8",
+    "TRANSLATION"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "25%; 50%; '5%' (OCR, vermutlich 75%); 100%",
+   "paraphraseDe": "Progressive Exposure: Wer mit 25% oder 50% investiert nichts verdient, erhöht nicht auf 75% oder 100% oder Margin, sondern reduziert.",
+   "coveredBy": "PARTIAL:MIN-RISK-03",
+   "novelty": "OCR/Übersetzung: '5%' ist mit großer Wahrscheinlichkeit '75%'; Zahl nicht übernehmen.",
+   "quoteSha256": "d66da29319b680b07818d3a1b69b1ea15e389089fcbc54ef2f643ebcd379bc9d",
+   "quoteChars": 184,
+   "id": "F7-B03-122-048"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 123,
+   "printedPage": "116",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1/4; 6.25%; 12.5%; 25%",
+   "paraphraseDe": "Positionsaufbau über Trades: Start mit Viertelposition (6,25% des Kapitals), nach jedem Gewinner Verdopplung (12,5%, dann volle 25%), nach Verlust Halbierung; Gewinne finanzieren das zusätzliche Risiko.",
+   "coveredBy": "PARTIAL:MIN-W18-4",
+   "novelty": "Trade-zu-Trade-Skalierung (verdoppeln nach Gewinn, halbieren nach Verlust) mit 25% Vollposition fehlt.",
+   "quoteSha256": "d39ef193ed7c6488181e568318d8cac4fdd57cdca1e15c583fee7b1f62e6cb7a",
+   "quoteChars": 274,
+   "id": "F7-B03-123-049"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 126,
+   "printedPage": "119",
+   "questions": [
+    "Q10",
+    "TRANSLATION"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3R; 2R",
+   "paraphraseDe": "Bei 3R immer Stop anheben (besonders über Durchschnittsgewinn); bei 2R immer mindestens auf Einstand; teils Stop so, dass der Durchschnittsgewinn gesichert ist.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Widerspruch innerhalb der Übersetzung (S. 79: 3R→Einstand; S. 126: 2R→Einstand); Original prüfen, möglicher Übersetzungsfehler.",
+   "quoteSha256": "fdc891947b24b6de68a507023234cb5ec9485ba8be2810e70095ea3d78dbc9fe",
+   "quoteChars": 272,
+   "id": "F7-B03-126-050"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 128,
+   "printedPage": "121",
+   "questions": [
+    "Q15"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Keine spontanen 'Audibles' während des Handels: auch Profis halten sich strikt an den Plan und minimieren Ausnahmen; Planänderungen erst nach Glattstellung.",
+   "coveredBy": "NONE",
+   "novelty": "Aussage zum Umgang mit Ermessen/Ausnahmen fehlt.",
+   "quoteSha256": "d3734228ba1af006936cba5a5452b6ed1f978b6af9718a52ec8ba9d330f55bcf",
+   "quoteChars": 130,
+   "id": "F7-B03-128-051"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 130,
+   "printedPage": "123",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "10%; 10%-15%",
+   "paraphraseDe": "Earnings: nie große Position ohne Gewinnpolster in den Bericht; mit ~10% Gewinn kann gehalten werden; ohne Gewinn oder im Verlust verkaufen oder reduzieren wegen möglicher 10–15%-Gaps.",
+   "coveredBy": "PARTIAL:MIN-MM-EARN-HOLD",
+   "novelty": "Konkretes 10%-Gewinnpolster als Schwelle fehlt.",
+   "quoteSha256": "3b12744e12e027d81fd72650c8b30484edb91ee6b21dea49c83f212acd57b23d",
+   "quoteChars": 325,
+   "id": "F7-B03-130-052"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 133,
+   "printedPage": "126",
+   "questions": [
+    "Q5",
+    "Q15"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Nie einen Trade erzwingen: 'fast korrekte' Setups nicht kaufen, bis der vordefinierte Kaufpunkt erreicht ist; auch keine 'kleine Probeposition' als Ausrede.",
+   "coveredBy": "NONE",
+   "novelty": "Verbot, unvollständige Setups vorzeitig zu handeln, fehlt.",
+   "quoteSha256": "274e615803302b52d6b2c9cf157b4d697e8deb6f7772dc9448fa07b3d17de15d",
+   "quoteChars": 77,
+   "id": "F7-B03-133-053"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 142,
+   "printedPage": "135",
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "8",
+   "paraphraseDe": "Der Trend Template ist 'nicht verhandelbar': Jede Aktie, die die Kriterien nicht erfüllt, fliegt vom Radar; alle 8 Kriterien müssen für Stage 2 erfüllt sein.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-01",
+   "novelty": "B03 bestätigt ausdrücklich, dass alle 8 Kriterien Pflicht sind (Frage Q1 'all 8 must').",
+   "quoteSha256": "c8a4f4431d6add590921ad1b70e3f1e7b0aa355a9ce1efa49a925e51d9a4fad0",
+   "quoteChars": 102,
+   "id": "F7-B03-142-054"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 143,
+   "printedPage": "136",
+   "questions": [
+    "Q1",
+    "TRANSLATION"
+   ],
+   "modal": "HARD",
+   "numbers": "25%; 100%; 300%",
+   "paraphraseDe": "Kriterium 5 in B03: Kurs mindestens 25% über dem 52-Wochen-Tief (viele Titel 100%, 300% oder mehr), nicht 30% wie in B12.",
+   "coveredBy": "PARTIAL:MIN-TT-06",
+   "novelty": "Abweichung: B03 nennt 25%, B12/MIN-TT-06 nennt 30%; Original prüfen (Ausgabe- oder Übersetzungsunterschied).",
+   "quoteSha256": "455da28afff93fda8623d7d5a2849170c7333138794039791ead21f124504ed6",
+   "quoteChars": 176,
+   "id": "F7-B03-143-055"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 143,
+   "printedPage": "136",
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "MA50",
+   "paraphraseDe": "Kriterium 8: Kurs über MA50 (als Zeichen, dass er die Basis verlässt); beim Übergang Stage 1→2 auf deutlichen Volumenanstieg achten.",
+   "coveredBy": "MIN-TT-05",
+   "novelty": "Volumenanstieg beim Stage-1→2-Übergang als Begleitbeobachtung ist neu.",
+   "quoteSha256": "65ff5521adfa322d208eb5d10d1c5c7d1cf8c913d99d7897c6783e219bb6453b",
+   "quoteChars": 101,
+   "id": "F7-B03-143-056"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 143,
+   "printedPage": "136",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "6 Wochen; 13 Wochen",
+   "paraphraseDe": "Zusatz zu Kriterium 7: Die RS-Linie darf nicht im Abwärtstrend sein; bevorzugt mindestens 6 Wochen steigend, ideal 13 Wochen oder mehr.",
+   "coveredBy": "NONE",
+   "novelty": "RS-Linien-Bedingung (≥6, ideal ≥13 Wochen steigend) fehlt komplett – liefert eine selbst berechenbare RS-Alternative.",
+   "quoteSha256": "7d7520e653766fc03a294aa1677243222a49277fb78f99c609365f2d196165fe",
+   "quoteChars": 155,
+   "id": "F7-B03-143-057"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 143,
+   "printedPage": "136",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "HARD",
+   "numbers": "70; 90",
+   "paraphraseDe": "IBD-RS-Rating nicht unter 70, bevorzugt 90 oder höher.",
+   "coveredBy": "PARTIAL:MIN-TT-08P",
+   "novelty": "B03 nennt als Präferenz 90+, B12 '80er oder 90er'.",
+   "quoteSha256": "84597a0bf615cdd59fb6a7576cebef892dc262bb87fe55de15cc435ad9d1b9ae",
+   "quoteChars": 164,
+   "id": "F7-B03-143-058"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 143,
+   "printedPage": "136",
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "1 Monat; 4-5 Monate",
+   "paraphraseDe": "MA200 mindestens 1 Monat steigend, ideal 4–5 Monate oder länger; keine weitere Operationalisierung (z. B. Steigungsmaß) im Text.",
+   "coveredBy": "MIN-TT-03",
+   "novelty": "Bestätigt B12; auch B03 definiert nicht, wie 'steigend' gemessen wird (Antwort auf Q1: nicht spezifiziert).",
+   "quoteSha256": "a69081111edd86081592a22330c134e6eec99c82d89852537f4586f6c4c6856a",
+   "quoteChars": 115,
+   "id": "F7-B03-143-059"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 155,
+   "printedPage": "148",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Ohne ungewöhnlich ruhige Preis- und Volumenaktion auf der rechten Basisseite strömt weiter Angebot herein – höheres Risiko und Scheitern; warten, bis der letzte schwache Halter raus ist.",
+   "coveredBy": "PARTIAL:MIN-VCP-05",
+   "novelty": "Negativ-Kriterium (keine Ruhe rechts = kein Kauf) fehlt.",
+   "quoteSha256": "fe039c059c45d16401763476b906ef4eb639a4605933633698367874ea7480df",
+   "quoteChars": 194,
+   "id": "F7-B03-155-060"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 156,
+   "printedPage": "149",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "So nah wie möglich am Pivot kaufen, um nicht hinterherzulaufen; korrekte Pivots sind selten Fehlausbrüche.",
+   "coveredBy": "PARTIAL:MIN-VCP-07",
+   "novelty": "Chase-Begrenzung wird nur qualitativ genannt; keine Prozentgrenze im Minervini-Text (vgl. Ryan >10% extended, S. 43).",
+   "quoteSha256": "3706919ecf7537e8561a4c5df0b7fee9dd4acd8b7f4fb4bc9108e247be9b7626",
+   "quoteChars": 78,
+   "id": "F7-B03-156-061"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 156,
+   "printedPage": "149",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "6W 32/6 3T; 27W 27/8 3T; 19W 16/3 4T",
+   "paraphraseDe": "Notation des technischen Fußabdrucks: '6W 32/6 3T' = Basisdauer 6 Wochen, größte (erste) Korrektur 32%, letzte Korrektur vor Pivot 6%, 3 Kontraktionen (weitere: NFLX 27W 27/8 3T, MIK 19W 16/3 4T).",
+   "coveredBy": "PARTIAL:MIN-BASE-04",
+   "novelty": "Konkretes Notationsformat W / größte/letzte / T fehlt.",
+   "quoteSha256": "389a72fe701139536e47c5261f472bbdc9a3c5b0c93699cea831500fcde419ca",
+   "quoteChars": 201,
+   "id": "F7-B03-156-062"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 156,
+   "printedPage": "149",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "30%; 40%; 50%",
+   "paraphraseDe": "VCP ist ein Fortsetzungsmuster: tritt typischerweise auf, nachdem die Aktie bereits 30–50% oder mehr gestiegen ist.",
+   "coveredBy": "PARTIAL:MIN-BASE-01",
+   "novelty": "Vorlauf-Anstieg vor einem VCP als typisches Merkmal fehlt.",
+   "quoteSha256": "5aa8fd993b1f7c568707f8cd50c59edae43c5be19bca12752bb44a3c34ec7309",
+   "quoteChars": 180,
+   "id": "F7-B03-156-063"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 160,
+   "printedPage": "153",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "10%-35%; 40%; 60%; 2-3x Markt",
+   "paraphraseDe": "Basiskorrekturen liegen meist bei 10–35%, gelegentlich 40%; Titel mit 60%+ Rückgang meidet er; meist auch Titel meiden, die 2–3× stärker fallen als der Markt.",
+   "coveredBy": "NONE",
+   "novelty": "Maximale Basistiefe und relative Rückgangsgrenze zum Markt fehlen.",
+   "quoteSha256": "e90ea99dad0caeddf847e4e5e94d07ef9d32dbbb260b3a748a348ceb6b16a23b",
+   "quoteChars": 189,
+   "id": "F7-B03-160-064"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 164,
+   "printedPage": "157",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1-99",
+   "paraphraseDe": "RS-Rating nicht isoliert nutzen: Kombination aus RS-Rating, RS-Linie (Aktie vs. Gesamtmarkt) und technischer Aktion; nur RS-Rating verleitet zum Hinterherkaufen überhitzter Titel.",
+   "coveredBy": "NONE",
+   "novelty": "Methodik der RS-Nutzung (Rating + RS-Linie + Chart) fehlt.",
+   "quoteSha256": "f0cb1c8ca27d2077788173c930e53026a349eb8663a6d264f4bca458b49587be",
+   "quoteChars": 167,
+   "id": "F7-B03-164-065"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 166,
+   "printedPage": "159",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1-2 Monate; 4-8 Wochen",
+   "paraphraseDe": "Leader bilden ihr Tief vor dem Markt (Tage bis 1–2 Monate), zeigen höhere Tiefs bei tieferen Index-Tiefs und machen in den ersten 4–8 Wochen eines neuen Zyklus neue Hochs.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Zeitliche Kennzahlen der Leader-Divergenz fehlen.",
+   "quoteSha256": "68cf02979c93b92dab5a779569f5206f1e5acefe97942f7f7ec55470d94a77ea",
+   "quoteChars": 103,
+   "id": "F7-B03-166-066"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 168,
+   "printedPage": "161",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "RS-Linie macht ein neues Hoch vor dem Kurs (vor dem Ausbruch) – wichtiges Zeichen institutioneller Akkumulation (Beispiele AMZN 2002, EBAY 2002, DKS 2003).",
+   "coveredBy": "NONE",
+   "novelty": "'RS line new high before price' als Vorlaufsignal fehlt.",
+   "quoteSha256": "fedca22ee7d9953bf16ae4dc47ed4e9ffc72774653e319ee68c7a6e3fd90e07d",
+   "quoteChars": 231,
+   "id": "F7-B03-168-067"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 175,
+   "printedPage": "168",
+   "questions": [
+    "Q14",
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nach einem Markttief in der Reihenfolge der Stärke kaufen: zuerst die Titel, die als erste aus einer korrekten Basis ausbrechen; keine Lieblingstitel abwarten.",
+   "coveredBy": "NONE",
+   "novelty": "Priorisierungsregel 'erste Ausbrüche zuerst' fehlt.",
+   "quoteSha256": "ff340fc88fcd567b3d04a4f142d1312793412862bf9ea3a9c78d09a1be4eae2d",
+   "quoteChars": 124,
+   "id": "F7-B03-175-068"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 176,
+   "printedPage": "169",
+   "questions": [
+    "TRANSLATION",
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "8-10 Jahre",
+   "paraphraseDe": "Die stärksten Gewinner sind Firmen, die '8–10 Jahre' börsennotiert sind – Vietnamesisch mehrdeutig ('sau' = nach/innerhalb).",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzung mehrdeutig; im englischen Original vermutlich 'innerhalb der letzten 8–10 Jahre an die Börse gegangen'; nicht als Mindestalter übernehmen.",
+   "quoteSha256": "d3156a2977857ce6fc5446befc9429049cac8a3871380ad4196626df14307496",
+   "quoteChars": 100,
+   "id": "F7-B03-176-069"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 177,
+   "printedPage": "170",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "52-Wochen-Hochs > Tiefs",
+   "paraphraseDe": "Lockout-Rally nach Bärenmarkt: echte Erholung, wenn Index-Auftage mit steigendem und Abtage mit fallendem Volumen kommen, Leader aus konstruktiven Basen ausbrechen und die Zahl der 52-Wochen-Hochs die Tiefs deutlich und wachsend übersteigt; dann Exposure erhöhen.",
+   "coveredBy": "NONE",
+   "novelty": "Bestätigungskriterien für einen neuen Bullenmarkt fehlen.",
+   "quoteSha256": "5208608a84510875062a32c41dc5017cce2a941901d7f20653d5e0bd66b6375d",
+   "quoteChars": 203,
+   "id": "F7-B03-177-070"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 178,
+   "printedPage": "171",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "25%-100%; 200%-300%; 3-36 Monate; 3-45 Wochen; 7-25; 15-50%; >60%",
+   "paraphraseDe": "3C-Voraussetzung: vorheriger Anstieg mindestens 25–100% (teils 200–300%) über 3–36 Monate, Kurs über steigender MA200; Musterdauer 3–45 Wochen (meist 7–25); Tiefe 15–20% bis 30–40%, max. 50%; >60% zu tief.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-04",
+   "novelty": "Quantitative 3C-Kriterien (Vorlauf, Dauer, Tiefe) fehlen.",
+   "quoteSha256": "4a26a26262de60c1dc8aae9f0ae3f73da9776ef441733feed4b6d6fa6197d332",
+   "quoteChars": 184,
+   "id": "F7-B03-178-071"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 180,
+   "printedPage": "173",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1/3-1/2; 5%-10%",
+   "paraphraseDe": "Cheat-Ablauf: Erholung holt meist 1/3 bis 1/2 des vorherigen Rückgangs auf, dann Pause von Tagen/Wochen mit 5–10% Tiefe; optimal ein kurzes Unterschießen des vorherigen Pausentiefs (Shakeout); Kauf, wenn das Hoch der Pause überschritten wird.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-02",
+   "novelty": "Erholungsanteil 1/3–1/2 und optimales Unterschießen (Shakeout) fehlen.",
+   "quoteSha256": "27c66c39764a77b75921e94bf56688de0203a42f06edd86ffd3ed5c2eadb0453",
+   "quoteChars": 178,
+   "id": "F7-B03-180-072"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 182,
+   "printedPage": "175",
+   "questions": [
+    "Q5",
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1/3; 10 Tage",
+   "paraphraseDe": "Low Cheat (unteres Drittel der Basis) ist riskanter: kleine Startposition, Aufstocken an späteren Pivots; bei IPOs Basis mindestens 10 Tage, möglichst über IPO-Preis.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-01",
+   "novelty": "Low-Cheat-Sizing und IPO-Mindestbasis 10 Tage fehlen (vgl. B07: 3–4 Wochen Historie).",
+   "quoteSha256": "5fb5fe476f6c3e853189934ff18c509451cfa0cac5cc83dc91476a40846ef1ed",
+   "quoteChars": 166,
+   "id": "F7-B03-182-073"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 187,
+   "printedPage": "180",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Doppelboden (W, gern mit Undercut) braucht auf der rechten Seite eine Pause/einen Pivot (Cheat oder Henkel); V-förmige Anstiege ohne Pause scheitern oft.",
+   "coveredBy": "PARTIAL:MIN-VCP-08",
+   "novelty": "Pause-/Henkel-Pflicht für Doppelboden-Pivots fehlt.",
+   "quoteSha256": "48aa6efd9892bce9cc1ede2ca9e88ee6631e4eee48d9676d4a656f6afcd0c1f0",
+   "quoteChars": 85,
+   "id": "F7-B03-187-074"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 189,
+   "printedPage": "182",
+   "questions": [
+    "Q13"
+   ],
+   "modal": "HARD",
+   "numbers": "20%; 25%; 3-6 Wochen; 10-12 Sitzungen; 10%",
+   "paraphraseDe": "Konsolidierung nach dem Schub höchstens 20% (niedrigpreisige ~25%) über 3–6 Wochen, manche nur 10–12 Sitzungen; bei ≤10% Tiefe keine sichtbare Volatilitätskontraktion nötig.",
+   "coveredBy": "PARTIAL:MIN-PP-03",
+   "novelty": "25% nur für niedrigpreisige Titel und 10–12 Sitzungen als Untergrenze präzisieren B12.",
+   "quoteSha256": "9242d20d1c04d559f6fef46fbcf6ccd6675e242f50d792633d8bf8b03d976265",
+   "quoteChars": 188,
+   "id": "F7-B03-189-075"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 189,
+   "printedPage": "182",
+   "questions": [
+    "Q13"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "100%; 8 Wochen",
+   "paraphraseDe": "Power Play: Titel, die vorher schon stark gestiegen sind, qualifizieren meist nicht; die besten waren in Stage 1 ruhig (dormant) und explodieren dann (≥100% in 8 Wochen auf hohem Volumen).",
+   "coveredBy": "PARTIAL:MIN-PP-02",
+   "novelty": "Dormanz-Bedingung (ruhige Stage 1 vor dem Schub) fehlt.",
+   "quoteSha256": "e53181c79f4e30e41c88f1dc69e013651c49c57eec8135a38ad25383064f9443",
+   "quoteChars": 209,
+   "id": "F7-B03-189-076"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 189,
+   "printedPage": "182",
+   "questions": [
+    "Q13"
+   ],
+   "modal": "HARD",
+   "numbers": "3-6 Wochen",
+   "paraphraseDe": "Power Play: keine Fundamentaldaten nötig, aber VCP-Merkmale sind Pflicht; Konsolidierung 3–6 Wochen.",
+   "coveredBy": "PARTIAL:MIN-PP-05",
+   "novelty": "B03 macht VCP für Power Play ausdrücklich zur Pflicht ('bắt buộc'), außer bei ≤10% Tiefe.",
+   "quoteSha256": "f20050e09c5f73449bfc83ea481fc65fbbbabe5086101b88f021cc52e28d9dad",
+   "quoteChars": 119,
+   "id": "F7-B03-189-077"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 194,
+   "printedPage": "187",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "HARD",
+   "numbers": "50%; 20%-25%; 1.25%-2.5%; 10%; 5%-6%; 10-12",
+   "paraphraseDe": "Sizing-Leitfaden: Risiko 1,25–2,5% je Trade, max. Stop 10%, Ø-Verlust ≤5–6%, nie 50% in eine Position, 20–25% nur für die besten Titel, max. 10–12 Titel.",
+   "coveredBy": "PARTIAL:MIN-MM-SIZE-01",
+   "novelty": "B03-Obergrenze 'nie 50%' und 20–25% für Top-Titel (B07 nennt 25% max).",
+   "quoteSha256": "5eb35a3a658854014f73969d15beee14c855e14a625ced2062e3268c9fd3737f",
+   "quoteChars": 138,
+   "id": "F7-B03-194-078"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 195,
+   "printedPage": "188",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "'Unkraut jäten': stagnierende 'tote' Positionen nicht bis zum Stop halten, sondern Kapital in bessere Titel umschichten.",
+   "coveredBy": "PARTIAL:MIN-TTC-ROTATION",
+   "novelty": "Zeitbasierter Ausstieg aus stagnierenden Titeln (vgl. Zug-Fahrplan S. 33) fehlt.",
+   "quoteSha256": "45721c0d727600a3704c5f4ed223f9407579ba65ec9d2be6dacfb8066929c0d4",
+   "quoteChars": 140,
+   "id": "F7-B03-195-079"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 195,
+   "printedPage": "188",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "4-8; 10-12; 20; 20%-25%; 5%-10%",
+   "paraphraseDe": "Je nach Größe 4–8 Titel, große Portfolios 10–12; mehr als 20 unnötig; ideal 20–25% in jeweils 4–5 besten Titeln, Start meist 5–10% je Position.",
+   "coveredBy": "PARTIAL:MIN-RISK-09",
+   "novelty": "B03 nennt 4–8 statt 4–6 (B12) und bestätigt Start 5–10%.",
+   "quoteSha256": "4d9674f73d8f36365021e59a45c8bf67b8e1098904c946296cc44b8d39e93fea",
+   "quoteChars": 165,
+   "id": "F7-B03-195-080"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 199,
+   "printedPage": "192",
+   "questions": [
+    "Q8",
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2:1; 25%; 4",
+   "paraphraseDe": "Bei Gewinn/Verlust 2:1 (Kelly/Optimal f) ergibt sich ~25% Positionsgröße je Titel (4 Titel). Übersetzerfußnote deutet Kelly-25% fälschlich als maximales Kontorisiko je Trade.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzerfußnote vermischt Positionsgewicht und Risiko (Kelly 25% ≠ 25% Kontorisiko); nicht übernehmen.",
+   "quoteSha256": "44c3adc0bbbda5c8f22578aa5e5096f9dbbf63955b7706f0929868687a9b2bb8",
+   "quoteChars": 230,
+   "id": "F7-B03-199-081"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 207,
+   "printedPage": "200",
+   "questions": [
+    "Q11",
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "Basis 1-6",
+   "paraphraseDe": "Basiszählung: 1. und 2. Basis nach einer Marktkorrektur sind gut; 3. und 4. Basis funktionieren noch, aber spät im Zyklus (eher für Swing); 5./6. Basis scheitern wahrscheinlich – früh in Stärke verkaufen.",
+   "coveredBy": "NONE",
+   "novelty": "Basiszählung als Verkaufs- und Einstiegsfilter fehlt.",
+   "quoteSha256": "bb2bcdd260af82ca2b31a0b0ede03bad56f5f4bd99f49d1f4c5838525654c4b4",
+   "quoteChars": 232,
+   "id": "F7-B03-207-082"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 207,
+   "printedPage": "200",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": ">90%",
+   "paraphraseDe": "Über 90% der großen Bewegungen entstehen nach Marktkorrekturen; frühe Erholung aus der 1. oder 2. Basis nach der Korrektur ist der beste Einstieg.",
+   "coveredBy": "NONE",
+   "novelty": "Zusammenhang Marktkorrektur → Basiszähler-Reset fehlt.",
+   "quoteSha256": "bf4654c1e0e396ddb3dc742cda621cf63a8cc054ef6b763943cb981cff3d1bd8",
+   "quoteChars": 81,
+   "id": "F7-B03-207-083"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 211,
+   "printedPage": "204",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2x P/E; 20→40",
+   "paraphraseDe": "P/E-Expansion: verdoppelt sich das KGV gegenüber dem Beginn des Aufwärtstrends (z. B. 20→40), besonders in einer späten Basis, nach Verkaufspunkten suchen; analog beim Kauf Vorsicht nach 4–5 Basen und verdoppeltem/verdreifachtem KGV.",
+   "coveredBy": "NONE",
+   "novelty": "P/E-Expansion als Verkaufssignal fehlt.",
+   "quoteSha256": "250109bdd1585eb7e899261d446a7e9661fc634450098e6a8bb505257b37924f",
+   "quoteChars": 317,
+   "id": "F7-B03-211-084"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 212,
+   "printedPage": "205",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "25%-50%; 1-3 Wochen; 70%-80%; 5-10 Tage",
+   "paraphraseDe": "Climax Top: nach Monaten Anstieg beschleunigt die Aktie mit steilster Steigung des Trends, typischerweise +25–50% in 1–3 Wochen, manche +70–80% in 5–10 Tagen; dann Teil oder alles in die Stärke verkaufen.",
+   "coveredBy": "NONE",
+   "novelty": "Quantitative Climax-Top-Kriterien fehlen.",
+   "quoteSha256": "aac06ce7c43712322090104055b6122b443d8e1f6c1849c0319e493dd73e3c15",
+   "quoteChars": 102,
+   "id": "F7-B03-212-085"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 216,
+   "printedPage": "209",
+   "questions": [
+    "Q11",
+    "TRANSLATION"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "70%; 7-15 Tage; 6-10; 2-3",
+   "paraphraseDe": "Verkaufssignale bei extendierten Titeln: ≥70% Auftage in 7–15 Tagen; 6–10 schnelle Auftage bei nur 2–3 Abtagen; plus größter Auftag, größte Tagesspanne und Exhaustion Gap seit Trendbeginn; neues Hoch nach 4./5. Basis; P/E verdoppelt.",
+   "coveredBy": "NONE",
+   "novelty": "Zählregeln fehlen; Inkonsistenz: S. 214 nennt '6 Auftage in 10 Tagen', S. 216 '6–10 Auftage' – Original prüfen.",
+   "quoteSha256": "fadcd869bb3f7b133ec9c1d2334d2d16c8198765f6500b347357c68fa4a97cd0",
+   "quoteChars": 253,
+   "id": "F7-B03-216-086"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 217,
+   "printedPage": "210",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Weitere Top-Signale: Umkehr auf hohem Volumen; Volumen-Churning ohne Kursfortschritt; Rückgang mit größtem Volumen seit Trendbeginn.",
+   "coveredBy": "NONE",
+   "novelty": "Volumenbasierte Umkehrsignale am Top fehlen.",
+   "quoteSha256": "1da41864d2823771482f9d56848bf13582add11d075cf17b34aed0c38f736928",
+   "quoteChars": 163,
+   "id": "F7-B03-217-087"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 217,
+   "printedPage": "210",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Größter Tages- und/oder Wochenrückgang seit Beginn von Stage 2 ist ein klares Verkaufssignal, auch direkt nach guten Earnings.",
+   "coveredBy": "NONE",
+   "novelty": "Regel 'largest down day/week since Stage-2 start = sell' fehlt.",
+   "quoteSha256": "72bdd88bd68a78a75837a5dda447ddbc9ec7e51454544d93b3b7d6e37c52840e",
+   "quoteChars": 126,
+   "id": "F7-B03-217-088"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 219,
+   "printedPage": "212",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "4%-5%",
+   "paraphraseDe": "Top-Muster sind nicht immer perfekt: schon ein Rückgang von nur 4–5% auf dem höchsten Volumen seit Trendbeginn ist zusammen mit weiteren Verletzungen ein wichtiges Warnsignal.",
+   "coveredBy": "NONE",
+   "novelty": "Toleranz für unvollkommene Top-Signale fehlt.",
+   "quoteSha256": "65aa5445bcbdf24a39bbdd5beff28d05f974f7b414ffd2244470be941de9dd44",
+   "quoteChars": 185,
+   "id": "F7-B03-219-089"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 222,
+   "printedPage": "215",
+   "questions": [
+    "Q10",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "MA50",
+   "paraphraseDe": "MA50-Trailing ('break even or better') ist besonders in frühen Bullenmärkten nützlich; in späten Bullenmärkten lieber in Stärke verkaufen.",
+   "coveredBy": "PARTIAL:MIN-TTC-TRAIL",
+   "novelty": "Marktphasenabhängige Wahl Trailing vs. Verkauf in Stärke fehlt.",
+   "quoteSha256": "fbc354157dcbcf497ebc60966f5f0a6f2d24bb294a1c6d9f23f839d988dca703",
+   "quoteChars": 221,
+   "id": "F7-B03-222-090"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 223,
+   "printedPage": "216",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "10%; 20%",
+   "paraphraseDe": "Back-Stop meist auf oder über dem eigenen Durchschnittsgewinn platzieren (Beispiel: Ø 10%, Aktie +20% → Back-Stop bei +10% oder halb verkaufen).",
+   "coveredBy": "PARTIAL:MIN-TTC-BACKSTOP",
+   "novelty": "Kopplung des Back-Stop-Niveaus an den Durchschnittsgewinn fehlt.",
+   "quoteSha256": "7b43f1ec590f7ea89e5c8a5e94440435ea7101954b28917fc8821765a99f8644",
+   "quoteChars": 155,
+   "id": "F7-B03-223-091"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 225,
+   "printedPage": "218",
+   "questions": [
+    "Q11",
+    "Q15"
+   ],
+   "modal": "HARD",
+   "numbers": "70%; Basis 1 vs. letzte",
+   "paraphraseDe": "Ausnahme erste Basis: dieselbe 'Erschöpfungs'-Aktion (≥70% Auftage, Serie starker Tage) aus der ersten Basis ist bullish, nur nach der letzten Basis ein Verkaufssignal; deshalb muss die Basiszahl bekannt sein.",
+   "coveredBy": "NONE",
+   "novelty": "Kontextabhängigkeit der Verkaufssignale von der Basiszahl fehlt (wichtig gegen Fehlverkäufe früher Leader).",
+   "quoteSha256": "1c09a3bf7be73b6c5b395f527f350d13ef8405ae0f2abd9ac30f68c444789721",
+   "quoteChars": 126,
+   "id": "F7-B03-225-092"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 236,
+   "printedPage": "229",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "40%; 78%; 27%; 1:1",
+   "paraphraseDe": "Jede Position täglich nach Chance/Risiko bewerten: wer nach +40% mit Einstandsstop weiterhält und später +78% erzielt, hat für 27% Mehrgewinn 27% riskiert (1:1) – kein guter Trade.",
+   "coveredBy": "NONE",
+   "novelty": "Bewertung des Haltens als neuer Trade (Rest-Chance vs. Rückgabe-Risiko) fehlt.",
+   "quoteSha256": "1d56786c9ee641ff0867141201935935ce7190651811d122b3af6819b8e1a6db",
+   "quoteChars": 174,
+   "id": "F7-B03-236-093"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 237,
+   "printedPage": "230",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "12x10% = 214%; 8x10% = 2x",
+   "paraphraseDe": "Drawdown-Schlüssel 1: lieber zu früh als zu spät in Stärke verkaufen; kleine, häufig compoundierte Gewinne (12×10% ≈ 214%) schlagen das Warten auf Riesengewinne.",
+   "coveredBy": "PARTIAL:MIN-RISK-06",
+   "novelty": "B03 formuliert Verkauf in Stärke als Kernprinzip mit Compounding-Arithmetik.",
+   "quoteSha256": "2f83cb030c140de1c59a5c4f51473834aa95aa1c6de5742edaa42103b7924f22",
+   "quoteChars": 98,
+   "id": "F7-B03-237-094"
+  },
+  {
+   "source": "B03",
+   "pdfPage": 241,
+   "printedPage": "234",
+   "questions": [
+    "Q10",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Einstandssicherung marktabhängig: in schwierigen Märkten Stop sehr schnell nachziehen; wenn Strategie und Markt im Einklang sind, mehr Spielraum geben.",
+   "coveredBy": "PARTIAL:MIN-RISK-07",
+   "novelty": "Marktphasenabhängiges Tempo der Stopanhebung fehlt.",
+   "quoteSha256": "c5e96c0dd857bdca78775a7639cfd232adb2d7c7ef5f74c3b642ac096247e2d5",
+   "quoteChars": 192,
+   "id": "F7-B03-241-095"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 14,
+   "printedPage": null,
+   "questions": [
+    "Q10",
+    "Q15"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": null,
+   "paraphraseDe": "EOD-Trader mit Vollzeitjob müssen ggf. auf mechanische Trailing-Stops setzen.",
+   "coveredBy": "NONE",
+   "novelty": "EOD-Ausnahme für Trailing-Stops.",
+   "quoteSha256": "71842f0dfb079afe8c50815e07c3ff268f90ea6312d9883dcd320cf0827fea06",
+   "quoteChars": 60,
+   "id": "F7-B07-014-096"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 18,
+   "printedPage": null,
+   "questions": [
+    "Q2"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Vor dem Kauf verlangt er starke relative Kursstärke mit hohem Alpha und niedriger Standardabweichung.",
+   "coveredBy": "PARTIAL:MIN-TT-08",
+   "novelty": "Eigene RS-Definition über Alpha und niedrige Standardabweichung statt nur IBD-RS-Rating fehlt.",
+   "quoteSha256": "9e5b95c2d16c7118d061bcb2cd6ef74990866ecf8f0499c211ceb4c830a9ea10",
+   "quoteChars": 167,
+   "id": "F7-B07-018-097"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 19,
+   "printedPage": null,
+   "questions": [
+    "Q6"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Maßgeblich ist die EOD-Volumenzahl (inkl. Dark Pools).",
+   "coveredBy": "NONE",
+   "novelty": "EOD-Volumen als Referenzwert fehlt.",
+   "quoteSha256": "6ecdd95407029574304769bfa349092aac0a6cfd43ba228bd1da2e8e023e3b19",
+   "quoteChars": 109,
+   "id": "F7-B07-019-098"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 20,
+   "printedPage": null,
+   "questions": [
+    "Q5",
+    "Q12"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Kauf nach normalem Pullback nur, wenn die Aktie aufwärts durch den Pivot läuft und in starkem Aufwärtstrend ist; nie ins fallende Messer.",
+   "coveredBy": "PARTIAL:MIN-MM-PULL-02",
+   "novelty": "Zusatzbedingung: Pullback-Kauf nur bei Durchlaufen des Pivots plus starkem Aufwärtstrend.",
+   "quoteSha256": "9fecb33e68064a103deb5a65384e374009ee2d12d73e2f44a479c1fe2c8a3af3",
+   "quoteChars": 220,
+   "id": "F7-B07-020-099"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 22,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "50, 1990",
+   "paraphraseDe": "Beispiel 1990: AMGN und USS fielen im Bärenmarkt nicht unter die MA50 und wurden spätere Großgewinner.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Historischer Beleg: Halten der MA50 im Bärenmarkt als Leader-Merkmal.",
+   "quoteSha256": "dd321be8c5d2201247dd9f641b62e1e67a94138d5828642abc18210fa8ba3e2b",
+   "quoteChars": 140,
+   "id": "F7-B07-022-100"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 23,
+   "printedPage": null,
+   "questions": [
+    "Q2",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "200, 50",
+   "paraphraseDe": "Liegt der Nasdaq unter MA200 und MA50, Aktien suchen, die über MA200 und MA50 liegen – Kandidaten für die nächsten Führer.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Konkreter Resilienz-Screen (Aktie über MA50/MA200 während Index darunter) fehlt.",
+   "quoteSha256": "54b1cec5932899844f7c150aafec96dd241d7965dd562a45a124aa06f0fba18f",
+   "quoteChars": 145,
+   "id": "F7-B07-023-101"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 24,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "IPO: bei starker Basis Kauf beim Ausbruch aus der Konsolidierung, vorzugsweise nahe Allzeithoch.",
+   "coveredBy": "PARTIAL:MIN-MM-IPO-01",
+   "novelty": "IPO-Entry-Präferenz nahe Allzeithoch fehlt.",
+   "quoteSha256": "1d4a25ad39b2fc4c16fa7522689a41e593348b9a7875b947b3343cf54f50d0b1",
+   "quoteChars": 164,
+   "id": "F7-B07-024-102"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 24,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Small Caps werden nahe neuen Hochs gehandelt, da ihre Preisbildung weniger effizient ist.",
+   "coveredBy": "NONE",
+   "novelty": "Small-Cap-Entry nahe neuen Hochs als Präferenz fehlt.",
+   "quoteSha256": "403caa88ce28875116be1a533dc6b77711393e614ffb62a2ba4b3a1940d77a75",
+   "quoteChars": 128,
+   "id": "F7-B07-024-103"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 24,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Large Caps oft früher innerhalb der Korrekturspanne kaufen (bzw. nach Bärenmarkt/tiefer Korrektur); Small Caps eher nahe neuen Hochs.",
+   "coveredBy": "NONE",
+   "novelty": "Unterschiedliche Entry-Lage nach Marktkapitalisierung (Large Cap früh in Korrektur, Small Cap nahe Hoch) fehlt.",
+   "quoteSha256": "cbd3c85f2874c1d5a0298cf81ff5322751df2f7a94e4178bf92915363287cf38",
+   "quoteChars": 109,
+   "id": "F7-B07-024-104"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 28,
+   "printedPage": null,
+   "questions": [
+    "Q8"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2:1, 25%",
+   "paraphraseDe": "Mathematisch (Optimal f / Kelly) ist für einen 2:1-Trader 25% die optimale Positionsgröße; dort sollen die besten Positionen liegen.",
+   "coveredBy": "PARTIAL:MIN-MM-SIZE-01",
+   "novelty": "Herleitung der 25%-Obergrenze aus Optimal f/Kelly bei 2:1 fehlt.",
+   "quoteSha256": "78488d908040a0120fca59289d74901703e7ad37b0e2c14dddfb89794f06aa5d",
+   "quoteChars": 68,
+   "id": "F7-B07-028-105"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 30,
+   "printedPage": null,
+   "questions": [
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "10-12, 4-8",
+   "paraphraseDe": "Selten mehr als 10–12 Positionen; Kapital möglichst in den 4–8 besten Aktien konzentrieren.",
+   "coveredBy": "PARTIAL:MIN-RISK-09",
+   "novelty": "2015er Zahlen 10–12 Maximum und 4–8 Kernpositionen weichen von 4–6 (2013) ab.",
+   "quoteSha256": "024887d824e344be7549625347a1ea9808b7489c6a05e213e0a8fa83534d68c5",
+   "quoteChars": 131,
+   "id": "F7-B07-030-106"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 30,
+   "printedPage": null,
+   "questions": [
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "10-12%, 8-10",
+   "paraphraseDe": "Für Konservative/Anfänger 10–12% je Position (8–10 Aktien); nie das ganze Konto in eine Aktie.",
+   "coveredBy": "PARTIAL:MIN-MM-SIZE-01",
+   "novelty": "Konkrete Anfänger-Positionsgröße 10–12% fehlt.",
+   "quoteSha256": "b9641ce28a39144bcfabf392603321c4424a391e1545544febf41647573069a0",
+   "quoteChars": 108,
+   "id": "F7-B07-030-107"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 31,
+   "printedPage": null,
+   "questions": [
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "5%",
+   "paraphraseDe": "Normal mindestens 5% Startposition; nach mehreren Stops schrittweise kleiner, dann kein Minimum.",
+   "coveredBy": "PARTIAL:MIN-MM-SIZE-02",
+   "novelty": "Kein Minimum nach Stop-Serien; Normalstart mind. 5%.",
+   "quoteSha256": "265e16e7d4c7727e00fcff233520e59c60df0cbe9584c7a7f1de4d5585ccb8c0",
+   "quoteChars": 71,
+   "id": "F7-B07-031-108"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 32,
+   "printedPage": null,
+   "questions": [
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "25%, 50%",
+   "paraphraseDe": "Neue Trader sollen Positionsgrößen erst steigern, wenn das Konto ca. 25% oder 50% zugelegt hat.",
+   "coveredBy": "NONE",
+   "novelty": "Wachstumsschwelle des Kontos vor Positionsvergrößerung für Anfänger fehlt.",
+   "quoteSha256": "e2285303aaa441503b2fbda7ae975d846539301f55a0f6e0795afbe8cc0ff41b",
+   "quoteChars": 129,
+   "id": "F7-B07-032-109"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 33,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION",
+    "Q8"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Wahrscheinlich Übersetzungsfehler: Original sinngemäß 'größeres Risiko mit Gewinnen eingehen'; 'memangkas' (kürzen) kehrt Sinn um.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzungsfehler, mögliche Sinnumkehr.",
+   "quoteSha256": "073889df56f1a16a9a31fe5e487538e9ed18854cb202ab5f3c064915b56acdf5",
+   "quoteChars": 68,
+   "id": "F7-B07-033-110"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 33,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Je geringer das Risiko, desto größer die Position; Risiko = Stopabstand plus Liquidität.",
+   "coveredBy": "PARTIAL:MIN-TTC-SIZING",
+   "novelty": "Liquidität als zweite Risikodimension neben Stopabstand fehlt.",
+   "quoteSha256": "ca53f0b35f528964997dfd65cce9eb533c1f6fe96ac91f880fc8dc1e8c8c613a",
+   "quoteChars": 166,
+   "id": "F7-B07-033-111"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 34,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Setup-Qualität = Preis-/Volumenaktion plus Gewinnstärke; Positionen grundsätzlich gleich groß, kleiner bei illiquiden/volatilen Titeln oder ohne jüngste Erfolge.",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Gleichgewichtung als Grundsatz und Abweichungsgründe (Liquidität, Volatilität, Trading-Rhythmus) fehlen.",
+   "quoteSha256": "4ea590411866a3de6f782e72a05046bdd9d59165a9eccc96d6722675903c268b",
+   "quoteChars": 89,
+   "id": "F7-B07-034-112"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 37,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "70%",
+   "paraphraseDe": "70% der großen Marktbeweger hatten vor dem großen Anstieg bereits Gewinne; bei Biotech oft nicht.",
+   "coveredBy": "PARTIAL:MIN-MM-FUND-EX",
+   "novelty": "Quantifizierung 70% mit Vorab-Gewinnen fehlt.",
+   "quoteSha256": "220fca848e93d0416654f500af50204d7ff7655b64dcef5cb8f44242a3069519",
+   "quoteChars": 112,
+   "id": "F7-B07-037-113"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 37,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "200",
+   "paraphraseDe": "Er kauft niemals eine Aktie unterhalb der 200-Tage-Linie, egal wie gut die Fundamentals aussehen.",
+   "coveredBy": "PARTIAL:MIN-TT-01",
+   "novelty": "Explizites Kaufverbot unter MA200 unabhängig von Fundamentals bestätigt TT-01 als absolute Regel in 2015-Antwort.",
+   "quoteSha256": "52767ed9550b2a6a7c08225c57ec1c5822054d76bfd02e78a208a52f16d6c1d5",
+   "quoteChars": 96,
+   "id": "F7-B07-037-114"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 38,
+   "printedPage": null,
+   "questions": [
+    "Q15",
+    "Q4"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Keine Stochastics, MACD oder ATR; nur Preis, Volumen, einige MAs zur Glättung und Fundamentals (EPS, Umsatz, Marge).",
+   "coveredBy": "NONE",
+   "novelty": "Explizite Ablehnung von Oszillatoren/ATR (relevant für ATR-basierte Stops/Filter) fehlt.",
+   "quoteSha256": "8186de349df6af9d2bb013c5fe91c373440d2bb37f7bc86987b3498f867f95c8",
+   "quoteChars": 138,
+   "id": "F7-B07-038-115"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 39,
+   "printedPage": null,
+   "questions": [
+    "Q2"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Wichtigste technische Kriterien: Preis, Volumen und relative Stärke gegenüber Markt und gegenüber Titeln derselben Gruppe.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-10",
+   "novelty": "RS zweifach messen (vs. Markt und vs. Branchenpeers) als wichtigste technische Prüfung fehlt.",
+   "quoteSha256": "fdccc2dba6625808f9f54bdbf272a0617fd22d3d414ca200dfe58a049a4bdc9c",
+   "quoteChars": 130,
+   "id": "F7-B07-039-116"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 40,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1, 5, 10, 20 sen",
+   "paraphraseDe": "Nicht 1 Cent über dem Kaufpunkt kaufen, sondern warten, bis 5, 10 oder 20 Cent über dem Pivot gehandelt wird; keine magische Zahl.",
+   "coveredBy": "NONE",
+   "novelty": "Puffer über dem Pivot gegen Fehlausbrüche fehlt.",
+   "quoteSha256": "217841a5ed9071100cc829acbb9cf2c335cff22fd16ad025753e0506c476c0b9",
+   "quoteChars": 150,
+   "id": "F7-B07-040-117"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 40,
+   "printedPage": null,
+   "questions": [
+    "Q5",
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Breakout = Handel über vorher definiertem Niveau, z. B. Vortageshoch; hängt von Strategie ab.",
+   "coveredBy": "NONE",
+   "novelty": "Vortageshoch als möglicher Pivot und Strategieabhängigkeit der Breakout-Definition fehlen.",
+   "quoteSha256": "3361e4776f4e15f5be0fa91234202f03a252b3352314b97705b55f0a849fe1bb",
+   "quoteChars": 146,
+   "id": "F7-B07-040-118"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 40,
+   "printedPage": null,
+   "questions": [
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Für den Pivot-Puffer gibt es keine magische Zahl.",
+   "coveredBy": "NONE",
+   "novelty": "Pivot-Puffer explizit nicht fix.",
+   "quoteSha256": "8e7a85d447a9455016154bb8cd16f3bdc2328a76ee784ae2f7089ceada9ca5b3",
+   "quoteChars": 51,
+   "id": "F7-B07-040-119"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 41,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Er wartet meist auf Ausbruch oder zumindest auf Bewegung durch den Pivot, statt in ruhiger Seitwärtsphase zu kaufen.",
+   "coveredBy": "PARTIAL:MIN-VCP-07",
+   "novelty": "Kein Kauf in volumenarmer Seitwärtsphase ohne Pivotbewegung.",
+   "quoteSha256": "0d88d6607919bb3c2844fd0c89ce0c58bf9d43e4593bef69ff36659721229cba",
+   "quoteChars": 91,
+   "id": "F7-B07-041-120"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 43,
+   "printedPage": null,
+   "questions": [
+    "Q6"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "10.30, 500.000, 175.000, 1 juta",
+   "paraphraseDe": "Intraday-Volumenhochrechnung: 175.000 bis 10:30 bei 500.000 Schnitt ≈ 1 Mio. Tagesvolumen → Kauf; Schlussvolumen später prüfen.",
+   "coveredBy": "PARTIAL:MIN-MM-VOL-EX",
+   "novelty": "Konkrete Hochrechnungsmethode fehlt.",
+   "quoteSha256": "073782226a1d368f622aa1b606a77b3ffc2dd1f881794cbcc19b0e801aeebe95",
+   "quoteChars": 179,
+   "id": "F7-B07-043-121"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 45,
+   "printedPage": null,
+   "questions": [
+    "Q10"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Stop oft auf Einstand ziehen, sobald die Aktie ordentlich gestiegen ist.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Bestätigung Breakeven-Regel 2015 ohne feste R-Zahl.",
+   "quoteSha256": "bd29443b6a53d8c3089a2576585af0f9a2025ceb1b53e8be1085da958ac02e8d",
+   "quoteChars": 102,
+   "id": "F7-B07-045-122"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 45,
+   "printedPage": null,
+   "questions": [
+    "Q12",
+    "Q10"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "separuh (50%)",
+   "paraphraseDe": "Rücksetzer in oder unter den Breakoutbereich passieren etwa in der Hälfte der Fälle, auch bei besten Aktien; halten solange erster Stop hält.",
+   "coveredBy": "NONE",
+   "novelty": "Häufigkeit von Pullbacks in Breakoutzone und Halten bis Initial-Stop fehlt.",
+   "quoteSha256": "df4ce2bb827d5ad4427005f4bf318826ea072d049badce90469ff7f468c3dccb",
+   "quoteChars": 72,
+   "id": "F7-B07-045-123"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 46,
+   "printedPage": null,
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "6, 8",
+   "paraphraseDe": "Er handelt 6–8 Setups, meist Permutationen von Breakout/Pullback; Hauptmerkmal ist VCP (Volatilitätskontraktion links→rechts).",
+   "coveredBy": "PARTIAL:MIN-VCP-01",
+   "novelty": "VCP-Charakteristik als Kernanforderung über alle 6–8 Setups.",
+   "quoteSha256": "d222dfcae2b3f24047bbf391c094adfc78be530d669ffb3cfdd4a72b91488f56",
+   "quoteChars": 127,
+   "id": "F7-B07-046-124"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 50,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1-4",
+   "paraphraseDe": "Quartals-EPS im Vorjahresvergleich, die über die letzten 1–4 Quartale sequenziell steigen; plus Ausbruch aus mehrjähriger Spanne und Beschleunigung über Wachstumsrate.",
+   "coveredBy": "PARTIAL:MIN-CODE33-01",
+   "novelty": "Sequenzielle YoY-Steigerung über 1–4 Quartale fehlt.",
+   "quoteSha256": "5940c0eec428ffd3772f2bde0a95a59f243761e780297ee23bd9309770543521",
+   "quoteChars": 112,
+   "id": "F7-B07-050-125"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 50,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3, 4",
+   "paraphraseDe": "Gewinnverlangsamung kann Topbildung anzeigen (Stage 3/4).",
+   "coveredBy": "PARTIAL:MIN-EPS-11",
+   "novelty": "Dezeleration als Top-Warnsignal.",
+   "quoteSha256": "9c85d2446c506a58a6d22b39cc7d40450fabf3193e6235a470d4bb9f83e1bd2e",
+   "quoteChars": 80,
+   "id": "F7-B07-050-126"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 52,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "KGV wenig beachtet; relativ hohes KGV wird sehr niedrigem vorgezogen (niedriges kann Warnsignal sein).",
+   "coveredBy": "NONE",
+   "novelty": "Keine KGV-Obergrenze; Präferenz für hohes KGV fehlt.",
+   "quoteSha256": "5b2adf8a420e927d42597818098b6b5fdcf1f886964645bcec7647d5bb15d5d8",
+   "quoteChars": 103,
+   "id": "F7-B07-052-127"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 52,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "15-17%",
+   "paraphraseDe": "ROE im Branchenvergleich nutzen; bessere Aktien haben meist ROE von 15–17% oder höher.",
+   "coveredBy": "NONE",
+   "novelty": "ROE-Schwelle fehlt.",
+   "quoteSha256": "6baff5ef7d4babc8b7080e0cc4358786bced6e2e2533006f91688982da52830f",
+   "quoteChars": 79,
+   "id": "F7-B07-052-128"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 53,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Fokus auf aktuelles Quartalswachstum; bessere Aktien wachsen aktuell schneller als historisch.",
+   "coveredBy": "PARTIAL:MIN-EPS-11",
+   "novelty": "Vergleich aktuelles vs. langfristiges Wachstum als Beschleunigungstest.",
+   "quoteSha256": "f873924dcfe9bebd14629a137e124670d3488313d30bd475b8120d174fad9c7f",
+   "quoteChars": 175,
+   "id": "F7-B07-053-129"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 54,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Er hat ein allgemeines Marktrisikomodell, aber der Hauptfokus liegt auf Einzelaktien; ohne Setups zählen Indikatoren nicht.",
+   "coveredBy": "PARTIAL:MIN-LEAD-02",
+   "novelty": "Marktmodell nachrangig gegenüber Einzelaktien.",
+   "quoteSha256": "e55705fd21ba86896645352cd392f0cb90ea52af93b6223598a6ecdf923f55e2",
+   "quoteChars": 196,
+   "id": "F7-B07-054-130"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 55,
+   "printedPage": null,
+   "questions": [
+    "Q14",
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei Markt-Verkaufssignal nicht alles nach Meinung verkaufen, sondern Stops enger ziehen und sich einzeln ausstoppen lassen.",
+   "coveredBy": "NONE",
+   "novelty": "Reaktion auf Markt-Sell-Signal (Stops straffen statt Pauschalverkauf) fehlt.",
+   "quoteSha256": "f54bacbe1e049853b2d87d418c0e498ee45ab674ddee01d4f157edce7758951a",
+   "quoteChars": 188,
+   "id": "F7-B07-055-131"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 56,
+   "printedPage": null,
+   "questions": [
+    "Q10",
+    "Q14"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei ernsthaften Marktproblemen: Stops marginaler Gewinner auf Einstand, große Gewinner eng mit Backstop sichern; erste natürliche Reaktion zulassen.",
+   "coveredBy": "PARTIAL:MIN-TTC-BACKSTOP",
+   "novelty": "Differenzierung marginale vs. große Gewinner bei Marktschwäche fehlt.",
+   "quoteSha256": "550bea8c7ed85c37f5638877a5926c357e0dadc8c16d77ba8be9c7542395f98e",
+   "quoteChars": 126,
+   "id": "F7-B07-056-132"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 56,
+   "printedPage": null,
+   "questions": [
+    "Q14",
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "In Korrektur/Bärenmarkt: abseits oder leichter, Pilotkäufe bei Akkumulation; Exposure erst nach zweiter Setup-Welle und Fortschritt der Piloten deutlich erhöhen.",
+   "coveredBy": "PARTIAL:MIN-RISK-03",
+   "novelty": "Bedingung 'zweite Welle von Setups' fehlt.",
+   "quoteSha256": "60675fb8fb3ead61cde6f83c212a965d36d08032bef3672e70b8336ab73d7f3a",
+   "quoteChars": 129,
+   "id": "F7-B07-056-133"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 57,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Distribution = Marktverkauf bei steigendem Volumen; umgekehrt Akkumulation; mit eigenen Aktien abgleichen.",
+   "coveredBy": "NONE",
+   "novelty": "Distributions-Definition fehlt.",
+   "quoteSha256": "d1c9ca00d816372b38b6016afcf34e6d9a1fe98563321190901a61e28786b711",
+   "quoteChars": 109,
+   "id": "F7-B07-057-134"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 58,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Kauf auch vor bestätigtem Marktaufwärtstrend; ohne passende Setups trotz gutem Markt kein Kauf – Aktie entscheidet.",
+   "coveredBy": "PARTIAL:MIN-LEAD-02",
+   "novelty": "Kein Markt-Gate für Entries; Einzelaktie hat letztes Wort.",
+   "quoteSha256": "355bcb5f0c3c3c4fa3ceae0aaf24bd8f29dee16a7e0262a0de2e260bf6463de3",
+   "quoteChars": 65,
+   "id": "F7-B07-058-135"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 58,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Wahrscheinlich 'bevor der Markt endgültig den Boden bildet'; ähnlich 'saat market mulai turun' statt 'dreht nach oben'.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzungsfehler, Richtungsumkehr.",
+   "quoteSha256": "94ca41d6d0102225f9c047a883862637aea28307bb427393209942910543246d",
+   "quoteChars": 112,
+   "id": "F7-B07-058-136"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 60,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Quartalsbeschleunigung und Jahres-Ausbruch der Gewinne; steigende Umsätze.",
+   "coveredBy": "PARTIAL:MIN-EPS-10",
+   "novelty": "Kombination Quartalsbeschleunigung + Jahresausbruch.",
+   "quoteSha256": "3ea7d7f12549209aa6ec0a399c78ca939551f29f208df3c752d498f930b4ab8f",
+   "quoteChars": 108,
+   "id": "F7-B07-060-137"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 61,
+   "printedPage": null,
+   "questions": [
+    "Q5",
+    "Q6"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "20-30 sen",
+   "paraphraseDe": "Kauf intraday sobald der Pivot überschritten ist, meist einige Cent bis 20–30 Cent über dem Kaufpunkt; nicht auf Schlusskurs warten.",
+   "coveredBy": "PARTIAL:MIN-MM-VOL-EX",
+   "novelty": "Intraday-Kauf statt Schlusskursbestätigung und Cent-Spanne fehlen.",
+   "quoteSha256": "9634b9681637de84bd3f66381dadb903b5228626fd6d6048a03057a61dc423e4",
+   "quoteChars": 130,
+   "id": "F7-B07-061-138"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 66,
+   "printedPage": null,
+   "questions": [
+    "Q9"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": "15-30",
+   "paraphraseDe": "Position früh am Tag starten und auf volle Größe erhöhen, wenn die Aktie in den letzten 15–30 Minuten stark schließt.",
+   "coveredBy": "PARTIAL:MIN-MM-ADD-02",
+   "novelty": "Zeitfenster 15–30 Minuten fehlt.",
+   "quoteSha256": "5dac12c96d71cafc538cde1fddbd4dc2269163f49246c094b1b7fb125db2638b",
+   "quoteChars": 61,
+   "id": "F7-B07-066-139"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 67,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "beberapa persentase",
+   "paraphraseDe": "Gaps werden grundsätzlich nicht gejagt; liegt der Gap einige Prozent über dem Kaufpunkt, kein Kauf.",
+   "coveredBy": "NONE",
+   "novelty": "Gap-Regel fehlt.",
+   "quoteSha256": "5d00dd43f3b787dea631aefc7bdec69dcc8d869b74064a9fa3cd084df33cafd7",
+   "quoteChars": 150,
+   "id": "F7-B07-067-140"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 67,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bevorzugter Gap-Trade: Ausbruch aus großer Basis auf Earnings, Einstieg nicht weit über dem Pivot.",
+   "coveredBy": "NONE",
+   "novelty": "Earnings-Gap-Ausnahme fehlt.",
+   "quoteSha256": "ef4c0b72048e105df9aec3d4caa04720da686ced3f86f35d1510491012d8c42b",
+   "quoteChars": 164,
+   "id": "F7-B07-067-141"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 70,
+   "printedPage": null,
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Stop am technischen Niveau, wenn es mit akzeptablem Risiko zusammenfällt; sonst Prozent-Stop oder fixer Dollarbetrag.",
+   "coveredBy": "NONE",
+   "novelty": "Hierarchie technischer Stop vs. %-Stop fehlt.",
+   "quoteSha256": "02c6b0618fc5a3bce2756edc9be76ae22b2850e73c6043bd4218277851fb45f3",
+   "quoteChars": 225,
+   "id": "F7-B07-070-142"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 71,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-6",
+   "paraphraseDe": "Gap-Risiko über Positionsgröße steuern; Aktien mit großen Down-Gaps in den letzten 3–6 Monaten ('serial gapper') sind höheres Risiko.",
+   "coveredBy": "NONE",
+   "novelty": "Serial-Gapper-Prüfung für Positionsgröße fehlt.",
+   "quoteSha256": "c4483b774c3c8e9456a1a980e4d557741aa4ae14932d836c58e9661479d60b04",
+   "quoteChars": 107,
+   "id": "F7-B07-071-143"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 73,
+   "printedPage": null,
+   "questions": [
+    "Q7",
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "½",
+   "paraphraseDe": "Bei Stop-Treffer ganze Position verkaufen; manchmal gestaffelte Stops mit gleichem Durchschnittsverlust, Teile meist in Hälften. Übersetzung verstümmelt ('terhuyung-huyung' = staggered).",
+   "coveredBy": "PARTIAL:MIN-W18-1",
+   "novelty": "Übersetzungsproblem: Staffel-Stops unverständlich übersetzt.",
+   "quoteSha256": "099f71d5a3ab98199257b8f58551dac92030d00a6bb4f3852788c2d4d871f242",
+   "quoteChars": 100,
+   "id": "F7-B07-073-144"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 74,
+   "printedPage": null,
+   "questions": [
+    "Q7"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": null,
+   "paraphraseDe": "Meist mentale Stops; offene Orders nahe am Kurs können abgefischt werden, ferne Stops bei liquiden Titeln ok.",
+   "coveredBy": "NONE",
+   "novelty": "Ordertyp-Präferenz.",
+   "quoteSha256": "147db5c3f13033a745546887853d711980abd0f0ee57c4aa41b8e42f8ec4ae10",
+   "quoteChars": 55,
+   "id": "F7-B07-074-145"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 74,
+   "printedPage": null,
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "15-20%, 10%",
+   "paraphraseDe": "Unabhängig vom Support nie 15–20% riskieren; liegt Support zu weit, %-Stop verwenden.",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-02",
+   "novelty": "Support-Stop wird durch Prozentgrenze übersteuert.",
+   "quoteSha256": "fb60e78de24965127c92cd383978fab34bcab8f594c48e05539549cb5e30942d",
+   "quoteChars": 102,
+   "id": "F7-B07-074-146"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 75,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Whipsaw-Märkte sind gefährlicher als Bärenmärkte (viele kleine Verluste); übermäßige Whipsaws deuten auf fehlerhafte Kriterien oder feindlichen Markt.",
+   "coveredBy": "NONE",
+   "novelty": "Whipsaw-Diagnose fehlt.",
+   "quoteSha256": "294c6f95a8b3d6dbaacfff065daa5c87a254c958d7b467d5472b76e53b894c64",
+   "quoteChars": 51,
+   "id": "F7-B07-075-147"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 77,
+   "printedPage": null,
+   "questions": [
+    "Q9",
+    "Q11"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": null,
+   "paraphraseDe": "Um eine Kernposition handeln: großer Einstieg bei sehr niedrigem Risiko, Überschuss bei schnellem Anstieg verkaufen; bei Gegenbewegung Übergewicht schnell abbauen.",
+   "coveredBy": "NONE",
+   "novelty": "Core-Position-Trading fehlt.",
+   "quoteSha256": "e73f28bbb06a1d17daf0108a206464657742db870a7f0dd1ebc174d75d80dc0f",
+   "quoteChars": 114,
+   "id": "F7-B07-077-148"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 86,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2-3, 12-24",
+   "paraphraseDe": "Gewinner werden 2–3x länger gehalten als Verlierer, oft 2–3 Quartale; Hauptbewegung von Führern meist in 12–24 Monaten.",
+   "coveredBy": "NONE",
+   "novelty": "Haltedauer-Kennzahlen fehlen.",
+   "quoteSha256": "6350f87d6f92509af4f7a8a89ad87bd3f27559e2adef97af5b782e9059fea13b",
+   "quoteChars": 83,
+   "id": "F7-B07-086-149"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 87,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "beberapa %",
+   "paraphraseDe": "Liegt die Aktie einige Prozent über dem Kaufpunkt, wird nicht mehr gekauft/aufgestockt; kein Hinterherlaufen.",
+   "coveredBy": "NONE",
+   "novelty": "Chase-Grenze 'einige Prozent' über Pivot fehlt (keine feste Zahl).",
+   "quoteSha256": "c44bb13556bf84459ef8fb5256e1abdfb38462fff9784c6b9f240475f5923e69",
+   "quoteChars": 162,
+   "id": "F7-B07-087-150"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 87,
+   "printedPage": null,
+   "questions": [
+    "Q9"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei neuem Setup nach großem Gewinn nachkaufen, aber kleiner als der vorige Kauf, um Durchschnittskosten nicht stark anzuheben.",
+   "coveredBy": "PARTIAL:MIN-ADD-01",
+   "novelty": "Pyramidenregel 'kleiner als Vorkauf' fehlt.",
+   "quoteSha256": "fb1a8560a755db089a0cadc699a763d3237bbf90b864eaa8bc611b4574699e8b",
+   "quoteChars": 125,
+   "id": "F7-B07-087-151"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 88,
+   "printedPage": null,
+   "questions": [
+    "Q11",
+    "Q10"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "setengah",
+   "paraphraseDe": "Bei ordentlichem Gewinn in Stärke verkaufen; 'Halb-verkaufen-Regel' bei Zweifel; teils Hälfte verkaufen und Stop auf Einstand ('free roll').",
+   "coveredBy": "PARTIAL:MIN-TTC-FREEROLL",
+   "novelty": "Halb-Verkauf als Default bei Unentschlossenheit.",
+   "quoteSha256": "6e25d72d3643889954d6d659e7fe90691c042d66bda1615aa27ec18c68efb312",
+   "quoteChars": 51,
+   "id": "F7-B07-088-152"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 89,
+   "printedPage": null,
+   "questions": [
+    "Q10",
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei parabolischen Bewegungen Stop deutlich straffen.",
+   "coveredBy": "NONE",
+   "novelty": "Parabel-Stopstraffung fehlt.",
+   "quoteSha256": "191ad2c8d0db87fe01a33fec8716715f4b2bd0bffbb8af63270ef2ee35162ee3",
+   "quoteChars": 142,
+   "id": "F7-B07-089-153"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 90,
+   "printedPage": null,
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Stop erst auf Einstand, wenn Kurs ein Vielfaches des Risikos oder über dem historischen Durchschnittsgewinn liegt; großer Gewinn darf nie Verlust werden.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Alternative Schwelle 'über historischem Durchschnittsgewinn' fehlt.",
+   "quoteSha256": "0f59cb4a87a279bebdbcc0b2aca626b0a9e6a764cd6a435cb683d8e0fb98c6be",
+   "quoteChars": 147,
+   "id": "F7-B07-090-154"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 90,
+   "printedPage": null,
+   "questions": [
+    "Q10"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Ein großer Gewinn darf nie zum Verlust werden.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Absolutformulierung.",
+   "quoteSha256": "80970e0fe9c3b82ca0c2f9a7f31eba4b037ba666d1bca7c69d0a5b60086672cc",
+   "quoteChars": 72,
+   "id": "F7-B07-090-155"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 90,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "2-6",
+   "paraphraseDe": "Selten feste Ziele; Verkauf (in Stärke) möglich bei 2–6-fachem Stopabstand, danach Backstop.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-03",
+   "novelty": "R-Multiple-Verkaufszone 2–6R fehlt.",
+   "quoteSha256": "a4e5b45a821a53a4b81fdc4f50c234b866f396e86c35d47471cbcab8273bbdf3",
+   "quoteChars": 162,
+   "id": "F7-B07-090-156"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 91,
+   "printedPage": null,
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3, 4, 20, 50",
+   "paraphraseDe": "Verstöße nach Kauf: Low-Volume-Breakout mit High-Volume-Rückfall; 3–4 tiefere Tiefs ohne Support; Schluss unter MA20/MA50 kurz nach Breakout; fehlendes Follow-through, mehr Down- als Up-Tage.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-04",
+   "novelty": "Konkrete Verstoßliste fehlt in SELL-04.",
+   "quoteSha256": "ea8b23cdd97c76f37c9aa8a625e1ad2dcf8d55ba139051325aebbf00a5c3c35c",
+   "quoteChars": 213,
+   "id": "F7-B07-091-157"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 93,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1/3, 1/2, 75%, 50",
+   "paraphraseDe": "Meist 1/3 bis 1/2 bis 75% der Position im Swing verkaufen, Rest für größere Bewegung halten; bei neuen Führern MA50 als zusätzlicher Verkaufspunkt.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-02",
+   "novelty": "Teilverkaufsquoten fehlen.",
+   "quoteSha256": "90920764a399ed82538cfc4ba288cf506b6e3295c1c4946fe9107e559daf6c9a",
+   "quoteChars": 167,
+   "id": "F7-B07-093-158"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 94,
+   "printedPage": null,
+   "questions": [
+    "Q11",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Frühe Bullmarktphase: halten; späte Phase (nach einigen Jahren): kurzfristig handeln und in Stärke verkaufen.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-02",
+   "novelty": "Bullmarkt-Phasenabhängigkeit der Haltestrategie.",
+   "quoteSha256": "a0ebdc9944245069c88b750505614682a2100080ddcdae1c1b01101e4e96c8b6",
+   "quoteChars": 231,
+   "id": "F7-B07-094-159"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 95,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Fällt die Aktie auf schlechten Bericht, fast immer sofort verkaufen; ohne Gewinnpolster vor Earnings reduzieren.",
+   "coveredBy": "PARTIAL:MIN-MM-EARN-HOLD",
+   "novelty": "Sofortverkauf nach schlechtem Report fehlt.",
+   "quoteSha256": "4758dceaecb2968f369d85708052accd90aa8d14631b40db889e823031429f84",
+   "quoteChars": 90,
+   "id": "F7-B07-095-160"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 95,
+   "printedPage": null,
+   "questions": [
+    "Q12",
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Time-Stop: Erwartung beim Entry; verhält sich die Aktie nicht wie erwartet, oft Verkauf.",
+   "coveredBy": "NONE",
+   "novelty": "Erwartungsbasierter Time-Stop fehlt (keine feste Tageszahl).",
+   "quoteSha256": "9b7514ed04132b266b9437f4568d30a6673f5ce2025f0613e68d63314313b110",
+   "quoteChars": 89,
+   "id": "F7-B07-095-161"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 96,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei Vollinvestition für neuen Breakout zuerst Verlierer verkaufen; starke Aktien zumindest teilweise halten.",
+   "coveredBy": "PARTIAL:MIN-TTC-ROTATION",
+   "novelty": "Rotationsreihenfolge (Verlierer zuerst) fehlt.",
+   "quoteSha256": "446ad34a475bb217400ea29745e38b7896ae991199546735a01774e886d6750b",
+   "quoteChars": 88,
+   "id": "F7-B07-096-162"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 97,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "20%",
+   "paraphraseDe": "Große schnelle Gewinner (+20% in Tagen/Wochen) mehr Zeit geben; Teilverkauf, Rest halten, besonders früh im Bullmarkt.",
+   "coveredBy": "PARTIAL:MIN-TTC-EARLY",
+   "novelty": "Keine harte 20%-Haltepflicht; Ermessen.",
+   "quoteSha256": "bbcc6a7d36bd9842ab160dd0f4d49856a5a959acb3d9f4d05acfe14302288b0e",
+   "quoteChars": 119,
+   "id": "F7-B07-097-163"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 98,
+   "printedPage": null,
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Keine Trailing-Stops, sondern Backstop zum Schutz eines Gewinnteils; mit steigendem Kurs Backstop enger.",
+   "coveredBy": "PARTIAL:MIN-TTC-BACKSTOP",
+   "novelty": "Explizite Ablehnung Trailing-Stop; Backstop schrittweise straffen.",
+   "quoteSha256": "8f904e715638d89a75c7c9049f32431561ad54dae2a2678c3f494bc2883af594",
+   "quoteChars": 75,
+   "id": "F7-B07-098-164"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 101,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Je mehr Verluste, desto kleiner handeln; Verlustserien signalisieren ungünstige Marktbedingungen.",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Verlustserie als Marktsignal fehlt.",
+   "quoteSha256": "bacb239fefa4b2cbc5d220fbb8a61de15fabac569bf6acb05a8da48d2c176cf8",
+   "quoteChars": 117,
+   "id": "F7-B07-101-165"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 111,
+   "printedPage": null,
+   "questions": [
+    "Q9"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Niemals verbilligen.",
+   "coveredBy": "PARTIAL:MIN-MM-ADD-03",
+   "novelty": "Absolute Formulierung als Top-Regel.",
+   "quoteSha256": "35de0c509c8beb614be4b8f76e416f03099a72c9f9568247a33c83a216c54d35",
+   "quoteChars": 19,
+   "id": "F7-B07-111-166"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 111,
+   "printedPage": null,
+   "questions": [
+    "Q7",
+    "Q9"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Top-Regel: nie mehr riskieren als erwarteter Gewinn; immer mit Stop; nie verbilligen.",
+   "coveredBy": "NONE",
+   "novelty": "Risk ≤ erwarteter Gewinn als Top-Regel fehlt.",
+   "quoteSha256": "8bd19c7ce9a7177ad6637db1e4416c75cf4cef5200f6153e092f20b57a1bf734",
+   "quoteChars": 40,
+   "id": "F7-B07-111-167"
+  },
+  {
+   "source": "B07",
+   "pdfPage": 112,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3",
+   "paraphraseDe": "Indonesische Fassung lässt 'zu gewinnen' weg ('mehr als Sie erwarten'); englisches Original S.111 maßgeblich.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzungsfehler.",
+   "quoteSha256": "ef2cf0acf7791c528ef728a2088713f4ba0c73d8bf5347827f5df0ea4fe5832b",
+   "quoteChars": 64,
+   "id": "F7-B07-112-168"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 61,
+   "printedPage": null,
+   "questions": [
+    "Q3",
+    "Q2"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "95",
+   "paraphraseDe": "Rund 95% der Trend-Template-Treffer scheitern an den nachgelagerten Screens (Gewinne, Umsatz, Margen, RS, Volatilität).",
+   "coveredBy": "PARTIAL:MIN-PROCESS-02",
+   "novelty": "Bestehende Zeile nennt die Screens, aber nicht die erwartete Durchfallquote von ~95% als Kalibrierungsgröße.",
+   "quoteSha256": "1ba49204c21f75ae4530cb1c9087ba1e7f646e3d9b2cffe6d3512798f3be717c",
+   "quoteChars": 104,
+   "id": "F7-B12-061-169"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 63,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "90",
+   "paraphraseDe": "Über 90% der Superperformer starten ihren Kursanstieg, wenn der Gesamtmarkt aus einer Korrektur oder einem Bärenmarkt kommt (Satz endet auf PDF 64).",
+   "coveredBy": "NONE",
+   "novelty": "Statistischer Bezug zwischen Marktphase (Ausgang aus Korrektur) und Start der Superperformance fehlt.",
+   "quoteSha256": "9386caabe8fe2f5aaa928cd274e65fc1df31b500f99c8e1dce1422f998a2fb97",
+   "quoteChars": 67,
+   "id": "F7-B12-063-170"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 64,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "10",
+   "paraphraseDe": "Superperformance tritt meist in jungen Unternehmen auf, z. B. in den ersten 10 Jahren nach dem IPO.",
+   "coveredBy": "NONE",
+   "novelty": "Alterskriterium (≤10 Jahre seit IPO) als Profilmerkmal fehlt.",
+   "quoteSha256": "bdd28116cfe5a3ff98a954234242e5e185d019b40f0b04eea29fd0d96a98ab72",
+   "quoteChars": 147,
+   "id": "F7-B12-064-171"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 64,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Sehr wenige Aktien haben ihre Superperformance-Phase während eines Bärenmarkts.",
+   "coveredBy": "NONE",
+   "novelty": "Kein bestehender Eintrag zur geringen Erfolgswahrscheinlichkeit von Neueinstiegen im Bärenmarkt.",
+   "quoteSha256": "c9b22542b886d435f56cd31d8d6bc06ea5abc7e6c0e8a07b8517234db6968879",
+   "quoteChars": 87,
+   "id": "F7-B12-064-172"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 65,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei Large Caps mit schnellem Anstieg Gewinne früher mitnehmen als bei kleinen, schneller wachsenden Firmen.",
+   "coveredBy": "NONE",
+   "novelty": "Kapitalisierungsabhängige Gewinnmitnahme fehlt.",
+   "quoteSha256": "07bfe0d7286b3fceedd13e9100df76cd16dbe280bd5a3fd829cf4cb6415a873e",
+   "quoteChars": 170,
+   "id": "F7-B12-065-173"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 65,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei kleinen Unternehmen sicherstellen, dass sie bereits profitabel sind und die Skalierbarkeit des Geschäftsmodells bewiesen haben.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-16",
+   "novelty": "MIN-PROCESS-16 bevorzugt Small/Mid Caps, verlangt aber nicht bereits bestehende Profitabilität.",
+   "quoteSha256": "96fb18b25639c939e0f02061a5ace386082e68ab7d735d955d183b456ed0337e",
+   "quoteChars": 184,
+   "id": "F7-B12-065-174"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 76,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "87; 65",
+   "paraphraseDe": "Übersetzung garbled: zweimal 'rata-rata' (vermutlich Durchschnitt 87 und Median 65).",
+   "coveredBy": "NONE",
+   "novelty": "Kennzahlen nicht eindeutig.",
+   "quoteSha256": "0d52096eba81a2207d01e6835dd47a691e2edd3beaecd143ca5c6ef4187868e3",
+   "quoteChars": 67,
+   "id": "F7-B12-076-175"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 84,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "25; 1995-2005; 33x; 8,6x; 223x",
+   "paraphraseDe": "KGV ist kein Filter: Top-25 1995–2005 hatten KGV 8,6x–223x (Ø 33x); kein magischer KGV-Wert.",
+   "coveredBy": "NONE",
+   "novelty": "Ausdrücklicher Ausschluss eines KGV-Schwellenwerts fehlt im Regelwerk.",
+   "quoteSha256": "1a9c9be9678c068ad9333384ac940d6d91fc405843c14c5ea144779cc7aaa67f",
+   "quoteChars": 147,
+   "id": "F7-B12-084-176"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 85,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Faustregel: sehr ungern Aktien mit extrem niedrigem KGV kaufen, besonders nahe dem 52-Wochen-Tief (Satz endet auf PDF 86).",
+   "coveredBy": "NONE",
+   "novelty": "Einzige KGV-bezogene Ausschlussneigung (Super-Low-KGV) fehlt.",
+   "quoteSha256": "de90d3074ad3daac51d2e7c9f0f5237360a972f6330808f8244d172c0474fbce",
+   "quoteChars": 181,
+   "id": "F7-B12-085-177"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 86,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3; 4; 5",
+   "paraphraseDe": "KGV von 3–5 oder weit unter Branchenmultiplikator kann auf fundamentale Probleme hindeuten.",
+   "coveredBy": "NONE",
+   "novelty": "Konkrete Zahlen für das Super-Low-KGV-Warnsignal fehlen.",
+   "quoteSha256": "dee2a23253e8fc4e063a6a59b0088f231acc166325d79dfa3b8d9f8976d7f8c9",
+   "quoteChars": 176,
+   "id": "F7-B12-086-178"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 91,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "100; 200; 2-3",
+   "paraphraseDe": "Historisch steigt das KGV vom Beginn bis Ende der großen Bewegung um 100–200% (Faktor 2–3).",
+   "coveredBy": "NONE",
+   "novelty": "KGV-Expansion als Reifeindikator fehlt.",
+   "quoteSha256": "60ec5f63e9bfa45b60a36b090702715c6b1b9d4b69ffe8ac1f2bc6e0cae144fe",
+   "quoteChars": 204,
+   "id": "F7-B12-091-179"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 92,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "2; 2,5; 3",
+   "paraphraseDe": "Besondere Wachsamkeit für Verkaufssignale, wenn das KGV das ~2-fache, besonders 2,5–3-fache des KGV beim Erstausbruch erreicht; Top kann bald folgen.",
+   "coveredBy": "NONE",
+   "novelty": "Multiplikator des Einstiegs-KGV als Sell-Alert fehlt (kein harter Verkaufstrigger).",
+   "quoteSha256": "047fd46ea8b49612d7a51181018931a351f89ad52ca41029ae8625d1bd9a8da3",
+   "quoteChars": 130,
+   "id": "F7-B12-092-180"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 93,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Übersetzungsfehler (Negation): Original sinngemäß 'KGV ist weit WENIGER wichtig als das Gewinnwachstumspotenzial'.",
+   "coveredBy": "NONE",
+   "novelty": "Übersetzung kehrt die Aussage um; nicht als Regel verwenden.",
+   "quoteSha256": "50c949501857b7a91d8e8e95543491a728f2faba19006c21066a8dffda85ff29",
+   "quoteChars": 84,
+   "id": "F7-B12-093-181"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 94,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Egal wie gut die Fundamentaldaten, bestimmte technische Standards müssen erfüllt sein, um Kaufkandidat zu sein.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-01",
+   "novelty": "Vorrang der Technik vor Fundamentals explizit.",
+   "quoteSha256": "440287ce0da8f74b5d6d06c0f6c98e5081ae531bd3f8ceedc32d3a979f1c1160",
+   "quoteChars": 136,
+   "id": "F7-B12-094-182"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 94,
+   "printedPage": null,
+   "questions": [
+    "Q1",
+    "Q15"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Bestimmte technische Kriterien sind 'nicht verhandelbar' (im Gegensatz zum sonstigen Ermessen).",
+   "coveredBy": "PARTIAL:MIN-PROCESS-01",
+   "novelty": "Explizite Kennzeichnung der technischen Vorfilter als nicht verhandelbar fehlt.",
+   "quoteSha256": "d2dad7f9d107bf35c36c68207722c605c2d0e5edf135e391b99c57c5e36aaba9",
+   "quoteChars": 62,
+   "id": "F7-B12-094-183"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 95,
+   "printedPage": "63",
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "200",
+   "paraphraseDe": "Nie unter einer fallenden MA200 kaufen (sofern 200 Handelstage vorhanden).",
+   "coveredBy": "PARTIAL:MIN-TT-01",
+   "novelty": "Explizites 'nie' plus Vorbehalt 'sofern 200 Handelstage existieren' außerhalb des Cheat-Kontexts.",
+   "quoteSha256": "74c29ea79b5241aaaee089d01c4a5991949797edc2b022b948c99e4206019530",
+   "quoteChars": 149,
+   "id": "F7-B12-095-184"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 99,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Negationsfehler: Original 'ein ruhender Körper bleibt in Ruhe'.",
+   "coveredBy": "NONE",
+   "novelty": "Sinn umgekehrt (nur Illustration).",
+   "quoteSha256": "2d11ca59643259d99bfb6a3c9b835298b2e430ca0f055f550f67623211f6dee2",
+   "quoteChars": 86,
+   "id": "F7-B12-099-185"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 99,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "1; 2",
+   "paraphraseDe": "In Stage 1 nicht kaufen, auch bei attraktiven Fundamentals; nur in Stage 2 kaufen.",
+   "coveredBy": "PARTIAL:MIN-BASE-01",
+   "novelty": "Explizites Stage-1-Kaufverbot fehlt.",
+   "quoteSha256": "a370c493d7fba3b2bf8ad51416d844b9456d604bab5c758408d18d0f9194b564",
+   "quoteChars": 164,
+   "id": "F7-B12-099-186"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 99,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "200; 40",
+   "paraphraseDe": "Stage-1-Merkmal: Kurs pendelt um die MA200 (40 Wochen) ohne Trend.",
+   "coveredBy": "NONE",
+   "novelty": "Operatives Stage-1-Erkennungsmerkmal fehlt.",
+   "quoteSha256": "dc5b23eac9a71f1fa5d1c70c4d2bb983660bf701fa874a66d40ec97a61cc2729",
+   "quoteChars": 86,
+   "id": "F7-B12-099-187"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 101,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "25-30; 52",
+   "paraphraseDe": "Vor Stage-2-Schluss und Kauf muss immer eine Rally von mindestens 25–30% vom 52-Wochen-Tief erfolgt sein.",
+   "coveredBy": "PARTIAL:MIN-TT-06",
+   "novelty": "Hier 25–30% statt 30% im Trend Template (Inkonsistenz/Bandbreite).",
+   "quoteSha256": "4f862c231402313359c8e650965de0ecd399f74f45daa4e50784bd9723cae26f",
+   "quoteChars": 225,
+   "id": "F7-B12-101-188"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 101,
+   "printedPage": null,
+   "questions": [
+    "Q6",
+    "Q1"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2",
+   "paraphraseDe": "Echte Stage 2 zeigt hohes Volumen an großen Auf-Tagen/-Wochen und leichtes Volumen in Rücksetzern.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Volumenmuster als Stage-2-Bestätigung (nicht nur in der Basis).",
+   "quoteSha256": "8e9b06f34c793d0afe671dd5d3fde64fc52600a51cfcf467057be21a6c95a310",
+   "quoteChars": 188,
+   "id": "F7-B12-101-189"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 102,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "80",
+   "paraphraseDe": "Amgen-Beispiel: erst nach >80% vom 52W-Tief Kauf erwägen; früher fehlt Bestätigung (totes Kapital).",
+   "coveredBy": "NONE",
+   "novelty": "Beispiel zeigt, dass Erstkauf weit über der 30%-Mindestmarke liegen kann.",
+   "quoteSha256": "932a6709e7b23b6af9db1476c9f18d6d53ff1ea307f1be92797e4d39c5917ee8",
+   "quoteChars": 107,
+   "id": "F7-B12-102-190"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 103,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION",
+    "Q1"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "200",
+   "paraphraseDe": "Übersetzungsproblem: 'telah muncul' (ist erschienen) steht vermutlich für 'has turned up' (MA200 hat nach oben gedreht).",
+   "coveredBy": "NONE",
+   "novelty": "Kriterium in der Übersetzung sinnentstellt.",
+   "quoteSha256": "034bad2f4bb76971093a20d7be9e6ddad248368284a915ac94685286a8caebe5",
+   "quoteChars": 46,
+   "id": "F7-B12-103-191"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 103,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Übergangskriterium Stage 1→2: Folge höherer Hochs und höherer Tiefs.",
+   "coveredBy": "NONE",
+   "novelty": "HH/HL-Struktur ist kein Trend-Template-Kriterium und fehlt.",
+   "quoteSha256": "571aa3bee306424f306b3de336b191d629e3f55d7cbe5ba61c820aea0dedbc13",
+   "quoteChars": 95,
+   "id": "F7-B12-103-192"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 103,
+   "printedPage": null,
+   "questions": [
+    "Q1",
+    "Q6"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Übergangskriterium: mehr Aufwärtswochen mit Volumen als Abwärtswochen mit Volumen.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Wochenbasierte Zählung als Stage-2-Kriterium.",
+   "quoteSha256": "57faf124359d9243081b578f8fd27b13295ba7f67b18a142754cbdd733689359",
+   "quoteChars": 68,
+   "id": "F7-B12-103-193"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 105,
+   "printedPage": null,
+   "questions": [
+    "Q1",
+    "Q6"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Stage-2-Merkmal: mehr Auf-Tage/-Wochen mit überdurchschnittlichem Volumen als Ab-Tage/-Wochen mit überdurchschnittlichem Volumen.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Messbare Zählregel auf Basis überdurchschnittlichen Volumens.",
+   "quoteSha256": "720e9f6c9b27a6cae792b87c9c9df9075b6af3a02d674a3732c8d1633657bc00",
+   "quoteChars": 140,
+   "id": "F7-B12-105-194"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 107,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2",
+   "paraphraseDe": "Stage-3-Merkmal: Kursbruch auf erhöhtem Volumen, oft der größte Tagesverlust seit Beginn von Stage 2 (wöchentlich ebenso).",
+   "coveredBy": "NONE",
+   "novelty": "Größter Tages-/Wochenrückgang seit Stage-2-Beginn als Top-Merkmal fehlt.",
+   "quoteSha256": "e46ee3541d871bafa05d22a28aa4403ab290815cbf34bb3d12c95cf346b78c18",
+   "quoteChars": 83,
+   "id": "F7-B12-107-195"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 108,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "4",
+   "paraphraseDe": "In Stage 4 unbedingt nicht kaufen.",
+   "coveredBy": "PARTIAL:MIN-BASE-01",
+   "novelty": "Explizites Stage-4-Kaufverbot.",
+   "quoteSha256": "d98ae924c07707c4d39d2e4f6352984c82605a549ceea204774cc32319e319f5",
+   "quoteChars": 65,
+   "id": "F7-B12-108-196"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 108,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "200",
+   "paraphraseDe": "Stage 3: MA200 verliert Aufwärtsmomentum, verflacht und dreht dann nach unten.",
+   "coveredBy": "NONE",
+   "novelty": "MA200-Verflachung als Stage-3-Erkennung fehlt.",
+   "quoteSha256": "fddf6ef5b2e971f482c47e98c50ac78200faada8810be80f489c65a966fe58c2",
+   "quoteChars": 111,
+   "id": "F7-B12-108-197"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 110,
+   "printedPage": null,
+   "questions": [
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "4",
+   "paraphraseDe": "Die Stage-Analyse dient der Einordnung, nicht dem präzisen Timing.",
+   "coveredBy": "NONE",
+   "novelty": "Abgrenzung Stage-Analyse vs. Entry-Timing fehlt.",
+   "quoteSha256": "29db6aa2019bf90cd4e7dd0c91b6e1dc65e353370241f80f967e99ea9e8554ff",
+   "quoteChars": 92,
+   "id": "F7-B12-110-198"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 114,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "100; 300; 52",
+   "paraphraseDe": "Viele der besten Kandidaten liegen 100%, 300% oder mehr über dem 52W-Tief, bevor sie aus einer soliden Konsolidierung ausbrechen.",
+   "coveredBy": "PARTIAL:MIN-TT-06",
+   "novelty": "Zusatz zum 30%-Kriterium: größere Abstände vom Tief sind typisch und kein Nachteil.",
+   "quoteSha256": "5ca18aef9a98fc30232805192d0d8372ba3bac355e17fcdf8b2a99c1a1b27ea5",
+   "quoteChars": 212,
+   "id": "F7-B12-114-199"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 114,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "HARD",
+   "numbers": "8",
+   "paraphraseDe": "Alle acht Trend-Template-Kriterien müssen erfüllt sein, damit ein bestätigter Stage-2-Trend vorliegt.",
+   "coveredBy": "PARTIAL:MIN-TT-01",
+   "novelty": "Explizite UND-Verknüpfung aller 8 Kriterien; keine Angabe Schluss vs. Intraday für 52W-Hoch/-Tief und keine Messmethode für 'MA200 steigt'.",
+   "quoteSha256": "f0beda53b819f630928a77b2fd2baf5b9336ed5fab284bc4f2833a2ad8c62d66",
+   "quoteChars": 158,
+   "id": "F7-B12-114-200"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 114,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "99; 200; 96; 50",
+   "paraphraseDe": "99% der Superperformer lagen vor dem großen Anstieg über MA200, 96% über MA50.",
+   "coveredBy": "NONE",
+   "novelty": "Empirische Begründung/Trefferquote der MA-Kriterien fehlt.",
+   "quoteSha256": "f5f58e8c7d38926114429071649d7d177bac52be9657c62985666d0577d18119",
+   "quoteChars": 197,
+   "id": "F7-B12-114-201"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 115,
+   "printedPage": null,
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "4; 5; 1 Jahr",
+   "paraphraseDe": "Basen/Pullbacks innerhalb Stage 2 dauern 4–5 Wochen bis über ein Jahr.",
+   "coveredBy": "PARTIAL:MIN-BASE-02",
+   "novelty": "Gesamtbandbreite 4–5 Wochen bis >1 Jahr neben der typischen 5–26-Wochen-Spanne.",
+   "quoteSha256": "d9e06fb62c3fc0517ff0d75a50b769acfd4bce2d4ef507ba13ae560781acd6dc",
+   "quoteChars": 123,
+   "id": "F7-B12-115-202"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 116,
+   "printedPage": null,
+   "questions": [
+    "Q4",
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "4; 5",
+   "paraphraseDe": "Ab Basis 4 oder 5 ist der Trend spät; plötzliche Basisfehlschläge häufiger.",
+   "coveredBy": "NONE",
+   "novelty": "Late-stage-Warnung über Base-Count fehlt.",
+   "quoteSha256": "8231bace9e7bd70587fbc556b906a698fe263a636400952b56431781fcfad896",
+   "quoteChars": 198,
+   "id": "F7-B12-116-203"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 116,
+   "printedPage": null,
+   "questions": [
+    "Q4",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-5",
+   "paraphraseDe": "Ein Top bildet sich meist nach drei bis fünf Basen im Stage-2-Trend.",
+   "coveredBy": "NONE",
+   "novelty": "Base-Count fehlt im Regelwerk vollständig.",
+   "quoteSha256": "98ca6d54113f7c37e5d91c931b9084aed61664ffbda8815663a83e27d924cfdd",
+   "quoteChars": 93,
+   "id": "F7-B12-116-204"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 116,
+   "printedPage": null,
+   "questions": [
+    "Q4",
+    "Q14"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1; 2; 3",
+   "paraphraseDe": "Basis 1 und 2 entstehen meist aus Marktkorrekturen und sind der beste Einstiegszeitpunkt; Basis 3 meist noch handelbar.",
+   "coveredBy": "NONE",
+   "novelty": "Präferenz für frühe Basen fehlt.",
+   "quoteSha256": "ec8732858d732140defe517eb1fbc152eec335987eefc78f6ba45ff3b17ee251",
+   "quoteChars": 106,
+   "id": "F7-B12-116-205"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 120,
+   "printedPage": null,
+   "questions": [
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Base-Count allein sagt kein Top voraus; nur Perspektive in Kombination mit Preis/Volumen/Fundamentals.",
+   "coveredBy": "NONE",
+   "novelty": "Base-Count ist ausdrücklich kein harter Verkaufstrigger.",
+   "quoteSha256": "fa12e76720631fd41aecdd3d9939f4b7e6ec115993c5c56913ed6b5e3cd1e60f",
+   "quoteChars": 146,
+   "id": "F7-B12-120-206"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 121,
+   "printedPage": null,
+   "questions": [
+    "Q1"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Erstes Kursbein bewusst anderen überlassen gegen Bestätigung eines Stage-2-Trends mit Momentum.",
+   "coveredBy": "PARTIAL:MIN-PRICE-01",
+   "novelty": "Bewusster Verzicht auf den Tiefpunkt-Einstieg zugunsten Bestätigung.",
+   "quoteSha256": "83859522192f522d20ba8fa568dc53d36952ae272c19522bfa35374e6c16850a",
+   "quoteChars": 136,
+   "id": "F7-B12-121-207"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 121,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3; 4",
+   "paraphraseDe": "Nicht auf schwächere Gewinne warten, wenn Stage 3/4 einsetzt; Aktien toppen oft bei noch guten Gewinnen.",
+   "coveredBy": "NONE",
+   "novelty": "Preisaktion hat beim Verkauf Vorrang vor Fundamentaldaten.",
+   "quoteSha256": "dd5a2bbdeed4cc83d66ca03f6e75a1721542db6936ac72d0a5ddd9b1dd59f874",
+   "quoteChars": 169,
+   "id": "F7-B12-121-208"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 124,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei Stage-3/4-Warnsignalen verkaufen oder schrittweise bis in Cash reduzieren.",
+   "coveredBy": "NONE",
+   "novelty": "Schrittweiser Abbau bis Cash als Reaktion auf Stage-Warnung fehlt.",
+   "quoteSha256": "2c26612bfd84d8560e696c4daa38bae204a086aba274ea6f9b424d49d873d67b",
+   "quoteChars": 114,
+   "id": "F7-B12-124-209"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 130,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2",
+   "paraphraseDe": "Größter Tages- und/oder Wochenrückgang seit Beginn von Stage 2 ist in den meisten Fällen ein Verkaufssignal, auch nach scheinbar starkem Earnings-Bericht.",
+   "coveredBy": "NONE",
+   "novelty": "Konkretes, messbares Verkaufssignal fehlt bisher.",
+   "quoteSha256": "08fe45547283f184c2933ff0ba4db027d0cdbd32146cfe5c36f09dde7f0cfa17",
+   "quoteChars": 218,
+   "id": "F7-B12-130-210"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 135,
+   "printedPage": null,
+   "questions": [
+    "Q9",
+    "Q11"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Einen großen Kurseinbruch nie als Kauf-/Nachkaufgelegenheit betrachten.",
+   "coveredBy": "PARTIAL:MIN-MM-ADD-03",
+   "novelty": "Explizites Verbot des Nachkaufs in einen Breakdown.",
+   "quoteSha256": "1210500062a048eeee494398632dd8131b5edc3b50aea3c7482766b1f4d64290",
+   "quoteChars": 121,
+   "id": "F7-B12-135-211"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 135,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei materieller Verhaltensänderung meist sofort aussteigen, Gründe später klären.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-04",
+   "novelty": "Vorrang des Ausstiegs vor Ursachenklärung.",
+   "quoteSha256": "633f40faba8216b5ed94a1dc6aeb22f2cf3786a0e771e94639e94601cd14603e",
+   "quoteChars": 169,
+   "id": "F7-B12-135-212"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 140,
+   "printedPage": null,
+   "questions": [
+    "Q14",
+    "Q2"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Marktführer steigen in der Frühphase einer Rally prozentual am stärksten und erreichen zuerst neue Hochs.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Führer als Erste an neuen Hochs zu Rally-Beginn.",
+   "quoteSha256": "68ac89da9acfe04a3b725abadabd52bf810ede00cda8dcd66124b63a53c12f77",
+   "quoteChars": 145,
+   "id": "F7-B12-140-213"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 141,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Gute Bilanz, steigende Margen, hohe Eigenkapitalrendite und vernünftige Verschuldung als Qualitätszeichen.",
+   "coveredBy": "NONE",
+   "novelty": "ROE und Verschuldung werden im Regelwerk nicht erwähnt.",
+   "quoteSha256": "5ee7d875fd0935cd3cefbcef439a3c53e0cc3f9d959613565505f53e8cfa9d20",
+   "quoteChars": 141,
+   "id": "F7-B12-141-214"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 141,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "20; 35-45; 5; 10",
+   "paraphraseDe": "Marktführer steigern Gewinne meist um ≥20%, viele im Schnitt 35–45% über ihre besten 5–10 Jahre ('pendapatan' hier = Gewinne/Erträge, mehrdeutig).",
+   "coveredBy": "PARTIAL:MIN-EPS-02",
+   "novelty": "Mehrjährige Durchschnittswachstumsrate der Führer fehlt.",
+   "quoteSha256": "a8da88eba724adf38450cf0f93db2e5cce5d309d49da05cabab77d6771ea47b6",
+   "quoteChars": 164,
+   "id": "F7-B12-141-215"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 144,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "25-30",
+   "paraphraseDe": "Same-Store-Sales-Wachstum von 25–30%+ ist langfristig nicht nachhaltig.",
+   "coveredBy": "NONE",
+   "novelty": "Obergrenze der Nachhaltigkeit für Comps fehlt.",
+   "quoteSha256": "4e4696801afcc2f7e4e331e779d00239762f6c9a46732c39f5de445c208816ba",
+   "quoteChars": 116,
+   "id": "F7-B12-144-216"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 144,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "10",
+   "paraphraseDe": "Einzelhandel: Same-Store-Sales-Wachstum ≥10% gilt als gesund; Comps sollen jedes Quartal steigen.",
+   "coveredBy": "NONE",
+   "novelty": "Branchenspezifische Kennzahl (Comps) fehlt.",
+   "quoteSha256": "8701ff335cca8a061d9c4598c6f97ad5eae8bb456b12a8030e4a1807b58492f7",
+   "quoteChars": 94,
+   "id": "F7-B12-144-217"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 145,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "100",
+   "paraphraseDe": "Mehr als 100 neue Filialen pro Jahr ist für die meisten Firmen schwer durchzuhalten (Warnsignal 'zu viel, zu schnell').",
+   "coveredBy": "NONE",
+   "novelty": "Expansions-Warnschwelle fehlt.",
+   "quoteSha256": "956b42bd9d1cdbcc590b9a702e2a706e115bd624d8d2796d77e2b040ed58233e",
+   "quoteChars": 111,
+   "id": "F7-B12-145-218"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 147,
+   "printedPage": null,
+   "questions": [
+    "Q2",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2-3",
+   "paraphraseDe": "Auf die zwei bis drei Top-Aktien einer Gruppe konzentrieren: führend bei Gewinn, Umsatz, Marge und relativer Kursstärke.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-10",
+   "novelty": "Konkrete Begrenzung auf Top 2–3 je Gruppe inkl. RS als Kriterium.",
+   "quoteSha256": "382df32983d3ccd0a6083b69e742f5c4e842d3debc5a8ac462142c632e0dea9d",
+   "quoteChars": 155,
+   "id": "F7-B12-147-219"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 149,
+   "printedPage": null,
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Übersetzungsfehler: 'remaja' (Teenager) für 'teens' – gemeint ist Wachstum im niedrigen bis mittleren 10er-Prozentbereich.",
+   "coveredBy": "NONE",
+   "novelty": "Zahl nur über Rückübersetzung erkennbar.",
+   "quoteSha256": "4bbd2704936cc7eda7f51a783a18467e7135a7459ad1280e42bd117e32140c47",
+   "quoteChars": 68,
+   "id": "F7-B12-149-220"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 150,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Verläuft ein Turnaround schlechter als erwartet, ist das meist Grund, einen Verkauf zu erwägen.",
+   "coveredBy": "NONE",
+   "novelty": "Fundamentaler Verkaufsgrund für Turnarounds fehlt.",
+   "quoteSha256": "63640d5cd204c87a22a2478b72d81790cfe4a41fce3916a9dc5c55cdab62fb34",
+   "quoteChars": 90,
+   "id": "F7-B12-150-221"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 150,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "100; 2; 3",
+   "paraphraseDe": "Turnaround: meist ≥100% Wachstum in den letzten zwei oder drei Quartalen und dramatische Beschleunigung ggü. früheren Raten.",
+   "coveredBy": "PARTIAL:MIN-TURN-01",
+   "novelty": "Hier 'zwei oder drei' Quartale, PDF 188 sagt 'ein oder zwei' – Inkonsistenz.",
+   "quoteSha256": "9b426210ce28fb6462dd41740b39c5b9c7778b24b3df21d226cf80bba694dece",
+   "quoteChars": 140,
+   "id": "F7-B12-150-222"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 150,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2; 1; 12",
+   "paraphraseDe": "Turnaround: mindestens zwei starke Quartale oder ein Quartal, das das 12-Monats-EPS nahe/über das alte Hoch hebt ('dua perempat' = zwei Quartale).",
+   "coveredBy": "PARTIAL:MIN-TURN-02",
+   "novelty": "TTM-EPS-Kriterium als Alternative zu zwei starken Quartalen fehlt.",
+   "quoteSha256": "cf139b11bb910c0e1c873ebaa138fcf8b2e771f40ea52ea6d40e3e819b753232",
+   "quoteChars": 203,
+   "id": "F7-B12-150-223"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 152,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Zykliker: inverser KGV-Zyklus – hohes KGV vor der Rally, niedriges gegen Zyklusende; eigener Ansatz.",
+   "coveredBy": "NONE",
+   "novelty": "Sonderbehandlung zyklischer Werte fehlt.",
+   "quoteSha256": "23bb5395f65d5f74714257b4f6a27257ae7900522c0a2da3038ce66233c6666f",
+   "quoteChars": 183,
+   "id": "F7-B12-152-224"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 154,
+   "printedPage": null,
+   "questions": [
+    "Q2"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nachzügler (niedrigeres KGV, weniger gestiegen als Branchenführer) meiden.",
+   "coveredBy": "NONE",
+   "novelty": "Laggard-Ausschluss fehlt.",
+   "quoteSha256": "a72a7b237c1d68e08bde25768d635ac0524daed859257ec00d879428fba02cb9",
+   "quoteChars": 125,
+   "id": "F7-B12-154-225"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 156,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-4; 8-10",
+   "paraphraseDe": "Neue Bullenmärkte werden meist von 3–4 bis 8–10 Branchengruppen geführt.",
+   "coveredBy": "NONE",
+   "novelty": "Anzahl führender Gruppen fehlt.",
+   "quoteSha256": "78959acbca41b7e0a3ba5f7989e9213fee108f33b97ff06d50b69f8b4d490ff3",
+   "quoteChars": 101,
+   "id": "F7-B12-156-226"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 156,
+   "printedPage": null,
+   "questions": [
+    "Q8",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "4-5",
+   "paraphraseDe": "Portfolio aus den besten Firmen der vier bis fünf führenden Sektoren zusammensetzen.",
+   "coveredBy": "NONE",
+   "novelty": "Sektorstreuung über Top-4–5-Sektoren fehlt (MIN-TTC-CONCENTRATION betrifft Titelanzahl).",
+   "quoteSha256": "ac8def8d00b418662e7a015a59f7e300115483757c1a178980edd78c524ddfda",
+   "quoteChars": 88,
+   "id": "F7-B12-156-227"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 156,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "52",
+   "paraphraseDe": "Gruppen mit vielen Aktien auf neuen 52W-Hochs früh im Bullenmarkt werden oft Führer (52W-Hoch-Liste verfolgen).",
+   "coveredBy": "NONE",
+   "novelty": "Gruppenführerschaft über 52W-Hoch-Zählung fehlt.",
+   "quoteSha256": "ed33d85b7c38ab65c99623b8c626ea0a6fe27a2b43022ddd5ab294d2e6d1de65",
+   "quoteChars": 127,
+   "id": "F7-B12-156-228"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 157,
+   "printedPage": null,
+   "questions": [
+    "Q2"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Die RS-Führer einer Gruppe führen deren Anstieg früh an und zeigen meist den größten Kursgewinn ('penghargaan' = Übersetzungsfehler für 'appreciation').",
+   "coveredBy": "NONE",
+   "novelty": "RS innerhalb der Gruppe als Führungsindikator.",
+   "quoteSha256": "08a9f502ed8f524e1619f3e2a7d994df6c360179a9b39d48bbeb780c6bb597e1",
+   "quoteChars": 154,
+   "id": "F7-B12-157-229"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 157,
+   "printedPage": null,
+   "questions": [
+    "Q2"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Zuerst die stärksten Aktien prüfen: beste Gewinne/Umsätze, am nächsten an neuen Hochs, größte relative Stärke gegenüber dem Markt.",
+   "coveredBy": "PARTIAL:MIN-TT-08P",
+   "novelty": "RS wird hier als Stärke 'versus Markt' definiert (nicht nur IBD-Rating) und mit Nähe zum Hoch kombiniert.",
+   "quoteSha256": "8b3a507aaf59ad7e81325fe5016848645326c71d8433c1d793e413be444264c3",
+   "quoteChars": 201,
+   "id": "F7-B12-157-230"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 158,
+   "printedPage": null,
+   "questions": [
+    "Q15",
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Eine Aktie muss nicht zu einer starken Gruppe gehören, um stark zu steigen.",
+   "coveredBy": "PARTIAL:MIN-MM-BOT-01",
+   "novelty": "Gruppenstärke ist kein Pflichtkriterium.",
+   "quoteSha256": "bca45e5870c9095b3840bbeef6706b7c6a7e80bfe3a7178c773e0454fab77228",
+   "quoteChars": 102,
+   "id": "F7-B12-158-231"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 160,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "60",
+   "paraphraseDe": "Historisch waren >60% der Superperformer Teil eines Gruppenanstiegs.",
+   "coveredBy": "NONE",
+   "novelty": "Quantifizierung des Gruppeneffekts fehlt.",
+   "quoteSha256": "1db74986f6a3ea503d76cc79920582df1209a6a3767353eb2714c6bc978eaf35",
+   "quoteChars": 111,
+   "id": "F7-B12-160-232"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 160,
+   "printedPage": null,
+   "questions": [
+    "Q11",
+    "Q14"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bricht ein Schlüsselführer nach großem Anstieg ein, ist das oft Frühwarnung für die ganze Gruppe.",
+   "coveredBy": "NONE",
+   "novelty": "Gruppen-Warnsignal über Führer-Breakdown fehlt.",
+   "quoteSha256": "f4e27018933fd30c6080f96cc738877f9c3838c05a0a806e5d5988876a9cbc99",
+   "quoteChars": 146,
+   "id": "F7-B12-160-233"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 173,
+   "printedPage": "154",
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "5",
+   "paraphraseDe": "Schätzungsrevisionen von ≥+5% gehen mit überdurchschnittlicher Performance einher, ≤−5% mit unterdurchschnittlicher.",
+   "coveredBy": "PARTIAL:MIN-EPS-07",
+   "novelty": "5%-Revisionsschwelle fehlt.",
+   "quoteSha256": "cb486dbfce3245fdd0b7fc4559ccdf89f283ac6c888010f36aee6dbf669b87f8",
+   "quoteChars": 157,
+   "id": "F7-B12-173-234"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 176,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3/4",
+   "paraphraseDe": "In drei von vier Fällen zeigen Top-Performer eine deutliche Gewinnsteigerung im letzten Quartal ggü. Vorjahresquartal (YoY-Basis).",
+   "coveredBy": "PARTIAL:MIN-EPS-01",
+   "novelty": "Vergleichsbasis Vorjahresquartal und 75%-Häufigkeit fehlen.",
+   "quoteSha256": "ee5775b59c272cb8b0cf0daff0db5f18d6bbe8c20d2631564bee6558c9f88125",
+   "quoteChars": 167,
+   "id": "F7-B12-176-235"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 177,
+   "printedPage": "158",
+   "questions": [
+    "Q3"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": "40-100; 2-3",
+   "paraphraseDe": "Im Bullenmarkt höhere Mindestwerte: 40–100%+ Gewinnsteigerung in den letzten zwei bis drei Quartalen suchen.",
+   "coveredBy": "PARTIAL:MIN-EPS-03",
+   "novelty": "Konkrete Bullenmarkt-Schwellen fehlen in MIN-EPS-03.",
+   "quoteSha256": "64cc67fedd9cd9ad31b4270eeaff2d14638e587e4addaff3eb216631f0bee25f",
+   "quoteChars": 203,
+   "id": "F7-B12-177-236"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 178,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "4; 5; 6",
+   "paraphraseDe": "Vier bis sechs starke Quartale in Folge geben mehr Sicherheit.",
+   "coveredBy": "NONE",
+   "novelty": "Präferenz für Serien starker Quartale fehlt.",
+   "quoteSha256": "60944f2e6aeb1f22b6d8e5d2d2f0c75884a7444103252ef0690df4c762fe7452",
+   "quoteChars": 155,
+   "id": "F7-B12-178-237"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 182,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "90",
+   "paraphraseDe": "Über 90% der größten Gewinner zeigen vor oder während der Bewegung irgendeine Form von Gewinnbeschleunigung (Beispiel −, 10%, 28%, 56% = drei Quartale Beschleunigung).",
+   "coveredBy": "PARTIAL:MIN-CODE33-01",
+   "novelty": "Beschleunigung als eigenständige EPS-Präferenz mit Häufigkeit fehlt.",
+   "quoteSha256": "f2ff998d88db6cfdab0cf3383f494de7faf04dd64e0ecefd2f18430653eb907f",
+   "quoteChars": 149,
+   "id": "F7-B12-182-238"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 183,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Umsätze sollen wie EPS starkes Quartalswachstum und Beschleunigung zeigen.",
+   "coveredBy": "PARTIAL:MIN-QUALITY-03",
+   "novelty": "Umsatzbeschleunigung als eigenes Kriterium.",
+   "quoteSha256": "c75f270427030e0906013aabaf931023592ef797e8ab9314b941ce671a33ded0",
+   "quoteChars": 168,
+   "id": "F7-B12-183-239"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 185,
+   "printedPage": null,
+   "questions": [
+    "Q3",
+    "Q15"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "2; 4; 6; 8",
+   "paraphraseDe": "Einzelne nicht beschleunigende Quartale sind tolerierbar; Glättung per gleitendem 2-Quartals-Durchschnitt über die letzten 4, 6 oder 8 Quartale; Rückblick 1–2 Jahre (PDF 184).",
+   "coveredBy": "NONE",
+   "novelty": "Operationalisierung der Beschleunigung (Glättung, Toleranz) fehlt.",
+   "quoteSha256": "40aa2b7e650310a88a3b98ccdc21a1f468c40eefad56352f3b4ca08711e01ebd",
+   "quoteChars": 263,
+   "id": "F7-B12-185-240"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 185,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1; 2",
+   "paraphraseDe": "Starke Quartale müssen sich in starken Jahresergebnissen niederschlagen; ein bis zwei gute Quartale reichen nicht.",
+   "coveredBy": "NONE",
+   "novelty": "Jahres-EPS-Anforderung fehlt.",
+   "quoteSha256": "de03d29d558e3f5632b0b9ba3e785cc229f1aad08a28df7c50f6fc946301a434",
+   "quoteChars": 225,
+   "id": "F7-B12-185-241"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 187,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1; 2",
+   "paraphraseDe": "Prüfen, ob für die nächsten ein bis zwei Quartale und das nächste Geschäftsjahr fortgesetzte Beschleunigung erwartet wird.",
+   "coveredBy": "PARTIAL:MIN-EPS-10",
+   "novelty": "Vorwärtsprüfung der Beschleunigung.",
+   "quoteSha256": "1bb8c431cd72bfa0cdb0a0bdcc814271fc02b3cd6397027a30a1a4a3c01aa579",
+   "quoteChars": 145,
+   "id": "F7-B12-187-242"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 190,
+   "printedPage": null,
+   "questions": [
+    "Q3",
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "50-60; 20-30",
+   "paraphraseDe": "Bei Firmen mit >50–60% Wachstum wäre ein Rückgang auf 20–30% eine materielle Verschlechterung (Dezeleration als Warnsignal).",
+   "coveredBy": "PARTIAL:MIN-EPS-11",
+   "novelty": "Zahlenbeispiel zur relativen Dezeleration fehlt.",
+   "quoteSha256": "d342e43700cc3b33ac177e8fd710dfceef16fa72e231a71301cbf3e467a1e0c4",
+   "quoteChars": 147,
+   "id": "F7-B12-190-243"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 204,
+   "printedPage": null,
+   "questions": [
+    "Q5"
+   ],
+   "modal": "OPTIONAL",
+   "numbers": null,
+   "paraphraseDe": "Wegen Post-Earnings-Drift kann ein Kauf nach besser als erwarteten Zahlen noch nicht zu spät sein.",
+   "coveredBy": "NONE",
+   "novelty": "Einstieg nach Earnings (PED) fehlt.",
+   "quoteSha256": "5c177b044bac0b4b5c93427823890578d69346af67cf6a358cf93df4bd09eb30",
+   "quoteChars": 104,
+   "id": "F7-B12-204-244"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 204,
+   "printedPage": null,
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "15",
+   "paraphraseDe": "Steigt die Aktie nach positiver Überraschung kurz, fällt dann 15% und erholt sich nicht, ist das ein großes Problem.",
+   "coveredBy": "PARTIAL:MIN-QUALITY-05",
+   "novelty": "Zahl (15%) für negative Earnings-Reaktion fehlt.",
+   "quoteSha256": "c062bd698368b09d80b8cc3905111c5e17c62515707b8d7c91933c9777165c17",
+   "quoteChars": 111,
+   "id": "F7-B12-204-245"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 204,
+   "printedPage": null,
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Ein echter Superperformer sollte keinen massiven Abverkauf zeigen, der die gesamte Aufwärtsbewegung bricht.",
+   "coveredBy": "PARTIAL:MIN-QUALITY-05",
+   "novelty": "Verhaltensmaßstab für echte Führer.",
+   "quoteSha256": "f1681fc144d748453bded0c7715bd011cf0eb1ed79ff3540311ddc246d943f30",
+   "quoteChars": 128,
+   "id": "F7-B12-204-246"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 215,
+   "printedPage": "196",
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2",
+   "paraphraseDe": "Wachsen Forderungen und Lagerbestände beide doppelt oder mehr so schnell wie der Umsatz ohne Erklärung, ist das ein doppeltes Warnsignal.",
+   "coveredBy": "PARTIAL:MIN-QUALITY-09",
+   "novelty": "Faktor-2-Schwelle für kombiniertes Warnsignal fehlt.",
+   "quoteSha256": "da7d2e5a82b91c955f2b54b2e2589de88479b39ab87c7df0ab3fa6d39c47eca1",
+   "quoteChars": 168,
+   "id": "F7-B12-215-247"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 218,
+   "printedPage": null,
+   "questions": [
+    "Q3"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Wenn Umsatz- und Margensteigerung ausbleiben, ist es vermutlich nicht der optimale Kaufzeitpunkt.",
+   "coveredBy": "PARTIAL:MIN-CODE33-01",
+   "novelty": "Negativform von Code 33 als Timing-Hinweis.",
+   "quoteSha256": "8a313fd12c521007337044ec09aac4006a71cd69209d2899031996d14b07352a",
+   "quoteChars": 89,
+   "id": "F7-B12-218-248"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 220,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "12-18",
+   "paraphraseDe": "Das meiste große Geld im Bullenmarkt wird in den ersten 12–18 Monaten verdient.",
+   "coveredBy": "NONE",
+   "novelty": "Zeitliche Gewichtung der Bullenmarktphase fehlt.",
+   "quoteSha256": "57e93e8b83635abe3671ba38df8529f3224153ac554f4be6ad940b30ee999ccc",
+   "quoteChars": 114,
+   "id": "F7-B12-220-249"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 220,
+   "printedPage": null,
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Am Bärenmarkttief brechen die Führer, die den Rückgang am besten hielten, zuerst aus – Tage bis Monate vor den Indizes.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Zeitvorlauf der Führer vor den Indizes.",
+   "quoteSha256": "e1acd52e46266a258f8820cbfb4f7c7500c492aac5c696179f9370927ce2fcb2",
+   "quoteChars": 125,
+   "id": "F7-B12-220-250"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 225,
+   "printedPage": "206",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Echte Rally: Aufwärtstage mit steigendem Volumen, Abwärtstage mit geringerem Gesamtmarktvolumen.",
+   "coveredBy": "NONE",
+   "novelty": "Marktvolumen-Bestätigung einer Rally fehlt in den bestehenden Regime-Zeilen.",
+   "quoteSha256": "52a233434a1e63336ac6ead6a051cae0d6e0e54caec0e44495179a9ecd1a8c58",
+   "quoteChars": 168,
+   "id": "F7-B12-225-251"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 225,
+   "printedPage": "206",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-5%",
+   "paraphraseDe": "In den ersten Monaten eines neuen Bullenmarkts bleiben Rücksetzer des Gesamtmarkts klein, etwa 3–5% vom Hoch zum Tief (Lockout-Rally).",
+   "coveredBy": "NONE",
+   "novelty": "Keine Zeile beschreibt das Lockout-Rally-Profil frühen Bullenmarkts mit 3–5% Rücksetzern.",
+   "quoteSha256": "d6a74fc5525bff72ee8d0018109a844a25b3860692dd3bbdfc5863653e9d5a54",
+   "quoteChars": 107,
+   "id": "F7-B12-225-252"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 226,
+   "printedPage": "207 (inferred, PDF-19)",
+   "questions": [
+    "Q14",
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "52",
+   "paraphraseDe": "Zusätzliche Bestätigung: neue 52W-Hochs übersteigen neue 52W-Tiefs deutlich und weiten sich aus; dann Exposure Titel für Titel nach Kriterien erhöhen.",
+   "coveredBy": "PARTIAL:MIN-RISK-03",
+   "novelty": "Breiten-Kriterium Neue Hochs > Neue Tiefs als Exposure-Auslöser ist nicht erfasst.",
+   "quoteSha256": "a3daf4a143227d06f5578f1e043cd2326372a2cddd456c16ae4a77efb71b303e",
+   "quoteChars": 282,
+   "id": "F7-B12-226-253"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 226,
+   "printedPage": "207 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Bei frühem Einstieg Stop-Disziplin halten; wiederholte Ausstoppungen zeigen, dass man zu früh ist.",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Wiederholte Stops als Signal 'zu früh im Markt' fehlt.",
+   "quoteSha256": "cc9b831ba5fa8849b6632f914f8dd8867ccbc0048b8598e904c7f1140e6e1822",
+   "quoteChars": 240,
+   "id": "F7-B12-226-254"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 228,
+   "printedPage": "209 (inferred, PDF-19)",
+   "questions": [
+    "Q2",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "4-8 Wochen",
+   "paraphraseDe": "Echte Marktführer: halten sich am besten und erreichen in den ersten 4–8 Wochen ab Markttief neue Hochs.",
+   "coveredBy": "PARTIAL:MIN-LEAD-01",
+   "novelty": "Zeitfenster 4–8 Wochen nach Markttief für Führerschaft fehlt.",
+   "quoteSha256": "22c078da4b5fe02d267d4c1eb0f0ffaa0ac73a19baa5efbcf4c251b024ed441e",
+   "quoteChars": 181,
+   "id": "F7-B12-228-255"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 230,
+   "printedPage": "211 (inferred, PDF-19)",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Die RS-Linie der Aktie soll während Marktrückgängen stetig steigen.",
+   "coveredBy": "NONE",
+   "novelty": "Selbst definierte RS-Linie (statt IBD-Rating) als Kriterium fehlt in TT-08.",
+   "quoteSha256": "c86c13e04bd7b8302a413b273bbf9a8ee3efad207ef0968603e5c1ce7b114a38",
+   "quoteChars": 90,
+   "id": "F7-B12-230-256"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 232,
+   "printedPage": "213 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Mehrheit der Ausbruchsführer muss halten; versagen die meisten, ist das ein Warnsignal.",
+   "coveredBy": "PARTIAL:MIN-LEAD-02",
+   "novelty": "Ausfallquote der Ausbrecher als Marktgesundheits-Kriterium fehlt.",
+   "quoteSha256": "5d7ede434f61d397c51d62fc654a14cd21f4085596f769b418e95ba19020b8c4",
+   "quoteChars": 188,
+   "id": "F7-B12-232-257"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 232,
+   "printedPage": "213 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "15-20%; 5-10%",
+   "paraphraseDe": "Marktboden-Signal: führende Aktien steigen typischerweise 15–20% und pausieren dann mit 5–10% Rücksetzer.",
+   "coveredBy": "NONE",
+   "novelty": "Konkretes Verhaltensprofil der Führer an Markttiefs fehlt.",
+   "quoteSha256": "86c03f26ea139e2104bab40d9ea1637029772f1e978b8074b7f0ea99a3301312",
+   "quoteChars": 135,
+   "id": "F7-B12-232-258"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 232,
+   "printedPage": "213 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Distribution im Index (mehr Volumen an Ab- als Aufwärtstagen) kann Rückkehr in Cash erfordern.",
+   "coveredBy": "NONE",
+   "novelty": "Distributionsvolumen im Index als Rückzugsauslöser fehlt.",
+   "quoteSha256": "bf3685e8ad0187e81f758a2a4c01fcc0dc86185a01e664e19a67da8b20244fc6",
+   "quoteChars": 172,
+   "id": "F7-B12-232-259"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 239,
+   "printedPage": "220 (inferred, PDF-19)",
+   "questions": [
+    "Q2"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1-3",
+   "paraphraseDe": "Nur die ein bis drei stärksten Titel einer Branche nach relativer Performance und Gewinnstärke halten.",
+   "coveredBy": "PARTIAL:MIN-PROCESS-10",
+   "novelty": "Begrenzung auf Top-1–3 je Branche fehlt.",
+   "quoteSha256": "7eb499fe8519ab9f18279f0fd018904020fb6dd94e444b8b61b0f4391598f693",
+   "quoteChars": 133,
+   "id": "F7-B12-239-260"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 241,
+   "printedPage": "222 (inferred, PDF-19)",
+   "questions": [
+    "Q14",
+    "Q8"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nach einem Markttief in Reihenfolge der Ausbrüche kaufen; wer zuerst richtig ausbricht, ist meist die beste Wahl.",
+   "coveredBy": "NONE",
+   "novelty": "Kaufpriorisierung nach Ausbruchsreihenfolge fehlt.",
+   "quoteSha256": "14a183fe7d04aa949fdb631abbed453f988fbd090cdb42ff48fae3fc4bca7bf9",
+   "quoteChars": 208,
+   "id": "F7-B12-241-261"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 247,
+   "printedPage": "228 (inferred, PDF-19)",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1/3; 50-70%",
+   "paraphraseDe": "Ein Drittel der Superperformer gibt den gesamten Anstieg wieder ab; Folgerückgänge im Schnitt 50–70% – daher Verkaufsplan nötig.",
+   "coveredBy": "NONE",
+   "novelty": "Begründung/Statistik für zwingenden Verkaufsplan fehlt.",
+   "quoteSha256": "b376c4cfc119970ddcbb392013ad35f76ba1dee0527400311558cc0d6029a863",
+   "quoteChars": 183,
+   "id": "F7-B12-247-262"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 249,
+   "printedPage": "230 (inferred, PDF-19)",
+   "questions": [
+    "Q1",
+    "Q14"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "5-15%; 52",
+   "paraphraseDe": "Watchlist: Titel, die sich im Marktrückgang halten und nur 5–15% unter dem 52W-Hoch liegen.",
+   "coveredBy": "PARTIAL:MIN-TT-07P",
+   "novelty": "Konkrete Watchlist-Nähe 5–15% zum 52W-Hoch statt nur ≤25% fehlt.",
+   "quoteSha256": "80c39a5c565a23fbf06f01ae88848ce23bc009627d9045a0b910996fdcd3e7bb",
+   "quoteChars": 185,
+   "id": "F7-B12-249-263"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 250,
+   "printedPage": "231 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "25-35%; 50%",
+   "paraphraseDe": "Gesunde Aktien korrigieren meist 25–35%, in schweren Märkten bis 50%; über 50% ist in der Regel zu viel.",
+   "coveredBy": "NONE",
+   "novelty": "Maximale Basistiefe an Marktböden fehlt.",
+   "quoteSha256": "245fc6786237be914d4b6abf94a71c7ddbdf1156ffd0681d66a87d954d3eb0fd",
+   "quoteChars": 254,
+   "id": "F7-B12-250-264"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 250,
+   "printedPage": "231 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "25%",
+   "paraphraseDe": "Weniger als 25% der Führer eines Zyklus führen auch im nächsten.",
+   "coveredBy": "PARTIAL:MIN-LEAD-03",
+   "novelty": "Quote <25% fehlt.",
+   "quoteSha256": "fb9f0b2a33476f03ba77956ebb74da9d20e9ed343bcb420d4a307c81602ebdd8",
+   "quoteChars": 90,
+   "id": "F7-B12-250-265"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 262,
+   "printedPage": "243 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Wer zu spät kommt, kauft eine für alle offensichtliche Spätphasen-Basis, die eher scheitert.",
+   "coveredBy": "PARTIAL:MIN-BASE-01",
+   "novelty": "Warnung vor Late-Stage-Basen (Basiszählung) fehlt.",
+   "quoteSha256": "7aad6f13bb6d998201d02f1be46a8c62324e2fb8cd27658febe4b13264533d05",
+   "quoteChars": 109,
+   "id": "F7-B12-262-266"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 264,
+   "printedPage": "245 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-60 Wochen",
+   "paraphraseDe": "Footprint-Beurteilung über 3–60 Wochen Kurshistorie (an anderer Stelle 3–65 Wochen).",
+   "coveredBy": "PARTIAL:MIN-BASE-03",
+   "novelty": "Abweichende Spanne 3–60 vs. 3–65 Wochen im selben Buch.",
+   "quoteSha256": "7771947a6a9c79d8edadee5f111de595ad9b7b095773fe8b2451864922f10ebd",
+   "quoteChars": 86,
+   "id": "F7-B12-264-267"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 266,
+   "printedPage": "247 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "25/10/5%",
+   "paraphraseDe": "Beispiel einer klassischen VCP-Folge: 25% → 10% → 5%.",
+   "coveredBy": "PARTIAL:MIN-VCP-03",
+   "novelty": "Zahlenbeispiel.",
+   "quoteSha256": "7b780f568c3c0906e8f1a5114d5b350a1fbc51b4821bdfde322743c8a7c53870",
+   "quoteChars": 213,
+   "id": "F7-B12-266-268"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 266,
+   "printedPage": "247 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "4-7 Wochen; 10-15%",
+   "paraphraseDe": "Flat Base/Darvas-Box: 4–7 Wochen, ohne echte Kontraktionsfolge, eng seitwärts mit ca. 10–15% Korrektur.",
+   "coveredBy": "PARTIAL:MIN-VCP-04",
+   "novelty": "Dauer und Tiefe der Flat Base fehlen.",
+   "quoteSha256": "a4e6d617590f3c2929efda6cb80f83b93a25aa3d7048741a09fdb22fd84a77be",
+   "quoteChars": 269,
+   "id": "F7-B12-266-269"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 269,
+   "printedPage": "250",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "40W 31/3 4T",
+   "paraphraseDe": "Footprint-Notation: Wochen (W), größte/kleinste Korrektur in %, Anzahl Kontraktionen (T), z.B. 40W 31/3 4T.",
+   "coveredBy": "PARTIAL:MIN-BASE-04",
+   "novelty": "Konkretes Notationsformat W, Max/Min-%, nT fehlt.",
+   "quoteSha256": "dc8ea45ce0d74c202ea867446e7270628e667c9ab00c71654c83c2eeed36ef2b",
+   "quoteChars": 39,
+   "id": "F7-B12-269-270"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 270,
+   "printedPage": "251 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q5"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "3%; 2 Wochen",
+   "paraphraseDe": "Beispiel VIVO: letzter Rücksetzer nur 3% über zwei Wochen bei sehr niedrigem Volumen bildet den Pivot.",
+   "coveredBy": "PARTIAL:MIN-VCP-06",
+   "novelty": "Beispiel für Pivot-Enge.",
+   "quoteSha256": "7f776466247210d724f0743b2ee268842feb42884f3ee8f33f413022a38fde10",
+   "quoteChars": 128,
+   "id": "F7-B12-270-271"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 270,
+   "printedPage": "251 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q5"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Enge Schlusskurse mit geringer Veränderung von Tag zu Tag und Woche zu Woche sind konstruktiv.",
+   "coveredBy": "PARTIAL:MIN-VCP-05",
+   "novelty": "Tight closes (Tag/Woche) als Kriterium fehlt.",
+   "quoteSha256": "ba177ad178fb031b03c27d089c11fa653ff7826e2acac21a0c943f49c30a4357",
+   "quoteChars": 211,
+   "id": "F7-B12-270-272"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 270,
+   "printedPage": "251 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Teils trocknet Volumen auf oder nahe dem niedrigsten Niveau seit Beginn des Anstiegs aus.",
+   "coveredBy": "PARTIAL:MIN-VCP-06",
+   "novelty": "Volumen-Tief relativ zur gesamten Aufwärtsbewegung fehlt.",
+   "quoteSha256": "e51169c13e80095bc2fd554cc3ae6a6f2b695d2deb6715a7da2b5fc2875b01fe",
+   "quoteChars": 116,
+   "id": "F7-B12-270-273"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 273,
+   "printedPage": "254 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Beruhigen sich Kurs und Volumen auf der rechten Seite nicht, kommt noch Angebot – Aktie zu riskant.",
+   "coveredBy": "PARTIAL:MIN-VCP-05",
+   "novelty": "Explizites Ausschlusskriterium fehlt.",
+   "quoteSha256": "c0473473f1346a8a4062473bc6cf00d5221ef81d6c4ee93c01eba2f281b0baf5",
+   "quoteChars": 136,
+   "id": "F7-B12-273-274"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 280,
+   "printedPage": "261 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2-3x",
+   "paraphraseDe": "Aktien meiden, die mehr als das Zwei- bis Dreifache der Marktkorrektur korrigieren.",
+   "coveredBy": "NONE",
+   "novelty": "Relative Korrekturtiefe zum Markt als Filter fehlt.",
+   "quoteSha256": "2eea734dbbbd9a4929e438c3254515b1b38bcd3590bb7c0c22a34e19b225f0a7",
+   "quoteChars": 119,
+   "id": "F7-B12-280-275"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 280,
+   "printedPage": "261 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "60%; 10-35%",
+   "paraphraseDe": "Selten Kauf nach ≥60% Korrektur; die meisten konstruktiven Setups korrigieren 10–35%.",
+   "coveredBy": "NONE",
+   "novelty": "Max-Tiefe und typische Tiefe der Basis fehlen.",
+   "quoteSha256": "cde9ee471292bdb412db5a6a625a2db15e9c693159822d77bc4cdc1c9f608440",
+   "quoteChars": 220,
+   "id": "F7-B12-280-276"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 286,
+   "printedPage": "267 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "1-3",
+   "paraphraseDe": "Shakeouts idealerweise ein- bis dreimal (je nach Basisgröße) vor dem Einstieg.",
+   "coveredBy": "PARTIAL:MIN-VCP-09",
+   "novelty": "Anzahl Shakeouts fehlt.",
+   "quoteSha256": "7568e085bef452bedd2ae2e2637f0b37dfb440b41ee22d1f52b10125bf222fec",
+   "quoteChars": 67,
+   "id": "F7-B12-286-277"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 287,
+   "printedPage": "268 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Shakeouts können am Basisboden, rechts und im Henkel/Pivot auftreten.",
+   "coveredBy": "PARTIAL:MIN-VCP-09",
+   "novelty": "Orte der Shakeouts fehlen.",
+   "quoteSha256": "b8f53c0ba97ddf71f33dca80fcf1d2e69461b1c3fd41d7f207bd18144d33aea8",
+   "quoteChars": 98,
+   "id": "F7-B12-287-278"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 291,
+   "printedPage": "272 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Aktien meiden, bei denen auf große Nachfragetage noch größere Abwärtsvolumentage folgen.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Explizites Vermeidungskriterium.",
+   "quoteSha256": "2d3f3b786647e8c6aab8a6b27bd802305211727971fb0eaa485854bd650269a5",
+   "quoteChars": 92,
+   "id": "F7-B12-291-279"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 291,
+   "printedPage": "272 (inferred, PDF-19)",
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Übersetzungsfehler: Original meint 'große Aufwärtstage größer und häufiger als große Abwärtstage'; Indonesisch vergleicht 'große Tage mit großen Tagen'.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Satz unbrauchbar, Original heranziehen.",
+   "quoteSha256": "d4948fc7e4a921dc38032124f877b0a60bb49015345190fbb67ae0fff368fa2a",
+   "quoteChars": 91,
+   "id": "F7-B12-291-280"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 291,
+   "printedPage": "272 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q6"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "100s-1000%",
+   "paraphraseDe": "Nachfrage-Spikes mit einigen hundert bis 1.000% des Durchschnittsvolumens sind nicht ungewöhnlich.",
+   "coveredBy": "PARTIAL:MIN-VCP-10",
+   "novelty": "Größenordnung der Volumen-Spikes fehlt.",
+   "quoteSha256": "dd25a948b9cc17a596adfd5912cb5ce869f385aac5558ae841182f2cc1d7bba6",
+   "quoteChars": 123,
+   "id": "F7-B12-291-281"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 295,
+   "printedPage": "276 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "23%; 2,3x",
+   "paraphraseDe": "Beispiel CRUS: 23% Korrektur = 2,3-fache Marktkorrektur, noch akzeptabel.",
+   "coveredBy": "NONE",
+   "novelty": "Anwendungsbeispiel der 2–3x-Regel.",
+   "quoteSha256": "be36c532d3fcf11d701206d2d51d720a381deaecf57434f83a297757b56252a8",
+   "quoteChars": 119,
+   "id": "F7-B12-295-282"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 297,
+   "printedPage": "278 (inferred, PDF-19)",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "einige %",
+   "paraphraseDe": "So nah wie möglich am Pivot kaufen, nicht mehr als einige Prozentpunkte darüber hinterherjagen.",
+   "coveredBy": "NONE",
+   "novelty": "Chase-Grenze über Pivot fehlt (keine feste Zahl).",
+   "quoteSha256": "271faa8e59b2da2f1ddd030a3a5d3a3ff3a6ffb96793f08d51977955347efd85",
+   "quoteChars": 110,
+   "id": "F7-B12-297-283"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 297,
+   "printedPage": "278 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "6W 32/6 3T",
+   "paraphraseDe": "Notation erklärt: 6W 32/6 3T = 6 Wochen Basis, erste Korrektur 32%, letzte am Pivot 6%, 3 Kontraktionen.",
+   "coveredBy": "PARTIAL:MIN-BASE-04",
+   "novelty": "Bestätigt: zweite Zahl = letzte Kontraktion am Pivot.",
+   "quoteSha256": "6b56e6effeab3d35cc69fb36ab46cfd0d487af1e099031c06f7d6e9818719b18",
+   "quoteChars": 156,
+   "id": "F7-B12-297-284"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 301,
+   "printedPage": "282 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Extremes Volumen-Austrocknen am Pivot tritt bei den größten Werten nicht immer auf.",
+   "coveredBy": "PARTIAL:MIN-VCP-06",
+   "novelty": "Ausnahme für Large Caps fehlt.",
+   "quoteSha256": "90c74472129c072bebb6900ff25f2c6e8d42ca8096f81f56cba8e3a5c1d7b287",
+   "quoteChars": 76,
+   "id": "F7-B12-301-285"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 302,
+   "printedPage": "283 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "8W 22/2 3T",
+   "paraphraseDe": "Beispiel EDU: 8W 22/2 3T, Kontraktionen 22% → 8% → 2%.",
+   "coveredBy": "PARTIAL:MIN-BASE-04",
+   "novelty": "Beispiel.",
+   "quoteSha256": "9ad15dbfc3332220adccb0b87f5b41d6fd37205f6464aeac46a6cc4abd9a4780",
+   "quoteChars": 150,
+   "id": "F7-B12-302-286"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 306,
+   "printedPage": "287 (inferred, PDF-19)",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nicht vor dem Pivot-Bruch kaufen; bei engem Pivot bringt Vorwegnahme keinen Vorteil.",
+   "coveredBy": "PARTIAL:MIN-VCP-07",
+   "novelty": "Verbot des Vorabkaufs fehlt.",
+   "quoteSha256": "23e9f9fe753e52ece1adf9ce5990356bb9c1f870463d19f43c9dfd5bc0aad2dc",
+   "quoteChars": 265,
+   "id": "F7-B12-306-287"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 306,
+   "printedPage": "287 (inferred, PDF-19)",
+   "questions": [
+    "Q6"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2h; 50%; 300-400%",
+   "paraphraseDe": "Intraday-Extrapolation: nach 2 Stunden bereits 50% des Normalvolumens → Tag kann 300–400% erreichen; dann beim Pivot-Durchbruch kaufen.",
+   "coveredBy": "PARTIAL:MIN-MM-VOL-EX",
+   "novelty": "Rechenbeispiel der Volumenhochrechnung im Buch.",
+   "quoteSha256": "37051c0da9eca2626aa211f3e15878091520eeb0164cb5b21ecb6c30fda65398",
+   "quoteChars": 341,
+   "id": "F7-B12-306-288"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 306,
+   "printedPage": "287 (inferred, PDF-19)",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "10-15%",
+   "paraphraseDe": "Flat Base ohne eigenen Pivot: Kauf über dem Basishoch, sofern Basis höchstens 10–15% korrigiert.",
+   "coveredBy": "PARTIAL:MIN-VCP-04",
+   "novelty": "Flat-Base-Einstieg mit Tiefengrenze fehlt.",
+   "quoteSha256": "876bcf0e8807bd3faa241688b67f9ed7e57ea9c636be09f480ac1578ecd92144",
+   "quoteChars": 243,
+   "id": "F7-B12-306-289"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 307,
+   "printedPage": "288",
+   "questions": [
+    "Q12",
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1-2 Tage; 10 Tage",
+   "paraphraseDe": "Squat: mindestens 1–2 Tage auf Reversal Recovery warten, bis zu 10+ Tage möglich; ausdrücklich keine harte Regel.",
+   "coveredBy": "NONE",
+   "novelty": "Squat/Reversal-Recovery-Logik fehlt.",
+   "quoteSha256": "04cd78f57635ae54b63fea70f6fa87735745b40f5accbc1f0c91dd05d5eba161",
+   "quoteChars": 296,
+   "id": "F7-B12-307-290"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 307,
+   "printedPage": "288",
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Übersetzungsfehler: Squat heißt im Original Schluss deutlich unter dem Tageshoch ('off the highs'); Indonesisch sagt 'schließt am Tageshoch'.",
+   "coveredBy": "NONE",
+   "novelty": "Definition des Squat in der Übersetzung umgekehrt.",
+   "quoteSha256": "1d070e5b221b0eae37c57cc68f8e98911858c9907281eb96b363e4051c12a790",
+   "quoteChars": 129,
+   "id": "F7-B12-307-291"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 307,
+   "printedPage": "288",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "3C oder Cup-with-Handle können einen Pivot unterhalb des Gesamthochs bilden.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-01",
+   "novelty": "Pivot unter Basishoch auch für Handle.",
+   "quoteSha256": "89f5235b3b4b9868d315ccbcd0c9388ae52431ba1e43f53df634a1358f326d8c",
+   "quoteChars": 95,
+   "id": "F7-B12-307-292"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 307,
+   "printedPage": "288",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "MA20",
+   "paraphraseDe": "Squat: Stop-Treffer → Verkauf; Schluss unter MA20 senkt Erfolgswahrscheinlichkeit (Ermessensentscheidung, S.308).",
+   "coveredBy": "NONE",
+   "novelty": "MA20-Schluss nach Squat fehlt.",
+   "quoteSha256": "bac94f83bb3665154b3464f0fd1e24208779ae60a883bbe9e55ec73d75580250",
+   "quoteChars": 185,
+   "id": "F7-B12-307-293"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 308,
+   "printedPage": "289 (inferred, PDF-19)",
+   "questions": [
+    "Q9",
+    "Q12"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "10 Tage",
+   "paraphraseDe": "Beispiel AFFY: nach Reversal Recovery auf neue Hochs (10 Tage) Position aufgestockt.",
+   "coveredBy": "PARTIAL:MIN-ADD-01",
+   "novelty": "Aufstocken nach Squat-Recovery.",
+   "quoteSha256": "4981add208858730371ef20c1e68a8a41b25fb7366777029cc56581a3307f599",
+   "quoteChars": 102,
+   "id": "F7-B12-308-294"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 308,
+   "printedPage": "289 (inferred, PDF-19)",
+   "questions": [
+    "Q12",
+    "Q15"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Schluss unter MA20 nach Squat ist Ermessenssache; über dem Stop wird der Aktie Raum gegeben.",
+   "coveredBy": "NONE",
+   "novelty": "Explizit diskretionär.",
+   "quoteSha256": "62ce3c573b2f846635426ae0d2aced89f838c774be292a06ac6578acd6c67212",
+   "quoteChars": 188,
+   "id": "F7-B12-308-295"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 309,
+   "printedPage": "290 (inferred, PDF-19)",
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "10",
+   "paraphraseDe": "Bildunterschrift sagt 'stoppte mich aus', der Text (S.308) sagt, er blieb mit dem Initialstop drin – vermutlich Übersetzungsfehler.",
+   "coveredBy": "NONE",
+   "novelty": "Widerspruch zwischen Bildunterschrift und Text.",
+   "quoteSha256": "63a9fe031b749a86be05ec2462bc987ac742f94da70da4afb40fc36e7ffaa10f",
+   "quoteChars": 108,
+   "id": "F7-B12-309-296"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 311,
+   "printedPage": "292",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "MA20",
+   "paraphraseDe": "Nach Ausbruch soll die Aktie die MA20 halten und meist nicht darunter schließen; Muster darf nicht ausweiten.",
+   "coveredBy": "NONE",
+   "novelty": "Failed-Breakout-Kriterium MA20 fehlt.",
+   "quoteSha256": "1d2413fd6a18d7b1f9fce0a1e8cfb7123d0588289cabcb5a3ef29f1e4f717e88",
+   "quoteChars": 211,
+   "id": "F7-B12-311-297"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 312,
+   "printedPage": "293 (inferred, PDF-19)",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "MA20",
+   "paraphraseDe": "Rücksetzer über MA20 mit Squat erholt sich oft am nächsten Tag; bei Stop-Treffer raus und neu bewerten.",
+   "coveredBy": "NONE",
+   "novelty": "Recovery-Fenster fehlt.",
+   "quoteSha256": "c6ed863b8cdc7f1b08849363ac721bdfb29f7d2a3f49c37af5aac02c998dcc61",
+   "quoteChars": 186,
+   "id": "F7-B12-312-298"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 312,
+   "printedPage": "293 (inferred, PDF-19)",
+   "questions": [
+    "Q12",
+    "Q6"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "12:00/13:00",
+   "paraphraseDe": "Early-Day-Reversal (Umkehr vor 12/13 Uhr): Aktie bis Tagesende Zeit geben, außer der Stop wird ausgelöst.",
+   "coveredBy": "NONE",
+   "novelty": "Intraday-Reversal-Regel fehlt.",
+   "quoteSha256": "ddb81fedc6db8ac42c1e667c7dd3f54c7eb48e55a9a3308bd144f5eb227f54a5",
+   "quoteChars": 254,
+   "id": "F7-B12-312-299"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 320,
+   "printedPage": "301 (inferred, PDF-19)",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1-2 Wochen",
+   "paraphraseDe": "Rücklauf an/unter den Ausbruchspunkt ist normal, wenn Erholung binnen Tagen bis 1–2 Wochen; Volumen im Pullback sinkt, beim neuen Hoch steigt es.",
+   "coveredBy": "NONE",
+   "novelty": "Normale Reaktion nach Ausbruch (Tennisball) fehlt.",
+   "quoteSha256": "a9e9de159f342741941766361bb3fd4b1ef45a9b8dd0056b2fae03df410ed03f",
+   "quoteChars": 332,
+   "id": "F7-B12-320-300"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 322,
+   "printedPage": "303 (inferred, PDF-19)",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1-2 Wochen",
+   "paraphraseDe": "Nach normaler Reaktion soll binnen Tagen bis 1–2 Wochen Volumen steigen und Trend fortsetzen.",
+   "coveredBy": "NONE",
+   "novelty": "Checkliste nach dem Kauf fehlt.",
+   "quoteSha256": "05b4f7316961ff1b247585130a60e9b87101f0f8c5ead8c6f65ab79d8a47fadc",
+   "quoteChars": 133,
+   "id": "F7-B12-322-301"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 327,
+   "printedPage": "308 (inferred, PDF-19)",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1/3",
+   "paraphraseDe": "Henkel meist im oberen Drittel der Tasse; bildet er sich im mittleren Drittel/knapp unter Mitte, gibt es mehrere Kaufpunkte.",
+   "coveredBy": "NONE",
+   "novelty": "Lage des Henkels fehlt.",
+   "quoteSha256": "3a6e3d1e7fa5925fc0928ac25eae884e5c340d749d78598d0e4a1520ac66440d",
+   "quoteChars": 206,
+   "id": "F7-B12-327-302"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 330,
+   "printedPage": "311 (inferred, PDF-19)",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "HARD",
+   "numbers": "25-100%; 200-300%; 3-36 Monate",
+   "paraphraseDe": "Cheat/Cup-Qualifikation: Vorlauf von mindestens 25–100% (teils 200–300%) in den vorherigen 3–36 Monaten.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-04",
+   "novelty": "Vorlauf-Anforderung fehlt (nur MA200 erfasst).",
+   "quoteSha256": "abec6dd14618a2586a304f9084da62f02f88dd2e83433d741742d75779c505d7",
+   "quoteChars": 179,
+   "id": "F7-B12-330-303"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 330,
+   "printedPage": "311 (inferred, PDF-19)",
+   "questions": [
+    "Q4",
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "3-45 Wochen",
+   "paraphraseDe": "Cheat/Cup-Muster bildet sich in 3–45 Wochen (meist 7–25 Wochen, S.331).",
+   "coveredBy": "NONE",
+   "novelty": "Dauer der Cup/Cheat-Basis fehlt.",
+   "quoteSha256": "daf2e074a28c2e3f1e2962953091e13715e9606020b6b6a5c8d9d3a12eaa4af8",
+   "quoteChars": 61,
+   "id": "F7-B12-330-304"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 331,
+   "printedPage": "312",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "1/3-1/2",
+   "paraphraseDe": "Cheat: Erholung auf rechter Seite meist um ein Drittel bis die Hälfte des Rückgangs, dann Pause.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-03",
+   "novelty": "Lage der Cheat-Pause fehlt.",
+   "quoteSha256": "7c430f6e96fdba6bafc51ba9bfd4560ea95d0d1431229c2f965d0651f3e143fe",
+   "quoteChars": 111,
+   "id": "F7-B12-331-305"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 331,
+   "printedPage": "312",
+   "questions": [
+    "Q4",
+    "Q5"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "7-25 Wochen; 15-50%; 60%",
+   "paraphraseDe": "Cup/Cheat: meist 7–25 Wochen; Tiefe 15/20% bis 35/40%, teils 50% je nach Markt; >60% zu tief.",
+   "coveredBy": "NONE",
+   "novelty": "Tiefenbandbreite Cup/Cheat fehlt.",
+   "quoteSha256": "8d19e614278c10e2ed438765471c15db6ac78502c162c2f2fb6fce946771d84b",
+   "quoteChars": 311,
+   "id": "F7-B12-331-306"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 331,
+   "printedPage": "312",
+   "questions": [
+    "Q5"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Optimal: Cheat-Pause driftet unter vorheriges Tief (Shakeout) wie beim Henkel.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-02",
+   "novelty": "Shakeout in Cheat-Pause fehlt.",
+   "quoteSha256": "a4b658ddc25cbca26d8ac6a67a80be3982eacf505a8407f3a11c3d51f1e50b34",
+   "quoteChars": 130,
+   "id": "F7-B12-331-307"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 333,
+   "printedPage": "314",
+   "questions": [
+    "Q5",
+    "Q12"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nicht auf Trendlinienbruch kaufen; auf 'Turn' warten – Kauf, wenn das Pausenhoch überschritten wird.",
+   "coveredBy": "PARTIAL:MIN-CHEAT-03",
+   "novelty": "Trendlinienbruch explizit als unzureichend.",
+   "quoteSha256": "035dd4d307dfec77bd284ef07df866891a7784bbea4d6569b2023b158f3e5d6d",
+   "quoteChars": 134,
+   "id": "F7-B12-333-308"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 335,
+   "printedPage": "316",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Failure Reset: Basisversagen erfordert neue Basis; Pivotversagen kann sich in Tagen zurücksetzen.",
+   "coveredBy": "PARTIAL:MIN-MM-REEN-01",
+   "novelty": "B12-Quelle für die Unterscheidung.",
+   "quoteSha256": "0552fa8f0aa9f96f77b4a87a3a3a10e52849e624d9baa78b5dcd0dc5c72af05b",
+   "quoteChars": 168,
+   "id": "F7-B12-335-309"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 336,
+   "printedPage": "317 (inferred, PDF-19)",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Ausgestoppte Aktie nicht verwerfen; bei intakten Fundamentals auf Failure Reset achten.",
+   "coveredBy": "PARTIAL:MIN-MM-REEN-01",
+   "novelty": "Fundamentals-intakt-Bedingung.",
+   "quoteSha256": "62b86a41355be93f04a0932689b2c1e78a1f3ac8917aaefc5a3a34e3d7e72c30",
+   "quoteChars": 111,
+   "id": "F7-B12-336-310"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 341,
+   "printedPage": "322 (inferred, PDF-19)",
+   "questions": [
+    "Q13"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Power Play braucht keine sichtbaren Fundamentals, aber stets VCP-Merkmale.",
+   "coveredBy": "PARTIAL:MIN-PP-05",
+   "novelty": "Hier VCP generell verlangt; PP-05 nennt '≤10% oder VCP' – Spannung.",
+   "quoteSha256": "b571a67f8d36b44ef7ec4082f1a6806d0d53e9b0cc9b882e3869351954a63d11",
+   "quoteChars": 192,
+   "id": "F7-B12-341-311"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 342,
+   "printedPage": "323 (inferred, PDF-19)",
+   "questions": [
+    "Q13"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Der explosive Power-Play-Anstieg folgt meist auf eine Phase relativer Ruhe.",
+   "coveredBy": "PARTIAL:MIN-PP-02",
+   "novelty": "Dormanz-Kontext fehlt.",
+   "quoteSha256": "d6aa04de41ad874942ca1c17e7897e5fe65540d5494351ecb0914865bcca5be1",
+   "quoteChars": 53,
+   "id": "F7-B12-342-312"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 349,
+   "printedPage": "330 (inferred, PDF-19)",
+   "questions": [
+    "Q3"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "8-10 Jahre",
+   "paraphraseDe": "Die meisten Superperformer waren 8–10 Jahre vor ihrer Superperformance-Phase an die Börse gegangen.",
+   "coveredBy": "NONE",
+   "novelty": "Firmenalter seit IPO fehlt.",
+   "quoteSha256": "674a21ba28f6da7782327c25a24a716909b7c193b004303313744768fc8adb80",
+   "quoteChars": 114,
+   "id": "F7-B12-349-313"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 350,
+   "printedPage": "331 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3 Wochen",
+   "paraphraseDe": "Primary Base (erste kaufbare Basis nach IPO): Korrektur ≥3 Wochen, dann Ausbruch zu Allzeithoch.",
+   "coveredBy": "PARTIAL:MIN-MM-IPO-01",
+   "novelty": "B12-Definition der Primary Base.",
+   "quoteSha256": "21ef89abc40db20f22798f6aa0aff0e1194f02e4a1790039afd54b5a859d18e9",
+   "quoteChars": 211,
+   "id": "F7-B12-350-314"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 352,
+   "printedPage": "333 (inferred, PDF-19)",
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "25-35%",
+   "paraphraseDe": "Verstümmelt: Original etwa 'not correct more than 25–35%'; 'tepat/dapat diandalkan' ist Fehlübersetzung.",
+   "coveredBy": "NONE",
+   "novelty": "Satz grammatisch defekt.",
+   "quoteSha256": "1931d66b322a122e8e494327bad4a9a17ac2bff42bb388d6649719765fd57721",
+   "quoteChars": 59,
+   "id": "F7-B12-352-315"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 352,
+   "printedPage": "333 (inferred, PDF-19)",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "3-5 Wochen; 25-35%; 1 Jahr",
+   "paraphraseDe": "Primary Base mindestens 3–5 Wochen, nicht mehr als 25–35% Korrektur; längere (~1 Jahr) bis 50% möglich (S.353).",
+   "coveredBy": "NONE",
+   "novelty": "IPO-Basis-Parameter fehlen.",
+   "quoteSha256": "718d73f2afa3c553e130821892a4c0742c28b80912dadf570ecaa7939994088f",
+   "quoteChars": 205,
+   "id": "F7-B12-352-316"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 353,
+   "printedPage": "334",
+   "questions": [
+    "Q4"
+   ],
+   "modal": "HARD",
+   "numbers": "3 Wochen; 25%",
+   "paraphraseDe": "Kurze 3-Wochen-Konsolidierung (Primary Base) höchstens 25% Korrektur.",
+   "coveredBy": "NONE",
+   "novelty": "Kurzbasis-Grenze fehlt.",
+   "quoteSha256": "76c75f802305497be4544a201a7657ab6166d14dd41f2ebe76575701151aaf78",
+   "quoteChars": 91,
+   "id": "F7-B12-353-317"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 367,
+   "printedPage": "348 (inferred, PDF-19)",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Nach ordentlichem Gewinn weniger Raum nach unten; Gewinnschutzmodus, mindestens Einstand sichern.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Qualitative Variante ohne R-Bezug.",
+   "quoteSha256": "2f157e4d7f4dbdc6e9680732624c1fcb61b81f0053fcc7dad25192dd8da3db1a",
+   "quoteChars": 237,
+   "id": "F7-B12-367-318"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 370,
+   "printedPage": "351 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "10%; 6-7%",
+   "paraphraseDe": "Absolute Verlustgrenze max. 10%; Durchschnittsverlust deutlich niedriger, etwa 6–7%.",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-02",
+   "novelty": "B12 nennt 6–7% Durchschnittsverlust (vs. 5–6% bzw. 4–5% anderswo).",
+   "quoteSha256": "a996620ae0d04695c0977aac3ee2c63119ec6782d58a35e9911782dbe06ef992",
+   "quoteChars": 164,
+   "id": "F7-B12-370-319"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 371,
+   "printedPage": "352 (inferred, PDF-19)",
+   "questions": [
+    "Q7",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "10%",
+   "paraphraseDe": "Braucht man mehr als 10% Puffer, sind Kriterien/Timing fehlerhaft oder der Markt feindlich – dann raus aus Aktien.",
+   "coveredBy": "NONE",
+   "novelty": "Verknüpfung Stopbedarf → Marktregime fehlt.",
+   "quoteSha256": "65bbeb7f6078ee223a55e549d0961744d9d244b624f4cf5ffdf4cacf3b9e745c",
+   "quoteChars": 123,
+   "id": "F7-B12-371-320"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 375,
+   "printedPage": "356 (inferred, PDF-19)",
+   "questions": [
+    "Q11",
+    "Q12"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Häufig Verkauf, wenn die Aktie nach dem Kauf nicht prompt steigt, auch ohne Verlust.",
+   "coveredBy": "PARTIAL:MIN-MM-SELL-04",
+   "novelty": "Zeit-/Erwartungsstopp ohne Kursverlust fehlt.",
+   "quoteSha256": "d2a768816ab2a1de72b06f92d537350c07896031b06e8cd3d2e502e7ff2aebea",
+   "quoteChars": 225,
+   "id": "F7-B12-375-321"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 378,
+   "printedPage": "359 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "60-70%; 30-40%",
+   "paraphraseDe": "Beste Trader treffen in gesunden Märkten 60–70%; 30–40% Verlierer sind normal.",
+   "coveredBy": "NONE",
+   "novelty": "Erwartete Trefferquote fehlt.",
+   "quoteSha256": "cbf245093609d65d4df5a2163d296d6868f8a6e0f6ff2696719075bcf691dad0",
+   "quoteChars": 169,
+   "id": "F7-B12-378-322"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 393,
+   "printedPage": "374 (inferred, PDF-19)",
+   "questions": [
+    "Q7",
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Initialstop gilt v.a. anfangs; nach Anstieg Verkaufspunkt per Trailing- oder Backstop anheben.",
+   "coveredBy": "PARTIAL:MIN-TTC-BACKSTOP",
+   "novelty": "B12-Quelle für Übergang Initial→Trailing.",
+   "quoteSha256": "23b0b47bc0a3ffdf19a5312e4f2a2477ffbe8dd36fb4ee4125be7f705d01f950",
+   "quoteChars": 187,
+   "id": "F7-B12-393-323"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 394,
+   "printedPage": "375 (inferred, PDF-19)",
+   "questions": [
+    "Q12"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": "2-3 Versuche",
+   "paraphraseDe": "Re-entry suchen, wenn alle Merkmale intakt; oft braucht es zwei bis drei Versuche.",
+   "coveredBy": "PARTIAL:MIN-MM-REEN-01",
+   "novelty": "Anzahl Versuche fehlt.",
+   "quoteSha256": "fb69e020bfd73a0627a502f1ceb7aef1897a1236cb61cc309ad13c80388d894f",
+   "quoteChars": 195,
+   "id": "F7-B12-394-324"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 395,
+   "printedPage": "376 (inferred, PDF-19)",
+   "questions": [
+    "Q11"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Man braucht sowohl einen Plan für Verkauf in Stärke als auch in Schwäche.",
+   "coveredBy": "PARTIAL:MIN-RISK-06",
+   "novelty": "Dualer Verkaufsplan fehlt.",
+   "quoteSha256": "ae4c5d367ae02114f20abc6b9e1a7239b885cb9ed5a522026c452440f85aae73",
+   "quoteChars": 73,
+   "id": "F7-B12-395-325"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 395,
+   "printedPage": "376 (inferred, PDF-19)",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "7%; 20%",
+   "paraphraseDe": "Gewinn als Vielfaches des Stops (z.B. 20% bei 7% Stop) darf nicht in Verlust kippen; Stop auf Einstand oder nachziehen.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "Zahlenbeispiel 7%/20%.",
+   "quoteSha256": "ee4be2f5865aa3cb3db1e34022363c398d77c5e9f07acef277124de2213202c9",
+   "quoteChars": 350,
+   "id": "F7-B12-395-326"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 398,
+   "printedPage": "379 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "1/2",
+   "paraphraseDe": "Faustregel: Verlust bei der Hälfte des Durchschnittsgewinns begrenzen.",
+   "coveredBy": "PARTIAL:MIN-TTC-AVGLOSS",
+   "novelty": "Stop als Funktion des Durchschnittsgewinns fehlt.",
+   "quoteSha256": "01ef3ed68e834e7439c9e4df824be987201e0166a5d0e9300f89f8981dc27430",
+   "quoteChars": 101,
+   "id": "F7-B12-398-327"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 399,
+   "printedPage": "380 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Durchschnittsgewinn regelmäßig überwachen und Stop anpassen.",
+   "coveredBy": "NONE",
+   "novelty": "Adaptiver Stop fehlt.",
+   "quoteSha256": "0d07f303393c45a60117953e94fdd488a201cf1fa7c4cbafb5ba08c476f57a5a",
+   "quoteChars": 93,
+   "id": "F7-B12-399-328"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 399,
+   "printedPage": "380 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "15%; 7,5%",
+   "paraphraseDe": "Beispiel: Durchschnittsgewinn 15% → Stop höchstens 7,5%.",
+   "coveredBy": "NONE",
+   "novelty": "Zahlenbeispiel der Halbregel.",
+   "quoteSha256": "1dc7b9742e8177461ce0109329bba35c490d26f03043a767384fb22042b25898",
+   "quoteChars": 176,
+   "id": "F7-B12-399-329"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 399,
+   "printedPage": "380 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": "10%",
+   "paraphraseDe": "Unabhängig vom Durchschnittsgewinn nie mehr als 10% Verlust zulassen (auch bei 30% Durchschnittsgewinn keine 15%).",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-02",
+   "novelty": "Deckel über Halbregel.",
+   "quoteSha256": "1e9677e82bd725343d46271bd8bff459159b653d482a54b6c1dbeaf09361caa3",
+   "quoteChars": 174,
+   "id": "F7-B12-399-330"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 401,
+   "printedPage": "382 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2:1; 3:1; 10%",
+   "paraphraseDe": "Ziel mindestens 2:1 Gewinn/Verlust bei max. 10% Stop; angestrebt 3:1.",
+   "coveredBy": "NONE",
+   "novelty": "Ziel-Payoff-Ratio fehlt.",
+   "quoteSha256": "55d7c7728279e1fb48b9a26f32a40c75f3bc1eb225225e1e19eb8ac3973e1c6b",
+   "quoteChars": 153,
+   "id": "F7-B12-401-331"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 402,
+   "printedPage": "383 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Erreicht die Aktie den Stop, sofort ohne Ausnahme verkaufen.",
+   "coveredBy": "PARTIAL:MIN-MM-STOP-01",
+   "novelty": "B12-Quelle.",
+   "quoteSha256": "c9d825fb25ad6390115fe7b22c022dedb1a42be0a07628cb10ff62aeacc8945e",
+   "quoteChars": 76,
+   "id": "F7-B12-402-332"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 403,
+   "printedPage": "384 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "HARD",
+   "numbers": null,
+   "paraphraseDe": "Bei Slippage/Gap unter den Stop sofort zum nächsten Geldkurs raus.",
+   "coveredBy": "NONE",
+   "novelty": "Gap-/Slippage-Regel fehlt.",
+   "quoteSha256": "2adf17489e0b2ce9b430147ee01de2b2294ad982cf1efb1c5ba8dbdaac8de161",
+   "quoteChars": 77,
+   "id": "F7-B12-403-333"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 404,
+   "printedPage": "385 (inferred, PDF-19)",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Bei abnormaler Verlustserie zuerst Exposure senken (S.405: z.B. 5.000 → 2.000 → 1.000 Stück).",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Schrittweise Größenreduktion.",
+   "quoteSha256": "ea77a207e517e916b2b71c1328c940e7cb92ea6c288dbd72ff856242f9d37675",
+   "quoteChars": 97,
+   "id": "F7-B12-404-334"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 404,
+   "printedPage": "385 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": null,
+   "paraphraseDe": "Wiederholte Ausstoppungen: entweder Selektionskriterien fehlerhaft oder Markt feindlich.",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Diagnose der Verlustserie.",
+   "quoteSha256": "f94f6bc799047fecbd72fa28908d40eae1bb7d4ec2ef910bf941ae13dd368745",
+   "quoteChars": 190,
+   "id": "F7-B12-404-335"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 405,
+   "printedPage": "386 (inferred, PDF-19)",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "5000; 2000; 1000",
+   "paraphraseDe": "Beispiel Größenreduktion bei Verlustserie: 5.000 → 2.000 → 1.000 Aktien.",
+   "coveredBy": "PARTIAL:MIN-RISK-04",
+   "novelty": "Zahlenbeispiel.",
+   "quoteSha256": "331a21d527f273a52db84ba9af8931ca1234daf0e2c0ed174c3d56b2d34d101d",
+   "quoteChars": 181,
+   "id": "F7-B12-405-336"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 406,
+   "printedPage": "387 (inferred, PDF-19)",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "100%",
+   "paraphraseDe": "Aus 100% Cash nach Bärenmarkt/Korrektur selten sofort voll investieren.",
+   "coveredBy": "PARTIAL:MIN-RISK-02",
+   "novelty": "B12-Quelle.",
+   "quoteSha256": "31545cdb823d38f85402735055508e612393474eee4c0e1e11e056b123e4822e",
+   "quoteChars": 154,
+   "id": "F7-B12-406-337"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 407,
+   "printedPage": "388 (inferred, PDF-19)",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Positionsgrößen nur nach Phasen hoher Profitabilität erhöhen.",
+   "coveredBy": "PARTIAL:MIN-RISK-03",
+   "novelty": "'nur nach' Gewinnphase.",
+   "quoteSha256": "e1b372cca7aa33e4f73c9db149891ab2fa312f9483d3ec44c0c3da0e775a6a90",
+   "quoteChars": 117,
+   "id": "F7-B12-407-338"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 409,
+   "printedPage": "390 (inferred, PDF-19)",
+   "questions": [
+    "Q8",
+    "Q9"
+   ],
+   "modal": "EXAMPLE_ONLY",
+   "numbers": "2%; 2%; 1%; 10%; 0,5%",
+   "paraphraseDe": "Scaling-in: 5%-Position in 2%+2%+1%, Stop 10% unter Durchschnittskosten = 0,5% Kontorisiko.",
+   "coveredBy": "PARTIAL:MIN-ADD-01",
+   "novelty": "Konkretes Scaling-Schema und Kontorisiko fehlen.",
+   "quoteSha256": "2d0e7f892a370ccba1107cf1822981b342be2cb03f29aeff5225103bb3a03567",
+   "quoteChars": 293,
+   "id": "F7-B12-409-339"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 409,
+   "printedPage": "390 (inferred, PDF-19)",
+   "questions": [
+    "TRANSLATION"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "5%; 0,5%",
+   "paraphraseDe": "'mempertaruhkan' (riskieren) steht hier für Kapitaleinsatz/Positionsgröße 5%, nicht für Risiko 5% – das Risiko ist 0,5%.",
+   "coveredBy": "NONE",
+   "novelty": "Begriffsverwechslung Einsatz vs. Risiko.",
+   "quoteSha256": "85b6becf27dc896809cf4e91a81665abb9926e0d74489828d84cde7012845230",
+   "quoteChars": 58,
+   "id": "F7-B12-409-340"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 410,
+   "printedPage": "391 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "40%; 20/10%",
+   "paraphraseDe": "Bei 40% Trefferquote ist 20%/10% Gewinn/Verlust optimal (S.412: bei 50% → 48%/24%).",
+   "coveredBy": "PARTIAL:MIN-W18-8",
+   "novelty": "Optimale Ratios nach Trefferquote fehlen.",
+   "quoteSha256": "90fd939039a631f013e56ba7978bd6ef6c35f60d1fe687c9c93373233f892980",
+   "quoteChars": 101,
+   "id": "F7-B12-410-341"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 410,
+   "printedPage": "391 (inferred, PDF-19)",
+   "questions": [
+    "Q10"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "2-3R",
+   "paraphraseDe": "Stop nachziehen bei 2–3R, besonders wenn das über dem historischen Durchschnittsgewinn liegt.",
+   "coveredBy": "PARTIAL:MIN-RISK-05",
+   "novelty": "2R-Untergrenze und Bezug Durchschnittsgewinn fehlen.",
+   "quoteSha256": "f2c106ebe7f205bba8c48a374760c463ed51b2899806cc07ec5d762e847f173b",
+   "quoteChars": 153,
+   "id": "F7-B12-410-342"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 412,
+   "printedPage": "393 (inferred, PDF-19)",
+   "questions": [
+    "Q7"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "48/24%; 50%",
+   "paraphraseDe": "Optimum bei 50% Trefferquote: 48%/24%.",
+   "coveredBy": "NONE",
+   "novelty": "Zahl.",
+   "quoteSha256": "d6fdf2e7b486b949008ea8e93158b94b26a27e0191b739e585ec26388177d012",
+   "quoteChars": 114,
+   "id": "F7-B12-412-343"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 413,
+   "printedPage": "394",
+   "questions": [
+    "Q7",
+    "Q11",
+    "Q14"
+   ],
+   "modal": "STRONG_PREFERENCE",
+   "numbers": "7-8%→5-6%; 15-20%→10-12%",
+   "paraphraseDe": "Schwieriger Markt: Stop von 7–8% auf 5–6% verengen; Gewinne bei 10–12% statt 15–20% mitnehmen.",
+   "coveredBy": "PARTIAL:MIN-RISK-07",
+   "novelty": "Konkrete Zahlen fehlen in RISK-07.",
+   "quoteSha256": "004ba44a698ff3c4552afed81c92e09094eeb5856748a9c63bfb0c295ac08e87",
+   "quoteChars": 257,
+   "id": "F7-B12-413-344"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 414,
+   "printedPage": "395 (inferred, PDF-19)",
+   "questions": [
+    "Q14"
+   ],
+   "modal": "PREFERENCE",
+   "numbers": null,
+   "paraphraseDe": "Erst nach verbesserter Trefferquote/Risiko-Profil Parameter schrittweise normalisieren.",
+   "coveredBy": "PARTIAL:MIN-RISK-07",
+   "novelty": "Rückkehrbedingung fehlt.",
+   "quoteSha256": "3daed4b8335b123d4699548f6a43281853834b3be20401bd24bce6b026560924",
+   "quoteChars": 164,
+   "id": "F7-B12-414-345"
+  },
+  {
+   "source": "B12",
+   "pdfPage": 415,
+   "printedPage": "396",
+   "questions": [
+    "Q8"
+   ],
+   "modal": "CONTEXTUAL",
+   "numbers": "2:1; 25%; 4",
+   "paraphraseDe": "Für einen echten 2:1-Trader ist mathematisch 25% Positionsgröße (4 Titel gleichgewichtet) optimal.",
+   "coveredBy": "PARTIAL:MIN-MM-SIZE-01",
+   "novelty": "B12-Begründung der 25%-Position.",
+   "quoteSha256": "effd4f71c460ae211de3f4612037867fec56e7b44c7fdaf93c0585b1699de1e4",
+   "quoteChars": 123,
+   "id": "F7-B12-415-346"
+  }
+ ]
+}
