@@ -2,9 +2,11 @@
 
 Stand: 24. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Grundlage ist Eigentümerentscheidung E1 aus [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md).
 
-Maßgeblich ist der **Regelsatz 1.2.0**, Lauf **40118088867**. Er enthält die Befunde der Nachprüfung, siehe den Abschnitt „Nachprüfung“.
-- Hash des vollständigen Regelsatzes: `7841f3ce…`, in einem Test festgeschrieben.
-- Zum Vergleich stehen daneben: 1.0.0 (Lauf 40104626083) und 1.1.0 (Lauf 40111713883).
+Maßgeblich ist der **Regelsatz 1.3.0**, Lauf **40122736287**. Er enthält die Befunde der Nachprüfungen 1 und 2.
+- Hash des vollständigen Regelsatzes: `08d8a6ec…`, in einem Test festgeschrieben.
+- Zum Vergleich stehen daneben: 1.0.0 (Lauf 40104626083), 1.1.0 (Lauf 40111713883) und 1.2.0 (Lauf 40118088867).
+
+**Kernergebnis:** Unter 1.3.0 ist **kein** nicht erklärter Split bestätigt. Für einen Split verlangt 1.3.0 eine faktortragende unabhängige Quelle (Tiingo-adjClose), und die fehlt in den V4-D1-Fällen. Der verbleibende Hebel ist eine lizenzierte Quelle für Kapitalmaßnahmen; das entscheidet der Eigentümer.
 
 Code:
 - [`integrity/ca-resolution.mjs`](../scripts/supertrader/source-faithful/integrity/ca-resolution.mjs): Klassifikation, vorregistrierter Regelsatz (`RULESET`).
@@ -16,7 +18,7 @@ Code:
   - `sf7-ca-resolution`;
   - `sf7-ca-resolution-smoke`: 400 Reihen desselben Snapshots;
   - `sec-pit-r14`.
-- Tests: [`sf-sf7-ca-resolution.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-resolution.test.mjs), 27 Tests.
+- Tests: [`sf-sf7-ca-resolution.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-resolution.test.mjs), 29 Tests.
 
 ## Ziel
 
@@ -24,8 +26,8 @@ Supertrader 6.0 hat V4-D1 nur **eingegrenzt**: Markierte Sitzungen kamen in Quar
 
 | Klasse | Bedeutung |
 |---|---|
-| `CONFIRMED_UNDECLARED_SPLIT` | Faktor **und** Sitzung belegt:<br>– Das SEC-Aktienverhältnis und, unabhängig davon, das Eröffnungsrelativ von d wählen denselben Rasterfaktor N.<br>– Das Aktien-Residuum ist eng.<br>– Schluss und Rohvolumen passen.<br>– Die CIK ist bekannt (`KNOWN`), in den Meldungen steht keine Fusion.<br>– Ab N = 10 gibt es einen zweiten Beleg (adjClose oder 8-K 5.03/3.03). |
-| `CONFIRMED_MISDATED_DECLARED_SPLIT` | Tiingo hat den Faktor f am Tag j erklärt. Der Kurs sprang aber höchstens 5 Sitzungen daneben um f (innerhalb ±10 %), nicht an j. SEC oder adjClose bestätigen den Faktor. Der erklärte Faktor wird verschoben, nie erfunden. |
+| `CONFIRMED_UNDECLARED_SPLIT` | Faktor **und** Sitzung belegt:<br>– Das SEC-Aktienverhältnis und, unabhängig davon, das Eröffnungsrelativ von d wählen denselben Rasterfaktor N.<br>– Das Aktien-Residuum ist eng.<br>– Schluss und Rohvolumen passen.<br>– Die CIK ist bekannt (`KNOWN`), in den Meldungen steht keine Fusion.<br>– Ab 1.3.0 Pflicht für jedes N: Der von Tiingo-adjClose implizierte Faktor wählt genau denselben Rasterwert. Ein 8-K-Item trägt keinen Faktor. |
+| `CONFIRMED_MISDATED_DECLARED_SPLIT` | Tiingo hat den Faktor f am Tag j erklärt. Der Kurs sprang aber höchstens 5 Sitzungen daneben um f (innerhalb ±10 %), nicht an j. Ab 1.3.0 muss adjClose den Faktor tragen; SEC zählt nie als zweiter Beleg. Der erklärte Faktor wird verschoben, nie erfunden. |
 | `CONFIRMED_GENUINE_MOVE` | Aktienzahl unverändert, und die frühere Zahl wurde vor d eingereicht. Das Volumen verhält sich nicht wie bei einem Split. Es gibt keine erklärte und keine von Tiingo angedeutete Kapitalmaßnahme. Die CIK ist bekannt, der Emittent ist inländisch, und seine Meldungen um d enthalten keine Kapitalmaßnahme. |
 | `UNRESOLVED` | alles andere |
 
@@ -56,7 +58,18 @@ Keine Vermutung wird als bestätigt ausgegeben. Was nicht eindeutig ist, bleibt 
   - **Referenzexposition**: Ein BASE-Trade einer der 11 Referenzen hat die Sitzung im Rückblick von 400 Tagen oder in der Haltedauer.
 - „Weitere Markierungen“ zählen über **alle Segmente eines Listings** (Review L3).
 
-## Regelsatz (vorregistriert; 1.1.0, ergänzt durch 1.2.0)
+## Regelsatz (vorregistriert; 1.1.0, ergänzt durch 1.2.0 und 1.3.0)
+
+Die 1.3.0-Ergänzungen (Entscheidung nach der Nachprüfung 2):
+- **Split:** Der Faktor braucht eine **faktortragende, unabhängige Quelle**.
+  - Der von Tiingo-adjClose/close implizierte Faktor muss genau denselben Rasterwert g wählen; das Fenster liegt unter dem halben Log-Abstand zu beiden Nachbarn.
+  - Das gilt für jedes N, auch 2 bis 9.
+  - Aktienzahl und Eröffnung bleiben notwendige Bedingungen.
+  - Ein 8-K 5.03/3.03 wird nur vermerkt und ist nie Faktorbeleg. Meldungsdokumente werden weder abgerufen noch gelesen.
+- **Falsch datierter Split:**
+  - Für jeden erklärten Faktor muss adjClose mit derselben engen Toleranz den Faktor tragen.
+  - SEC-Aktienzahlen zählen nie als zweiter Beleg, denn ein 2:1-Split und eine Kapitalerhöhung sehen gleich aus.
+  - SEC-Zahlen dürfen nur widersprechen, mit derselben Residuum-Grenze wie beim Split.
 
 Die 1.2.0-Ergänzungen:
 - **Split:**
@@ -142,43 +155,44 @@ Der Regelsatz wurde vor dem Lauf festgeschrieben und gehasht (`RULESET`, `rulese
 | [40104626083](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40104626083) | Hauptlauf **1.0.0** („Vorher“) | erfolgreich, Commit `9a25c657c` |
 | [40110748496](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40110748496) | `sec-pit-r14` | erfolgreich, ohne Einzelabrufe |
 | [40111713883](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40111713883) | Hauptlauf 1.1.0 | erfolgreich, Commit `6351d6eaf`; 7 Splits, Overlay `64f4de26…` |
-| [**40118088867**](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40118088867) | **Hauptlauf 1.2.0, maßgeblich** | erfolgreich, Commit `972bdfaf4`, versiegelt abgelegt (`20261024T183921Z`) |
+| [40118088867](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40118088867) | Hauptlauf 1.2.0 | erfolgreich, Commit `972bdfaf4`; 1 Split, Overlay `04728f16…` |
+| [**40122736287**](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40122736287) | **Hauptlauf 1.3.0, maßgeblich** | erfolgreich, Commit `38a2a8c2d`, versiegelt abgelegt (`20261024T200020Z`) |
 
-Maßgeblicher Lauf 40118088867:
+Maßgeblicher Lauf 40122736287:
 - Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT`, research-v1.
-- Regelsatz `7841f3cee73aa309c8f7855f41726fbdedeb9b738b13db24d510fd5f69d59958`.
+- Regelsatz `08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7`.
 - `sec-pit-r14`: SHA-256 `a02c184705f46c4299f16608e3f50831581a1f42101f5243f3c9425279e66bbd`.
-- EDGAR-Index: 12 Anfragen, alle erfolgreich.
-- Overlay: 1 Eintrag (`ADD_UNDECLARED`, 1:10). `manifestSha256` `04728f16a2a2960245b1d4fcec85ebb5df946f5147f4c169a5989087e38baf26`.
+- EDGAR-Index: 11 Anfragen, alle erfolgreich.
+- Overlay: **0 Einträge**, `manifestSha256` `e0a31fea1f723faec9046e944c9500984809a62b3cc44262ad3e648f252522c1`. CA ist damit BASE.
 - **BASE hash-identisch mit 6.0 für alle 11 Referenzen** (Ledger, Trades, Anzahl).
 - CA ist trade- und ledger-identisch mit BASE.
 - Alle 44 Läufe sind abgestimmt (Ledger-Replay).
 
 ## Ergebnis
 
-### Klassen 1.0.0 / 1.1.0 / 1.2.0
+### Klassen 1.0.0 / 1.1.0 / 1.2.0 / 1.3.0
 
-| | DQ-K5 1.0.0 | 1.1.0 | **1.2.0** | DQ-K3 1.0.0 | 1.1.0 | **1.2.0** |
-|---|---|---|---|---|---|---|
-| markierte Sitzungen | 1.210 | 1.210 | 1.210 | 2.521 | 2.521 | 2.521 |
-| `CONFIRMED_UNDECLARED_SPLIT` | 6 | 7 | **1** | 6 | 7 | **1** |
-| `CONFIRMED_MISDATED_DECLARED_SPLIT` | – | 0 | **0** | – | 0 | **0** |
-| `CONFIRMED_GENUINE_MOVE` | 8 | 0 | **0** | 24 | 2 | **2** |
-| `UNRESOLVED` | 1.196 | 1.203 | **1.209** | 2.491 | 2.512 | **2.518** |
-| referenzexponiert: echt / ungeklärt | 8 / 75 | 0 / 83 | **0 / 83** | 24 / 241 | 2 / 263 | **2 / 263** |
+| | DQ-K5 1.0.0 | 1.1.0 | 1.2.0 | **1.3.0** | DQ-K3 1.0.0 | 1.1.0 | 1.2.0 | **1.3.0** |
+|---|---|---|---|---|---|---|---|---|
+| markierte Sitzungen | 1.210 | 1.210 | 1.210 | 1.210 | 2.521 | 2.521 | 2.521 | 2.521 |
+| `CONFIRMED_UNDECLARED_SPLIT` | 6 | 7 | 1 | **0** | 6 | 7 | 1 | **0** |
+| `CONFIRMED_MISDATED_DECLARED_SPLIT` | – | 0 | 0 | **0** | – | 0 | 0 | **0** |
+| `CONFIRMED_GENUINE_MOVE` | 8 | 0 | 0 | **0** | 24 | 2 | 2 | **2** |
+| `UNRESOLVED` | 1.196 | 1.203 | 1.209 | **1.210** | 2.491 | 2.512 | 2.518 | **2.519** |
+| referenzexponiert: echt / ungeklärt | 8 / 75 | 0 / 83 | 0 / 83 | **0 / 83** | 24 / 241 | 2 / 263 | 2 / 263 | **2 / 263** |
 
-**Die 6 Split-Bestätigungen aus 1.0.0 unter 1.2.0:**
+**Die 6 Split-Bestätigungen aus 1.0.0 unter 1.3.0:**
 
-| 1.0.0 | 1.2.0 | Grund |
+| 1.0.0 | 1.3.0 | Grund |
 |---|---|---|
-| 1:10 | 1:10 | bestätigt (einziger Split) |
+| 1:10 | `UNRESOLVED` | `NO_FACTOR_BEARING_SOURCE`: adjClose trägt den Faktor nicht. Unter 1.2.0 war das der einzige bestätigte Split |
 | 1:10 | `UNRESOLVED` | `OPEN_SELECTS_OTHER_FACTOR`: Die Eröffnung wählt einen anderen Faktor |
 | 1:35 | `UNRESOLVED` | `OPEN_SELECTS_OTHER_FACTOR` |
 | 1:7 | `UNRESOLVED` | `OPEN_SELECTS_OTHER_FACTOR` |
-| 1:5 | `UNRESOLVED` | `SHARE_RESIDUAL_TOO_LARGE`: Aktienzahl weicht zu weit vom Faktor ab |
-| 1:25 | `UNRESOLVED` | `SPLIT_REQUIRES_KNOWN_CIK` (schon unter 1.1.0) |
+| 1:5 | `UNRESOLVED` | `SHARE_RESIDUAL_TOO_LARGE`: Die Aktienzahl weicht zu weit vom Faktor ab |
+| 1:25 | `UNRESOLVED` | `NO_FACTOR_BEARING_SOURCE` |
 
-Die in 1.1.0 neu bestätigten 1:10 und 1:11 halten 1.2.0 ebenfalls nicht stand. Der einzige bestätigte Split liegt unter 1 $ und hinter keinem Referenztrade.
+Kein Split ist bestätigt, das Overlay ist leer. Die Tiingo-Felder kennen die V4-D1-Splits per Definition nicht (kein `splitFactor`), und ihr adjClose bereinigt sie ebenso wenig. Eine faktortragende Quelle fehlt also genau dort, wo sie gebraucht würde.
 
 **Echte Bewegungen:** 0 bei DQ-K5. Bei DQ-K3 sind es 2, beide referenzexponiert (betroffen: Turtle S1, Kullamägi, BGU und Weinstein Investor). Sie liegen über keinem gehaltenen Trade.
 
@@ -194,7 +208,7 @@ Die in 1.1.0 neu bestätigten 1:10 und 1:11 halten 1.2.0 ebenfalls nicht stand. 
    - Seit 1.2.0 sind die Klammern quellenrein: 188 dei–dei und 7 bs–bs bei DQ-K5, 2 gemischte sind `UNRESOLVED`.
    - Bestätigt wird dadurch keine Sitzung.
 
-### Wirkung auf die Referenzen (1.2.0)
+### Wirkung auf die Referenzen (1.3.0)
 
 Lesehilfe: Abgleich heißt unverändert / geändert / entfernt / neu gegenüber BASE.
 
@@ -205,18 +219,18 @@ Lesehilfe: Abgleich heißt unverändert / geändert / entfernt / neu gegenüber 
 | Minervini SEPA | 954 | 0 | 0 | 0 | 0 | 0 | 957 | 901 / 39 / 14 / 17 | 526 / 325 / 103 / 126 |
 | Minervini Power Play | 1.007 | 12 | 1 | 39 | 0 | 39 | 975 | 108 / 771 / 128 / 96 | 149 / 711 / 147 / 95 |
 | Darvas | 19.556 | 15 | 0 | 30 | 0 | 30 | 19.623 | 18.058 / 1.410 / 88 / 155 | 14.076 / 5.299 / 181 / 377 |
-| Kullamägi Breakout | 9.114 | 27 | 3 | 95 | 1 | 94 | 9.048 | 2.809 / 4.784 / 1.521 / 1.455 | 1.924 / 5.413 / 1.777 / 1.623 |
+| Kullamägi Breakout | 9.114 | 27 | 3 | 95 | 1 | 94 | 9.048 | 2.809 / 4.784 / 1.521 / 1.455 | 1.804 / 5.506 / 1.804 / 1.626 |
 | Pocket Pivot | 1.872 | 9 | 2 | 25 | 0 | 25 | 1.853 | 187 / 1.058 / 627 / 608 | 201 / 1.040 / 631 / 651 |
 | Buyable Gap-Up | 3.415 | 14 | 1 | 69 | 1 | 68 | 3.500 | 1.281 / 1.487 / 647 / 732 | 723 / 1.788 / 904 / 948 |
 | Weinstein Investor | 1.348 | 0 | 0 | 5 | 1 | 4 | 1.361 | 311 / 916 / 121 / 134 | 369 / 815 / 164 / 195 |
 | Weinstein Trader | 1.808 | 4 | 2 | 9 | 0 | 9 | 1.934 | 373 / 962 / 473 / 599 | 365 / 975 / 468 / 636 |
-| Holy Grail (W-RAS97) | 4.025 | 29 | 3 | 99 | 0 | 99 | 4.039 | 375 / 2.400 / 1.250 / 1.264 | 376 / 2.253 / 1.396 / 1.527 |
+| Holy Grail (W-RAS97) | 4.025 | 29 | 3 | 99 | 0 | 99 | 4.039 | 375 / 2.400 / 1.250 / 1.264 | 364 / 2.311 / 1.350 / 1.581 |
 
-- **CA** (nur Overlay) ist für alle 11 Referenzen trade- und ledger-identisch mit BASE.
+- **CA** (Overlay leer) ist für alle 11 Referenzen trade- und ledger-identisch mit BASE.
 - Die exponierten Sitzungen sind für jede Referenz identisch mit 1.1.0, nur ihre Gründe verschieben sich.
 - Die CA-Q-Abgleiche weichen von 1.1.0 nur dort ab, wo sich die Menge der geschnittenen Sitzungen geändert hat.
 
-### Ungeklärter Rest der 83 exponierten DQ-K5-Sitzungen (1.2.0)
+### Ungeklärter Rest der 83 exponierten DQ-K5-Sitzungen (1.3.0, unverändert seit 1.2.0)
 
 | Gruppe | Anzahl | Gründe |
 |---|---|---|
@@ -235,17 +249,17 @@ Lesehilfe: Abgleich heißt unverändert / geändert / entfernt / neu gegenüber 
 ## Antwort und CC-5
 
 **V4-D1 ist nur dort aufgelöst, wo Belege vorliegen.**
-- Unter dem strengen Regelsatz 1.2.0 ist **ein** nicht erklärter Split bestätigt und korrigiert. Er berührt keine Referenz.
+- Unter dem strengen Regelsatz 1.3.0 ist **kein** nicht erklärter Split bestätigt; das Overlay ist leer.
 - **Keine** referenzexponierte DQ-K5-Sitzung ist bestätigt.
-- Die Bestätigungen aus 1.0.0 und 1.1.0 halten den Prüfungen der Reviews überwiegend nicht stand.
-  - Bei 5 der 6 früheren Splits stimmen Eröffnung, Aktien-Residuum oder Identität nicht eng genug.
-  - Das zeigt, wie wenig die freien Daten für eine Bestätigung hergeben.
+- Bestätigt sind nur 2 echte Bewegungen bei DQ-K3.
+- Die Bestätigungen aus 1.0.0 bis 1.2.0 halten den Prüfungen nicht stand. Sie beruhten auf Aktienzahl und Kurs, die gemeinsam auf einen Nachbarfaktor rutschen können.
+- **Ehrliche Antwort:** Mit freien, vorhandenen Daten lässt sich V4-D1 nicht faktorgenau auflösen. Die Quarantäne bleibt die einzige belastbare Behandlung.
 
 | CC-5-Bedingung | Stand |
 |---|---|
 | alle exponierten DQ-K5-Sitzungen bestätigt | **leer erfüllt nur für Minervini SEPA und Weinstein Investor** (keine exponierte Sitzung); bei DQ-K3 nur für Minervini SEPA |
 | dasselbe für die übrigen 9 Referenzen | **nicht erfüllt**: 4 bis 29 ungeklärte DQ-K5-Sitzungen je Referenz |
-| bestätigte Splits korrigiert, Referenzen neu gerechnet | im Research-Datensatz erfüllt. Offen ist der Quant-Daten-PR für den einen Split; ohne Wirkung auf die Referenzen |
+| bestätigte Splits korrigiert, Referenzen neu gerechnet | gegenstandslos: kein Split bestätigt, kein Quant-Daten-PR nötig |
 | neue Snapshot-Generation mit Vorher/Nachher (E1) | offen |
 
 Die Readiness-Matrix bleibt unverändert; die Entscheidung liegt beim Eigentümer.
@@ -287,6 +301,20 @@ Die Nachprüfung hat alle früheren Behebungen bestätigt: Jede Rücknahme läss
 | LOW: 8-K ohne Items beim Split | blockiert (`8K_ITEMS_UNKNOWN_NEAR_SPLIT`) | SF7-NACH-LOW |
 | LOW: gemischte dei/bs-Klammern | nur quellenreine Klammern, sonst `SEC_MIXED_SOURCE_BRACKET` | SF7-NACH-LOW |
 | LOW: Zeitlimit des Abrufs ohne Test | `fetchSubmissions` mit Zeitlimit; ein hängender Abruf endet als fehlender Index | SF7-NACH-LOW |
+
+## Nachprüfung 2 von #902 (Stand `63a0c45`)
+
+Die dritte unabhängige Prüfung bestätigt: Alle Wächter von 1.2.0 sind getestet. Offen war aber weiter die Klasse „Nachbarfaktor“. Ausgabe neuer Aktien und ein Kursrückgang am selben Tag schieben Aktienverhältnis **und** Eröffnung gemeinsam auf N − 1. Ein bloßes 8-K-Item trägt keinen Faktor, und die adjClose-Toleranz ln 1,10 war breiter als der Rasterabstand.
+
+Behebung in Regelsatz 1.3.0, vorher festgeschrieben. Die Lösung folgt der Entscheidung des Koordinators.
+
+| Befund | Behebung | Test |
+|---|---|---|
+| HIGH: 1:10 mit +11 % Ausgabe und −10 % Eröffnung → 1:9; 1:8 → 1:7; 1:5 → 1:4; 1:20 mit 8-K 5.03 oder adjClose 1:20 → 1:19; 10:1 → 11:1 | Split nur mit faktortragender unabhängiger Quelle: Der adjClose-Faktor wählt genau denselben Rasterwert (Fenster unter dem halben Log-Abstand), für jedes N. 8-K ist kein Faktorbeleg | SF7-NACH2-HIGH: alle Proben mit gewöhnlicher Eröffnung `UNRESOLVED`; ohne Drift mit adjClose richtig bestätigt. Gegenprobe mit dem 1.2.0-Code: 1:10, 1:8, 1:20 und 10:1 wurden dort auf den Nachbarn bestätigt |
+| MEDIUM: Phantom-2:1 neben echtem −50-%-Absturz bei verdoppelter Aktienzahl (Kapitalerhöhung) → bestätigt | falsch datierter Split nur mit adjClose-Faktor; SEC zählt nie als zweiter Beleg | SF7-NACH2-MEDIUM |
+| LOW: Residuum-Grenze fehlte im SEC-Abgleich des falsch datierten Splits | gleiche Grenze wie beim Split (`SHARE_RESIDUAL_TOO_LARGE`) | SF7-NACH2-MEDIUM |
+
+**Folge:** 0 bestätigte Splits, das Overlay ist leer. Das ist das erwartete, konservative Ergebnis. Der verbleibende Hebel ist eine lizenzierte Quelle für Kapitalmaßnahmen, und darüber entscheidet der Eigentümer.
 
 ## Grenzen
 
