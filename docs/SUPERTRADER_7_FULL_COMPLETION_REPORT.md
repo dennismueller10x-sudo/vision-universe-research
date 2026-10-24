@@ -30,8 +30,8 @@ Maschinenlesbar:
   - Die versiegelten EP-Trade-Kennzahlen waren leer (SF7-D2). Behoben.
   - Die optimistische Minutenregel übersah sichere Stops (SF7-D5). Behoben als Variante, Cache-Lauf mit 0 Abrufen.
 - **V4-D1 (alle elf messbaren Referenzen):**
-  - Erstmals sind Sitzungen mit Belegen aufgelöst: 7 nicht deklarierte Reverse-Splits, Faktor und Sitzung durch SEC-Aktienzahlen mit bekannter CIK belegt. Dazu kommen 2 echte Bewegungen (DQ-K3).
-  - Keine dieser Sitzungen liegt hinter einem Referenztrade. Nach dem unabhängigen Review sind die Regeln strenger (Regelsatz 1.1.0). Seitdem bleiben alle 83 referenzexponierten DQ-K5-Sitzungen ungeklärt und in Quarantäne. Aus freien Daten ist dort nichts weiter belegbar.
+  - Erstmals gibt es eine prüfbare, versionierte Klassifikation mit Korrektur-Overlay und Quarantäne. Unter dem nach zwei unabhängigen Reviews verschärften Regelsatz 1.2.0 ist **1 nicht deklarierter Reverse-Split (1:10)** vollständig belegt. Dazu kommen 2 echte Bewegungen (DQ-K3).
+  - Keine dieser Sitzungen liegt hinter einem Referenztrade. Alle 83 referenzexponierten DQ-K5-Sitzungen bleiben ungeklärt und in Quarantäne. Aus freien Daten ist dort nichts weiter belegbar.
   - Hinter Minervini SEPA und Weinstein Investor liegt keine exponierte Sitzung.
 
 **Was ist endgültig gelöst?**
@@ -39,7 +39,7 @@ Maschinenlesbar:
 - Der Extraktionsfehler W-MIN18.
 - Der Power-Play-VCP-Konflikt (B12 S. 341 / B03 S. 189).
 - SF7-D1 (als Variante), SF7-D2, SF7-D5 (als Variante).
-- Für 7 Sitzungen der belegte Split-Faktor (Overlay schreibt genau 1/N); für 2 Sitzungen die echte Bewegung.
+- Für 1 Sitzung der belegte Split-Faktor (Overlay schreibt genau 1/10); für 2 Sitzungen die echte Bewegung. Die Klassifikationsregeln sind gegen falsche Faktoren abgesichert.
 
 **Was bleibt bestehen?**
 - **V4-D1:** alle 83 exponierten DQ-K5-Sitzungen sind ungeklärt. Die beiden kostenfrei lösbaren Restgruppen sind bearbeitet und belegen nichts weiter: Datumsverschiebung und Bilanz-Aktienzahlen (Abschnitt 4). Weiter kommt nur eine lizenzierte zweite CA-Quelle oder Ihre Entscheidung über die Quarantäne.
@@ -93,25 +93,34 @@ Kein Gate wurde abgeschwächt, und kein Test wurde geändert, um eine Implementi
 | SF7-D2 | `run-kk-intraday.mjs#epTradeSummary` | versiegelte EP-Trade-Kennzahlen lasen `realizedPnl` statt `pnl` (leer) | behoben | nur versiegelte Werte |
 | SF7-D5 | `kk-ep-lifecycle.mjs` | optimistische Minutenregel übersah einen sicheren Stop in der Füll-Minute | Variante `SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE` | 21 sichere Stops; EP-Referenz identisch |
 | SF7-A1 | `run-sf7-ca-resolution` (eigene 7.0-Arbeit) | Abgleich las 6.0-Hashes am falschen Ort | behoben, Test | – |
-| Review A | `integrity/ca-resolution.mjs` (eigene 7.0-Arbeit) | 2 HIGH (falscher Faktor bestätigbar; echte Bewegung ohne Volumen- und Einreichungsprüfung), 4 MEDIUM, 6 LOW | Regelsatz 1.1.0, alle mit Tests | strengere Klassen (Abschnitt 4) |
+| Review A | `integrity/ca-resolution.mjs` (eigene 7.0-Arbeit) | 3 HIGH in zwei Runden (falscher Faktor bestätigbar, auch über Aktiendrift; echte Bewegung ohne Volumen- und Einreichungsprüfung), 5 MEDIUM, 13 LOW | Regelsätze 1.1.0 / 1.2.0, alle mit Tests | strengere Klassen (Abschnitt 4) |
 | Review C | `minervini-sf7.mjs` (eigene 7.0-Arbeit) | 1 HIGH (zunächst unbelegte `SOURCE_EXACT`-Aufwertung), 6 MEDIUM, 7 LOW | alle behoben | siehe #899 |
 
 ## 4. Fortschritt bei V4-D1
 
 Ergebnis von #902:
-- Maßgeblicher Lauf 40111713883, Regelsatz 1.1.0. Alle Regeln sind vor dem Lauf committet (`6351d6eaf`), der Hash des vollen Regelsatzes `4233cea8…` ist im Test gepinnt.
+- Maßgeblicher Lauf **40118088867**, Regelsatz 1.2.0. Alle Regeln sind vor dem Lauf committet (`972bdfaf4`), der Hash des vollen Regelsatzes `7841f3ce…` ist im Test gepinnt.
+- Vorläufer: 40104626083 (1.0.0), 40111713883 (1.1.0).
 - sec-pit r14 aus Lauf 40110748496: derselbe EDGAR-Bulk-Mechanismus wie bisher, 0 Kosten, SHA `a02c1847…`.
 - 19 EDGAR-Indizes gelesen; die Einträge liegen versiegelt vor.
 - BASE ist hash-identisch für alle 11 Referenzen, alle 44 Läufe sind abgestimmt.
 
-| | DQ-K5 1.0.0 → 1.1.0 | DQ-K3 1.0.0 → 1.1.0 |
+| | DQ-K5 1.0.0 → 1.1.0 → 1.2.0 | DQ-K3 1.0.0 → 1.1.0 → 1.2.0 |
 |---|---|---|
 | markierte Sitzungen | 1.210 | 2.521 |
-| `CONFIRMED_UNDECLARED_SPLIT` | 6 → 7 | 6 → 7 |
-| `CONFIRMED_MISDATED_DECLARED_SPLIT` (neu) | – → 0 | – → 0 |
-| `CONFIRMED_GENUINE_MOVE` | 8 → 0 | 24 → 2 |
-| `UNRESOLVED` | 1.196 → 1.203 | 2.491 → 2.512 |
-| mit Referenzexposition, ungeklärt | 75 → 83 (von 83) | 241 → 263 (von 265) |
+| `CONFIRMED_UNDECLARED_SPLIT` | 6 → 7 → **1** | 6 → 7 → **1** |
+| `CONFIRMED_MISDATED_DECLARED_SPLIT` (neu) | – → 0 → **0** | – → 0 → **0** |
+| `CONFIRMED_GENUINE_MOVE` | 8 → 0 → **0** | 24 → 2 → **2** |
+| `UNRESOLVED` | 1.196 → 1.203 → **1.209** | 2.491 → 2.512 → **2.518** |
+| mit Referenzexposition, ungeklärt | 75 → 83 → **83** (von 83) | 241 → 263 → **263** (von 265) |
+
+**Zweite Nachprüfung (Regelsatz 1.2.0).** Normale Aktienausgabe zwischen den SEC-Stichtagen konnte den Nachbarfaktor bestätigen (1:10 als 1:9, HIGH). Jetzt gilt für die Bestätigung eines Splits:
+- Aktienverhältnis und Eröffnungsrelativ müssen unabhängig denselben Faktor wählen.
+- Das Residuum muss eng sein: ≤ min(0,2 × Abstand zum Nachbarfaktor, 2 %).
+- Ab 1:10 braucht es eine zweite Quelle (adjClose oder 8-K 5.03/3.03).
+- Falsch datierte erklärte Splits brauchen ln 1,10 und eine SEC- oder adjClose-Bestätigung (MEDIUM).
+
+Von den früheren Bestätigungen bleibt ein 1:10. Die übrigen scheitern an der Eröffnung, am Residuum oder an der Namenszuordnung.
 
 **Was das unabhängige Review geändert hat.** 2 HIGH, 4 MEDIUM, 6 LOW, alle behoben und mit Tests abgesichert:
 - Ein Split-Faktor konnte auf einen falschen Standardfaktor einrasten (1:24 → 1:25). Jetzt gilt ein Ganzzahlraster 2–1000 mit disjunkten Fenstern.
@@ -123,7 +132,7 @@ Ergebnis von #902:
   - nur inländische Emittenten.
 - Split-Kandidaten werden ebenfalls auf Fusionen geprüft.
 
-Folge: Die 8 echten Bewegungen der ersten Fassung halten der strengeren Prüfung nicht stand. Das ist gewollt, denn keine Vermutung soll als Bestätigung gelten. Von den 6 früheren Splits:
+Folge (1.1.0): Die 8 echten Bewegungen der ersten Fassung halten der strengeren Prüfung nicht stand. Das ist gewollt, denn keine Vermutung soll als Bestätigung gelten. Von den 6 früheren Splits:
 - 5 behalten ihren Faktor.
 - 1 ist jetzt ungeklärt (CIK nur über den Namen zugeordnet).
 - 2 sind neu belegt, darunter ein 1:11, das die alte Faktorliste nicht kannte.
@@ -136,7 +145,7 @@ Folge: Die 8 echten Bewegungen der ersten Fassung halten der strengeren Prüfung
 - **Fehlende SEC-Daten (34 → 32 exponiert):** Die Bilanz-Aktienzahlen helfen bei 109 DQ-K5-Sitzungen als Nachher-Wert, bestätigen aber keine exponierte Sitzung.
 
 **Offen:**
-- ein Quant-Daten-PR für die 7 Splits (Gate A hält ihn aus diesem Auftrag);
+- ein Quant-Daten-PR für den belegten Split (Gate A hält ihn aus diesem Auftrag);
 - eine neue Snapshot-Generation mit Vorher/Nachher;
 - der Holdout;
 - für den exponierten Rest eine lizenzierte zweite Corporate-Action-Quelle (Kosten, Ihre Freigabe) oder Ihre Entscheidung über die Quarantäne-Lesart.
@@ -192,7 +201,7 @@ Kein Regelstatus wird aufgewertet, keine Minervini-Regel ist `SOURCE_EXACT`.
 - **VCP-Konflikt aufgelöst:** B12 S. 341 verlangt VCP-Merkmale, B03 S. 189 nimmt Basen mit höchstens 10 % Tiefe davon aus. Das ist die Referenzlesart.
 - **Korrektur präzisiert:** höchstens 20 %, bei niedrigpreisigen Titeln etwa 25 %. „Niedrigpreisig“ ist nicht beziffert.
 - **Diagnose:** 957 von 957 bewertbaren Trades liegen innerhalb des halben Durchschnittsgewinns.
-- **V4-D1:** 12 Sitzungen exponiert, alle ungeklärt (Regelsatz 1.1.0).
+- **V4-D1:** 12 Sitzungen exponiert, alle ungeklärt (Regelsatz 1.2.0).
 
 ## 9. Die übrigen elf Strategien
 
@@ -224,7 +233,7 @@ Unverändert gelassen ohne künstliche Arbeit: Kullamägi Breakout, Pocket Pivot
 - **Intraday:** nur IEX, 0 neue Abrufe.
 - **Neu:** sec-pit-r13 dient als Aktienzahlquelle für V4-D1 (privat, nur per Hash identifiziert).
 - Das EDGAR-Einreichungsverzeichnis wurde gezielt live gelesen (19 Indizes im maßgeblichen Lauf, Budget 150). Die Einträge sind versiegelt, aber nicht im Snapshot eingefroren.
-- Neu: sec-pit r14 (Bilanz-Aktienzahlen, gleicher Bulk-Mechanismus).
+- Neu: sec-pit r14 (Bilanz-Aktienzahlen, gleicher Bulk-Mechanismus). Ein Aktienzahl-Paar muss auf beiden Seiten aus derselben Quelle stammen.
 
 ## 12. Bestehende Quellen- und Datenblocker
 
@@ -244,7 +253,7 @@ Unverändert gelassen ohne künstliche Arbeit: Kullamägi Breakout, Pocket Pivot
 ## 13. Reproduzierbarkeit und Robustheit
 
 - **Reproduzierbarkeit:**
-  - Alle 11 Referenzen sind in 7.0 erneut hash-identisch mit den maßgeblichen Läufen: sf5 41/41 Varianten (40099831813), Minervini REF (40103766418), BASE in sf7-ca-resolution (40111713883).
+  - Alle 11 Referenzen sind in 7.0 erneut hash-identisch mit den maßgeblichen Läufen: sf5 41/41 Varianten (40099831813), Minervini REF (40103766418), BASE in sf7-ca-resolution (40118088867).
   - EP/PS sind blockgleich (40107434014).
 - **Trade-Stabilität:** weiterhin gering (Knock-on). Beispiele: ALT-SEPA-FLAT-BASE mit 24 unveränderten Trades; CA-Quarantäne wie DQ-K5 in 6.0.
 - **Robustheit:** nicht belegt (E6). Kennzahlen versiegelt und in 7.0 nicht gelesen oder bewertet; keine Variante wurde nach Ergebnissen gewählt.
@@ -255,8 +264,8 @@ Unverändert gelassen ohne künstliche Arbeit: Kullamägi Breakout, Pocket Pivot
 |---|---|---|---|---|
 | #899 | 679 / 0 Fehler | `sf-sf7-minervini` (13 Tests) | 1 HIGH, 6 MEDIUM, 7 LOW → behoben | 0 / 0 |
 | #898 | 683 / 0 Fehler | `sf-sf7-execution` (17 Tests) | 0 HIGH, 2 MEDIUM → D4 gelistet, D5 behoben; LOW behoben | 0 / 2 als Risiko ausgewiesen (D4 Eigentümer, EP-IEX-Stop) |
-| #902 | 690 / 0 Fehler | Mutantentests je Wächter, gepinnter Regelsatz | 2 HIGH, 4 MEDIUM, 6 LOW → behoben; Nachprüfung der Korrekturen siehe Freigabestand | 0 / 0 |
-| Integration | 721 / 0 Fehler (#902 + #898 + #899) | `sf-sf7-completion` | – | – |
+| #902 | 693 / 0 Fehler | Mutantentests je Wächter, gepinnter Regelsatz | Review: 2 HIGH, 4 MEDIUM, 6 LOW → behoben (1.1.0); Nachprüfung: 1 HIGH, 1 MEDIUM, 7 LOW → behoben (1.2.0); dritte Prüfung siehe Freigabestand | 0 / 0 |
+| Integration | 724 / 0 Fehler (#902 + #898 + #899) | `sf-sf7-completion` | – | – |
 
 Gate A ist auf jedem Zweig ok, die Testisolation ist sauber. Fremde Fehler auf `main` wurden getrennt reproduziert:
 - 7 Elliott-Tests scheitern auf dem alten Basis-Commit `304f917` und sind auf dem aktuellen `main` behoben.
@@ -273,7 +282,7 @@ Gate A ist auf jedem Zweig ok, die Testisolation ist sauber. Fremde Fehler auf `
 3. **#899 (C):** Modusliste wie oben; danach `rebuild-all.mjs` und `build-sf6-readiness.mjs`.
 4. **Abschluss-PR:** zuletzt; `sf7-completion-matrix.mjs` neu bauen, der Test prüft die Gleichheit.
 
-Konflikte löse ich vor jedem Merge per Merge-Commit von `main`, ohne Rebase. Danach laufen Suite, Gate A und Testisolation erneut. Die Gesamtintegration aller drei Zweige liegt auf `claude/supertrader-7-integration`. Dort sind zwei Moduslisten-Konflikte (Workflow und Moduslisten-Test) per Merge-Commit aufgelöst, alle Modi bleiben erhalten. Die Artefakte sind mit ihren Erzeugern neu gebaut. Suite 721 / 0, Gate A ok.
+Konflikte löse ich vor jedem Merge per Merge-Commit von `main`, ohne Rebase. Danach laufen Suite, Gate A und Testisolation erneut. Die Gesamtintegration aller drei Zweige liegt auf `claude/supertrader-7-integration`. Dort sind zwei Moduslisten-Konflikte (Workflow und Moduslisten-Test) per Merge-Commit aufgelöst, alle Modi bleiben erhalten. Die Artefakte sind mit ihren Erzeugern neu gebaut. Suite 724 / 0, Gate A ok.
 
 ## 17. Notwendige Eigentümerentscheidungen
 
@@ -304,7 +313,7 @@ Nichts davon ist Teil von 7.0. Es gibt keine UI- oder Menüänderung.
 > Ich gebe die Draft-PRs #902, #898, #899 und den Abschluss-PR in dieser Reihenfolge zum Merge frei. Konflikte werden per Merge-Commit aufgelöst, und die Artefakte werden mit ihren Erzeugern neu gebaut.
 >
 > Bestätigt:
-> - V4-D1: 7 nicht deklarierte Splits sind belegt; alle referenzexponierten Sitzungen bleiben ungeklärt und gesperrt (E1 gilt weiter).
+> - V4-D1: 1 nicht deklarierter Split ist vollständig belegt; alle referenzexponierten Sitzungen bleiben ungeklärt und gesperrt (E1 gilt weiter).
 > - Keine Minervini-Regel ist `SOURCE_EXACT`; Varianten und Diagnosen sind Forschung (E3).
 > - Keine neuen Intraday-Abrufe (E5).
 > - 0 von 13 Strategien sind `CERTIFICATION_CANDIDATE`. Alle bleiben `LIVE_NOT_APPROVED` und `DIAGNOSTIC_NOT_CERTIFIED`.
