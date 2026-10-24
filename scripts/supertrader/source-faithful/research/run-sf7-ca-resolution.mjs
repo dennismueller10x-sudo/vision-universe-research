@@ -208,6 +208,19 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   return { pub, sealed, manifest };
 }
 
+/** FETCH_TIMEOUT_MS: one EDGAR index request; a hung connection ends as a missing index (UNRESOLVED), never a wait. */
+export const FETCH_TIMEOUT_MS = 30000;
+/** One request of the EDGAR submissions index (recent page only), polite delay, timeout; null on any failure. */
+export async function fetchSubmissions(cik, { userAgent, fetchImpl = fetch, timeoutMs = FETCH_TIMEOUT_MS, delayMs = 150 } = {}) {
+  if (delayMs) await new Promise((res) => setTimeout(res, delayMs));
+  try {
+    const r = await fetchImpl(`https://data.sec.gov/submissions/CIK${String(cik).padStart(10, '0')}.json`, { headers: { 'User-Agent': userAgent }, signal: AbortSignal.timeout(timeoutMs) });
+    if (!r.ok) return null;
+    const j = await r.json(), rec = j?.filings?.recent || {};
+    return { form: [...(rec.form || [])], filingDate: [...(rec.filingDate || [])], items: [...(rec.items || [])] };
+  } catch { return null; }
+}
+
 /** BASE vs the authoritative 6.0 facts (hash by hash). */
 export function compareWithSf6(pubLifecycles) {
   const out = {};
@@ -263,13 +276,7 @@ async function main() {
   const ds = datasetFromPit(pit); attachSecPit(ds, secPit);
   const listingPeriods = new Map(pit.listings.map((l) => [l.id, { startDate: l.startDate, listEnd: l.listEnd || null }]));
   const { UA } = await import('../../validation/sec-pit.mjs');
-  const fetchFilings = async (cik) => {
-    await new Promise((res) => setTimeout(res, 150));
-    const r = await fetch(`https://data.sec.gov/submissions/CIK${String(cik).padStart(10, '0')}.json`, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(30000) });
-    if (!r.ok) return null;
-    const j = await r.json(), rec = j?.filings?.recent || {};
-    return { form: [...(rec.form || [])], filingDate: [...(rec.filingDate || [])], items: [...(rec.items || [])] };
-  };
+  const fetchFilings = (cik) => fetchSubmissions(cik, { userAgent: UA });
   const evidenceInputs = { secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, datasetSha256, snapshotId };
   const receipt = { schema: 'supertrader-sf7-ca-resolution-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), runner: SF7_CA_RUNNER_VERSION, classifier: CA_RESOLUTION_VERSION, rulesetSha256: rulesetSha256(), overlay: CA_OVERLAY_VERSION, secShares: sharesVersion, secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, secFetchMax, lifecycles: keys, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: secFetchMax ? fetchFilings : null, secFetchMax, keys, snapshotId, evidenceInputs, log });
