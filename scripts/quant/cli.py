@@ -1510,12 +1510,14 @@ def cmd_consumer(args):
     the raw facts come from companyfacts.zip in one request. Output: one
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
-    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_product_universe_ciks,
-                                    load_successor_issuers, summarize_bundle, with_successors)
+    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
+                                    load_product_universe_ciks, load_successor_issuers, summarize_bundle,
+                                    with_successors)
     registry = MetricRegistry.load()
     provider = SECProvider()
     names_file = Path(args.names)
     by_cik, without_cik = load_product_universe_ciks(names_file)
+    year_end_hints = load_fiscal_year_end_hints(args.issuers)
     product_count = sum(len(e["tickers"]) for e in by_cik.values()) + len(without_cik)
     wanted = set(by_cik)
     if args.ciks:
@@ -1548,6 +1550,7 @@ def cmd_consumer(args):
         try:
             bundle = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
                                            security_ids=entry["securityIds"], name=entry["name"],
+                                           fiscal_year_end_hint=year_end_hints.get(cik),
                                            annual_years=args.annual_years, quarters=args.quarters,
                                            provider=provider)
         except Exception as exc:  # noqa: BLE001 - one bad company must not stop 6,000
@@ -1863,6 +1866,8 @@ def build_parser():
     consumer.add_argument("--keep-stale", action="store_true")
     consumer.add_argument("--successors", default=str(ROOT / "quant" / "config" / "sec-successor-issuers.json"),
                           help="successor issuers whose predecessor CIK facts are merged in")
+    consumer.add_argument("--issuers", default=str(DATA_DIR.parent / "fundamentals" / "issuers"),
+                          help="SEC pipeline issuer shards with the registered fiscal year end per CIK")
     consumer.set_defaults(func=cmd_consumer)
 
     census = subparsers.add_parser("concept-census",

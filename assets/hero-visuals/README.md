@@ -5,6 +5,7 @@ Vorsorge plant in glass sphere and Hedgefonds institutional architecture.
 Original background artwork generated for this fidelity pass, encoded once as
 640px WebP (22–46 KB). No stock photographs, interface text or product icons.
 SuperTrader SVG is a decorative chart without market data, numbers or returns.
+Fundamental SVG (bars, trend line, magnifier) is likewise decorative, without company data or numbers.
 Quant reuses `QX.globe()`; it needs no additional image resource.
 
 Original product symbols remain in `assets/product-icons.svg`, unchanged.
