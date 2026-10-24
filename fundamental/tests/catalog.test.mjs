@@ -449,6 +449,8 @@ test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgelief
   const wf = readFileSync(new URL('.github/workflows/fundamental-sec-freshness.yml', root), 'utf8');
   assert.match(wf, /verify-publication\.mjs/);
   assert.match(wf, /Alarm bei veralteten SEC-Daten/);
+  assert.match(wf, /branches: \[main\]/, 'nur Erzeugerlaeufe auf main');
+  assert.match(wf, /conclusion" = skipped/, 'uebersprungene Laeufe sind kein Alarm');
   assert.match(wf, /259200/, 'Alarm nach 3 Tagen ohne Uebernahme');
   assert.match(wf, /gh workflow run pages-release\.yml --ref main/);
   assert.match(wf, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
