@@ -1,0 +1,84 @@
+{
+  "main": "304f9179433ae24de65936742f44d85782658b2f",
+  "quant": {
+    "tests": 2858,
+    "pass": 2851,
+    "fail": 7,
+    "skipped": 0,
+    "durationMs": 714759.973827,
+    "failures": [
+      "M11-P3 Abweichung vom veroeffentlichten Produkt → nichts registriert",
+      "M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pruefung",
+      "M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eigene Kohorte eingefroren; Forschungskohorte meldet Sichtbarkeit wahrheitsgemäß",
+      "M11-P6 Registry 1.5.0: kuratierte Explore Highlights als eigene Kohorte eingefroren (Rolle, Rang, Leitplanken, Zonen, Kuratierung, Versionen); Candidate Explorer nie registriert; Kette bleibt gültig",
+      "M11-P7 Registry 1.5.0: bestehende Ereignisse der breiten Kohorte (1.4.0) bleiben unverändert, neue Highlights werden angehängt; Kette und Nur-Anhängen gültig",
+      "M11-P8 Vollvergleich der Explore Highlights ist standardmaessig scharf: fehlen Titel mit veroeffentlichten Highlights im Register-Eingang, wird nichts registriert",
+      "M11-P9 Vollvergleich des Datenstands ist standardmaessig scharf: fehlen Produkttitel im Register-Eingang, wird nichts registriert (freshnessTickers begrenzt nur ausdruecklich)"
+    ],
+    "sameFailuresReproducedOnUnchangedMain": true,
+    "mainProof": "Node 22 --test --test-name-pattern=M11-P[3-9] quant/tests/elliott-registry-product-view.test.mjs; all seven reproduced. Full V5 suite was not filtered."
+  },
+  "core": {
+    "tests": 260,
+    "pass": 260,
+    "fail": 0
+  },
+  "targetedBacktest": {
+    "tests": 56,
+    "pass": 56,
+    "fail": 0
+  },
+  "shellAndBudgets": {
+    "tests": 23,
+    "pass": 23,
+    "fail": 0
+  },
+  "v4HarnessBrowser": {
+    "checks": 20,
+    "pass": 20
+  },
+  "publicBrowser": {
+    "checks": 96,
+    "knownNameFindings": 2,
+    "resourceBudgets": 8,
+    "resourceBudgetsPass": 8,
+    "accessibilityPages": 84,
+    "accessibilityViolations": 0
+  },
+  "independentPython": {
+    "periods": [
+      "1Y",
+      "3Y",
+      "5Y",
+      "10Y",
+      "MAX"
+    ],
+    "pass": 5,
+    "frozenV4CutoffAlsoVerified": true
+  },
+  "productionApproved": false,
+  "publiclyActivated": false,
+  "httpsOnlinePreview": false,
+  "onlineBlocker": "No configured private hosting/auth/storage/ingress bindings. environment_status returned empty credentials and outbound identities; repository Actions secret metadata API returned HTTP 403. No workflow or deployment dispatched.",
+  "executionMechanics": "VALIDATED_EXECUTION_MODEL",
+  "certification": "NOT_CERTIFIED",
+  "newRegressionObserved": false,
+  "integratedBrowser": {
+    "checks": 43,
+    "pass": 43,
+    "engines": [
+      "Chromium desktop",
+      "WebKit desktop",
+      "WebKit iPhone 390",
+      "WebKit iPhone 430"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "pageErrors": 0,
+    "cspErrors": 0,
+    "automatedAccessibilityViolations": 0,
+    "physicalIPhoneTested": false
+  }
+}

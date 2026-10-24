@@ -1,0 +1,1122 @@
+{
+  "observedAt": "2026-10-24T13:40:37.803740+00:00",
+  "main": "304f9179433ae24de65936742f44d85782658b2f",
+  "prs": [
+    {
+      "number": 862,
+      "title": "Fix Quant backtest status provenance",
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "dbe3ffa2f1d1302965442975e836a15f7bfc0787",
+      "headRefName": "codex/quant-p0-status-consistency",
+      "baseRefName": "main",
+      "mergeable": "CONFLICTING",
+      "mergeStateStatus": "DIRTY",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/862",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579350/job/120272386562"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910562170/job/120272331849"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579200/job/120272386223"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272386331"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120272385933"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579184/job/120272385362"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579159/job/120272385536"
+        },
+        {
+          "name": "shell",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579253/job/120272386075"
+        },
+        {
+          "name": "vu3-regression",
+          "conclusion": "CANCELLED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579253/job/120272386411"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579200/job/120272387869"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120274536292"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272385943"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579166/job/120272419249"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39910579167/job/120274536396"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/48688bf9-35bb-40d7-b756-44a462a09534"
+        },
+        {
+          "context": "Vercel",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/8wBwyyWwQNY7MBEdQ8gc3pDZwaQ9"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://vercel.com/github"
+        }
+      ],
+      "fileComparison": {
+        "quant/app/page-evidence.js": "DIFFERENT_FROM_PR_HEAD",
+        "quant/data/product/backtest-certification-v1.json": "DIFFERENT_FROM_PR_HEAD",
+        "quant/data/product/backtest-readiness-v2.json": "DIFFERENT_FROM_PR_HEAD",
+        "quant/data/product/backtest-signal-intelligence-v1.json": "DIFFERENT_FROM_PR_HEAD",
+        "quant/engines/backtest-artifact-consistency.js": "MISSING_IN_V5",
+        "quant/tests/backtest-artifact-consistency.test.mjs": "MISSING_IN_V5",
+        "scripts/quant/build-backtest-certification.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/build-backtest-readiness.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/measure-backtest-signal-intelligence.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/methodology-fingerprint.mjs": "DIFFERENT_FROM_PR_HEAD"
+      },
+      "comparisonCounts": {
+        "DIFFERENT_FROM_PR_HEAD": 8,
+        "MISSING_IN_V5": 2
+      }
+    },
+    {
+      "number": 872,
+      "title": "Quant: derive historical MAX eligibility and add six-kind capability audit",
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "0a57295f5a1ddffb8bf125646428ce29e9ba281e",
+      "headRefName": "codex/quant-historical-max-recovery",
+      "baseRefName": "main",
+      "mergeable": "MERGEABLE",
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/872",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996673/job/120580179529"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001963621/job/120580147379"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996702/job/120580181645"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580180248"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120580180432"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996759/job/120580180331"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996731/job/120580180689"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996702/job/120580183437"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120584687988"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580180592"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996709/job/120580243915"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001996684/job/120584688355"
+        },
+        {
+          "context": "Vercel",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/e90a10b6-142b-4d51-bc34-1e4380801bad"
+        }
+      ],
+      "fileComparison": {
+        "docs/QUANT_BACKTEST_CERTIFICATION_METHODOLOGY_V1.md": "MISSING_IN_V5",
+        "docs/VU_BACKTEST_METHODOLOGY.md": "DIFFERENT_FROM_PR_HEAD",
+        "docs/VU_QUANT_SIGNAL_BACKTEST_FIRST_CERTIFICATION.md": "MISSING_IN_V5",
+        "quant/data/product/backtest-historical-capability-v1.json": "MISSING_IN_V5",
+        "quant/engines/backtest-history.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/backtest.js": "DIFFERENT_FROM_PR_HEAD",
+        "quant/engines/mock-provider.js": "DIFFERENT_FROM_PR_HEAD",
+        "quant/methodology/backtest-certification-methodology-v1.0.0.json": "MISSING_IN_V5",
+        "quant/methodology/backtest-v1.json": "DIFFERENT_FROM_PR_HEAD",
+        "quant/methodology/index.html": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/backtest-history.test.mjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/backtest.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/panel-builder.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/build-methodology-index.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/report-backtest-historical-capability.mjs": "MISSING_IN_V5"
+      },
+      "comparisonCounts": {
+        "IDENTICAL_TO_PR_HEAD": 2,
+        "DIFFERENT_FROM_PR_HEAD": 8,
+        "MISSING_IN_V5": 5
+      }
+    },
+    {
+      "number": 882,
+      "title": "Quant: execute reproducible real NVDA weekly MAX backtest",
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "f3233d46f60cb48f939f21dd53cda4b21702bd50",
+      "headRefName": "codex/quant-real-weekly-backtest",
+      "baseRefName": "main",
+      "mergeable": "MERGEABLE",
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/882",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "core",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562236/job/120790944010"
+        },
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562237/job/120790943875"
+        },
+        {
+          "name": "test",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562316/job/120790944218"
+        },
+        {
+          "name": "validate",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562304/job/120790944317"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066539887/job/120790878587"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790944092"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120790944211"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562236/job/120790945926"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120792372243"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790943896"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562259/job/120790965113"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40066562277/job/120792372635"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/614f6df3-5cdb-4f42-99fd-93fb4bcae30b"
+        },
+        {
+          "context": "Vercel",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/F8KrbCXZT8CkrKMMMCWYEuSmukUT"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://vercel.com/github"
+        }
+      ],
+      "fileComparison": {
+        "docs/quant-recovery/REAL_WEEKLY_BACKTEST.md": "DIFFERENT_FROM_PR_HEAD",
+        "docs/quant-recovery/VALIDATION.json": "DIFFERENT_FROM_PR_HEAD",
+        "docs/quant-recovery/nvda-weekly-summary.json": "DIFFERENT_FROM_PR_HEAD",
+        "docs/quant-recovery/weekly-listing-cases.json": "DIFFERENT_FROM_PR_HEAD",
+        "quant/engines/backtest-history.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-real-adapter.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/backtest-history.test.mjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/real-weekly-backtest.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/diagnose-real-weekly-backtests.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/run-real-weekly-backtest.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/verify-real-weekly-backtest.py": "DIFFERENT_FROM_PR_HEAD"
+      },
+      "comparisonCounts": {
+        "DIFFERENT_FROM_PR_HEAD": 9,
+        "IDENTICAL_TO_PR_HEAD": 2
+      }
+    },
+    {
+      "number": 894,
+      "title": "Quant: validate weekly costs, align SPY and batch stored listings",
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "f354c647cb8cb7d471fb014590e8f69b3531b86a",
+      "headRefName": "codex/quant-weekly-benchmark-batch",
+      "baseRefName": "main",
+      "mergeable": "MERGEABLE",
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/894",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "core",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308156/job/120811222584"
+        },
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308139/job/120811222209"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073255535/job/120811065473"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811222378"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120811222184"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308064/job/120811221928"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308118/job/120811222137"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308156/job/120811223323"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120814509466"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811222180"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308100/job/120811797982"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40073308099/job/120814509724"
+        },
+        {
+          "context": "Vercel",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/dbf962ab-017a-437b-8d39-13d0e3774111"
+        }
+      ],
+      "fileComparison": {
+        "docs/quant-recovery/DATA_CONTRACTS.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/REAL_WEEKLY_BACKTEST.md": "DIFFERENT_FROM_PR_HEAD",
+        "docs/quant-recovery/VALIDATION.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-execution-evidence.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-independent-validation.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/legacy-cost-regression.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/loader-performance.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/nvda-weekly-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/weekly-listing-cases.json": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/backtest-history.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-benchmark.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-real-adapter.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/backtest-history.test.mjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/real-weekly-backtest.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/weekly-benchmark-batch.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/batch-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/diagnose-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/measure-weekly-loader.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/run-real-weekly-backtest.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/verify-real-weekly-backtest.py": "DIFFERENT_FROM_PR_HEAD"
+      },
+      "comparisonCounts": {
+        "DIFFERENT_FROM_PR_HEAD": 6,
+        "IDENTICAL_TO_PR_HEAD": 15
+      }
+    },
+    {
+      "number": 895,
+      "title": "Quant V3: validated execution, listing quality and private real-backtest reader",
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "53e7ba9e1821b040cc39d2c062d1354f9d438072",
+      "headRefName": "codex/quant-backtest-v3-read-service",
+      "baseRefName": "main",
+      "mergeable": "MERGEABLE",
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/895",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913734/job/120842848726"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083874673/job/120842738034"
+        },
+        {
+          "name": "Master pruefen (ohne Netz)",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913701/job/120842848655"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913721/job/120842848796"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842849060"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120842848911"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913665/job/120842848559"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913691/job/120842848561"
+        },
+        {
+          "name": "Universum synchronisieren (mit Zugang)",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913701/job/120843052545"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913721/job/120842849802"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120844138371"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842849275"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913748/job/120842933096"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40083913729/job/120844138567"
+        },
+        {
+          "context": "Vercel",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/5d287a0b-d62b-4a95-a02d-2091fbe81802"
+        }
+      ],
+      "fileComparison": {
+        "docs/quant-recovery/BACKTEST_V3.md": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/DATA_CONTRACTS.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/REAL_WEEKLY_BACKTEST.md": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/V3_REPOSITORY_BASELINE.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/V3_TEST_RESULTS.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/VALIDATION.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-execution-evidence.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-independent-validation.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/legacy-cost-regression.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/loader-performance.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/nvda-weekly-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-browser-baseline.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-materialization.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-read-validation.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-resume.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-runtime-parity.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/weekly-listing-cases.json": "IDENTICAL_TO_PR_HEAD",
+        "quant/api/product-services.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/api/real-backtest-contract.js": "DIFFERENT_FROM_PR_HEAD",
+        "quant/engines/backtest-history.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/real-backtest-quality.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-benchmark.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-real-adapter.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/backtest-history.test.mjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/real-backtest-read.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/real-weekly-backtest.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/weekly-benchmark-batch.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/batch-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/contracts/weekly-execution-model-v2.json": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/diagnose-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/materialize-real-backtest-read.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/measure-weekly-loader.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/run-real-weekly-backtest.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/validate-real-backtest-read.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/verify-real-weekly-backtest.py": "IDENTICAL_TO_PR_HEAD",
+        "server/quant-backtest-store.cjs": "IDENTICAL_TO_PR_HEAD"
+      },
+      "comparisonCounts": {
+        "DIFFERENT_FROM_PR_HEAD": 5,
+        "IDENTICAL_TO_PR_HEAD": 32
+      }
+    },
+    {
+      "number": 896,
+      "title": "Quant V4: protected local backtest preview and incremental refresh",
+      "state": "OPEN",
+      "isDraft": true,
+      "headRefOid": "7a6d729bf89872a50956fc9f0e3082483b462ee4",
+      "headRefName": "codex/quant-backtest-v4-protected-preview",
+      "baseRefName": "main",
+      "mergeable": "MERGEABLE",
+      "mergeStateStatus": "UNSTABLE",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/896",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153828/job/120863926243"
+        },
+        {
+          "name": "materialize",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091075726/job/120863728613"
+        },
+        {
+          "name": "Master pruefen (ohne Netz)",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153854/job/120863925670"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153861/job/120863925919"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863925899"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120863925849"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153859/job/120863926443"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153870/job/120863925834"
+        },
+        {
+          "name": "Universum synchronisieren (mit Zugang)",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153854/job/120864171011"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153861/job/120863927142"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120865251973"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863926032"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153844/job/120863952687"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40091153845/job/120865252594"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/48802d66-b767-4614-aac8-80331b6593e3"
+        },
+        {
+          "context": "Vercel",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/76eSWDHg77YWfrYkGnP8S6C3t53x"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://vercel.com/github"
+        }
+      ],
+      "fileComparison": {
+        "docs/quant-recovery/BACKTEST_V3.md": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/BACKTEST_V4.md": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/DATA_CONTRACTS.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/REAL_WEEKLY_BACKTEST.md": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/V3_REPOSITORY_BASELINE.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/V3_TEST_RESULTS.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/VALIDATION.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-execution-evidence.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-independent-validation.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/batch-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/legacy-cost-regression.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/loader-performance.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/nvda-weekly-summary.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-browser-baseline.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-materialization.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-read-validation.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-resume.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v3-runtime-parity.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/VALIDATION.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/browser.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/delivery.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/materialization.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/public-browser.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/public-build.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/repository-baseline.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/v4/reproducibility.json": "IDENTICAL_TO_PR_HEAD",
+        "docs/quant-recovery/weekly-listing-cases.json": "IDENTICAL_TO_PR_HEAD",
+        "quant/api/product-services.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/api/real-backtest-contract.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/backtest-history.js": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/real-backtest-quality.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-benchmark.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/engines/weekly-real-adapter.cjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/backtest-history.test.mjs": "IDENTICAL_TO_PR_HEAD",
+        "quant/tests/backtest-preview-security.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/backtest-refresh.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/real-backtest-read.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/real-weekly-backtest.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "quant/tests/weekly-benchmark-batch.test.mjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/batch-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/contracts/weekly-execution-model-v2.json": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/diagnose-real-weekly-backtests.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/materialize-real-backtest-read.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/measure-weekly-loader.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/preview-real-backtest.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/preview/client.js": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/preview/index.html": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/qa/preview-delivery-check.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/qa/protected-preview-browser.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "scripts/quant/refresh-real-backtest.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/rollback-real-backtest.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/run-real-weekly-backtest.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/validate-real-backtest-read.cjs": "IDENTICAL_TO_PR_HEAD",
+        "scripts/quant/verify-real-weekly-backtest.py": "IDENTICAL_TO_PR_HEAD",
+        "server/quant-backtest-freshness.cjs": "IDENTICAL_TO_PR_HEAD",
+        "server/quant-backtest-preview.cjs": "DIFFERENT_FROM_PR_HEAD",
+        "server/quant-backtest-store.cjs": "IDENTICAL_TO_PR_HEAD"
+      },
+      "comparisonCounts": {
+        "DIFFERENT_FROM_PR_HEAD": 8,
+        "IDENTICAL_TO_PR_HEAD": 49
+      }
+    },
+    {
+      "number": 873,
+      "title": "Quant-Aktienseite: sechs kompakte Ansichten nach Owner-Mockup (iPhone wischen, Chart 1J)",
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "7b032da60993128da8a3701cd1ef23d33df92bfa",
+      "headRefName": "quant-ui-konzept-roku",
+      "baseRefName": "main",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/873",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "experience",
+          "conclusion": "FAILURE",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626570/job/120599482007"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626533/job/120599482208"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626523/job/120599483120"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626950/job/120599483628"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626443/job/120599481636"
+        },
+        {
+          "name": "validate",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626511/job/120599481587"
+        },
+        {
+          "name": "shell",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626566/job/120632765815"
+        },
+        {
+          "name": "vu3-regression",
+          "conclusion": "CANCELLED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626566/job/120632765361"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626533/job/120599484860"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626950/job/120607884966"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626523/job/120599482624"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626523/job/120599767953"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007626950/job/120607884922"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/7456a497-ffd1-4854-9079-d9698ff492b7"
+        },
+        {
+          "context": "Vercel",
+          "state": "SUCCESS",
+          "targetUrl": "https://vercel.com/vision-universe/vision-universe-research/AyoTJL3N8FzpRu9An2s3hiiJS6Vc"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://vercel.com/github"
+        }
+      ]
+    },
+    {
+      "number": 892,
+      "title": "Browser-QA (experience): Kopfname aus der vorgesehenen Quelle",
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "e09825e318d6914c28d06ec08f13a5f955b9720b",
+      "headRefName": "fix-browser-qa-kopfname",
+      "baseRefName": "main",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/892",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663054/job/120847951819"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663270/job/120847952816"
+        },
+        {
+          "name": "package",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663144/job/120847952292"
+        },
+        {
+          "name": "experience",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663110/job/120847951746"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663092/job/120847977427"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663054/job/120847953075"
+        },
+        {
+          "name": "deploy",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663144/job/120849261600"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663270/job/120847952688"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663270/job/120847969112"
+        },
+        {
+          "name": "company-intelligence-live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085663144/job/120849261925"
+        },
+        {
+          "context": "Vercel",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/35f04f4a-f513-4ee5-9ba1-d08f41e439e4"
+        }
+      ]
+    },
+    {
+      "number": 893,
+      "title": "Shell Quality Gates: Browser aus dem Playwright-Image statt apt-get je Lauf (vu3-regression, shell)",
+      "state": "OPEN",
+      "isDraft": false,
+      "headRefOid": "35fc705bc613b0c42b96b023c1ec2a2936cb77d1",
+      "headRefName": "fix-vu3-regression-installation",
+      "baseRefName": "main",
+      "mergeable": "UNKNOWN",
+      "mergeStateStatus": "UNKNOWN",
+      "reviewDecision": "",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/893",
+      "humanReviews": 0,
+      "checks": [
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777752/job/120848306400"
+        },
+        {
+          "name": "core",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777584/job/120848293448"
+        },
+        {
+          "name": "contract",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777580/job/120848293324"
+        },
+        {
+          "name": "shell",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777561/job/120848293290"
+        },
+        {
+          "name": "test",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085776870/job/120848290976"
+        },
+        {
+          "name": "live",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777584/job/120848294491"
+        },
+        {
+          "name": "marker",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777580/job/120848293487"
+        },
+        {
+          "name": "vu3-regression",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777561/job/120848293128"
+        },
+        {
+          "name": "measure",
+          "conclusion": "SKIPPED",
+          "status": "COMPLETED",
+          "detailsUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40085777580/job/120848317767"
+        },
+        {
+          "context": "Vercel",
+          "state": "FAILURE",
+          "targetUrl": "https://vercel.com/vision-universe?upgradeToPro=build-rate-limit"
+        },
+        {
+          "name": "Cloudflare Pages",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED",
+          "detailsUrl": "https://dash.cloudflare.com/?to=/bd3d267913ac952c70a429fbf6e63265/pages/view/vision-universe/3af6d62c-0a15-4f01-acd5-0ddf7eb0aaf6"
+        }
+      ]
+    }
+  ],
+  "noMergesPerformed": true
+}

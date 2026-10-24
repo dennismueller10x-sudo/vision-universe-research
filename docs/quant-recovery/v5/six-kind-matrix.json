@@ -1,0 +1,272 @@
+{
+  "asOf": "2026-10-24",
+  "certificationSource": "quant/data/product/backtest-certification-v1.json",
+  "certificationSourceVersion": "backtest-certification-1.0.0",
+  "newEngine": false,
+  "kinds": [
+    {
+      "id": "SAME_STOCK_REPLAY",
+      "engines": [
+        "quant/engines/historical-cases.js",
+        "quant/engines/pattern-research.js"
+      ],
+      "existingProductStatus": "LIMITED",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "survivorship",
+          "label": "Überlebende",
+          "category": "STRUCTURAL",
+          "state": "FAIL",
+          "value": "Eine Aktie mit langer Historie hat überlebt",
+          "required": null,
+          "reason": "SURVIVOR_BY_CONSTRUCTION"
+        },
+        {
+          "id": "ruleTest",
+          "label": "prüft eine Regel außerhalb des Lernzeitraums",
+          "category": "QUALITY",
+          "state": "FAIL",
+          "value": "beschreibt, prüft keine Regel",
+          "required": null,
+          "reason": "DESCRIPTIVE_NOT_A_TEST"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "Existing descriptive episode replay retained. Additional named single-listing NEW_52W_HIGH trade simulation in stock history, not a replacement of similar-condition replay. Validate descriptive sample limits separately.",
+      "newPrivateTradeReplayAvailable": true,
+      "semantics": "SINGLE_LISTING_WEEKLY_REPLAY_NOT_AGGREGATE_SIGNAL_CERTIFICATION"
+    },
+    {
+      "id": "PATTERN_EVIDENCE",
+      "engines": [
+        "quant/engines/pattern-research.js",
+        "scripts/quant/build-pattern-research.mjs"
+      ],
+      "existingProductStatus": "LIMITED",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "survivorship",
+          "label": "Überlebende",
+          "category": "STRUCTURAL",
+          "state": "FAIL",
+          "value": "teilweise nicht quantifiziert",
+          "required": null,
+          "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART"
+        },
+        {
+          "id": "returnBasis",
+          "label": "Gesamtrendite",
+          "category": "STRUCTURAL",
+          "state": "FAIL",
+          "value": "Kursrendite",
+          "required": null,
+          "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+        },
+        {
+          "id": "certifiedAsBacktest",
+          "label": "als Backtest freigegeben",
+          "category": "QUALITY",
+          "state": "FAIL",
+          "value": "Häufigkeitsauswertung",
+          "required": null,
+          "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "No new execution path; existing studies retained. Require historical population/identity controls and approved return basis.",
+      "newPrivateTradeReplayAvailable": false,
+      "semantics": "UNCHANGED_SEPARATE_PRODUCT_KIND"
+    },
+    {
+      "id": "SIGNAL_BACKTEST",
+      "engines": [
+        "quant/engines/signal-backtest.js",
+        "scripts/quant/build-signal-backtest.mjs",
+        "scripts/quant/run-real-weekly-backtest.cjs"
+      ],
+      "existingProductStatus": "LIMITED",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "survivorship",
+          "label": "Überlebende-Kontrolle",
+          "category": "STRUCTURAL",
+          "state": "FAIL",
+          "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+          "required": null,
+          "reason": "PARTIAL_SENSITIVITY_ONLY"
+        },
+        {
+          "id": "ruleCertified",
+          "label": "mindestens eine Regel zertifiziert",
+          "category": "QUALITY",
+          "state": "FAIL",
+          "value": "0 von 5",
+          "required": null,
+          "reason": "NO_RULE_CERTIFIED"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "Independent single-listing NEW_52W_HIGH price simulation shown alongside unchanged aggregate study. Need survivorship, regimes, frozen independent validation and rule-specific gates for aggregate certification.",
+      "newPrivateTradeReplayAvailable": true,
+      "semantics": "SINGLE_LISTING_WEEKLY_REPLAY_NOT_AGGREGATE_SIGNAL_CERTIFICATION"
+    },
+    {
+      "id": "SETUP_BACKTEST",
+      "engines": [
+        "scripts/quant/build-setup-backtest.mjs",
+        "scripts/quant/replay-setup-history.mjs"
+      ],
+      "existingProductStatus": "COLLECTING_HISTORY",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "historyDates",
+          "label": "veröffentlichte Stichtage",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 20,
+          "required": 120,
+          "reason": "SETUP_HISTORY_TOO_SHORT"
+        },
+        {
+          "id": "historySpan",
+          "label": "Spanne der Historie",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": "43 Tage",
+          "required": "180 Tage",
+          "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
+        },
+        {
+          "id": "completedOutcomes",
+          "label": "abgeschlossene 6-Monats-Ergebnisse",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 0,
+          "required": 100,
+          "reason": "COMPLETED_OUTCOMES_TOO_FEW"
+        },
+        {
+          "id": "titles",
+          "label": "Titel mit abgeschlossenem Ergebnis",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 0,
+          "required": 20,
+          "reason": "TOO_FEW_TITLES"
+        },
+        {
+          "id": "independence",
+          "label": "verschiedene Monate mit Ereignissen",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 2,
+          "required": 20,
+          "reason": "EVENTS_CLUSTERED_IN_TIME"
+        },
+        {
+          "id": "returnBasis",
+          "label": "Gesamtrendite",
+          "category": "STRUCTURAL",
+          "state": "FAIL",
+          "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+          "required": null,
+          "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN"
+        },
+        {
+          "id": "entryVariant",
+          "label": "Einstiegsvarianten stimmen überein",
+          "category": "QUALITY",
+          "state": "FAIL",
+          "value": "noch nicht messbar",
+          "required": "Δ Median ≤ 1 Pp",
+          "reason": "VARIANTS_NOT_MEASURABLE_YET"
+        },
+        {
+          "id": "oos",
+          "label": "Lernen/Testen (zeitlich)",
+          "category": "QUALITY",
+          "state": "FAIL",
+          "value": "erst mit abgeschlossenen Ergebnissen messbar",
+          "required": null,
+          "reason": "OOS_NOT_MEASURABLE_YET"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "Keep real published snapshots distinct from reconstructed setups. Need enough completed prospective outcomes, independent clusters, contract return basis and OOS validation. No current snapshot backfill.",
+      "newPrivateTradeReplayAvailable": false,
+      "semantics": "UNCHANGED_SEPARATE_PRODUCT_KIND"
+    },
+    {
+      "id": "STRATEGY_BACKTEST",
+      "engines": [
+        "quant/engines/profile-backtest.js"
+      ],
+      "existingProductStatus": "COLLECTING_HISTORY",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "membershipHistory",
+          "label": "Monate mit Index-Zugehörigkeit",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": "2 (5 Stände seit 2026-09-15)",
+          "required": 24,
+          "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+        },
+        {
+          "id": "factorHistory",
+          "label": "Monate mit Faktor-Snapshots",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": "2 (20 Stände seit 2026-09-23)",
+          "required": 24,
+          "reason": "FACTOR_HISTORY_TOO_SHORT"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "Existing strict-before membership/factor PIT engine retained. Supply verified historical membership and PIT factors; approved total-return series and delisting terminal values. No current-universe substitution.",
+      "newPrivateTradeReplayAvailable": false,
+      "semantics": "UNCHANGED_SEPARATE_PRODUCT_KIND"
+    },
+    {
+      "id": "FACTOR_RANKING_BACKTEST",
+      "engines": [
+        "quant/engines/profile-backtest.js",
+        "scripts/quant/build-factor-evidence.mjs"
+      ],
+      "existingProductStatus": "COLLECTING_HISTORY",
+      "certification": "NOT_CERTIFIED",
+      "openGates": [
+        {
+          "id": "factorHistory",
+          "label": "Monate mit Faktor-Snapshots",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 2,
+          "required": 24,
+          "reason": "FACTOR_HISTORY_TOO_SHORT"
+        },
+        {
+          "id": "completedForward",
+          "label": "Monate mit abgeschlossenem 3-Monats-Ergebnis",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 0,
+          "required": 12,
+          "reason": "FORWARD_OUTCOMES_TOO_FEW"
+        },
+        {
+          "id": "membershipHistory",
+          "label": "Monate mit Index-Zugehörigkeit",
+          "category": "HISTORY",
+          "state": "FAIL",
+          "value": 2,
+          "required": 24,
+          "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+        }
+      ],
+      "v5ScopeAndRemainingWork": "Existing quintile/ranking engine retained. Need PIT cross-sectional factors, historical comparison membership and completed forward outcomes; no reconstructed current ranks.",
+      "newPrivateTradeReplayAvailable": false,
+      "semantics": "UNCHANGED_SEPARATE_PRODUCT_KIND"
+    }
+  ]
+}
