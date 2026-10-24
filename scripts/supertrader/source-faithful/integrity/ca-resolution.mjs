@@ -35,6 +35,15 @@
  *    second source (SEC shares show the factor, or adjClose knows it at the jump);
  *  - LOW: unit-error and same-factor tolerances in TOLERANCES; an 8-K without items near a split blocks; a share
  *    bracket must use ONE source on both sides (dei-dei or bs-bs), a mixed bracket is UNRESOLVED.
+ * 1.3.0 (owner/coordinator decision after the third check at 63a0c45, registered before its run): issuance plus a
+ * same-session decline moves the share ratio AND the open towards N - 1 together, and a bare 8-K item carries no factor,
+ * so the neighbour-factor class is closed by requiring a FACTOR-BEARING independent source:
+ *  - CONFIRMED_UNDECLARED_SPLIT needs the Tiingo adjClose/close implied factor to select exactly the same grid value g
+ *    (grid window: below half the log-gap to both neighbours) - for every N; shares and open stay necessary; an 8-K
+ *    item is recorded only, it is never factor evidence;
+ *  - CONFIRMED_MISDATED_DECLARED_SPLIT needs the same adjClose factor for every declared factor; SEC share counts never
+ *    count as a second source (a 2:1 forward split and a dilutive offering look alike) - they may only contradict, with
+ *    the same residual cap as the split path.
  * The inverse volume test of 1.1.0 makes CONFIRMED_GENUINE_MOVE almost unreachable for crashes with high volume; this
  * is intended (conservative): a crash with a split-like volume shift is not separable from a forward split.
  */
@@ -42,7 +51,7 @@ import crypto from 'node:crypto';
 import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 
-export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.2.0';
+export const CA_RESOLUTION_VERSION = 'sf7-ca-resolution-1.3.0';
 export const CLASSES = Object.freeze({ SPLIT: 'CONFIRMED_UNDECLARED_SPLIT', MISDATED: 'CONFIRMED_MISDATED_DECLARED_SPLIT', GENUINE: 'CONFIRMED_GENUINE_MOVE', UNRESOLVED: 'UNRESOLVED' });
 /** Share-count sources accepted as a reference date: dei cover page (r13, r14) and balance sheet (r14). */
 export const SHARE_SOURCES = Object.freeze(['dei', 'bs']);
@@ -79,9 +88,9 @@ export const TOLERANCES = Object.freeze({
   standardFactorNear: 1.02, unitErrorRatios: Object.freeze([100]), largeDistribution: 0.25, distributionSessions: 5,
   volumePreBars: 20, volumePostBars: 10, volumeMinBars: 5, filingWindowDays: Object.freeze([-45, 15]), misdatedMaxSessions: 5,
   // 1.2.0
-  shareResidualGapShare: 0.2, shareResidualMax: 1.02, secondSourceMinFactor: 10, misdatedPriceTol: 1.10, unitErrorTol: 1.5, sameFactorLogTol: 1e-3,
+  shareResidualGapShare: 0.2, shareResidualMax: 1.02, misdatedPriceTol: 1.10, unitErrorTol: 1.5, sameFactorLogTol: 1e-3,
 });
-/** 8-K items that serve as a second source of a reverse / forward split (1.2.0). */
+/** 8-K items recorded with a split (1.2.0 used them as second source; since 1.3.0 evidence only, never factor evidence). */
 export const SPLIT_SECOND_SOURCE_8K_ITEMS = Object.freeze(['5.03', '3.03']);
 /** 8-K items that are a corporate action for a genuine move; for a split only 2.01 (merger / disposition) blocks. */
 export const CA_8K_ITEMS = Object.freeze(['2.01', '3.03', '5.03', '5.07', '8.01']);
@@ -126,6 +135,9 @@ export function snapFactor(q) {
 export function snapStandard(x, tol) { return fin(x) && x > 0 ? STANDARD_RATIOS.flatMap((n) => [n, 1 / n]).filter((c) => within(x / c, tol)) : []; }
 /** Label of a price factor c: 10 -> '1:10' (reverse), 0.5 -> '2:1', 1/1.5 -> '1.5:1'. */
 export const ratioLabel = (c) => { const g = c >= 1 ? c : 1 / c, n = Math.abs(g - Math.round(g)) < 1e-6 ? `${Math.round(g)}` : g.toFixed(1); return c >= 1 ? `1:${n}` : `${n}:1`; };
+/** 1.3.0: the grid factor implied by Tiingo's adjClose at bar i (null when adjClose is missing or implies no grid value). */
+function adjCloseFactor(raw, i) { const adj = adjCloseImplied(raw, i); if (adj === null) return null; const s = snapFactor(1 / adj); return s.length === 1 ? s[0] : null; }
+const residualOk = (q, c, tol) => Math.abs(Math.log(q / c)) <= Math.min(tol.shareResidualGapShare * gridLogGap(c), Math.log(tol.shareResidualMax)) + 1e-12;
 const sameFactor = (a, b) => fin(a) && fin(b) && a > 0 && b > 0 && Math.abs(ln(a / b)) < TOLERANCES.sameFactorLogTol;
 
 /**
@@ -236,14 +248,15 @@ export function misdatedDeclaredSplit({ raw, bars, i: x, sec, identity = {}, oth
       Object.assign(ev, { sharesBefore: br.before[1], sharesBeforeAsOf: br.before[0], sharesAfter: br.after[1], sharesAfterAsOf: br.after[0], sharesBeforeSource: br.before[3], sharesAfterSource: br.after[3], q: br.q });
       const snap = snapFactor(br.q);
       if (!(snap.length === 1 && sameFactor(snap[0], c))) return unresolved('SEC_CONTRADICTS_DECLARED_FACTOR', ev);
-      ev.secCorroborates = true;
+      if (!residualOk(br.q, c, tol)) return unresolved('SHARE_RESIDUAL_TOO_LARGE', ev); // 1.3.0: same cap as the split path
+      ev.secCorroborates = true; // recorded; never sufficient (1.3.0)
     }
   }
-  // 1.2.0: a second source must show the factor at the jump (a phantom declared factor next to a genuine crash
-  // would otherwise erase the crash): SEC shares (above) or the provider's adjClose
-  const adj = adjCloseImplied(raw, i); ev.adjCloseImplied = adj;
-  ev.adjCloseCorroborates = adj !== null && within(adj * c, tol.adjCloseTol);
-  if (!ev.secCorroborates && !ev.adjCloseCorroborates) return unresolved('MISDATED_NEEDS_SECOND_SOURCE', ev);
+  // 1.3.0: the provider's adjClose must imply exactly the declared grid factor at the jump (factor-bearing source);
+  // SEC share counts never suffice (a 2:1 forward split and a dilutive offering look alike)
+  ev.adjCloseImplied = adjCloseImplied(raw, i); ev.adjCloseFactor = adjCloseFactor(raw, i);
+  ev.adjCloseCorroborates = ev.adjCloseFactor !== null && sameFactor(ev.adjCloseFactor, c);
+  if (!ev.adjCloseCorroborates) return unresolved('MISDATED_NEEDS_ADJCLOSE_FACTOR', ev);
   return { cls: CLASSES.MISDATED, reason: 'DECLARED_FACTOR_ON_WRONG_SESSION', factor: c, splitFactor: s, label: ratioLabel(c), overlay: { date: raw[i].date, splitFactor: s, moveFromDate: raw[j].date }, evidence: ev };
 }
 
@@ -293,20 +306,19 @@ export function classifyFlag({ raw, bars, i, sec, identity = {}, otherFlagDates 
     if (ev.shareResidual > Math.min(tol.shareResidualGapShare * gap, ln(tol.shareResidualMax)) + 1e-12) return unresolved('SHARE_RESIDUAL_TOO_LARGE', ev);
     if (v === null) return unresolved('VOLUME_EVIDENCE_MISSING', ev);
     if (!volumeLikeSplit(v, c, tol)) return unresolved('VOLUME_INCONSISTENT_WITH_FACTOR', ev);
-    const adjKnowsFactor = adj !== null && within(adj * c, tol.adjCloseTol), adjNeutral = adj !== null && within(adj, tol.adjCloseTol);
-    if (adj !== null && !adjKnowsFactor && !adjNeutral) return unresolved('TIINGO_ADJCLOSE_CONFLICT', ev);
-    ev.tiingoAdjCloseCorroborates = adjKnowsFactor;
-    // an N:1 forward split looks like a dilutive offering into a crash: a second independent source (adjClose) is required
-    if (c < 1 && !adjKnowsFactor) return unresolved('FORWARD_SPLIT_NEEDS_SECOND_SOURCE', ev);
+    // 1.3.0: a FACTOR-BEARING independent source must select the same grid value: Tiingo's adjClose implied factor
+    const adjF = adjCloseFactor(raw, i); ev.adjCloseFactor = adjF;
+    const adjKnowsFactor = adjF !== null && sameFactor(adjF, c); ev.tiingoAdjCloseCorroborates = adjKnowsFactor;
+    if (adj !== null && !adjKnowsFactor && !within(adj, tol.adjCloseTol)) return unresolved('TIINGO_ADJCLOSE_CONFLICT', ev);
+    if (!adjKnowsFactor) return unresolved('NO_FACTOR_BEARING_SOURCE', ev);
     if (sec.how !== 'KNOWN') return unresolved('SPLIT_REQUIRES_KNOWN_CIK', ev);
     if (filings === undefined) return needsFilings(CLASSES.SPLIT, ev);
     if (!filings.covered) return unresolved(filings.reason, ev);
     if (filings.hits.some(blocksSplit)) return unresolved('MERGER_OR_DISPOSITION_FILING_NEAR_SPLIT', { ...ev, filings: filings.hits });
     if (filings.unknownItems.length) return unresolved('8K_ITEMS_UNKNOWN_NEAR_SPLIT', { ...ev, filings: filings.hits });
-    // 1.2.0: where ordinary issuance can cross a grid neighbour (factor >= 10: log-gap <= ln 1.10), a second source is required
-    const item8k = filings.hits.some((h) => h[3] === 'ITEM' && h[2].split(',').some((x) => SPLIT_SECOND_SOURCE_8K_ITEMS.includes(x)));
-    ev.secondSource = adjKnowsFactor ? 'ADJCLOSE' : item8k ? '8K_ITEM' : null;
-    if (Math.max(c, 1 / c) >= tol.secondSourceMinFactor - 1e-9 && !ev.secondSource) return unresolved('LARGE_FACTOR_NEEDS_SECOND_SOURCE', ev);
+    // an 8-K 5.03 / 3.03 is recorded (necessary-not-sufficient context), never factor evidence (1.3.0)
+    ev.splitItem8k = filings.hits.some((h) => h[3] === 'ITEM' && h[2].split(',').some((x) => SPLIT_SECOND_SOURCE_8K_ITEMS.includes(x)));
+    ev.secondSource = 'ADJCLOSE';
     return { cls: CLASSES.SPLIT, reason: 'SHARES_PRICE_VOLUME_SAME_FACTOR', factor: c, splitFactor: 1 / c, label: ratioLabel(c), evidence: { ...ev, filingWindow: filings.window, filings: filings.hits } };
   }
   // ---- genuine: share count unchanged
