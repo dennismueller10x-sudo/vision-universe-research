@@ -488,10 +488,15 @@
      "sourceId": "B03",
      "edition": "Think & Trade Like a Champion, Vietnamese licensed edition (copyright 2017)",
      "role": "sizing and sell rules"
+    },
+    {
+     "sourceId": "W-MIN18",
+     "edition": "Minervini interview, Stockopedia, 2018-04-17 (English; Minervini answers only)",
+     "role": "English original wording: stops, staggered stops, progressive exposure, fundamentals need price confirmation"
     }
    ],
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "44c0fbc53e0356dfd987d0f088c185a66b386aade7d8a024a479769d9b1cfb08",
+   "sourceContractVersion": "1.3.0",
+   "contractFingerprint": "80f372b5a2ab336d4143e6b18b68bdc00bb8864390ecae2152b27e18eb45c42a",
    "implementationStatus": "PARTIAL_DATA_BLOCKED",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -499,16 +504,16 @@
    "liveActivation": false,
    "fullyAutomatable": false,
    "sourceCoverage": {
-    "rulesInScope": 118,
-    "hardRules": 16,
-    "hardRulesImplemented": 8,
-    "implementedExact": 0,
-    "implementedDerived": 9,
-    "manualReview": 31,
+    "rulesInScope": 127,
+    "hardRules": 18,
+    "hardRulesImplemented": 10,
+    "implementedExact": 1,
+    "implementedDerived": 10,
+    "manualReview": 36,
     "dataBlocked": 1,
     "ambiguous": 0,
     "notImplemented": 0,
-    "excluded": 77,
+    "excluded": 79,
     "unmapped": 0
    },
    "dataReadiness": "PARTIAL",
@@ -568,7 +573,7 @@
     }
    ],
    "knownLimitations": [
-    "translation-only source wording: no rule is SOURCE_EXACT",
+    "translation-only source wording for every book rule; English original wording only for the nine W-MIN18 answers (MIN-SF-STAGGER is SOURCE_EXACT, it does not touch the reference lifecycle)",
     "Trend Template criterion 8 (IBD RS >= 70) is DATA_BLOCKED; a VU percentile is not the IBD rating",
     "SEPA selection is manual by design (MIN-PROCESS-04); the full method cannot be measured on history"
    ],
@@ -601,10 +606,15 @@
      "sourceId": "B03",
      "edition": "Think & Trade Like a Champion, Vietnamese licensed edition (copyright 2017)",
      "role": "sizing and sell rules"
+    },
+    {
+     "sourceId": "W-MIN18",
+     "edition": "Minervini interview, Stockopedia, 2018-04-17 (English; Minervini answers only)",
+     "role": "English original wording: stops, staggered stops, progressive exposure, fundamentals need price confirmation"
     }
    ],
-   "sourceContractVersion": "1.3.0",
-   "contractFingerprint": "8bbda9ce658f9914097dfdf441d9ef87c0e462b79d67fed65188190c802253ca",
+   "sourceContractVersion": "1.4.0",
+   "contractFingerprint": "54de277c4d75374c87d06441a2e5d1b31b0cd49426577ab885e39c8eff4bc90b",
    "implementationStatus": "PARTIAL_MANUAL_REVIEW",
    "statusByScope": null,
    "outputKind": "MANUAL_REVIEW_CANDIDATE",
@@ -612,16 +622,16 @@
    "liveActivation": false,
    "fullyAutomatable": false,
    "sourceCoverage": {
-    "rulesInScope": 20,
-    "hardRules": 6,
-    "hardRulesImplemented": 3,
-    "implementedExact": 0,
+    "rulesInScope": 29,
+    "hardRules": 8,
+    "hardRulesImplemented": 4,
+    "implementedExact": 1,
     "implementedDerived": 5,
-    "manualReview": 4,
+    "manualReview": 8,
     "dataBlocked": 0,
     "ambiguous": 0,
     "notImplemented": 0,
-    "excluded": 11,
+    "excluded": 15,
     "unmapped": 0
    },
    "dataReadiness": "READY",

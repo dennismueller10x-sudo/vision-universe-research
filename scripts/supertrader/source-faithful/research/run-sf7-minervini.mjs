@@ -4,7 +4,8 @@
  * snapshot with research-v1. DIAGNOSTIC_NOT_CERTIFIED and MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST.
  *  - REF of both strategies (4.0 lifecycle, unchanged): must reproduce the authoritative ledger hashes
  *    (completion/sf6-run-facts.mjs, run 39746264325); otherwise the run fails;
- *  - the pre-registered 7.0 variants ALT-SEPA-FLAT-BASE and ALT-PP-VCP-REQUIRED, each against REF trade by trade;
+ *  - the pre-registered 7.0 SEPA variants ALT-SEPA-FLAT-BASE, ALT-SEPA-TT6-25 and ALT-SEPA-RS-LINE, each against REF trade
+ *    by trade (Power Play: REF and diagnostics only; the B12 / B03 VCP question resolves to the reference reading);
  *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only).
  * Public: counts and hashes. Sealed (owner key): metrics per run. No variant is chosen by any result.
  *
@@ -22,7 +23,7 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { researchCodeSha256 } from './run-sf4-lifecycle.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
-import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withPowerPlayVcpRequired, largestDeclineSignal, halfAverageGainStopCheck } from './minervini-sf7.mjs';
+import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -73,7 +74,7 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
       halfAverageGainStop: { ...halfAverageGainStopCheck(ref.trades), rule: 'B12 PDF 398-399 (MA-MIN7-AVG-GAIN)' },
     };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
-      const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : withPowerPlayVcpRequired(dataset, refIndex);
+      const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : v.index === 'withTrendTemplateLow25' ? withTrendTemplateLow25(dataset, { from }) : withRsLineRising(dataset, refIndex);
       const r = runMinerviniLifecycle(dataset, { strategy, setupIndex: idx, config: v.config, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
       ps.variants[v.id] = { source: v.source, indexChanges: idx.counts.sf7, ...publicOf(r), vsRef: diffTrades(ref.trades, r.trades) };

@@ -32,7 +32,11 @@ test('SF5-OD-REGISTRY: genau die vier Entscheidungen, je mit Wirkung und Grenze'
 });
 
 test('SF5-OD-NO-OTHER-STATUS-CHANGE: ausser RAS-SF-ENTRY / RAS-SF-STOP ist jeder Regelstatus unveraendert', () => {
-  const pairs = CONTRACTS.flatMap((c) => c.rules.map((r) => `${c.candidateId}|${r.id}|${r.status}`)).sort();
+  // Supertrader 7.0 adds three Minervini rules (source inventory); every pre-existing status stays covered by the hash
+  const SF7_ADDED = ['C06|MIN-SF-PRICE-CONFIRM|SOURCE_DERIVED', 'C06|MIN-SF-STAGGER|SOURCE_EXACT', 'C07|MIN-SF-STAGGER|SOURCE_EXACT'];
+  const all = CONTRACTS.flatMap((c) => c.rules.map((r) => `${c.candidateId}|${r.id}|${r.status}`)).sort();
+  assert.deepEqual(all.filter((p) => /\|MIN-SF-(STAGGER|PRICE-CONFIRM)\|/.test(p)), SF7_ADDED);
+  const pairs = all.filter((p) => !SF7_ADDED.includes(p));
   const undo = pairs.map((p) => (/^C13\|RAS-SF-(ENTRY|STOP)\|SOURCE_DERIVED$/.test(p) ? p.replace('SOURCE_DERIVED', 'SOURCE_AMBIGUOUS') : p)).sort();
   assert.equal(crypto.createHash('sha256').update(undo.join('\n')).digest('hex'), STATUSES_BEFORE_DECISIONS);
   assert.equal(pairs.filter((p, i) => p !== undo[i]).length, 2);

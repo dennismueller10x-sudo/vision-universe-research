@@ -9,9 +9,16 @@
  *  - flat-base setups (B12 PDF 306): a flat base without a real pivot other than the top of the base may be bought as
  *    the price moves above the base high, provided the base corrected no more than 10 or 15 percent. The 4.0 strict
  *    VCP proxy excludes flat bases (MIN-VCP-04); the variant ALT-SEPA-FLAT-BASE admits them at the printed outer bound.
- *  - Power Play with VCP characteristics (B12 PDF 341): "I require it to display VCP characteristics as I do with all
- *    other setups" (a power play needs no visible fundamentals). The 4.0 reference accepts the TIGHT branch of MIN-PP-05
- *    without VCP evidence; the variant ALT-PP-VCP-REQUIRED keeps only Power Play setups with VCP characteristics.
+ *  - Trend Template criterion "above the 52-week low": B12 PDF 114 prints 30 %, the licensed Vietnamese edition of Think &
+ *    Trade Like a Champion (B03 PDF 143) prints 25 %, and B12 PDF 101 itself says "at least 25 to 30 percent". The
+ *    reference keeps 30 % (MIN-TT-06); the variant ALT-SEPA-TT6-25 measures the 25 % reading.
+ *  - RS line (B03 PDF 143): besides the IBD RS rating (DATA_BLOCKED) the RS line should not be in a downtrend, preferably
+ *    rising for at least 6 weeks (ideally 13). The RS line is computable (price relative to the market); the variant
+ *    ALT-SEPA-RS-LINE keeps only setups whose RS line rose over the last 6 weeks. It is no substitute for the IBD rating.
+ *  - Power Play: B12 PDF 341 requires VCP characteristics "as with all other setups", B03 PDF 189 adds the exception
+ *    "if the correction from peak to trough does not exceed 10 %, you need not see the tightening as a contraction of
+ *    volatility". That is exactly the 4.0 reference reading of MIN-PP-05 (TIGHT or VCP review): no variant, the source
+ *    conflict is resolved in favour of the reference.
  *  - two diagnostics on the reference trades (counts only, never a gate, never a variant choice):
  *    largest-decline sell signal (B12 PDF 130: the largest daily decline since the start of the Stage 2 advance is a
  *    sell signal "in most cases") and the half-average-gain stop rule (B12 PDF 398-399: cut losses at half the average
@@ -24,8 +31,8 @@
 import crypto from 'node:crypto';
 import { fin, smaAt } from '../common/series.mjs';
 import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
-import { vcpContractions, COMPONENT_CONVENTIONS } from './minervini-components.mjs';
-import { REFERENCE_CONFIG } from './minervini-lifecycle.mjs';
+import { COMPONENT_CONVENTIONS } from './minervini-components.mjs';
+import { REFERENCE_CONFIG, sepaSetupSeries } from './minervini-lifecycle.mjs';
 
 export const SF7_MINERVINI_VERSION = 'sf7-minervini-1.0.0';
 
@@ -34,6 +41,8 @@ export const SF7_SOURCE_BOUNDS = Object.freeze({
   flatBaseMaxCorrection: Object.freeze({ value: 0.15, source: 'B12 PDF 306', reading: 'outer bound of "no more than 10 or 15 percent"', translationUnverified: true }),
   maxPlannedLoss: Object.freeze({ value: 0.10, source: 'B12 PDF 370 / 399, B07 PDF 72, W-MIN18 (English: generally 8-10 %)', reading: 'absolute maximum loss', translationUnverified: false }),
   stopAtHalfAverageGain: Object.freeze({ value: 0.5, source: 'B12 PDF 398-399', reading: 'cut losses at half the average gain', translationUnverified: true }),
+  aboveLow52wAlt: Object.freeze({ value: 0.25, source: 'B03 PDF 143 (25 %), B12 PDF 101 (25-30 %); reference B12 PDF 114 (30 %)', reading: 'lower printed reading of the 52-week-low criterion', translationUnverified: true }),
+  rsLineRisingWeeks: Object.freeze({ value: 6, source: 'B03 PDF 143', reading: 'RS line not in a downtrend, preferably rising for at least 6 weeks (ideally 13)', translationUnverified: true }),
 });
 
 /** Model assumptions of the 7.0 additions; none is a Minervini rule. */
@@ -41,7 +50,7 @@ export const SF7_MODEL_ASSUMPTIONS = Object.freeze([
   Object.freeze({ id: 'MA-MIN7-FLAT-BASE-WINDOW', phase: 'SETUP_QUALIFICATION', reference: 'base = sessions from the 52-week high (the 4.0 VCP base start, vcpContractions) to the setup close; at least 15 sessions', why: 'B12 PDF 306 names the flat base and its 10-15 % bound, not its length; 15 sessions is the lower end of the printed 3-5 week minimum of a primary base (B12 PDF 352); the base start is the one the 4.0 footprint already uses' }),
   Object.freeze({ id: 'MA-MIN7-FLAT-BASE-PIVOT', phase: 'SETUP_QUALIFICATION', reference: 'pivot = the base high (the 52-week high that starts the base), stop = the lowest low of the base (structure), the 10 % planned-loss bound of the 4.0 eligibility applies unchanged', why: 'B12 PDF 306: buy "as the stock moves above the high at the top of the base"; the stop placement inside the 10 % bound stays the reviewer\'s (MA-MIN-STOP-PLACEMENT reading of the reference)' }),
   Object.freeze({ id: 'MA-MIN7-FLAT-BASE-MERGE', phase: 'SETUP_QUALIFICATION', reference: 'a 4.0 setup that meets the strict VCP proxy is kept unchanged; a flat-base setup is added only where the reference has no strict setup on that close', why: 'one-at-a-time change: the variant widens the reference by the flat-base family and changes nothing else' }),
-  Object.freeze({ id: 'MA-MIN7-PP-VCP', phase: 'SETUP_QUALIFICATION', reference: 'VCP characteristics = the strict 4.0 footprint on the setup close (>= 2 contractions, contracting left to right, last contraction volume below the 50-day mean)', why: 'B12 PDF 341 requires VCP characteristics without defining them anew; the strict footprint is the same proxy the SEPA reference uses (MA-MIN-SEPA-SETUP-PROXY)' }),
+  Object.freeze({ id: 'MA-MIN7-RS-LINE', phase: 'SETUP_QUALIFICATION', reference: 'RS line = split-adjusted close / split-adjusted SPY close of the same session (snapshot benchmark); "rising for at least 6 weeks" = RS line on the setup close above the RS line 30 sessions earlier', why: 'B03 PDF 143 gives the RS line and its 6-week preference, not a slope measure; the one-point comparison is the reading the 4.0 reference already uses for "MA200 rising for at least one month" (MIN-SF-TT-3)' }),
   Object.freeze({ id: 'MA-MIN7-STAGE2-START', phase: 'EXIT_CONDITIONS', reference: 'start of the Stage 2 advance = first session of the uninterrupted run of Trend Template 1-7 passes that contains the setup close', why: 'B12 PDF 130 measures the largest decline "since the start of the Stage 2 advance" without a mechanical start; the Trend Template is the source\'s own Stage 2 qualification (MIN-PROCESS-01)' }),
   Object.freeze({ id: 'MA-MIN7-AVG-GAIN', phase: 'INITIAL_STOP', reference: 'average gain = mean return of the winning reference trades closed before the entry date (point in time), at least 10 closed winners, otherwise not evaluated', why: 'B12 PDF 398-399 relates the stop to the trader\'s own average gain; the reference run is the only PIT trade history the model study has' }),
 ]);
@@ -119,40 +128,61 @@ export function withFlatBaseSetups(dataset, refIndex, { from = null, P = MIN_PAR
   return { strategy: 'SEPA', index, counts: { ...refIndex.counts, sf7: counts } };
 }
 
-/** Strict VCP characteristics on the close of bar i (MA-MIN7-PP-VCP). */
-export function vcpCharacteristicsAt(bars, i) {
-  const v = vcpContractions(bars, i);
-  return v.status === 'EVIDENCE_ONLY' && v.count >= 2 && v.contractingLeftToRight === true && fin(v.lastContractionVolumeVs50d) && v.lastContractionVolumeVs50d < 1;
+/**
+ * ALT-SEPA-TT6-25 setup index: the 4.0 SEPA setup series with the lower printed reading of the 52-week-low criterion
+ * (25 % instead of 30 %, SF7_SOURCE_BOUNDS.aboveLow52wAlt); everything else is the reference.
+ */
+export function withTrendTemplateLow25(dataset, { from = null } = {}) {
+  const P = Object.freeze({ ...MIN_PARAMS, aboveLow: SF7_SOURCE_BOUNDS.aboveLow52wAlt.value });
+  const index = new Map(), counts = {};
+  for (const s of dataset.securities) {
+    const r = sepaSetupSeries(s, { P, from });
+    if (r.setups.size) index.set(s.id, r.setups);
+    for (const [k, v] of Object.entries(r.counts)) counts[k] = (counts[k] || 0) + v;
+  }
+  return { strategy: 'SEPA', index, counts: { ...counts, sf7: { aboveLow: P.aboveLow } } };
+}
+
+const RS_LINE_SESSIONS = 30; // 6 weeks (MA-MIN7-RS-LINE)
+
+/** RS line rising over the last 6 weeks on the close of bar i (bars 0..i, benchmark by date; null if not measurable). */
+export function rsLineRising(bars, i, benchByDate) {
+  if (i < RS_LINE_SESSIONS) return null;
+  const a = bars[i], b = bars[i - RS_LINE_SESSIONS], ma = benchByDate.get(a.date), mb = benchByDate.get(b.date);
+  if (!(fin(a.close) && fin(b.close) && fin(ma) && fin(mb) && ma > 0 && mb > 0 && b.close > 0)) return null;
+  return a.close / ma > b.close / mb;
 }
 
 /**
- * ALT-PP-VCP-REQUIRED setup index: the 4.0 Power Play index restricted to setups with VCP characteristics on their
- * close (B12 PDF 341). Non-confirmed setups are kept as they are (the 4.0 eligibility blocks them anyway).
+ * ALT-SEPA-RS-LINE setup index: the 4.0 SEPA index restricted to setups whose RS line rose over the last 6 weeks
+ * (B03 PDF 143). A setup whose RS line is not measurable is removed (no setup without its evidence).
  */
-export function withPowerPlayVcpRequired(dataset, refIndex) {
-  if (refIndex.strategy !== 'POWER_PLAY') throw new Error('POWER_PLAY_INDEX_REQUIRED');
+export function withRsLineRising(dataset, refIndex) {
+  if (refIndex.strategy !== 'SEPA') throw new Error('SEPA_INDEX_REQUIRED');
+  const bench = new Map((dataset.benchmark ?? []).map((b) => [b.date, b.close]));
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
-  const index = new Map(), counts = { confirmedKept: 0, confirmedRemovedNoVcp: 0 };
+  const index = new Map(), counts = { kept: 0, removedRsLineNotRising: 0, removedNotMeasurable: 0 };
   for (const [id, setups] of refIndex.index) {
     const bars = byId.get(id)?.bars, out = new Map();
     for (const [i, st] of setups) {
-      if (st.state !== 'CONFIRMED_MECHANICAL_SETUP') { out.set(i, st); continue; }
-      if (bars && vcpCharacteristicsAt(bars, i)) { out.set(i, st); counts.confirmedKept++; } else counts.confirmedRemovedNoVcp++;
+      const r = bars ? rsLineRising(bars, i, bench) : null;
+      if (r === true) { out.set(i, st); counts.kept++; } else counts[r === false ? 'removedRsLineNotRising' : 'removedNotMeasurable']++;
     }
     if (out.size) index.set(id, out);
   }
-  return { strategy: 'POWER_PLAY', index, counts: { ...refIndex.counts, sf7: counts } };
+  return { strategy: 'SEPA', index, counts: { ...refIndex.counts, sf7: counts } };
 }
 
 /** Pre-registered 7.0 variants: one-at-a-time changes of the setup index; the configuration stays the 4.0 reference. */
 export const SF7_VARIANTS = Object.freeze([
   Object.freeze({ id: 'ALT-SEPA-FLAT-BASE', strategy: 'SEPA', index: 'withFlatBaseSetups', config: REFERENCE_CONFIG, source: 'B12 PDF 306' }),
-  Object.freeze({ id: 'ALT-PP-VCP-REQUIRED', strategy: 'POWER_PLAY', index: 'withPowerPlayVcpRequired', config: REFERENCE_CONFIG, source: 'B12 PDF 341' }),
+  Object.freeze({ id: 'ALT-SEPA-TT6-25', strategy: 'SEPA', index: 'withTrendTemplateLow25', config: REFERENCE_CONFIG, source: 'B03 PDF 143, B12 PDF 101' }),
+  Object.freeze({ id: 'ALT-SEPA-RS-LINE', strategy: 'SEPA', index: 'withRsLineRising', config: REFERENCE_CONFIG, source: 'B03 PDF 143' }),
 ]);
 
 /** Fingerprint of the 7.0 additions' pre-registration (bounds, assumptions, variants). */
 export function sf7VariantRegistrySha256() {
-  return crypto.createHash('sha256').update(JSON.stringify({ version: SF7_MINERVINI_VERSION, bounds: SF7_SOURCE_BOUNDS, assumptions: SF7_MODEL_ASSUMPTIONS, variants: SF7_VARIANTS, flatMinSessions: FLAT_MIN_SESSIONS })).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify({ version: SF7_MINERVINI_VERSION, bounds: SF7_SOURCE_BOUNDS, assumptions: SF7_MODEL_ASSUMPTIONS, variants: SF7_VARIANTS, flatMinSessions: FLAT_MIN_SESSIONS, rsLineSessions: RS_LINE_SESSIONS })).digest('hex');
 }
 
 /**

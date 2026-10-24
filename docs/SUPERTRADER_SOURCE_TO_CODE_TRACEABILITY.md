@@ -209,6 +209,8 @@ SEPA: Trend Template qualification and VCP evidence as a machine screen, then ma
 
 | Quelle | Ausgabe | Seite | #709-Regel | Modalität/Conf./geprüft | Ausführbare Regel | Status | Code | Tests (Ergebnis) |
 |---|---|---|---|---|---|---|---|---|
+| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_EXACT | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER-EXACT (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | fundamentals answer | MIN-W18-5 | HARD/HIGH/ja | MIN-SF-PRICE-CONFIRM | SOURCE_DERIVED | `research/minervini-lifecycle.mjs#fillBuyOrder` | SF7-MIN-PRICE-CONFIRM (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 66 | MIN-PROCESS-15 | STRONG_PREFERENCE/MEDIUM/nein | MIN-SF-SIMPLE | SOURCE_DERIVED | `methods/minervini.mjs#sepaScreen` | GC-MIN-SEPA-NO-FUNDAMENTAL-GATE (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 61 | MIN-PROCESS-01 | HARD/MEDIUM/nein | MIN-SF-PROCESS | SOURCE_DERIVED | `methods/minervini.mjs#sepaScreen` | GC-MIN-SEPA-CANDIDATE (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 114 | MIN-TT-01 | HARD/MEDIUM/nein | MIN-SF-TT-1 | SOURCE_DERIVED | `methods/minervini.mjs#trendTemplate` | GC-MIN-TT-1 (PASS) |
@@ -244,12 +246,17 @@ SEPA: Trend Template qualification and VCP evidence as a machine screen, then ma
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 75; respective Minervini answer | MIN-MM-STOP-01 | HARD/MEDIUM/nein | MIN-SF-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 72; respective Minervini answer | MIN-MM-STOP-02 | HARD/MEDIUM/nein | MIN-SF-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 409 | MIN-RISK-05 | STRONG_PREFERENCE/MEDIUM/nein | MIN-SF-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | stop answer | MIN-W18-7 | STRONG_PREFERENCE/HIGH/ja | MIN-SF-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | stop answer | MIN-W18-8 | CONTEXTUAL/HIGH/ja | MIN-SF-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B03 | Mark Minervini / Think & Trade Like a Champion / Vietnamese copyright 2017; printed January 2018 / vi | PDF 193; printed 186 | MIN-TTC-SIZING | STRONG_PREFERENCE/MEDIUM/nein | MIN-SF-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 30; respective Minervini answer | MIN-MM-SIZE-01 | HARD/MEDIUM/nein | MIN-SF-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
+| W-MIN18 | Min ervin i own interview 2018 | progressive exposure answer | MIN-W18-3 | STRONG_PREFERENCE/HIGH/ja | MIN-SF-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
+| W-MIN18 | Min ervin i own interview 2018 | progressive exposure answer | MIN-W18-4 | EXAMPLE_ONLY/HIGH/ja | MIN-SF-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 92; respective Minervini answer | MIN-MM-SELL-01 | PREFERENCE/MEDIUM/nein | MIN-SF-SELL | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 93; respective Minervini answer | MIN-MM-SELL-02 | CONTEXTUAL/MEDIUM/nein | MIN-SF-SELL | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 90; respective Minervini answer | MIN-MM-SELL-03 | CONTEXTUAL/MEDIUM/nein | MIN-SF-SELL | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 91; respective Minervini answer | MIN-MM-SELL-04 | CONTEXTUAL/MEDIUM/nein | MIN-SF-SELL | MANUAL_REVIEW_REQUIRED | – | – |
+| W-MIN18 | Min ervin i own interview 2018 | selling answer | MIN-W18-2 | CONTEXTUAL/HIGH/ja | MIN-SF-SELL | MANUAL_REVIEW_REQUIRED | – | – |
 
 ## C07 `SF_MINERVINI_POWER_PLAY` – Mark Minervini
 
@@ -257,6 +264,7 @@ Power Play: >= 100 % in under eight weeks starting on strong volume, then a tigh
 
 | Quelle | Ausgabe | Seite | #709-Regel | Modalität/Conf./geprüft | Ausführbare Regel | Status | Code | Tests (Ergebnis) |
 |---|---|---|---|---|---|---|---|---|
+| W-MIN18 | Min ervin i own interview 2018 | riskmanagement answer | MIN-W18-1 | HARD/HIGH/ja | MIN-SF-STAGGER | SOURCE_EXACT | `research/minervini-sf7.mjs#staggeredStopRisk` | SF7-MIN-STAGGER-EXACT (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 341 | MIN-PP-01 | CONTEXTUAL/MEDIUM/nein | MIN-SF-PP-NOFUND | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-CANDIDATE (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 342 | MIN-PP-03 | CONTEXTUAL/MEDIUM/nein | MIN-SF-PP-DURATION | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-SHORT-CONSOLIDATION (PASS) |
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 342 | MIN-PP-02 | HARD/MEDIUM/nein | MIN-SF-PP-RUNUP | SOURCE_DERIVED | `methods/minervini.mjs#powerPlayScreen` | GC-MIN-PP-CANDIDATE (PASS)<br>GC-MIN-PP-SLOW-RUN (PASS) |
@@ -266,8 +274,12 @@ Power Play: >= 100 % in under eight weeks starting on strong volume, then a tigh
 | B12 | Mark Minervini / Trade Like a Stock Market Wizard / 2013; Indonesian machine-like translation / id | PDF 61 | MIN-RISK-01 | HARD/MEDIUM/nein | MIN-SF-PP-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 75; respective Minervini answer | MIN-MM-STOP-01 | HARD/MEDIUM/nein | MIN-SF-PP-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 72; respective Minervini answer | MIN-MM-STOP-02 | HARD/MEDIUM/nein | MIN-SF-PP-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | stop answer | MIN-W18-7 | STRONG_PREFERENCE/HIGH/ja | MIN-SF-PP-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
+| W-MIN18 | Min ervin i own interview 2018 | stop answer | MIN-W18-8 | CONTEXTUAL/HIGH/ja | MIN-SF-PP-STOP | MANUAL_REVIEW_REQUIRED | `methods/minervini.mjs#stopCheck` | GC-MIN-STOP-10PCT-FLAG (PASS) |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 30; respective Minervini answer | MIN-MM-SIZE-01 | HARD/MEDIUM/nein | MIN-SF-PP-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
 | B03 | Mark Minervini / Think & Trade Like a Champion / Vietnamese copyright 2017; printed January 2018 / vi | PDF 193; printed 186 | MIN-TTC-SIZING | STRONG_PREFERENCE/MEDIUM/nein | MIN-SF-PP-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
+| W-MIN18 | Min ervin i own interview 2018 | progressive exposure answer | MIN-W18-3 | STRONG_PREFERENCE/HIGH/ja | MIN-SF-PP-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
+| W-MIN18 | Min ervin i own interview 2018 | progressive exposure answer | MIN-W18-4 | EXAMPLE_ONLY/HIGH/ja | MIN-SF-PP-SIZE | MANUAL_REVIEW_REQUIRED | – | – |
 | B07 | Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II / Momentum Masters / 2015 original; 2021 Indonesian translation file / id | PDF 92; respective Minervini answer | MIN-MM-SELL-01 | PREFERENCE/MEDIUM/nein | MIN-SF-PP-EXIT | MANUAL_REVIEW_REQUIRED | – | – |
 
 ## C08 `SF_KK_BREAKOUT` – Kristjan Kullamaegi
