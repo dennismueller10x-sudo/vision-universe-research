@@ -206,3 +206,26 @@ Was die Zählungen zeigen (keine Performanceaussage):
   - Bei EP liegt der gleiche Anteil je Schicht bei 33/293 = 11,3 %.
   - Mehrere Schichten mit hoher Liquidität (≥ 100 Mio. USD) haben weniger als 100 Kandidaten und fallen aus der Schichtung heraus.
   - Die Stichprobe bleibt eine Stichprobe und ist keine repräsentative Gesamtaussage.
+
+### Eigentümerentscheidung E5 (24.10.2026): keine weiteren Abrufe, nur ein Plan
+
+Es gibt **keine zusätzlichen EP- oder PS-Intraday-Abrufe**. Der folgende Plan ist eine dokumentierte Vorlage für eine spätere Freigabe. Er bleibt im bestehenden Budget (≤ 6.000 Anfragen je Lauf, keine Erhöhung) und ist **nicht** ausgeführt.
+
+Ausgangslage aus Lauf 40001460163, Schichtung Jahr × Liquidität:
+- **EP:** Der gemeinsame Anteil liegt bei 11,3 %. Er wird durch die Schicht 2017/2019 mit 10–100 Mio. $ begrenzt.
+  - Die Schichten 2017–2019 mit ≥ 100 Mio. $ haben weniger als 100 Kandidaten (67/85/81). Sie fehlen in der Schichtung.
+  - Das ist eine Grenze der Grundgesamtheit, keine Stichprobengrenze; mehr Abrufe ändern daran nichts.
+- **PS:** Der gemeinsame Anteil liegt bei 2,1 % und wird durch 2018 mit 10–100 Mio. $ begrenzt. Alle 30 Schichten sind auswertbar; 2,6–3,9 % ihrer Kandidaten liegen im Cache.
+
+Priorisierte Aufstockung. Die Auswahl erfolgt je Schicht in der bestehenden Hash-Reihenfolge, also unabhängig von jedem Ergebnis:
+
+| Priorität | Schritt | zusätzliche Tage | Anfragen | gemeinsamer Anteil danach |
+|---|---|---|---|---|
+| 1 | PS auf 3,5 % je Schicht | 294 | ≈ 294 | 3,5 % (statt 2,1 %) |
+| 2 | EP auf 15 % je Schicht | 127 | ≈ 254 (Minuten und Basis) | 15 % (statt 11,3 %) |
+| 3 | PS auf 5 % je Schicht | weitere ≈ 970 | ≈ 970 | 5 % |
+| 4 | EP auf 20 % je Schicht | weitere ≈ 620 | ≈ 1.240 | 20 % |
+
+- **Umfang:** Die Schritte 1 und 2 passen mit ≈ 550 Anfragen in einen einzigen Lauf. Alle vier Schritte zusammen brauchen ≈ 2.760 Anfragen, weniger als die Hälfte des bestehenden Laufbudgets.
+- **Regime:** Die Schichtung nach SPY-Regime bleibt eine Zusatzauswertung.
+- **Was bleibt:** Auch nach allen vier Schritten ist die Stichprobe deterministisch und nur IEX-basiert. Sie ist weiterhin keine repräsentative Gesamtaussage, und die Grenzen der Grundgesamtheit (2017–2019, ≥ 100 Mio. $) bleiben.
