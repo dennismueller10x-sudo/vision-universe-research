@@ -7,12 +7,17 @@
  *     bucket and resumable; a day that is not (yet) fetched is reported as such, never simulated from daily bars;
  *  EP  every pre-registered variant on the shared research engine (research-v1, order type INTRADAY_RESOLVED);
  *  PS  every pre-registered variant as a trade-level short model study (no borrow data, never executable).
+ * Supertrader 6.0 (research/kk-sample.mjs): every evaluation runs on explicit day sets: BEFORE_FIX (the 1.1.0 behaviour,
+ * for the before / after comparison only), CLEAN (PS: its own clean hash prefix; EP: one common day set for all
+ * variants) and two stratified equal-fraction samples (year x liquidity [x SPY regime]). PS additionally reports the
+ * overlap variant ONE_POSITION_PER_TICKER and the shorts open at the data end. --cache-only skips both fetch loops
+ * (zero requests, asserted) and evaluates the existing private cache.
  * Public (repository log): candidate counts per year, fetch coverage, statuses, trade and exit-reason counts, hashes.
  * Sealed (owner key): metrics and trade lists. Minute values never leave the sealed file and the private cache
  * (internal, non-displaying use).
  *
  *   node scripts/supertrader/source-faithful/research/run-kk-intraday.mjs --snapshot sts1-<id> --accounting research-v1 \
- *        --out <dir> [--max-requests 6000] [--count-only] [--limit 400 --smoke-snapshot]
+ *        --out <dir> [--max-requests 6000] [--count-only | --cache-only] [--limit 400 --smoke-snapshot]
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,12 +32,13 @@ import { eligibleAtPriorSession } from '../common/series.mjs';
 import { runResearchLifecycle, runMetricsSF5, prepareAll, ENGINE_VERSION } from './lifecycle-engine.mjs';
 import { toSession, compactSession, expandSession, tickerOf, KK_INTRADAY_VERSION } from './kk-intraday.mjs';
 import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION, IEX_BASELINE_SESSIONS, IEX_BASELINE_MIN_DAYS } from './kk-ep-lifecycle.mjs';
-import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, psChartCandidate, runPsCandidate, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
+import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, PS_OVERLAP_POLICIES, psChartCandidate, evaluatePsCandidates, psTradeMetrics, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
+import { KK_SAMPLE_VERSION, STRATA_SCHEMES, STRATA_MIN_POPULATION, OUTSIDE_DAY_SET, hashOrder, median, cleanPrefix, epCommonDaySet, regimeByDate, strataFeatures, stratumOf, stratifiedSample, kkSampleRegistrySha256 } from './kk-sample.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.1.0';
-export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'run-kk-intraday.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.2.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only
+export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'run-kk-intraday.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
 export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
 export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
 // Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
@@ -75,7 +81,7 @@ export function candidateCounts(list, firstIntraday) {
 }
 
 /** Deterministic fetch order: sha256 of the cache key (no ranking by anything that could relate to an outcome). */
-export const fetchOrder = (keys) => [...new Set(keys)].sort((a, b) => (sha(a) < sha(b) ? -1 : sha(a) > sha(b) ? 1 : 0));
+export const fetchOrder = hashOrder;
 
 /** Every budget ({ used, max }) in `budgets` still has room. */
 export const hasRoom = (budgets, n = 1) => budgets.every((b) => b.max - b.used >= n);
@@ -116,6 +122,77 @@ export function iexBaselineFromRange(rangeBars, sessionDates) {
   return withVol >= IEX_BASELINE_MIN_DAYS ? { mean: vols.reduce((a, b) => a + b, 0) / vols.length, days: vols.length, daysWithVolume: withVol } : { mean: null, days: vols.length, daysWithVolume: withVol };
 }
 
+/**
+ * Both fetch loops (EP first: baseline and minutes per day; PS with the rest of the run budget), deterministic hash
+ * order, resumable. With `cacheOnly` nothing is fetched at all (the loops are skipped; the caller asserts 0 requests).
+ */
+export async function runFetchLoops({ cacheOnly, epOrder, psOrder, minuteCache, baseCache, budget, epBudget, fetchMinutes, fetchBaseline, checkpoint = async () => {}, pause = () => new Promise((res) => setTimeout(res, 120)) }) {
+  if (cacheOnly) return { skipped: true };
+  const epB = [budget, epBudget];
+  for (const k of epOrder) {
+    const needBase = !(k in baseCache), needMin = !(k in minuteCache);
+    if (!needBase && !needMin) continue;
+    if (!hasRoom(epB, (needBase ? 1 : 0) + (needMin ? 1 : 0))) break; // do not start a day without room for both requests (retries can still leave one for a later run)
+    if (needBase) await fetchBaseline(k, epB);
+    if (needMin) await fetchMinutes(k, epB);
+    await checkpoint(); await pause();
+  }
+  for (const k of psOrder) {
+    if (!hasRoom([budget])) break;
+    if (k in minuteCache) continue;
+    await fetchMinutes(k, [budget]);
+    await checkpoint(); await pause();
+  }
+  return { skipped: false };
+}
+
+/** sha256 of a day set (sorted keys): public evidence of which days an evaluation used, never the keys themselves. */
+export const daySetSha256 = (keys) => sha([...keys].sort());
+
+/**
+ * Day sets of every evaluation (Supertrader 6.0, research/kk-sample.mjs), from the cache contents only:
+ *  ep.CLEAN = EP common day set (EP prefix, minutes and baseline mean > 0); ps.CLEAN = PS clean prefix;
+ *  STRAT_<scheme> = equal-fraction stratified sample of the clean prefix (EP: intersected with the common day set).
+ * BEFORE_FIX is null (no restriction: every cached day, the 1.1.0 behaviour). Returns { ep, ps, public }.
+ */
+export function buildDaySets({ epCands, psCands, minuteCache, baseCache, barsOf, benchmark }) {
+  const epFirst = new Map(), psFirst = new Map();
+  for (const c of epCands) { const k = `${c.ticker}|${c.date}`; if (c.date >= EP_FIRST_INTRADAY_DATE && !epFirst.has(k)) epFirst.set(k, c); }
+  for (const c of psCands) { const k = `${c.ticker}|${c.date}`; if (c.date >= PS_FIRST_INTRADAY_DATE && !psFirst.has(k)) psFirst.set(k, c); }
+  const epOrder = hashOrder([...epFirst.keys()]), psOrder = hashOrder([...psFirst.keys()]);
+  const epP = cleanPrefix(epOrder, { cached: (k) => k in minuteCache && k in baseCache, ownPath: (k) => k in baseCache });
+  const psP = cleanPrefix(psOrder, { cached: (k) => k in minuteCache, ownPath: (k) => k in minuteCache && !epFirst.has(k) });
+  const common = epCommonDaySet(epP.keys, baseCache);
+  const regimes = regimeByDate(benchmark);
+  const feats = (m) => new Map([...m].map(([k, c]) => [k, strataFeatures(barsOf(c), c.i, regimes)]));
+  const epF = feats(epFirst), psF = feats(psFirst);
+  const ep = { BEFORE_FIX: null, CLEAN: common.keys }, ps = { BEFORE_FIX: null, CLEAN: psP.keys }, strataOf = {};
+  const pub = { version: KK_SAMPLE_VERSION, registrySha256: kkSampleRegistrySha256(), minPopulation: STRATA_MIN_POPULATION, ep: { prefix: epP.counts, commonDaySet: { size: common.keys.size, excluded: common.excluded } }, ps: { prefix: psP.counts, psCandidatesThatAreEpCandidates: { population: psOrder.filter((k) => epFirst.has(k)).length, inPsPrefix: [...psP.keys].filter((k) => epFirst.has(k)).length, cachedOutsidePsPrefixDropped: psOrder.filter((k) => epFirst.has(k) && k in minuteCache && !psP.keys.has(k)).length } }, strata: {} };
+  for (const sc of STRATA_SCHEMES) {
+    const id = `STRAT_${sc.id}`;
+    const epPop = new Map([...epF].map(([k, f]) => [k, stratumOf(f, sc)])), psPop = new Map([...psF].map(([k, f]) => [k, stratumOf(f, sc)]));
+    const es = stratifiedSample(epPop, epP.keys), pss = stratifiedSample(psPop, psP.keys);
+    ep[id] = new Set([...es.keys].filter((k) => common.keys.has(k))); ps[id] = pss.keys;
+    strataOf[id] = { ep: epPop, ps: psPop };
+    pub.strata[id] = { dims: sc.dims, ep: { fraction: es.fraction, strata: es.strata, excludedSmallStrata: es.excludedSmallStrata, keptBeforeCommonDaySet: es.keys.size, keptInCommonDaySet: ep[id].size }, ps: { fraction: pss.fraction, strata: pss.strata, excludedSmallStrata: pss.excludedSmallStrata, kept: pss.keys.size } };
+  }
+  pub.daySetSha256 = { ep: Object.fromEntries(Object.entries(ep).filter(([, v]) => v).map(([k, v]) => [k, daySetSha256(v)])), ps: Object.fromEntries(Object.entries(ps).filter(([, v]) => v).map(([k, v]) => [k, daySetSha256(v)])) };
+  return { ep, ps, strataOf, epOrder, psOrder, public: pub };
+}
+
+/** Trade-level summary of EP engine trades (sealed): return on the entry notional, closed trades only. */
+export function epTradeSummary(trades) {
+  const closed = trades.filter((t) => t.status === 'CLOSED' && t.shares > 0 && t.entryFill > 0);
+  const rets = closed.map((t) => t.realizedPnl / (t.shares * t.entryFill)).filter(Number.isFinite);
+  return { label: 'TRADE_LEVEL_RETURN_ON_ENTRY_NOTIONAL', trades: trades.length, closed: closed.length, openAtDataEnd: trades.filter((t) => t.status === 'OPEN_AT_DATA_END').length, meanReturn: rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null, medianReturn: median(rets), hitRate: rets.length ? rets.filter((x) => x > 0).length / rets.length : null };
+}
+/** Groups trades by the stratum of their key (sealed per-stratum metrics). */
+export function byStratum(trades, keyOf, strata, summarize) {
+  const g = new Map();
+  for (const t of trades) { const s = strata.get(keyOf(t)) ?? 'UNKNOWN'; if (!g.has(s)) g.set(s, []); g.get(s).push(t); }
+  return Object.fromEntries([...g.keys()].sort().map((s) => [s, summarize(g.get(s))]));
+}
+
 async function main() {
   const argv = process.argv.slice(2), arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   if (arg('--accounting') !== 'research-v1') { console.error('RESEARCH_ACCOUNTING_REQUIRED'); process.exit(2); }
@@ -123,6 +200,8 @@ async function main() {
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
   const LIMIT = intArg(arg('--limit', '0'), 0, 1e6), MAX_REQ = intArg(arg('--max-requests', String(DEFAULT_MAX_REQUESTS)), 1, MAX_REQUESTS_CAP), COUNT_ONLY = argv.includes('--count-only');
+  const CACHE_ONLY = argv.includes('--cache-only');
+  if (COUNT_ONLY && CACHE_ONLY) { console.error('COUNT_ONLY_AND_CACHE_ONLY_EXCLUSIVE'); process.exit(2); }
   if (LIMIT === null) { console.error('LIMIT_INVALID'); process.exit(2); }
   if (MAX_REQ === null) { console.error(`MAX_REQUESTS_INVALID (integer 1..${MAX_REQUESTS_CAP})`); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[kk +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
@@ -155,7 +234,7 @@ async function main() {
   const pub = { schema: 'supertrader-kk-intraday-public-1.0.0', receipt, label: 'CHART_FIRST_MODEL_STUDIES_NOT_ORIGINAL_EP_NOT_EXECUTABLE_SHORTS', candidates: counts };
   fs.mkdirSync(OUT, { recursive: true });
   const write = (sealed) => {
-    const tag = `kk-intraday${COUNT_ONLY ? '-count' : ''}${LIMIT || verification.smokeStore ? '-smoke' : ''}`;
+    const tag = `kk-intraday${COUNT_ONLY ? '-count' : CACHE_ONLY ? '-cache' : ''}${LIMIT || verification.smokeStore ? '-smoke' : ''}`;
     fs.writeFileSync(path.join(OUT, `${tag}.public.json`), JSON.stringify(pub, null, 1) + '\n');
     const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
     fs.writeFileSync(path.join(OUT, `${tag}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ receipt, public: pub, ...sealed }))));
@@ -163,9 +242,9 @@ async function main() {
   };
   if (COUNT_ONLY) { write({}); return; }
 
-  // B: minute cache (private bucket, sharded), budgeted and resumable
+  // B: minute cache (private bucket, sharded), budgeted and resumable; --cache-only reads it and fetches nothing
   const { createS3DriverFromEnv } = await import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs'));
-  const driver = createS3DriverFromEnv(process.env), KEY = process.env.TIINGO_API_KEY || '';
+  const driver = createS3DriverFromEnv(process.env), KEY = CACHE_ONLY ? '' : process.env.TIINGO_API_KEY || '';
   const SHARDS = Array.from({ length: CACHE_SHARDS }, (_, n) => n.toString(16));
   const getShard = async (kind, h) => { pit.budget.consumeClassB(1, `GET ${kind}-${h}`); const b = await driver.get(pit.mine.seriesPrefix + cacheKey(kind, h)); return b ? JSON.parse(zlib.gunzipSync(b).toString('utf8')) : {}; };
   const loadAll = async (kind) => { const o = {}; for (const h of SHARDS) Object.assign(o, await getShard(kind, h)); return o; };
@@ -173,7 +252,7 @@ async function main() {
   const mark = (kind, k) => { const h = shardOf(k); if (!added[kind].has(h)) added[kind].set(h, new Set()); added[kind].get(h).add(k); };
   // re-read a shard before writing it, so entries another run added meanwhile are kept (definitive entries only)
   const saveDirty = async (kind, cache) => {
-    if (LIMIT || verification.smokeStore) return; // smoke runs never write the shared cache
+    if (LIMIT || verification.smokeStore || CACHE_ONLY) return; // smoke and cache-only runs never write the shared cache
     for (const [h, keys] of added[kind]) {
       const merged = await getShard(kind, h);
       for (const k of keys) merged[k] = cache[k];
@@ -187,10 +266,12 @@ async function main() {
   const sec = new Map(dataset.securities.map((s) => [s.id, s]));
   const epKeys = [...new Set(cand.ep.filter((c) => c.date >= EP_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`))];
   const psKeys = [...new Set(cand.ps.filter((c) => c.date >= PS_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`))];
-  const budget = { used: 0, max: MAX_REQ }, epBudget = { used: 0, max: Math.floor(MAX_REQ * EP_BUDGET_SHARE) };
+  const budget = { used: 0, max: CACHE_ONLY ? 0 : MAX_REQ }, epBudget = { used: 0, max: CACHE_ONLY ? 0 : Math.floor(MAX_REQ * EP_BUDGET_SHARE) };
   const epByKey = new Map(cand.ep.map((c) => [`${c.ticker}|${c.date}`, c]));
   const httpStatus = {};
+  const noRequests = () => { throw new Error('CACHE_ONLY_NO_REQUESTS'); };
   const fetchMinutes = async (k, b) => {
+    if (CACHE_ONLY) noRequests();
     const [t, d] = k.split('|');
     const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, KEY, b);
     bump(httpStatus, `minutes:${r.status}`);
@@ -198,6 +279,7 @@ async function main() {
     return r.status;
   };
   const fetchBaseline = async (k, b) => {
+    if (CACHE_ONLY) noRequests();
     const c = epByKey.get(k), bars = sec.get(c.id).bars;
     if (c.i < IEX_BASELINE_SESSIONS) { baseCache[k] = { mean: null, reason: 'HISTORY' }; mark('baseline', k); return 'HISTORY'; }
     const dates = bars.slice(c.i - IEX_BASELINE_SESSIONS, c.i).map((x) => x.date), [t] = k.split('|');
@@ -212,71 +294,75 @@ async function main() {
   };
   let lastSave = 0;
   const checkpoint = async () => { if (budget.used - lastSave >= CHECKPOINT_REQUESTS) { lastSave = budget.used; await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache); log(`requests ${budget.used}`); } };
-  // EP first (each day needs its baseline and its minutes), deterministic hash order
-  const epB = [budget, epBudget];
-  for (const k of fetchOrder(epKeys)) {
-    const needBase = !(k in baseCache), needMin = !(k in minuteCache);
-    if (!needBase && !needMin) continue;
-    if (!hasRoom(epB, (needBase ? 1 : 0) + (needMin ? 1 : 0))) break; // do not start a day without room for both requests (retries can still leave one for a later run)
-    if (needBase) await fetchBaseline(k, epB);
-    if (needMin) await fetchMinutes(k, epB);
-    await checkpoint(); await new Promise((res) => setTimeout(res, 120));
-  }
-  // PS with the rest of the run budget
-  for (const k of fetchOrder(psKeys)) {
-    if (!hasRoom([budget])) break;
-    if (k in minuteCache) continue;
-    await fetchMinutes(k, [budget]);
-    await checkpoint(); await new Promise((res) => setTimeout(res, 120));
-  }
+  const loops = await runFetchLoops({ cacheOnly: CACHE_ONLY, epOrder: fetchOrder(epKeys), psOrder: fetchOrder(psKeys), minuteCache, baseCache, budget, epBudget, fetchMinutes, fetchBaseline, checkpoint });
+  if (CACHE_ONLY && (budget.used !== 0 || epBudget.used !== 0 || Object.keys(httpStatus).length || !loops.skipped)) throw new Error('CACHE_ONLY_REQUEST_COUNT_NOT_ZERO');
   await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache);
   const requests = budget.used;
   pub.intradayCoverage = {
-    requestsThisRun: requests, epRequests: epBudget.used, maxRequests: MAX_REQ, epBudgetShare: EP_BUDGET_SHARE, baselineFreqs: BASELINE_FREQS, httpStatus,
-    sample: 'DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related)',
+    mode: CACHE_ONLY ? 'CACHE_ONLY_ZERO_REQUESTS' : 'FETCH_BUDGETED', fetchLoopsSkipped: loops.skipped,
+    requestsThisRun: requests, epRequests: epBudget.used, maxRequests: CACHE_ONLY ? 0 : MAX_REQ, epBudgetShare: EP_BUDGET_SHARE, baselineFreqs: BASELINE_FREQS, httpStatus,
+    sample: 'DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related); evaluated on the clean per-method prefixes (Supertrader 6.0), NOT automatically representative',
     minuteCache: { start: startMinutes, end: Object.keys(minuteCache).length, emptyDays: Object.values(minuteCache).filter((v) => !v.k?.length).length },
     baselineCache: { start: startBase, end: Object.keys(baseCache).length },
-    ep: { candidateDaysInIexHistory: epKeys.length, withMinutes: epKeys.filter((k) => k in minuteCache).length, withBaseline: epKeys.filter((k) => baseCache[k]?.mean > 0).length, baselineTooFewIexDays: epKeys.filter((k) => k in baseCache && !(baseCache[k].mean > 0)).length },
+    ep: { candidateDaysInIexHistory: epKeys.length, withMinutes: epKeys.filter((k) => k in minuteCache).length, withBaseline: epKeys.filter((k) => baseCache[k]?.mean > 0).length, baselineTooFewIexDays: epKeys.filter((k) => k in baseCache && !(baseCache[k].mean > 0)).length, withMinutesWithoutBaseline: epKeys.filter((k) => k in minuteCache && !(k in baseCache)).length },
     ps: { candidateDaysInIexHistory: psKeys.length, withMinutes: psKeys.filter((k) => k in minuteCache).length },
     complete: epKeys.every((k) => k in minuteCache && k in baseCache) && psKeys.every((k) => k in minuteCache),
   };
+  receipt.cacheOnly = CACHE_ONLY;
   receipt.minuteCacheSha256 = sha(fetchOrder([...epKeys, ...psKeys]).filter((k) => k in minuteCache).map((k) => [k, minuteCache[k]]));
   receipt.baselineCacheSha256 = sha(fetchOrder(epKeys).filter((k) => k in baseCache).map((k) => [k, baseCache[k]]));
-  log(`coverage: EP minutes ${pub.intradayCoverage.ep.withMinutes}/${epKeys.length}, baselines ${pub.intradayCoverage.ep.withBaseline}; PS minutes ${pub.intradayCoverage.ps.withMinutes}/${psKeys.length}; requests ${requests}`);
+  log(`coverage: EP minutes ${pub.intradayCoverage.ep.withMinutes}/${epKeys.length}, baselines ${pub.intradayCoverage.ep.withBaseline}; PS minutes ${pub.intradayCoverage.ps.withMinutes}/${psKeys.length}; requests ${requests}${CACHE_ONLY ? ' (cache-only)' : ''}`);
 
-  // EP: engine variants
+  // Supertrader 6.0: day sets (clean per-method prefixes, EP common day set, stratified equal-fraction samples)
+  const sets = buildDaySets({ epCands: cand.ep, psCands: cand.ps, minuteCache, baseCache, barsOf: (c) => sec.get(c.id).bars, benchmark: dataset.benchmark });
+  pub.sampling = { ...sets.public, statement: 'a deterministic hash sample is outcome-independent but NOT automatically representative; the stratified samples equalise the sampling fraction per stratum, they are still samples, never a full backtest' };
+  receipt.sampleVersion = KK_SAMPLE_VERSION; receipt.sampleRegistrySha256 = kkSampleRegistrySha256(); receipt.daySetSha256 = sets.public.daySetSha256;
+  log(`day sets: EP prefix ${sets.public.ep.prefix.cachedInPrefix}, common ${sets.public.ep.commonDaySet.size}; PS prefix ${sets.public.ps.prefix.cachedInPrefix} (dropped beyond ${sets.public.ps.prefix.cachedBeyondPrefixDropped})`);
+  const SET_IDS = ['BEFORE_FIX', 'CLEAN', ...STRATA_SCHEMES.map((sc) => `STRAT_${sc.id}`)];
+
+  // EP: engine variants on each day set (one delegating accessor, so the prepared contexts are shared)
+  let cur = null;
+  const has = (t, d) => `${t}|${d}` in minuteCache;
   dataset.kkIntraday = {
     minutes: (t, d) => { const c = minuteCache[`${t}|${d}`]; return c === undefined ? undefined : expandSession(c); },
     iexBaseline: (t, d) => baseCache[`${t}|${d}`]?.mean ?? null,
+    excluded: (t, d) => cur !== null && has(t, d) && !cur.has(`${t}|${d}`),
   };
   const sealed = { ep: {}, ps: {} };
-  pub.ep = { label: KK_EP_ADAPTER.label, variants: {} };
+  pub.ep = { label: KK_EP_ADAPTER.label, referenceDaySet: 'CLEAN', sets: {} };
   const prepCache = new Map();
-  for (const v of EP_RUN_VARIANTS) {
-    const key = KK_EP_ADAPTER.prepareKey(v.config);
-    if (!prepCache.has(key)) prepCache.set(key, prepareAll(dataset, KK_EP_ADAPTER, v.config));
-    const r = runResearchLifecycle(dataset, { adapter: KK_EP_ADAPTER, config: v.config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
-    if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${v.id}`);
-    const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
-    pub.ep.variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
-    sealed.ep[v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), trades: r.trades.map((t) => ({ id: t.id, entryDate: t.entryDate, entryFill: t.entryFill, initialStop: t.initialStop, exitDate: t.exitDate, exitReason: t.exitReason, realizedPnl: t.realizedPnl, intraday: t.intradayEvidence })) };
-    log(`EP ${v.id}: trades ${r.trades.length}`);
-  }
-  // PS: trade-level short studies
-  pub.ps = { label: 'CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE', variants: {} };
-  for (const v of PS_RUN_VARIANTS) {
-    const statuses = {}, exits = {}, years = {}, trades = [];
-    for (const c of cand.ps) {
-      const bars = sec.get(c.id).bars, pc = psChartCandidate(bars, c.i, v.config); if (!pc) continue;
-      if (c.date < L.WINDOW.from || c.date > L.WINDOW.to) continue;
-      const res = runPsCandidate({ bars, cand: pc, minutes: dataset.kkIntraday.minutes(c.ticker, c.date), cfg: v.config });
-      bump(statuses, res.status);
-      if (res.status === 'CLOSED') { trades.push({ id: c.id, ...res.trade }); bump(years, c.date.slice(0, 4)); for (const x of res.trade.exitReasons) bump(exits, x); }
+  for (const setId of SET_IDS) {
+    cur = sets.ep[setId]; pub.ep.sets[setId] = { variants: {} }; sealed.ep[setId] = {};
+    for (const v of EP_RUN_VARIANTS) {
+      const key = KK_EP_ADAPTER.prepareKey(v.config);
+      if (!prepCache.has(key)) prepCache.set(key, prepareAll(dataset, KK_EP_ADAPTER, v.config));
+      const r = runResearchLifecycle(dataset, { adapter: KK_EP_ADAPTER, config: v.config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
+      if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${setId}:${v.id}`);
+      const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
+      pub.ep.sets[setId].variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
+      sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map((t) => ({ id: t.id, status: t.status, entryDate: t.entryDate, entryFill: t.entryFill, initialStop: t.initialStop, exitDate: t.exitDate, exitReason: t.exitReason, realizedPnl: t.realizedPnl, unrealizedPnl: t.unrealizedPnl ?? null, intraday: t.intradayEvidence })) };
+      log(`EP ${setId} ${v.id}: trades ${r.trades.length}`);
     }
-    const rs = trades.map((t) => t.netReturn).sort((a, b) => a - b), rm = trades.map((t) => t.rMultiple).filter(Number.isFinite);
-    pub.ps.variants[v.id] = { changes: v.changes, statuses, closedTrades: trades.length, exitReasons: exits, entryYears: years, tradesSha256: sha(trades.map((t) => [t.id, t.entryDate, t.exitReasons])) };
-    sealed.ps[v.id] = { metrics: { label: 'TRADE_LEVEL_SHORT_MODEL_STUDY_NO_BORROW_COST', trades: trades.length, meanNetReturn: rs.length ? rs.reduce((a, b) => a + b, 0) / rs.length : null, medianNetReturn: rs.length ? rs[Math.floor(rs.length / 2)] : null, hitRate: rs.length ? rs.filter((x) => x > 0).length / rs.length : null, meanR: rm.length ? rm.reduce((a, b) => a + b, 0) / rm.length : null }, trades };
-    log(`PS ${v.id}: closed ${trades.length}`);
+  }
+  cur = null;
+  // PS: trade-level short studies on each day set, reference overlap (INDEPENDENT) and ONE_POSITION_PER_TICKER
+  pub.ps = { label: 'CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE', referenceDaySet: 'CLEAN', referenceOverlap: PS_OVERLAP_POLICIES[0], sets: {} };
+  const terminalOf = (id) => (sec.get(id)?.terminal?.cause ?? 'ACTIVE_AT_DATA_END');
+  for (const setId of SET_IDS) {
+    const daySet = sets.ps[setId];
+    pub.ps.sets[setId] = {}; sealed.ps[setId] = {};
+    for (const overlap of PS_OVERLAP_POLICIES) {
+      pub.ps.sets[setId][overlap] = { variants: {} }; sealed.ps[setId][overlap] = {};
+      for (const v of PS_RUN_VARIANTS) {
+        const res = evaluatePsCandidates({ cands: cand.ps, barsOf: (c) => sec.get(c.id).bars, minutesOf: (c) => dataset.kkIntraday.minutes(c.ticker, c.date), inDaySet: (c) => daySet === null || daySet.has(`${c.ticker}|${c.date}`), cfg: v.config, overlap, from: L.WINDOW.from, to: L.WINDOW.to, outsideStatus: OUTSIDE_DAY_SET });
+        const exits = {}, years = {}, openTerm = {};
+        for (const t of res.closed) { bump(years, t.entryDate.slice(0, 4)); for (const x of t.exitReasons) bump(exits, x); }
+        for (const t of res.open) bump(openTerm, terminalOf(t.id));
+        pub.ps.sets[setId][overlap].variants[v.id] = { changes: v.changes, statuses: res.statuses, closedTrades: res.closed.length, openAtDataEnd: res.open.length, openAtDataEndByTerminal: openTerm, exitReasons: exits, entryYears: years, tradesSha256: sha(res.closed.map((t) => [t.id, t.entryDate, t.exitReasons])), openTradesSha256: sha(res.open.map((t) => [t.id, t.entryDate])) };
+        sealed.ps[setId][overlap][v.id] = { metrics: psTradeMetrics(res.closed, res.open), ...(sets.strataOf[setId] ? { perStratum: byStratum([...res.closed, ...res.open], (t) => t.key, sets.strataOf[setId].ps, (ts) => psTradeMetrics(ts.filter((t) => Number.isFinite(t.netReturn)), ts.filter((t) => !Number.isFinite(t.netReturn)))) } : {}), trades: res.closed, open: res.open.map((t) => ({ ...t, terminal: terminalOf(t.id) })) };
+      }
+      log(`PS ${setId} ${overlap}: REF closed ${pub.ps.sets[setId][overlap].variants.REF.closedTrades}`);
+    }
   }
   write(sealed);
 }

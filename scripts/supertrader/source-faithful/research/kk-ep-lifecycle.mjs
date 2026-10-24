@@ -28,9 +28,10 @@ import crypto from 'node:crypto';
 import { fin, smaAt, rawTickAdjusted } from '../common/series.mjs';
 import { adr20, epStopCheck, KK_PARAMS, KK_VERSION } from '../methods/kullamagi.mjs';
 import { eligibilityResult } from './lifecycle-engine.mjs';
+import { OUTSIDE_DAY_SET } from './kk-sample.mjs';
 import { KK_INTRADAY_VERSION, openingRange, runningVwap, identityCheck, openIdentityCheck, tickerOf } from './kk-intraday.mjs';
 
-export const KK_EP_LIFECYCLE_VERSION = 'kk-ep-chart-lifecycle-1.1.0';
+export const KK_EP_LIFECYCLE_VERSION = 'kk-ep-chart-lifecycle-1.2.0'; // 1.2.0 (Supertrader 6.0): common day set hook (excluded)
 export const EP_LABEL = 'CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT';
 export const EP_CLASS = Object.freeze({ CHART: 'CHART_EP_CANDIDATE', INTRADAY_CONFIRMED: 'INTRADAY_CONFIRMED_CHART_EP_SETUP', ORIGINAL: 'CATALYST_CONFIRMED_ORIGINAL_EP' });
 export const EP_ORIGINAL_CLASS_ASSIGNABLE = false; // catalyst data DATA_BLOCKED (owner decision 2026-10-23: no news database)
@@ -53,6 +54,7 @@ export const EP_MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-EP-EXIT', phase: 'EXIT_CONDITIONS', reference: 'MA20: first daily close below the 20-day MA exits at the next open (plus the low-of-day stop-market)', alternatives: ['MA10', 'MA50'], why: 'KK-017 names 20 / 50 and later 10 / 20-day MAs (SOURCE_AMBIGUOUS, KK-C2); 20 is named in both readings' },
   { id: 'MA-EP-SIZING', phase: 'POSITION_SIZING', reference: 'RISK 0.005 of equity to the low-of-day stop, KK-001 cap 30 % (platform 25 %)', alternatives: ['RISK 0.0025', 'RISK 0.01'], why: 'KK-SF-SIZE is the reviewer\'s; the printed context ranges KK-003 / KK-025' },
   { id: 'MA-EP-UNIVERSE', phase: 'ENTRY_ELIGIBILITY', reference: 'VU_TOURNAMENT_UNIVERSE_705 at the session before the gap day', alternatives: [], why: 'measurement convention shared by every method' },
+  { id: 'MA-EP-COMMON-DAY-SET', phase: 'SAMPLING', reference: 'all variants of one evaluation run on the same day set (research/kk-sample.mjs MA-SAMPLE-EP-COMMON-DAY-SET): a cached day outside it is NOT_EVALUATED_OUTSIDE_DAY_SET for every variant', alternatives: [], why: 'Supertrader 6.0 review: PACE_20 and NONE ran on different day sets (days without IEX baseline)' },
   { id: 'MA-EP-COSTS', phase: 'ENTRY_EXECUTION', reference: '10 bps slippage per side, 1 bp commission (platform policy)', alternatives: [], why: 'no costs in the source' },
 ]);
 
@@ -145,7 +147,8 @@ export function resolveEpDay({ minutes, bar, rawFactor, adrPct, iexBaseline, cfg
 
 /**
  * dataset.kkIntraday: { minutes(ticker, date) -> session minutes | [] (fetched, empty) | undefined (not fetched),
- * iexBaseline(ticker, date) -> mean IEX daily volume of the 20 prior sessions | null }.
+ * iexBaseline(ticker, date) -> mean IEX daily volume of the 20 prior sessions | null,
+ * excluded?(ticker, date) -> true for a cached day outside the evaluation's common day set (Supertrader 6.0) }.
  */
 export const KK_EP_ADAPTER = Object.freeze({
   strategy: 'KK_EPISODIC_PIVOT_CHART', version: KK_EP_LIFECYCLE_VERSION, methodVersion: `${KK_VERSION}+${KK_INTRADAY_VERSION}`, label: EP_LABEL,
@@ -162,6 +165,8 @@ export const KK_EP_ADAPTER = Object.freeze({
     const t = setup.i, bar = bars[t];
     const resolve = () => {
       if (bar.date < EP_FIRST_INTRADAY_DATE) return { status: 'NOT_EXECUTED_BEFORE_IEX_HISTORY', evidence: { class: EP_CLASS.CHART } };
+      // Supertrader 6.0: a cached day outside the evaluation's common day set is not evaluated by any variant
+      if (ctx.intraday?.excluded?.(ctx.ticker, bar.date)) return { status: OUTSIDE_DAY_SET, evidence: { class: EP_CLASS.CHART } };
       const minutes = ctx.intraday ? ctx.intraday.minutes(ctx.ticker, bar.date) : undefined;
       const base = ctx.intraday ? ctx.intraday.iexBaseline(ctx.ticker, bar.date) : null;
       return resolveEpDay({ minutes, bar, rawFactor: bar.splitAdj, adrPct: setup.adr20, iexBaseline: base, cfg });
