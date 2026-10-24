@@ -10,7 +10,7 @@ async function digest(x){const s=typeof x==='string'?x:JSON.stringify(x);if(type
 function summaryViolations(s,id,generation){
  const errors=[];const fail=x=>errors.push(x);
  if(!s||s.schemaVersion!==VERSION||s.generation!==generation||s.identity?.sourceSecurityId!==id) return ['INVALID_SUMMARY_IDENTITY_OR_VERSION'];
- if(s.certification!=='NOT_CERTIFIED'||s.returnBasis!=='PRICE_RETURN'||s.executionModel?.state!=='VALIDATED_EXECUTION_MODEL'||s.executionModel?.scope!=='EXECUTION_MECHANICS_ONLY'||s.executionModel?.productionApproved!==false||s.executionModel?.costModel!=='PER_SIDE_NOTIONAL'||s.executionModel?.feeBpsPerSide!==10||s.executionModel?.slippageBpsPerSide!==5)fail('INVALID_RELEASE_STATUS');
+ if(s.certification!=='NOT_CERTIFIED'||s.returnBasis!=='PRICE_RETURN'||s.executionModel?.schemaVersion!=='weekly-execution-model-2.0.0'||s.executionModel?.strategyCertification!=='NOT_CERTIFIED'||s.executionModel?.returnBasis!=='PRICE_RETURN'||s.executionModel?.state!=='VALIDATED_EXECUTION_MODEL'||s.executionModel?.scope!=='EXECUTION_MECHANICS_ONLY'||s.executionModel?.productionApproved!==false||s.executionModel?.costModel!=='PER_SIDE_NOTIONAL'||s.executionModel?.feeBpsPerSide!==10||s.executionModel?.slippageBpsPerSide!==5)fail('INVALID_RELEASE_STATUS');
  if(s.quality?.schemaVersion!==QUALITY||s.quality.certification!=='NOT_CERTIFIED'||s.quality.sourceSecurityId!==id||s.quality.listingId!==s.identity.listingId)fail('INVALID_QUALITY');
  if(!['AVAILABLE_LIMITED','BLOCKED'].includes(s.state)||!s.periods||!Array.isArray(s.supportedPeriods))fail('INVALID_EXECUTION_STATE');
  if(s.state==='BLOCKED'){
