@@ -322,7 +322,8 @@ jobs:
         run: |
           set -euo pipefail
           extra="--sec-fetch-max 150"
-          [ "$MODE" = sf7-ca-resolution-smoke ] && extra="--smoke-snapshot --sec-fetch-max 5"
+          # Probelauf auf dem massgeblichen Snapshot (der Smoke-Snapshot traegt einen aelteren Code-Fingerabdruck): 400 Reihen
+          [ "$MODE" = sf7-ca-resolution-smoke ] && extra="--limit 400 --sec-fetch-max 5"
           node scripts/supertrader/source-faithful/research/run-sf7-ca-resolution.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
           cat "$RUNNER_TEMP/val"/*.public.json
       - name: Supertrader 6.0 Validierung (Kosten, Perioden, Regime, Modellvarianten), diagnostisch (Snapshot + research-v1, verschluesselt)
