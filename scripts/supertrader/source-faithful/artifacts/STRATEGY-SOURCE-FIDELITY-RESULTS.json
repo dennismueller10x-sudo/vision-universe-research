@@ -267,8 +267,8 @@
   {
    "strategyId": "SF_DARVAS_BOX",
    "candidateId": "C03",
-   "sourceContractVersion": "1.3.0",
-   "contractFingerprint": "5a3cd000e46ce7a5937565b4d0878fff4aac0285968aed336fa116874601a2c9",
+   "sourceContractVersion": "1.3.1",
+   "contractFingerprint": "185098191640a3fd05c586276e975de075cef0e16ff6eb5cbe256266d93a517e",
    "sourceCoverage": {
     "rulesInScope": 35,
     "hardRules": 10,
@@ -671,8 +671,8 @@
   {
    "strategyId": "SF_KK_BREAKOUT",
    "candidateId": "C08",
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "244af9986d71403e7c8ff725ffceb4a2382db881e7732266430b6a9a183fac22",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "7680207d852a8a4a6b0f2a4c2a38daa2ed472c3bc2d5fa278c6fe6d243f90539",
    "sourceCoverage": {
     "rulesInScope": 36,
     "hardRules": 4,
@@ -707,7 +707,7 @@
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
    "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "c8e7e4e17a522b5d07ad7390cf3b7028039e0ce8b87dec38a9c627fd7aa1ecf3",
+   "contractFingerprint": "f589e7398866095d9be8da0f8dcd5f19c66d49775137e17ec421e66da3add7f6",
    "sourceCoverage": {
     "rulesInScope": 38,
     "hardRules": 4,
@@ -741,7 +741,7 @@
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
    "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "39c8c8b290b57163bf656221f1d09a18b33098f51db2b6321638714fc9a23d22",
+   "contractFingerprint": "cc846f1cdc14ef9844981a045f040a0fbacff325400c60f90b8ac4c09ff022a3",
    "sourceCoverage": {
     "rulesInScope": 34,
     "hardRules": 3,
@@ -859,8 +859,8 @@
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "candidateId": "C13",
-   "sourceContractVersion": "1.1.0",
-   "contractFingerprint": "cff73cff691779f1fed046d1b5dca2d6d2818e5b9ca2fcec4ffac1b42e5e4a40",
+   "sourceContractVersion": "1.2.1",
+   "contractFingerprint": "e9a10425fe7d99c8d477c33a3afed988f9cb6fbcb7d97164b4323f1e29abf01d",
    "sourceCoverage": {
     "rulesInScope": 6,
     "hardRules": 2,
@@ -890,21 +890,43 @@
      ],
      "gate": false,
      "derivation": "only the daily timeframe exists in the snapshot; intraday timeframes DATA_BLOCKED"
+    },
+    {
+     "ruleId": "RAS-SF-ENTRY",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "gate": false,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23",
+     "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 (AIQ Opening Bell, August 1997, sidebar \"Holy Grail Pattern\", hosted on lindaraschke.net) states the buy stop above the high of the previous bar; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). Which bar is \"previous\" stays a model assumption (MA-RAS-PREVIOUS-BAR); never SOURCE_EXACT; the lifecycle is not thereby source-conform (no trailing mechanics, size not disclosed)"
+    },
+    {
+     "ruleId": "RAS-SF-STOP",
+     "psr709": [
+      "RAS04-001"
+     ],
+     "gate": false,
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23",
+     "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 states the protective sell stop at the newly formed swing low once filled; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). The swing definition stays a model assumption (MA-RAS-SWING-LOW); never SOURCE_EXACT"
     }
    ],
    "goldenCases": {
-    "total": 5,
-    "pass": 5
+    "total": 7,
+    "pass": 7
    },
    "noInventedThreshold": true
   }
  ],
  "goldenSummary": {
-  "goldenCases": 116,
-  "pass": 116,
+  "goldenCases": 118,
+  "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 278,
+  "testsRun": 308,
   "testsFailed": 0,
   "testsSkipped": 2
  }

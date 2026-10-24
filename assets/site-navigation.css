@@ -186,6 +186,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-ranges::-webkit-scrollbar{display:none}
 .vu-ranges button,.vu-chart .vu-ranges button{flex:none;min-width:44px;min-height:36px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:750 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
 .vu-ranges button[aria-pressed=true],.vu-chart .vu-ranges button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+.vu-ranges button:disabled,.vu-chart .vu-ranges button:disabled{opacity:.38;cursor:default}
 @media(max-width:760px){.vu-chart--bleed{margin-inline:calc(-1 * var(--vu-gutter) + 4px)}}
 .vu-more>summary:focus-visible,.vu-dm>summary:focus-visible,.vu-ranges button:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.vu-more>summary:after{transition:none}}

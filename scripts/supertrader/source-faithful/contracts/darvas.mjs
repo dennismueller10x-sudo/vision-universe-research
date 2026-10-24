@@ -12,7 +12,7 @@ const T = 'scripts/supertrader/tests/sf-darvas.test.mjs';
 
 export const DARVAS = defineContract({
   implemented: true,
-  sourceContractVersion: '1.3.0',
+  sourceContractVersion: '1.3.1',
   componentBacktest: true,
   plannedIn: 'PR 3 Darvas',
   strategyId: 'SF_DARVAS_BOX',
@@ -73,7 +73,7 @@ export const DARVAS = defineContract({
     { id: 'DAR-SF-SELECTION', kind: 'SETUP', psr709: ['DAR-Q12', 'DAR-Q14', 'DAR-B9', 'DAR-B10', 'DAR-B11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'techno-fundamental selection (industry growth, strongest stock of the industry, earning power)', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth'), sf5Evidence('darvas-lifecycle.mjs', 'DARVAS_ADAPTER', [['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-LIFECYCLE']], 'Supertrader 5.0 MODEL lifecycle: selection substituted (MA-DAR-MANUAL-SUBSTITUTE); product records stay manual')] },
     { id: 'DAR-SF-VOLUME', kind: 'FILTER', psr709: ['DAR-Q10', 'DAR-B3'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'volume relative to the stock\'s own history; the machine reports breakout-day volume against its own prior sessions as evidence' },
     { id: 'DAR-SF-MARKET', kind: 'FILTER', psr709: ['DAR-Q13', 'DAR-B14'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'market trend and industry representatives', researchEvidence: [sf3Evidence('context-evidence.mjs', 'withContextEvidence', [['sf-context-evidence-research', 'SF3-CTX-LEADERSHIP'], ['sf-context-evidence-research', 'SF3-CTX-APPEND']], 'rank inside the PIT SIC group (VU proxy for industry) and research-universe breadth')] },
-    { id: 'DAR-SF-SIZING', kind: 'SIZING', psr709: ['DAR-B15', 'DAR-B18'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and pilot buys', researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'plannedShares', [['sf-sf5-darvas-lifecycle', 'GC-SF5-ENGINE-FILL'], ['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-VARIANTS']], 'Supertrader 5.0 MODEL lifecycle: fixed weight 10 % (MA-DAR-SIZING), alternatives pre-registered')] },
+    { id: 'DAR-SF-SIZING', kind: 'SIZING', psr709: ['DAR-B15', 'DAR-B18'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'position size and pilot buys', researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'plannedShares', [['sf-sf5-darvas-lifecycle', 'GC-SF5-ENGINE-FILL'], ['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-VARIANTS']], 'Supertrader 5.0 MODEL lifecycle: reference weight 10 % as a comparison convention, not a Darvas rule; results reported as the span of all sizing variants (MA-DAR-SIZING, owner decision 2026-10-23)')] },
     { id: 'DAR-SF-PYRAMID', kind: 'PYRAMIDING', essential: false, psr709: ['DAR-B8'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'further buys while the confirmed up-trend continues (no absolute "every add above every earlier fill", DAR-C3)' },
     { id: 'DAR-SF-REENTRY', kind: 'ENTRY', essential: false, psr709: ['DAR-Q11'], status: 'MANUAL_REVIEW_REQUIRED', rule: 'after a stop-out new all-time highs can allow a re-entry; the machine reports later boxes, the reviewer decides', researchEvidence: [sf5Evidence('lifecycle-engine.mjs', 'runResearchLifecycle', [['sf-sf5-darvas-lifecycle', 'GC-SF5-DAR-EQUIV-COMPONENT']], 'Supertrader 5.0 MODEL lifecycle: later ATH box breakouts are taken again (MA-DAR-REENTRY)')] },
   ],

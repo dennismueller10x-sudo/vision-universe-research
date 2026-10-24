@@ -843,7 +843,16 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var SS = global.VUQuant && global.VUQuant.SeriesSampling;
     var engineLeiste = Ranges.rangeBar(weekly || daily, { gates: gates });
     var eintag = engineLeiste.filter(function (r) { return r.id === "1D"; })[0] || { id: "1D", label: "1T", available: false, message: "Kein Tagesverlauf" };
-    var leiste = [eintag].filter(function(r){return r.available;}).concat(verbraucherZeitraeume(state, SS));
+    var leiste = [eintag].concat(verbraucherZeitraeume(state, SS));
+    /* Start nach dem Chartstandard, einmal je Aktie: gemerkte Wahl (gilt in allen Welten), sonst 1T,
+       sonst der laengste abgedeckte Zeitraum bis 1J. */
+    var CS = CStd();
+    if (CS && !state.rangeStarted) {
+      state.rangeStarted = true;
+      var start = CS.startRange(function (c) { return leiste.some(function (r) { return r.available && CS.canonical(r.id) === c; }); });
+      var treffer = start && leiste.filter(function (r) { return CS.canonical(r.id) === start; })[0];
+      if (treffer) state.range = treffer.id;
+    }
     leiste.forEach(function (r) {
       var knopf = el("button", { type: "button", text: r.label,
         "aria-pressed": String(r.id === state.range), disabled: !r.available,
@@ -851,6 +860,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       knopf.addEventListener("click", function () {
         if (!r.available) return;
         state.range = r.id;
+        if (CS) CS.rememberRange(r.id);
         Array.prototype.forEach.call(tf.children, function (b) {
           b.setAttribute("aria-pressed", String(b.textContent === r.label));
         });
@@ -876,7 +886,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     werkzeuge.appendChild(paneHost);
     wrap.appendChild(werkzeuge);
 
-    var gesperrt = leiste.filter(function (r) { return !r.available && r.reason === "gateDisabled"; });
+    /* 1T steht jetzt auch abgeschaltet in der Leiste (Grund im Titel); die Hinweiszeile bleibt wie bisher aus. */
+    var gesperrt = leiste.filter(function (r) { return r !== eintag && !r.available && r.reason === "gateDisabled"; });
     if (gesperrt.length) {
       /* Eigener Text statt des Engine-Wortlauts: derselbe Inhalt, aber in
          der Schreibweise dieser Oberfläche. Der Grund der Engine steht am
@@ -975,18 +986,34 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      Keine Overlays: gleitende Durchschnitte ueber 5-Minuten-Kurse waeren
      andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
      bleibt deshalb zu. */
+  /* Reihenfolge nach dem Chartstandard (core/chart-standard.js): Hauptleiste
+     1T 1W 1M 1J 5J MAX, die weiteren Zeitraeume dahinter. Ein Zeitraum, den die
+     Reihe nicht traegt, bleibt sichtbar und abgeschaltet - mit Grund im Titel. */
   var VERBRAUCHER_ZEITRAEUME = [
+    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
     { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
+    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
+    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
+    { id: "MAX", label: "MAX", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null },
     { id: "3M", label: "3M", quelle: "daily", wort: "in drei Monaten", tage: 92 },
     { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
-    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
-    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096 },
-    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
-    { id: "MAX", label: "MAX", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096 }
   ];
+  function CStd() { return global.VUCore && global.VUCore.ChartStandard || null; }
+  /* Fenster: ChartHistory fuer die Zeitraeume, die es kennt; 1W schneidet der Chartstandard nach derselben Regel. */
+  function zeitfenster(punkte, id) {
+    var H = global.VUCore.ChartHistory, CS = CStd();
+    if (Object.prototype.hasOwnProperty.call(H.days, id) || !CS) return H.sliceRange(punkte, id);
+    var p = CS.slice(punkte, id);
+    return { points: p, from: p.length ? p[0][0] : null, to: punkte.length ? punkte[punkte.length - 1][0] : null, complete: CS.covers(punkte, id) };
+  }
+  function traegt(punkte, id) {
+    var H = global.VUCore.ChartHistory, CS = CStd();
+    if (Object.prototype.hasOwnProperty.call(H.days, id)) return H.available(punkte, id);
+    return !!CS && CS.covers(punkte, id);
+  }
   function verbraucherZeitraeume(state) {
-    var H=global.VUCore.ChartHistory;
-    return VERBRAUCHER_ZEITRAEUME.map(function(z){var points=z.quelle==='weekly'?(state.weeklyPoints||state.dailyPoints||[]):state.dailyPoints||[];return {id:z.id,label:z.label,available:H.available(points,z.id)};}).filter(function(z){return z.available;});
+    return VERBRAUCHER_ZEITRAEUME.map(function(z){var points=z.quelle==='weekly'?(state.weeklyPoints||state.dailyPoints||[]):state.dailyPoints||[];var ok=traegt(points,z.id);return {id:z.id,label:z.label,available:ok,message:ok?"":"Die Kursreihe reicht nicht so weit zurück."};});
   }
 
   /* Der Verbraucher-Chart: eine Linie, der Kurs, die Veraenderung im
@@ -1065,14 +1092,19 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
   function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
     var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
     S.clear(chartBox); S.clear(paneHost); S.clear(controls);
-    var z = VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === state.range; })[0] || VERBRAUCHER_ZEITRAEUME[3];
-    var punkte = z.quelle === "weekly" ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
-    if (z.id === "MAX") punkte = state.weeklyPoints || state.dailyPoints || [];
+    var z = VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === state.range; })[0] || VERBRAUCHER_ZEITRAEUME.filter(function (x) { return x.id === "1Y"; })[0];
+    /* Quelle nach derselben Regel wie Quant und Supertrader (Chartstandard): traegt die
+       Tagesreihe den Zeitraum (Golden-Titel: Tageskurse ueber Jahre), bleibt es bei
+       Tagesschluessen - dieselben Stichtage, dieselbe Rendite in jeder Welt. Sonst, und
+       fuer MAX immer, die Wochenreihe. */
+    var wochen = z.id === "MAX" || (z.quelle === "weekly" && !traegt(state.dailyPoints || [], z.id));
+    var punkte = wochen ? (state.weeklyPoints || state.dailyPoints || []) : (state.dailyPoints || []);
+    var woechentlich = wochen && !!state.weeklyPoints;
     if (!SS || !MC || !MC.renderRange || punkte.length < 2) {
       chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Für diesen Zeitraum liegt keine Kursreihe vor."));
       return;
     }
-    var sel = global.VUCore.ChartHistory.sliceRange(punkte, z.id);
+    var sel = zeitfenster(punkte, z.id);
     if (sel.points.length < 2) { chartBox.appendChild(C().emptyState("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum.")); return; }
     /* Der Chart wird in der Anzeigewaehrung gezeichnet, Punkt fuer Punkt
        mit dem Kurs SEINES Tages. Nicht mit dem heutigen: eine Reihe, die
@@ -1103,7 +1135,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
-          (z.quelle === "weekly" && state.weeklyPoints ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
+          (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
           (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
         frischeTages(state)
@@ -1116,12 +1148,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
-                                                 range: z.id, label: z.wort, grain: z.quelle === "weekly" && state.weeklyPoints ? "weekly" : "daily",
+                                                 range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
       kopf.querySelector(".dx-chart-hero-span").textContent += " · logarithmische Kursachse";
     }
-    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": z.quelle,
+    var rahmen = el("div", { class: "dx-range-chart-wrap", "data-range": z.id, "data-grain": woechentlich ? "weekly" : "daily",
                              "data-direction": svgNode ? svgNode.getAttribute("data-direction") : null });
     rahmen.appendChild(svgNode);
     chartBox.appendChild(rahmen);

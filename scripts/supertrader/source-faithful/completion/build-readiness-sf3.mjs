@@ -35,7 +35,7 @@ const SF3_RUNNER_PARTS = Object.freeze({ SF_TURTLE_S1: ['turtle'], SF_TURTLE_S2:
 function measurementOf(st, contract) {
   if (st.backtestReadiness === 'DIAGNOSTIC_READY') return { class: MEASUREMENT.FULL, note: st.fullMethodMeasurable ? 'complete engine' : `diagnostic run WITH DATA EXCEPTION (${st.blockingDataRules.join(', ')} not enforced in reference runs)` };
   if (st.backtestReadiness === 'COMPONENT_SIGNAL_STUDY_ONLY') return { class: MEASUREMENT.COMPONENT, note: 'mechanical signals with their mechanical exit, equal weight, no selection or sizing; not a method return' };
-  const entryOrStopBlocked = contract.rules.some((r) => ['ENTRY', 'STOP'].includes(r.kind) && r.essential !== false && ((r.status === 'DATA_BLOCKED' && !(r.scopes && !r.scopes.includes('EQUITY_ADAPTATION'))) || r.status === 'SOURCE_AMBIGUOUS'));
+  const entryOrStopBlocked = contract.rules.some((r) => ['ENTRY', 'STOP'].includes(r.kind) && r.essential !== false && ((r.status === 'DATA_BLOCKED' && !(r.scopes && !r.scopes.includes('EQUITY_ADAPTATION'))) || r.status === 'SOURCE_AMBIGUOUS' || r.sourceBasis === 'SECONDARY_SOURCE'));
   if (st.engine === 'MECHANICAL_COMPONENTS_ONLY' || entryOrStopBlocked) return { class: MEASUREMENT.NONE, note: 'the essential entry or stop is data- or source-blocked; no daily-bar substitute; setup counts are evidence only' };
   return { class: MEASUREMENT.SCREEN, note: 'machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return' };
 }
@@ -50,7 +50,7 @@ export function buildReadiness() {
     const translationOnly = c.rules.some((r) => r.translationUnverified);
     return {
       candidateId: st.candidateId, strategyId: st.strategyId, sourceContractVersion: c.sourceContractVersion,
-      sourceFidelity: { exact: count('SOURCE_EXACT'), derived: count('SOURCE_DERIVED'), manual: count('MANUAL_REVIEW_REQUIRED'), dataBlocked: count('DATA_BLOCKED'), sourceAmbiguous: count('SOURCE_AMBIGUOUS'), notImplemented: count('NOT_IMPLEMENTED'), implementationStatus: st.implementationStatus, translationOnlySource: translationOnly, sourceOpenRules: st.blockingSourceRules, modelAssumptions: st.modelAssumptions },
+      sourceFidelity: { exact: count('SOURCE_EXACT'), derived: count('SOURCE_DERIVED'), derivedFromSecondarySource: c.rules.filter((r) => r.sourceBasis === 'SECONDARY_SOURCE').length, manual: count('MANUAL_REVIEW_REQUIRED'), dataBlocked: count('DATA_BLOCKED'), sourceAmbiguous: count('SOURCE_AMBIGUOUS'), notImplemented: count('NOT_IMPLEMENTED'), implementationStatus: st.implementationStatus, translationOnlySource: translationOnly, sourceOpenRules: st.blockingSourceRules, modelAssumptions: st.modelAssumptions },
       mechanicalCompleteness: { engine: st.engine, acceptanceGate: st.acceptanceGate, researchComponents: evidence.map((e) => `${e.rule} <- ${e.code.split('/').at(-1)}`) },
       dataCoverage: { blockingDataRules: st.blockingDataRules, proxiesAvailableNotUnblocking: proxies },
       backtestReadiness: { registry: st.backtestReadiness, measurement: measurementOf(st, c), sf3RunnerParts: SF3_RUNNER_PARTS[st.strategyId] ?? [], certification: 'DIAGNOSTIC_NOT_CERTIFIED' },

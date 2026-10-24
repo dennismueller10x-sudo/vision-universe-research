@@ -22,14 +22,25 @@ export const SF5_LIFECYCLES = Object.freeze([
   Object.freeze({ key: 'BUYABLE_GAP_UP', strategyId: 'SF_MOKA_BUYABLE_GAP_UP', candidateId: 'C12', adapter: BUYABLE_GAP_UP_ADAPTER, reference: BGU_REFERENCE_CONFIG, variants: BGU_RUN_VARIANTS, modelAssumptions: mokaFor('BUYABLE_GAP_UP'), sourceStatus: 'CONTRACT_SOURCES' }),
   Object.freeze({ key: 'WEINSTEIN_INVESTOR', strategyId: 'SF_WEINSTEIN_INVESTOR', candidateId: 'C04', adapter: WEINSTEIN_INVESTOR_ADAPTER, reference: WEIN_INVESTOR_REFERENCE_CONFIG, variants: WEIN_INVESTOR_RUN_VARIANTS, modelAssumptions: weinFor('INVESTOR'), sourceStatus: 'CONTRACT_SOURCES_WITH_DATA_EXCEPTION' }),
   Object.freeze({ key: 'WEINSTEIN_TRADER', strategyId: 'SF_WEINSTEIN_TRADER', candidateId: 'C05', adapter: WEINSTEIN_TRADER_ADAPTER, reference: WEIN_TRADER_REFERENCE_CONFIG, variants: WEIN_TRADER_RUN_VARIANTS, modelAssumptions: weinFor('TRADER'), sourceStatus: 'CONTRACT_SOURCES_WITH_DATA_EXCEPTION' }),
-  Object.freeze({ key: 'HOLY_GRAIL_W_RAS97', strategyId: 'SF_RASCHKE_HOLY_GRAIL', candidateId: 'C13', adapter: HOLY_GRAIL_RESEARCH_ADAPTER, reference: HG_REFERENCE_CONFIG, variants: HG_RUN_VARIANTS, modelAssumptions: HG_MODEL_ASSUMPTIONS, sourceStatus: 'RESEARCH_VARIANT_SOURCE_PENDING_OWNER_DECISION' }),
+  Object.freeze({ key: 'HOLY_GRAIL_W_RAS97', strategyId: 'SF_RASCHKE_HOLY_GRAIL', candidateId: 'C13', adapter: HOLY_GRAIL_RESEARCH_ADAPTER, reference: HG_REFERENCE_CONFIG, variants: HG_RUN_VARIANTS, modelAssumptions: HG_MODEL_ASSUMPTIONS, sourceStatus: 'RESEARCH_VARIANT_SECONDARY_SOURCE' }),
 ]);
 export const SF5_KEYS = Object.freeze(SF5_LIFECYCLES.map((l) => l.key));
+
+/**
+ * Owner decisions of 2026-10-23 on the four open questions of the Supertrader 5.0 report. Each names what it changes
+ * and what it does not; none makes a model assumption an original rule (test sf-sf5-owner-decisions).
+ */
+export const SF5_OWNER_DECISIONS = Object.freeze([
+  Object.freeze({ id: 'D-RAS97', date: '2026-10-23', lifecycle: 'HOLY_GRAIL_W_RAS97', decision: 'W-RAS97 (AIQ 1997) accepted as an explicitly labelled secondary source for entry order and initial stop', changes: 'contract RAS-SF-ENTRY / RAS-SF-STOP: SOURCE_AMBIGUOUS -> SOURCE_DERIVED with sourceBasis SECONDARY_SOURCE; lifecycle label RESEARCH_VARIANT_SECONDARY_SOURCE', unchanged: 'never SOURCE_EXACT; measurement class NOT_MEASURABLE; trailing and size undisclosed, the lifecycle is not source-conform; trades unchanged' }),
+  Object.freeze({ id: 'D-KK-ENTRY', date: '2026-10-23', lifecycle: 'KK_BREAKOUT', decision: 'next tradable open is the research execution reference (the signal is known only after the completed daily bar)', changes: 'reference entryTiming NEXT_OPEN; the former reference becomes ALT-ENTRY-BREAKOUT-DAY-CLOSE', unchanged: 'deviation from KK-012 declared; no fill at a price no longer reachable at the decision; contract statuses unchanged' }),
+  Object.freeze({ id: 'D-BGU-VOLWINDOW', date: '2026-10-23', lifecycle: 'BUYABLE_GAP_UP', decision: '50-session volume window confirmed as a declared research model convention', changes: 'MOKA-MR-VOLWINDOW no longer an open per-signal decision in the lifecycle', unchanged: 'not an original source rule: MOKA-SF-BGU-VOLWINDOW stays SOURCE_AMBIGUOUS; trades unchanged' }),
+  Object.freeze({ id: 'D-DARVAS-SIZE-INTRABAR', date: '2026-10-23', lifecycle: 'DARVAS', decision: 'pessimistic intrabar order stays the research reference; sizing is reported as the span of all variants', changes: 'model assumption texts and the readiness artifact (sizing span)', unchanged: 'no size is declared a Darvas rule; reference config and trades unchanged' }),
+]);
 
 /**
  * Fingerprint of every pre-registered configuration (reference + variants) and the platform policy. Pinned in a test and
  * written into every snapshot receipt: a change after results exist needs an owner decision.
  */
 export function sf5VariantRegistrySha256() {
-  return crypto.createHash('sha256').update(JSON.stringify({ engine: ENGINE_VERSION, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, lifecycles: SF5_LIFECYCLES.map((l) => ({ key: l.key, adapter: l.adapter.version, reference: l.reference, variants: l.variants.map((v) => ({ id: v.id, changes: v.changes })) })) })).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify({ engine: ENGINE_VERSION, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, ownerDecisions: SF5_OWNER_DECISIONS.map((d) => d.id), lifecycles: SF5_LIFECYCLES.map((l) => ({ key: l.key, adapter: l.adapter.version, reference: l.reference, variants: l.variants.map((v) => ({ id: v.id, changes: v.changes })) })) })).digest('hex');
 }

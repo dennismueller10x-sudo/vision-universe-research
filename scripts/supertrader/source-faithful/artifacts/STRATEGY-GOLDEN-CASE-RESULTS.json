@@ -26,14 +26,16 @@
   "scripts/supertrader/tests/sf-sf5-darvas-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
   "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs",
-  "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs"
+  "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
+  "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+  "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs"
  ],
  "summary": {
-  "goldenCases": 116,
-  "pass": 116,
+  "goldenCases": 118,
+  "pass": 118,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 278,
+  "testsRun": 308,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -990,6 +992,34 @@
    "result": "PASS"
   },
   {
+   "test": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ENTRY",
+    "RAS-SF-STOP"
+   ],
+   "psr709": [
+    "RAS04-001"
+   ],
+   "result": "PASS"
+  },
+  {
+   "test": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE",
+   "strategyIds": [
+    "SF_RASCHKE_HOLY_GRAIL"
+   ],
+   "rules": [
+    "RAS-SF-ENTRY",
+    "RAS-SF-STOP"
+   ],
+   "psr709": [
+    "RAS04-001"
+   ],
+   "result": "PASS"
+  },
+  {
    "test": "scripts/supertrader/tests/sf-turtle-completion.test.mjs: GC-TUR-ENTRY-BAR-CHANNEL-EXIT",
    "strategyIds": [
     "SF_TURTLE_S1",
@@ -1702,7 +1732,7 @@
    "result": "PASS"
   }
  ],
- "otherTests": 131,
+ "otherTests": 140,
  "allTests": [
   {
    "file": "scripts/supertrader/tests/sf-foundation.test.mjs",
@@ -2971,12 +3001,12 @@
   },
   {
    "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
-   "name": "GC-SF5-KK-LIFECYCLE: Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even",
+   "name": "GC-SF5-KK-LIFECYCLE: Alternative Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even",
    "result": "PASS"
   },
   {
    "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
-   "name": "GC-SF5-KK-WIDE-STOP-REJECT: Abstand Schluss-Tagestief > ADR20 lehnt ab, kein engerer Ersatzstop (KK-012)",
+   "name": "GC-SF5-KK-WIDE-STOP-REJECT: Alternative Schluss: Abstand Schluss-Tagestief > ADR20 lehnt ab, kein engerer Ersatzstop (KK-012)",
    "result": "PASS"
   },
   {
@@ -2986,7 +3016,7 @@
   },
   {
    "file": "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs",
-   "name": "GC-SF5-KK-NEXT-OPEN: Alternative kauft zur naechsten Eroeffnung; Stop = Ausbruchstag-Tief; Abstand > ADR wird nicht ausgefuehrt",
+   "name": "GC-SF5-KK-NEXT-OPEN: Referenz (Owner 23.10.2026) kauft zur naechsten Eroeffnung; Stop = Ausbruchstag-Tief; Abstand > ADR wird nicht ausgefuehrt",
    "result": "PASS"
   },
   {
@@ -3092,6 +3122,156 @@
   {
    "file": "scripts/supertrader/tests/sf-sf5-lifecycle-runner.test.mjs",
    "name": "SF5-SNAPSHOT-RUN-CURRENT-CODE: ein eingetragener Snapshot-Lauf gilt nur fuer den aktuellen Research-Code",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-REGISTRY: genau die vier Entscheidungen, je mit Wirkung und Grenze",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-NO-OTHER-STATUS-CHANGE: ausser RAS-SF-ENTRY / RAS-SF-STOP ist jeder Regelstatus unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-RAS97-SECONDARY-SOURCE: Sekundaerquelle ausdruecklich gekennzeichnet, nie SOURCE_EXACT, keine Messklassen-Aufwertung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-KK-NEXT-OPEN: Referenz naechste Eroeffnung, bisherige Schlusskursvariante vorregistriert, Abweichung zu KK-012 dokumentiert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-BGU-VOLWINDOW: 50-Sitzungen-Fenster als Research-Modellkonvention, keine Quellenregel; Konfiguration unveraendert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-DARVAS: pessimistische Intrabar-Referenz; Groesse als Bandbreite aller Varianten, keine Darvas-Regel",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs",
+   "name": "SF5-OD-NO-READINESS-UPGRADE: Messklassen, Engine-Zustaende und Live-Status aller 13 Kandidaten wie vor den Entscheidungen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-CHART-CANDIDATE: Gap der offiziellen Eroeffnung >= 10 % (KK-015, gedruckte Groesse); nur Daten bis zur Eroeffnung",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-INTRADAY-ENTRY: ORH-1-Bruch mit Volumen-Tempo, Stop = Tagestief vor der Kaufminute (KK-034), Engine-Lifecycle bis MA20",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-VOLUME-PACE: zu wenig IEX-Eroeffnungsvolumen -> kein Einstieg; ohne Volumenregel Einstieg (Variante)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-KK034-REJECT: Tagestief weiter als 1,5 ADR20 unter dem Einstieg lehnt ab, kein engerer Ersatzstop",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-SAME-DAY-STOP: ein spaeteres Minutentief am Stop beendet den Trade am selben Tag, aus Minuten entschieden",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-EP-NO-INVENTED-MINUTES: ohne Minuten, vor 2017 oder bei fremder Identitaet kein Trade (kein Tagesbalken-Ersatz)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-PIT-INTRADAY: Einstieg und Stop haengen nicht von Minuten nach der Kaufminute ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-CLASSES: originaler EP nie vergeben; Katalysator bleibt DATA_BLOCKED; Varianten festgeschrieben",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-CHART-CANDIDATE: beschleunigte Aufwaertstage bis zum Vortag (KK-018), Summe >= 3 ADR20, Schluss ueber MA10; nur Daten bis t-1",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-ORL5-SHORT: Short unter dem 5-Minuten-ORL, Stop ueber dem Tageshoch vor dem Einstieg, Eindeckung am MA10 (KK-020/-022/-023)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-STOP-FIRST: erreicht eine Minute nach dem Einstieg das Tageshoch, ist es ein Stop (vor jedem Ziel)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-ENTRY-READINGS: erste rote 5-Minuten-Kerze und gescheiterter VWAP-Retest sind vorregistrierte Lesarten",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "GC-KK-PS-NO-INVENTED-MINUTES / SF-KK-PS-CLASSES: ohne Minuten kein Trade; ausfuehrbarer Short nie vergeben (Borrow DATA_BLOCKED)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-INTRADAY-BLOCKS: Sitzungsminuten, Kompaktformat, Identitaet, Opening Range, VWAP, 5-Minuten-Kerzen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-SCREEN-AND-ORDER: Kandidaten beider Methoden im Universum; Abrufreihenfolge deterministisch, ergebnisunabhaengig",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-IEX-BASELINE: IEX-Tagesvolumen nur aus IEX-Balken je ET-Datum; unter 15 Tagen mit Volumen keine Basis",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer Short nie vergebbar; Vertragsstatus unveraendert; nichts live",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-PIT-IDENTITY: die Identitaetspruefung kennt nur die Eroeffnung; spaetere Minuten waehlen keinen Tag ab",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-OR-OFFICIAL-OPEN: die offizielle Eroeffnung gehoert zur Opening Range (Auktion ist kein IEX-Print)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-EP-VOLUME-BY-20: nach Minute 20 zaehlt das IEX-Volumen der Minuten 0-19, auch wenn Minuten fehlen",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie ueber die Grenze; nur 200/404 werden gespeichert",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige Abdeckung heisst Stichprobe, nie mehr",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs",
+   "name": "SF-KK-STATEMENTS: nicht zertifiziert, keine repraesentative Gesamtaussage, IEX-Volumen, hypothetische Shorts, Lizenz",
    "result": "PASS"
   }
  ]

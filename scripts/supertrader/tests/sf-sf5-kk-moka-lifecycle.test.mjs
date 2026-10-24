@@ -9,13 +9,15 @@ import { POCKET_PIVOT_ADAPTER, BUYABLE_GAP_UP_ADAPTER, PP_REFERENCE_CONFIG, BGU_
 import { sellGuideEvidence } from '../source-faithful/methods/morales-kacher.mjs';
 import { breakoutStopCheck, adr20 } from '../source-faithful/methods/kullamagi.mjs';
 
-const PINNED_KK_VARIANTS = '4ce68694eb3182fc6c720297d665077969c7f0d2864dfae39be43d9f1396d491';
+const PINNED_KK_VARIANTS = '7baeb5b2d3802442bbc331e81fc65b5a5ec90d577ef1a34a330aae33678be39e';
 const PINNED_MOKA_VARIANTS = '709c00ac75473dfea9b218e3eb134d8746f756ea0c0b68ee3f31ba0413e3e3ca';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const r3 = (k, c, v = 1e6) => bar(k, c, c * 1.015, c * 0.985, c, v);
 const ds = (...secs) => ({ calendar: [...new Set(secs.flatMap((s) => s.bars.map((b) => b.date)))].sort(), securities: secs });
 const runA = (adapter, ref, d, changes = {}) => runResearchLifecycle(d, { adapter, config: { ...ref, ...changes } });
+// former reference, now the pre-registered alternative ALT-ENTRY-BREAKOUT-DAY-CLOSE (owner decision 2026-10-23): KK-012 exactly
+const KK_CLOSE = KK_RUN_VARIANTS.find((v) => v.id === 'ALT-ENTRY-BREAKOUT-DAY-CLOSE').config;
 
 /** flat 80 sessions, +50 % in 30, tight 10-session consolidation, breakout bar 120 (close 30.9, low 30.4) */
 function kkScenario({ breakoutLow = 30.4, tail = null } = {}) {
@@ -29,8 +31,8 @@ function kkScenario({ breakoutLow = 30.4, tail = null } = {}) {
   return { id: 'KK', bars };
 }
 
-test('GC-SF5-KK-LIFECYCLE: Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even', () => {
-  const s = kkScenario(), r = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(s));
+test('GC-SF5-KK-LIFECYCLE: Alternative Tagesausbruch zum Schluss, Stop = Tagestief (KK-012), Teilverkauf 1/3 nach 3 Tagen, Rest Break-even', () => {
+  const s = kkScenario(), r = runA(KK_BREAKOUT_ADAPTER, KK_CLOSE, ds(s));
   assert.equal(r.trades.length, 1);
   const t = r.trades[0];
   assert.equal(t.entryDate, day(120)); assert.equal(t.entryBasis, 'CLOSE'); assert.equal(t.entryFill, 30.9); assert.equal(t.initialStop, 30.4);
@@ -38,34 +40,48 @@ test('GC-SF5-KK-LIFECYCLE: Tagesausbruch zum Schluss, Stop = Tagestief (KK-012),
   assert.equal(sells[0].date, day(124)); assert.equal(sells[0].reason, 'KK_PARTIAL_AFTER_DAYS'); assert.ok(Math.abs(sells[0].shares - t.shares / 3) < 1e-9);
   assert.equal(t.exitReason, 'STOP_KK-013-BREAKEVEN'); assert.equal(t.exitDate, day(126));
   assert.ok(t.weight <= 0.25 + 1e-9 && t.weight <= 0.30); // KK-001 cap (platform cap stricter)
-  assert.ok(t.riskOfEquity <= KK_REFERENCE_CONFIG.sizing.riskFraction + 1e-12);
+  assert.ok(t.riskOfEquity <= KK_CLOSE.sizing.riskFraction + 1e-12);
   assert.equal(r.reconciliation.pass, true); assert.equal(r.label, 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST');
   assert.deepEqual(t.openManualDecisionsSubstituted, ['KK-MR-SETUP', 'KK-MR-LEVEL', 'KK-MR-PRIORITY']);
 });
 
-test('GC-SF5-KK-WIDE-STOP-REJECT: Abstand Schluss-Tagestief > ADR20 lehnt ab, kein engerer Ersatzstop (KK-012)', () => {
+test('GC-SF5-KK-WIDE-STOP-REJECT: Alternative Schluss: Abstand Schluss-Tagestief > ADR20 lehnt ab, kein engerer Ersatzstop (KK-012)', () => {
   const s = kkScenario({ breakoutLow: 28.6 });
   const adr = adr20(s.bars, 120), dist = ((30.9 - 28.6) / 30.9) * 100;
   assert.ok(dist > adr); assert.equal(breakoutStopCheck({ entry: 30.9, lowOfDay: 28.6, adrPct: adr }).status, 'REJECT_WIDE_STOP');
-  const r = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(s));
+  const r = runA(KK_BREAKOUT_ADAPTER, KK_CLOSE, ds(s));
   assert.ok(!r.trades.some((t) => t.signalDate === day(120))); assert.ok(r.counts.eligibilityBlockers.REJECT_WIDE_STOP >= 1);
 });
 
 test('GC-SF5-KK-TRAIL-MA10: ohne Teilverkauf fuehrt der erste Schluss unter MA10 zum Ausstieg zur naechsten Eroeffnung', () => {
   const tail = [[31, 31.6, 30.9, 31.4], [31.4, 32, 31.2, 31.8], [31.8, 32.6, 31.6, 32.4], [32.4, 33, 32.2, 32.8], [32.8, 33.4, 32.6, 33.2], [33.2, 33.5, 33, 33.3], [33.3, 33.4, 31.1, 31.2], [31.3, 31.5, 31, 31.2]];
-  const r = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(kkScenario({ tail })), { exitPolicy: 'NO_PARTIAL_MA10' });
+  const r = runA(KK_BREAKOUT_ADAPTER, KK_CLOSE, ds(kkScenario({ tail })), { exitPolicy: 'NO_PARTIAL_MA10' });
   const t = r.trades[0];
   assert.equal(t.exitReason, 'KK_TRAIL_CLOSE_BELOW_MA10'); assert.equal(t.exitDate, day(128));
   assert.equal(t.events.find((e) => e.type === 'EXIT_SCHEDULED_NEXT_OPEN').date, day(127));
 });
 
-test('GC-SF5-KK-NEXT-OPEN: Alternative kauft zur naechsten Eroeffnung; Stop = Ausbruchstag-Tief; Abstand > ADR wird nicht ausgefuehrt', () => {
-  const r = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(kkScenario()), { entryTiming: 'NEXT_OPEN' });
+test('GC-SF5-KK-NEXT-OPEN: Referenz (Owner 23.10.2026) kauft zur naechsten Eroeffnung; Stop = Ausbruchstag-Tief; Abstand > ADR wird nicht ausgefuehrt', () => {
+  assert.equal(KK_REFERENCE_CONFIG.entryTiming, 'NEXT_OPEN');
+  const r = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(kkScenario()));
   assert.equal(r.trades[0].entryDate, day(121)); assert.equal(r.trades[0].entryBasis, 'OPEN'); assert.equal(r.trades[0].initialStop, 30.4);
+  assert.equal(r.trades[0].entryFill, kkScenario().bars[121].open); // the next open, never the breakout-day close
   const gap = kkScenario({ tail: [[33, 33.5, 32.8, 33.2], [33.2, 33.4, 33, 33.1]] }); // open 8.6 % above the breakout-day low
-  const g = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(gap), { entryTiming: 'NEXT_OPEN' });
+  const g = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(gap));
   assert.ok(!g.trades.some((t) => t.signalDate === day(120))); assert.ok(g.counts.notExecutedPlannedLossAboveMax >= 1);
   assert.ok(g.rejections.some((x) => x.date === day(121) && x.reason === 'NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX'));
+  // an open at or below the breakout-day low is not bought (no fill at a price below the stop)
+  const down = kkScenario({ tail: [[30.2, 30.6, 30, 30.5], [30.5, 30.7, 30.3, 30.6]] });
+  const d = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(down));
+  assert.ok(!d.trades.some((t) => t.signalDate === day(120)));
+  assert.ok(d.rejections.some((x) => x.date === day(121) && x.reason === 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP'));
+  // boundary: an open exactly at the stop is not bought either
+  const eq = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(kkScenario({ tail: [[30.4, 30.8, 30.3, 30.6], [30.6, 30.7, 30.4, 30.6]] })));
+  assert.ok(eq.rejections.some((x) => x.date === day(121) && x.reason === 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP'));
+  // PIT: the decision and the fill use the breakout-day bar and the next open only, nothing else of the fill day
+  const a = r.trades[0], alt = kkScenario(); alt.bars[121] = { ...alt.bars[121], high: 40, close: 39, volume: 1 };
+  const b = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(alt)).trades[0];
+  assert.deepEqual([b.entryDate, b.entryFill, b.initialStop, b.shares], [a.entryDate, a.entryFill, a.initialStop, a.shares]);
 });
 
 test('GC-SF5-KK-SETUP-PIT: Setup auf Balken i nutzt nur Balken 0..i (Ergebnis unabhaengig von spaeteren Balken)', () => {
@@ -150,7 +166,7 @@ test('GC-SF5-KK-MOKA-VARIANTS: vorregistrierte Varianten gueltig und festgeschri
   assert.ok(PLATFORM_RESEARCH_PORTFOLIO_POLICY.maxPositionWeight <= KK_BREAKOUT_ADAPTER.sourceMaxPositionWeight);
 });
 
-// ---------------------------------------------------------------- Holy Grail research variant (W-RAS97, owner decision pending)
+// ---------------------------------------------------------------- Holy Grail research variant (W-RAS97, secondary source, D-RAS97 2026-10-23)
 import { HOLY_GRAIL_RESEARCH_ADAPTER, HG_REFERENCE_CONFIG, HG_RUN_VARIANTS, validateHgConfig, holyGrailSetupSeries, W_RAS97 } from '../source-faithful/research/holy-grail-lifecycle.mjs';
 import { holyGrailScreen } from '../source-faithful/methods/holy-grail.mjs';
 import { HOLY_GRAIL } from '../source-faithful/contracts/holy-grail.mjs';
@@ -177,10 +193,12 @@ test('GC-SF5-HG-RESEARCH-VARIANT: Buy-Stop ueber dem Beruehrungsbalken, Stop am 
   assert.ok(st && k >= first); assert.equal(s.bars[k + 1].date, t.entryDate);
   assert.ok(Math.abs(t.orderLevel - (st.touchHigh + 0.01)) < 1e-9); assert.equal(t.initialStop, st.swingLow);
   assert.equal(t.exitReason, 'RAS_NEW_HIGH_EXIT');
-  assert.equal(r.label, 'MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SOURCE_PENDING'); assert.equal(r.reconciliation.pass, true);
+  assert.equal(r.label, 'MODEL_LIFECYCLE_STUDY_RESEARCH_VARIANT_SECONDARY_SOURCE'); assert.equal(r.reconciliation.pass, true);
   for (const v of HG_RUN_VARIANTS) assert.deepEqual(validateHgConfig(v.config), []);
-  assert.equal(W_RAS97.contractStatusUnchanged, true);
-  for (const id of ['RAS-SF-ENTRY', 'RAS-SF-STOP', 'RAS-SF-SIZE']) assert.equal(HOLY_GRAIL.rules.find((x) => x.id === id).status, 'SOURCE_AMBIGUOUS');
+  // D-RAS97 (2026-10-23): entry and stop rest on the labelled secondary source, never SOURCE_EXACT; size stays undisclosed
+  assert.equal(W_RAS97.notSourceExact, true);
+  for (const id of ['RAS-SF-ENTRY', 'RAS-SF-STOP']) { const x = HOLY_GRAIL.rules.find((y) => y.id === id); assert.equal(x.status, 'SOURCE_DERIVED'); assert.equal(x.sourceBasis, 'SECONDARY_SOURCE'); assert.equal(x.secondarySource, 'W-RAS97'); }
+  assert.equal(HOLY_GRAIL.rules.find((x) => x.id === 'RAS-SF-SIZE').status, 'SOURCE_AMBIGUOUS');
 });
 
 test('GC-SF5-HG-READINGS: ADX-Lesart und erste Beruehrung sind vorregistrierte Alternativen; Referenz = Vertragskomponente', () => {
@@ -216,8 +234,9 @@ test('GC-SF5-MOKA-USED-VIOLATION: eine bereits durch Unterschreitung bestaetigte
 
 test('GC-SF5-KK-DELIST-NO-CLOSE-ENTRY: kein Schlusskurs-Einstieg am Delisting-Tag; Teilverkauf rueckt bei fehlendem Schluss auf den naechsten Balken', () => {
   const s = kkScenario(), del = { ...s, terminal: { date: day(120), cause: 'LISTING_INACTIVE', distress: false, delistClass: 'MERGER' } };
+  assert.equal(runA(KK_BREAKOUT_ADAPTER, KK_CLOSE, ds(del)).trades.length, 0);
   assert.equal(runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(del)).trades.length, 0);
   const nan = kkScenario(); nan.bars[123] = { ...nan.bars[123], close: NaN };
-  const t = runA(KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, ds(nan)).trades[0];
+  const t = runA(KK_BREAKOUT_ADAPTER, KK_CLOSE, ds(nan)).trades[0];
   assert.ok(t.events.some((e) => e.type === 'EXIT_SCHEDULED_NEXT_OPEN' && e.reason === 'KK_PARTIAL_AFTER_DAYS' && e.date === day(124)));
 });

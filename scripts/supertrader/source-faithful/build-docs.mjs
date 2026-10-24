@@ -45,7 +45,7 @@ export function traceabilityDoc() {
     md += `## ${c.candidateId} \`${c.strategyId}\` – ${esc(c.trader)}\n\n${esc(c.method)}\n\n| Quelle | Ausgabe | Seite | #709-Regel | Modalität/Conf./geprüft | Ausführbare Regel | Status | Code | Tests (Ergebnis) |\n|---|---|---|---|---|---|---|---|---|\n`;
     for (const r of c.chain) {
       const tests = (r.tests || []).map((t) => `${t.split(': ')[1]} (${res.get(t) ?? 'n/a'})`).join('<br>');
-      md += `| ${r.source ?? '–'} | ${esc(r.bookEdition ?? '–')} | ${esc(r.page ?? '–')} | ${r.ruleId ?? '– (Konvention)'} | ${r.modal ?? '–'}/${r.confidence ?? '–'}/${r.originalWordingChecked === null ? '–' : r.originalWordingChecked ? 'ja' : 'nein'} | ${r.executableRule} | ${r.status} | ${r.code ? `\`${r.code.replace('scripts/supertrader/source-faithful/', '')}\`` : '–'} | ${tests || '–'} |\n`;
+      md += `| ${r.source ?? '–'}${r.sourceBasis === 'SECONDARY_SOURCE' ? ` (Primärquelle schweigt; Sekundärquelle ${r.secondarySource}, ${r.ownerDecision})` : ''} | ${esc(r.bookEdition ?? '–')} | ${esc(r.page ?? '–')} | ${r.ruleId ?? '– (Konvention)'} | ${r.modal ?? '–'}/${r.confidence ?? '–'}/${r.originalWordingChecked === null ? '–' : r.originalWordingChecked ? 'ja' : 'nein'} | ${r.executableRule} | ${r.status} | ${r.code ? `\`${r.code.replace('scripts/supertrader/source-faithful/', '')}\`` : '–'} | ${tests || '–'} |\n`;
     }
     md += '\n';
   }

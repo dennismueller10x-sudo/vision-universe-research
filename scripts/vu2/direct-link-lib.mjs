@@ -38,13 +38,15 @@ export const LOADING_SELECTOR = '[aria-busy="true"],[class*="skeleton"],[class*=
 // fuer europaeische Titel) ehrliche Auskunft und bewusst erlaubt.
 export const CORE_BAD = 'nicht verfügbar|wird geladen|lädt|nicht erreichbar|keine daten';
 
-const PRICE_USD = '\\d[\\d.]*,\\d{2}\\s*\\$';
+// Kurs im Kopf: Betrag mit Waehrungszeichen. Seit #883 zeigt Quant die gewaehlte Anzeigewaehrung (Vorgabe EUR,
+// umschaltbar auf USD); geprueft wird, dass ein Kurs sichtbar ist - in der einen oder der anderen Waehrung.
+const PRICE = '\\d[\\d.]*,\\d{2}\\s*[$€]';
 const STOCK_CORE = '.qx-stock-hero, .q-stock-price, .qc-chart';
 const STOCK_CHART = {scope: '.qc-chart', minW: 150, minH: 100, minGeom: 2};
 const GLOBE = {scope: '.q-hero', minW: 100, minH: 100, minGeom: 5};
 export const SPECS = {
-  nvda: {path: '/quant/#/aktie/NVDA', critical: true, h1: '^NVIDIA', price: {selector: '.q-stock-price', re: PRICE_USD}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['NVDA'], technik: 'NVDA'},
-  aapl: {path: '/quant/#/aktie/AAPL', critical: true, h1: '^Apple', price: {selector: '.q-stock-price', re: PRICE_USD}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['AAPL'], technik: 'AAPL'},
+  nvda: {path: '/quant/#/aktie/NVDA', critical: true, h1: '^NVIDIA', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['NVDA'], technik: 'NVDA'},
+  aapl: {path: '/quant/#/aktie/AAPL', critical: true, h1: '^Apple', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['AAPL'], technik: 'AAPL'},
   start: {path: '/quant/', critical: true, h1: 'Jeden Tag sehen', minText: 3000, chart: GLOBE, includes: ['Quant']},
   radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
   strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Unternehmen', minText: 1500, chart: GLOBE},

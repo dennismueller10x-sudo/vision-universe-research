@@ -1258,7 +1258,7 @@
   {
    "strategyId": "SF_RASCHKE_HOLY_GRAIL",
    "stops": [
-    "RAS-SF-STOP (not disclosed)"
+    "RAS-SF-STOP (secondary source W-RAS97: newly formed swing low)"
    ],
    "positionSizing": [
     "RAS-SF-SIZE (not disclosed)"
@@ -1270,14 +1270,20 @@
      "psr709": [
       "RAS04-001"
      ],
-     "status": "SOURCE_AMBIGUOUS",
+     "status": "SOURCE_DERIVED",
      "essential": true,
-     "gate": null,
-     "rule": "initial stop",
-     "derivation": null,
-     "reason": "stop not fully disclosed (#709 C13)",
-     "code": null,
-     "tests": []
+     "gate": false,
+     "rule": "initial stop: protective sell stop at the newly formed swing low",
+     "sourceBasis": "SECONDARY_SOURCE",
+     "secondarySource": "W-RAS97",
+     "ownerDecision": "D-RAS97 2026-10-23",
+     "derivation": "SECONDARY SOURCE, not the author's own wording: W-RAS97 states the protective sell stop at the newly formed swing low once filled; accepted as an explicitly labelled secondary source by owner decision D-RAS97 (2026-10-23). The swing definition stays a model assumption (MA-RAS-SWING-LOW); never SOURCE_EXACT",
+     "reason": null,
+     "code": "scripts/supertrader/source-faithful/research/holy-grail-lifecycle.mjs#holyGrailSetupSeries",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+      "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE"
+     ]
     },
     {
      "ruleId": "RAS-SF-SIZE",

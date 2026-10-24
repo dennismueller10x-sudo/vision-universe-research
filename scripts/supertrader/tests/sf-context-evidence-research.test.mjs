@@ -70,5 +70,6 @@ test('SF3-CTX-FRONTIER: jede verbleibende Daten- und Quellensperre ist konkret b
   const rule = (m, id) => CONTRACTS.find((c) => c.strategyId === m).rules.find((r) => r.id === id).status;
   assert.equal(rule('SF_KK_EPISODIC_PIVOT', 'KK-SF-EP-CATALYST'), 'DATA_BLOCKED');
   assert.equal(rule('SF_KK_PARABOLIC_SHORT', 'KK-SF-PS-BORROW'), 'DATA_BLOCKED');
-  assert.equal(rule('SF_RASCHKE_HOLY_GRAIL', 'RAS-SF-ENTRY'), 'SOURCE_AMBIGUOUS');
+  // D-RAS97 (2026-10-23): the primary source stays silent; entry and stop rest on the labelled secondary source W-RAS97
+  for (const id of ['RAS-SF-ENTRY', 'RAS-SF-STOP']) { const r = CONTRACTS.find((c) => c.strategyId === 'SF_RASCHKE_HOLY_GRAIL').rules.find((x) => x.id === id); assert.equal(r.status, 'SOURCE_DERIVED'); assert.equal(r.sourceBasis, 'SECONDARY_SOURCE'); }
 });
