@@ -37,7 +37,7 @@ import { KK_SAMPLE_VERSION, STRATA_SCHEMES, STRATA_MIN_POPULATION, OUTSIDE_DAY_S
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.2.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.2.1'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2)
 export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'run-kk-intraday.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
 export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
 export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
@@ -180,12 +180,20 @@ export function buildDaySets({ epCands, psCands, minuteCache, baseCache, barsOf,
   return { ep, ps, strataOf, epOrder, psOrder, public: pub };
 }
 
+/**
+ * Realized result of an engine trade: a CLOSED trade carries it as pnl (lifecycle-engine#finish), a trade open at the data
+ * end as realizedPnl. Supertrader 7.0 (SF7-D2): 1.2.0 read realizedPnl for closed trades, which they never carry, so the
+ * sealed EP trade-level numbers were empty (null); public counts and hashes were not affected.
+ */
+export const epRealizedPnl = (t) => (t.status === 'CLOSED' ? t.pnl : t.realizedPnl);
 /** Trade-level summary of EP engine trades (sealed): return on the entry notional, closed trades only. */
 export function epTradeSummary(trades) {
   const closed = trades.filter((t) => t.status === 'CLOSED' && t.shares > 0 && t.entryFill > 0);
-  const rets = closed.map((t) => t.realizedPnl / (t.shares * t.entryFill)).filter(Number.isFinite);
+  const rets = closed.map((t) => epRealizedPnl(t) / (t.shares * t.entryFill)).filter(Number.isFinite);
   return { label: 'TRADE_LEVEL_RETURN_ON_ENTRY_NOTIONAL', trades: trades.length, closed: closed.length, openAtDataEnd: trades.filter((t) => t.status === 'OPEN_AT_DATA_END').length, meanReturn: rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null, medianReturn: median(rets), hitRate: rets.length ? rets.filter((x) => x > 0).length / rets.length : null };
 }
+/** Sealed per-trade record of an EP engine trade. */
+export const epSealedTrade = (t) => ({ id: t.id, status: t.status, entryDate: t.entryDate, entryFill: t.entryFill, initialStop: t.initialStop, exitDate: t.exitDate, exitReason: t.exitReason, realizedPnl: epRealizedPnl(t), unrealizedPnl: t.unrealizedPnl ?? null, intraday: t.intradayEvidence });
 /** Groups trades by the stratum of their key (sealed per-stratum metrics). */
 export function byStratum(trades, keyOf, strata, summarize) {
   const g = new Map();
@@ -340,7 +348,7 @@ async function main() {
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${setId}:${v.id}`);
       const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
       pub.ep.sets[setId].variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
-      sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map((t) => ({ id: t.id, status: t.status, entryDate: t.entryDate, entryFill: t.entryFill, initialStop: t.initialStop, exitDate: t.exitDate, exitReason: t.exitReason, realizedPnl: t.realizedPnl, unrealizedPnl: t.unrealizedPnl ?? null, intraday: t.intradayEvidence })) };
+      sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map(epSealedTrade) };
       log(`EP ${setId} ${v.id}: trades ${r.trades.length}`);
     }
   }
