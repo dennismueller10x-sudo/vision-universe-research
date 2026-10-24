@@ -244,6 +244,11 @@ test('SF7-RUN-TRANSCRIPTION: eingetragene SF7-Registerhashes der Laeufe = aktuel
   const auth = SF5_SNAPSHOT_RUNS.find((r) => r.role === 'AUTHORITATIVE');
   assert.equal(auth.sf7Execution.variantsSha256, sf7ExecutionVariantsSha256());
   for (const [k, vs] of Object.entries(auth.sf7Execution.variants)) for (const id of Object.keys(vs)) assert.ok(SF7_EXECUTION_VARIANTS.some((v) => v.key === k && v.id === id), `${k}/${id}`);
+  const { KK_SNAPSHOT_RUNS } = await import('../source-faithful/completion/build-kk-ep-ps.mjs');
+  const { sf7EpExecutionVariantsSha256, SF7_EP_VARIANTS } = await import('../source-faithful/research/sf7-ep-execution-variants.mjs');
+  const kk = KK_SNAPSHOT_RUNS.find((r) => r.role === 'AUTHORITATIVE');
+  assert.equal(kk.sf7EpExecution.variantsSha256, sf7EpExecutionVariantsSha256());
+  assert.deepEqual(Object.keys(kk.sf7EpExecution.variants), SF7_EP_VARIANTS.map((v) => v.id));
 });
 
 test('SF7-D4-MINERVINI-CHARACTERIZED: Minervini-Pivot-Beruehrung mit Schluss unter dem Stop gilt als mehrdeutig (offen, Code gepinnt b1d81fb8)', async () => {
