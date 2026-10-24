@@ -2,7 +2,7 @@
  "schema": "supertrader-kk-ep-ps-chart-readiness-1.0.0",
  "statements": {
   "certification": "DIAGNOSTIC_NOT_CERTIFIED: model studies, never a strategy backtest or a performance claim",
-  "sample": "deterministic sha256(TICKER|date) prefix of the candidate days, outcome-independent but not stratified: NOT a representative backtest of all candidates and not to be extrapolated",
+  "sample": "deterministic sha256(TICKER|date) prefix of the candidate days, outcome-independent but NOT automatically representative: NOT a representative backtest of all candidates and not to be extrapolated; the Supertrader 6.0 stratified samples equalise the sampling fraction per year x liquidity [x regime] stratum, they remain samples",
   "iexVolume": "IEX venue only (1-5 % of the consolidated volume): compared only with IEX volume, never treated as market volume",
   "shorts": "every PS trade is a hypothetical one-unit short; borrow, locates and fees unknown (KK-030 DATA_BLOCKED): never a historically executable short sale",
   "license": "Tiingo IEX minutes for internal, non-displaying use: private cache and owner-encrypted results only; public outputs carry counts and hashes, never minute values"
@@ -48,11 +48,151 @@
   },
   "consequence": "all IEX candidate days would need about 93 000 requests (EP: minutes + baseline, PS: minutes); a run fetches at most 6 000, two thirds for EP, as a deterministic hash-order sample (sha256 of TICKER|date), resumable via the private cache"
  },
+ "supertrader6": {
+  "runner": "kk-intraday-runner-1.2.0",
+  "status": "RUN_ON_CURRENT_CODE",
+  "fixes": [
+   {
+    "id": "SF6-PS-CLEAN-PREFIX",
+    "finding": "run-kk-intraday.mjs 1.1.0: EP and PS walk the same sha256 order, EP first; the PS loop skipped every cached key, so PS days that are also EP candidates were cached up to the EP frontier, all other PS days only up to the PS frontier",
+    "before": "PS evaluated on every cached PS day (run 39939887192: 2 065 days, 65 of them cached by the EP loop, ~14 expected in an unbiased PS prefix: gap-up PS days ~4.5x over-represented)",
+    "after": "PS evaluated on its clean hash prefix only (CLEAN); keys cached only via the EP path beyond it are dropped and counted; BEFORE_FIX is still computed for the comparison"
+   },
+   {
+    "id": "SF6-EP-COMMON-DAY-SET",
+    "finding": "kk-ep-lifecycle.mjs:113 (1.1.0): a day without IEX baseline is NOT_EXECUTED_NO_IEX_VOLUME_BASELINE under PACE_20 but executable under ALT-NO-VOLUME-RULE",
+    "before": "EP variants on different day sets (run 39939887192: REF 103 days NOT_EXECUTED_NO_IEX_VOLUME_BASELINE, 172 EP days with too few IEX baseline sessions; no EP day was cached via the PS path in that run because the PS prefix was shorter than the EP prefix, but the code allowed it)",
+    "after": "every EP variant on one common day set (EP prefix, minutes and baseline mean > 0); excluded days counted per reason; cached days outside the set are NOT_EVALUATED_OUTSIDE_DAY_SET for every variant"
+   },
+   {
+    "id": "SF6-PS-OPEN-AT-DATA-END",
+    "finding": "kk-ps-study.mjs:151 / run-kk-intraday.mjs:273-278 (1.1.0): OPEN_AT_DATA_END only in the status counts, never in the metrics",
+    "before": "open shorts (incl. delisted securities) silently left out of every metric",
+    "after": "counted publicly (openAtDataEnd, by terminal cause); sealed metrics closedOnly (unchanged population) and withOpenMarked (marked to the last finite close with exit costs)"
+   },
+   {
+    "id": "SF6-PS-MEDIAN",
+    "finding": "run-kk-intraday.mjs:278 (1.1.0): medianNetReturn = rs[floor(n / 2)]",
+    "before": "upper median for an even trade count",
+    "after": "proper median (mean of the two middle values); only sealed medians of even-count variants change, nothing pinned"
+   }
+  ],
+  "additions": {
+   "daySets": [
+    "BEFORE_FIX (1.1.0 behaviour, comparison only)",
+    "CLEAN (reference)",
+    "STRAT_YEAR_X_LIQUIDITY",
+    "STRAT_YEAR_X_LIQUIDITY_X_REGIME"
+   ],
+   "psOverlap": {
+    "reference": "INDEPENDENT",
+    "reportingVariants": [
+     {
+      "id": "ONE_POSITION_PER_TICKER",
+      "overlap": "ONE_POSITION_PER_TICKER",
+      "appliesTo": "EVERY_PS_RUN_VARIANT"
+     }
+    ]
+   },
+   "strata": {
+    "version": "kk-sample-1.0.0",
+    "schemes": [
+     {
+      "id": "YEAR_X_LIQUIDITY",
+      "dims": [
+       "year",
+       "liquidity"
+      ]
+     },
+     {
+      "id": "YEAR_X_LIQUIDITY_X_REGIME",
+      "dims": [
+       "year",
+       "liquidity",
+       "regime"
+      ]
+     }
+    ],
+    "liquidityBoundsUsd": [
+     10000000,
+     100000000
+    ],
+    "liquidityBuckets": [
+     "LIQ_1M_10M",
+     "LIQ_10M_100M",
+     "LIQ_100M_PLUS"
+    ],
+    "minPopulation": 100,
+    "registrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+    "public": "per-stratum counts only",
+    "sealed": "per-stratum metrics"
+   },
+   "cacheOnly": "workflow mode kk-intraday-cache: --cache-only, both fetch loops skipped, no API key, 0 requests asserted (mandate: use the existing cache first, no additional requests)"
+  },
+  "samplingAssumptions": [
+   {
+    "id": "MA-SAMPLE-CLEAN-PREFIX",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "per method the longest hash-order prefix of its own candidate keys that its own fetch path reached: EP up to the highest-ranked EP key with a cached baseline (only the EP path fetches baselines), PS up to the highest-ranked cached PS key that is not an EP candidate (only the PS path can have cached it). Cached keys beyond the prefix are dropped; keys inside it without a definitive answer are reported as holes",
+    "alternatives": [],
+    "why": "review 6.0: the PS loop skipped keys cached by the EP loop, over-representing gap-up PS days"
+   },
+   {
+    "id": "MA-SAMPLE-EP-COMMON-DAY-SET",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "every EP variant runs on one day set: keys in the EP prefix with minutes and an IEX volume baseline (mean > 0); days with too few IEX baseline sessions or too little history are excluded for ALL variants and counted",
+    "alternatives": [],
+    "why": "review 6.0: PACE_20 and NONE ran on different day sets; the baseline is known at the prior close (point in time)"
+   },
+   {
+    "id": "MA-STRAT-YEAR",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "calendar year of the trade day",
+    "alternatives": [],
+    "why": "known at the decision; IEX coverage and market conditions differ by year"
+   },
+   {
+    "id": "MA-STRAT-LIQUIDITY",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "mean raw dollar volume (raw close x raw volume) of the 20 sessions before the trade day, fixed nominal bounds: LIQ_1M_10M < 10 M <= LIQ_10M_100M < 100 M <= LIQ_100M_PLUS (USD); NA if a session is missing",
+    "alternatives": [],
+    "why": "fixed decade bounds chosen before any result, known at the decision (population terciles would use later candidates); same measure as the universe floor (1 M). Nominal, not inflation adjusted"
+   },
+   {
+    "id": "MA-STRAT-REGIME",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "SPY adjusted close of the prior session above its 200-session SMA (SPY_ABOVE_SMA200) or not (SPY_AT_OR_BELOW_SMA200); NA under 200 sessions. Optional dimension (scheme YEAR_X_LIQUIDITY_X_REGIME)",
+    "alternatives": [],
+    "why": "common market-regime convention, known at the prior close"
+   },
+   {
+    "id": "MA-STRAT-MIN-POPULATION",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "a stratum takes part only with at least 100 candidate keys (population); smaller strata are excluded from the stratified evaluation and counted",
+    "alternatives": [],
+    "why": "the common fraction is the minimum over strata; tiny strata would drive it toward zero by chance"
+   },
+   {
+    "id": "MA-STRAT-EQUAL-FRACTION",
+    "class": "MODEL_ASSUMPTION",
+    "phase": "SAMPLING",
+    "reference": "common fraction f = min over eligible strata of (cached keys in the clean prefix / population); each eligible stratum keeps its first floor(f x population) cached prefix keys in hash order",
+    "alternatives": [],
+    "why": "equal sampling fraction per stratum; hash rank inside the stratum stays outcome-independent"
+   }
+  ]
+ },
  "strategies": {
   "C09": {
    "strategyId": "SF_KK_EPISODIC_PIVOT",
    "candidateId": "C09",
-   "version": "kk-ep-chart-lifecycle-1.1.0",
+   "version": "kk-ep-chart-lifecycle-1.2.0",
    "intraday": "kk-intraday-1.1.0",
    "label": "CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT",
    "contract": {
@@ -165,7 +305,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00",
+   "variantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
    "modelAssumptions": [
     {
      "id": "MA-EP-CATALYST-NOT-VERIFIED",
@@ -280,6 +420,13 @@
      "why": "measurement convention shared by every method"
     },
     {
+     "id": "MA-EP-COMMON-DAY-SET",
+     "phase": "SAMPLING",
+     "reference": "all variants of one evaluation run on the same day set (research/kk-sample.mjs MA-SAMPLE-EP-COMMON-DAY-SET): a cached day outside it is NOT_EVALUATED_OUTSIDE_DAY_SET for every variant",
+     "alternatives": [],
+     "why": "Supertrader 6.0 review: PACE_20 and NONE ran on different day sets (days without IEX baseline)"
+    },
+    {
      "id": "MA-EP-COSTS",
      "phase": "ENTRY_EXECUTION",
      "reference": "10 bps slippage per side, 1 bp commission (platform policy)",
@@ -296,9 +443,800 @@
    ],
    "runs": [
     {
+     "runId": "40001460163",
+     "commit": "b4b9d1eadca732fd8f6ae0975f89643e1774cea3",
+     "role": "AUTHORITATIVE",
+     "validity": "Supertrader 6.0 cache-only rerun on the current code (0 requests): clean per-method prefixes, EP common day set, PS open trades counted; BEFORE_FIX is recomputed in the same run",
+     "strategies": [
+      "EP",
+      "PS"
+     ],
+     "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+     "datasetVerified": "EXACT",
+     "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+     "researchCodeSha256": "a3e4fd5f727c90e144c7b6f5ca845807184d46f861bf1e34c2b9577fa857efa3",
+     "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+     "epVariantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
+     "psVariantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
+     "sampleRegistrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+     "minuteCacheSha256": "c399a88c7514bec942e84fb2de1f6f3f823cca333d04e6a23e213250aa840d9b",
+     "baselineCacheSha256": "911b53b5a7dac161d3667c54dbdd4dd4c011d681a43def17f403191eec8d422b",
+     "coverage": {
+      "requestsThisRun": 0,
+      "mode": "CACHE_ONLY_ZERO_REQUESTS",
+      "sample": "DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related); evaluated on the clean per-method prefixes (Supertrader 6.0), NOT ***matically representative",
+      "ep": {
+       "candidateDaysInIexHistory": 13769,
+       "withMinutes": 2000,
+       "withBaseline": 1828,
+       "baselineTooFewIexDays": 172,
+       "withMinutesWithoutBaseline": 0
+      },
+      "ps": {
+       "candidateDaysInIexHistory": 65216,
+       "withMinutes": 2065
+      },
+      "complete": false
+     },
+     "sampling": {
+      "ep": {
+       "prefix": {
+        "population": 13769,
+        "prefixLength": 2000,
+        "cachedInPrefix": 2000,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 0
+       },
+       "commonDaySet": {
+        "size": 1828,
+        "excluded": {
+         "BASELINE_TOO_FEW_IEX_DAYS": 172
+        }
+       }
+      },
+      "ps": {
+       "prefix": {
+        "population": 65216,
+        "prefixLength": 2014,
+        "cachedInPrefix": 2014,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 51
+       },
+       "psCandidatesThatAreEpCandidates": {
+        "population": 474,
+        "inPsPrefix": 14,
+        "cachedOutsidePsPrefixDropped": 51
+       }
+      },
+      "strataFractions": {
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        }
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 6,
+         "den": 334,
+         "value": 0.017964071856287425
+        }
+       }
+      }
+     },
+     "ep": {
+      "REF": {
+       "trades": 611,
+       "closed": 609,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 99,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "a321911457db9b2e5481c05c408e846f0b0ee2a941fa95990f4d0a1f0e8c477e"
+      },
+      "ALT-ORH-5": {
+       "trades": 403,
+       "closed": 401,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 169,
+        "EP_CLOSE_BELOW_MA20": 107,
+        "STOP_INITIAL": 103,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 19,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11738,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "e62761cb5c43d356f57b3108014f05ae3a64cba3841eba09f4ea57c0112b30cb"
+      },
+      "ALT-NO-VOLUME-RULE": {
+       "trades": 1042,
+       "closed": 1039,
+       "openAtDataEnd": 3,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 659,
+        "EP_CLOSE_BELOW_MA20": 174,
+        "STOP_INITIAL": 178,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 25,
+        "null": 3
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11731,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 70,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "d90c3977b37ceda697fe04467ef6a42313b681b32436a3f7382e33bd6ae85a45"
+      },
+      "ALT-QUIET-PRIOR-RUN-50": {
+       "trades": 406,
+       "closed": 405,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 246,
+        "EP_CLOSE_BELOW_MA20": 73,
+        "STOP_INITIAL": 71,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 12,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7908,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 103,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 35,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 53,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "reconciliation": true,
+       "tradesSha256": "c7cdc6c3c3986bc6fcd5b6559816f89cf8da19be2d038623b4f61c69eeb03e25"
+      },
+      "ALT-EXIT-MA10": {
+       "trades": 613,
+       "closed": 612,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA10": 132,
+        "STOP_INITIAL": 78,
+        "STOP_INITIAL_GAP_OPEN": 13,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11751,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "fcfa0981722f3c20b66fc32149bc116e5e318719e866e3242e7b5b3fab264a1b"
+      },
+      "ALT-EXIT-MA50": {
+       "trades": 598,
+       "closed": 593,
+       "openAtDataEnd": 5,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 378,
+        "EP_CLOSE_BELOW_MA50": 78,
+        "STOP_INITIAL": 111,
+        "TERMINAL_DELISTED": 7,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "SECURITY_UNAVAILABLE": 2,
+        "null": 5
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11744,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "16665e42074323ff2da89f9dbb1efbbf5b33071dbd8a4316834d96a503924896"
+      },
+      "ALT-FILL-MINUTE-OPTIMISTIC": {
+       "trades": 607,
+       "closed": 605,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 384,
+        "EP_CLOSE_BELOW_MA20": 102,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "77cef900bf04544c06756fa812ebed77f4113189a4034387bdee08b9cbebd06a"
+      },
+      "ALT-RISK-00025": {
+       "trades": 612,
+       "closed": 610,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "8ffd24893e9b22b57f289627a5aa053a36262a2e265caaa8ec3ed28466a84539"
+      },
+      "ALT-RISK-001": {
+       "trades": 581,
+       "closed": 579,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 368,
+        "EP_CLOSE_BELOW_MA20": 99,
+        "STOP_INITIAL": 94,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 15,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "6c9063d0379180ae8e8500b56999fa636c1c95d72fc3e738bc5f51c44fbf6984"
+      }
+     },
+     "ps": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1261,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63151,
+        "CLOSED": 1261,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 889,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5e8e1935d0c86ca883443b9a8e5bd9ac424e76d8a34c8f846c9702ade1bd93f1"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "psOnePositionPerTicker": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1260,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63073,
+        "CLOSED": 1260,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "SKIPPED_EARLIER_TRADE_OPEN": 79,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 888,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5bbb2089a26cd83cabdf9bb4caa8d98705d8ac22b8c67b2d3dd9044f888edbbd"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11807,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 2,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11808,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 1,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "tradesBySet": {
+      "ep": {
+       "BEFORE_FIX": {
+        "REF": 611,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1106,
+        "ALT-QUIET-PRIOR-RUN-50": 406,
+        "ALT-EXIT-MA10": 613,
+        "ALT-EXIT-MA50": 598,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 607,
+        "ALT-RISK-00025": 612,
+        "ALT-RISK-001": 581
+       },
+       "CLEAN": {
+        "REF": 611,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1042,
+        "ALT-QUIET-PRIOR-RUN-50": 406,
+        "ALT-EXIT-MA10": 613,
+        "ALT-EXIT-MA50": 598,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 607,
+        "ALT-RISK-00025": 612,
+        "ALT-RISK-001": 581
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 463,
+        "ALT-ORH-5": 297,
+        "ALT-NO-VOLUME-RULE": 818,
+        "ALT-QUIET-PRIOR-RUN-50": 310,
+        "ALT-EXIT-MA10": 463,
+        "ALT-EXIT-MA50": 457,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 462,
+        "ALT-RISK-00025": 463,
+        "ALT-RISK-001": 459
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 429,
+        "ALT-ORH-5": 275,
+        "ALT-NO-VOLUME-RULE": 774,
+        "ALT-QUIET-PRIOR-RUN-50": 286,
+        "ALT-EXIT-MA10": 429,
+        "ALT-EXIT-MA50": 427,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 428,
+        "ALT-RISK-00025": 429,
+        "ALT-RISK-001": 422
+       }
+      },
+      "ps": {
+       "BEFORE_FIX": {
+        "REF": 239,
+        "ALT-STREAK4": 49,
+        "ALT-NO-ACCEL": 1301,
+        "ALT-ENTRY-FIRST-RED-5MIN": 276,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 246,
+        "ALT-STOP-VWAP-RECLAIM": 239,
+        "ALT-TARGET-MA20": 232,
+        "ALT-TARGET-HALF-MA10-MA20": 231
+       },
+       "CLEAN": {
+        "REF": 228,
+        "ALT-STREAK4": 47,
+        "ALT-NO-ACCEL": 1261,
+        "ALT-ENTRY-FIRST-RED-5MIN": 264,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 235,
+        "ALT-STOP-VWAP-RECLAIM": 228,
+        "ALT-TARGET-MA20": 221,
+        "ALT-TARGET-HALF-MA10-MA20": 220
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 150,
+        "ALT-STREAK4": 30,
+        "ALT-NO-ACCEL": 859,
+        "ALT-ENTRY-FIRST-RED-5MIN": 176,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 161,
+        "ALT-STOP-VWAP-RECLAIM": 150,
+        "ALT-TARGET-MA20": 146,
+        "ALT-TARGET-HALF-MA10-MA20": 145
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 126,
+        "ALT-STREAK4": 27,
+        "ALT-NO-ACCEL": 715,
+        "ALT-ENTRY-FIRST-RED-5MIN": 147,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 137,
+        "ALT-STOP-VWAP-RECLAIM": 126,
+        "ALT-TARGET-MA20": 122,
+        "ALT-TARGET-HALF-MA10-MA20": 121
+       }
+      }
+     },
+     "metrics": "SEALED (claude/supertrader-validation-results, run 40001460163)"
+    },
+    {
      "runId": "39939887192",
      "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-     "role": "AUTHORITATIVE",
+     "role": "PRE_6_0_REFERENCE",
+     "validity": "code before the Supertrader 6.0 fixes (researchCodeSha256 and both variant registries differ from the current code): its counts are the BEFORE side of the comparison; PS sample over-represents gap-up PS days, EP variants on different day sets",
      "strategies": [
       "EP",
       "PS"
@@ -730,7 +1668,7 @@
   "C10": {
    "strategyId": "SF_KK_PARABOLIC_SHORT",
    "candidateId": "C10",
-   "version": "kk-ps-chart-short-study-1.1.0",
+   "version": "kk-ps-chart-short-study-1.2.0",
    "intraday": "kk-intraday-1.1.0",
    "label": "CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE",
    "contract": {
@@ -829,7 +1767,7 @@
      }
     }
    ],
-   "variantRegistrySha256": "e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a",
+   "variantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
    "modelAssumptions": [
     {
      "id": "MA-PS-ACCELERATION",
@@ -913,6 +1851,20 @@
      "reference": "10 bps slippage per side, 1 bp commission; no borrow fee (unknown)",
      "alternatives": [],
      "why": "platform policy; borrow DATA_BLOCKED"
+    },
+    {
+     "id": "MA-PS-OVERLAP",
+     "reference": "INDEPENDENT: every candidate day is its own hypothetical one-unit short, also while an earlier short of the same security (same streak) is still open",
+     "alternatives": [
+      "ONE_POSITION_PER_TICKER (reporting variant): a candidate is skipped while an earlier PS trade of the same security is open; open means its last cover is on or after the candidate day (a cover on the candidate day itself counts as open, conservative), a trade open at the data end blocks every later candidate"
+     ],
+     "why": "Supertrader 6.0 review: consecutive candidate days of one streak ran as overlapping trades; the source says nothing about re-entries"
+    },
+    {
+     "id": "MA-PS-OPEN-AT-DATA-END",
+     "reference": "a short still open at the data end (incl. a delisted security) is counted publicly and, sealed, marked to the last finite daily close of its series with exit costs (closed-only metrics are kept as the reference)",
+     "alternatives": [],
+     "why": "Supertrader 6.0 review: excluding them silently drops the trades that never reached the stop or the target"
     }
    ],
    "blockers": [
@@ -924,9 +1876,800 @@
    ],
    "runs": [
     {
+     "runId": "40001460163",
+     "commit": "b4b9d1eadca732fd8f6ae0975f89643e1774cea3",
+     "role": "AUTHORITATIVE",
+     "validity": "Supertrader 6.0 cache-only rerun on the current code (0 requests): clean per-method prefixes, EP common day set, PS open trades counted; BEFORE_FIX is recomputed in the same run",
+     "strategies": [
+      "EP",
+      "PS"
+     ],
+     "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+     "datasetVerified": "EXACT",
+     "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+     "researchCodeSha256": "a3e4fd5f727c90e144c7b6f5ca845807184d46f861bf1e34c2b9577fa857efa3",
+     "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+     "epVariantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
+     "psVariantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
+     "sampleRegistrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+     "minuteCacheSha256": "c399a88c7514bec942e84fb2de1f6f3f823cca333d04e6a23e213250aa840d9b",
+     "baselineCacheSha256": "911b53b5a7dac161d3667c54dbdd4dd4c011d681a43def17f403191eec8d422b",
+     "coverage": {
+      "requestsThisRun": 0,
+      "mode": "CACHE_ONLY_ZERO_REQUESTS",
+      "sample": "DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related); evaluated on the clean per-method prefixes (Supertrader 6.0), NOT ***matically representative",
+      "ep": {
+       "candidateDaysInIexHistory": 13769,
+       "withMinutes": 2000,
+       "withBaseline": 1828,
+       "baselineTooFewIexDays": 172,
+       "withMinutesWithoutBaseline": 0
+      },
+      "ps": {
+       "candidateDaysInIexHistory": 65216,
+       "withMinutes": 2065
+      },
+      "complete": false
+     },
+     "sampling": {
+      "ep": {
+       "prefix": {
+        "population": 13769,
+        "prefixLength": 2000,
+        "cachedInPrefix": 2000,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 0
+       },
+       "commonDaySet": {
+        "size": 1828,
+        "excluded": {
+         "BASELINE_TOO_FEW_IEX_DAYS": 172
+        }
+       }
+      },
+      "ps": {
+       "prefix": {
+        "population": 65216,
+        "prefixLength": 2014,
+        "cachedInPrefix": 2014,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 51
+       },
+       "psCandidatesThatAreEpCandidates": {
+        "population": 474,
+        "inPsPrefix": 14,
+        "cachedOutsidePsPrefixDropped": 51
+       }
+      },
+      "strataFractions": {
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        }
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 6,
+         "den": 334,
+         "value": 0.017964071856287425
+        }
+       }
+      }
+     },
+     "ep": {
+      "REF": {
+       "trades": 611,
+       "closed": 609,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 99,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "a321911457db9b2e5481c05c408e846f0b0ee2a941fa95990f4d0a1f0e8c477e"
+      },
+      "ALT-ORH-5": {
+       "trades": 403,
+       "closed": 401,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 169,
+        "EP_CLOSE_BELOW_MA20": 107,
+        "STOP_INITIAL": 103,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 19,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11738,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "e62761cb5c43d356f57b3108014f05ae3a64cba3841eba09f4ea57c0112b30cb"
+      },
+      "ALT-NO-VOLUME-RULE": {
+       "trades": 1042,
+       "closed": 1039,
+       "openAtDataEnd": 3,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 659,
+        "EP_CLOSE_BELOW_MA20": 174,
+        "STOP_INITIAL": 178,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 25,
+        "null": 3
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11731,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 70,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "d90c3977b37ceda697fe04467ef6a42313b681b32436a3f7382e33bd6ae85a45"
+      },
+      "ALT-QUIET-PRIOR-RUN-50": {
+       "trades": 406,
+       "closed": 405,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 246,
+        "EP_CLOSE_BELOW_MA20": 73,
+        "STOP_INITIAL": 71,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 12,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7908,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 103,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 35,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 53,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "reconciliation": true,
+       "tradesSha256": "c7cdc6c3c3986bc6fcd5b6559816f89cf8da19be2d038623b4f61c69eeb03e25"
+      },
+      "ALT-EXIT-MA10": {
+       "trades": 613,
+       "closed": 612,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA10": 132,
+        "STOP_INITIAL": 78,
+        "STOP_INITIAL_GAP_OPEN": 13,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11751,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "fcfa0981722f3c20b66fc32149bc116e5e318719e866e3242e7b5b3fab264a1b"
+      },
+      "ALT-EXIT-MA50": {
+       "trades": 598,
+       "closed": 593,
+       "openAtDataEnd": 5,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 378,
+        "EP_CLOSE_BELOW_MA50": 78,
+        "STOP_INITIAL": 111,
+        "TERMINAL_DELISTED": 7,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "SECURITY_UNAVAILABLE": 2,
+        "null": 5
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11744,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "16665e42074323ff2da89f9dbb1efbbf5b33071dbd8a4316834d96a503924896"
+      },
+      "ALT-FILL-MINUTE-OPTIMISTIC": {
+       "trades": 607,
+       "closed": 605,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 384,
+        "EP_CLOSE_BELOW_MA20": 102,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "77cef900bf04544c06756fa812ebed77f4113189a4034387bdee08b9cbebd06a"
+      },
+      "ALT-RISK-00025": {
+       "trades": 612,
+       "closed": 610,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 389,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "8ffd24893e9b22b57f289627a5aa053a36262a2e265caaa8ec3ed28466a84539"
+      },
+      "ALT-RISK-001": {
+       "trades": 581,
+       "closed": 579,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 368,
+        "EP_CLOSE_BELOW_MA20": 99,
+        "STOP_INITIAL": 94,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 15,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "6c9063d0379180ae8e8500b56999fa636c1c95d72fc3e738bc5f51c44fbf6984"
+      }
+     },
+     "ps": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1261,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63151,
+        "CLOSED": 1261,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 889,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5e8e1935d0c86ca883443b9a8e5bd9ac424e76d8a34c8f846c9702ade1bd93f1"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "psOnePositionPerTicker": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1260,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63073,
+        "CLOSED": 1260,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "SKIPPED_EARLIER_TRADE_OPEN": 79,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 888,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5bbb2089a26cd83cabdf9bb4caa8d98705d8ac22b8c67b2d3dd9044f888edbbd"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11807,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 2,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11808,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 1,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "tradesBySet": {
+      "ep": {
+       "BEFORE_FIX": {
+        "REF": 611,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1106,
+        "ALT-QUIET-PRIOR-RUN-50": 406,
+        "ALT-EXIT-MA10": 613,
+        "ALT-EXIT-MA50": 598,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 607,
+        "ALT-RISK-00025": 612,
+        "ALT-RISK-001": 581
+       },
+       "CLEAN": {
+        "REF": 611,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1042,
+        "ALT-QUIET-PRIOR-RUN-50": 406,
+        "ALT-EXIT-MA10": 613,
+        "ALT-EXIT-MA50": 598,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 607,
+        "ALT-RISK-00025": 612,
+        "ALT-RISK-001": 581
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 463,
+        "ALT-ORH-5": 297,
+        "ALT-NO-VOLUME-RULE": 818,
+        "ALT-QUIET-PRIOR-RUN-50": 310,
+        "ALT-EXIT-MA10": 463,
+        "ALT-EXIT-MA50": 457,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 462,
+        "ALT-RISK-00025": 463,
+        "ALT-RISK-001": 459
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 429,
+        "ALT-ORH-5": 275,
+        "ALT-NO-VOLUME-RULE": 774,
+        "ALT-QUIET-PRIOR-RUN-50": 286,
+        "ALT-EXIT-MA10": 429,
+        "ALT-EXIT-MA50": 427,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 428,
+        "ALT-RISK-00025": 429,
+        "ALT-RISK-001": 422
+       }
+      },
+      "ps": {
+       "BEFORE_FIX": {
+        "REF": 239,
+        "ALT-STREAK4": 49,
+        "ALT-NO-ACCEL": 1301,
+        "ALT-ENTRY-FIRST-RED-5MIN": 276,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 246,
+        "ALT-STOP-VWAP-RECLAIM": 239,
+        "ALT-TARGET-MA20": 232,
+        "ALT-TARGET-HALF-MA10-MA20": 231
+       },
+       "CLEAN": {
+        "REF": 228,
+        "ALT-STREAK4": 47,
+        "ALT-NO-ACCEL": 1261,
+        "ALT-ENTRY-FIRST-RED-5MIN": 264,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 235,
+        "ALT-STOP-VWAP-RECLAIM": 228,
+        "ALT-TARGET-MA20": 221,
+        "ALT-TARGET-HALF-MA10-MA20": 220
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 150,
+        "ALT-STREAK4": 30,
+        "ALT-NO-ACCEL": 859,
+        "ALT-ENTRY-FIRST-RED-5MIN": 176,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 161,
+        "ALT-STOP-VWAP-RECLAIM": 150,
+        "ALT-TARGET-MA20": 146,
+        "ALT-TARGET-HALF-MA10-MA20": 145
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 126,
+        "ALT-STREAK4": 27,
+        "ALT-NO-ACCEL": 715,
+        "ALT-ENTRY-FIRST-RED-5MIN": 147,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 137,
+        "ALT-STOP-VWAP-RECLAIM": 126,
+        "ALT-TARGET-MA20": 122,
+        "ALT-TARGET-HALF-MA10-MA20": 121
+       }
+      }
+     },
+     "metrics": "SEALED (claude/supertrader-validation-results, run 40001460163)"
+    },
+    {
      "runId": "39939887192",
      "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-     "role": "AUTHORITATIVE",
+     "role": "PRE_6_0_REFERENCE",
+     "validity": "code before the Supertrader 6.0 fixes (researchCodeSha256 and both variant registries differ from the current code): its counts are the BEFORE side of the comparison; PS sample over-represents gap-up PS days, EP variants on different day sets",
      "strategies": [
       "EP",
       "PS"

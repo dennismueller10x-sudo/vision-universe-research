@@ -9,6 +9,8 @@ name: Supertrader Research Snapshot (Capture, Restore, Paritaet)
 #   [supertrader-snapshot:capture]        voller Capture (Ablage sts1) + 2 Restores
 #   [supertrader-snapshot:restore]        nur 2 Restores des zuletzt veroeffentlichten vollen Snapshots
 #   [supertrader-snapshot:restore-smoke]  dasselbe fuer den Smoke-Snapshot
+#   [supertrader-snapshot:capture-holdout] voller Capture des Holdout-Fensters 2008-2015 (ST_WINDOW=HOLDOUT, eigener Zeiger) + 2 Restores
+#   [supertrader-snapshot:restore-holdout] nur 2 Restores des Holdout-Snapshots
 # Rohdaten liegen nur im privaten Eimer (Praefix research-snapshots/supertrader/). Das Repository ist
 # oeffentlich: Logs und veroeffentlichte Dateien enthalten nur Hashes, Zaehlungen und Reason Codes.
 on:
@@ -36,6 +38,8 @@ jobs:
           set -euo pipefail
           m=""
           case "$MSG" in
+            *"[supertrader-snapshot:restore-holdout]"*) m=restore-holdout;;
+            *"[supertrader-snapshot:capture-holdout]"*) m=capture-holdout;;
             *"[supertrader-snapshot:restore-smoke]"*) m=restore-smoke;;
             *"[supertrader-snapshot:restore]"*) m=restore;;
             *"[supertrader-snapshot:smoke]"*) m=smoke;;
@@ -46,7 +50,7 @@ jobs:
 
   capture:
     needs: mode
-    if: needs.mode.outputs.mode == 'smoke' || needs.mode.outputs.mode == 'capture'
+    if: needs.mode.outputs.mode == 'smoke' || needs.mode.outputs.mode == 'capture' || needs.mode.outputs.mode == 'capture-holdout'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     # Review F7: Captures aller Zweige nacheinander (Generations- und Bytegrenze ohne Wettlauf).
@@ -76,6 +80,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
+          ST_WINDOW: ${{ endsWith(needs.mode.outputs.mode, 'holdout') && 'HOLDOUT' || 'DEV' }}
         run: |
           set -euo pipefail
           if [ "$MODE" = "smoke" ]; then
@@ -115,6 +120,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
+          ST_WINDOW: ${{ endsWith(needs.mode.outputs.mode, 'holdout') && 'HOLDOUT' || 'DEV' }}
         run: bash scripts/supertrader/snapshot/restore-job.sh
 
   restore_b:
@@ -144,6 +150,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
+          ST_WINDOW: ${{ endsWith(needs.mode.outputs.mode, 'holdout') && 'HOLDOUT' || 'DEV' }}
         run: bash scripts/supertrader/snapshot/restore-job.sh
 
   publish:

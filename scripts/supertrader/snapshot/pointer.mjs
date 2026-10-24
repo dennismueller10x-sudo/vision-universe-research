@@ -11,7 +11,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
 const arg = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : null; };
 const mode = arg('--mode') || '';
-const file = path.join(here, /smoke/.test(mode) ? 'SNAPSHOT-POINTER-SMOKE.json' : 'SNAPSHOT-POINTER.json');
+// Holdout-Fenster (ST_WINDOW=HOLDOUT, 2008-2015): eigener Zeiger, der DEV-Zeiger bleibt unberuehrt.
+const file = path.join(here, /smoke/.test(mode) ? 'SNAPSHOT-POINTER-SMOKE.json' : /holdout/.test(mode) ? 'SNAPSHOT-POINTER-HOLDOUT.json' : 'SNAPSHOT-POINTER.json');
 const cur = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
 if (argv.includes('--read')) {
   if (!cur?.snapshotId) { console.error('INPUT_INTEGRITY_FAILURE: SNAPSHOT_NOT_FOUND (kein Zeiger)'); process.exit(3); }

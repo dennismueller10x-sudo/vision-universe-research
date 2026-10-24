@@ -8,8 +8,11 @@ import { PS_REFERENCE_CONFIG, PS_RUN_VARIANTS, PS_CLASS, PS_EXECUTABLE_CLASS_ASS
 import { toSession, compactSession, expandSession, identityCheck, openIdentityCheck, openingRange, runningVwap, fiveMinuteCandles, sessionMinute } from '../source-faithful/research/kk-intraday.mjs';
 import { KK_EPISODIC_PIVOT, KK_PARABOLIC_SHORT } from '../source-faithful/contracts/kullamagi.mjs';
 
-const PINNED_EP = 'efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00';
-const PINNED_PS = 'e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a';
+// Supertrader 6.0: both registries re-pinned (EP 1.2.0: common-day-set hook; PS 1.2.0: overlap reference INDEPENDENT and
+// reporting variant ONE_POSITION_PER_TICKER in the fingerprint). Before: EP efa94377..., PS e7ddaa7e... (run 39939887192).
+const PINNED_EP = 'e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f';
+const PINNED_PS = '436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9';
+const PRE_SF6 = Object.freeze({ ep: 'efa94377effb3f5afdf24ff5029699b9b69ab4a43fdbec329e0d33293450cb00', ps: 'e7ddaa7ef0481df816136638461f65f36ba053d23cecdc18b5357c1adc5d596a', researchCode: '4c8afe34f203757dccb44cf7576c2d2dd8e6cbca465dfb34de8c58a0c532a395' });
 const day = (k) => new Date(Date.UTC(2021, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const flat = (k, c) => bar(k, c, c * 1.015, c * 0.985, c);
@@ -235,6 +238,9 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
   for (const id of ['KK-SF-PS-ENTRY', 'KK-SF-PS-STOP', 'KK-SF-PS-BORROW']) assert.equal(a.strategies.C10.contract.ruleStatuses[id], 'DATA_BLOCKED');
   for (const c of ['C09', 'C10']) { assert.equal(a.strategies[c].liveReadiness, 'LIVE_NOT_APPROVED'); assert.match(a.strategies[c].contract.measurementClassOfTheOriginalMethod, /^NOT_MEASURABLE/); }
   for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.researchCodeSha256, kkCode());
+  // a run on older code is never AUTHORITATIVE: the pre-6.0 run keeps its own hashes and is labelled as the BEFORE side
+  for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.researchCodeSha256 !== kkCode())) { assert.notEqual(r.role, 'AUTHORITATIVE'); assert.match(r.validity, /before the Supertrader 6\.0 fixes/); }
+  if (!KK_SNAPSHOT_RUNS.some((x) => x.role === 'AUTHORITATIVE')) assert.equal(a.supertrader6.status, 'CACHE_ONLY_RERUN_PENDING');
 });
 
 test('SF-KK-PIT-IDENTITY: die Identitaetspruefung kennt nur die Eroeffnung; spaetere Minuten waehlen keinen Tag ab', () => {
@@ -288,8 +294,12 @@ test('SF-KK-RUNNER-BUDGET: jeder HTTP-Versuch zaehlt (auch Wiederholungen), nie 
 });
 
 test('SF-KK-RUN-REGISTERED: eingetragener Lauf passt zum Code; unvollstaendige Abdeckung heisst Stichprobe, nie mehr', () => {
-  const a = buildKkEpPs(), run = KK_SNAPSHOT_RUNS.find((x) => x.role === 'AUTHORITATIVE');
-  assert.ok(run); assert.equal(run.epVariantRegistrySha256, epVariantRegistrySha256()); assert.equal(run.psVariantRegistrySha256, psVariantRegistrySha256());
+  const a = buildKkEpPs(), auth = KK_SNAPSHOT_RUNS.find((x) => x.role === 'AUTHORITATIVE'), pre = KK_SNAPSHOT_RUNS.find((x) => x.role === 'PRE_6_0_REFERENCE');
+  const run = auth ?? pre;
+  assert.ok(run);
+  if (auth) { assert.equal(auth.epVariantRegistrySha256, epVariantRegistrySha256()); assert.equal(auth.psVariantRegistrySha256, psVariantRegistrySha256()); }
+  // the pre-6.0 run is pinned to the 1.1.0 code and registries (BEFORE side of the 6.0 comparison)
+  assert.deepEqual({ ep: pre.epVariantRegistrySha256, ps: pre.psVariantRegistrySha256, researchCode: pre.researchCodeSha256 }, PRE_SF6);
   assert.ok(run.coverage.requestsThisRun <= 6000);
   for (const v of Object.values(run.ep)) assert.equal(v.reconciliation, true);
   for (const k of ['C09', 'C10']) {
