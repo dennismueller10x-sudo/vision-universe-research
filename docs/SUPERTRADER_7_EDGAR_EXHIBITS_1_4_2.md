@@ -1,8 +1,8 @@
 # Supertrader 7.0 – Regelsatz 1.4.2: EDGAR-Exhibits für die 83 V4-D1-Sitzungen
 
-Stand: 25. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Maßgeblich ist der **Regelsatz 1.4.2**, Lauf **40206319111**. Vorgänger und Vorgeschichte: [SUPERTRADER_7_EDGAR_CA_CHECK.md](SUPERTRADER_7_EDGAR_CA_CHECK.md) (1.4.0 und 1.4.1, PR #921).
+Stand: 25. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Maßgeblich ist der **Regelsatz 1.4.3**, Lauf **40214193643**, siehe [Regelsatz 1.4.3](#regelsatz-143-review-von-931). Der Regelsatz 1.4.2 mit Lauf 40206319111 ist eingefroren. Vorgänger und Vorgeschichte: [SUPERTRADER_7_EDGAR_CA_CHECK.md](SUPERTRADER_7_EDGAR_CA_CHECK.md) (1.4.0 und 1.4.1, PR #921).
 
-**Kernergebnis:** Die Exhibits bestätigen **keinen** Split.
+**Kernergebnis:** Die Exhibits bestätigen **keinen** Split, weder unter 1.4.2 noch unter 1.4.3.
 - Gelesen wurden 29 Exhibits aus 51 Einreichungen der 21 Sitzungen mit Dokumentpfad.
 - Alle 83 Sitzungen bleiben `UNRESOLVED` und in Quarantäne. Das Overlay ist leer.
 - Verbraucht wurden **122 von 600** Anfragen für alle 1.4.2-Läufe zusammen.
@@ -17,6 +17,114 @@ Die Prüfung hält folgende Grenzen ein:
 - keine Live-Aktivierung, keine Orders;
 - keine UI-Änderung, kein Merge;
 - `quant/data` und der Snapshot bleiben unverändert.
+
+## Regelsatz 1.4.3 (Review von #931)
+
+**Grund:** Ein unabhängiges Review von #931 hat zwei Parser-Befunde gefunden, an denen die Belastbarkeit des Exhibit-Ergebnisses hängt. Es gab keinen CRITICAL- und keinen HIGH-Befund.
+- Die Änderung folgt aus dem Review, **nicht** aus einem Ergebnis: Lauf 40206319111 hatte nichts bestätigt.
+- Hash `5fba098cb0a9f8916d868105cf0dd5b9de58c3a33d4c61f1331544b1c8ef359a`, vor jedem Lauf festgeschrieben.
+- 1.4.2 liegt eingefroren in [`ca-edgar-1.4.2.mjs`](../scripts/supertrader/source-faithful/integrity/ca-edgar-1.4.2.mjs) (`2130be8e…`); 1.4.1, 1.4.0 und 1.3.0 sind unverändert.
+- Je Befund gibt es synthetische Tests (SF7-REVIEW143-F1, -F2, -F3, -M1 sowie SF7-EDGAR-LEDGER und SF7-EDGAR-PLAN).
+
+| Befund | Schwere | Behebung in 1.4.3 |
+|---|---|---|
+| F1: falsch negativ beim Satzungswortlaut | MEDIUM | Erkannt werden jetzt: „each ten (10) shares of Common Stock, par value $0.001 per share, … shall be combined into one (1) share“ (das Muster reicht jetzt über 300 Zeichen und über Dezimalpunkte); „every N shares … issued and outstanding … automatically reclassified and combined into one share“; „converted into one (1) share“ neben einem Reverse-Split. „converted into“ gilt nicht mehr für sich allein als Wandlungswortlaut. Fusionswortlaut sowie convertible / conversion / warrant / exercise / preferred stock sperren weiter |
+| F2: falsch positiv bei Ermessenswortlaut | MEDIUM | Ein Satz mit Ermessens-, Bedingungs- oder Ermächtigungswortlaut (may, could, would, in its sole discretion, authorized / authority, if effected, if approved, proposal, to approve, intends / plans to, subject to … approval) trägt nie einen Faktor. Nur solche Sätze ergeben `DOCUMENT_DISCRETIONARY_ONLY`. Vollzogenes („effected“, „became effective“, „filed a certificate of amendment … effective“) besteht. Der Monat „May“ ist kein Modalwort |
+| F3 (LOW 6): Exhibit-Typ aus der ersten `EX-`-Zelle | LOW | Der Typ kommt aus der Spalte „Type“, gefunden über die Kopfzeile. Ohne Kopfzeile gibt es kein Exhibit, und die Sitzung ist unvollständig (`EXHIBIT_INDEX_UNPARSED`) |
+| M1: die 1.4.2-Probe lief auf DQ-K3-Sitzungen außerhalb der 83 | MEDIUM | Dokumente und Exhibits nur noch für K5-Sitzungen, in jedem Modus |
+| M2: Ledger nicht sicher gegen gleichzeitige Läufe | MEDIUM | Eine feste Concurrency-Gruppe `supertrader-sf7-ca-edgar-ledger` für alle `sf7-ca-edgar*`-Modi; das Ledger wird nach der Reservierung zurückgelesen, bei Abweichung bricht der Lauf ab |
+| L4: Plan übersprang Sitzungen ohne gecachten Index | LOW | Solche Sitzungen zählen mit dem schlimmsten Fall: Indexseiten + 6 Dokumente + 6 Filing-Indizes + 6 × 3 Exhibits |
+| L5: fehlendes Ledger begann bei 0 | LOW | Ein fehlendes Ledger oder weniger als **122** verbrauchte Anfragen (Anker der 1.4.2-Läufe, im Code) bricht ab |
+
+**Abweichung der 1.4.2-Probe, offen benannt:** Die Probe 40205818659 verbrauchte **42 Anfragen**. Sie lief auf exponierten DQ-K3-Sitzungen von 400 Reihen. Ihre Anfragen dienten damit Sitzungen **außerhalb** der 83:
+- 1 Einreichungsindex;
+- 36 Hauptdokumente;
+- 3 Filing-Indizes;
+- 2 Exhibits.
+
+Die 42 Anfragen sind im Ledger gezählt. Seit 1.4.3 ist der Umfang in jedem Modus K5.
+
+**Vorher 1.4.2 nur aus dem Cache:** Der eingefrorene 1.4.2 wurde aus den gecachten Extraktionen (Parser 1.1.0) und den gecachten Index-Parses (1.0.0) bewertet, ohne Anfrage. Für alle 21 Sitzungen mit Dokumentpfad war das vollständig möglich.
+- 1.4.3 liest Dokumente und Exhibits mit dem neuen Parser nur für diese 21 Sitzungen neu; nur dort kann ein Dokument bestätigen.
+- Für die 51 übrigen geprüften Sitzungen ohne Dokumentpfad übernimmt 1.4.3 das 1.4.2-Label (`labelsCarriedFrom142` 51); ihre Klasse bleibt die aus 1.3.0.
+
+**Läufe 1.4.3:**
+
+| Lauf | Modus | Anfragen | Ergebnis |
+|---|---|---|---|
+| [40212814452](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40212814452) | `sf7-ca-edgar-plan` | **0** | 51 Hauptdokumente, 51 Filing-Indizes, höchstens 153 Exhibits, also **Obergrenze 255** (unter dem Rest von 478, kein Stopp); 0 Sitzungen ohne gecachten Index |
+| [**40214193643**](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40214193643) | **`sf7-ca-edgar`, maßgeblich** | **132** von 478 reserviert | 51 Hauptdokumente, 51 Filing-Indizes, 30 Exhibits; Einreichungsindizes aus dem Cache (83 Treffer); 0 Fehler, 0 über dem Budget |
+
+Eine Probe wurde nicht gestartet.
+
+**Ledger, alle 1.4.x-Exhibit-Läufe:**
+
+| Lauf | Anfragen |
+|---|---|
+| 1.4.2 Plan | 0 |
+| 1.4.2 Probe | 42 |
+| 1.4.2 Hauptlauf | 80 |
+| 1.4.3 Plan | 0 |
+| 1.4.3 Hauptlauf | 132 |
+| **Summe** | **254 von 600** (Rest 346) |
+
+**Prüfungen im Hauptlauf:**
+- Snapshot `EXACT`; 1.3.0 unverändert; das Manifest `e0a31fea…` ist reproduziert; der Umfang sind **83** Sitzungen.
+- BASE ist hash-identisch mit 6.0 für alle 11 Referenzen; CA ist identisch mit BASE.
+- 1.4.3-Overlay: **0 Einträge**, `2850f3512982dadcd46b02e54177d07aef7e410cf33af77cbe4309e0aa174267`.
+- `genuineCandidatesChanged` 0, `changedOutsideScope` 0.
+
+**Exhibits unter 1.4.3:**
+- 30 gelesen: `EX-3.1` 8, `EX-3.2` 6, `EX-99.1` 16. Ein EX-99.1 mehr als unter 1.4.2, weil der Typ jetzt aus der Type-Spalte kommt.
+- **0 Split-Aussagen mit Verhältnis**, auch mit dem erweiterten Satzungswortlaut.
+- 2 Aussagen mit Ermessenswortlaut wurden ausgeschlossen (aus den Hauptdokumenten).
+
+**Vorher (1.4.2) / Nachher (1.4.3):**
+
+| Klasse (83) | 1.4.2 | 1.4.3 |
+|---|---|---|
+| `CONFIRMED_UNDECLARED_SPLIT` | 0 | **0** |
+| `CONFIRMED_GENUINE_MOVE` | 0 | **0** |
+| `UNRESOLVED` | 83 | **83** |
+
+| Label | 1.4.2 | 1.4.3 |
+|---|---|---|
+| `REVERSE_SPLIT_DOCUMENTED` | 0 | 0 |
+| `NO_SPLIT_DOCUMENT_FOUND` | 33 | 33 |
+| `UNCLEAR` | 33 | 32 |
+| `AMBIGUOUS` | 6 | 7 |
+| `NOT_CHECKED` (keine CIK) | 11 | 11 |
+
+Eine Sitzung wechselt von `UNCLEAR` zu `AMBIGUOUS`: Ihr einziges Verhältnis steht in einem Satz mit Ermessenswortlaut. Die Dokumentbefunde der 21 Pfad-Sitzungen sind gleich geblieben:
+
+| Befund | Anzahl |
+|---|---|
+| `NO_SPLIT_DOCUMENT_FOUND` | 12 |
+| `DOCUMENT_CAP_EXCEEDED` | 4 |
+| `DOCUMENT_NO_RATIO` | 2 |
+| `DOCUMENT_RATIO_NOT_ON_GRID` | 1 |
+| `DOCUMENT_PROXY_ONLY` | 1 |
+| `DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW` | 1 |
+
+Je Referenz (DQ-K5 exponiert / bestätigt 1.4.2 / bestätigt 1.4.3 / ungeklärt 1.4.3):
+
+| Referenz | exponiert | 1.4.2 | 1.4.3 | ungeklärt |
+|---|---|---|---|---|
+| Turtle S1 | 16 | 0 | 0 | 16 |
+| Turtle S2 | 14 | 0 | 0 | 14 |
+| Minervini SEPA | 0 | 0 | 0 | 0 |
+| Minervini Power Play | 12 | 0 | 0 | 12 |
+| Darvas | 15 | 0 | 0 | 15 |
+| Kullamägi Breakout | 27 | 0 | 0 | 27 |
+| Pocket Pivot | 9 | 0 | 0 | 9 |
+| Buyable Gap-Up | 14 | 0 | 0 | 14 |
+| Weinstein Investor | 0 | 0 | 0 | 0 |
+| Weinstein Trader | 4 | 0 | 0 | 4 |
+| Holy Grail (W-RAS97) | 29 | 0 | 0 | 29 |
+
+**Gelöst durch Exhibits: 0 von 83.** Die Restgruppen, die Wirkung auf CC-5 und die nötigen Anbieter-Datenfelder in den Abschnitten unten gelten unverändert für 1.4.3. Die Gründe der Pfad-B-Sitzungen sind gleich geblieben.
+
+Die folgenden Abschnitte beschreiben Regelsatz 1.4.2 und seine Läufe.
 
 ## Regelsatz 1.4.2
 
@@ -190,7 +298,8 @@ Die Abnahmekriterien aus der Entscheidungsvorlage E7-1 gelten unverändert: mind
   - Die Regeln wurden **nach** dem Lauf nicht angepasst. Jede Lockerung wäre ein neuer Regelsatz mit Vorher/Nachher und eigener Freigabe.
 - 4 der 21 Sitzungen mit Dokumentpfad bleiben wegen der Obergrenze von 6 Einreichungen unvollständig (1.4.1-Regel, unverändert).
 - Gemeinsam eingereichte Dokumente bleiben eine dokumentierte Grenze, siehe [SUPERTRADER_7_EDGAR_CA_CHECK.md](SUPERTRADER_7_EDGAR_CA_CHECK.md).
-- Der Rest von 478 Anfragen im Ledger ist **keine** Freigabe für weitere Abrufe. Ein weiterer 1.4.x-Lauf braucht eine eigene Entscheidung.
+- Der Rest von 346 Anfragen im Ledger (nach 1.4.3) ist **keine** Freigabe für weitere Abrufe. Ein weiterer 1.4.x-Lauf braucht eine eigene Entscheidung.
+- Auch mit dem erweiterten Satzungswortlaut von 1.4.3 enthält keines der 30 Exhibits eine zählbare Split-Aussage. Ein häufiger Grund dürfte sein, dass Satzungsänderungen den Wirksamkeitszeitpunkt als „Effective Time“ ohne Datum im selben Satz nennen. Das bleibt bewusst streng: Datum und Verhältnis müssen im selben Satz stehen (Regel R1 aus 1.4.1).
 
 Tests: [`sf-sf7-ca-edgar.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-edgar.test.mjs), nur synthetische Texte. Für 1.4.2 neu:
 - Exhibit-Fund aus einem Index;
