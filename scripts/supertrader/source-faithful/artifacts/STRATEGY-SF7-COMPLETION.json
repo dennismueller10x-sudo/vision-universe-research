@@ -10,6 +10,7 @@
   "PR911": "Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle)",
   "PR898": "Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache)",
   "PR902": "Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution)",
+  "E76": "docs/SUPERTRADER_7_EPPS_SAMPLE_E7_6.md: E7-6-Stichprobenerweiterung CLEAN_EXT_E7_6 (Läufe 40184926658 Plan, 40185337539 Abruf 481 Anfragen, 40185748527 kk-intraday-cache)",
   "INV": "docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md",
   "EXE": "docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md",
   "CA": "docs/SUPERTRADER_7_V4D1_RESOLUTION.md"
@@ -460,7 +461,7 @@
    ],
    "corporateActions7": null,
    "cc5Subcriteria": null,
-   "changed7": "SF7-D2: versiegelte EP-Trade-Kennzahlen waren leer (Feld pnl) – behoben; SF7-D5: sicherer Stop in der Füll-Minute unter der optimistischen Minutenregel – Variante; Cache-Lauf mit 0 Abrufen, EP-Referenz identisch",
+   "changed7": "SF7-D2: versiegelte EP-Trade-Kennzahlen waren leer (Feld pnl) – behoben; SF7-D5: sicherer Stop in der Füll-Minute unter der optimistischen Minutenregel – Variante; Cache-Lauf mit 0 Abrufen, EP-Referenz identisch; E7-6: vorregistrierte Erweiterung CLEAN_EXT_E7_6 (15 % je Schicht, 481 Anfragen) neben der unveränderten Referenz",
    "technical": "chartbasierte Intraday-Modellstudie auf einer Stichprobe",
    "original": "Kullamägi-EP-Artikel (englisch); Katalysator nicht prüfbar",
    "assumptions": "Gap-Screen, ORH-Einstieg, IEX-Volumentempo",
@@ -470,9 +471,10 @@
    "blocked": "Katalysator-/News-Historie, konsolidiertes Intraday-Volumen",
    "execution": "nur IEX-Minuten; Stop am selben Tag nur gegen IEX-Tiefs geprüft (offenes Risiko)",
    "manual": "2 essenzielle Entscheidungen",
-   "next": "Budgetentscheidung für eine größere Stichprobe (E5); Katalysatorkalender aus SEC-8-K-Zeitstempeln",
+   "next": "Katalysatorkalender aus SEC-8-K-Zeitstempeln",
    "evidence": [
-    "PR898"
+    "PR898",
+    "E76"
    ]
   },
   {
@@ -497,7 +499,7 @@
    ],
    "corporateActions7": null,
    "cc5Subcriteria": null,
-   "changed7": "Stichprobencode neu geprüft, kein Fehler",
+   "changed7": "Stichprobencode neu geprüft, kein Fehler; E7-6: vorregistrierte Erweiterung CLEAN_EXT_E7_6 (3,5 % je Schicht) neben der unveränderten Referenz",
    "technical": "hypothetische Einzeltrade-Studie",
    "original": "Kullamägi-Webprimärquellen",
    "assumptions": "Kontexturteil (4 manuelle Entscheidungen)",
@@ -509,7 +511,8 @@
    "manual": "4 essenzielle Entscheidungen",
    "next": "Quelle für Borrow-Historie (Lizenz-/Kostenentscheidung)",
    "evidence": [
-    "PR898"
+    "PR898",
+    "E76"
    ]
   },
   {
