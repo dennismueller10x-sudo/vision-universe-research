@@ -1,0 +1,117 @@
+{
+  "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "reportModeMatchesPRWorkflow": true,
+  "strictScheduledModeNotDispatched": true,
+  "system-health": {
+    "overall": "STALE",
+    "checkedAt": "2026-10-24T17:34:08.811Z",
+    "findings": [
+      {
+        "id": "securityMaster",
+        "status": "STALE",
+        "reason": "OLDER_THAN_840H"
+      },
+      {
+        "id": "discoverImBlickLive",
+        "status": "DEGRADED",
+        "reason": "SEE_WARNINGS"
+      },
+      {
+        "id": "news",
+        "status": "STALE",
+        "reason": "OLDER_THAN_168H"
+      },
+      {
+        "id": "companyIntelligence",
+        "status": "DISABLED",
+        "reason": "DISABLED_BY_ARTIFACT"
+      }
+    ]
+  },
+  "data-quality": {
+    "overall": "WARN",
+    "checkedAt": "2026-10-24T17:34:09.503Z",
+    "findings": [
+      {
+        "id": "DQ-PX-2",
+        "status": "FAIL",
+        "failed": 93,
+        "checked": 6679,
+        "severity": "WARN",
+        "samples": [
+          "ref_ACV_A: Stand 2026-10-15 (6 Sitzungen zurueck)",
+          "ref_AIXC: Stand 2026-09-29 (18 Sitzungen zurueck)",
+          "ref_ANY: Stand 2026-09-15 (28 Sitzungen zurueck)",
+          "ref_APGE: Stand 2026-09-04 (34 Sitzungen zurueck)",
+          "ref_AREN: Stand 2026-08-28 (39 Sitzungen zurueck)",
+          "ref_ATAI: Stand 2026-09-11 (30 Sitzungen zurueck)",
+          "ref_ATKR: Stand 2026-10-16 (5 Sitzungen zurueck)",
+          "ref_AVB: Stand 2026-08-17 (48 Sitzungen zurueck)",
+          "ref_BCAR: Stand 2026-08-27 (40 Sitzungen zurueck)",
+          "ref_BRRWW: Stand 2026-09-25 (20 Sitzungen zurueck)",
+          "ref_BTOG: Stand 2026-09-03 (35 Sitzungen zurueck)",
+          "ref_BWOW: Stand 2026-10-14 (7 Sitzungen zurueck)",
+          "ref_BZH: Stand 2026-10-19 (4 Sitzungen zurueck)",
+          "ref_CAM: Stand 2026-10-16 (5 Sitzungen zurueck)",
+          "ref_CCO: Stand 2026-10-14 (7 Sitzungen zurueck)",
+          "ref_CMII: Stand 2026-08-26 (41 Sitzungen zurueck)",
+          "ref_CRNX: Stand 2026-09-01 (37 Sitzungen zurueck)",
+          "ref_CSAN: Stand 2026-09-18 (25 Sitzungen zurueck)",
+          "ref_DBRG: Stand 2026-09-30 (17 Sitzungen zurueck)",
+          "ref_DBRG_P_H: Stand 2026-10-02 (15 Sitzungen zurueck)",
+          "ref_DBRG_P_I: Stand 2026-10-02 (15 Sitzungen zurueck)",
+          "ref_DBRG_P_J: Stand 2026-10-02 (15 Sitzungen zurueck)",
+          "ref_DOMO: Stand 2026-09-23 (22 Sitzungen zurueck)",
+          "ref_DVXE: Stand 2026-09-01 (37 Sitzungen zurueck)",
+          "ref_FBRX: Stand 2026-08-27 (40 Sitzungen zurueck)"
+        ]
+      },
+      {
+        "id": "DQ-PX-3",
+        "status": "FAIL",
+        "failed": 303,
+        "checked": 6679,
+        "severity": "WARN",
+        "samples": [
+          "ref_AARD 2026-10-23: 3.95 -> 1.39",
+          "ref_ADBT 2026-09-03: 1.72 -> 0.3437 (Faktor ~5: Split-Verdacht)",
+          "ref_AEMD 2026-09-17: 1.43 -> 6.78",
+          "ref_AFJK 2025-12-09: 8 -> 88.5",
+          "ref_AHMA 2025-12-01: 4.81 -> 14.34 (Faktor ~3: Split-Verdacht)",
+          "ref_AIXI 2026-04-06: 18.3 -> 112.53",
+          "ref_AKAN 2026-04-22: 3.25 -> 10.21",
+          "ref_AKTX 2026-05-22: 5.14 -> 18.27",
+          "ref_ALDX 2026-03-17: 4.23 -> 1.24",
+          "ref_AMCI 2025-12-15: 2.71 -> 7.27",
+          "ref_AMIX 2026-08-04: 3.65 -> 19.5",
+          "ref_AMOD 2026-10-02: 1.17 -> 3.49 (Faktor ~3: Split-Verdacht)",
+          "ref_AMPGZ 2026-05-18: 0.1 -> 0.25",
+          "ref_AMZE 2026-07-16: 0.092 -> 0.7392 (Faktor ~8: Split-Verdacht)",
+          "ref_ANPA 2026-01-09: 24.2 -> 86.85",
+          "ref_APLT 2025-11-13: 0.9101 -> 0.27",
+          "ref_AQMS 2025-10-14: 9.91 -> 29.62 (Faktor ~3: Split-Verdacht)",
+          "ref_ARBK 2025-12-12: 30.67 -> 6.87",
+          "ref_ARBKL 2025-12-12: 1.76 -> 5.3 (Faktor ~3: Split-Verdacht)",
+          "ref_AREB 2026-02-02: 5.55 -> 1.96",
+          "ref_ARTL 2026-03-27: 28.71 -> 94.86",
+          "ref_ASNS 2026-03-04: 0.1882 -> 0.5393",
+          "ref_ASTC 2026-05-27: 2.47 -> 13.81",
+          "ref_ATPC 2025-12-10: 65.75 -> 3.4 (Faktor ~20: Split-Verdacht)",
+          "ref_AUUD 2026-04-24: 5.06 -> 1.83"
+        ]
+      }
+    ]
+  },
+  "unchangedMainInputScopes": [
+    "core",
+    "scripts/core",
+    "quant/engines/realtime",
+    "quant/config",
+    "quant/data/market",
+    "quant/data/universe",
+    "discover/data",
+    "supertrader/data",
+    "news"
+  ],
+  "changedFilesInThoseScopes": []
+}

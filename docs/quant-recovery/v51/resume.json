@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "real-backtest-read-1.0.0",
+  "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+  "calculationRuntime": {
+    "nodeVersion": "22.23.4",
+    "v8Version": "12.4.254.21-node.57",
+    "platform": "linux",
+    "arch": "x64",
+    "glibcVersion": "2.41",
+    "nodeExecutableHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+  },
+  "state": "COMPLETE",
+  "computedAt": "2026-10-24T17:11:15.787Z",
+  "expected": 6190,
+  "processed": 6190,
+  "counts": {
+    "A": 0,
+    "B": 4451,
+    "C": 1739
+  },
+  "reasons": {
+    "WARMUP": 439,
+    "DATA_GAPS": 218,
+    "CORPORATE_ACTION": 600,
+    "INSTRUMENT_CLASS": 295,
+    "IDENTITY": 183,
+    "TERMINAL_LISTING_VALUE": 4
+  },
+  "benchmarkStates": {
+    "AVAILABLE": 3615,
+    "BENCHMARK_UNAVAILABLE": 836
+  },
+  "calculatedListings": 0,
+  "calculationCacheHits": 0,
+  "computed": 0,
+  "reused": 6190,
+  "elapsedMs": 105413.370077,
+  "peakRssBytes": 265129984,
+  "newDetailBytes": 0,
+  "newDetailGzipBytes": 0,
+  "publiclyActivated": false,
+  "certification": "NOT_CERTIFIED"
+}
