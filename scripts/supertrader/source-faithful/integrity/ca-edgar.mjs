@@ -1,4 +1,19 @@
 /**
+ * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.2 (owner decision of 25.10.2026 on EDGAR exhibits; 1.4.1 frozen in
+ * ca-edgar-1.4.1.mjs, 1.4.0 in ca-edgar-1.4.0.mjs, 1.3.0 untouched). 1.4.2 = 1.4.1 with ONE further source: the
+ * pre-registered EXHIBITS (EXHIBIT_TYPES: charter / certificate of amendment EX-3.1 / 3.2 / 3(i), press release EX-99.1)
+ * of exactly the filings 1.4.1 selects (same CIK, same window, same forms, same cap). Exhibits are found through the
+ * filing index (<acc>-index.htm, its Type column) and must lie in the same filing directory (same CIK). Every exhibit
+ * goes through the UNCHANGED 1.4.1 parser and document rules (ratio, sentence date, year conflict, range / choice list,
+ * conflicting ratios, warrant / conversion and merger wording, +-2 sessions on the snapshot calendar) and counts as a
+ * document of its parent filing's form. A document factor still confirms only with the necessary price, open, volume and
+ * share conditions of 1.4.1; a 1.3.0 genuine-move candidate keeps its class (no document path); an exhibit ratio the
+ * price jump does not support stays UNRESOLVED. Live exhibit fetching is limited to the sessions with a document path
+ * (the only ones a document can confirm); more allowed exhibits than the cap, an unreadable filing index or exhibit make
+ * the session incomplete (UNRESOLVED). Request budget: at most 600 requests for ALL 1.4.2 runs together (private ledger,
+ * reserved before any request, fail closed); a plan step (0 requests, from the cache) gives the upper bound first.
+ *
+ * Rule set 1.4.1 text:
  * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.1 (owner decision E7-1, 25.10.2026). 1.4.1 closes the parser gaps of
  * the independent code review of #921 - the reason is the review, not a result; 1.4.0 stays frozen in ca-edgar-1.4.0.mjs:
  *  R1 effective dates only from the SENTENCE of the ratio; any other year in that sentence blocks; ISO dates; a sentence
@@ -48,10 +63,22 @@ import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 import { CLASSES, TOLERANCES, FACTOR_GRID, MERGER_FORMS, SPLIT_BLOCKING_8K_ITEMS, snapFactor, gridLogGap, ratioLabel, volumeRelative, adjCloseImplied, rulesetSha256 as rulesetSha256V130, CA_RESOLUTION_VERSION as V130 } from './ca-resolution.mjs';
 
-export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.1';
+export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.2';
 export const DOC_PARSER_VERSION = 'sf7-edgar-ratio-parser-1.1.0';
-/** The frozen predecessor (ca-edgar-1.4.0.mjs, run 40185801366). */
-export const PREVIOUS_RULESET = Object.freeze({ version: 'sf7-ca-resolution-1.4.0', sha256: '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd' });
+/** The frozen predecessor (ca-edgar-1.4.1.mjs, run 40190526062); 1.4.0 (ca-edgar-1.4.0.mjs, run 40185801366) before it. */
+export const PREVIOUS_RULESET = Object.freeze({ version: 'sf7-ca-resolution-1.4.1', sha256: '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c' });
+export const RULESET_1_4_0 = Object.freeze({ version: 'sf7-ca-resolution-1.4.0', sha256: '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd' });
+/**
+ * 1.4.2: exhibit types that count (Type column of the filing index, upper case, spaces removed). Charter / certificate of
+ * amendment and by-laws (EX-3.1, EX-3.2, EX-3(i), EX-3.i, EX-3.01, EX-3.02) and the press release (EX-99.1, EX-99.01).
+ */
+export const EXHIBIT_TYPES = Object.freeze(['EX-3.1', 'EX-3.2', 'EX-3(I)', 'EX-3.I', 'EX-3.01', 'EX-3.02', 'EX-99.1', 'EX-99.01']);
+/**
+ * 1.4.2 exhibit budget: one filing-index request per selected filing, at most 3 allowed exhibits per filing (more ->
+ * the session is incomplete), exhibits fetched only for document-path sessions; at most 600 requests for all 1.4.2 runs
+ * together (cumulative ledger, fail closed); the plan bound is filing indexes + 3 x filings (worst case).
+ */
+export const EXHIBIT_BUDGET = Object.freeze({ filingIndexPerFiling: 1, maxExhibitsPerFiling: 3, scope: 'DOCUMENT_PATH_SESSIONS', cumulativeRequestsAllRuns: 600 });
 /** The 1.3.0 rule set this layer extends (pinned in a test; ca-resolution.mjs stays byte-for-byte as in run 40122736287). */
 export const BASE_RULESET = Object.freeze({ version: V130, sha256: '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7' });
 
@@ -114,13 +141,14 @@ const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'ei
 const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
 export const NUMBER_WORDS = Object.freeze([...ONES, ...TENS.filter(Boolean), 'hundred', 'thousand']);
 
-/** The full 1.4.1 rule set (its SHA-256 is pinned in a test; any change is a new version with before / after). */
+/** The full 1.4.2 rule set (its SHA-256 is pinned in a test; any change is a new version with before / after). */
 export const RULESET = Object.freeze({
   version: CA_EDGAR_VERSION, base: BASE_RULESET, parser: DOC_PARSER_VERSION, postEventForms: POST_EVENT_FORMS, contextForms: CONTEXT_FORMS, conflictForms: DOC_CONFLICT_FORMS,
   priority: DOC_PRIORITY, docPathReasons: DOC_PATH_REASONS, tolerances: DOC_TOLERANCES, budget: EDGAR_BUDGET, smokeBudget: SMOKE_BUDGET,
   splitKeywords: SPLIT_KEYWORDS.source, rangeWords: RANGE_WORDS.source, effectiveWords: EFFECTIVE_WORDS.source, mergerWords: MERGER_WORDS.source, numberWords: NUMBER_WORDS,
   previous: PREVIOUS_RULESET, instrumentWords: INSTRUMENT_WORDS.source, sentenceAbbreviations: SENTENCE_ABBREVIATIONS,
   review141: Object.freeze(['R1-SENTENCE-DATES-YEAR-CONFLICT-ISO', 'R2-COLON-PUNCT-SHARE-FOR-EVERY-TO', 'R3-CHOICE-LIST-RANGE', 'R4-SNAPSHOT-CALENDAR', 'R5-CAP-TRUNCATION-INCOMPLETE', 'R6-INSTRUMENT-WORDING', 'R7-JOINT-FILER-LIMIT-DOCUMENTED']),
+  ruleset140: RULESET_1_4_0, exhibitTypes: EXHIBIT_TYPES, exhibitBudget: EXHIBIT_BUDGET,
 });
 export const rulesetSha256 = () => crypto.createHash('sha256').update(JSON.stringify(RULESET)).digest('hex');
 /** The 1.3.0 rule set must be exactly the one this layer was registered on. */
@@ -290,6 +318,34 @@ export function extractStatements(html, tol = DOC_TOLERANCES) {
   }
   const kw = text.match(new RegExp(SPLIT_KEYWORDS.source, 'g'));
   return { parser: DOC_PARSER_VERSION, chars: full.length, truncated, textSha256: sha(full), splitKeywordHits: kw ? kw.length : 0, instrumentExcluded, statements };
+}
+
+// ---------------------------------------------------------------------------------------------------- exhibits (1.4.2)
+
+const normType = (t) => String(t ?? '').toUpperCase().replace(/\s+/g, '');
+const stripTags = (h) => String(h).replace(/<[^>]*>/g, ' ').replace(/&nbsp;|&#160;/gi, ' ').replace(/\s+/g, ' ').trim();
+/**
+ * Exhibits of one filing from its index page (<acc>-index.htm): rows of the document table with a Type cell and a link.
+ * Only links inside the filing's own directory /Archives/edgar/data/<cik>/<acc without dashes>/ are kept (same CIK, same
+ * filing); an inline-XBRL viewer link (/ix?doc=...) is unwrapped. Returns { allowed: [{ type, name }], other: count }.
+ */
+export function parseFilingIndex(html, { cik, accessionNumber }) {
+  const dir = `/archives/edgar/data/${String(Number(String(cik).replace(/^0+/, '') || '0'))}/${String(accessionNumber).replace(/-/g, '')}/`;
+  const allowed = [], seen = new Set(); let other = 0, foreign = 0;
+  for (const row of String(html ?? '').match(/<tr[\s\S]*?<\/tr>/gi) || []) {
+    const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => m[1]);
+    const href = row.match(/href="([^"]+)"/i)?.[1];
+    if (!cells.length || !href) continue;
+    const type = cells.map((c) => normType(stripTags(c))).find((c) => /^EX-[\w.()]+$/.test(c));
+    if (!type) continue;
+    const path = href.replace(/^https?:\/\/www\.sec\.gov/i, '').replace(/^\/ix\?doc=/i, '');
+    if (!path.toLowerCase().startsWith(dir)) { foreign++; continue; }
+    const name = path.slice(dir.length);
+    if (!name || name.includes('/') || seen.has(name)) continue;
+    seen.add(name);
+    if (EXHIBIT_TYPES.includes(type)) allowed.push({ type, name }); else other++;
+  }
+  return { allowed, other, foreign };
 }
 
 // ---------------------------------------------------------------------------------------------------- document choice
