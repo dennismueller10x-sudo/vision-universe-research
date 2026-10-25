@@ -32,6 +32,8 @@ Keine Fundstelle mit Zweifel hat eine Vertragsregel verändert.
 | OWNER | 2 | F7-B03-212-085, -216-086: Klimax-Verkauf, Entscheidung E7-7 |
 
 Nachtrag E7-7 (25.10.2026): F7-B03-047-016, -212-085 und -216-086 sind jetzt als vorregistrierte Forschungsvarianten umgesetzt (`EXIT-MA20-HALF`, `EXIT-CLIMAX`, `EXIT-CLIMAX-UPCLOSES`), nie als Referenz oder Originalregel. Siehe [SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md](SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md). Die Tabelle oben zeigt den Stand vor E7-7.
+
+Nachtrag Paket 1.4.0 (25.10.2026): Basiszählung (F7-B03-207-082, -225-092, F7-B12-116-203, -116-205), Top-Volumen (F7-B03-217-087), relative Basistiefe (F7-B12-280-275), Chase-Abstand (F7-B07-067-140, -087-150, F7-B12-297-283) und Buy-Stop-Puffer (F7-B07-040-117) sind jetzt als **Diagnosen** umgesetzt, mit neuen Modellannahmen `MA-MIN7-BASECOUNT-*`, `MA-MIN7-TOPVOL`, `MA-MIN7-RELDEPTH`, `MA-MIN7-ENTRY-DISTANCE`. Alle Variantenformen, Stop-Fallback (F7-B07-070-142), Sizing-Progression (F7-B07-032-109) und die EPS-Punkte bleiben DEFERRED. Siehe [SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md](SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md).
 | NOT_IN_SCOPE | 4 | Cup/Cheat- und IPO-Familie (ausgeschlossene Vertragsvarianten) |
 
 Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `postBreakoutEvidence` (`research/minervini-sf7.mjs`, Version `sf7-minervini-1.3.0`) mit der neuen Modellannahme `MA-MIN7-POST-BREAKOUT-WINDOW` (10 Sitzungen). Umgesetzt sind:
@@ -102,5 +104,5 @@ Kein Regelstatus wurde angehoben. SOURCE_EXACT setzt den englischen Originalwort
 
 ## 5. Zusammenspiel mit #911 (SF7-D3/D4)
 
-- **Fingerabdruck:** #911 ändert `minervini-lifecycle.mjs`. Damit verschiebt sich der 4.0-Fingerabdruck von `b1d81fb8…` auf `c834b227…`, die Ausgaben aller registrierten Varianten bleiben hashgleich. Der Kopfkommentar von `minervini-sf7.mjs` nennt noch `b1d81fb8…`. Seine Aussage stimmt weiterhin: Diese Datei geht nicht in `run-sf4-lifecycle#FILES` ein und verschiebt den Fingerabdruck nie. Veraltet ist nur der Wert. Er wird bei der nächsten ohnehin nötigen Änderung des SF7-Codes nachgezogen, weil jede Byteänderung den gepinnten SF7-Code-Hash `7441237b…` verschiebt.
+- **Fingerabdruck:** #911 ändert `minervini-lifecycle.mjs`. Damit verschiebt sich der 4.0-Fingerabdruck von `b1d81fb8…` auf `c834b227…`, die Ausgaben aller registrierten Varianten bleiben hashgleich. Der Kopfkommentar von `minervini-sf7.mjs` nennt noch `b1d81fb8…`. Seine Aussage stimmt weiterhin: Diese Datei geht nicht in `run-sf4-lifecycle#FILES` ein und verschiebt den Fingerabdruck nie. Veraltet ist nur der Wert. Er wird bei der nächsten ohnehin nötigen Änderung des SF7-Codes nachgezogen, weil jede Byteänderung den gepinnten SF7-Code-Hash `7441237b…` verschiebt. Mit Paket 1.4.0 ist der Wert nachgezogen.
 - **Runner-Test:** Der Test vergleicht nur REF und übergibt deshalb `sf7Variants: []`. Mit #911 muss zu jeder SF7-Ausführungsvariante ihre Vergleichsvariante laufen. Ohne den leeren Wert wäre der Test im Gesamtstand abgebrochen.
