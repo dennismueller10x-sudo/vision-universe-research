@@ -1,0 +1,256 @@
+/* Referenztests: eingeschwungene EMA 20/50/200 (ema-settled-1.0.0).
+   Methodik und Messung: docs/technical/EMA200_MATERIALIZATION.md.
+
+   Geprueft wird:
+     - die Aufwaermregel (Startgewicht (1-a)^k <= 1e-3, k = 691 fuer p = 200),
+     - Handwerte und eine unabhaengige naive EMA,
+     - Konventionsunabhaengigkeit an echten Kursen (Golden-Reihen),
+     - Kausalitaet (Wert an t haengt nicht von Bars nach t ab),
+     - Splits (dieselbe SPLIT_ADJUSTED-Reihe wie SMA 200, ADR-002),
+     - unvollstaendige Historien (zu kurz, Luecken),
+     - Bundle-Integration, Determinismus und den Vorher/Nachher-Vergleicher.
+   Kein Test schreibt ausserhalb von os.tmpdir(). */
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { gunzipSync, gzipSync } from "node:zlib";
+import { materialize } from "../../scripts/technical/materialize-product-intelligence.mjs";
+import { compareInstrument, compareDirs } from "../../scripts/technical/compare-ema-materialization.mjs";
+import { estimateEma200 } from "../../scripts/technical/measure-ema200-signal-effect.mjs";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Features = require("../engines/technical/feature-store.js");
+const Canonical = require("../engines/technical/canonical-bars.js");
+const Analysis = require("../engines/technical/technical-analysis.js");
+const RS = require("../engines/return-series.js");
+const GOLDEN = join(ROOT, "quant/data/market/golden-preview/daily");
+const METH = { technical: JSON.parse(readFileSync(join(ROOT, "quant/methodology/technical-v1.json"), "utf8")),
+  elliott: JSON.parse(readFileSync(join(ROOT, "quant/methodology/elliott-v1.json"), "utf8")) };
+
+function golden(ticker) {
+  const p = JSON.parse(readFileSync(join(GOLDEN, "ref_" + ticker + ".json"), "utf8"));
+  const actions = p.bars.filter((b) => b.splitFactor !== 1).map((b) => ({ type: "split", exDate: b.date, ratio: b.splitFactor }));
+  return { payload: p, series: Canonical.fromPriceBars(p.bars, actions, { instrumentId: ticker, source: "tiingo" }).SPLIT_ADJUSTED };
+}
+function randomWalk(n, seed = 11, start = 50) {
+  let x = seed, px = start; const out = [];
+  const rnd = () => ((x = (x * 1103515245 + 12345) % 2147483648) / 2147483648);
+  for (let i = 0; i < n; i++) { px *= 1 + (rnd() - 0.5) * 0.05; out.push(px); }
+  return out;
+}
+/** Unabhaengige naive EMA: Start = arithmetisches Mittel der ersten p Werte, dann a*x + (1-a)*prev. */
+function naiveEma(values, p) {
+  const out = values.map(() => NaN), a = 2 / (p + 1);
+  let s = 0; for (let i = 0; i < p; i++) s += values[i];
+  let prev = s / p; out[p - 1] = prev;
+  for (let i = p; i < values.length; i++) { prev = a * values[i] + (1 - a) * prev; out[i] = prev; }
+  return out;
+}
+
+test("EMA-1 · Aufwaermregel: k = 691 fuer EMA 200 bei Startgewicht 1e-3 (Mindesthistorie 891 Bars)", () => {
+  assert.equal(Features.EMA_MAX_SEED_WEIGHT, 1e-3);
+  assert.equal(Features.emaWarmupBars(200, 1e-3), 691);
+  assert.equal(Features.emaWarmupBars(50, 1e-3), 173);
+  assert.equal(Features.emaWarmupBars(20, 1e-3), 70);
+  for (const p of [3, 20, 50, 200]) {
+    const k = Features.emaWarmupBars(p, 1e-3);
+    assert.ok(Features.emaSeedWeight(p, k) <= 1e-3, "Startgewicht nach k Bars <= 1e-3");
+    assert.ok(Features.emaSeedWeight(p, k - 1) > 1e-3, "k ist minimal");
+  }
+  assert.throws(() => Features.emaWarmupBars(200, 0));
+  assert.throws(() => Features.emaWarmupBars(200, 1));
+});
+
+test("EMA-2 · Handwerte: p = 3, Startgewicht 0,2 -> erster Wert drei Bars nach dem Start", () => {
+  // a = 0,5. Start (SMA 2,4,6) = 4; dann 6, 8, 10. (0,5)^2 = 0,25 > 0,2, (0,5)^3 = 0,125 <= 0,2.
+  assert.deepEqual(Features.ema([2, 4, 6, 8, 10, 12], 3).map((v) => (Number.isFinite(v) ? v : null)), [null, null, 4, 6, 8, 10]);
+  const s = Features.settledEma([2, 4, 6, 8, 10, 12], 3, 0.2);
+  assert.deepEqual(s.values.map((v) => (Number.isFinite(v) ? v : null)), [null, null, null, null, null, 10]);
+  assert.equal(s.warmupBars, 3); assert.equal(s.minimumBars, 6);
+  assert.equal(s.seedIndex, 2); assert.equal(s.firstSettledIndex, 5); assert.equal(s.barsAfterSeed, 3);
+});
+
+test("EMA-3 · Handwert EMA 200 auf einer Rampe: x_t - 99,5 (Nachlauf (1-a)/a) ab Bar 890", () => {
+  const ramp = Array.from({ length: 1200 }, (_, i) => 100 + i);
+  const s = Features.settledEma(ramp, 200);
+  for (let t = 0; t < 890; t++) assert.ok(Number.isNaN(s.values[t]), "vor der Mindesthistorie kein Wert (t=" + t + ")");
+  for (let t = 890; t < 1200; t++) assert.ok(Math.abs(s.values[t] - (ramp[t] - 99.5)) < 1e-9, "t=" + t);
+  const flat = Features.settledEma(new Array(1000).fill(42.5), 200);
+  for (let t = 890; t < 1000; t++) assert.equal(flat.values[t], 42.5);
+});
+
+test("EMA-4 · Gleich der naiven Referenz-EMA und bitgleich zur bestehenden ema() (keine zweite Formel)", () => {
+  const v = randomWalk(1600);
+  for (const p of [20, 50, 200]) {
+    const ref = naiveEma(v, p), base = Features.ema(v, p), s = Features.settledEma(v, p);
+    let checked = 0;
+    for (let i = 0; i < v.length; i++) {
+      if (!Number.isFinite(s.values[i])) continue;
+      checked++;
+      assert.ok(Math.abs(s.values[i] / ref[i] - 1) < 1e-12, "p=" + p + " i=" + i);
+      assert.ok(Object.is(s.values[i], base[i]));
+    }
+    assert.equal(checked, v.length - (p - 1) - Features.emaWarmupBars(p));
+  }
+});
+
+test("EMA-5 · Konventionsunabhaengig an echten Kursen: Fehler <= 1e-3 x Startabweichung", () => {
+  for (const ticker of ["NVDA", "JPM"]) {
+    const c = golden(ticker).series.close, full = Features.settledEma(c, 200).values, rawFull = Features.ema(c, 200);
+    const a = 2 / 201;
+    for (let end = 1780; end < c.length; end += 37) {
+      const sub = c.slice(end - 890, end + 1), v = Features.settledEma(sub, 200).values.at(-1);
+      assert.ok(Number.isFinite(v));
+      const seedDev = Math.abs(Features.ema(sub, 200)[199] - rawFull[end - 890 + 199]);
+      assert.ok(Math.abs(v - full[end]) <= 1e-3 * seedDev + 1e-9, ticker + " end=" + end);
+      // Andere Konvention (erster Wert als Start) landet im selben Band.
+      let e = sub[0]; for (let i = 1; i < sub.length; i++) e = e + a * (sub[i] - e);
+      assert.ok(Math.abs(e / v - 1) < 1e-4, ticker + " Erstwert-Start end=" + end);
+    }
+  }
+});
+
+test("EMA-6 · Kausal: der Wert an t ist mit und ohne die Bars nach t bitgleich", () => {
+  const v = randomWalk(1500, 5);
+  const full = Features.settledEma(v, 200).values;
+  for (const t of [889, 890, 891, 1000, 1234, 1499]) {
+    const cut = Features.settledEma(v.slice(0, t + 1), 200).values[t];
+    assert.ok(Object.is(cut, full[t]) || (Number.isNaN(cut) && Number.isNaN(full[t])), "t=" + t);
+  }
+  // Ueber den Orchestrator: analyzeAsOf schneidet VOR jeder Rechnung.
+  const { series } = golden("MSFT");
+  const fullS = Features.settledEma(series.close, 200).values;
+  const asOf = Analysis.analyzeAsOf({ series, methodology: METH, options: { elliott: false, annotations: false } }, 2000);
+  assert.equal(asOf.dataCutoffIndex, 2000);
+  assert.ok(Object.is(asOf.featuresAtCutoff.ema200, fullS[2000]));
+});
+
+test("EMA-7 · Splits: EMA auf derselben SPLIT_ADJUSTED-Reihe wie SMA 200 (ADR-002), kein Sprung", () => {
+  // 1:10-Split an Bar 1000 bei konstantem wirtschaftlichem Kurs.
+  const bars = [];
+  for (let i = 0; i < 1400; i++) {
+    const d = new Date(Date.UTC(2018, 0, 1) + i * 864e5).toISOString().slice(0, 10);
+    const px = i < 1000 ? 500 + (i % 7) : 50 + (i % 7) / 10;
+    bars.push({ date: d, open: px, high: px * 1.01, low: px * 0.99, close: px, adjustedClose: px, volume: 1000, splitFactor: i === 1000 ? 10 : 1 });
+  }
+  const actions = [{ type: "split", exDate: bars[1000].date, ratio: 10 }];
+  const sa = Canonical.fromPriceBars(bars, actions, { instrumentId: "SPLT" }).SPLIT_ADJUSTED;
+  const ema = Features.settledEma(sa.close, 200).values;
+  // Dieselbe Split-Definition wie return-series#splitFactors (Core).
+  const core = RS.splitAdjustedColumn(bars, "close");
+  const emaCore = Features.settledEma(core, 200).values;
+  for (let i = 890; i < 1400; i++) assert.ok(Math.abs(ema[i] - emaCore[i]) < 1e-6, "i=" + i);
+  // Kein Sprung: von Bar 999 auf 1000 aendert sich die EMA nur um eine Tagesbewegung.
+  assert.ok(Math.abs(ema[1000] / ema[999] - 1) < 0.001);
+  // Auf Rohkursen waere sie um Faktor ~10 daneben; das ist der Fehler, den die Bereinigung verhindert.
+  const raw = Features.settledEma(bars.map((b) => b.close), 200).values;
+  assert.ok(raw[1100] / ema[1100] > 3);
+  // An echten Kursen: NVDA (4:1 2021, 10:1 2024) - featuresAtCutoff.sma200 und ema200 auf derselben Spalte.
+  const { series } = golden("NVDA");
+  const sma = Features.sma(series.close, 200), e = Features.settledEma(series.close, 200).values, n = series.length;
+  assert.ok(Math.abs(e[n - 1] / sma[n - 1] - 1) < 0.2);
+});
+
+test("EMA-8 · Unvollstaendige Historien: zu kurz -> null; Luecken zaehlen nicht als Abklingen", () => {
+  const v = randomWalk(1000, 3);
+  const s890 = Features.settledEma(v.slice(0, 890), 200);
+  assert.ok(s890.values.every((x) => Number.isNaN(x)));
+  assert.equal(s890.firstSettledIndex, -1);
+  const s891 = Features.settledEma(v.slice(0, 891), 200);
+  assert.ok(Number.isFinite(s891.values[890]));
+  assert.equal(s891.firstSettledIndex, 890);
+  // Fehlende Beobachtung nach dem Start: Wert wird getragen, Aufwaermen verschiebt sich um eine Bar.
+  const gap = v.slice(); gap[500] = NaN;
+  const g = Features.settledEma(gap, 200);
+  assert.equal(g.firstSettledIndex, 891);
+  // Fehlende Beobachtung VOR dem Start: der SMA-Start braucht 200 lueckenlose Werte.
+  const early = v.slice(); early[100] = NaN;
+  const h = Features.settledEma(early, 200);
+  assert.equal(h.seedIndex, 300);
+  assert.equal(h.firstSettledIndex, 300 + 691);
+  // Leere und nur-NaN-Reihen liefern nichts, ohne Fehler.
+  assert.equal(Features.settledEma([], 200).seedIndex, -1);
+  assert.equal(Features.settledEma([NaN, NaN], 200).barsAfterSeed, null);
+});
+
+test("EMA-9 · Bundle: chartSeries.ema20/50/200 und featuresAtCutoff.ema200 aus derselben Rechnung", () => {
+  const { series } = golden("NVDA");
+  const b = Analysis.analyze({ series, methodology: METH, options: { elliott: false, annotations: false, includeChartSeries: true } });
+  const n = series.length, F = b.featuresAtCutoff, cs = b.chartSeries;
+  for (const k of ["ema20", "ema50", "ema200"]) assert.equal(cs[k].length, n);
+  const r4 = (x) => Math.round(x * 1e4) / 1e4;
+  assert.equal(cs.ema20[n - 1], r4(F.ema20)); assert.equal(cs.ema50[n - 1], r4(F.ema50)); assert.equal(cs.ema200[n - 1], r4(F.ema200));
+  assert.equal(cs.ema200.findIndex((x) => x !== null), 890);
+  assert.equal(cs.ema50.findIndex((x) => x !== null), 49 + 173);
+  assert.equal(cs.ema20.findIndex((x) => x !== null), 19 + 70);
+  const p200 = b.emaSettlement.periods.find((p) => p.period === 200);
+  assert.deepEqual({ status: p200.status, warmupBars: p200.warmupBars, minimumBars: p200.minimumBars, firstSettledIndex: p200.firstSettledIndex },
+    { status: "SETTLED", warmupBars: 691, minimumBars: 891, firstSettledIndex: 890 });
+  assert.equal(b.emaSettlement.priceSeriesType, "SPLIT_ADJUSTED");
+  // Zu kurze Historie (600 Bars): ema200 null, Status benannt; ema20/50 bleiben.
+  const short = Canonical.slice(series, series.timestamps[599]);
+  const bs = Analysis.analyze({ series: short, methodology: METH, options: { elliott: false, annotations: false, includeChartSeries: true } });
+  assert.equal(bs.featuresAtCutoff.ema200, null);
+  assert.ok(bs.chartSeries.ema200.every((x) => x === null));
+  assert.equal(bs.emaSettlement.periods.find((p) => p.period === 200).status, "INSUFFICIENT_HISTORY");
+  assert.ok(Number.isFinite(bs.featuresAtCutoff.ema50));
+  // Determinismus: gleiche Eingabe, gleiche Bytes.
+  const again = Analysis.analyze({ series, methodology: METH, options: { elliott: false, annotations: false, includeChartSeries: true } });
+  assert.equal(JSON.stringify(again), JSON.stringify(b));
+});
+
+test("EMA-10 · Produzent: neue Felder im Shard, Lauf zweimal byte-identisch, Vergleicher erkennt nur additive Pfade", () => {
+  const dir = mkdtempSync(join(tmpdir(), "vu-ema200-"));
+  mkdirSync(join(dir, "work", "tiingo", "daily"), { recursive: true });
+  copyFileSync(join(GOLDEN, "ref_NVDA.json"), join(dir, "work", "tiingo", "daily", "ref_NVDA.json"));
+  materialize({ workDir: join(dir, "work"), outDir: join(dir, "a"), tickers: ["NVDA"] });
+  materialize({ workDir: join(dir, "work"), outDir: join(dir, "b"), tickers: ["NVDA"] });
+  const shard = (d) => readFileSync(join(dir, d, "NV.json.gz"));
+  assert.ok(shard("a").equals(shard("b")), "derselbe Lauf, dieselben Bytes");
+  const x = JSON.parse(gunzipSync(shard("a"))).instruments.NVDA;
+  assert.ok(Number.isFinite(x.bundle.featuresAtCutoff.ema200));
+  for (const k of ["ema20", "ema50", "ema200"]) assert.equal(x.bundle.chartSeries[k].length, x.bars.close.length);
+  assert.ok(x.bundle.chartSeries.ema200.every((v) => Number.isFinite(v)), "2970 Bars: ganzes Anzeigefenster eingeschwungen");
+
+  // Vergleicher: additive Pfade -> identisch; jede andere Aenderung -> Befund.
+  const before = JSON.parse(JSON.stringify(x));
+  delete before.bundle.featuresAtCutoff.ema200; delete before.bundle.emaSettlement;
+  for (const k of ["ema20", "ema50", "ema200"]) delete before.bundle.chartSeries[k];
+  const ok = compareInstrument(before, x);
+  assert.equal(ok.identical, true); assert.deepEqual(ok.unexpected, []); assert.equal(ok.present.length, 5);
+  const changed = JSON.parse(JSON.stringify(x)); changed.bundle.featuresAtCutoff.sma200 += 1e-6;
+  assert.equal(compareInstrument(before, changed).identical, false);
+  const extra = JSON.parse(JSON.stringify(x)); extra.bundle.trend.newField = 1;
+  assert.deepEqual(compareInstrument(before, extra).unexpected, ["bundle.trend.newField"]);
+  // Verzeichnisvergleich: "vorher" = derselbe Shard ohne die neuen Pfade, Rest kopiert.
+  mkdirSync(join(dir, "before"));
+  const doc = JSON.parse(gunzipSync(shard("a"))); doc.instruments.NVDA = before;
+  writeFileSync(join(dir, "before", "NV.json.gz"), gzipSync(Buffer.from(JSON.stringify(doc))));
+  for (const f of readdirSync(join(dir, "a"))) if (f !== "NV.json.gz") copyFileSync(join(dir, "a", f), join(dir, "before", f));
+  const rep = compareDirs(join(dir, "before"), join(dir, "a"));
+  assert.equal(rep.verdict, "PASS");
+  assert.equal(rep.identicalInstruments, 1);
+  assert.ok(rep.sizes.rawGrowth > 0);
+});
+
+test("EMA-11 · Schaetzer fuer alte Shards: Wochenvorlauf + 270 Tagesbars trifft die exakte EMA 200 auf 1e-3", () => {
+  const { payload, series } = golden("XOM");
+  const exact = Features.settledEma(series.close, 200).values.at(-1);
+  const dates = series.timestamps.slice(-270), closes = series.close.slice(-270);
+  // Wochenschluesse aus derselben Reihe (letzter Handelstag je Kalenderwoche).
+  const weekly = [];
+  for (let i = 0; i < series.length; i++) {
+    const next = series.timestamps[i + 1];
+    const wk = (x) => Math.floor((Date.parse(x + "T00:00:00Z") / 864e5 + 3) / 7);
+    if (!next || wk(next) !== wk(series.timestamps[i])) weekly.push([series.timestamps[i], series.close[i]]);
+  }
+  const est = estimateEma200(weekly, dates, closes);
+  assert.equal(est.status, "ESTIMATED");
+  assert.ok(Math.abs(est.ema200 / exact - 1) < 1e-3, "rel. Fehler " + (est.ema200 / exact - 1));
+  assert.ok(payload.bars.length === series.length);
+});

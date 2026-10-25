@@ -70,7 +70,7 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
 2. **Eigene Menügruppe „Technical“** (Folge-PR, nur `assets/site-navigation.js` + `discover/tests/navigation-theme.test.mjs`, damit das Discover-Gate sauber bleibt).
 3. **Supertrader-Angleichung** (eigener PR unter Gate A): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
-4. **EMA 200 exakt:** 270 Tagesbars reichen nicht. Vorschlag: `ema200` (und `ema20/50`) in `chartSeries` der Materialisierung aufnehmen (eigener PR mit Vorher/Nachher). Bis dahin zeigt Technical die SMA 200 und sagt das in der Methodik.
+4. **EMA 200 exakt:** in Prüfung auf Branch `claude/technical-ema200` (Fachmodelländerung, kein automatischer Merge). Regel, Vorher/Nachher und Referenztests: [EMA200_MATERIALIZATION.md](EMA200_MATERIALIZATION.md). Offen danach: Screener-Feld `aboveEma200` und Wochen-EMA, je eigener PR.
 5. **KI-Suche freischalten:** `technical-query.js#jsonSchema()` an `workers/vu-ask` anbinden (Deploy = Produktionsänderung, Kosten → Freigabe nötig).
 6. **Zusammenführung mit `/screener/`:** Feldregister-Injektion in `screener/engine/engine.js`, danach eine Engine für beide.
 7. **Evidenz:** Trefferquoten der Formationen über die bestehende Outcome-Schicht (`ti/outcomes.js`) messen. Erst dann wäre eine Rangfolge nach Evidenz begründbar.

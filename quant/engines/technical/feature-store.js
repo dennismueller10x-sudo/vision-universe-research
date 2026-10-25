@@ -56,6 +56,50 @@
     return out;
   }
 
+  /* ---------------------------------------------------- Eingeschwungene EMA
+     ema() startet mit dem SMA der ersten `period` Werte. Dieser Startwert
+     wirkt nach k weiteren Bars noch mit dem Gewicht (1 - a)^k, a = 2/(p+1).
+     settledEma() rechnet DIESELBE Reihe (dieselbe Funktion ema(), keine
+     zweite Formel) und gibt einen Wert erst aus, wenn das Startgewicht
+     hoechstens maxSeedWeight betraegt. Davor: NaN (serialisiert null) -
+     Missing != Zero, kein Wert, der von der Startkonvention abhaengt.
+     Begruendung und Messung: docs/technical/EMA200_MATERIALIZATION.md. */
+  var EMA_MAX_SEED_WEIGHT = 1e-3;
+
+  /** Restgewicht des Startwerts nach k Bars hinter dem Startindex. */
+  function emaSeedWeight(period, k) { return Math.pow(1 - 2 / (period + 1), k); }
+
+  /** Kleinste Zahl k von Bars hinter dem Start, ab der das Startgewicht <= maxSeedWeight ist. */
+  function emaWarmupBars(period, maxSeedWeight) {
+    var eps = isNum(maxSeedWeight) ? maxSeedWeight : EMA_MAX_SEED_WEIGHT;
+    if (!(period >= 1) || !(eps > 0 && eps < 1)) throw new Error("emaWarmupBars: ungueltige Parameter");
+    var k = Math.max(0, Math.ceil(Math.log(eps) / Math.log(1 - 2 / (period + 1))));
+    /* Gleitkomma-Grenzfall: an der Definition nachpruefen, nicht am Logarithmus. */
+    while (k > 0 && emaSeedWeight(period, k - 1) <= eps) k--;
+    while (emaSeedWeight(period, k) > eps) k++;
+    return k;
+  }
+
+  /**
+   * EMA mit Aufwaermregel. Gezaehlt werden nur endliche Beobachtungen nach
+   * dem Startindex (eine fehlende Beobachtung traegt den Wert fort, laesst
+   * das Startgewicht aber nicht sinken).
+   * @returns {{values:number[], period:number, maxSeedWeight:number, warmupBars:number,
+   *            minimumBars:number, seedIndex:number, firstSettledIndex:number, barsAfterSeed:number}}
+   */
+  function settledEma(values, period, maxSeedWeight) {
+    var eps = isNum(maxSeedWeight) ? maxSeedWeight : EMA_MAX_SEED_WEIGHT;
+    var raw = ema(values, period), n = values.length, out = arr(n);
+    var warm = emaWarmupBars(period, eps), seedIndex = -1, firstSettled = -1, k = 0;
+    for (var i = 0; i < n; i++) {
+      if (seedIndex < 0) { if (isNum(raw[i])) seedIndex = i; else continue; }
+      else if (isNum(values[i])) k++;
+      if (k >= warm && isNum(raw[i])) { out[i] = raw[i]; if (firstSettled < 0) firstSettled = i; }
+    }
+    return { values: out, period: period, maxSeedWeight: eps, warmupBars: warm, minimumBars: period + warm,
+      seedIndex: seedIndex, firstSettledIndex: firstSettled, barsAfterSeed: seedIndex < 0 ? null : k };
+  }
+
   /** Wilder-Glaettung (RMA) — fuer ATR, RSI, ADX. */
   function wilder(values, period) {
     var n = values.length, out = arr(n), sum = 0, count = 0, prev = NaN;
@@ -317,7 +361,8 @@
     FEATURE_VERSION: FEATURE_VERSION, DEFAULTS: DEFAULTS,
     computeFeatures: computeFeatures,
     /* Primitive fuer Tests und andere Engines */
-    sma: sma, ema: ema, wilder: wilder, trueRange: trueRange, rsi: rsi,
+    sma: sma, ema: ema, wilder: wilder,
+    EMA_MAX_SEED_WEIGHT: EMA_MAX_SEED_WEIGHT, emaSeedWeight: emaSeedWeight, emaWarmupBars: emaWarmupBars, settledEma: settledEma, trueRange: trueRange, rsi: rsi,
     rollingMax: rollingMax, rollingMin: rollingMin, rollingStd: rollingStd,
     rollingMedianPrior: rollingMedianPrior, regressionSlope: regressionSlope, adx: adx, percentileRank: percentileRank
   };
