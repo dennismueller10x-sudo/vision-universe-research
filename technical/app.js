@@ -4,7 +4,8 @@
    Methodik (#/methodik). Hash-Routen, keine Bibliothek.
 
    Datenquellen (nur lesend):
-     /technical/data/screener-v1.json + meta.json      (Erzeuger build-screener.mjs)
+     /technical/data/index-v1.json + meta.json         (Startseite, Chart Studio; Erzeuger build-screener.mjs)
+     /technical/data/screener-v1.json                  (nur Screener, bei Bedarf)
      /quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz
                                                        (Tagesbars + Vollhistorien-Features)
      /quant/data/market/discover-series-long/<securityId>.json (Wochenschluesse)
@@ -27,7 +28,8 @@
       else if (k.slice(0, 2) === "on" && typeof v === "function") n.addEventListener(k.slice(2), v);
       else n.setAttribute(k, v === true ? "" : v);
     });
-    [].concat(kids || []).forEach(function (c) { if (c !== null && c !== undefined && c !== false) n.append(c.nodeType ? c : String(c)); });
+    /* eine Ebene verschachtelter Listen (z. B. dt/dd-Paare) wird flach eingesetzt */
+    [].concat.apply([], [].concat(kids || [])).forEach(function (c) { if (c !== null && c !== undefined && c !== false) n.append(c.nodeType ? c : String(c)); });
     return n;
   }
   function put(host, kids) { host.replaceChildren.apply(host, [].concat(kids || []).filter(Boolean)); }
@@ -74,6 +76,22 @@
       dataset = { ds: Q.createDataset(r[0]), artifact: r[0], meta: r[1] };
       return dataset;
     });
+  }
+  /* Startseite und Chart Studio brauchen nur Kuerzel, Namen und Trefferzahlen: schlanker Index statt des vollen Datensatzes.
+     Fehlt er (z. B. vor dem ersten Erzeugerlauf), wird er aus dem Datensatz nachgerechnet - dieselbe Funktion wie im Erzeuger. */
+  var indexP = null;
+  function loadIndex() {
+    if (indexP) return indexP;
+    var meta = fetchJSON(M.META_PATH).catch(function () { return null; });
+    indexP = Promise.all([fetchJSON(M.INDEX_PATH).then(function (x) { if (!x || x.schemaVersion !== M.INDEX_SCHEMA) throw new Error("INDEX_SCHEMA"); return x; })
+      .catch(function () { return loadScreener().then(function (D) { return M.homeIndex(D.artifact); }); }), meta]).then(function (r) {
+      var ix = r[0], pos = {};
+      ix.s.forEach(function (t, i) { pos[t] = i; });
+      return { index: ix, meta: r[1], name: function (t) { return pos[t] >= 0 ? ix.n[pos[t]] : null; }, has: function (t) { return pos[t] >= 0; },
+        entries: ix.s.map(function (t, i) { return { s: t, n: ix.n[i] }; }) };
+    });
+    indexP.catch(function () { indexP = null; });
+    return indexP;
   }
   function loadInstrument(ticker) {
     var paths = M.technicalPaths(ticker);
@@ -171,9 +189,7 @@
   }
 
   /* ------------------------------------------------------------- Start */
-  var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var PRESET_ICON = { breakout: "breakout", trend: "trend", triangles: "triangle", high52: "trophy", aboveSma200: "bars", high200w: "trophy", contraction: "contraction", bullflag: "flag" };
-  function presetCount(ds, id) { var p = Q.PRESETS.filter(function (x) { return x.id === id; })[0]; var r = Q.evaluate(ds, p.query); return { preset: p, count: r.count, indices: r.indices }; }
 
   function viewHome(main) {
     var hero = el("section", { class: "tc-hero vu-product-hero vu-hero-fidelity", "data-product": "technical", "aria-labelledby": "tc-hero-h" }, [
@@ -187,24 +203,22 @@
     var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" });
     put(main, [hero, searchSlot, chips, kpis, sectionHead("Setups im Fokus", "#/screener"), focus, sectionHead("Technische Ranglisten", "#/screener"), ranks, el("div", { class: "tc-foot-slot" })]);
     hero.append(searchSlot, chips);
-    loadScreener().then(function (D) {
-      var ds = D.ds, entries = ds.cols.s.map(function (s, i) { return { s: s, n: ds.cols.n[i] }; });
-      put(searchSlot, searchBox(entries));
-      put(chips, ["NVDA", "AAPL", "TSLA", "MSFT", "AMZN"].filter(function (t) { return ds.indexOf(t) >= 0; }).map(function (t) {
-        return el("a", { class: "tc-chip", role: "listitem", href: M.chartHref(t) }, [el("b", { text: t }), el("span", { text: shortName(ds.cols.n[ds.indexOf(t)]) })]);
+    loadIndex().then(function (X) {
+      var ix = X.index;
+      put(searchSlot, searchBox(X.entries));
+      put(chips, ["NVDA", "AAPL", "TSLA", "MSFT", "AMZN"].filter(X.has).map(function (t) {
+        return el("a", { class: "tc-chip", role: "listitem", href: M.chartHref(t) }, [el("b", { text: t }), el("span", { text: shortName(X.name(t)) })]);
       }));
-      var f = FOCUS.map(function (id) { return presetCount(ds, id); });
-      var union = {};
-      f.forEach(function (x) { Q.evaluate(ds, Object.assign({}, x.preset.query, { limit: 500 })).indices.forEach(function (i) { union[i] = 1; }); });
-      var asOf = D.meta && D.meta.asOf || D.artifact.asOf;
+      var asOf = X.meta && X.meta.asOf || ix.asOf;
       put(kpis, [
-        el("li", {}, [el("b", { class: "num", text: ds.size.toLocaleString("de-DE") }), el("span", { text: "Aktien im Kursuniversum" })]),
-        el("li", {}, [el("b", { class: "num", text: Object.keys(union).length.toLocaleString("de-DE") }), el("span", { text: "Setups im Fokus" })]),
+        el("li", {}, [el("b", { class: "num", text: ix.count.toLocaleString("de-DE") }), el("span", { text: "Aktien im Kursuniversum" })]),
+        el("li", {}, [el("b", { class: "num", text: ix.focusUnion.toLocaleString("de-DE") }), el("span", { text: "Setups im Fokus" })]),
         el("li", {}, [el("b", { class: "num", text: asOf ? M.dateDe(asOf).slice(0, 6) : "–" }), el("span", { text: "Stand der Signale" })])
       ]);
-      put(focus, f.map(function (x) { return rowCard("#/screener?preset=" + x.preset.id, PRESET_ICON[x.preset.id], x.preset.title, x.preset.description, x.count, ds.size); }));
-      put(ranks, RANKS.map(function (id) { var x = presetCount(ds, id); return rowCard("#/screener?preset=" + id, PRESET_ICON[id], x.preset.title, x.preset.description, x.count, ds.size); }));
-      main.querySelector(".tc-foot-slot").replaceWith(disclaimer(D.meta));
+      function card(id) { var p = Q.PRESETS.filter(function (x) { return x.id === id; })[0]; return rowCard("#/screener?preset=" + id, PRESET_ICON[id], p.title, p.description, ix.presets[id] || 0, ix.count); }
+      put(focus, M.FOCUS.map(card));
+      put(ranks, M.RANKS.map(card));
+      main.querySelector(".tc-foot-slot").replaceWith(disclaimer(X.meta));
     }).catch(function () {
       put(searchSlot, stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden. Das Chart Studio ist über die Adresse #/chart/<Kürzel> weiter erreichbar."));
     });
@@ -219,7 +233,7 @@
     var input = el("input", { class: "tc-input", type: "search", maxlength: "300", value: textQ || "", placeholder: "z. B. " + EXAMPLES[0], "aria-label": "Setup in Worten beschreiben", "aria-describedby": "tc-ts-preview", autocomplete: "off" });
     var preview = el("div", { class: "tc-ts-preview", id: "tc-ts-preview", "aria-live": "polite" });
     function paint(r) {
-      if (!r) { put(preview, el("p", { class: "tc-note" }, ["Beispiele: "].concat(EXAMPLES.map(function (x, i) { return el("button", { type: "button", class: "tc-linkbtn", text: (i ? " · " : "") + x, onclick: function () { input.value = x; paint(QT.parse(x)); input.focus(); } }); })))); return; }
+      if (!r) { put(preview, el("div", { class: "tc-examples" }, [el("span", { class: "tc-note", text: "Beispiele" })].concat(EXAMPLES.map(function (x) { return el("button", { type: "button", class: "tc-linkbtn", text: x, onclick: function () { input.value = x; paint(QT.parse(x)); input.focus(); } }); })))); return; }
       var kids = [];
       if (r.recognized.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Erkannt" })].concat(r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok", text: t }); }))));
       if (r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, [el("span", { text: "Nicht erkannt" })].concat(r.unknown.map(function (t) { return el("span", { class: "tc-mini is-warn", text: t }); }))));
@@ -333,6 +347,7 @@
         var flags = [];
         if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
         if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
+        if (row.suspectJumpAt) flags.push(el("span", { class: "tc-flag", title: "Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5: möglicher nicht nachgezogener Split", text: "Kurssprung prüfen (" + M.dateDe(row.suspectJumpAt) + ")" }));
         list.append(el("a", { class: "tc-hit", href: M.chartHref(row.s) }, [
           el("div", { class: "tc-hit-top" }, [
             el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
@@ -402,9 +417,8 @@
     var slot = el("div", { class: "tc-search-slot" });
     put(main, [head, slot]);
     var last = lastTicker();
-    loadScreener().then(function (D) {
-      var ds = D.ds;
-      put(slot, [searchBox(ds.cols.s.map(function (s, i) { return { s: s, n: ds.cols.n[i] }; }), "Aktie oder Kürzel …"),
+    loadIndex().then(function (X) {
+      put(slot, [searchBox(X.entries, "Aktie oder Kürzel …"),
         last ? el("p", { class: "tc-note" }, ["Zuletzt geöffnet: ", el("a", { href: M.chartHref(last), text: last })]) : null]);
     }).catch(function () { put(slot, stateBox("Suche nicht verfügbar", "Bitte das Kürzel direkt in der Adresse angeben: #/chart/NVDA")); });
   }
@@ -430,9 +444,8 @@
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
     put(main, [head, links, tabBar, body]);
 
-    Promise.all([loadInstrument(T), loadEngines(), loadScreener().catch(function () { return null; })]).then(function (r) {
-      var inst = r[0].inst, D = r[2], ds = D && D.ds, idx = ds ? ds.indexOf(T) : -1;
-      var name = idx >= 0 ? ds.cols.n[idx] : null;
+    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; })]).then(function (r) {
+      var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
       titleName.textContent = name ? shortName(name) : T;
       head.querySelector(".tc-eyebrow").textContent = T + (name ? " · " + shortName(name).toUpperCase() : "");
       doc.title = T + " · Chart Studio · Technical · Vision Universe®";
@@ -648,6 +661,11 @@
     return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
       el("dt", { text: "Kursreihe" }), el("dd", { text: "Tiingo EOD, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
       el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); EMA, Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
+      (function () {
+        var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
+        if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
+        return at.length ? [el("dt", { text: "Kurssprünge" }), el("dd", { class: "is-warn", text: "Datenverdacht am " + at.slice(-3).join(", ") + ": Schlussfaktor mit Split-Signatur oder außerhalb 0,2–5. Indikatoren und Formationen um diese Tage können verfälscht sein; Kurslücken werden dort nicht gemeldet." })] : null;
+      })(),
       el("dt", { text: "Volumen" }), el("dd", { text: b.volume && b.volume.some(function (v) { return v > 0; }) ? "vorhanden" : "nicht vorhanden – Volumenindikatoren entfallen" }),
       el("dt", { text: "Formationen" }), el("dd", { text: "Nur bestätigte Swing-Punkte; Erkennung ohne Blick in die Zukunft (Engine " + global.VUTechnical.Formations.ENGINE_VERSION + ")" }),
       weekly ? el("dt", { text: "Wochenchart" }) : null, weekly ? el("dd", { text: "Wochenschlüsse aus der langen Reihe (discover-series-long), nur Schlusskurse" }) : null,

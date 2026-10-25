@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* =========================================================================
    VISION UNIVERSE TECHNICAL — browser-qa.mjs
-   BROWSER-PRUEFUNG DER PRODUKTWELT /technical/ (Chromium, 390 und 1280 px,
+   BROWSER-PRUEFUNG DER PRODUKTWELT /technical/ (Chromium, 360, 390 und 1280 px,
    Hell und Dunkel)
 
    Prueft gegen das Repository (statischer Server, keine Auslieferung):
@@ -68,7 +68,7 @@ async function main() {
   }
   function assert(ok, msg) { if (!ok) throw new Error(msg); }
 
-  for (const theme of ["light", "dark"]) for (const width of [390, 1280]) {
+  for (const theme of ["light", "dark"]) for (const width of [360, 390, 1280]) {
     const key = width + "-" + theme;
     const ctx = await browser.newContext({ viewport: { width, height: 900 } });
     await ctx.addInitScript((t) => { try { localStorage.setItem("vu-discover-theme-v1", t); } catch (e) { /* privat */ } }, theme);
