@@ -43,9 +43,9 @@ Für alle 13 gilt:
 | C06 | Minervini SEPA/VCP | `CHART_CANDIDATE` | EOD ≥ 200 Sitzungen; Fundamentaldaten nur im Ermessen | 7 (Priorität, Fundamentaldaten, VCP, Pivot, Stop, Größe, Verkauf) | `MIN-SF-TT-8` datenblockiert (IBD-RS-Historie); nur übersetzte Quellen (CC-1) | IBD-RS-Ersatz als Owner-Entscheidung oder lizenzierte Daten → dann CONFIRMED |
 | C07 | Minervini Power Play | `MODELED_TRADE_PLAN` | nur EOD | 4 (Einstieg, Stop, Größe, Ausstieg) | nur übersetzte Quellen (CC-1); V4-D1 je Titel | Modellannahmen im Plan; VALIDATED: CC-1, CC-3, CC-5, CC-8 |
 | C08 | Kullamägi Breakout (täglich) | `MODELED_TRADE_PLAN` | EOD + Querschnitt 1/3/6-Monats-Renditen des Universums (der Lauf braucht das ganze Universum) | 5 (Setup, Einstieg, Teilverkauf, Trailing, Größe) | ORH-Einstieg (Intraday) datenblockiert, aber nicht wesentlich; geringe Trade-Stabilität (E6) | Modellannahmen; VALIDATED: CC-3, CC-5, CC-8 |
-| C09 | Kullamägi Episodic Pivot | `CHART_CANDIDATE` | Katalysator, Intraday-Volumen und ORH fehlen | 1 (Größe) | Katalysator, Volumen und Einstieg datenblockiert; `VALIDATION_BLOCKED`; nicht messbar | Katalysatorkalender (SEC-8-K-Zeitstempel) und konsolidiertes Intraday-Volumen; E5 verbietet heute neue Intraday-Abrufe |
+| C09 | Kullamägi Episodic Pivot | `CHART_CANDIDATE` | Katalysator, Intraday-Volumen und ORH fehlen | 1 (Größe); Ausstieg mehrdeutig | Katalysator, Volumen und Einstieg datenblockiert; `VALIDATION_BLOCKED`; nicht messbar | Katalysatorkalender (SEC-8-K-Zeitstempel) und konsolidiertes Intraday-Volumen; E5 verbietet heute neue Intraday-Abrufe |
 | C10 | Kullamägi Parabolic Short | `CHART_CANDIDATE` | Intraday/VWAP, Borrow, Locate, Gebühren fehlen | 3 | Einstieg, Stop und Borrow datenblockiert; Short-Pläne verbietet der Vertrag grundsätzlich (nur Long) | Borrow-Historie (Lizenz-/Kostenentscheidung) und ein eigener Short-Vertrag |
-| C11 | Morales/Kacher Pocket Pivot | `CONFIRMED_RESEARCH_SETUP` | nur EOD (Schluss + Volumen) | 4 (Kontext, Stop, Größe, MA-Ausstieg) | `SOURCE_BLOCKED`: Initialstop nicht in der Quelle, 8/9 Phasen; der Stop am Signaltagstief ist nur eine Variante (E3) | Primärquelle für die Stopregel → 9/9 Phasen → MODELED |
+| C11 | Morales/Kacher Pocket Pivot | `CONFIRMED_RESEARCH_SETUP` | nur EOD (Schluss + Volumen) | 4 (Kontext, Stop, Größe, MA-Ausstieg); Verletzungs-Ausstieg mehrdeutig | `SOURCE_BLOCKED`: Initialstop nicht in der Quelle, 8/9 Phasen; der Stop am Signaltagstief ist nur eine Variante (E3) | Primärquelle für die Stopregel → 9/9 Phasen → MODELED |
 | C12 | Morales/Kacher Buyable Gap-Up | `MODELED_TRADE_PLAN` | EOD; PIT-Marktkapitalisierung für die Megacap-Ausnahme fehlt (Ermessen) | 5 | Volumenfenster mehrdeutig (D-BGU-VOLWINDOW); V4-D1 je Titel | Modellannahmen; VALIDATED: CC-1, CC-3, CC-5, CC-8 |
 | C13 | Raschke Holy Grail | `CONFIRMED_RESEARCH_SETUP` | nur EOD (EMA20, ADX14) | 1 (Ausstieg); Größe mehrdeutig | `SOURCE_BLOCKED`: Trailing und Größe nicht in den Quellen, 8/9 Phasen, nicht messbar; Einstieg nur aus Sekundärquelle W-RAS97 | Primärquelle für Trailing und Größe → MODELED |
 
@@ -100,7 +100,14 @@ Zusätzlich gilt:
 - `CONFIRMED_RESEARCH_SETUP` braucht `setup` mit den Feldern `mechanicalRules`, `openDiscretionaryRules`, `ambiguousRules`, `dataBlockedRules` und `manualReviewStatus`.
 - `MODELED_TRADE_PLAN` braucht zusätzlich `plan` mit den Feldern `hypothetical`, `model {lifecycleKey, variantId}`, `entry {type, trigger, earliestSession}`, `stop {initial}`, `sizing {method, riskFraction ≤ 0,05}`, `exit {ruleIds}` (nur STOP-/EXIT-Regeln), `modelAssumptions` und `declaredDataExceptions`.
 
-Unbekannte Felder werden abgelehnt, zum Beispiel `signal`, `order` oder `target`.
+Unbekannte Felder werden abgelehnt, zum Beispiel `signal`, `order` oder `target`, und zwar auch in jedem Unterobjekt (`pattern`, `setup`-Einträge, `plan.*`, `blockReasons`-Einträge, Quarantäne-Einträge). `provenance.accounting` ist nur in `MODELED_TRADE_PLAN` erlaubt.
+
+**Bindung an die Readiness:** Der Validator rechnet die Obergrenze immer gegen das committete `STRATEGY-SF6-READINESS.json`. Wer eine Readiness übergibt, muss inhaltsgleich zum Artefakt sein, sonst gilt `READINESS_NOT_COMMITTED_ARTIFACT`. Eine geänderte Readiness kann also keine Obergrenze anheben. `deriveStageCeiling` nimmt dagegen jede Readiness an, damit sich Hypothesen durchrechnen lassen. Auch dort bleibt VALIDATED durch `CONTRACT_LOCK` gesperrt.
+
+**Grenzen des Vertrags (bewusst):**
+- Die Quarantäne-Liste ist eine Angabe des Producers. Der Vertrag erzwingt Ausweis und Sperre einer *deklarierten* Sitzung. Ob der Producer jede Sitzung gemeldet hat, prüft erst die spätere DQ-Regel (§5.2, §5.4).
+- Bei `FROZEN_SNAPSHOT` lässt sich nicht nachweisen, dass der Stichtag im Snapshot liegt. Für die spätere Produktion ist `DAILY_EOD` mit `inputsSha256` vorgesehen.
+- `price.close` wird deklariert, aber nicht gegen `published-close.js` nachgerechnet. Der Vertrag liest keine Daten; die Nachrechnung gehört in die DQ-Regel.
 
 ### 3.3 Pflicht-Disclaimer (Codes; der Wortlaut ist eine spätere Produktentscheidung)
 
@@ -162,11 +169,12 @@ Aufwertung, jeweils als neuer Datensatz (`checkStageTransition`):
 - ein Datensatz mit Quarantäne-Sitzung kommt nicht über CHART hinaus, und der Sperrgrund lässt sich nicht verschweigen;
 - ADR-001: `ref_BRK.B`, `ref_brk_b` und Ähnliches werden abgelehnt;
 - ADR-002;
-- keine Stufenvermischung, nur Übergänge zur nächsten Stufe als neuer Datensatz;
+- keine Stufenvermischung, auch nicht verschachtelt in Unterobjekten; nur Übergänge zur nächsten Stufe als neuer Datensatz;
 - gesperrte Strategien bleiben unter ihrer Obergrenze;
 - Ermessensausweis und Modellannahmen;
 - PIT (Folgesitzung, kein Intraday, keine Fundamentaldaten, keine Zukunftsbalken);
 - Sperrgründe exakt abgeleitet;
+- eine geänderte Readiness hebt keine Obergrenze an;
 - keine Laufintegration: kein Workflow, keine Datei unter `supertrader/` und kein Eintrag in `domains.json` verweist auf das Modul; das Modul enthält keine Schreib- oder Netzzugriffe.
 
 ## 5. Technische Integrationsvoraussetzungen (spätere, eigene PRs)
@@ -189,12 +197,14 @@ Aufwertung, jeweils als neuer Datensatz (`checkStageTransition`):
    - kein `VALIDATED_TRADE_SIGNAL`;
    - `asOf` = letzter EOD-Stand;
    - `securityId` existiert im Security Master;
-   - `codeSha256` entspricht dem Code des Laufs.
+   - `codeSha256` entspricht dem Code des Laufs;
+   - die Quarantäne-Liste jedes Datensatzes stimmt mit `flagDiscontinuities` über den Rückblick überein;
+   - `price.close` stimmt mit `published-close.js` überein.
 5. **Status-Seite** (`/status/`, `system-health.mjs`, `diagnose.mjs`): Frische, Zahl je Stufe und Strategie, Zahl der Quarantäne-Sperren und Vertragsversion; je Titel (`/status/#/TICKER`) die Sperrgründe.
 6. **Frontend-Sprache und Disclaimer.**
    - Die Disclaimer-Codes brauchen einen deutschen Wortlaut als Produktentscheidung. Die Stufen tragen eigene Namen: Chart-Kandidat, bestätigtes Research-Setup, modellierter Handelsablauf. Wörter wie „Signal“, „Kauf“ oder „validiert“ kommen nicht vor.
    - Je Kandidat werden offene Ermessensregeln, Modellannahmen und Sperrgründe sichtbar gemacht.
-   - Es wird nichts gezeigt, was nicht im Datensatz steht: keine Rendite, keine Trefferquote, kein Trust Score (wie `SUPERTRADER_PRODUCT_READINESS.md`).
+   - Es wird nur gezeigt, was im Datensatz steht; insbesondere keine Rendite, keine Trefferquote und kein Trust Score (wie `SUPERTRADER_PRODUCT_READINESS.md`).
    - Abgrenzung zu den heutigen Live-Varianten (Darvas VU, Weinstein VU, Momentum Breakout Daily): Sie heißen ähnlich, sind aber andere Regeln. Die Benennung muss sie unterscheiden.
    - Für Discover-Ansichten gilt das Frontend-Budget.
 7. **Freigaben (Owner).**

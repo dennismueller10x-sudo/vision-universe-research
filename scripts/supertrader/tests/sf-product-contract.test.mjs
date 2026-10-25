@@ -84,7 +84,8 @@ test('SF-PRODUCT-FIXTURES-VALID: die synthetischen Beispiele je Stufe erfuellen 
   assert.match(FIXTURE.note, /SYNTHETISCH/);
   assert.deepEqual(FIXTURE.records.map((r) => r.stage), ['CHART_CANDIDATE', 'CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN']);
   for (const r of FIXTURE.records) assert.deepEqual(v(r), { ok: true, errors: [] }, r.strategyId);
-  assert.equal(validateCandidateRecord(MODELED(), {}).errors[0], 'READINESS_REQUIRED');
+  assert.equal(validateCandidateRecord(MODELED(), { readiness: null }).errors[0], 'READINESS_REQUIRED');
+  assert.deepEqual(validateCandidateRecord(MODELED()), { ok: true, errors: [] }, 'default: the committed readiness artifact');
 });
 
 test('SF-PRODUCT-REQUIRED-FIELDS: jedes fehlende Pflichtfeld, Disclaimer oder Statusfeld wird abgelehnt', () => {
@@ -117,7 +118,8 @@ test('SF-PRODUCT-QUARANTINE: ein Datensatz mit Quarantaene-Sitzung kommt nicht u
   const t = MODELED(); const c = CHART(); c.strategyId = t.strategyId; c.candidateId = t.candidateId; c.provenance = { ...t.provenance }; delete c.provenance.accounting;
   c.pattern = { patternId: 'TURTLE_S2_55D_CHANNEL', ruleIds: ['TUR-SF-ENTRY'] }; c.pit.barInterval = 'DAILY'; c.dataIntegrity.quarantinedSessions = k3; rederive(c);
   assert.deepEqual(v(c), { ok: true, errors: [] });
-  // the quarantine cannot be hidden: dropping its block reason fails
+  // a DECLARED quarantine cannot be hidden: dropping its block reason fails. Whether a producer declares every flagged
+  // session is checked by the later producer / DQ rule (flagDiscontinuities over the lookback), not by this contract
   const hidden = structuredClone(c); hidden.blockReasons = hidden.blockReasons.filter((b) => b.code !== 'QUARANTINE_SESSION_IN_LOOKBACK');
   assert.ok(v(hidden).errors.includes('BLOCK_REASONS_NOT_DERIVED'));
   const fut = CHART(); fut.dataIntegrity.quarantinedSessions = [{ date: '2026-12-01', flag: 'DQ-K5' }]; rederive(fut);
@@ -181,6 +183,12 @@ test('SF-PRODUCT-STRATEGY-CEILING: gesperrte Strategien koennen ihre Obergrenze 
     assert.deepEqual(v(asStrategy(CONFIRMED, id)), { ok: true, errors: [] }, id);
     assert.ok(has(v(asStrategy(MODELED, id)), 'STAGE_ABOVE_CEILING'), id);
   }
+  // an edited readiness cannot lift a ceiling: only the committed artifact counts (review SF7-PC-M1)
+  const lifted = structuredClone(READINESS); const hg = lifted.candidates.find((x) => x.strategyId === 'SF_RASCHKE_HOLY_GRAIL');
+  Object.assign(hg, { primaryState: 'RESEARCH_COMPLETE_WITH_EXCEPTIONS', executablePhases: 9, measurementClass: 'SCREEN_STATISTICS' });
+  const up = asStrategy(MODELED, 'SF_RASCHKE_HOLY_GRAIL'); up.plan.exit.ruleIds = ['RAS-SF-EXIT']; up.plan.declaredDataExceptions = []; up.plan.modelAssumptions = [{ ruleId: 'RAS-SF-EXIT', assumption: 'A' }]; up.blockReasons = blockReasonsFor(up, lifted);
+  assert.deepEqual(validateCandidateRecord(up, { readiness: lifted }).errors, ['READINESS_NOT_COMMITTED_ARTIFACT']);
+  assert.ok(has(v(rederive(up)), 'STAGE_ABOVE_CEILING'));
   // a chart pattern may only name mechanical rules
   const p = CHART(); p.pattern.ruleIds = ['WEIN-SF-STAGE']; assert.ok(v(p).errors.includes('PATTERN_NON_MECHANICAL_RULE:WEIN-SF-STAGE'));
   const p2 = CHART(); p2.pattern.ruleIds = ['WEIN-SF-GROUP']; assert.ok(v(p2).errors.includes('PATTERN_NON_MECHANICAL_RULE:WEIN-SF-GROUP'));
@@ -204,6 +212,18 @@ test('SF-PRODUCT-DISCRETION-DISCLOSED: offene Ermessens-, mehrdeutige und datenb
   const res = v(m); assert.ok(rc.discretionaryRules.every((x) => res.errors.includes(`PLAN_OPEN_DISCRETIONARY_RULE_WITHOUT_ASSUMPTION:${x}`)));
   m.plan.modelAssumptions = rc.discretionaryRules.map((ruleId) => ({ ruleId, assumption: 'declared model assumption (VU-SF5)' }));
   assert.deepEqual(v(m), { ok: true, errors: [] });
+});
+
+test('SF-PRODUCT-NESTED-FIELDS: unbekannte Felder in Unterobjekten werden abgelehnt (keine verschachtelte Stufenvermischung)', () => {
+  const c = CHART(); c.pattern.entry = { trigger: 1 }; c.pattern.stop = { initial: 0.5 }; c.provenance.accounting = 'RESEARCH_V1';
+  const rc = v(c).errors; for (const e of ['UNKNOWN_FIELD:pattern.entry', 'UNKNOWN_FIELD:pattern.stop', 'STAGE_MIXING:provenance.accounting']) assert.ok(rc.includes(e), e);
+  const m = MODELED(); m.pattern.signal = 'BUY'; m.plan.stop.target = 999; m.plan.sizing.shares = 1000; m.plan.model.liveApproved = true; m.blockReasons[0].approved = true; m.setup.mechanicalRules[0].override = true;
+  const rm = v(m).errors;
+  for (const e of ['UNKNOWN_FIELD:pattern.signal', 'UNKNOWN_FIELD:plan.stop.target', 'UNKNOWN_FIELD:plan.sizing.shares', 'UNKNOWN_FIELD:plan.model.liveApproved', 'UNKNOWN_FIELD:blockReasons[].approved', 'UNKNOWN_FIELD:setup.mechanicalRules[].override']) assert.ok(rm.includes(e), e);
+  const q = CHART(); q.dataIntegrity.quarantinedSessions = [{ date: '2026-06-01', flag: 'DQ-K5', resolved: true }]; rederive(q);
+  assert.ok(v(q).errors.includes('UNKNOWN_FIELD:dataIntegrity.quarantinedSessions[].resolved'));
+  const lower = CHART(); lower.security.ticker = 'fixa'; assert.ok(v(lower).errors.includes('IDENTITY_TICKER_NOT_NORMALIZED'));
+  const num = CHART(); num.security.ticker = 123; num.security.securityId = 'ref_123'; rederive(num); assert.ok(v(num).errors.includes('IDENTITY_TICKER_INVALID'));
 });
 
 test('SF-PRODUCT-PIT: nur Tagesbalken bis zum Stichtag; der Plan handelt fruehestens in der Folgesitzung', () => {

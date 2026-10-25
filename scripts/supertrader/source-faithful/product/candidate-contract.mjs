@@ -134,6 +134,12 @@ const isDate = (d) => { if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test
 const posNum = (x) => typeof x === 'number' && Number.isFinite(x) && x > 0;
 const sameSet = (a, b) => a.length === b.length && [...new Set(a)].length === a.length && a.every((x) => b.includes(x));
 const keyOf = (b) => `${b.code}:${b.ref ?? ''}`;
+/** sub-object whitelist (review SF7-PC-M2): an unknown nested key is rejected like a top-level one */
+const onlyKeys = (o, allowed, where, errors) => { if (isObj(o)) for (const k of Object.keys(o)) if (!allowed.includes(k)) errors.push(`UNKNOWN_FIELD:${where}.${k}`); };
+const sha256Json = (x) => crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
+let committedReadinessSha = null;
+/** SHA-256 of the committed SF6 readiness artifact (read once, never written). */
+export function committedReadinessSha256() { if (committedReadinessSha === null) committedReadinessSha = sha256Json(loadSf6Readiness()); return committedReadinessSha; }
 
 const contractOf = (strategyId) => CONTRACTS.find((c) => c.strategyId === strategyId) || null;
 // rules of the declared research scope only (same reading as signals/research-signal.mjs): an ORIGINAL-only rule (the
@@ -231,9 +237,11 @@ function checkSecurity(s, errors) {
   for (const k of Object.keys(s)) if (!['securityId', 'ticker', 'identityScheme'].includes(k)) errors.push(`UNKNOWN_FIELD:security.${k}`);
   if (s.identityScheme !== IDENTITY_SCHEME) errors.push('IDENTITY_SCHEME');
   let expected = null;
+  if (typeof s.ticker !== 'string') { errors.push('IDENTITY_TICKER_INVALID'); return; }
   try { expected = Identity.securityIdForTicker(s.ticker); } catch { errors.push('IDENTITY_TICKER_INVALID'); }
   // ADR-001: the id must be exactly what core/identity.js builds; any hand-built prefix concatenation is rejected
   if (expected !== null && s.securityId !== expected) errors.push('IDENTITY_NOT_FROM_CORE_IDENTITY');
+  if (expected !== null && s.ticker !== String(s.ticker).trim().toUpperCase()) errors.push('IDENTITY_TICKER_NOT_NORMALIZED');
 }
 
 function checkProvenance(p, record, contract, readiness, errors) {
@@ -261,6 +269,8 @@ function checkProvenance(p, record, contract, readiness, errors) {
     for (const k of Object.keys(ds)) if (!['kind', 'asOf', 'inputsSha256'].includes(k)) errors.push(`UNKNOWN_FIELD:provenance.dataSource.${k}`);
   } else errors.push('PROVENANCE_DATA_SOURCE_KIND');
   if (record.stage === STAGE.MODELED_TRADE_PLAN && p.accounting !== FOUNDATION.accounting.mode) errors.push('PROVENANCE_ACCOUNTING');
+  // accounting belongs to the modeled plan only (review SF7-PC-L3)
+  if (record.stage !== STAGE.MODELED_TRADE_PLAN && p.accounting !== undefined) errors.push('STAGE_MIXING:provenance.accounting');
 }
 
 function checkPit(pit, record, errors) {
@@ -289,6 +299,7 @@ function checkDataIntegrity(di, record, errors) {
   if (di.lookbackDays !== EXPOSURE_LOOKBACK_DAYS) errors.push('DATA_INTEGRITY_LOOKBACK');
   if (!Array.isArray(di.quarantinedSessions)) { errors.push('DATA_INTEGRITY_SESSIONS'); return; }
   for (const s of di.quarantinedSessions) {
+    onlyKeys(s, ['date', 'flag'], 'dataIntegrity.quarantinedSessions[]', errors);
     if (!isObj(s) || !isDate(s.date) || !['DQ-K5', 'DQ-K3'].includes(s.flag)) errors.push('DATA_INTEGRITY_SESSION_FORMAT');
     else if (s.date > record.asOf) errors.push('DATA_INTEGRITY_SESSION_AFTER_ASOF');
   }
@@ -300,11 +311,13 @@ function checkSetup(setup, record, rc, errors) {
   const mech = Array.isArray(setup.mechanicalRules) ? setup.mechanicalRules : null;
   if (!mech) errors.push('SETUP_MECHANICAL_RULES');
   else {
+    for (const m of mech) onlyKeys(m, ['ruleId', 'met'], 'setup.mechanicalRules[]', errors);
     if (!sameSet(mech.map((m) => m?.ruleId), rc.mechanicalSetupRules)) errors.push('SETUP_MECHANICAL_RULES_INCOMPLETE');
     if (mech.some((m) => m?.met !== true)) errors.push('SETUP_MECHANICAL_RULE_NOT_MET');
   }
   if (!Array.isArray(setup.openDiscretionaryRules) || !sameSet(setup.openDiscretionaryRules, rc.discretionaryRules)) errors.push('SETUP_OPEN_DISCRETIONARY_RULES_NOT_DISCLOSED');
   const amb = Array.isArray(setup.ambiguousRules) ? setup.ambiguousRules : null;
+  if (amb) for (const a of amb) onlyKeys(a, ['ruleId', 'reading'], 'setup.ambiguousRules[]', errors);
   if (!amb || !sameSet(amb.map((a) => a?.ruleId), rc.ambiguousRules) || amb.some((a) => typeof a?.reading !== 'string' || !a.reading)) errors.push('SETUP_AMBIGUOUS_RULES_NOT_DISCLOSED');
   if (!Array.isArray(setup.dataBlockedRules) || !sameSet(setup.dataBlockedRules, rc.dataBlockedRules)) errors.push('SETUP_DATA_BLOCKED_RULES_NOT_DISCLOSED');
   const expectReview = rc.discretionaryRules.length ? 'REQUIRED_PENDING' : 'NOT_REQUIRED';
@@ -315,6 +328,12 @@ function checkPlan(plan, record, rc, contract, errors) {
   if (!isObj(plan)) { errors.push('MISSING:plan'); return; }
   for (const k of Object.keys(plan)) if (!['hypothetical', 'model', 'entry', 'stop', 'sizing', 'exit', 'modelAssumptions', 'declaredDataExceptions'].includes(k)) errors.push(`UNKNOWN_FIELD:plan.${k}`);
   if (plan.hypothetical !== true) errors.push('PLAN_NOT_HYPOTHETICAL');
+  onlyKeys(plan.model, ['lifecycleKey', 'variantId'], 'plan.model', errors);
+  onlyKeys(plan.entry, ['type', 'trigger', 'earliestSession'], 'plan.entry', errors);
+  onlyKeys(plan.stop, ['initial'], 'plan.stop', errors);
+  onlyKeys(plan.sizing, ['method', 'riskFraction'], 'plan.sizing', errors);
+  onlyKeys(plan.exit, ['ruleIds'], 'plan.exit', errors);
+  if (Array.isArray(plan.modelAssumptions)) for (const a of plan.modelAssumptions) onlyKeys(a, ['ruleId', 'assumption'], 'plan.modelAssumptions[]', errors);
   if (!isObj(plan.model) || typeof plan.model.lifecycleKey !== 'string' || typeof plan.model.variantId !== 'string') errors.push('PLAN_MODEL');
   const e = plan.entry, s = plan.stop;
   if (!isObj(e) || typeof e.type !== 'string' || !posNum(e.trigger) || !isDate(e.earliestSession)) errors.push('PLAN_ENTRY');
@@ -325,7 +344,9 @@ function checkPlan(plan, record, rc, contract, errors) {
   else if (isObj(e) && posNum(e.trigger) && !(s.initial < e.trigger)) errors.push('PLAN_STOP_NOT_BELOW_ENTRY');
   if (!isObj(plan.sizing) || typeof plan.sizing.method !== 'string' || !(posNum(plan.sizing.riskFraction) && plan.sizing.riskFraction <= 0.05)) errors.push('PLAN_SIZING');
   if (!isObj(plan.exit) || !Array.isArray(plan.exit.ruleIds) || !plan.exit.ruleIds.length) errors.push('PLAN_EXIT');
-  else for (const id of plan.exit.ruleIds) { const r = contract.rules.find((x) => x.id === id); if (!r || !EXECUTION_KINDS.has(r.kind)) errors.push(`PLAN_EXIT_RULE:${id}`); }
+  // an exit rule is a STOP / EXIT rule of the declared scope that the model can execute (implemented, or manual /
+  // ambiguous and then covered by a model assumption / reading); never data-blocked or not implemented (review SF7-PC-L4)
+  else for (const id of plan.exit.ruleIds) { const r = contract.rules.find((x) => x.id === id); if (!r || !EXECUTION_KINDS.has(r.kind) || !inScope(contract, r) || r.status === RULE_STATUS.DATA_BLOCKED || r.status === RULE_STATUS.NOT_IMPLEMENTED) errors.push(`PLAN_EXIT_RULE:${id}`); }
   // every open discretionary rule must be replaced by a NAMED model assumption, never silently
   const ma = Array.isArray(plan.modelAssumptions) ? plan.modelAssumptions : null;
   if (!ma || ma.some((a) => typeof a?.ruleId !== 'string' || typeof a?.assumption !== 'string' || !a.assumption)) errors.push('PLAN_MODEL_ASSUMPTIONS');
@@ -334,14 +355,18 @@ function checkPlan(plan, record, rc, contract, errors) {
 }
 
 /**
- * Validates one candidate record against contract 1.0.0. Fails closed. `readiness` (the SF6 readiness artifact) is
- * mandatory: the stage ceiling is derived from it, never from the record.
+ * Validates one candidate record against contract 1.0.0. Fails closed. The stage ceiling is derived from the SF6
+ * readiness artifact, never from the record. `readiness` defaults to the committed artifact; a passed one must be
+ * byte-identical in content to it (review SF7-PC-M1: a caller cannot lift a ceiling with an edited readiness).
  * Returns { ok, errors[] }.
  */
-export function validateCandidateRecord(record, { readiness } = {}) {
+export function validateCandidateRecord(record, { readiness = loadSf6Readiness() } = {}) {
   const errors = [];
   if (!isObj(record)) return { ok: false, errors: ['NOT_AN_OBJECT'] };
   if (!isObj(readiness) || !Array.isArray(readiness.candidates)) return { ok: false, errors: ['READINESS_REQUIRED'] };
+  if (sha256Json(readiness) !== committedReadinessSha256()) return { ok: false, errors: ['READINESS_NOT_COMMITTED_ARTIFACT'] };
+  // only the readiness generation this contract was written against (criteria 1.2.0); a later one needs a contract review
+  if (readiness.criteriaVersion !== SF6_READINESS_VERSION || readiness.liveReadiness !== REQUIRED_STATUS.liveReadiness || readiness.certification !== REQUIRED_STATUS.certification) errors.push('READINESS_GENERATION');
   if (record.schema !== CANDIDATE_SCHEMA) errors.push('SCHEMA');
   if (record.contractVersion !== CANDIDATE_CONTRACT_VERSION) errors.push('CONTRACT_VERSION');
   const stage = record.stage;
@@ -373,6 +398,7 @@ export function validateCandidateRecord(record, { readiness } = {}) {
   const disc = record.disclaimers;
   if (!Array.isArray(disc) || !sameSet(disc, REQUIRED_DISCLAIMERS[stage])) errors.push('DISCLAIMERS');
   const pat = record.pattern;
+  onlyKeys(pat, ['patternId', 'ruleIds'], 'pattern', errors);
   if (!isObj(pat) || typeof pat.patternId !== 'string' || !pat.patternId || !Array.isArray(pat.ruleIds) || !pat.ruleIds.length) errors.push('PATTERN');
   else if (contract) {
     const known = new Set(contract.rules.map((r) => r.id));
@@ -388,6 +414,7 @@ export function validateCandidateRecord(record, { readiness } = {}) {
     // block reasons: exactly the derived ones (strategy ceiling + record level), none invented, none dropped
     const expected = blockReasonsFor(record, readiness);
     const got = Array.isArray(record.blockReasons) ? record.blockReasons : null;
+    if (got) for (const b of got) onlyKeys(b, ['code', 'ref', 'blocks'], 'blockReasons[]', errors);
     if (!got || got.some((b) => !isObj(b) || !BLOCK_BY_CODE.has(b.code) || BLOCK_BY_CODE.get(b.code).blocks !== b.blocks)) errors.push('BLOCK_REASONS_FORMAT');
     else if (!sameSet(got.map(keyOf), expected.map(keyOf))) errors.push('BLOCK_REASONS_NOT_DERIVED');
     // the stage must lie below every block reason that applies (strategy ceiling and record level)
@@ -401,7 +428,7 @@ export function validateCandidateRecord(record, { readiness } = {}) {
  * The only allowed transition: a NEW record of the next stage for the same strategy, security and as-of date, valid on
  * its own. Never in place, never a skip, never to VALIDATED_TRADE_SIGNAL in contract 1.0.0.
  */
-export function checkStageTransition(from, to, { readiness } = {}) {
+export function checkStageTransition(from, to, { readiness = loadSf6Readiness() } = {}) {
   const errors = [];
   if (!isObj(from) || !isObj(to)) return { ok: false, errors: ['NOT_AN_OBJECT'] };
   if (to.stage === STAGE.VALIDATED_TRADE_SIGNAL) errors.push('STAGE_NOT_ISSUABLE:VALIDATED_TRADE_SIGNAL');
