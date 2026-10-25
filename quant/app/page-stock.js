@@ -913,38 +913,32 @@
       tabs.querySelectorAll("a").forEach(function (a) { var on = a.dataset.target === id; a.setAttribute("aria-current", on ? "true" : "false"); if (on) hit = a; });
       if (hit && tabs.scrollWidth > tabs.clientWidth && tabs.scrollTo) tabs.scrollTo({ left: hit.offsetLeft - 16, behavior: "smooth" });
     }
-    /* Desktop: ein Klick markiert die gewaehlte Pille und haelt sie, bis das Scrollen ruht - sonst markiert das Band
-       unterwegs oder am Ziel die rechte Nachbarkarte derselben Zeile. Mobil entscheidet weiter das Wischen (deck). */
-    var pinned = null, pinT = 0;
-    function pin(id, ms) { pinned = id; clearTimeout(pinT); pinT = setTimeout(function () { pinned = null; }, ms); }
-    tabs.addEventListener("click", function (e) {
-      var a = e.target.closest("a[data-target]");
-      if (a && !swipe.on()) { setCurrent(a.dataset.target); pin(a.dataset.target, 600); }
-    });
+    /* Desktop: ein Klick markiert die gewaehlte Pille; solange die Seite dorthin scrollt (bis 150 ms nach dem letzten
+       Scroll-Ereignis), schweigt das Band. Gemessen auf der Ereignis-Uhr (timeStamp, entry.time, Frame-Zeit), nicht mit Date. */
+    var hold = 0;
+    tabs.onclick = function (e) { var a = e.target.closest("a"); if (a && !swipe.on()) { hold = e.timeStamp + 1500; setCurrent(a.dataset.target); } };
     if (global.IntersectionObserver) {
-      var seen = {};
       var spy = new global.IntersectionObserver(function (entries) {
+        var id;
         entries.forEach(function (e) {
-          seen[e.target.id] = e.isIntersecting;
+          if (!e.isIntersecting) return;
           /* Mobil liegen 2-6 nebeneinander: dort entscheidet das Wischen (deck), oben nur der Ueberblick. */
-          if (e.isIntersecting && swipe && swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
+          if (swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
+          /* Kommen zwei Karten einer Zeile zugleich ins Band (Desktop-Raster), gilt die erste - die linke. */
+          else id = id || e.target.id;
         });
-        if (pinned || (swipe && swipe.on())) return;
-        /* Im Band gilt die Zeile, deren Oberkante am tiefsten steht (zuletzt hineingekommen); bei zwei Karten nebeneinander die linke. */
-        var best = null, top = -1e9;
-        TABS.forEach(function (t) { var n = seen[t[0]] && document.getElementById(t[0]), y = n ? n.getBoundingClientRect().top : top; if (y > top + 2) { top = y; best = t[0]; } });
-        if (best) setCurrent(best);
+        if (id && entries[0].time > hold) setCurrent(id);
       }, { rootMargin: "-30% 0px -60% 0px" });
       disposers.push(function () { spy.disconnect(); });
       /* Ganz oben (Kurs, Chart, Ergebnis) ist der Ueberblick aktiv - auch dort, wo das Beobachtungsband ihn nicht trifft. */
-      var topRaf = 0, onTop = function () {
+      var topRaf = 0, onTop = function (t) {
         topRaf = 0;
-        if (pinned) return;
-        var lay = document.getElementById("ueberblick"); if (!lay || !lay.isConnected) return;
-        if (lay.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
-        else if (swipe && swipe.on() && tabs.querySelector("a[aria-current=true]") && tabs.querySelector("a[aria-current=true]").dataset.target === "ueberblick") setCurrent(swipe.current());
+        if (t < hold) return;
+        if (!layout.isConnected) return;
+        if (layout.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
+        else if (swipe.on() && tabs.querySelector("a[aria-current=true][data-target=ueberblick]")) setCurrent(swipe.current());
       };
-      var onScroll = function () { if (pinned) pin(pinned, 200); if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
+      var onScroll = function (e) { if (hold > e.timeStamp) hold = e.timeStamp + 150; if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
       global.addEventListener("scroll", onScroll, { passive: true });
       disposers.push(function () { global.removeEventListener("scroll", onScroll); });
       setTimeout(function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n) spy.observe(n); }); }, 0);
