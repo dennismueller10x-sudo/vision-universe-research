@@ -1,0 +1,54 @@
+# =============================================================================
+# VISION UNIVERSE — workers/vu-account/wrangler.toml
+#
+# Konto- und Abo-API (Cloudflare Workers Free: 100.000 Anfragen/Tag,
+# 10 ms CPU je Anfrage; der Worker wartet fast nur auf Supabase/Stripe).
+# Kein KV, kein D1, kein Durable Object: Zustand liegt in Supabase.
+#
+# AUSGEROLLT WIRD NUR VON HAND (Workflow "Konten — vu-account ausrollen",
+# workflow_dispatch) in die GitHub-Umgebung "account-dev". Kein Ausrollen bei
+# Merge. Produktion braucht die Freigabe aus docs/accounts/LIVE_RELEASE.md.
+#
+# SECRETS (nie in diese Datei, setzt der Workflow aus GitHub-Secrets):
+#   SUPABASE_SECRET_KEY      sb_secret_…  (Supabase -> Settings -> API Keys)
+#   STRIPE_SECRET_KEY        sk_test_… bzw. rk_test_… (Restricted Key empfohlen)
+#   STRIPE_WEBHOOK_SECRET    whsec_…
+# =============================================================================
+
+name = "vu-account"
+main = "src/index.mjs"
+compatibility_date = "2026-09-17"
+workers_dev = true
+
+[observability]
+enabled = true
+
+# Eigene Subdomain derselben Site, damit die HttpOnly-Cookies First-Party sind
+# (Safari/Firefox blockieren Cookies von *.workers.dev im Kontext der Seite).
+# Erst nach DNS-Freigabe aktivieren (docs/accounts/SETUP.md, Schritt D1):
+# routes = [{ pattern = "account.visionuniverse.de", custom_domain = true }]
+
+# Optionale, isolate-uebergreifende Ratenbegrenzung (docs/accounts/SETUP.md, C3).
+# [[ratelimits]]
+# name = "VU_ACCOUNT_LIMITER"
+# namespace_id = "1101"
+# simple = { limit = 20, period = 60 }
+
+[vars]
+VU_ENVIRONMENT = "development"
+VU_SITE_ORIGIN = "https://research.visionuniverse.de"
+# Wird nach dem ersten Ausrollen auf die Worker-Adresse gesetzt (Workflow-Variable
+# VU_ACCOUNT_API_ORIGIN hat Vorrang). Muss in Supabase als Redirect-URL eingetragen sein.
+VU_ACCOUNT_API_ORIGIN = ""
+VU_ALLOWED_ORIGINS = ""
+SUPABASE_URL = ""
+# Oeffentlich (sb_publishable_…): darf im Klartext stehen, RLS schuetzt die Daten.
+SUPABASE_PUBLISHABLE_KEY = ""
+SUPABASE_FORWARD_CLIENT_IP = "false"
+STRIPE_API_VERSION = "2025-03-31.basil"
+STRIPE_CHECKOUT_REQUIRE_TERMS = "false"
+# Oeffentliche Registrierung: AUS bis zur ausdruecklichen Freigabe.
+VU_REGISTRATION_ENABLED = "false"
+VU_REGISTRATION_ALLOWLIST = ""
+# Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
+STRIPE_LIVE_MODE_APPROVED = "false"
