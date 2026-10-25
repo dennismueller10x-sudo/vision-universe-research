@@ -175,13 +175,16 @@ const VISUAL = [
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
   ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
-  ['Fundamental', '/fundamental/#/PLTR', '.fu-kpi .fu-dir', 'Kennzahl mit Richtung zum Vorjahr'],
-  ['Fundamental', '/fundamental/#/NVDA', '.fu-gap', 'Luecke als "keine Angabe" sichtbar'],
-  ['Fundamental', '/fundamental/#/NVDA', '.fu-gcell .fu-gbar', 'Wachstum pro Jahr mit Balken'],
-  ['Fundamental', '/fundamental/#/NVDA', '.fu-ladder', 'Vom Umsatz zum Free Cashflow'],
-  ['Fundamental', '/fundamental/#/JPM', '.fu-gauge .mk-self', 'KGV im Marktvergleich'],
-  ['Fundamental', '/fundamental/#/KO', '.fu-cmp-rows li.is-self .fu-cmp-bar i', 'Im Vergleich: eigener Balken neben Vergleichsunternehmen'],
-  ['Fundamental', '/fundamental/', '.fu-tile .fu-meter-bar i', 'Start: Entdecken-Kacheln mit Kennzahlbalken']
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-k .fu-chg', 'Kennzahl mit Richtung zum Vorjahr'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-cagr', 'Wachstum pro Jahr ueber 3/5/10 Jahre'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-bc.is-last .fu-b', 'Verlauf je Geschaeftsjahr als Balken'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=finanzen', '.fu-stmt', 'Finanzen: GuV je Geschaeftsjahr'],
+  ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-gauge .mk-self', 'KGV im Marktvergleich'],
+  ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV nach jedem Jahresbericht als Linie'],
+  ['Fundamental', '/fundamental/#/KO?ansicht=vergleich', '.fu-bc.is-self .fu-b', 'Branchenvergleich: eigener Balken neben Vergleichsunternehmen'],
+  ['Fundamental', '/fundamental/', '.fu-entry-list li', 'Start: Ranglisten-Einstiege mit Unternehmen'],
+  ['Fundamental', '/fundamental/#/entdecken', '.fu-tile .fu-meter-bar i', 'Entdecken: Discover-Kacheln mit Kennzahlbalken']
 ];
 if (only.has('visual')) await guard('visual', async () => {
   console.log('\n[3] Visual-First-Bausteine (' + engine + ')');

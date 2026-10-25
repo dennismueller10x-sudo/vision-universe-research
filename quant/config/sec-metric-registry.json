@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.6.0",
+  "mapping_version": "1.7.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
@@ -651,6 +651,8 @@
       "units": [
         "USD"
       ],
+      "total_concepts": ["us-gaap:Revenues", "ifrs-full:Revenue"],
+      "total_concepts_note": "us-gaap:Revenues ist laut Taxonomie der Gesamtumsatz; RevenueFromContractWithCustomer* ist nur der Teil nach ASC 606 (ohne Miet-/Leasingerloese nach ASC 842, Versicherungspraemien, Zinsertraege). Meldet ein Emittent beide in DERSELBEN Meldung fuer DIESELBE Periode und ist Revenues groesser, gilt Revenues. Ist Revenues kleiner oder gleich, bleibt die Prioritaet unveraendert - ein kleineres Revenues ist erkennbar nicht der Gesamtumsatz (gemessen 25.10.2026: 311 groesser, 497 gleich, 70 kleiner im Produktuniversum). Dasselbe gilt fuer IFRS: ifrs-full:Revenue ist der Gesamtumsatz, ifrs-full:RevenueFromContractsWithCustomers (IFRS 15) der Rueckfall fuer 37 IFRS-Emittenten ohne ifrs-full:Revenue (u. a. Nutrien, AngloGold, BioNTech). Nicht fuer Banken und Versicherer: dort ist der IFRS-15-Teil nur der Provisions- bzw. Dienstleistungsertrag (Barclays 11,1 Mrd. bei rund 27 Mrd. Gesamtertrag), kein Umsatz.",
       "concepts": [
         {
           "taxonomy": "us-gaap",
@@ -686,6 +688,12 @@
           "taxonomy": "ifrs-full",
           "concept": "Revenue",
           "priority": 200
+        },
+        {
+          "taxonomy": "ifrs-full",
+          "concept": "RevenueFromContractsWithCustomers",
+          "priority": 210,
+          "excluded_industries": ["BANK", "INSURER"]
         }
       ]
     },

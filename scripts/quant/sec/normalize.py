@@ -30,6 +30,7 @@ LOGGER = logging.getLogger("vu.sec.normalize")
 FLAG_COVER_DATE_INSTANT = "COVER_DATE_INSTANT"
 FLAG_CONCEPT_DISAGREEMENT = "CONCEPT_DISAGREEMENT"
 FLAG_DUPLICATE_FACT = "DUPLICATE_FACT"
+FLAG_TOTAL_CONCEPT = "TOTAL_CONCEPT"
 
 ISSUE_UNIT_MISMATCH = "UNIT_MISMATCH"
 ISSUE_PERIOD_MISMATCH = "PERIOD_MISMATCH"
@@ -96,9 +97,17 @@ class NormalizationResult:
 
 
 def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
-                      calendar=None):
-    """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
+                      calendar=None, industry=None):
+    """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines.
+
+    `industry` is the registry industry id (BANK, INSURER, REIT); without it the
+    profile's SIC decides. A concept rule can exclude industries for which the
+    concept does not mean the metric.
+    """
     raw_facts = list(raw_facts)
+    if industry is None and getattr(profile, "sic", None):
+        found = registry.industry_for(profile.sic)
+        industry = found.industry_id if found else None
     issues = []
     availability = build_availability_map(filing_metadata)
 
@@ -131,6 +140,8 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         seen_fact_ids.add(fact.fact_id)
 
         for metric_name, priority in matches:
+            if registry.excluded_for(metric_name, fact.taxonomy, fact.concept, industry):
+                continue
             definition = registry.get(metric_name)
             if not definition.allows_unit(fact.unit):
                 issues.append(_issue(
@@ -194,6 +205,25 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
         entries.sort(key=lambda item: item[0])
         best_priority, fact = entries[0]
         flags = []
+
+        # A higher-priority concept can be only a COMPONENT of the metric: for
+        # revenue, RevenueFromContractWithCustomer* covers ASC 606 revenue only,
+        # while us-gaap:Revenues is the consolidated total (lease revenue under
+        # ASC 842, insurance premiums, interest). When the same filing reports
+        # the total for the same cell and it is LARGER, the total is the
+        # metric. A smaller or equal total leaves the priority untouched -- it
+        # is evidently not the total. Nothing is added up.
+        definition = registry.get(metric_name)
+        totals = getattr(definition, "total_concepts", None)
+        if totals and f"{fact.taxonomy}:{fact.concept}" not in totals:
+            larger = [other for _, other in entries[1:]
+                      if f"{other.taxonomy}:{other.concept}" in totals
+                      and other.value > fact.value + max(abs(fact.value), 1.0) * CONCEPT_DISAGREEMENT_TOLERANCE]
+            if larger:
+                component = fact
+                fact = max(larger, key=lambda other: other.value)
+                entries = [(best_priority, fact)] + [(p, o) for p, o in entries if o is not fact and o is not component]
+                flags.append(FLAG_TOTAL_CONCEPT)
 
         # More than one accepted concept in the same filing for the same cell:
         # the registry's priority decides, and a material disagreement is
