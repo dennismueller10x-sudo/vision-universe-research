@@ -692,12 +692,21 @@
       var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
       if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
       var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null }); });
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
       if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
       if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
       if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
         var ci = S.dates.indexOf(f.confirmedAt);
         if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
       }
     });
     if (L.niveaus) {

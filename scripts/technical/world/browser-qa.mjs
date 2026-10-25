@@ -179,6 +179,13 @@ async function main() {
       await page.goto(base + href);
       await page.waitForSelector(".tc-focus b", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg");
+      /* Das Fenster beginnt am ersten Formationspunkt, also liegt der Erkennungstag darin. */
+      assert(await page.locator(".tc-chart text.tc-badge-text", { hasText: "Erkannt" }).count() === 1, "Erkennungsmarke im Fokus fehlt");
+      const overlap = await page.evaluate(() => {
+        const r = [...document.querySelectorAll(".tc-chart rect.tc-badge")].map((e) => e.getBBox());
+        return r.some((a, i) => r.some((b, j) => j > i && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height));
+      });
+      assert(!overlap, "Beschriftungen im Chart ueberdecken sich");
       await clean("Formationsfokus");
     });
 
