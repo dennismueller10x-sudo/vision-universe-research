@@ -118,7 +118,8 @@ test('Echte Daten: Lueckenhafte Reihe (NVDA Free Cashflow) und Banken ohne Brutt
 test('Nur bestehende, ausgelieferte Daten: Discover-Aktiendatei und Suchliste', () => {
   const src = readFileSync(new URL('../engine/model.js', import.meta.url), 'utf8') + readFileSync(new URL('../app.js', import.meta.url), 'utf8');
   const paths = [...src.matchAll(/['"](\/[a-z0-9-]+\/data\/[^'"]*)['"]/g)].map((m) => m[1]);
-  assert.deepEqual([...new Set(paths)].sort(), ['/discover/data/rows/US_REAL/', '/discover/data/search/US_REAL.json', '/discover/data/stocks/US_REAL/']);
+  assert.deepEqual([...new Set(paths)].sort(), ['/discover/data/rows/US_REAL/', '/discover/data/search/US_REAL.json', '/discover/data/stocks/US_REAL/', '/quant/data/market/discover-series-long/'],
+    'lange Wochenreihe (Kurs + Split-Beleg) wie die Discover-Aktiendatei sie verlinkt');
   assert.ok(existsSync(new URL('../../discover/data/rows/US_REAL/thema-ki.json', import.meta.url)));
   assert.ok(existsSync(new URL('../../discover/data/search/US_REAL.json', import.meta.url)));
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/, 'keine nicht ausgelieferten SEC-Rohdaten');
