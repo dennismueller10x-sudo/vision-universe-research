@@ -4,7 +4,7 @@ const fs=require('node:fs'), path=require('node:path'), crypto=require('node:cry
 const C=require('./research-contract.cjs');
 const SCHEMA='research-generation-1.0.0';
 function id(v){if(typeof v!=='string'||!/^[a-f0-9]{64}$/.test(v))throw Error('INVALID_GENERATION_ID');return v;}
-function root(directory){const d=path.resolve(directory);fs.mkdirSync(d,{recursive:true,mode:0o700});if(fs.lstatSync(d).isSymbolicLink())throw Error('SYMLINK_STORE_FORBIDDEN');return d;}
+function root(directory){const d=path.resolve(directory),repository=path.resolve(__dirname,'../..');const outside=p=>{const rel=path.relative(repository,p);if(!rel.startsWith('..'+path.sep))throw Error('OUTPUT_MUST_BE_PRIVATE_OUTSIDE_REPOSITORY');};outside(d);fs.mkdirSync(d,{recursive:true,mode:0o700});if(fs.lstatSync(d).isSymbolicLink())throw Error('SYMLINK_STORE_FORBIDDEN');outside(fs.realpathSync(d));return d;}
 function readFile(p){if(fs.lstatSync(p).isSymbolicLink())throw Error('SYMLINK_ARTIFACT_FORBIDDEN');return JSON.parse(fs.readFileSync(p,'utf8'));}
 function read(directory,generation){const d=root(directory), g=id(generation);const snapshot=readFile(path.join(d,g+'.json'));if(snapshot.schemaVersion!==SCHEMA||C.hash(snapshot.payload)!==g)throw Error('CORRUPT_RESEARCH_GENERATION');return snapshot;}
 function current(directory){const d=root(directory), p=path.join(d,'current.json');if(!fs.existsSync(p))return null;const pointer=readFile(p);if(pointer.schemaVersion!==SCHEMA)throw Error('UNKNOWN_RESEARCH_POINTER');read(d,pointer.generation);return pointer.generation;}
