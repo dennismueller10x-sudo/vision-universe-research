@@ -4,7 +4,7 @@
  * Daten: Discover-Aktiendatei, SEC-Historie (Release), Screener-Universum, Kursreihen, Analysten – siehe engine/catalog.js. */
 (function (global) {
   'use strict';
-  var M = global.VUFundamental.Model, C = global.VUFundamental.Catalog;
+  var M = global.VUFundamental.Model, C = global.VUFundamental.Catalog, K = global.VUFundamental.Compare;
   var ID = global.VUCore && global.VUCore.Identity;
   var main = document.getElementById('fu-main');
   var EXAMPLES = [['NVDA', 'NVIDIA'], ['AAPL', 'Apple'], ['MSFT', 'Microsoft'], ['PLTR', 'Palantir'], ['JPM', 'JPMorgan Chase'], ['KO', 'Coca-Cola']];
@@ -45,6 +45,7 @@
     cash: 'M3 7h18v10H3zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 10v4M18 10v4', balance: 'M12 4v16M5 8h14M5 8l-3 6h6zM19 8l-3 6h6zM8 20h8', share: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5',
     valuation: 'M4 20h16M6 16l4-6 4 3 5-8M9 4h6', dividend: 'M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.6 5 3 5 1.4 5 3.4-2.2 3.1-5 3.1-5-1.2-5-3', analysts: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 3-5 6-5s6 2 6 5M14 15.5c3 0 8 1 8 4.5',
     company: 'M4 21V5l8-2v18M12 8h8v13M8 8v.01M8 12v.01M8 16v.01M16 12v.01M16 16v.01M2 21h20', source: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7', investors: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c0-4 3-7 7-7s7 3 7 7M17 3.5a4 4 0 0 1 0 7.5M22 21c0-3-1.5-5.5-4-6.5',
+    plus: 'M12 5v14M5 12h14', close: 'M6 6l12 12M18 6L6 18', expand: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
     chevron: 'M9 6l6 6-6 6', back: 'M15 6l-6 6 6 6', search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM16 16l4.5 4.5', info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 11v6M12 7.5v.01', download: 'M12 4v11M7 10l5 5 5-5M5 20h14'
   };
   function glyph(name, cls) {
@@ -271,6 +272,181 @@
     var lastI = -1; points.forEach(function (p, i) { if (isNum(series[0].vals[p.key])) lastI = i; });
     setTimeout(function () { read(lastI >= 0 ? lastI : n - 1); }, 0);
     return el('div', { class: 'fu-lines' }, [legend, el('p', { class: 'fu-bars-unit', text: sc.unit }), plot, xs, readout]);
+  }
+
+  /* ------------------------------------------------------------ Mehrere Kennzahlen in einem Verlauf (engine/compare.js)
+   * Jede Kennzahl behaelt ihre Farbe (m0 = Hauptkennzahl, m1–m3 je Platz der Auswahl; Entfernen faerbt nichts um).
+   * Kennzahlen verschiedener Einheit teilen nie eine Achse: eine Einheit = eine Achse, zwei = links und rechts,
+   * sonst Index (Basis 100) oder getrennte Verlaeufe mit gemeinsamer Zeitachse. Tippen, Ziehen oder Zeigen liest alle
+   * Kennzahlen zum selben Zeitraum ab; Luecken bleiben Luecken – es wird nicht interpoliert. */
+  function domainOf(vals, kind) {
+    var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+    if (min > 0 && (kind === 'money' || kind === 'shares') && min < max * 0.5) min = 0;
+    var span = (max - min) || Math.abs(max) || 1, hi = max + span * 0.1, lo = min === 0 ? 0 : min - span * 0.1;
+    return { min: min, max: max, y: function (v) { return (hi - v) / (hi - lo) * 100; }, zero: lo < 0 && hi > 0 };
+  }
+  var INDEX_SCALE = { unit: 'Index', f: function (v) { return Math.round(v).toLocaleString('de-DE'); } };
+  function mcAxisLabel(ax) { return ax.index ? 'Index' : ax.sc.unit; }
+  function multiChart(model, opt) {
+    var mode = opt.mode, cu = opt.currency, pts = model.points, n = pts.length;
+    var ix = mode === 'index' ? K.indexed(model) : null, list = [];
+    model.series.forEach(function (s, i) {
+      if (!s.ok) return;
+      var vals = {};
+      if (ix) { if (!ix.vals[i]) return; vals = ix.vals[i]; }
+      else pts.forEach(function (p) { var r = s.rows[p.key]; if (r && isNum(r.v)) vals[p.key] = r.v; });
+      if (Object.keys(vals).length) list.push({ i: i, s: s, def: s.def, tone: opt.tones[i], vals: vals });
+    });
+    if (!list.length || !n) return notice('Keine gemeinsamen Werte', 'Für diesen Zeitraum liegen keine vergleichbaren Angaben vor.');
+    // Achsen je Diagramm: [{side, lines}]
+    var panels;
+    if (mode === 'split') panels = list.map(function (l) { return [{ side: 'right', lines: [l] }]; });
+    else if (ix) panels = [[{ side: 'right', lines: list, index: true }]];
+    else {
+      var gs = [];
+      list.forEach(function (l) { var g = gs.filter(function (x) { return x.key === l.s.unit.key; })[0]; if (!g) gs.push(g = { key: l.s.unit.key, lines: [] }); g.lines.push(l); });
+      panels = [gs.length > 1 ? [{ side: 'left', lines: gs[0].lines }, { side: 'right', lines: gs[1].lines }] : [{ side: 'right', lines: gs[0].lines }]];
+    }
+    var H = opt.height || 210, PH = mode === 'split' ? Math.max(92, Math.round(H / Math.min(list.length, 4) * 0.9)) : H;
+    var xp = function (k) { return n === 1 ? 50 : 4 + k * 92 / (n - 1); };
+    var cursors = [], markLayers = [], plots = [];
+    var dom = panels.map(function (axes) {
+      var dual = axes.length > 1, svgEl = svg('svg', { class: 'fu-lines-svg', viewBox: '0 0 100 100', preserveAspectRatio: 'none', 'aria-hidden': 'true' }), dots = [], labels = [];
+      axes.forEach(function (ax) {
+        var vs = []; ax.lines.forEach(function (l) { pts.forEach(function (p) { if (isNum(l.vals[p.key])) vs.push(l.vals[p.key]); }); });
+        ax.d = domainOf(vs, ax.index ? 'index' : ax.lines[0].def.kind);
+        ax.sc = ax.index ? INDEX_SCALE : scaleFor(ax.lines[0].def, vs, cu);
+        if (ax.d.zero && !dual) svgEl.append(svg('line', { class: 'fu-l-zero', x1: 0, x2: 100, y1: ax.d.y(0), y2: ax.d.y(0), 'vector-effect': 'non-scaling-stroke' }));
+        if (ax.index) svgEl.append(svg('line', { class: 'fu-l-base', x1: 0, x2: 100, y1: ax.d.y(100), y2: ax.d.y(100), 'vector-effect': 'non-scaling-stroke' }));
+        ax.lines.forEach(function (l) {
+          var d = '', open = false;
+          pts.forEach(function (p, k) {
+            var v = l.vals[p.key];
+            if (!isNum(v)) { open = false; return; }
+            d += (open ? 'L' : 'M') + xp(k).toFixed(2) + ' ' + ax.d.y(v).toFixed(2); open = true;
+            var prevOk = k > 0 && isNum(l.vals[pts[k - 1].key]), nextOk = k < n - 1 && isNum(l.vals[pts[k + 1].key]);
+            if (!prevOk && !nextOk) dots.push(el('i', { class: 'fu-ldot fu-mdot m' + l.tone, style: 'left:' + xp(k) + '%;top:' + ax.d.y(v) + '%' }));
+          });
+          if (d) svgEl.append(svg('path', { class: 'fu-l fu-l-m m' + l.tone, d: d, 'vector-effect': 'non-scaling-stroke' }));
+          l.ax = ax;
+        });
+        labels.push(el('div', { class: 'fu-laxis' + (ax.side === 'left' ? ' fu-laxis-l' : ''), 'aria-hidden': 'true' }, [el('span', { style: 'top:' + ax.d.y(ax.d.max) + '%', text: ax.sc.f(ax.d.max) }),
+          ax.d.max !== ax.d.min ? el('span', { style: 'top:' + ax.d.y(ax.d.min) + '%', text: ax.sc.f(ax.d.min) }) : null,
+          ax.index && 100 < ax.d.max && 100 > ax.d.min ? el('span', { class: 'is-base', style: 'top:' + ax.d.y(100) + '%', text: '100' }) : null]));
+      });
+      var cur = el('i', { class: 'fu-lcur', hidden: true }), marks = el('div', { class: 'fu-lmarks' });
+      cursors.push(cur); markLayers.push({ node: marks, axes: axes });
+      var plot = el('div', { class: 'fu-lines-plot fu-mc-plot' + (dual ? ' is-dual' : ''), style: 'height:' + PH + 'px' }, [svgEl].concat(labels, [cur, marks], dots));
+      plots.push(plot);
+      // Kopf je Diagramm: Einheit links/rechts mit Farbmarke der zugehoerigen Kennzahlen
+      var side = function (ax) { return el('span', { class: 'fu-mc-u' + (ax.side === 'left' ? ' is-l' : ' is-r') }, ax.lines.map(function (l) { return el('i', { class: 'sw m' + l.tone }); }).concat([(mode === 'split' ? l0(ax) + ' · ' : '') + mcAxisLabel(ax)])); };
+      return el('div', { class: 'fu-mc-panel' }, [el('div', { class: 'fu-mc-units', 'aria-hidden': 'true' }, dual ? [side(axes[0]), side(axes[1])] : [el('span'), side(axes[0])]), plot]);
+    });
+    function l0(ax) { return short(ax.lines[0].def.label); }
+    var area = el('div', { class: 'fu-mc-area', tabindex: '0', role: 'group', 'aria-label': 'Verlauf von ' + model.series.filter(function (s) { return s.ok; }).map(function (s) { return s.def.label; }).join(', ') + ' – mit Pfeiltasten ablesen' }, dom);
+    var xs = el('div', { class: 'fu-lines-x' + (panels.length === 1 && panels[0].length > 1 ? ' is-dual' : ''), 'aria-hidden': 'true' }, pts.map(function (p, k) {
+      var every = n > 8 ? Math.ceil(n / 5) : 1;
+      return (n - 1 - k) % every === 0 ? el('span', { style: 'left:' + xp(k) + '%', text: p.short }) : null;
+    }));
+    var legend = el('ul', { class: 'fu-legend fu-mc-legend' }, list.map(function (l) {
+      var where = mode === 'axes' && panels[0].length > 1 ? (l.ax.side === 'left' ? ' · links' : ' · rechts') : '';
+      return el('li', {}, [el('i', { class: 'sw m' + l.tone }), l.def.label + where]);
+    }));
+    var readout = el('div', { class: 'fu-mc-read', 'aria-live': 'polite' }), sel = -1;
+    function rowNote(s, r) {
+      if (!r) return null;
+      if (s.def.snap && r.priceDate) return 'Kurs ' + C.fmt({ kind: 'perShare' }, r.price, 'USD') + ' am ' + M.dateDe(r.priceDate);
+      if (model.period === 'quarterly' && r.filed) return (r.derived ? 'berechnet · ' : '') + 'Meldung ' + M.dateDe(r.filed);
+      return r.derived ? 'berechnet' : null;
+    }
+    function read(k) {
+      sel = Math.max(0, Math.min(n - 1, k)); var p = pts[sel];
+      cursors.forEach(function (c) { c.hidden = false; c.style.left = xp(sel) + '%'; });
+      markLayers.forEach(function (m) {
+        put(m.node, [].concat.apply([], m.axes.map(function (ax) { return ax.lines.map(function (l) { var v = l.vals[p.key]; return isNum(v) ? el('i', { class: 'fu-ldot fu-mdot m' + l.tone, style: 'left:' + xp(sel) + '%;top:' + ax.d.y(v) + '%' }) : null; }); })));
+      });
+      var when = [p.end ? 'Berichtszeitraum bis ' + M.dateDe(p.end) : null, p.published ? 'Jahresbericht (10-K) veröffentlicht ' + M.dateDe(p.published) : null].filter(Boolean).join(' · ');
+      put(readout, el('p', { class: 'fu-mc-rh' }, [el('b', { text: model.period === 'quarterly' ? p.label : 'Geschäftsjahr ' + p.key }), when ? el('small', { text: when }) : null]),
+        el('ul', { class: 'fu-mc-rows' }, model.series.map(function (s, i) {
+          if (!s.ok) return null;
+          var r = s.rows[p.key], has = r && isNum(r.v), iv = ix && ix.vals[i] ? ix.vals[i][p.key] : null;
+          var text = has ? val(s.def, r.v, cu) : 'keine Angabe', why = !has && r && r.reason ? K.reasonText(r.reason) : !has ? 'kein Wert für diesen Zeitraum' : null;
+          var note = has ? rowNote(s, r) : why;
+          if (ix && ix.excluded[i] && has) note = 'nicht indexiert' + (note ? ' · ' + note : '');
+          return el('li', { class: has ? '' : 'is-none' }, [el('i', { class: 'sw m' + opt.tones[i] }), el('span', { class: 'fu-mc-l', text: short(s.def.label) }),
+            el('b', { class: 'fu-num', text: ix && isNum(iv) ? 'Index ' + INDEX_SCALE.f(iv) : text }),
+            ix && isNum(iv) ? el('small', { text: text + (note ? ' · ' + note : '') }) : note ? el('small', { text: note }) : null]);
+        })));
+    }
+    function at(ev) { var r = plots[0].getBoundingClientRect(); var f = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / r.width * 100; return n === 1 ? 0 : Math.round((f - 4) / 92 * (n - 1)); }
+    area.addEventListener('pointerdown', function (ev) { read(at(ev)); });
+    area.addEventListener('pointermove', function (ev) { var k = at(ev); if (k !== sel) read(k); });
+    area.addEventListener('keydown', function (ev) { if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') { ev.preventDefault(); read(sel + (ev.key === 'ArrowLeft' ? -1 : 1)); } });
+    var head = el('div', { class: 'fu-mc-head' }, [legend, opt.onFull ? el('button', { type: 'button', class: 'fu-mc-full', 'aria-label': 'Diagramm vergrößern', title: 'Vergrößern', onclick: opt.onFull }, glyph('expand', 'fu-glyph-sm')) : null]);
+    var start = pts.map(function (p) { return p.key; }).indexOf(model.lastMain);
+    setTimeout(function () { read(start >= 0 ? start : n - 1); }, 0);
+    return el('div', { class: 'fu-lines fu-mc fu-mc-' + mode, 'data-mode': mode }, [head, area, xs, readout]);
+  }
+  /* Werte aller gezeigten Kennzahlen je Zeitraum, mit Grund fuer jede Luecke (Tabellenansicht zum Diagramm). */
+  function multiTable(model, cu) {
+    var ok = model.series.filter(function (s) { return s.ok; });
+    return el('div', { class: 'fu-table-wrap' }, el('table', { class: 'fu-table fu-mc-table' }, [
+      el('thead', {}, el('tr', {}, [el('th', { scope: 'col', text: model.period === 'quarterly' ? 'Quartal' : 'Jahr' })].concat(ok.map(function (s) { return el('th', { scope: 'col', class: 'r', text: short(s.def.label) }); })))),
+      el('tbody', {}, model.points.slice().reverse().map(function (p) {
+        return el('tr', {}, [el('th', { scope: 'row' }, [p.label, p.end ? el('small', { text: 'bis ' + M.dateDe(p.end) }) : null, p.published ? el('small', { text: '10-K ' + M.dateDe(p.published) }) : null])].concat(ok.map(function (s) {
+          var r = s.rows[p.key], has = r && isNum(r.v);
+          return el('td', { class: 'r fu-num' + (has ? '' : ' is-none') }, [has ? val(s.def, r.v, cu) : r && r.reason ? K.reasonText(r.reason) : '–', has && s.def.snap && r.priceDate ? el('small', { class: 'fu-td-s', text: 'Kurs am ' + M.dateDe(r.priceDate) }) : null]);
+        })));
+      }))]));
+  }
+
+  /* ------------------------------------------------------------ Auswahlblatt (Dialog; unten auf dem iPhone, mittig ab Tablet) */
+  function sheet(title, body, cls) {
+    var d = el('dialog', { class: 'fu-sheet' + (cls ? ' ' + cls : ''), 'aria-label': title });
+    function shut() { if (typeof d.close === 'function' && d.open) d.close(); else gone(); }
+    function gone() { d.remove(); document.documentElement.classList.remove('fu-locked'); }
+    put(d, el('div', { class: 'fu-sheet-in' }, [el('div', { class: 'fu-sheet-head' }, [el('h2', { class: 'fu-sheet-t', text: title }),
+      el('button', { type: 'button', class: 'fu-sheet-x', 'aria-label': 'Schließen', onclick: shut }, glyph('close', 'fu-glyph-sm'))]), body]));
+    d.addEventListener('close', gone);
+    d.addEventListener('click', function (ev) { if (ev.target === d) shut(); });
+    main.append(d); document.documentElement.classList.add('fu-locked'); // in .fu: Tokens und Bausteine gelten auch im Dialog
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    d.shut = shut; return d;
+  }
+  var SUGGEST = ['revenue', 'net_income', 'free_cash_flow', 'operating_margin', 'pe', 'market_cap', 'roic', 'operating_cash_flow'];
+  /* Kennzahl fuer den Verlauf waehlen: Suche, Kategorien, Vorschlaege; nicht vergleichbare Kennzahlen mit Grund. */
+  function pickMetric(co, taken, period, why, onPick) {
+    var b = co.book, q = '', cat = '', d = null, list = el('div', { class: 'fu-pick-list' });
+    var input = el('input', { class: 'fu-input fu-input-sm', type: 'search', enterkeyhint: 'search', placeholder: 'Kennzahl suchen – z. B. „Cashflow“', 'aria-label': 'Kennzahl suchen', autocomplete: 'off', oninput: function () { q = input.value.trim().toLowerCase(); paint(); } });
+    var chips = el('div', { class: 'fu-seg fu-seg-scroll', role: 'group', 'aria-label': 'Kategorie' }, [['', 'Alle']].concat(C.CATS.map(function (c) { return [c.id, c.label]; })).map(function (c) {
+      return el('button', { type: 'button', class: 'fu-seg-b', 'aria-pressed': String(c[0] === cat), 'data-cat': c[0], onclick: function () { cat = c[0]; [].forEach.call(chips.children, function (x) { x.setAttribute('aria-pressed', String(x.dataset.cat === cat)); }); paint(); } }, c[1]);
+    }));
+    var catOf = function (def) { return C.CATS.filter(function (k) { return k.id === def.cat; })[0] || {}; };
+    function pick(id) { d.shut(); onPick(id); }
+    function row(x) {
+      var def = x.def, a = x.a;
+      return el('li', {}, el('button', { type: 'button', class: 'fu-crow fu-pick-row', disabled: a.ok ? null : true, onclick: function () { pick(def.id); } }, [
+        el('span', { class: 'fu-crow-ico', 'data-cat': def.cat }, glyph(catOf(def).icon)),
+        el('span', { class: 'fu-crow-l' }, [el('b', { text: def.label }), el('small', { text: a.ok ? K.unitOf(def).label + (def.snap ? ' · nach jedem Jahresbericht' : period === 'quarterly' ? ' · quartalsweise' : ' · je Geschäftsjahr') : why(a.reason) })]),
+        a.ok ? spark(a.rows) : el('span', { class: 'fu-spark is-empty', 'aria-hidden': 'true' }), a.ok ? glyph('plus', 'fu-glyph-sm') : el('span')]));
+    }
+    function paint() {
+      var all = C.METRICS.filter(function (m) { return taken.indexOf(m.id) < 0; }).map(function (m) { return { def: m, a: K.availability(b, m, period) }; });
+      var match = function (x) { return (!cat || x.def.cat === cat) && (!q || (x.def.label + ' ' + x.def.desc + ' ' + x.def.id).toLowerCase().indexOf(q) >= 0); };
+      var have = all.filter(function (x) { return x.a.ok && match(x); }), off = all.filter(function (x) { return !x.a.ok && match(x); });
+      var sug = !q && !cat ? SUGGEST.map(function (id) { return all.filter(function (x) { return x.def.id === id && x.a.ok; })[0]; }).filter(Boolean).slice(0, 6) : [];
+      var groups = C.CATS.filter(function (c) { return !cat || c.id === cat; }).map(function (c) {
+        var items = have.filter(function (x) { return x.def.cat === c.id; });
+        return items.length ? el('section', {}, [el('h3', { class: 'fu-h3', text: c.label }), el('ul', { class: 'fu-crows' }, items.map(row))]) : null;
+      }).filter(Boolean);
+      put(list, sug.length ? el('div', { class: 'fu-pick-sug' }, [el('h3', { class: 'fu-h3', text: 'Häufig verglichen' }), el('div', { class: 'fu-chips' }, sug.map(function (x) { return el('button', { type: 'button', class: 'fu-chip', onclick: function () { pick(x.def.id); } }, [glyph('plus', 'fu-glyph-sm'), x.def.label]); }))]) : null,
+        groups.length ? groups : notice('Keine vergleichbare Kennzahl gefunden.', q ? 'Anderen Begriff versuchen.' : null),
+        off.length ? more('Nicht vergleichbar (' + off.length + ')', [el('ul', { class: 'fu-crows' }, off.map(row)), el('p', { text: 'Ohne mindestens zwei Werte in dieser Zeitraum-Art oder ohne geprüften Verlauf wird eine Kennzahl nicht in den Verlauf aufgenommen. Es wird nichts geschätzt.' })]) : null);
+    }
+    paint();
+    d = sheet('Kennzahl hinzufügen', el('div', { class: 'fu-pick' }, [el('p', { class: 'fu-note', text: period === 'quarterly' ? 'Quartalsweise: eigenständige Quartale. Bewertung gibt es nur nach Jahresberichten.' : 'Je Geschäftsjahr; Bewertung zum Kurs nach dem Jahresbericht.' }),
+      el('div', { class: 'fu-search fu-search-sm' }, [glyph('search', 'fu-search-ico'), input]), chips, list]), 'fu-sheet-pick');
+    d.repaint = paint; return d;
   }
 
   /* ------------------------------------------------------------ Suche */
@@ -793,6 +969,10 @@
     var period = r.period === 'quarterly' && def.q && !def.snap ? 'quarterly' : 'annual', range = period === 'quarterly' ? '8' : '10';
     var kind = lineFirst(def) ? 'line' : 'bars', cmp = '', cmpData = { median: null, peers: null, group: null, note: null };
     var hasQ = !def.snap && def.q && C.seriesOf(b, def, 'quarterly').filter(function (x) { return isNum(x.v); }).length > 1;
+    // Weitere Kennzahlen im selben Verlauf (engine/compare.js); Farbe je Platz der Auswahl (1–3), die Hauptkennzahl bleibt.
+    var canPlus = !(def.snap && !def.hist), extra = canPlus ? K.cleanSelection(def.id, r.plus) : [], dmode = K.modeFromParam(r.dmode), slot = {}, valState = '';
+    extra.forEach(function (id, i) { slot[id] = i + 1; });
+    var plusRow = el('div', { class: 'fu-plus', role: 'group', 'aria-label': 'Kennzahlen im Verlauf' }), modeRow = el('div', { class: 'fu-mc-mode' });
     var head = el('div', { class: 'fu-mhead' }), chartBox = el('div', { class: 'fu-card' }, skel(190)), table = el('div'), cagrBox = el('div'), facts = el('div'), cmpNote = el('p', { class: 'fu-note' });
     function paintHead() {
       var c = C.current(b, def, ctx), none = !isNum(c.v);
@@ -810,7 +990,7 @@
       return el('p', { class: 'fu-note fu-asof' }, ['LTM = Q' + q0 + ' GJ ' + fy0 + ' bis Q' + m[2] + ' GJ ' + m[1] + (c.end ? ' (bis ' + M.dateDe(c.end) + ')' : '') + '.',
         y ? ' Das Jahresdiagramm zeigt abgeschlossene Geschäftsjahre, zuletzt ' + y.label + (y.end ? ' (bis ' + M.dateDe(y.end) + ')' : '') + ': ' + val(def, y.v, cu) + '.' : '']);
     }
-    var segP = seg('Zeitraum-Art', [['annual', 'Jährlich'], ['quarterly', 'Quartalsweise', !hasQ]], period, function (v) { period = v; range = v === 'quarterly' ? '8' : '10'; if (v === 'quarterly') cmp = ''; paint(); });
+    var segP = seg('Zeitraum-Art', [['annual', 'Jährlich'], ['quarterly', 'Quartalsweise', !hasQ]], period, function (v) { period = v; range = v === 'quarterly' ? '8' : '10'; if (v === 'quarterly') cmp = ''; if (extra.length) syncUrl(); paint(); });
     var segR = seg('Zeitraum', RANGES[period], range, function (v) { range = v; paint(); });
     var segK = seg('Diagrammart', [['bars', 'Balkendiagramm', false, 'income'], ['line', 'Liniendiagramm', false, 'growth']], kind, function (v) { kind = v; if (v === 'bars') cmp = ''; paint(); });
     var segC = seg('Vergleich', [['', 'Ohne'], ['median', 'Branchenmedian', !canMedian], ['peers', 'Wettbewerber']], cmp, pickCmp);
@@ -831,6 +1011,64 @@
       else main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); fn(e.detail ? groupOf(co, e.detail) : null); });
     }
     function rowsNow() { return C.seriesOf(b, def, period); }
+    function whyText(code) { return code === 'LOADING' && valState === 'failed' ? 'Kursreihe gerade nicht verfügbar' : K.reasonText(code); }
+    function syncUrl() {
+      var h = href(t, 'kennzahl', '&k=' + def.id + (period === 'quarterly' ? '&p=q' : '') + (extra.length ? '&plus=' + extra.join('.') + (dmode ? '&d=' + K.MODE_PARAM[dmode] : '') : ''));
+      try { history.replaceState(history.state, '', h); } catch (e) { /* ohne Verlauf: Auswahl gilt nur fuer diese Ansicht */ }
+    }
+    function addExtra(id) {
+      var used = extra.map(function (x) { return slot[x]; });
+      slot[id] = [1, 2, 3].filter(function (k) { return used.indexOf(k) < 0; })[0]; extra.push(id); syncUrl(); paint();
+    }
+    function removeExtra(id) {
+      extra = extra.filter(function (x) { return x !== id; }); delete slot[id]; syncUrl(); paint();
+      var bt = plusRow.querySelector('.fu-plus-b'); if (bt) bt.focus();
+    }
+    function openPick() {
+      var d = pickMetric(co, [def.id].concat(extra), period, whyText, addExtra);
+      if (!b.valuation && valState !== 'failed') valuationOf(co).then(function (v) { if (!v) valState = 'failed'; d.repaint(); });
+    }
+    function paintPlus() {
+      if (!canPlus) return;
+      var full = extra.length >= K.MAX - 1;
+      put(plusRow, extra.length ? el('span', { class: 'fu-pchip is-main' }, [el('i', { class: 'sw m0' }), short(def.label)]) : null,
+        extra.map(function (id) {
+          var d = C.BY_ID[id], a = K.availability(b, d, period), off = !a.ok && a.reason !== 'LOADING';
+          return el('span', { class: 'fu-pchip' + (off ? ' is-off' : ''), title: off ? whyText(a.reason) : null }, [el('i', { class: 'sw m' + slot[id] }), short(d.label),
+            el('button', { type: 'button', class: 'fu-pchip-x', 'aria-label': d.label + ' entfernen', onclick: function () { removeExtra(id); } }, glyph('close', 'fu-glyph-sm'))]);
+        }),
+        el('button', { type: 'button', class: 'fu-plus-b', disabled: full ? true : null, 'aria-haspopup': 'dialog', onclick: openPick }, [glyph('plus', 'fu-glyph-sm'), full ? 'Höchstens ' + K.MAX : 'Kennzahl']));
+    }
+    /* Gemeinsamer Verlauf: Hauptkennzahl und Auswahl auf einer Zeitachse; Darstellung nach Einheiten (compare.js#modes). */
+    function multiBox() {
+      var defs = [def].concat(extra.map(function (id) { return C.BY_ID[id]; }));
+      if (defs.some(function (d) { return d.snap; }) && !b.valuation && !valState) { valState = 'loading'; valuationOf(co).then(function (v) { valState = v ? '' : 'failed'; paint(); }); }
+      var model = K.align(b, defs, period, Number(range)), md = K.modes(model), mode = dmode && md.ok[dmode] ? dmode : md.preferred;
+      var tones = defs.map(function (d, i) { return i ? slot[d.id] : 0; });
+      put(modeRow, seg('Darstellung', [['axes', 'Achsen', !md.ok.axes], ['index', 'Index 100', !md.ok.index], ['split', 'Getrennt', !md.ok.split]], mode, function (v) { dmode = v; syncUrl(); paint(); }));
+      return [multiChart(model, { mode: mode, currency: cu, tones: tones, height: window.innerWidth >= 720 ? 260 : 210, onFull: function () { fullView(model, mode, tones); } }), multiNotes(model, md, mode),
+        more('Alle Werte im Vergleich', [multiTable(model, cu)])];
+    }
+    function multiNotes(model, md, mode) {
+      var out = [], ok = model.series.filter(function (s) { return s.ok; });
+      model.series.forEach(function (s) { if (!s.ok) out.push(s.def.label + ' nicht im Verlauf: ' + whyText(s.reason) + '.'); });
+      if (mode === 'axes' && md.groups.length > 1) out.push('Zwei Achsen: links ' + md.groups[0].label + ', rechts ' + md.groups[1].label + '. Jede Einheit hat ihre eigene Skala – Schnittpunkte der Linien haben keine Bedeutung.');
+      if (mode === 'index') {
+        var ix = md.index, bp = model.points.filter(function (p) { return p.key === ix.base; })[0];
+        out.push('Index: jeder Wert ÷ Wert ' + (bp ? (model.period === 'quarterly' ? 'in ' + bp.label : 'im GJ ' + bp.key) : 'im Basiszeitraum') + ' × 100 – zeigt die Entwicklung, nicht die Höhe. Basis ist der erste Zeitraum, in dem alle indexierten Kennzahlen positiv sind.');
+        Object.keys(ix.excluded).forEach(function (i) { out.push(model.series[i].def.label + ' nicht indexiert: ' + whyText(ix.excluded[i]) + '.'); });
+      }
+      if (mode === 'split') out.push('Jede Kennzahl mit eigener Achse; Zeitachse und Ablesen sind gemeinsam.');
+      if (ok.some(function (s) { return s.def.snap; })) out.push('Bewertung nach jedem Jahresbericht: Kurs = erster Wochenschluss nach Veröffentlichung des 10-K, mit den Zahlen dieses Geschäftsjahres – zu diesem Zeitpunkt waren sie veröffentlicht. Spätere Korrekturen der Jahreszahlen: siehe „Wie wird gerechnet?“.');
+      out.push(model.period === 'quarterly' ? 'Eigenständige Quartale; Q4 = Jahreswert minus neun Monate („berechnet“). Quelle je Wert: jüngste SEC-Meldung mit diesem Wert. LTM wird nicht mit Quartalen gemischt.' : 'Abgeschlossene Geschäftsjahre, je Wert der Berichtszeitraum und das Datum des Jahresberichts. LTM steht nur oben bei der Hauptkennzahl.');
+      out.push('Fehlende Werte bleiben Lücken; nichts wird geschätzt oder verbunden.');
+      return el('ul', { class: 'fu-mc-notes' }, out.map(function (x) { return el('li', { text: x }); }));
+    }
+    function fullView(model, mode, tones) {
+      var box = el('div', { class: 'fu-full-body' });
+      sheet(def.label + ' im Vergleich', box, 'fu-sheet-full');
+      put(box, multiChart(model, { mode: mode, currency: cu, tones: tones, height: Math.max(200, Math.min(520, Math.round(window.innerHeight * 0.82) - 340)) }));
+    }
     function paint() {
       segP.redraw(period); put(segR, RANGES[period].map(function (x) { return el('button', { type: 'button', class: 'fu-seg-b', 'aria-pressed': String(x[0] === range), onclick: function () { range = x[0]; paint(); } }, x[1]); }));
       segK.redraw(kind); segC.redraw(cmp);
@@ -841,11 +1079,15 @@
         put(table); put(facts); [ctrl, cmpWrap, werte].forEach(function (x) { if (histVal && x) x.hidden = true; }); return;
       }
       [ctrl, cmpWrap, werte].forEach(function (x) { if (x) x.hidden = false; });
+      var multi = extra.length > 0;
+      if (multi) cmp = '';
+      cmpWrap.hidden = multi; segK.hidden = multi; modeRow.hidden = !multi; paintPlus();
       var prevRows = {}, yoy = {};
       shown.forEach(function (x) { prevRows[x.key] = C.stepChange(b, def, rows, x.key, 1, period); if (period === 'quarterly') yoy[x.key] = C.stepChange(b, def, rows, x.key, 4, period); });
       var med = cmp === 'median' ? cmpData.median : null, peers = cmp === 'peers' ? cmpData.peers : null;
       // Chart
-      if (kind === 'bars') put(chartBox, bars(shown.map(function (x) { var c = period === 'quarterly' ? yoy[x.key] : prevRows[x.key]; return { key: x.key, label: x.label, short: x.short, v: x.v, gap: !isNum(x.v), extra: isNum(x.v) ? (c && !c.reason ? changeLabel(def, c, cu) + (period === 'quarterly' ? ' ggü. Vorjahresquartal' : ' ggü. Vorjahr') : null) : C.reason(x.reason) }; }), { def: def, currency: cu, height: 190 }));
+      if (multi) put(chartBox, multiBox());
+      else if (kind === 'bars') put(chartBox, bars(shown.map(function (x) { var c = period === 'quarterly' ? yoy[x.key] : prevRows[x.key]; return { key: x.key, label: x.label, short: x.short, v: x.v, gap: !isNum(x.v), extra: isNum(x.v) ? (c && !c.reason ? changeLabel(def, c, cu) + (period === 'quarterly' ? ' ggü. Vorjahresquartal' : ' ggü. Vorjahr') : null) : C.reason(x.reason) }; }), { def: def, currency: cu, height: 190 }));
       else {
         var self = { label: t, cls: 'self', vals: {} }; shown.forEach(function (x) { if (isNum(x.v)) self.vals[x.key] = x.v; });
         var series = [self];
@@ -888,7 +1130,7 @@
       })) : null);
     }
     var related = C.METRICS.filter(function (m) { return m.cat === def.cat && m.id !== def.id; });
-    var ctrl = el('div', { class: 'fu-ctrl fu-ctrl-m' }, [def.snap ? null : segP, el('div', { class: 'fu-ctrl-row' }, [segR, segK])]);
+    var ctrl = el('div', { class: 'fu-ctrl fu-ctrl-m' }, [def.snap ? null : segP, el('div', { class: 'fu-ctrl-row' }, [segR, segK]), canPlus ? plusRow : null, modeRow]);
     var cmpWrap = el('div', { class: 'fu-cmp' }, [segC, cmpNote]), werte = null;
     var out = [compactHead(t, co, def.label, def.desc, [href(t, 'kennzahlen', def.cat ? '&t=' + def.cat : ''), 'Kennzahlen']), head];
     var nowCmp = def.snap ? sec('Im Vergleich', { sub: 'Aktueller Wert zum Schlusskurs' }, [withUniverse(co, function (U) { paintHead(); return valuationContext(co, def, U, ctx); })]) : null;
@@ -1292,6 +1534,7 @@
     var r = M.parseRoute(location.hash);
     var keepScroll = r.view === 'company' && main.getAttribute('data-ticker') === r.ticker && main.getAttribute('data-sub') === (r.sub || '') && r.sub;
     if (!keepScroll) window.scrollTo(0, 0);
+    document.documentElement.classList.remove('fu-locked');
     main.removeAttribute('data-view');
     if (r.view !== 'company') { main.removeAttribute('data-ticker'); main.removeAttribute('data-fu-source'); }
     main.setAttribute('data-sub', r.sub || '');
