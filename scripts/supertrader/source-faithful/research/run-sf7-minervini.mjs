@@ -6,7 +6,10 @@
  *    (completion/sf6-run-facts.mjs, run 39746264325); otherwise the run fails;
  *  - the pre-registered 7.0 SEPA variants ALT-SEPA-FLAT-BASE, ALT-SEPA-TT6-25 and ALT-SEPA-RS-LINE, each against REF trade
  *    by trade (Power Play: REF and diagnostics only; the B12 / B03 VCP question resolves to the reference reading);
- *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only).
+ *  - diagnostics on the REF trades: largest-decline sell signal and half-average-gain stop rule (counts only);
+ *  - the pre-registered research exit variants of owner decision E7-7 (research/minervini-sf7-exits.mjs, both
+ *    strategies): REF configuration plus one exit rule, run by research/minervini-sf7-exit-execution.mjs. The run fails
+ *    unless that engine copy without a rule reproduces the REF ledger; each variant is compared with REF trade by trade.
  * Public: counts and hashes. Sealed (owner key): metrics per run. No variant is chosen by any result.
  *
  *   node scripts/supertrader/source-faithful/research/run-sf7-minervini.mjs --snapshot sts1-<id> --accounting research-v1 --out <dir> [--smoke-snapshot] [--limit N]
@@ -23,13 +26,15 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { researchCodeSha256 } from './run-sf4-lifecycle.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
+import { SF7_EXIT_VERSION, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256 } from './minervini-sf7-exits.mjs';
+import { runMinerviniLifecycleWithExitRule } from './minervini-sf7-exit-execution.mjs';
 import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck, postBreakoutEvidence, postBreakoutTally, benchIndex } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.1.0';
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.2.0'; // 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
-const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs'];
+const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs'];
 export function sf7CodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of SF7_FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -61,8 +66,24 @@ export function diffTrades(ref, alt) {
   return { unchanged: same, changed, removedVsRef: removed, addedVsRef: added };
 }
 
-/** REF + 7.0 variants + diagnostics for one dataset. */
-export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false } = {}) {
+/**
+ * Trade-level comparison of an exit variant against REF: like diffTrades, but a trade counts as unchanged only if its
+ * whole sell sequence (date, shares, reason of every sale) is identical, so a partial sale with the same final exit is
+ * "changed". Counts only.
+ */
+export function diffTradeSells(ref, alt) {
+  const sells = (t) => JSON.stringify((t.events ?? []).filter((e) => e.type === 'SELL').map((e) => [e.date, e.shares, e.reason]));
+  const a = new Map(ref.map((t) => [tradeKey(t), t])), b = new Map(alt.map((t) => [tradeKey(t), t]));
+  let same = 0, changed = 0, removed = 0, added = 0;
+  for (const [k, t] of a) { const u = b.get(k); if (!u) removed++; else if (u.shares === t.shares && u.exitDate === t.exitDate && u.exitReason === t.exitReason && sells(u) === sells(t)) same++; else changed++; }
+  for (const k of b.keys()) if (!a.has(k)) added++;
+  return { unchanged: same, changed, removedVsRef: removed, addedVsRef: added };
+}
+
+const sellReasons = (r) => tally(r.ledger.filter((x) => x.side === 'SELL'), (x) => x.reason);
+
+/** REF + 7.0 variants + diagnostics + E7-7 exit variants for one dataset. */
+export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false, exitVariants = SF7_EXIT_VARIANTS } = {}) {
   const pub = { version: SF7_MINERVINI_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
@@ -90,6 +111,23 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
       ps.variants[v.id] = { source: v.source, indexChanges: idx.counts.sf7, ...publicOf(r), vsRef: diffTrades(ref.trades, r.trades) };
       ss.variants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
       log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.variants[v.id].vsRef)}`);
+    }
+    // E7-7 research exit variants: REF configuration + one pre-registered exit rule (never a reference, never an original rule)
+    const ev = exitVariants.filter((x) => x.strategies.includes(strategy));
+    if (!ev.length) continue;
+    const copy = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, exitRule: null, from, to });
+    const copyLedger = sha(copy.ledger), copyTrades = publicOf(copy).tradesSha256;
+    ps.exitEngineIdentity = { ledgerEqualsRef: copyLedger === ps.ref.ledgerSha256, tradesEqualRef: copyTrades === ps.ref.tradesSha256 };
+    log(`${strategy} exit engine copy without rule: ledger ${ps.exitEngineIdentity.ledgerEqualsRef ? 'EQUAL' : 'DIFFERENT'}`);
+    if (!ps.exitEngineIdentity.ledgerEqualsRef || !ps.exitEngineIdentity.tradesEqualRef) throw new Error(`EXIT_ENGINE_COPY_NOT_REF:${strategy}`);
+    ps.exitVariants = {}; ss.exitVariants = {};
+    const stage2 = new Map(); // Stage 2 start per (security, setup close), shared by the variants (pure function of the bars)
+    for (const v of ev) {
+      const r = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: v.config, exitRule: v.exitRule, stage2, from, to });
+      if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
+      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades) };
+      ss.exitVariants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
+      log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.exitVariants[v.id].vsRefSells)}`);
     }
   }
   return { pub, sealed };
@@ -126,7 +164,7 @@ async function main() {
   if (LIMIT) pit.segs = pit.segs.slice(0, LIMIT);
   // same input construction as run-sf4-lifecycle (sec-pit attached; the lifecycle does not use it as a gate)
   const dataset = datasetFromPit(pit); attachSecPit(dataset, secPit);
-  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf7-minervini-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, researchCodeSha256: researchCodeSha256(), variantRegistrySha256: variantRegistrySha256(), sf7VariantRegistrySha256: sf7VariantRegistrySha256(), sf7CodeSha256: sf7CodeSha256(), sf7ExitVersion: SF7_EXIT_VERSION, sf7ExitRegistrySha256: sf7ExitRegistrySha256(), runner: SF7_RUNNER_VERSION, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const full = !LIMIT && !smoke;
   const r = sf7Part(dataset, { log, requireAuthoritativeRef: full });
   const pub = { schema: 'supertrader-sf7-minervini-public-1.0.0', receipt, minervini: r.pub };
