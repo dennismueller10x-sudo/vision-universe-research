@@ -61,7 +61,10 @@ class SuccessorMergeTest(unittest.TestCase):
             self.assertTrue(entry["predecessors"] and all(len(p) == 10 for p in entry["predecessors"]))
             self.assertIn("8-K12B", entry["evidence"])
         self.assertEqual(consumer.load_successor_issuers(ROOT / "quant/config/sec-successor-issuers.json"),
-                         {"0002115436": ["0000034088"]})
+                         {"0002115436": ["0000034088"],    # ExxonMobil (XOM)
+                          "0002119322": ["0001438231"],    # Digimarc (DMRC)
+                          "0002058897": ["0001071371"],    # Grupo Cibest / Bancolombia (CIB)
+                          "0001973832": ["0001067428"]})   # AngloGold Ashanti (AU)
         with tempfile.TemporaryDirectory() as tmp:
             self.assertEqual(consumer.load_successor_issuers(Path(tmp, "missing.json")), {})
 
