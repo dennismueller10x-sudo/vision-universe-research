@@ -134,7 +134,6 @@ jobs:
         env:
           PLAYWRIGHT_PATH: /tmp/fu-qa-deps/node_modules/playwright
         run: |
-          set -euo pipefail
           mkdir -p /tmp/fu-evidence
           node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/fu-release" --port=8765 > /tmp/fu-evidence/server.log 2>&1 &
           server_pid=$!
