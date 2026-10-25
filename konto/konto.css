@@ -1,0 +1,98 @@
+/* VISION UNIVERSE — Konto. Nutzt ausschliesslich die gemeinsamen --vu-*
+   Tokens aus /assets/site-navigation.css (Hell/Dunkel, Lime-Akzent). */
+.ka{--ka-max:880px;--ka-narrow:440px;box-sizing:border-box;width:100%;max-width:var(--ka-max);margin:0 auto;
+  padding:calc(var(--vu-space-4) + 8px) max(var(--vu-gutter),env(safe-area-inset-right)) var(--vu-space-6) max(var(--vu-gutter),env(safe-area-inset-left));
+  color:var(--vu-text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:70dvh}
+.ka *,.ka *::before,.ka *::after{box-sizing:border-box}
+body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
+.ka--narrow{max-width:calc(var(--ka-narrow) + 2 * var(--vu-gutter))}
+.ka-eyebrow{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--vu-accent-text)}
+.ka-title{margin:0 0 12px;font-size:clamp(30px,7vw,44px);line-height:1.06;letter-spacing:-.035em;font-weight:700}
+.ka-lead{margin:0 0 var(--vu-space-4);color:var(--vu-text-secondary);font-size:16px;line-height:1.6;max-width:60ch}
+.ka-card{background:var(--vu-surface);border:1px solid var(--vu-line);border-radius:var(--vu-radius);padding:var(--vu-space-3)}
+@media(min-width:761px){.ka-card{padding:var(--vu-space-4)}}
+.ka-card+.ka-card,.ka-section+.ka-section{margin-top:var(--vu-space-3)}
+.ka-card h2,.ka-section h2{margin:0 0 6px;font-size:19px;letter-spacing:-.01em}
+.ka-card p{line-height:1.55}
+.ka-muted{color:var(--vu-muted);font-size:14px}
+.ka-grid{display:grid;gap:var(--vu-space-3)}
+@media(min-width:761px){.ka-grid--2{grid-template-columns:1fr 1fr}.ka-grid--3{grid-template-columns:repeat(3,1fr)}}
+
+/* Formulare: 16px gegen den iOS-Zoom, 48px Bedienhoehe */
+.ka-form{display:grid;gap:14px}
+.ka-field{display:grid;gap:6px}
+.ka-field label,.ka-legend{font-size:14px;font-weight:600}
+.ka-input,.ka-select{font:inherit;font-size:16px;min-height:48px;width:100%;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--vu-line-strong);background:var(--vu-elevated);color:var(--vu-text);-webkit-appearance:none;appearance:none}
+.ka-input:focus-visible,.ka-select:focus-visible,.ka-btn:focus-visible,.ka-check input:focus-visible,.ka-link:focus-visible,.ka-seg button:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+.ka-input[aria-invalid=true]{border-color:var(--vu-down)}
+.ka-hint{font-size:13px;color:var(--vu-muted);line-height:1.45;margin:0}
+.ka-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}
+.ka-check input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--vu-accent-text)}
+.ka-pw{position:relative}
+.ka-pw .ka-input{padding-right:96px}
+.ka-pw button{position:absolute;right:6px;top:6px;min-height:36px;padding:0 12px;border:0;border-radius:999px;background:transparent;
+  color:var(--vu-text-secondary);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+
+.ka-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.ka-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 22px;border-radius:var(--vu-radius-control);
+  border:1px solid transparent;font:inherit;font-size:15px;font-weight:700;text-decoration:none;cursor:pointer;
+  background:var(--vu-accent);color:var(--vu-on-accent)}
+.ka-btn--secondary{background:transparent;color:var(--vu-text);border-color:var(--vu-line-strong)}
+.ka-btn--danger{background:transparent;color:var(--vu-down);border-color:currentColor}
+.ka-btn--block{width:100%}
+.ka-btn[disabled],.ka-btn[aria-busy=true]{opacity:.6;cursor:wait}
+.ka-link{color:var(--vu-accent-text);font-weight:600;text-underline-offset:3px}
+.ka-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:var(--vu-space-3);font-size:14px}
+
+/* Meldungen */
+.ka-notice{border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.5;border:1px solid var(--vu-line);background:var(--vu-elevated)}
+.ka-notice[data-kind=error]{border-color:var(--vu-down);color:var(--vu-down)}
+.ka-notice[data-kind=ok]{border-color:var(--vu-accent-text);color:var(--vu-text);background:var(--vu-accent-soft)}
+.ka-notice[data-kind=info]{color:var(--vu-text-secondary)}
+.ka-notice:empty{display:none}
+
+/* Konto-Uebersicht */
+.ka-kv{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:8px 16px;margin:12px 0 0;font-size:15px}
+.ka-kv dt{color:var(--vu-muted)}
+.ka-kv dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.ka-badge{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;
+  background:var(--vu-accent-soft);color:var(--vu-accent-text)}
+.ka-badge[data-tone=warn]{background:transparent;border:1px solid var(--vu-warn);color:var(--vu-warn)}
+.ka-badge[data-tone=muted]{background:transparent;border:1px solid var(--vu-line-strong);color:var(--vu-muted)}
+.ka-nav{display:flex;gap:8px;overflow-x:auto;margin:0 0 var(--vu-space-3);padding-bottom:4px;scrollbar-width:none}
+.ka-nav a{flex:none;min-height:40px;display:inline-flex;align-items:center;padding:0 16px;border-radius:999px;border:1px solid var(--vu-line-strong);
+  color:var(--vu-text);text-decoration:none;font-size:14px;font-weight:600}
+.ka-nav a[aria-current=page]{background:var(--vu-text);color:var(--vu-bg);border-color:var(--vu-text)}
+
+/* Tarife */
+.ka-seg{display:inline-flex;padding:4px;border-radius:999px;border:1px solid var(--vu-line-strong);margin-bottom:var(--vu-space-3)}
+.ka-seg button{min-height:40px;padding:0 18px;border:0;border-radius:999px;background:transparent;color:var(--vu-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.ka-seg button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+.ka-plan{display:flex;flex-direction:column;gap:12px}
+.ka-plan[data-current=true]{border-color:var(--vu-accent-text)}
+.ka-price{font-size:32px;font-weight:700;letter-spacing:-.03em;margin:0}
+.ka-price small{font-size:14px;font-weight:500;color:var(--vu-muted)}
+.ka-features{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px}
+.ka-features li{display:flex;gap:8px;line-height:1.45}
+.ka-features li::before{content:"";flex:none;width:8px;height:8px;margin-top:6px;border-radius:2px;background:var(--vu-accent)}
+.ka-plan .ka-actions{margin-top:auto}
+
+/* Rechnungen */
+.ka-table-wrap{overflow-x:auto;margin-top:12px}
+.ka-table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
+.ka-table th,.ka-table td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--vu-line)}
+.ka-table th{color:var(--vu-muted);font-weight:600}
+.ka-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+.ka-skeleton{min-height:120px;border-radius:var(--vu-radius);background:linear-gradient(90deg,var(--vu-surface),var(--vu-line),var(--vu-surface));
+  background-size:200% 100%;animation:ka-shimmer 1.4s ease-in-out infinite}
+@keyframes ka-shimmer{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.ka-skeleton{animation:none}}
+[hidden]{display:none!important}
+.ka-fieldset{border:0;padding:0;margin:0;min-width:0}
+.ka-notice:not(:empty){margin-bottom:var(--vu-space-3)}
+ul.ka-hint{list-style:none;padding:0;display:grid;gap:2px}
+ul.ka-hint li[data-ok=true]{color:var(--vu-accent-text)}
+.ka-select{padding-right:40px;background-image:linear-gradient(45deg,transparent 50%,var(--vu-muted) 50%),linear-gradient(135deg,var(--vu-muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 21px,calc(100% - 15px) 21px;background-size:5px 5px;background-repeat:no-repeat}
