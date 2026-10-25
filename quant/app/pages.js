@@ -85,7 +85,17 @@
     }).catch(function () { return {}; });
   }
   var REGIME = { BROAD_WEAKNESS: "Breite Schwäche", BROAD_STRENGTH: "Breite Stärke", NARROW_LEADERSHIP: "Schmale Führung", MIXED: "Gemischte Lage" };
-  var STRATEGY_ART = function (id) { return global.QXStock && global.QXStock.strategyArt ? global.QXStock.strategyArt(id) : null; };
+  /* Bildwelt der Anlagestile: dieselben Fotografien wie Discovers Perspektiven, je nach Sinn zugeordnet. Steht hier, wo
+     sie gebraucht wird (Strategien) - die Aktienseite liegt im Release in einem eigenen Paket (QUANT_PACKS). */
+  var STRATEGY_ART = {
+    "quality-compounder": "langfristige-compounder", "momentum-leader": "momentum-leader", "quality-momentum": "stabile-aufwaertstrends",
+    "garp": "qualitaet-zum-preis", "future-leader": "umsatz-waechst-stark", "defensive-quality": "starke-bilanz-wachstum",
+    "value-momentum": "comeback", "earnings-revision-leader": "gewinne-beschleunigen"
+  };
+  function strategyArt(id) {
+    var key = STRATEGY_ART[id] || STRATEGY_ART[String(id || "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")];
+    return key ? "/assets/discover-perspektiven/" + key + ".jpeg" : null;
+  }
 
   /* ================================================================ HOME
      Nach den Tafeln "Quant Home & Einstieg" und "Neuer Aufbau": Hero mit
@@ -747,7 +757,7 @@
       el("p", { class: "q-hero-lead v2-lead", text: "Jeder Anlagestil sucht eine bestimmte Art von Unternehmen. Quant prüft täglich, welche Aktien alle Bedingungen erfüllen – für jede Aktie mit denselben Regeln." }),
       X.more("Was „passt heute“ heißt", function () { return el("p", { class: "q-intro-note", text: "„Passt heute“ heißt: die Bedingungen sind heute erfüllt. Wie sich ein Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – neue Treffer meldet der Radar." }); })]));
     main.append(el("div", { class: "v2-collection-links qx-strats" }, list.map(function (p) {
-      var ix = byId[p.profileId], art = STRATEGY_ART(p.profileId);
+      var ix = byId[p.profileId], art = strategyArt(p.profileId);
       var blocked = ix && ix.availability && ix.availability.state !== "AVAILABLE";
       var countText = blocked || !ix || typeof ix.count !== "number" ? "Derzeit nicht prüfbar: " + VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.") : ix.count.toLocaleString("de-DE") + " Aktien erfüllen heute alle Bedingungen";
       return el("a", { class: "v2-collection-link qx-strat", href: X.routes.strategy(p.profileId), dataset: { profile: p.profileId } }, [
@@ -775,7 +785,7 @@
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.strategies(), text: "← Strategien" }));
     if (!p) { main.append(el("h1", { class: "qx-h1", text: "Strategie nicht gefunden" }), X.notice("Unbekannte Strategie", "Diese Strategie gibt es in der veröffentlichten Methodik nicht.")); return; }
     document.title = p.label + " – Quant-Strategie · Vision Universe®";
-    var art = STRATEGY_ART(p.profileId);
+    var art = strategyArt(p.profileId);
     if (art) main.append(el("div", { class: "v2-collection-hero qx-strat-hero" }, [el("img", { src: art, alt: "", width: "1254", height: "1254", decoding: "async" })]));
     main.append(el("h1", { class: "qx-h1", text: p.label }), el("p", { class: "v2-lead", text: p.plain }));
     main.append(el("details", { class: "v2-rule qx-rules-box", open: true }, [el("summary", { text: "Welche Bedingungen gelten?" }),

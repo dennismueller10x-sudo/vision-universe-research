@@ -103,6 +103,21 @@ export function goldenChartView(payload){
  view.bars=payload.bars.map(b=>{const o={};for(const k of ['date','close','splitFactor'])if(b&&Object.hasOwn(b,k))o[k]=b[k];return o;});
  return view;
 }
+/* PAKETE JE ANSICHT (Performance, 25.10.2026). Code, den nur EINE Ansicht von Quant ausfuehrt, steht nicht im Buendel,
+   das jede Ansicht laedt - die Startseite trug ihn sonst mit (Ressourcen-Budget home: 1.819.983 von 1.820.000 Bytes).
+   Je Paket die unveraenderten Quelldateien in der Reihenfolge von quant/index.html; quant/app/app.js laedt das Paket der
+   Route (globalThis.VUQuantPacks, ueber loadScript mit Versionsmarke und Release-Waechter). Lokal und im Repository stehen
+   die Skripte weiter einzeln in der Seite, dann gibt es kein Paket. Das Paket der Aktienseite beginnt mit dem FX-Paket:
+   die Seite laedt eine Datei statt zwei (Anfrage-Budget stock). Aufgenommen wird nur, was keine andere Ansicht, kein
+   Nachlade-Skript (Chartbild, Evidenz, Backtesting) und kein Gast (Elliott) braucht - quant/tests/release-packs.test.mjs.
+   Nicht hier: assets/stock-navigator.js und quant/engines/technical/ti/explain.js (Chartbild), company-intelligence/**
+   (die Auslieferung von Company Intelligence schreibt in das Buendel), Engines, die die Produkt-API beim Laden bindet. */
+export const QUANT_PACKS=Object.freeze({
+ stock:Object.freeze(['quant/engines/series-sampling.js','quant/api/live-relay-client.js','quant/engines/journey-shape.js',
+  'discover/ui/live-hub.js','discover/ui/microchart.js','assets/vu-chart.js','quant/app/chart.js','quant/app/page-stock.js']),
+ tools:Object.freeze(['quant/ui/charts.js','quant/ui/technical-chart.js','quant/app/page-tools.js']),
+ method:Object.freeze(['quant/app/page-method.js'])
+});
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^brand-media\//.test(path))return false; // unveroeffentlichte Markenmedien: nie ausliefern
@@ -230,7 +245,9 @@ export async function buildRelease({root,output}){
  // Concatenate classic scripts in their existing document order. Original
  // modules remain available to every other workspace, including Discover.
  // The canonical Quant product lives at /quant/ (quant/index.html).
- async function bundlePage(page,bundlePath,tail=''){
+ // packs: {Name: [Pfade]} - diese Skripte gehen nicht ins Buendel, sondern in quant/app/pack-<Name>.js (QUANT_PACKS);
+ // lead: was einem Paket vorangeht (FX-Paket der Aktienseite). Ein Paket ohne eines seiner Skripte in der Seite entfaellt.
+ async function bundlePage(page,bundlePath,tail='',packs={},lead={}){
   const html=await readFile(resolve(root,page),'utf8');
   const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
   // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
@@ -238,11 +255,22 @@ export async function buildRelease({root,output}){
   // nur die externen klassischen Skripte. Alles andere bleibt unzulaessig.
   const inline=(html.match(/<script>(?:(?!<\/script>)[\s\S])*<\/script>/g)||[]).length;
   if(!tags.length||tags.length+inline!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
-  const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[];
-  for(const tag of tags){const p=tag[1].startsWith('/')?tag[1].slice(1):dir+tag[1];
+  const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[],linked=tags.map(t=>t[1].startsWith('/')?t[1].slice(1):dir+t[1]);
+  const packOf={};for(const [name,list] of Object.entries(packs))if(list.every(p=>linked.includes(p)))for(const p of list)packOf[p]=name;
+  const packChunks={};
+  for(const p of linked){
    if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
-   chunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
+   const chunk='/* '+p+' */\n'+await readFile(resolve(root,p),'utf8');
+   if(packOf[p])(packChunks[packOf[p]]||=(lead[packOf[p]]?[lead[packOf[p]]]:[])).push(chunk);else chunks.push(chunk);
   }
+  const packed={};
+  for(const [name,list] of Object.entries(packChunks)){
+   const text=list.join('\n;\n'),src='/quant/app/pack-'+name+'.js';
+   await writeFile(resolve(output,src.slice(1)),text);
+   packed[name]={src,v:createHash('sha256').update(text).digest('hex').slice(0,16)};
+  }
+  /* Die Marke jedes Pakets steht im Buendel: aendert sich ein Paket, aendert sich die Versionsmarke des Buendels mit. */
+  if(Object.keys(packed).length)chunks.push('globalThis.VUQuantPacks='+JSON.stringify(packed)+';');
   if(tail)chunks.push(tail);
   const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
   await writeFile(resolve(output,bundlePath),bundle);
@@ -267,14 +295,15 @@ export async function buildRelease({root,output}){
  if(withPack)for(const p of FX_PACK)packChunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
  const packData=!withPack?null:{license:JSON.parse(await readFile(resolve(root,'quant/config/fx-license.json'),'utf8')),
   series:[JSON.parse(await readFile(resolve(root,'quant/data/market/fx/ecb/EURUSD.json'),'utf8'))]};
- let packTail='';
+ let packTail='',fxLead=null;
  if(withPack){
   packChunks.push('(function(g){var F=g.VUFx=g.VUFx||{};F.PACK='+JSON.stringify(packData)+';})(typeof globalThis!=="undefined"?globalThis:this);');
   const pack=packChunks.join('\n;\n'),packVersion=createHash('sha256').update(pack).digest('hex').slice(0,16);
   await writeFile(resolve(output,'quant/fx-pack.js'),pack);
   packTail='globalThis.VUFxPack="/quant/fx-pack.js?v='+packVersion+'";';
+  fxLead=pack;
  }
- const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js',packTail);
+ const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js',packTail,QUANT_PACKS,fxLead?{stock:fxLead}:{});
  // Former entries (/vu2/, /Quant/) are one hop to the canonical product.
  // The query string travels along; /quant/ maps ?view=... to its routes.
  const legacyEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><link rel="canonical" href="/quant/"><title>Vision Universe® Quant</title><script>location.replace("/quant/"+location.search+location.hash)</script></head><body><p><a href="/quant/">Vision Universe® Quant öffnen</a></p></body></html>';
