@@ -309,3 +309,32 @@ Tests: [`sf-sf7-ca-edgar.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-edgar
 - kumulatives Ledger;
 - Plan ohne Anfrage und Stopp vor dem ersten Abruf;
 - Hash-Pins von 1.4.2, 1.4.1 und 1.4.0.
+
+## Abschluss V4-D1 (Eigentümerentscheidung 25.10.2026)
+
+**Ergebnis:** Die Prüfung der verfügbaren kostenlosen Daten ist **im untersuchten Umfang ausgeschöpft**. Untersucht wurden:
+- die Tiingo-Felder des eingefrorenen Snapshots;
+- die SEC-Aktienzahlen (sec-pit r14);
+- die EDGAR-Einreichungsindizes;
+- die Hauptdokumente und die Exhibits EX-3.1, EX-3.2 und EX-99.1 derselben CIK im vorregistrierten Fenster um jede Sitzung.
+
+Die Regelsätze 1.3.0 bis 1.4.3 sind jeweils vor ihrem Lauf gepinnt. Insgesamt sind es 877 kostenfreie, gedrosselte Anfragen.
+
+**Keine der 83 referenzexponierten DQ-K5-Sitzungen ist belegt.**
+
+Das ist **kein Beweis**, dass es außerhalb dieses Umfangs keine Belege gibt. Nicht untersucht sind:
+- die EDGAR-Volltextsuche;
+- Einreichungen außerhalb des Fensters;
+- weitere Exhibit-Typen;
+- Unterlagen anderer Registranten;
+- Börsen- und FINRA-Mitteilungen;
+- lizenzierte Anbieter.
+
+Für die 11 Sitzungen ohne CIK war die Prüfung von vornherein nicht möglich.
+
+**Was weiter gilt:**
+- **Quarantäne:** Sie bleibt aktiv. Alle 83 Sitzungen bleiben gesperrt, das CA-Overlay bleibt leer.
+- **Klassifikation:** Unbelegte Kapitalmaßnahmen werden nie als bestätigte Splits klassifiziert. Kandidaten einer echten Kursbewegung werden nie nachträglich zu Splits; das Laufgate `EDGAR_GENUINE_CANDIDATE_CHANGED` und die Tests `SF7-EDGAR-GENUINE*` sichern das ab.
+- **Status:** CC-5 und sämtliche Zertifizierungsstatus bleiben unverändert. 0 von 13 Strategien sind Zertifizierungskandidaten, alle 13 sind `LIVE_NOT_APPROVED`.
+- **Weitere Suchrunden:** Es gibt keine weiteren EDGAR-Exhibit-Runden. Die restlichen 346 Anfragen im Ledger sind keine Freigabe.
+- **Weg nach vorn:** Weiter kommt man nur mit einer lizenzierten Quelle für Kapitalmaßnahmen nach gesonderter Kostenfreigabe oder mit der Entscheidung, die Quarantäne als Dauerzustand zu führen.
