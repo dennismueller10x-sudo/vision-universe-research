@@ -1,6 +1,6 @@
 {
  "schema": "supertrader-sf7-completion-1.0.0",
- "version": "sf7-completion-matrix-1.1.0",
+ "version": "sf7-completion-matrix-1.2.0",
  "basis": {
   "readinessCriteria": "sf6-readiness-criteria-1.2.0",
   "readinessSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342"
@@ -12,7 +12,8 @@
   "PR902": "Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution)",
   "INV": "docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md",
   "EXE": "docs/SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md",
-  "CA": "docs/SUPERTRADER_7_V4D1_RESOLUTION.md"
+  "CA": "docs/SUPERTRADER_7_V4D1_RESOLUTION.md",
+  "EDGAR": "Draft-PR E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.0, Lauf 40185801366 sf7-ca-edgar): 83 Sitzungen, 303 Anfragen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md"
  },
  "statusChange": "Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED",
  "candidates": [
@@ -66,6 +67,7 @@
    "evidence": [
     "PR898",
     "PR902",
+    "EDGAR",
     "PR911"
    ]
   },
@@ -119,6 +121,7 @@
    "evidence": [
     "PR898",
     "PR902",
+    "EDGAR",
     "PR911"
    ]
   },
@@ -171,7 +174,8 @@
    "next": "Eigentümerentscheidungen zu den manuellen Darvas-Regeln; V4-D1-Rest",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -223,7 +227,8 @@
    "next": "PIT-Branchenhistorie; Eigentümerentscheidung, ob V4-D1-Exposition 0 für CC-5 genügt",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -275,7 +280,8 @@
    "next": "PIT-Branchenhistorie; V4-D1-Rest",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -330,6 +336,7 @@
     "INV",
     "PR898",
     "PR902",
+    "EDGAR",
     "PR911"
    ]
   },
@@ -384,6 +391,7 @@
     "PR899",
     "INV",
     "PR902",
+    "EDGAR",
     "PR911"
    ]
   },
@@ -436,7 +444,8 @@
    "next": "Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -561,7 +570,8 @@
    "next": "Quelle für die Stopregel",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -613,7 +623,8 @@
    "next": "Eigentümerentscheidungen zu den manuellen Regeln; V4-D1-Rest",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   },
   {
@@ -665,7 +676,8 @@
    "next": "Primärquelle für Trailing / Größe",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "EDGAR"
    ]
   }
  ]
