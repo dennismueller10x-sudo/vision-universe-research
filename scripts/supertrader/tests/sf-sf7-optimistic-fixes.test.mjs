@@ -16,6 +16,9 @@ import { SF7_MINERVINI_VARIANTS, SF7_MINERVINI_SUPERSEDED, sf7MinerviniVariantsS
 const PINNED_SF7_MINERVINI_VARIANTS = '496cad56c7eb71a3eef3e675679ecfbe02896f0997e464eab52b8139c0928b04';
 // produced with the code BEFORE the fix (claude/supertrader-7-execution @ 8e66e392): reference readings unchanged
 const PRE_FIX_TURTLE_READINGS = '2e4fe04136ae29bbdd4c04789f525954e7cf8d4381752af35b08a2e395e99746';
+// the same, over every scenario option of SCENARIO_SET plus correlation groups (32 runs; review #911, produced with the
+// pre-fix code from git archive 8e66e392 and with this code: identical)
+const PRE_FIX_TURTLE_ALL_OPTIONS = '88b3230614dbb8b1331f7fa534298a4d95ca09f586b02355ee39d4c2b69ac102';
 const PRE_FIX_MINERVINI_VARIANTS = '27b9efd105874b02ebc320806f10f9d59de0d06896650802a540641f94cef868';
 
 const sha = (x) => crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
@@ -143,3 +146,31 @@ function synthetic(n = 30, len = 700, seed0 = 101) {
   }
   return { calendar: secs[0].bars.map((b) => b.date), securities: secs };
 }
+
+test('SF7-D3-TURTLE-SHORT-AND-TIE: S1-Filter Short-Seite (Eroeffnung unter dem Kanal, Hoch durch den Stop) sicher; Schluss genau auf dem Level zaehlt als sicher (Review #911)', () => {
+  // short breakout filled at the open (9.0 below the 20-day low 9.9), high 10.0 through the short stop: certain loser
+  const b = flat(70); b.push(bar(70, 9.0, 10.0, 8.9, 9.5)); b.push(bar(71, 9.5, 9.6, 9.4, 9.5));
+  const run = (entryBarOrder) => { const t = createBreakoutTracker(b, turtleN(b), undefined, { entryBarOrder }); for (let i = 1; i <= 70; i++) { t.resolve(i); t.start(i); } return t; };
+  const fix = run('OPTIMISTIC_CERTAIN_RULE');
+  assert.equal(fix.outcome(), 'LOSER'); assert.equal(fix.counts.ENTRY_BAR_RESOLVED_CERTAIN, 1);
+  assert.equal(run('OPTIMISTIC').outcome(), 'OPEN'); assert.equal(run('PESSIMISTIC').outcome(), 'LOSER');
+  // close exactly on the 20-day exit level: certain (<=); one tick above: ambiguous, held like OPTIMISTIC
+  const level = tur(entryBar(10.05, 10.6, 9.0, 9.5), 'OPTIMISTIC_CERTAIN_RULE').ledger[1].price;
+  assert.deepEqual(rows(tur(entryBar(10.05, 10.6, 9.0, level), 'OPTIMISTIC_CERTAIN_RULE')).slice(1), [[day(70), 'SELL', 1, 9.89, 'EXIT_20D_SAME_BAR_CERTAIN']]);
+  const above = entryBar(10.05, 10.6, 9.0, level + 1e-9);
+  assert.equal(tur(above, 'OPTIMISTIC_CERTAIN_RULE').positionTrades[0].exitDate > day(70), true);
+  assert.deepEqual(rows(tur(above, 'OPTIMISTIC_CERTAIN_RULE')), rows(tur(above, 'OPTIMISTIC')));
+});
+
+test('SF7-D3-TURTLE-ALL-OPTIONS: PESSIMISTIC und OPTIMISTIC ueber alle Szenario-Optionen und Korrelationsgruppen bitgleich mit dem Code vor der Behebung (Review #911)', () => {
+  const d = synthetic(), out = [], groupsOf = (id) => ({ closely: 'C', loosely: 'L' + (Number(id.slice(1)) % 2) });
+  const OPTS = [{}, { scenario: 'S1_MINUS_30' }, { scenario: 'S2_DISTRESS_ZERO' }, { scenario: 'S1_MINUS_30', slippageBps: 20, commissionBps: 2 }, { dataEventScenario: 'UNKNOWN_PROCEEDS_MINUS_30_PERCENT' }, { failsafeExit: '20D' }, { openBreakout: 'TAKE' }, { groupsOf }];
+  let corr = 0;
+  for (const o of OPTS) for (const system of ['S1', 'S2']) for (const entryBarOrder of ['PESSIMISTIC', 'OPTIMISTIC']) {
+    const r = runTurtle(d, { system, universe: OPEN_UNIVERSE, from: sday(100), entryBarOrder, ...o });
+    if (o.groupsOf) corr += r.counts.rejectCorrelationLimit6 + r.counts.rejectCorrelationLimit10;
+    out.push([Object.keys(o).join(','), system, entryBarOrder, r.ledger, r.counts, r.filterCounts]);
+  }
+  assert.equal(sha(out), PRE_FIX_TURTLE_ALL_OPTIONS);
+  assert.equal(corr, 265, 'the correlation-group runs exercise the limits');
+});

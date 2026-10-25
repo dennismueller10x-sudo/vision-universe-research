@@ -132,3 +132,22 @@ Die bisherigen Charakterisierungstests in `sf-sf7-execution.test.mjs` heißen je
 | LOW | Schlussregel: Der Tagesschluss ist der Kurs der Schlussauktion. Ob eine ruhende Stop-Order in der Auktion ausgeführt worden wäre, zeigt kein Tagesbalken (gleiche Grenze wie D1). | dokumentiert |
 | LOW | Bei Minervini zählt der Runner die durch den Schluss sicheren Fälle als Differenz von `sameBarStopCertain`. Ein eigener Zähler hätte eine Änderung an `minervini-execution.mjs` verlangt und damit die Fingerabdrücke von sf5 und EP/PS verschoben. | bei der nächsten ohnehin nötigen sf5/EP-Neuberechnung nachziehen |
 | INFO | `contracts/turtle.mjs` nennt in `knownLimitations` weiter das Szenario `ENTRY_BAR_OPTIMISTIC`. Es wird weiter gerechnet. Eine Textänderung hätte den Vertragsfingerabdruck geändert. | mit der nächsten Vertragsrunde angleichen |
+| LOW | Turtle, Nachkauf am Einstiegsbalken: Der Callback für einen Nachkauf zur Eröffnung (`turtle.mjs`, Einstiegszweig) kann dort nie greifen. Das Nachkauf-Level liegt über dem letzten Fill und damit über der Eröffnung. Der Code ist harmlos, deutet aber einen Fall an, den es nicht gibt. | mit der nächsten Engine-Änderung entfernen; heute nicht, weil jede Byteänderung den gepinnten Fingerabdruck `89fbcf86…` verschiebt |
+| LOW | Die Zähler `sameBarCertainByOpenFill` und `sameBarCertainByClose` erfassen Stops und Kanalausstiege gemeinsam. Kanalausstiege stehen zusätzlich in `sameBarEntryChannelExits`, ein Ereignis erscheint also in zwei Zählern. | bei der Auswertung beachten, Zähler mit der nächsten Engine-Änderung trennen |
+| LOW | Der Turtle-Fingerabdruck (`codeSha256`) deckt alle Dateien von `CODE_FILES` ab, darunter Darvas, Kennzahlen, Snapshot-Eingang und Validierung. Seit 1.1.0 prüft `sf-sf6-readiness` den Pin gegen den laufenden Code. Jede spätere Änderung an diesen Dateien, auch eine reine Darvas-Änderung, verlangt deshalb SF6-PAPER-2027 1.2.0. | so gewollt (Protokollregel: gepinnter Code ist unverändert oder eine neue Protokollversion); hier ausdrücklich festgehalten |
+| INFO | Der Lauf-Beleg von 40170829944 enthält neu die Szenario-Felder `status` und `supersededBy`. Er ist darum nicht bytegleich mit dem Beleg von 39397517900. Verglichen werden die öffentlichen Szenario-Blöcke. | erwartet |
+
+## 9. Unabhängiges Review (25.10.2026)
+
+Ergebnis: kein CRITICAL- und kein HIGH-Befund. Die Referenzen sind **durch die Konstruktion** geschützt, nicht nur durch einen Snapshot: Der neue Code läuft nur hinter der neuen Lesart bzw. dem neuen Flag, und die SF7-Varianten laufen nach allen registrierten Varianten.
+
+Das MEDIUM-Ergebnis betraf Testlücken. Es ist mit zwei neuen Tests behoben:
+- **`SF7-D3-TURTLE-SHORT-AND-TIE`:**
+  - Die Short-Seite des S1-Filters mit Eröffnungs-Fill ist sicher.
+  - Ein Schluss genau auf dem Level zählt als sicher, einen Tick darüber bleibt er mehrdeutig.
+  - Die Short-Seite mit Schlussregel lässt sich auf einem Tagesbalken nicht isoliert bauen. Jedes Hoch über dem Short-Stop liegt dort auch über dem Long-Kanal, beide Richtungen wären gleichzeitig ausgelöst.
+- **`SF7-D3-TURTLE-ALL-OPTIONS`:**
+  - PESSIMISTIC und OPTIMISTIC wurden über alle Optionen von `SCENARIO_SET` und Korrelationsgruppen gerechnet: Kosten, Delisting-Szenarien, Daten-Ereignis, Failsafe 20D, `openBreakout=TAKE`, Gruppen mit 265 Limit-Ablehnungen.
+  - Das sind 32 Läufe, und sie sind bitgleich mit dem Code vor der Behebung. Gegengeprüft wurde mit `git archive 8e66e392`.
+
+Die LOW-Befunde stehen in Abschnitt 8.
