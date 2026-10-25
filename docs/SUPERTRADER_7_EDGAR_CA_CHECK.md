@@ -1,8 +1,8 @@
 # Supertrader 7.0 – E7-1: gezielte EDGAR-Prüfung der 83 V4-D1-Sitzungen
 
-Stand: 25. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Maßgeblich ist der **Regelsatz 1.4.0**, Lauf **40185801366**.
+Stand: 25. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Maßgeblich ist der **Regelsatz 1.4.1**, Lauf **40190526062**. Der Vorgänger 1.4.0 (Lauf 40185801366) ist eingefroren und dient nur dem Vorher/Nachher, siehe [Regelsatz 1.4.1](#regelsatz-141-review-von-921).
 
-**Kernergebnis:** Keine der 83 referenzexponierten, ungeklärten DQ-K5-Sitzungen ist durch ein EDGAR-Dokument als Split belegt.
+**Kernergebnis:** Keine der 83 referenzexponierten, ungeklärten DQ-K5-Sitzungen ist durch ein EDGAR-Dokument als Split belegt, weder unter 1.4.0 noch unter 1.4.1.
 - Bestätigt: 0 Splits und 0 echte Bewegungen. Das Overlay bleibt leer.
 - Alle 83 Sitzungen bleiben `UNRESOLVED` und in Quarantäne.
 - CC-5 wird **nicht** hochgestuft.
@@ -85,6 +85,99 @@ Der Regelsatz wurde vor jedem Lauf festgeschrieben.
 
 Eine Regel wurde vor dem ersten Lauf nachgeschärft, ausgelöst durch einen synthetischen Test: Ein Datum zählt nur neben einer Wirksamkeitsformulierung. Sonst hätte das Einreichungsdatum einer Satzungsänderung in derselben Passage als Wirksamkeitsdatum gegolten. Der Hash oben ist der Stand **nach** dieser Änderung und **vor** dem Probelauf. Nach den Läufen wurde keine Regel geändert.
 
+## Regelsatz 1.4.1 (Review von #921)
+
+**Grund:** Ein unabhängiges Code-Review von #921 hat Lücken im Parser gefunden. Es gab keinen CRITICAL- und keinen HIGH-Befund. Diese Lücken mussten geschlossen sein, bevor das Werkzeug je einen Split bestätigen darf.
+- Die Änderung folgt aus dem Review, **nicht** aus einem Ergebnis: Lauf 40185801366 hatte nichts bestätigt.
+- Hash `21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c`, vor dem Lauf festgeschrieben (SF7-EDGAR-RULESET).
+- 1.4.0 liegt eingefroren in `integrity/ca-edgar-1.4.0.mjs`, Hash `8f9f5e69…`, ebenfalls festgeschrieben.
+- 1.3.0 (`08d8a6ec…`) bleibt unverändert.
+- Je Befund gibt es einen synthetischen Test (SF7-REVIEW141-R1 bis R7).
+
+| Befund | Schwere | Behebung in 1.4.1 |
+|---|---|---|
+| R1: Ein falsches Datum konnte einen alten Split bestätigen. Daten kamen aus ±300 Zeichen über Satzgrenzen; eine bloße Jahreszahl galt als undatiert. Beispiel: „In 2019 we effected a 1-for-10 reverse stock split. Effective March 3, 2023, …“ ergab unter 1.4.0 1:10 zum 2023-03-03 | MEDIUM | Wirksamkeitsdatum nur aus **demselben Satz** wie das Verhältnis. Jede andere Jahreszahl in diesem Satz blockiert (`DOCUMENT_YEAR_CONFLICT`). ISO-Daten werden erkannt. Ein Satz mit nur Jahreszahlen ist historisch, wenn keine davon im 135-Tage-Fenster liegt |
+| R2: fehlende Formulierungen, die auch die Konfliktprüfung schwächten | MEDIUM | `1:10.` / `1:10,` / `1:10;` (Uhrzeiten mit führender Null bei den Minuten oder mit a.m./p.m./on/ET bleiben ausgeschlossen); „one (1) share for every ten (10) shares“ und „1 share for every 10 shares“; „10-to-1“ und „1-to-10 ratio“ |
+| R3: Auswahllisten galten nicht als Spanne („1-for-5, 1-for-10 or 1-for-15“) | MEDIUM | Eine Kommakette von Verhältnissen mit „or“ oder „and“ ist eine Spanne, also kein Faktor |
+| R4: Sitzungen wurden auf den Balken des Listings gezählt | LOW | Die ±2 Sitzungen werden auf dem Handelskalender des Snapshots gezählt |
+| R5: Die Obergrenze von 6 Dokumenten und gekürzte Dokumente galten als vollständig | LOW | Mehr als 6 Kandidaten (`DOCUMENT_CAP_EXCEEDED`) oder ein gekürztes Dokument (`DOCUMENT_TRUNCATED`) machen die Sitzung unvollständig, also `UNRESOLVED` |
+| R6: Optionsschein-, Wandlungs- und Umtauschverhältnisse konnten als Split-Verhältnis gelten | LOW | Ein Satz mit warrant / convertible / conversion / exercise / exchangeable ist keine Split-Aussage. Im Lauf wurden 40 solche Aussagen ausgeschlossen |
+| R7: keine Prüfung desselben Emittenten bei gemeinsam eingereichten Dokumenten | LOW | als Grenze dokumentiert, siehe [Grenzen](#grenzen): Der Einreichungsindex nennt keine Mit-Einreicher |
+
+**Lauf [40190526062](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40190526062)** (`sf7-ca-edgar`, Commit `40bef356a`):
+- Snapshot `EXACT`; 1.3.0 unverändert (11 Indexabfragen aus dem Cache).
+- Das 1.3.0-Manifest `e0a31fea…` ist reproduziert, der Umfang sind 83 Sitzungen.
+- BASE ist hash-identisch mit 6.0 für alle 11 Referenzen; CA ist identisch mit BASE.
+- 1.4.1-Overlay: 0 Einträge, `4640ebd5c23706be29e0a39864b6d9c13e611c51ed222d28c36a8416ce4c9978`.
+- **Anfragen: 260 von 600**, alle Dokumente. Die Indizes kamen vollständig aus dem Cache (83 Treffer). 0 Fehler, 0 über dem Budget, 10 Dokument-Cache-Treffer.
+- Alle Dokumente wurden neu gelesen, weil sich die Parser-Fassung geändert hat. Beide Parser liefen auf demselben Text; gespeichert sind nur die extrahierten Werte.
+- Der eingefrorene 1.4.0 lief im selben Lauf auf denselben Dokumenten. Er reproduziert die Zählungen von Lauf 40185801366 genau, Labels wie Dokumentbefunde.
+
+**Vorher (1.4.0) / Nachher (1.4.1), dieselben 83 Sitzungen und Dokumente:**
+
+| Klasse | 1.4.0 | 1.4.1 |
+|---|---|---|
+| `CONFIRMED_UNDECLARED_SPLIT` | 0 | **0** |
+| `CONFIRMED_GENUINE_MOVE` | 0 | **0** |
+| `UNRESOLVED` | 83 | **83** |
+
+| Label | 1.4.0 | 1.4.1 |
+|---|---|---|
+| `REVERSE_SPLIT_DOCUMENTED` | 1 | **0** |
+| `NO_SPLIT_DOCUMENT_FOUND` | 36 | 36 |
+| `AMBIGUOUS` | 4 | 6 |
+| `UNCLEAR` | 31 | 30 |
+| `NOT_CHECKED` (keine CIK) | 11 | 11 |
+
+Das Label in 1.4.1 bewertet die gelesenen Dokumente ohne die Vollständigkeitsregel R5. Die Unvollständigkeit wird getrennt gezählt: 23 Sitzungen haben mehr als 6 Kandidaten, 0 Dokumente sind gekürzt.
+
+| Dokumentbefund | 1.4.0 | 1.4.1 |
+|---|---|---|
+| `NO_SPLIT_DOCUMENT_FOUND` | 36 | 27 |
+| `DOCUMENT_CAP_EXCEEDED` | – | 23 |
+| `DOCUMENT_NO_RATIO` | 16 | 11 |
+| `DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW` | 10 | 2 |
+| `DOCUMENT_NO_EFFECTIVE_DATE` | 1 | 3 |
+| `DOCUMENT_MERGER_CONTEXT` | 3 | 3 |
+| `DOCUMENT_RATIO_NOT_ON_GRID` | 3 | 1 |
+| `DOCUMENT_CONFLICTING_RATIOS` | 1 | 1 |
+| `DOCUMENT_PROXY_ONLY` | 1 | 1 |
+| Dokumentfaktor gefunden | 1 | **0** |
+
+Der einzige unter 1.4.0 gefundene Dokumentfaktor wird unter 1.4.1 zu `DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW`: Nach Satz- und Kalenderregel liegt kein Wirksamkeitsdatum in ±2 Sitzungen. Die Sitzung war schon unter 1.4.0 gesperrt (`SPLIT_REQUIRES_KNOWN_CIK`, CIK nur über den Namen).
+
+**Je Referenz** (DQ-K5 exponiert / bestätigt 1.4.0 / bestätigt 1.4.1 / ungeklärt 1.4.1):
+
+| Referenz | exponiert | 1.4.0 | 1.4.1 | ungeklärt |
+|---|---|---|---|---|
+| Turtle S1 | 16 | 0 | 0 | 16 |
+| Turtle S2 | 14 | 0 | 0 | 14 |
+| Minervini SEPA | 0 | 0 | 0 | 0 |
+| Minervini Power Play | 12 | 0 | 0 | 12 |
+| Darvas | 15 | 0 | 0 | 15 |
+| Kullamägi Breakout | 27 | 0 | 0 | 27 |
+| Pocket Pivot | 9 | 0 | 0 | 9 |
+| Buyable Gap-Up | 14 | 0 | 0 | 14 |
+| Weinstein Investor | 0 | 0 | 0 | 0 |
+| Weinstein Trader | 4 | 0 | 0 | 4 |
+| Holy Grail (W-RAS97) | 29 | 0 | 0 | 29 |
+
+**Gesperrt unter 1.4.1:**
+- Pfad B (21 Sitzungen):
+
+  | Grund | Anzahl |
+  |---|---|
+  | `NO_SPLIT_DOCUMENT_FOUND` | 13 |
+  | `DOCUMENT_CAP_EXCEEDED` | 4 |
+  | `DOCUMENT_NO_RATIO` | 1 |
+  | `DOCUMENT_RATIO_NOT_ON_GRID` | 1 |
+  | `DOCUMENT_PROXY_ONLY` | 1 |
+  | `DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW` | 1 |
+
+- Die übrigen 62 Sitzungen behalten ihren 1.3.0-Grund, wie in den Tabellen unten.
+
+Die folgenden Abschnitte beschreiben den Regelsatz 1.4.0 und seinen Lauf 40185801366. Wo 1.4.1 abweicht, gilt die Tabelle oben.
+
 ## Quellen und Caches
 
 | Quelle | genutzt | Anmerkung |
@@ -111,9 +204,10 @@ Code: [`research/sf7-edgar-client.mjs`](../scripts/supertrader/source-faithful/r
 | Lauf | Modus | Ergebnis |
 |---|---|---|
 | [40185388680](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40185388680) | `sf7-ca-edgar-smoke` (400 Reihen, Umfang exponierte DQ-K3, Budget 60) | erfolgreich: 31 Sitzungen, 17 geprüft, 60/60 Anfragen, 4 über dem Budget abgewiesen, 0 Fehler, Cache angelegt |
-| [**40185801366**](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40185801366) | **`sf7-ca-edgar`, maßgeblich** | erfolgreich, Commit `70dc3620a`, versiegelt abgelegt |
+| [40185801366](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40185801366) | `sf7-ca-edgar`, Regelsatz 1.4.0 (Vorher) | erfolgreich, Commit `70dc3620a`, versiegelt abgelegt |
+| [**40190526062**](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40190526062) | **`sf7-ca-edgar`, Regelsatz 1.4.1, maßgeblich** | erfolgreich, Commit `40bef356a`, versiegelt abgelegt; 260 Anfragen, 0 bestätigt |
 
-Lauf 40185801366 im Einzelnen:
+Lauf 40185801366 (1.4.0) im Einzelnen:
 - Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT`, research-v1.
 - Die Kandidaten wurden neu berechnet: 2.521 DQ-K3, davon 1.210 DQ-K5.
 - 1.3.0 unverändert: 11 Indexabfragen, alle erfolgreich. Die Klassen sind identisch mit Lauf 40122736287: DQ-K5 1.210 `UNRESOLVED`; DQ-K3 2 echt, 2.519 ungeklärt.
@@ -225,7 +319,8 @@ Eine Sitzung kann mehrere Referenzen betreffen; die Summe der Zeilen ist deshalb
 ## Grenzen
 
 - **Nur Hauptdokumente:** Exhibits (Satzungsänderung EX-3.1, Pressemitteilung EX-99.1) wurden nicht gelesen. Ein 8-K, das nur auf das Exhibit verweist, ergibt `NO_SPLIT_DOCUMENT_FOUND` oder `DOCUMENT_NO_RATIO`. Das betrifft wahrscheinlich einen Teil der 36 Sitzungen ohne Fundstelle.
-  - Exhibits mitzulesen wäre eine Regeländerung. Sie bräuchte einen neuen Regelsatz 1.4.1 mit Vorher/Nachher und eine Begründung.
+  - Exhibits mitzulesen bleibt außerhalb des Umfangs. Es ist eine offene Option für den Eigentümer und bräuchte einen eigenen Regelsatz mit Vorher/Nachher.
+- Mit 1.4.1 ist eine Sitzung mit mehr als 6 Kandidatendokumenten nie bestätigbar (23 der 72 geprüften Sitzungen). Eine höhere Obergrenze wäre ebenfalls eine eigene Regeländerung.
 - Der Parser ist konservativ. Einige Fälle blockieren eher, als dass sie bestätigen:
   - Ein Spannenwort („up to“, „within“) in der Nähe macht ein Verhältnis zur Spanne.
   - „merger“ in der Passage blockiert.
@@ -244,7 +339,7 @@ Eine Sitzung kann mehrere Referenzen betreffen; die Summe der Zeilen ist deshalb
 - `CC5-e` (Erkennung vollständig) und `CC5-f` (Holdout) bleiben unerfüllt.
 
 **Für den Eigentümer:** Mit freien Hauptdokumenten ist kein Split belegbar. Die verbleibenden Wege sind:
-1. ein Regelsatz 1.4.1, der auch Exhibits liest (kostenfrei, im gleichen Budget);
+1. ein neuer Regelsatz, der auch Exhibits liest und gegebenenfalls die Obergrenze von 6 Dokumenten anhebt (kostenfrei, im gleichen Budget);
 2. die lizenzierte CA-Quelle aus E7-1 (Sharadar/Massive), geprüft gegen die EDGAR-Labels oben;
 3. die Annahme, dass die Quarantäne der ungeklärten Sitzungen genügt.
 
@@ -254,4 +349,6 @@ Code:
 - [`research/run-sf7-ca-edgar.mjs`](../scripts/supertrader/source-faithful/research/run-sf7-ca-edgar.mjs);
 - Workflow-Modi `sf7-ca-edgar` und `sf7-ca-edgar-smoke`.
 
-Tests: [`sf-sf7-ca-edgar.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-edgar.test.mjs), 11 Tests, nur synthetische Texte.
+Tests: [`sf-sf7-ca-edgar.test.mjs`](../scripts/supertrader/tests/sf-sf7-ca-edgar.test.mjs), 18 Tests (davon 7 zum Review, SF7-REVIEW141-R1 bis R7), nur synthetische Texte.
+
+Code 1.4.1: [`integrity/ca-edgar.mjs`](../scripts/supertrader/source-faithful/integrity/ca-edgar.mjs); eingefroren 1.4.0: [`integrity/ca-edgar-1.4.0.mjs`](../scripts/supertrader/source-faithful/integrity/ca-edgar-1.4.0.mjs).
