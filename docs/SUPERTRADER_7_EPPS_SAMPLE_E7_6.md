@@ -211,6 +211,13 @@ Sie ändert nicht:
     - das Ledger direkt vor dem Schreiben neu lesen und bedingt schreiben (`If-None-Match`);
     - eine feste Concurrency-Gruppe setzen;
     - Checkpoints während des Abrufs schreiben.
+- **Alle EP/PS-Abrufmodi gesperrt (vor dem Merge, 25.10.2026):**
+  - Ein eigener Workflow-Schritt direkt nach der Modusbestimmung bricht `kk-intraday`, `kk-intraday-smoke` und `kk-intraday-probe` fail closed ab (`KK_INTRADAY_FETCH_FROZEN`), bevor ein Abrufschritt läuft. Das gilt für manuellen Start und für Commit-Marken.
+  - Grund: Nach E5 gibt es keine weiteren EP/PS-Abrufe ohne Freigabe. Ein normaler Abruf kennte den Erweiterungscache nicht und würde die 481 Tage doppelt abrufen.
+  - Erlaubt bleiben nur `kk-intraday-count`, `kk-intraday-cache` und `kk-intraday-e76-count`. Alle drei laufen ohne API-Schlüssel und mit 0 Anfragen.
+  - Ein Test (`sf-runner`) hält Sperre und Reihenfolge fest.
+  - Die Intraday-Modi älterer Runden für andere Methoden (`intraday`, `r9b`, `r10b`) sind davon unberührt. Sie sind nur manuell startbar und haben eigene Budgets.
+- **Lizenzgrenze:** Durch die Sperre bleibt es beim einmaligen, freigegebenen Abruf von 481 Anfragen im bestehenden Tiingo-Abo. Interne Auswertung und private Speicherung entsprechen der Freigabe vom 01.10.2026. Es gibt keine Anzeige von Minutenwerten und keine Veröffentlichung von Kennzahlen.
 - **Absturz während des Abrufs:** Der Erweiterungsabruf schrieb den Cache erst am Ende, ohne Checkpoint. Ein Absturz hätte den einen Abruf verbraucht, ohne Daten zu sichern. Eingetreten ist das nicht: Der Lauf endete mit `COMPLETE`.
 - **Normaler `kk-intraday`-Abruf:** Dieser Modus hat bis zu 6.000 Anfragen je Lauf und kennt den Erweiterungscache nicht. Er würde die Erweiterungstage erneut in den Referenzcache holen und damit die Referenz-Tagessätze verschieben. Das war schon vor diesem PR möglich. Vor jedem solchen Lauf ist eine eigene Entscheidung nötig.
 - **Tests:** `scripts/supertrader/tests/sf-kk-e7-6-sample.test.mjs`. Geprüft werden Vorregistrierungs-Hash, unveränderte Referenz-Hashes, Zielanzahl je Schicht, Mutationstest, Plan-Priorität und Obergrenze, Fail-closed-Abbruch (auch bei Wiederholungen), Ledger, 0 Anfragen im Cache-only- und Planlauf sowie die Tagessätze.

@@ -76,6 +76,9 @@ test('SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and
   assert.match(y, /if \[ "\$MODE" = kk-intraday-e76-count \]; then extra="--ext-e7-6 --count-only"; unset TIINGO_API_KEY; fi/);
   // E7-6: the one extension fetch is spent (run 40185337539, 481 requests); the fetch mode is not startable any more
   assert.doesNotMatch(y, /kk-intraday-e76(?!-count)/);
+  // E5 / E7-6: every EP/PS intraday mode that makes requests is frozen fail-closed before any step can fetch
+  assert.match(y, /case "\$MODE" in kk-intraday\|kk-intraday-smoke\|kk-intraday-probe\) echo "KK_INTRADAY_FETCH_FROZEN: \$MODE ist gesperrt \(E5\/E7-6\); Freigabe und eigener PR noetig" >&2; exit 1;; esac/);
+  assert.ok(y.indexOf('KK_INTRADAY_FETCH_FROZEN') < y.indexOf('run-kk-intraday.mjs') && y.indexOf('KK_INTRADAY_FETCH_FROZEN') < y.indexOf('kk-intraday-probe.mjs'), 'guard runs before every EP/PS fetch step');
   assert.doesNotMatch(y, /\[supertrader-validation:kk-intraday-e76/);
   const rk = fs.readFileSync(new URL('../source-faithful/research/run-kk-intraday.mjs', import.meta.url), 'utf8');
   assert.match(rk, /requireRestoreReceipt: true/); assert.match(rk, /encryptForOwner/);
