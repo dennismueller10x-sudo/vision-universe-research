@@ -1,6 +1,6 @@
 # Supertrader 7.0 – Probe des Tiingo-Splits-Endpunkts (Corporate Actions)
 
-Stand: 25. Oktober 2026. Reine Probe, `DIAGNOSTIC_NOT_CERTIFIED`. Sie ändert nichts an Overlay, Quarantäne, CC-5 oder einem Status. Branch `claude/supertrader-7-tiingo-splits-probe`, ohne PR und ohne Merge.
+Stand: 25. Oktober 2026. Reine Probe, `DIAGNOSTIC_NOT_CERTIFIED`. Sie ändert nichts an Overlay, Quarantäne, CC-5 oder einem Status. Branch `claude/supertrader-7-tiingo-splits-probe`, Draft-PR ohne Merge-Freigabe.
 
 **Ergebnis:** **Kein Zugang.**
 - Alle drei Anfragen der Zugangsprobe antworteten mit **HTTP 403** und **leerem Antworttext**.
@@ -77,3 +77,24 @@ Die Tagesbalken-Abrufe des Projekts nutzen denselben Schlüssel mit demselben He
   - eine lizenzierte CA-Quelle (Sharadar / Massive), geprüft gegen die EDGAR-Labels;
   - oder die Annahme, dass die Quarantäne genügt.
 - Es wurde nichts geändert: kein Overlay, keine Quarantäne, kein CC-5, kein Status.
+
+## Stufe B: vorbereitet, gesperrt (Eigentümerentscheidung 25.10.2026)
+
+Der Eigentümer hat den Endpunkt bis zu einer Antwort von Tiingo gesperrt: keine weiteren Zugriffsversuche, keine neuen Anbieter, keine kostenpflichtigen Abrufe. Die 83 Sitzungen bleiben in Quarantäne; CC-5 bleibt offen.
+
+**Sperre an zwei Stellen, beide fail closed und getestet (SF7-TIINGO-GATE):**
+- Code: `PROBE_GATE.state = 'FROZEN'` in `run-sf7-tiingo-splits-probe.mjs`. Der Abruflauf bricht mit `PROBE_FROZEN` ab, bevor er den Schlüssel liest oder den Snapshot öffnet. `PROBE_GATE` liegt außerhalb von `PROBE_SPEC`; der vorregistrierte Hash `76b70088…` bleibt unverändert.
+- Workflow: Schritt „Tiingo-Splits-Abruf gesperrt“ direkt nach der Modusbestimmung, vor jedem Schritt mit Schlüssel (`TIINGO_SPLITS_FETCH_FROZEN`), manuell wie per Commit-Marke.
+
+**Plan ohne Anfrage** (Modus `sf7-tiingo-splits-plan`, Flag `--plan`):
+- rechnet den Umfang der Stufe B genau wie der spätere Abruf: die 83 Sitzungen nach Regelsatz 1.3.0, EDGAR nur aus dem Cache;
+- sendet **nichts** an Tiingo und bekommt keinen Tiingo-Schlüssel;
+- veröffentlicht nur Zählungen: Sitzungen, eindeutige Ticker (= geplante Anfragen), Einhaltung der Obergrenze 90, Sitzungen ohne CIK, Reason-Gruppen, frühestes Startjahr;
+- bricht mit `PROBE_STAGE_B_OVER_CAP` ab (Exit 5), wenn mehr als 90 Ticker nötig wären.
+
+**Ablauf nach einer Freischaltung durch Tiingo** (keine Neuentwicklung):
+1. Schriftliche Bestätigung von Tiingo: Endpunkt im bestehenden Abo freigeschaltet, ohne Mehrkosten.
+2. Freigabe des Eigentümers für genau einen Lauf mit höchstens 4 + 90 Anfragen.
+3. Ein kleiner PR: `PROBE_GATE.state` auf `'UNLOCKED'`, `unlockedBy` mit Datum und Freigabe, Workflow-Sperrschritt entfernen; Test SF7-TIINGO-GATE entsprechend anpassen.
+4. Lauf `sf7-tiingo-splits-probe` auf dem Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`. Stufe A bestätigt den Zugang (3 Anfragen); nur dann folgt Stufe B.
+5. Auswertung gegen die EDGAR-Labels. Eine Aufnahme ins Overlay ist **nicht** Teil der Probe; sie bräuchte einen eigenen Regelsatz und eine eigene Freigabe.

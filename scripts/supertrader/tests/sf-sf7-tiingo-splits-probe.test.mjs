@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import * as L from '../validation/lib.mjs';
 import { datasetFromPit } from '../source-faithful/runner/snapshot-input.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
-import { PROBE_SPEC, probeSpecSha256, createTiingoClient, stageA, classifySession, stageBRefine, ProbeDone, groupOf } from '../source-faithful/research/run-sf7-tiingo-splits-probe.mjs';
+import { PROBE_SPEC, PROBE_GATE, probeSpecSha256, createTiingoClient, stageA, classifySession, stageBRefine, ProbeDone, groupOf } from '../source-faithful/research/run-sf7-tiingo-splits-probe.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(HERE, '..', '..', '..');
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
@@ -89,10 +89,37 @@ test('SF7-TIINGO-FAIL-CLOSED: ohne Snapshot, research-v1 oder Schluessel kein La
     const env = { ...process.env }; delete env.TIINGO_API_KEY;
     assert.match(spawnSync(process.execPath, [script, '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env }).stderr, /SNAPSHOT_REQUIRED/);
     assert.match(spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--out', out], { encoding: 'utf8', env }).stderr, /RESEARCH_ACCOUNTING_REQUIRED/);
-    const r = spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env });
-    assert.equal(r.status, 2); assert.match(r.stderr, /TIINGO_KEY_MISSING/); assert.deepEqual(fs.readdirSync(out), []);
+    const r = spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env: { ...env, TIINGO_API_KEY: 'k3y' } });
+    assert.equal(r.status, 2); assert.match(r.stderr, /PROBE_FROZEN/, 'gesperrt, auch mit Schluessel'); assert.doesNotMatch(r.stderr, /k3y/); assert.deepEqual(fs.readdirSync(out), []);
   } finally { fs.rmSync(out, { recursive: true, force: true }); }
   const y = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-validation.yml'), 'utf8');
   assert.match(y, /run-sf7-tiingo-splits-probe\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS/);
   for (const m of y.matchAll(/case "\$MODE" in (sf-research\|[^)]*|methods\|[^)]*)\)/g)) assert.match(m[1], /\|sf7-tiingo-splits-probe\|/);
+});
+
+test('SF7-TIINGO-GATE: nach HTTP 403 gesperrt; Abruf vor Schluessel und Snapshot abgelehnt; Workflow-Sperre vor jedem Schritt mit Schluessel', () => {
+  assert.ok(Object.isFrozen(PROBE_GATE)); assert.equal(PROBE_GATE.state, 'FROZEN'); assert.equal(PROBE_GATE.unlockedBy, null);
+  assert.match(PROBE_GATE.reason, /40221353332/);
+  assert.equal(probeSpecSha256(), '76b70088060119319c8196d36c22589fdd7f22e3182b5ecca07b6b55dc1c6eac', 'die Sperre liegt ausserhalb der vorregistrierten Spezifikation');
+  const y = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-validation.yml'), 'utf8');
+  const freeze = y.indexOf('TIINGO_SPLITS_FETCH_FROZEN'), probeStep = y.indexOf('Supertrader 7.0 Tiingo-Splits-Probe (Corporate'), snapStep = y.indexOf('- name: Snapshot- und Abrechnungsvertrag');
+  assert.ok(freeze > 0 && freeze < snapStep && snapStep < probeStep, 'Sperre vor Snapshot-Vertrag und Abrufschritt');
+  assert.match(y, /case "\$MODE" in sf7-tiingo-splits-probe\) echo "TIINGO_SPLITS_FETCH_FROZEN/);
+  // der Plan-Schritt bekommt keinen Tiingo-Schluessel
+  const plan = y.slice(y.indexOf('Supertrader 7.0 Tiingo-Splits-Plan'), y.indexOf('- name:', y.indexOf('Supertrader 7.0 Tiingo-Splits-Plan') + 10));
+  assert.doesNotMatch(plan, /TIINGO_API_KEY/); assert.match(plan, /run-sf7-tiingo-splits-probe\.mjs --plan --out/);
+});
+
+test('SF7-TIINGO-PLAN: Stufe B als Plan ohne jede Anfrage; Umfang, Ticker, Obergrenze, Reason-Gruppen; nur Zaehlungen', async () => {
+  const ids = (s) => `tiingo:NYSE:S${String(s).padStart(3, '0')}:2010-01-01`;
+  const EV = { 2: [{ at: 400, price: 10, volume: 0.1 }], 5: [{ at: 300, price: 10, volume: 0.1 }], 9: [{ at: 500, price: 12, volume: 0.08 }], 11: [{ at: 450, price: 20, volume: 0.05 }] };
+  const segs = Array.from({ length: 16 }, (_, s) => seg(ids(s), series(700, s + 21, EV[s] || []))), ds = dsOf(segs);
+  let res = null;
+  await assert.rejects(caResolutionPart(ds, segs, { from: day(0), to: day(699), dataEnd: day(699), refine: stageBRefine({ plan: true }) }), (e) => { res = e; return e instanceof ProbeDone; });
+  const p = res.result.pub;
+  assert.equal(p.plan, true); assert.equal(p.requests, 0); assert.equal(p.sessions, 4); assert.equal(p.distinctTickers, 4); assert.equal(p.plannedRequests, 4);
+  assert.equal(p.cap, 90); assert.equal(p.fitsCap, true); assert.equal(p.noCikSessions, 4); assert.equal(p.byReasonGroup.NO_CIK, 4);
+  assert.deepEqual(res.result.sealed, []); assert.doesNotMatch(JSON.stringify(p), /s00\d|tiingo:/);
+  // ohne Plan und ohne Client: fail closed statt Abruf
+  await assert.rejects(caResolutionPart(ds, segs, { from: day(0), to: day(699), dataEnd: day(699), refine: stageBRefine({}) }), /PROBE_CLIENT_MISSING/);
 });

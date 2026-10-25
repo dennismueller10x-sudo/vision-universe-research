@@ -72,6 +72,20 @@ export const PROBE_SPEC = Object.freeze({
   baseRulesetSha256: '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7',
   changesNothing: 'no overlay, no quarantine, no CC-5, no status change',
 });
+/**
+ * Access gate (outside PROBE_SPEC, so the pinned spec hash is unchanged). Run 40221353332 got HTTP 403 for all three
+ * stage-A requests; owner 25.10.2026: no further access attempts against the blocked endpoint. While FROZEN the fetch
+ * run refuses before reading the key (PROBE_FROZEN); only the request-free plan (--plan, mode sf7-tiingo-splits-plan)
+ * runs. Unlocking is a reviewed change of `state` to 'UNLOCKED' with the owner approval in `unlockedBy`, together with
+ * removing the workflow step "Tiingo-Splits-Abruf gesperrt" (docs/SUPERTRADER_7_TIINGO_SPLITS_PROBE.md, Stufe B).
+ */
+export const PROBE_GATE = Object.freeze({
+  state: 'FROZEN',
+  since: '2026-10-25',
+  reason: 'HTTP 403 for the corporate-actions splits endpoint (run 40221353332); owner: no further access attempts until Tiingo enables it',
+  unlockedBy: null,
+  unlockRequires: Object.freeze(['written Tiingo confirmation that the endpoint is enabled within the existing subscription at no extra cost', 'owner approval for one stage-B run (<= 4 + 90 requests)', 'plan run with 0 requests showing distinct tickers <= 90']),
+});
 export const probeSpecSha256 = () => crypto.createHash('sha256').update(JSON.stringify(PROBE_SPEC)).digest('hex');
 const tally = (rows, key) => rows.reduce((o, r) => { const k = key(r); if (k != null) o[k] = (o[k] || 0) + 1; return o; }, {});
 const addDays = (d, n) => new Date(Date.parse(`${d}T00:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
@@ -145,9 +159,22 @@ export function classifySession({ records, found, raw, i, calendar, windowSessio
   };
 }
 
+/** The request-free plan of stage B: scope, distinct tickers (= requests), cap check, per reason group. Counts only. */
+export function planSummary({ inScope, byTicker, tickers, identityOf }) {
+  const grp = tally(inScope, (c) => groupOf(c.result.reason));
+  return {
+    plan: true, requests: 0, sessions: inScope.length, distinctTickers: tickers.length, plannedRequests: tickers.length,
+    cap: PROBE_SPEC.stageB.maxRequests, fitsCap: tickers.length <= PROBE_SPEC.stageB.maxRequests,
+    sessionsWithoutTicker: inScope.length - [...byTicker.values()].reduce((n, xs) => n + xs.length, 0),
+    noCikSessions: inScope.filter((c) => !identityOf(c).sec?.cik).length,
+    byReasonGroup: grp,
+    earliestStartYear: tickers.length ? Number(addDays([...byTicker.values()].flat().map((c) => c.date).sort()[0], PROBE_SPEC.stageB.startExDateOffsetDays).slice(0, 4)) : null,
+  };
+}
+
 /** Stage B as a caResolutionPart refinement; throws ProbeDone so the CA datasets are never built (a probe changes nothing). */
 export class ProbeDone extends Error { constructor(result) { super('PROBE_DONE'); this.result = result; } }
-export function stageBRefine({ client, expectedCount = null }) {
+export function stageBRefine({ client = null, expectedCount = null, plan = false }) {
   return async ({ cands, identityOf, segs, baseDs, log = () => {} }) => {
     const inScope = cands.filter((c) => c.result.cls === CLASSES.UNRESOLVED && c.exposedRefs.length && c.level === 'K5');
     if (expectedCount !== null && inScope.length !== expectedCount) throw new Error(`PROBE_SCOPE_COUNT_MISMATCH: ${inScope.length} != ${expectedCount}`);
@@ -155,8 +182,10 @@ export function stageBRefine({ client, expectedCount = null }) {
     const byTicker = new Map();
     for (const c of inScope) { const t = tickerOf(c); if (!t) continue; if (!byTicker.has(t)) byTicker.set(t, []); byTicker.get(t).push(c); }
     const tickers = [...byTicker.keys()].sort();
-    if (tickers.length > PROBE_SPEC.stageB.maxRequests) throw new Error(`PROBE_STAGE_B_OVER_CAP: ${tickers.length}`);
     log(`stage B: ${inScope.length} sessions, ${tickers.length} distinct tickers`);
+    if (plan) throw new ProbeDone({ pub: planSummary({ inScope, byTicker, tickers, identityOf }), sealed: [] });
+    if (tickers.length > PROBE_SPEC.stageB.maxRequests) throw new Error(`PROBE_STAGE_B_OVER_CAP: ${tickers.length}`);
+    if (!client) throw new Error('PROBE_CLIENT_MISSING');
     const resp = new Map();
     for (const t of tickers) {
       const start = addDays(byTicker.get(t).map((c) => c.date).sort()[0], PROBE_SPEC.stageB.startExDateOffsetDays);
@@ -202,21 +231,23 @@ async function main() {
   const snapshotId = arg('--snapshot');
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
-  const KEY = process.env.TIINGO_API_KEY; if (!KEY) { console.error('TIINGO_KEY_MISSING'); process.exit(2); }
+  const PLAN = argv.includes('--plan');
+  if (!PLAN && PROBE_GATE.state !== 'UNLOCKED') { console.error(`PROBE_FROZEN: ${PROBE_GATE.reason}`); process.exit(2); }
+  const KEY = PLAN ? null : process.env.TIINGO_API_KEY; if (!PLAN && !KEY) { console.error('TIINGO_KEY_MISSING'); process.exit(2); }
   if (rulesetSha256V130() !== PROBE_SPEC.baseRulesetSha256) { console.error('BASE_RULESET_1_3_0_CHANGED'); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[sf7-tiingo-probe +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT, { recursive: true });
   const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const receipt = { schema: 'supertrader-sf7-tiingo-splits-probe-receipt-1.0.0', certification: FOUNDATION.certification, probe: PROBE_VERSION, probeSpecSha256: probeSpecSha256(), snapshotId, accounting: FOUNDATION.accounting.mode, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  // ---- Stage A
-  const clientA = createTiingoClient({ key: KEY, cap: PROBE_SPEC.stageA.maxRequests });
-  const A = await stageA(clientA);
+  receipt.plan = PLAN; receipt.gate = PROBE_GATE.state;
+  // ---- Stage A (never in the plan: the plan sends nothing to Tiingo)
+  const A = PLAN ? { skipped: 'PLAN_NO_REQUESTS', used: 0, access: null } : await stageA(createTiingoClient({ key: KEY, cap: PROBE_SPEC.stageA.maxRequests }));
   log(`stage A: ${A.used} requests, access ${A.access}`);
   const write = (pub, sealed) => {
     fs.writeFileSync(path.join(OUT, 'sf7-tiingo-splits-probe.public.json'), JSON.stringify(pub, null, 1) + '\n');
     fs.writeFileSync(path.join(OUT, 'sf7-tiingo-splits-probe.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ receipt, public: pub, sessions: sealed }))));
   };
-  if (!A.access) { write({ schema: 'supertrader-sf7-tiingo-splits-probe-public-1.0.0', receipt, stageA: A, stageB: { skipped: 'NO_ACCESS_STOP_AFTER_STAGE_A' } }, []); log('stop after stage A (no access)'); return; }
+  if (!PLAN && !A.access) { write({ schema: 'supertrader-sf7-tiingo-splits-probe-public-1.0.0', receipt, stageA: A, stageB: { skipped: 'NO_ACCESS_STOP_AFTER_STAGE_A' } }, []); log('stop after stage A (no access)'); return; }
   // ---- Stage B: recompute the 83 exactly as run-sf7-ca-edgar.mjs (1.3.0 unchanged; EDGAR lookups from the cache only)
   const K = await import('../../snapshot/contract.mjs');
   let pit, secPit, shares, live, cache = null, datasetSha256;
@@ -252,17 +283,18 @@ async function main() {
   const edgar = createEdgarClient({ userAgent: UA, budget: { ...EDGAR_BUDGET, totalRequests: 0 }, cache, fetchImpl: async () => { throw new Error('NEVER'); } });
   const evidenceInputs = { secShares: 'r14', secSharesKey: SEC_SHARES_KEYS.r14, datasetSha256, snapshotId };
   const authoritative = snapshotId === SF6_RUN_FACTS.integrity.snapshotId;
-  const clientB = createTiingoClient({ key: KEY, cap: PROBE_SPEC.stageB.maxRequests });
+  const clientB = PLAN ? null : createTiingoClient({ key: KEY, cap: PROBE_SPEC.stageB.maxRequests });
   let B = null;
   try {
-    await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: (cik) => edgar.submissions13(cik), secFetchMax: 150, snapshotId, evidenceInputs, refine: stageBRefine({ client: clientB, expectedCount: authoritative ? EXPECTED_SCOPE_SESSIONS : null }), log });
+    await caResolutionPart(ds, pit.segs, { sharesByListing: shares, listingPeriods, fetchFilings: (cik) => edgar.submissions13(cik), secFetchMax: 150, snapshotId, evidenceInputs, refine: stageBRefine({ client: clientB, plan: PLAN, expectedCount: authoritative ? EXPECTED_SCOPE_SESSIONS : null }), log });
     console.error('PROBE_DID_NOT_RUN'); process.exit(6);
   } catch (e) {
     if (!(e instanceof ProbeDone)) { console.error(String(e?.message || e).startsWith('PROBE_') ? e.message : String(e?.stack || e)); process.exit(6); }
     B = e.result;
   }
   if (edgar.stats().requests !== 0) { console.error('EDGAR_REQUESTS_NOT_ZERO'); process.exit(7); }
-  if (clientB.used() > PROBE_SPEC.stageB.maxRequests) { console.error('PROBE_CAP_BREACH'); process.exit(7); }
+  if (clientB && clientB.used() > PROBE_SPEC.stageB.maxRequests) { console.error('PROBE_CAP_BREACH'); process.exit(7); }
+  if (PLAN && !B.pub.fitsCap) { write({ schema: 'supertrader-sf7-tiingo-splits-probe-public-1.0.0', receipt, stageA: A, stageB: { ...B.pub, edgarRequests: edgar.stats().requests } }, []); console.error(`PROBE_STAGE_B_OVER_CAP: ${B.pub.distinctTickers}`); process.exit(5); }
   write({ schema: 'supertrader-sf7-tiingo-splits-probe-public-1.0.0', receipt, stageA: A, stageB: { ...B.pub, edgarRequests: edgar.stats().requests } }, B.sealed);
   log('done; public sf7-tiingo-splits-probe.public.json');
 }
