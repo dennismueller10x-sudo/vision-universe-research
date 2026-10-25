@@ -35,7 +35,7 @@ export function cancellationConfirmation({confirmationId, receivedAt, email, ful
   if (endsAt) endText = `Dein Vertrag endet am ${dateOnly(endsAt)}. Bis dahin bleibt dein Zugang erhalten; danach wird nichts mehr abgebucht.`;
   else if (provider === 'apple' || provider === 'google') endText = 'Dein Abonnement wurde über den App Store bzw. Google Play abgeschlossen. Den Beendigungszeitpunkt bestätigen wir, sobald der Anbieter die Kündigung meldet; du kannst sie dort auch direkt auslösen.';
   else if (status === 'no_contract') endText = 'Zu dieser Adresse haben wir kein laufendes Abonnement gefunden. Falls du ein Abonnement mit einer anderen Adresse abgeschlossen hast, antworte bitte mit der Rechnungsnummer.';
-  else endText = 'Wir ordnen deine Kündigung deinem Vertrag zu und teilen dir den Zeitpunkt der Beendigung unverzüglich in einer weiteren E-Mail mit.';
+  else endText = 'Deine Kündigung ist wirksam eingegangen. Wir ordnen sie deinem Vertrag zu und teilen dir den Zeitpunkt der Beendigung unverzüglich in einer weiteren E-Mail mit.';
   const rows = [
     ['Bestätigungsnummer', confirmationId],
     ['Eingang', berlin(receivedAt)],
@@ -57,4 +57,32 @@ export function cancellationConfirmation({confirmationId, receivedAt, email, ful
 <p style="color:#555">Bitte bewahre diese E-Mail als Nachweis auf. Du hast nicht gekündigt? Dann antworte auf diese E-Mail oder setze dein Abonnement in deinem Konto unter „Abonnement“ fort.</p>
 <p>Vision Universe</p></body></html>`;
   return {subject, text, html};
+}
+
+// Zweite Nachricht, sobald die Kuendigung ausgefuehrt ist: Zeitpunkt der Beendigung.
+export function cancellationFinal({confirmationId, receivedAt, email, planName, endsAt, status}) {
+  const subject = `Deine Kündigung ist ausgeführt (${confirmationId.slice(0, 8)})`;
+  const endText = status === 'no_contract'
+    ? 'Zu deiner Kündigung haben wir kein laufendes Abonnement gefunden. Es wird nichts abgebucht. Falls du ein Abonnement mit einer anderen Adresse abgeschlossen hast, antworte bitte mit der Rechnungsnummer.'
+    : `Dein Vertrag${planName ? ' ' + planName : ''} endet am ${dateOnly(endsAt)}. Bis dahin bleibt dein Zugang erhalten; danach wird nichts mehr abgebucht.`;
+  const rows = [['Bestätigungsnummer', confirmationId], ['Eingang der Kündigung', berlin(receivedAt)], ['E-Mail', email]];
+  const text = ['Hallo,', '', endText, '', ...rows.map(([k, v]) => `${k}: ${v}`), '',
+    'Du hast nicht gekündigt? Dann antworte bitte auf diese E-Mail; du kannst dein Abonnement bis zum Laufzeitende in deinem Konto unter „Abonnement“ fortsetzen.',
+    '', 'Vision Universe'].join('\n');
+  const html = `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
+<p>Hallo,</p><p><strong>${esc(endText)}</strong></p>
+<table cellpadding="6" style="border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="color:#555">${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>
+<p style="color:#555">Du hast nicht gekündigt? Dann antworte bitte auf diese E-Mail; du kannst dein Abonnement bis zum Laufzeitende in deinem Konto unter „Abonnement“ fortsetzen.</p>
+<p>Vision Universe</p></body></html>`;
+  return {subject, text, html};
+}
+
+// Betriebsalarm ohne personenbezogene Daten (nur Zahlen).
+export function opsAlert(health) {
+  const lines = [`Offene Kündigungen: ${health.open}`, `Davon überfällig (> 24 h): ${health.overdue}`,
+    `Bestätigungen seit > 30 min nicht zugestellt: ${health.mails_unsent_30min}`, `Endgültig nicht zustellbar: ${health.mails_dead}`];
+  const text = ['Vision Universe – Kündigungen brauchen Bearbeitung.', '', ...lines, '',
+    'Bearbeiten: node scripts/account/cancellations.mjs list (bzw. Workflow „Konten — Kündigungen bearbeiten“).'].join('\n');
+  return {subject: 'Alarm: Kündigungen brauchen Bearbeitung', text,
+    html: `<pre style="font-family:system-ui,sans-serif">${esc(text)}</pre>`};
 }

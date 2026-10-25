@@ -18,11 +18,29 @@ import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
+import {runScheduled, needsAttention} from './cancellation.mjs';
+
+// Gesundheit, oeffentlich und ohne Zahlen: Kuendigungen "ok" | "attention" | "unknown"
+// (fuer die Ueberwachung ohne Schluessel, .github/workflows/account-monitor.yml). 60 s zwischengespeichert.
+let cancellationState = {at: 0, value: 'unknown'};
+async function health(ctx) {
+  let cancellations = 'unknown';
+  if (supabaseReady(ctx.cfg)) {
+    if (ctx.now() - cancellationState.at > 60_000) {
+      let value = 'unknown';
+      try { value = needsAttention(await ctx.store.cancellationHealth()) ? 'attention' : 'ok'; } catch { value = 'unknown'; }
+      cancellationState = {at: ctx.now(), value};
+    }
+    cancellations = cancellationState.value;
+  }
+  return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
+    mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess});
+}
+export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; };
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
-  ['GET', '/v1/health', ctx => json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
-    mail: ctx.mailer.configured}), {db: false}],
+  ['GET', '/v1/health', health, {db: false}],
   ['GET', '/v1/session', auth.session],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
@@ -87,11 +105,20 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
       return json(request, cfg, upstream === 'INTERNAL' ? 500 : 502, {state: upstream === 'INTERNAL' ? 'INTERNAL_ERROR' : 'UPSTREAM_UNAVAILABLE'});
     }
   }
-  return {handle, cfg};
+  // Cron (wrangler.toml [triggers]): Postausgang wiederholen, Fristen ueberwachen.
+  async function scheduled() {
+    if (!supabaseReady(cfg)) return {skipped: 'ACCOUNTS_NOT_CONFIGURED'};
+    return runScheduled({store, stripe, mailer, cfg, log, now});
+  }
+  return {handle, scheduled, cfg, deps: {store, stripe, mailer, cfg, log, now}};
 }
 
 let cached = null;
 export default {
+  async scheduled(event, env, ctx) {
+    if (!cached || cached.env !== env) cached = {env, app: createApp({env})};
+    ctx.waitUntil(cached.app.scheduled());
+  },
   async fetch(request, env) {
     if (!cached || cached.env !== env) cached = {env, app: createApp({env})};
     return cached.app.handle(request);

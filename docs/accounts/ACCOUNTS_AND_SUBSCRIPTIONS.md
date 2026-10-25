@@ -63,7 +63,7 @@ werden von Safari/Firefox blockiert. `account.visionuniverse.de` ist dieselbe Si
 | Checkout | `POST /v1/billing/checkout {price:"plus_month"}` → Preis aus `plan_prices` (nie vom Client) → bestehendes gültiges Abo? → 409 → Stripe-Kunde (idempotent, mit Nutzer verknüpft **bevor** bezahlt wird) → Checkout-Sitzung (Idempotenzschlüssel je Nutzer/Preis/10 min) → Weiterleitung nur zu `https://checkout.stripe.com`. |
 | Zahlungsbestätigung | Webhook → Signatur (HMAC-SHA256, 300 s Toleranz, konstante Zeit) → Idempotenz (`billing_claim_event`) → **aktueller Zustand wird bei Stripe abgerufen** (Nutzlast nur Hinweis) → `billing_apply_subscription` (Kunde→Nutzer aus eigener Tabelle, Preis→Tarif, Modus, Reihenfolge). |
 | Tarifwechsel, Zahlungsmethode, Adresse | Stripe Customer Portal (`POST /v1/billing/portal`) → Änderungen kommen als Webhook zurück. |
-| Kündigung | Kündigungsbutton `/konto/kuendigen/` (§ 312k BGB, §8): Eingang wird **zuerst** gespeichert, dann zugeordnet (angemeldet oder ordentlich ohne Anmeldung → `cancel_at_period_end` bei Stripe), dann **Bestätigung per E-Mail** (Brevo) mit Inhalt, Eingangszeitpunkt und Vertragsende. |
+| Kündigung | Kündigungsbutton `/konto/kuendigen/` (§ 312k BGB, §8): Eingang wird **zuerst** gespeichert und **per E-Mail bestätigt** (Brevo, Postausgang mit Wiederholung). Angemeldet: sofort `cancel_at_period_end` bei Stripe. Ohne Anmeldung: Zuordnungsvorschlag, Ausführung durch eine berechtigte Person binnen 24 h, dann zweite E-Mail mit dem Vertragsende. |
 | Fehlgeschlagene Zahlung | Stripe `past_due` → Zugang bleibt bis Periodenende + 7 Tage (Stripe versucht erneut), `unpaid` → kein Zugang; Seite zeigt Hinweis „Zahlungsmethode aktualisieren“. |
 | Rechnungen | `invoice.*`-Webhooks → `public.invoices` (nur https-Links von Stripe), Anzeige unter `/konto/abo/`. |
 | Datenexport | `GET /v1/me/export` (Art. 15/20 DSGVO), JSON-Download. |
@@ -194,12 +194,12 @@ Aktiviert werden Methoden **im Stripe-Dashboard** (dynamische Zahlungsmethoden),
   | sofortige Bestätigung in Textform mit Inhalt, Datum/Uhrzeit des Eingangs und Beendigungszeitpunkt | E-Mail über Brevo (`src/mail.mjs#cancellationConfirmation`) mit allen Angaben; Eingangszeitpunkt aus der Datenbankuhr. Steht das Ende fest (zugeordnetes Stripe-Abo), nennt die E-Mail das Datum; sonst kündigt sie die Mitteilung an |
   | Nachweis | `billing.cancellation_requests`: Inhalt, Quelle, Status (`completed`, `manual_review`, `no_contract`), Ende, Bestätigungsstatus (`sent`, `failed`, `not_configured`) |
 
-  Zuordnung ohne Anmeldung: ordentliche Kündigungen mit der Kontoadresse werden **sofort** bei Stripe zum Laufzeitende vorgemerkt
-  (`VU_CANCELLATION_AUTO_PROCESS`, umkehrbar im Kundenportal; die Bestätigung geht an genau diese Adresse). Außerordentliche Kündigungen,
-  App-Store-/Play-Abos und unbekannte Adressen gehen in die Prüfung von Hand. **Noch offen (Owner):** ein dauerhaft sichtbarer Link
-  „Verträge hier kündigen“ auf *allen* Seiten verlangt eine Änderung der globalen Shell/Fußzeile – bewusst nicht gemacht (Menüstruktur bleibt
-  unverändert), vor dem Start zu entscheiden (O4). Ohne Brevo-Schlüssel und verifizierten Absender wird keine E-Mail versendet; der Eingang
-  wird dann als `not_configured` markiert und im Log gemeldet (O2).
+  Zuordnung ohne Anmeldung: der Eingang wird gespeichert und sofort bestätigt; der Server **schlägt** die Zuordnung nur vor
+  (Kontoadresse, Rechnungs-/Abo-Nummer). Ausgeführt wird sie von einer berechtigten Person – `VU_CANCELLATION_AUTO_PROCESS=false` ist
+  Owner-Vorgabe und im Deploy-Workflow hart gesetzt. Frist 24 h, danach Alarm. Bei Zuordnung zu einem Konto mit anderer Adresse erfährt
+  der Kontoinhaber es immer. Bestätigungen laufen über den Postausgang mit Wiederholung und Nachbearbeitung (`retry`/`drop`). Ablauf,
+  Prüfschritte und Werkzeuge: [DEV_ENVIRONMENT.md](DEV_ENVIRONMENT.md), Teil 3. Footer-Link „Verträge hier kündigen“ in der Spalte
+  „Rechtliches“ der Startseite, aktiv sobald Konten freigeschaltet sind (Teil 4, Restrisiko dort).
 - **Button-Lösung § 312j BGB:** Der Bestell-Button liegt bei Stripe Checkout (Abo-Modus, deutsch „Abonnieren“). Rechtlich prüfen lassen; alternativ eingebetteter Checkout mit eigenem Button „zahlungspflichtig abonnieren“.
 - **Widerrufsrecht** bei digitalen Inhalten/Dienstleistungen: Belehrung, Muster-Widerrufsformular, ggf. Zustimmung zum vorzeitigen Beginn (`consent_collection` – Schalter `STRIPE_CHECKOUT_REQUIRE_TERMS`).
 - **AGB/Nutzungsbedingungen** existieren noch nicht (Registrierung verweist auf „Nutzungsbedingungen“ als Entwurf, `termsVersion: entwurf-2026-10`).
@@ -212,8 +212,8 @@ Aktiviert werden Methoden **im Stripe-Dashboard** (dynamische Zahlungsmethoden),
 |---|---|---|
 | O1 | Konten/Projekte anlegen, Schlüssel, DNS – [SETUP.md](SETUP.md) | Owner |
 | O2 | Brevo: Domain `visionuniverse.de` authentifizieren, Absender verifizieren, SMTP für Supabase Auth (eingebauter Versand: nur **2 E-Mails/Stunde**) und API-Schlüssel für den Worker | Owner (B1–B4) |
-| O3 | ~~Kündigungsbestätigung per E-Mail~~ umgesetzt; offen bleibt nur die Abarbeitung von `manual_review` (heute SQL, später Admin-Oberfläche) | Betrieb |
-| O4 | Link „Verträge hier kündigen“ und „Anmelden“ in der globalen Shell | Owner-Entscheidung, eigener Shell-PR (Shell-QA) |
+| O3 | ~~Kündigungsbestätigung per E-Mail~~, ~~Bearbeitung von Kündigungen~~ umgesetzt (Workflow „Kündigungen bearbeiten“, Überwachung stündlich) | Betrieb |
+| O4 | Footer-Link auf der Startseite umgesetzt (an mit `konto/config.js`); auf *allen* Seiten und „Anmelden“ nur über die globale Shell | Rechtsberatung, ggf. eigener Shell-PR (Shell-QA) |
 | O5 | Rechtstexte: AGB, Widerruf, Datenschutzerklärung | Owner/Rechtsberatung |
 | O6 | Apple/Google: Signaturprüfung und Endpunkte anschließen | eigener PR, wenn die App kommt |
 | O7 | Premium-Durchsetzung in den Produkten (Daten über geprüfte Endpunkte) | je Produkt eigener PR |

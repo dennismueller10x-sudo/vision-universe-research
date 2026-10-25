@@ -34,7 +34,7 @@ node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "
 node --test "technical/tests/*.test.mjs"
 python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'
 node scripts/quality/check-test-isolation.mjs  # ein Test darf keine Produktionsdaten schreiben
-node --test workers/vu-account/tests/unit.test.mjs "konto/tests/*.test.mjs"   # Konten/Abos; mit PG_TEST_URL zusätzlich:
+node --test workers/vu-account/tests/unit.test.mjs "konto/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"   # Konten/Abos; mit PG_TEST_URL zusätzlich:
 node scripts/account/sql-tests.mjs && node --test workers/vu-account/tests/flows.test.mjs
 ```
 

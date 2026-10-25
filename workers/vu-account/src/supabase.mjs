@@ -100,5 +100,16 @@ export function createBillingStore(service) {
     recordCancellation: entry => service.rpc('billing_record_cancellation', {p: entry}),
     updateCancellation: (id, patch) => service.rpc('billing_update_cancellation', {p_id: id, p: patch}),
     userByEmail: email => service.rpc('billing_user_by_email', {p_email: email}),
+    getCancellation: id => service.rpc('billing_cancellation_get', {p_id: id}),
+    proposeCancellationMatch: id => service.rpc('billing_propose_cancellation_match', {p_id: id}),
+    setCancellationMatch: (id, userId, operator) => service.rpc('billing_set_cancellation_match',
+      {p_id: id, p_user: userId, p_operator: operator}),
+    cancellationQueue: (limit = 50) => service.rpc('billing_cancellation_queue', {p_limit: limit}),
+    cancellationHealth: () => service.rpc('billing_cancellation_health'),
+    enqueueMail: entry => service.rpc('billing_enqueue_mail', {p: entry}),
+    claimDueMails: (limit = 20) => service.rpc('billing_claim_due_mails', {p_limit: limit}),
+    mailResult: (id, result, error = null) => service.rpc('billing_mail_result', {p_id: id, p_result: result, p_error: error}),
+    resolveMails: (cancellationId, action, operator, note = null) => service.rpc('billing_resolve_mails',
+      {p_cancellation: cancellationId, p_action: action, p_operator: operator, p_note: note}),
   };
 }

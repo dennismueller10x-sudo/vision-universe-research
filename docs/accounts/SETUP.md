@@ -5,6 +5,10 @@ genannten Felder (Supabase, Stripe, Cloudflare, GitHub-Secrets). **Alles hier is
 
 Architektur: [ACCOUNTS_AND_SUBSCRIPTIONS.md](ACCOUNTS_AND_SUBSCRIPTIONS.md).
 
+**Kurzweg:** [DEV_ENVIRONMENT.md](DEV_ENVIRONMENT.md) – nur Anmeldungen und Schlüssel von Hand, den Rest (Schema, Auth-Einstellungen, Stripe-
+Katalog, Portal, Webhook, Brevo-Prüfung) erledigt der Workflow „Konten — Entwicklungsumgebung einrichten“. Diese Seite beschreibt dieselben
+Schritte von Hand.
+
 ## Supabase (Projekt `vision-universe-dev`)
 
 **S1 – Projekt anlegen.** supabase.com → New project → Organisation „Vision Universe“, Name `vision-universe-dev`, Region **Central EU (Frankfurt)**,
@@ -27,7 +31,7 @@ oder im Dashboard → SQL Editor die fünf Dateien aus `supabase/migrations/` in
 | Einstellung | Wert |
 |---|---|
 | Sign In / Providers → Email | an; **Confirm email: an**; Secure email change: an; Secure password change: an |
-| Sign In / Providers → „Allow new users to sign up“ | **an** im Entwicklungsprojekt (der Worker schließt die Registrierung selbst über `VU_REGISTRATION_ENABLED`/Positivliste) |
+| Sign In / Providers → „Allow new users to sign up“ | **an** im Entwicklungsprojekt; geschlossen wird über den Worker (`VU_REGISTRATION_ENABLED`/Positivliste) **und** Auth Hooks → „Before User Created“ → Postgres-Funktion `public.hook_before_user_created` (Positivliste `public.registration_allowlist`) |
 | Password: Minimum length | 10; „Lowercase, uppercase letters and digits“ |
 | Leaked password protection | an, falls im Plan verfügbar |
 | URL Configuration → Site URL | `https://research.visionuniverse.de/konto/` |
@@ -131,7 +135,7 @@ eigenen Adresse absenden → E-Mail „Eingangsbestätigung deiner Kündigung“
 |---|---|---|
 | Secret | `VU_ACCOUNT_SUPABASE_SECRET_KEY` | `sb_secret_…` (S5) |
 | Secret | `VU_ACCOUNT_STRIPE_SECRET_KEY` | `rk_test_…` (T7) |
-| Secret | `VU_ACCOUNT_STRIPE_WEBHOOK_SECRET` | `whsec_…` (T8; beim ersten Lauf leer lassen → Abrechnung aus) |
+| Secret | `VU_ACCOUNT_STRIPE_WEBHOOK_SECRET` | nur beim Weg von Hand (T8); der Einrichtungs-Workflow setzt das Geheimnis direkt im Worker |
 | Secret (Repo) | `CLOUDFLARE_API_TOKEN` | liegt bereits vor |
 | Variable | `VU_ACCOUNT_SUPABASE_URL` | `https://<ref>.supabase.co` |
 | Secret | `VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` (öffentlich, aber nach Repo-Regel nur über `secrets`) |

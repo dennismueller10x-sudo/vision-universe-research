@@ -8,6 +8,10 @@ name: Konten — vu-account ausrollen (Entwicklung)
 #     Workflow kennt keine Produktionsfreigabe.
 #   * Oeffentliche Registrierung bleibt aus (VU_REGISTRATION_ENABLED=false);
 #     Testkonten nur ueber VU_REGISTRATION_ALLOWLIST.
+#   * Kuendigungen ohne Anmeldung werden nicht automatisch ausgefuehrt
+#     (VU_CANCELLATION_AUTO_PROCESS=false, hart gesetzt).
+#   * Vorher: Workflow "Konten — Entwicklungsumgebung einrichten" (Schema,
+#     Stripe-Testkatalog, Brevo-Pruefung) ohne Fehler.
 #   * Kein Wert wird ausgegeben (oeffentliches Repository).
 on:
   workflow_dispatch:
@@ -48,7 +52,8 @@ jobs:
             sk_live_*|rk_live_*) echo "::error::Stripe-LIVE-Schluessel abgelehnt. Produktion nur nach Freigabe (docs/accounts/LIVE_RELEASE.md)."; exit 1;;
             *) echo "::error::Stripe-Schluessel hat keine bekannte Form"; exit 1;;
           esac
-          if [ -n "$STRIPE_SECRET_KEY" ]; then [[ "$STRIPE_WEBHOOK_SECRET" == whsec_* ]] || { echo "::error::VU_ACCOUNT_STRIPE_WEBHOOK_SECRET fehlt"; exit 1; }; fi
+          # Das Webhook-Geheimnis setzt normalerweise der Einrichtungs-Workflow direkt in Cloudflare.
+          if [ -n "$STRIPE_WEBHOOK_SECRET" ]; then [[ "$STRIPE_WEBHOOK_SECRET" == whsec_* ]] || { echo "::error::VU_ACCOUNT_STRIPE_WEBHOOK_SECRET muss whsec_… sein"; exit 1; }; fi
 
       - name: Ausrollen
         working-directory: workers/vu-account
@@ -60,9 +65,13 @@ jobs:
           ALLOWLIST: ${{ vars.VU_ACCOUNT_REGISTRATION_ALLOWLIST }}
           ORIGINS: ${{ vars.VU_ACCOUNT_ALLOWED_ORIGINS }}
           MAIL_SENDER: ${{ vars.VU_ACCOUNT_MAIL_SENDER }}
+          OPS_ALERT_EMAIL: ${{ vars.VU_ACCOUNT_OPS_ALERT_EMAIL }}
         run: |
           set -euo pipefail
-          extra=(--var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY")
+          # Owner-Vorgabe: Kuendigungen ohne Anmeldung werden NICHT automatisch ausgefuehrt.
+          grep -qE '^VU_CANCELLATION_AUTO_PROCESS = "false"$' wrangler.toml || { echo "::error::wrangler.toml muss VU_CANCELLATION_AUTO_PROCESS = \"false\" enthalten"; exit 1; }
+          extra=(--var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY"
+            --var "VU_CANCELLATION_AUTO_PROCESS:false" --var "STRIPE_LIVE_MODE_APPROVED:false" --var "VU_REGISTRATION_ENABLED:false")
           if [ -n "$API_ORIGIN" ]; then
             [[ "$API_ORIGIN" =~ ^https://[a-z0-9.-]+$ ]] || { echo "::error::VU_ACCOUNT_API_ORIGIN muss https://<host> sein"; exit 1; }
             extra+=(--var "VU_ACCOUNT_API_ORIGIN:$API_ORIGIN")
@@ -79,8 +88,12 @@ jobs:
             [[ "$MAIL_SENDER" =~ ^[a-z0-9._%+-]+@visionuniverse\.de$ ]] || { echo "::error::VU_ACCOUNT_MAIL_SENDER muss eine Adresse @visionuniverse.de sein"; exit 1; }
             extra+=(--var "VU_MAIL_SENDER:$MAIL_SENDER")
           fi
+          if [ -n "$OPS_ALERT_EMAIL" ]; then
+            [[ "$OPS_ALERT_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "::error::VU_ACCOUNT_OPS_ALERT_EMAIL ist keine Adresse"; exit 1; }
+            extra+=(--var "VU_OPS_ALERT_EMAIL:$OPS_ALERT_EMAIL")
+          fi
           npx --yes wrangler@4.147.0 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
-          url=$(grep -oE 'https://vu-account\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
+          url=$(grep -oE 'https://vu-account-dev\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
           echo "Worker-Adresse: ${url:-unbekannt} (als VU_ACCOUNT_API_ORIGIN eintragen, falls noch leer)"
 
       - name: Secrets zu Cloudflare (nie ins Protokoll)
@@ -95,5 +108,6 @@ jobs:
           set -euo pipefail
           put() { printf '%s' "$2" | npx --yes wrangler@4.147.0 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           put SUPABASE_SECRET_KEY "$SUPABASE_SECRET_KEY"
-          if [ -n "$STRIPE_SECRET_KEY" ]; then put STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"; put STRIPE_WEBHOOK_SECRET "$STRIPE_WEBHOOK_SECRET"; fi
+          if [ -n "$STRIPE_SECRET_KEY" ]; then put STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"; fi
+          if [ -n "$STRIPE_WEBHOOK_SECRET" ]; then put STRIPE_WEBHOOK_SECRET "$STRIPE_WEBHOOK_SECRET"; fi
           if [ -n "$BREVO_API_KEY" ]; then put BREVO_API_KEY "$BREVO_API_KEY"; else echo "::warning::VU_ACCOUNT_BREVO_API_KEY fehlt - Kuendigungsbestaetigungen werden nicht per E-Mail versendet."; fi

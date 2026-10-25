@@ -309,15 +309,25 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
       confirmation_status: 'sent', provider: null, has_end: false, reason: null});
     assert.match(env.lastMailTo('kunde@example.test').text, /kein laufendes Abonnement gefunden/);
 
-    // Bekannte Adresse mit Abo: sofort zum Laufzeitende vorgemerkt, Ende steht in der E-Mail.
+    // Bekannte Adresse mit Abo: Eingang bestaetigt, Zuordnung vorgeschlagen, Abo NICHT angefasst
+    // (VU_CANCELLATION_AUTO_PROCESS=false). Ausfuehrung durch eine berechtigte Person.
     const b = await signedIn(env, 'lena@example.test');
     const sub = await subscribe(env, b, 'pro_month');
     const known = await env.browser().post('/v1/billing/cancellation-request', {email: 'lena@example.test', fullName: 'Lena L.'});
     assert.deepEqual(Object.keys(known.data).sort(), Object.keys(unknown.data).sort(), 'Antwort verraet nichts');
-    assert.deepEqual(await row(known.data.confirmationId), {email: 'lena@example.test', kind: 'ordinary', status: 'completed',
-      confirmation_status: 'sent', provider: 'stripe', has_end: true, reason: null});
+    assert.deepEqual(await row(known.data.confirmationId), {email: 'lena@example.test', kind: 'ordinary', status: 'pending_assignment',
+      confirmation_status: 'sent', provider: null, has_end: false, reason: null});
+    assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, false, 'ohne Freigabe kein Eingriff');
+    assert.match(env.lastMailTo('lena@example.test').text, /wirksam eingegangen[\s\S]*unverzüglich/);
+    const {executeCancellation} = await import('../src/cancellation.mjs');
+    await assert.rejects(executeCancellation(env.app.deps, known.data.confirmationId, {}), /OPERATOR_REQUIRED/);
+    const done = await executeCancellation(env.app.deps, known.data.confirmationId, {operator: 'test-operator'});
+    assert.equal(done.status, 'completed');
     assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, true);
-    assert.match(env.lastMailTo('lena@example.test').text, /Dein Vertrag endet am .*\n?.*Vision Universe Pro|Vision Universe Pro[\s\S]*Dein Vertrag endet am/);
+    const final = env.lastMailTo('lena@example.test');
+    assert.match(final.subject, /Kündigung ist ausgeführt/);
+    assert.match(final.text, /Dein Vertrag Vision Universe Pro endet am/);
+    assert.equal((await executeCancellation(env.app.deps, known.data.confirmationId, {operator: 'x'})).alreadyDone, true, 'idempotent');
     assert.equal((await b.get('/v1/me/billing')).data.entitlements.plan_id, 'pro', 'Zugang bis zum Laufzeitende');
 
     // Ausserordentlich mit Grund: Pruefung von Hand; Links aus Fremdeingaben werden nicht weitergegeben.
@@ -358,9 +368,145 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
       assert.deepEqual([res.status, res.data.emailSent], [202, false]);
       assert.equal(await noMail.pg.json(`select to_json(confirmation_status) from billing.cancellation_requests where id = :'id'`,
         {id: res.data.confirmationId}), 'not_configured');
-      assert.ok(noMail.logs.some(l => l.message === 'CANCELLATION_CONFIRMATION_NOT_SENT'));
+      assert.ok(noMail.logs.some(l => l.message === 'MAIL_NOT_SENT'));
+      assert.equal(await noMail.pg.json(`select to_json(status) from billing.mail_outbox where cancellation_id = :'id'`,
+        {id: res.data.confirmationId}), 'not_configured', 'bleibt im Postausgang und wird wiederholt');
       assert.equal((await noMail.browser().get('/v1/health')).data.mail, false);
     } finally { await noMail.close(); }
+  });
+
+  await t.test('Bearbeitung von Hand: Arbeitsliste, Zuordnung anderer Adresse, kein Vertrag', async () => {
+    const c = await import('../src/cancellation.mjs');
+    const b = await signedIn(env, 'otto@example.test');
+    const sub = await subscribe(env, b, 'plus_month');
+    // Kunde kuendigt mit anderer Adresse als der Kontoadresse.
+    const res = await env.browser().post('/v1/billing/cancellation-request', {email: 'otto.privat@example.test', fullName: 'Otto O.'});
+    const queue = await env.app.deps.store.cancellationQueue();
+    assert.ok(!queue.some(q => q.id === res.data.confirmationId), 'kein Vorschlag -> nicht in der Arbeitsliste (no_contract)');
+    const otto = await env.pg.json(`select to_json(id) from auth.users where email = 'otto@example.test'`);
+    await assert.rejects(c.assignAndExecute(env.app.deps, res.data.confirmationId, otto, {operator: ''}), /OPERATOR_REQUIRED/);
+    const r = await c.assignAndExecute(env.app.deps, res.data.confirmationId, otto, {operator: 'test-operator'});
+    assert.equal(r.status, 'completed');
+    assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, true);
+    assert.match(env.lastMailTo('otto.privat@example.test').subject, /ausgeführt/, 'Abschluss an die Adresse der Kuendigung');
+    assert.match(env.lastMailTo('otto@example.test').subject, /ausgeführt/, 'Kontoinhaber erfaehrt die Zuordnung immer');
+    assert.equal(await env.pg.json(`select to_json(processed_by) from billing.cancellation_requests where id = :'id'`, {id: res.data.confirmationId}), 'test-operator');
+    await c.executeCancellation(env.app.deps, res.data.confirmationId, {operator: 'test-operator'});
+    const notices = await env.pg.json(`select count(*) from billing.mail_outbox where cancellation_id = '${res.data.confirmationId}' and kind = 'cancellation_final'`);
+    assert.equal(Number(notices), 2, 'wiederholtes Ausfuehren verschickt nichts doppelt');
+    // Ohne Vertrag abschliessen und mitteilen.
+    const none = await env.browser().post('/v1/billing/cancellation-request', {email: 'paula@example.test', fullName: 'Paula'});
+    assert.equal(await c.closeWithoutContract(env.app.deps, none.data.confirmationId, {operator: 'test-operator'}), true);
+    assert.match(env.lastMailTo('paula@example.test').subject, /ausgeführt/);
+    assert.match(env.lastMailTo('paula@example.test').text, /kein laufendes Abonnement gefunden/);
+    // Ausserordentliche Kuendigung eines Kunden: immer in die Arbeitsliste, nie automatisch ausfuehrbar.
+    const extra = await env.browser().post('/v1/billing/cancellation-request', {email: 'otto@example.test', fullName: 'Otto O.',
+      kind: 'extraordinary', reason: 'Umzug'});
+    const item = (await env.app.deps.store.cancellationQueue()).find(q => q.id === extra.data.confirmationId);
+    assert.deepEqual([item.status, item.has_match, 'reason' in item], ['manual_review', true, false], 'Grund nicht in der Liste');
+    await assert.rejects(c.executeCancellation(env.app.deps, extra.data.confirmationId, {operator: 'x'}), /NOT_ASSIGNABLE/);
+  });
+
+  await t.test('Bearbeitungswerkzeug: Liste ohne Personendaten, Ausfuehrung, Fristueberwachung', async () => {
+    const {run} = await import('../../../scripts/account/cancellations.mjs');
+    const lines = [];
+    const cli = argv => run(argv, {env: env.env, fetchImpl: env.fetchImpl, out: l => lines.push(l)});
+    const b = await signedIn(env, 'wanda@example.test');
+    const sub = await subscribe(env, b, 'pro_year');
+    const res = await env.browser().post('/v1/billing/cancellation-request', {email: 'wanda@example.test', fullName: 'Wanda Wunder', reference: 'geheim-42'});
+    lines.length = 0;
+    assert.equal(await cli(['list', '--redact']), 0);
+    const listed = lines.join('\n');
+    assert.ok(listed.includes(res.data.confirmationId));
+    assert.ok(!/wanda@example\.test|Wanda Wunder|geheim-42/.test(listed), 'redigiert: keine Personendaten im Protokoll');
+    await assert.rejects(cli(['execute', res.data.confirmationId]), /OPERATOR_REQUIRED/);
+    await assert.rejects(cli(['execute', 'keine-id', '--operator=ops']), /ID_REQUIRED/);
+    assert.equal(await cli(['execute', res.data.confirmationId, '--operator=ops', '--redact']), 0);
+    assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, true);
+    assert.match(env.lastMailTo('wanda@example.test').subject, /ausgeführt/);
+    // Frist: offene Kuendigung ueber 24 h -> check meldet Exit 1.
+    const late = await env.browser().post('/v1/billing/cancellation-request', {email: 'wanda@example.test', fullName: 'W', kind: 'extraordinary'});
+    await env.pg.json(`with u as (update billing.cancellation_requests set due_at = now() - interval '1 minute' where id = :'id' returning 1)
+      select to_json(count(*)) from u`, {id: late.data.confirmationId});
+    lines.length = 0;
+    assert.equal(await cli(['check']), 1);
+    assert.match(lines.join('\n'), /"overdue":1/);
+    assert.equal(await cli(['no-contract', late.data.confirmationId, '--operator=ops']), 0);
+    assert.equal(await cli(['check']), 0, 'nach Bearbeitung wieder in Ordnung');
+    assert.equal(await cli(['unbekannt']), 2);
+  });
+
+  await t.test('Bestaetigung bei Brevo-Ausfall: wiederholt, ueberwacht, Alarm an den Betrieb', async () => {
+    const ops = await createEnvironment({envOverrides: {VU_OPS_ALERT_EMAIL: 'ops@visionuniverse.de'}});
+    try {
+      ops.brevo.down = true;
+      const res = await ops.browser().post('/v1/billing/cancellation-request', {email: 'q@example.test', fullName: 'Q'});
+      assert.deepEqual([res.status, res.data.emailSent], [202, false], 'Eingang gilt trotz Ausfall');
+      const status = () => ops.pg.json(`select to_json(r) from (select o.status, o.attempts, c.confirmation_status from billing.mail_outbox o
+        join billing.cancellation_requests c on c.id = o.cancellation_id where c.id = :'id') r`, {id: res.data.confirmationId});
+      assert.deepEqual(await status(), {status: 'failed', attempts: 1, confirmation_status: 'failed'});
+      // Cron vor Ablauf des Abstands: kein erneuter Versuch.
+      await ops.app.scheduled();
+      assert.equal((await status()).attempts, 1);
+      // Brevo wieder da, Abstand abgelaufen: zugestellt.
+      ops.brevo.down = false;
+      await ops.pg.json(`with u as (update billing.mail_outbox set next_attempt_at = now() - interval '1 second' returning 1) select to_json(count(*)) from u`);
+      await ops.app.scheduled();
+      assert.deepEqual(await status(), {status: 'sent', attempts: 2, confirmation_status: 'sent'});
+      assert.ok(ops.lastMailTo('q@example.test'));
+
+      // Dauerausfall: nach 8 Versuchen "dead" -> Alarm (hoechstens einer je Stunde) und Gesundheit "attention".
+      ops.brevo.down = true;
+      const res2 = await ops.browser().post('/v1/billing/cancellation-request', {email: 'r@example.test', fullName: 'R'});
+      await ops.pg.json(`with u as (update billing.mail_outbox set attempts = 7, next_attempt_at = now() - interval '1 second'
+        where cancellation_id = :'id' returning 1) select to_json(count(*)) from u`, {id: res2.data.confirmationId});
+      await ops.app.scheduled();
+      assert.equal(await ops.pg.json(`select to_json(status) from billing.mail_outbox where cancellation_id = :'id'`, {id: res2.data.confirmationId}), 'dead');
+      assert.ok(ops.logs.some(l => l.message === 'CANCELLATIONS_NEED_ATTENTION'));
+      ops.brevo.down = false;
+      await ops.pg.json(`with u as (update billing.mail_outbox set next_attempt_at = now() - interval '1 second' where kind = 'ops_alert' returning 1) select to_json(count(*)) from u`);
+      await ops.app.scheduled();
+      await ops.app.scheduled();
+      const alerts = ops.mails.filter(m => m.to === 'ops@visionuniverse.de');
+      assert.equal(alerts.length, 1, 'ein Alarm je Stunde');
+      assert.match(alerts[0].text, /Endgültig nicht zustellbar: 1/);
+      assert.ok(!/r@example\.test/.test(alerts[0].text), 'keine personenbezogenen Daten im Alarm');
+      const {resetHealthCache} = await import('../src/index.mjs');
+      resetHealthCache();
+      const health = await ops.browser().get('/v1/health');
+      assert.deepEqual([health.data.cancellations, health.data.autoProcess], ['attention', false]);
+      assert.ok(!('open' in health.data) && !JSON.stringify(health.data).includes('@'), 'keine Zahlen, keine Adressen');
+
+      // Nachbearbeiten: erneut senden (Ursache behoben) bzw. begruendet aufgeben.
+      const c = await import('../src/cancellation.mjs');
+      await assert.rejects(c.retryMails(ops.app.deps, res2.data.confirmationId, {operator: ''}), /OPERATOR_REQUIRED/);
+      const retried = await c.retryMails(ops.app.deps, res2.data.confirmationId, {operator: 'test-operator'});
+      assert.equal(retried.requeued, 1);
+      assert.equal(await ops.pg.json(`select to_json(confirmation_status) from billing.cancellation_requests where id = :'id'`, {id: res2.data.confirmationId}), 'sent');
+      assert.ok(ops.lastMailTo('r@example.test'), 'Bestaetigung nachgeliefert');
+      ops.brevo.down = true;
+      const res3 = await ops.browser().post('/v1/billing/cancellation-request', {email: 's@example.test', fullName: 'S'});
+      await ops.pg.json(`with u as (update billing.mail_outbox set status = 'dead' where cancellation_id = :'id' returning 1) select to_json(count(*)) from u`, {id: res3.data.confirmationId});
+      await assert.rejects(c.dropMails(ops.app.deps, res3.data.confirmationId, {operator: 'test-operator', note: ' '}), /NOTE_REQUIRED/);
+      assert.deepEqual(await c.dropMails(ops.app.deps, res3.data.confirmationId, {operator: 'test-operator', note: 'Adresse existiert nicht (Bounce)'}), {dropped: 1});
+      assert.deepEqual(await ops.pg.json(`select to_json(r) from (select o.status, o.last_error, c.confirmation_status from billing.mail_outbox o
+        join billing.cancellation_requests c on c.id = o.cancellation_id where c.id = :'id') r`, {id: res3.data.confirmationId}),
+        {status: 'dropped', last_error: 'test-operator: Adresse existiert nicht (Bounce)', confirmation_status: 'dropped'});
+      const after = await ops.app.deps.store.cancellationHealth();
+      assert.deepEqual([Number(after.mails_dead), Number(after.mails_unsent_30min)], [0, 0], 'nachbearbeitet -> nicht mehr offen');
+    } finally { await ops.close(); }
+  });
+
+  await t.test('Automatische Ausfuehrung nur mit ausdruecklicher Freigabe', async () => {
+    const auto = await createEnvironment({envOverrides: {VU_CANCELLATION_AUTO_PROCESS: 'true'}});
+    try {
+      const b = await signedIn(auto, 'vera@example.test');
+      const sub = await subscribe(auto, b, 'plus_month');
+      const res = await auto.browser().post('/v1/billing/cancellation-request', {email: 'vera@example.test', fullName: 'Vera'});
+      assert.equal(res.status, 202);
+      assert.equal(auto.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, true);
+      assert.match(auto.lastMailTo('vera@example.test').text, /Dein Vertrag endet am/);
+    } finally { await auto.close(); }
   });
 
   await t.test('Preisabgleich mit Stripe und Alarm bei Rueckbuchung', async () => {

@@ -25,12 +25,14 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
   const supabase = await createFakeSupabase({baseUrl: SIM.supabase, pg, now});
   const stripe = createFakeStripe({now, checkoutBase, portalBase});
   const mails = []; // simuliertes Brevo (Transaktions-E-Mails des Workers)
+  const brevo = {down: false}; // Ausfall simulieren
   const fetchImpl = async (input, init) => {
     const req = input instanceof Request ? input : new Request(input, init);
     if (req.url.startsWith(SIM.supabase)) return supabase.handle(req);
     if (req.url.startsWith(SIM.stripe)) return stripe.handle(req);
     if (req.url.startsWith(SIM.brevo)) {
       if (req.headers.get('api-key') !== 'brevo-sim-key') return new Response('{"code":"unauthorized"}', {status: 401});
+      if (brevo.down) return new Response('{"code":"service_unavailable"}', {status: 503});
       const mail = await req.json();
       mails.push({to: mail.to[0].email, subject: mail.subject, text: mail.textContent, html: mail.htmlContent, sender: mail.sender.email, at: new Date(now()).toISOString()});
       return new Response(JSON.stringify({messageId: `<sim-${mails.length}@brevo.sim>`}), {status: 201});
@@ -52,7 +54,7 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
     headers: {'Content-Type': 'application/json', 'Stripe-Signature': signature}, body: raw}));
 
   return {
-    app, pg, db, supabase, stripe, env, logs, now, api, site, mails,
+    app, pg, db, supabase, stripe, env, logs, now, api, site, mails, brevo, fetchImpl,
     lastMailTo: to => [...mails].reverse().find(m => m.to === to) || null,
     advance(ms) { offset += ms; },
     deliverWebhooks: opts => stripe.sim.deliver(webhook, opts),

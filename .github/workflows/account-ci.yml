@@ -5,7 +5,7 @@ name: Konten und Abos — Tests
 # Stripe, keine Konten, keine Zahlungen.
 on:
   pull_request:
-    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', '.github/workflows/account-ci.yml', '.github/workflows/account-deploy.yml']
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', '.github/workflows/account-*.yml']
   push:
     branches: [main]
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', '.github/workflows/account-ci.yml']
@@ -38,7 +38,7 @@ jobs:
       - name: SQL-Migrationen und RLS (PostgreSQL 17)
         run: node scripts/account/sql-tests.mjs
       - name: Worker, Ende-zu-Ende und Kontoseiten
-        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs"
+        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"
       - name: Keine Schluessel im Repository
         run: node scripts/account/assert-no-billing-secrets.mjs
       - name: Worker laesst sich buendeln (ohne Ausrollen)

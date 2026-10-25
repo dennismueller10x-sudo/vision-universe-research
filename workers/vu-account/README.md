@@ -12,6 +12,8 @@ Einrichtung: [docs/accounts/SETUP.md](../../docs/accounts/SETUP.md) · Entscheid
 | `src/auth.mjs` | Sitzung, Login, Registrierung (PKCE), Passwort |
 | `src/account.mjs` | Profil, Einstellungen, Abo-Übersicht, Export, Löschung |
 | `src/billing.mjs` | Tarife, Checkout, Portal, Kündigung, Stripe-Webhook, `requireFeature` |
+| `src/cancellation.mjs` | Kündigung § 312k: Eingang, Zuordnung, Ausführung, Postausgang, Cron-Überwachung (auch von `scripts/account/cancellations.mjs` genutzt) |
+| `src/mail.mjs` | Brevo-Versand, Kündigungs- und Alarm-E-Mails |
 | `src/providers/` | Stripe-Adapter (aktiv), Apple/Google (vorbereitet) |
 | `src/supabase.mjs`, `src/stripe.mjs` | Clients ohne SDK |
 
@@ -22,4 +24,5 @@ PG_TEST_URL=postgresql://postgres:postgres@localhost:5432/postgres \
 PG_TEST_URL=… node scripts/account/dev-server.mjs                        # http://localhost:8790/__dev/
 ```
 
-Ausrollen nur über den Workflow „Konten — vu-account ausrollen (Entwicklung)“ (manuell, Live-Schlüssel werden abgelehnt).
+Ausrollen nur über den Workflow „Konten — vu-account ausrollen (Entwicklung)“ (manuell, Live-Schlüssel werden abgelehnt). Echte
+Entwicklungszugänge: [docs/accounts/DEV_ENVIRONMENT.md](../../docs/accounts/DEV_ENVIRONMENT.md). Cron alle 10 min: Postausgang, Fristen, Alarm.

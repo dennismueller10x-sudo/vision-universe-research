@@ -46,6 +46,7 @@ export function loadConfig(env = {}) {
       mode: stripeMode,
       liveApproved,
       requireTerms: flag(env.STRIPE_CHECKOUT_REQUIRE_TERMS),
+      portalConfiguration: /^bpc_[A-Za-z0-9]+$/.test(String(env.STRIPE_PORTAL_CONFIGURATION || '')) ? env.STRIPE_PORTAL_CONFIGURATION : '',
       checkoutHosts: new Set(['checkout.stripe.com', ...list(env.STRIPE_CHECKOUT_HOSTS)]),
     },
     registration: {
@@ -59,10 +60,14 @@ export function loadConfig(env = {}) {
       senderName: String(env.VU_MAIL_SENDER_NAME || 'Vision Universe'),
     },
     cancellation: {
-      // Ordentliche Kuendigung ohne Anmeldung sofort zuordnen und bei Stripe zum
-      // Laufzeitende vormerken (umkehrbar im Kundenportal). "false" = nur Eingang
-      // speichern und bestaetigen, Zuordnung von Hand.
-      autoProcess: String(env.VU_CANCELLATION_AUTO_PROCESS || 'true').toLowerCase() !== 'false',
+      // "true": ordentliche Kuendigung ohne Anmeldung bei eindeutigem Vorschlag sofort
+      // bei Stripe zum Laufzeitende vormerken. "false": Eingang speichern, bestaetigen,
+      // Zuordnung vorschlagen; ausfuehren nur durch eine berechtigte Person
+      // (scripts/account/cancellations.mjs).
+      // Vorgabe des Owners: AUS ("false"), bis zur ausdruecklichen Freigabe.
+      autoProcess: String(env.VU_CANCELLATION_AUTO_PROCESS || 'false').toLowerCase() === 'true',
+      // Empfaenger von Betriebsalarmen (Kuendigung ueberfaellig, Bestaetigung nicht zustellbar).
+      opsAlertEmail: String(env.VU_OPS_ALERT_EMAIL || ''),
     },
     cookies: {
       secure: cookieSecure,

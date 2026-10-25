@@ -14,20 +14,28 @@
 #   STRIPE_SECRET_KEY        sk_test_… bzw. rk_test_… (Restricted Key empfohlen)
 #   STRIPE_WEBHOOK_SECRET    whsec_…
 #   BREVO_API_KEY            Brevo-API-Schluessel fuer Transaktions-E-Mails (Kuendigungsbestaetigung)
+#   STRIPE_PORTAL_CONFIGURATION  bpc_… (kein Geheimnis; setzt "Konten — Entwicklungsumgebung einrichten")
+#   STRIPE_WEBHOOK_SECRET wird ebenfalls von diesem Einrichtungs-Workflow gesetzt.
 # =============================================================================
 
-name = "vu-account"
+name = "vu-account-dev"
 main = "src/index.mjs"
 compatibility_date = "2026-09-17"
 workers_dev = true
+# Eigene Subdomain derselben Site, damit die HttpOnly-Cookies First-Party sind
+# (Safari/Firefox blockieren Cookies von *.workers.dev im Kontext der Seite).
+# Entwicklung: account-dev.visionuniverse.de. Aktivieren, sobald die Zone in
+# Cloudflare liegt (docs/accounts/DEV_ENVIRONMENT.md, Schritt C1); Cloudflare legt
+# DNS-Eintrag und Zertifikat selbst an:
+# routes = [{ pattern = "account-dev.visionuniverse.de", custom_domain = true }]
 
 [observability]
 enabled = true
 
-# Eigene Subdomain derselben Site, damit die HttpOnly-Cookies First-Party sind
-# (Safari/Firefox blockieren Cookies von *.workers.dev im Kontext der Seite).
-# Erst nach DNS-Freigabe aktivieren (docs/accounts/SETUP.md, Schritt D1):
-# routes = [{ pattern = "account.visionuniverse.de", custom_domain = true }]
+# Alle 10 Minuten: Postausgang wiederholen (Kuendigungsbestaetigungen), Fristen
+# ueberwachen, Alarm an VU_OPS_ALERT_EMAIL (Workers Free: Cron-Trigger enthalten).
+[triggers]
+crons = ["*/10 * * * *"]
 
 # Optionale, isolate-uebergreifende Ratenbegrenzung (docs/accounts/SETUP.md, C3).
 # [[ratelimits]]
@@ -55,8 +63,12 @@ VU_REGISTRATION_ALLOWLIST = ""
 # Leer = keine E-Mails; Kuendigungen werden dann als "nicht bestaetigt" markiert.
 VU_MAIL_SENDER = ""
 VU_MAIL_SENDER_NAME = "Vision Universe"
-# Ordentliche Kuendigung ohne Anmeldung automatisch zuordnen und bei Stripe zum
-# Laufzeitende vormerken (§ 312k BGB). "false" = nur Eingang + Bestaetigung.
-VU_CANCELLATION_AUTO_PROCESS = "true"
+# Kuendigung ohne Anmeldung (§ 312k BGB): Eingang speichern, bestaetigen,
+# Zuordnung vorschlagen; ausfuehren nur durch eine berechtigte Person.
+# VERPFLICHTEND "false" (Owner-Vorgabe); der Deploy-Workflow setzt den Wert hart.
+VU_CANCELLATION_AUTO_PROCESS = "false"
+# Empfaenger von Betriebsalarmen (Kuendigung > 24 h offen, Bestaetigung nicht
+# zustellbar). Ohne Wert: nur Log und /v1/health "attention".
+VU_OPS_ALERT_EMAIL = ""
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"

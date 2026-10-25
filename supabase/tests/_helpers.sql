@@ -1,7 +1,7 @@
 -- Testhelfer (nur in der Testdatenbank). Simuliert, was PostgREST je Anfrage
 -- tut: die JWT-Claims setzen und in die Rolle des Tokens wechseln.
 create schema if not exists tests;
-grant usage on schema tests to anon, authenticated, service_role;
+grant usage on schema tests to anon, authenticated, service_role, supabase_auth_admin;
 
 create or replace function tests.create_user(p_email text, p_name text default null)
 returns uuid language sql as $$

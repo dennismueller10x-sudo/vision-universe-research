@@ -14,7 +14,7 @@ import {verifyStripeSignature, StripeError} from './stripe.mjs';
 import {normalizeStripeSubscription, normalizeStripeInvoice, stripeInvoiceSubscriptionId} from './providers/stripe-adapter.mjs';
 import {SupabaseError} from './supabase.mjs';
 import {featureDecision} from './entitlements.mjs';
-import {cancellationConfirmation} from './mail.mjs';
+import {receivePublicCancellation, receiveSignedInCancellation} from './cancellation.mjs';
 import * as v from './validate.mjs';
 
 const STRIPE_ID = {sub: /^sub_[A-Za-z0-9]{6,}$/, in: /^in_[A-Za-z0-9]{6,}$/, cus: /^cus_[A-Za-z0-9]{6,}$/};
@@ -97,33 +97,15 @@ export async function portal(ctx) {
   const user = await requireUser(ctx);
   const customer = await ctx.store.customerForUser(user.id, 'stripe');
   if (!customer) throw new HttpError(404, 'NO_BILLING_ACCOUNT');
-  const session = await ctx.stripe.createPortalSession({customer, return_url: ctx.cfg.siteOrigin + SITE_PATHS.subscription, locale: 'de'});
+  const session = await ctx.stripe.createPortalSession({customer, return_url: ctx.cfg.siteOrigin + SITE_PATHS.subscription, locale: 'de',
+    ...(ctx.cfg.stripe.portalConfiguration ? {configuration: ctx.cfg.stripe.portalConfiguration} : {})});
   return json(ctx.request, ctx.cfg, 200, {url: session.url}, {cookies: ctx.outCookies});
 }
 
 // ---------------------------------------------------------------------------
-// Kuendigungsbutton (§ 312k BGB). Beide Wege speichern zuerst den Eingang
-// (Inhalt + Zeitpunkt), ordnen dann zu und bestaetigen in Textform per E-Mail
-// mit Eingangszeitpunkt und - sobald feststehend - dem Beendigungszeitpunkt.
+// Kuendigungsbutton (§ 312k BGB): Ablauf in cancellation.mjs.
 // ---------------------------------------------------------------------------
-const PLAN_NAMES = {plus: 'Vision Universe Plus', pro: 'Vision Universe Pro'};
-
-// Ordentliche Kuendigung eines Stripe-Abos zum Laufzeitende (idempotent).
-async function cancelStripeAtPeriodEnd(ctx, subscriptionId) {
-  if (!STRIPE_ID.sub.test(subscriptionId)) throw new HttpError(500, 'SUBSCRIPTION_ID_INVALID');
-  await ctx.stripe.updateSubscription(subscriptionId, {cancel_at_period_end: 'true'}, `vu-cancel-${subscriptionId}`);
-  return syncSubscription(ctx, subscriptionId);
-}
-
-async function confirmCancellation(ctx, entry) {
-  const mail = cancellationConfirmation(entry);
-  const result = await ctx.mailer.send({to: entry.email, ...mail});
-  if (result !== 'sent') ctx.log('error', 'CANCELLATION_CONFIRMATION_NOT_SENT', {cancellation: entry.confirmationId, result});
-  await ctx.store.updateCancellation(entry.confirmationId, {confirmation_status: result});
-  return result === 'sent';
-}
-
-// Angemeldet: ordentliche Kuendigung zum Periodenende.
+// Angemeldet: ordentliche Kuendigung zum Periodenende (Identitaet durch Login belegt).
 export async function cancel(ctx) {
   assertBilling(ctx);
   const user = await requireUser(ctx);
@@ -131,31 +113,18 @@ export async function cancel(ctx) {
   const blocking = await ctx.store.blockingSubscription(user.id);
   if (!blocking) throw new HttpError(404, 'NO_ACTIVE_SUBSCRIPTION');
   if (blocking.provider !== 'stripe') throw new HttpError(409, 'MANAGED_BY_STORE', {provider: blocking.provider});
-  const received = await ctx.store.recordCancellation({user_id: user.id, email: user.email || 'unbekannt@invalid',
-    kind: 'ordinary', reference: blocking.provider_subscription_id, source: 'signed_in'});
-  let snapshot;
-  try { snapshot = await cancelStripeAtPeriodEnd(ctx, blocking.provider_subscription_id); }
-  catch (e) {
-    // Der Eingang zaehlt trotzdem: speichern, bestaetigen, von Hand nachziehen.
-    ctx.log('error', 'CANCELLATION_PROCESS_FAILED', {cancellation: received.id, code: String(e.code || e.message).slice(0, 80)});
-    await ctx.store.updateCancellation(received.id, {status: 'manual_review', provider: 'stripe',
-      subscription_ref: blocking.provider_subscription_id, note: 'PROCESS_FAILED'});
-    const emailSent = user.email ? await confirmCancellation(ctx, {confirmationId: received.id, receivedAt: received.requested_at,
-      email: user.email, kind: 'ordinary', planName: PLAN_NAMES[blocking.plan_id] || blocking.plan_id, status: 'manual_review'}) : false;
-    return json(ctx.request, ctx.cfg, 202, {state: 'CANCELLATION_RECEIVED', confirmationId: received.id,
-      receivedAt: received.requested_at, emailSent}, {cookies: ctx.outCookies});
+  const r = await receiveSignedInCancellation(ctx, {user, blocking});
+  if (!r.snapshot) {
+    // Der Eingang zaehlt trotzdem: gespeichert, bestaetigt, Ausfuehrung von Hand.
+    return json(ctx.request, ctx.cfg, 202, {state: 'CANCELLATION_RECEIVED', confirmationId: r.confirmationId,
+      receivedAt: r.receivedAt, emailSent: r.emailSent}, {cookies: ctx.outCookies});
   }
-  await ctx.store.updateCancellation(received.id, {status: 'completed', provider: 'stripe',
-    subscription_ref: blocking.provider_subscription_id, ends_at: snapshot.current_period_end});
-  const emailSent = user.email ? await confirmCancellation(ctx, {confirmationId: received.id, receivedAt: received.requested_at,
-    email: user.email, kind: 'ordinary', planName: PLAN_NAMES[blocking.plan_id] || blocking.plan_id,
-    reference: null, endsAt: snapshot.current_period_end, status: 'completed'}) : false;
-  return json(ctx.request, ctx.cfg, 200, {state: 'CANCELED_AT_PERIOD_END', endsAt: snapshot.current_period_end,
-    confirmationId: received.id, receivedAt: received.requested_at, emailSent}, {cookies: ctx.outCookies});
+  return json(ctx.request, ctx.cfg, 200, {state: 'CANCELED_AT_PERIOD_END', endsAt: r.snapshot.current_period_end,
+    confirmationId: r.confirmationId, receivedAt: r.receivedAt, emailSent: r.emailSent}, {cookies: ctx.outCookies});
 }
 
-// Ohne Anmeldung. Die Antwort verraet nie, ob es zur Adresse ein Konto oder Abo
-// gibt (das steht nur in der E-Mail an genau diese Adresse).
+// Ohne Anmeldung (§ 312k BGB). Die Antwort verraet nie, ob es zur Adresse ein
+// Konto oder Abo gibt (das steht nur in der E-Mail an genau diese Adresse).
 export async function cancellationRequest(ctx) {
   if (billingBlocker(ctx.cfg) === 'ACCOUNTS_NOT_CONFIGURED') throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
   const body = await readJson(ctx.request);
@@ -165,36 +134,10 @@ export async function cancellationRequest(ctx) {
   const fullName = v.shortText(body.fullName, 120);
   if (!fullName) throw new HttpError(400, 'NAME_REQUIRED');
   const kind = body.kind === 'extraordinary' ? 'extraordinary' : 'ordinary';
-  const reference = v.shortText(body.reference, 120);
-  const reason = kind === 'extraordinary' ? v.shortText(body.reason, 500) : null;
-  const received = await ctx.store.recordCancellation({email, full_name: fullName, reference, kind, reason, source: 'public'});
-
-  // Zuordnung: nur ordentliche Kuendigungen automatisch; alles andere prueft der Betrieb.
-  let outcome = {status: 'manual_review'};
-  if (kind === 'ordinary' && ctx.cfg.cancellation.autoProcess && !billingBlocker(ctx.cfg)) {
-    try {
-      const userId = await ctx.store.userByEmail(email);
-      const blocking = userId ? await ctx.store.blockingSubscription(userId) : null;
-      if (!userId || !blocking) outcome = {status: 'no_contract', user_id: userId || null};
-      else if (blocking.provider !== 'stripe') outcome = {status: 'manual_review', user_id: userId, provider: blocking.provider,
-        subscription_ref: blocking.provider_subscription_id, note: 'STORE_MANAGED'};
-      else {
-        const snapshot = await cancelStripeAtPeriodEnd(ctx, blocking.provider_subscription_id);
-        outcome = {status: 'completed', user_id: userId, provider: 'stripe', subscription_ref: blocking.provider_subscription_id,
-          ends_at: snapshot.current_period_end, plan: blocking.plan_id};
-      }
-    } catch (e) {
-      ctx.log('error', 'CANCELLATION_AUTO_PROCESS_FAILED', {cancellation: received.id, code: String(e.code || e.message).slice(0, 80)});
-      outcome = {status: 'manual_review', note: 'AUTO_PROCESS_FAILED'};
-    }
-  }
-  const {plan, ...patch} = outcome;
-  await ctx.store.updateCancellation(received.id, patch);
-  const emailSent = await confirmCancellation(ctx, {confirmationId: received.id, receivedAt: received.requested_at, email,
-    fullName, reference, kind, reason, planName: PLAN_NAMES[plan] || null, endsAt: outcome.ends_at || null,
-    status: outcome.status, provider: outcome.provider || null});
-  return json(ctx.request, ctx.cfg, 202, {state: 'CANCELLATION_RECEIVED', confirmationId: received.id,
-    receivedAt: received.requested_at, emailSent});
+  const r = await receivePublicCancellation(ctx, {email, fullName, reference: v.shortText(body.reference, 120), kind,
+    reason: kind === 'extraordinary' ? v.shortText(body.reason, 500) : null});
+  return json(ctx.request, ctx.cfg, 202, {state: 'CANCELLATION_RECEIVED', confirmationId: r.confirmationId,
+    receivedAt: r.receivedAt, emailSent: r.emailSent});
 }
 
 export async function entitlementCheck(ctx) {
