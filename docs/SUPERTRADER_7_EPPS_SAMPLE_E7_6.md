@@ -13,7 +13,7 @@ Umsetzung in einem Satz: eine vorregistrierte Zusatzstichprobe `CLEAN_EXT_E7_6`,
 
 ## 2. Lizenzgrundlage und Lücke
 
-Geprüft vor dem Abruf:
+Die Belege sind bestehende Dokumente; sie lagen vor dem Abruf im Repository vor. Diese Zusammenstellung wurde erst nach dem Abruf committet (Review #920), der Vorregistrierungs-Commit `694b91c` enthält sie nicht:
 
 | Beleg | Inhalt |
 |---|---|
@@ -201,6 +201,16 @@ Sie ändert nicht:
 
 ## 10. Betriebshinweise
 
-- **Getrennter Cache:** Die Erweiterung liegt in eigenen privaten Objekten. Ein späterer normaler `kk-intraday`-Abruf sähe diese Tage als fehlend an und würde sie erneut abrufen. Vor einem solchen Lauf ist eine eigene Entscheidung nötig.
-- **Kein zweiter Abruf:** Das Ledger verweigert jeden weiteren `kk-intraday-e76`-Lauf. Eine weitere Aufstockung (Plan-Schritte 3 und 4) braucht eine neue Entscheidung und eine neue Vorregistrierung.
+- **Getrennter Cache:** Die Erweiterung liegt in eigenen privaten Objekten. Die Referenz-Tagessätze lesen nur den Referenzcache.
+- **Kein zweiter Abruf:**
+  - Der einmalige Abruf ist verbraucht: Lauf 40185337539 mit 481 Anfragen.
+  - Nach dem unabhängigen Review (HIGH: die Ledger-Prüfung ist nicht atomar, zwei gleichzeitig gestartete Läufe hätten beide abrufen können) ist der Abrufmodus aus dem Workflow **entfernt**. Ein Test (`sf-runner`) hält fest, dass er nicht mehr startbar ist.
+  - Das Ledger bleibt eine zweite Sicherung, aber nicht die einzige.
+  - Verfügbar bleiben nur der Planmodus `kk-intraday-e76-count` (0 Anfragen, ohne API-Schlüssel) und die Cache-Auswertung.
+  - Eine weitere Aufstockung (Plan-Schritte 3 und 4) braucht eine neue Entscheidung, eine neue Vorregistrierung und einen eigenen PR. Dieser PR muss den Abrufmodus wieder einführen und dabei:
+    - das Ledger direkt vor dem Schreiben neu lesen und bedingt schreiben (`If-None-Match`);
+    - eine feste Concurrency-Gruppe setzen;
+    - Checkpoints während des Abrufs schreiben.
+- **Absturz während des Abrufs:** Der Erweiterungsabruf schrieb den Cache erst am Ende, ohne Checkpoint. Ein Absturz hätte den einen Abruf verbraucht, ohne Daten zu sichern. Eingetreten ist das nicht: Der Lauf endete mit `COMPLETE`.
+- **Normaler `kk-intraday`-Abruf:** Dieser Modus hat bis zu 6.000 Anfragen je Lauf und kennt den Erweiterungscache nicht. Er würde die Erweiterungstage erneut in den Referenzcache holen und damit die Referenz-Tagessätze verschieben. Das war schon vor diesem PR möglich. Vor jedem solchen Lauf ist eine eigene Entscheidung nötig.
 - **Tests:** `scripts/supertrader/tests/sf-kk-e7-6-sample.test.mjs`. Geprüft werden Vorregistrierungs-Hash, unveränderte Referenz-Hashes, Zielanzahl je Schicht, Mutationstest, Plan-Priorität und Obergrenze, Fail-closed-Abbruch (auch bei Wiederholungen), Ledger, 0 Anfragen im Cache-only- und Planlauf sowie die Tagessätze.

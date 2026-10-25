@@ -64,9 +64,9 @@ test('SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and
   const y = fs.readFileSync(new URL('../../../.github/workflows/supertrader-validation.yml', import.meta.url), 'utf8');
   assert.match(y, /SF_RESEARCH_REQUIRES_SNAPSHOT_AND_RESEARCH_V1/);
   assert.match(y, /run-research\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
-  assert.match(y, /sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|sf7-minervini\|sf7-minervini-smoke\|sf6-integrity\|sf6-integrity-smoke\|sf7-ca-resolution\|sf7-ca-resolution-smoke\|sf6-validation\|sf6-validation-holdout\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\|kk-intraday-cache\|kk-intraday-e76-count\|kk-intraday-e76\) ;;/);
+  assert.match(y, /sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|sf7-minervini\|sf7-minervini-smoke\|sf6-integrity\|sf6-integrity-smoke\|sf7-ca-resolution\|sf7-ca-resolution-smoke\|sf6-validation\|sf6-validation-holdout\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\|kk-intraday-cache\|kk-intraday-e76-count\) ;;/);
   // Supertrader 3.0 research runner, 4.0 and 5.0 lifecycle runners: same fail-closed conditions, sealed result
-  assert.match(y, /case "\$MODE" in sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|sf7-minervini\|sf7-minervini-smoke\|sf6-integrity\|sf6-integrity-smoke\|sf7-ca-resolution\|sf7-ca-resolution-smoke\|sf6-validation\|sf6-validation-holdout\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\|kk-intraday-cache\|kk-intraday-e76-count\|kk-intraday-e76\)\n\s+if \[ -z "\$snap" \] \|\| \[ "\$acc" != research-v1 \]/);
+  assert.match(y, /case "\$MODE" in sf-research\|sf-research-smoke\|sf3-research\|sf3-research-smoke\|sf4-lifecycle\|sf4-lifecycle-smoke\|sf5-lifecycle\|sf5-lifecycle-smoke\|sf7-minervini\|sf7-minervini-smoke\|sf6-integrity\|sf6-integrity-smoke\|sf7-ca-resolution\|sf7-ca-resolution-smoke\|sf6-validation\|sf6-validation-holdout\|kk-intraday\|kk-intraday-count\|kk-intraday-smoke\|kk-intraday-cache\|kk-intraday-e76-count\)\n\s+if \[ -z "\$snap" \] \|\| \[ "\$acc" != research-v1 \]/);
   // Kullamaegi EP / PS chart-first runner: same fail-closed snapshot conditions, request budget capped, sealed result
   assert.match(y, /run-kk-intraday\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS \$extra/);
   assert.match(y, /KK_MAX_REQUESTS_ABOVE_6000/);
@@ -74,7 +74,8 @@ test('SF-RUN-WORKFLOW: sf-research runs only with a snapshot and research-v1 and
   assert.match(y, /if \[ "\$MODE" = kk-intraday-cache \]; then extra="--cache-only"; unset TIINGO_API_KEY; fi/);
   // E7-6: the plan mode passes no API key; the fetch mode carries no budget input (the cap of 550 is fixed in the runner)
   assert.match(y, /if \[ "\$MODE" = kk-intraday-e76-count \]; then extra="--ext-e7-6 --count-only"; unset TIINGO_API_KEY; fi/);
-  assert.match(y, /\[ "\$MODE" = kk-intraday-e76 \] && extra="--ext-e7-6"\n/);
+  // E7-6: the one extension fetch is spent (run 40185337539, 481 requests); the fetch mode is not startable any more
+  assert.doesNotMatch(y, /kk-intraday-e76(?!-count)/);
   assert.doesNotMatch(y, /\[supertrader-validation:kk-intraday-e76/);
   const rk = fs.readFileSync(new URL('../source-faithful/research/run-kk-intraday.mjs', import.meta.url), 'utf8');
   assert.match(rk, /requireRestoreReceipt: true/); assert.match(rk, /encryptForOwner/);

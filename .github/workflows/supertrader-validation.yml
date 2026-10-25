@@ -47,7 +47,8 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:kk-intraday-smoke]   technischer Probelauf (400 Reihen, Smoke-Snapshot)
 #   [supertrader-validation:kk-intraday-cache]   Supertrader 6.0: nur vorhandener Cache (0 Anfragen, kein API-Schluessel), saubere Stichproben + Schichtung
 #   E7-6 (nur manuell, keine Commit-Marke): kk-intraday-e76-count  Plan der Stichprobenerweiterung CLEAN_EXT_E7_6 (0 Anfragen, kein API-Schluessel)
-#                                           kk-intraday-e76        der eine Erweiterungsabruf, hart <= 550 Anfragen, fail closed, nur einmal
+#                                           (Abrufmodus entfernt)  der eine Erweiterungsabruf ist verbraucht (Lauf 40185337539, 481 Anfragen);
+#                                                                  ein weiterer Abruf braucht eine neue Eigentuemerentscheidung und einen eigenen PR
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -56,7 +57,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [sf7-minervini, sf7-minervini-smoke, sf7-ca-resolution, sf7-ca-resolution-smoke, sec-pit-r14, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, kk-intraday-e76-count, kk-intraday-e76, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [sf7-minervini, sf7-minervini-smoke, sf7-ca-resolution, sf7-ca-resolution-smoke, sec-pit-r14, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, kk-intraday-e76-count, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
       snapshot:
         description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
@@ -116,11 +117,11 @@ jobs:
           case "$acc" in legacy|research-v1) ;; *) echo "UNKNOWN_ACCOUNTING_MODE" >&2; exit 1;; esac
           # Nur analyze-methods.mjs liest einen Snapshot; r9b/r10b brauchen Live-Minutendaten (dort ebenfalls gesperrt).
           if [ -n "$snap" ] || [ "$acc" != legacy ]; then
-            case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b|sf-research|sf-research-smoke|sf3-research|sf3-research-smoke|sf4-lifecycle|sf4-lifecycle-smoke|sf5-lifecycle|sf5-lifecycle-smoke|sf7-minervini|sf7-minervini-smoke|sf6-integrity|sf6-integrity-smoke|sf7-ca-resolution|sf7-ca-resolution-smoke|sf6-validation|sf6-validation-holdout|kk-intraday|kk-intraday-count|kk-intraday-smoke|kk-intraday-cache|kk-intraday-e76-count|kk-intraday-e76) ;;
+            case "$MODE" in methods|methods-smoke|r7|r7-smoke|r8|r8-smoke|r8b|r8c|r10c|r10m|r11|r12|r13b|sf-research|sf-research-smoke|sf3-research|sf3-research-smoke|sf4-lifecycle|sf4-lifecycle-smoke|sf5-lifecycle|sf5-lifecycle-smoke|sf7-minervini|sf7-minervini-smoke|sf6-integrity|sf6-integrity-smoke|sf7-ca-resolution|sf7-ca-resolution-smoke|sf6-validation|sf6-validation-holdout|kk-intraday|kk-intraday-count|kk-intraday-smoke|kk-intraday-cache|kk-intraday-e76-count) ;;
               *) echo "INPUT_INTEGRITY_FAILURE: SNAPSHOT_OR_ACCOUNTING_NOT_SUPPORTED_FOR_MODE ($MODE)" >&2; exit 1;; esac
           fi
           # Buchgetreue Methoden: nur eingefrorener Snapshot und research-v1 (fail closed).
-          case "$MODE" in sf-research|sf-research-smoke|sf3-research|sf3-research-smoke|sf4-lifecycle|sf4-lifecycle-smoke|sf5-lifecycle|sf5-lifecycle-smoke|sf7-minervini|sf7-minervini-smoke|sf6-integrity|sf6-integrity-smoke|sf7-ca-resolution|sf7-ca-resolution-smoke|sf6-validation|sf6-validation-holdout|kk-intraday|kk-intraday-count|kk-intraday-smoke|kk-intraday-cache|kk-intraday-e76-count|kk-intraday-e76)
+          case "$MODE" in sf-research|sf-research-smoke|sf3-research|sf3-research-smoke|sf4-lifecycle|sf4-lifecycle-smoke|sf5-lifecycle|sf5-lifecycle-smoke|sf7-minervini|sf7-minervini-smoke|sf6-integrity|sf6-integrity-smoke|sf7-ca-resolution|sf7-ca-resolution-smoke|sf6-validation|sf6-validation-holdout|kk-intraday|kk-intraday-count|kk-intraday-smoke|kk-intraday-cache|kk-intraday-e76-count)
             if [ -z "$snap" ] || [ "$acc" != research-v1 ]; then echo "INPUT_INTEGRITY_FAILURE: SF_RESEARCH_REQUIRES_SNAPSHOT_AND_RESEARCH_V1" >&2; exit 1; fi;; esac
           if [ "$acc" != legacy ] && [ -z "$snap" ]; then echo "research-v1 ohne Snapshot: Eingaben sind live (nicht eingefroren)"; fi
           args=""
@@ -257,7 +258,7 @@ jobs:
           node scripts/supertrader/source-faithful/research/run-sf4-lifecycle.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
           cat "$RUNNER_TEMP/val"/*.public.json
       - name: Kullamaegi EP/PS chart-first, Tagesscreens + IEX-Minuten (Snapshot + research-v1, budgetiert, verschluesselt)
-        if: steps.mode.outputs.mode == 'kk-intraday' || steps.mode.outputs.mode == 'kk-intraday-count' || steps.mode.outputs.mode == 'kk-intraday-smoke' || steps.mode.outputs.mode == 'kk-intraday-cache' || steps.mode.outputs.mode == 'kk-intraday-e76-count' || steps.mode.outputs.mode == 'kk-intraday-e76'
+        if: steps.mode.outputs.mode == 'kk-intraday' || steps.mode.outputs.mode == 'kk-intraday-count' || steps.mode.outputs.mode == 'kk-intraday-smoke' || steps.mode.outputs.mode == 'kk-intraday-cache' || steps.mode.outputs.mode == 'kk-intraday-e76-count'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -278,7 +279,6 @@ jobs:
           if [ "$MODE" = kk-intraday-cache ]; then extra="--cache-only"; unset TIINGO_API_KEY; fi
           # E7-6: Plan ohne Schluessel (0 Anfragen); Abruf mit fester Obergrenze 550 im Runner, ein zweiter Abruf wird verweigert
           if [ "$MODE" = kk-intraday-e76-count ]; then extra="--ext-e7-6 --count-only"; unset TIINGO_API_KEY; fi
-          [ "$MODE" = kk-intraday-e76 ] && extra="--ext-e7-6"
           if [ "$MODE" = kk-intraday ] && [[ "${MSG:-}" =~ \[kk-max-requests:([0-9]{1,4})\] ]]; then n="${BASH_REMATCH[1]}"; [ "$n" -le 6000 ] || { echo "KK_MAX_REQUESTS_ABOVE_6000" >&2; exit 1; }; extra="--max-requests $n"; fi
           node scripts/supertrader/source-faithful/research/run-kk-intraday.mjs --out "$RUNNER_TEMP/val" $SNAP_ARGS $extra
           cat "$RUNNER_TEMP/val"/*.public.json
