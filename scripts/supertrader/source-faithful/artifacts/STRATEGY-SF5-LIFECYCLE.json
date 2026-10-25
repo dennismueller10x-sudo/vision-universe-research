@@ -886,9 +886,312 @@
      "why": "4 manual source decisions; 2 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -2637,9 +2940,312 @@
      "why": "6 manual source decisions; 3 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -4231,9 +4837,312 @@
      "why": "5 manual source decisions; 3 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -5898,9 +6807,312 @@
      "why": "7 manual source decisions; 4 are substituted by declared model assumptions in the simulation, so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -7787,9 +8999,312 @@
      "why": "9 manual source decisions; 5 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -9647,9 +11162,312 @@
      "why": "9 manual source decisions; 5 are substituted by declared model assumptions in the simulation; DATA_BLOCKED filters are not applied (data exception), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
@@ -11235,9 +13053,312 @@
      "why": "3 manual source decisions; 2 are substituted by declared model assumptions in the simulation; entry and stop come from a source the owner has not accepted (contract status unchanged), so a complete run is a model study, never a strategy backtest",
      "snapshotRuns": [
       {
+       "runId": "40099831813",
+       "commit": "d1ea01796b9045d5c49bf613d0e0c0292e01b224",
+       "role": "AUTHORITATIVE",
+       "strategies": [
+        "DARVAS",
+        "KK_BREAKOUT",
+        "POCKET_PIVOT",
+        "BUYABLE_GAP_UP",
+        "WEINSTEIN_INVESTOR",
+        "WEINSTEIN_TRADER",
+        "HOLY_GRAIL_W_RAS97"
+       ],
+       "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+       "datasetVerified": "EXACT",
+       "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+       "researchCodeSha256": "8c883ae851a5a6e9b86cef4e9c2c74aeaa8d4b476bbf96d05d88517c2ba381b7",
+       "engineCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+       "variantRegistrySha256": "0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da",
+       "allVariantsReconciled": true,
+       "referenceDeterministic": true,
+       "referenceTrades": {
+        "DARVAS": {
+         "trades": 19556,
+         "closed": 19555,
+         "openAtDataEnd": 1,
+         "exitReasons": {
+          "STOP_INITIAL": 351,
+          "STOP_SAME_BAR_ASSUMED": 17002,
+          "STOP_SAME_BAR_CERTAIN": 1772,
+          "SECURITY_UNAVAILABLE": 4,
+          "STOP_DAR-SF-STOP-RAISE": 266,
+          "STOP_DAR-SF-STOP-RAISE_GAP_OPEN": 55,
+          "STOP_INITIAL_GAP_OPEN": 81,
+          "TERMINAL_DELISTED": 24
+         }
+        },
+        "KK_BREAKOUT": {
+         "trades": 9114,
+         "closed": 9103,
+         "openAtDataEnd": 11,
+         "exitReasons": {
+          "STOP_INITIAL": 2454,
+          "STOP_SAME_BAR_CERTAIN": 3514,
+          "STOP_KK-013-BREAKEVEN": 1124,
+          "TERMINAL_DELISTED": 34,
+          "KK_TRAIL_CLOSE_BELOW_MA10": 1491,
+          "STOP_KK-013-BREAKEVEN_GAP_OPEN": 171,
+          "STOP_INITIAL_GAP_OPEN": 304,
+          "SECURITY_UNAVAILABLE": 11
+         }
+        },
+        "POCKET_PIVOT": {
+         "trades": 1872,
+         "closed": 1852,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "MOKA_MA50_VIOLATION": 1161,
+          "MOKA_MA10_VIOLATION": 131,
+          "SECURITY_UNAVAILABLE": 9,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 475,
+          "TERMINAL_DELISTED": 25,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 51
+         }
+        },
+        "BUYABLE_GAP_UP": {
+         "trades": 3415,
+         "closed": 3398,
+         "openAtDataEnd": 17,
+         "exitReasons": {
+          "STOP_INITIAL": 1167,
+          "STOP_SAME_BAR_CERTAIN": 1202,
+          "STOP_INITIAL_GAP_OPEN": 236,
+          "MOKA_MA50_VIOLATION": 395,
+          "MOKA_MA50_VIOLATION_GAP_OPEN": 158,
+          "MOKA_MA10_VIOLATION": 136,
+          "TERMINAL_DELISTED": 42,
+          "SECURITY_UNAVAILABLE": 8,
+          "MOKA_MA10_VIOLATION_GAP_OPEN": 54
+         }
+        },
+        "WEINSTEIN_INVESTOR": {
+         "trades": 1348,
+         "closed": 1328,
+         "openAtDataEnd": 20,
+         "exitReasons": {
+          "STOP_INITIAL": 101,
+          "STOP_INITIAL_GAP_OPEN": 23,
+          "WEIN_VOL5_FIRST_STRENGTH": 1038,
+          "TERMINAL_DELISTED": 19,
+          "STOP_WEIN-TRAIL1-2": 118,
+          "STOP_WEIN-TRAIL1-2_GAP_OPEN": 24,
+          "STOP_SAME_BAR_ASSUMED": 4,
+          "SECURITY_UNAVAILABLE": 1
+         }
+        },
+        "WEINSTEIN_TRADER": {
+         "trades": 1808,
+         "closed": 1789,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "WEIN_VOL5_FIRST_STRENGTH": 1175,
+          "STOP_INITIAL": 278,
+          "STOP_SAME_BAR_ASSUMED": 22,
+          "STOP_SAME_BAR_CERTAIN": 5,
+          "STOP_WEIN-TR-TRAIL": 187,
+          "STOP_INITIAL_GAP_OPEN": 48,
+          "STOP_WEIN-TR-TRAIL_GAP_OPEN": 30,
+          "TERMINAL_DELISTED": 38,
+          "SECURITY_UNAVAILABLE": 6
+         }
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "trades": 4025,
+         "closed": 4006,
+         "openAtDataEnd": 19,
+         "exitReasons": {
+          "STOP_INITIAL": 1795,
+          "STOP_INITIAL_GAP_OPEN": 219,
+          "RAS_NEW_HIGH_EXIT": 1318,
+          "STOP_SAME_BAR_ASSUMED": 543,
+          "STOP_SAME_BAR_CERTAIN": 90,
+          "TERMINAL_DELISTED": 34,
+          "SECURITY_UNAVAILABLE": 7
+         }
+        }
+       },
+       "tradesByVariant": {
+        "DARVAS": {
+         "REF": 19556,
+         "ALT-BOTTOM-AFTER-TOP-CONFIRMED": 15385,
+         "ALT-INTRABAR-OPTIMISTIC": 7515,
+         "ALT-SIZE-WEIGHT-005": 21965,
+         "ALT-SIZE-WEIGHT-020": 14924,
+         "ALT-SIZE-RISK-001": 13773
+        },
+        "KK_BREAKOUT": {
+         "REF": 9114,
+         "ALT-SETUP-CONSOLIDATION-20": 8510,
+         "ALT-SETUP-NO-MA": 9622,
+         "ALT-ENTRY-BREAKOUT-DAY-CLOSE": 6601,
+         "ALT-EXIT-PARTIAL5-HALF": 8622,
+         "ALT-EXIT-TRAIL-MA20": 8030,
+         "ALT-EXIT-NO-PARTIAL": 7538,
+         "ALT-EXIT-TRAIL-FROM-ENTRY": 9105,
+         "ALT-RISK-00025": 11301,
+         "ALT-RISK-001": 7454
+        },
+        "POCKET_PIVOT": {
+         "REF": 1872,
+         "ALT-CONTEXT-NONE": 2510,
+         "ALT-VIOLATION-NEXT-DAY": 1851,
+         "ALT-SIZE-WEIGHT-005": 1901,
+         "ALT-SIZE-WEIGHT-020": 1827
+        },
+        "BUYABLE_GAP_UP": {
+         "REF": 3415,
+         "ALT-CONTEXT-NONE": 4334,
+         "ALT-VIOLATION-NEXT-DAY": 3632,
+         "ALT-RISK-0005": 3763,
+         "ALT-RISK-002": 3290
+        },
+        "WEINSTEIN_INVESTOR": {
+         "REF": 1348,
+         "ALT-NO-VOL5-EXIT": 311,
+         "ALT-TRAIL-10PCT": 1184,
+         "ALT-RISK-GUIDE-15": 2252,
+         "ALT-FULL-AT-BREAKOUT": 1230,
+         "ALT-SIC3-GROUP-PROXY": 1366
+        },
+        "WEINSTEIN_TRADER": {
+         "REF": 1808,
+         "ALT-NO-VOL5-EXIT": 515,
+         "ALT-RISK-GUIDE-15": 2580,
+         "ALT-SIC3-GROUP-PROXY": 1773
+        },
+        "HOLY_GRAIL_W_RAS97": {
+         "REF": 4025,
+         "ALT-PREVIOUS-BAR-BEFORE-TOUCH": 4098,
+         "ALT-INTRABAR-OPTIMISTIC": 3624,
+         "ALT-ADX-AT-IMPULSE-HIGH": 2164,
+         "ALT-FIRST-TOUCH-ONLY": 4881
+        }
+       },
+       "groupProxy": {
+        "id": "SIC3-EW-MIN5-400D-WIDE",
+        "sicHistorySha256": "54d638c742a8257ebdfc5e9920783f30e3f90b7e8bdf1dd8ba9ac09d781b89c7",
+        "ciks": 5758,
+        "blockerCountUnit": "signal evaluations (a buy stop is re-armed every session of its order week)",
+        "byStrategy": {
+         "WEINSTEIN_INVESTOR": {
+          "trades": 1366,
+          "groupProxyBlocks": 502510,
+          "setups": {
+           "total": 1259819,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 255829,
+            "TOO_FEW_MEMBERS": 64602,
+            "KNOWN": 902308,
+            "INSUFFICIENT_HISTORY": 37080
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 688092,
+            "ABOVE_FALLING_MA30W": 38482,
+            "BELOW_RISING_MA30W": 70552,
+            "BELOW_FALLING_MA30W": 105182
+           }
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "trades": 1773,
+          "groupProxyBlocks": 497906,
+          "setups": {
+           "total": 1199500,
+           "byStatus": {
+            "UNKNOWN_MEMBERSHIP": 265295,
+            "TOO_FEW_MEMBERS": 58994,
+            "KNOWN": 838915,
+            "INSUFFICIENT_HISTORY": 36296
+           },
+           "byLabel": {
+            "ABOVE_RISING_MA30W": 629927,
+            "ABOVE_FALLING_MA30W": 35642,
+            "BELOW_RISING_MA30W": 69456,
+            "BELOW_FALLING_MA30W": 103890
+           }
+          }
+         }
+        }
+       },
+       "metrics": "SEALED (claude/supertrader-validation-results, 20261023T114506Z)",
+       "sameReferencesAs": {
+        "run": "39939890956",
+        "result": "41 of 41 variants: the full public block of every variant (counts, exit reasons, entry basis, rejections, ledgerSha256, tradesSha256) identical; determinism true for all 7 references",
+        "change": "Supertrader 7.0: engine flag sameBarCloseConfirmsStop (off for every reference), runner sf5-lifecycle-runner-1.1.0 with the SF7 execution variants"
+       },
+       "sf7Execution": {
+        "variantsSha256": "310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a",
+        "revision": "EX7-SAME-BAR-CLOSE-CONFIRMS-STOP",
+        "variants": {
+         "DARVAS": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 19556,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 8596,
+           "stopSameBarAssumedLeft": 8406,
+           "ledgerSha256": "27d7cd3e1ee2d9cceb909d3b6d6cedd173e6172fa5e50be22392997f9f471b19",
+           "tradesSha256": "1151ee70f68f08b89b2163e009ea49aea2a539c3ff10bc4f4eba65c22079ab86"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 9440,
+           "baseTrades": 7515,
+           "sameBarStopCertainByClose": 4419,
+           "ledgerSha256": "bf12e58c6043591ccc785e4aaf6450f6f6a7e9df2d3ca144f5308e36c7d68469",
+           "tradesSha256": "327b770c59a6ac69ac3920902424f05fbffa518da7df3d51eb8038e3665d7416"
+          }
+         },
+         "HOLY_GRAIL_W_RAS97": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 4025,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 127,
+           "stopSameBarAssumedLeft": 416,
+           "ledgerSha256": "916d7e835a3487b0e00bcc95a33d75ce667aaf3954e4d8650dba6f2a308ad1a1",
+           "tradesSha256": "73ee9626ada3e96683d2b75afc6b8cd4de8255b20445268b3a0e560ea467470f"
+          },
+          "SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE": {
+           "compareTo": "ALT-INTRABAR-OPTIMISTIC",
+           "trades": 3702,
+           "baseTrades": 3624,
+           "sameBarStopCertainByClose": 112,
+           "ledgerSha256": "d3ea138daa1b891ad87424cba66cbc43017bb1c1d3c0805763b67201bcb53f4f",
+           "tradesSha256": "b6f5122e9cafd4fd874ef27dc960a32b754d8d5ceb49e2e121d59fa1ed964f86"
+          }
+         },
+         "WEINSTEIN_INVESTOR": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1348,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 1,
+           "stopSameBarAssumedLeft": 3,
+           "ledgerSha256": "090bf2c0ad751ea552e3962b614cfbfd7361fffb7cc61a0890e5ea743ac510da",
+           "tradesSha256": "4be5f369083bd6632bb89adcc8b8b984d0edca638e87778beb9a4604c6900a5d"
+          }
+         },
+         "WEINSTEIN_TRADER": {
+          "SF7-REF-CLOSE-RULE": {
+           "compareTo": "REF",
+           "trades": 1808,
+           "ledgerWithoutReasonsEqual": true,
+           "sameBarStopCertainByClose": 4,
+           "stopSameBarAssumedLeft": 18,
+           "ledgerSha256": "fb8b6698eb4a5ad243bb075e70be6e32dc0fd760a690ed198b6f2e14acd9b5e9",
+           "tradesSha256": "a2e166a1b2e0b8c0fe75f00bbbc9673fc6e52115d01a7a15d9d0dc255cd8a470"
+          }
+         }
+        }
+       }
+      },
+      {
        "runId": "39939890956",
        "commit": "b6c15dd070aed0f9725a5b93e13a711a099aea98",
-       "role": "AUTHORITATIVE",
+       "role": "SUPERSEDED_BY_40099831813_SAME_REFERENCES",
        "strategies": [
         "DARVAS",
         "KK_BREAKOUT",
