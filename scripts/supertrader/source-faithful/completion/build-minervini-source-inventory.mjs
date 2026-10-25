@@ -19,6 +19,7 @@ import { loadFindings } from '../evidence/minervini-sf7-findings.mjs';
 import { MINERVINI_SEPA, MINERVINI_POWER_PLAY } from '../contracts/minervini.mjs';
 import { MODEL_ASSUMPTIONS } from '../research/minervini-lifecycle.mjs';
 import { SF7_MODEL_ASSUMPTIONS, SF7_VARIANTS } from '../research/minervini-sf7.mjs';
+import { SF7_EXIT_MODEL_ASSUMPTIONS, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256 } from '../research/minervini-sf7-exits.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ARTIFACT = 'STRATEGY-MINERVINI-SOURCE-INVENTORY.json';
@@ -98,6 +99,13 @@ export const CLASSIFICATION = Object.freeze({
   'MA-MIN7-POST-BREAKOUT-WINDOW': [C('OPERATIONALIZATION_OPEN', 'right after the breakout has no number; 10 sessions from the printed 2-5 days to 1-2 weeks', ['B03 PDF 40', 'B03 PDF 47'])],
   'MA-MIN7-WEEKLY-STEP': [C('OPERATIONALIZATION_OPEN', 'the weekly chart reading defines no week; 5-session steps from the entry, at least 4 prior weeks', ['B03 PDF 217'])],
   'MA-MIN7-AVG-GAIN': [C('OPERATIONALIZATION_OPEN', 'average gain of the trader\'s own history', ['B12 PDF 398'])],
+  // E7-7 research exit variants (research/minervini-sf7-exits.mjs)
+  'MA-MIN7-EXIT-NOT-EVALUABLE': [C('ABSENT_FROM_MATERIAL', 'the books measure from the Stage 2 start and give no reading without one; REF exits are kept', ['B12 PDF 130', 'B03 PDF 217'])],
+  'MA-MIN7-EXIT-PRECEDENCE': [C('ABSENT_FROM_MATERIAL', 'research design (one-at-a-time): order of REF and variant exits on one close', [])],
+  'MA-MIN7-EXIT-CATCH-UP': [C('ABSENT_FROM_MATERIAL', 'simulation convention for sessions without an executable open', [])],
+  'MA-MIN7-CLIMAX-RUN': [C('OPERATIONALIZATION_OPEN', 'climax ranges printed (+25-50 % in 1-3 weeks, +70-80 % in 5-10 days), steepness without a measure; lower gain over the upper window end', ['B03 PDF 212'])],
+  'MA-MIN7-CLIMAX-FRACTION': [C('OPERATIONALIZATION_OPEN', 'sell part or all into strength, no fraction printed; all', ['B03 PDF 212'])],
+  'MA-MIN7-CLIMAX-EXTENDED': [C('OPERATIONALIZATION_OPEN', '70 % up days in 7-15 days on an extended stock; extension not defined, second count inconsistent (translation doubt)', ['B03 PDF 216', 'B03 PDF 212'])],
 });
 
 /** Problems that have nothing to do with the books (owner question 6). */
@@ -123,16 +131,16 @@ export const E72_DISPOSITION = Object.freeze({
  "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
  "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 and longestUpRun over the first 10 sessions (G-UPDAYS, diagnostic)",
  "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (volume above the 50-day mean reading) and lowerLowsCleared (third day closes up or in the upper half of its range on volume above the mean); the rising-volume-each-day reading is not computed (G-LOWERLOWS, diagnostic)",
- "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
+ "F7-B03-047-016": "IMPLEMENTED as research variant EXIT-MA20-HALF (owner decision E7-7: pre-registered, SOURCE_DERIVED_RESEARCH_VARIANT, never a reference or original rule) besides the diagnostic closeBelowMa20InWindow",
  "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
  "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
  "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice, price below its own 252-session high (at a setup the close is always below the pivot) (G-RSLINE-HIGH, evidence)",
  "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
  "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
- "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
- "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+ "F7-B03-212-085": "IMPLEMENTED as research variant EXIT-CLIMAX (owner decision E7-7: pre-registered, MA-MIN7-CLIMAX-RUN / -FRACTION, never a reference or original rule)",
+ "F7-B03-216-086": "IMPLEMENTED as research variant EXIT-CLIMAX-UPCLOSES (owner decision E7-7: pre-registered, translation doubt flagged, only the 70 % share used, MA-MIN7-CLIMAX-EXTENDED, never a reference or original rule)",
  "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
- "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic)",
+ "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic); E7-7 research variants EXIT-LARGEST-DECLINE-WEEKLY and (with B12 PDF 130) EXIT-LARGEST-DECLINE-DAILY",
  "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
  "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
  "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
@@ -169,7 +177,7 @@ export function buildInventory() {
   const rowPages = new Set(rows.map((r) => `${r.source_id} PDF ${(/PDF (\d+)/.exec(r.page_location ?? '') ?? [])[1]}`));
   const errors = [];
   const contractRules = contracts.flatMap((c) => c.rules.map((r) => r.id));
-  const assumptions = [...MODEL_ASSUMPTIONS.map((m) => m.id), ...SF7_MODEL_ASSUMPTIONS.map((m) => m.id)];
+  const assumptions = [...MODEL_ASSUMPTIONS.map((m) => m.id), ...SF7_MODEL_ASSUMPTIONS.map((m) => m.id), ...SF7_EXIT_MODEL_ASSUMPTIONS.map((m) => m.id)];
   for (const id of [...new Set([...contractRules, ...assumptions])]) if (!CLASSIFICATION[id]) errors.push(`UNCLASSIFIED:${id}`);
   for (const [id, list] of Object.entries(CLASSIFICATION)) {
     if (![...contractRules, ...assumptions].includes(id)) errors.push(`UNKNOWN_CLASSIFIED:${id}`);
@@ -213,6 +221,7 @@ export function buildInventory() {
     projectAvailability: PROJECT_AVAILABILITY,
     findings154: { counts: tally(cls154, (r) => r.class), translationDoubt: cls154.filter((r) => r.translationDoubt).length, wouldChangeReference: cls154.filter((r) => r.wouldChangeReference).length, disposition: E72_DISPOSITION, dispositionCounts: tally(Object.values(E72_DISPOSITION), (d) => d.split(':')[0]) },
     variants7: SF7_VARIANTS.map((v) => ({ id: v.id, strategy: v.strategy, source: v.source })),
+    exitVariants7: { ownerDecision: 'E7-7', registrySha256: sf7ExitRegistrySha256(), variants: SF7_EXIT_VARIANTS.map((v) => ({ id: v.id, strategies: v.strategies, status: v.status, findings: v.findings, source: v.source, translationDoubt: v.translationDoubt })) },
     statusChange: 'no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)',
     validation: { ok: errors.length === 0, errors },
   };
