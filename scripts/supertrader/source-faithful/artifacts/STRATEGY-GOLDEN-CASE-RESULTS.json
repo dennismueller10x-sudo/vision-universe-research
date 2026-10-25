@@ -36,7 +36,7 @@
   "pass": 120,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 322,
+  "testsRun": 324,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -3372,6 +3372,16 @@
   {
    "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
    "name": "SF7-MIN-POST-BREAKOUT: up-day counts, lower lows on volume, close below MA20, base depth and RS-line high (E7-2 findings), evidence only",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "ADV-SF7-MIN-POST-BREAKOUT-EXIT-BOUND: a closed trade never reads the exit session or later (E7-2 review HIGH)",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "ADV-SF7-MIN-POST-BREAKOUT-BASE-RS-WEEKLY: base depth from the base start, RS line against the own high, weekly reading needs prior weeks (E7-2 review MEDIUM)",
    "result": "PASS"
   }
  ]

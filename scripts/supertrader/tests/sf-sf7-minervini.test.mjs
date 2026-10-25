@@ -159,7 +159,7 @@ test('SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on 
   const { RUN_VARIANTS } = await import('../source-faithful/research/minervini-lifecycle.mjs');
   const fb = { id: 'FB', bars: mk(FB) }, v = { id: 'VCP', bars: VCP.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, VOL[k])) };
   const d = { ...ds(fb, v), benchmark: fb.bars.map((x) => ({ date: x.date, close: 100 })), spyTR: null };
-  const r7 = sf7Part(d, { from: null, to: null }), r4 = lifecyclePart(d, { variants: RUN_VARIANTS.filter((x) => x.id === 'REF'), from: null, to: null });
+  const r7 = sf7Part(d, { from: null, to: null }), r4 = lifecyclePart(d, { variants: RUN_VARIANTS.filter((x) => x.id === 'REF'), sf7Variants: [], from: null, to: null }); // REF only, no 7.0 execution variants (SF7-D4)
   for (const st of ['SEPA', 'POWER_PLAY']) assert.equal(r7.pub.strategies[st].ref.ledgerSha256, r4.pub.strategies[st].variants.REF.ledgerSha256);
   assert.deepEqual(Object.keys(r7.pub.strategies.SEPA.variants), ['ALT-SEPA-FLAT-BASE', 'ALT-SEPA-TT6-25', 'ALT-SEPA-RS-LINE']);
   assert.equal(r7.pub.strategies.SEPA.variants['ALT-SEPA-FLAT-BASE'].vsRef.addedVsRef, 1);
