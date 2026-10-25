@@ -1,6 +1,6 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
-**Stand:** 25.10.2026 · Branch `claude/technical-world-v1` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
+**Stand:** 25.10.2026 · V1 gemergt (PR #919, `f2012b0`) · Folgearbeit auf `claude/technical-world-v2` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz
@@ -74,14 +74,22 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 5. **KI-Suche freischalten:** `technical-query.js#jsonSchema()` an `workers/vu-ask` anbinden (Deploy = Produktionsänderung, Kosten → Freigabe nötig).
 6. **Zusammenführung mit `/screener/`:** Feldregister-Injektion in `screener/engine/engine.js`, danach eine Engine für beide.
 7. **Evidenz:** Trefferquoten der Formationen über die bestehende Outcome-Schicht (`ti/outcomes.js`) messen. Erst dann wäre eine Rangfolge nach Evidenz begründbar.
-8. **Release-Stempel:** `technical` in `scripts/vu2/release-id.mjs` (`STAMP_ONLY`) aufnehmen, damit offene Tabs nach einem Deployment frischen Code holen.
-9. **Browser-QA in CI:** `scripts/quality/shell-browser-qa.mjs` um Technical ergänzen.
+8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
+9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
+10. **Eigene Menügruppe** und weitere Änderungen an geschützten Dateien (`ui-protection.json`) brauchen je eine eigene Owner-Freigabe der Hashes.
 
 ## 7. Blockaden und Entscheidungen
 
 - Keine neuen Anbieter, Dienste oder Modellaufrufe. Die Passwortsperre ist unverändert.
 - Gates wurden nicht abgeschwächt. Die Isolationsgates von Discover, Supertrader und Company Intelligence werden von diesem PR nicht ausgelöst (keine Pfade unter `discover/**`, `supertrader/**`, `scripts/supertrader/**`).
 - Der Ausbruch über Widerstand verlangt eine Zone mit mindestens zwei Swing-Kontakten. Ohne diese Regel meldeten 18 % des Universums einen „Ausbruch“, mit ihr 9 % (Stichtag 23.10.2026).
+
+## 10. Verlauf
+
+| Datum | Schritt |
+|---|---|
+| 25.10.2026 | PR #919 (V1) gemergt, nachdem alle Checks grün waren. Vercel ist kein Pflicht-Check (Tageslimit des Free-Tarifs). Der WebKit-Ausreißer in der Discover-QA bestand beim einen Wiederholungslauf. |
+| 25.10.2026 | V2 begonnen: Release-Stempel, Browser-QA in CI. |
 
 ## 8. Fortsetzen
 

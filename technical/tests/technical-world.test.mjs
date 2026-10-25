@@ -118,3 +118,26 @@ test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/dat
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
   assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["meta.json", "screener-v1.json"]);
 });
+
+test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
+  const { mkdtemp, mkdir, copyFile, readFile: rf, rm } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { createHash } = await import("node:crypto");
+  const R = await import(join(root, "scripts/vu2/release-id.mjs"));
+  assert.ok(R.STAMP_ONLY.includes("technical"));
+  const dir = await mkdtemp(join(tmpdir(), "tc-stamp-"));
+  try {
+    const html = readFileSync(join(root, "technical/index.html"), "utf8");
+    const linked = [...html.matchAll(/(?:src|href)="\/([^"?#]+\.(?:js|css))"/g)].map((m) => m[1]);
+    assert.ok(linked.includes("technical/app.js") && linked.includes("technical/technical.css"));
+    for (const f of ["technical/index.html", ...linked]) { await mkdir(dirname(join(dir, f)), { recursive: true }); await copyFile(join(root, f), join(dir, f)); }
+    const report = await R.stampTrees(dir, ["technical"]);
+    assert.deepEqual(report, { pages: 1, changed: 1 });
+    const out = await rf(join(dir, "technical/index.html"), "utf8");
+    for (const f of linked) {
+      const digest = createHash("sha256").update(readFileSync(join(root, f))).digest("hex").slice(0, 16);
+      assert.ok(out.includes("/" + f + "?v=" + digest), f);
+    }
+    assert.doesNotMatch(out, /vu-release/, "kein Meta-Tag, kein Waechter");
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});

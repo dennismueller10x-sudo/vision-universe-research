@@ -113,7 +113,7 @@ const stPages=['supertrader/index.html','supertrader/signals/index.html','supert
 test('Supertrader: jede Seite des Baums traegt den Hash der ausgelieferten Bytes, ohne Meta-Tag und ohne release-id-Eintrag',async()=>{
  const dir=await stSite();
  try{
-  assert.deepEqual(STAMP_ONLY,['supertrader']);assert.ok(!('supertrader' in PRODUCTS),'kein Produkt: kein Waechter, keine Kennung');
+  assert.deepEqual(STAMP_ONLY,['supertrader','technical']);for(const t of STAMP_ONLY)assert.ok(!(t in PRODUCTS),t+': kein Produkt: kein Waechter, keine Kennung');
   const report=await stampRelease(dir,{commit:'c0ffee'});
   assert.deepEqual(Object.keys(report.products),['quant','discover'],'release-id.json unveraendert im Format');
   assert.deepEqual(JSON.parse(await readFile(join(dir,'release-id.json'),'utf8')),report);
