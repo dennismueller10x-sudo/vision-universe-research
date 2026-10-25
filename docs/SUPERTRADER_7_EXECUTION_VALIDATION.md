@@ -167,3 +167,17 @@ Neu ist `scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs` mit 20 
 | LOW | SF7-V1: Weinstein „am oder über“ gegen „darüber“; Eigentümerentscheidung, welche Lesart die Referenz wird (dann neue Referenzversion mit diesem Vorher/Nachher) |
 | LOW | Terminal-Datum: Am letzten Handelstag eines delisteten Titels entsteht keine neue Position (Review SF5-C-L3). Das nutzt das bekannte Enddatum, betrifft nur Schlusskurs-Einstiege und keine Referenz. Unverändert. |
 | LOW | Die 6.0-Receipts selbst bleiben ohne Engine-Datei. Abgedeckt nur über die anderen Fingerabdrücke und den Zusatz-Fingerabdruck. |
+
+## Zweites Review (unabhängig, nur lesend, 25.10.2026)
+
+Ergebnis: 0 HIGH, 1 MEDIUM, 6 LOW. Referenzen nachweislich unverändert (Lauf-Logs 40228392651 gegen 40099831813: 47/47 Varianten gleich; 40228395395 gegen 40185748527: alle Blöcke außer Receipt und neuem `ep.sf7Validation` gleich). Artefakte bitgleich aus ihren Erzeugern (`rebuild-all.mjs`). Gepinnte Verträge (SF6-PAPER-2027 `e623b336…`, Turtle `89fbcf86…`, sf4 `c834b227…`, `integrityCodeSha256` `7ca45bc9…`) unverschoben; SF6-PAPER-2027 pinnt weder den sf5- noch den KK-Fingerabdruck, die Neueintragung ist daher zulässig. Golden Cases KK-Breakout und Darvas von Hand nachgerechnet.
+
+| Befund | Behandlung |
+|---|---|
+| MEDIUM: `engineCodeSha256` im KK-Eintrag 40228395395 – und schon auf main im Eintrag 40185748527 – vom Vorgänger abgeschrieben (`ae2a51ed…`); Receipt beider Läufe: `89fbcf86…` | in beiden Einträgen korrigiert; neuer Test: der AUTHORITATIVE-Eintrag trägt den Engine-Hash des aktuellen Codes |
+| LOW: `EX7-WEIN-TRAIL-AT-OR-ABOVE` schaltet mehr als den Vergleich: eine Woche mit gleichem Hoch setzt auch das Korrekturtief zurück, wenn die Korrektur unter der Schwelle blieb; das kann Anhebungen unterdrücken (Investor −15) | hier dokumentiert; der Registertext ist vor dem Lauf gepinnt (`d112eab5…`) und bleibt unverändert |
+| LOW: „unabhängige Nachrechnung“ nutzt `isExecutableBar` und `reconciliationTolerance` der Engine mit; Strategie-Ausstiegslogik (MA-Verletzung nur „≤ Eröffnung“) und Dividendenbeträge werden nicht nachgerechnet | Grenze; §2 nennt den Umfang |
+| LOW: die Abdeckungsprüfung zählt eine Datei als abgedeckt, wenn sie in irgendeinem eingetragenen Fingerabdruck steht, nicht im Receipt des jeweiligen Runners | Grenze; Änderungen werden über den sf4-Pin-Test trotzdem erkannt |
+| LOW: PIT-Verfälschung nur für REF und über 20 Sitzungen; `groupProxies` werden nicht verfälscht | Grenze (dokumentiert); der synthetische Test verfälscht alle Varianten, die Negativkontrolle greift |
+| LOW: Validierung läuft im Referenz-Runner; jede Änderung am Prüfmodul verschiebt den sf5-/KK-Fingerabdruck und verlangt einen neuen AUTHORITATIVE-Lauf | Designhinweis; ein eigener Validierungs-Runner wäre ein späterer, eigener PR |
+| LOW: Lauf-Eintrag sagte „no reference path changed“, obwohl `weinstein-lifecycle.mjs` geändert ist | Wortlaut korrigiert („no reference behaviour changed … opt-in flag, default unchanged“) |
