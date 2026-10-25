@@ -1,9 +1,9 @@
 # Quant Backtest – Übergabe von Auftrag 1 an Auftrag 2
 
-**Dokumentvertrag:** `backtest-v6-handoff-1.0.0`  
-**Status:** SECUREMENT_IN_PROGRESS – kein Nachweis eines bereits erfolgten Merges.  
-**PR:** [#906](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/906)  
-**Integrationsbasis:** `05cd43b34bce9cee25564a48db29ff19ba3b1c7b` (25.10.2026).  
+**Dokumentvertrag:** `backtest-v6-handoff-1.0.0`
+**Status:** LOCAL_VALIDATION_PASSED – Remote-Abschluss und Merge noch ausstehend.
+**PR:** [#906](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/906)
+**Integrationsbasis:** `05cd43b34bce9cee25564a48db29ff19ba3b1c7b` (25.10.2026).
 **Verifizierter Main nach Übernahme / Merge-Commit #906:** noch offen; wird nach tatsächlichem Merge ergänzt.
 
 ## A. Repository und Sicherung
@@ -50,7 +50,7 @@ Zentral bleibt `quant/api/product-services.js#create().getRealBacktest(ticker, s
 
 ### Daten und Referenzen
 
-Referenz vor erneuter Abnahme: 6.190 gespeicherte Serien-/Listingkandidaten, 4.451 Klasse B, 1.739 Klasse C, 22.255 Periodenergebnisse. Diese Population ist kein vollständiges historisches Marktuniversum und keine unabhängige Stichprobe. Der tatsächliche neue Lauf und dessen Hashes werden unter `v6-securement/` protokolliert.
+Erneut vollständig materialisiert und geprüft am 25.10.2026: 6.190 gespeicherte Serien-/Listingkandidaten, 4.451 Klasse B, 1.739 Klasse C, 22.255 Periodenergebnisse. Diese Population ist kein vollständiges historisches Marktuniversum und keine unabhängige Stichprobe. Der neue Lauf und dessen Hashes stehen unter [v6-securement/validation.json](v6-securement/validation.json): 6.190 Reader-Antworten und alle Details geprüft, **0 Performance-Payloads für blockierte Listings**; alle fünf NVDA-Perioden zweimal exakt und unabhängig mit Python nachgerechnet. Unveränderte Wiederholung: 6.190 Wiederverwendungen, null Neuberechnungen.
 
 NVDA-Referenz: reale Wochenhistorie 22.01.1999–23.10.2026, zulässiger Signalbeginn 28.01.2000, erster tatsächlicher Handel 18.02.2000; 21 abgeschlossene Trades und eine offene Position. Zuletzt unabhängig geprüft: Start 100.000 USD, Ende 4.853.701,42 USD, CAGR 15,6284 %, wöchentlicher Drawdown −80,2182 %. Eigene Buy-and-Hold-CAGR rund 34,3992 %, SPY rund 6,6510 % auf gemeinsamer NVDA-Periode. Dies ist keine Behauptung eines unabhängig bestätigten Signalvorteils.
 
@@ -98,6 +98,6 @@ Auftrag 2 klärt gemeinsame fachliche Regeln, Abnahmen und die Lizenz-/Datenlüc
 
 ## F. Prüf- und Merge-Nachweis
 
-Die erneuten Prüfergebnisse, aktuelle Generation, Herkunftshashes, UI-Schutz und der abschließende PR-/Main-Zustand werden unter `v6-securement/` gesichert. Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](BACKTEST_V51.md), [Servicevertrag](BACKTEST_V51_HANDOFF.md), [Gate-Matrix](v51/six-kind-matrix.json).
+Die erneuten lokalen Prüfungen sind abgeschlossen: Quant **2.874/2.874**, Core **260/260**, gemeinsame Navigation/Theme/Budget **23/23**, Consumer **31**, SEC-/PIT-Python **32**; Browser **96**, Budgets **8/8**, automatisierte Accessibility **84 Seiten / 0 Verstöße**, direkte Zugangs-/Routen-/Cache-/Parallelprüfungen Chromium **12/12** und echtes WebKit **7/7**. Datenqualitäts-, Look-ahead-, As-of-, Runtime-, Rechte-/Identitäts-, Writer-/Rollback- und Generationstests sind Bestandteil der ausgeführten Suite. Die Runtime, Daten-/Qualitätsgeneration und reproduzierbaren Nachweise stehen unter `v6-securement/`. Remote-Checks und tatsächlicher Merge werden gesondert nachgewiesen. Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](BACKTEST_V51.md), [Servicevertrag](BACKTEST_V51_HANDOFF.md), [Gate-Matrix](v51/six-kind-matrix.json).
 
 **Abschlussstatus:** noch ausstehend. Keine vorweggenommene Merge- oder Freigabebehauptung.
