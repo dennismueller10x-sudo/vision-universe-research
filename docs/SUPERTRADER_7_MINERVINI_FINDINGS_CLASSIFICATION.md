@@ -97,3 +97,8 @@ Kein Regelstatus wurde angehoben. SOURCE_EXACT setzt den englischen Originalwort
 - **Ein Leser pro Fundstelle:** Gegen das Original wurde nur stichprobenweise doppelt gelesen (rund 40 Zitate). Klassifikationen QUALITATIVE und NOT_RELEVANT wurden nicht zweitgeprüft.
 - **OCR-Ziffern:** B03 ist ein Bild-PDF, der Text stammt aus Tesseract-OCR. Ziffern sind dort OCR-empfindlich (`BOOKS.B03.text`). Implementiert wurden aus B03 nur Diagnosen, keine handelsrelevanten Schwellen.
 - **Ausstiegsregeln:** Eine verbindliche neue Minervini-Ausstiegsregel (Klimax, MA20-Halbverkauf) gibt es nur mit ausdrücklicher Zustimmung des Owners (E7-7).
+
+## 5. Zusammenspiel mit #911 (SF7-D3/D4)
+
+- **Fingerabdruck:** #911 ändert `minervini-lifecycle.mjs`. Damit verschiebt sich der 4.0-Fingerabdruck von `b1d81fb8…` auf `c834b227…`, die Ausgaben aller registrierten Varianten bleiben hashgleich. Der Kopfkommentar von `minervini-sf7.mjs` nennt noch `b1d81fb8…`. Seine Aussage stimmt weiterhin: Diese Datei geht nicht in `run-sf4-lifecycle#FILES` ein und verschiebt den Fingerabdruck nie. Veraltet ist nur der Wert. Er wird bei der nächsten ohnehin nötigen Änderung des SF7-Codes nachgezogen, weil jede Byteänderung den gepinnten SF7-Code-Hash `7441237b…` verschiebt.
+- **Runner-Test:** Der Test vergleicht nur REF und übergibt deshalb `sf7Variants: []`. Mit #911 muss zu jeder SF7-Ausführungsvariante ihre Vergleichsvariante laufen. Ohne den leeren Wert wäre der Test im Gesamtstand abgebrochen.
