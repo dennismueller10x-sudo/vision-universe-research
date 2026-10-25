@@ -22,7 +22,7 @@ Maschinenlesbar und generiert:
   - #709 hat alle Seiten indexiert, Regeln aber nur gezielt herausgezogen.
   - Aus *Think & Trade Like a Champion* (272 Seiten) kamen nur 8 Zeilen, alle von den Seiten 193–232.
   - Die Neulesung ergibt 346 relevante Befunde. 154 davon deckt keine #709-Zeile ab, 190 nur teilweise.
-  - Die 154 nicht abgedeckten Befunde sind nach Entscheidung E7-2 einzeln klassifiziert: 36 bestätigen, 14 präzisieren, 17 neu umsetzbar, 54 qualitativ, 33 nicht relevant. Details und Disposition stehen in [SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md](SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md). Umgesetzt sind 9 Diagnosen bzw. Belege (`postBreakoutEvidence`, Code `sf7-minervini-1.2.0`); 16 sind zurückgestellt, 2 liegen beim Owner (Klimax-Verkauf), 4 sind außerhalb des Umfangs.
+  - Die 154 nicht abgedeckten Befunde sind nach Entscheidung E7-2 einzeln klassifiziert: 36 bestätigen, 14 präzisieren, 17 neu umsetzbar, 54 qualitativ, 33 nicht relevant. Details und Disposition stehen in [SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md](SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md). Umgesetzt sind 9 Diagnosen bzw. Belege (`postBreakoutEvidence`, Code `sf7-minervini-1.3.0`); 16 sind zurückgestellt, 2 liegen beim Owner (Klimax-Verkauf), 4 sind außerhalb des Umfangs.
 - **Was sich dadurch ändert:**
   - Die neun englischen W-MIN18-Antworten stützen jetzt Stop, Positionsgröße, Verkauf und Kursbestätigung. Neu ist die Prüfregel für gestaffelte Stops: Sie erhöhen das geplante Risiko nie.
   - Keine Regel wird `SOURCE_EXACT`. Nach dem unabhängigen Review bleibt auch die Staffel-Stop-Regel `SOURCE_DERIVED`, weil der englische Wortlaut heute nicht erneut prüfbar ist und kein Zitat-Hash vorliegt.

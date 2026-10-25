@@ -32,9 +32,9 @@ Keine Fundstelle mit Zweifel hat eine Vertragsregel verändert.
 | OWNER | 2 | F7-B03-212-085, -216-086: Klimax-Verkauf, Entscheidung E7-7 |
 | NOT_IN_SCOPE | 4 | Cup/Cheat- und IPO-Familie (ausgeschlossene Vertragsvarianten) |
 
-Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `postBreakoutEvidence` (`research/minervini-sf7.mjs`, Version `sf7-minervini-1.2.0`) mit der neuen Modellannahme `MA-MIN7-POST-BREAKOUT-WINDOW` (10 Sitzungen). Umgesetzt sind:
-- `healthy3of4` / `healthy6of8`
-- `lowerLowsOnVolume` (3 tiefere Tiefs bei Volumen über dem 50-Tage-Mittel)
+Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `postBreakoutEvidence` (`research/minervini-sf7.mjs`, Version `sf7-minervini-1.3.0`) mit der neuen Modellannahme `MA-MIN7-POST-BREAKOUT-WINDOW` (10 Sitzungen). Umgesetzt sind:
+- `healthy3of4` / `healthy6of8`, `longestUpRun`
+- `lowerLowsOnVolume` (3 tiefere Tiefs bei Volumen über dem 50-Tage-Mittel) und `lowerLowsCleared`
 - `closeBelowMa20InWindow`
 - `weeklyDeclineSignalBeforeExit`
 - `baseDepthAbove50` / `baseDepthAbove60`
@@ -42,29 +42,41 @@ Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `pos
 
 Keine dieser Diagnosen ändert einen Einstieg, einen Ausstieg, eine Positionsgröße oder einen Fill.
 
-Maßgeblicher Lauf ist [40170379663](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40170379663) auf `63a4c42`, Datensatz `EXACT`, Code-Hash `06c41d88…` (gepinnt). Ergebnisse:
-- SEPA-REF hat 954 Trades, Power-Play-REF 1.007 Trades, beide **ledger-identisch** mit 4.0.
+Maßgeblicher Lauf ist [40172178386](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40172178386) auf `895a5cd` (Code `sf7-minervini-1.3.0`, Hash `7441237b…`, gepinnt vor dem Lauf), Datensatz `EXACT`. Ergebnisse:
+- SEPA-REF hat 954 Trades, Power-Play-REF 1.007 Trades, beide **ledger-identisch** mit 4.0. Die Ledger-Hashes `1ca52391…` und `877ceb33…` sind gegenüber dem 1.2.0-Lauf unverändert.
 - Die Varianten haben unverändert 824 / 982 / 890 Trades.
+
+Version 1.3.0 setzt ein unabhängiges Review der 1.2.0-Diagnosen um (1 HIGH, 3 MEDIUM, 6 LOW):
+- **HIGH:** In 1.2.0 las die Diagnose bei geschlossenen Trades die Ausstiegssitzung mit. Ihr Schluss liegt aber nach dem Ausstieg.
+- Die Basistiefe wird jetzt vom Basisstart gemessen, nicht mehr als tiefste Einzelkontraktion.
+- Das RS-Linienhoch wird gegen das eigene Preishoch geprüft.
+- Die Wochenlesart braucht Stage 2 am Setup und mindestens 4 Vorwochen (`MA-MIN7-WEEKLY-STEP`).
+- Der größte Rückgang ohne Stage 2 am Setup gilt als „nicht bewertbar“.
+
+Die 1.2.0-Zählungen (Lauf 40170379663) sind damit überholt. Die Änderung folgt Review-Defekten, nicht Ergebnissen; die Referenz ist unberührt.
 
 Diagnosezählungen (nur Zählungen, die Kennzahlen bleiben versiegelt):
 
 | Diagnose | SEPA (954) ja / nein / n. a. | Power Play (1.007) ja / nein / n. a. |
 |---|---|---|
-| `healthy3of4` | 393 / 447 / 114 | 306 / 320 / 381 |
-| `healthy6of8` | 181 / 503 / 270 | 120 / 307 / 580 |
-| `lowerLowsOnVolume` | 29 / 925 / 0 | 29 / 978 / 0 |
-| `closeBelowMa20InWindow` | 459 / 495 / 0 | 110 / 897 / 0 |
-| `weeklyDeclineSignalBeforeExit` | 545 / 409 / 0 | 345 / 662 / 0 |
-| `baseDepthAbove50` | 0 / 954 / 0 | 232 / 712 / 63 |
-| `baseDepthAbove60` | 0 / 954 / 0 | 129 / 815 / 63 |
+| `healthy3of4` | 391 / 398 / 165 | 298 / 263 / 446 |
+| `healthy6of8` | 181 / 472 / 301 | 118 / 287 / 602 |
+| `lowerLowsOnVolume` | 21 / 933 / 0 | 16 / 991 / 0 |
+| `lowerLowsCleared` (nur bei Verletzung) | 10 / 11 / – | 8 / 8 / – |
+| `closeBelowMa20InWindow` | 324 / 630 / 0 | 27 / 980 / 0 |
+| `weeklyDeclineSignalBeforeExit` | 138 / 215 / 601 | 39 / 136 / 832 |
+| `baseDepthAbove50` | 0 / 954 / 0 | 361 / 583 / 63 |
+| `baseDepthAbove60` | 0 / 954 / 0 | 319 / 625 / 63 |
 | `rsLineHighBeforePrice` | 63 / 891 / 0 | 203 / 741 / 63 |
 
-„n. a.“ hat je Feld eine eigene Ursache:
-- **`healthy3of4` / `healthy6of8`:** Der Trade endete vor der 4. bzw. 8. Sitzung.
-- **Basistiefe:** Am Setup-Tag war keine Kontraktion messbar.
-- **RS-Linie:** Vor dem Setup lagen weniger als 252 Sitzungen, oder die Benchmark fehlte.
+Größter Tagesrückgang bei Power Play: In 558 von 1.007 Trades bestand am Setup keine Stage 2 (Trend Template nicht bestanden), daher nicht bewertbar. Signal 260, kein Signal 185, offen 4. SEPA ist unverändert, weil jedes SEPA-Setup das Trend Template besteht.
 
-Dass keine SEPA-Basis tiefer als 50 % ist, wurde nicht gesondert untersucht. Die Diagnose ist kein Gate und wurde nicht zur Variantenwahl verwendet.
+„n. a.“ hat je Feld eine eigene Ursache:
+- **`healthy3of4` / `healthy6of8`:** Der Trade sah weniger als 4 bzw. 8 Sitzungsschlüsse vor dem Ausstieg.
+- **Wochenlesart:** Stage 2 fehlte am Setup, oder es lagen weniger als 4 Vorwochen vor.
+- **Basistiefe und RS-Linie bei Power Play (63):** Vor dem Setup lagen weniger als 252 Sitzungen.
+
+Dass auch nach der korrigierten Messung keine SEPA-Basis tiefer als 50 % ist, wurde nicht gesondert untersucht. Die Diagnose ist kein Gate und wurde nicht zur Variantenwahl verwendet.
 
 Zurückgestellt sind alle Punkte, die Trades verändern würden. Dazu gehören Chase-Grenze, Buy-Stop-Aufschlag, Stop-Fallback, Sizing-Progression und relativer Basis-Tiefenfilter. Sie brauchen eine Modellannahme, also einen vor dem Test festgelegten Parameter, und dürfen nicht nach Ergebnissen gewählt werden.
 
