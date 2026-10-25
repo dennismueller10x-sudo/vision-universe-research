@@ -35,7 +35,7 @@
   var ENGINE_BUNDLE_VERSION = "technical-bundle-1.0.0";
   /* Eigene Version des additiven EMA-Blocks: ENGINE_BUNDLE_VERSION und
      parametersHash bleiben, weil sich kein bestehendes Feld aendert. */
-  var EXACT_EMA_VERSION = "ema-settled-1.0.0";
+  var EXACT_EMA_VERSION = "ema-settled-1.1.0";
   var EXACT_EMA_PERIODS = [20, 50, 200];
 
   /** Optionale Module (Annotationen, Elliott, Snapshot) — registrierbar, damit der Kern ohne sie laeuft. */
@@ -99,7 +99,7 @@
        Rein additiv: keine Engine liest sie, parametersHash bleibt unberuehrt;
        dieselbe SPLIT_ADJUSTED-Schlussreihe wie SMA 200. */
     var settled = {};
-    EXACT_EMA_PERIODS.forEach(function (p) { settled[p] = Features.settledEma(series.close, p, Features.EMA_MAX_SEED_WEIGHT); });
+    EXACT_EMA_PERIODS.forEach(function (p) { settled[p] = Features.settledEma(series.close, p); });
     var tradeSetup = TradeSetup.buildTradeSetup(scenarios.primary, { close: series.close[i], atr: features.columns.atr[i], averageVolume: features.columns.averageVolume[i], cfg: cfgOf(meth, "scenario", undefined) });
     var altSetup = scenarios.alternative ? TradeSetup.buildTradeSetup(scenarios.alternative, { close: series.close[i], atr: features.columns.atr[i], averageVolume: features.columns.averageVolume[i] }) : null;
     var score = Score.computeOpportunityScore({ confluence: confluence, scenarios: scenarios, tradeSetup: tradeSetup, engines: engines }, cfgOf(meth, "opportunityScore", undefined));
@@ -137,13 +137,15 @@
     }
     bundle.emaSettlement = {
       version: EXACT_EMA_VERSION, priceSeriesType: series.priceSeriesType, input: "close",
-      seed: "SMA_OF_FIRST_PERIOD_BARS", maxSeedWeight: Features.EMA_MAX_SEED_WEIGHT,
-      rule: "Wert erst, wenn (1 - 2/(p+1))^k <= maxSeedWeight; k = Bars nach dem Startindex; davor null",
+      seed: "SMA_OF_FIRST_PERIOD_BARS", maxRelError: Features.EMA_MAX_REL_ERROR, floorSeedWeight: Features.EMA_FLOOR_SEED_WEIGHT,
+      rule: "Wert am Tag t, wenn w = (1 - 2/(p+1))^k <= floorSeedWeight und w * Spanne(Startfenster) / Schluss_t <= maxRelError; k = Bars nach dem Startindex; sonst null",
       periods: EXACT_EMA_PERIODS.map(function (p) {
         var s = settled[p];
         return { period: p, warmupBars: s.warmupBars, minimumBars: s.minimumBars, seedIndex: s.seedIndex,
           firstSettledIndex: s.firstSettledIndex, firstSettledDate: s.firstSettledIndex >= 0 ? series.timestamps[s.firstSettledIndex] : null,
-          barsAfterSeed: s.barsAfterSeed, status: finite(s.values[i]) ? "SETTLED" : "INSUFFICIENT_HISTORY" };
+          barsAfterSeed: s.barsAfterSeed, seedRange: s.seedRange === null ? null : nz(s.seedRange),
+          errorBoundAtCutoff: finite(s.errorBound[i]) ? Number(s.errorBound[i].toPrecision(3)) : null,
+          status: finite(s.values[i]) ? "SETTLED" : "INSUFFICIENT_HISTORY" };
       })
     };
     var AnnMod = opts.annotations !== false ? resolveOptional("annotations", "./annotations.js", "Annotations") : null;

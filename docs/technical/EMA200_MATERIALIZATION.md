@@ -1,6 +1,6 @@
-# Exakte EMA 200 – Materialisierung (ema-settled-1.0.0)
+# Exakte EMA 200 – Materialisierung (ema-settled-1.1.0)
 
-Stand: 25.10.2026 · Branch `claude/technical-ema200` · **Fachmodelländerung, kein automatischer Merge**
+Stand: 25.10.2026 · PR #927 · **Fachmodelländerung**; Owner-Freigabe vom 25.10.2026 nach Prüfung der Aufwärmregel (Abschnitt 1)
 
 ## Worum es geht
 
@@ -22,48 +22,63 @@ Code:
 - Produzent `scripts/technical/materialize-product-intelligence.mjs` (Workflow `product-intelligence-materialization.yml`) ist **unverändert**. Er projiziert `chartSeries` bereits schlüsselweise ins Anzeigefenster (`product-materialization.js#compactBundle`).
 - Workflows, Zeitpläne und Rechte sind unverändert.
 
-## 1. Aufwärmphase
+## 1. Aufwärmphase und Freigaberegel
 
 `ema()` startet am Index `p-1` mit dem SMA der ersten `p` Werte und rechnet danach `e_t = e_{t-1} + a·(x_t − e_{t-1})` mit `a = 2/(p+1)`.
+Nach `k` weiteren Bars wirkt der Startwert noch mit dem Gewicht `w_k = (1−a)^k`. Zwei EMA-Läufe mit verschiedenem Start unterscheiden sich am Ende genau um
 
-Nach `k` weiteren Bars ist der Wert eine gewichtete Summe der echten Kurse plus dem Startwert mit dem Gewicht `(1−a)^k`. Zwei EMA-Läufe mit verschiedenem Start unterscheiden sich am Ende also genau um
+    |e_t − e'_t| = w_k · |Start − Start'|
 
-    |e_t − e'_t| = (1−a)^k · |Start − Start'|
+### Owner-Prüfung vom 25.10.2026: Warum fehlten 686 Titel?
 
-Das gilt für SMA-Start, Erstwert-Start oder unendliche Historie gleichermaßen.
+Die erste Fassung (`ema-settled-1.0.0`) gab einen Wert frei, sobald `w_k ≤ 1e-3` war. Für die EMA 200 heißt das starr 891 Tagesbars, also rund 3,5 Jahre. Die Prüfung zeigt, dass diese Grenze **weder notwendig noch hinreichend** ist. Der Fehler in Kurseinheiten ist `w_k · |Start − Start'|`. Er hängt davon ab, wie weit der heutige Kurs vom Startfenster entfernt liegt, nicht nur von der Zahl der Bars.
 
-**Regel:** Ein Wert wird erst veröffentlicht, wenn `(1−a)^k ≤ 1e-3` ist. Davor steht `null` (Missing ≠ Zero). `k` zählt nur endliche Beobachtungen nach dem Startindex.
+**Messung 1: simulierter Börsengang an echten Kursen.** Die fünf Golden-Reihen (AAPL, JPM, MSFT, NVDA, XOM) wurden an jeder fünften Startposition abgeschnitten, so dass vor dem Start mindestens 1.000 Bars Vorlauf liegen. Das ergibt 1.080 Fenster. Verglichen wurde die EMA nach L Bars mit dem Wert aus der Vollhistorie, relativ zum Kurs:
 
-| Periode | a | k (Startgewicht ≤ 1e-3) | Mindesthistorie p + k | Startgewicht genau |
-|---|---|---|---|---|
-| EMA 20 | 2/21 | 70 | 90 Bars | 9,07e-4 |
-| EMA 50 | 2/51 | 173 | 223 Bars | 9,87e-4 |
-| **EMA 200** | 2/201 | **691** | **891 Bars (~3,5 Jahre)** | 9,977e-4 |
+| L Bars | Startgewicht | p50 | p95 | p99 | max |
+|---|---|---|---|---|---|
+| 400 | 0,135 | 0,27 % | 0,78 % | 1,25 % | 1,60 % |
+| 500 | 0,050 | 0,09 % | 0,26 % | 0,33 % | 0,38 % |
+| 600 | 0,018 | 0,03 % | 0,08 % | 0,12 % | 0,14 % |
+| 661 | 0,010 | 0,015 % | 0,04 % | 0,06 % | 0,06 % |
+| 891 | 0,001 | 0,001 % | 0,004 % | 0,005 % | 0,006 % |
 
-Zum Vergleich: Wie weit ist das Startgewicht der EMA 200 auf dem 270-Bar-Fenster abgeklungen?
+Bei stabilen Large Caps ist der Wert also schon nach 600 bis 660 Bars auf rund 0,1 % genau, und 891 Bars sperren unnötig lange.
 
-| Fenster nach dem Start | Startgewicht |
-|---|---|
-| 70 Bars (Ende des 270er-Fensters, Start bei Bar 199) | 0,497 |
-| 270 Bars | 0,067 |
-| 691 Bars | 0,000998 |
+**Messung 2: Gegenbeispiel.** Ein Titel ist seit dem Startfenster auf ein Zwanzigstel gefallen, etwa durch Reverse-Splits nach einem Verfall. Hier wirkt dasselbe Restgewicht 1e-3 mit dem Faktor 20 auf den Kurs, und die alte Regel hätte einen Wert mit rund 2 % Konventionsfehler veröffentlicht (Test EMA-8). Im Universum erreicht die Schranke solcher Titel trotz über 891 Bars Werte bis über 100 % des Kurses. Grob geschätzt sind das rund 220 Titel; die Schätzung ist nur ungefähr, weil Wochenreihe und Tageshistorie bei den meisten Titeln nicht am selben Tag beginnen.
 
-Das bestätigt den Methodik-Satz von bisher: 270 Bars reichen nicht.
+### Regel ab `ema-settled-1.1.0`
 
-**Warum 1e-3?**
-1. Der Fehler ist dann kleiner als ein Tausendstel der Startabweichung. An den fünf Golden-Reihen (AAPL, JPM, MSFT, NVDA, XOM, je 2.970 Bars) wurden 850 Fenster mit genau 891 Bars gerechnet, deren Wert jeweils mit der Vollhistorie verglichen wurde. Größte relative Abweichung: **5,9e-5** (JPM). Größter Quotient Fehler/Startabweichung: **9,977e-4**, das ist exakt `(199/201)^691`, die Theorie stimmt also auf die Stelle. Auch die andere Konvention (Erstwert statt SMA als Start) lag höchstens **6,2e-5** daneben. Damit ist der Wert konventionsunabhängig.
-2. Bei 1e-2 (661 Bars) würde die Startabweichung noch mit 1 % durchschlagen. Bei einem Titel, dessen 200-Tage-Mittel sich um 30 % von der Start-SMA unterscheidet, wären das 0,3 %. Das ist mehr als der Abstand vieler Titel zur Linie.
-3. Bei 1e-4 (1.122 Bars) verlören weitere 164 Titel ihren Wert, ohne dass sich eine Seitenaussage messbar ändert.
+Jede Startkonvention, die im Startfenster liegt, weicht vom SMA-Start höchstens um dessen Spanne `R = max − min` der ersten `p` Schlusskurse ab. Das gilt etwa für den ersten Kurs, den SMA oder den Median. Daraus folgt für Tag t die Fehlerschranke
 
-Abdeckung am committeten Stand (`technical-signals-v1/summary.json`, 5.655 Bundles):
+    E_t = w_k · R / Schluss_t
 
-| Schwelle | Mindesthistorie | Titel mit EMA 200 | ohne |
-|---|---|---|---|
-| 1e-2 | 661 | 5.153 | 502 |
-| **1e-3** | **891** | **4.969** | **686** |
-| 1e-4 | 1.122 | 4.805 | 850 |
+Sie nutzt nur Daten bis t und ist damit frei von Look-ahead.
 
-Bei 198 Titeln (891 bis 1.159 Bars) beginnt die EMA-200-Linie erst innerhalb des 270-Bar-Fensters. Der Chart zeigt sie dann ab ihrem ersten gültigen Tag.
+**Freigabe am Tag t, wenn beide Bedingungen gelten:**
+1. `E_t ≤ 0,1 %` des Kurses (`EMA_MAX_REL_ERROR = 1e-3`);
+2. `w_k ≤ 5 %` (`EMA_FLOOR_SEED_WEIGHT`). Das ist eine Untergrenze: Der Startwert darf nie mehr als 5 % des Werts ausmachen.
+
+Sonst ist der Wert `null`.
+
+| Periode | Untergrenze k | frühester Wert |
+|---|---|---|
+| EMA 20 | 30 | ab 50 Bars |
+| EMA 50 | 75 | ab 125 Bars |
+| **EMA 200** | **300** | **ab 500 Bars**; tatsächlich, sobald die Schranke hält |
+
+**Empirischer Nachweis der Schranke** (Test EMA-12, dazu eine Vollmessung über alle Bars):
+- Auf 747.360 Messpunkten der fünf Golden-Reihen lag der tatsächliche Fehler gegen die Vollhistorie **kein einziges Mal** über `E_t`.
+- Wo die Regel einen Wert freigibt, liegt der tatsächliche Fehler bei höchstens **0,02 %**.
+- Freigegeben wird im Median nach 749 Bars, frühestens nach 636 und spätestens nach 835 Bars, statt starr nach 891.
+- Die Konventionsunabhängigkeit prüft EMA-5: Jeder veröffentlichte Wert liegt höchstens 0,1 % neben dem Erstwert-Start.
+
+**Wirkung:**
+- Junge, ruhige Titel erhalten ihren Wert früher. Unter den 190 Titeln mit 500 bis 890 Bars, deren Wochenreihe die ganze Historie abdeckt, gewinnen 6 einen Wert, darunter SPACs um 10 USD.
+- Stark gefallene Titel bleiben trotz langer Historie gesperrt.
+- Genaue Zahlen entstehen erst im ersten Datenlauf, weil die Tageshistorien nur dort vorliegen. Je Titel stehen dann in `emaSettlement.periods[]` die Felder `status`, `firstSettledDate`, `errorBoundAtCutoff` und `seedRange`. Das Chart Studio zeigt sie unter „Datenqualität und Herkunft“.
+
+Die reine Gewichtsregel bleibt als Modus erhalten: `settledEma(values, p, 1e-3)` liefert weiter 891 Bars, für Handwerte und Vergleiche.
 
 ## 2. Preisbereinigungen
 
@@ -76,8 +91,9 @@ Bei 198 Titeln (891 bis 1.159 Bars) beginnt die EMA-200-Linie erst innerhalb des
 
 | Fall | Verhalten | Test |
 |---|---|---|
-| IPO / kurze Historie (< 891 Bars) | `featuresAtCutoff.ema200 = null`, `chartSeries.ema200` ganz `null`, `emaSettlement…status = "INSUFFICIENT_HISTORY"`. EMA 20/50 bleiben, solange 90/223 Bars vorhanden sind. Das Produkt verlangt ohnehin mindestens 300 Bars, also sind EMA 20/50 am Stichtag immer gesetzt. | EMA-8, EMA-9 |
-| Genau 890 / 891 Bars | 890 ergibt `null`, 891 ergibt einen Wert am letzten Bar | EMA-8 |
+| IPO / kurze Historie (< 500 Bars oder Schranke über 0,1 %) | `featuresAtCutoff.ema200 = null`, `chartSeries.ema200` ganz `null`, `emaSettlement…status = "INSUFFICIENT_HISTORY"`. EMA 20/50 bleiben, solange 90/223 Bars vorhanden sind. Das Produkt verlangt ohnehin mindestens 300 Bars, also sind EMA 20/50 am Stichtag immer gesetzt. | EMA-8, EMA-9 |
+| Unter der Untergrenze (499 Bars) | immer `null` | EMA-8, EMA-9 |
+| Einbruch nach dem Start (Kurs ÷ 20) | `null` trotz langer Historie, Schranke im Status sichtbar | EMA-8 |
 | Fehlende Beobachtung (NaN) nach dem Start | Der Wert wird fortgetragen und zählt **nicht** als Abklingschritt. Die Aufwärmphase verlängert sich um diese Bar. | EMA-8 |
 | Fehlende Beobachtung vor dem Start | Der SMA-Start braucht `p` lückenlose Werte. Der Start rückt hinter die Lücke, und die Aufwärmphase beginnt dort. | EMA-8 |
 | Kalenderlücken (Handelsaussetzung, dünner Handel) | Die EMA läuft je **vorhandener** Bar, wie SMA 200, RSI und alle Tagesindikatoren. Es werden keine Bars erfunden. Die Kalenderprüfung des Produzenten (`validateTechnicalCalendar`, letzte 270 Bars) gilt unverändert. | – |
@@ -104,7 +120,7 @@ Was sich **nicht** ändert, mit Absicht:
 |---|---|
 | Bundles | 5.655 |
 | Schluss > SMA 200 (exakt, alle Bundles) | 2.035 (36,0 %) |
-| mit EMA 200 (≥ 891 Bars) | 4.969 |
+| mit EMA 200 nach der alten Regel (≥ 891 Bars; diese Zählung stammt aus `ema-settled-1.0.0`) | 4.969 |
 | davon ohne Wochenreihe vor dem Fenster (nicht schätzbar) | 20 |
 | davon nicht entscheidbar (Schluss im Unsicherheitsband) | 45 |
 | **entschieden** | **4.904** |
@@ -129,7 +145,7 @@ Ergebnis: `verdict: PASS`.
 - Es gibt keinen weiteren neuen Schlüssel. `signals-5/20/60.json.gz` sind byte-identisch, `summary.json` ist bis auf die Größenangaben identisch.
 - Größe, 5 Golden-Shards: roh +40.002 B (+8,0 KB je Titel), gzip +17.675 B (**+3,5 KB je Titel, +7,8 %**).
 - Kosten je Pfad (roh, 5 Titel): `chartSeries.ema20/50/200` je ~12,0 KB, `emaSettlement` 3,7 KB, `featuresAtCutoff.ema200` 0,1 KB.
-- Hochgerechnet auf 5.655 Bundles: gzip rund **+20 MB** auf 237,9 MB Shards (+8,4 %), roh rund +45 MB auf 1,56 GB (+2,9 %). Titel unter 891 Bars tragen `null`-Reihen und kosten weniger. Die Aktienseite lädt im Release je Titel ein Dokument und damit ~8 KB decodiert mehr. Das Budget `stock` (3.300.000 B) hat dafür Luft.
+- Hochgerechnet auf 5.655 Bundles: gzip rund **+20 MB** auf 237,9 MB Shards (+8,4 %), roh rund +45 MB auf 1,56 GB (+2,9 %). Titel ohne freigegebene EMA 200 tragen `null`-Reihen und kosten weniger. Die Aktienseite lädt im Release je Titel ein Dokument und damit ~8 KB decodiert mehr. Das Budget `stock` (3.300.000 B) hat dafür Luft.
 - Wer gzip sparen will: `chartSeries.ema20/50` sind zwei Drittel des Zuwachses. Der Browser kann sie im Fenster nachrechnen; nach der Aufwärmphase sind sie praktisch gleich. Sie stehen hier, weil der Auftrag Konsistenz mit der EMA 200 verlangt. Weglassen wäre eine Zeile in `technical-analysis.js`.
 
 Reproduzieren in Scratch-Verzeichnissen. Nichts unter `quant/data` wird geschrieben. Ein Lauf dauert etwa 1 s, weil alle anderen Titel `SOURCE_MISSING` sind:
@@ -154,22 +170,23 @@ So gelaufen am 25.10.2026: 5/5 Instrumente bitgleich. Alle 646 Shards und die dr
 
 | Test | Prüft |
 |---|---|
-| EMA-1 | `k = 691/173/70`. Minimalität: `(1−a)^k ≤ 1e-3 < (1−a)^(k−1)` |
+| EMA-1 | Untergrenzen `k = 300/75/30` (Startgewicht 5 %) und Gewichtsregel `k = 691` (1e-3), jeweils minimal |
 | EMA-2 | Handwerte: p = 3, Reihe 2,4,6,8,10,12 ergibt Start 4, dann 6, 8, 10. Erster veröffentlichter Wert erst nach 3 Bars |
-| EMA-3 | Handwert EMA 200 auf einer Rampe: genau `x_t − 99,5` (Nachlauf `(1−a)/a`) ab Bar 890. Konstante Reihe bleibt konstant |
-| EMA-4 | Gleich einer unabhängigen naiven EMA (rel. < 1e-12) und **bitgleich** zur bestehenden `ema()` |
-| EMA-5 | Konventionsunabhängigkeit an NVDA/JPM: Fehler ≤ 1e-3 × Startabweichung. Erstwert-Start rel. < 1e-4 |
+| EMA-3 | Rampe: genau `x_t − 99,5` ab dem unabhängig gerechneten ersten Tag mit Schranke ≤ 0,1 % (vor Bar 890). Konstante Reihe ab der Untergrenze (Bar 499). Gewichtsregel weiter Bar 890 |
+| EMA-4 | Gleich einer unabhängigen naiven EMA (rel. < 1e-12) und **bitgleich** zur bestehenden `ema()`; jeder veröffentlichte Wert erfüllt die Regel |
+| EMA-5 | An NVDA/JPM, Fensterlängen 520 bis 891: Fehler gegen die Vollhistorie ≤ Schranke, Abstand zum Erstwert-Start ≤ 0,1 % des Kurses |
 | EMA-6 | Kausalität: Der Wert an t ist mit und ohne spätere Bars bitgleich, auch über `analyzeAsOf` |
 | EMA-7 | Splits: gleich dem Weg über `return-series#splitAdjustedColumn`, kein Sprung, Roh-EMA wäre falsch |
-| EMA-8 | Unvollständige Historien (890/891 Bars, Lücken vor/nach dem Start, leere Reihe) |
-| EMA-9 | Bundle: `chartSeries` = gerundete Feature-Werte, erste gültige Indizes 89/222/890, `INSUFFICIENT_HISTORY`, Determinismus (gleiche Bytes) |
+| EMA-8 | Unvollständige Historien (Untergrenze 499/500, Lücken vor/nach dem Start, Einbruch sperrt, ruhiger Titel ab 500 Bars, leere Reihe) |
+| EMA-12 | Fehlerschranke empirisch an allen Golden-Reihen nie kleiner als der tatsächliche Fehler |
+| EMA-9 | Bundle: `chartSeries` = gerundete Feature-Werte; erste gültige Indizes = `firstSettledIndex`; NVDA vor Bar 890 freigegeben; `INSUFFICIENT_HISTORY` unter 500 Bars; Determinismus (gleiche Bytes) |
 | EMA-10 | Produzent end-to-end in `os.tmpdir()`: Shard trägt die Felder, zwei Läufe sind byte-identisch, Vergleicher erkennt jede nicht-additive Änderung |
 | EMA-11 | Schätzer für alte Shards trifft die exakte EMA 200 auf < 1e-3 |
 
 ## Offene Punkte und Risiken
 
 - **Erstausrollung:** Technical-Engines stehen nicht im Methodik-Fingerabdruck. Die neuen Felder entstehen deshalb beim nächsten regulären Lauf mit neuem Datenstand. Die committeten Shards werden hier bewusst nicht mitgebracht.
-- **Gerechnet nur lokal auf 5 Titeln:** Bitgleichheit ist auf den Golden-Reihen belegt, nicht auf dem Vollbestand. Der Code ändert keinen bestehenden Rechenweg. Nach dem ersten Lauf auf `main` sollte trotzdem `compare-ema-materialization.mjs` gegen den Vortag gefahren werden; Datenänderungen des Tages sind dabei herauszurechnen. Alternativ: Workflow-Lauf mit `--out` auf einem Branch.
+- **Gerechnet nur lokal auf 5 Titeln:** Die Abdeckungszahlen nach `ema-settled-1.1.0` liegen erst nach dem ersten Datenlauf exakt vor; je Titel stehen Status und Schranke in `emaSettlement`. Bitgleichheit ist auf den Golden-Reihen belegt, nicht auf dem Vollbestand. Der Code ändert keinen bestehenden Rechenweg. Nach dem ersten Lauf auf `main` sollte trotzdem `compare-ema-materialization.mjs` gegen den Vortag gefahren werden; Datenänderungen des Tages sind dabei herauszurechnen. Alternativ: Workflow-Lauf mit `--out` auf einem Branch.
 - **Artefaktgröße:** etwa +20 MB gzip. Wenn das zu viel ist, `chartSeries.ema20/50` weglassen (−⅔).
 - **Screener-Feld `aboveEma200`:** bewusst nicht enthalten, eigener PR.
 - **Wochen-EMA:** bewusst nicht enthalten, siehe Abschnitt 4.
