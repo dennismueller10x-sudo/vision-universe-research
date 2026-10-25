@@ -343,6 +343,26 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
    /* Barrierefreier Name der Seitenueberschrift (Rolle heading, Ebene 1) gegen den vorgesehenen Namen. */
    if(!await page.locator('.qx-stock-hero').getByRole('heading',{level:1,name:nvdaHeadName,exact:true}).count())befund(view,width,'Name weicht vom Verzeichnis ab');
+   /* Die sechs Pillen (Live-Befund 24.10.2026): Ein Klick markiert immer die gewaehlte Pille - auf dem Desktop-Raster
+      stehen zwei Karten nebeneinander, dort markierte das Beobachtungsband die rechte. Danach: Scrollen (Desktop)
+      und Wischen (Mobil) markieren den Bereich, der vorne steht. */
+   {const pillen=await page.locator('.qv2-toc a[data-target]').evaluateAll(as=>as.map(a=>a.dataset.target));
+    if(pillen.join('|')!=='ueberblick|einordnung|dafuer|veraenderung|setup|historie')befund(view,width,'nicht die sechs Pillen: '+pillen.join('|'));
+    const aktiv=()=>page.locator('.qv2-toc a[aria-current="true"]').evaluateAll(as=>as.map(a=>a.dataset.target).join('|'));
+    const ruhig=async()=>{let vorher=null;for(let i=0;i<40;i++){await page.waitForTimeout(100);const jetzt=await page.evaluate(()=>scrollY+'/'+(document.querySelector('.qv2-grid')||{}).scrollLeft);if(jetzt===vorher)return;vorher=jetzt;}};
+    for(const ziel of [...pillen.slice(1),...pillen.slice(0,-1).reverse()]){
+     await page.locator(`.qv2-toc a[data-target="${ziel}"]`).click();await ruhig();await page.waitForTimeout(700);
+     const ist=await aktiv();if(ist!==ziel)befund(view,width,`Pille "${ziel}" angeklickt, markiert ist "${ist}"`);}
+    if(width>=760){
+     for(const ziel of ['einordnung','veraenderung'])/* links in ihrer Zeile, rechts daneben dafuer bzw. setup */{
+      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
+    }else{
+     for(const ziel of ['setup','dafuer','historie']){
+      await page.locator('.qv2-grid').evaluate((g,id)=>g.scrollTo({left:g.querySelector('#'+id).offsetLeft,behavior:'instant'}),ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Wischen zu "${ziel}" markiert ist "${ist}"`);}
+    }
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));}
   }
   if(view==='radar'){
    /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
