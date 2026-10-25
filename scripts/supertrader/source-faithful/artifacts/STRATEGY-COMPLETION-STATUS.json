@@ -8,7 +8,7 @@
   "MECHANICAL_COMPONENTS_ONLY",
   "INCOMPLETE"
  ],
- "currentCodeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
+ "currentCodeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
  "flags": [
   "PARTIAL_DATA_BLOCKED",
   "PARTIAL_SOURCE_BLOCKED",
@@ -482,7 +482,8 @@
      "pass": true,
      "detail": [
       "SF_TURTLE_S1 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
-      "SF_TURTLE_S1 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, current): reconciliation PASS",
+      "SF_TURTLE_S1 run 40170829944 (sf-turtle-1.3.0, code 89fbcf864a57, current): reconciliation PASS",
+      "SF_TURTLE_S1 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, other code: regression reference only): reconciliation PASS",
       "SF_TURTLE_S1 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
      ]
     },
@@ -496,7 +497,7 @@
      "title": "no unsourced price assumption: fills follow the source entry / gap rules; every model assumption (unknown intrabar order, source-silent reading) is declared with a reference reading, and each boundable one runs its alternative as a scenario",
      "pass": true,
      "detail": [
-      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC (scenario ENTRY_BAR_OPTIMISTIC)",
+      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC_CERTAIN_RULE (scenario ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE)",
       "MA-TUR-HELD-BAR-ORDER: reference fixed; alternative none (fixed convention, declared)",
       "MA-TUR-S1-OPEN-BREAKOUT: reference openBreakout=SKIP; alternative openBreakout=TAKE (scenario S1_OPEN_BREAKOUT_TAKEN)",
       "MA-TUR-FAILSAFE-EXIT: reference failsafeExit='10D'; alternative failsafeExit='20D' (scenario FAILSAFE_EXIT_20D)"
@@ -545,7 +546,8 @@
      "pass": true,
      "detail": [
       "SF_TURTLE_S2 run 39271055007 (sf-turtle-1.0.0, code n/a, other code: regression reference only): reconciliation PASS",
-      "SF_TURTLE_S2 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, current): reconciliation PASS",
+      "SF_TURTLE_S2 run 40170829944 (sf-turtle-1.3.0, code 89fbcf864a57, current): reconciliation PASS",
+      "SF_TURTLE_S2 run 39397517900 (sf-turtle-1.2.0, code ae2a51ed86ae, other code: regression reference only): reconciliation PASS",
       "SF_TURTLE_S2 run 39392734794 (sf-turtle-1.1.0, code 9372a8f8f92b, other code: regression reference only): reconciliation PASS"
      ]
     },
@@ -559,7 +561,7 @@
      "title": "no unsourced price assumption: fills follow the source entry / gap rules; every model assumption (unknown intrabar order, source-silent reading) is declared with a reference reading, and each boundable one runs its alternative as a scenario",
      "pass": true,
      "detail": [
-      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC (scenario ENTRY_BAR_OPTIMISTIC)",
+      "MA-TUR-INTRABAR-ORDER: reference entryBarOrder=PESSIMISTIC; alternative entryBarOrder=OPTIMISTIC_CERTAIN_RULE (scenario ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE)",
       "MA-TUR-HELD-BAR-ORDER: reference fixed; alternative none (fixed convention, declared)"
      ]
     },

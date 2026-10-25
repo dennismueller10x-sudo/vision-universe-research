@@ -147,9 +147,18 @@ Grundsätze: a mechanically confirmed setup is not an executable trade; a model 
 | ALT-STOP-MAXLOSS10 | SEPA, POWER_PLAY | {"stopPlacement":"MAX_PLANNED_LOSS_10"} |
 | ALT-ORDER-STOP-MARKET | SEPA, POWER_PLAY | {"orderType":"BUY_STOP_MARKET"} |
 | ALT-ENTRY-VOLUME-NEXT-OPEN | SEPA, POWER_PLAY | {"entryTiming":"NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE"} |
-| ALT-INTRABAR-OPTIMISTIC | SEPA, POWER_PLAY | {"intrabarOrder":"OPTIMISTIC"} |
+| ALT-INTRABAR-OPTIMISTIC (SUPERSEDED_SF7_D4, ersetzt durch SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE) | SEPA, POWER_PLAY | {"intrabarOrder":"OPTIMISTIC"} |
 | ALT-EXIT-STOP-BE3R | SEPA, POWER_PLAY | {"exitPolicy":"STOP_BE3R"} |
 | ALT-EXIT-FREEROLL-2R | SEPA, POWER_PLAY | {"exitPolicy":"FREEROLL_2R"} |
 | ALT-EXIT-FREEROLL-3R | SEPA, POWER_PLAY | {"exitPolicy":"FREEROLL_3R"} |
 | ALT-RISK-0075 | SEPA, POWER_PLAY | {"riskFraction":0.0075} |
 | ALT-RISK-025 | SEPA, POWER_PLAY | {"riskFraction":0.025} |
+
+## Supertrader-7.0-Ausführungsvarianten (sf7-minervini-variants-1.0.0, Register `496cad56c7eb…`)
+
+Revision EX7-SAME-BAR-CLOSE-CONFIRMS-STOP (SF7-D4): Pivot-Berührung mit Schluss am oder unter dem Stop ist ein sicherer Stop am selben Balken. Bericht: [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md).
+
+| ID | Vergleich mit | Strategien | ersetzt |
+|---|---|---|---|
+| SF7-REF-CLOSE-RULE | REF | SEPA, POWER_PLAY | – |
+| SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE | ALT-INTRABAR-OPTIMISTIC | SEPA, POWER_PLAY | ALT-INTRABAR-OPTIMISTIC |

@@ -154,7 +154,7 @@ test('SF3-TUR-CORR-ENGINE: unveraenderte Engine setzt LIMIT6 mit Korrelationsgru
   const ref1 = runTurtle(data, opts), ref2 = runTurtle(data, opts);
   assert.deepEqual(ref1.ledger, ref2.ledger);
   assert.equal(ref1.correlationLimits, 'NOT_EVALUATED_NO_PIT_GROUPS');
-  assert.equal(TURTLE_VERSION, 'sf-turtle-1.2.0'); // the engine is not changed by this research component
+  assert.equal(TURTLE_VERSION, 'sf-turtle-1.3.0'); // the engine is not changed by this research component (1.3.0: SF7-D3 reading only)
   const p = createCorrelationGroupProvider(data, RAW, { unknownPolicy: 'REPORT_ONLY' });
   const withG = runTurtle(data, { ...opts, groupsOf: p.groupsOf });
   assert.ok(withG.counts.rejectCorrelationLimit6 > 0, JSON.stringify(withG.counts));

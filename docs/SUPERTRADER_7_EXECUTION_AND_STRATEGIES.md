@@ -13,8 +13,8 @@ Alle Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist live, zertifi
 |---|---|---|---|---|
 | SF7-D1 | MEDIUM | `lifecycle-engine.mjs#fillOrder` | Bei einem Buy-Stop-Fill per Berührung mit Tief **und Schluss** am oder unter dem Stop galt der Stop als „mehrdeutig“. Der Schluss ist aber der letzte Kurs des Balkens: Der Kurs lag beim Fill über dem Stop und schloss am oder unter ihm, also wurde der Stop **nach** dem Fill gehandelt. Die OPTIMISTIC-Lesart hielt solche Positionen trotzdem. Die PESSIMISTIC-Referenz stieg bereits zum Stop aus, nur mit der Bezeichnung „angenommen“. | als deklarierte Variante behoben (EX7) |
 | SF7-D2 | MEDIUM | `run-kk-intraday.mjs#epTradeSummary` | Die versiegelten EP-Handelskennzahlen lasen `realizedPnl`. Geschlossene Engine-Trades tragen ihr Ergebnis aber als `pnl`. Mittelwert, Median und Trefferquote waren deshalb leer (`null`), auch je Schicht. In der versiegelten Tradeliste fehlte das Ergebnis geschlossener Trades. Öffentliche Zählungen und Hashes waren nicht betroffen. | behoben |
-| SF7-D3 | MEDIUM | `methods/turtle.mjs`, nur Alternative `ENTRY_BAR_OPTIMISTIC` | Gleiche Klasse wie D1: Die Turtle-Alternative übergeht jeden Stop am Einstiegs- oder Nachkaufbalken, auch wenn der Fill zur Eröffnung lag. Dann kommt das Tief zwingend danach. | **offen, gelistet** (Engine gepinnt, Abschnitt 6) |
-| SF7-D4 | MEDIUM | `research/minervini-lifecycle.mjs#fillBuyOrder` / `minervini-execution.mjs` | Gleiche Klasse wie D1 bei Minervini: Eine Pivot-Berührung mit Tief ≤ Stop gilt unabhängig vom Schluss als `AMBIGUOUS`, und `ALT-INTRABAR-OPTIMISTIC` übergeht sie. Beispiel: Pivot 10,5, Stop 10,0, Balken O 10,2 / H 10,8 / L 9,9 / C 9,95; OPTIMISTIC hält eine sicher gestoppte Position. | **offen, gelistet**: Minervini-Code `b1d81fb8…` ist in SF6-PAPER-2027 gepinnt, nicht geändert; Charakterisierungstest; braucht eine Eigentümerentscheidung |
+| SF7-D3 | MEDIUM | `methods/turtle.mjs`, nur Alternative `ENTRY_BAR_OPTIMISTIC` | Gleiche Klasse wie D1: Die Turtle-Alternative übergeht jeden Stop am Einstiegs- oder Nachkaufbalken, auch wenn der Fill zur Eröffnung lag. Dann kommt das Tief zwingend danach. | **behoben nach E7-3** als versionierte Lesart `OPTIMISTIC_CERTAIN_RULE` (sf-turtle-1.3.0), siehe [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md) |
+| SF7-D4 | MEDIUM | `research/minervini-lifecycle.mjs#fillBuyOrder` / `minervini-execution.mjs` | Gleiche Klasse wie D1 bei Minervini: Eine Pivot-Berührung mit Tief ≤ Stop gilt unabhängig vom Schluss als `AMBIGUOUS`, und `ALT-INTRABAR-OPTIMISTIC` übergeht sie. Beispiel: Pivot 10,5, Stop 10,0, Balken O 10,2 / H 10,8 / L 9,9 / C 9,95; OPTIMISTIC hält eine sicher gestoppte Position. | **behoben nach E7-3** als Variante `SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE`, siehe [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md) |
 | SF7-D5 | MEDIUM | `research/kk-ep-lifecycle.mjs#resolveEpDay` | Unter `ALT-FILL-MINUTE-OPTIMISTIC` wird das Tief der Fill-Minute ≤ Stop immer übergangen. Sicher ist der Stop aber, wenn der Fill die Minuteneröffnung ist (Open ≥ Level) oder die Minute am oder unter dem Stop schließt. | als deklarierte Variante behoben (EX7-EP), REF unberührt |
 
 - **Referenzen unverändert.** Ohne Adapter-Flag läuft die Engine Zeile für Zeile wie in 5.0. Belegt wird das durch den neuen sf5-Lauf (Abschnitt 4): Er reproduziert alle Referenz-Hashes. Das sf5-Variantenregister (`0a1260e9…`, gepinnt in SF6-PAPER-2027) ist unverändert, die Engine-Version bleibt `sf5-lifecycle-engine-1.0.0`.
@@ -81,8 +81,8 @@ Neu ist `scripts/supertrader/tests/sf-sf7-execution.test.mjs` mit 17 Tests. Die 
 | SF7-D1-PESSIMISTIC-PRICES | unter PESSIMISTIC nur die Bezeichnung anders, Fills, Stücke und Preise gleich |
 | SF7-D1-REFERENCES-UNTOUCHED | sf5-Register gepinnt, kein Referenzadapter mit Flag, SF7-Register gepinnt, Konfiguration = Vergleichsvariante |
 | SF7-D2-EP-TRADE-SUMMARY | versiegelte EP-Handelskennzahlen aus `pnl` |
-| SF7-D3-TURTLE-OPTIMISTIC-CHARACTERIZED | dokumentiert D3; die Turtle-Referenz stoppt korrekt |
-| SF7-D4-MINERVINI-CHARACTERIZED | dokumentiert D4 (`fillBuyOrder` liefert `AMBIGUOUS` bei Schluss < Stop) |
+| SF7-D3-TURTLE-OPTIMISTIC-FIXED | (seit E7-3) ersetzte Lesart zeigt D3, `OPTIMISTIC_CERTAIN_RULE` stoppt; die Turtle-Referenz stoppt korrekt |
+| SF7-D4-MINERVINI-FIXED | (seit E7-3) ohne Option `AMBIGUOUS` (Referenzpfad), mit Revision `CERTAIN_BY_CLOSE` |
 | SF7-D5-EP-FILL-MINUTE | Fill zur Minuteneröffnung und Minutenschluss ≤ Stop: ohne Flag übergangen, mit Flag sicher; mehrdeutiger Fall unverändert; REF mit und ohne Flag identisch |
 | SF7-D5-EP-VARIANT | EP-Register, Referenzadapter und Version unverändert; Variante gepinnt; Konfiguration = Vergleichsvariante |
 | SF7-RUN-TRANSCRIPTION | eingetragener SF7-Registerhash im sf5-Laufeintrag = aktueller Code; jede eingetragene Variante existiert |
@@ -118,7 +118,7 @@ Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Abrechnung research-v1, Auslö
 | Weinstein Trader | `0d869af0…` |
 | Holy Grail | `875cda8c…` |
 
-Turtle und Minervini liegen nicht auf dieser Engine. Ihr Code ist unverändert: Der Engine-Fingerabdruck `ae2a51ed…` ist unverändert, und der sf4-Fingerabdruck wird per Test geprüft.
+Turtle und Minervini liegen nicht auf dieser Engine. Ihr Code ist unverändert: Der Engine-Fingerabdruck `ae2a51ed…` ist unverändert, und der sf4-Fingerabdruck wird per Test geprüft. (Stand #898; seit E7-3 `89fbcf864a57…` bzw. Minervini `c834b227045b…`, Referenzen hashgleich, siehe [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md)).
 
 **SF7-Varianten (öffentliche Zählungen, Kennzahlen versiegelt):**
 
@@ -156,17 +156,17 @@ Einordnung (nur Zählungen, keine Performanceaussage):
 | Parabolic Short | **unverändert, keine technisch lösbare Lücke** | Einstiegs- und Zielregeln, Stop vor Ziel (pessimistisch), Überlappungsvariante setzt chronologische Kandidaten je Wertpapier voraus (`screenCandidates`: aufsteigend), offene Trades markiert |
 | EP/PS-Stichprobe (`kk-sample.mjs`) | **unverändert, keine technisch lösbare Lücke** | `cleanPrefix`: EP bis zum letzten Schlüssel mit Basis, PS bis zum letzten nur über den PS-Pfad gecachten Schlüssel; `stratifiedSample`: exakter rationaler Bruch, Reihenfolge nach Hash; korrekter Median |
 
-Die Readiness-Matrix 6.0 enthält keine Zeile der Klasse TECHNICAL. Ihre TEIL-Zellen sind manuelle Entscheidungen, Quellen- oder Datensperren oder V4-D1. Die `MEASUREMENT_GAP`-Einträge in `STRATEGY-COMPLETION-GAPS.json` betreffen nur V4-D1/V4-D2 (außerhalb dieses Auftrags). Der Minervini-Code wurde nicht geändert. Der Befund D4 (Abschnitt 1) ist gelistet und durch einen Test charakterisiert.
+Die Readiness-Matrix 6.0 enthält keine Zeile der Klasse TECHNICAL. Ihre TEIL-Zellen sind manuelle Entscheidungen, Quellen- oder Datensperren oder V4-D1. Die `MEASUREMENT_GAP`-Einträge in `STRATEGY-COMPLETION-GAPS.json` betreffen nur V4-D1/V4-D2 (außerhalb dieses Auftrags). Der Minervini-Code wurde nicht geändert. Der Befund D4 (Abschnitt 1) ist gelistet und durch einen Test charakterisiert. Nachtrag E7-3: D3 und D4 sind in [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md) behoben.
 
 ## 6. Verbleibende Risiken
 
 | Schwere | Risiko | Warum offen / Vorschlag |
 |---|---|---|
-| MEDIUM | **SF7-D3 Turtle OPTIMISTIC**: Die Alternative `ENTRY_BAR_OPTIMISTIC` überschätzt ihre Schranke (Eröffnungs-Fills und Schluss ≤ Stop). | `methods/turtle.mjs` gehört zum gepinnten `turtleEngineCodeSha256` (SF6-PAPER-2027) und zum AG-3-Fingerabdruck. Eine Behebung braucht eine neue Turtle-Engine-Version, einen neuen Referenzlauf und eine Protokollversion. Das ist eine Eigentümerentscheidung vor dem 01.01.2027. Die Referenz BASE_S0 ist nicht betroffen. |
+| erledigt | **SF7-D3 Turtle OPTIMISTIC** | Behoben nach E7-3 (25.10.2026): [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md), Lauf 40170829944, Referenzen hashgleich, SF6-PAPER-2027 1.1.0 (nicht aktiv). |
 | MEDIUM | **EP am Einstiegstag nur IEX**: Ob der Stop am selben Tag fällt, entscheiden allein die IEX-Minuten. Ein konsolidiertes Tagestief unter dem Stop wird nicht geprüft und ist eine mögliche optimistische Verzerrung. | Lösbar als reine Zähl-Evidenz aus den Tagesbalken (Cache-only). Nicht umgesetzt, weil es eine neue Einordnung wäre und nicht nebenbei kommen soll. Vorschlag: eigener Schritt mit Zählung „Tagestief ≤ Stop ohne IEX-Stop“. |
 | LOW | Weinstein-Trailing: Der Kommentar sagt „Wochenhoch am oder über dem Hoch“, der Code verlangt „darüber“ (`>`). | Eine Änderung würde die Referenz ändern. Vorerst nur dokumentiert. |
 | LOW | Dust-Abschreibungen (< 0,01 $) stehen in der Engine nur in den Ereignissen, nicht im Ledger (Vertrag A8 verlangt das Ledger). Ohne Zahlungsfluss bleibt die Kasse unberührt. | Eine Änderung des Ledgers ändert Referenz-Hashes. Nur dokumentiert. |
 | LOW | Stale-Abrechnung ohne jeden früheren Schluss ergäbe NaN. | Theoretisch: Die Eligibility verlangt Vorbalken. Nur dokumentiert. |
 | LOW | EP/PS-Schichtung: Schichten mit Merkmal `NA` (Liquidität oder Regime) sind teilnahmeberechtigt. | Deklariertes Verhalten von 6.0, unverändert. |
-| MEDIUM | **SF7-D4 Minervini OPTIMISTIC** (Abschnitt 1). | Code gepinnt (`b1d81fb8…`, SF6-PAPER-2027); die Referenz ist PESSIMISTIC und nicht betroffen. Behebung nur mit Eigentümerentscheidung und neuer Protokollversion. |
+| erledigt | **SF7-D4 Minervini OPTIMISTIC** | Behoben nach E7-3 (25.10.2026): [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md), Lauf 40170832007, alle registrierten Varianten hashgleich. |
 | LOW | `run-sf6-validation.mjs` und `run-sf6-integrity.mjs` führen `lifecycle-engine.mjs` und `minervini-execution.mjs` nicht in ihren Code-Dateilisten (`validationCodeSha256` / `integrityCodeSha256`). Eine Engine-Änderung ändert deren Fingerabdruck daher nicht. | Nicht hier behoben, weil eine Änderung die eingetragenen 6.0-Fingerabdrücke verschieben würde. Vorschlag für einen eigenen PR: beide Dateien aufnehmen und die Läufe neu eintragen. |
