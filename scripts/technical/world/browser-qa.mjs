@@ -14,6 +14,8 @@
      Suche        Suche in Worten: Vorschau (erkannt/nicht erkannt), Ausfuehren,
                   "Erkannt als" und Treffer
      Fokus        Befundkarte -> Chart nur mit dieser Formation
+     Baukasten    Bedingung hinzufuegen, RSI waehlen, anwenden, speichern;
+                  Gespeichert zeigt Beschreibung und heutige Trefferzahl
      Signale      Befunde und Erkennungshistorie
      Menue        eigene Gruppe nach Fundamental, Chart Studio aktiv
      Methodik     Indikatorkatalog
@@ -121,6 +123,29 @@ async function main() {
       assert(/Dreieck/.test(txt) && /SMA 200/.test(txt), "Erkannt als: " + txt);
       assert(await page.locator(".tc-hit").count() >= 1, "keine Treffer fuer Dreieck ueber SMA 200");
       await clean("Suche in Worten");
+    });
+
+    await check(key + " Baukasten und Gespeichert", async () => {
+      await page.goto(base + "#/screener");
+      await page.waitForSelector(".tc-builder summary", { timeout: 30000 });
+      await page.locator(".tc-builder summary").click();
+      await page.locator(".tc-builder .tc-bgroup .tc-btn-ghost").first().click();
+      const sel = page.locator(".tc-builder .tc-bgroup .tc-brow").nth(1).locator("select").first();
+      await sel.selectOption("rsi14");
+      const val = page.locator(".tc-builder .tc-bgroup .tc-brow").nth(1).locator("input.tc-num-in").first();
+      await val.fill("45"); await val.dispatchEvent("change");
+      await page.locator(".tc-builder").getByRole("button", { name: "Anwenden", exact: true }).click();
+      await page.waitForFunction(() => /q=/.test(location.hash) && /rsi14/.test(decodeURIComponent(location.hash)));
+      await page.waitForSelector(".tc-preset");
+      assert(/RSI 14/.test(await page.locator(".tc-preset p").innerText()), "Baukasten-Abfrage nicht erkannt");
+      await page.locator(".tc-save summary").click();
+      await page.fill(".tc-save-form input", "QA Baukasten");
+      await page.locator(".tc-save-form button[type=submit]").click();
+      await page.goto(base + "#/screener/gespeichert");
+      await page.waitForSelector(".tc-saved");
+      await page.waitForFunction(() => /\d/.test(document.querySelector(".tc-saved .tc-hit-score b").textContent));
+      assert(/RSI 14/.test(await page.locator(".tc-saved .tc-row-text span").first().innerText()), "Beschreibung fehlt");
+      await clean("Baukasten und Gespeichert");
     });
 
     await check(key + " Chart Studio", async () => {

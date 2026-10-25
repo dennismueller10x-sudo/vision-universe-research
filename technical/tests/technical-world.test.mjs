@@ -169,3 +169,37 @@ test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in me
   assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
   assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
 });
+
+test("Filter-Baukasten: Abfrage <-> Baukasten verlustfrei, Prozent-Eingabe, Standardzeilen fuer jedes Feld", () => {
+  const QT = require(join(root, "quant/engines/technical/query-text.js"));
+  const q = { timeframe: "1D", logic: "OR", groups: [{ op: "AND", filters: [{ field: "rsi14", op: "between", value: 30, value2: 50 }, { field: "formationActive", op: "in", value: ["DOUBLE_BOTTOM"] }] }, { op: "AND", filters: [{ field: "distSma200", op: "gt", value: -0.05 }] }] };
+  const b = M.builderFromQuery(q);
+  assert.equal(b.groups.length, 2);
+  const back = Q.validate(M.queryFromBuilder(b)).query;
+  assert.deepEqual(back.groups.map((g) => g.filters.map(({ id, ...f }) => f)), q.groups.map((g) => g.filters));
+  assert.ok(QT.parse(QT.toText(back)).ok, "Baukasten -> kanonischer Text -> Parser");
+  assert.equal(M.parseFieldInput("distSma200", "-5,5"), -0.055);
+  assert.equal(M.formatFieldInput("distSma200", -0.055), "-5,5");
+  assert.ok(Number.isNaN(M.parseFieldInput("rsi14", "abc")));
+  for (const f of Q.FIELDS) { const r = M.defaultRow(f.id); assert.ok(Q.validate({ timeframe: f.tfs[0], groups: [{ filters: [r] }] }).ok, f.id); }
+  /* Mehrere UND-Gruppen werden zu einer (UND bindet ohnehin). */
+  assert.equal(M.builderFromQuery({ timeframe: "1W", logic: "AND", groups: [{ filters: [{ field: "aboveSma200", op: "is", value: true }] }, { filters: [{ field: "rsi14", op: "gt", value: 50 }] }] }).groups.length, 1);
+});
+
+test("Gespeicherte Suchstrategien: umbenennen, exportieren, importieren (validiert, ohne Dubletten)", () => {
+  const mem = {}, st = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
+  const a = M.saveScreen(st, "RSI tief", "q=" + encodeURIComponent("rsi14 < 30"), 1000);
+  M.saveScreen(st, "Breakout", "preset=breakout", 2000);
+  assert.ok(M.updateScreen(st, a.id, { name: "  RSI unter 30  " }, 3000));
+  const one = M.loadScreens(st).find((x) => x.id === a.id);
+  assert.equal(one.name, "RSI unter 30"); assert.ok(one.updatedAt);
+  assert.equal(M.updateScreen(st, "gibt-es-nicht", { name: "x" }), false);
+  const exp = M.exportScreens(st);
+  const mem2 = {}, st2 = { getItem: (k) => mem2[k] ?? null, setItem: (k, v) => { mem2[k] = v; } };
+  assert.deepEqual(M.importScreens(st2, exp, 5000), { ok: true, added: 2, skipped: 0 });
+  assert.deepEqual(M.importScreens(st2, exp, 6000), { ok: true, added: 0, skipped: 2 }, "keine Dubletten");
+  const bad = JSON.stringify({ format: "vu-technical-screens-1", screens: [{ name: "x", params: "evil=1" }, { name: "", params: "preset=trend" }] });
+  assert.deepEqual(M.importScreens(st2, bad, 7000), { ok: true, added: 0, skipped: 2 }, "unbekannte Parameter und leere Namen");
+  assert.equal(M.importScreens(st2, "{kaputt").error, "KEIN_JSON");
+  assert.equal(M.importScreens(st2, JSON.stringify({ screens: [] })).error, "FORMAT");
+});
