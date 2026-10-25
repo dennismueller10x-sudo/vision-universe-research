@@ -116,7 +116,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["meta.json", "screener-v1.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["index-v1.json", "meta.json", "screener-v1.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -140,4 +140,32 @@ test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash 
     }
     assert.doesNotMatch(out, /vu-release/, "kein Meta-Tag, kein Waechter");
   } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test("Index fuer Startseite und Chart Studio: deckungsgleich mit dem Datensatz, ein Bruchteil der Groesse", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const raw = readFileSync(join(root, "technical/data/index-v1.json"), "utf8"), ix = JSON.parse(raw);
+  assert.equal(ix.schemaVersion, M.INDEX_SCHEMA);
+  assert.deepEqual(ix, M.homeIndex(art), "Erzeuger und Rueckfall im Browser rechnen gleich");
+  assert.deepEqual(ix.s, art.cols.s);
+  assert.equal(ix.asOf, art.asOf);
+  const ds = Q.createDataset(art);
+  for (const p of Q.PRESETS) assert.equal(ix.presets[p.id], Q.evaluate(ds, p.query).count, p.id);
+  for (const id of M.FOCUS.concat(M.RANKS)) assert.ok(Q.PRESETS.some((p) => p.id === id), id);
+  assert.ok(ix.focusUnion > 0 && ix.focusUnion <= ix.count);
+  assert.ok(raw.length * 10 < readFileSync(join(root, "technical/data/screener-v1.json")).length, "Index unter 10 % des Datensatzes");
+  const app = readFileSync(join(root, "technical/app.js"), "utf8");
+  assert.match(app, /function viewHome[\s\S]*?loadIndex\(\)/, "Startseite laedt den Index");
+  const html = readFileSync(join(root, "technical/index.html"), "utf8");
+  assert.doesNotMatch(html, /preload[^>]*screener-v1/, "der volle Datensatz wird nicht auf jeder Route vorgeladen");
+});
+
+test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in meta.json stimmt", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const meta = JSON.parse(readFileSync(join(root, "technical/data/meta.json"), "utf8"));
+  const col = art.cols.suspectJumpAt;
+  assert.equal(col.length, art.count);
+  col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
 });

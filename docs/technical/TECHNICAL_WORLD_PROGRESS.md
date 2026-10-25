@@ -1,6 +1,6 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
-**Stand:** 25.10.2026 · V1 (PR #919, `f2012b0`) und V2 (PR #923, `74a49d0`) gemergt · Menügruppe PR #925 · V3 auf `claude/technical-v3` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
+**Stand:** 25.10.2026 · V1 (PR #919, `f2012b0`) und V2 (PR #923, `74a49d0`) gemergt · Menügruppe PR #925 · V3 gemergt (PR #929, `9787b1a`) · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz
@@ -52,6 +52,17 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
 - **V3 – Suche in Worten** (`quant/engines/technical/query-text.js`): deterministischer Parser deutscher Fachbegriffe, Kennzahl-Vergleiche, „und/oder“-Gruppen, Formationslisten, Zeitrahmen und eine kanonische Schreibweise. Er gibt dieselbe validierte Abfrage aus wie die Klickfilter, meldet Nicht-Erkanntes, statt zu raten, und `contract()` beschreibt den späteren Modellaufruf (Status „vorbereitet, nicht aktiv“). Rundreise-Test über alle Felder und Zeitrahmen. Im Screener: Eingabe mit Live-Vorschau, Adresse `#/screener?q=…`, speicherbar.
 - **V3 – Chart Studio:** Schichten im Kurs (zusätzlich Keltner, Donchian, Ichimoku, Supertrend, Parabolic SAR, VWMA) und ein Unterfenster aus elf Indikatoren (RSI, MACD, Stochastik, ADX, ATR, CCI, Williams %R, Aroon, MFI, OBV, CMF). Formationsfokus `#/chart/<T>?f=<id>`: nur diese Formation, Fenster ab ihrem ersten Punkt, teilbare Adresse.
 - **V3 – Vorher/Nachher Datensatz:** Neubau mit dem Erzeuger. Die 55 bestehenden Spalten sind bitgleich; die Formationslisten unterscheiden sich ausschließlich um die neuen Lücken; alle bisherigen Formationszählungen in `meta.json` sind unverändert.
+- **D – Performance:** Startseite und Chart Studio laden einen schlanken Index (`technical/data/index-v1.json`: Kürzel, Namen, Treffer je Vorlage; 174 KB, 60 KB gzip) statt des vollen Datensatzes (3,8 MB, 822 KB gzip). Erzeuger und Browser-Rückfall nutzen dieselbe Funktion `model.js#homeIndex`. Messung bei 390 px, CPU ×4, 9 Mbit/s, ohne Kompression:
+
+  | Ansicht | vorher | nachher | Daten vorher → nachher |
+  |---|---|---|---|
+  | Start | 4,7 s | 0,8 s | 4,0 → 0,47 MB |
+  | Chart Studio | 5,4 s | 2,1 s | 4,9 → 1,35 MB |
+  | Screener | 4,3 s | 4,5 s | unverändert (braucht den Datensatz) |
+
+  Das `preload` des vollen Datensatzes entfällt.
+- **D – Mobile:** Die Browser-QA prüft zusätzlich 360 px (48 Prüfungen). Kein horizontaler Überlauf in allen sechs Ansichten. Die Beispiel-Links der Suche haben jetzt 44 px Zielhöhe.
+- **D – Datenqualität:** Neue Zeilenspalte `suspectJumpAt`: jüngster Schlusssprung der letzten 60 Bars mit Split-Signatur oder einem Faktor außerhalb 0,2 bis 5; am Stichtag 23.10.2026 betrifft das 56 Titel. Der Screener zeigt „Kurssprung prüfen“, das Chart Studio nennt die Tage unter „Datenqualität und Herkunft“, `meta.json` zählt `counts.suspectJump60`. Ursache sind nicht nachgezogene Splits und Abspaltungen in der Quelle (vgl. DQ-PX-3); Technical korrigiert nichts selbst (ADR-002).
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
@@ -97,6 +108,8 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 25.10.2026 | V2 begonnen: Release-Stempel, Browser-QA in CI. |
 | 25.10.2026 | PR #923 (V2) gemergt (`74a49d0`), nachdem alle Pflichtprüfungen grün waren. Vercel (Tageslimit) ist kein Pflicht-Check. |
 | 25.10.2026 | PR #925 gemergt (`6a1396a`): eigene Menügruppe „Technical“ nach Fundamental. Geschützter Hash nur für `site-navigation.js` nachgezogen. Shell-Tests, Discover-Navigationstest und Shell-Browser-QA wurden angepasst. Alle Pflichtprüfungen grün; `frontend` nach einer Wiederholung des bekannten WebKit-Ausreißers. |
+| 25.10.2026 | PR #929 (V3) gemergt (`9787b1a`), nachdem alle Pflichtprüfungen grün waren; Vercel (Tageslimit) ist kein Pflicht-Check. Wirkung: neue Indikatoren, Kurslücken, Suche in Worten und Chart-Studio-Schichten sind auf `main`; bestehende Datensatzspalten bitgleich. |
+| 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
 
 ## 8. Fortsetzen

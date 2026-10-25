@@ -13,6 +13,11 @@
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
+  /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
+  var INDEX_PATH = "/technical/data/index-v1.json";
+  var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* Startseite: "Setups im Fokus" und Ranglisten (Vorlagen aus technical-query.js). */
+  var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var TECH_DIR = "/quant/data/product/technical-signals-v1/";
   var LONG_DIR = "/quant/data/market/discover-series-long/";
   var STORE_KEY = "vu-technical-screens-v1";
@@ -231,8 +236,23 @@
     return scored.slice(0, limit || 8).map(function (x) { return x[1]; });
   }
 
+  /**
+   * Index aus dem Screener-Datensatz: eine Rechnung fuer Erzeuger (build-screener.mjs) und Rueckfall im Browser.
+   * presets = Trefferzahl je Vorlage; focusUnion = Titel in mindestens einer Fokus-Vorlage (je hoechstens 500, wie die Anzeige).
+   */
+  function homeIndex(artifact) {
+    var ds = Q.createDataset(artifact), presets = {}, union = {};
+    Q.PRESETS.forEach(function (p) {
+      var r = Q.evaluate(ds, Object.assign({}, p.query, { limit: 500 }));
+      presets[p.id] = r.count;
+      if (FOCUS.indexOf(p.id) >= 0) r.indices.forEach(function (i) { union[i] = 1; });
+    });
+    return { schemaVersion: INDEX_SCHEMA, asOf: artifact.asOf, count: artifact.count, s: artifact.cols.s.slice(), n: artifact.cols.n.slice(),
+      presets: presets, focusUnion: Object.keys(union).length };
+  }
+
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
