@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="none">
+<!-- Decorative technical-analysis composition (indicator curves, converging triangle, analysis points). No market series, no signal claim. -->
+<defs><radialGradient id="g"><stop stop-color="#c8f531" stop-opacity=".2"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></radialGradient><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" stroke="#c8f531" stroke-opacity=".06"/></pattern><linearGradient id="fade" x1="0" x2="1"><stop stop-color="#c8f531" stop-opacity=".15"/><stop offset=".6" stop-color="#c8f531" stop-opacity=".85"/><stop offset="1" stop-color="#c8f531"/></linearGradient></defs>
+<rect width="640" height="640" fill="url(#grid)"/>
+<ellipse cx="470" cy="300" rx="240" ry="260" fill="url(#g)"/>
+<g stroke="#c8f531" stroke-dasharray="4 8" stroke-opacity=".35"><path d="M150 168H620M150 470H620"/></g>
+<path d="M120 380C190 330 230 410 300 352S400 250 470 300 560 250 620 230" stroke="url(#fade)" stroke-width="3"/>
+<path d="M120 430C200 400 250 440 320 400S430 330 500 345 580 300 620 290" stroke="#c8f531" stroke-opacity=".38" stroke-width="2.5"/>
+<path d="M120 300C210 290 260 250 330 270S440 230 520 210 600 196 620 190" stroke="#c8f531" stroke-opacity=".22" stroke-width="2"/>
+<g stroke="#c8f531" stroke-width="3" stroke-linecap="round"><path d="M250 168 560 300M250 470 560 300"/></g>
+<g fill="#c8f531" fill-opacity=".14" stroke="#c8f531" stroke-opacity=".5" stroke-width="1.5"><path d="M250 168 560 300 250 470Z"/></g>
+<g fill="#0b0f08" stroke="#c8f531" stroke-width="3"><circle cx="250" cy="168" r="9"/><circle cx="250" cy="470" r="9"/><circle cx="410" cy="236" r="7"/><circle cx="410" cy="384" r="7"/></g>
+<circle cx="560" cy="300" r="13" fill="#c8f531"/><circle cx="560" cy="300" r="26" stroke="#c8f531" stroke-opacity=".45" stroke-width="2"/>
+</svg>
