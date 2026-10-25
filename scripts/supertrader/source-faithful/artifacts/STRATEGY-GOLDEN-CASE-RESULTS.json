@@ -36,7 +36,7 @@
   "pass": 120,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 321,
+  "testsRun": 322,
   "testsFailed": 0,
   "testsSkipped": 2
  },
@@ -3367,6 +3367,11 @@
   {
    "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
    "name": "SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on the same dataset; public part has counts and hashes only; code pinned",
+   "result": "PASS"
+  },
+  {
+   "file": "scripts/supertrader/tests/sf-sf7-minervini.test.mjs",
+   "name": "SF7-MIN-POST-BREAKOUT: up-day counts, lower lows on volume, close below MA20, base depth and RS-line high (E7-2 findings), evidence only",
    "result": "PASS"
   }
  ]

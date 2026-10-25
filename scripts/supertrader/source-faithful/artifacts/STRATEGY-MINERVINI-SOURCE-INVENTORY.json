@@ -737,6 +737,25 @@
     ]
    }
   ],
+  "MA-MIN7-POST-BREAKOUT-WINDOW": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "right after the breakout has no number; 10 sessions from the printed 2-5 days to 1-2 weeks",
+    "evidence": [
+     "B03 PDF 40",
+     "B03 PDF 47"
+    ]
+   }
+  ],
+  "MA-MIN7-WEEKLY-STEP": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "the weekly chart reading defines no week; 5-session steps from the entry, at least 4 prior weeks",
+    "evidence": [
+     "B03 PDF 217"
+    ]
+   }
+  ],
   "MA-MIN7-AVG-GAIN": [
    {
     "cls": "OPERATIONALIZATION_OPEN",
@@ -750,7 +769,7 @@
  "classCounts": {
   "SOURCE_PRESENT_ENGLISH": 6,
   "PROJECT_AVAILABILITY": 1,
-  "OPERATIONALIZATION_OPEN": 20,
+  "OPERATIONALIZATION_OPEN": 22,
   "SOURCE_PRESENT_TRANSLATION": 21,
   "SOURCE_CONFLICT_TRANSLATION": 1,
   "DATA_MISSING": 6,
@@ -831,6 +850,57 @@
    "note": "read with original wording checked in #709 on 2026-10-13 (9 rows in the extract); on 2026-10-24 the page answers HTTP 403 to this container and the archive copy (web.archive.org 2022-12-06) is not reachable from here; the rows are not re-verified, they are not changed"
   }
  ],
+ "findings154": {
+  "counts": {
+   "QUALITATIVE": 54,
+   "NOT_RELEVANT": 33,
+   "NEW_IMPLEMENTABLE": 17,
+   "CONFIRMS": 36,
+   "REFINES": 14
+  },
+  "translationDoubt": 18,
+  "wouldChangeReference": 10,
+  "disposition": {
+   "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
+   "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 and longestUpRun over the first 10 sessions (G-UPDAYS, diagnostic)",
+   "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (volume above the 50-day mean reading) and lowerLowsCleared (third day closes up or in the upper half of its range on volume above the mean); the rising-volume-each-day reading is not computed (G-LOWERLOWS, diagnostic)",
+   "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
+   "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
+   "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
+   "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice, price below its own 252-session high (at a setup the close is always below the pivot) (G-RSLINE-HIGH, evidence)",
+   "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+   "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+   "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+   "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
+   "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic)",
+   "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
+   "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
+   "F7-B07-067-140": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B07-070-142": "DEFERRED: stop-fallback variant (percent stop instead of rejection); changes trades as a variant, owner may pre-register",
+   "F7-B07-087-150": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B12-092-180": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+   "F7-B12-116-203": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B12-116-205": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B12-185-240": "DEFERRED: evidence on rolling 2-quarter EPS / sales acceleration; depends on the same EPS data-quality fix as G-PE-EXPANSION",
+   "F7-B12-250-264": "IMPLEMENTED: baseDepthAbove50 (evidence)",
+   "F7-B12-280-275": "DEFERRED: setup-filter variant (would change trades as a variant); needs a pre-registered market-drawdown window",
+   "F7-B12-297-283": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B12-311-297": "IMPLEMENTED: closeBelowMa20InWindow (G-MA20, diagnostic)",
+   "F7-B12-327-302": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-330-304": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-331-306": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-353-317": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)"
+  },
+  "dispositionCounts": {
+   "DEFERRED": 16,
+   "IMPLEMENTED": 8,
+   "IMPLEMENTED as diagnostic only": 1,
+   "OWNER": 2,
+   "NOT_IN_SCOPE": 4
+  }
+ },
  "variants7": [
   {
    "id": "ALT-SEPA-FLAT-BASE",

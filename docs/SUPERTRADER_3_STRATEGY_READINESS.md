@@ -64,7 +64,7 @@ Grundsätze: a mechanically complete screening component is not a tradable strat
 - Stellvertreter (heben keine Datensperre auf): WEIN-SF-GROUP: VU_PROXY_OF_WEINSTEIN_GROUP_CHART; WEIN-SF-MARKET: proxy, not NYSE breadth
 - quellenoffen: –; Modellannahmen: –
 
-### C06 `SF_MINERVINI_SEPA_VCP` (Vertrag 1.3.0)
+### C06 `SF_MINERVINI_SEPA_VCP` (Vertrag 1.4.0)
 
 - Messung: machine screen with manual layer: counts and coverage of candidates; a forward price change after a screen is a screen statistic, not a strategy return
 - Research-Komponenten: MIN-SF-TT-6 <- minervini-sf7.mjs#withTrendTemplateLow25; MIN-SF-TT-8 <- minervini-components.mjs#createRsPercentileProxy; MIN-SF-TT-8 <- minervini-sf7.mjs#withRsLineRising; MIN-SF-FUNDAMENTALS <- minervini-components.mjs#fundamentalEvidence; MIN-SF-VCP <- minervini-components.mjs#vcpContractions; MIN-SF-VCP <- minervini-lifecycle.mjs#sepaSetupFromTrendTemplate; MIN-SF-VCP <- minervini-sf7.mjs#withFlatBaseSetups; MIN-SF-PIVOT <- minervini-components.mjs#pivotBreakout; MIN-SF-PIVOT <- minervini-lifecycle.mjs#entryEligibility; MIN-SF-PIVOT <- minervini-lifecycle.mjs#fillBuyOrder; MIN-SF-STOP <- minervini-components.mjs#sellEvidence; MIN-SF-STOP <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-STOP <- minervini-sf7.mjs#halfAverageGainStopCheck; MIN-SF-SIZE <- minervini-components.mjs#positionSize; MIN-SF-SIZE <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SELL <- minervini-components.mjs#sellEvidence; MIN-SF-SELL <- minervini-execution.mjs#runMinerviniLifecycle; MIN-SF-SELL <- minervini-sf7.mjs#largestDeclineSignal

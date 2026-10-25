@@ -1510,18 +1510,24 @@ def cmd_consumer(args):
     the raw facts come from companyfacts.zip in one request. Output: one
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
-    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle,
-                                    load_product_universe_ciks, summarize_bundle)
+    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
+                                    load_product_universe_ciks, load_successor_issuers, summarize_bundle,
+                                    with_successors)
     registry = MetricRegistry.load()
     provider = SECProvider()
     names_file = Path(args.names)
     by_cik, without_cik = load_product_universe_ciks(names_file)
+    year_end_hints = load_fiscal_year_end_hints(args.issuers)
     product_count = sum(len(e["tickers"]) for e in by_cik.values()) + len(without_cik)
     wanted = set(by_cik)
     if args.ciks:
         wanted = {normalize_cik(c) for c in args.ciks.split(",")} & wanted
     if args.limit:
         wanted = set(sorted(wanted)[:args.limit])
+    # Nachfolge-Emittenten (Holding-Umgruendung): die Vorgaenger-CIK wird mitgelesen
+    # und ihre Fakten mit denen der Nachfolgerin zusammengefuehrt.
+    successors = {c: p for c, p in load_successor_issuers(args.successors).items() if c in wanted}
+    to_read = wanted | {p for preds in successors.values() for p in preds}
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
@@ -1534,15 +1540,17 @@ def cmd_consumer(args):
         # dieser Lauf es und legt nichts ab; ein nachfolgender Schritt, der
         # dieselben Daten messen will, faende dann keine Datei vor - genau
         # das liess den Konzept-Zensus in Lauf 35862972083 auflaufen.
-        source = provider.iter_bulk_company_facts(ciks=wanted, archive_path=args.archive)
+        source = provider.iter_bulk_company_facts(ciks=to_read, archive_path=args.archive)
     else:
-        source = ((cik, provider.get_company_facts(cik)) for cik in sorted(wanted))
+        source = ((cik, provider.get_company_facts(cik)) for cik in sorted(to_read))
+
     written = set()
-    for cik, payload in source:
+    for cik, payload in with_successors(source, successors):
         entry = by_cik[cik]
         try:
             bundle = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
                                            security_ids=entry["securityIds"], name=entry["name"],
+                                           fiscal_year_end_hint=year_end_hints.get(cik),
                                            annual_years=args.annual_years, quarters=args.quarters,
                                            provider=provider)
         except Exception as exc:  # noqa: BLE001 - one bad company must not stop 6,000
@@ -1856,6 +1864,10 @@ def build_parser():
     consumer.add_argument("--annual-years", type=int, default=consumer_module.DEFAULT_ANNUAL_YEARS)
     consumer.add_argument("--quarters", type=int, default=consumer_module.DEFAULT_QUARTERS)
     consumer.add_argument("--keep-stale", action="store_true")
+    consumer.add_argument("--successors", default=str(ROOT / "quant" / "config" / "sec-successor-issuers.json"),
+                          help="successor issuers whose predecessor CIK facts are merged in")
+    consumer.add_argument("--issuers", default=str(DATA_DIR.parent / "fundamentals" / "issuers"),
+                          help="SEC pipeline issuer shards with the registered fiscal year end per CIK")
     consumer.set_defaults(func=cmd_consumer)
 
     census = subparsers.add_parser("concept-census",

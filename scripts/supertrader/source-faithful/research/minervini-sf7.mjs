@@ -36,10 +36,10 @@
 import crypto from 'node:crypto';
 import { fin, smaAt } from '../common/series.mjs';
 import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
-import { COMPONENT_CONVENTIONS } from './minervini-components.mjs';
+import { COMPONENT_CONVENTIONS, vcpContractions } from './minervini-components.mjs';
 import { REFERENCE_CONFIG, sepaSetupSeries } from './minervini-lifecycle.mjs';
 
-export const SF7_MINERVINI_VERSION = 'sf7-minervini-1.1.0'; // 1.1.0: independent review (calendar RS lookback, exit-bounded diagnostic, flat-base bound count)
+export const SF7_MINERVINI_VERSION = 'sf7-minervini-1.3.0'; // 1.3.0: E7-2 review (post-entry windows end before the exit session, base depth from the 52-week-high base start, RS line against the price's own high, weekly reading needs prior weeks, Stage 2 required at the setup); 1.2.0: E7-2 post-breakout / setup evidence (diagnostics only); 1.1.0: independent review (calendar RS lookback, exit-bounded diagnostic, flat-base bound count)
 
 /** Printed bounds used by the 7.0 additions (source, page, translation status). */
 export const SF7_SOURCE_BOUNDS = Object.freeze({
@@ -57,6 +57,8 @@ export const SF7_MODEL_ASSUMPTIONS = Object.freeze([
   Object.freeze({ id: 'MA-MIN7-FLAT-BASE-MERGE', phase: 'SETUP_QUALIFICATION', reference: 'a 4.0 setup that meets the strict VCP proxy is kept unchanged; a flat-base setup is added only where the reference has no strict setup on that close', why: 'one-at-a-time change: the variant widens the reference by the flat-base family and changes nothing else' }),
   Object.freeze({ id: 'MA-MIN7-RS-LINE', phase: 'SETUP_QUALIFICATION', reference: 'RS line = split-adjusted close / split-adjusted SPY close of the same session (snapshot benchmark); rising for at least 6 weeks = RS line on the setup close above the RS line 30 benchmark sessions earlier (no value if the security has no bar on that date)', why: 'B03 PDF 143 gives the RS line and its 6-week preference, not a slope measure; the one-point comparison is the reading the 4.0 reference already uses for "MA200 rising for at least one month" (MIN-SF-TT-3)' }),
   Object.freeze({ id: 'MA-MIN7-STAGE2-START', phase: 'EXIT_CONDITIONS', reference: 'start of the Stage 2 advance = first session of the uninterrupted run of Trend Template 1-7 passes that contains the setup close', why: 'B12 PDF 130 measures the largest decline since the start of the Stage 2 advance without a mechanical start; the Trend Template is the source\'s own Stage 2 qualification (MIN-PROCESS-01)' }),
+  Object.freeze({ id: 'MA-MIN7-POST-BREAKOUT-WINDOW', phase: 'EXIT_CONDITIONS', reference: 'the first 10 sessions from the entry session, ending before the exit session of a closed trade (diagnostics G-UPDAYS, G-LOWERLOWS, G-MA20)', why: 'B03 PDF 47 and B12 PDF 311 speak of the time right after the breakout without a number; 10 sessions is the upper end of the printed normal pullback of 2-5 days to at most 1-2 weeks (B03 PDF 40)' }),
+  Object.freeze({ id: 'MA-MIN7-WEEKLY-STEP', phase: 'EXIT_CONDITIONS', reference: 'weeks are 5-session close-to-close steps anchored at the entry session (not calendar Friday closes); the week ending at the entry is not scanned; at least 4 weekly returns since the Stage 2 start are required, otherwise not evaluable', why: 'B03 PDF 217 reads the largest decline on the weekly chart without defining the week; a calendar week would need a holiday-aware week end, and a reading against fewer than 4 prior weeks has no comparison base' }),
   Object.freeze({ id: 'MA-MIN7-AVG-GAIN', phase: 'INITIAL_STOP', reference: 'average gain = mean return of the winning reference trades closed before the entry date (point in time), at least 10 closed winners, otherwise not evaluated', why: 'B12 PDF 398-399 relates the stop to the trader\'s own average gain; the reference run is the only PIT trade history the model study has' }),
 ]);
 
@@ -218,6 +220,7 @@ export function largestDeclineSignal(bars, trade, P = MIN_PARAMS) {
   if (e < 1 || s0 < 1) return { status: 'NOT_EVALUABLE' };
   const open = !trade.exitDate, x = open ? bars.length - 1 : atOrBefore(trade.exitDate);
   if (x < e) return { status: 'NOT_EVALUABLE' };
+  if (trendTemplate(bars, s0, P).status !== 'TREND_TEMPLATE_1_7_PASS') return { status: 'NOT_IN_STAGE2_AT_SETUP' };
   let start = s0; while (start > 0 && trendTemplate(bars, start - 1, P).status === 'TREND_TEMPLATE_1_7_PASS') start--;
   let worst = 0; // most negative daily return since the Stage 2 start, up to the session before the entry
   for (let k = Math.max(start, 1); k < e; k++) { const a = bars[k - 1].close, b = bars[k].close; if (fin(a) && fin(b) && a > 0) worst = Math.min(worst, b / a - 1); }
@@ -247,5 +250,84 @@ export function halfAverageGainStopCheck(trades, { minWinners = 10 } = {}) {
     if (planned > SF7_SOURCE_BOUNDS.maxPlannedLoss.value + 1e-12) out.plannedLossAbove10pct++;
     if (planned <= SF7_SOURCE_BOUNDS.stopAtHalfAverageGain.value * avg + 1e-12) out.plannedLossWithinHalfAvgGain++; else out.plannedLossAboveHalfAvgGain++;
   }
+  return out;
+}
+
+/**
+ * Supertrader 7.0 owner decision E7-2 (2026-10-25): post-breakout and setup evidence from the 154 re-read findings that
+ * give a concrete operational criterion (classification docs/SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md).
+ * Diagnostics on the reference trades only: counts, never a gate, never an exit, never a variant choice.
+ * Every post-entry window of a closed trade ends the session before the exit session (all exits fill before that close).
+ *  - G-UPDAYS (B03 PDF 41): up closes in the first 4 / 8 sessions after the entry; healthy at >= 3 of 4 / >= 6 of 8
+ *    (null when the trade saw fewer sessions); longest run of up closes in the first 10 sessions;
+ *  - G-LOWERLOWS (B03 PDF 47-48): three consecutive lower lows on volume above the 50-day mean in the first 10 sessions,
+ *    and whether the third day cleared it (close up or in the upper half of its range on volume above the mean);
+ *  - G-MA20 (B03 PDF 47, B12 PDF 311): a close below MA20 in the first 10 sessions after the entry
+ *    (MA-MIN7-POST-BREAKOUT-WINDOW: the books say "right after the breakout" without a number);
+ *  - G-WEEKLY-DECLINE (B03 PDF 217, refines B12 PDF 130): a weekly close-to-close decline larger than every weekly
+ *    decline since the Stage 2 start, before the exit (MA-MIN7-WEEKLY-STEP; null without Stage 2 at the setup or with
+ *    fewer than 4 prior weeks);
+ *  - G-BASE-DEPTH (B12 PDF 250 / 280, B03 PDF 160): base depth from the 52-week-high base start to the lowest low up to
+ *    the setup close, above 50 % / 60 %;
+ *  - G-RSLINE-HIGH (B03 PDF 168): on the setup close the RS line is at its 252-session high while the price is below its
+ *    own 252-session high (at a SEPA setup the close is always below the pivot, so the pivot is no test).
+ */
+export const POST_BREAKOUT_WINDOW = 10; // MA-MIN7-POST-BREAKOUT-WINDOW
+
+export function postBreakoutEvidence(bars, trade, { bench = null, P = MIN_PARAMS } = {}) {
+  const pos = new Map(bars.map((b, k) => [b.date, k]));
+  const e = pos.get(trade.entryDate), s0 = pos.get(trade.setupDate ?? trade.signalDate ?? trade.entryDate);
+  if (e === undefined || s0 === undefined || e < 60) return { status: 'NOT_EVALUABLE' };
+  const atOrBefore = (d) => { let lo = 0, hi = bars.length - 1, r = -1; while (lo <= hi) { const m = (lo + hi) >> 1; if (bars[m].date <= d) { r = m; lo = m + 1; } else hi = m - 1; } return r; };
+  // last session whose close the position saw: every exit (stop intraday, next-open exit) fills before the exit
+  // session's close, so a closed trade's windows end the session before; an open trade runs to the data end
+  const last = trade.exitDate ? atOrBefore(trade.exitDate) - 1 : bars.length - 1;
+  const up = (k) => fin(bars[k]?.close) && fin(bars[k - 1]?.close) && bars[k].close > bars[k - 1].close;
+  const count = (n) => { let c = 0, m = 0; for (let k = e; k < e + n && k <= last; k++) { m++; if (up(k)) c++; } return { up: c, sessions: m }; };
+  const w4 = count(4), w8 = count(8), end = Math.min(e + POST_BREAKOUT_WINDOW - 1, last);
+  let longestUpRun = 0; for (let k = e, r = 0; k <= end; k++) { r = up(k) ? r + 1 : 0; longestUpRun = Math.max(longestUpRun, r); }
+  const mean50 = (k) => { let v = 0, n = 0; for (let j = k - 50; j < k; j++) if (j >= 0 && fin(bars[j].volume)) { v += bars[j].volume; n++; } return n === 50 ? v / n : null; };
+  // G-LOWERLOWS: three consecutive lower lows on volume above the 50-day mean (prior 50 sessions); cleared when the
+  // third day closes up or in the upper half of its range on volume above the mean (B03 PDF 47)
+  let lowerLowsOnVolume = false, lowerLowsCleared = null, run = 0;
+  for (let k = e; k <= end; k++) {
+    const m = mean50(k), ll = fin(bars[k].low) && fin(bars[k - 1].low) && bars[k].low < bars[k - 1].low && m !== null && bars[k].volume > m;
+    run = ll ? run + 1 : 0;
+    if (run >= 3) { const b = bars[k]; lowerLowsOnVolume = true; lowerLowsCleared = (up(k) || (fin(b.high) && fin(b.close) && b.close >= (b.high + b.low) / 2)) && b.volume > m; break; }
+  }
+  let closeBelowMa20 = false;
+  for (let k = e; k <= end; k++) { const m = smaAt(bars, k, 20); if (fin(m) && fin(bars[k].close) && bars[k].close < m) { closeBelowMa20 = true; break; } }
+  // weekly decline since the Stage 2 start (MA-MIN7-STAGE2-START, MA-MIN7-WEEKLY-STEP)
+  let weeklySignalBeforeExit = null;
+  if (trendTemplate(bars, s0, P).status === 'TREND_TEMPLATE_1_7_PASS') {
+    let start = s0; while (start > 0 && trendTemplate(bars, start - 1, P).status === 'TREND_TEMPLATE_1_7_PASS') start--;
+    const wret = (k) => (k - 5 >= 0 && fin(bars[k].close) && fin(bars[k - 5].close) && bars[k - 5].close > 0 ? bars[k].close / bars[k - 5].close - 1 : null);
+    let worstW = 0, weeks = 0; for (let k = e - 5; k >= start + 5; k -= 5) { const r = wret(k); if (r !== null) { worstW = Math.min(worstW, r); weeks++; } }
+    if (weeks >= 4) { weeklySignalBeforeExit = false; for (let k = e + 5; k <= last; k += 5) { const r = wret(k); if (r !== null && r < worstW) { weeklySignalBeforeExit = true; break; } } }
+  }
+  // G-BASE-DEPTH: 52-week-high base start (vcpContractions base) to the lowest low up to the setup close
+  const v = vcpContractions(bars, s0);
+  let baseDepth = null;
+  if (v.status === 'EVIDENCE_ONLY') { const hk = pos.get(v.base.highDate); let lo = Infinity; for (let k = hk; k <= s0; k++) if (fin(bars[k].low)) lo = Math.min(lo, bars[k].low); if (Number.isFinite(lo) && v.base.high > 0) baseDepth = 1 - lo / v.base.high; }
+  // G-RSLINE-HIGH: RS line at its 252-session high on the setup close while the price is below its own 252-session high
+  let rsLineHighBeforePrice = null;
+  if (bench && s0 >= 252) {
+    const rs = (k) => { const m = bench.close.get(bars[k].date); return fin(m) && m > 0 && fin(bars[k].close) ? bars[k].close / m : null; };
+    const now = rs(s0); let hi = -Infinity, ph = -Infinity;
+    for (let k = s0 - 251; k < s0; k++) { const r = rs(k); if (r !== null) hi = Math.max(hi, r); if (fin(bars[k].high)) ph = Math.max(ph, bars[k].high); }
+    rsLineHighBeforePrice = now !== null && Number.isFinite(hi) && Number.isFinite(ph) ? now >= hi && bars[s0].close < ph : null;
+  }
+  return {
+    status: 'EVIDENCE', upDays4: w4, upDays8: w8, longestUpRun, healthy3of4: w4.sessions === 4 ? w4.up >= 3 : null, healthy6of8: w8.sessions === 8 ? w8.up >= 6 : null,
+    lowerLowsOnVolume, lowerLowsCleared, closeBelowMa20InWindow: closeBelowMa20, weeklyDeclineSignalBeforeExit: weeklySignalBeforeExit, baseDepth,
+    baseDepthAbove50: baseDepth === null ? null : baseDepth > 0.5, baseDepthAbove60: baseDepth === null ? null : baseDepth > 0.6, rsLineHighBeforePrice,
+  };
+}
+
+/** Tally of postBreakoutEvidence over the reference trades (counts of true / false / null per field). */
+export function postBreakoutTally(rows) {
+  const keys = ['healthy3of4', 'healthy6of8', 'lowerLowsOnVolume', 'lowerLowsCleared', 'closeBelowMa20InWindow', 'weeklyDeclineSignalBeforeExit', 'baseDepthAbove50', 'baseDepthAbove60', 'rsLineHighBeforePrice'];
+  const out = { evaluated: rows.filter((r) => r.status === 'EVIDENCE').length, notEvaluable: rows.filter((r) => r.status !== 'EVIDENCE').length };
+  for (const k of keys) out[k] = { true: rows.filter((r) => r[k] === true).length, false: rows.filter((r) => r[k] === false).length, null: rows.filter((r) => r.status === 'EVIDENCE' && (r[k] === null || r[k] === undefined)).length };
   return out;
 }
