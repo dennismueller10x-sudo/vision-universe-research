@@ -14,9 +14,10 @@ import { CLASSES, classifyFlag, filingEvidence, rulesetSha256 as rulesetSha256V1
 import { ratioMentions, documentText, parseNumber, extractStatements, documentFactor, selectDocuments, classifyWithDocument, groundTruthLabel, documentPath, rulesetSha256, baseRulesetUnchanged, RULESET, EDGAR_BUDGET, DOC_TOLERANCES, CA_EDGAR_VERSION } from '../source-faithful/integrity/ca-edgar.mjs';
 import { createEdgarClient, emptyCache } from '../source-faithful/research/sf7-edgar-client.mjs';
 import * as V141 from '../source-faithful/integrity/ca-edgar-1.4.1.mjs';
+import * as V142 from '../source-faithful/integrity/ca-edgar-1.4.2.mjs';
 import * as V140 from '../source-faithful/integrity/ca-edgar-1.4.0.mjs';
 import { sentenceBounds, parseFilingIndex, EXHIBIT_TYPES, EXHIBIT_BUDGET } from '../source-faithful/integrity/ca-edgar.mjs';
-import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130, EXTRACTORS, PlanOnly, PlanExceedsBudget, emptyLedger, ledgerUsed, ledgerRemaining, reserveLedger, settleLedger } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
+import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130, EXTRACTORS, PlanOnly, PlanExceedsBudget, emptyLedger, ledgerUsed, ledgerRemaining, reserveLedger, settleLedger, ledgerGate, ledgerEquals, EXPECTED_LEDGER_USED_AFTER_142 } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
 import { integrityPart, INTEGRITY_KEYS } from '../source-faithful/research/run-sf6-integrity.mjs';
 
@@ -214,7 +215,7 @@ const ids = (s) => `tiingo:NYSE:S${String(s).padStart(3, '0')}:2010-01-01`;
 const EVENTS = { 2: [{ at: 400, price: 10, volume: 0.1 }], 5: [{ at: 300, price: 10, volume: 0.1 }], 9: [{ at: 500, price: 12, volume: 0.08 }], 11: [{ at: 450, price: 20, volume: 0.05 }] };
 const SECRET = 'UNIQUE-SYNTHETIC-PASSAGE-4410';
 /** Filing index page (synthetic): rows Seq | Description | Document | Type | Size. */
-const INDEX_HTML = (cik, acc, rows) => `<html><body><table class="tableFile">${rows.map(([type, name, dir]) => `<tr><td>1</td><td>doc</td><td><a href="${dir ?? `/Archives/edgar/data/${Number(cik)}/${acc.replace(/-/g, '')}/`}${name}">${name}</a></td><td>${type}</td><td>1234</td></tr>`).join('')}</table></body></html>`;
+const INDEX_HTML = (cik, acc, rows) => `<html><body><table class="tableFile"><tr><th>Seq</th><th>Description</th><th>Document</th><th>Type</th><th>Size</th></tr>${rows.map(([type, name, dir]) => `<tr><td>1</td><td>doc</td><td><a href="${dir ?? `/Archives/edgar/data/${Number(cik)}/${acc.replace(/-/g, '')}/`}${name}">${name}</a></td><td>${type}</td><td>1234</td></tr>`).join('')}</table></body></html>`;
 const CHARTER = (k) => `<p>CERTIFICATE OF AMENDMENT. ${SECRET} Effective at 5:00 p.m., Eastern Time, on ${spoken(day(k))} (the Effective Time), each ten (10) shares of common stock issued and outstanding shall be combined into one (1) share of common stock (the reverse stock split).</p>`;
 const PRESS = (n, k) => `<p>XYZ Corp. announced a 1-for-${n} reverse stock split of its common stock, and the common stock will begin trading on a split-adjusted basis on ${spoken(day(k))}.</p>`;
 /** S002 path A (primary 8-K without ratio, EX-3.1 charter 1:10), S005 path B (EX-99.1 with two ratios), S009 path B (EX-99.1 press 1:12), S011 no CIK. */
@@ -245,7 +246,7 @@ function runFixture() {
 const W = { from: day(0), to: day(699), dataEnd: day(699) };
 const clients = (impl, budget = EDGAR_BUDGET) => { const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, budget, extractors: EXTRACTORS }); const planClient = createEdgarClient({ userAgent: 'test', fetchImpl: async () => { throw new Error('NEVER'); }, budget: { ...budget, totalRequests: 0 }, cache: client.exportCache(), extractors: EXTRACTORS }); return { client, planClient }; };
 
-test('SF7-EDGAR-RUN: 1.4.2 mit Exhibits; 1.3.0 unveraendert zuerst, BASE unveraendert, 1.4.1 als Vorher, kein Dokumenttext oeffentlich', async () => {
+test('SF7-EDGAR-RUN: 1.4.3 mit Exhibits; 1.3.0 unveraendert zuerst, BASE unveraendert, 1.4.2 aus dem Cache als Vorher, kein Dokumenttext oeffentlich', async () => {
   const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs);
   const { client, planClient } = clients(impl);
   const r = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => client.submissions13(cik), secFetchMax: 150, classifierVersion: CA_EDGAR_VERSION, rulesetSha256Value: rulesetSha256(), refine: edgarRefine({ client, planClient }), ...W });
@@ -254,17 +255,18 @@ test('SF7-EDGAR-RUN: 1.4.2 mit Exhibits; 1.3.0 unveraendert zuerst, BASE unverae
   for (const k of INTEGRITY_KEYS) { assert.equal(r.pub.lifecycles[k].BASE.ledgerSha256, ref.pub.lifecycles[k].BASE.ledgerSha256, k); assert.equal(r.pub.lifecycles[k].BASE.tradesSha256, plain.pub.lifecycles[k].BASE.tradesSha256, k); }
   const e = r.pub.refine;
   assert.equal(e.sessionsInScope, 4); assert.equal(e.sessionsChecked, 3); assert.deepEqual(e.byDocumentPath, { A: 1, B: 2, NONE: 1 });
-  // 1.4.1 (primaries only): nothing; 1.4.2: the EX-3.1 charter (1:10) and the EX-99.1 press release (1:12) confirm
+  // 1.4.2 (from an empty cache): nothing; 1.4.3: the EX-3.1 charter (1:10) and the EX-99.1 press release (1:12) confirm
   assert.equal(e.previous.byClass[CLASSES.SPLIT] ?? 0, 0); assert.equal(e.previous.pinned, true);
-  assert.equal(e.byClass142[CLASSES.SPLIT], 2); assert.deepEqual(e.splitFactors142, { '1:10': 1, '1:12': 1 });
-  assert.equal(e.byReason142.DOCUMENT_CONFLICTING_RATIOS, 1, 'S005: zwei Verhaeltnisse im Exhibit -> UNRESOLVED');
+  assert.equal(e.byClass143[CLASSES.SPLIT], 2); assert.deepEqual(e.splitFactors143, { '1:10': 1, '1:12': 1 });
+  assert.equal(e.byReason143.DOCUMENT_CONFLICTING_RATIOS, 1, 'S005: zwei Verhaeltnisse im Exhibit -> UNRESOLVED');
   assert.deepEqual(e.exhibits.byType, { 'EX-3.1': 1, 'EX-99.1': 2 }, 'EX-10.1 zaehlt nicht; fremdes Verzeichnis ausgeschlossen');
   assert.equal(e.exhibits.filingIndexesRead, 3); assert.equal(e.exhibits.exhibitsRead, 3);
   assert.equal(e.requests.byKind.filingIndex, 3); assert.equal(e.requests.byKind.exhibit, 3); assert.equal(e.requests.requests, calls.length);
-  assert.equal(e.plan.planRequests, 0); assert.equal(e.plan.exhibitSessions, 0, 'Plan vor jedem Abruf: noch kein Index im Cache');
+  assert.equal(e.plan.planRequests, 0); assert.equal(e.plan.exhibitSessions, 3); assert.equal(e.plan.sessionsWithoutCachedIndex, 3, 'L4: ohne Index im Cache zaehlt der schlimmste Fall');
+  assert.equal(e.plan.totalUpperBound, 3 * (EDGAR_BUDGET.indexPagesPerCik + EDGAR_BUDGET.docRequestsPerSession * (2 + EXHIBIT_BUDGET.maxExhibitsPerFiling)));
   assert.equal(e.labels.REVERSE_SPLIT_DOCUMENTED, 2); assert.equal(e.previous.labels.REVERSE_SPLIT_DOCUMENTED ?? 0, 0);
   assert.equal(e.genuineCandidatesChanged, 0); assert.equal(e.changedOutsideScope, 0);
-  for (const p of Object.values(e.perReference)) assert.equal(p.unresolved142, p.dqK5Exposed - p.confirmedSplit142 - p.confirmedGenuine142);
+  for (const p of Object.values(e.perReference)) assert.equal(p.unresolved143, p.dqK5Exposed - p.confirmedSplit143 - p.confirmedGenuine143);
   assert.equal(r.manifest.entries.length, 2); assert.equal(r.pub.overlay.entries, 2); assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 2);
   for (const k of INTEGRITY_KEYS) for (const t of ['CA', 'CA-Q-K5', 'CA-Q-K3']) assert.ok(r.pub.lifecycles[k][t].reconciliation, `${k} ${t}`);
   const pubText = JSON.stringify(r.pub), sealedText = JSON.stringify(r.sealed);
@@ -276,14 +278,15 @@ test('SF7-EDGAR-RUN: 1.4.2 mit Exhibits; 1.3.0 unveraendert zuerst, BASE unverae
   const n = calls.length, again = clients(impl); again.client.exportCache().submissions = client.exportCache().submissions;
   const c2 = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, cache: client.exportCache(), extractors: EXTRACTORS }), p2 = createEdgarClient({ userAgent: 'test', fetchImpl: impl, budget: { ...EDGAR_BUDGET, totalRequests: 0 }, cache: c2.exportCache(), extractors: EXTRACTORS });
   const r2 = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => c2.submissions13(cik), refine: edgarRefine({ client: c2, planClient: p2 }), ...W });
-  assert.equal(calls.length, n, 'Cache zuerst: keine Anfrage'); assert.equal(r2.pub.refine.plan.totalUpperBound, 0); assert.equal(r2.pub.refine.byClass142[CLASSES.SPLIT], 2);
+  assert.equal(calls.length, n, 'Cache zuerst: keine Anfrage'); assert.equal(r2.pub.refine.plan.totalUpperBound, 0); assert.equal(r2.pub.refine.byClass143[CLASSES.SPLIT], 2);
+  assert.equal(r2.pub.refine.previous.byClass[CLASSES.SPLIT] ?? 0, 0, '1.4.2 liest nur ihre eigenen Index-Parses (1.0.0) aus dem Cache; hier gibt es keine');
 });
 
 test('SF7-EDGAR-PLAN: Plan nur aus dem Cache (0 Anfragen); Ueberschreitung des Budgets stoppt vor jedem Abruf; Umfang 83 vor jeder Anfrage', async () => {
   assert.equal(EXPECTED_SCOPE_SESSIONS, 83); assert.equal(MANIFEST_SHA256_V130, 'e0a31fea1f723faec9046e944c9500984809a62b3cc44262ad3e648f252522c1');
   const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs);
   let { client, planClient } = clients(impl);
-  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, planOnly: true }), ...W }), (e) => e instanceof PlanOnly && e.plan.planRequests === 0 && e.plan.submissionsNeeded === 3 * EDGAR_BUDGET.indexPagesPerCik);
+  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, planOnly: true }), ...W }), (e) => e instanceof PlanOnly && e.plan.planRequests === 0 && e.plan.submissionsNeeded === 3 * EDGAR_BUDGET.indexPagesPerCik && e.plan.primaryDocumentsNeeded === 3 * EDGAR_BUDGET.docRequestsPerSession);
   assert.equal(calls.length, 0, 'der Plan sendet nichts');
   ({ client, planClient } = clients(impl, { ...EDGAR_BUDGET, totalRequests: 5 }));
   await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, budget: { ...EDGAR_BUDGET, totalRequests: 5 } }), ...W }), (e) => e instanceof PlanExceedsBudget && e.plan.totalUpperBound > 5);
@@ -293,8 +296,17 @@ test('SF7-EDGAR-PLAN: Plan nur aus dem Cache (0 Anfragen); Ueberschreitung des B
   assert.equal(calls.length, 0);
 });
 
-test('SF7-EDGAR-LEDGER: Obergrenze 600 fuer alle 1.4.2-Laeufe zusammen, kumulativ und fail closed', () => {
+test('SF7-EDGAR-LEDGER: Obergrenze 600 fuer alle 1.4.x-Exhibit-Laeufe zusammen, kumulativ und fail closed', () => {
   assert.equal(EXHIBIT_BUDGET.cumulativeRequestsAllRuns, 600);
+  // review L5: anchor of the 1.4.2 runs (0 + 42 + 80); a missing ledger or one below the anchor stops the run
+  assert.equal(EXPECTED_LEDGER_USED_AFTER_142, 122);
+  assert.equal(ledgerGate(null), 'EDGAR_LEDGER_MISSING'); assert.equal(ledgerGate(emptyLedger()), 'EDGAR_LEDGER_BELOW_ANCHOR');
+  const after142 = { ...emptyLedger(), runs: [{ runId: '40204439421', mode: 'plan', reserved: 0, used: 0 }, { runId: '40205818659', mode: 'smoke', reserved: 60, used: 42 }, { runId: '40206319111', mode: 'full', reserved: 558, used: 80 }] };
+  assert.equal(ledgerGate(after142), null); assert.equal(ledgerRemaining(after142), 478);
+  // review M2: the re-read after the reservation must equal the written ledger
+  const mine = reserveLedger(after142, { runId: 'x', mode: 'full', want: 600 });
+  assert.equal(mine.reserved, 478); assert.equal(ledgerEquals(mine.ledger, JSON.parse(JSON.stringify(mine.ledger))), true);
+  assert.equal(ledgerEquals(mine.ledger, reserveLedger(after142, { runId: 'y', mode: 'full', want: 600 }).ledger), false, 'ein gleichzeitiger Lauf faellt auf');
   let l = emptyLedger(); assert.equal(ledgerRemaining(l), 600);
   let x = reserveLedger(l, { runId: 'p', mode: 'plan', want: 0 }); l = settleLedger(x.ledger, 'p', 0);
   x = reserveLedger(l, { runId: 's', mode: 'smoke', want: 60 }); assert.equal(x.reserved, 60); l = x.ledger;
@@ -339,13 +351,15 @@ test('SF7-EDGAR-GENUINE-142: eine echte Bewegung wird nie nachtraeglich ein Spli
   assert.equal(r25.cls, CLASSES.UNRESOLVED); assert.equal(r25.reason, 'PRICE_RATIO_OFF_DOCUMENT_FACTOR');
 });
 
-test('SF7-EDGAR-RULESET: Regelsatz 1.4.2 vorregistriert und festgeschrieben; 1.4.1 und 1.4.0 eingefroren; 1.3.0 unveraendert', () => {
-  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.2'); assert.equal(V141.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.1'); assert.equal(V140.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
+test('SF7-EDGAR-RULESET: Regelsatz 1.4.3 vorregistriert und festgeschrieben; 1.4.2, 1.4.1 und 1.4.0 eingefroren; 1.3.0 unveraendert', () => {
+  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.3'); assert.equal(V142.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.2');
+  assert.equal(V142.rulesetSha256(), '2130be8e8131c22100e00160cb5606e1db95e628e554088ccf04dcb861191636', '1.4.2 (Lauf 40206319111) eingefroren');
+  assert.equal(RULESET.previous.sha256, V142.rulesetSha256()); assert.equal(RULESET.ruleset141.sha256, V141.rulesetSha256()); assert.equal(V141.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.1'); assert.equal(V140.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
   assert.equal(V141.rulesetSha256(), '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c', '1.4.1 (Lauf 40190526062) eingefroren');
   assert.equal(V140.rulesetSha256(), '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd', '1.4.0 (Lauf 40185801366) eingefroren');
-  assert.equal(RULESET.previous.sha256, V141.rulesetSha256()); assert.equal(RULESET.ruleset140.sha256, V140.rulesetSha256());
+  assert.equal(RULESET.ruleset140.sha256, V140.rulesetSha256());
   assert.ok(Object.isFrozen(RULESET)); assert.ok(Object.isFrozen(RULESET.exhibitBudget));
-  assert.equal(rulesetSha256(), '2130be8e8131c22100e00160cb5606e1db95e628e554088ccf04dcb861191636', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz');
+  assert.equal(rulesetSha256(), '5fba098cb0a9f8916d868105cf0dd5b9de58c3a33d4c61f1331544b1c8ef359a', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz');
   assert.equal(rulesetSha256V130(), '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7'); assert.equal(baseRulesetUnchanged(), true);
 });
 
@@ -432,4 +446,52 @@ test('SF7-REVIEW141-R6: Optionsschein-, Wandlungs-, Ausuebungs- und Umtauschverh
 test('SF7-REVIEW141-R7: gemeinsam eingereichte Dokumente (mehrere CIKs) sind als Grenze dokumentiert', () => {
   assert.ok(RULESET.review141.includes('R7-JOINT-FILER-LIMIT-DOCUMENTED'));
   assert.match(fs.readFileSync(path.join(ROOT, 'docs/SUPERTRADER_7_EDGAR_CA_CHECK.md'), 'utf8'), /gemeinsam eingereicht/i);
+});
+
+// ---------------------------------------------------------------------------------------------------- 1.4.3: review of #931
+
+test('SF7-REVIEW143-F1: Satzungswortlaut (combined / reclassified / converted into one share) wird erkannt; Fusions- und Wandlungskontext bleibt gesperrt', () => {
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]), d = spoken(day(400));
+  const forms = [
+    `<p>Effective at 5:00 p.m., Eastern Time, on ${d} (the Effective Time), each ten (10) shares of Common Stock, par value $0.001 per share, of the Corporation issued and outstanding immediately prior to the Effective Time shall be combined into one (1) share of Common Stock (the reverse stock split).</p>`,
+    `<p>Effective on ${d}, every ten shares of the Corporation's common stock issued and outstanding shall be automatically reclassified and combined into one share of common stock, a reverse stock split.</p>`,
+    `<p>Effective ${d}, each 10 shares of common stock outstanding were converted into one (1) share of common stock pursuant to the reverse stock split.</p>`,
+  ];
+  for (const h of forms) {
+    const df = documentFactor({ docs: [doc('8-K', 401, h)], raw, i: 400 });
+    assert.equal(df.ok, true, `${df.reason}: ${h.slice(0, 60)}`); assert.equal(df.label, '1:10');
+  }
+  // the review finding: 1.4.2 missed the par-value form ('$0.001' broke the pattern) and 'converted into' (read as instrument wording)
+  for (const h of [forms[0], forms[2]]) assert.notEqual(V142.documentFactor({ docs: [{ ...doc('8-K', 401, h), extraction: V142.extractStatements(h) }], raw, i: 400 }).ok, true, '1.4.2 uebersah den Wortlaut (Befund)');
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>In connection with the merger, each 10 shares were converted into one (1) share in the reverse stock split, effective ${d}.</p>`)], raw, i: 400 }).reason, 'DOCUMENT_MERGER_CONTEXT');
+  assert.equal(extractStatements(`<p>Each 10 shares of Series A convertible preferred stock were converted into one (1) share after the reverse stock split effective ${d}.</p>`).statements.length, 0, 'Wandlungskontext');
+});
+
+test('SF7-REVIEW143-F2: Ermessens-, Bedingungs- und Ermaechtigungswortlaut bestaetigt nie; vollzogene Massnahme schon', () => {
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]), d = spoken(day(400));
+  for (const h of [`The Board is authorized, in its sole discretion, to effect a 1-for-10 reverse stock split effective ${d}.`, `The Company may effect a 1-for-10 reverse stock split effective ${d}.`, `If effected, the 1-for-10 reverse stock split will become effective on ${d}.`, `The proposal to approve a 1-for-10 reverse stock split effective ${d} was presented.`]) {
+    const df = documentFactor({ docs: [doc('8-K', 401, `<p>${h}</p>`)], raw, i: 400 });
+    assert.equal(df.ok, false, h); assert.equal(df.reason, 'DOCUMENT_DISCRETIONARY_ONLY', h); assert.equal(groundTruthLabel(df), 'AMBIGUOUS');
+  }
+  for (const h of [`The Company effected a 1-for-10 reverse stock split, which became effective on ${d}.`, `On ${spoken(day(398))} the Company filed a certificate of amendment to effect a 1-for-10 reverse stock split, effective ${d}.`]) assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>${h}</p>`)], raw, i: 400 }).ok, true, h);
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>The reverse stock split at 1-for-10 became effective on May 5, 2017.</p>`)], raw: series(700, 3), i: 400 }).reason !== 'DOCUMENT_DISCRETIONARY_ONLY', true, 'der Monat May ist kein Modalwort');
+});
+
+test('SF7-REVIEW143-F3: Exhibit-Typ aus der Type-Spalte der Kopfzeile, nicht aus der ersten EX-Zelle', () => {
+  const acc = '0000000002-17-000001', dir = '/Archives/edgar/data/2/000000000217000001/';
+  const html = `<table><tr><th>Seq</th><th>Description</th><th>Document</th><th>Type</th><th>Size</th></tr><tr><td>1</td><td>EX-99.1</td><td><a href="${dir}a.htm">a</a></td><td>EX-10.1</td><td>1</td></tr><tr><td>2</td><td>charter</td><td><a href="${dir}b.htm">b</a></td><td>EX-3.1</td><td>1</td></tr></table>`;
+  const fi = parseFilingIndex(html, { cik: '2', accessionNumber: acc });
+  assert.deepEqual(fi.allowed, [{ type: 'EX-3.1', name: 'b.htm' }]); assert.equal(fi.other, 1); assert.equal(fi.typeColumnFound, true);
+  assert.deepEqual(V142.parseFilingIndex(html, { cik: '2', accessionNumber: acc }).allowed.map((x) => x.name), ['a.htm', 'b.htm'], '1.4.2 las die Beschreibung (Befund)');
+  assert.equal(parseFilingIndex(html.replace(/<tr><th>[\s\S]*?<\/tr>/, ''), { cik: '2', accessionNumber: acc }).typeColumnFound, false, 'ohne Kopfzeile kein Exhibit (unvollstaendig)');
+});
+
+test('SF7-REVIEW143-M1: Exhibits und Dokumente nur fuer K5-Sitzungen, in jedem Modus', async () => {
+  const { segs, shares, calls, impl } = runFixture();
+  // a reference-exposed DQ-K3 (not K5) jump of a listing without usable shares: outside the scope, never fetched
+  segs[13] = seg(ids(13), series(700, 34, [{ at: 420, price: 4, volume: 0.25 }])); shares.set(ids(13), SEC([[300, 50e6]], '0000000013'));
+  const ds = dsOf(segs), { client, planClient } = clients(impl);
+  const r = await caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient }), ...W });
+  assert.equal(r.pub.refine.scope, 'K5'); assert.equal(r.pub.refine.sessionsInScope, 4);
+  assert.equal(calls.filter((u) => u.includes('CIK0000000013') || u.includes('/data/13/')).length, 0, 'keine Anfrage ausserhalb der K5-Sitzungen');
 });

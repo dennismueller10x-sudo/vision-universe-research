@@ -15,20 +15,25 @@
  *   www.sec.gov/Archives/edgar/data/<cik>/<acc>/<exhibit>         1.4.2: an allowed exhibit (extracted values cached)
  * A client with budget.totalRequests 0 sends nothing: the 1.4.2 plan step uses it to count from the cache only.
  */
-import { EDGAR_BUDGET, DOC_PARSER_VERSION, extractStatements, parseFilingIndex } from '../integrity/ca-edgar.mjs';
+import { EDGAR_BUDGET, DOC_PARSER_VERSION, FILING_INDEX_PARSER_VERSION, extractStatements, parseFilingIndex } from '../integrity/ca-edgar.mjs';
+/** Version of the filing-index parses cached by 1.4.2 (schema 1.2.0 entries without byParser). */
+export const FILING_INDEX_PARSER_V142 = 'sf7-filing-index-parser-1.0.0';
 
 /** Default parser set: the current parser only. */
 export const DEFAULT_EXTRACTORS = Object.freeze([Object.freeze({ parser: DOC_PARSER_VERSION, extract: extractStatements })]);
 
-export const EDGAR_CLIENT_VERSION = 'sf7-edgar-client-1.2.0';
+export const EDGAR_CLIENT_VERSION = 'sf7-edgar-client-1.3.0';
 export const EDGAR_CACHE_KEY = '_validation/edgar-ca-r1.json.gz';
-export const emptyCache = () => ({ schema: 'supertrader-edgar-ca-cache-1.2.0', submissions: {}, documents: {}, filingIndexes: {}, exhibits: {} });
+export const emptyCache = () => ({ schema: 'supertrader-edgar-ca-cache-1.3.0', submissions: {}, documents: {}, filingIndexes: {}, exhibits: {} });
 /** Schema 1.0.0 stored one extraction per accession (with its parser field); 1.1.0 stores { byParser: { version: extraction } }. */
 export function migrateCache(c) {
   if (!c) return emptyCache();
   const documents = {};
   for (const [acc, e] of Object.entries(c.documents || {})) documents[acc] = e?.byParser ? e : { form: e?.form, filingDate: e?.filingDate, cik: e?.cik, byParser: e?.parser ? { [e.parser]: e } : {} };
-  return { schema: 'supertrader-edgar-ca-cache-1.2.0', submissions: c.submissions || {}, documents, filingIndexes: c.filingIndexes || {}, exhibits: c.exhibits || {} };
+  // 1.3.0: filing-index parses per parser version (1.4.2 entries were { allowed, other, foreign } of parser 1.0.0)
+  const filingIndexes = {};
+  for (const [acc, e] of Object.entries(c.filingIndexes || {})) filingIndexes[acc] = e?.byParser ? e : { byParser: { [FILING_INDEX_PARSER_V142]: e } };
+  return { schema: 'supertrader-edgar-ca-cache-1.3.0', submissions: c.submissions || {}, documents, filingIndexes, exhibits: c.exhibits || {} };
 }
 const pad = (cik) => String(cik).replace(/^0+/, '').padStart(10, '0');
 const INDEX_FIELDS = ['form', 'filingDate', 'items', 'accessionNumber', 'primaryDocument'];
@@ -115,31 +120,36 @@ export function createEdgarClient({ userAgent, fetchImpl = fetch, budget = EDGAR
     },
     /** 1.4.2: allowed exhibits of one filing from its index page (cached parsed: types and names only). */
     async filingIndex(cik, entry) {
-      const acc = entry.accessionNumber;
-      if (cache.filingIndexes[acc]) { st.cacheHits.filingIndex++; return { ok: true, ...cache.filingIndexes[acc], cached: true }; }
+      const acc = entry.accessionNumber, hit = cache.filingIndexes[acc]?.byParser?.[FILING_INDEX_PARSER_VERSION];
+      if (hit) { st.cacheHits.filingIndex++; return { ok: true, ...hit, cached: true }; }
       const nod = acc.replace(/-/g, ''), cikInt = String(Number(String(cik).replace(/^0+/, '') || '0'));
       const x = await request(`https://www.sec.gov/Archives/edgar/data/${cikInt}/${nod}/${acc}-index.htm`, 'filingIndex', 'text');
       if (x.refused) return { refused: true };
       if (!x.ok) return { ok: false };
-      cache.filingIndexes[acc] = parseFilingIndex(x.body, { cik, accessionNumber: acc });
-      return { ok: true, ...cache.filingIndexes[acc], cached: false };
+      const parsed = parseFilingIndex(x.body, { cik, accessionNumber: acc });
+      cache.filingIndexes[acc] = { byParser: { ...(cache.filingIndexes[acc]?.byParser || {}), [FILING_INDEX_PARSER_VERSION]: parsed } };
+      return { ok: true, ...parsed, cached: false };
     },
     /** 1.4.2: extracted statements of one allowed exhibit (same filing directory; text parsed and dropped). */
     async exhibit(cik, entry, ex) {
       const key = `${entry.accessionNumber}/${ex.name}`, hit = cache.exhibits[key];
-      const out = (e, cached) => ({ ok: true, extraction: e.byParser[extractors[0].parser], cached });
-      if (hit && hit.byParser?.[extractors[0].parser]) { st.cacheHits.exhibit++; return out(hit, true); }
+      const out = (e, cached) => ({ ok: true, extractions: Object.fromEntries(extractors.map((x) => [x.parser, e.byParser[x.parser]])), extraction: e.byParser[extractors[0].parser], cached });
+      if (hit && extractors.every((x) => hit.byParser?.[x.parser])) { st.cacheHits.exhibit++; return out(hit, true); }
       const nod = entry.accessionNumber.replace(/-/g, ''), cikInt = String(Number(String(cik).replace(/^0+/, '') || '0'));
       const x = await request(`https://www.sec.gov/Archives/edgar/data/${cikInt}/${nod}/${ex.name}`, 'exhibit', 'text');
       if (x.refused) return { refused: true };
       if (!x.ok) return { ok: false };
-      const e = { type: ex.type, form: entry.form, filingDate: entry.filingDate, cik: pad(cik), byParser: { [extractors[0].parser]: extractors[0].extract(x.body) } };
+      const e = { type: ex.type, form: entry.form, filingDate: entry.filingDate, cik: pad(cik), byParser: { ...(hit?.byParser || {}) } };
+      for (const y of extractors) e.byParser[y.parser] = y.extract(x.body);
       cache.exhibits[key] = e;
       return out(e, false);
     },
     /** 1.4.2 plan: is this filing index / exhibit already cached (no request)? */
-    cached: (acc, name = null) => (name === null ? !!cache.filingIndexes[acc] : !!cache.exhibits[`${acc}/${name}`]?.byParser?.[extractors[0].parser]),
-    cachedFilingIndex: (acc) => cache.filingIndexes[acc] ?? null,
+    cached: (acc, name = null) => (name === null ? !!cache.filingIndexes[acc]?.byParser?.[FILING_INDEX_PARSER_VERSION] : extractors.every((x) => !!cache.exhibits[`${acc}/${name}`]?.byParser?.[x.parser])),
+    cachedFilingIndex: (acc, version = FILING_INDEX_PARSER_VERSION) => cache.filingIndexes[acc]?.byParser?.[version] ?? null,
+    /** Cache-only lookups (no request): one parser version's extraction of a document / exhibit, or null. */
+    cachedDocumentExtraction: (acc, parser) => cache.documents[acc]?.byParser?.[parser] ?? null,
+    cachedExhibitExtraction: (acc, name, parser) => cache.exhibits[`${acc}/${name}`]?.byParser?.[parser] ?? null,
     cachedDocument: (acc) => extractors.every((x) => !!cache.documents[acc]?.byParser?.[x.parser]),
   };
 }

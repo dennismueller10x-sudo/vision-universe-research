@@ -1,4 +1,19 @@
 /**
+ * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.3: the independent review of #931 (the reason is the review, not a
+ * result; 1.4.2 frozen in ca-edgar-1.4.2.mjs, 1.4.1 / 1.4.0 / 1.3.0 unchanged):
+ *  F1 false negative: charter / certificate-of-amendment wording ('each ten (10) shares of Common Stock, par value $0.001
+ *     per share, ... shall be combined into one (1) share', 'every N shares ... issued and outstanding ... automatically
+ *     reclassified and combined into one share', 'converted into one (1) share' next to a reverse split): the 'each /
+ *     every ... into' pattern now spans 300 characters and decimal points; 'converted into' is no longer instrument
+ *     wording by itself (merger wording and convertible / conversion / warrant / exercise / preferred stock still block);
+ *  F2 false positive: a sentence with discretionary, conditional or authorization wording (may, might, could, would, in
+ *     its (sole) discretion, authorized / authority, if effected, if approved, proposal, propose, to approve, approval of,
+ *     intends / plans to, subject to ... approval) never carries a factor (like a range); only such sentences ->
+ *     DOCUMENT_DISCRETIONARY_ONLY;
+ *  F3 the exhibit type is read from the Type column located through the header row of the filing index;
+ *  scope: exhibits for K5 sessions only, in every mode (runner).
+ *
+ * Rule set 1.4.2 text:
  * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.2 (owner decision of 25.10.2026 on EDGAR exhibits; 1.4.1 frozen in
  * ca-edgar-1.4.1.mjs, 1.4.0 in ca-edgar-1.4.0.mjs, 1.3.0 untouched). 1.4.2 = 1.4.1 with ONE further source: the
  * pre-registered EXHIBITS (EXHIBIT_TYPES: charter / certificate of amendment EX-3.1 / 3.2 / 3(i), press release EX-99.1)
@@ -63,10 +78,13 @@ import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 import { CLASSES, TOLERANCES, FACTOR_GRID, MERGER_FORMS, SPLIT_BLOCKING_8K_ITEMS, snapFactor, gridLogGap, ratioLabel, volumeRelative, adjCloseImplied, rulesetSha256 as rulesetSha256V130, CA_RESOLUTION_VERSION as V130 } from './ca-resolution.mjs';
 
-export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.2';
-export const DOC_PARSER_VERSION = 'sf7-edgar-ratio-parser-1.1.0';
+export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.3';
+export const DOC_PARSER_VERSION = 'sf7-edgar-ratio-parser-1.2.0';
+/** 1.4.3 (F3): version of the filing-index parser (cached parses of other versions are not reused). */
+export const FILING_INDEX_PARSER_VERSION = 'sf7-filing-index-parser-1.1.0';
 /** The frozen predecessor (ca-edgar-1.4.1.mjs, run 40190526062); 1.4.0 (ca-edgar-1.4.0.mjs, run 40185801366) before it. */
-export const PREVIOUS_RULESET = Object.freeze({ version: 'sf7-ca-resolution-1.4.1', sha256: '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c' });
+export const PREVIOUS_RULESET = Object.freeze({ version: 'sf7-ca-resolution-1.4.2', sha256: '2130be8e8131c22100e00160cb5606e1db95e628e554088ccf04dcb861191636' });
+export const RULESET_1_4_1 = Object.freeze({ version: 'sf7-ca-resolution-1.4.1', sha256: '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c' });
 export const RULESET_1_4_0 = Object.freeze({ version: 'sf7-ca-resolution-1.4.0', sha256: '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd' });
 /**
  * 1.4.2: exhibit types that count (Type column of the filing index, upper case, spaces removed). Charter / certificate of
@@ -78,7 +96,7 @@ export const EXHIBIT_TYPES = Object.freeze(['EX-3.1', 'EX-3.2', 'EX-3(I)', 'EX-3
  * the session is incomplete), exhibits fetched only for document-path sessions; at most 600 requests for all 1.4.2 runs
  * together (cumulative ledger, fail closed); the plan bound is filing indexes + 3 x filings (worst case).
  */
-export const EXHIBIT_BUDGET = Object.freeze({ filingIndexPerFiling: 1, maxExhibitsPerFiling: 3, scope: 'DOCUMENT_PATH_SESSIONS', cumulativeRequestsAllRuns: 600 });
+export const EXHIBIT_BUDGET = Object.freeze({ filingIndexPerFiling: 1, maxExhibitsPerFiling: 3, scope: 'DOCUMENT_PATH_SESSIONS_K5_ONLY', cumulativeRequestsAllRuns: 600 });
 /** The 1.3.0 rule set this layer extends (pinned in a test; ca-resolution.mjs stays byte-for-byte as in run 40122736287). */
 export const BASE_RULESET = Object.freeze({ version: V130, sha256: '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7' });
 
@@ -133,7 +151,9 @@ export const SPLIT_KEYWORDS = /\b(?:reverse\s+(?:stock\s+|share\s+)?split|stock\
 export const RANGE_WORDS = /\b(?:between|range|ranging|ranges|not\s+less\s+than|not\s+more\s+than|no\s+less\s+than|no\s+more\s+than|up\s+to|not\s+to\s+exceed|not\s+exceeding|maximum|minimum|at\s+least|any\s+whole\s+number|within)\b/;
 export const EFFECTIVE_WORDS = /\b(?:effective|effected|effectuated|became\s+effective|becomes\s+effective|begin\s+trading|begins\s+trading|began\s+trading|commence\s+trading|commenced\s+trading|split-adjusted\s+basis|market\s+open|opening\s+of\s+(?:the\s+)?(?:market|trading)|effective\s+time)\b/;
 /** 1.4.1 (R6): sentences about warrants, conversions, exercises or exchangeable instruments carry no split ratio. */
-export const INSTRUMENT_WORDS = /\b(?:warrants?|convertible|conversion|convert(?:ed|s)?\s+into|exercise[ds]?|exercisable|exchangeable)\b/;
+export const INSTRUMENT_WORDS = /\b(?:warrants?|convertible|conversion|exercise[ds]?|exercisable|exchangeable|preferred\s+(?:stock|shares)|debentures?)\b/;
+/** 1.4.3 (F2): discretionary, conditional or authorization wording in the sentence of a ratio: never a factor. */
+export const DISCRETIONARY_WORDS = /\b(?:may(?!\s+\d)|might|could|would|in\s+its\s+(?:sole\s+|absolute\s+)?discretion|discretionary|authoriz(?:e|es|ed|ing|ation)|authority|if\s+effected|if\s+approved|proposals?|propose[ds]?|to\s+approve|approval\s+of|intends?\s+to|plans?\s+to|subject\s+to\s+(?:stockholder|shareholder)s?'?\s+approval)\b/;
 /** 1.4.1 (R1): a '. ' after these tokens does not end a sentence. */
 export const SENTENCE_ABBREVIATIONS = Object.freeze(['inc', 'corp', 'co', 'ltd', 'llc', 'no', 'nos', 'u.s', 'mr', 'ms', 'dr', 'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec', 'approx', 'e.g', 'i.e', 'vs', 'st', 'p.m', 'a.m']);
 export const MERGER_WORDS = /\b(?:merger|exchange\s+offer|exchange\s+ratio|business\s+combination|amalgamation|plan\s+of\s+arrangement|tender\s+offer)\b/;
@@ -141,7 +161,7 @@ const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'ei
 const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
 export const NUMBER_WORDS = Object.freeze([...ONES, ...TENS.filter(Boolean), 'hundred', 'thousand']);
 
-/** The full 1.4.2 rule set (its SHA-256 is pinned in a test; any change is a new version with before / after). */
+/** The full 1.4.3 rule set (its SHA-256 is pinned in a test; any change is a new version with before / after). */
 export const RULESET = Object.freeze({
   version: CA_EDGAR_VERSION, base: BASE_RULESET, parser: DOC_PARSER_VERSION, postEventForms: POST_EVENT_FORMS, contextForms: CONTEXT_FORMS, conflictForms: DOC_CONFLICT_FORMS,
   priority: DOC_PRIORITY, docPathReasons: DOC_PATH_REASONS, tolerances: DOC_TOLERANCES, budget: EDGAR_BUDGET, smokeBudget: SMOKE_BUDGET,
@@ -149,6 +169,7 @@ export const RULESET = Object.freeze({
   previous: PREVIOUS_RULESET, instrumentWords: INSTRUMENT_WORDS.source, sentenceAbbreviations: SENTENCE_ABBREVIATIONS,
   review141: Object.freeze(['R1-SENTENCE-DATES-YEAR-CONFLICT-ISO', 'R2-COLON-PUNCT-SHARE-FOR-EVERY-TO', 'R3-CHOICE-LIST-RANGE', 'R4-SNAPSHOT-CALENDAR', 'R5-CAP-TRUNCATION-INCOMPLETE', 'R6-INSTRUMENT-WORDING', 'R7-JOINT-FILER-LIMIT-DOCUMENTED']),
   ruleset140: RULESET_1_4_0, exhibitTypes: EXHIBIT_TYPES, exhibitBudget: EXHIBIT_BUDGET,
+  ruleset141: RULESET_1_4_1, discretionaryWords: DISCRETIONARY_WORDS.source, filingIndexParser: FILING_INDEX_PARSER_VERSION, review143: Object.freeze(['F1-CHARTER-WORDING', 'F2-DISCRETIONARY-WORDING', 'F3-TYPE-COLUMN-FROM-HEADER', 'M1-K5-SCOPE-ALL-MODES', 'M2-LEDGER-CONCURRENCY', 'L4-PLAN-WORST-CASE', 'L5-LEDGER-REQUIRED']),
 });
 export const rulesetSha256 = () => crypto.createHash('sha256').update(JSON.stringify(RULESET)).digest('hex');
 /** The 1.3.0 rule set must be exactly the one this layer was registered on. */
@@ -204,7 +225,7 @@ const RE_FOR = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}\\s*[-\\s]\\s*for\\s*[-\\
 const RE_COLON = /(?<![\w.,:])(\d{1,4})\s*:\s*(\d{1,4})(?![\w:]|[.,;]\d)/g;
 const RE_TO = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}(?:\\s*-\\s*to\\s*-\\s*(${NUM})\\b${PAREN}|\\s+to\\s+(${NUM})\\b${PAREN}(?=\\s+(?:ratio|reverse|forward|stock\\s+split|split)))`, 'g');
 const RE_SHARE_FOR_EVERY = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}\\s+(?:(?:new|post-split|fully|paid|validly|issued|and|non-assessable|nonassessable)[\\s,-]+)*shares?\\b(?:\\s+of\\s+[a-z ,.'-]{0,60}?)?\\s+for\\s+(?:each|every)\\s+(${NUM})${PAREN}\\s+(?:(?:old|pre-split|existing|issued|and|outstanding)\\s+)*shares?\\b`, 'g');
-const RE_EACH = new RegExp(`\\b(?:each|every)\\s+(?:(${NUM})${PAREN}\\s+)?(?:(?:issued|and|outstanding|pre-split|old|existing|shares?\\s+of)\\s+)*shares?\\b[^.;]{0,160}?\\b(?:into|for)\\s+(${NUM})${PAREN}\\s+(?:(?:new|post-split|fully|paid|validly|issued|and|non-assessable|nonassessable|outstanding)[\\s,-]+)*shares?\\b`, 'g');
+const RE_EACH = new RegExp(`\\b(?:each|every)\\s+(?:(${NUM})${PAREN}\\s+)?(?:(?:issued|and|outstanding|pre-split|old|existing|shares?\\s+of)\\s+)*shares?\\b(?:[^.;]|\\.(?=\\d)){0,300}?\\b(?:into|for)\\s+(${NUM})${PAREN}\\s+(?:(?:new|post-split|fully|paid|validly|issued|and|non-assessable|nonassessable|outstanding)[\\s,-]+)*shares?\\b`, 'g');
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 const RE_DATE_LONG = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/g;
 const RE_DATE_NUM = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
@@ -314,7 +335,7 @@ export function extractStatements(html, tol = DOC_TOLERANCES) {
     const near = dates.filter((x) => x.pos >= sa && x.pos < sb), eff = [...sentence.matchAll(new RegExp(EFFECTIVE_WORDS.source, 'g'))].map((x) => [sa + x.index, sa + x.index + x[0].length]);
     const effectiveDates = near.filter((x) => eff.some(([a, b]) => x.pos >= a - tol.effectiveDateChars && x.pos <= b + tol.effectiveDateChars)).map((x) => x.date);
     const years = [...new Set([...sentence.matchAll(RE_YEAR)].map((x) => Number(x[1])))].sort();
-    statements.push({ kind: m.kind, factor: g, offGrid: g === null, label: g !== null ? ratioLabel(g) : `${m.newN}-for-${m.oldN}`, range: m.range, dates: near.map((x) => x.date), years, effectiveDates, effective: eff.length > 0, merger: MERGER_WORDS.test(around), passageSha256: sha(sentence) });
+    statements.push({ kind: m.kind, factor: g, offGrid: g === null, label: g !== null ? ratioLabel(g) : `${m.newN}-for-${m.oldN}`, range: m.range, discretionary: DISCRETIONARY_WORDS.test(sentence), dates: near.map((x) => x.date), years, effectiveDates, effective: eff.length > 0, merger: MERGER_WORDS.test(around), passageSha256: sha(sentence) });
   }
   const kw = text.match(new RegExp(SPLIT_KEYWORDS.source, 'g'));
   return { parser: DOC_PARSER_VERSION, chars: full.length, truncated, textSha256: sha(full), splitKeywordHits: kw ? kw.length : 0, instrumentExcluded, statements };
@@ -331,13 +352,16 @@ const stripTags = (h) => String(h).replace(/<[^>]*>/g, ' ').replace(/&nbsp;|&#16
  */
 export function parseFilingIndex(html, { cik, accessionNumber }) {
   const dir = `/archives/edgar/data/${String(Number(String(cik).replace(/^0+/, '') || '0'))}/${String(accessionNumber).replace(/-/g, '')}/`;
-  const allowed = [], seen = new Set(); let other = 0, foreign = 0;
+  const allowed = [], seen = new Set(); let other = 0, foreign = 0, typeColumn = null;
   for (const row of String(html ?? '').match(/<tr[\s\S]*?<\/tr>/gi) || []) {
+    // 1.4.3 (F3): the Type column is located through the header row (<th> cells); rows before a header are ignored
+    const heads = [...row.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map((m) => stripTags(m[1]).toLowerCase());
+    if (heads.length) { const k = heads.indexOf('type'); typeColumn = k >= 0 ? k : null; continue; }
     const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => m[1]);
     const href = row.match(/href="([^"]+)"/i)?.[1];
-    if (!cells.length || !href) continue;
-    const type = cells.map((c) => normType(stripTags(c))).find((c) => /^EX-[\w.()]+$/.test(c));
-    if (!type) continue;
+    if (!cells.length || !href || typeColumn === null) continue;
+    const type = normType(stripTags(cells[typeColumn] ?? ''));
+    if (!/^EX-[\w.()]+$/.test(type)) continue;
     const path = href.replace(/^https?:\/\/www\.sec\.gov/i, '').replace(/^\/ix\?doc=/i, '');
     if (!path.toLowerCase().startsWith(dir)) { foreign++; continue; }
     const name = path.slice(dir.length);
@@ -345,7 +369,7 @@ export function parseFilingIndex(html, { cik, accessionNumber }) {
     seen.add(name);
     if (EXHIBIT_TYPES.includes(type)) allowed.push({ type, name }); else other++;
   }
-  return { allowed, other, foreign };
+  return { allowed, other, foreign, typeColumnFound: typeColumn !== null, parser: FILING_INDEX_PARSER_VERSION };
 }
 
 // ---------------------------------------------------------------------------------------------------- document choice
@@ -381,7 +405,7 @@ export function documentFactor({ docs, raw, i, calendar = null, complete = true,
   const all = inWin.flatMap((x) => x.extraction.statements.map((s) => ({ ...s, accessionNumber: x.accessionNumber, form: x.form, filingDate: x.filingDate })));
   // 1.4.1 (R1): a statement dated only by bare years is relevant when one of them lies in the statement window
   const yLo = Number(addDays(d, -tol.statementDays).slice(0, 4)), yHi = Number(addDays(d, tol.statementDays).slice(0, 4));
-  const relevant = all.filter((s) => !s.range && (s.dates.length ? s.dates.some((y) => Math.abs(daysBetween(d, y)) <= tol.statementDays) : !(s.years || []).length || s.years.some((y) => y >= yLo && y <= yHi)));
+  const relevant = all.filter((s) => !s.range && !s.discretionary && (s.dates.length ? s.dates.some((y) => Math.abs(daysBetween(d, y)) <= tol.statementDays) : !(s.years || []).length || s.years.some((y) => y >= yLo && y <= yHi)));
   const ev = { documentsRead: inWin.length, statements: all.length, rangeStatements: all.filter((s) => s.range).length, relevantStatements: relevant.length };
   const out = (reason, more = {}) => ({ ok: false, reason, evidence: { ...ev, ...more } });
   if (!complete) return out('EDGAR_BUDGET_EXHAUSTED');
@@ -389,7 +413,7 @@ export function documentFactor({ docs, raw, i, calendar = null, complete = true,
   if (incompleteReason) return out(incompleteReason);
   if (inWin.some((x) => x.extraction.truncated)) return out('DOCUMENT_TRUNCATED');
   if (relevant.some((s) => s.merger)) return out('DOCUMENT_MERGER_CONTEXT');
-  if (!relevant.length) return out(all.some((s) => s.range) ? 'DOCUMENT_RANGE_ONLY' : inWin.some((x) => x.extraction.splitKeywordHits > 0) ? 'DOCUMENT_NO_RATIO' : 'NO_SPLIT_DOCUMENT_FOUND');
+  if (!relevant.length) return out(all.some((s) => s.range) ? 'DOCUMENT_RANGE_ONLY' : all.some((s) => s.discretionary) ? 'DOCUMENT_DISCRETIONARY_ONLY' : inWin.some((x) => x.extraction.splitKeywordHits > 0) ? 'DOCUMENT_NO_RATIO' : 'NO_SPLIT_DOCUMENT_FOUND');
   const labels = [...new Set(relevant.map((s) => s.label))];
   if (labels.length > 1) return out('DOCUMENT_CONFLICTING_RATIOS', { ratios: labels.length });
   const s0 = relevant[0];
@@ -417,7 +441,7 @@ export function groundTruthLabel(df) {
   if (df.reason === 'NO_SPLIT_DOCUMENT_FOUND') return 'NO_SPLIT_DOCUMENT_FOUND';
   if (df.reason === 'EDGAR_BUDGET_EXHAUSTED') return 'NOT_CHECKED';
   if (df.reason === 'DOCUMENT_CAP_EXCEEDED' || df.reason === 'DOCUMENT_TRUNCATED') return 'INCOMPLETE';
-  if (df.reason === 'DOCUMENT_CONFLICTING_RATIOS' || df.reason === 'DOCUMENT_RANGE_ONLY' || df.reason === 'DOCUMENT_MERGER_CONTEXT') return 'AMBIGUOUS';
+  if (df.reason === 'DOCUMENT_CONFLICTING_RATIOS' || df.reason === 'DOCUMENT_RANGE_ONLY' || df.reason === 'DOCUMENT_DISCRETIONARY_ONLY' || df.reason === 'DOCUMENT_MERGER_CONTEXT') return 'AMBIGUOUS';
   return 'UNCLEAR';
 }
 
