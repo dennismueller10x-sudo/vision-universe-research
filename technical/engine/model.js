@@ -16,6 +16,8 @@
   /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
   var INDEX_PATH = "/technical/data/index-v1.json";
   var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
+  var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
   /* Startseite: "Setups im Fokus" und Ranglisten (Vorlagen aus technical-query.js). */
   var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var TECH_DIR = "/quant/data/product/technical-signals-v1/";
@@ -134,6 +136,22 @@
     list.unshift({ id: id, name: String(name).slice(0, 60), params: params, createdAt: new Date(now || Date.now()).toISOString() });
     try { storage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 50))); return { ok: true, id: id }; } catch (e) { return { ok: false }; }
   }
+  /* ---------------------------------------------------------- Evidenz */
+  function pctDe(v, d) { return typeof v === "number" && isFinite(v) ? (v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 0 : d, maximumFractionDigits: d === undefined ? 0 : d }) + " %" : "–"; }
+  function signedPct(v) { return (v > 0 ? "+" : v < 0 ? "−" : "±") + pctDe(Math.abs(v), 1); }
+  /**
+   * Ein Satz zur historischen Evidenz eines Formationstyps. Keine Aussage ohne ausreichende Stichprobe;
+   * eine Ueberrendite heisst nur "belastbar", wenn sie die Mehrfachtest-Korrektur besteht.
+   */
+  function evidenceText(e, window) {
+    if (!e) return "Für diesen Typ liegt keine historische Auswertung vor.";
+    var span = window && window.from ? " (Erkennungen " + dateDe(window.from) + " – " + dateDe(window.to) + ")" : "";
+    if (!e.published) return "Zu wenige Fälle für eine Aussage (n = " + e.n.toLocaleString("de-DE") + span + ").";
+    return "n = " + e.n.toLocaleString("de-DE") + span + ": nach 20 Handelstagen bestätigt " + pctDe(e.confirmedBy20) + ", invalidiert " + pctDe(e.invalidatedBy20) +
+      ", entfallen " + pctDe(e.droppedBy20) + ". Rendite ggü. allen Titeln am selben Tag " + signedPct(e.excess20Mean) + " (± " + pctDe(e.excess20Ci95, 1) + ") – " +
+      (e.significant ? "nach Mehrfachtest-Korrektur belastbar, aber nur ein Marktjahr." : "statistisch nicht belastbar.");
+  }
+
   function deleteScreen(storage, id) {
     var list = loadScreens(storage).filter(function (x) { return x.id !== id; });
     try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
@@ -252,7 +270,7 @@
   }
 
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
