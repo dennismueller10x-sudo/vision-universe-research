@@ -225,6 +225,11 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-line.tc-negative{stroke:var(--tc-down)}
 .tc-line.tc-muted{stroke:var(--tc-axis);stroke-opacity:.6}
 .tc-line.tc-neutral{stroke:var(--tc-price)}
+.tc-line.tc-proj{stroke-opacity:.55;stroke-width:1.2}
+.tc-xmark{stroke-width:2.4;stroke-linecap:round;fill:none}
+.tc-xmark.tc-negative{stroke:var(--tc-down)}
+.tc-xmark.tc-positive{stroke:var(--tc-up)}
+.tc-xmark.tc-muted,.tc-xmark.tc-neutral{stroke:var(--tc-axis)}
 .tc-zone.tc-positive{fill:var(--tc-zone-pos)}
 .tc-zone.tc-negative{fill:var(--tc-zone-neg)}
 .tc-zone.tc-accent{fill:var(--tc-zone-acc)}
@@ -242,6 +247,8 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-marker.tc-accent{fill:#8bc34a;stroke:var(--vu-accent);stroke-width:3;stroke-opacity:.5}
 .tc-badge-text{font-size:11px;font-weight:800;fill:#101318}
 .tc-chart rect.tc-badge{fill:var(--vu-accent)}
+.tc-chart rect.tc-badge.tc-badge-muted{fill:var(--vu-surface);stroke:var(--vu-line-strong)}
+.tc-chart rect.tc-badge-muted+text.tc-badge-text{fill:var(--vu-text)}
 .tc-vol-up{fill:var(--tc-candle-up);fill-opacity:.35}
 .tc-vol-down{fill:var(--tc-candle-down);fill-opacity:.35}
 .tc-pane-bg{fill:transparent;stroke:var(--tc-grid)}
