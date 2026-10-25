@@ -9,7 +9,7 @@ import { REFERENCE_CONFIG, variantRegistrySha256, fillBuyOrder, sepaSetupAt } fr
 // pinned before the first 7.0 snapshot result was read; re-pinned for 1.3.0 (E7-2 review: diagnostics only, the REF
 // and the three variants are unchanged), before the 1.3.0 run; re-pinned for runner 1.2.0 with the E7-7 exit files
 // (minervini-sf7-exits.mjs, minervini-sf7-exit-execution.mjs; minervini-sf7.mjs unchanged), before the E7-7 run
-const PINNED_SF7_CODE_SHA256 = '3bfe13751a4dcdae31d564352f4b7f29b4cd1aef424e344c85db9f08ebfd5d78'; // re-pinned for runner 1.3.0 (review #917) before its run
+const PINNED_SF7_CODE_SHA256 = '84caa463c7e7784d267a63b06a4dd067ab9587588560e4f677066728348a925b'; // re-pinned for runner 1.4.0 (owner check of EXIT-CLIMAX-UPCLOSES) before its run
 const PINNED_SF7_REGISTRY_SHA256 = 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });

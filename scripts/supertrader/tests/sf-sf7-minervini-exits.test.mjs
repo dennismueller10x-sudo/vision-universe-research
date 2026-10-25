@@ -278,3 +278,30 @@ test('SF7-EXIT-SIGNAL-TALLY: Sitzungen vom Einstieg bis zum Signal je Bucket, nu
   const t = signalSessionsFromEntry(trades, new Map([['A', { bars }]]));
   assert.deepEqual(t, { '0-0': 1, '1-2': 1, '3-5': 0, '6-10': 0, '11-20': 0, '21+': 1, unknown: 1 });
 });
+
+test('SF7-EXIT-UPCLOSES-NO-LOOKAHEAD: die Bedingung liest nur Schluesse bis j; vor dem Einstieg wird nie ausgewertet; Einstiegstag-Signale stammen aus dem Vorlauf (Owner-Pruefung E7-7)', async () => {
+  const { climaxUpClosesHolds, createExitRule, SF7_EXIT_VARIANTS: V } = await import('../source-faithful/research/minervini-sf7-exits.mjs');
+  const { upClosesSignalTiming } = await import('../source-faithful/research/run-sf7-minervini.mjs');
+  const day = (k) => new Date(Date.UTC(2020, 0, 1) + k * 864e5).toISOString().slice(0, 10);
+  const mkb = (cl) => cl.map((c, k) => ({ date: day(k), open: c, high: c * 1.01, low: c * 0.99, close: c, volume: 1e6 }));
+  // flat to 60, then a steep run-up of 15 rising closes (+40 %) up to the setup close s0 = 75, entry e = 76
+  const cl = [...Array.from({ length: 61 }, () => 50), ...Array.from({ length: 15 }, (_, k) => 50 * (1 + 0.4 * (k + 1) / 15)), 70.5, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56];
+  const bars = mkb(cl), s0 = 75, e = 76;
+  assert.equal(climaxUpClosesHolds(bars, s0), true, 'extended with 15 rising closes at the setup close (pre-entry state)');
+  // no look-ahead: changing every bar after j never changes the value at j
+  for (const j of [s0, e, e + 3]) { const b2 = bars.map((b, k) => (k > j ? { ...b, close: b.close * 3 } : b)); assert.equal(climaxUpClosesHolds(b2, j), climaxUpClosesHolds(bars, j)); }
+  const rule = V.find((v) => v.id === 'EXIT-CLIMAX-UPCLOSES').exitRule;
+  // the rule state starts at the entry close: a condition that holds only BEFORE the entry never fires
+  const pre = mkb([...cl.slice(0, e), 40, 39, 38, 37, 36, 35, 34, 33, 32, 31]);
+  assert.equal(climaxUpClosesHolds(pre, s0), true); assert.equal(climaxUpClosesHolds(pre, e), false);
+  const st = createExitRule(rule, pre, { e, s0 }); let hit = null; for (let j = e; j < pre.length && !hit; j++) hit = st.onClose(j);
+  assert.equal(hit, null, 'pre-entry-only condition: no exit, no retroactive exit');
+  // when the entry close still meets it, the signal is on the entry close (after the fill) and is classified as already knowable at the setup
+  const st2 = createExitRule(rule, bars, { e, s0 }); const h2 = st2.onClose(e);
+  assert.equal(h2?.signalIndex, e);
+  const trades = [{ id: 'A', setupDate: day(s0), entryDate: day(e), exitDate: day(e + 1), events: [{ type: 'EXIT_SCHEDULED_NEXT_OPEN', rule: 'SF7_EXIT_VARIANT', signalDate: day(e) }] }];
+  const t = upClosesSignalTiming(trades, new Map([['A', { bars }]]));
+  assert.equal(t.ON_ENTRY_CLOSE_ALREADY_AT_SETUP, 1); assert.equal(t.signalBeforeEntry, 0); assert.equal(t.fillNotAfterSignal, 0);
+  const bad = upClosesSignalTiming([{ ...trades[0], exitDate: day(e) }], new Map([['A', { bars }]]));
+  assert.equal(bad.fillNotAfterSignal, 1, 'an exit on the signal session itself would be a timing violation');
+});

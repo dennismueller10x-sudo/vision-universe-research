@@ -63,6 +63,19 @@ export function stage2Start(bars, s0, P = MIN_PARAMS) {
 }
 
 /**
+ * The EXIT-CLIMAX-UPCLOSES condition on close j (MA-MIN7-CLIMAX-EXTENDED), reading bars j-15..j only. It is not anchored
+ * at the entry or the Stage 2 advance: on the entry close it is often already true from the run-up BEFORE the entry
+ * (review #917). Exported so the runner can report whether a signal was already knowable at the setup close.
+ */
+export function climaxUpClosesHolds(bars, j) {
+  const B = SF7_EXIT_SOURCE_BOUNDS, w = B.climaxUpCloseShare.sessions, need = Math.ceil(B.climaxUpCloseShare.value * w - 1e-9);
+  const g = ret(bars, j, B.climaxRunGain.sessions), g10 = ret(bars, j, B.climaxExtremeGain.sessions);
+  if (!((g !== null && g >= B.climaxRunGain.value - 1e-12) || (g10 !== null && g10 >= B.climaxExtremeGain.value - 1e-12))) return false;
+  let up = 0; for (let m = j - w + 1; m <= j; m++) if (m >= 1 && fin(bars[m].close) && fin(bars[m - 1].close) && bars[m].close > bars[m - 1].close) up++;
+  return up >= need;
+}
+
+/**
  * Rule state for one trade. bars: the security's bars; e: entry bar index; s0: setup bar index (s0 < e);
  * stage2: optional memo (key -> start) shared by the variants of a run. The state reads bars 0..e - 1 at creation and
  * bar j only in onClose(j) (catch-up over skipped closes, MA-MIN7-EXIT-CATCH-UP). onClose returns null or
@@ -112,13 +125,7 @@ export function createExitRule(rule, bars, { e, s0, stage2 = null, key = null, P
     }
     case 'CLIMAX_UP_CLOSES': {
       // B03 PDF 216 (F7-B03-216-086, translation doubt): extended and >= 70 % up closes in the last 15 sessions (MA-MIN7-CLIMAX-EXTENDED)
-      const B = SF7_EXIT_SOURCE_BOUNDS, w = B.climaxUpCloseShare.sessions, need = Math.ceil(B.climaxUpCloseShare.value * w - 1e-9);
-      return { status: 'EVALUATED', onClose: scan((j) => {
-        const g = ret(bars, j, B.climaxRunGain.sessions), g10 = ret(bars, j, B.climaxExtremeGain.sessions);
-        if (!((g !== null && g >= B.climaxRunGain.value - 1e-12) || (g10 !== null && g10 >= B.climaxExtremeGain.value - 1e-12))) return null;
-        let up = 0; for (let m = j - w + 1; m <= j; m++) if (m >= 1 && fin(bars[m].close) && fin(bars[m - 1].close) && bars[m].close > bars[m - 1].close) up++;
-        return up >= need ? { fraction: 1, reason: rule.reason, signalIndex: j } : null;
-      }) };
+      return { status: 'EVALUATED', onClose: scan((j) => (climaxUpClosesHolds(bars, j) ? { fraction: 1, reason: rule.reason, signalIndex: j } : null)) };
     }
     default: throw new Error(`SF7_EXIT_RULE_UNKNOWN:${rule.kind}`);
   }

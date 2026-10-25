@@ -26,13 +26,13 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { researchCodeSha256 } from './run-sf4-lifecycle.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
-import { SF7_EXIT_VERSION, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256 } from './minervini-sf7-exits.mjs';
+import { SF7_EXIT_VERSION, SF7_EXIT_VARIANTS, sf7ExitRegistrySha256, climaxUpClosesHolds } from './minervini-sf7-exits.mjs';
 import { runMinerviniLifecycleWithExitRule } from './minervini-sf7-exit-execution.mjs';
 import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck, postBreakoutEvidence, postBreakoutTally, benchIndex } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.3.0'; // 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.4.0'; // 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
 const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs'];
 export function sf7CodeSha256() {
@@ -83,6 +83,37 @@ export function diffTradeSells(ref, alt) {
 const sellReasons = (r) => tally(r.ledger.filter((x) => x.side === 'SELL'), (x) => x.reason);
 
 /** REF + 7.0 variants + diagnostics + E7-7 exit variants for one dataset. */
+/**
+ * Owner check E7-7 (25.10.2026) of EXIT-CLIMAX-UPCLOSES, counts only. Per scheduled signal: on the entry close (j = e)
+ * or later, and whether the same condition already held on the setup close (knowable BEFORE the entry). A signal on the
+ * entry close still uses that close, which comes after the fill, and fills at the next open: no look-ahead, no exit
+ * before the entry. ALREADY_AT_SETUP means the variant mostly measures the state at the purchase, not a climax after it.
+ */
+export function upClosesSignalTiming(trades, byId) {
+  const out = { ON_ENTRY_CLOSE_ALREADY_AT_SETUP: 0, ON_ENTRY_CLOSE_NEW_ON_ENTRY_DAY: 0, LATER_ALREADY_AT_SETUP: 0, LATER_NOT_AT_SETUP: 0, unknown: 0, signalBeforeEntry: 0, fillNotAfterSignal: 0 };
+  for (const t of trades) {
+    const bars = byId.get(t.id)?.bars; if (!bars) continue;
+    const e = bars.findIndex((x) => x.date === t.entryDate), s0 = bars.findIndex((x) => x.date === t.setupDate);
+    for (const ev of t.events ?? []) {
+      if (ev.type !== 'EXIT_SCHEDULED_NEXT_OPEN' || ev.rule !== 'SF7_EXIT_VARIANT') continue;
+      const j = bars.findIndex((x) => x.date === ev.signalDate);
+      if (e < 0 || s0 < 0 || j < 0) { out.unknown++; continue; }
+      if (j < e) out.signalBeforeEntry++;
+      if (t.exitDate && t.exitDate <= ev.signalDate) out.fillNotAfterSignal++; // a scheduled exit must fill on a later session
+      const atSetup = climaxUpClosesHolds(bars, s0);
+      out[j === e ? (atSetup ? 'ON_ENTRY_CLOSE_ALREADY_AT_SETUP' : 'ON_ENTRY_CLOSE_NEW_ON_ENTRY_DAY') : (atSetup ? 'LATER_ALREADY_AT_SETUP' : 'LATER_NOT_AT_SETUP')]++;
+    }
+  }
+  return out;
+}
+
+/** REF trades whose setup close already met the EXIT-CLIMAX-UPCLOSES condition: pre-entry risk evidence, counts only, never a gate or filter. */
+export function upClosesExtendedAtSetup(trades, byId) {
+  let yes = 0, no = 0, unknown = 0;
+  for (const t of trades) { const bars = byId.get(t.id)?.bars; const s0 = bars ? bars.findIndex((x) => x.date === t.setupDate) : -1; if (s0 < 0) { unknown++; continue; } if (climaxUpClosesHolds(bars, s0)) yes++; else no++; }
+  return { extendedAtSetup: yes, notExtendedAtSetup: no, unknown, rule: 'MA-MIN7-CLIMAX-EXTENDED on the setup close (evidence only)' };
+}
+
 /** Review #917: sessions from the entry to each scheduled exit-variant signal (public tally, counts only; 0 = signal on the entry close). */
 export const SIGNAL_SESSION_BUCKETS = Object.freeze([[0, 0], [1, 2], [3, 5], [6, 10], [11, 20], [21, Infinity]]);
 export function signalSessionsFromEntry(trades, byId) {
@@ -137,11 +168,14 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     log(`${strategy} exit engine copy without rule: ledger ${ps.exitEngineIdentity.ledgerEqualsRef ? 'EQUAL' : 'DIFFERENT'}`);
     if (Object.values(ps.exitEngineIdentity).some((x) => !x)) throw new Error(`EXIT_ENGINE_COPY_NOT_REF:${strategy}`);
     ps.exitVariants = {}; ss.exitVariants = {};
+    ps.diagnostics.upClosesExtendedAtSetup = upClosesExtendedAtSetup(ref.trades, byId); // pre-entry risk evidence on REF trades, never a gate
     const stage2 = new Map(); // Stage 2 start per (security, setup close), shared by the variants (pure function of the bars)
     for (const v of ev) {
       const r = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: v.config, exitRule: v.exitRule, stage2, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
-      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId) };
+      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId), ...(v.exitRule.kind === 'CLIMAX_UP_CLOSES' ? { upClosesSignalTiming: upClosesSignalTiming(r.trades, byId) } : {}) };
+      const tm = upClosesSignalTiming(r.trades, byId); // every exit variant: no signal before the entry, every scheduled exit fills later
+      if (tm.signalBeforeEntry || tm.fillNotAfterSignal) throw new Error(`EXIT_SIGNAL_TIMING_VIOLATION:${strategy}:${v.id}`);
       ss.exitVariants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
       log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.exitVariants[v.id].vsRefSells)}`);
     }
