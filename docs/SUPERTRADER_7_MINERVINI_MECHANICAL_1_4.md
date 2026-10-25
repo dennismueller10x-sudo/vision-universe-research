@@ -201,4 +201,47 @@ REF, die Setup- und Ausstiegsvarianten, die 4.0-Engine (`minervini-lifecycle.mjs
 
 ### Vorher/Nachher
 
-Lauf ausstehend.
+Drei Läufe, alle Workflow `supertrader-validation.yml`, Modus `sf7-minervini`, Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Abrechnung `research-v1`, Runner 1.5.0 bzw. 1.6.0:
+
+| Fassung | Lauf | Commit | Register / Code-Hash |
+|---|---|---|---|
+| 1.0.0 | [40226429160](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40226429160) | `3807283` | `0cc8cb2a…` / `832223b9…` |
+| 1.1.0 | [40228813041](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40228813041) | `0cca717` | `131746dc…` / `2862748e…` |
+| 1.2.0 | [40232389268](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40232389268) | `bd5d05d` | `a122022a…` / `dd3568fb…` |
+
+In allen drei Läufen gleich: `researchCodeSha256` `c834b227…`, `variantRegistrySha256` `f13ea350…`, `sf7VariantRegistrySha256` `9b9a8a00…`, `sf7ExitRegistrySha256` `df0379ae…`. **REF SEPA 954 Trades, Ledger `1ca52391…`; REF Power Play 1.007 Trades, Ledger `877ceb33…`**, `matchesAuthoritativeLedger` wahr. 1.1.0 gegen 1.2.0 verglichen (öffentliche Teile): REF, `ALT-SEPA-FLAT-BASE` / `-TT6-25` / `-RS-LINE` (824 / 982 / 890), alle fünf Ausstiegsvarianten beider Strategien (Ledger-Hashes und alle Zähler außer `signalsByBaseNumber`), Engine-Kopie gleich REF (Ledger, Trades, Kurve, Zähler), alle älteren Diagnosen sowie `topVolumeDecline`, `relativeBaseDepth` und `entryDistance` gleich. Geändert sind nur die Basiszählung und die daraus abgeleitete Zuordnung der Klimax-Signale.
+
+Basiszählung (SEPA 954 / Power Play 1.007):
+
+| Diagnose | SEPA 1.0.0 | SEPA 1.1.0 | SEPA 1.2.0 | PP 1.0.0 | PP 1.1.0 | PP 1.2.0 |
+|---|---|---|---|---|---|---|
+| Basiszahl 1 / 2 / 3 / 4 / 5+ | 442 / 265 / 120 / 76 / 51 | 442 / 265 / 120 / 76 / 51 | 444 / 271 / 141 / 56 / 42 | 736 / 151 / 84 / 23 / 13 | 736 / 151 / 84 / 23 / 13 | 738 / 160 / 75 / 26 / 8 |
+| Neustart Marktkorrektur / unter MA200 / keiner | 251 / 697 / 6 | 251 / 697 / 6 | 251 / 697 / 6 | 142 / 839 / 26 | 142 / 839 / 26 | 142 / 839 / 26 |
+| unsicher (davon Überzählung / Unterzählung möglich) | 13 (–) | 22 (22 / 6) | 22 (20 / 6) | 61 (–) | 49 (44 / 26) | 48 (41 / 26) |
+| früh 1–2 / davon nach Marktkorrektur | 707 / – | 707 / 209 | 715 / 213 | 887 / – | 887 / 120 | 898 / 119 |
+| spät 3–4 / Spätphase ≥ 4 / wahrscheinlich scheiternd ≥ 5 | 196 / 127 / 51 | 196 / 127 / 51 | 197 / 98 / 42 | 107 / 36 / 13 | 107 / 36 / 13 | 101 / 34 / 8 |
+
+Klimax-Variantensignale nach Basiszahl 1 / 2 / 3 / 4 / 5+ (Signalanzahl gleich, nur die Zuordnung ändert sich):
+
+| Variante | 1.0.0 = 1.1.0 | 1.2.0 |
+|---|---|---|
+| SEPA `EXIT-CLIMAX` | 32 / 27 / 12 / 4 / 1 | 30 / 28 / 14 / 2 / 2 |
+| SEPA `EXIT-CLIMAX-UPCLOSES` | 29 / 15 / 14 / 4 / 2 | 27 / 18 / 15 / 2 / 2 |
+| PP `EXIT-CLIMAX` | 39 / 39 / 26 / 5 / 8 | 40 / 45 / 21 / 7 / 4 |
+| PP `EXIT-CLIMAX-UPCLOSES` | 390 / 92 / 55 / 10 / 9 | 398 / 87 / 47 / 22 / 2 |
+
+Übrige Diagnosen (1.1.0 = 1.2.0; 1.0.0 hatte je nur ein Fenster):
+
+| Diagnose | SEPA 1.0.0 | SEPA 1.1.0 = 1.2.0 | PP 1.0.0 | PP 1.1.0 = 1.2.0 |
+|---|---|---|---|---|
+| Top-Volumen `aboveMa200Run` ja / nein / n. a. (gekürzt) | 97 / 830 / 27 | 97 / 830 / 27 (33) | 57 / 727 / 223 | 55 / 683 / 269 (11) |
+| Top-Volumen `trendTemplateRun` ja / nein / n. a. | – | 329 / 598 / 27 | – | 52 / 330 / 625 |
+| relative Tiefe `sameWindow` > 2× / > 3× (bewertet) | 8 / 1 (78) | 8 / 1 (78) | 260 / 179 (283) | 260 / 179 (283) |
+| relative Tiefe `trailingHigh` > 2× / > 3× (bewertet) | – | 5 / 1 (196) | – | 271 / 180 (369) |
+| Eröffnung über Pivot 0 / ≤ 1 / 1–2 / 2–3 / 3–5 / > 5 % | 11 / 84 / 15 / 6 / 6 / 2 | gleich | 10 / 60 / 24 / 8 / 12 / 12 | gleich |
+| nicht ausgeführte Orders über dem Limit | – | 28 | – | 37 |
+
+Lesehinweise:
+- Revision 2 der Basiszählung zählt Erholungen über einen alten Schluss, aber unter dem Intraday-Basishoch nicht mehr als Ausbruch. Dadurch wandern Setups aus hohen Basiszahlen nach unten (SEPA ≥ 4: 127 → 98; Power Play 5+: 13 → 8). Weil der Basisbeginn jetzt am Intraday-Hoch liegt und reife Basen ihren Beginn behalten, verschieben sich auch einzelne Fälle nach oben (SEPA Basis 3: 120 → 141). Das ist eine Zählung, keine Bewertung und keine Grundlage für eine Variantenwahl.
+- 1.0.0 und 1.1.0 zählen Basen gleich; 1.1.0 änderte nur die Unsicherheitsflags. Der `markDate` der offenen REF-Trades (SEPA 17, Power Play 9) ist der letzte Kalendertag des Laufs; deshalb ändert die `markDate`-Grenze (LOW-1) in diesem Lauf nichts, sie schützt nur gegen Reihen, die länger sind als der Lauf.
+- Die `smaAt`-genaue MA200-Entscheidung (LOW-3) ändert in diesem Lauf keine Neustart-Zählung.
