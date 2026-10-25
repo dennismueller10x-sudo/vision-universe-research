@@ -115,11 +115,29 @@ test('SF7-TIINGO-PLAN: Stufe B als Plan ohne jede Anfrage; Umfang, Ticker, Oberg
   const EV = { 2: [{ at: 400, price: 10, volume: 0.1 }], 5: [{ at: 300, price: 10, volume: 0.1 }], 9: [{ at: 500, price: 12, volume: 0.08 }], 11: [{ at: 450, price: 20, volume: 0.05 }] };
   const segs = Array.from({ length: 16 }, (_, s) => seg(ids(s), series(700, s + 21, EV[s] || []))), ds = dsOf(segs);
   let res = null;
-  await assert.rejects(caResolutionPart(ds, segs, { from: day(0), to: day(699), dataEnd: day(699), refine: stageBRefine({ plan: true }) }), (e) => { res = e; return e instanceof ProbeDone; });
+  const realFetch = globalThis.fetch; let netCalls = 0;
+  globalThis.fetch = async () => { netCalls++; throw new Error('NETWORK_IN_PLAN'); };
+  try {
+    await assert.rejects(caResolutionPart(ds, segs, { from: day(0), to: day(699), dataEnd: day(699), refine: stageBRefine({ plan: true }) }), (e) => { res = e; return e instanceof ProbeDone; });
+  } finally { globalThis.fetch = realFetch; }
+  assert.equal(netCalls, 0, 'der Plan beruehrt das Netz nicht');
   const p = res.result.pub;
   assert.equal(p.plan, true); assert.equal(p.requests, 0); assert.equal(p.sessions, 4); assert.equal(p.distinctTickers, 4); assert.equal(p.plannedRequests, 4);
   assert.equal(p.cap, 90); assert.equal(p.fitsCap, true); assert.equal(p.noCikSessions, 4); assert.equal(p.byReasonGroup.NO_CIK, 4);
   assert.deepEqual(res.result.sealed, []); assert.doesNotMatch(JSON.stringify(p), /s00\d|tiingo:/);
   // ohne Plan und ohne Client: fail closed statt Abruf
   await assert.rejects(caResolutionPart(ds, segs, { from: day(0), to: day(699), dataEnd: day(699), refine: stageBRefine({}) }), /PROBE_CLIENT_MISSING/);
+});
+
+test('SF7-TIINGO-GATE-CLI: --plan mit gesetztem Schluessel meldet weder PROBE_FROZEN noch Stufe A; echter Client gesperrt', () => {
+  assert.throws(() => createTiingoClient({ key: 'k3y', cap: 4 }), /PROBE_FROZEN/, 'ohne injiziertes fetch kein Netzclient, solange FROZEN');
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'sf7-tiingo-plan-')), script = path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-sf7-tiingo-splits-probe.mjs');
+  try {
+    const env = { ...process.env, TIINGO_API_KEY: 'k3y' };
+    for (const k of Object.keys(env)) if (k.startsWith('VU_HISTORY_S3_')) delete env[k];
+    const r = spawnSync(process.execPath, [script, '--plan', '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env, timeout: 60000 });
+    assert.doesNotMatch(r.stderr + r.stdout, /PROBE_FROZEN|TIINGO_KEY_MISSING|k3y/);
+    assert.match(r.stdout, /stage A: 0 requests, access null/);
+    assert.notEqual(r.status, 0, 'ohne Snapshot-Speicher bricht der Plan fail closed ab');
+  } finally { fs.rmSync(out, { recursive: true, force: true }); }
 });

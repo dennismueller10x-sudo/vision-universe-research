@@ -94,8 +94,11 @@ const fin = (x) => typeof x === 'number' && Number.isFinite(x);
 export const groupOf = (reason) => Object.entries(PROBE_SPEC.reasonGroups).find(([, v]) => v.includes(reason))?.[0] ?? 'OTHER';
 
 /** Throttled, capped Tiingo client: never more than `cap` requests (fail closed), >= minIntervalMs apart, no retries. */
-export function createTiingoClient({ key, cap, fetchImpl = fetch, now = () => Date.now(), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), throttle = PROBE_SPEC.throttle }) {
+export function createTiingoClient({ key, cap, fetchImpl = null, now = () => Date.now(), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), throttle = PROBE_SPEC.throttle }) {
   if (!key) throw new Error('TIINGO_KEY_MISSING');
+  // third lock: the real network (no injected fetchImpl) only when the gate is UNLOCKED
+  if (!fetchImpl && PROBE_GATE.state !== 'UNLOCKED') throw new Error('PROBE_FROZEN');
+  fetchImpl = fetchImpl || fetch;
   let used = 0, last = -Infinity, refused = 0;
   const strip = (t) => String(t ?? '').split(key).join('<token>').replace(/\s+/g, ' ').slice(0, 300);
   return {

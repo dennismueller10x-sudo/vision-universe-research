@@ -110,3 +110,5 @@ Der Eigentümer hat den Endpunkt bis zu einer Antwort von Tiingo gesperrt: keine
 | frühestes Startjahr der Abfragen | 2015 |
 
 Reason-Gruppen: Dokumentweg 21, erklärter Split in der Nähe 19, echte Bewegung 16, Widerspruch Aktienzahl/Kurs 14, keine CIK 11, ADR 2 – identisch mit dem Stand nach Regelsatz 1.4.3. Ein späterer Abruf bräuchte also höchstens 3 + 72 = 75 Anfragen.
+
+**Review (unabhängig, nur lesend, 25.10.2026):** kein Pfad zu `api.tiingo.com`, PROBE_SPEC-Hash unverändert, Workflow-Regeln eingehalten. Nachgezogen: eine dritte Sperre in `createTiingoClient` (ohne injiziertes `fetch` kein Netzclient, solange `FROZEN`), ein Plan-Test mit werfendem globalem `fetch` und ein CLI-Test für `--plan` mit gesetztem Schlüssel. **Vor einer Entsperrung zu klären:** Zwei Listings mit demselben Symbol (Ticker-Wiederverwendung) fallen zu einer Anfrage zusammen, und Schreibweisen wie `BRK.B` werden nicht auf die Tiingo-Form (`brk-b`) gebracht. Für den Plan ist das unkritisch (er zählt höchstens zu wenig Anfragen; 72 liegen weit unter 90).
