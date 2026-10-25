@@ -6,9 +6,10 @@ import { staggeredStopRisk, flatBaseSetupAt, withFlatBaseSetups, withTrendTempla
 import { buildSetupIndex, runMinerviniLifecycle } from '../source-faithful/research/minervini-execution.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256, fillBuyOrder, sepaSetupAt } from '../source-faithful/research/minervini-lifecycle.mjs';
 
-// pinned before the first 7.0 snapshot result was read
-const PINNED_SF7_CODE_SHA256 = '06c41d88b56df9a59ffac052ebd808bb46d4f335d13b5e344b0e43912fb49c94';
-const PINNED_SF7_REGISTRY_SHA256 = 'a76c53160d11309039834bf1c12237c0341389e3368610d62cc1d7b7cd514fb9';
+// pinned before the first 7.0 snapshot result was read; re-pinned for 1.3.0 (E7-2 review: diagnostics only, the REF
+// and the three variants are unchanged), before the 1.3.0 run
+const PINNED_SF7_CODE_SHA256 = '7441237bcef988713ac1bac002d733f77097106d850508b5ac90e5d44a95065f';
+const PINNED_SF7_REGISTRY_SHA256 = 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c));
@@ -183,6 +184,53 @@ test('SF7-MIN-POST-BREAKOUT: up-day counts, lower lows on volume, close below MA
   const v = VCP.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, VOL[k]));
   const e = postBreakoutEvidence(v, { setupDate: v[324].date, entryDate: v[325].date, exitDate: v.at(-1).date, entryFill: 96.192 }, { bench: bi(v.map((b) => ({ date: b.date, close: 100 }))) });
   assert.equal(e.baseDepthAbove50, false); assert.equal(typeof e.rsLineHighBeforePrice, 'boolean');
+  // the third lower-low day closes in the upper half of its range on heavy volume: cleared (B03 PDF 47)
+  assert.equal(g.longestUpRun, 10); assert.equal(w.lowerLowsCleared, true);
+  const weak2 = [...base.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, 1e6)), ...[100.5, 97, 94, 91, 90, 92].map((c, j) => bar(301 + j, c * 1.01, c * 1.01, c * 0.999, c, 3e6))];
+  const w2 = postBreakoutEvidence(weak2, { setupDate: weak2[300].date, entryDate: weak2[301].date, exitDate: null, entryFill: 100.5 });
+  assert.equal(w2.lowerLowsOnVolume, true); assert.equal(w2.lowerLowsCleared, false);
   const t = postBreakoutTally([g, w, { status: 'NOT_EVALUABLE' }]);
   assert.equal(t.evaluated, 2); assert.equal(t.notEvaluable, 1); assert.equal(t.healthy3of4.true, 1); assert.equal(t.lowerLowsOnVolume.true, 1);
+});
+
+test('ADV-SF7-MIN-POST-BREAKOUT-EXIT-BOUND: a closed trade never reads the exit session or later (E7-2 review HIGH)', async () => {
+  const { postBreakoutEvidence, postBreakoutTally } = await import('../source-faithful/research/minervini-sf7.mjs');
+  const base = path([[0, 40], [300, 100]]);
+  // entry 301 up, exit (intraday stop) on 302; from 302 on the closes collapse below MA20 on heavy volume
+  const b = [...base.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c)), bar(301, 100.5, 101, 100.2, 100.8), ...[95, 90, 85, 80, 75, 70, 65, 60, 55].map((c, j) => bar(302 + j, c, c * 1.002, c * 0.99, c, 5e6))];
+  const closed = postBreakoutEvidence(b, { setupDate: b[300].date, entryDate: b[301].date, exitDate: b[302].date, entryFill: 100.5 });
+  assert.equal(closed.closeBelowMa20InWindow, false); assert.equal(closed.lowerLowsOnVolume, false);
+  assert.equal(closed.healthy3of4, null); assert.equal(closed.healthy6of8, null); assert.deepEqual(closed.upDays4, { up: 1, sessions: 1 });
+  // the same bars as an open trade see the collapse
+  const open = postBreakoutEvidence(b, { setupDate: b[300].date, entryDate: b[301].date, exitDate: null, entryFill: 100.5 });
+  assert.equal(open.closeBelowMa20InWindow, true); assert.equal(open.lowerLowsOnVolume, true); assert.equal(open.healthy3of4, false);
+  const t = postBreakoutTally([closed, open]);
+  assert.equal(t.healthy3of4.null, 1); assert.equal(t.healthy3of4.false, 1);
+});
+
+test('ADV-SF7-MIN-POST-BREAKOUT-BASE-RS-WEEKLY: base depth from the base start, RS line against the own high, weekly reading needs prior weeks (E7-2 review MEDIUM)', async () => {
+  const { postBreakoutEvidence, benchIndex: bi } = await import('../source-faithful/research/minervini-sf7.mjs');
+  // base: high 100 at 100, low 60, swing high 70, low 45 (base depth 55 %, deepest single contraction 40 %); setup at 330
+  const c = path([[0, 50], [100, 100], [130, 60], [160, 70], [190, 45], [330, 80], [340, 82]]);
+  const b = c.map((x, k) => bar(k, x, x * 1.002, x * 0.998, x));
+  const r = postBreakoutEvidence(b, { setupDate: b[330].date, entryDate: b[331].date, exitDate: b.at(-1).date, entryFill: 80.3 });
+  assert.ok(r.baseDepth > 0.55 && r.baseDepth < 0.56, String(r.baseDepth)); assert.equal(r.baseDepthAbove50, true); assert.equal(r.baseDepthAbove60, false);
+  // no Stage 2 at this setup (price below its 200-day mean area after the decline): weekly reading not evaluable
+  assert.equal(r.weeklyDeclineSignalBeforeExit, null);
+  // RS line: a falling benchmark lifts the RS line to a new high while the price stays below its own 252-session high -> true;
+  // a flat benchmark keeps RS = price, below its high -> false
+  const falling = bi(b.map((x, k) => ({ date: x.date, close: 200 - 0.5 * k })));
+  const flat = bi(b.map((x) => ({ date: x.date, close: 100 })));
+  assert.equal(postBreakoutEvidence(b, { setupDate: b[330].date, entryDate: b[331].date, exitDate: b.at(-1).date, entryFill: 80.3 }, { bench: falling }).rsLineHighBeforePrice, true);
+  assert.equal(postBreakoutEvidence(b, { setupDate: b[330].date, entryDate: b[331].date, exitDate: b.at(-1).date, entryFill: 80.3 }, { bench: flat }).rsLineHighBeforePrice, false);
+  // Stage 2 uptrend with a long prior run: weekly signal when a post-entry week falls more than every prior week
+  const up = path([[0, 30], [320, 100]]);
+  const u = [...up.map((x, k) => bar(k, x, x * 1.002, x * 0.998, x)), ...[101, 102, 103, 104, 105, 104, 98, 90, 85, 84, 83, 82].map((x, j) => bar(321 + j, x, x * 1.002, x * 0.998, x))];
+  const wk = postBreakoutEvidence(u, { setupDate: u[320].date, entryDate: u[321].date, exitDate: null, entryFill: 101 });
+  assert.equal(wk.weeklyDeclineSignalBeforeExit, true);
+  // the largest-decline diagnostic has no Stage 2 start without a passing Trend Template at the setup
+  const { largestDeclineSignal: lds } = await import('../source-faithful/research/minervini-sf7.mjs');
+  assert.equal(lds(b, { setupDate: b[330].date, entryDate: b[331].date, exitDate: b.at(-1).date }).status, 'NOT_IN_STAGE2_AT_SETUP');
+  const calm = postBreakoutEvidence(up.map((x, k) => bar(k, x, x * 1.002, x * 0.998, x)), { setupDate: day(300), entryDate: day(301), exitDate: null, entryFill: 98 });
+  assert.equal(calm.weeklyDeclineSignalBeforeExit, false);
 });

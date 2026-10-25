@@ -16,7 +16,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadExtract } from '../evidence/psr709-extract.mjs';
 import { loadFindings } from '../evidence/minervini-sf7-findings.mjs';
-import fsx from 'node:fs';
 import { MINERVINI_SEPA, MINERVINI_POWER_PLAY } from '../contracts/minervini.mjs';
 import { MODEL_ASSUMPTIONS } from '../research/minervini-lifecycle.mjs';
 import { SF7_MODEL_ASSUMPTIONS, SF7_VARIANTS } from '../research/minervini-sf7.mjs';
@@ -97,6 +96,7 @@ export const CLASSIFICATION = Object.freeze({
   'MA-MIN7-RS-LINE': [C('OPERATIONALIZATION_OPEN', 'RS line rising >= 6 weeks without a slope measure', ['B03 PDF 143'])],
   'MA-MIN7-STAGE2-START': [C('OPERATIONALIZATION_OPEN', 'start of the Stage 2 advance not dated mechanically', ['B12 PDF 130'])],
   'MA-MIN7-POST-BREAKOUT-WINDOW': [C('OPERATIONALIZATION_OPEN', 'right after the breakout has no number; 10 sessions from the printed 2-5 days to 1-2 weeks', ['B03 PDF 40', 'B03 PDF 47'])],
+  'MA-MIN7-WEEKLY-STEP': [C('OPERATIONALIZATION_OPEN', 'the weekly chart reading defines no week; 5-session steps from the entry, at least 4 prior weeks', ['B03 PDF 217'])],
   'MA-MIN7-AVG-GAIN': [C('OPERATIONALIZATION_OPEN', 'average gain of the trader\'s own history', ['B12 PDF 398'])],
 });
 
@@ -121,18 +121,18 @@ export const PROJECT_AVAILABILITY = Object.freeze([
 /** E7-2: disposition of every NEW_IMPLEMENTABLE / REFINES finding of the 154 (implemented / deferred with reason / owner). */
 export const E72_DISPOSITION = Object.freeze({
  "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
- "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 (G-UPDAYS, diagnostic)",
- "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (G-LOWERLOWS, diagnostic)",
+ "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 and longestUpRun over the first 10 sessions (G-UPDAYS, diagnostic)",
+ "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (volume above the 50-day mean reading) and lowerLowsCleared (third day closes up or in the upper half of its range on volume above the mean); the rising-volume-each-day reading is not computed (G-LOWERLOWS, diagnostic)",
  "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
  "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
  "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
- "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice (G-RSLINE-HIGH, evidence)",
+ "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice, price below its own 252-session high (at a setup the close is always below the pivot) (G-RSLINE-HIGH, evidence)",
  "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
  "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
  "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
  "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
  "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
- "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit (weekly reading of the largest-decline diagnostic)",
+ "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic)",
  "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
  "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
  "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
@@ -180,11 +180,17 @@ export function buildInventory() {
       }
     }
   }
-  const cls154 = JSON.parse(fsx.readFileSync(path.join(HERE, '..', 'evidence', 'MINERVINI-SF7-FINDINGS-CLASSIFICATION.json'), 'utf8')).rows;
+  const cls154 = JSON.parse(fs.readFileSync(path.join(HERE, '..', 'evidence', 'MINERVINI-SF7-FINDINGS-CLASSIFICATION.json'), 'utf8')).rows;
   const fids = new Set(f.findings.map((r) => r.id));
   for (const r of cls154) { if (!fids.has(r.id)) errors.push(`CLASSIFIED_UNKNOWN_FINDING:${r.id}`); if (!['CONFIRMS', 'REFINES', 'NEW_IMPLEMENTABLE', 'QUALITATIVE', 'NOT_RELEVANT'].includes(r.class)) errors.push(`CLASS:${r.id}`); }
-  if (cls154.length !== f.findings.filter((r) => r.coveredBy === 'NONE').length) errors.push('CLASSIFICATION_INCOMPLETE');
-  for (const r of cls154.filter((x) => x.class === 'NEW_IMPLEMENTABLE' || x.class === 'REFINES')) if (!E72_DISPOSITION[r.id]) errors.push(`NO_DISPOSITION:${r.id}`);
+  // set equality with the uncovered findings (a duplicate plus a missing id must fail), one row per id
+  const uncovered = new Set(f.findings.filter((r) => r.coveredBy === 'NONE').map((r) => r.id)), seen = new Set();
+  for (const r of cls154) { if (seen.has(r.id)) errors.push(`CLASSIFIED_TWICE:${r.id}`); seen.add(r.id); if (!uncovered.has(r.id)) errors.push(`CLASSIFIED_NOT_UNCOVERED:${r.id}`); }
+  for (const id of uncovered) if (!seen.has(id)) errors.push(`CLASSIFICATION_INCOMPLETE:${id}`);
+  // a disposition exactly for the rows whose primary class is NEW_IMPLEMENTABLE or REFINES (secondary classes do not count)
+  const actionable = new Set(cls154.filter((x) => x.class === 'NEW_IMPLEMENTABLE' || x.class === 'REFINES').map((x) => x.id));
+  for (const id of actionable) if (!E72_DISPOSITION[id]) errors.push(`NO_DISPOSITION:${id}`);
+  for (const id of Object.keys(E72_DISPOSITION)) if (!actionable.has(id)) errors.push(`DISPOSITION_NOT_ACTIONABLE:${id}`);
   const bySource = (sid) => rows.filter((r) => r.source_id === sid).length;
   const tally = (arr, k) => arr.reduce((o, v) => { const key = k(v); o[key] = (o[key] || 0) + 1; return o; }, {});
   return {

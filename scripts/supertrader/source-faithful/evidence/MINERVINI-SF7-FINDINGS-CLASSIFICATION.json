@@ -305,7 +305,7 @@
    "class": "NEW_IMPLEMENTABLE",
    "secondary": null,
    "ruleRef": "MIN-SF-TT-8 / MA-MIN7-RS-LINE",
-   "operationalForm": "[G-RSLINE-HIGH] evidence: on the setup close (before the pivot fill) RS line >= its 252-session maximum while close < pivot; reported, never a gate",
+   "operationalForm": "[G-RSLINE-HIGH] evidence: on the setup close (before the pivot fill) RS line >= its 252-session maximum while the close is below its own 252-session high (at a setup the close is always below the pivot); reported, never a gate",
    "phase": "SETUP_QUALIFICATION",
    "wouldChangeReference": false,
    "translationDoubt": false,
