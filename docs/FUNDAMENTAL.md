@@ -99,7 +99,7 @@ Quelle des Codes: `quant/data/product/sic-peer-taxonomy-v1.json` (wie Screener),
 
 ## Mehrere Kennzahlen im Verlauf
 
-In jeder Kennzahl-Detailansicht mit Verlauf (alle außer PEG) blendet „+ Kennzahl“ bis zu drei weitere Kennzahlen desselben Unternehmens ein: Auswahl mit Suche, Kategorien und Vorschlägen. Jede lässt sich einzeln entfernen; die Hauptkennzahl bleibt. Die Auswahl steht in der Adresse (`&plus=`, `&d=`). Dann gibt es keinen Branchen- oder Wettbewerbervergleich und kein Balkendiagramm. Entfernt man alle weiteren Kennzahlen, ist die Ansicht wieder wie vorher.
+In jeder Kennzahl-Detailansicht mit Verlauf (alle außer PEG) blendet „+ Kennzahl“ bis zu drei weitere Kennzahlen desselben Unternehmens ein: Auswahl mit Suche, Kategorien und Vorschlägen. Jede lässt sich einzeln entfernen; die Hauptkennzahl bleibt. Die Auswahl steht in der Adresse (`&plus=`, `&d=`). Dann gibt es keinen Branchen- oder Wettbewerbervergleich und kein Balkendiagramm. Entfernt man alle weiteren Kennzahlen, ist die Ansicht wieder wie vorher, einschließlich Diagrammart und gewählter Vergleichsgruppe.
 
 `fundamental/engine/compare.js` rechnet keine Kennzahl neu. Jede Reihe kommt unverändert aus `catalog.js#seriesOf`; compare.js legt nur fest, was sich zeitlich zusammenführen lässt:
 - **Eine Zeitraum-Art je Diagramm:** Geschäftsjahre oder eigenständige Quartale, zusammengeführt über den Schlüssel des Zeitraums (gleiches Unternehmen, gleiche Geschäftsjahre). LTM wird nicht mit Jahren oder Quartalen gemischt.
@@ -135,4 +135,4 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 
 ## Tests
 
-`node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs`.
+`node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs` · `scripts/quality/fundamental-compare-qa.mjs` (Kennzahlenvergleich, WebKit iPhone und Chromium).

@@ -130,12 +130,13 @@ node scripts/core/data-quality.mjs
 2. `<dir>` statisch ausliefern.
 3. `node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:<port> --out=<tmp>` prüft Wege, Theme, Visual-Bausteine und Kontrast. Die Fundamental-Prüfungen stehen dort in Zeile 105 und 178–188; sie verlangen u. a. die Klassen `.fu-k .fu-chg`, `.fu-crow .fu-spark i`, `.fu-cagr`, `.fu-bc.is-last .fu-b`, `.fu-stmt`, `.fu-gauge .mk-self`, `.fu-lines .fu-l-self`, `.fu-entry-list li`, `.fu-tile .fu-meter-bar i` und `.fu-mc .fu-l-m.m1` (mehrere Kennzahlen im Verlauf).
 4. `scripts/quality/shell-browser-qa.mjs` prüft Shell und Dock (Fundamental-Ziele in Zeile 35–37).
+5. `scripts/quality/fundamental-compare-qa.mjs` prüft den Kennzahlenvergleich (mehrere Kennzahlen im Verlauf) in WebKit im iPhone-Profil und in Chromium, 390 und 430 px, hell und dunkel: „+ Kennzahl“, mobiler Dialog, Antippen, Achsen und Legende, Touch-Flächen, Vollbild, Entfernen bis zur Ausgangsansicht (CI: `shell-ci.yml`, Job `fundamental-compare`).
 
 **Release-Smoke:** `scripts/vu2/production-smoke.mjs` mit `CHROMIUM_PATH=/opt/pw-browsers/chromium` prüft u. a., dass `/fundamental/#/NVDA` aus der Historie liest.
 
 **CI:**
 - `fundamental-ci.yml` (Pfade `fundamental/**`, `scripts/fundamental/**`)
-- `shell-ci.yml`, Job `vu3-regression` (u. a. `fundamental/**`)
+- `shell-ci.yml`, Jobs `vu3-regression` und `fundamental-compare` (u. a. `fundamental/**`)
 - `pages-release.yml`
 
 **Bekannte Prüfwerte zum Gegenlesen** (live am 25.10.2026):

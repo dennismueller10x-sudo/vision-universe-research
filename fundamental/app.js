@@ -283,7 +283,7 @@
     var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
     if (min > 0 && (kind === 'money' || kind === 'shares') && min < max * 0.5) min = 0;
     var span = (max - min) || Math.abs(max) || 1, hi = max + span * 0.1, lo = min === 0 ? 0 : min - span * 0.1;
-    return { min: min, max: max, y: function (v) { return (hi - v) / (hi - lo) * 100; }, zero: lo < 0 && hi > 0 };
+    return { min: min, max: max, y: function (v) { return (hi - v) / (hi - lo) * 100; }, at: function (y) { return hi - y / 100 * (hi - lo); }, zero: lo < 0 && hi > 0 };
   }
   var INDEX_SCALE = { unit: 'Index', f: function (v) { return Math.round(v).toLocaleString('de-DE'); } };
   function mcAxisLabel(ax) { return ax.index ? 'Index' : ax.sc.unit; }
@@ -330,9 +330,14 @@
           if (d) svgEl.append(svg('path', { class: 'fu-l fu-l-m m' + l.tone, d: d, 'vector-effect': 'non-scaling-stroke' }));
           l.ax = ax;
         });
+        // Dritte Marke auf halber Hoehe (dezente Hilfslinie, bei zwei Achsen dieselbe Linie mit dem Wert jeder Skala an dieser Stelle).
+        var mid = ax.d.at(50), showMid = ax.d.max !== ax.d.min && Math.min(50 - ax.d.y(ax.d.max), ax.d.y(ax.d.min) - 50) * PH / 100 >= 16;
+        if (showMid && (ax === axes[0] || !axes[0].showMid)) svgEl.append(svg('line', { class: 'fu-l-grid', x1: 0, x2: 100, y1: 50, y2: 50, 'vector-effect': 'non-scaling-stroke' }));
+        ax.showMid = showMid;
         labels.push(el('div', { class: 'fu-laxis' + (ax.side === 'left' ? ' fu-laxis-l' : ''), 'aria-hidden': 'true' }, [el('span', { style: 'top:' + ax.d.y(ax.d.max) + '%', text: ax.sc.f(ax.d.max) }),
+          showMid && !(ax.index && Math.abs(50 - ax.d.y(100)) * PH / 100 < 16) ? el('span', { style: 'top:50%', text: ax.sc.f(mid) }) : null,
           ax.d.max !== ax.d.min ? el('span', { style: 'top:' + ax.d.y(ax.d.min) + '%', text: ax.sc.f(ax.d.min) }) : null,
-          ax.index && 100 < ax.d.max && 100 > ax.d.min ? el('span', { class: 'is-base', style: 'top:' + ax.d.y(100) + '%', text: '100' }) : null]));
+          ax.index && 100 < ax.d.max && 100 > ax.d.min && Math.min(ax.d.y(100) - ax.d.y(ax.d.max), ax.d.y(ax.d.min) - ax.d.y(100)) * PH / 100 >= 16 ? el('span', { class: 'is-base', style: 'top:' + ax.d.y(100) + '%', text: '100' }) : null]));
       });
       var cur = el('i', { class: 'fu-lcur', hidden: true }), marks = el('div', { class: 'fu-lmarks' });
       cursors.push(cur); markLayers.push({ node: marks, axes: axes });
@@ -970,7 +975,7 @@
     var kind = lineFirst(def) ? 'line' : 'bars', cmp = '', cmpData = { median: null, peers: null, group: null, note: null };
     var hasQ = !def.snap && def.q && C.seriesOf(b, def, 'quarterly').filter(function (x) { return isNum(x.v); }).length > 1;
     // Weitere Kennzahlen im selben Verlauf (engine/compare.js); Farbe je Platz der Auswahl (1–3), die Hauptkennzahl bleibt.
-    var canPlus = !(def.snap && !def.hist), extra = canPlus ? K.cleanSelection(def.id, r.plus) : [], dmode = K.modeFromParam(r.dmode), slot = {}, valState = '';
+    var canPlus = !(def.snap && !def.hist), extra = canPlus ? K.cleanSelection(def.id, r.plus) : [], dmode = K.modeFromParam(r.dmode), slot = {}, valState = '', cmpKept = '';
     extra.forEach(function (id, i) { slot[id] = i + 1; });
     var plusRow = el('div', { class: 'fu-plus', role: 'group', 'aria-label': 'Kennzahlen im Verlauf' }), modeRow = el('div', { class: 'fu-mc-mode' });
     var head = el('div', { class: 'fu-mhead' }), chartBox = el('div', { class: 'fu-card' }, skel(190)), table = el('div'), cagrBox = el('div'), facts = el('div'), cmpNote = el('p', { class: 'fu-note' });
@@ -990,7 +995,7 @@
       return el('p', { class: 'fu-note fu-asof' }, ['LTM = Q' + q0 + ' GJ ' + fy0 + ' bis Q' + m[2] + ' GJ ' + m[1] + (c.end ? ' (bis ' + M.dateDe(c.end) + ')' : '') + '.',
         y ? ' Das Jahresdiagramm zeigt abgeschlossene Geschäftsjahre, zuletzt ' + y.label + (y.end ? ' (bis ' + M.dateDe(y.end) + ')' : '') + ': ' + val(def, y.v, cu) + '.' : '']);
     }
-    var segP = seg('Zeitraum-Art', [['annual', 'Jährlich'], ['quarterly', 'Quartalsweise', !hasQ]], period, function (v) { period = v; range = v === 'quarterly' ? '8' : '10'; if (v === 'quarterly') cmp = ''; if (extra.length) syncUrl(); paint(); });
+    var segP = seg('Zeitraum-Art', [['annual', 'Jährlich'], ['quarterly', 'Quartalsweise', !hasQ]], period, function (v) { period = v; range = v === 'quarterly' ? '8' : '10'; if (v === 'quarterly') cmp = cmpKept = ''; if (extra.length) syncUrl(); paint(); });
     var segR = seg('Zeitraum', RANGES[period], range, function (v) { range = v; paint(); });
     var segK = seg('Diagrammart', [['bars', 'Balkendiagramm', false, 'income'], ['line', 'Liniendiagramm', false, 'growth']], kind, function (v) { kind = v; if (v === 'bars') cmp = ''; paint(); });
     var segC = seg('Vergleich', [['', 'Ohne'], ['median', 'Branchenmedian', !canMedian], ['peers', 'Wettbewerber']], cmp, pickCmp);
@@ -1079,8 +1084,9 @@
         put(table); put(facts); [ctrl, cmpWrap, werte].forEach(function (x) { if (histVal && x) x.hidden = true; }); return;
       }
       [ctrl, cmpWrap, werte].forEach(function (x) { if (x) x.hidden = false; });
+      // Waehrend des Kennzahlenvergleichs ruht der Branchenvergleich; danach gilt wieder die vorherige Wahl.
       var multi = extra.length > 0;
-      if (multi) cmp = '';
+      if (multi && cmp) { cmpKept = cmp; cmp = ''; } else if (!multi && cmpKept) { cmp = cmpKept; cmpKept = ''; segC.redraw(cmp); }
       cmpWrap.hidden = multi; segK.hidden = multi; modeRow.hidden = !multi; paintPlus();
       var prevRows = {}, yoy = {};
       shown.forEach(function (x) { prevRows[x.key] = C.stepChange(b, def, rows, x.key, 1, period); if (period === 'quarterly') yoy[x.key] = C.stepChange(b, def, rows, x.key, 4, period); });
