@@ -5,24 +5,36 @@
  *
  * Caches first: a private cache (bucket key EDGAR_CACHE_KEY, never committed) holds per CIK the merged index fields and
  * per accession number only the EXTRACTED statements (integrity/ca-edgar.mjs#extractStatements: ratio, dates, flags,
- * passage SHA-256) – never document text. A cached accession is reused only with the same parser version.
+ * passage SHA-256) – never document text. Each accession keeps one extraction per parser version (1.4.1: the frozen
+ * 1.4.0 parser and the 1.4.1 parser run on the same text for the before / after); a cached accession is reused only
+ * when every requested parser version is present. Cache entries of schema 1.0.0 (one extraction) are migrated.
  *
  *   data.sec.gov/submissions/CIK##########.json      recent page (+ files[] older pages only when the window is not covered)
  *   www.sec.gov/Archives/edgar/data/<cik>/<acc>/<doc> the primary document of a selected filing
  */
 import { EDGAR_BUDGET, DOC_PARSER_VERSION, extractStatements } from '../integrity/ca-edgar.mjs';
 
-export const EDGAR_CLIENT_VERSION = 'sf7-edgar-client-1.0.0';
+/** Default parser set: the current parser only. */
+export const DEFAULT_EXTRACTORS = Object.freeze([Object.freeze({ parser: DOC_PARSER_VERSION, extract: extractStatements })]);
+
+export const EDGAR_CLIENT_VERSION = 'sf7-edgar-client-1.1.0';
 export const EDGAR_CACHE_KEY = '_validation/edgar-ca-r1.json.gz';
-export const emptyCache = () => ({ schema: 'supertrader-edgar-ca-cache-1.0.0', parser: DOC_PARSER_VERSION, submissions: {}, documents: {} });
+export const emptyCache = () => ({ schema: 'supertrader-edgar-ca-cache-1.1.0', submissions: {}, documents: {} });
+/** Schema 1.0.0 stored one extraction per accession (with its parser field); 1.1.0 stores { byParser: { version: extraction } }. */
+export function migrateCache(c) {
+  if (!c) return emptyCache();
+  const documents = {};
+  for (const [acc, e] of Object.entries(c.documents || {})) documents[acc] = e?.byParser ? e : { form: e?.form, filingDate: e?.filingDate, cik: e?.cik, byParser: e?.parser ? { [e.parser]: e } : {} };
+  return { schema: 'supertrader-edgar-ca-cache-1.1.0', submissions: c.submissions || {}, documents };
+}
 const pad = (cik) => String(cik).replace(/^0+/, '').padStart(10, '0');
 const INDEX_FIELDS = ['form', 'filingDate', 'items', 'accessionNumber', 'primaryDocument'];
 const pick = (rec) => Object.fromEntries(INDEX_FIELDS.map((f) => [f, [...(rec?.[f] || [])]]));
 const oldestOf = (ix) => ix.filingDate.reduce((m, x) => (x && (!m || x < m) ? x : m), null);
 
-export function createEdgarClient({ userAgent, fetchImpl = fetch, budget = EDGAR_BUDGET, cache = emptyCache(), now = () => Date.now(), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), log = () => {} } = {}) {
+export function createEdgarClient({ userAgent, fetchImpl = fetch, budget = EDGAR_BUDGET, cache = emptyCache(), extractors = DEFAULT_EXTRACTORS, now = () => Date.now(), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), log = () => {} } = {}) {
   if (!userAgent) throw new Error('EDGAR_USER_AGENT_REQUIRED');
-  if (!cache || cache.parser !== DOC_PARSER_VERSION) cache = { ...emptyCache(), submissions: cache?.submissions || {} };
+  cache = migrateCache(cache);
   const st = { requests: 0, byKind: { submissions: 0, olderPage: 0, document: 0 }, ok: 0, failed: 0, refused: 0, cacheHits: { submissions: 0, olderPage: 0, document: 0 }, starts: [] };
   let last = -Infinity;
   const exhausted = () => st.requests >= budget.totalRequests;
@@ -86,15 +98,17 @@ export function createEdgarClient({ userAgent, fetchImpl = fetch, budget = EDGAR
     /** Extracted statements of one filing's primary document (cached by accession; the text is parsed and dropped). */
     async document(cik, entry) {
       const acc = entry.accessionNumber, hit = cache.documents[acc];
-      if (hit && hit.parser === DOC_PARSER_VERSION) { st.cacheHits.document++; return { ok: true, extraction: hit, cached: true }; }
+      const out = (e, cached) => ({ ok: true, extractions: Object.fromEntries(extractors.map((x) => [x.parser, e.byParser[x.parser]])), extraction: e.byParser[extractors[0].parser], cached });
+      if (hit && extractors.every((x) => hit.byParser?.[x.parser])) { st.cacheHits.document++; return out(hit, true); }
       const nod = acc.replace(/-/g, ''), cikInt = String(Number(String(cik).replace(/^0+/, '') || '0'));
       const file = entry.primaryDocument || `${acc}.txt`;
       const x = await request(`https://www.sec.gov/Archives/edgar/data/${cikInt}/${nod}/${file}`, 'document', 'text');
       if (x.refused) return { refused: true };
       if (!x.ok) return { ok: false };
-      const extraction = extractStatements(x.body);
-      cache.documents[acc] = { ...extraction, form: entry.form, filingDate: entry.filingDate, cik: pad(cik) };
-      return { ok: true, extraction: cache.documents[acc], cached: false };
+      const e = { form: entry.form, filingDate: entry.filingDate, cik: pad(cik), byParser: { ...(hit?.byParser || {}) } };
+      for (const ex of extractors) e.byParser[ex.parser] = ex.extract(x.body);
+      cache.documents[acc] = e;
+      return out(e, false);
     },
   };
 }

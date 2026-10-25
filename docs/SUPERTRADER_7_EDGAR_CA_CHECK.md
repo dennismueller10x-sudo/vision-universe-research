@@ -231,6 +231,7 @@ Eine Sitzung kann mehrere Referenzen betreffen; die Summe der Zeilen ist deshalb
   - „merger“ in der Passage blockiert.
   - Ein undatierter historischer Split mit anderem Verhältnis zählt als Widerspruch.
 - 11 Sitzungen haben keine CIK-Zuordnung und sind mit EDGAR nicht prüfbar.
+- **Gemeinsam eingereichte Dokumente** (mehrere Filer-CIKs in einer Einreichung, Review-Befund R7) sind im Einreichungsindex nicht erkennbar. Der Index nennt je Einreichung keine Mit-Einreicher, und der Kopf der Einreichung bräuchte eine zusätzliche Anfrage je Dokument. Die Prüfung „dieselbe CIK“ bedeutet deshalb nur: Die Einreichung steht im Index dieser CIK. Das Risiko ist begrenzt, denn Eröffnung, Schluss und Volumen derselben Sitzung müssen denselben Faktor zeigen.
 - Der EDGAR-Index ist live. Die gelesenen Werte liegen versiegelt und im privaten Cache vor; Dokumenttext wird nicht gespeichert, die Prüfsumme des Volltexts schon.
 - Nicht erklärte 2:1-Splits sieht weder DQ-K5 noch DQ-K3. `CC5-e` bleibt deshalb unerfüllt.
 

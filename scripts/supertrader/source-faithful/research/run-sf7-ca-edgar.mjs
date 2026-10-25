@@ -31,19 +31,23 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { INTEGRITY_KEYS } from './run-sf6-integrity.mjs';
 import { caResolutionPart, compareWithSf6, caCodeSha256, SEC_SHARES_KEYS } from './run-sf7-ca-resolution.mjs';
 import { CLASSES, CA_RESOLUTION_VERSION, filingEvidence, rulesetSha256 as rulesetSha256V130 } from '../integrity/ca-resolution.mjs';
-import { CA_EDGAR_VERSION, EDGAR_BUDGET, SMOKE_BUDGET, DOC_TOLERANCES, rulesetSha256, baseRulesetUnchanged, BASE_RULESET, selectDocuments, documentFactor, groundTruthLabel, classifyWithDocument, documentPath, addDays } from '../integrity/ca-edgar.mjs';
+import { CA_EDGAR_VERSION, EDGAR_BUDGET, SMOKE_BUDGET, DOC_TOLERANCES, DOC_PARSER_VERSION, PREVIOUS_RULESET, extractStatements, rulesetSha256, baseRulesetUnchanged, BASE_RULESET, selectDocuments, documentFactor, groundTruthLabel, classifyWithDocument, documentPath, addDays } from '../integrity/ca-edgar.mjs';
+// frozen 1.4.0 (run 40185801366): evaluated on the same documents for the before / after of 1.4.1, never for the result
+import * as V140 from '../integrity/ca-edgar-1.4.0.mjs';
 import { buildOverlayManifest } from '../integrity/ca-overlay.mjs';
 import { createEdgarClient, emptyCache, EDGAR_CACHE_KEY, EDGAR_CLIENT_VERSION } from './sf7-edgar-client.mjs';
 import { SF6_RUN_FACTS } from '../completion/sf6-run-facts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_CA_EDGAR_RUNNER_VERSION = 'sf7-ca-edgar-runner-1.0.0';
+export const SF7_CA_EDGAR_RUNNER_VERSION = 'sf7-ca-edgar-runner-1.1.0';
+/** Both parser versions run on every document text (1.4.1 result, 1.4.0 before / after). */
+export const EXTRACTORS = Object.freeze([Object.freeze({ parser: DOC_PARSER_VERSION, extract: extractStatements }), Object.freeze({ parser: V140.DOC_PARSER_VERSION, extract: V140.extractStatements })]);
 /** E7-1: the reference-exposed UNRESOLVED DQ-K5 sessions of rule set 1.3.0 (run 40122736287). */
 export const EXPECTED_SCOPE_SESSIONS = 83;
 /** 1.3.0 overlay manifest hash of run 40122736287 (empty overlay); the 1.3.0 stage of this run must reproduce it. */
 export const MANIFEST_SHA256_V130 = 'e0a31fea1f723faec9046e944c9500984809a62b3cc44262ad3e648f252522c1';
-const FILES = ['../integrity/ca-edgar.mjs', 'sf7-edgar-client.mjs', 'run-sf7-ca-edgar.mjs'];
+const FILES = ['../integrity/ca-edgar.mjs', '../integrity/ca-edgar-1.4.0.mjs', 'sf7-edgar-client.mjs', 'run-sf7-ca-edgar.mjs'];
 export function edgarCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -53,7 +57,7 @@ const sha = (x) => crypto.createHash('sha256').update(typeof x === 'string' ? x 
 const tally = (rows, key) => rows.reduce((o, r) => { const k = key(r); if (k != null) o[k] = (o[k] || 0) + 1; return o; }, {});
 
 /**
- * Refinement of caResolutionPart (rule set 1.4.0). scope 'K5' (E7-1) or 'K3' (smoke only: the technical probe exercises
+ * Refinement of caResolutionPart (rule set 1.4.1; the frozen 1.4.0 is evaluated on the same documents for the before / after). scope 'K5' (E7-1) or 'K3' (smoke only: the technical probe exercises
  * EDGAR on the exposed DQ-K3 sessions of 400 series). expectedCount: asserted before any document request (fail closed).
  */
 export function edgarRefine({ client, scope = 'K5', expectedCount = null, budget = EDGAR_BUDGET, tol = DOC_TOLERANCES }) {
@@ -70,32 +74,44 @@ export function edgarRefine({ client, scope = 'K5', expectedCount = null, budget
     for (const c of order) {
       const { sec, identity } = identityOf(c), raw = segs[c.j].raw, bars = baseDs.securities[c.j].bars;
       const row = { segmentId: c.segmentId, date: c.date, level: c.level, exposedRefs: c.exposedRefs, cik: sec?.cik ?? null, cls13: c.result13.cls, reason13: c.result13.reason, path: documentPath(c.result13) };
-      if (!sec?.cik) { c.edgar = { label: 'NOT_CHECKED', check: 'NO_CIK' }; sealedRows.push({ ...row, ...c.edgar }); continue; }
+      if (!sec?.cik) { c.edgar = { label: 'NOT_CHECKED', label140: 'NOT_CHECKED', check: 'NO_CIK' }; sealedRows.push({ ...row, ...c.edgar }); continue; }
       const lo = addDays(c.date, Math.min(tol.filingWindowDays[0], -45)), hi = addDays(c.date, tol.filingWindowDays[1]);
       const ix = await client.indexCovering(sec.cik, lo, hi);
-      if (!ix || ix.refused) { c.edgar = { label: 'NOT_CHECKED', check: ix?.refused ? 'EDGAR_BUDGET_EXHAUSTED' : 'EDGAR_INDEX_UNAVAILABLE' }; if (documentPath(c.result13)) c.result = { cls: CLASSES.UNRESOLVED, reason: c.edgar.check, evidence: c.result13.evidence }; sealedRows.push({ ...row, ...c.edgar }); continue; }
-      const picks = selectDocuments(ix.index, c.date, tol).slice(0, budget.docRequestsPerSession); docsSelectedTotal += picks.length;
-      const docs = []; let complete = true, failed = 0;
+      if (!ix || ix.refused) { c.edgar = { label: 'NOT_CHECKED', label140: 'NOT_CHECKED', check: ix?.refused ? 'EDGAR_BUDGET_EXHAUSTED' : 'EDGAR_INDEX_UNAVAILABLE' }; if (documentPath(c.result13)) c.result = c.result140 = { cls: CLASSES.UNRESOLVED, reason: c.edgar.check, evidence: c.result13.evidence }; sealedRows.push({ ...row, ...c.edgar }); continue; }
+      const candidates = selectDocuments(ix.index, c.date, tol), picks = candidates.slice(0, budget.docRequestsPerSession); docsSelectedTotal += picks.length;
+      const capExceeded = candidates.length > budget.docRequestsPerSession; // 1.4.1 (R5)
+      const docs = [], docs140 = []; let complete = true, failed = 0;
       for (const p of picks) {
         const x = await client.document(sec.cik, p);
         if (x.refused) { complete = false; break; }
         if (!x.ok) { failed++; continue; }
-        docs.push({ accessionNumber: p.accessionNumber, form: p.form, filingDate: p.filingDate, extraction: x.extraction });
+        const meta = { accessionNumber: p.accessionNumber, form: p.form, filingDate: p.filingDate };
+        docs.push({ ...meta, extraction: x.extractions?.[DOC_PARSER_VERSION] ?? x.extraction });
+        docs140.push({ ...meta, extraction: x.extractions?.[V140.DOC_PARSER_VERSION] ?? null });
       }
-      // a document that could not be read may hold a conflicting ratio: the session cannot be confirmed (fail closed)
-      const df = documentFactor({ docs, raw, i: c.i, complete: complete && failed === 0, tol });
-      if (df.ok === false && complete && failed > 0) df.reason = 'DOCUMENT_FETCH_FAILED';
       const filings = ix.covered ? filingEvidence(ix.index, c.date) : { covered: false, reason: 'SEC_FILINGS_NOT_COVERED' };
-      c.result = classifyWithDocument({ r13: c.result13, raw, bars, i: c.i, sec, identity, otherFlagDates: c.otherFlagDates, filings, index: ix.index, df });
-      c.edgar = { label: groundTruthLabel(df), check: 'CHECKED', indexCovered: ix.covered, documentsSelected: picks.length, documentsRead: docs.length, documentsFailed: failed, documentReason: df.ok ? 'DOCUMENT_FACTOR' : df.reason };
-      sealedRows.push({ ...row, ...c.edgar, cls14: c.result.cls, reason14: c.result.reason, label14: c.result.label ?? null, document: df.evidence, documents: docs.map((x) => ({ accessionNumber: x.accessionNumber, form: x.form, filingDate: x.filingDate, chars: x.extraction.chars, truncated: x.extraction.truncated, textSha256: x.extraction.textSha256, statements: x.extraction.statements })) });
+      const args = { r13: c.result13, raw, bars, i: c.i, sec, identity, otherFlagDates: c.otherFlagDates, filings, index: ix.index };
+      // a document that could not be read may hold a conflicting ratio: the session cannot be confirmed (fail closed)
+      const fetchFailed = complete && failed > 0;
+      const df = documentFactor({ docs, raw, i: c.i, calendar: baseDs.calendar, complete: complete && !fetchFailed, incompleteReason: capExceeded ? 'DOCUMENT_CAP_EXCEEDED' : null, tol });
+      if (df.ok === false && fetchFailed) df.reason = 'DOCUMENT_FETCH_FAILED';
+      // ground-truth label: what the read documents state, without the completeness rule (incompleteness counted apart)
+      const dfLabel = documentFactor({ docs, raw, i: c.i, calendar: baseDs.calendar, complete: true, tol });
+      c.result = classifyWithDocument({ ...args, df });
+      // before / after: the frozen 1.4.0 on the same documents
+      const df140 = V140.documentFactor({ docs: docs140, raw, i: c.i, complete: complete && !fetchFailed });
+      if (df140.ok === false && fetchFailed) df140.reason = 'DOCUMENT_FETCH_FAILED';
+      c.result140 = V140.classifyWithDocument({ ...args, df: df140 });
+      c.edgar = { label: groundTruthLabel(dfLabel), label140: V140.groundTruthLabel(df140), check: 'CHECKED', indexCovered: ix.covered, candidates: candidates.length, capExceeded, truncated: docs.filter((x) => x.extraction?.truncated).length, instrumentExcluded: docs.reduce((a, x) => a + (x.extraction?.instrumentExcluded || 0), 0), documentsSelected: picks.length, documentsRead: docs.length, documentsFailed: failed, documentReason: df.ok ? 'DOCUMENT_FACTOR' : df.reason, documentReason140: df140.ok ? 'DOCUMENT_FACTOR' : df140.reason };
+      sealedRows.push({ ...row, ...c.edgar, cls141: c.result.cls, reason141: c.result.reason, label141: c.result.label ?? null, cls140: c.result140.cls, reason140: c.result140.reason, document: df.evidence, document140: df140.evidence, documents: docs.map((x) => ({ accessionNumber: x.accessionNumber, form: x.form, filingDate: x.filingDate, chars: x.extraction.chars, truncated: x.extraction.truncated, textSha256: x.extraction.textSha256, instrumentExcluded: x.extraction.instrumentExcluded, statements: x.extraction.statements })) });
     }
     // public, counts only
     const confirmedNow = (c) => c.result.cls !== CLASSES.UNRESOLVED, k5 = (c) => c.level === 'K5';
     const perReference = {};
     for (const k of [...new Set(cands.flatMap((c) => c.exposedRefs))].sort()) {
       const rows = cands.filter((c) => k5(c) && c.exposedRefs.includes(k));
-      perReference[k] = { dqK5Exposed: rows.length, unresolved13: rows.filter((c) => c.result13.cls === CLASSES.UNRESOLVED).length, confirmedSplit14: rows.filter((c) => c.result.cls === CLASSES.SPLIT).length, confirmedGenuine14: rows.filter((c) => c.result.cls === CLASSES.GENUINE).length, unresolved14: rows.filter((c) => !confirmedNow(c)).length, splitFactors14: tally(rows.filter((c) => c.result.cls === CLASSES.SPLIT), (c) => c.result.label) };
+      const r140 = (c) => c.result140 ?? c.result;
+      perReference[k] = { dqK5Exposed: rows.length, unresolved13: rows.filter((c) => c.result13.cls === CLASSES.UNRESOLVED).length, confirmedSplit140: rows.filter((c) => r140(c).cls === CLASSES.SPLIT).length, unresolved140: rows.filter((c) => r140(c).cls === CLASSES.UNRESOLVED).length, confirmedSplit14: rows.filter((c) => c.result.cls === CLASSES.SPLIT).length, confirmedGenuine14: rows.filter((c) => c.result.cls === CLASSES.GENUINE).length, unresolved14: rows.filter((c) => !confirmedNow(c)).length, splitFactors14: tally(rows.filter((c) => c.result.cls === CLASSES.SPLIT), (c) => c.result.label) };
     }
     const m13 = buildOverlayManifest(cands.map((c) => ({ ...c.result13, segmentId: c.segmentId, date: c.date })), { snapshotId, classifierVersion: CA_RESOLUTION_VERSION, evidenceInputs });
     const pub = {
@@ -110,6 +126,10 @@ export function edgarRefine({ client, scope = 'K5', expectedCount = null, budget
       after: { 'DQ-K5': tally(cands.filter(k5), (c) => c.result.cls), 'DQ-K3': tally(cands, (c) => c.result.cls), exposedK5Unresolved: cands.filter((c) => k5(c) && c.exposedRefs.length && c.result.cls === CLASSES.UNRESOLVED).length },
       changedOutsideScope: cands.filter((c) => !inScope.includes(c) && c.result !== c.result13).length,
       perReference,
+      // 1.4.1 vs the frozen 1.4.0 on the same documents (counts only)
+      previous: { version: PREVIOUS_RULESET.version, rulesetSha256: V140.rulesetSha256(), pinned: V140.rulesetSha256() === PREVIOUS_RULESET.sha256, labels: tally(inScope, (c) => c.edgar?.label140 ?? 'NOT_CHECKED'), documentReasons: tally(inScope, (c) => c.edgar?.documentReason140 ?? null), byClass: tally(inScope, (c) => (c.result140 ?? c.result).cls), byReason: tally(inScope, (c) => (c.result140 ?? c.result).reason) },
+      transitions140to141: tally(inScope.filter((c) => c.edgar?.check === 'CHECKED'), (c) => `${c.edgar.documentReason140} -> ${c.edgar.documentReason}`),
+      incomplete: { capExceeded: inScope.filter((c) => c.edgar?.capExceeded).length, truncatedSessions: inScope.filter((c) => c.edgar?.truncated).length, instrumentStatementsExcluded: inScope.reduce((a, c) => a + (c.edgar?.instrumentExcluded || 0), 0) },
     };
     if (pub.changedOutsideScope) throw new Error('EDGAR_CHANGED_OUTSIDE_SCOPE');
     log(`EDGAR: ${pub.sessionsChecked}/${inScope.length} checked, requests ${pub.requests.requests}/${budget.totalRequests}, confirmed splits ${pub.byClass14[CLASSES.SPLIT] ?? 0}`);
@@ -163,7 +183,7 @@ async function main() {
   const ds = datasetFromPit(pit); attachSecPit(ds, secPit);
   const listingPeriods = new Map(pit.listings.map((l) => [l.id, { startDate: l.startDate, listEnd: l.listEnd || null }]));
   const { UA } = await import('../../validation/sec-pit.mjs');
-  const client = createEdgarClient({ userAgent: UA, budget, cache });
+  const client = createEdgarClient({ userAgent: UA, budget, cache, extractors: EXTRACTORS });
   const evidenceInputs = { secShares: 'r14', secSharesKey: SEC_SHARES_KEY, secSharesSha256: sharesSha256, datasetSha256, snapshotId };
   const authoritative = snapshotId === SF6_RUN_FACTS.integrity.snapshotId && !LIMIT;
   const receipt = { schema: 'supertrader-sf7-ca-edgar-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), caCodeSha256: caCodeSha256(), edgarCodeSha256: edgarCodeSha256(), runner: SF7_CA_EDGAR_RUNNER_VERSION, classifier: CA_EDGAR_VERSION, rulesetSha256: rulesetSha256(), baseRulesetSha256: rulesetSha256V130(), secShares: 'r14', secSharesSha256: sharesSha256, edgarCache: { key: EDGAR_CACHE_KEY, loaded: cacheLoaded, sha256: cacheSha256, ...cacheBefore }, budget, scope, limit: LIMIT || null, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };

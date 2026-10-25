@@ -13,7 +13,9 @@ import { flagDiscontinuities } from '../source-faithful/integrity/discontinuity.
 import { CLASSES, classifyFlag, filingEvidence, rulesetSha256 as rulesetSha256V130 } from '../source-faithful/integrity/ca-resolution.mjs';
 import { ratioMentions, documentText, parseNumber, extractStatements, documentFactor, selectDocuments, classifyWithDocument, groundTruthLabel, documentPath, rulesetSha256, baseRulesetUnchanged, RULESET, EDGAR_BUDGET, DOC_TOLERANCES, CA_EDGAR_VERSION } from '../source-faithful/integrity/ca-edgar.mjs';
 import { createEdgarClient, emptyCache } from '../source-faithful/research/sf7-edgar-client.mjs';
-import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130 } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
+import * as V140 from '../source-faithful/integrity/ca-edgar-1.4.0.mjs';
+import { sentenceBounds } from '../source-faithful/integrity/ca-edgar.mjs';
+import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130, EXTRACTORS } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
 import { integrityPart, INTEGRITY_KEYS } from '../source-faithful/research/run-sf6-integrity.mjs';
 
@@ -35,7 +37,8 @@ const dei = (pairs) => pairs.map(([k, v]) => [day(k), v, day(k + 20), 'dei']);
 const SEC = (pairs, cik = '0000000001', how = 'KNOWN') => ({ cik, how, taxonomy: 'us-gaap', shares: dei(pairs) });
 const INDEX = (rows) => ({ form: ['10-Q', ...rows.map((r) => r[0]), '10-K'], filingDate: [day(0), ...rows.map((r) => day(r[1])), day(650)], items: ['', ...rows.map((r) => r[2] ?? ''), ''], accessionNumber: ['0000000000-16-000001', ...rows.map((r, k) => r[3] ?? `0000000000-17-${String(k + 10).padStart(6, '0')}`), '0000000000-18-000099'], primaryDocument: ['q.htm', ...rows.map((_, k) => `d${k}.htm`), 'k.htm'] });
 const doc = (form, k, html, acc = `acc-${form}-${k}`) => ({ accessionNumber: acc, form, filingDate: day(k), extraction: extractStatements(html) });
-const SPLIT_8K = (n, k, word = `1-for-${n}`) => `<html><body><p>Item 5.03 Amendments to Articles of Incorporation.</p><p>On ${spoken(day(k - 2))}, the Company filed a Certificate of Amendment to effect a ${word} reverse stock split of its common stock. The reverse stock split became effective at the market open on ${spoken(day(k))}.</p></body></html>`;
+// 1.4.1 (R1): ratio and effective date in ONE sentence; the filing date of the certificate is not the effective date
+const SPLIT_8K = (n, k, word = `1-for-${n}`) => `<html><body><p>Item 5.03 Amendments to Articles of Incorporation.</p><p>On ${spoken(day(k - 2))}, the Company filed a Certificate of Amendment to effect a ${word} reverse stock split of its common stock, which became effective at the market open on ${spoken(day(k))}.</p></body></html>`;
 
 // ---------------------------------------------------------------------------------------------------- parser
 
@@ -228,7 +231,7 @@ function runFixture() {
 
 test('SF7-EDGAR-RUN: 1.3.0 unveraendert zuerst, BASE unveraendert, nur Umfang geprueft, Dokumenttext nie oeffentlich, Overlay erzeugt', async () => {
   const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs), W = { from: day(0), to: day(699), dataEnd: day(699) };
-  const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {} });
+  const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, extractors: EXTRACTORS });
   const r = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => client.submissions13(cik), secFetchMax: 150, classifierVersion: CA_EDGAR_VERSION, rulesetSha256Value: rulesetSha256(), refine: edgarRefine({ client }), ...W });
   const plain = await caResolutionPart(ds, segs, { sharesByListing: shares, ...W });
   const ref = integrityPart(ds, { ...W, policies: [] });
@@ -237,18 +240,21 @@ test('SF7-EDGAR-RUN: 1.3.0 unveraendert zuerst, BASE unveraendert, nur Umfang ge
   const e = r.pub.refine;
   assert.equal(e.sessionsInScope, 4); assert.equal(e.sessionsWithCik, 3); assert.equal(e.sessionsChecked, 3);
   assert.deepEqual(e.byDocumentPath, { A: 1, B: 2, NONE: 1 });
-  assert.equal(e.byClass14[CLASSES.SPLIT], 2); assert.deepEqual(e.splitFactors14, { '1:10': 1, '1:12': 1 });
+  // 1.4.1 (R5): S009 has 9 candidate documents (> 6): incomplete -> UNRESOLVED; the frozen 1.4.0 confirmed it
+  assert.equal(e.byClass14[CLASSES.SPLIT], 1); assert.deepEqual(e.splitFactors14, { '1:10': 1 }); assert.equal(e.byReason14.DOCUMENT_CAP_EXCEEDED, 1);
+  assert.equal(e.previous.byClass[CLASSES.SPLIT], 2); assert.equal(e.previous.pinned, true); assert.equal(e.incomplete.capExceeded, 1);
+  assert.equal(e.transitions140to141['DOCUMENT_FACTOR -> DOCUMENT_CAP_EXCEEDED'], 1);
   assert.equal(e.byReason14.DOCUMENT_RANGE_ONLY, 1, 'S005: nur eine genehmigte Spanne');
-  assert.equal(e.labels.AMBIGUOUS, 1); assert.equal(e.labels.REVERSE_SPLIT_DOCUMENTED, 2); assert.equal(e.labels.NOT_CHECKED, 1);
+  assert.equal(e.labels.AMBIGUOUS, 1); assert.equal(e.labels.REVERSE_SPLIT_DOCUMENTED, 2); assert.equal(e.labels.NOT_CHECKED, 1); assert.deepEqual(e.previous.labels, e.labels);
   assert.equal(e.byCheck.NO_CIK, 1);
   assert.equal(calls.filter((u) => u.includes('/data/9/')).length, EDGAR_BUDGET.docRequestsPerSession, 'hoechstens 6 Dokumente je Sitzung');
   assert.equal(e.requests.requests, calls.length); assert.equal(e.requests.byKind.submissions, 3);
-  assert.equal(e.before.exposedK5Unresolved, 4); assert.equal(e.after.exposedK5Unresolved, 2); assert.equal(e.changedOutsideScope, 0);
-  assert.equal(e.before.overlayEntries, 0); assert.equal(r.manifest.entries.length, 2); assert.equal(r.pub.overlay.entries, 2);
+  assert.equal(e.before.exposedK5Unresolved, 4); assert.equal(e.after.exposedK5Unresolved, 3); assert.equal(e.changedOutsideScope, 0);
+  assert.equal(e.before.overlayEntries, 0); assert.equal(r.manifest.entries.length, 1); assert.equal(r.pub.overlay.entries, 1);
   assert.equal(r.pub.version, CA_EDGAR_VERSION); assert.equal(r.manifest.classifierVersion, CA_EDGAR_VERSION);
-  assert.equal(r.pub.census['DQ-K5'].byClass[CLASSES.SPLIT], 2);
-  for (const p of Object.values(e.perReference)) assert.equal(p.unresolved14, p.dqK5Exposed - p.confirmedSplit14 - p.confirmedGenuine14);
-  assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 2, 'nur die ungeklaerten Sitzungen werden geschnitten');
+  assert.equal(r.pub.census['DQ-K5'].byClass[CLASSES.SPLIT], 1);
+  for (const p of Object.values(e.perReference)) { assert.equal(p.unresolved14, p.dqK5Exposed - p.confirmedSplit14 - p.confirmedGenuine14); assert.ok(p.confirmedSplit140 >= p.confirmedSplit14); }
+  assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 3, 'nur die ungeklaerten Sitzungen werden geschnitten');
   // public: counts only - no document text, no accession, no CIK, no security id
   const pubText = JSON.stringify(r.pub);
   assert.doesNotMatch(pubText, new RegExp(SECRET, 'i')); assert.doesNotMatch(pubText, /certificate of amendment/i); assert.doesNotMatch(pubText, /0000000002|0000000009-17/); assert.doesNotMatch(pubText, /tiingo:/);
@@ -266,17 +272,19 @@ test('SF7-EDGAR-SCOPE: erwartete Anzahl (83) wird vor jeder Dokumentanfrage gepr
   await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, expectedCount: 83 }), ...W }), /EDGAR_SCOPE_COUNT_MISMATCH: 4 != 83/);
   assert.equal(calls.length, 0, 'keine Anfrage vor der Pruefung');
   // budget exhausted mid-way: the rest stays UNRESOLVED and is reported, no request beyond the budget
-  const tight = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, budget: { ...EDGAR_BUDGET, totalRequests: 2 } });
+  const tight = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, budget: { ...EDGAR_BUDGET, totalRequests: 2 }, extractors: EXTRACTORS });
   const r = await caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client: tight, budget: tight.stats().budget }), ...W });
   assert.equal(calls.length, 2); assert.equal(r.pub.refine.requests.requests, 2);
   assert.ok((r.pub.refine.byReason14.EDGAR_BUDGET_EXHAUSTED ?? 0) >= 1);
   assert.equal(r.pub.refine.byClass14[CLASSES.SPLIT] ?? 0, 1, 'nur die vollstaendig gepruefte Sitzung');
 });
 
-test('SF7-EDGAR-RULESET: Regelsatz 1.4.0 vorregistriert und festgeschrieben; 1.3.0 unveraendert', () => {
-  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
+test('SF7-EDGAR-RULESET: Regelsatz 1.4.1 vorregistriert und festgeschrieben; 1.4.0 eingefroren; 1.3.0 unveraendert', () => {
+  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.1'); assert.equal(V140.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
+  assert.equal(V140.rulesetSha256(), '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd', '1.4.0 (Lauf 40185801366) eingefroren');
+  assert.equal(RULESET.previous.sha256, V140.rulesetSha256());
   assert.ok(Object.isFrozen(RULESET)); assert.ok(Object.isFrozen(RULESET.tolerances)); assert.ok(Object.isFrozen(RULESET.budget));
-  assert.equal(rulesetSha256(), '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz (1.4.1 mit Vorher/Nachher)');
+  assert.equal(rulesetSha256(), '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz (1.4.1 mit Vorher/Nachher)');
   assert.equal(rulesetSha256V130(), '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7'); assert.equal(baseRulesetUnchanged(), true);
 });
 
@@ -295,4 +303,72 @@ test('SF7-EDGAR-FAIL-CLOSED: ohne Snapshot oder research-v1 kein Lauf; Workflow-
   for (const m of y.matchAll(/case "\$MODE" in (sf-research\|[^)]*|methods\|[^)]*)\)/g)) assert.match(m[1], /\|sf7-ca-edgar\|sf7-ca-edgar-smoke\|/, 'Snapshot- und research-v1-Pflicht');
   const r = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-sf7-ca-edgar.mjs'), 'utf8');
   assert.match(r, /requireRestoreReceipt: true/); assert.match(r, /encryptForOwner\(pem, Buffer\.from\(JSON\.stringify\(r\.manifest\)\)\)/);
+});
+
+// ---------------------------------------------------------------------------------------------------- 1.4.1: review of #921
+
+const D23 = Array.from({ length: 40 }, (_, k) => new Date(Date.UTC(2023, 1, 13) + k * 864e5).toISOString().slice(0, 10));
+const raw23 = D23.map((date) => ({ date })), i23 = D23.indexOf('2023-03-03');
+const docAt = (form, filingDate, html) => ({ accessionNumber: `x-${filingDate}`, form, filingDate, extraction: extractStatements(html) });
+
+test('SF7-REVIEW141-R1: Datum nur aus dem Satz des Verhaeltnisses; andere Jahreszahl blockiert; ISO-Datum', () => {
+  const review = '<p>In 2019 we effected a 1-for-10 reverse stock split. Effective March 3, 2023, our shares began trading on Nasdaq.</p>';
+  assert.equal(V140.documentFactor({ docs: [{ ...docAt('8-K', '2023-03-06', review), extraction: V140.extractStatements(review) }], raw: raw23, i: i23 }).ok, true, '1.4.0 bestaetigte den alten Split (Befund)');
+  assert.notEqual(documentFactor({ docs: [docAt('8-K', '2023-03-06', review)], raw: raw23, i: i23 }).ok, true, '1.4.1: kein Faktor');
+  assert.equal(documentFactor({ docs: [docAt('8-K', '2023-03-06', '<p>Following the 2019 offering, we effected a 1-for-10 reverse stock split effective March 3, 2023.</p>')], raw: raw23, i: i23 }).reason, 'DOCUMENT_YEAR_CONFLICT');
+  const iso = documentFactor({ docs: [docAt('8-K', '2023-03-06', '<p>We effected a 1-for-10 reverse stock split, effective 2023-03-03.</p>')], raw: raw23, i: i23 });
+  assert.equal(iso.ok, true); assert.equal(iso.evidence.statedDate, '2023-03-03');
+  const t = documentText('the split was approved by the board of xyz inc. on march 1. the reverse split took effect.');
+  assert.equal(t.slice(...sentenceBounds(t, t.indexOf('board'))), 'the split was approved by the board of xyz inc. on march 1.', 'Abkuerzung beendet keinen Satz');
+});
+
+test('SF7-REVIEW141-R2: Doppelpunkt vor Satzzeichen, "one (1) share for every ten (10) shares", "10-to-1" / "1-to-10 ratio"', () => {
+  const one = (x) => { const m = ratioMentions(documentText(x)).filter((y) => y.splitContext); assert.equal(m.length, 1, x); return m[0].priceFactor; };
+  assert.equal(one('a reverse stock split at a ratio of 1:10.'), 10);
+  assert.equal(one('the reverse split at 1:10, effective march 3, 2023'), 10);
+  assert.equal(one('the reverse split at a ratio of 1:10; the shares'), 10);
+  assert.equal(one('one (1) share for every ten (10) shares of common stock (reverse split)'), 10);
+  assert.equal(one('1 share for every 10 shares held, the reverse split'), 10);
+  assert.equal(one('a 10-to-1 reverse split'), 10);
+  assert.equal(one('a 1-to-10 ratio reverse stock split'), 10);
+  assert.equal(ratioMentions(documentText('the reverse split became effective at 12:01, on march 3')).filter((y) => y.splitContext).length, 0, 'Uhrzeit');
+  // a second ratio in a new phrasing now defeats a confirmation (conflict check)
+  const a = docAt('8-K', '2023-03-06', '<p>We effected a 1-for-10 reverse stock split effective March 3, 2023.</p>'), b = docAt('10-Q', '2023-04-20', '<p>Share data reflect the reverse stock split at a ratio of 1:12.</p>');
+  assert.equal(documentFactor({ docs: [a, b], raw: raw23, i: i23 }).reason, 'DOCUMENT_CONFLICTING_RATIOS');
+});
+
+test('SF7-REVIEW141-R3: Auswahlliste "1-for-5, 1-for-10 or 1-for-15" ist eine Spanne', () => {
+  const st = extractStatements('<p>to approve a reverse stock split at a ratio of 1-for-5, 1-for-10 or 1-for-15, effective March 3, 2023.</p>').statements;
+  assert.equal(st.length, 3); assert.ok(st.every((x) => x.range));
+  assert.equal(V140.extractStatements('<p>to approve a reverse stock split at a ratio of 1-for-5, 1-for-10 or 1-for-15.</p>').statements[0].range, false, '1.4.0: 1-for-5 galt als Verhaeltnis (Befund)');
+  assert.equal(documentFactor({ docs: [docAt('8-K', '2023-03-06', '<p>The board approved a reverse stock split at a ratio of 1-for-5, 1-for-10 or 1-for-15, effective March 3, 2023.</p>')], raw: raw23, i: i23 }).reason, 'DOCUMENT_RANGE_ONLY');
+});
+
+test('SF7-REVIEW141-R4: +-2 Sitzungen auf dem Snapshot-Kalender, nicht auf den Balken des Listings', () => {
+  // the listing lacks two calendar sessions (no trade) before d: on its own bars 2023-02-28 is 2 bars away, on the calendar 4
+  const listing = raw23.filter((b) => b.date !== '2023-03-01' && b.date !== '2023-03-02'), il = listing.findIndex((b) => b.date === '2023-03-03');
+  const docs = [docAt('8-K', '2023-03-06', '<p>We effected a 1-for-10 reverse stock split effective February 27, 2023.</p>')];
+  assert.equal(V140.documentFactor({ docs: [{ ...docs[0], extraction: V140.extractStatements('<p>We effected a 1-for-10 reverse stock split effective February 27, 2023.</p>') }], raw: listing, i: il }).ok, true, '1.4.0 zaehlte Balken (Befund)');
+  assert.equal(documentFactor({ docs, raw: listing, i: il, calendar: D23 }).reason, 'DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW');
+});
+
+test('SF7-REVIEW141-R5: mehr Kandidaten als die Obergrenze oder ein gekuerztes Dokument -> unvollstaendig', () => {
+  const ok = [docAt('8-K', '2023-03-06', '<p>We effected a 1-for-10 reverse stock split effective March 3, 2023.</p>')];
+  assert.equal(documentFactor({ docs: ok, raw: raw23, i: i23 }).ok, true);
+  assert.equal(documentFactor({ docs: ok, raw: raw23, i: i23, incompleteReason: 'DOCUMENT_CAP_EXCEEDED' }).reason, 'DOCUMENT_CAP_EXCEEDED');
+  const long = extractStatements('<p>We effected a 1-for-10 reverse stock split effective March 3, 2023.</p>' + ' x'.repeat(40), { ...DOC_TOLERANCES, maxDocChars: 80 });
+  assert.equal(long.truncated, true);
+  const df = documentFactor({ docs: [{ ...ok[0], extraction: long }], raw: raw23, i: i23 });
+  assert.equal(df.reason, 'DOCUMENT_TRUNCATED'); assert.equal(groundTruthLabel(df), 'INCOMPLETE');
+});
+
+test('SF7-REVIEW141-R6: Optionsschein-, Wandlungs-, Ausuebungs- und Umtauschverhaeltnisse sind kein Split-Verhaeltnis', () => {
+  for (const x of ['the exercise price of the warrants was adjusted for the 1-for-10 reverse stock split effective march 3, 2023.', 'each share of convertible preferred stock is convertible into 1-for-10 shares after the reverse split effective march 3, 2023.', 'the conversion rate was adjusted to reflect the 1-for-10 reverse split effective march 3, 2023.', 'the exchangeable shares were adjusted for the 1-for-10 reverse split effective march 3, 2023.']) {
+    const e = extractStatements(`<p>${x}</p>`); assert.equal(e.statements.length, 0, x); assert.ok(e.instrumentExcluded >= 1, x);
+  }
+});
+
+test('SF7-REVIEW141-R7: gemeinsam eingereichte Dokumente (mehrere CIKs) sind als Grenze dokumentiert', () => {
+  assert.ok(RULESET.review141.includes('R7-JOINT-FILER-LIMIT-DOCUMENTED'));
+  assert.match(fs.readFileSync(path.join(ROOT, 'docs/SUPERTRADER_7_EDGAR_CA_CHECK.md'), 'utf8'), /gemeinsam eingereicht/i);
 });

@@ -1,5 +1,16 @@
 /**
- * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.0 (owner decision E7-1, 25.10.2026): a targeted, free, throttled
+ * Supertrader 7.0 – V4-D1 resolution, rule set 1.4.1 (owner decision E7-1, 25.10.2026). 1.4.1 closes the parser gaps of
+ * the independent code review of #921 - the reason is the review, not a result; 1.4.0 stays frozen in ca-edgar-1.4.0.mjs:
+ *  R1 effective dates only from the SENTENCE of the ratio; any other year in that sentence blocks; ISO dates; a sentence
+ *     dated only by bare years is historical when they lie outside the statement window;
+ *  R2 colon ratio before [.,;], 'one (1) share for every ten (10) shares', '10-to-1' / '1-to-10 ratio';
+ *  R3 a comma chain of ratios ending in or / and is a choice list (range, no factor);
+ *  R4 the +-2 sessions are counted on the snapshot trading calendar;
+ *  R5 more candidate documents than the cap, or a truncated document, make the session incomplete (UNRESOLVED);
+ *  R6 a sentence with warrant / convertible / conversion / exercise / exchangeable wording is not a split statement;
+ *  R7 jointly filed documents (several filer CIKs) cannot be seen in the submissions index: documented limit.
+ *
+ * Rule set 1.4.0 text (unchanged where not listed above):: a targeted, free, throttled
  * EDGAR check of the reference-exposed, still UNRESOLVED DQ-K5 sessions of rule set 1.3.0.
  *
  * 1.4.0 = 1.3.0 (integrity/ca-resolution.mjs, UNCHANGED, hash 08d8a6ec... pinned) plus exactly ONE new factor-bearing
@@ -37,8 +48,10 @@ import { fin } from '../common/series.mjs';
 import { sessionRatio } from './discontinuity.mjs';
 import { CLASSES, TOLERANCES, FACTOR_GRID, MERGER_FORMS, SPLIT_BLOCKING_8K_ITEMS, snapFactor, gridLogGap, ratioLabel, volumeRelative, adjCloseImplied, rulesetSha256 as rulesetSha256V130, CA_RESOLUTION_VERSION as V130 } from './ca-resolution.mjs';
 
-export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.0';
-export const DOC_PARSER_VERSION = 'sf7-edgar-ratio-parser-1.0.0';
+export const CA_EDGAR_VERSION = 'sf7-ca-resolution-1.4.1';
+export const DOC_PARSER_VERSION = 'sf7-edgar-ratio-parser-1.1.0';
+/** The frozen predecessor (ca-edgar-1.4.0.mjs, run 40185801366). */
+export const PREVIOUS_RULESET = Object.freeze({ version: 'sf7-ca-resolution-1.4.0', sha256: '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd' });
 /** The 1.3.0 rule set this layer extends (pinned in a test; ca-resolution.mjs stays byte-for-byte as in run 40122736287). */
 export const BASE_RULESET = Object.freeze({ version: V130, sha256: '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7' });
 
@@ -76,9 +89,11 @@ export const DOC_PATH_REASONS = Object.freeze({
  *  otherFlagSessions   path B: no other flag of the listing within +-10 sessions;
  *  conflictMaxSmall    an off-grid ratio with its smaller side <= 10 and larger side <= 1000 counts as a conflicting
  *                      ratio (5-for-4); larger numbers (vote counts) are not ratios;
- *  maxDocChars         at most 15 000 000 characters of one document are parsed (truncation recorded).
+ *  maxDocChars         at most 15 000 000 characters of one document are parsed (truncation recorded);
+ *  colonKeywordLeadChars (1.4.1) a colon ratio also counts with a split keyword up to 60 characters before it;
+ *  incompleteOnCapOrTruncation (1.4.1) more candidates than docRequestsPerSession or a truncated document -> incomplete.
  */
-export const DOC_TOLERANCES = Object.freeze({ effectiveSessions: 2, filingWindowDays: Object.freeze([-90, 100]), statementDays: 135, keywordChars: 150, passageChars: 300, effectiveDateChars: 80, directionChars: Object.freeze([80, 40]), rangeLeadChars: 60, rangeJoinChars: 30, otherFlagSessions: 10, conflictMaxSmall: 10, conflictMaxLarge: 1000, maxDocChars: 15000000 });
+export const DOC_TOLERANCES = Object.freeze({ effectiveSessions: 2, filingWindowDays: Object.freeze([-90, 100]), statementDays: 135, keywordChars: 150, passageChars: 300, effectiveDateChars: 80, directionChars: Object.freeze([80, 40]), rangeLeadChars: 60, rangeJoinChars: 30, otherFlagSessions: 10, conflictMaxSmall: 10, conflictMaxLarge: 1000, maxDocChars: 15000000, colonKeywordLeadChars: 60, incompleteOnCapOrTruncation: true });
 /**
  * Hard, pre-registered request budget (enforced fail-closed by the EDGAR client): sequential requests, at most 2 per
  * second, 30 s timeout, at most 600 requests per run (the 1.3.0 index lookups included), at most 6 document requests per
@@ -90,16 +105,22 @@ export const SMOKE_BUDGET = Object.freeze({ ...EDGAR_BUDGET, totalRequests: 60 }
 export const SPLIT_KEYWORDS = /\b(?:reverse\s+(?:stock\s+|share\s+)?split|stock\s+split|share\s+split|forward\s+(?:stock\s+)?split|split-adjusted|share\s+consolidation|reverse\s+split|split)\b/g;
 export const RANGE_WORDS = /\b(?:between|range|ranging|ranges|not\s+less\s+than|not\s+more\s+than|no\s+less\s+than|no\s+more\s+than|up\s+to|not\s+to\s+exceed|not\s+exceeding|maximum|minimum|at\s+least|any\s+whole\s+number|within)\b/;
 export const EFFECTIVE_WORDS = /\b(?:effective|effected|effectuated|became\s+effective|becomes\s+effective|begin\s+trading|begins\s+trading|began\s+trading|commence\s+trading|commenced\s+trading|split-adjusted\s+basis|market\s+open|opening\s+of\s+(?:the\s+)?(?:market|trading)|effective\s+time)\b/;
+/** 1.4.1 (R6): sentences about warrants, conversions, exercises or exchangeable instruments carry no split ratio. */
+export const INSTRUMENT_WORDS = /\b(?:warrants?|convertible|conversion|convert(?:ed|s)?\s+into|exercise[ds]?|exercisable|exchangeable)\b/;
+/** 1.4.1 (R1): a '. ' after these tokens does not end a sentence. */
+export const SENTENCE_ABBREVIATIONS = Object.freeze(['inc', 'corp', 'co', 'ltd', 'llc', 'no', 'nos', 'u.s', 'mr', 'ms', 'dr', 'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec', 'approx', 'e.g', 'i.e', 'vs', 'st', 'p.m', 'a.m']);
 export const MERGER_WORDS = /\b(?:merger|exchange\s+offer|exchange\s+ratio|business\s+combination|amalgamation|plan\s+of\s+arrangement|tender\s+offer)\b/;
 const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
 export const NUMBER_WORDS = Object.freeze([...ONES, ...TENS.filter(Boolean), 'hundred', 'thousand']);
 
-/** The full 1.4.0 rule set (its SHA-256 is pinned in a test; any change is a new version 1.4.1 with before / after). */
+/** The full 1.4.1 rule set (its SHA-256 is pinned in a test; any change is a new version with before / after). */
 export const RULESET = Object.freeze({
   version: CA_EDGAR_VERSION, base: BASE_RULESET, parser: DOC_PARSER_VERSION, postEventForms: POST_EVENT_FORMS, contextForms: CONTEXT_FORMS, conflictForms: DOC_CONFLICT_FORMS,
   priority: DOC_PRIORITY, docPathReasons: DOC_PATH_REASONS, tolerances: DOC_TOLERANCES, budget: EDGAR_BUDGET, smokeBudget: SMOKE_BUDGET,
   splitKeywords: SPLIT_KEYWORDS.source, rangeWords: RANGE_WORDS.source, effectiveWords: EFFECTIVE_WORDS.source, mergerWords: MERGER_WORDS.source, numberWords: NUMBER_WORDS,
+  previous: PREVIOUS_RULESET, instrumentWords: INSTRUMENT_WORDS.source, sentenceAbbreviations: SENTENCE_ABBREVIATIONS,
+  review141: Object.freeze(['R1-SENTENCE-DATES-YEAR-CONFLICT-ISO', 'R2-COLON-PUNCT-SHARE-FOR-EVERY-TO', 'R3-CHOICE-LIST-RANGE', 'R4-SNAPSHOT-CALENDAR', 'R5-CAP-TRUNCATION-INCOMPLETE', 'R6-INSTRUMENT-WORDING', 'R7-JOINT-FILER-LIMIT-DOCUMENTED']),
 });
 export const rulesetSha256 = () => crypto.createHash('sha256').update(JSON.stringify(RULESET)).digest('hex');
 /** The 1.3.0 rule set must be exactly the one this layer was registered on. */
@@ -151,11 +172,16 @@ const WORD = `(?:${[...NUMBER_WORDS].sort((a, b) => b.length - a.length).join('|
 const NUM = `(?:\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\\d+)?|\\b${WORD}(?:[\\s-]+(?:(?<=hundred[\\s-]+)and[\\s-]+)?${WORD}\\b)*)`;
 const PAREN = `(?:\\s*\\(\\s*\\d+(?:\\.\\d+)?\\s*\\))?`;
 const RE_FOR = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}\\s*[-\\s]\\s*for\\s*[-\\s]\\s*(${NUM})\\b${PAREN}`, 'g');
-const RE_COLON = /(?<![\w.,:])(\d{1,4})\s*:\s*(\d{1,4})(?![\w.,:])/g;
+// 1.4.1 (R2): a colon ratio may be followed by . , ; (not by a digit: 1:10.5 stays excluded)
+const RE_COLON = /(?<![\w.,:])(\d{1,4})\s*:\s*(\d{1,4})(?![\w:]|[.,;]\d)/g;
+const RE_TO = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}(?:\\s*-\\s*to\\s*-\\s*(${NUM})\\b${PAREN}|\\s+to\\s+(${NUM})\\b${PAREN}(?=\\s+(?:ratio|reverse|forward|stock\\s+split|split)))`, 'g');
+const RE_SHARE_FOR_EVERY = new RegExp(`(?<![\\w.,])(${NUM})${PAREN}\\s+(?:(?:new|post-split|fully|paid|validly|issued|and|non-assessable|nonassessable)[\\s,-]+)*shares?\\b(?:\\s+of\\s+[a-z ,.'-]{0,60}?)?\\s+for\\s+(?:each|every)\\s+(${NUM})${PAREN}\\s+(?:(?:old|pre-split|existing|issued|and|outstanding)\\s+)*shares?\\b`, 'g');
 const RE_EACH = new RegExp(`\\b(?:each|every)\\s+(?:(${NUM})${PAREN}\\s+)?(?:(?:issued|and|outstanding|pre-split|old|existing|shares?\\s+of)\\s+)*shares?\\b[^.;]{0,160}?\\b(?:into|for)\\s+(${NUM})${PAREN}\\s+(?:(?:new|post-split|fully|paid|validly|issued|and|non-assessable|nonassessable|outstanding)[\\s,-]+)*shares?\\b`, 'g');
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 const RE_DATE_LONG = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/g;
 const RE_DATE_NUM = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
+const RE_DATE_ISO = /\b(\d{4})-(\d{2})-(\d{2})\b/g;
+const RE_YEAR = /\b(19[5-9]\d|20\d\d)\b/g;
 const isoDate = (y, m, d) => { const s = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, t = Date.parse(`${s}T00:00:00Z`); return Number.isFinite(t) && new Date(t).toISOString().slice(0, 10) === s ? s : null; };
 
 /** Every date in the text with its position. */
@@ -163,6 +189,7 @@ export function findDates(text) {
   const out = [];
   for (const m of text.matchAll(RE_DATE_LONG)) { const s = isoDate(Number(m[3]), MONTHS[m[1].slice(0, 3)], Number(m[2])); if (s) out.push({ pos: m.index, date: s }); }
   for (const m of text.matchAll(RE_DATE_NUM)) { const s = isoDate(Number(m[3]), Number(m[1]), Number(m[2])); if (s) out.push({ pos: m.index, date: s }); }
+  for (const m of text.matchAll(RE_DATE_ISO)) { const s = isoDate(Number(m[1]), Number(m[2]), Number(m[3])); if (s) out.push({ pos: m.index, date: s }); }
   return out.sort((a, b) => a.pos - b.pos);
 }
 
@@ -178,10 +205,14 @@ export function ratioMentions(text, tol = DOC_TOLERANCES) {
   for (const m of text.matchAll(RE_FOR)) push(m.index, m.index + m[0].length, parseNumber(m[1]), parseNumber(m[2]), 'FOR');
   for (const m of text.matchAll(RE_COLON)) {
     const end = m.index + m[0].length, after = text.slice(end, end + 40), before = text.slice(Math.max(0, m.index - 20), m.index);
-    if (/^\s*(?:a\.?\s?m\b|p\.?\s?m\b|hours?\b)/.test(after)) continue;
-    if (!(/^\W{0,3}(?:\w+\W+){0,2}(?:reverse|forward|stock\s+split|share\s+split|split|share\s+consolidation)/.test(after) || /ratio\s+of\s*$/.test(before))) continue;
+    // times: minutes with a leading zero (12:01, 5:00) or followed by a.m. / p.m. / on / eastern / ET / New York
+    if (/^0/.test(m[2]) || /^[\s,]*(?:a\.?\s?m\b|p\.?\s?m\b|hours?\b|on\b|eastern\b|e\.?[sd]?t\b|new\s+york\b)/.test(after)) continue;
+    const lead = text.slice(Math.max(0, m.index - tol.colonKeywordLeadChars), m.index);
+    if (!(/^\W{0,3}(?:\w+\W+){0,2}(?:reverse|forward|stock\s+split|share\s+split|split|share\s+consolidation)/.test(after) || /ratio\s+of\s*$/.test(before) || new RegExp(SPLIT_KEYWORDS.source).test(lead))) continue;
     push(m.index, end, Number(m[1]), Number(m[2]), 'COLON');
   }
+  for (const m of text.matchAll(RE_TO)) push(m.index, m.index + m[0].length, parseNumber(m[1]), parseNumber(m[2] ?? m[3]), 'TO');
+  for (const m of text.matchAll(RE_SHARE_FOR_EVERY)) push(m.index, m.index + m[0].length, parseNumber(m[1]), parseNumber(m[2]), 'SHARE_FOR_EVERY');
   for (const m of text.matchAll(RE_EACH)) push(m.index, m.index + m[0].length, parseNumber(m[2]), m[1] === undefined ? 1 : parseNumber(m[1]), 'EACH_INTO');
   // a FOR match inside an EACH_INTO match (or the reverse) is one mention: keep the first-starting, longest
   raw.sort((a, b) => a.pos - b.pos || b.end - a.end);
@@ -197,6 +228,18 @@ export function ratioMentions(text, tol = DOC_TOLERANCES) {
     const gap = text.slice(ms[k].end, ms[k + 1].pos);
     if (gap.length <= tol.rangeJoinChars && /^[\s,]*(?:and|to|through|or|-)[\s,]*(?:(?:a|an)\s+)?(?:ratio\s+of\s+)?$/.test(gap)) ms[k].range = ms[k + 1].range = true;
   }
+  // 1.4.1 (R3): a chain 'r1, r2, ... or / and rn' (comma gaps, at least one and / or) is a choice list: every member is a range bound
+  for (let k = 0; k < ms.length;) {
+    let e = k, joined = false;
+    while (e + 1 < ms.length) {
+      const gap = text.slice(ms[e].end, ms[e + 1].pos);
+      if (!(gap.length <= tol.rangeJoinChars && /^[\s,]*(?:(?:and|or)[\s,]*)?(?:(?:a|an)\s+)?(?:ratio\s+of\s+)?$/.test(gap) && /,|\b(?:and|or)\b/.test(gap))) break;
+      if (/\b(?:and|or)\b/.test(gap)) joined = true;
+      e++;
+    }
+    if (e > k && joined) for (let x = k; x <= e; x++) ms[x].range = true;
+    k = e + 1;
+  }
   return ms;
 }
 
@@ -205,6 +248,18 @@ export function gridFactor(c) {
   if (!(fin(c) && c > 0)) return null;
   const g = c >= 1 ? c : 1 / c, hit = FACTOR_GRID.find((x) => Math.abs(x - g) < 1e-9 * Math.max(1, g));
   return hit === undefined ? null : c >= 1 ? hit : 1 / hit;
+}
+/** 1.4.1 (R1): bounds [a, b) of the sentence around [pos, end): '.', ';', '!' or '?' before whitespace ends it, except after an abbreviation. */
+export function sentenceBounds(text, pos, end = pos) {
+  const isEnd = (k) => {
+    if (!/[.;!?]/.test(text[k] ?? '') || !/\s/.test(text[k + 1] ?? ' ')) return false;
+    if (text[k] !== '.') return true;
+    const w = text.slice(Math.max(0, k - 8), k).match(/([a-z.]+)$/);
+    return !(w && SENTENCE_ABBREVIATIONS.includes(w[1].replace(/^\.+/, '')));
+  };
+  let a = pos; while (a > 0 && !isEnd(a - 1)) a--;
+  let b = end; while (b < text.length && !isEnd(b)) b++;
+  return [a, Math.min(text.length, b + 1)];
 }
 const passageOf = (text, m) => {
   const a = Math.max(text.lastIndexOf('. ', m.pos) + 2, m.pos - 300), bIdx = text.indexOf('. ', m.end), b = bIdx < 0 ? Math.min(text.length, m.end + 300) : Math.min(bIdx + 1, m.end + 300);
@@ -218,19 +273,23 @@ const passageOf = (text, m) => {
 export function extractStatements(html, tol = DOC_TOLERANCES) {
   const full = documentText(html), truncated = full.length > tol.maxDocChars, text = truncated ? full.slice(0, tol.maxDocChars) : full;
   const dates = findDates(text), ms = ratioMentions(text, tol);
-  const statements = [];
+  const statements = []; let instrumentExcluded = 0;
   for (const m of ms) {
     if (!m.splitContext) continue;
     const lo = m.pos - tol.passageChars, hi = m.end + tol.passageChars, around = text.slice(Math.max(0, lo), hi);
     const g = gridFactor(m.priceFactor), small = Math.min(m.newN, m.oldN), large = Math.max(m.newN, m.oldN);
     const isRatio = g !== null || (small <= tol.conflictMaxSmall && large <= tol.conflictMaxLarge);
     if (!isRatio) continue;
-    const near = dates.filter((x) => x.pos >= lo && x.pos <= hi), eff = [...around.matchAll(new RegExp(EFFECTIVE_WORDS.source, 'g'))].map((x) => [Math.max(0, lo) + x.index, Math.max(0, lo) + x.index + x[0].length]);
+    // 1.4.1 (R1, R6): dates, years, effective and instrument wording from the SENTENCE of the ratio only
+    const [sa, sb] = sentenceBounds(text, m.pos, m.end), sentence = text.slice(sa, sb);
+    if (INSTRUMENT_WORDS.test(sentence)) { instrumentExcluded++; continue; }
+    const near = dates.filter((x) => x.pos >= sa && x.pos < sb), eff = [...sentence.matchAll(new RegExp(EFFECTIVE_WORDS.source, 'g'))].map((x) => [sa + x.index, sa + x.index + x[0].length]);
     const effectiveDates = near.filter((x) => eff.some(([a, b]) => x.pos >= a - tol.effectiveDateChars && x.pos <= b + tol.effectiveDateChars)).map((x) => x.date);
-    statements.push({ kind: m.kind, factor: g, offGrid: g === null, label: g !== null ? ratioLabel(g) : `${m.newN}-for-${m.oldN}`, range: m.range, dates: near.map((x) => x.date), effectiveDates, effective: eff.length > 0, merger: MERGER_WORDS.test(around), passageSha256: sha(passageOf(text, m)) });
+    const years = [...new Set([...sentence.matchAll(RE_YEAR)].map((x) => Number(x[1])))].sort();
+    statements.push({ kind: m.kind, factor: g, offGrid: g === null, label: g !== null ? ratioLabel(g) : `${m.newN}-for-${m.oldN}`, range: m.range, dates: near.map((x) => x.date), years, effectiveDates, effective: eff.length > 0, merger: MERGER_WORDS.test(around), passageSha256: sha(sentence) });
   }
   const kw = text.match(new RegExp(SPLIT_KEYWORDS.source, 'g'));
-  return { parser: DOC_PARSER_VERSION, chars: full.length, truncated, textSha256: sha(full), splitKeywordHits: kw ? kw.length : 0, statements };
+  return { parser: DOC_PARSER_VERSION, chars: full.length, truncated, textSha256: sha(full), splitKeywordHits: kw ? kw.length : 0, instrumentExcluded, statements };
 }
 
 // ---------------------------------------------------------------------------------------------------- document choice
@@ -252,22 +311,27 @@ export function selectDocuments(index, d, tol = DOC_TOLERANCES) {
   return out.sort((a, b) => a.cls - b.cls || a.dist - b.dist || (a.accessionNumber < b.accessionNumber ? -1 : 1));
 }
 
-/** First session index on / after date s (null beyond the data). */
-const sessionOnOrAfter = (raw, s) => { const k = raw.findIndex((b) => b.date >= s); return k < 0 ? null : k; };
+/** 1.4.1 (R4): index of the first snapshot trading session on / after date s (null beyond the calendar). */
+const sessionOnOrAfter = (calendar, s) => { const k = calendar.findIndex((x) => x >= s); return k < 0 ? null : k; };
 
 /**
  * The document answer for session i (date d) of raw bars: the one ratio the documents of the CIK state, with the
  * statement that dates it within +-effectiveSessions of d; or a reason why there is none. docs: [{ accessionNumber,
  * form, filingDate, extraction }]. complete: all selected documents were read (budget not cut).
  */
-export function documentFactor({ docs, raw, i, complete = true, tol = DOC_TOLERANCES }) {
+export function documentFactor({ docs, raw, i, calendar = null, complete = true, incompleteReason = null, tol = DOC_TOLERANCES }) {
   const d = raw[i].date, lo = addDays(d, tol.filingWindowDays[0]), hi = addDays(d, tol.filingWindowDays[1]);
   const inWin = (docs || []).filter((x) => x.filingDate >= lo && x.filingDate <= hi && x.extraction);
   const all = inWin.flatMap((x) => x.extraction.statements.map((s) => ({ ...s, accessionNumber: x.accessionNumber, form: x.form, filingDate: x.filingDate })));
-  const relevant = all.filter((s) => !s.range && (!s.dates.length || s.dates.some((y) => Math.abs(daysBetween(d, y)) <= tol.statementDays)));
+  // 1.4.1 (R1): a statement dated only by bare years is relevant when one of them lies in the statement window
+  const yLo = Number(addDays(d, -tol.statementDays).slice(0, 4)), yHi = Number(addDays(d, tol.statementDays).slice(0, 4));
+  const relevant = all.filter((s) => !s.range && (s.dates.length ? s.dates.some((y) => Math.abs(daysBetween(d, y)) <= tol.statementDays) : !(s.years || []).length || s.years.some((y) => y >= yLo && y <= yHi)));
   const ev = { documentsRead: inWin.length, statements: all.length, rangeStatements: all.filter((s) => s.range).length, relevantStatements: relevant.length };
   const out = (reason, more = {}) => ({ ok: false, reason, evidence: { ...ev, ...more } });
   if (!complete) return out('EDGAR_BUDGET_EXHAUSTED');
+  // 1.4.1 (R5): more candidates than the cap, or a truncated document: a conflicting ratio may be unread
+  if (incompleteReason) return out(incompleteReason);
+  if (inWin.some((x) => x.extraction.truncated)) return out('DOCUMENT_TRUNCATED');
   if (relevant.some((s) => s.merger)) return out('DOCUMENT_MERGER_CONTEXT');
   if (!relevant.length) return out(all.some((s) => s.range) ? 'DOCUMENT_RANGE_ONLY' : inWin.some((x) => x.extraction.splitKeywordHits > 0) ? 'DOCUMENT_NO_RATIO' : 'NO_SPLIT_DOCUMENT_FOUND');
   const labels = [...new Set(relevant.map((s) => s.label))];
@@ -275,12 +339,16 @@ export function documentFactor({ docs, raw, i, complete = true, tol = DOC_TOLERA
   const s0 = relevant[0];
   if (s0.offGrid) return out('DOCUMENT_RATIO_NOT_ON_GRID');
   const c = s0.factor;
-  const inSessions = (y) => { const k = sessionOnOrAfter(raw, y); return k !== null && Math.abs(k - i) <= tol.effectiveSessions; };
+  const cal = calendar || raw.map((b) => b.date), di = cal.indexOf(d);
+  if (di < 0) return out('SESSION_NOT_IN_CALENDAR');
+  const inSessions = (y) => { const k = sessionOnOrAfter(cal, y); return k !== null && Math.abs(k - di) <= tol.effectiveSessions; };
   const dated = relevant.filter((s) => POST_EVENT_FORMS.includes(s.form) && s.effectiveDates.some(inSessions));
   if (!dated.length) {
     const reason = relevant.every((s) => CONTEXT_FORMS.includes(s.form)) ? 'DOCUMENT_PROXY_ONLY' : relevant.some((s) => s.effectiveDates.length) ? 'DOCUMENT_EFFECTIVE_DATE_OUTSIDE_WINDOW' : 'DOCUMENT_NO_EFFECTIVE_DATE';
     return out(reason, { factor: c, label: ratioLabel(c) });
   }
+  // 1.4.1 (R1): any other year in the sentence of a confirming statement is a conflicting date
+  if (dated.some((s) => { const y = Number(s.effectiveDates.find(inSessions).slice(0, 4)); return (s.years || []).some((x) => x !== y); })) return out('DOCUMENT_YEAR_CONFLICT', { factor: c, label: ratioLabel(c) });
   const best = dated.sort((a, b) => POST_EVENT_FORMS.indexOf(a.form) - POST_EVENT_FORMS.indexOf(b.form) || (a.filingDate < b.filingDate ? -1 : 1))[0];
   const statedDate = best.effectiveDates.find(inSessions);
   return { ok: true, factor: c, label: ratioLabel(c), evidence: { ...ev, factor: c, label: ratioLabel(c), accessionNumber: best.accessionNumber, form: best.form, filingDate: best.filingDate, statedDate, passageSha256: best.passageSha256, confirmingStatements: dated.length } };
@@ -292,6 +360,7 @@ export function groundTruthLabel(df) {
   if (df.ok) return df.factor > 1 ? 'REVERSE_SPLIT_DOCUMENTED' : 'FORWARD_SPLIT_DOCUMENTED';
   if (df.reason === 'NO_SPLIT_DOCUMENT_FOUND') return 'NO_SPLIT_DOCUMENT_FOUND';
   if (df.reason === 'EDGAR_BUDGET_EXHAUSTED') return 'NOT_CHECKED';
+  if (df.reason === 'DOCUMENT_CAP_EXCEEDED' || df.reason === 'DOCUMENT_TRUNCATED') return 'INCOMPLETE';
   if (df.reason === 'DOCUMENT_CONFLICTING_RATIOS' || df.reason === 'DOCUMENT_RANGE_ONLY' || df.reason === 'DOCUMENT_MERGER_CONTEXT') return 'AMBIGUOUS';
   return 'UNCLEAR';
 }
