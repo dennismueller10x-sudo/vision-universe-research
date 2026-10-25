@@ -12,12 +12,16 @@
  * variants) and two stratified equal-fraction samples (year x liquidity [x SPY regime]). PS additionally reports the
  * overlap variant ONE_POSITION_PER_TICKER and the shorts open at the data end. --cache-only skips both fetch loops
  * (zero requests, asserted) and evaluates the existing private cache.
+ * Owner decision E7-6 (research/kk-sample-ext-e7-6.mjs): --ext-e7-6 [--count-only] plans (and once fetches) the
+ * pre-registered extension CLEAN_EXT_E7_6, at most 550 requests, fail closed, into SEPARATE private cache objects; every
+ * evaluation run computes the reference day sets from the reference cache only and adds CLEAN_EXT_E7_6 beside them.
  * Public (repository log): candidate counts per year, fetch coverage, statuses, trade and exit-reason counts, hashes.
  * Sealed (owner key): metrics and trade lists. Minute values never leave the sealed file and the private cache
  * (internal, non-displaying use).
  *
  *   node scripts/supertrader/source-faithful/research/run-kk-intraday.mjs --snapshot sts1-<id> --accounting research-v1 \
  *        --out <dir> [--max-requests 6000] [--count-only | --cache-only] [--limit 400 --smoke-snapshot]
+ *        [--ext-e7-6 [--count-only]]   (E7-6: plan with 0 requests, or the one capped extension fetch; no evaluation)
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,12 +38,13 @@ import { toSession, compactSession, expandSession, tickerOf, KK_INTRADAY_VERSION
 import { KK_EP_ADAPTER, EP_RUN_VARIANTS, EP_REFERENCE_CONFIG, EP_FIRST_INTRADAY_DATE, epChartCandidate, epVariantRegistrySha256, KK_EP_LIFECYCLE_VERSION, IEX_BASELINE_SESSIONS, IEX_BASELINE_MIN_DAYS } from './kk-ep-lifecycle.mjs';
 import { PS_RUN_VARIANTS, PS_FIRST_INTRADAY_DATE, PS_OVERLAP_POLICIES, psChartCandidate, evaluatePsCandidates, psTradeMetrics, psVariantRegistrySha256, KK_PS_STUDY_VERSION } from './kk-ps-study.mjs';
 import { SF7_EP_VARIANTS, SF7_EP_EXECUTION_VERSION, sf7EpExecutionVariantsSha256 } from './sf7-ep-execution-variants.mjs';
+import { KK_EXT_E7_6_VERSION, EXT_E7_6_ID, EXT_E7_6_REQUEST_CAP, EXT_E7_6_TARGETS, kkExtE76RegistrySha256, extPopulation, extTargets, planExtension, runExtFetch, extDaySets } from './kk-sample-ext-e7-6.mjs';
 import { KK_SAMPLE_VERSION, STRATA_SCHEMES, STRATA_MIN_POPULATION, OUTSIDE_DAY_SET, hashOrder, median, cleanPrefix, epCommonDaySet, regimeByDate, strataFeatures, stratumOf, stratifiedSample, kkSampleRegistrySha256 } from './kk-sample.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.3.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2); 1.3.0 (7.0): SF7 EP variant (SF7-D5)
-export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'run-kk-intraday.mjs', 'sf7-ep-execution-variants.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
+export const KK_RUNNER_VERSION = 'kk-intraday-runner-1.4.0'; // 1.2.0 (Supertrader 6.0): clean day sets, strata, --cache-only; 1.2.1 (7.0): sealed EP trade-level pnl (SF7-D2); 1.3.0 (7.0): SF7 EP variant (SF7-D5); 1.4.0 (E7-6): extension sample CLEAN_EXT_E7_6
+export const KK_RESEARCH_FILES = Object.freeze(['kk-intraday.mjs', 'kk-ep-lifecycle.mjs', 'kk-ps-study.mjs', 'kk-sample.mjs', 'kk-sample-ext-e7-6.mjs', 'run-kk-intraday.mjs', 'sf7-ep-execution-variants.mjs', 'lifecycle-engine.mjs', 'minervini-execution.mjs', '../methods/kullamagi.mjs', '../common/series.mjs', '../runner/metrics.mjs']);
 export const DEFAULT_MAX_REQUESTS = 6000, MAX_REQUESTS_CAP = 6000; // per run, every HTTP attempt counts; the cache resumes
 export const EP_BUDGET_SHARE = 2 / 3; // EP (baseline + minutes per day) first, the rest to PS; EP leftovers go to PS
 // Phase 1b (run 39933893419): resampleFreq=1day is rejected (400), 4hour returns one bar set per session with IEX volume
@@ -47,6 +52,11 @@ export const BASELINE_FREQS = Object.freeze(['4hour', '1hour']);
 export const CACHE_SHARDS = 16; // shard = first hex digit of sha256(key); each shard is one private gzip JSON object
 // the baseline value depends on its rule (sessions, minimum days): the rule is part of the key, so a new rule never reuses old means
 export const cacheKey = (kind, shard) => `_validation/kk-epps-v2/${kind === 'baseline' ? `baseline-s${IEX_BASELINE_SESSIONS}m${IEX_BASELINE_MIN_DAYS}` : kind}-${shard}.json.gz`;
+// E7-6: the extension never writes the reference cache objects above (reference day sets stay byte-identical)
+export const extCacheKey = (kind, shard) => `_validation/kk-epps-v2/ext-e7-6/${kind === 'baseline' ? `baseline-s${IEX_BASELINE_SESSIONS}m${IEX_BASELINE_MIN_DAYS}` : kind}-${shard}.json.gz`;
+export const EXT_LEDGER_KEY = '_validation/kk-epps-v2/ext-e7-6/ledger.json'; // written before the first request: a second fetch is refused
+/** E7-6 fetch guard (fail closed): only without a ledger, i.e. never a second time. */
+export function assertExtFetchAllowed(ledger) { if (ledger) throw new Error(`EXT_E7_6_ALREADY_FETCHED (${ledger.status ?? 'UNKNOWN'}, run ${ledger.runId ?? '?'})`); }
 export const CHECKPOINT_REQUESTS = 2000; // shards are rewritten every 2000 requests and at the end (each write re-reads the shard)
 export const shardOf = (key) => crypto.createHash('sha256').update(key).digest('hex')[0];
 export function kkResearchCodeSha256() {
@@ -209,8 +219,9 @@ async function main() {
   if (!/^sts1-[0-9a-f]{32}$/.test(snapshotId || '')) { console.error('SNAPSHOT_REQUIRED'); process.exit(2); }
   const OUT = arg('--out'); if (!OUT) { console.error('--out required'); process.exit(2); }
   const LIMIT = intArg(arg('--limit', '0'), 0, 1e6), MAX_REQ = intArg(arg('--max-requests', String(DEFAULT_MAX_REQUESTS)), 1, MAX_REQUESTS_CAP), COUNT_ONLY = argv.includes('--count-only');
-  const CACHE_ONLY = argv.includes('--cache-only');
+  const CACHE_ONLY = argv.includes('--cache-only'), EXT = argv.includes('--ext-e7-6'), EXT_COUNT = EXT && COUNT_ONLY;
   if (COUNT_ONLY && CACHE_ONLY) { console.error('COUNT_ONLY_AND_CACHE_ONLY_EXCLUSIVE'); process.exit(2); }
+  if (EXT && CACHE_ONLY) { console.error('EXT_E7_6_AND_CACHE_ONLY_EXCLUSIVE (the cache-only evaluation always adds the extension day set)'); process.exit(2); }
   if (LIMIT === null) { console.error('LIMIT_INVALID'); process.exit(2); }
   if (MAX_REQ === null) { console.error(`MAX_REQUESTS_INVALID (integer 1..${MAX_REQUESTS_CAP})`); process.exit(2); }
   const t0 = Date.now(), log = (m) => console.log(`[kk +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
@@ -239,38 +250,45 @@ async function main() {
   const cand = screenCandidates(dataset);
   const counts = { ep: candidateCounts(cand.ep, EP_FIRST_INTRADAY_DATE), ps: candidateCounts(cand.ps, PS_FIRST_INTRADAY_DATE) };
   log(`candidates: EP ${counts.ep.total} (IEX window ${counts.ep.inIexHistory}), PS ${counts.ps.total} (IEX window ${counts.ps.inIexHistory})`);
-  const receipt = { schema: 'supertrader-kk-intraday-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineVersion: ENGINE_VERSION, engineCodeSha256: engineCodeSha256(), researchCodeSha256: kkResearchCodeSha256(), runner: KK_RUNNER_VERSION, intraday: KK_INTRADAY_VERSION, ep: KK_EP_LIFECYCLE_VERSION, ps: KK_PS_STUDY_VERSION, epVariantRegistrySha256: epVariantRegistrySha256(), psVariantRegistrySha256: psVariantRegistrySha256(), limit: LIMIT || null, maxRequests: MAX_REQ, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-kk-intraday-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineVersion: ENGINE_VERSION, engineCodeSha256: engineCodeSha256(), researchCodeSha256: kkResearchCodeSha256(), runner: KK_RUNNER_VERSION, intraday: KK_INTRADAY_VERSION, ep: KK_EP_LIFECYCLE_VERSION, ps: KK_PS_STUDY_VERSION, epVariantRegistrySha256: epVariantRegistrySha256(), psVariantRegistrySha256: psVariantRegistrySha256(), limit: LIMIT || null, maxRequests: EXT ? (EXT_COUNT ? 0 : EXT_E7_6_REQUEST_CAP) : MAX_REQ, extE76: { version: KK_EXT_E7_6_VERSION, registrySha256: kkExtE76RegistrySha256(), mode: EXT_COUNT ? 'PLAN_ZERO_REQUESTS' : EXT ? 'FETCH_CAPPED' : 'EVALUATION' }, ...verification, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const pub = { schema: 'supertrader-kk-intraday-public-1.0.0', receipt, label: 'CHART_FIRST_MODEL_STUDIES_NOT_ORIGINAL_EP_NOT_EXECUTABLE_SHORTS', candidates: counts };
   fs.mkdirSync(OUT, { recursive: true });
   const write = (sealed) => {
-    const tag = `kk-intraday${COUNT_ONLY ? '-count' : CACHE_ONLY ? '-cache' : ''}${LIMIT || verification.smokeStore ? '-smoke' : ''}`;
+    const tag = `kk-intraday${EXT ? '-e76' : ''}${COUNT_ONLY ? '-count' : CACHE_ONLY ? '-cache' : ''}${LIMIT || verification.smokeStore ? '-smoke' : ''}`;
     fs.writeFileSync(path.join(OUT, `${tag}.public.json`), JSON.stringify(pub, null, 1) + '\n');
     const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
     fs.writeFileSync(path.join(OUT, `${tag}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ receipt, public: pub, ...sealed }))));
     log(`done; public ${tag}.public.json`);
   };
-  if (COUNT_ONLY) { write({}); return; }
+  if (COUNT_ONLY && !EXT) { write({}); return; }
 
   // B: minute cache (private bucket, sharded), budgeted and resumable; --cache-only reads it and fetches nothing
   const { createS3DriverFromEnv } = await import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs'));
-  const driver = createS3DriverFromEnv(process.env), KEY = CACHE_ONLY ? '' : process.env.TIINGO_API_KEY || '';
+  const driver = createS3DriverFromEnv(process.env), KEY = CACHE_ONLY || EXT_COUNT ? '' : process.env.TIINGO_API_KEY || '';
   const SHARDS = Array.from({ length: CACHE_SHARDS }, (_, n) => n.toString(16));
-  const getShard = async (kind, h) => { pit.budget.consumeClassB(1, `GET ${kind}-${h}`); const b = await driver.get(pit.mine.seriesPrefix + cacheKey(kind, h)); return b ? JSON.parse(zlib.gunzipSync(b).toString('utf8')) : {}; };
-  const loadAll = async (kind) => { const o = {}; for (const h of SHARDS) Object.assign(o, await getShard(kind, h)); return o; };
+  const getShard = async (kind, h, keyFn = cacheKey) => { pit.budget.consumeClassB(1, `GET ${kind}-${h}`); const b = await driver.get(pit.mine.seriesPrefix + keyFn(kind, h)); return b ? JSON.parse(zlib.gunzipSync(b).toString('utf8')) : {}; };
+  const loadAll = async (kind, keyFn = cacheKey) => { const o = {}; for (const h of SHARDS) Object.assign(o, await getShard(kind, h, keyFn)); return o; };
   const added = { minutes: new Map(), baseline: new Map() }; // shard -> keys added by this run
   const mark = (kind, k) => { const h = shardOf(k); if (!added[kind].has(h)) added[kind].set(h, new Set()); added[kind].get(h).add(k); };
   // re-read a shard before writing it, so entries another run added meanwhile are kept (definitive entries only)
+  // E7-6: an extension fetch run writes ONLY the extension objects (extCacheKey), never the reference cache
   const saveDirty = async (kind, cache) => {
-    if (LIMIT || verification.smokeStore || CACHE_ONLY) return; // smoke and cache-only runs never write the shared cache
+    if (LIMIT || verification.smokeStore || CACHE_ONLY || EXT_COUNT) return; // smoke, cache-only and plan runs never write the shared cache
+    const keyFn = EXT ? extCacheKey : cacheKey;
     for (const [h, keys] of added[kind]) {
-      const merged = await getShard(kind, h);
+      const merged = await getShard(kind, h, keyFn);
       for (const k of keys) merged[k] = cache[k];
       pit.budget.consumeClassA(1, `PUT ${kind}-${h}`);
-      await driver.put(pit.mine.seriesPrefix + cacheKey(kind, h), zlib.gzipSync(Buffer.from(JSON.stringify(merged))), { contentType: 'application/gzip' });
+      await driver.put(pit.mine.seriesPrefix + keyFn(kind, h), zlib.gzipSync(Buffer.from(JSON.stringify(merged))), { contentType: 'application/gzip' });
     }
     added[kind].clear();
   };
   const minuteCache = await loadAll('minutes'), baseCache = await loadAll('baseline');
+  // E7-6 extension cache (separate objects; read in every mode, written only by the one capped extension fetch)
+  const extMinutes = await loadAll('minutes', extCacheKey), extBase = await loadAll('baseline', extCacheKey);
+  const readLedger = async () => { pit.budget.consumeClassB(1, 'GET ext-e7-6 ledger'); const b = await driver.get(pit.mine.seriesPrefix + EXT_LEDGER_KEY); return b ? JSON.parse(b.toString('utf8')) : null; };
+  const writeLedger = async (o) => { pit.budget.consumeClassA(1, 'PUT ext-e7-6 ledger'); await driver.put(pit.mine.seriesPrefix + EXT_LEDGER_KEY, Buffer.from(JSON.stringify(o)), { contentType: 'application/json' }); };
+  const ledger = await readLedger();
   const startMinutes = Object.keys(minuteCache).length, startBase = Object.keys(baseCache).length;
   const sec = new Map(dataset.securities.map((s) => [s.id, s]));
   const epKeys = [...new Set(cand.ep.filter((c) => c.date >= EP_FIRST_INTRADAY_DATE).map((c) => `${c.ticker}|${c.date}`))];
@@ -279,30 +297,63 @@ async function main() {
   const epByKey = new Map(cand.ep.map((c) => [`${c.ticker}|${c.date}`, c]));
   const httpStatus = {};
   const noRequests = () => { throw new Error('CACHE_ONLY_NO_REQUESTS'); };
-  const fetchMinutes = async (k, b) => {
-    if (CACHE_ONLY) noRequests();
+  const fetchMinutes = async (k, b, into = minuteCache) => {
+    if (CACHE_ONLY || EXT_COUNT) noRequests();
     const [t, d] = k.split('|');
     const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, KEY, b);
     bump(httpStatus, `minutes:${r.status}`);
-    if (definitive(r.status, r.body)) { minuteCache[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : [])); mark('minutes', k); }
+    if (definitive(r.status, r.body)) { into[k] = compactSession(toSession(Array.isArray(r.body) ? r.body : [])); mark('minutes', k); }
     return r.status;
   };
-  const fetchBaseline = async (k, b) => {
-    if (CACHE_ONLY) noRequests();
+  const fetchBaseline = async (k, b, into = baseCache) => {
+    if (CACHE_ONLY || EXT_COUNT) noRequests();
     const c = epByKey.get(k), bars = sec.get(c.id).bars;
-    if (c.i < IEX_BASELINE_SESSIONS) { baseCache[k] = { mean: null, reason: 'HISTORY' }; mark('baseline', k); return 'HISTORY'; }
+    if (c.i < IEX_BASELINE_SESSIONS) { into[k] = { mean: null, reason: 'HISTORY' }; mark('baseline', k); return 'HISTORY'; }
     const dates = bars.slice(c.i - IEX_BASELINE_SESSIONS, c.i).map((x) => x.date), [t] = k.split('|');
     for (const f of BASELINE_FREQS) {
       const r = await getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${dates[0]}&endDate=${dates.at(-1)}&resampleFreq=${f}&columns=volume`, KEY, b);
       bump(httpStatus, `baseline:${f}:${r.status}`);
       if (r.status === 400) continue; // frequency rejected: next pre-registered frequency
-      if (definitive(r.status, r.body)) { baseCache[k] = { ...iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates), freq: f, status: r.status }; mark('baseline', k); }
+      if (definitive(r.status, r.body)) { into[k] = { ...iexBaselineFromRange(Array.isArray(r.body) ? r.body : [], dates), freq: f, status: r.status }; mark('baseline', k); }
       return r.status;
     }
     return 400;
   };
   let lastSave = 0;
   const checkpoint = async () => { if (budget.used - lastSave >= CHECKPOINT_REQUESTS) { lastSave = budget.used; await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache); log(`requests ${budget.used}`); } };
+  // E7-6: populations, targets and the capped plan from the candidate keys, their strata and the caches only (no outcome)
+  const barsOfC = (c) => sec.get(c.id).bars;
+  const epPopX = extPopulation(cand.ep, barsOfC, EP_FIRST_INTRADAY_DATE), psPopX = extPopulation(cand.ps, barsOfC, PS_FIRST_INTRADAY_DATE);
+  const epT = extTargets(epPopX.stratum, EXT_E7_6_TARGETS.ep), psT = extTargets(psPopX.stratum, EXT_E7_6_TARGETS.ps);
+  const inMin = (k) => k in minuteCache || k in extMinutes, inBase = (k) => k in baseCache || k in extBase;
+  const baseCost = (k) => (inBase(k) || epByKey.get(k).i < IEX_BASELINE_SESSIONS ? 0 : 1); // a too-short history is decided without a request
+  const plan = planExtension({ psTargets: psT.keys, epTargets: epT.keys, costPs: (k) => (inMin(k) ? 0 : 1), costEp: (k) => (inMin(k) ? 0 : 1) + baseCost(k) });
+  const ledgerPublic = ledger && { status: ledger.status, runId: ledger.runId, planned: ledger.planned, requestsUsed: ledger.requestsUsed ?? null, planSha256: ledger.planSha256 };
+  pub.extE7_6 = { id: EXT_E7_6_ID, version: KK_EXT_E7_6_VERSION, registrySha256: kkExtE76RegistrySha256(), targets: EXT_E7_6_TARGETS, requestCap: EXT_E7_6_REQUEST_CAP, ledger: ledgerPublic, extensionCache: { minutes: Object.keys(extMinutes).length, baseline: Object.keys(extBase).length }, plan: { requests: plan.requests, requestsNeededTotal: plan.requestsNeededTotal, truncated: plan.truncated, counts: plan.counts, planSha256: plan.planSha256 }, strataTargets: { ps: psT.strata, ep: epT.strata } };
+  log(`E7-6 plan: ${plan.requests} requests (needed ${plan.requestsNeededTotal}; PS ${plan.counts.ps.plannedRequests}/${plan.counts.ps.requestsNeeded}, EP ${plan.counts.ep.plannedRequests}/${plan.counts.ep.requestsNeeded}), cap ${EXT_E7_6_REQUEST_CAP}, ledger ${ledger ? ledger.status : 'none'}`);
+  if (EXT) {
+    if (EXT_COUNT) {
+      if (budget.used !== 0 || Object.keys(httpStatus).length) throw new Error('EXT_E7_6_PLAN_REQUEST_COUNT_NOT_ZERO');
+      pub.extE7_6.mode = 'PLAN_ZERO_REQUESTS'; pub.extE7_6.requestsThisRun = 0;
+      write({ extE7_6Plan: plan.list }); return;
+    }
+    if (LIMIT || verification.smokeStore) throw new Error('EXT_E7_6_FETCH_NOT_IN_SMOKE');
+    assertExtFetchAllowed(ledger); // once only
+    const extBudget = { used: 0, max: EXT_E7_6_REQUEST_CAP };
+    const head = { runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null, registrySha256: kkExtE76RegistrySha256(), planned: plan.requests, planSha256: plan.planSha256, cap: EXT_E7_6_REQUEST_CAP };
+    await writeLedger({ ...head, status: 'STARTED', at: new Date().toISOString() }); // before the first request (a crash still counts as the one fetch)
+    let outcome = 'COMPLETE', err = null, done = null;
+    try {
+      done = await runExtFetch({ plan, needs: (k, m) => ({ minutes: !inMin(k), baseline: m === 'ep' && !inBase(k), baselineCost: m === 'ep' ? baseCost(k) : 0 }), fetchMinutes: (k, b) => fetchMinutes(k, b, extMinutes), fetchBaseline: (k, b) => fetchBaseline(k, b, extBase), budget: extBudget });
+    } catch (e) { outcome = e?.code === 'EXT_E7_6_REQUEST_CAP_REACHED' ? 'ABORTED_AT_CAP' : 'ABORTED_ERROR'; err = e; }
+    if (extBudget.used > EXT_E7_6_REQUEST_CAP) { outcome = 'ABORTED_AT_CAP'; err = err || new Error('EXT_E7_6_REQUEST_CAP_REACHED'); }
+    await saveDirty('minutes', extMinutes); await saveDirty('baseline', extBase);
+    await writeLedger({ ...head, status: outcome, requestsUsed: extBudget.used, httpStatus, at: new Date().toISOString() });
+    pub.extE7_6.mode = 'FETCH_CAPPED';
+    pub.extE7_6.fetch = { outcome, requestsUsed: extBudget.used, requestsPlanned: plan.requests, cap: EXT_E7_6_REQUEST_CAP, keysPlanned: plan.list.length, keysDone: done?.keysDone ?? null, httpStatus, extensionCacheAfter: { minutes: Object.keys(extMinutes).length, baseline: Object.keys(extBase).length } };
+    log(`E7-6 fetch ${outcome}: requests ${extBudget.used}/${EXT_E7_6_REQUEST_CAP} (planned ${plan.requests}), status ${JSON.stringify(httpStatus)}`);
+    write({ extE7_6Plan: plan.list }); if (err) throw err; return;
+  }
   const loops = await runFetchLoops({ cacheOnly: CACHE_ONLY, epOrder: fetchOrder(epKeys), psOrder: fetchOrder(psKeys), minuteCache, baseCache, budget, epBudget, fetchMinutes, fetchBaseline, checkpoint });
   if (CACHE_ONLY && (budget.used !== 0 || epBudget.used !== 0 || Object.keys(httpStatus).length || !loops.skipped)) throw new Error('CACHE_ONLY_REQUEST_COUNT_NOT_ZERO');
   await saveDirty('minutes', minuteCache); await saveDirty('baseline', baseCache);
@@ -330,11 +381,12 @@ async function main() {
   const SET_IDS = ['BEFORE_FIX', 'CLEAN', ...STRATA_SCHEMES.map((sc) => `STRAT_${sc.id}`)];
 
   // EP: engine variants on each day set (one delegating accessor, so the prepared contexts are shared)
-  let cur = null;
-  const has = (t, d) => `${t}|${d}` in minuteCache;
+  // E7-6: `view` is the reference cache for every reference day set; only CLEAN_EXT_E7_6 reads the merged view
+  let cur = null, view = { min: minuteCache, base: baseCache };
+  const has = (t, d) => `${t}|${d}` in view.min;
   dataset.kkIntraday = {
-    minutes: (t, d) => { const c = minuteCache[`${t}|${d}`]; return c === undefined ? undefined : expandSession(c); },
-    iexBaseline: (t, d) => baseCache[`${t}|${d}`]?.mean ?? null,
+    minutes: (t, d) => { const c = view.min[`${t}|${d}`]; return c === undefined ? undefined : expandSession(c); },
+    iexBaseline: (t, d) => view.base[`${t}|${d}`]?.mean ?? null,
     excluded: (t, d) => cur !== null && has(t, d) && !cur.has(`${t}|${d}`),
   };
   const sealed = { ep: {}, ps: {} };
@@ -387,6 +439,44 @@ async function main() {
       log(`PS ${setId} ${overlap}: REF closed ${pub.ps.sets[setId][overlap].variants.REF.closedTrades}`);
     }
   }
+
+  // E7-6: CLEAN_EXT_E7_6 beside the unchanged references, on the merged view (reference cache + extension cache)
+  const mMin = { ...extMinutes, ...minuteCache }, mBase = { ...extBase, ...baseCache };
+  const ext = extDaySets({ psTargets: psT, epTargets: epT, psPop: psPopX.stratum, epPop: epPopX.stratum, hasMinutes: (k) => k in mMin, baselineMean: (k) => mBase[k]?.mean ?? null, beforePs: sets.ps.CLEAN, beforeEp: sets.ep.CLEAN });
+  Object.assign(pub.extE7_6, { mode: CACHE_ONLY ? 'EVALUATION_CACHE_ONLY' : 'EVALUATION', sampling: ext.public, daySetSha256: { ep: daySetSha256(ext.ep), ps: daySetSha256(ext.ps) }, ep: { variants: {}, sf7Execution: {} }, ps: {} });
+  receipt.extE76.daySetSha256 = pub.extE7_6.daySetSha256;
+  receipt.extE76.extensionMinuteCacheSha256 = sha(fetchOrder(Object.keys(extMinutes)).map((k) => [k, extMinutes[k]]));
+  receipt.extE76.extensionBaselineCacheSha256 = sha(fetchOrder(Object.keys(extBase)).map((k) => [k, extBase[k]]));
+  sealed.extE7_6 = { ep: { variants: {}, sf7Execution: {} }, ps: {} };
+  view = { min: mMin, base: mBase }; cur = ext.ep;
+  const epStrata = new Map([...epT.keys].map((k) => [k, epPopX.stratum.get(k)])), psStrata = new Map([...psT.keys].map((k) => [k, psPopX.stratum.get(k)]));
+  const runEpExt = (id, adapter, config) => {
+    const key = adapter.prepareKey(config);
+    if (!prepCache.has(key)) prepCache.set(key, prepareAll(dataset, adapter, config));
+    const r = runResearchLifecycle(dataset, { adapter, config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
+    if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${EXT_E7_6_ID}:${id}`);
+    const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
+    const p = { trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
+    const z = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, epStrata, epTradeSummary), trades: r.trades.map(epSealedTrade) };
+    log(`EP ${EXT_E7_6_ID} ${id}: trades ${r.trades.length}`);
+    return { p, z };
+  };
+  for (const v of EP_RUN_VARIANTS) { const { p, z } = runEpExt(v.id, KK_EP_ADAPTER, v.config); pub.extE7_6.ep.variants[v.id] = { changes: v.changes, ...p }; sealed.extE7_6.ep.variants[v.id] = z; }
+  for (const x of SF7_EP_VARIANTS) { const { p, z } = runEpExt(x.id, x.adapter, x.config); pub.extE7_6.ep.sf7Execution[x.id] = { compareTo: x.compareTo, revision: x.revision, ...p, comparison: { tradesDelta: p.trades - pub.extE7_6.ep.variants[x.compareTo].trades, ledgerEqual: p.ledgerSha256 === pub.extE7_6.ep.variants[x.compareTo].ledgerSha256 } }; sealed.extE7_6.ep.sf7Execution[x.id] = z; }
+  cur = null;
+  for (const overlap of PS_OVERLAP_POLICIES) {
+    pub.extE7_6.ps[overlap] = { variants: {} }; sealed.extE7_6.ps[overlap] = {};
+    for (const v of PS_RUN_VARIANTS) {
+      const res = evaluatePsCandidates({ cands: cand.ps, barsOf: (c) => sec.get(c.id).bars, minutesOf: (c) => dataset.kkIntraday.minutes(c.ticker, c.date), inDaySet: (c) => ext.ps.has(`${c.ticker}|${c.date}`), cfg: v.config, overlap, from: L.WINDOW.from, to: L.WINDOW.to, outsideStatus: OUTSIDE_DAY_SET });
+      const exits = {}, years = {}, openTerm = {};
+      for (const t of res.closed) { bump(years, t.entryDate.slice(0, 4)); for (const x of t.exitReasons) bump(exits, x); }
+      for (const t of res.open) bump(openTerm, terminalOf(t.id));
+      pub.extE7_6.ps[overlap].variants[v.id] = { changes: v.changes, statuses: res.statuses, closedTrades: res.closed.length, openAtDataEnd: res.open.length, openAtDataEndByTerminal: openTerm, exitReasons: exits, entryYears: years, tradesSha256: sha(res.closed.map((t) => [t.id, t.entryDate, t.exitReasons])), openTradesSha256: sha(res.open.map((t) => [t.id, t.entryDate])) };
+      sealed.extE7_6.ps[overlap][v.id] = { metrics: psTradeMetrics(res.closed, res.open), perStratum: byStratum([...res.closed, ...res.open], (t) => t.key, psStrata, (ts) => psTradeMetrics(ts.filter((t) => Number.isFinite(t.netReturn)), ts.filter((t) => !Number.isFinite(t.netReturn)))), trades: res.closed, open: res.open.map((t) => ({ ...t, terminal: terminalOf(t.id) })) };
+    }
+    log(`PS ${EXT_E7_6_ID} ${overlap}: REF closed ${pub.extE7_6.ps[overlap].variants.REF.closedTrades}`);
+  }
+  view = { min: minuteCache, base: baseCache };
   write(sealed);
 }
 
