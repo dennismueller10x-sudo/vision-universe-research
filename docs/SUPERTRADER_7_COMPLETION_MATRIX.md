@@ -1,6 +1,6 @@
 # Supertrader 7.0 – Abschlussmatrix der 13 Strategien
 
-Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.0.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
+Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.1.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
 
 V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.3.0 (Draft-PR #902).
 
@@ -49,7 +49,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | Unit-, Korrelationsgruppen- und Failsafe-Logik neu geprüft, kein Fehler in der Referenz; SF7-D3 (OPTIMISTIC-Alternative übersieht einen sicheren Stop am Einstiegstag) charakterisiert, offen |
+| Was hat sich in 7.0 geändert? | Unit-, Korrelationsgruppen- und Failsafe-Logik neu geprüft, kein Fehler in der Referenz; SF7-D3 (OPTIMISTIC-Alternative übersah einen sicheren Stop am Einstiegstag) als versionierte Lesart OPTIMISTIC_CERTAIN_RULE behoben (sf-turtle-1.3.0); Referenz und alte Lesarten hashgleich (Lauf 40170829944) |
 | Technisch vollständig | 9/9 Phasen, vollständiger diagnostischer Backtest (Aktien-Adaption) |
 | Nachgewiesene Originalregeln | Original Turtle Rules (W-TUR, englisch); die Failsafe-Lesart ist im Original mehrdeutig, beide Lesarten laufen |
 | Modellannahmen | Aktien statt Futures, Units auf Eigenkapital, keine PIT-Korrelationsgruppen (SIC-Proxy nur Research, E4) |
@@ -59,15 +59,15 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Gesperrte Daten | PIT-Korrelationsgruppen; V4-D1-Rest |
 | Ausführungsrealismus | Tagesbalken, Stop intraday, pessimistische Reihenfolge am selben Tag |
 | Manuelle Prüfung | keine |
-| Nächster konkreter Schritt | Eigentümerentscheidung zu SF7-D3 (Turtle-Code gepinnt); Quelle für PIT-Korrelationsgruppen |
+| Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest (E7-1) |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C02 `SF_TURTLE_S2`
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | wie C01 (gemeinsame Engine): kein Fehler in der Referenz |
+| Was hat sich in 7.0 geändert? | wie C01 (gemeinsame Engine): kein Fehler in der Referenz; SF7-D3 als versionierte Lesart behoben |
 | Technisch vollständig | 9/9 Phasen, vollständiger diagnostischer Backtest |
 | Nachgewiesene Originalregeln | Original Turtle Rules (W-TUR, englisch) |
 | Modellannahmen | Aktien-Adaption, keine PIT-Korrelationsgruppen |
@@ -77,9 +77,9 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Gesperrte Daten | PIT-Korrelationsgruppen; V4-D1-Rest |
 | Ausführungsrealismus | Tagesbalken, pessimistisch |
 | Manuelle Prüfung | keine |
-| Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen; V4-D1-Rest; SF6-PAPER-2027 |
+| Nächster konkreter Schritt | Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest; SF6-PAPER-2027 1.1.0 (vorbereitet, nicht aktiv) |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C03 `SF_DARVAS_BOX`
 
@@ -139,7 +139,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), 2 Diagnosen; REF ledger-identisch (Lauf 40103766418) |
+| Was hat sich in 7.0 geändert? | Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386) |
 | Technisch vollständig | 9/9 Phasen als Modellstudie (4.0-Engine unverändert) |
 | Nachgewiesene Originalregeln | Bücher vollständig im Projekt, nur Übersetzungen (B12 id, B07 id, B03 vi); englische Bestätigung nur über W-MIN18; Trend-Template-Zahlen in zwei Übersetzungen gleich |
 | Modellannahmen | 19 Lifecycle- und 6 sf7-Modellannahmen, jede klassifiziert (Inventur) |
@@ -147,11 +147,11 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Vollständiger diagnostischer Backtest | nur Modellstudie |
 | Belastbare Daten | DEV-Snapshot EXACT; PIT-EPS split-korrigiert, wo belegbar |
 | Gesperrte Daten | IBD-RS-Historie, Schätzungen / Überraschungen / Guidance |
-| Ausführungsrealismus | Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) offen, gepinnt |
+| Ausführungsrealismus | Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) als SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE behoben, alle 21 Varianten hashgleich (Lauf 40170832007) |
 | Manuelle Prüfung | 11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS) |
-| Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); ob V4-D1-Exposition 0 für CC-5 genügt; SF7-D4 |
+| Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Minervini-Ausstiegsvarianten (E7-7) |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C07 `SF_MINERVINI_POWER_PLAY`
 
@@ -165,11 +165,11 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Vollständiger diagnostischer Backtest | nur Modellstudie |
 | Belastbare Daten | DEV-Snapshot EXACT |
 | Gesperrte Daten | V4-D1-Rest |
-| Ausführungsrealismus | wie SEPA; SF7-D4 offen |
+| Ausführungsrealismus | wie SEPA; SF7-D4 behoben (versionierte Variante) |
 | Manuelle Prüfung | 6 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | CC-1-Entscheidung wie SEPA; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
 
 ## C08 `SF_KK_BREAKOUT`
 

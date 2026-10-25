@@ -1,6 +1,6 @@
 # Supertrader 7.0 – Full Strategy Completion & Certification Accelerator: Abschlussbericht
 
-Stand: 24. Oktober 2026.
+Stand: 24. Oktober 2026, ergänzt am 25. Oktober 2026 um die Umsetzung der Eigentümerentscheidungen E7-1 bis E7-7 (Abschnitt 0).
 - **Basis:** `main` nach Supertrader 6.0 (`c6fad12`, #881); Zweige ab `304f917`, `main` jeweils per Merge-Commit nachgezogen.
 - **Snapshot:** DEV `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Abrechnung `research-v1`.
 
@@ -11,7 +11,36 @@ Maschinenlesbar:
 - Teilberichte:
   - [SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md](SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md) (Workstream C);
   - [SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md](SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md) (B/D/E/F);
-  - [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md) (A).
+  - [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md) (A);
+  - [SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md](SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md) (E7-2);
+  - [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md) (E7-3, #911);
+  - [SUPERTRADER_7_OWNER_DECISIONS_E7.md](SUPERTRADER_7_OWNER_DECISIONS_E7.md) (Vorlagen E7-1 und E7-4 bis E7-7).
+
+---
+
+## 0. Umsetzung der Eigentümerentscheidungen vom 25.10.2026
+
+| | Entscheidung | Umgesetzt | Wirkung |
+|---|---|---|---|
+| E7-1 | Keine pauschale Quarantäne-Lesart. Prüfen, welche CC-5-Teilkriterien bei Exposition 0 erfüllt sind. Memo zu einer lizenzierten CA-Quelle, ohne Bestellung. | Die CC-5-Teilkriterien a bis f stehen je Referenz in der Matrix. SEPA erfüllt a und b, Weinstein Investor a. Kein Referenzwert erfüllt e (Splits unter dem Faktor 3 sind unsichtbar) oder f (Holdout nicht gerechnet). Das Anbieter-Memo liegt in `SUPERTRADER_7_OWNER_DECISIONS_E7.md`. | CC-5 bleibt für alle 13 offen. Es gibt keine Aufwertung. |
+| E7-2 | Zwei Übersetzungen gelten als Beleg, aber nicht als `SOURCE_EXACT`. Die 154 Befunde werden klassifiziert, belegbare Verbesserungen umgesetzt. | 36 bestätigen, 14 präzisieren, 17 sind neu umsetzbar, 54 qualitativ, 33 nicht relevant. Umgesetzt sind 9 Punkte, nur Diagnosen und Belege (`sf7-minervini-1.3.0`). Die Übersetzungsübereinstimmung steht als `CROSS_TRANSLATION` im SEPA-Vertrag 1.4.0. Maßgeblicher Lauf ist 40172178386 (#899). | REF ist ledger-identisch. CC-1 bleibt offen. |
+| E7-3 | D3/D4 in den optimistischen Varianten korrigieren, Referenzen schützen, SF6-PAPER-2027 neu versionieren, aber nicht aktivieren. | Neue Lesarten `OPTIMISTIC_CERTAIN_RULE` (Turtle, `sf-turtle-1.3.0`) und `SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE` (Minervini). Die alten Lesarten laufen weiter als „ersetzt“. SF6-PAPER-2027 1.1.0 ist `PREPARED_NOT_ACTIVE`. Läufe 40170829944 und 40170832007 (#911). | Alle Referenzen und alle bisherigen Varianten sind hashgleich. |
+| E7-4 bis E7-7 | Optionen vorbereiten. Ohne ausdrückliche Zustimmung gibt es keinen Snapshot-Capture, keine kostenpflichtige Quelle, keine Intraday-Massenabrufe und keine verbindliche Minervini-Ausstiegsregel. | Optionen, Empfehlung, Betroffene, Budget und Readiness-Wirkung stehen in `SUPERTRADER_7_OWNER_DECISIONS_E7.md`. | Nichts ausgelöst |
+
+Vorher/Nachher der korrigierten optimistischen Varianten. Das sind Zählungen; die Kennzahlen bleiben versiegelt.
+
+| Variante | vorher (ersetzt) | nachher |
+|---|---|---|
+| Turtle S1 optimistisch | 786 Trades | 862 Trades (99 sichere Stops) |
+| Turtle S2 optimistisch | 528 Trades | 489 Trades (61 sichere Stops) |
+| SEPA optimistisch | 987 Trades | 977 Trades |
+| Power Play optimistisch | 929 Trades | 931 Trades |
+
+Die Ergänzung hatte zwei unabhängige Reviews:
+- **E7-2-Code:** 1 HIGH, 3 MEDIUM, 6 LOW. Das HIGH: Diagnosen lasen die Ausstiegssitzung mit.
+- **#911:** 0 HIGH, 1 MEDIUM, 5 LOW.
+
+Alle Befunde sind behoben oder begründet dokumentiert.
 
 ---
 
@@ -49,7 +78,7 @@ Maschinenlesbar:
 - **CC-3:** Die manuellen Quellenentscheidungen bleiben (alle außer Turtle).
 - **CC-4:** IBD-RS, PIT-Branchen- und Korrelationsgruppen fehlen.
 - **CC-8:** SF6-PAPER-2027 ist frühestens Ende 2027 auswertbar.
-- **Ausführungsdefekte:** SF7-D3 (Turtle) und SF7-D4 (Minervini) sind in gepinnten Engines charakterisiert, aber nicht korrigiert.
+- **Ausführungsdefekte:** SF7-D3 (Turtle) und SF7-D4 (Minervini) sind seit E7-3 als versionierte Varianten behoben (#911). Die Referenzen sind unverändert.
 
 **Welche Strategien liegen der Zertifizierungsfähigkeit am nächsten?**
 - Unverändert Turtle S2 (offen CC-4, CC-5, CC-8).
@@ -59,7 +88,7 @@ Maschinenlesbar:
 **Welche nächsten Entscheidungen bringen den größten Fortschritt?** Siehe Abschnitt 17:
 1. **CC-5-Lesart:** ob 0 exponierte Sitzungen genügen;
 2. **CC-1 Minervini:** englische Ausgabe oder Übersetzungsbelege;
-3. **Ausführungsdefekte in gepinnten Engines:** Korrektur von SF7-D3/D4 mit neuer Protokollversion;
+3. **Ausführungsdefekte in gepinnten Engines:** erledigt (E7-3, #911);
 4. **V4-D1-Folge:** lizenzierte Corporate-Action-Quelle (Kosten) und danach eine neue Snapshot-Generation;
 5. **Datenquellen:** PIT-Korrelations- bzw. Branchengruppen.
 
@@ -165,7 +194,7 @@ Folge (1.1.0): Die 8 echten Bewegungen der ersten Fassung halten der strengeren 
 ## 6. Gemeinsame Execution Engine
 
 - SF7-D1, D2 und D5 sind behoben bzw. als Variante umgesetzt.
-- D3 (Turtle, OPTIMISTIC-Alternative) und D4 (Minervini, OPTIMISTIC-Alternative) liegen in gepinnten Engines. Charakterisierungstests halten das heutige Verhalten fest. Eine Korrektur braucht Ihre Entscheidung, weil der Code in SF6-PAPER-2027 gepinnt ist.
+- D3 (Turtle) und D4 (Minervini) betrafen die OPTIMISTIC-Alternativen. Nach E7-3 sind sie als neue, versionierte Lesarten behoben (#911). Die alten Lesarten laufen weiter als ersetzt. SF6-PAPER-2027 1.1.0 pinnt die neuen Fingerabdrücke und ist nicht aktiviert.
 - Neu geprüft ohne Fehler (13 Regressionstests in #898): Kostensymmetrie, Positionslimit bei gleichzeitigen Signalen und Unabhängigkeit von der Eingabereihenfolge, Aktienbilanz je Trade, Dividende am Einstiegstag, Gaps, Drawdown.
 - Offen bleiben:
   - EP-Stops werden nur gegen IEX-Tiefs geprüft (MEDIUM, dokumentiert);
@@ -216,7 +245,7 @@ Je Strategie mit den zwölf Fragen in [SUPERTRADER_7_COMPLETION_MATRIX.md](SUPER
 
 | Strategie | 7.0 |
 |---|---|
-| Turtle S1/S2 | geprüft (Unit-Limits, Korrelationsgruppen, Failsafe): Referenz ohne Fehler; D3 offen |
+| Turtle S1/S2 | geprüft (Unit-Limits, Korrelationsgruppen, Failsafe): Referenz ohne Fehler; D3 als versionierte Lesart behoben (#911) |
 | Darvas | D1 als Variante (8.596 sichere Stops) |
 | Weinstein Investor/Trader | D1 gezählt; ohne Exposition (Investor) bzw. 3 ungeklärt (Trader) |
 | Kullamägi Breakout, Pocket Pivot, BGU | geprüft, keine technisch lösbare Lücke (Einstieg zur Eröffnung bzw. zum Schluss) |
@@ -269,10 +298,11 @@ Unverändert gelassen ohne künstliche Arbeit: Kullamägi Breakout, Pocket Pivot
 
 | Zweig | Supertrader-Suite | Neu | Review | HIGH / MEDIUM offen |
 |---|---|---|---|---|
-| #899 | 679 / 0 Fehler | `sf-sf7-minervini` (13 Tests) | 1 HIGH, 6 MEDIUM, 7 LOW → behoben | 0 / 0 |
-| #898 | 683 / 0 Fehler | `sf-sf7-execution` (17 Tests) | 0 HIGH, 2 MEDIUM → D4 gelistet, D5 behoben; LOW behoben | 0 / 2 als Risiko ausgewiesen (D4 Eigentümer, EP-IEX-Stop) |
+| #899 | 682 / 0 Fehler | `sf-sf7-minervini` (16 Tests) | 1 HIGH, 6 MEDIUM, 7 LOW → behoben; E7-2-Code: 1 HIGH, 3 MEDIUM, 6 LOW → behoben (1.3.0) | 0 / 0 |
+| #898 | 683 / 0 Fehler | `sf-sf7-execution` (17 Tests) | 0 HIGH, 2 MEDIUM → D4 gelistet (in #911 behoben), D5 behoben; LOW behoben | 0 / 1 als Risiko ausgewiesen (EP-IEX-Stop) |
+| #911 | 693 / 0 Fehler | `sf-sf7-optimistic-fixes` (10 Tests, davon 2 Fingerabdrücke gegen den Code vor der Behebung) | 0 HIGH, 1 MEDIUM (Testlücken) → behoben, 5 LOW dokumentiert | 0 / 0 |
 | #902 | 695 / 0 Fehler | Mutantentests je Wächter, gepinnter Regelsatz | Review: 2 HIGH, 4 MEDIUM, 6 LOW → 1.1.0; Nachprüfung: 1 HIGH, 1 MEDIUM, 7 LOW → 1.2.0; dritte Prüfung: 1 HIGH, 1 MEDIUM, 2 LOW → 1.3.0 (faktortragende Quelle Pflicht) | 0 / 0 |
-| Integration | 726 / 0 Fehler (#902 + #898 + #899) | `sf-sf7-completion` | – | – |
+| Integration | 739 / 0 Fehler (#902 + #898 + #911 + #899 + main); Core 236 / 0, Quant 2.798 / 0, Discover + Screener 621 / 0, Python OK | `sf-sf7-completion` | – | – |
 
 Gate A ist auf jedem Zweig ok, die Testisolation ist sauber. Fremde Fehler auf `main` wurden getrennt reproduziert:
 - 7 Elliott-Tests scheitern auf dem alten Basis-Commit `304f917` und sind auf dem aktuellen `main` behoben.
@@ -280,28 +310,36 @@ Gate A ist auf jedem Zweig ok, die Testisolation ist sauber. Fremde Fehler auf `
 
 ## 15. Neue Draft-PRs
 
-#899, #898, #902 und dieser Abschluss-PR. Keiner ist gemergt.
+#902, #898, #911, #899 und dieser Abschluss-PR (#905). Keiner ist gemergt.
 
 ## 16. Empfohlene Merge-Reihenfolge
 
-1. **#902 (A):** Basis `main`. Konflikt nur in der Modusliste des Validierungs-Workflows und im Moduslisten-Test; beide Modi bleiben.
-2. **#898 (B/D/E/F):** keine Workflow-Änderung. Artefakte nach dem Merge mit `rebuild-all.mjs` neu bauen.
-3. **#899 (C):** Modusliste wie oben; danach `rebuild-all.mjs` und `build-sf6-readiness.mjs`.
-4. **Abschluss-PR:** zuletzt; `sf7-completion-matrix.mjs` neu bauen, der Test prüft die Gleichheit.
+| Schritt | PR | Abhängigkeit | Nach dem Merge |
+|---|---|---|---|
+| 1 | **#902** (A, V4-D1) | Basis `main` | – |
+| 2 | **#898** (B/D/E/F, Ausführung) | unabhängig von #902 | `rebuild-all.mjs` |
+| 3 | **#911** (E7-3, D3/D4) | **baut auf #898 auf**; deshalb nach #898 | `rebuild-all.mjs`, `build-sf6-readiness.mjs` |
+| 4 | **#899** (C, Minervini, E7-2) | unabhängig; der Runner-Test ist mit #911 verträglich (`sf7Variants: []`) | Konflikt nur in der Modusliste von Workflow und `sf-runner.test.mjs`; beide Modi bleiben. Danach `rebuild-all.mjs` und `build-minervini-source-inventory.mjs` |
+| 5 | **#905** (Abschluss) | zuletzt | `sf7-completion-matrix.mjs`; der Test prüft die Gleichheit |
 
-Konflikte löse ich vor jedem Merge per Merge-Commit von `main`, ohne Rebase. Danach laufen Suite, Gate A und Testisolation erneut. Die Gesamtintegration aller drei Zweige liegt auf `claude/supertrader-7-integration`. Dort sind zwei Moduslisten-Konflikte (Workflow und Moduslisten-Test) per Merge-Commit aufgelöst, alle Modi bleiben erhalten. Die Artefakte sind mit ihren Erzeugern neu gebaut. Suite 726 / 0, Gate A ok.
+Die Folge habe ich auf einem Wegwerf-Zweig von `main` simuliert:
+- Die Schritte 1 bis 3 laufen konfliktfrei.
+- Schritt 4 hat nur den bekannten Moduslisten-Konflikt.
+- Der Baum nach Schritt 5 ist **identisch** mit dem Integrationsstand, auf dem alle Regressionen grün sind.
+
+Konflikte werden vor jedem Merge per Merge-Commit von `main` aufgelöst, ohne Rebase. Nach jedem Merge laufen Suite, Gate A und Testisolation des nächsten PR erneut auf dem neuen `main`.
 
 ## 17. Notwendige Eigentümerentscheidungen
 
 | | Entscheidung | Wirkung |
 |---|---|---|
-| E7-1 | Genügt für CC-5 eine V4-D1-Exposition von 0 (SEPA, Weinstein Investor), oder bleibt CC-5 bis zur neuen Snapshot-Generation offen? Und für die übrigen 9: Quarantäne-Lesart als Ausnahme, oder Beschaffung einer lizenzierten zweiten CA-Quelle (Kosten)? | CC-5 für 2 bzw. 9 Referenzen |
-| E7-2 | Minervini CC-1: rechtmäßige Bereitstellung einer englischen Ausgabe, oder zählen zwei übereinstimmende Übersetzungen als Beleg? | CC-1 SEPA / Power Play |
-| E7-3 | SF7-D3 / SF7-D4 in den gepinnten Engines korrigieren (neue Protokollversion SF6-PAPER-2027 1.1.0)? | OPTIMISTIC-Varianten Turtle / Minervini |
-| E7-4 | Neue Snapshot-Generation (mit Holdout), sobald eine faktortragende CA-Quelle vorliegt | V4-D1-Auflösung in den Daten |
+| E7-1 | **entschieden 25.10.:** keine pauschale Quarantäne; Teilkriterien geprüft; Anbieter-Memo vorgelegt. Ursprüngliche Frage: Genügt für CC-5 eine V4-D1-Exposition von 0 (SEPA, Weinstein Investor), oder bleibt CC-5 bis zur neuen Snapshot-Generation offen? Und für die übrigen 9: Quarantäne-Lesart als Ausnahme, oder Beschaffung einer lizenzierten zweiten CA-Quelle (Kosten)? | CC-5 für 2 bzw. 9 Referenzen |
+| E7-2 | **entschieden 25.10.:** Übersetzungen als Beleg ohne `SOURCE_EXACT`; 154 Befunde klassifiziert. Ursprüngliche Frage: Minervini CC-1: rechtmäßige Bereitstellung einer englischen Ausgabe, oder zählen zwei übereinstimmende Übersetzungen als Beleg? | CC-1 SEPA / Power Play |
+| E7-3 | **entschieden und umgesetzt 25.10. (#911).** Ursprüngliche Frage: SF7-D3 / SF7-D4 in den gepinnten Engines korrigieren (neue Protokollversion SF6-PAPER-2027 1.1.0)? | OPTIMISTIC-Varianten Turtle / Minervini |
+| E7-4 | offen, Vorlage in `SUPERTRADER_7_OWNER_DECISIONS_E7.md`: Neue Snapshot-Generation (mit Holdout), sobald eine faktortragende CA-Quelle vorliegt | V4-D1-Auflösung in den Daten |
 | E7-5 | Quelle für PIT-Korrelations- und Branchengruppen (kostenfrei prüfen, kostenpflichtig nur mit Freigabe) | CC-4 Turtle, Weinstein |
 | E7-6 | EP/PS: Budget für eine größere Intraday-Stichprobe (E5) | EP/PS-Belastbarkeit |
-| E7-7 | Ausstiegsvariante „größter Rückgang seit Stage-2-Beginn“ für Minervini (Änderung der 4.0-Engine) | Minervini-Verkaufsregeln |
+| E7-7 | Ausstiegsvarianten für Minervini (größter Rückgang seit Stage-2-Beginn, Klimax-Verkauf, MA20-Halbverkauf) als vorregistrierte Forschungsvarianten oder nur Diagnose | Minervini-Verkaufsregeln |
 
 ## 18. Voraussetzungen für eine spätere Produktintegration
 
@@ -317,13 +355,14 @@ Nichts davon ist Teil von 7.0. Es gibt keine UI- oder Menüänderung.
 
 > **Freigabe Supertrader 7.0 (technischer Entwicklungsauftrag)**
 >
-> Ich gebe die Draft-PRs #902, #898, #899 und den Abschluss-PR in dieser Reihenfolge zum Merge frei. Konflikte werden per Merge-Commit aufgelöst, und die Artefakte werden mit ihren Erzeugern neu gebaut.
+> Ich gebe die Draft-PRs #902, #898, #911, #899 und den Abschluss-PR #905 in dieser Reihenfolge zum Merge frei. Konflikte werden per Merge-Commit aufgelöst, und die Artefakte werden mit ihren Erzeugern neu gebaut.
 >
 > Bestätigt:
 > - V4-D1: Mit freien Daten ist kein Split faktorgenau belegbar; alle referenzexponierten Sitzungen bleiben ungeklärt und gesperrt (E1 gilt weiter). Eine lizenzierte CA-Quelle entscheide ich gesondert (E7-1).
 > - Keine Minervini-Regel ist `SOURCE_EXACT`; Varianten und Diagnosen sind Forschung (E3).
 > - Keine neuen Intraday-Abrufe (E5).
+> - SF7-D3/D4 sind als versionierte Varianten behoben. SF6-PAPER-2027 1.1.0 bleibt vorbereitet und nicht aktiv (E7-3).
 > - 0 von 13 Strategien sind `CERTIFICATION_CANDIDATE`. Alle bleiben `LIVE_NOT_APPROVED` und `DIAGNOSTIC_NOT_CERTIFIED`.
 > - Keine Live-Aktivierung, keine Orders, keine neuen Anbieter, keine Änderung der Produktoberfläche, keine Änderung an Gates oder Branch Protection.
 >
-> Die Entscheidungen E7-1 bis E7-7 treffe ich gesondert.
+> Die offenen Entscheidungen treffe ich gesondert: EDGAR-Grundwahrheit und Anbieteranfrage (E7-1), E7-4 bis E7-7.

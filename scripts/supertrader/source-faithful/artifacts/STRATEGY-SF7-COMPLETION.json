@@ -1,12 +1,13 @@
 {
  "schema": "supertrader-sf7-completion-1.0.0",
- "version": "sf7-completion-matrix-1.0.0",
+ "version": "sf7-completion-matrix-1.1.0",
  "basis": {
   "readinessCriteria": "sf6-readiness-criteria-1.2.0",
   "readinessSha256": "4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342"
  },
  "evidence": {
-  "PR899": "Draft-PR #899 Minervini-Quelleninventur (Lauf 40103766418)",
+  "PR899": "Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0)",
+  "PR911": "Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle)",
   "PR898": "Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache)",
   "PR902": "Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution)",
   "INV": "docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md",
@@ -51,7 +52,7 @@
     "CC5-e-DETECTION-COMPLETE": false,
     "CC5-f-HOLDOUT": false
    },
-   "changed7": "Unit-, Korrelationsgruppen- und Failsafe-Logik neu geprüft, kein Fehler in der Referenz; SF7-D3 (OPTIMISTIC-Alternative übersieht einen sicheren Stop am Einstiegstag) charakterisiert, offen",
+   "changed7": "Unit-, Korrelationsgruppen- und Failsafe-Logik neu geprüft, kein Fehler in der Referenz; SF7-D3 (OPTIMISTIC-Alternative übersah einen sicheren Stop am Einstiegstag) als versionierte Lesart OPTIMISTIC_CERTAIN_RULE behoben (sf-turtle-1.3.0); Referenz und alte Lesarten hashgleich (Lauf 40170829944)",
    "technical": "9/9 Phasen, vollständiger diagnostischer Backtest (Aktien-Adaption)",
    "original": "Original Turtle Rules (W-TUR, englisch); die Failsafe-Lesart ist im Original mehrdeutig, beide Lesarten laufen",
    "assumptions": "Aktien statt Futures, Units auf Eigenkapital, keine PIT-Korrelationsgruppen (SIC-Proxy nur Research, E4)",
@@ -61,10 +62,11 @@
    "blocked": "PIT-Korrelationsgruppen; V4-D1-Rest",
    "execution": "Tagesbalken, Stop intraday, pessimistische Reihenfolge am selben Tag",
    "manual": "keine",
-   "next": "Eigentümerentscheidung zu SF7-D3 (Turtle-Code gepinnt); Quelle für PIT-Korrelationsgruppen",
+   "next": "Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest (E7-1)",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "PR911"
    ]
   },
   {
@@ -103,7 +105,7 @@
     "CC5-e-DETECTION-COMPLETE": false,
     "CC5-f-HOLDOUT": false
    },
-   "changed7": "wie C01 (gemeinsame Engine): kein Fehler in der Referenz",
+   "changed7": "wie C01 (gemeinsame Engine): kein Fehler in der Referenz; SF7-D3 als versionierte Lesart behoben",
    "technical": "9/9 Phasen, vollständiger diagnostischer Backtest",
    "original": "Original Turtle Rules (W-TUR, englisch)",
    "assumptions": "Aktien-Adaption, keine PIT-Korrelationsgruppen",
@@ -113,10 +115,11 @@
    "blocked": "PIT-Korrelationsgruppen; V4-D1-Rest",
    "execution": "Tagesbalken, pessimistisch",
    "manual": "keine",
-   "next": "Quelle für PIT-Korrelationsgruppen; V4-D1-Rest; SF6-PAPER-2027",
+   "next": "Quelle für PIT-Korrelationsgruppen (E7-5); V4-D1-Rest; SF6-PAPER-2027 1.1.0 (vorbereitet, nicht aktiv)",
    "evidence": [
     "PR898",
-    "PR902"
+    "PR902",
+    "PR911"
    ]
   },
   {
@@ -311,7 +314,7 @@
     "CC5-e-DETECTION-COMPLETE": false,
     "CC5-f-HOLDOUT": false
    },
-   "changed7": "Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), 2 Diagnosen; REF ledger-identisch (Lauf 40103766418)",
+   "changed7": "Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386)",
    "technical": "9/9 Phasen als Modellstudie (4.0-Engine unverändert)",
    "original": "Bücher vollständig im Projekt, nur Übersetzungen (B12 id, B07 id, B03 vi); englische Bestätigung nur über W-MIN18; Trend-Template-Zahlen in zwei Übersetzungen gleich",
    "assumptions": "19 Lifecycle- und 6 sf7-Modellannahmen, jede klassifiziert (Inventur)",
@@ -319,14 +322,15 @@
    "backtest": "nur Modellstudie",
    "reliable": "DEV-Snapshot EXACT; PIT-EPS split-korrigiert, wo belegbar",
    "blocked": "IBD-RS-Historie, Schätzungen / Überraschungen / Guidance",
-   "execution": "Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) offen, gepinnt",
+   "execution": "Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) als SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE behoben, alle 21 Varianten hashgleich (Lauf 40170832007)",
    "manual": "11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS)",
-   "next": "Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); ob V4-D1-Exposition 0 für CC-5 genügt; SF7-D4",
+   "next": "Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Minervini-Ausstiegsvarianten (E7-7)",
    "evidence": [
     "PR899",
     "INV",
     "PR898",
-    "PR902"
+    "PR902",
+    "PR911"
    ]
   },
   {
@@ -373,13 +377,14 @@
    "backtest": "nur Modellstudie",
    "reliable": "DEV-Snapshot EXACT",
    "blocked": "V4-D1-Rest",
-   "execution": "wie SEPA; SF7-D4 offen",
+   "execution": "wie SEPA; SF7-D4 behoben (versionierte Variante)",
    "manual": "6 essenzielle Entscheidungen",
    "next": "CC-1-Entscheidung wie SEPA; V4-D1-Rest",
    "evidence": [
     "PR899",
     "INV",
-    "PR902"
+    "PR902",
+    "PR911"
    ]
   },
   {
