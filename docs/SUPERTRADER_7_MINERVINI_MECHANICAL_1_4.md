@@ -11,7 +11,7 @@ Dieses Paket arbeitet die DEFERRED-Fundstellen aus der E7-2-Klassifikation ([SUP
 | Diagnosen | `scripts/supertrader/source-faithful/research/minervini-sf7-mechanical.mjs` | `sf7-minervini-mechanical-1.0.0`, Register `sf7MechanicalRegistrySha256` `0cc8cb2a…` (vor dem Lauf gepinnt) |
 | Paket | `research/minervini-sf7.mjs` | `sf7-minervini-1.4.0`; nur Versionszeichenkette und Kopfkommentar geändert |
 | Runner | `research/run-sf7-minervini.mjs` | `sf7-minervini-runner-1.5.0`, `SF7_FILES` um die neue Datei erweitert |
-| Code-Hash | `sf7CodeSha256` | vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`), Wert siehe Abschnitt 5 |
+| Code-Hash | `sf7CodeSha256` | `832223b9…`, vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`) |
 
 Unverändert bleiben:
 - die 4.0-Engine (`minervini-lifecycle.mjs`, `minervini-execution.mjs`, Fingerabdruck `c834b227…`) und alle Dateien in `run-sf4-lifecycle#FILES` / SF6-PAPER-2027;
@@ -65,7 +65,47 @@ Keine davon ist eine Minervini-Regel. Gedruckte Werte stehen in `SF7_MECHANICAL_
 
 ## 5. Lauf
 
-Wird nach dem maßgeblichen Lauf ergänzt.
+Maßgeblicher Lauf: [40226429160](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40226429160), Workflow `supertrader-validation.yml`, Modus `sf7-minervini`, auf `3807283`. Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT`, Abrechnung `research-v1`, Runner `sf7-minervini-runner-1.5.0`.
+
+Beleg (`receipt`), alle Werte entsprechen den vor dem Lauf gepinnten:
+- `researchCodeSha256` `c834b227…`, `variantRegistrySha256` `f13ea350…` (4.0 unverändert);
+- `sf7VariantRegistrySha256` `9b9a8a00…` (Inhalt = 1.3.0-Register `ce98c24f…`, nur Versionszeichenkette);
+- `sf7CodeSha256` `832223b9…`, `sf7MechanicalRegistrySha256` `0cc8cb2a…`;
+- `sf7ExitRegistrySha256` `df0379ae…` (unverändert).
+
+**Identität gegen den Vorlauf [40202504143](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40202504143)** (öffentliche Teile verglichen):
+- REF SEPA 954 Trades, Ledger `1ca52391…`; REF Power Play 1.007 Trades, Ledger `877ceb33…`: ledger- und tradegleich, `matchesAuthoritativeLedger` wahr;
+- `ALT-SEPA-FLAT-BASE` / `-TT6-25` / `-RS-LINE` (824 / 982 / 890) und alle fünf E7-7-Ausstiegsvarianten beider Strategien: Ledger-Hashes gleich;
+- Engine-Kopie ohne Regel gleich REF in Ledger, Trades, Kurve und Zählern; alle bisherigen Diagnosen byte-gleich.
+
+**Neue Zählungen** (nur Zählungen, Kennzahlen versiegelt):
+
+| Diagnose | SEPA (954) | Power Play (1.007) |
+|---|---|---|
+| Basiszahl 1 / 2 / 3 / 4 / 5+ | 442 / 265 / 120 / 76 / 51 | 736 / 151 / 84 / 23 / 13 |
+| Neustart Marktkorrektur / unter MA200 / keiner | 251 / 697 / 6 | 142 / 839 / 26 |
+| `baseCountUncertain` | 13 | 61 |
+| früh (1–2) / spät (3–4) / Spätphase (≥ 4) / wahrscheinlich scheiternd (≥ 5) | 707 / 196 / 127 / 51 | 887 / 107 / 36 / 13 |
+| Top-Volumen-Rückgang ja / nein / n. a. | 97 / 830 / 27 (Ausstieg am Einstiegstag) | 57 / 727 / 223 (73 Setup unter MA200, 150 Ausstieg am Einstiegstag) |
+| relative Tiefe > 2× / > 3× (bewertet) | 8 / 1 (78) | 260 / 179 (283) |
+| relative Tiefe nicht bewertet (Markt < 10 % / zu kurze Historie) | 876 / 0 | 661 / 63 |
+| Einstiegsbasis Pivot-Berührung / Gap / Limit nach Gap | 830 / 119 / 5 | 881 / 92 / 34 |
+| Fill über Pivot 0 / ≤ 1 % / 1–2 / 2–3 / 3–5 / > 5 % | 841 / 86 / 14 / 5 / 8 / 0 | 891 / 71 / 25 / 11 / 7 / 2 |
+| Eröffnung über Pivot (Fills mit Eröffnung ≥ Pivot) 0 / ≤ 1 % / 1–2 / 2–3 / 3–5 / > 5 % | 11 / 84 / 15 / 6 / 6 / 2 | 10 / 60 / 24 / 8 / 12 / 12 |
+| Buy-Stop +5 / +10 / +20 Cent hätte am Fill-Balken nicht ausgelöst | 131 / 257 / 418 | 142 / 225 / 360 |
+
+Klimax-Variantensignale nach Basiszahl (F7-B03-225-092), 1 / 2 / 3 / 4 / 5+:
+
+| Variante | SEPA | Power Play |
+|---|---|---|
+| `EXIT-CLIMAX` | 32 / 27 / 12 / 4 / 1 | 39 / 39 / 26 / 5 / 8 |
+| `EXIT-CLIMAX-UPCLOSES` | 29 / 15 / 14 / 4 / 2 | 390 / 92 / 55 / 10 / 9 |
+
+Lesehinweise:
+- Bei Power Play stehen 390 der 556 `EXIT-CLIMAX-UPCLOSES`-Signale auf Basis 1. Nach F7-B03-225-092 ist eine Erschöpfungsaktion aus der ersten Basis bullish. Das ist eine Zählung, keine Bewertung und keine Grundlage für eine Variantenwahl.
+- Der Chase-Abstand bleibt bei den REF-Fills meist klein, weil das REF-Limit (`stop / 0,9`) ihn schon begrenzt. Eine Chase-Variante wäre trotzdem eine neue Modellannahme („einige Prozent“ ist unbeziffert).
+- Die Pufferzahlen zeigen nur, wie viele Fill-Balken das Pivot um weniger als 5 / 10 / 20 Cent überschritten. Ob ein späterer Balken ausgelöst hätte, wird nicht simuliert.
+- Etikett: Im öffentlichen Teil trägt `topVolumeDecline.rule` noch den Text „MA-MIN7-STAGE2-START“. Gerechnet wurde nach der Review-Korrektur M2 mit dem MA200-Fenster (`MA-MIN7-TOPVOL`, Code im gepinnten Hash `832223b9…`). Der Text bleibt bis zur nächsten ohnehin nötigen Codeänderung stehen, damit Lauf und Code-Hash übereinstimmen.
 
 ## 6. Tests
 
