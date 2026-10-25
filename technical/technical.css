@@ -138,23 +138,20 @@ details[open]>summary .tc-rot{transform:rotate(90deg)}
 .tc-spark polyline{fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .tc-spark.is-up polyline{stroke:var(--tc-candle-up)}
 .tc-spark.is-down polyline{stroke:var(--tc-candle-down)}
-.tc-funnel,.tc-save,.tc-ai,.tc-dq{margin-top:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card);padding:0 14px}
+.tc-funnel,.tc-save,.tc-dq{margin-top:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card);padding:0 14px}
 .tc-funnel>summary,.tc-dq>summary{min-height:52px;display:flex;align-items:center;font-weight:700;cursor:pointer}
 .tc-funnel ol{margin:0 0 8px;padding-left:20px}
 .tc-funnel li{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
 .tc-funnel li span{flex:1}
 .tc-funnel li em{font-style:normal;color:var(--vu-muted);font-size:13px}
 .tc-json{max-height:220px;overflow:auto;padding:10px;border-radius:12px;background:var(--vu-surface);font-size:12px}
-.tc-save>summary,.tc-ai>summary{display:flex;align-items:center;gap:12px;min-height:64px;cursor:pointer;list-style:none}
-.tc-save>summary::-webkit-details-marker,.tc-ai>summary::-webkit-details-marker{display:none}
+.tc-save>summary{display:flex;align-items:center;gap:12px;min-height:64px;cursor:pointer;list-style:none}
+.tc-save>summary::-webkit-details-marker{display:none}
 .tc-save>summary>span:nth-child(2){flex:1;display:flex;flex-direction:column}
 .tc-save>summary span span{font-size:14px;color:var(--vu-text-secondary)}
 .tc-save-form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-bottom:14px}
 .tc-btn{min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--vu-text);color:var(--vu-bg);font:700 15px Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;cursor:pointer}
 .tc-btn-ghost{background:transparent;color:var(--vu-text);border:1px solid var(--vu-line-strong)}
-.tc-ai>summary span{flex:1;color:var(--vu-text-secondary)}
-.tc-ai>summary em{font-style:normal;font-size:12px;color:var(--vu-muted);border:1px solid var(--vu-line-strong);padding:2px 8px;border-radius:99px}
-.tc-ai p{margin:0 0 14px;color:var(--vu-text-secondary);font-size:14px}
 
 /* ---- Chart Studio */
 .tc-snav{margin:4px 0 2px}
@@ -365,3 +362,22 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 /* END GENERATED HERO FIDELITY */
 /* Hero-Motiv Technical: Indikatorlinien, konvergierendes Dreieck, Analysepunkte (nach dem generierten Block, Kaskade). */
 html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/hero-visuals/technical.svg')}
+
+/* Suche in Worten (regelbasiert, query-text.js) */
+.tc-textsearch{margin:0 0 14px;padding:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card)}
+.tc-ts-label{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tc-ts-label em{font-style:normal;font-size:12px;color:var(--vu-muted);border:1px solid var(--vu-line-strong);padding:2px 8px;border-radius:99px}
+.tc-ts-field{display:flex;gap:8px;align-items:center}
+.tc-ts-field .tc-input{height:44px;padding:0 16px;flex:1;min-width:0}
+.tc-ts-preview{margin-top:10px;display:grid;gap:8px}
+.tc-ts-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.tc-ts-row>span:first-child{color:var(--vu-muted);min-width:96px}
+.tc-mini.is-ok{background:color-mix(in srgb,var(--tc-up) 16%,transparent)}
+.tc-mini.is-warn{background:color-mix(in srgb,var(--tc-down) 16%,transparent)}
+.tc-note.is-warn{color:var(--tc-down)}
+.tc-examples{display:grid;justify-items:start;gap:0}
+.tc-linkbtn{border:0;background:none;padding:0 2px;color:var(--vu-text);text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer;min-height:44px;text-align:left}
+.tc-textsearch code{font-size:12px;word-break:break-word}
+.tc-layer-groups{display:grid;gap:0}
+.tc-layers-h{flex:none;align-self:center;font-size:12px;color:var(--vu-muted);min-width:78px}
+.tc-focus{margin:0 0 10px;padding:10px 14px;border-radius:14px;background:var(--tc-soft);font-size:14px}

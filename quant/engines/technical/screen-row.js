@@ -14,8 +14,9 @@
                         relatives Volumen, ATR %, Bollinger-Breitenperzentil
                         -> auf der VOLLHISTORIE gerechnet (feature-store.js)
      indicators.js      Stochastik, CCI, MFI, Supertrend, Bollinger %B, OBV,
-                        ROC -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
-                        (<= 35 Bars) liegen weit innerhalb des Fensters
+                        Parabolic SAR, Ichimoku-Wolke, Aroon, Williams %R, CMF
+                        -> auf dem 270-Bar-Fenster; alle Aufwaermphasen
+                        (<= 77 Bars, Ichimoku-Wolke) liegen im Fenster
      formations.js      Formationen Stand letzter Bar
    Fehlt ein Eingang, bleibt der Wert null (Missing != Zero); der Screener
    wertet null als "Bedingung nicht erfuellt" und zaehlt es im Trichter.
@@ -30,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.0.0";
+  var ROW_VERSION = "technical-screen-row-1.2.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -91,6 +92,11 @@
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;
+    var ps = I.compute(b, "psar").values;
+    row.psarUp = isNum(ps.direction[t]) ? ps.direction[t] > 0 : null;
+    var ich = I.compute(b, "ichimoku").values, ca = lastAt(ich.cloudA, t), cb = lastAt(ich.cloudB, t);
+    row.aboveCloud = isNum(ca) && isNum(cb) ? c > Math.max(ca, cb) : null;
+    row.aroonOsc = r(lastAt(I.compute(b, "aroon").values.oscillator, t), 1);
 
     /* ---- Tag: Hochs ---- */
     row.newHigh52w = isNum(f.high52w) ? b.high[t] >= f.high52w : null;
@@ -103,6 +109,7 @@
     row.stochK = r(sto.k ? lastAt(sto.k, t) : null, 2);
     row.cci20 = r(lastAt(I.compute(b, "cci").values, t), 2);
     row.roc21 = r(isNum(f.roc21) ? f.roc21 : null);
+    row.williamsR = r(lastAt(I.compute(b, "williamsR").values, t), 2);
 
     /* ---- Tag: Volumen ---- */
     var hasVol = b.volume && b.volume.some(function (v) { return isNum(v) && v > 0; });
@@ -112,6 +119,7 @@
     row.mfi14 = hasVol ? r(lastAt(I.compute(b, "mfi").values, t), 2) : null;
     var obv = hasVol ? I.compute(b, "obv").values : null;
     row.obvRising = obv && t >= 20 ? obv[t] > obv[t - 20] : null;
+    row.cmf20 = hasVol ? r(lastAt(I.compute(b, "cmf").values, t), 3) : null;
 
     /* ---- Tag: Volatilitaet ---- */
     row.atrPct = r(f.atrPct);
@@ -163,6 +171,10 @@
     row.hasVolume = !!hasVol;
     row.weeks = wc.length;
     row.fresh = input.universeAsOf ? row.asOf === input.universeAsOf : null;
+    /* Juengster Schlusssprung mit Datenverdacht (Split-Signatur oder Faktor ausserhalb 0,2..5) in den letzten 60 Bars:
+       nicht nachgezogene Splits oder Abspaltungen verfaelschen Indikatoren und Formationen; der Screener zeigt ihn an. */
+    row.suspectJumpAt = null;
+    for (var q = n - 1; q >= Math.max(1, n - 60); q--) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) { row.suspectJumpAt = b.timestamps[q]; break; }
 
     /* ---- Vorschau: letzte 60 Schluesse auf 0..99 normiert ---- */
     var tail = b.close.slice(Math.max(0, n - 60)), lo = Math.min.apply(null, tail), hi = Math.max.apply(null, tail);
