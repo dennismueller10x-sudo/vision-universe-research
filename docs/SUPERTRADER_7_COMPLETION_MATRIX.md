@@ -1,6 +1,6 @@
 # Supertrader 7.0 – Abschlussmatrix der 13 Strategien
 
-Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.2.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
+Generiert von `scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs` (sf7-completion-matrix-1.3.0). Maschinelle Felder aus `STRATEGY-SF6-READINESS.json` (Kriterien sf6-readiness-criteria-1.2.0); keine Note ist von Hand gesetzt. Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED.
 
 V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.3.0 (Draft-PR #902).
 
@@ -139,7 +139,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386) |
+| Was hat sich in 7.0 geändert? | Quelleninventur: 346 Befunde, englische W-MIN18-Zeilen im Vertrag, 3 quellengestützte Varianten (Flat Base, 25 %-Lesart, RS-Linie), Diagnosen (größter Rückgang, Halbgewinn-Stop, Nach-Ausbruch-Belege aus E7-2); 154 Befunde klassifiziert; REF ledger-identisch (Lauf 40172178386); E7-7: fünf vorregistrierte Ausstiegs-Forschungsvarianten (größter Tages- / Wochenrückgang, MA20-Halbverkauf, zwei Klimax-Lesarten), keine Referenz, REF ledger-identisch (Lauf 40185143571) |
 | Technisch vollständig | 9/9 Phasen als Modellstudie (4.0-Engine unverändert) |
 | Nachgewiesene Originalregeln | Bücher vollständig im Projekt, nur Übersetzungen (B12 id, B07 id, B03 vi); englische Bestätigung nur über W-MIN18; Trend-Template-Zahlen in zwei Übersetzungen gleich |
 | Modellannahmen | 19 Lifecycle- und 6 sf7-Modellannahmen, jede klassifiziert (Inventur) |
@@ -149,15 +149,15 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Gesperrte Daten | IBD-RS-Historie, Schätzungen / Überraschungen / Guidance |
 | Ausführungsrealismus | Buy-Stop-Limit am Pivot, pessimistisch; SF7-D4 (OPTIMISTIC-Alternative) als SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE behoben, alle 21 Varianten hashgleich (Lauf 40170832007) |
 | Manuelle Prüfung | 11 essenzielle Entscheidungen (Priorität, Earnings-Qualität, VCP-Gültigkeit, RS) |
-| Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Minervini-Ausstiegsvarianten (E7-7) |
+| Nächster konkreter Schritt | Eigentümer: englische Ausgabe oder Entscheidung über Übersetzungsbelege (CC-1); CC-5-Teilkriterien (E7-1); Auswertung der versiegelten E7-7-Ausstiegsvarianten (keine Referenzänderung) |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
 
 ## C07 `SF_MINERVINI_POWER_PLAY`
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | VCP-Differenz B12 / B03 zugunsten der Referenz aufgelöst; Korrekturspanne präzisiert (20 %, niedrigpreisig etwa 25 %); REF ledger-identisch |
+| Was hat sich in 7.0 geändert? | VCP-Differenz B12 / B03 zugunsten der Referenz aufgelöst; Korrekturspanne präzisiert (20 %, niedrigpreisig etwa 25 %); REF ledger-identisch; E7-7-Ausstiegsvarianten auch für Power Play (Stage-2-Regeln in rund 600 Trades nicht bewertbar) |
 | Technisch vollständig | 9/9 Phasen als Modellstudie |
 | Nachgewiesene Originalregeln | Bücher nur als Übersetzung; englische Bestätigung für Stop und Größe (W-MIN18) |
 | Modellannahmen | Pivot, Urteil zum Startvolumen, Schwelle „niedrigpreisig“ |
@@ -169,7 +169,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 6 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | CC-1-Entscheidung wie SEPA; V4-D1-Rest |
 | Zertifizierung erfüllt / fehlt | CC-2-LIFECYCLE, CC-4-DATA, CC-6-REPRODUCIBLE, CC-7-EXECUTION / CC-1-SOURCE, CC-3-NO-MANUAL, CC-5-CORPORATE-ACTIONS, CC-8-OOS |
-| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle) |
+| Belege | Draft-PR #899 Minervini-Quelleninventur und E7-2-Klassifikation (Lauf 40172178386, sf7-minervini-1.3.0); docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md; Draft-PR #902 V4-D1-Auflösung (Regelsatz 1.3.0, Läufe 40110748496 sec-pit-r14, 40122736287 sf7-ca-resolution); Draft-PR #921 E7-1 gezielte EDGAR-Prüfung (Regelsatz 1.4.1, Lauf 40190526062, 260 Anfragen; Vorher 1.4.0, Lauf 40185801366, 303 Anfragen): 83 Sitzungen, 0 bestätigte Splits; docs/SUPERTRADER_7_EDGAR_CA_CHECK.md; Draft-PR #911 SF7-D3 / SF7-D4 als versionierte Varianten, SF6-PAPER-2027 1.1.0 nicht aktiv (Läufe 40170829944 sf-research, 40170832007 sf4-lifecycle); docs/SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md: fünf vorregistrierte Ausstiegs-Forschungsvarianten (E7-7, Register df0379ae…, Lauf 40185143571, REF ledger-identisch) |
 
 ## C08 `SF_KK_BREAKOUT`
 
