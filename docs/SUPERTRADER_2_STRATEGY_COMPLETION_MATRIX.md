@@ -199,7 +199,7 @@ Vorkommen je Dimension über alle Kandidaten (eine Regel kann in mehreren Dimens
 
 | Dimension | Status | Klasse | Regel | wesentlich | Umfang | Mechanik | Detail |
 |---|---|---|---|---|---|---|---|
-| Source Rule Coverage | COMPLETE | – | – | – | – | – | 118 #709 rules in scope; HARD 8/16 implemented; 77 excluded with a written reason |
+| Source Rule Coverage | COMPLETE | – | – | – | – | – | 127 #709 rules in scope; HARD 10/18 implemented; 79 excluded with a written reason |
 | Signal Completeness | PARTIAL | DATA_GAP | MIN-SF-TT-8 | ja | DECLARED | umgesetzt | the IBD rating is proprietary and not in the snapshot; a VU cross-sectional percentile is reported as a proxy and never gates (#709: "Ein VU-Perzentil mit ähnlicher Skala ist kein identischer IBD-Rang") |
 | Signal Completeness | PARTIAL | MANUAL_DECISION | MIN-SF-PRIORITY | ja | DECLARED | – | manual relative-priority review of the remaining names |
 | Signal Completeness | PARTIAL | MANUAL_DECISION | MIN-SF-FUNDAMENTALS | ja | DECLARED | – | earnings and sales growth and quality; no fixed percentage gate |
@@ -225,7 +225,7 @@ Vorkommen je Dimension über alle Kandidaten (eine Regel kann in mehreren Dimens
 
 | Dimension | Status | Klasse | Regel | wesentlich | Umfang | Mechanik | Detail |
 |---|---|---|---|---|---|---|---|
-| Source Rule Coverage | COMPLETE | – | – | – | – | – | 20 #709 rules in scope; HARD 3/6 implemented; 11 excluded with a written reason |
+| Source Rule Coverage | COMPLETE | – | – | – | – | – | 29 #709 rules in scope; HARD 4/8 implemented; 15 excluded with a written reason |
 | Signal Completeness | COMPLETE | – | – | – | – | – |  |
 | Entry Completeness | PARTIAL | MANUAL_DECISION | MIN-SF-PP-ENTRY | ja | DECLARED | – | pivot entry decided by the reviewer |
 | Exit Completeness | PARTIAL | MANUAL_DECISION | MIN-SF-PP-EXIT | ja | DECLARED | – | reviewer sell rules |

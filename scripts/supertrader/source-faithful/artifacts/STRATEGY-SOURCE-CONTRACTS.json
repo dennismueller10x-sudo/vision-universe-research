@@ -4026,7 +4026,7 @@
   {
    "strategyId": "SF_MINERVINI_SEPA_VCP",
    "candidateId": "C06",
-   "sourceContractVersion": "1.2.0",
+   "sourceContractVersion": "1.4.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Mark Minervini",
@@ -4149,11 +4149,53 @@
     ]
    },
    "knownLimitations": [
-    "translation-only source wording: no rule is SOURCE_EXACT",
+    "translation-only source wording: no rule is SOURCE_EXACT; English corroboration only from the nine W-MIN18 answers recorded by #709 (not re-verifiable from the project today)",
     "Trend Template criterion 8 (IBD RS >= 70) is DATA_BLOCKED; a VU percentile is not the IBD rating",
     "SEPA selection is manual by design (MIN-PROCESS-04); the full method cannot be measured on history"
    ],
    "chain": [
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "riskmanagement answer",
+     "ruleId": "MIN-W18-1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-STAGGER",
+     "kind": "STOP",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
+     ],
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "fundamentals answer",
+     "ruleId": "MIN-W18-5",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-PRICE-CONFIRM",
+     "kind": "ENTRY",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/research/minervini-lifecycle.mjs#fillBuyOrder",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-PRICE-CONFIRM"
+     ],
+     "derivation": "no simulated entry without the price crossing the pivot (buy stop at the pivot); fundamentals are evidence only and never trigger an order; the full judgment of \"confirming chart action\" stays with the reviewer",
+     "reason": null
+    },
     {
      "source": "B12",
      "bookEdition": "Mark Minervini | Trade Like a Stock Market Wizard | 2013; Indonesian machine-like translation | id",
@@ -4860,6 +4902,48 @@
      "reason": null
     },
     {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "stop answer",
+     "ruleId": "MIN-W18-7",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-STOP",
+     "kind": "STOP",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "stop answer",
+     "ruleId": "MIN-W18-8",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-STOP",
+     "kind": "STOP",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ],
+     "derivation": null,
+     "reason": null
+    },
+    {
      "source": "B03",
      "bookEdition": "Mark Minervini | Think & Trade Like a Champion | Vietnamese copyright 2017; printed January 2018 | vi",
      "page": "PDF 193; printed 186",
@@ -4887,6 +4971,44 @@
      "confidence": "MEDIUM",
      "originalWordingChecked": false,
      "clearance": "REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-SIZE",
+     "kind": "SIZING",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": null,
+     "tests": [],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "progressive exposure answer",
+     "ruleId": "MIN-W18-3",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-SIZE",
+     "kind": "SIZING",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": null,
+     "tests": [],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "progressive exposure answer",
+     "ruleId": "MIN-W18-4",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
      "candidate": "C06",
      "executableRule": "MIN-SF-SIZE",
      "kind": "SIZING",
@@ -4972,13 +5094,32 @@
      "tests": [],
      "derivation": null,
      "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "selling answer",
+     "ruleId": "MIN-W18-2",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C06",
+     "executableRule": "MIN-SF-SELL",
+     "kind": "EXIT",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": null,
+     "tests": [],
+     "derivation": null,
+     "reason": null
     }
    ]
   },
   {
    "strategyId": "SF_MINERVINI_POWER_PLAY",
    "candidateId": "C07",
-   "sourceContractVersion": "1.3.0",
+   "sourceContractVersion": "1.4.0",
    "implemented": true,
    "plannedIn": null,
    "trader": "Mark Minervini",
@@ -5070,6 +5211,27 @@
     "no minimum consolidation length: 3-6 weeks is typical and twelve days is printed (MIN-PP-03)"
    ],
    "chain": [
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "riskmanagement answer",
+     "ruleId": "MIN-W18-1",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "candidate": "C07",
+     "executableRule": "MIN-SF-STAGGER",
+     "kind": "STOP",
+     "status": "SOURCE_DERIVED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/research/minervini-sf7.mjs#staggeredStopRisk",
+     "tests": [
+      "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
+     ],
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash",
+     "reason": null
+    },
     {
      "source": "B12",
      "bookEdition": "Mark Minervini | Trade Like a Stock Market Wizard | 2013; Indonesian machine-like translation | id",
@@ -5262,6 +5424,48 @@
      "reason": null
     },
     {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "stop answer",
+     "ruleId": "MIN-W18-7",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C07",
+     "executableRule": "MIN-SF-PP-STOP",
+     "kind": "STOP",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "stop answer",
+     "ruleId": "MIN-W18-8",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C07",
+     "executableRule": "MIN-SF-PP-STOP",
+     "kind": "STOP",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": "scripts/supertrader/source-faithful/methods/minervini.mjs#stopCheck",
+     "tests": [
+      "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG"
+     ],
+     "derivation": null,
+     "reason": null
+    },
+    {
      "source": "B07",
      "bookEdition": "Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II | Momentum Masters | 2015 original; 2021 Indonesian translation file | id",
      "page": "PDF 30; respective Minervini answer",
@@ -5288,6 +5492,44 @@
      "modal": "STRONG_PREFERENCE",
      "confidence": "MEDIUM",
      "originalWordingChecked": false,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C07",
+     "executableRule": "MIN-SF-PP-SIZE",
+     "kind": "SIZING",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": null,
+     "tests": [],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "progressive exposure answer",
+     "ruleId": "MIN-W18-3",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "candidate": "C07",
+     "executableRule": "MIN-SF-PP-SIZE",
+     "kind": "SIZING",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "targetStatus": null,
+     "code": null,
+     "tests": [],
+     "derivation": null,
+     "reason": null
+    },
+    {
+     "source": "W-MIN18",
+     "bookEdition": "Min ervin i own interview 2018",
+     "page": "progressive exposure answer",
+     "ruleId": "MIN-W18-4",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "originalWordingChecked": true,
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
      "candidate": "C07",
      "executableRule": "MIN-SF-PP-SIZE",

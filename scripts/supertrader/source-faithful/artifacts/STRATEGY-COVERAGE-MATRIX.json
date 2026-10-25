@@ -2175,20 +2175,21 @@
     "MIN_RISK_EXIT_2017",
     "MIN_PULLBACK",
     "MIN_IPO",
-    "MIN_SEPA_TURNAROUND"
+    "MIN_SEPA_TURNAROUND",
+    "SEPA2018"
    ],
    "summary": {
-    "rulesInScope": 118,
+    "rulesInScope": 127,
     "implementedExact": 0,
-    "implementedDerived": 9,
-    "manualReview": 31,
+    "implementedDerived": 11,
+    "manualReview": 36,
     "dataBlocked": 1,
     "ambiguous": 0,
     "notImplemented": 0,
-    "unmappedWithExclusion": 77,
+    "unmappedWithExclusion": 79,
     "unmappedWithoutExclusion": 0,
-    "hardRules": 16,
-    "hardRulesImplemented": 8
+    "hardRules": 18,
+    "hardRulesImplemented": 10
    },
    "rows": [
     {
@@ -3209,6 +3210,87 @@
      "exclusion": "reviewer (sell rules)"
     },
     {
+     "ruleId": "MIN-W18-1",
+     "method": "SEPA2018",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "SOURCE_DERIVED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-2",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-3",
+     "method": "SEPA2018",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-4",
+     "method": "SEPA2018",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-5",
+     "method": "SEPA2018",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "SOURCE_DERIVED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-6",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context (no fixed volume cutoff; resize small names): the research universe floor is the declared platform convention MA-MIN-RESEARCH-UNIVERSE, not a Minervini rule"
+    },
+    {
+     "ruleId": "MIN-W18-7",
+     "method": "SEPA2018",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-8",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-9",
+     "method": "SEPA2018",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (small float, few analysts attractive if the chart supports)"
+    },
+    {
      "ruleId": "MIN-CHEAT-01",
      "method": "MIN_CHEAT_3C_2013",
      "modal": "OPTIONAL",
@@ -3261,20 +3343,21 @@
    "contexts": [
     "MIN_POWER_PLAY",
     "MIN_RISK_2015",
-    "MIN_RISK_EXIT_2017"
+    "MIN_RISK_EXIT_2017",
+    "SEPA2018"
    ],
    "summary": {
-    "rulesInScope": 20,
+    "rulesInScope": 29,
     "implementedExact": 0,
-    "implementedDerived": 5,
-    "manualReview": 4,
+    "implementedDerived": 6,
+    "manualReview": 8,
     "dataBlocked": 0,
     "ambiguous": 0,
     "notImplemented": 0,
-    "unmappedWithExclusion": 11,
+    "unmappedWithExclusion": 15,
     "unmappedWithoutExclusion": 0,
-    "hardRules": 6,
-    "hardRulesImplemented": 3
+    "hardRules": 8,
+    "hardRulesImplemented": 4
    },
    "rows": [
     {
@@ -3447,6 +3530,87 @@
      "clearance": "DO_NOT_HARDEN_PREFERENCE",
      "status": "UNMAPPED",
      "exclusion": "reviewer (sell rules)"
+    },
+    {
+     "ruleId": "MIN-W18-1",
+     "method": "SEPA2018",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "SOURCE_DERIVED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-2",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context (selling is subjective), see MIN-SF-PP-EXIT"
+    },
+    {
+     "ruleId": "MIN-W18-3",
+     "method": "SEPA2018",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-4",
+     "method": "SEPA2018",
+     "modal": "EXAMPLE_ONLY",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-5",
+     "method": "SEPA2018",
+     "modal": "HARD",
+     "confidence": "HIGH",
+     "clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED",
+     "status": "UNMAPPED",
+     "exclusion": "not a Power Play input: a Power Play needs no visible fundamentals (MIN-PP-01); price confirmation is the pivot entry (MIN-SF-PP-ENTRY)"
+    },
+    {
+     "ruleId": "MIN-W18-6",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "context (no fixed volume cutoff); research universe floor is the platform convention MA-MIN-RESEARCH-UNIVERSE"
+    },
+    {
+     "ruleId": "MIN-W18-7",
+     "method": "SEPA2018",
+     "modal": "STRONG_PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-8",
+     "method": "SEPA2018",
+     "modal": "CONTEXTUAL",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "MANUAL_REVIEW_REQUIRED",
+     "exclusion": null
+    },
+    {
+     "ruleId": "MIN-W18-9",
+     "method": "SEPA2018",
+     "modal": "PREFERENCE",
+     "confidence": "HIGH",
+     "clearance": "DO_NOT_HARDEN_PREFERENCE",
+     "status": "UNMAPPED",
+     "exclusion": "reviewer context"
     },
     {
      "ruleId": "MIN-TTC-CONCENTRATION",

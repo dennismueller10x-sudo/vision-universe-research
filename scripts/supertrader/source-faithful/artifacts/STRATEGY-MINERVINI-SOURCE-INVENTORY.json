@@ -1,0 +1,926 @@
+{
+ "schema": "supertrader-sf7-minervini-source-inventory-1.0.0",
+ "question": "Which Minervini material was supplied, what is available today, what reached the contracts, and why is each rule not SOURCE_EXACT?",
+ "sources": [
+  {
+   "sourceId": "B03",
+   "title": "Think & Trade Like a Champion",
+   "language": "vi",
+   "provenance": "BOOK_PRIMARY",
+   "originalWordingChecked": false,
+   "sha256": "ad332a52d3e9bfa4d9e34aa11123a994a16a15956dba3fe3d93c97d066ba16d2",
+   "rows709": 8,
+   "findings7": 95,
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
+  },
+  {
+   "sourceId": "B07",
+   "title": "Momentum Masters",
+   "language": "id",
+   "provenance": "BOOK_PRIMARY",
+   "originalWordingChecked": false,
+   "sha256": "d3fd7f0f1724e6f3ee214a6b2bd5ae40b98cb9da85c273057642638aaab1118a",
+   "rows709": 25,
+   "findings7": 73,
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
+  },
+  {
+   "sourceId": "B12",
+   "title": "Trade Like a Stock Market Wizard",
+   "language": "id",
+   "provenance": "BOOK_PRIMARY",
+   "originalWordingChecked": false,
+   "sha256": "2ba966edc23215a897f4529e616c0c0c4f99b242eafae9826dfbbd0c45a54697",
+   "rows709": 90,
+   "findings7": 178,
+   "availableToday": "PDF_SHA256_MATCHED_AT_FINDINGS_BUILD"
+  },
+  {
+   "sourceId": "W-MIN18",
+   "title": "Min ervin i own interview 2018",
+   "language": null,
+   "provenance": "WEB_PRIMARY",
+   "originalWordingChecked": true,
+   "sha256": null,
+   "rows709": 9,
+   "findings7": 0,
+   "availableToday": "RECORDED_NOT_REFETCHABLE_HERE"
+  }
+ ],
+ "extraction": {
+  "rows709": 132,
+  "rowsInExtractBefore7": 123,
+  "droppedBefore7": {
+   "count": 9,
+   "reason": "method context SEPA2018 (W-MIN18, the only English Minervini rows) was not mapped by the 2.0 extractor; fixed in 7.0"
+  },
+  "rowUse": {
+   "inContractRule": 53,
+   "onlyExcludedAsContext": 79,
+   "unused": 0
+  },
+  "b03Note": "B03 (272 pages, licensed translation) gave #709 only 8 rows, all PDF 193-232 (sizing, average loss, sell guides); 7.0 re-reading: 95 findings across the whole book",
+  "findings7": {
+   "findings": 346,
+   "bySource": {
+    "B12": 178,
+    "B07": 73,
+    "B03": 95
+   },
+   "notCoveredBy709": 154,
+   "partiallyCovered": 190,
+   "translationFlags": 23
+  },
+  "findingsByQuestion": {
+   "Q11": 56,
+   "Q7": 40,
+   "Q12": 32,
+   "Q10": 21,
+   "Q6": 15,
+   "TRANSLATION": 23,
+   "Q5": 35,
+   "Q15": 16,
+   "Q14": 51,
+   "Q9": 10,
+   "Q8": 29,
+   "Q3": 36,
+   "Q1": 24,
+   "Q2": 16,
+   "Q4": 36,
+   "Q13": 5
+  }
+ },
+ "classes": {
+  "SOURCE_PRESENT_ENGLISH": "rule present in Minervini's own English words in the project (W-MIN18)",
+  "SOURCE_PRESENT_TRANSLATION": "rule fully present in the supplied books; only the English original wording is not in the project",
+  "SOURCE_CONFLICT_TRANSLATION": "the supplied translations / editions print different values; not a missing rule",
+  "OPERATIONALIZATION_OPEN": "rule present, but the books give no exact mathematical definition (a model assumption is needed)",
+  "METHOD_DISCRETION": "Minervini himself describes the step as judgment (manual), not as a fixed rule",
+  "DATA_MISSING": "the rule is clear; historical data are missing (independent of the books)",
+  "PROJECT_AVAILABILITY": "material that exists but is not accessible in the project",
+  "ABSENT_FROM_MATERIAL": "checked in every supplied book: the material contains no rule for it"
+ },
+ "classification": {
+  "MIN-SF-STAGGER": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "staggered stops redistribute, never increase the planned risk (English answer recorded by #709); SOURCE_DERIVED, because the wording is not re-verifiable here and no quote hash is held",
+    "evidence": [
+     "MIN-W18-1"
+    ]
+   },
+   {
+    "cls": "PROJECT_AVAILABILITY",
+    "why": "W-MIN18 page not re-fetchable from the project (HTTP 403, archive unreachable)",
+    "evidence": [
+     "MIN-W18-1"
+    ]
+   }
+  ],
+  "MIN-SF-PRICE-CONFIRM": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "fundamentals need confirming chart action (English)",
+    "evidence": [
+     "MIN-W18-5",
+     "MIN-PRICE-01"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "\"confirming chart action\" is broader than a pivot crossing; the machine part is derived",
+    "evidence": [
+     "B12 PDF 306"
+    ]
+   }
+  ],
+  "MIN-SF-SIMPLE": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "simple separate screens",
+    "evidence": [
+     "MIN-PROCESS-15"
+    ]
+   }
+  ],
+  "MIN-SF-PROCESS": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "Trend Template as the qualification; B12 and B03 both: a stock failing it is not considered",
+    "evidence": [
+     "MIN-PROCESS-01",
+     "B12 PDF 114",
+     "B03 PDF 142"
+    ]
+   }
+  ],
+  "MIN-SF-TT-1": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "same numbers in B12 (2013, Indonesian) and B03 (2017, licensed Vietnamese): cross-translation consistent",
+    "evidence": [
+     "MIN-TT-01",
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MIN-SF-TT-2": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "cross-translation consistent (B12 / B03)",
+    "evidence": [
+     "MIN-TT-02",
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MIN-SF-TT-3": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "at least 1 month, preferably 4-5 months in both books",
+    "evidence": [
+     "MIN-TT-03",
+     "B03 PDF 143"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "no book defines how \"trending up\" is measured (21-session point comparison is the derivation)",
+    "evidence": [
+     "B12 PDF 114",
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MIN-SF-TT-4": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "cross-translation consistent (B12 / B03)",
+    "evidence": [
+     "MIN-TT-04",
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MIN-SF-TT-5": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "cross-translation consistent (B12 / B03)",
+    "evidence": [
+     "MIN-TT-05",
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MIN-SF-TT-6": [
+   {
+    "cls": "SOURCE_CONFLICT_TRANSLATION",
+    "why": "B12 Trend Template 30 %, B03 25 %, B12 PDF 101 \"at least 25 to 30 percent\"; reference keeps 30 %, variant ALT-SEPA-TT6-25",
+    "evidence": [
+     "MIN-TT-06",
+     "B03 PDF 143",
+     "B12 PDF 101"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "intraday or closing 52-week low not stated",
+    "evidence": [
+     "B12 PDF 114"
+    ]
+   }
+  ],
+  "MIN-SF-TT-7": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "within 25 % of the 52-week high in both books",
+    "evidence": [
+     "MIN-TT-07",
+     "B03 PDF 143"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "intraday or closing 52-week high not stated",
+    "evidence": [
+     "B12 PDF 114"
+    ]
+   }
+  ],
+  "MIN-SF-TT-8": [
+   {
+    "cls": "DATA_MISSING",
+    "why": "IBD RS rating >= 70 is clear in both books; the rating is proprietary and has no history in the project",
+    "evidence": [
+     "MIN-TT-08",
+     "B03 PDF 143"
+    ]
+   },
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "Minervini's own RS-line condition (not in a downtrend, preferably rising >= 6 weeks) is computable; variant ALT-SEPA-RS-LINE; no substitute for the rating",
+    "evidence": [
+     "B03 PDF 143",
+     "B03 PDF 168"
+    ]
+   }
+  ],
+  "MIN-SF-PRIORITY": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "relative priority of the remaining names is a manual review in the book itself",
+    "evidence": [
+     "MIN-PROCESS-04"
+    ]
+   },
+   {
+    "cls": "DATA_MISSING",
+    "why": "surprise, revision and guidance history (inputs of the priority) have no PIT history in the project",
+    "evidence": [
+     "MIN-PROCESS-06",
+     "MIN-PROCESS-08"
+    ]
+   }
+  ],
+  "MIN-SF-FUNDAMENTALS": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "no universal threshold: 20-25 % is a common minimum, higher in bull markets, single non-accelerating quarters tolerated",
+    "evidence": [
+     "MIN-EPS-02",
+     "B12 PDF 177",
+     "B12 PDF 185"
+    ]
+   },
+   {
+    "cls": "DATA_MISSING",
+    "why": "estimates, surprises, guidance; derived Q4 values not split-correctable (6.0: 405 cases)",
+    "evidence": [
+     "MIN-EPS-05",
+     "MIN-EPS-09"
+    ]
+   }
+  ],
+  "MIN-SF-VCP": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "counts and halving are typical, flat bases allowed; validity is judged",
+    "evidence": [
+     "MIN-VCP-02",
+     "MIN-VCP-03",
+     "MIN-VCP-04"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "footprint notation (6W 32/6 3T), depth bands (10-35 %, rarely after 60 %) and the flat-base bound (10-15 %) are printed, the contraction measurement is not; variant ALT-SEPA-FLAT-BASE",
+    "evidence": [
+     "B12 PDF 297",
+     "B12 PDF 280",
+     "B12 PDF 306"
+    ]
+   }
+  ],
+  "MIN-SF-PIVOT": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "buy over the pivot with rising volume, never before it, not chasing more than \"a few percentage points\" - no number for the chase or the volume",
+    "evidence": [
+     "MIN-VCP-07",
+     "B12 PDF 297",
+     "B12 PDF 306",
+     "B07 PDF 67",
+     "B07 PDF 87"
+    ]
+   },
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "he waits for 5-20 cents over the pivot and says there is no magic number",
+    "evidence": [
+     "B07 PDF 40"
+    ]
+   }
+  ],
+  "MIN-SF-STOP": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "generally about 8-10 % as the maximum (STRONG_PREFERENCE), no volatility-widened stops (English answer)",
+    "evidence": [
+     "MIN-W18-7",
+     "MIN-W18-8"
+    ]
+   },
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "absolute maximum 10 % in B12 / B07 / B03; cut at half the average gain",
+    "evidence": [
+     "MIN-MM-STOP-02",
+     "B12 PDF 370",
+     "B12 PDF 399"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "placement inside the bound (technical level vs percent) is the reviewer's; half-average-gain needs the trader's own history (diagnostic only)",
+    "evidence": [
+     "B07 PDF 74",
+     "B12 PDF 398"
+    ]
+   }
+  ],
+  "MIN-SF-SIZE": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "pilot positions, progressive exposure, examples only (English)",
+    "evidence": [
+     "MIN-W18-3",
+     "MIN-W18-4"
+    ]
+   },
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "risk per trade should not exceed 1.25-2.5 %, at most 25 % per position",
+    "evidence": [
+     "MIN-MM-SIZE-01",
+     "B03 PDF 193"
+    ]
+   },
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "the exact risk inside the range and the progression are the trader's",
+    "evidence": [
+     "B03 PDF 123"
+    ]
+   }
+  ],
+  "MIN-SF-SELL": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "selling is more subjective than buying (English)",
+    "evidence": [
+     "MIN-W18-2",
+     "MIN-MM-SELL-03"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "concrete signals are printed (largest decline since the Stage 2 start, climax run, close below MA20 after a breakout, 2-6R sales) but not ranked into a rule set; diagnostic largestDeclineSignal",
+    "evidence": [
+     "B12 PDF 130",
+     "B07 PDF 90",
+     "B07 PDF 91"
+    ]
+   }
+  ],
+  "MIN-SF-PP-NOFUND": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "no visible fundamentals required",
+    "evidence": [
+     "MIN-PP-01",
+     "B12 PDF 341"
+    ]
+   }
+  ],
+  "MIN-SF-PP-DURATION": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "3-6 weeks typical, 12 days (B12) / 10-12 sessions (B03) possible",
+    "evidence": [
+     "MIN-PP-03",
+     "B03 PDF 189"
+    ]
+   }
+  ],
+  "MIN-SF-PP-RUNUP": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "+100 % in under eight weeks on big volume, generally after dormancy (B12 / B03)",
+    "evidence": [
+     "MIN-PP-02",
+     "B03 PDF 189"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "\"big volume\" at the start has no number (manual flag MIN-MR-PP-VOLUME)",
+    "evidence": [
+     "MIN-PP-02"
+    ]
+   }
+  ],
+  "MIN-SF-PP-CORRECTION": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "B03 clarifies the printed range: no more than 20 %, some low-priced stocks about 25 %",
+    "evidence": [
+     "MIN-PP-04",
+     "B03 PDF 189"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "\"low-priced\" is not quantified; (20 %, 25 %] stays a review case",
+    "evidence": [
+     "B03 PDF 189"
+    ]
+   }
+  ],
+  "MIN-SF-PP-TIGHT": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "conflict resolved: B12 requires VCP characteristics, B03 exempts bases correcting no more than 10 % - exactly the reference reading",
+    "evidence": [
+     "MIN-PP-05",
+     "B12 PDF 341",
+     "B03 PDF 189"
+    ]
+   }
+  ],
+  "MIN-SF-PP-ENTRY": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "pivot of a power play not constructed in the books (run-up high is the model assumption)",
+    "evidence": [
+     "MIN-VCP-07"
+    ]
+   }
+  ],
+  "MIN-SF-PP-STOP": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "maximum about 8-10 % (English)",
+    "evidence": [
+     "MIN-W18-7"
+    ]
+   },
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "placement inside the bound",
+    "evidence": [
+     "MIN-RISK-01"
+    ]
+   }
+  ],
+  "MIN-SF-PP-SIZE": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "at most 25 % per position",
+    "evidence": [
+     "MIN-MM-SIZE-01"
+    ]
+   },
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "risk inside the range is the trader's",
+    "evidence": [
+     "B03 PDF 193"
+    ]
+   }
+  ],
+  "MIN-SF-PP-EXIT": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "sell rules are judgment",
+    "evidence": [
+     "MIN-MM-SELL-01"
+    ]
+   }
+  ],
+  "MA-MIN-MANUAL-SUBSTITUTE": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "the substituted decisions are manual in the books",
+    "evidence": [
+     "MIN-PROCESS-04"
+    ]
+   }
+  ],
+  "MA-MIN-SEPA-PIVOT": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "pivot named, not constructed",
+    "evidence": [
+     "B12 PDF 297"
+    ]
+   }
+  ],
+  "MA-MIN-SEPA-SETUP-PROXY": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "VCP judged; flat bases allowed (B12 PDF 306 now gives their 10-15 % bound)",
+    "evidence": [
+     "B12 PDF 306"
+    ]
+   }
+  ],
+  "MA-MIN-STOP-PLACEMENT": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "stop inside the 10 % bound; half-average-gain rule needs own trade history",
+    "evidence": [
+     "B12 PDF 398"
+    ]
+   }
+  ],
+  "MA-MIN-ORDER-TYPE": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "no order type in the books; the limit follows the 10 % bound; chase limit only \"a few percentage points\"",
+    "evidence": [
+     "B12 PDF 297"
+    ]
+   }
+  ],
+  "MA-MIN-ENTRY-TIMING": [
+   {
+    "cls": "DATA_MISSING",
+    "why": "buy intraday on price, judge volume by intraday extrapolation: needs intraday volume (not in the daily snapshot)",
+    "evidence": [
+     "B12 PDF 306",
+     "MIN-MM-VOL-EX"
+    ]
+   }
+  ],
+  "MA-MIN-INTRABAR-ORDER": [
+   {
+    "cls": "DATA_MISSING",
+    "why": "order of high and low inside a daily bar is unknown without intraday data",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-SETUP-VALIDITY": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "no setup lifetime in the books",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-SIGNAL-ORDER": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "relative priority is manual",
+    "evidence": [
+     "MIN-PROCESS-04"
+    ]
+   }
+  ],
+  "MA-MIN-EXIT-POLICY": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "break-even at 2-3R (B12 PDF 410, B03 PDF 126: 3R raise, 2R break-even); sell rules judgment",
+    "evidence": [
+     "B12 PDF 410",
+     "B03 PDF 126"
+    ]
+   }
+  ],
+  "MA-MIN-STAGE2-TREND-TEMPLATE": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "the Trend Template defines Stage 2 in the books themselves",
+    "evidence": [
+     "B12 PDF 114"
+    ]
+   }
+  ],
+  "MA-MIN-PP-PIVOT": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "pivot not constructed",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-PP-ELIGIBLE-CLASSES": [
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "owner decision 2026-10-21: no automatic upgrade of manual setups",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-RESEARCH-UNIVERSE": [
+   {
+    "cls": "SOURCE_PRESENT_ENGLISH",
+    "why": "no fixed volume cutoff (English): the universe floor is a platform convention",
+    "evidence": [
+     "MIN-W18-6"
+    ]
+   }
+  ],
+  "MA-MIN-STOP-FILL": [
+   {
+    "cls": "DATA_MISSING",
+    "why": "fill of a stop inside a daily bar needs intraday data",
+    "evidence": [
+     "MIN-MM-STOP-01"
+    ]
+   }
+  ],
+  "MA-MIN-COSTS": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "no costs in the books",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-ACCOUNTING-RESEARCH-V1": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "platform accounting",
+    "evidence": []
+   }
+  ],
+  "MA-MIN-MAX-POSITIONS": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "not more than 20 (B12), rarely more than 10-12 (B07); preference, not a cap",
+    "evidence": [
+     "MIN-RISK-10",
+     "B07 PDF 30"
+    ]
+   }
+  ],
+  "MA-MIN-RISK-FRACTION": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "B03: should not exceed 1.25-2.5 % per trade; reference 1.25 % is the lower printed bound",
+    "evidence": [
+     "B03 PDF 193"
+    ]
+   },
+   {
+    "cls": "METHOD_DISCRETION",
+    "why": "the value inside the range is the trader's",
+    "evidence": []
+   }
+  ],
+  "MA-MIN7-FLAT-BASE-WINDOW": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "flat-base length not printed",
+    "evidence": [
+     "B12 PDF 306"
+    ]
+   }
+  ],
+  "MA-MIN7-FLAT-BASE-PIVOT": [
+   {
+    "cls": "SOURCE_PRESENT_TRANSLATION",
+    "why": "buy above the base high",
+    "evidence": [
+     "B12 PDF 306"
+    ]
+   }
+  ],
+  "MA-MIN7-FLAT-BASE-MERGE": [
+   {
+    "cls": "ABSENT_FROM_MATERIAL",
+    "why": "research design (one-at-a-time)",
+    "evidence": []
+   }
+  ],
+  "MA-MIN7-RS-LINE": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "RS line rising >= 6 weeks without a slope measure",
+    "evidence": [
+     "B03 PDF 143"
+    ]
+   }
+  ],
+  "MA-MIN7-STAGE2-START": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "start of the Stage 2 advance not dated mechanically",
+    "evidence": [
+     "B12 PDF 130"
+    ]
+   }
+  ],
+  "MA-MIN7-POST-BREAKOUT-WINDOW": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "right after the breakout has no number; 10 sessions from the printed 2-5 days to 1-2 weeks",
+    "evidence": [
+     "B03 PDF 40",
+     "B03 PDF 47"
+    ]
+   }
+  ],
+  "MA-MIN7-WEEKLY-STEP": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "the weekly chart reading defines no week; 5-session steps from the entry, at least 4 prior weeks",
+    "evidence": [
+     "B03 PDF 217"
+    ]
+   }
+  ],
+  "MA-MIN7-AVG-GAIN": [
+   {
+    "cls": "OPERATIONALIZATION_OPEN",
+    "why": "average gain of the trader's own history",
+    "evidence": [
+     "B12 PDF 398"
+    ]
+   }
+  ]
+ },
+ "classCounts": {
+  "SOURCE_PRESENT_ENGLISH": 6,
+  "PROJECT_AVAILABILITY": 1,
+  "OPERATIONALIZATION_OPEN": 22,
+  "SOURCE_PRESENT_TRANSLATION": 21,
+  "SOURCE_CONFLICT_TRANSLATION": 1,
+  "DATA_MISSING": 6,
+  "METHOD_DISCRETION": 12,
+  "ABSENT_FROM_MATERIAL": 6
+ },
+ "dataOnlyProblems": [
+  {
+   "id": "D-IBD-RS",
+   "problem": "IBD RS rating history (proprietary)",
+   "affects": [
+    "MIN-SF-TT-8"
+   ]
+  },
+  {
+   "id": "D-ESTIMATES",
+   "problem": "PIT analyst estimates, revisions, surprise and guidance history",
+   "affects": [
+    "MIN-SF-PRIORITY",
+    "MIN-SF-FUNDAMENTALS"
+   ]
+  },
+  {
+   "id": "D-EPS-Q4",
+   "problem": "derived Q4 EPS not split-correctable (6.0: 405 SEPA entries with evidence); restatements not taken over",
+   "affects": [
+    "MIN-SF-FUNDAMENTALS"
+   ]
+  },
+  {
+   "id": "D-INTRADAY",
+   "problem": "intraday volume and bar order (daily snapshot only; IEX intraday only from 2017 and only one venue)",
+   "affects": [
+    "MA-MIN-ENTRY-TIMING",
+    "MA-MIN-INTRABAR-ORDER",
+    "MA-MIN-STOP-FILL"
+   ]
+  },
+  {
+   "id": "D-V4D1",
+   "problem": "undeclared corporate actions (V4-D1): SEPA 0 %, Power Play 0.99 % of reference trades directly exposed (6.0)",
+   "affects": [
+    "CC-5"
+   ]
+  },
+  {
+   "id": "D-SURVIVORSHIP-HOLDOUT",
+   "problem": "holdout 2008-2015 survivorship-burdened and already opened",
+   "affects": [
+    "CC-8"
+   ]
+  },
+  {
+   "id": "D-OOS",
+   "problem": "no untouched out-of-sample window before SF6-PAPER-2027",
+   "affects": [
+    "CC-8"
+   ]
+  }
+ ],
+ "projectAvailability": [
+  {
+   "id": "A-ENGLISH-EDITIONS",
+   "item": "English editions of Trade Like a Stock Market Wizard (2013), Momentum Masters (2015), Think & Trade Like a Champion (2017)",
+   "status": "NOT_IN_PROJECT",
+   "note": "only translations were supplied (Dropbox root, 13 PDFs, 2026-10-13); the books are complete, the original wording is not in the project"
+  },
+  {
+   "id": "A-STOCK-MARKET-WIZARDS",
+   "item": "Schwager, Stock Market Wizards (2001), Minervini chapter",
+   "status": "NOT_IN_PROJECT",
+   "note": "the supplied Schwager volumes are Market Wizards (1989), The New Market Wizards (1992, pt), Unknown Market Wizards (2020, fr): none contains a Minervini interview"
+  },
+  {
+   "id": "A-W-MIN18-PAGE",
+   "item": "W-MIN18 interview page (stockopedia.com, 2018-04-17)",
+   "status": "RECORDED_NOT_REFETCHABLE_HERE",
+   "note": "read with original wording checked in #709 on 2026-10-13 (9 rows in the extract); on 2026-10-24 the page answers HTTP 403 to this container and the archive copy (web.archive.org 2022-12-06) is not reachable from here; the rows are not re-verified, they are not changed"
+  }
+ ],
+ "findings154": {
+  "counts": {
+   "QUALITATIVE": 54,
+   "NOT_RELEVANT": 33,
+   "NEW_IMPLEMENTABLE": 17,
+   "CONFIRMS": 36,
+   "REFINES": 14
+  },
+  "translationDoubt": 18,
+  "wouldChangeReference": 10,
+  "disposition": {
+   "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
+   "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 and longestUpRun over the first 10 sessions (G-UPDAYS, diagnostic)",
+   "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (volume above the 50-day mean reading) and lowerLowsCleared (third day closes up or in the upper half of its range on volume above the mean); the rising-volume-each-day reading is not computed (G-LOWERLOWS, diagnostic)",
+   "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
+   "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
+   "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
+   "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice, price below its own 252-session high (at a setup the close is always below the pivot) (G-RSLINE-HIGH, evidence)",
+   "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+   "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+   "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+   "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
+   "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit, 5-session weeks anchored at the entry instead of Friday closes (MA-MIN7-WEEKLY-STEP, diagnostic)",
+   "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
+   "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
+   "F7-B07-067-140": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B07-070-142": "DEFERRED: stop-fallback variant (percent stop instead of rejection); changes trades as a variant, owner may pre-register",
+   "F7-B07-087-150": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B12-092-180": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+   "F7-B12-116-203": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B12-116-205": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+   "F7-B12-185-240": "DEFERRED: evidence on rolling 2-quarter EPS / sales acceleration; depends on the same EPS data-quality fix as G-PE-EXPANSION",
+   "F7-B12-250-264": "IMPLEMENTED: baseDepthAbove50 (evidence)",
+   "F7-B12-280-275": "DEFERRED: setup-filter variant (would change trades as a variant); needs a pre-registered market-drawdown window",
+   "F7-B12-297-283": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+   "F7-B12-311-297": "IMPLEMENTED: closeBelowMa20InWindow (G-MA20, diagnostic)",
+   "F7-B12-327-302": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-330-304": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-331-306": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+   "F7-B12-353-317": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)"
+  },
+  "dispositionCounts": {
+   "DEFERRED": 16,
+   "IMPLEMENTED": 8,
+   "IMPLEMENTED as diagnostic only": 1,
+   "OWNER": 2,
+   "NOT_IN_SCOPE": 4
+  }
+ },
+ "variants7": [
+  {
+   "id": "ALT-SEPA-FLAT-BASE",
+   "strategy": "SEPA",
+   "source": "B12 PDF 306"
+  },
+  {
+   "id": "ALT-SEPA-TT6-25",
+   "strategy": "SEPA",
+   "source": "B03 PDF 143, B12 PDF 101"
+  },
+  {
+   "id": "ALT-SEPA-RS-LINE",
+   "strategy": "SEPA",
+   "source": "B03 PDF 143"
+  }
+ ],
+ "statusChange": "no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)",
+ "validation": {
+  "ok": true,
+  "errors": []
+ }
+}

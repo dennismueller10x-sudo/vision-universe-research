@@ -507,22 +507,38 @@
   {
    "strategyId": "SF_MINERVINI_SEPA_VCP",
    "candidateId": "C06",
-   "sourceContractVersion": "1.2.0",
-   "contractFingerprint": "44c0fbc53e0356dfd987d0f088c185a66b386aade7d8a024a479769d9b1cfb08",
+   "sourceContractVersion": "1.4.0",
+   "contractFingerprint": "445a958ce1e0ce7b6ffed81544138de4c7dd4f211a5fd674e749d324a16bdc10",
    "sourceCoverage": {
-    "rulesInScope": 118,
-    "hardRules": 16,
-    "hardRulesImplemented": 8,
+    "rulesInScope": 127,
+    "hardRules": 18,
+    "hardRulesImplemented": 10,
     "implementedExact": 0,
-    "implementedDerived": 9,
-    "manualReview": 31,
+    "implementedDerived": 11,
+    "manualReview": 36,
     "dataBlocked": 1,
     "ambiguous": 0,
     "notImplemented": 0,
-    "excluded": 77,
+    "excluded": 79,
     "unmapped": 0
    },
    "derivations": [
+    {
+     "ruleId": "MIN-SF-STAGGER",
+     "psr709": [
+      "MIN-W18-1"
+     ],
+     "gate": true,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash"
+    },
+    {
+     "ruleId": "MIN-SF-PRICE-CONFIRM",
+     "psr709": [
+      "MIN-W18-5"
+     ],
+     "gate": true,
+     "derivation": "no simulated entry without the price crossing the pivot (buy stop at the pivot); fundamentals are evidence only and never trigger an order; the full judgment of \"confirming chart action\" stays with the reviewer"
+    },
     {
      "ruleId": "MIN-SF-SIMPLE",
      "psr709": [
@@ -597,30 +613,38 @@
     }
    ],
    "goldenCases": {
-    "total": 12,
-    "pass": 12
+    "total": 14,
+    "pass": 14
    },
    "noInventedThreshold": true
   },
   {
    "strategyId": "SF_MINERVINI_POWER_PLAY",
    "candidateId": "C07",
-   "sourceContractVersion": "1.3.0",
-   "contractFingerprint": "8bbda9ce658f9914097dfdf441d9ef87c0e462b79d67fed65188190c802253ca",
+   "sourceContractVersion": "1.4.0",
+   "contractFingerprint": "5c2e09ce557281b9a50870d49a325800e34b791b050c5e2867d7d9bd5db66d1c",
    "sourceCoverage": {
-    "rulesInScope": 20,
-    "hardRules": 6,
-    "hardRulesImplemented": 3,
+    "rulesInScope": 29,
+    "hardRules": 8,
+    "hardRulesImplemented": 4,
     "implementedExact": 0,
-    "implementedDerived": 5,
-    "manualReview": 4,
+    "implementedDerived": 6,
+    "manualReview": 8,
     "dataBlocked": 0,
     "ambiguous": 0,
     "notImplemented": 0,
-    "excluded": 11,
+    "excluded": 15,
     "unmapped": 0
    },
    "derivations": [
+    {
+     "ruleId": "MIN-SF-STAGGER",
+     "psr709": [
+      "MIN-W18-1"
+     ],
+     "gate": true,
+     "derivation": "the paraphrased English rule as an arithmetic check of a staggered plan: sum over tranches of shares x (entry - stop) <= shares x (entry - single stop); not SOURCE_EXACT until the English wording is re-verified with a stored hash"
+    },
     {
      "ruleId": "MIN-SF-PP-NOFUND",
      "psr709": [
@@ -663,8 +687,8 @@
     }
    ],
    "goldenCases": {
-    "total": 8,
-    "pass": 8
+    "total": 9,
+    "pass": 9
    },
    "noInventedThreshold": true
   },
@@ -922,11 +946,11 @@
   }
  ],
  "goldenSummary": {
-  "goldenCases": 118,
-  "pass": 118,
+  "goldenCases": 120,
+  "pass": 120,
   "fail": 0,
   "notFound": 0,
-  "testsRun": 308,
+  "testsRun": 324,
   "testsFailed": 0,
   "testsSkipped": 2
  }

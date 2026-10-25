@@ -215,7 +215,8 @@
     "MIN_RISK_EXIT_2017",
     "MIN_PULLBACK",
     "MIN_IPO",
-    "MIN_SEPA_TURNAROUND"
+    "MIN_SEPA_TURNAROUND",
+    "SEPA2018"
    ]
   },
   "SF_MINERVINI_POWER_PLAY": {
@@ -224,7 +225,8 @@
    "contexts": [
     "MIN_POWER_PLAY",
     "MIN_RISK_2015",
-    "MIN_RISK_EXIT_2017"
+    "MIN_RISK_EXIT_2017",
+    "SEPA2018"
    ]
   },
   "SF_KK_BREAKOUT": {
@@ -759,6 +761,14 @@
    "original_wording_checked": true,
    "era": "2021-05-18",
    "sha256": "00d717417ae2c55c4c74aa78c204717db6ba6d6f3c62582e556bea8355f9304e"
+  },
+  {
+   "source_id": "W-MIN18",
+   "title": "Min ervin i own interview 2018",
+   "provenance": "WEB_PRIMARY",
+   "url": "https://www.stockopedia.com/content/mark-minervini-interview-how-to-trade-like-a-champion-353963/",
+   "original_wording_checked": true,
+   "era": "2018-04-17"
   },
   {
    "source_id": "W-MOKA12",
@@ -1448,6 +1458,24 @@
     "MIN-EDU-MNST",
     "MIN-EDU-MGA",
     "MIN-EDU-QSII"
+   ]
+  },
+  {
+   "method_id": "M-56917185c8",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "method_kind": "METHOD_CONTEXT",
+   "reproducibility": "MEDIUM",
+   "disclosed_component_reproducibility": "MEDIUM",
+   "full_personal_trading_replica": "REQUIRES_DISCRETION_AND_SCOPING",
+   "source_coverage": "MEDIUM",
+   "ground_truth_quality": "MEDIUM",
+   "vu_feasibility": "MEDIUM",
+   "original_english_checked_for_all_rules": true,
+   "not_fully_reproducible": true,
+   "personal_replication_status": "NOT_FULLY_REPRODUCIBLE",
+   "source_context_case_ids": [
+    "MIN-AMZN1997"
    ]
   },
   {
@@ -3809,6 +3837,82 @@
   },
   {
    "method": "MIN_SEPA_TURNAROUND",
+   "trader": "Mark Minervini",
+   "requirements": [
+    {
+     "field": "price",
+     "requirement": "REQUIRED",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "volume",
+     "requirement": "REQUIRED_OR_CONTEXTUAL",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "intraday",
+     "requirement": "NOT_EXPLICITLY_REQUIRED",
+     "availability": "MISSING"
+    },
+    {
+     "field": "fundamentals",
+     "requirement": "CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "estimates",
+     "requirement": "CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION",
+     "availability": "MISSING"
+    },
+    {
+     "field": "surprises",
+     "requirement": "CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION",
+     "availability": "MISSING"
+    },
+    {
+     "field": "guidance",
+     "requirement": "CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION",
+     "availability": "MISSING"
+    },
+    {
+     "field": "industry",
+     "requirement": "CONTEXTUAL_OR_REQUIRED_FOR_COMPLETE_SELECTION",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "institutional",
+     "requirement": "NOT_EXPLICITLY_REQUIRED",
+     "availability": "MISSING"
+    },
+    {
+     "field": "market_breadth",
+     "requirement": "NOT_EXPLICITLY_REQUIRED",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "market_regime",
+     "requirement": "CONTEXTUAL",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "float",
+     "requirement": "NOT_EXPLICITLY_REQUIRED",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "shares",
+     "requirement": "CONTEXTUAL",
+     "availability": "PARTIAL"
+    },
+    {
+     "field": "short_interest",
+     "requirement": "NOT_EXPLICITLY_REQUIRED",
+     "availability": "MISSING"
+    }
+   ]
+  },
+  {
+   "method": "SEPA2018",
    "trader": "Mark Minervini",
    "requirements": [
     {
@@ -9721,6 +9825,141 @@
    "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
   },
   {
+   "rule_id": "MIN-W18-1",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Risk",
+   "rule_text_paraphrase": "Staggered stops redistribute, never increase planned total risk.",
+   "modal_strength": "HARD",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "riskmanagement answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED"
+  },
+  {
+   "rule_id": "MIN-W18-2",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Exit",
+   "rule_text_paraphrase": "Selling is more subjective than entry.",
+   "modal_strength": "CONTEXTUAL",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "selling answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-3",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Exposure",
+   "rule_text_paraphrase": "Pilotpositions first; increase only after traction.",
+   "modal_strength": "STRONG_PREFERENCE",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "progressive exposure answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-4",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Exposure",
+   "rule_text_paraphrase": "25/50/75/100% illustrate progression, no requiredstart 25%.",
+   "modal_strength": "EXAMPLE_ONLY",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "progressive exposure answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-5",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Fundamentals",
+   "rule_text_paraphrase": "Earnings,sales,margins need confirming chart action.",
+   "modal_strength": "HARD",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "fundamentals answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "SCOPE_AND_EXCEPTIONS_REQUIRED"
+  },
+  {
+   "rule_id": "MIN-W18-6",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Universe",
+   "rule_text_paraphrase": "No fixed volume cutoff; resize small names.",
+   "modal_strength": "CONTEXTUAL",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "liquidity answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-7",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Stop",
+   "rule_text_paraphrase": "Generally 8–10% maximum stop; historicalaverage loss 4–5%.",
+   "modal_strength": "STRONG_PREFERENCE",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "stop answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-8",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Stop",
+   "rule_text_paraphrase": "Does not widen stop according to volatility.",
+   "modal_strength": "CONTEXTUAL",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "stop answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
+   "rule_id": "MIN-W18-9",
+   "trader": "Mark Minervini",
+   "method": "SEPA2018",
+   "rule_area": "Entry",
+   "rule_text_paraphrase": "Small float andfewanalysts attractive if chart supports.",
+   "modal_strength": "PREFERENCE",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "smallcaps answer",
+   "era": "2018-04-17",
+   "confidence": "HIGH",
+   "original_wording_checked": true,
+   "hard_coding_clearance": "DO_NOT_HARDEN_PREFERENCE"
+  },
+  {
    "rule_id": "MOKAPP-001",
    "trader": "Gil Morales / Chris Kacher",
    "method": "PocketPivot",
@@ -13300,6 +13539,20 @@
    "provenance": "WEB_PRIMARY",
    "source_id": "W-KK3",
    "page_location": "annotated setup chart",
+   "confidence": "HIGH"
+  },
+  {
+   "case_id": "MIN-AMZN1997",
+   "trader": "Mark Minervini",
+   "ticker": "AMZN",
+   "company": "Amazon",
+   "date_or_range": "1997",
+   "action": "BUY",
+   "personal_trade_category": "PERSONAL_TRADE_CONFIRMED",
+   "rationale": "Own stated purchase despite hostileanalystviews; source alone doesnot supply contemporary GAAPfinancials.",
+   "provenance": "WEB_PRIMARY",
+   "source_id": "W-MIN18",
+   "page_location": "Amazon answer",
    "confidence": "HIGH"
   },
   {

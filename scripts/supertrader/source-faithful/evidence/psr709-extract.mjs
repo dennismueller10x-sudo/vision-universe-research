@@ -15,7 +15,10 @@
  *    market direction, Weinstein short side for documentation) are included so that manual-review questions and
  *    exclusions can cite them; they never widen what a machine gate may enforce;
  *  - the source library rows (book edition, language, ISBN, provenance) are included for the
- *    Source -> Book Edition -> Rule chain; private storage locators are dropped.
+ *    Source -> Book Edition -> Rule chain; private storage locators are dropped;
+ *  - Supertrader 7.0 source inventory: #709 records Minervini's own 2018 English interview answers (W-MIN18, method
+ *    context SEPA2018, 9 rows, original wording checked) but the 2.0 mapping omitted that context, so the only English
+ *    Minervini rows never reached the contracts. SEPA2018 is now part of both Minervini contexts.
  *
  * Usage: node psr709-extract.mjs --psr <dir with the #709 docs tree or flat files> [--out <file>]
  */
@@ -46,8 +49,8 @@ export const METHOD_CONTEXTS = Object.freeze({
   SF_DARVAS_BOX: { candidate: 'C03', primary: 'DARVAS_LATER_QA', contexts: ['DARVAS_LATER_QA', 'DARVAS_TECHNO_FUNDAMENTAL_1957_1959', 'DARVAS_TECHNICAL_DEVELOPMENT'] },
   SF_WEINSTEIN_INVESTOR: { candidate: 'C04', primary: 'WEIN_STAGE_INVESTOR_1988', contexts: ['WEIN_STAGE_INVESTOR_1988', 'WEIN_MARKET_CONTEXT_1988'] },
   SF_WEINSTEIN_TRADER: { candidate: 'C05', primary: 'WEIN_STAGE_TRADER_1988', contexts: ['WEIN_STAGE_TRADER_1988', 'WEIN_MARKET_CONTEXT_1988', 'WEIN_STAGE_INVESTOR_1988'] },
-  SF_MINERVINI_SEPA_VCP: { candidate: 'C06', primary: 'MIN_SEPA_GROWTH_2013', contexts: ['MIN_SEPA_GROWTH_2013', 'MIN_CHEAT_3C_2013', 'MIN_EXIT', 'MIN_RISK_2015', 'MIN_RISK_EXIT_2017', 'MIN_PULLBACK', 'MIN_IPO', 'MIN_SEPA_TURNAROUND'] },
-  SF_MINERVINI_POWER_PLAY: { candidate: 'C07', primary: 'MIN_POWER_PLAY', contexts: ['MIN_POWER_PLAY', 'MIN_RISK_2015', 'MIN_RISK_EXIT_2017'] },
+  SF_MINERVINI_SEPA_VCP: { candidate: 'C06', primary: 'MIN_SEPA_GROWTH_2013', contexts: ['MIN_SEPA_GROWTH_2013', 'MIN_CHEAT_3C_2013', 'MIN_EXIT', 'MIN_RISK_2015', 'MIN_RISK_EXIT_2017', 'MIN_PULLBACK', 'MIN_IPO', 'MIN_SEPA_TURNAROUND', 'SEPA2018'] },
+  SF_MINERVINI_POWER_PLAY: { candidate: 'C07', primary: 'MIN_POWER_PLAY', contexts: ['MIN_POWER_PLAY', 'MIN_RISK_2015', 'MIN_RISK_EXIT_2017', 'SEPA2018'] },
   SF_KK_BREAKOUT: { candidate: 'C08', primary: 'Breakout', contexts: ['Breakout', 'Execution', 'Portfolio', 'Portfolio/execution'] },
   SF_KK_EPISODIC_PIVOT: { candidate: 'C09', primary: 'Episodic Pivot', contexts: ['Episodic Pivot', 'Execution', 'Portfolio', 'Portfolio/execution'] },
   SF_KK_PARABOLIC_SHORT: { candidate: 'C10', primary: 'Parabolic Short', contexts: ['Parabolic Short', 'Parabolic Long', 'Execution', 'Portfolio', 'Portfolio/execution'] },
