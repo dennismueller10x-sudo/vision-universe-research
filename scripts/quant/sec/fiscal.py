@@ -89,6 +89,12 @@ def classify_duration(start, end):
     return "UNKNOWN"
 
 
+def _is_after_filing(end, filed):
+    """True when a period end lies after the filing date (a future period, not a reported one)."""
+    filed_date = parse_date(filed) if filed else None
+    return end is not None and filed_date is not None and end > filed_date
+
+
 class FiscalCalendar:
     """Fiscal year boundaries and labels for one company."""
 
@@ -126,6 +132,13 @@ class FiscalCalendar:
             if _base_form(fact.form) not in ANNUAL_FORMS:
                 continue
             end = parse_date(fact.end)
+            # A year that ends after the filing was filed is not a year the
+            # filing reports: annual reports carry commitments and budgets for
+            # the coming year (Nutrien's 40-F for 2020, filed 26.02.2021, has
+            # durations 2021-01-01..2021-12-31). Taken as a year end, they made
+            # 2021 the year "2020" and added a phantom year 2026.
+            if _is_after_filing(end, fact.filed):
+                continue
             annual_ends.add(end)
             if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
                 bucket = anchors_by_accession[fact.accession]
@@ -215,7 +228,7 @@ class FiscalCalendar:
             if fact.form not in ANNUAL_FORMS or fact.filing_fp != "FY":
                 continue
             end = parse_date(fact.end)
-            if end is None:
+            if end is None or _is_after_filing(end, fact.filed):
                 continue
             bucket = instants_by_accession[fact.accession]
             bucket["ends"].add(end)

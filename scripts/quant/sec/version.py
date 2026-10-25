@@ -130,7 +130,11 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          carried 1.068 bn (ASC 606 only) instead of 4.893 bn total revenue.
 #          A concept rule can exclude registry industries (`excluded_industries`):
 #          IFRS 15 revenue is the fallback revenue, but not for banks/insurers.
-NORMALIZATION_LOGIC_VERSION = "1.11.0"
+# 1.12.0 — fiscal year ends are learned only from periods that end on or
+#          before the annual filing's filing date. Forward-looking durations
+#          (next year's commitments in Nutrien's 40-F) shifted every fiscal
+#          year label from 2020 on and added a phantom year 2026.
+NORMALIZATION_LOGIC_VERSION = "1.12.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -161,7 +165,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "51dc5f84445781e80c6dc660f0813f84240c096212d8c58c871f1953beba3d84"
+    "4686ffb3fd60771fe1112b13ee71cb6af3530d787ff0322b420f6633038a77e8"
 )
 
 
