@@ -19,6 +19,7 @@ Nichts hier veröffentlicht etwas. Veröffentlicht wird nur im Approval Center d
 | `templates/tesla-ark/` | Referenzreel: Komposition, Zeitberechnung, Stimmentext, Caption |
 | `templates/meta-muse/` | Hook ab Bild 1, Zeichnungen, Handy-Mock-up, Hintergrundbilder |
 | `templates/quartalszahlen/` | datengesteuerte Zahlenvorlage (`data.json`), Beispiel Tesla Q3 |
+| `templates/aktie-ausbruch/` | Aktie im Ausbruch aus Discover/Quant (echter Kurs, Grund aus SEC 8-K, Gegenstimme, nachgebaute Discover-Karte) |
 | `templates/produkt-quant/` | Produktvideo Quant als Anzeige (Hook mit Radar-Zahl, 7-Achsen-Radar, Meldungen, Signal gegen Markt) |
 | `templates/supertrader-erklaert/` | Erklär-Serie für Highlights (Teil 1 Minervini), iPhone-Mock-ups, Checkliste, Markt-Scan mit Platzhalter-Treffern |
 | `templates/etf-earnings/` | eigene Daten im iPhone (echte Kurssprünge, SEC-Umsatz), ETF-Ring, Waage; `earn_moves.py` für Kursbewegungen nach Quartalszahlen |

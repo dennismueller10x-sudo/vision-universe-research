@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>VU Studio – Robert Half</title>
+<style>
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#08080a;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--lime:#c8f531;--on-lime:#101318;--red:#ff6b5e;--green:#3ddc84}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;position:relative;font-variant-numeric:tabular-nums}
+.abs{position:absolute}
+#logo{left:62px;top:60px;width:330px;height:110px;overflow:hidden}
+#logo img{width:100%;height:auto;margin:-12.5% 0 -11%;filter:invert(1) brightness(1.08)}
+.kicker{display:flex;align-items:center;gap:14px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:32px;color:var(--lime)}
+.kicker::before{content:"";width:22px;height:2px;background:var(--lime)}
+#kick{left:72px;top:210px}
+.lime{color:var(--lime)} .red{color:var(--red)} .green{color:var(--green)}
+.chip{display:inline-flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:999px;padding:12px 26px;font-weight:700;font-size:32px;color:var(--ink-2);background:rgba(18,21,25,.9)}
+.chip b{background:var(--lime);color:var(--on-lime);border-radius:999px;padding:4px 16px;font-size:26px;letter-spacing:.06em}
+.hd{left:72px;right:60px;top:280px;height:330px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;font-weight:900;letter-spacing:-.045em;line-height:.98;font-size:100px;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.scn{left:0;top:640px;width:1080px;height:720px;opacity:0}
+#sub{left:60px;right:60px;top:1385px;height:170px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:52px;line-height:1.14;letter-spacing:-.01em;text-shadow:0 4px 28px rgba(0,0,0,.95)}
+#sub b{color:var(--lime);font-weight:900}
+.card{background:rgba(14,17,21,.9);border:1px solid var(--line);border-radius:22px}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.95}
+.lab{font-weight:700;font-size:34px;color:var(--ink-2)}
+svg{overflow:visible}
+.dr{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.bgw{inset:0;overflow:hidden;opacity:0}
+.bgw img{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:50% 45%}
+.phone{width:360px;height:720px;border-radius:58px;border:7px solid #2b3037;background:#f6f7f5;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+.notch{left:50%;top:12px;width:100px;height:26px;margin-left:-50px;border-radius:20px;background:#000;z-index:3}
+.lchip{display:inline-block;background:#ecedeb;border-radius:999px;padding:7px 14px;font-weight:700;font-size:17px;color:#55595e;margin-bottom:8px}
+.lchip b{color:#111;font-weight:800}
+</style></head>
+<body>
+<div id="bg" class="abs" style="inset:0;background:#08080a"></div>
+<div id="bgA" class="abs bgw" style="opacity:1"><img id="imgA" src="assets/facade.jpg"><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(8,8,10,.9) 0%,rgba(8,8,10,.72) 30%,rgba(8,8,10,.55) 55%,rgba(8,8,10,.8) 75%,rgba(8,8,10,.95) 100%)"></div></div>
+<div id="bgB" class="abs bgw"><img id="imgB" src="assets/office.jpg"><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(8,8,10,.9) 0%,rgba(8,8,10,.7) 30%,rgba(8,8,10,.55) 55%,rgba(8,8,10,.82) 75%,rgba(8,8,10,.95) 100%)"></div></div>
+<div id="logo" class="abs"><img src="assets/vision-universe-logo.png" alt="Vision Universe"></div>
+<div id="kick" class="abs kicker">Robert Half · RHI</div>
+
+<!-- Schlagzeilen -->
+<div id="h1" class="abs hd" style="opacity:1"><div id="n22" class="lime" style="font-size:240px;letter-spacing:-.06em;transform-origin:0 80%">+22 %</div><div style="font-size:72px;margin-top:4px">An einem Tag.</div></div>
+<div id="h2" class="abs hd"><div style="font-size:70px;color:var(--ink-2)">Robert Half</div><div>Mehr als</div><div class="lime">verdoppelt.</div></div>
+<div id="h3" class="abs hd"><div>Der</div><div class="lime">Grund.</div></div>
+<div id="h4" class="abs hd"><div style="font-size:88px">Thermometer für</div><div style="font-size:88px" class="lime">den Arbeitsmarkt.</div></div>
+<div id="h5" class="abs hd"><div>Aber</div><div class="red">Vorsicht.</div></div>
+<div id="h6" class="abs hd"><div>Ausbrüche finden.</div><div class="lime">Jeden Tag.</div></div>
+
+<!-- S1: Tagessprung -->
+<div id="s1" class="abs scn" style="opacity:1">
+ <div class="abs card" style="left:72px;top:20px;width:936px;height:400px;padding:26px 34px">
+  <div style="display:flex;justify-content:space-between"><span class="lab" style="font-size:28px">Schlusskurs, letzte 5 Wochen</span><span id="jumpTag" class="lab" style="font-size:28px;color:var(--lime);opacity:0">23.10.2026 · +21,7 %</span></div>
+  <svg width="868" height="300" viewBox="0 0 868 300" style="margin-top:18px"><path class="dr" id="c20" pathLength="1" d="" stroke="#c3c7cc" stroke-width="6"/><path class="dr" id="c20j" pathLength="1" d="" stroke="#c8f531" stroke-width="9"/><circle id="c20d" r="14" fill="#c8f531" opacity="0"/></svg>
+ </div>
+ <div id="pv" class="abs" style="left:72px;top:460px;opacity:0"><span class="chip" style="font-size:38px;color:var(--ink)"><svg width="44" height="44" viewBox="0 0 64 64"><path d="M8 22 H56 V54 H8 Z M24 22 V14 H40 V22 M8 34 H56" fill="none" stroke="#c8f531" stroke-width="5" stroke-linejoin="round"/></svg>eine Personalvermittlung</span></div>
+</div>
+
+<!-- S2: Jahreschart -->
+<div id="s2" class="abs scn">
+ <div class="abs card" style="left:72px;top:10px;width:936px;height:470px;padding:26px 34px">
+  <div style="display:flex;justify-content:space-between"><span class="lab" style="font-size:28px">Kurs in $, 12 Monate</span><span class="lab" style="font-size:28px;color:var(--lime)">Stand 23.10.2026</span></div>
+  <svg width="868" height="370" viewBox="0 0 868 370" style="margin-top:16px">
+   <line id="hiL" x1="0" x2="868" y1="0" y2="0" stroke="#c8f531" stroke-width="3" stroke-dasharray="8 10" opacity="0"/>
+   <path id="yArea" d="" fill="rgba(200,245,49,.1)"/>
+   <path class="dr" id="yLine" pathLength="1" d="" stroke="#c8f531" stroke-width="6"/>
+   <circle id="loD" r="12" fill="#ff6b5e" opacity="0"/><text id="loT" fill="#ff6b5e" font-family="Inter" font-weight="900" font-size="30" text-anchor="middle" opacity="0">21,86 $ · März</text>
+   <circle id="endD" r="14" fill="#c8f531" opacity="0"/><text id="endT" fill="#c8f531" font-family="Inter" font-weight="900" font-size="32" text-anchor="end" opacity="0">45,87 $</text>
+  </svg>
+ </div>
+ <div class="abs" style="left:72px;top:510px;display:flex;gap:16px;flex-wrap:wrap;width:936px">
+  <div id="cDbl" style="opacity:0"><span class="chip" style="font-size:34px;color:var(--ink)"><b>+110 %</b> seit März</span></div>
+  <div id="cHi" style="opacity:0"><span class="chip" style="font-size:34px;color:var(--ink)">↑ Neues 52-Wochen-Hoch</span></div>
+  <div id="cVol" style="opacity:0"><span class="chip" style="font-size:34px;color:var(--ink)"><svg width="40" height="36" viewBox="0 0 40 36"><rect x="2" y="22" width="7" height="12" rx="2" fill="#5b626b"/><rect x="12" y="18" width="7" height="16" rx="2" fill="#5b626b"/><rect x="22" y="20" width="7" height="14" rx="2" fill="#5b626b"/><rect id="vbar" x="32" y="2" width="7" height="32" rx="2" fill="#c8f531"/></svg>3,4× Volumen</span></div>
+ </div>
+</div>
+
+<!-- S3: Gründe -->
+<div id="s3" class="abs scn">
+ <div id="g1" class="abs card" style="left:72px;top:20px;width:936px;padding:30px 36px;display:flex;align-items:center;gap:30px;opacity:0">
+  <svg width="130" height="130" viewBox="0 0 64 64" style="flex:none"><path class="dr" id="uturn" pathLength="1" stroke="#c8f531" stroke-width="5" d="M8 14 C14 40 24 52 34 46 C42 41 46 28 56 12 M46 12 H56 V22"/></svg>
+  <div><div class="lab" style="font-size:30px">Geschäft mit Fachkräften</div><div class="big lime" style="font-size:72px;margin-top:6px">wächst wieder</div><div class="lab" style="font-size:28px;margin-top:6px">zum ersten Mal seit 2022 · +2 %</div></div>
+ </div>
+ <div id="g2" class="abs card" style="left:72px;top:300px;width:936px;padding:30px 36px;opacity:0">
+  <div class="lab" style="font-size:30px">Gewinn je Aktie, 3. Quartal</div>
+  <div style="display:flex;align-items:flex-end;gap:40px;margin-top:20px;height:250px">
+   <div style="text-align:center"><div id="e1" style="width:150px;height:0;background:#4a515a;border-radius:12px 12px 4px 4px"></div><div class="lab" style="font-size:30px;margin-top:10px">0,43 $</div><div class="lab" style="font-size:24px;color:var(--muted)">2025</div></div>
+   <div style="text-align:center"><div id="e2" style="width:150px;height:0;background:var(--lime);border-radius:12px 12px 4px 4px"></div><div class="lab" style="font-size:30px;margin-top:10px;color:var(--ink)">0,49 $</div><div class="lab" style="font-size:24px;color:var(--muted)">2026</div></div>
+   <div id="e3" class="big lime" style="font-size:110px;opacity:0;margin-left:30px;padding-bottom:60px">+14 %</div>
+  </div>
+ </div>
+</div>
+
+<!-- S4: Thermometer -->
+<div id="s4" class="abs scn">
+ <svg class="abs" style="left:150px;top:10px" width="200" height="560" viewBox="0 0 80 224">
+  <rect x="26" y="8" width="28" height="170" rx="14" fill="none" stroke="#c3c7cc" stroke-width="4"/>
+  <circle cx="40" cy="194" r="24" fill="none" stroke="#c3c7cc" stroke-width="4"/>
+  <circle cx="40" cy="194" r="17" fill="#c8f531"/>
+  <rect id="merc" x="33" y="178" width="14" height="0" rx="7" fill="#c8f531"/>
+  <path d="M58 40 H66 M58 70 H66 M58 100 H66 M58 130 H66" stroke="#5b626b" stroke-width="3"/>
+ </svg>
+ <div class="abs" style="left:420px;top:40px;width:600px">
+  <div id="t1" class="card" style="opacity:0;padding:26px 30px"><div class="lab" style="font-size:30px">Wenn Firmen wieder einstellen</div><div id="ppl" style="display:flex;gap:14px;margin-top:18px"></div></div>
+  <div id="t2" class="card" style="opacity:0;padding:26px 30px;margin-top:24px"><div class="big lime" style="font-size:64px">merkt man es</div><div class="big" style="font-size:64px">hier zuerst.</div></div>
+ </div>
+</div>
+
+<!-- S5: Kursziel -->
+<div id="s5" class="abs scn">
+ <div class="abs card" style="left:72px;top:10px;width:936px;height:470px;padding:26px 34px">
+  <div style="display:flex;justify-content:space-between"><span class="lab" style="font-size:28px">Kurs in $, 12 Monate</span><span class="lab" style="font-size:28px;color:var(--red)">Goldman Sachs</span></div>
+  <svg width="868" height="370" viewBox="0 0 868 370" style="margin-top:16px">
+   <path id="yLine2" d="" fill="none" stroke="#c3c7cc" stroke-width="5" stroke-linejoin="round"/>
+   <line id="ptL" x1="0" x2="868" y1="0" y2="0" stroke="#ff6b5e" stroke-width="5" stroke-dasharray="14 12" opacity="0"/>
+   <text id="ptT" x="10" y="0" fill="#ff6b5e" font-family="Inter" font-weight="900" font-size="34" opacity="0">– – Kursziel 33 $</text>
+   <path class="dr" id="gap" pathLength="1" d="" stroke="#ff6b5e" stroke-width="5"/>
+   <text id="gapT" fill="#ff6b5e" font-family="Inter" font-weight="900" font-size="44" text-anchor="end" opacity="0">−28 %</text>
+  </svg>
+ </div>
+ <div id="sell" class="abs" style="left:72px;top:510px;opacity:0"><span class="chip" style="font-size:36px;color:var(--ink);border-color:rgba(255,107,94,.6)"><span class="red" style="font-weight:900">„Verkaufen"</span> bleibt die Einstufung</span></div>
+</div>
+
+<!-- S6: App -->
+<div id="s6" class="abs scn">
+ <div id="ph" class="abs phone" style="left:72px;top:0">
+  <div class="abs notch"></div>
+  <div class="abs" style="left:22px;right:22px;top:58px">
+   <div style="font-weight:900;font-size:16px;letter-spacing:.06em;color:#111">VISION UNIVERSE</div>
+   <div style="font-weight:800;font-size:16px;letter-spacing:.12em;color:#666;margin-top:22px">RHI</div>
+   <div style="font-weight:900;font-size:36px;color:#111;letter-spacing:-.03em;margin-top:4px">Robert Half</div>
+   <div style="font-weight:900;font-size:16px;letter-spacing:.12em;color:#3d8f3a;margin:12px 0 12px">AUSBRUCH MIT VOLUMEN</div>
+   <div id="l1" class="lchip" style="opacity:0">Schlusskurs <b>höchster seit 52 Wochen</b></div>
+   <div id="l2" class="lchip" style="opacity:0">Ausbruch <b>mit Volumen</b></div>
+   <div id="l3" class="lchip" style="opacity:0">Volumen <b>3,4× Ø 20 Tage</b></div>
+   <div style="display:flex;align-items:flex-end;gap:10px;margin-top:8px"><span style="font-weight:900;font-size:50px;color:#3d8f3a;letter-spacing:-.04em;white-space:nowrap">+55 %</span><span style="font-weight:600;font-size:17px;color:#666;padding-bottom:10px">in 12 Monaten</span></div>
+   <svg width="302" height="150" viewBox="0 0 302 150" style="margin-top:6px"><path class="dr" id="pl" pathLength="1" d="" stroke="#5fbf5a" stroke-width="3.5"/></svg>
+  </div>
+ </div>
+ <div class="abs" style="left:480px;top:60px;width:540px">
+  <div id="ap" class="card" style="opacity:0;padding:30px 34px;border-color:rgba(200,245,49,.65)"><div style="margin-bottom:12px"><span class="chip" style="font-size:22px;padding:6px 14px"><b>APP</b> Vision Universe</span></div><div class="big" style="font-size:60px">Ausbrüche</div><div class="big lime" style="font-size:60px">mit Volumen</div><div class="lab" style="font-size:28px;margin-top:12px">neues Hoch · hohes Volumen · auf einen Blick</div></div>
+ </div>
+</div>
+
+<div id="fin" class="abs" style="inset:0;background:var(--bg);opacity:0">
+  <div class="abs" style="left:0;right:0;top:640px;text-align:center"><img src="assets/vision-universe-logo.png" style="width:760px;filter:invert(1) brightness(1.08)"></div>
+  <div class="abs kicker" style="left:0;right:0;top:960px;justify-content:center;font-size:40px">App</div>
+</div>
+<div id="sub" class="abs"></div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const $=id=>document.getElementById(id);
+const TM=window.TM, SUBS=window.SUBS||[], SC=TM.sc, EV=TM.ev||{}, D=window.DATA;
+const ev=(n,fb)=>EV[n]!=null?EV[n]:fb;
+function pathOf(v,W,H,lo,hi,pad=10){return v.map((x,i)=>[i*W/(v.length-1),H-pad-(x-lo)/(hi-lo)*(H-2*pad)]);}
+const toD=P=>"M"+P.map(p=>p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" L");
+// S1: letzte 25 Tage, Sprung am Ende
+const v25=D.v.slice(-25), lo25=Math.min(...v25)-1, hi25=Math.max(...v25)+1; const P25=pathOf(v25,868,300,lo25,hi25);
+$("c20").setAttribute("d",toD(P25.slice(0,-1))); $("c20j").setAttribute("d",toD(P25.slice(-2)));
+$("c20d").setAttribute("cx",P25[24][0]); $("c20d").setAttribute("cy",P25[24][1]);
+// S2/S5: Jahr
+const LO=18, HI=50, PY=pathOf(D.v,868,370,LO,HI,8); const dY=toD(PY);
+$("yLine").setAttribute("d",dY); $("yArea").setAttribute("d",dY+" L868 370 L0 370 Z"); $("yLine2").setAttribute("d",dY);
+const yOf=x=>370-8-(x-LO)/(HI-LO)*(370-16);
+const iLo=D.d.indexOf(D.lo[0]); $("loD").setAttribute("cx",PY[iLo][0]); $("loD").setAttribute("cy",PY[iLo][1]); $("loT").setAttribute("x",PY[iLo][0]); $("loT").setAttribute("y",PY[iLo][1]+50);
+const E=PY[PY.length-1]; $("endD").setAttribute("cx",E[0]); $("endD").setAttribute("cy",E[1]); $("endT").setAttribute("x",E[0]-22); $("endT").setAttribute("y",E[1]-4);
+$("hiL").setAttribute("y1",yOf(45.34)); $("hiL").setAttribute("y2",yOf(45.34));
+const y33=yOf(33); $("ptL").setAttribute("y1",y33); $("ptL").setAttribute("y2",y33); $("ptT").setAttribute("x",10); $("ptT").setAttribute("y",40);
+$("gap").setAttribute("d",`M${E[0]-40} ${E[1]+10} V${y33-6} M${E[0]-56} ${y33-26} L${E[0]-40} ${y33-6} L${E[0]-24} ${y33-26}`); $("gapT").setAttribute("x",E[0]-70); $("gapT").setAttribute("y",y33+100);
+// Telefon-Chart
+const PP=pathOf(D.v,302,150,LO,HI,6); $("pl").setAttribute("d",toD(PP));
+// Personen
+const PER='<svg width="52" height="52" viewBox="0 0 64 64"><circle cx="32" cy="20" r="11" fill="none" stroke="currentColor" stroke-width="5"/><path d="M10 58 C10 42 20 36 32 36 C44 36 54 42 54 58" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>';
+let ph="";for(let i=0;i<7;i++)ph+=`<div id="pp${i}" style="color:#3a4048">${PER}</div>`; $("ppl").innerHTML=ph;
+const win=(t,a,b,first)=>first?1-seg(t,b-.2,b):Math.min(seg(t,a,a+.25),1-seg(t,b-.2,b));
+function show(id,t,a,b,first,dx=60){const k=win(t,a,b,first);$(id).style.opacity=k;$(id).style.transform=`translateX(${first?0:(1-eo(seg(t,a,a+.35)))*dx}px)`;}
+const pop=(id,t,at,dy=26)=>{const k=eo(seg(t,at-.05,at+.35));$(id).style.opacity=k;$(id).style.transform=`translateY(${(1-k)*dy}px)`;return k;};
+const draw=(id,t,at,d=.8)=>{$(id).style.strokeDashoffset=1-eo(seg(t,at,at+d));};
+function render(t){
+  const [a1,a2,a3,a4,a5,a6,end]=SC;
+  ["h1","h2","h3","h4","h5","h6"].forEach((h,i)=>show(h,t,SC[i],SC[i+1],i===0));
+  ["s1","s2","s3","s4","s5","s6"].forEach((s,i)=>show(s,t,SC[i],SC[i+1],i===0,80));
+  // S1
+  $("n22").style.transform=`scale(${1+.08*Math.exp(-t*7)})`;
+  draw("c20",t,.05,1.3); draw("c20j",t,1.35,.35); $("c20d").style.opacity=seg(t,1.65,1.8); $("jumpTag").style.opacity=seg(t,1.7,2.0);
+  pop("pv",t,ev('pv',4.6)-.05,18);
+  // S2
+  draw("yLine",t,a2+.05,1.6); $("yArea").style.opacity=seg(t,a2+1,a2+1.8);
+  const tdb=ev('dbl',a2+1.3); $("loD").style.opacity=seg(t,tdb,tdb+.2); $("loT").style.opacity=seg(t,tdb,tdb+.3); pop("cDbl",t,tdb+1.2,18);
+  $("endD").style.opacity=seg(t,a2+1.6,a2+1.8); $("endT").style.opacity=seg(t,a2+1.7,a2+2);
+  const thi=ev('hi',a2+3.8); $("hiL").style.opacity=seg(t,thi,thi+.3); pop("cHi",t,thi,18);
+  const tv=ev('vol',a2+5.9); pop("cVol",t,tv-.1,18); $("vbar").setAttribute("height",32*eo(seg(t,tv,tv+.5))); $("vbar").setAttribute("y",34-32*eo(seg(t,tv,tv+.5)));
+  // S3
+  const ttu=ev('turn',a3+.9); pop("g1",t,ttu-.1,22); draw("uturn",t,ttu+.1,1.0);
+  const te=ev('eps',a3+5.9); pop("g2",t,te-.1,22); $("e1").style.height=(150*.43/.49*eo(seg(t,te+.2,te+.7)))+"px"; $("e2").style.height=(150*eo(seg(t,te+.5,te+1.1)))+"px"; pop("e3",t,te+1.2,18);
+  // S4
+  $("merc").setAttribute("height",160*eio(seg(t,a4+.2,a4+3)));$("merc").setAttribute("y",178-160*eio(seg(t,a4+.2,a4+3)));
+  const thr=ev('hire',a4+3.7); pop("t1",t,a4+.3,20); for(let i=0;i<7;i++){const k=seg(t,thr+i*.18,thr+i*.18+.15);$("pp"+i).style.color=k>0?"#c8f531":"#3a4048";}
+  pop("t2",t,thr+1.4,20);
+  // S5
+  const tgs=ev('gs',a5+1.1), tpt=ev('pt',tgs+2.2);
+  $("ptL").style.opacity=seg(t,tgs,tgs+.4); $("ptT").style.opacity=seg(t,tgs+.2,tgs+.5); draw("gap",t,tpt,.6); $("gapT").style.opacity=seg(t,tpt+.4,tpt+.7); pop("sell",t,tgs+.5,18);
+  // S6
+  const tap=ev('app',a6+.1); const fl=eo(seg(t,a6,a6+.6)); $("ph").style.transform=`translateY(${(1-fl)*420}px)`;
+  pop("l1",t,a6+.6,10); pop("l2",t,a6+.9,10); pop("l3",t,a6+1.2,10); draw("pl",t,a6+.7,1.4); pop("ap",t,tap+.8,22);
+  // Hintergründe
+  $("bgA").style.opacity=1-seg(t,a3-.3,a3); $("imgA").style.transform=`scale(${1.02+.05*seg(t,0,a3)})`;
+  $("bgB").style.opacity=Math.min(seg(t,a3-.2,a3+.3),1-seg(t,a5-.3,a5)); $("imgB").style.transform=`scale(${1.02+.05*seg(t,a3,a5)})`;
+  const fin=eo(seg(t,end+.05,end+.45));
+  $("kick").style.opacity=1-seg(t,end,end+.3);$("logo").style.opacity=1-seg(t,end,end+.3);$("fin").style.opacity=fin;
+  const cur=t<end?SUBS.find(x=>t>=x[0]&&t<x[1]):null;
+  $("sub").innerHTML=cur?"<div>"+cur[2]+"</div>":"";$("sub").style.opacity=cur?Math.min(seg(t,cur[0],cur[0]+.1),1-seg(t,cur[1]-.08,cur[1])):0;
+}
+window.render=render;document.fonts.ready.then(()=>{window.render(0);window.__ready=true;});
+</script></body></html>
