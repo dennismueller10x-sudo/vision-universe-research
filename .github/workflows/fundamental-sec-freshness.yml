@@ -1,0 +1,222 @@
+name: Fundamental SEC-Aktualitaet
+# Neue Quartals- und Jahresberichte (10-Q/10-K) sollen nicht bis zum naechsten Wochenlauf warten.
+# Die taegliche SEC-Pipeline (sec-fundamentals-daily.yml) erkennt neue Meldungen und haelt sie in
+# quant/data/fundamentals/daily/state.json fest. Fundamental baut seine Historie aber aus den
+# Verbraucherdateien (quant/data/sec/consumer), deren Erzeuger sec-consumer-fundamentals.yml nur
+# woechentlich laeuft. Dieser Waechter vergleicht beides (scripts/fundamental/sec-freshness.mjs) und
+# stoesst den bestehenden Erzeuger per workflow_dispatch an, wenn seit dessen letztem Lauf neue
+# periodische Meldungen eingegangen sind. Er schreibt keine Datei ins Repository; die Daten erzeugt
+# und committet weiterhin allein der Erzeuger, das Release baut danach die Fundamental-Historie neu.
+#
+# Zweiter Teil (Job "publish"): Nach jedem Lauf des Erzeugers wird geprueft, ob die neuen Zahlen
+# auch veroeffentlicht sind. Ist der Lauf gescheitert (z. B. in seiner eigenen Regressionspruefung),
+# wurde nichts committet – das wird sichtbar als roter Lauf gemeldet, ohne Wiederholung. War er
+# erfolgreich, wartet der Job auf das Production-Release (pages-release.yml startet selbst per
+# workflow_run und laeuft werktags ohnehin alle 5 Minuten); kommt keines, wird es einmal per
+# workflow_dispatch mit Standard-Eingaben angestossen. Danach vergleicht
+# scripts/fundamental/verify-publication.mjs die ausgelieferte Seite mit dem Repository.
+# Weder der Erzeuger noch pages-release.yml werden dafuer veraendert.
+on:
+  workflow_run:
+    workflows: ["SEC Fundamentals — Daily Incremental", "SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)"]
+    types: [completed]
+    # Nur Laeufe auf main: der Erzeuger startet auch bei jedem Push auf claude/** und wird dort
+    # uebersprungen; diese Laeufe sind keine Datenlaeufe und duerfen keinen Alarm ausloesen.
+    branches: [main]
+  schedule:
+    # Rueckfall, falls der taegliche Lauf kein Ereignis liefert (nach dessen Zeitfenster).
+    - cron: '40 14 * * *'
+    # Rueckfall fuer die Veroeffentlichungspruefung, falls nach einem (auch angestossenen) Lauf des
+    # Erzeugers kein workflow_run-Ereignis eintrifft. Prueft den juengsten Lauf der letzten 26 Stunden.
+    - cron: '50 19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  check:
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '40 14 * * *') ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.name == 'SEC Fundamentals — Daily Incremental' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: fundamental-sec-freshness-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Neue SEC-Meldungen gegen die Verbraucherdaten
+        id: fresh
+        run: |
+          set -euo pipefail
+          node scripts/fundamental/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
+          node -e 'const r=require(process.argv[1]); console.log("decision="+r.decision); console.log("pending="+r.pending)' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_OUTPUT"
+      - name: Erzeuger anstossen (nur wenn noetig und nicht schon unterwegs)
+        if: steps.fresh.outputs.decision == 'REFRESH_CONSUMER'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          busy=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --limit 20 --json status --jq '[.[] | select(.status != "completed")] | length')
+          last=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --limit 1 --json createdAt --jq '.[0].createdAt // ""')
+          recent=0
+          if [ -n "$last" ]; then
+            age=$(( $(date -u +%s) - $(date -u -d "$last" +%s) ))
+            # Hoechstens ein Lauf je 18 Stunden: das SEC-Sammelarchiv wird naechtlich erneuert.
+            if [ "$age" -lt 64800 ]; then recent=1; fi
+          fi
+          if [ "$busy" != "0" ]; then echo "Erzeuger laeuft bereits ($busy)."; exit 0; fi
+          if [ "$recent" = "1" ]; then echo "Erzeuger lief vor weniger als 18 Stunden ($last)."; exit 0; fi
+          gh workflow run sec-consumer-fundamentals.yml --ref "$REF"
+          echo "Erzeuger angestossen."
+      - name: Alarm bei veralteten SEC-Daten
+        # Rot (GitHub meldet gescheiterte Laeufe dem Eigentuemer), wenn eine neue 10-Q/10-K
+        # seit mehr als 3 Tagen nicht uebernommen ist oder der Erzeuger seit 8 Tagen keinen
+        # erfolgreichen Lauf hatte. Aeltere Luecken, die companyfacts selbst nicht enthaelt
+        # (notAdopted, docs/FUNDAMENTAL_SEC_GAPS.md), loesen keinen Alarm aus.
+        if: always() && steps.fresh.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          oldest=$(node -e 'console.log(require(process.argv[1]).oldestPending || "")' "$RUNNER_TEMP/freshness.json")
+          lastok=$(gh run list --workflow sec-consumer-fundamentals.yml --branch "$REF" --status success --limit 1 --json createdAt --jq '.[0].createdAt // ""')
+          now=$(date -u +%s); fail=0
+          if [ -n "$oldest" ] && [ $(( now - $(date -u -d "$oldest" +%s) )) -gt 259200 ]; then
+            echo "::error::Neue SEC-Meldungen seit $oldest (mehr als 3 Tage) nicht in den Verbraucherdaten."; fail=1
+          fi
+          if [ -z "$lastok" ] || [ $(( now - $(date -u -d "$lastok" +%s) )) -gt 691200 ]; then
+            echo "::error::Kein erfolgreicher Lauf von sec-consumer-fundamentals.yml seit 8 Tagen (zuletzt: ${lastok:-nie})."; fail=1
+          fi
+          echo "Aeltester offener Eingang: ${oldest:-keiner}; letzter erfolgreicher Erzeugerlauf: ${lastok:-nie}"
+          exit "$fail"
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          [ -f "$RUNNER_TEMP/freshness.json" ] || exit 0
+          node -e '
+            const r=require(process.argv[1]);
+            const L=["### Fundamental SEC-Aktualitaet","","| | |","|---|---|",
+              "| Verbraucherdaten Stand | "+r.consumerAsOf+" |","| SEC-Pipeline zuletzt | "+r.secLastRun+" |",
+              "| neu seit dem letzten Lauf | "+r.pending+" Unternehmen |","| aelter, nicht uebernommen | "+r.notAdopted+" |","| Entscheidung | "+r.decision+" |","",
+              "| CIK | Formular | eingereicht | in den Verbraucherdaten bis |","|---|---|---|---|"];
+            for (const x of r.items.slice(0,40)) L.push("| "+x.cik+" | "+x.form+" | "+x.filed+" | "+(x.consumerFiled||"–")+" |");
+            console.log(L.join("\n"));' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    # Nach einem Lauf des Erzeugers der Verbraucherdaten (oder im Rueckfall-Zeitplan).
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.name == 'SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)') ||
+      (github.event_name == 'schedule' && github.event.schedule == '50 19 * * *')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Eigene Gruppe: eine lange Veroeffentlichungspruefung darf die taegliche Pruefung nicht verdraengen.
+    concurrency:
+      group: fundamental-sec-publication-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - name: Lauf des Erzeugers bestimmen
+        id: producer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EV_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          EV_UPDATED: ${{ github.event.workflow_run.updated_at }}
+          EV_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+            conclusion="$EV_CONCLUSION"; updated="$EV_UPDATED"; url="$EV_URL"
+            if [ "$conclusion" = skipped ]; then
+              echo "Lauf des Erzeugers uebersprungen ($url) - kein Datenlauf."; echo "relevant=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          else
+            last=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow sec-consumer-fundamentals.yml --branch main --status completed --limit 1 --json conclusion,updatedAt,url --jq '.[0] // {} | [.conclusion // "", .updatedAt // "", .url // ""] | @tsv')
+            IFS=$'\t' read -r conclusion updated url <<< "$last"
+            if [ -z "$updated" ] || [ $(( $(date -u +%s) - $(date -u -d "$updated" +%s) )) -gt 93600 ]; then
+              echo "Kein Lauf des Erzeugers in den letzten 26 Stunden."; echo "relevant=false" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
+          { echo "relevant=true"; echo "conclusion=$conclusion"; echo "updated=$updated"; echo "url=$url"; } >> "$GITHUB_OUTPUT"
+      - name: Lauf des Erzeugers gescheitert – nichts uebernommen
+        if: steps.producer.outputs.relevant == 'true' && steps.producer.outputs.conclusion != 'success'
+        env:
+          CONCLUSION: ${{ steps.producer.outputs.conclusion }}
+          RUN_URL: ${{ steps.producer.outputs.url }}
+        run: |
+          {
+            echo "### Fundamental: SEC-Verbraucherdaten nicht aktualisiert"
+            echo ""
+            echo "Der Lauf des Erzeugers endete mit **$CONCLUSION** und hat nichts committet: $RUN_URL"
+            echo "Neue 10-Q/10-K erscheinen erst nach einem erfolgreichen Lauf. Keine automatische Wiederholung."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::SEC-Verbraucherdaten nicht aktualisiert ($CONCLUSION): $RUN_URL"
+          exit 1
+      - uses: actions/checkout@v4
+        if: steps.producer.outputs.conclusion == 'success'
+        with:
+          # Wie pages-release.yml: der frische Stand des Erzeugers ist der Kopf von main.
+          ref: main
+      - uses: actions/setup-node@v4
+        if: steps.producer.outputs.conclusion == 'success'
+        with:
+          node-version: '22'
+      - name: Production-Release abwarten (einmal anstossen, falls keines kommt)
+        if: steps.producer.outputs.conclusion == 'success'
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SINCE: ${{ steps.producer.outputs.updated }}
+        run: |
+          set -euo pipefail
+          # Zwei Minuten Spielraum: das Release, das der Erzeuger per workflow_run ausloest, entsteht zeitgleich.
+          since=$(( $(date -u -d "$SINCE" +%s) - 120 ))
+          deadline=$(( $(date -u +%s) + 100 * 60 ))
+          dispatched=0
+          while :; do
+            ok=$(gh run list --workflow pages-release.yml --branch main --limit 30 --json status,conclusion,createdAt,url | SINCE_S="$since" node -e '
+              const r=JSON.parse(require("fs").readFileSync(0,"utf8")).filter(x=>Date.parse(x.createdAt)/1000>=Number(process.env.SINCE_S));
+              const done=r.find(x=>x.status==="completed"&&x.conclusion==="success"); const busy=r.filter(x=>x.status!=="completed").length;
+              console.log(done?done.url:(busy?"busy":(r.length?"failed":"none")));')
+            case "$ok" in
+              http*) echo "Release nach dem Datenlauf: $ok"; echo "url=$ok" >> "$GITHUB_OUTPUT"; break ;;
+            esac
+            now=$(date -u +%s)
+            if [ "$now" -ge "$deadline" ]; then echo "::error::Kein erfolgreiches Production-Release nach dem Datenlauf ($ok)."; exit 1; fi
+            if [ "$ok" != "busy" ] && [ "$dispatched" = 0 ] && [ $(( now - since )) -ge 1020 ]; then
+              gh workflow run pages-release.yml --ref main
+              dispatched=1
+              echo "Kein erfolgreiches Release seit 15 Minuten – einmal angestossen ($ok)."
+            fi
+            sleep 60
+          done
+      - name: Veroeffentlichung pruefen (Repository gegen Auslieferung)
+        if: steps.producer.outputs.conclusion == 'success'
+        run: |
+          set -euo pipefail
+          # Pages-Auslieferung und CDN brauchen nach dem Deploy einige Minuten.
+          for i in 1 2 3 4 5 6; do
+            if node scripts/fundamental/verify-publication.mjs --out="$RUNNER_TEMP/publication.json"; then exit 0; fi
+            sleep 120
+          done
+          echo "::error::Die veroeffentlichte Fundamental-Historie zeigt den neuen SEC-Stand nicht."
+          exit 1
+      - name: Zusammenfassung
+        if: always() && steps.producer.outputs.conclusion == 'success'
+        env:
+          RELEASE: ${{ steps.release.outputs.url }}
+        run: |
+          [ -f "$RUNNER_TEMP/publication.json" ] || exit 0
+          node -e '
+            const r=require(process.argv[1]);
+            const L=["### Fundamental: Veroeffentlichung der SEC-Zahlen","","Release: "+(process.env.RELEASE||"–"),"",
+              "| Pruefung | Ergebnis | Detail |","|---|---|---|"];
+            for (const c of r.checks) L.push("| "+(c.check==="status"?"Stand der Verbraucherdaten":c.ticker+" "+c.form+" "+c.filed)+" | "+(c.ok?"ok":"fehlt")+" | "+(c.check==="status"?(c.published||c.error||"–")+" / erwartet "+c.expected:c.accession+(c.error?" "+c.error:""))+" |");
+            console.log(L.join("\n"));' "$RUNNER_TEMP/publication.json" >> "$GITHUB_STEP_SUMMARY"

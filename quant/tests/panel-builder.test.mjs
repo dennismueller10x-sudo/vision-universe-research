@@ -253,7 +253,7 @@ test("B8 · Ein reiner Kurs-Backtest laeuft auf echten Bars", () => {
   const days = res.panel.tradingDays;
   const result = Backtest.runBacktest({
     definition, strategyId: "tiingo-momentum", strategyVersion: 1,
-    startDate: days[60], endDate: days[days.length - 1],
+    startDate: days[252], endDate: days[days.length - 1],
     provider: priceOnlyProvider, dataSnapshotId: "tiingo-test"
   });
 
@@ -328,7 +328,7 @@ function kursBacktest(isMockJeTitel) {
   const days = res.panel.tradingDays;
   return Backtest.runBacktest({
     definition, strategyId: "herkunft", strategyVersion: 1,
-    startDate: days[60], endDate: days[days.length - 1],
+    startDate: days[252], endDate: days[days.length - 1],
     provider, dataSnapshotId: "herkunft-test"
   });
 }

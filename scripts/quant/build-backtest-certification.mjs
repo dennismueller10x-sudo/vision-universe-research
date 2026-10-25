@@ -27,11 +27,14 @@ const json = (p) => JSON.parse(readFileSync(P(p), "utf8"));
 const C = require(P("quant/engines/backtest-certification.js"));
 const PB = require(P("quant/engines/profile-backtest.js"));
 const SB = require(P("quant/engines/signal-backtest.js"));
+const BacktestSource = require(P("quant/engines/backtest-artifact-consistency.js"));
 const M = json("quant/methodology/backtest-certification-v1.json");
 const G = C.gate;
 const today = new Date().toISOString().slice(0, 10);
 
 const signal = json("quant/data/product/signal-backtest-v1.json");
+const totalReturnQuality = existsSync(P("quant/data/product/total-return-quality-v1.json")) ? json("quant/data/product/total-return-quality-v1.json") : null;
+const signalSource = BacktestSource.assertSignalSourceStatus(signal, totalReturnQuality);
 const outcomes = json("quant/data/product/setup-outcomes-v1.json");
 const replayStudy = existsSync(P("quant/data/product/setup-backtest-v1.json")) ? json("quant/data/product/setup-backtest-v1.json") : null;
 const pattern = json("quant/data/product/pattern-research-v1/study.json");
@@ -92,7 +95,7 @@ kind("PATTERN_EVIDENCE", "Marktweite Muster", [
   G("pit", "Leckage-Vertrag, gepurgte Folds", "HARD", true, "assert in observe()"),
   G("oos", "außerhalb des Lernzeitraums", "QUALITY", (pattern.findings || []).some((f) => f.verdict === "ROBUST"), (pattern.findings || []).filter((f) => f.verdict === "ROBUST").length + " robuste Befunde"),
   G("survivorship", "Überlebende", "STRUCTURAL", false, "teilweise nicht quantifiziert", null, "PRESENT_AND_UNQUANTIFIED_IN_PART"),
-  G("returnBasis", "Gesamtrendite", "STRUCTURAL", false, "Kursrendite", null, "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
+  G("returnBasis", "Gesamtrendite", "STRUCTURAL", false, "Diese Musterstudie verwendet Kursrendite", null, "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN"),
   G("certifiedAsBacktest", "als Backtest freigegeben", "QUALITY", pattern.backtest !== "NOT_CERTIFIED", "Häufigkeitsauswertung", null, "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED")
 ], { trust: "LIMITED", published: true });
 
@@ -111,9 +114,16 @@ const sigKind = kind("SIGNAL_BACKTEST", "Signal-Backtest", [
   G("pit", "Point-in-Time (alle Regeln)", "HARD", signalRules.every((r) => r.gates.find((x) => x.id === "pit").state === "PASS"), "abgeschnittene und verfälschte Zukunft"),
   G("lookahead", "Einstieg nach dem Signal", "HARD", signalRules.every((r) => r.gates.find((x) => x.id === "lookahead").state === "PASS"), "Schluss der Folgewoche"),
   G("survivorship", "Überlebende-Kontrolle", "STRUCTURAL", survivorship.control === "PASS", survivorship.control === "PASS" ? "aktiv" : survivorship.control === "PARTIAL" ? "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)" : "nicht vorhanden", null, survivorship.control === "PARTIAL" ? "PARTIAL_SENSITIVITY_ONLY" : "TODAYS_UNIVERSE_ONLY"),
-  G("returnBasis", "Gesamtrendite", "STRUCTURAL", signal.returnType === "TOTAL_RETURN", signal.returnType === "TOTAL_RETURN" ? "Gesamtrendite" : "Kursrendite (Pipeline rechnet mit Gesamtrendite)", null, "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
+  G("returnBasis", "Gesamtrendite", "STRUCTURAL", BacktestSource.hasConfirmedTotalReturn(signal, signalSource),
+    signalSource.state === "AVAILABLE" ? "Gesamtrendite (" + signalSource.contract + ")" : (signalSource.reason || "Gesamtrendite nicht bestätigt"), null,
+    signalSource.reason || "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
   G("ruleCertified", "mindestens eine Regel zertifiziert", "QUALITY", signalRules.some((r) => r.status === "CERTIFIED"), signalRules.filter((r) => r.status === "CERTIFIED").length + " von " + signalRules.length, null, "NO_RULE_CERTIFIED")
 ], { trust: signalRules.map((r) => r.trust).sort((a, b) => C.TRUST_RANK[b] - C.TRUST_RANK[a])[0], published: signalRules.some((r) => r.published), more: { rules: signalRules,
+  source: { asOf: signalSource.asOf, generatedAt: signalSource.generatedAt, returnType: signalSource.returnType,
+    studySchemaVersion: signalSource.studySchemaVersion, studyEngineVersion: signalSource.studyEngineVersion,
+    qualitySchemaVersion: signalSource.qualitySchemaVersion, returnContract: signalSource.contract,
+    corporateActionContract: signalSource.corporateActionContract, benchmarkContract: signalSource.benchmarkContract,
+    totalReturnCoverage: signalSource.coverage, benchmark: signalSource.benchmark, studyBenchmark: signalSource.studyBenchmark },
   collecting: (signal.withoutHistory || []).filter((w) => w.status === "COLLECTING_HISTORY").map((w) => ({ eventType: w.eventType, source: w.collecting.source })) } });
 
 /* ---------- D: Setup (nur veroeffentlichte Staende) ---------- */

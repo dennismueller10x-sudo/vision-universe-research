@@ -1,12 +1,12 @@
 name: Fundamental CI
-# Fundamental 1.0 (fundamental/**): Modell- und Datentests. Liest nur die bestehenden Discover-Aktiendateien,
-# schreibt nichts. Browser-Kontrast und Wege laufen in shell-ci.yml (vu3-regression), sobald die Welt dort gelistet ist.
+# Fundamental 2.0 (fundamental/**, scripts/fundamental/**): Modell- und Datentests. Liest die bestehenden Discover-Aktiendateien
+# und SEC-Verbraucherdateien, schreibt nur in ein temporaeres Verzeichnis. Browser-Kontrast und Wege laufen in shell-ci.yml (vu3-regression), sobald die Welt dort gelistet ist.
 on:
   push:
     branches: [main]
-    paths: ['fundamental/**', '.github/workflows/fundamental-ci.yml']
+    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml', '.github/workflows/fundamental-sec-freshness.yml']
   pull_request:
-    paths: ['fundamental/**', '.github/workflows/fundamental-ci.yml']
+    paths: ['fundamental/**', 'scripts/fundamental/**', '.github/workflows/fundamental-ci.yml', '.github/workflows/fundamental-sec-freshness.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +25,10 @@ jobs:
       - name: Syntax
         run: |
           node --check fundamental/engine/model.js
+          node --check fundamental/engine/catalog.js
           node --check fundamental/app.js
+          node --check scripts/fundamental/build-history.mjs
+          node --check scripts/fundamental/sec-freshness.mjs
+          node --check scripts/fundamental/verify-publication.mjs
       - name: Model and data tests
         run: node --test "fundamental/tests/*.test.mjs"

@@ -34,6 +34,13 @@ const profiles=JSON.parse(await readFile(resolve(root,'quant/methodology/strateg
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
+// Der Aktienkopf zeigt den Anzeigenamen des Security-Masters, wo der ausgelieferte
+// Verfuegbarkeits-Ausschnitt ihn traegt (assets/stock-navigator.js#head/shardName,
+// VU3: ein Name je Aktie in allen Welten - im Release "NVIDIA"), sonst den Namen des
+// Verzeichnisses. Erwartet wird, was dieselbe Quelle liefert; gelesen, nicht abgeschrieben.
+const StockContext=require(resolve(root,'core/stock-context.js'));
+const nvdaShard=await readFile(resolve(root,'.'+StockContext.availabilityUrl(StockContext.fromUs('NVDA'))),'utf8').then(JSON.parse).catch(()=>null);
+const nvdaHeadName=typeof nvdaShard?.names?.NVDA==='string'?nvdaShard.names.NVDA:nvdaName;
 const nvdaEod=(universeIndex.entries||[]).find(e=>e.s==='NVDA');
 // Explicit stale-data scenario, retaining actual source files and all freshness assertions.
 const staleClock=new Date(Date.parse(nvdaEod.d+'T22:00:00Z')+7*86400000);
@@ -289,10 +296,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
    if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Pro/Contra ohne dafuer/dagegen: '+gruppen.join('|'));
-   /* "Was ist jetzt wichtig?" steht neben dem Chart und traegt den Radar-Stand. */
-   const jetzt=await page.locator('.qx-verdict-card').innerText();
-   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt neben dem Chart');
-   await page.locator('.qx-verdict-card .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor();
+   /* Owner-Mockup 23.10.2026: "Was ist jetzt wichtig?" steht bei den Aktuellen Veraenderungen und traegt den Radar-Stand;
+      neben dem Chart steht das Quant-Ergebnis. */
+   if(!await page.locator('.qx-verdict-card').count())befund(view,width,'Quant-Ergebnis fehlt neben dem Chart');
+   const jetzt=await page.locator('#veraenderung').innerText();
+   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt bei den Veraenderungen');
+   await page.locator('#veraenderung .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor({state:'attached'});
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
@@ -319,8 +328,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   /* Reihenfolge nach Owner-Auftrag "Quant Daily Usefulness" (01.10.2026). */
-   const soll=['setup','historie','dafuer','einordnung','veraenderung','strategie','technik','zahlen','grenzen'];
+   /* Reihenfolge nach Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026); die Unternehmenszahlen sind Teil der Eigenschaften. */
+   const soll=['einordnung','zahlen','dafuer','veraenderung','setup','strategie','technik','historie','grenzen'];
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
@@ -332,7 +341,28 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Elliott nur im Chartbild: keine V1-Zaehlung ("Validierte Zaehlung", "Method Fit") auf der Aktienseite. */
    if(/Validierte Zählung|Method Fit|Elliott-Wellen\b/.test(await page.locator('#technik').innerText()))befund(view,width,'V1-Elliott auf der Aktienseite');
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
-   if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
+   /* Barrierefreier Name der Seitenueberschrift (Rolle heading, Ebene 1) gegen den vorgesehenen Namen. */
+   if(!await page.locator('.qx-stock-hero').getByRole('heading',{level:1,name:nvdaHeadName,exact:true}).count())befund(view,width,'Name weicht vom Verzeichnis ab');
+   /* Die sechs Pillen (Live-Befund 24.10.2026): Ein Klick markiert immer die gewaehlte Pille - auf dem Desktop-Raster
+      stehen zwei Karten nebeneinander, dort markierte das Beobachtungsband die rechte. Danach: Scrollen (Desktop)
+      und Wischen (Mobil) markieren den Bereich, der vorne steht. */
+   {const pillen=await page.locator('.qv2-toc a[data-target]').evaluateAll(as=>as.map(a=>a.dataset.target));
+    if(pillen.join('|')!=='ueberblick|einordnung|dafuer|veraenderung|setup|historie')befund(view,width,'nicht die sechs Pillen: '+pillen.join('|'));
+    const aktiv=()=>page.locator('.qv2-toc a[aria-current="true"]').evaluateAll(as=>as.map(a=>a.dataset.target).join('|'));
+    const ruhig=async()=>{let vorher=null;for(let i=0;i<40;i++){await page.waitForTimeout(100);const jetzt=await page.evaluate(()=>scrollY+'/'+(document.querySelector('.qv2-grid')||{}).scrollLeft);if(jetzt===vorher)return;vorher=jetzt;}};
+    for(const ziel of [...pillen.slice(1),...pillen.slice(0,-1).reverse()]){
+     await page.locator(`.qv2-toc a[data-target="${ziel}"]`).click();await ruhig();await page.waitForTimeout(700);
+     const ist=await aktiv();if(ist!==ziel)befund(view,width,`Pille "${ziel}" angeklickt, markiert ist "${ist}"`);}
+    if(width>=760){
+     for(const ziel of ['einordnung','veraenderung'])/* links in ihrer Zeile, rechts daneben dafuer bzw. setup */{
+      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
+    }else{
+     for(const ziel of ['setup','dafuer','historie']){
+      await page.locator('.qv2-grid').evaluate((g,id)=>g.scrollTo({left:g.querySelector('#'+id).offsetLeft,behavior:'instant'}),ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Wischen zu "${ziel}" markiert ist "${ist}"`);}
+    }
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));}
   }
   if(view==='radar'){
    /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;

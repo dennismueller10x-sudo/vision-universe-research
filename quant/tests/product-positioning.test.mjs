@@ -82,13 +82,17 @@ test("Radar: Bedeutung, naechste Bedingung, Vergleich mit dem Markt - und keine 
   assert.match(pages, /plainTrigger\(tr\.trigger\)/);
 });
 
-test("Aktie: 'Was ist jetzt wichtig?' trennt getestet (mit Markt) von beobachtet (ohne Markt)", () => {
+test("Aktie: getestet (mit Markt) und beobachtet (ohne Markt) stehen getrennt - einmal, im Historischen Vergleich", () => {
+  /* Owner-Mockup 23.10.2026: die Quoten stehen nur noch im Historischen Vergleich (evidenceOverview), nicht
+     zusaetzlich unter "Was ist jetzt wichtig?" - keine Doppelnennung. Die Trennung der Stufen bleibt. */
   const now = slice(stock, "function nowContent(", "function lifecycleLabel(");
-  const tested = now.indexOf("Historisch getestet"), observed = now.indexOf("Bei dieser Aktie beobachtet");
-  assert.ok(tested > 0 && observed > tested, "getestet steht nicht vor beobachtet");
-  assert.match(now, /der Markt " \+ E\.share1\(b\.basePositiveShare\)/, "die getestete Quote steht ohne Markt");
-  assert.match(now, /E\.edgeSentence\(b\)/);
-  assert.match(now, /ohne Marktvergleich/, "die beobachtete Quote sagt nicht, dass ein Vergleich fehlt");
+  assert.ok(!now.includes("Historisch getestet") && !now.includes("Bei dieser Aktie beobachtet"), "Quoten doppelt unter 'Was ist jetzt wichtig?'");
+  const ov = slice(stock, "function evidenceOverview(", "function replaySection(");
+  const observed = ov.indexOf('"Diese Aktie früher"'), tested = ov.indexOf('"Gesamter Markt"');
+  assert.ok(observed > 0 && tested > observed, "die beiden Stufen haben keine eigenen Ansichten");
+  assert.match(ov, /im Plus als der Markt/, "die getestete Quote steht ohne Markt");
+  assert.match(ov, /ähnlichen Lagen/, "die beobachtete Quote nennt ihre Faelle nicht");
+  assert.match(ov, /Aussagekraft begrenzt/, "die Grenze der Aussagekraft fehlt");
   assert.ok(!now.includes("Früher in derselben Kurslage:"), "nackte Trefferquote ohne Stufe");
 });
 

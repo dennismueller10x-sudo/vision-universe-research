@@ -74,6 +74,23 @@ jobs:
           print("companyfacts.zip %.2f GB %s -> %s" % (size/1e9, "aus dem Cache" if cached else "geladen", path))'
           test -s "$SEC_CACHE_DIR/bulk/companyfacts.zip"
 
+      # Zweite SEC-Veroeffentlichung derselben XBRL-Zahlen (Financial
+      # Statement Data Sets, vierteljaehrlich). Der Consumer nimmt daraus nur
+      # Meldungen, von denen companyfacts gar nichts enthaelt (am 25.10.2026:
+      # 199 Meldungen, u. a. Abbott 10-Q Q2 2026) - scripts/quant/sec/fsds.py.
+      # Ein noch nicht veroeffentlichtes Quartal wird gemeldet und
+      # uebersprungen; der Datenlauf haengt nicht davon ab.
+      - name: Financial Statement Data Sets der letzten vier Quartale
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+        run: |
+          python3 -c 'import os, sys, datetime; sys.path.insert(0, "scripts");
+          from quant.sec import fsds; from quant.sec.provider import SECProvider;
+          paths = fsds.fetch_recent(SECProvider().client, os.environ["SEC_CACHE_DIR"], datetime.date.today());
+          open(os.environ["RUNNER_TEMP"] + "/fsds-paths.txt", "w").write(",".join(paths))'
+          echo "Data Sets: $(cat "$RUNNER_TEMP/fsds-paths.txt")"
+
       - name: Consumer-Fundamentals aus companyfacts.zip
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
@@ -82,9 +99,10 @@ jobs:
         run: |
           LIMIT="$IN_LIMIT"
           case "$LIMIT" in *[!0-9]*) echo "::error::limit muss eine Zahl sein"; exit 1;; esac
-          python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
+          FSDS="$(cat "$RUNNER_TEMP/fsds-paths.txt" 2>/dev/null || true)"
+          python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT} ${FSDS:+--fsds "$FSDS"}
           du -sh quant/data/sec/consumer
-          node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'
+          node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length,fsds:c.fsdsSupplement}))'
 
       # Reine Messung, kein Wert aendert sich. total_debt deckt 2.645 von
       # 5.068 ausgelieferten Emittenten ab, und genau diese Zahl haelt

@@ -6,10 +6,10 @@ name: Shell Quality Gates
 # und Seitenende - in Chromium (390 bis 1440 px) und in WebKit (iPhone-Profil).
 on:
   pull_request:
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', 'scripts/vu2/build-release.mjs', '.github/workflows/shell-ci.yml']
   push:
     branches: [main]
-    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', '.github/workflows/shell-ci.yml']
+    paths: ['assets/site-navigation.js', 'assets/site-navigation.css', 'assets/product-icons.svg', 'assets/product-hero.css', 'assets/hero-visuals/**', 'discover/*.js', 'discover/*.css', 'discover/index.html', 'quant/app/**', 'quant/index.html', 'vorsorge/app.*', 'vorsorge/ui/**', 'screener/*.js', 'screener/*.css', 'supertrader/assets/**', 'hedgefonds/app.*', 'scripts/quality/shell-browser-qa.mjs', 'scripts/quality/vu3-regression-qa.mjs', 'elliott/**', 'fundamental/**', 'scripts/fundamental/**', '.github/workflows/shell-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,21 +18,24 @@ concurrency:
   cancel-in-progress: true
 jobs:
   shell:
+    # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Shell tests
         run: node --test "core/tests/shell-navigation.test.mjs" discover/tests/navigation-theme.test.mjs quant/tests/site-navigation.test.mjs
       - name: Build screener universe from committed product data
         run: node scripts/screener/build-universe.mjs
-      - name: Browser dependencies (Chromium and WebKit)
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
         run: |
           npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/shell-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+          node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
       - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
@@ -40,7 +43,7 @@ jobs:
           PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
         run: |
           mkdir -p /tmp/shell-evidence
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/shell-release" > /tmp/shell-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8765 > /tmp/shell-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
@@ -60,19 +63,26 @@ jobs:
     # VU3-Regression (scripts/quality/vu3-regression-qa.mjs): Wege zwischen den Welten (dieselbe Aktie bleibt dieselbe),
     # Farbschema ueber die Welten, Visual-First-Bausteine je Welt und Kontrast (axe color-contrast) hell/dunkel, 390/1440 px.
     # Eigener Job neben shell, damit dessen 40-Minuten-Budget unberuehrt bleibt. Europa-Routen bewusst ausgenommen.
+    # Browser und ihre Systembibliotheken kommen aus dem offiziellen Playwright-Image (Version = playwright@ unten).
+    # Vorher installierte `playwright install --with-deps` sie bei jedem Lauf per apt-get vom Ubuntu-Spiegel des
+    # Runners: rund 100 MB (WebKit: GStreamer, FFmpeg, Schriften) mit zeitweise unter 100 KB/s - die Installation
+    # allein lief in das 40-Minuten-Limit, bevor eine Pruefung startete. Node 22 und git bringt das Image mit;
+    # Python nicht, deshalb liefert scripts/ci/static-server.mjs die Seiten aus (Verhalten wie http.server).
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build screener universe from committed product data
         run: node scripts/screener/build-universe.mjs
-      - name: Browser dependencies (Chromium, WebKit, axe-core)
+      - name: Browser dependencies (axe-core; Chromium und WebKit liegen im Image)
         run: |
           npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
-          node /tmp/vu3-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+          node -e "const pw=require('/tmp/vu3-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
       - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
@@ -81,7 +91,7 @@ jobs:
           AXE_PATH: /tmp/vu3-qa-deps/node_modules/axe-core/axe.min.js
         run: |
           mkdir -p /tmp/vu3-evidence
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/vu3-release" > /tmp/vu3-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/vu3-release" --port=8765 > /tmp/vu3-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done

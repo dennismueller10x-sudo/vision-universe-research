@@ -204,7 +204,8 @@ def _horizons(annual_revenue_rows):
 
 def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), security_ids=(),
                           name=None, fiscal_year_end_hint=None, annual_years=DEFAULT_ANNUAL_YEARS,
-                          quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None):
+                          quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None,
+                          industry=None):
     """The compact consumer bundle for one company from a companyfacts payload."""
     cik = normalize_cik(cik)
     provider = provider or SECProvider.__new__(SECProvider)   # iter_raw_facts needs no client
@@ -215,7 +216,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         return None
     calendar = FiscalCalendar.from_raw_facts(cik, raw_facts, fiscal_year_end_hint=fiscal_year_end_hint)
     result = normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
-                               calendar=calendar)
+                               calendar=calendar, industry=industry)
     factbook = result.factbook
     resolver = PeriodResolver(factbook, registry)
 
@@ -326,6 +327,121 @@ def load_product_universe_ciks(names_file):
         entry["securityIds"].append(row["securityId"])
         entry["name"] = entry["name"] or row.get("companyName")
     return by_cik, without
+
+
+def load_successor_issuers(config_file):
+    """{successor CIK: [predecessor CIKs]} from quant/config/sec-successor-issuers.json."""
+    from pathlib import Path
+    path = Path(config_file)
+    if not path.is_file():
+        return {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    out = {}
+    for successor, entry in (payload.get("successors") or {}).items():
+        predecessors = [normalize_cik(c) for c in entry.get("predecessors") or []]
+        if predecessors:
+            out[normalize_cik(successor)] = predecessors
+    return out
+
+
+def merge_company_facts(successor, predecessors):
+    """One companyfacts payload from a successor and its predecessors.
+
+    A holding reorganisation moves the registrant to a new CIK; the filings
+    before the effective date stay under the old one. Facts are appended per
+    taxonomy, concept and unit; a fact the successor already carries (same
+    accession, period, fiscal labels, form and value) is not repeated. Which
+    value a period shows is decided later, as for any filer, by the filing
+    date (as_of_latest) - nothing here prefers one CIK over the other.
+    """
+    import copy
+    merged = copy.deepcopy(successor)
+    facts = merged.setdefault("facts", {})
+    for other in predecessors:
+        for taxonomy, concepts in (other.get("facts") or {}).items():
+            target_concepts = facts.setdefault(taxonomy, {})
+            for name, concept in concepts.items():
+                target = target_concepts.setdefault(name, {k: v for k, v in concept.items() if k != "units"})
+                units = target.setdefault("units", {})
+                for unit, rows in (concept.get("units") or {}).items():
+                    have = units.setdefault(unit, [])
+                    seen = {(r.get("accn"), r.get("start"), r.get("end"), r.get("fy"), r.get("fp"), r.get("form"), r.get("val"))
+                            for r in have}
+                    for row in rows:
+                        key = (row.get("accn"), row.get("start"), row.get("end"), row.get("fy"), row.get("fp"), row.get("form"), row.get("val"))
+                        if key not in seen:
+                            have.append(row)
+                            seen.add(key)
+    return merged
+
+
+def with_successors(stream, successors):
+    """(cik, payload) stream with each successor's predecessors merged in.
+
+    successors: {successor CIK: [predecessor CIKs]}. Successor and predecessor
+    payloads are held back and yielded once the stream is exhausted; a
+    predecessor alone never yields its own bundle.
+    """
+    predecessor_of = {p for preds in successors.values() for p in preds}
+    held = {}
+    for cik, payload in stream:
+        if cik in successors or cik in predecessor_of:
+            held[cik] = payload
+            continue
+        yield cik, payload
+    for cik, preds in sorted(successors.items()):
+        if cik not in held:
+            continue
+        parts = [held[p] for p in preds if p in held]
+        yield cik, merge_company_facts(held[cik], parts) if parts else held[cik]
+def load_fiscal_year_end_hints(issuers_dir):
+    """Registered fiscal year end (MMDD) per CIK from the SEC pipeline's issuer shards.
+
+    The SEC pipeline (quant/data/fundamentals/issuers, from SEC submissions)
+    hands the same value to FiscalCalendar (pipeline.py). The consumer did not,
+    so a filer without a 10-K yet - a company after its IPO, reporting only
+    10-Qs - had no fiscal year and an empty bundle although its quarters are in
+    companyfacts. The hint is the filer's own declaration and FiscalCalendar
+    uses it only when no annual filing fixes the year ends.
+    """
+    from pathlib import Path
+    hints = {}
+    directory = Path(issuers_dir)
+    if not directory.is_dir():
+        return hints
+    for path in sorted(directory.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for row in payload.get("issuers") or []:
+            value = str(row.get("fiscalYearEnd") or "").strip()
+            if row.get("cik") and len(value) == 4 and value.isdigit():
+                hints[normalize_cik(row["cik"])] = value
+    return hints
+
+
+def load_issuer_industries(issuers_dir):
+    """Registry industry (BANK, INSURER, REIT) per CIK from the same issuer shards.
+
+    The SEC pipeline classifies every issuer by its SIC code (registry
+    `industries`); the consumer reads the classification instead of deriving it
+    a second time. Issuers outside an industry are absent.
+    """
+    from pathlib import Path
+    industries = {}
+    directory = Path(issuers_dir)
+    if not directory.is_dir():
+        return industries
+    for path in sorted(directory.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for row in payload.get("issuers") or []:
+            if row.get("cik") and row.get("industry"):
+                industries[normalize_cik(row["cik"])] = row["industry"]
+    return industries
 
 
 def summarize_bundle(bundle):

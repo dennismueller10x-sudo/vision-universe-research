@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "quant-backtest-certification-methodology-1.0.0",
+  "methodologyVersion": "1.0.0",
+  "status": "PROPOSED_PENDING_OWNER_APPROVAL",
+  "effectiveFrom": null,
+  "sourceMain": "eddcde8e8880cc2ae6f8c47b936ffacfc5015b49",
+  "description": "Entwurf für eine einheitliche und reproduzierbare Zertifizierung der sechs bestehenden Backtest-Arten. Vorgeschlagene Schwellen gelten erst nach ausdrücklicher fachlicher Freigabe.",
+  "scope": "Shared certification methodology for the six existing backtest kinds. This document does not change engine behavior, existing gates, artifacts, or statuses.",
+  "principles": {
+    "noSurvivorByConstruction": true,
+    "noTickerOnlyIdentityJoin": true,
+    "noSyntheticHistoricalSnapshots": true,
+    "noMissingValueImputation": true,
+    "negativeCertifiedResultAllowed": true,
+    "statisticalSignificanceIsNotEconomicBenefit": true,
+    "positiveResultDoesNotImplyCertification": true,
+    "historicalSimulationCannotReplacePublishedPitSnapshots": true,
+    "existingStricterGatesRemainInForce": true
+  },
+  "historicalUniverseClasses": {
+    "HISTORICAL_INDEX_MEMBERSHIP": {
+      "useWhen": "The claim is about an index or index strategy.",
+      "required": ["constituent_listing_id", "effective_from", "effective_to", "published_at", "membership_vintage", "weight_if_used", "source", "snapshot_hash"],
+      "forbidden": ["current_constituents_backfilled_as_history"]
+    },
+    "ALL_THEN_TRADEABLE_LISTINGS": {
+      "useWhen": "The claim is market-wide or generally about eligible equities.",
+      "required": ["predeclared_market_segment", "point_in_time_instrument_class", "listing_status", "first_trade_date", "last_trade_date", "inclusion_and_exclusion_log"],
+      "forbidden": ["current_universe_as_historical_population", "retrospective_liquidity_filter"]
+    },
+    "CUSTOM_STRATEGY_UNIVERSE": {
+      "useWhen": "A strategy has a specifically defined membership and rebalance rule.",
+      "required": ["membership_rule_version", "rebalance_time", "effective_time", "available_time", "membership_snapshot_hash"],
+      "forbidden": ["present_day_membership_without_historical_snapshots"]
+    }
+  },
+  "identity": {
+    "primaryKey": "immutable_listing_id",
+    "requiredFields": ["listing_id", "issuer_id", "mic", "instrument_class", "ticker", "ticker_valid_from", "ticker_valid_to", "listing_status", "first_trade_date", "last_trade_date", "primary_listing", "identity_source", "identity_confidence"],
+    "tickerOnlyJoin": "PROHIBITED",
+    "tickerReuse": "Separate listing identity or non-overlapping validity intervals; ambiguous mappings quarantine observations.",
+    "delisting": "Include listing through last tradable time; require sourced terminal value/return or mark outcome UNKNOWN and censored.",
+    "unknownDelistingReturn": "Never replace with zero, last price, or -100%; fail survivorship if bounds can change the primary conclusion.",
+    "mergerAndSpinOff": "Record predecessor/successor graph, exchange ratio, cash/stock terms, event dates, announcement availability, source, and return factor; unresolved outcomes are censored."
+  },
+  "timeAndData": {
+    "modes": {
+      "AS_PUBLISHED_PIT": "Only data vintages with available_at/published_at no later than decision time; preserve immutable source version and hash.",
+      "HISTORICAL_SIMULATION": "Ex-post reconstruction only; explicitly labeled; cannot claim historical PIT availability, replace published snapshots, or inherit certification."
+    },
+    "requiredProvenance": ["effective_at", "available_at", "published_at", "retrieved_at", "source_vintage", "input_hash", "methodology_version", "engine_version", "parameter_hash", "as_of"],
+    "returnBasis": "Canonical total return for equities; splits and distributions included; price return may be reported only as a separate diagnostic.",
+    "corporateActionFields": ["action_id", "listing_id", "action_type", "amount", "currency", "ex_date", "record_date", "pay_date", "announcement_available_at", "adjustment_factor", "source", "revision_vintage"],
+    "coverageMinimum": 0.995,
+    "coverageUnit": "expected event/outcome observations, including exclusions and censored outcomes",
+    "coverageNote": "Proposed V1 threshold, not yet approved. Existing stricter gates remain. Any unresolved identity/corporate-action break affecting primary sample is a hard block.",
+    "missingData": "Preserve missing/UNKNOWN; no forward fill, interpolation, zero fill, or silent exclusion. Predeclare exclusion policy and report denominators.",
+    "benchmark": "Same return basis and aligned time axis; use preregistered matched base rate and a question-appropriate passive total-return benchmark.",
+    "costs": {"netPrimaryResult": true, "scenariosBpsRoundTrip": {"LOW": 10, "BASE": 30, "HIGH": 60}, "slippageMustNotBeDoubleCounted": true}
+  },
+  "regimeGate": {
+    "existingMinimumNecessary": {"orderedObservations": 12, "observationDays": 90},
+    "proposedAdditionalRequirements": {
+      "calendarYears": 5,
+      "allThreeStatesObserved": true,
+      "independentEpisodesPerState": 20,
+      "independentCalendarQuarterClustersPerState": 20,
+      "studyOutcomeClustersPerReportedState": 20,
+      "transitionMatrix": true,
+      "statePersistence": true,
+      "hysteresisValidation": true,
+      "immutablePublishedSnapshots": true,
+      "independentSourceRecalculation": true
+    },
+    "note": "Normative proposed thresholds require owner ratification. Retrospectively classified regimes are simulation-only, not PIT evidence. Insufficient state coverage is reported as INSUFFICIENT, never pooled silently."
+  },
+  "validation": {
+    "preregistrationRequired": true,
+    "purgeEmbargo": "At least longest outcome horizon plus cooldown; overlapping outcomes cannot cross train/test boundaries.",
+    "oos": "Chronological holdout not viewed during rule selection; previously inspected outcomes cannot be relabeled as untouched.",
+    "walkForward": {"minimumChronologicalFolds": 4, "purgeAndEmbargo": true, "reportEachFold": true},
+    "parameterAndEntrySensitivity": "Predeclared diagnostics only; never select a winning neighbor after seeing outcomes.",
+    "multipleTesting": "Count all explored rules/variants; use preregistered error control for simultaneous claims and a fresh holdout for the selected rule.",
+    "effectiveSample": "Report issuer/listing and time-cluster robust uncertainty, cluster count, effective N, and raw event count separately.",
+    "power": {"minimum": 0.8, "calculatedBeforeUnsealing": true, "basedOnPreregisteredEconomicMde": true}
+  },
+  "evidenceAndEconomics": {
+    "separateStatuses": ["TECHNICALLY_EXECUTED", "METHODICALLY_CERTIFIED", "STATISTICAL_EFFECT_SUPPORTED", "POSITIVE_NET_ECONOMIC_BENEFIT"],
+    "primaryEventStudyEndpoint": "Preregistered net canonical total-return median excess versus matched contemporaneous comparison cohort.",
+    "secondaryEndpoints": ["cluster_robust_positive_share_delta", "passive_total_return_benchmark_excess"],
+    "statisticalEffect": "Preregistered two-sided 95% cluster-robust interval excludes zero after applicable multiplicity correction; report sign.",
+    "positiveEconomicBenefitProposal": {"netMedianExcessM6Minimum": 0.005, "lower95PercentIntervalAboveZero": true, "ownerApprovalRequiredBeforeUnsealing": true},
+    "oosGateLabel": "OOS_DIRECTIONAL_REPLICATION",
+    "oosGateMustNotBeInterpretedAs": "positive economic advantage"
+  },
+  "backtestKinds": [
+    {"id": "SAME_STOCK_REPLAY", "universe": "Single-stock replay is conditional/descriptive; any success-rate or strategy claim needs all eligible then-tradeable listings, including failures and delistings.", "additionalGates": ["fixed_case_selection_before_outcome", "pit_snapshot", "identity_and_corporate_actions", "rule_test_outside_training_period"], "currentBlockers": ["SURVIVOR_BY_CONSTRUCTION", "DESCRIPTIVE_NOT_A_TEST"]},
+    {"id": "PATTERN_EVIDENCE", "universe": "All then-tradeable listings eligible for the predeclared pattern, or named PIT index membership.", "additionalGates": ["fixed_pattern_definition", "positive_and_negative_case_denominator", "total_return", "oos", "cluster_robust_inference"], "currentBlockers": ["PRESENT_AND_UNQUANTIFIED_IN_PART", "TOTAL_RETURN_SERIES_NOT_PUBLISHED", "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"]},
+    {"id": "SIGNAL_BACKTEST", "universe": "All then-tradeable listings in a predeclared market segment, or PIT index/custom strategy membership; include later delistings.", "additionalGates": ["frozen_rule", "next_executable_entry", "pit", "survivorship", "regime", "oos", "walk_forward", "costs", "benchmark", "independence", "fresh_holdout"], "currentBlockers": ["MAIN_STUDY_SURVIVORS_ONLY", "REGIME_HISTORY_NOT_CERTIFIED", "NO_RULE_CERTIFIED"]},
+    {"id": "SETUP_BACKTEST", "universe": "PIT membership of setup-eligible listings at every setup timestamp, with delisted outcomes retained.", "additionalGates": ["setup_state_version", "completed_outcomes", "oos_by_segment", "total_return", "owner_approval"], "existingMinimums": {"historyDates": 120, "historySpanDays": 180, "completedOutcomesM6": 100, "titles": 20, "independentWeeks": 20, "oosMinPerSegment": 30}, "currentBlockers": ["SETUP_HISTORY_TOO_SHORT", "COMPLETED_OUTCOMES_TOO_FEW", "TOO_FEW_TITLES", "EVENTS_CLUSTERED_IN_TIME", "TOTAL_RETURN_NOT_IN_THIS_RUN", "VARIANTS_NOT_MEASURABLE_YET", "OOS_NOT_MEASURABLE_YET"]},
+    {"id": "STRATEGY_BACKTEST", "universe": "PIT strategy membership and rebalance snapshots; PIT index membership when index-defined.", "additionalGates": ["pit_factor_snapshots", "turnover_and_continuity", "portfolio_execution", "costs", "benchmark", "oos"], "existingMinimums": {"membershipSnapshotsMonthly": 24, "factorSnapshotsMonthly": 24, "maxGapDays": 45}, "currentBlockers": ["HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING", "FACTOR_HISTORY_TOO_SHORT"]},
+    {"id": "FACTOR_RANKING_BACKTEST", "universe": "All eligible listings in the fixed PIT market/index universe at each rebalance; never current survivors.", "additionalGates": ["pit_factor_vintage", "predefined_ranking_and_portfolio", "completed_forward_returns", "costs", "benchmark", "oos"], "existingMinimums": {"factorSnapshotsMonthly": 24, "completedForwardMonths": 12, "maxGapDays": 45}, "currentBlockers": ["FACTOR_HISTORY_TOO_SHORT", "FORWARD_OUTCOMES_TOO_FEW", "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"]}
+  ],
+  "new52WeekHighReplication": {
+    "ruleId": "NEW_52W_HIGH",
+    "ruleVersion": "1.0.0",
+    "ruleFrozen": "Weekly close exceeds every close in the prior 52 weeks and was not true in the preceding week.",
+    "parametersMayChange": false,
+    "entry": "Close of the week after signal",
+    "exit": "Existing time-based M6 outcome",
+    "cooldownWeeks": 13,
+    "universe": "All then-listed primary US common-equity listings on NYSE, Nasdaq, and NYSE American, including later delistings; PIT exclusions for ADRs, funds/ETFs, preferred, warrants, rights, OTC, and non-common instruments; no unregistered price/liquidity filters.",
+    "returnBasis": "Canonical total return for signal and matched base rate; SPY total return as passive benchmark.",
+    "costsBpsRoundTrip": {"LOW": 10, "BASE": 30, "HIGH": 60},
+    "historicalResultsAlreadyViewedThrough": "2026-10-16",
+    "independentTest": "Prospectively sealed PIT cohort after preregistration; same historical dates from a different vendor are not an untouched outcome holdout.",
+    "minimums": {"coverage": 0.995, "calendarYears": 5, "walkForwardFolds": 4, "power": 0.8, "regimeClustersPerState": 20},
+    "acceptance": ["frozen_rule_and_preregistration_hash", "no_unresolved_identity_affecting_primary_cohort", "pit_and_lookahead_tests_pass", "total_return_and_benchmark_parity_pass", "delisting_and_corporate_action_coverage_pass", "power_and_independent_cluster_minimums_pass", "walk_forward_and_fresh_holdout_pass", "primary_effect_and_interval_reported", "independent_reproduction_pass", "separate_owner_certification_approval"],
+    "noGoIf": ["holdout_labels_seen", "power_below_80_percent", "unknown_delisting_bounds_change_conclusion", "commercial_rights_unproven", "method_or_rule_changed_after_unsealing"]
+  },
+  "dataAndRights": {
+    "criticalFields": ["listing_id", "issuer_id", "mic", "instrument_class", "ticker_valid_from", "ticker_valid_to", "first_trade_date", "last_trade_date", "listing_status", "membership_effective_at", "membership_available_at", "ohlcv_raw", "bar_available_at", "bar_vintage", "corporate_action_id", "corporate_action_type", "ex_date", "announcement_available_at", "delisting_return", "terminal_value", "factor_value", "factor_available_at", "factor_vintage", "regime_snapshot_id", "benchmark_total_return", "commercial_storage_rights", "derived_data_rights", "display_rights", "audit_retention_rights"],
+    "knownPartialSources": ["Tiingo price/listing/corporate-action fields (coverage and license must be checked)", "SEC filed/accepted timestamps for filings, not listing membership", "internal recent regime/membership and partial delisted-series artifacts"],
+    "notEstablished": ["complete historical US listing lifecycle", "complete ticker-reuse crosswalk", "complete delisting-return history", "complete historical index adds/removes", "historical provider PIT vintages/revisions", "commercial downstream rights", "five-year immutable certified regime history"],
+    "purchaseOrBackfillAuthorized": false
+  },
+  "implementationPlan": [
+    {"step": 1, "work": "Ratify normative thresholds, universe defaults, MDE, regime criteria, and legal use rights.", "estimate": "2-4 person-days", "acceptance": "Owner-approved versioned contract"},
+    {"step": 2, "work": "Map each gate to existing producer, test, artifact, and consumer without changing thresholds.", "estimate": "3-6 person-days", "acceptance": "Traceability matrix has evidence source for every gate"},
+    {"step": 3, "work": "Read-only provider field/license PoC on a fixed sample.", "estimate": "5-10 engineering days after access; provider/legal lead time about 1-3 weeks", "acceptance": "Identity, PIT, coverage, repeatability, and rights criteria pass or documented no-go"},
+    {"step": 4, "work": "Build limited data manifest/adapter only after PoC approval.", "estimate": "8-15 engineering days per approved source", "acceptance": "Hashed reproducible PIT manifest; identity and return parity gates pass"},
+    {"step": 5, "work": "Independent data, regime, statistical, and result reproduction audit.", "estimate": "5-10 engineering days plus reviewer/vendor time", "acceptance": "All existing and ratified V1 gates pass; separate certification decision"},
+    {"step": 6, "work": "Prospective NEW_52W_HIGH independent holdout and regime collection.", "estimate": "At least 5 years plus 6-month outcome lag unless a provably unseen licensed historical cohort exists", "acceptance": "Preregistered power, regime, and holdout minimums reached"}
+  ],
+  "scopeControls": {
+    "newBacktestEngine": false,
+    "productionPipelineChange": false,
+    "paidDataRequest": false,
+    "productionBackfill": false,
+    "automaticCertification": false,
+    "changeToPR862": false,
+    "changeToSupertraderOrUI": false
+  }
+}
