@@ -107,7 +107,7 @@ test('SF2-ACCEPTANCE-GATE: the gate needs a reconciled snapshot run of the CURRE
   }
   // a model assumption whose alternative scenario is not run fails AG-5
   const e1 = entryOf(TURTLE_S1), g1 = completionGaps(TURTLE_S1, e1, { testIndex: idx });
-  assert.equal(acceptanceGate(TURTLE_S1, e1, g1, { golden, reviews: { openHighOrCritical: 0 }, referenceRuns: run('abc'), codeSha256: 'abc', modelAssumptions: MODEL_ASSUMPTIONS, scenarioIds: SCENARIO_SET.map((x) => x.id).filter((x) => x !== 'ENTRY_BAR_OPTIMISTIC') }).checks.find((x) => x.id === 'AG-5-NO-UNSOURCED-PRICE').pass, false);
+  assert.equal(acceptanceGate(TURTLE_S1, e1, g1, { golden, reviews: { openHighOrCritical: 0 }, referenceRuns: run('abc'), codeSha256: 'abc', modelAssumptions: MODEL_ASSUMPTIONS, scenarioIds: SCENARIO_SET.map((x) => x.id).filter((x) => x !== 'ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE') }).checks.find((x) => x.id === 'AG-5-NO-UNSOURCED-PRICE').pass, false);
   const oneReading = { ...TURTLE_S1, rules: TURTLE_S1.rules.map((r) => (r.id === 'TUR-SF-FAILSAFE-EXIT' ? { ...r, variants: undefined } : r)) };
   const go = completionGaps(oneReading, entryOf(TURTLE_S1), { testIndex: idx });
   assert.equal(acceptanceGate(oneReading, entryOf(TURTLE_S1), go, { golden, reviews: { openHighOrCritical: 0 }, referenceRuns: run('abc'), codeSha256: 'abc', ...MA }).checks.find((x) => x.id === 'AG-1-RULES').pass, false);

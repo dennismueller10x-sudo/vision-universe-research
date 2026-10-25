@@ -39,7 +39,7 @@ export const GROUPS = {
   methodology: methodologyFiles,
   evidence: () => [
     "quant/engines/signal-backtest.js", "quant/engines/backtest-certification.js", "quant/engines/profile-backtest.js",
-    "quant/engines/survivorship-control.js",
+    "quant/engines/survivorship-control.js", "quant/engines/backtest-artifact-consistency.js", "quant/app/page-evidence.js",
     "scripts/quant/build-signal-backtest.mjs", "scripts/quant/build-setup-backtest.mjs", "scripts/quant/build-setup-outcomes.mjs",
     "scripts/quant/build-backtest-certification.mjs", "scripts/quant/build-backtest-readiness.mjs", "scripts/quant/build-quant-radar.mjs",
     "scripts/quant/lib/weekly-total-return.mjs"

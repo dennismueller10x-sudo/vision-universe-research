@@ -103,7 +103,7 @@ export function epChartCandidate(bars, i, cfg = EP_REFERENCE_CONFIG) {
  * Resolves one candidate day from its minutes in time order (raw prices; rawFactor = raw / adjusted).
  * Returns { status, fill, stop, sameDayStop, sameDayExitFill, evidence } with adjusted prices.
  */
-export function resolveEpDay({ minutes, bar, rawFactor, adrPct, iexBaseline, cfg }) {
+export function resolveEpDay({ minutes, bar, rawFactor, adrPct, iexBaseline, cfg, fillMinuteRule = false }) {
   const f = rawFactor > 0 ? rawFactor : 1, ev = { orMinutes: cfg.orMinutes, volumeRule: cfg.volumeRule, iexVolumeOnly: true };
   if (!minutes) return { status: 'NOT_EXECUTED_INTRADAY_NOT_FETCHED', evidence: ev };
   if (!minutes.length) return { status: 'NOT_EXECUTED_NO_INTRADAY_DATA', evidence: ev };
@@ -136,6 +136,10 @@ export function resolveEpDay({ minutes, bar, rawFactor, adrPct, iexBaseline, cfg
         // same-day stop from the later minutes; the fill minute's own low is ambiguous (MA-EP-FILL-MINUTE-STOP)
         let sameDayStop = null, exitRaw = null;
         if (m.low <= stop && cfg.intrabarOrder === 'PESSIMISTIC') { sameDayStop = 'CERTAIN'; exitRaw = stop; evidence.fillMinuteStop = 'ASSUMED'; }
+        // Supertrader 7.0 EX7-EP-FILL-MINUTE-CERTAIN (opt-in, research/sf7-ep-execution-variants.mjs; SF7-D5): under OPTIMISTIC the
+        // fill minute's own low is certain after the fill when the fill is the minute open (open >= level) or the minute
+        // closes at / below the stop; without the flag the 1.2.0 behaviour is unchanged
+        else if (fillMinuteRule && m.low <= stop && (m.open >= level || m.close <= stop)) { sameDayStop = 'CERTAIN'; exitRaw = stop; evidence.fillMinuteStop = m.open >= level ? 'CERTAIN_FILL_AT_MINUTE_OPEN' : 'CERTAIN_MINUTE_CLOSE_AT_OR_BELOW_STOP'; }
         else for (let q = j + 1; q < minutes.length; q++) if (minutes[q].low <= stop) { sameDayStop = 'CERTAIN'; exitRaw = Math.min(stop, minutes[q].open); evidence.stopMinute = minutes[q].k; break; }
         return { status: 'FILLED', fill: fill / f, stop: stop / f, sameDayStop, sameDayExitFill: exitRaw === null ? null : exitRaw / f, evidence: { ...evidence, stopDistancePct: chk.distancePct, limitPct: chk.limitPct } };
       }
@@ -150,8 +154,9 @@ export function resolveEpDay({ minutes, bar, rawFactor, adrPct, iexBaseline, cfg
  * iexBaseline(ticker, date) -> mean IEX daily volume of the 20 prior sessions | null,
  * excluded?(ticker, date) -> true for a cached day outside the evaluation's common day set (Supertrader 6.0) }.
  */
-export const KK_EP_ADAPTER = Object.freeze({
-  strategy: 'KK_EPISODIC_PIVOT_CHART', version: KK_EP_LIFECYCLE_VERSION, methodVersion: `${KK_VERSION}+${KK_INTRADAY_VERSION}`, label: EP_LABEL,
+/** EP adapter; fillMinuteRule (SF7-D5 revision) is only set by the wrapper of research/sf7-ep-execution-variants.mjs. */
+export function makeEpAdapter({ fillMinuteRule = false, versionSuffix = '' } = {}) { return Object.freeze({
+  strategy: 'KK_EPISODIC_PIVOT_CHART', version: `${KK_EP_LIFECYCLE_VERSION}${versionSuffix}`, ...(fillMinuteRule ? { fillMinuteRule: true } : {}), methodVersion: `${KK_VERSION}+${KK_INTRADAY_VERSION}`, label: EP_LABEL,
   sourceMaxPositionWeight: KK_PARAMS.overnightCap, // KK-001
   validateConfig: validateEpConfig,
   prepareKey: (cfg) => `${cfg.quietPhase}`,
@@ -169,7 +174,7 @@ export const KK_EP_ADAPTER = Object.freeze({
       if (ctx.intraday?.excluded?.(ctx.ticker, bar.date)) return { status: OUTSIDE_DAY_SET, evidence: { class: EP_CLASS.CHART } };
       const minutes = ctx.intraday ? ctx.intraday.minutes(ctx.ticker, bar.date) : undefined;
       const base = ctx.intraday ? ctx.intraday.iexBaseline(ctx.ticker, bar.date) : null;
-      return resolveEpDay({ minutes, bar, rawFactor: bar.splitAdj, adrPct: setup.adr20, iexBaseline: base, cfg });
+      return resolveEpDay({ minutes, bar, rawFactor: bar.splitAdj, adrPct: setup.adr20, iexBaseline: base, cfg, fillMinuteRule });
     };
     return eligibilityResult({ strategy: 'KK_EPISODIC_PIVOT_CHART', bars, i, blockers: [], openManualDecisions: EP_OPEN_MANUAL_DECISIONS, order: { type: 'INTRADAY_RESOLVED', resolve, rule: 'MA-EP-ORH / KK-SF-EP-STOP (KK-034) on IEX minutes' }, extra: { candidateClass: EP_CLASS.CHART, originalEpAssignable: EP_ORIGINAL_CLASS_ASSIGNABLE } });
   },
@@ -177,7 +182,8 @@ export const KK_EP_ADAPTER = Object.freeze({
     const c = ctx.bars[i].close, m = smaAt(ctx.bars, i, cfg.exitMa);
     if (fin(c) && fin(m) && c < m) api.scheduleExit(1, `EP_CLOSE_BELOW_MA${cfg.exitMa}`);
   },
-});
+}); }
+export const KK_EP_ADAPTER = makeEpAdapter();
 
 export function epVariantRegistrySha256() {
   return crypto.createHash('sha256').update(JSON.stringify({ version: KK_EP_LIFECYCLE_VERSION, reference: EP_REFERENCE_CONFIG, variants: EP_RUN_VARIANTS.map((v) => ({ id: v.id, changes: v.changes })) })).digest('hex');

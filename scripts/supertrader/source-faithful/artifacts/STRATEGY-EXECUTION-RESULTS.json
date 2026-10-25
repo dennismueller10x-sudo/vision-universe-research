@@ -32,9 +32,15 @@
       "meaning": "the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)"
      },
      "alternative": {
-      "option": "entryBarOrder=OPTIMISTIC",
-      "meaning": "the low comes before the entry: no same-bar stop or channel exit after an entry or add",
-      "scenario": "ENTRY_BAR_OPTIMISTIC"
+      "option": "entryBarOrder=OPTIMISTIC_CERTAIN_RULE",
+      "meaning": "the low comes before the entry wherever that is possible: a same-bar stop or channel exit after an entry or add only when it is certain (fill at the open, or close at or below the level; EX7-TUR-SAME-BAR-CERTAIN, SF7-D3)",
+      "scenario": "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE",
+      "supersedes": {
+       "option": "entryBarOrder=OPTIMISTIC",
+       "scenario": "ENTRY_BAR_OPTIMISTIC",
+       "status": "SUPERSEDED_SF7_D3",
+       "why": "skipped certain same-bar stops (fill at the open, close at or below the stop); still run for the before / after comparison"
+      }
      },
      "resolvableWith": "intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)"
     },
@@ -109,9 +115,15 @@
       "meaning": "the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)"
      },
      "alternative": {
-      "option": "entryBarOrder=OPTIMISTIC",
-      "meaning": "the low comes before the entry: no same-bar stop or channel exit after an entry or add",
-      "scenario": "ENTRY_BAR_OPTIMISTIC"
+      "option": "entryBarOrder=OPTIMISTIC_CERTAIN_RULE",
+      "meaning": "the low comes before the entry wherever that is possible: a same-bar stop or channel exit after an entry or add only when it is certain (fill at the open, or close at or below the level; EX7-TUR-SAME-BAR-CERTAIN, SF7-D3)",
+      "scenario": "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE",
+      "supersedes": {
+       "option": "entryBarOrder=OPTIMISTIC",
+       "scenario": "ENTRY_BAR_OPTIMISTIC",
+       "status": "SUPERSEDED_SF7_D3",
+       "why": "skipped certain same-bar stops (fill at the open, close at or below the stop); still run for the before / after comparison"
+      }
      },
      "resolvableWith": "intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)"
     },
@@ -316,6 +328,120 @@
   {
    "method": "SF_TURTLE_S1",
    "kind": "METHOD",
+   "runId": "40170829944",
+   "date": "2026-10-25",
+   "codeVersion": "sf-turtle-1.3.0",
+   "codeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
+   "receiptSha256Prefix": "11e26fde6d2e0c30",
+   "trades": {
+    "BASE_S0": 820,
+    "DELIST_S1_MINUS_30": 980,
+    "DELIST_S2_DISTRESS_ZERO": 980,
+    "COST2_S1": 841,
+    "DATA_EVENT_MINUS_30": 747,
+    "FAILSAFE_EXIT_20D": 574,
+    "ENTRY_BAR_OPTIMISTIC": 786,
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": 862,
+    "S1_OPEN_BREAKOUT_TAKEN": 803
+   },
+   "failsafeEntries": {
+    "BASE_S0": 710,
+    "FAILSAFE_EXIT_20D": 489,
+    "ENTRY_BAR_OPTIMISTIC": 709,
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": 754,
+    "S1_OPEN_BREAKOUT_TAKEN": 18
+   },
+   "entries": {
+    "BASE_S0": 825,
+    "ENTRY_BAR_OPTIMISTIC": 789,
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": 865,
+    "S1_OPEN_BREAKOUT_TAKEN": 806
+   },
+   "sameBarCertain": {
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": {
+     "byOpenFill": 69,
+     "byClose": 30
+    }
+   },
+   "ledgerSha256": {
+    "BASE_S0": "884d88cb519426e191e11ad40255faa431b374c190fccaa23bdeff2a41bb8610",
+    "DELIST_S1_MINUS_30": "6a8af7d857e5dd34f101ef5d90499b3e68bd3dbfc6c87e2e8af65d2fc0d60967",
+    "DELIST_S2_DISTRESS_ZERO": "6a8af7d857e5dd34f101ef5d90499b3e68bd3dbfc6c87e2e8af65d2fc0d60967",
+    "COST2_S1": "64129d6bbf7854b59de69d87f773b926483c85160a46faa58a6faabb31cae57f",
+    "DATA_EVENT_MINUS_30": "1f8294a4669f555ea93b76d0bb08678ec563a2724f1f5837a1a24de486878dbc",
+    "FAILSAFE_EXIT_20D": "46dfbd461740674663eea8380ffa05b491134c81d2de916c4e8b51e18ee4bdd1",
+    "ENTRY_BAR_OPTIMISTIC": "52d0c849f31e52d9b9457f7756d398decb5c697cc75a28cc1c121d052f0c7671",
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": "110e609578f55baa6c22171e632458766d46459fd32a8d23b3b878158c1214a0",
+    "S1_OPEN_BREAKOUT_TAKEN": "0962d871e680eceaedf28884e59481e74b5087b27c1994fc64a9f506517dacfd"
+   },
+   "publicScenarioBlocksIdenticalToRun": "39397517900",
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_TURTLE_S2",
+   "kind": "METHOD",
+   "runId": "40170829944",
+   "date": "2026-10-25",
+   "codeVersion": "sf-turtle-1.3.0",
+   "codeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
+   "receiptSha256Prefix": "b30f6c04ffdb48f5",
+   "trades": {
+    "BASE_S0": 559,
+    "DELIST_S1_MINUS_30": 524,
+    "DELIST_S2_DISTRESS_ZERO": 524,
+    "COST2_S1": 604,
+    "DATA_EVENT_MINUS_30": 586,
+    "FAILSAFE_EXIT_20D": 559,
+    "ENTRY_BAR_OPTIMISTIC": 528,
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": 489,
+    "S1_OPEN_BREAKOUT_TAKEN": 559
+   },
+   "entries": {
+    "BASE_S0": 562,
+    "ENTRY_BAR_OPTIMISTIC": 531,
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": 492
+   },
+   "sameBarCertain": {
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": {
+     "byOpenFill": 44,
+     "byClose": 17
+    }
+   },
+   "ledgerSha256": {
+    "BASE_S0": "67169e865384b866f2e51203dda75baff4778d125c5e1f60b67cb642c63b01f0",
+    "DELIST_S1_MINUS_30": "1285dd62b8da3a3de58cd9ead184755279044886ef1db2e3fb386966485f0ac1",
+    "DELIST_S2_DISTRESS_ZERO": "1285dd62b8da3a3de58cd9ead184755279044886ef1db2e3fb386966485f0ac1",
+    "COST2_S1": "f91934a7c23313a8323e93f56d4235300040f97c07ba551e45b233b5d9c05dcb",
+    "DATA_EVENT_MINUS_30": "cd7569f2732e0e59bacba6e1089c53ea64b1f28f7142a8a542ec2eb02e5d0522",
+    "FAILSAFE_EXIT_20D": "67169e865384b866f2e51203dda75baff4778d125c5e1f60b67cb642c63b01f0",
+    "ENTRY_BAR_OPTIMISTIC": "c6a4e61bede588b39e102ec146458d434945127a2ac47eb273c84e95f37abe98",
+    "ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE": "1b188ccdbb325b915725eba61ab8cc4626e0c9e7423fa049782056492b11de90",
+    "S1_OPEN_BREAKOUT_TAKEN": "67169e865384b866f2e51203dda75baff4778d125c5e1f60b67cb642c63b01f0"
+   },
+   "publicScenarioBlocksIdenticalToRun": "39397517900",
+   "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
+   "allScenariosReconciled": true,
+   "endingPositionCheck": "PASS",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_DARVAS_BOX",
+   "kind": "COMPONENT_STUDY",
+   "runId": "40170829944",
+   "date": "2026-10-25",
+   "codeVersion": "sf-darvas-1.1.0",
+   "codeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
+   "receiptSha256Prefix": "2bfdcbb912e40a48",
+   "signals": 22577,
+   "tradesSha256IdenticalToRun": "39397517900",
+   "role": "CURRENT_ENGINE"
+  },
+  {
+   "method": "SF_TURTLE_S1",
+   "kind": "METHOD",
    "runId": "39397517900",
    "date": "2026-10-20",
    "codeVersion": "sf-turtle-1.2.0",
@@ -345,7 +471,7 @@
    "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
    "allScenariosReconciled": true,
    "endingPositionCheck": "PASS",
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_TURTLE_S2",
@@ -368,7 +494,7 @@
    "correlationLimits": "NOT_EVALUATED_NO_PIT_GROUPS",
    "allScenariosReconciled": true,
    "endingPositionCheck": "PASS",
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_DARVAS_BOX",
@@ -379,7 +505,7 @@
    "codeSha256": "ae2a51ed86ae4d3ca10fcf263e1eb266437bbed851943e14dc1a984a3fd797a0",
    "receiptSha256Prefix": "b11a5fd25920419f",
    "signals": 22577,
-   "role": "CURRENT_ENGINE"
+   "role": "REGRESSION_REFERENCE"
   },
   {
    "method": "SF_TURTLE_S1",

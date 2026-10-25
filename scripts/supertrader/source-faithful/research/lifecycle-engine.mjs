@@ -69,8 +69,12 @@ export function plannedShares({ sizing, fill, stop, equity, policy, sourceMaxPos
  * INTRADAY_RESOLVED (Kullamaegi C09, research/kk-ep-lifecycle.mjs): the adapter resolves the day from REAL minute bars
  * in time order (fill, stop known at the fill minute, same-day stop decided by the later minutes); its own source
  * checks (e.g. KK-034) are part of the resolution. Any other status is a counted non-execution.
+ * opts.closeConfirmsStop (Supertrader 7.0, EX7-SAME-BAR-CLOSE-CONFIRMS-STOP, opt-in per adapter flag
+ * sameBarCloseConfirmsStop; research/sf7-execution-variants.mjs): after an intraday touch fill, a close at or below the
+ * stop proves that the price crossed the stop AFTER the fill (the close is the last print of the bar), so the same-bar
+ * stop is CERTAIN_BY_CLOSE instead of AMBIGUOUS. Without the flag the classification is the Supertrader 5.0 one.
  */
-export function fillOrder(bar, order) {
+export function fillOrder(bar, order, opts = {}) {
   if (!AC.isExecutableBar(bar, 'open') || !fin(bar.high) || !fin(bar.low)) return { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
   let fill, basis;
   if (order.type === 'INTRADAY_RESOLVED') {
@@ -88,7 +92,7 @@ export function fillOrder(bar, order) {
   if (fin(order.stop) && !(fill > order.stop)) return { status: 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP', fill };
   const plannedLoss = fin(order.stop) ? 1 - order.stop / fill : null;
   if (fin(order.maxPlannedLoss) && plannedLoss > order.maxPlannedLoss + 1e-12) return { status: 'NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX', fill, plannedLoss };
-  const sameBarStop = fin(order.stop) && bar.low <= order.stop ? (basis === 'INTRADAY_LEVEL_TOUCH' ? 'AMBIGUOUS' : 'CERTAIN') : null;
+  const sameBarStop = fin(order.stop) && bar.low <= order.stop ? (basis === 'INTRADAY_LEVEL_TOUCH' ? (opts.closeConfirmsStop === true && fin(bar.close) && bar.close <= order.stop ? 'CERTAIN_BY_CLOSE' : 'AMBIGUOUS') : 'CERTAIN') : null;
   return { status: 'FILLED', fill, basis, plannedLoss, sameBarStop };
 }
 
@@ -118,6 +122,7 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
   if (sec.size !== dataset.securities.length) throw new Error('DUPLICATE_SECURITY_ID');
   const ids = [...sec.keys()].sort();
   const stale = AC.createStaleTracker();
+  const fillOpts = adapter.sameBarCloseConfirmsStop === true ? { closeConfirmsStop: true } : {};
   let cash = policy.initialCapital, grossFlows = 0, tradeSeq = 0;
   const positions = new Map(), lastClose = new Map(), ledger = [], trades = [], curve = [], rejections = [];
   let orders = new Map();
@@ -199,7 +204,7 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
     for (const id of [...orders.keys()].sort((a, c) => fillRank(date, a) - fillRank(date, c) || (a < c ? -1 : a > c ? 1 : 0))) {
       const o = orders.get(id), x = sec.get(id), i = x.idx.get(date), b = i === undefined ? null : x.s.bars[i];
       if (positions.has(id)) continue;
-      const f = b ? fillOrder(b, o.order) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
+      const f = b ? fillOrder(b, o.order, fillOpts) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
       if (f.status === 'NOT_TRIGGERED') { counts.ordersNotTriggered++; continue; }
       if (f.status !== 'FILLED') {
         const known = { NOT_EXECUTED_NO_SOURCE_BAR: 'notExecutedNoSourceBar', NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP: 'notExecutedAtOrBelowStop', NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX: 'notExecutedPlannedLossAboveMax' }[f.status];
@@ -209,6 +214,8 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
       // a resolved intraday fill carries the stop known at its fill minute (the armed order has none)
       const pos = enter(id, x, i, date, f, fin(f.stop) ? { ...o, order: { ...o.order, stop: f.stop } } : o, equityPrev); if (!pos) continue;
       if (f.sameBarStop === 'CERTAIN') { counts.sameBarStopCertain++; sell(pos, pos.shares, fin(f.sameBarExitFill) ? f.sameBarExitFill : pos.stop, date, 'STOP_SAME_BAR_CERTAIN'); counts.protectiveExits++; continue; }
+      // EX7 (opt-in only): counted lazily, so the counts of a run without the flag keep their Supertrader 5.0 keys
+      if (f.sameBarStop === 'CERTAIN_BY_CLOSE') { counts.sameBarStopCertainByClose = (counts.sameBarStopCertainByClose || 0) + 1; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_CERTAIN_CLOSE_AT_OR_BELOW_STOP'); counts.protectiveExits++; continue; }
       if (f.sameBarStop === 'AMBIGUOUS') {
         if (config.intrabarOrder === 'PESSIMISTIC') { counts.sameBarStopAmbiguousExecuted++; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_ASSUMED'); counts.protectiveExits++; continue; }
         counts.sameBarStopAmbiguousIgnored++; pos.events.push({ date, type: 'SAME_BAR_STOP_IGNORED', rule: 'intrabarOrder OPTIMISTIC' });

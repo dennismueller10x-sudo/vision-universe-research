@@ -1,0 +1,547 @@
+{
+  "schemaVersion": "quant-backtest-invariance-proof-1.0.0",
+  "main": "05cd43b34bce9cee25564a48db29ff19ba3b1c7b",
+  "certifiedKinds": 0,
+  "kindAndRuleStatesUnchanged": true,
+  "states": [
+    {
+      "id": "SAME_STOCK_REPLAY",
+      "status": "LIMITED",
+      "gates": [
+        [
+          "pit",
+          "PASS"
+        ],
+        [
+          "survivorship",
+          "FAIL"
+        ],
+        [
+          "ruleTest",
+          "FAIL"
+        ]
+      ],
+      "rules": []
+    },
+    {
+      "id": "PATTERN_EVIDENCE",
+      "status": "LIMITED",
+      "gates": [
+        [
+          "pit",
+          "PASS"
+        ],
+        [
+          "oos",
+          "PASS"
+        ],
+        [
+          "survivorship",
+          "FAIL"
+        ],
+        [
+          "returnBasis",
+          "FAIL"
+        ],
+        [
+          "certifiedAsBacktest",
+          "FAIL"
+        ]
+      ],
+      "rules": []
+    },
+    {
+      "id": "SIGNAL_BACKTEST",
+      "status": "LIMITED",
+      "gates": [
+        [
+          "pit",
+          "PASS"
+        ],
+        [
+          "lookahead",
+          "PASS"
+        ],
+        [
+          "survivorship",
+          "FAIL"
+        ],
+        [
+          "returnBasis",
+          "PASS"
+        ],
+        [
+          "ruleCertified",
+          "FAIL"
+        ]
+      ],
+      "rules": [
+        {
+          "id": "MOMENTUM_IMPROVED",
+          "status": "LIMITED",
+          "gates": [
+            [
+              "pit",
+              "PASS"
+            ],
+            [
+              "lookahead",
+              "PASS"
+            ],
+            [
+              "sample",
+              "PASS"
+            ],
+            [
+              "oos",
+              "PASS"
+            ],
+            [
+              "walkForward",
+              "PASS"
+            ],
+            [
+              "survivorship",
+              "FAIL"
+            ],
+            [
+              "returnBasis",
+              "PASS"
+            ],
+            [
+              "costs",
+              "PASS"
+            ],
+            [
+              "slippage",
+              "PASS"
+            ],
+            [
+              "benchmark",
+              "PASS"
+            ],
+            [
+              "regimeDiversity",
+              "FAIL"
+            ],
+            [
+              "independence",
+              "PASS"
+            ],
+            [
+              "parameterStability",
+              "PASS"
+            ],
+            [
+              "completeness",
+              "PASS"
+            ],
+            [
+              "edgeOutOfSample",
+              "PASS"
+            ]
+          ],
+          "rules": []
+        },
+        {
+          "id": "MOMENTUM_DETERIORATED",
+          "status": "LIMITED",
+          "gates": [
+            [
+              "pit",
+              "PASS"
+            ],
+            [
+              "lookahead",
+              "PASS"
+            ],
+            [
+              "sample",
+              "PASS"
+            ],
+            [
+              "oos",
+              "FAIL"
+            ],
+            [
+              "walkForward",
+              "PASS"
+            ],
+            [
+              "survivorship",
+              "FAIL"
+            ],
+            [
+              "returnBasis",
+              "PASS"
+            ],
+            [
+              "costs",
+              "PASS"
+            ],
+            [
+              "slippage",
+              "PASS"
+            ],
+            [
+              "benchmark",
+              "PASS"
+            ],
+            [
+              "regimeDiversity",
+              "FAIL"
+            ],
+            [
+              "independence",
+              "PASS"
+            ],
+            [
+              "parameterStability",
+              "FAIL"
+            ],
+            [
+              "completeness",
+              "PASS"
+            ],
+            [
+              "edgeOutOfSample",
+              "FAIL"
+            ]
+          ],
+          "rules": []
+        },
+        {
+          "id": "TREND_UP",
+          "status": "LIMITED",
+          "gates": [
+            [
+              "pit",
+              "PASS"
+            ],
+            [
+              "lookahead",
+              "PASS"
+            ],
+            [
+              "sample",
+              "PASS"
+            ],
+            [
+              "oos",
+              "PASS"
+            ],
+            [
+              "walkForward",
+              "PASS"
+            ],
+            [
+              "survivorship",
+              "FAIL"
+            ],
+            [
+              "returnBasis",
+              "PASS"
+            ],
+            [
+              "costs",
+              "PASS"
+            ],
+            [
+              "slippage",
+              "PASS"
+            ],
+            [
+              "benchmark",
+              "PASS"
+            ],
+            [
+              "regimeDiversity",
+              "FAIL"
+            ],
+            [
+              "independence",
+              "PASS"
+            ],
+            [
+              "parameterStability",
+              "PASS"
+            ],
+            [
+              "completeness",
+              "PASS"
+            ],
+            [
+              "edgeOutOfSample",
+              "FAIL"
+            ]
+          ],
+          "rules": []
+        },
+        {
+          "id": "TREND_DOWN",
+          "status": "LIMITED",
+          "gates": [
+            [
+              "pit",
+              "PASS"
+            ],
+            [
+              "lookahead",
+              "PASS"
+            ],
+            [
+              "sample",
+              "PASS"
+            ],
+            [
+              "oos",
+              "FAIL"
+            ],
+            [
+              "walkForward",
+              "FAIL"
+            ],
+            [
+              "survivorship",
+              "FAIL"
+            ],
+            [
+              "returnBasis",
+              "PASS"
+            ],
+            [
+              "costs",
+              "PASS"
+            ],
+            [
+              "slippage",
+              "PASS"
+            ],
+            [
+              "benchmark",
+              "PASS"
+            ],
+            [
+              "regimeDiversity",
+              "FAIL"
+            ],
+            [
+              "independence",
+              "PASS"
+            ],
+            [
+              "parameterStability",
+              "FAIL"
+            ],
+            [
+              "completeness",
+              "PASS"
+            ],
+            [
+              "edgeOutOfSample",
+              "FAIL"
+            ]
+          ],
+          "rules": []
+        },
+        {
+          "id": "NEW_52W_HIGH",
+          "status": "LIMITED",
+          "gates": [
+            [
+              "pit",
+              "PASS"
+            ],
+            [
+              "lookahead",
+              "PASS"
+            ],
+            [
+              "sample",
+              "PASS"
+            ],
+            [
+              "oos",
+              "FAIL"
+            ],
+            [
+              "walkForward",
+              "FAIL"
+            ],
+            [
+              "survivorship",
+              "FAIL"
+            ],
+            [
+              "returnBasis",
+              "PASS"
+            ],
+            [
+              "costs",
+              "PASS"
+            ],
+            [
+              "slippage",
+              "PASS"
+            ],
+            [
+              "benchmark",
+              "PASS"
+            ],
+            [
+              "regimeDiversity",
+              "FAIL"
+            ],
+            [
+              "independence",
+              "PASS"
+            ],
+            [
+              "parameterStability",
+              "PASS"
+            ],
+            [
+              "completeness",
+              "PASS"
+            ],
+            [
+              "edgeOutOfSample",
+              "FAIL"
+            ]
+          ],
+          "rules": []
+        }
+      ]
+    },
+    {
+      "id": "SETUP_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        [
+          "publishedOnly",
+          "PASS"
+        ],
+        [
+          "pit",
+          "PASS"
+        ],
+        [
+          "lookahead",
+          "PASS"
+        ],
+        [
+          "historyDates",
+          "FAIL"
+        ],
+        [
+          "historySpan",
+          "FAIL"
+        ],
+        [
+          "completedOutcomes",
+          "FAIL"
+        ],
+        [
+          "titles",
+          "FAIL"
+        ],
+        [
+          "independence",
+          "FAIL"
+        ],
+        [
+          "returnBasis",
+          "FAIL"
+        ],
+        [
+          "survivorship",
+          "PASS"
+        ],
+        [
+          "entryVariant",
+          "FAIL"
+        ],
+        [
+          "oos",
+          "FAIL"
+        ]
+      ],
+      "rules": []
+    },
+    {
+      "id": "STRATEGY_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        [
+          "contract",
+          "PASS"
+        ],
+        [
+          "pitGuards",
+          "PASS"
+        ],
+        [
+          "membershipHistory",
+          "FAIL"
+        ],
+        [
+          "factorHistory",
+          "FAIL"
+        ],
+        [
+          "continuity",
+          "PASS"
+        ],
+        [
+          "returnBasis",
+          "PASS"
+        ],
+        [
+          "survivorship",
+          "PASS"
+        ]
+      ],
+      "rules": []
+    },
+    {
+      "id": "FACTOR_RANKING_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        [
+          "contract",
+          "PASS"
+        ],
+        [
+          "pitGuards",
+          "PASS"
+        ],
+        [
+          "factorHistory",
+          "FAIL"
+        ],
+        [
+          "completedForward",
+          "FAIL"
+        ],
+        [
+          "membershipHistory",
+          "FAIL"
+        ],
+        [
+          "noRetroactive",
+          "PASS"
+        ]
+      ],
+      "rules": []
+    }
+  ],
+  "unmodifiedGateAndStudyHashes": {
+    "quant/engines/backtest-certification.js": "f77c62e856f173f79793a4c41cb80575e046145b3e19c9a5cca3b345e07aef56",
+    "quant/methodology/backtest-certification-v1.json": "392f5657702e23598c4ee5ebcf36e120687f3975d31d9deb57e2e661882ad6ce",
+    "quant/data/product/signal-backtest-v1.json": "43d4e564198119ae8d9376c60103e814fcbe45f27c8725659877e3fa1ab4a10b",
+    "quant/data/product/total-return-quality-v1.json": "375d6566d237143d560c588c5ba84c4d0310d404448d802f72e1405bf88ef4b5"
+  },
+  "unchangedUIFiles": 237,
+  "frontendChanges": [],
+  "methodologyDraftActivated": false
+}

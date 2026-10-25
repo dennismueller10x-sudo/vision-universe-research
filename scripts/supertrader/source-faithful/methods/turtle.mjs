@@ -26,7 +26,21 @@ import * as AC from '../../validation/accounting-contract.mjs';
 import { SCENARIOS } from '../../validation/portfolio.mjs';
 import { trueRangeAt, priorHigh, priorLow, priorLowAvailable, priorHighAvailable, rawTickAdjusted, eligibleAtPriorSession, RESEARCH_UNIVERSE, fin } from '../common/series.mjs';
 
-export const TURTLE_VERSION = 'sf-turtle-1.2.0';
+export const TURTLE_VERSION = 'sf-turtle-1.3.0';
+
+/**
+ * Supertrader 7.0 execution revision of the OPTIMISTIC entry-bar reading (SF7-D3, owner decision E7-3, 2026-10-25).
+ * OPTIMISTIC (sf-turtle-1.2.0) skipped every same-bar stop and channel exit after an entry or add, also where the low
+ * cannot have come first. OPTIMISTIC_CERTAIN_RULE keeps the optimistic order wherever it is possible and executes a
+ * same-bar level only when it is CERTAIN:
+ *  - OPEN_FILL: the entry (or the first add of a bar) filled at the open, so the whole range comes after that fill:
+ *    every level the low reaches after it is hit; the low is assumed before any later add of the bar (optimistic);
+ *  - CLOSE: the bar closes at or below the level, so the level traded after the last fill of the bar.
+ * Fill at the level, the higher level first (as the reference). The reference PESSIMISTIC and the superseded OPTIMISTIC
+ * reading are unchanged line by line; only entryBarOrder = 'OPTIMISTIC_CERTAIN_RULE' reaches the new code.
+ */
+export const ENTRY_BAR_ORDERS = Object.freeze(['PESSIMISTIC', 'OPTIMISTIC', 'OPTIMISTIC_CERTAIN_RULE']);
+export const TURTLE_EXECUTION_REVISION = Object.freeze({ id: 'EX7-TUR-SAME-BAR-CERTAIN', defect: 'SF7-D3', entryBarOrder: 'OPTIMISTIC_CERTAIN_RULE', supersedes: 'OPTIMISTIC', since: 'sf-turtle-1.3.0', ownerDecision: 'E7-3' });
 
 /**
  * Explicit model assumptions (owner review 2026-10-20): what the source does not decide and daily bars cannot show.
@@ -34,7 +48,7 @@ export const TURTLE_VERSION = 'sf-turtle-1.2.0';
  * reports as its own scenario. No reading is chosen by performance.
  */
 export const MODEL_ASSUMPTIONS = Object.freeze([
-  Object.freeze({ id: 'MA-TUR-INTRABAR-ORDER', kind: 'EXECUTION_ON_DAILY_BARS', question: 'On a bar that reaches an entry or add level AND a stop or exit level, which came first?', source: 'not decidable: the source trades intraday (TUR-INTRADAY, TUR-ADDFAST); daily OHLC bars do not record the order', reference: { option: 'entryBarOrder=PESSIMISTIC', meaning: 'the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)' }, alternative: { option: 'entryBarOrder=OPTIMISTIC', meaning: 'the low comes before the entry: no same-bar stop or channel exit after an entry or add', scenario: 'ENTRY_BAR_OPTIMISTIC' }, resolvableWith: 'intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)' }),
+  Object.freeze({ id: 'MA-TUR-INTRABAR-ORDER', kind: 'EXECUTION_ON_DAILY_BARS', question: 'On a bar that reaches an entry or add level AND a stop or exit level, which came first?', source: 'not decidable: the source trades intraday (TUR-INTRADAY, TUR-ADDFAST); daily OHLC bars do not record the order', reference: { option: 'entryBarOrder=PESSIMISTIC', meaning: 'the low comes after the entry and the adds (unit stops and channel level checked after them; the S1 filter resolves its hypothetical breakout on the breakout bar the same way)' }, alternative: { option: 'entryBarOrder=OPTIMISTIC_CERTAIN_RULE', meaning: 'the low comes before the entry wherever that is possible: a same-bar stop or channel exit after an entry or add only when it is certain (fill at the open, or close at or below the level; EX7-TUR-SAME-BAR-CERTAIN, SF7-D3)', scenario: 'ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE', supersedes: { option: 'entryBarOrder=OPTIMISTIC', scenario: 'ENTRY_BAR_OPTIMISTIC', status: 'SUPERSEDED_SF7_D3', why: 'skipped certain same-bar stops (fill at the open, close at or below the stop); still run for the before / after comparison' } }, resolvableWith: 'intraday bars of the trigger days (IEX minutes from 2017 exist privately for the r9 study; not frozen in the snapshot)' }),
   Object.freeze({ id: 'MA-TUR-HELD-BAR-ORDER', kind: 'EXECUTION_ON_DAILY_BARS', question: 'On a held bar with several levels in range, which is reached first?', source: 'not decidable on daily bars', reference: { option: 'fixed', meaning: 'the level nearer the open first (unit stops above the channel level before it); exits before adds; no add on a bar on which a unit was stopped' }, alternative: null, resolvableWith: 'intraday bars' }),
   Object.freeze({ id: 'MA-TUR-S1-OPEN-BREAKOUT', kind: 'SOURCE_SILENT', question: 'Does a still unresolved (open) hypothetical last breakout make System 1 skip the next 20-day breakout?', source: 'TUR-S1SKIP defines a skip after a winning last breakout; the source does not say how an open one counts (#709 VU-TUR lists "open breakout assumed a winner" as a VU formalization)', reference: { option: 'openBreakout=SKIP', meaning: 'an open breakout counts as not losing: skip (the 55-day failsafe can still enter)' }, alternative: { option: 'openBreakout=TAKE', meaning: 'only a resolved winning breakout skips; an open one does not', scenario: 'S1_OPEN_BREAKOUT_TAKEN' }, resolvableWith: 'no further source in #709 / #712' }),
   Object.freeze({ id: 'MA-TUR-FAILSAFE-EXIT', kind: 'SOURCE_SILENT', question: 'Which exit does a 55-day failsafe position use?', source: 'TUR-FAILSAFE states only the entry; #709 VU-TUR: "Failsafe-Exit10 ist Auslegung, nicht ausdrücklich veröffentlichte Failsafe-Regel"; #709 revalidation TUR-F-FAILSAFE-55: "Ausstiegsregel für Failsafe-Positionen nicht ausdrücklich genannt"; #712 spec V4 T4-FAILSAFE: "exit like S1 (interpretation)"', reference: { option: "failsafeExit='10D'", meaning: 'System 1 exit (10-day low); the reading of the earlier VU engines, an interpretation' }, alternative: { option: "failsafeExit='20D'", meaning: 'System 2 exit (20-day low), the exit of the system whose entry channel the failsafe uses; equally an interpretation', scenario: 'FAILSAFE_EXIT_20D' }, resolvableWith: 'no further source in #709 / #712' }),
@@ -153,6 +167,17 @@ export function createBreakoutTracker(bars, N, P = PARAMS, { entryBarOrder = 'PE
       // the stop or the 10-day exit after the breakout resolves the hypothetical trade on this bar; the level nearer to
       // the entry is reached first (stop -> LOSER, exit without a 2N move -> NON_LOSER)
       if (entryBarOrder === 'OPTIMISTIC') return dir; // MA-TUR-INTRABAR-ORDER alternative: the low came before the breakout
+      if (entryBarOrder === 'OPTIMISTIC_CERTAIN_RULE') {
+        // EX7-TUR-SAME-BAR-CERTAIN: resolved on the breakout bar only when certain (breakout at the open, or close beyond the level)
+        if (dir > 0) {
+          const l = priorLowAvailable(bars, i, P.filterExit), xl = l === null ? -Infinity : l - t, top = Math.max(active.stop, xl);
+          if (b.low <= top && (b.open >= hh + t || (fin(b.close) && b.close <= top))) { counts.ENTRY_BAR_RESOLVED_CERTAIN = (counts.ENTRY_BAR_RESOLVED_CERTAIN || 0) + 1; done(active.stop >= xl ? 'LOSER' : 'NON_LOSER'); }
+        } else {
+          const h = priorHighAvailable(bars, i, P.filterExit), xh = h === null ? Infinity : h + t, bottom = Math.min(active.stop, xh);
+          if (b.high >= bottom && (b.open <= ll - t || (fin(b.close) && b.close >= bottom))) { counts.ENTRY_BAR_RESOLVED_CERTAIN = (counts.ENTRY_BAR_RESOLVED_CERTAIN || 0) + 1; done(active.stop <= xh ? 'LOSER' : 'NON_LOSER'); }
+        }
+        return dir;
+      }
       if (dir > 0) {
         const l = priorLowAvailable(bars, i, P.filterExit), xl = l === null ? -Infinity : l - t;
         if (b.low <= Math.max(active.stop, xl)) { counts.ENTRY_BAR_RESOLVED_PESSIMISTIC++; done(active.stop >= xl ? 'LOSER' : 'NON_LOSER'); }
@@ -215,15 +240,16 @@ export function liquiditySummary(rows) {
  * Portfolio simulation of one system on a frozen dataset.
  * data: { calendar: [date], securities: [{ id, bars, terminal: { date, cause, distress, delistClass } | null }] }
  * opts: { system, initialCapital, from, to, scenario, dataEventScenario, slippageBps, commissionBps, universe, groupsOf,
- *         failsafeExit: '10D' (reference reading) | '20D' (alternative reading), entryBarOrder: 'PESSIMISTIC' | 'OPTIMISTIC',
+ *         failsafeExit: '10D' (reference reading) | '20D' (alternative reading),
+ *         entryBarOrder: 'PESSIMISTIC' | 'OPTIMISTIC_CERTAIN_RULE' | 'OPTIMISTIC' (superseded, SF7-D3),
  *         openBreakout: 'SKIP' | 'TAKE' } - see MODEL_ASSUMPTIONS; every reading is an assumption, none a source rule
  */
 export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, to, scenario = 'S0_LAST_PRICE', dataEventScenario, slippageBps = 10, commissionBps = 1, universe = RESEARCH_UNIVERSE, groupsOf = null, failsafeExit = '10D', entryBarOrder = 'PESSIMISTIC', openBreakout = 'SKIP', P = PARAMS } = {}) {
   const S = P[system]; if (!S) throw new Error('TURTLE_SYSTEM_REQUIRED');
   if (!['10D', '20D'].includes(failsafeExit)) throw new Error('UNKNOWN_FAILSAFE_EXIT');
-  if (!['PESSIMISTIC', 'OPTIMISTIC'].includes(entryBarOrder)) throw new Error('UNKNOWN_ENTRY_BAR_ORDER');
+  if (!ENTRY_BAR_ORDERS.includes(entryBarOrder)) throw new Error('UNKNOWN_ENTRY_BAR_ORDER');
   if (!['SKIP', 'TAKE'].includes(openBreakout)) throw new Error('UNKNOWN_OPEN_BREAKOUT');
-  const optimistic = entryBarOrder === 'OPTIMISTIC';
+  const optimistic = entryBarOrder !== 'PESSIMISTIC', certainRule = entryBarOrder === 'OPTIMISTIC_CERTAIN_RULE';
   // TUR-SF-FAILSAFE-EXIT is SOURCE_AMBIGUOUS (MA-TUR-FAILSAFE-EXIT): reference reading 10-day (System 1) exit, alternative
   // 20-day (System 2) exit as scenario FAILSAFE_EXIT_20D; neither is the source's (review R1-03, owner review)
   const exitSessionsOf = (path) => (path === 'FAILSAFE_55' && failsafeExit === '20D' ? 20 : S.exit);
@@ -303,16 +329,19 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
    * first add of the bar at max(open, level). After any unit stop-out the position takes no further adds: a re-add
    * would be the optional Whipsaw re-entry (TUR-WHIPRE, not implemented) (review SF-R1-01, derivation).
    */
-  function addUnits(x, pos, i, date, nSize) {
+  function addUnits(x, pos, i, date, nSize, afterOpenFill = null) {
     const b = x.s.bars[i]; let first = true, added = 0;
     if (pos.unitStopped) return 0;
     for (;;) {
       if (pos.units.length >= P.maxUnitsPerMarket) break;
       const level = pos.lastFill + P.addStepN * pos.entryN;
       if (!(b.high >= level)) break;
+      const atOpen = first && b.open >= level;
       const px = first ? Math.max(b.open, level) : level; first = false;
       if (!buyUnit(x, i, px, date, nSize, pos.entryN, pos.path)) break;
       counts.adds++; added++;
+      // EX7-TUR-SAME-BAR-CERTAIN only: an add at the open is followed by the whole range; a certain stop ends the adds
+      if (afterOpenFill && atOpen && afterOpenFill()) break;
     }
     return added;
   }
@@ -322,6 +351,22 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
    */
   function sameBarStops(pos, b, date, counter, above = -Infinity) {
     for (let k = pos.units.length - 1; k >= 0 && positions.has(pos.id); k--) if (pos.units[k].stop > above && b.low <= pos.units[k].stop) { closeUnit(pos, k, pos.units[k].stop, date, 'STOP_2N_SAME_BAR'); counts[counter]++; }
+  }
+  /**
+   * EX7-TUR-SAME-BAR-CERTAIN (entryBarOrder OPTIMISTIC_CERTAIN_RULE only): executes the same-bar levels that are certain.
+   * by = 'OPEN_FILL': every level the low reaches (the fill was at the open); by = 'CLOSE': every level at or above the
+   * close. Unit stops above the channel level first, then the channel level (exitN given). Returns true if anything hit.
+   */
+  function certainSameBar(pos, b, date, counter, lvl, exitN, by) {
+    const hit = by === 'OPEN_FILL' ? (level) => b.low <= level : (level) => fin(b.close) && b.close <= level;
+    const key = by === 'OPEN_FILL' ? 'sameBarCertainByOpenFill' : 'sameBarCertainByClose';
+    let any = false;
+    for (let k = pos.units.length - 1; k >= 0 && positions.has(pos.id); k--) {
+      const u = pos.units[k];
+      if (u.stop > lvl && hit(u.stop)) { closeUnit(pos, k, u.stop, date, 'STOP_2N_SAME_BAR_CERTAIN'); counts[counter]++; counts[key] = (counts[key] || 0) + 1; any = true; }
+    }
+    if (exitN !== null && positions.has(pos.id) && hit(lvl)) { settleAll(pos, lvl * (1 - slip), date, `EXIT_${exitN}D_SAME_BAR_CERTAIN`); counts.sameBarEntryChannelExits++; counts[key] = (counts[key] || 0) + 1; any = true; }
+    return any;
   }
   let notionalNow = 0;
 
@@ -350,6 +395,11 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       if (positions.has(pos.id) && b.low <= exitLevel) { settleAll(pos, Math.min(b.open, exitLevel) * (1 - slip), date, exitReason); counts.channelExits++; continue; }
       if (!positions.has(pos.id)) continue;
       if (stopped) { counts.noAddAfterStopSameBar++; continue; }
+      if (certainRule) {
+        // held position: the unit stops and the channel level were checked before the adds (low above all of them)
+        if (addUnits(x, pos, i, date, x.N[i - 1] ?? pos.entryN, () => certainSameBar(pos, b, date, 'sameBarAddStops', -Infinity, null, 'OPEN_FILL')) && positions.has(pos.id)) certainSameBar(pos, b, date, 'sameBarAddStops', -Infinity, null, 'CLOSE');
+        continue;
+      }
       if (addUnits(x, pos, i, date, x.N[i - 1] ?? pos.entryN) && !optimistic) sameBarStops(pos, b, date, 'sameBarAddStops');
     }
     // 2) new entries: every security advances its filter; strongest first (TUR-RANK)
@@ -388,6 +438,14 @@ export function runTurtle(data, { system = 'S1', initialCapital = 100000, from, 
       // order on the entry bar: entry -> high (adds) -> low (unit stops, channel), as declared (review R2-01)
       const exitN = exitSessionsOf(c.e.path), l = priorLowAvailable(c.x.s.bars, c.i, exitN), lvl = l === null ? -Infinity : l - rawTickAdjusted(b, P.rawTick);
       if (exitedToday.has(pos.id)) counts.reentrySameBarAsExit++;
+      if (certainRule) {
+        // EX7-TUR-SAME-BAR-CERTAIN: an entry at the open is followed by the whole range (low before any add: optimistic);
+        // otherwise only levels at or above the close are certain (after the last fill of the bar)
+        if (b.open >= c.e.trigger) certainSameBar(pos, b, date, 'sameBarEntryStops', lvl, exitN, 'OPEN_FILL');
+        if (positions.has(pos.id)) addUnits(c.x, pos, c.i, date, n, () => certainSameBar(pos, b, date, 'sameBarAddStops', lvl, exitN, 'OPEN_FILL'));
+        if (positions.has(pos.id)) certainSameBar(pos, b, date, 'sameBarEntryStops', lvl, exitN, 'CLOSE');
+        continue;
+      }
       addUnits(c.x, pos, c.i, date, n);
       if (!optimistic) sameBarStops(pos, b, date, 'sameBarEntryStops', lvl);
       if (!optimistic && positions.has(pos.id) && b.low <= lvl) { settleAll(pos, lvl * (1 - slip), date, `EXIT_${exitN}D_SAME_BAR`); counts.sameBarEntryChannelExits++; }

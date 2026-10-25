@@ -1,0 +1,110 @@
+{
+  "state": "PASS",
+  "transport": "IN_PROCESS_ONLY_NO_ENDPOINT",
+  "cases": [
+    {
+      "ticker": "NVDA",
+      "state": "AVAILABLE_LIMITED",
+      "benchmarkState": "AVAILABLE",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "B",
+      "summaryBytes": 10266,
+      "elapsedMs": 601.4262900000001,
+      "financialPayload": true
+    },
+    {
+      "ticker": "MSFT",
+      "state": "AVAILABLE_LIMITED",
+      "benchmarkState": "BENCHMARK_UNAVAILABLE",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "B",
+      "summaryBytes": 12787,
+      "elapsedMs": 115.90403500000002,
+      "financialPayload": true
+    },
+    {
+      "ticker": "XOM",
+      "state": "AVAILABLE_LIMITED",
+      "benchmarkState": "BENCHMARK_UNAVAILABLE",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "B",
+      "summaryBytes": 12775,
+      "elapsedMs": 72.27222899999992,
+      "financialPayload": true
+    },
+    {
+      "ticker": "ARM",
+      "state": "AVAILABLE_LIMITED",
+      "benchmarkState": "AVAILABLE",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "B",
+      "summaryBytes": 10249,
+      "elapsedMs": 33.051512999999886,
+      "financialPayload": true
+    },
+    {
+      "ticker": "AAPL",
+      "state": "BLOCKED",
+      "benchmarkState": "NOT_EVALUATED",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "C",
+      "summaryBytes": 4353,
+      "elapsedMs": 62.890963000000056,
+      "financialPayload": false
+    },
+    {
+      "ticker": "BGC",
+      "state": "BLOCKED",
+      "benchmarkState": "NOT_EVALUATED",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "C",
+      "summaryBytes": 4392,
+      "elapsedMs": 99.81984399999988,
+      "financialPayload": false
+    },
+    {
+      "ticker": "AAAC",
+      "state": "BLOCKED",
+      "benchmarkState": "NOT_EVALUATED",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "C",
+      "summaryBytes": 4215,
+      "elapsedMs": 7.251647000000048,
+      "financialPayload": false
+    },
+    {
+      "ticker": "AACT",
+      "state": "BLOCKED",
+      "benchmarkState": "NOT_EVALUATED",
+      "generation": "d897b1adb58cd60edcb0bf8b946f79d28170f1c9b8b27e64257a0f504e0dba5e",
+      "quality": "C",
+      "summaryBytes": 4259,
+      "elapsedMs": 13.392918000000009,
+      "financialPayload": false
+    }
+  ],
+  "sections": [
+    {
+      "section": "quality",
+      "bytes": 6358,
+      "elapsedMs": 13.95355399999994
+    },
+    {
+      "section": "equity",
+      "bytes": 184145,
+      "elapsedMs": 106.3976540000001
+    },
+    {
+      "section": "trades",
+      "bytes": 18828,
+      "elapsedMs": 75.09290699999997
+    }
+  ],
+  "parallel": {
+    "calls": 20,
+    "elapsedMs": 1394.3253160000002,
+    "consistent": true
+  },
+  "elapsedMs": 2595.844549,
+  "peakRssBytes": 140595200
+}

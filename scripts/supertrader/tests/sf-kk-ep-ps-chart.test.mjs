@@ -239,7 +239,16 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
   for (const c of ['C09', 'C10']) { assert.equal(a.strategies[c].liveReadiness, 'LIVE_NOT_APPROVED'); assert.match(a.strategies[c].contract.measurementClassOfTheOriginalMethod, /^NOT_MEASURABLE/); }
   for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE')) assert.equal(r.researchCodeSha256, kkCode());
   // a run on older code is never AUTHORITATIVE: the pre-6.0 run keeps its own hashes and is labelled as the BEFORE side
-  for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.researchCodeSha256 !== kkCode())) { assert.notEqual(r.role, 'AUTHORITATIVE'); assert.match(r.validity, /before the Supertrader 6\.0 fixes/); }
+  for (const r of KK_SNAPSHOT_RUNS.filter((x) => x.researchCodeSha256 !== kkCode())) {
+    assert.notEqual(r.role, 'AUTHORITATIVE');
+    const sup = /superseded by (\d+) \(Supertrader 7\.0 code, same public counts and hashes\)/.exec(r.validity);
+    if (!sup) { assert.match(r.validity, /before the Supertrader 6\.0 fixes/); continue; }
+    // a superseded run names an existing run with the matching role; the chain of supersessions ends at the AUTHORITATIVE run
+    assert.equal(r.role, `SUPERSEDED_BY_${sup[1]}_SAME_PUBLIC_RESULTS`);
+    let next = KK_SNAPSHOT_RUNS.find((x) => x.runId === sup[1]), hops = 0;
+    while (next && next.role !== 'AUTHORITATIVE' && hops++ < KK_SNAPSHOT_RUNS.length) { const m = /^SUPERSEDED_BY_(\d+)_SAME_PUBLIC_RESULTS$/.exec(next.role); next = m && KK_SNAPSHOT_RUNS.find((x) => x.runId === m[1]); }
+    assert.equal(next?.role, 'AUTHORITATIVE', `superseding chain of ${r.runId}`);
+  }
   if (!KK_SNAPSHOT_RUNS.some((x) => x.role === 'AUTHORITATIVE')) assert.equal(a.supertrader6.status, 'CACHE_ONLY_RERUN_PENDING');
 });
 

@@ -26,13 +26,14 @@ import { fundamentalEvidence } from './minervini-components.mjs';
 import { RUN_VARIANTS, LIFECYCLE_VERSION, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics, EXECUTION_VERSION } from './minervini-execution.mjs';
 import { transitionsDaily, transitionsAt, PP_FIX_COMPARISON_VERSION } from './pp-missing-low-comparison.mjs';
+import { SF7_MINERVINI_VARIANTS, SF7_MINERVINI_VERSION, sf7MinerviniVariantsSha256, ledgerWithoutReasonsSha256 } from './sf7-minervini-variants.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF4_RUNNER_VERSION = 'sf4-lifecycle-runner-1.0.0';
+export const SF4_RUNNER_VERSION = 'sf4-lifecycle-runner-1.1.0';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 // every file the lifecycle results depend on, including the unchanged screens and the fundamentals attachment (review SF4-C-L5)
-const FILES = ['../methods/minervini.mjs', '../common/series.mjs', 'run-sf3-research.mjs', 'minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'pp-missing-low-comparison.mjs', 'run-sf4-lifecycle.mjs'];
+const FILES = ['../methods/minervini.mjs', '../common/series.mjs', 'run-sf3-research.mjs', 'minervini-components.mjs', 'minervini-lifecycle.mjs', 'minervini-execution.mjs', 'pp-missing-low-comparison.mjs', 'run-sf4-lifecycle.mjs', 'sf7-minervini-variants.mjs'];
 export function researchCodeSha256() {
   const h = crypto.createHash('sha256');
   for (const f of FILES) { h.update(f); h.update(fs.readFileSync(path.join(HERE, f))); }
@@ -55,7 +56,7 @@ function publicOf(r) {
  * Runs every pre-registered variant of each strategy. The setup index is built once per strategy (setups do not depend
  * on the variant). The reference run is executed twice and must be identical (determinism).
  */
-export function lifecyclePart(dataset, { strategies = ['SEPA', 'POWER_PLAY'], variants = RUN_VARIANTS, from = L.WINDOW.from, to = L.WINDOW.to, log = () => {} } = {}) {
+export function lifecyclePart(dataset, { strategies = ['SEPA', 'POWER_PLAY'], variants = RUN_VARIANTS, sf7Variants = SF7_MINERVINI_VARIANTS, from = L.WINDOW.from, to = L.WINDOW.to, log = () => {} } = {}) {
   const pub = { version: LIFECYCLE_VERSION, executionVersion: EXECUTION_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   for (const strategy of strategies) {
@@ -63,9 +64,11 @@ export function lifecyclePart(dataset, { strategies = ['SEPA', 'POWER_PLAY'], va
     const ps = (pub.strategies[strategy] = { setupClassCounts: setupIndex.counts, securitiesWithSetups: setupIndex.index.size, variants: {} });
     const ss = (sealed.strategies[strategy] = { variants: {} });
     log(`${strategy}: setup index ${JSON.stringify(setupIndex.counts)}`);
+    const runsById = new Map();
     for (const v of variants) {
       if (v.strategies && !v.strategies.includes(strategy)) continue;
       const r = runMinerviniLifecycle(dataset, { strategy, setupIndex, config: v.config, from, to });
+      if (sf7Variants.some((x) => x.compareTo === v.id)) runsById.set(v.id, r); // only the comparison runs are kept
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
       ps.variants[v.id] = { changes: v.changes, ...publicOf(r) };
       ss.variants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
@@ -80,6 +83,21 @@ export function lifecyclePart(dataset, { strategies = ['SEPA', 'POWER_PLAY'], va
       }
       log(`${strategy} ${v.id}: trades ${r.trades.length}, entries ${r.counts.entries}, open at end ${r.openAtEnd.length}`);
     }
+    // Supertrader 7.0 (SF7-D4): each SF7 variant beside the unchanged variant it is compared with; public counts only
+    const sf7 = {};
+    for (const v of sf7Variants) {
+      if (v.strategies && !v.strategies.includes(strategy)) continue;
+      const base = runsById.get(v.compareTo);
+      if (!base) throw new Error(`SF7_COMPARE_TO_NOT_RUN:${strategy}:${v.compareTo}`);
+      const r = runMinerviniLifecycle(dataset, { strategy, setupIndex, config: v.config, from, to });
+      if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
+      const reasonsChanged = r.ledger.length === base.ledger.length ? r.ledger.filter((row, k) => row.reason !== base.ledger[k].reason).length : null;
+      sf7[v.id] = { compareTo: v.compareTo, revision: v.revision, supersedes: v.supersedes ?? null, ...publicOf(r), comparison: { ledgerWithoutReasonsEqual: ledgerWithoutReasonsSha256(r.ledger) === ledgerWithoutReasonsSha256(base.ledger), ledgerRowsWithChangedReason: reasonsChanged, tradesDelta: r.trades.length - base.trades.length, sameBarStopCertainDelta: r.counts.sameBarStopCertain - base.counts.sameBarStopCertain, sameBarStopAmbiguousDelta: (r.counts.sameBarStopAmbiguousExecuted + r.counts.sameBarStopAmbiguousIgnored) - (base.counts.sameBarStopAmbiguousExecuted + base.counts.sameBarStopAmbiguousIgnored) } };
+      (ss.sf7Execution ||= {})[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
+      log(`${strategy} ${v.id}: trades ${r.trades.length} (${v.compareTo} ${base.trades.length}), certain ${r.counts.sameBarStopCertain} (${base.counts.sameBarStopCertain})`);
+    }
+    if (Object.keys(sf7).length) ps.sf7Execution = { version: SF7_MINERVINI_VERSION, variantsSha256: sf7MinerviniVariantsSha256(), variants: sf7 };
+    runsById.clear();
   }
   return { pub, sealed };
 }
@@ -127,7 +145,7 @@ async function main() {
   const dataset = datasetFromPit(pit);
   const fundCoverage = attachSecPit(dataset, secPit);
   log(`dataset: ${dataset.securities.length} securities, ${dataset.calendar.length} sessions, sec-pit ${fundCoverage.withFund}`);
-  const receipt = { schema: 'supertrader-sf4-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: researchCodeSha256(), runner: SF4_RUNNER_VERSION, variantRegistrySha256: variantRegistrySha256(), limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  const receipt = { schema: 'supertrader-sf4-lifecycle-receipt-1.0.0', certification: FOUNDATION.certification, snapshotId, datasetSha256, accounting: FOUNDATION.accounting.mode, engineCodeSha256: engineCodeSha256(), researchCodeSha256: researchCodeSha256(), runner: SF4_RUNNER_VERSION, variantRegistrySha256: variantRegistrySha256(), sf7MinerviniVariantsSha256: sf7MinerviniVariantsSha256(), limit: LIMIT || null, ...verification, computedSegmentsSha256: sha(dataset.securities.map((s) => s.id).join('\n')), survivorship: 'snapshot listing table incl. inactive listings; delisted segments settled by the research-v1 terminal policy', runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   const r = parts.has('lifecycle') ? lifecyclePart(dataset, { strategies, log }) : { pub: null, sealed: null };
   const pub = { schema: 'supertrader-sf4-lifecycle-public-1.0.0', receipt, fundCoverage, lifecycle: r.pub };
   if (parts.has('ppfix')) { pub.ppFix = ppFixPart(dataset); log(`pp fix: daily changed ${pub.ppFix.daily.changed}, month-end changed ${pub.ppFix.monthEndFull.changed}`); }

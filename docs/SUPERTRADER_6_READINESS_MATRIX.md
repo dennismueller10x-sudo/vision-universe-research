@@ -2,7 +2,7 @@
 
 Erzeugt von `scripts/supertrader/source-faithful/completion/build-sf6-readiness.mjs` aus Artefakten und Lauf-Receipts. Kriterien `sf6-readiness-criteria-1.2.0` (Fingerabdruck `4fb413783c04…`), festgeschrieben vor dem ersten Supertrader-6.0-Ergebnis. Keine Note ist von Hand gesetzt; keine Kennzahl geht ein.
 
-Eigentümerentscheidungen E1–E6 vom 24.10.2026 sind eingearbeitet: V4-D1 bleibt ein offener Datenintegritätsblocker (CC-5 nie durch die Quarantäne erfüllt); CC-8 nur aus dem prospektiven Paper-Protokoll `SF6-PAPER-2027` 1.0.0 ab 2027-01-01 (NOT_ACTIVATED, Fingerabdruck `c90c30bcf018…`); Modellvarianten und SIC-Proxys zählen nie.
+Eigentümerentscheidungen E1–E6 vom 24.10.2026 sind eingearbeitet: V4-D1 bleibt ein offener Datenintegritätsblocker (CC-5 nie durch die Quarantäne erfüllt); CC-8 nur aus dem prospektiven Paper-Protokoll `SF6-PAPER-2027` 1.1.0 ab 2027-01-01 (NOT_ACTIVATED, Fingerabdruck `e623b336cd24…`); Modellvarianten und SIC-Proxys zählen nie.
 
 Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter deklarierter Modellannahme; TEIL = teilweise (manuell oder Lücke); GESPERRT = gesperrt; NICHT BELEGT = keine Evidenz.
 
