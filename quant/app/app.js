@@ -161,6 +161,12 @@
     });
     return lazy[src];
   }
+  /* Release: der Code der Aktienseite, der Methodik und der Werkzeuge liegt je in einem Paket (scripts/vu2/build-release.mjs,
+     QUANT_PACKS), nicht im Buendel jeder Ansicht. Lokal stehen die Skripte in der Seite: kein Paket, sofort fertig. */
+  function pack(name) {
+    var p = global.VUQuantPacks && global.VUQuantPacks[name];
+    return p ? loadScript(p.src).then(function (ok) { if (!ok) throw new Error("PACK_LOAD_FAILED " + name); }) : Promise.resolve();
+  }
   var ctx = {
     api: api, names: {}, types: {}, entries: {},
     /* Signal-Engine und Backtest-Ansichten (quant/engines/signal-backtest.js, quant/app/page-backtest.js). */
@@ -227,7 +233,7 @@
     /* Realtime: derselbe Hub wie Discover, mit derselben Konfiguration -
        erst geladen, wenn eine Aktienseite einen Chart zeichnet. */
     hubReady: function () {
-      if (!hubPromise) hubPromise = Promise.all([S.loadJSON("/discover/data/meta.json").catch(function () { return null; }), S.loadJSON("/quant/config/market-calendar.json").catch(function () { return null; })]).then(function (v) {
+      if (!hubPromise) hubPromise = Promise.all([S.loadJSON("/discover/data/meta.json").catch(function () { return null; }), S.loadJSON("/quant/config/market-calendar.json").catch(function () { return null; }), pack("stock").catch(function () { return null; })]).then(function (v) {
         var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
         if (Hub && v[0] && v[0].realtime) Hub.init({ realtime: v[0].realtime, calendar: v[1] });
         return !!(Hub && Hub.enabled && Hub.enabled());
@@ -370,6 +376,9 @@
         if (r.view === "radar" || r.view === "aktie") ctx.loadBacktestView();
         if (r.view === "aktie" && /^[A-Z0-9.-]{1,12}$/.test(r.ticker)) ctx.prefetchStock(r.ticker);
       }
+      /* Das Paket der Ansicht startet mit den uebrigen Voraussetzungen; ein Fehler zeigt sich dort, wo die Ansicht es braucht. */
+      var viewPack = r.view === "aktie" ? pack("stock") : r.view === "methodik" ? pack("method") : r.view === "zahlen" || r.view === "vergleich" ? pack("tools") : null;
+      if (viewPack) viewPack.catch(function () { /* gemeldet ueber await in der Ansicht */ });
       await ctx.language();
       if (gen !== generation) return;
       if (/^(screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
@@ -380,13 +389,13 @@
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
-        case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
+        case "aktie": await Promise.all([ctx.loadBacktestView(), viewPack]); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
         case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); hideEmptyLagen(main, r.params); break;
-        case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
-        case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
-        case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;
+        case "zahlen": await viewPack; await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
+        case "vergleich": await viewPack; await global.QXTools.compare(main, ctx, r.list); break;
+        case "methodik": await viewPack; await global.QXMethod.render(main, ctx, r.topic, r.params); break;
         default:
           main.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Diese Adresse gehört zu keinem Bereich von Quant. Öffne einen der fünf Bereiche über die Navigation."),
             X.actions([X.btn("Zur Startseite", "#/")])]));

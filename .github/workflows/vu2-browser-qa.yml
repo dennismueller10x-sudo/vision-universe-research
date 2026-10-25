@@ -43,7 +43,13 @@ jobs:
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
       - name: Compact delivery script without changing identifiers or removing code
         run: |
+          set -euo pipefail
+          shopt -s nullglob
           /tmp/vu2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/quant2-site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/quant2-site/quant/release-bundle.js"
+          # Die Pakete je Ansicht (QUANT_PACKS in build-release.mjs) sind Teile des Buendels und werden wie es behandelt.
+          for pack in "$RUNNER_TEMP"/quant2-site/quant/app/pack-*.js; do
+            /tmp/vu2-qa/node_modules/.bin/esbuild "$pack" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$pack"
+          done
       - name: Test desktop and mobile preview
         env:
           NODE_PATH: /tmp/vu2-qa/node_modules
