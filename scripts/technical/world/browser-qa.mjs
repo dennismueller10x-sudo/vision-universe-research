@@ -9,8 +9,13 @@
      Screener     Vorlage liefert Treffer, ein Filter-Pill aendert Adresse
                   und Trefferzahl, Trichter vorhanden
      Chart Studio Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
-                  RSI-Schicht legt den Indikatorbereich an, Befundkarten
+                  RSI-Schicht legt den Indikatorbereich an, Befundkarten,
+                  Aroon-Unterfenster, Ichimoku-Linien
+     Suche        Suche in Worten: Vorschau (erkannt/nicht erkannt), Ausfuehren,
+                  "Erkannt als" und Treffer
+     Fokus        Befundkarte -> Chart nur mit dieser Formation
      Signale      Befunde und Erkennungshistorie
+     Menue        eigene Gruppe nach Fundamental, Chart Studio aktiv
      Methodik     Indikatorkatalog
    Je Ansicht: keine Seitenfehler, keine Konsolenfehler (ausser den zwei
    Pfaden, die nur der Release-Bau schreibt), kein horizontales Scrollen.
@@ -102,6 +107,22 @@ async function main() {
       await clean("Screener");
     });
 
+    await check(key + " Suche in Worten", async () => {
+      await page.goto(base + "#/screener");
+      await page.waitForSelector("#tc-ts-input", { timeout: 30000 });
+      await page.fill("#tc-ts-input", "Dreieck über der SMA 200 mit Mondphase");
+      await page.waitForSelector(".tc-ts-preview .tc-mini.is-warn");
+      assert(await page.locator(".tc-ts-preview .tc-mini.is-ok").count() === 2, "Vorschau: erkannte Bausteine fehlen");
+      await page.fill("#tc-ts-input", "Dreieck über der SMA 200");
+      await page.locator(".tc-textsearch button[type=submit]").click();
+      await page.waitForFunction(() => /q=Dreieck/.test(location.hash));
+      await page.waitForSelector(".tc-preset");
+      const txt = await page.locator(".tc-preset p").innerText();
+      assert(/Dreieck/.test(txt) && /SMA 200/.test(txt), "Erkannt als: " + txt);
+      assert(await page.locator(".tc-hit").count() >= 1, "keine Treffer fuer Dreieck ueber SMA 200");
+      await clean("Suche in Worten");
+    });
+
     await check(key + " Chart Studio", async () => {
       await page.goto(base + "#/chart/NVDA");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
@@ -116,7 +137,23 @@ async function main() {
       await page.waitForSelector(".tc-chart .tc-pane");
       assert(await page.locator(".tc-signals .tc-signal").count() >= 2, "Befundkarten fehlen");
       assert(await page.locator(".tc-level-card").count() === 2, "Niveaus fehlen");
+      await page.getByRole("button", { name: "Aroon", exact: true }).click();
+      await page.waitForFunction(() => /Aroon/.test((document.querySelector(".tc-chart .tc-pane-title") || {}).textContent || ""));
+      const before = await page.locator(".tc-chart .tc-overlay").count();
+      await page.getByRole("button", { name: "Ichimoku", exact: true }).click();
+      await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 3, before);
       await clean("Chart Studio");
+    });
+
+    await check(key + " Formationsfokus", async () => {
+      await page.goto(base + "#/chart/AAPL");
+      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
+      assert(href, "kein Fokus-Link in den Befundkarten");
+      await page.goto(base + href);
+      await page.waitForSelector(".tc-focus b", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg");
+      await clean("Formationsfokus");
     });
 
     await check(key + " Signale", async () => {
@@ -124,6 +161,26 @@ async function main() {
       await page.waitForSelector(".tc-history", { timeout: 45000 });
       assert(await page.locator(".tc-signal").count() >= 1, "keine Befunde");
       await clean("Signale");
+    });
+
+    await check(key + " Menue", async () => {
+      await page.goto(base + "#/chart/NVDA");
+      await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
+      await page.locator("#vu-dock button.menu").click();
+      await page.waitForFunction(() => { const p = document.querySelector("vu-navigation").shadowRoot.querySelector(".panel"); return getComputedStyle(p).visibility === "visible"; }, null, { timeout: 3000 });
+      const m = await page.evaluate(() => {
+        const root = document.querySelector("vu-navigation").shadowRoot, g = root.querySelector(".group[data-group=technical]");
+        return { heads: [...root.querySelectorAll(".group h2")].map((h) => h.textContent),
+          links: g ? [...g.querySelectorAll(".links a")].map((a) => a.getAttribute("href")) : [],
+          open: g ? g.querySelector(".disclosure").getAttribute("aria-expanded") : null,
+          current: g ? (g.querySelector(".links a[aria-current=page]") || {}).textContent : null };
+      });
+      const i = m.heads.indexOf("Technical");
+      assert(i > 0 && m.heads[i - 1] === "Fundamental", "Technical-Gruppe nicht nach Fundamental: " + m.heads.join("|"));
+      assert(m.links.length === 5 && m.links[2] === "/technical/#/chart", "Unterpunkte: " + m.links.join(","));
+      assert(m.open === "true" && m.current === "Chart Studio", "Chart Studio nicht aktiv: " + JSON.stringify(m));
+      await page.keyboard.press("Escape");
+      await clean("Menue");
     });
 
     await check(key + " Methodik", async () => {
