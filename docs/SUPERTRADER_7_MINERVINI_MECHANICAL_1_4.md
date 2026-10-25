@@ -8,10 +8,10 @@ Dieses Paket arbeitet die DEFERRED-Fundstellen aus der E7-2-Klassifikation ([SUP
 
 | Teil | Datei | Version / Fingerabdruck |
 |---|---|---|
-| Diagnosen | `scripts/supertrader/source-faithful/research/minervini-sf7-mechanical.mjs` | `sf7-minervini-mechanical-1.1.0`, Register `sf7MechanicalRegistrySha256` `70c48475…` (vor dem Lauf gepinnt); 1.0.0 = `0cc8cb2a…` (Lauf 40226429160) |
+| Diagnosen | `scripts/supertrader/source-faithful/research/minervini-sf7-mechanical.mjs` | `sf7-minervini-mechanical-1.1.0`, Register `sf7MechanicalRegistrySha256` `131746dc…` (vor dem Lauf gepinnt); 1.0.0 = `0cc8cb2a…` (Lauf 40226429160) |
 | Paket | `research/minervini-sf7.mjs` | `sf7-minervini-1.4.0`; nur Versionszeichenkette und Kopfkommentar geändert |
 | Runner | `research/run-sf7-minervini.mjs` | `sf7-minervini-runner-1.6.0` (1.5.0 im Lauf 40226429160), `SF7_FILES` um die neue Datei erweitert |
-| Code-Hash | `sf7CodeSha256` | `2a2b3c3b…`, vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`); `832223b9…` war Runner 1.5.0 |
+| Code-Hash | `sf7CodeSha256` | `2862748e…`, vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`); `832223b9…` war Runner 1.5.0 |
 
 Unverändert bleiben:
 - die 4.0-Engine (`minervini-lifecycle.mjs`, `minervini-execution.mjs`, Fingerabdruck `c834b227…`) und alle Dateien in `run-sf4-lifecycle#FILES` / SF6-PAPER-2027;
@@ -51,10 +51,11 @@ Keine davon ist eine Minervini-Regel, keine ist SOURCE_EXACT. Gedruckte Werte st
 |---|---|---|
 | `MA-MIN7-BASECOUNT-BASE` | Eine Basis endet mit dem ersten Schluss über dem laufenden Schlusshoch, das mindestens **20 Sitzungen** vorher gesetzt wurde; kürzere Pausen zählen nicht; keine Tiefenschranke (Flat Bases zählen) | B12 PDF 115: Basen in Stage 2 dauern 4–5 Wochen bis über ein Jahr, untere Grenze 4 Wochen. Schlüsse auf beiden Seiten, weil ein Intraday-Hoch am Ausbruchsversuch die Basis sonst einen Tag vor dem Ausbruch neu starten würde |
 | `MA-MIN7-BASECOUNT-MARKET-RESET` | Marktkorrektur = SPY schließt mindestens **10 %** unter dem höchsten bisherigen Schluss; die Zählung beginnt am tiefsten SPY-Schluss der letzten solchen Korrektur, der am Setup-Tag bekannt ist | Die Bücher beziffern die Marktkorrektur nicht (ABSENT_FROM_MATERIAL); 10 % ist eine Konvention. Am Tief beginnt die Zählung, damit die in der Korrektur gebildete Basis Basis 1 ist (B12 PDF 116) |
-| `MA-MIN7-BASECOUNT-STOCK-RESET` | Neustart auch nach dem letzten Schluss der Aktie unter ihrem 200-Tage-Mittel; ohne einen solchen Schluss ist die Zahl **unsicher**, mit Richtung: `undercountPossible`, wenn gar kein Neustart in den Daten liegt (Basen vor dem ersten Balken fehlen); `overcountPossible`, sobald eine Basis gezählt wurde (das Schlusshoch vor dem ersten Balken ist unbekannt, ein unsichtbarer Schluss unter MA200 in den ersten 199 Balken hätte neu gestartet); `baseCountUncertain` = eins von beiden, Gründe in `uncertaintyReasons` | Basen werden in einem Stage-2-Anstieg gezählt (B12 PDF 115–116); die 200-Tage-Linie ist die Stage-2-Grenze des Trend Templates (TT-1). Der Trend-Template-Lauf (`MA-MIN7-STAGE2-START`) taugt hier nicht, weil TT-5 (Schluss über MA50) in fast jeder Basis scheitert |
+| `MA-MIN7-BASECOUNT-STOCK-RESET` | Neustart auch nach dem letzten Schluss der Aktie unter ihrem 200-Tage-Mittel; ohne einen solchen Schluss ist die Zahl **unsicher**, mit Richtung: `undercountPossible`, wenn gar kein Neustart in den Daten liegt (Basen vor dem ersten Balken fehlen); `overcountPossible`, sobald eine Basis gezählt wurde (das Schlusshoch vor dem ersten Balken ist unbekannt, ein unsichtbarer Schluss unter MA200 in den ersten 199 Balken hätte neu gestartet); `baseCountUncertain` = eins von beiden, Gründe in `uncertaintyReasons`. „Ohne berechenbares MA200“ umfasst die ersten 199 Balken und jede Lücke im Schlusskurs nach dem Neustart | Basen werden in einem Stage-2-Anstieg gezählt (B12 PDF 115–116); die 200-Tage-Linie ist die Stage-2-Grenze des Trend Templates (TT-1). Der Trend-Template-Lauf (`MA-MIN7-STAGE2-START`) taugt hier nicht, weil TT-5 (Schluss über MA50) in fast jeder Basis scheitert |
+| Lesart „früh“ | `earlyBase` = jede Basis ≤ 2; `earlyBaseAfterMarketCorrection` = nur Basen ≤ 2 nach einem Marktkorrektur-Neustart. Nur die zweite Zahl entspricht der Buchbedingung „nach einer Marktkorrektur“ (F7-B03-207-082); der Neustart unter MA200 ist Modellannahme | B03 PDF 207 |
 | `MA-MIN7-BASECOUNT-CURRENT` | Basiszahl = abgeschlossene Basen nach dem Neustart und vor dem Setup-Schluss + 1 (die eigene Basis des Setups); der Setup-Schluss schließt nie eine Basis ab, auch wenn er über einem alten Schlusshoch und unter dem Intraday-Pivot liegt | So ist die erste Basis nach dem Neustart Basis 1 (B03 PDF 207) |
 | `MA-MIN7-TOPVOL` | Erster Abwärtsschluss ab dem Einstieg, dessen Volumen über dem jeder Sitzung seit Trendbeginn liegt; Fenster endet bei geschlossenen Trades eine Sitzung vor der Ausstiegssitzung; Ausstieg am Einstiegstag = nicht bewertbar. Der Trendbeginn ist in **zwei Fenstern nebeneinander** berichtet, keines gewählt: `trendTemplateRun` = Beginn des ununterbrochenen Trend-Template-Laufs (`MA-MIN7-STAGE2-START`; beginnt meist erst nach dem letzten MA50-Bruch in der Setup-Basis, reicht also oft nur Wochen zurück); `aboveMa200Run` = Sitzung nach dem letzten Schluss unter MA200 (Fenster der Basiszählung; `windowTruncated`, wenn kein solcher Schluss in den Daten liegt) | B03 PDF 217 / 219 datieren den Trendbeginn nicht; keine Größenschranke für den Rückgang. Beide Lesarten sind vertretbar; die Wahl nach einem Ergebnis ist ausgeschlossen |
-| `MA-MIN7-RELDEPTH` | Rückgang der Aktie geteilt durch Rückgang des SPY, Schlüsse auf beiden Seiten, Basisstart (52-Wochen-Hoch wie G-BASE-DEPTH) bis Setup-Tag, in **zwei Fenstern nebeneinander**, keines gewählt: `sameWindow` = größter Rückgang Hoch-zu-Tief innerhalb des Fensters; `trailingHigh` = größter Abstand unter dem gleitenden 252-Sitzungen-Schlusshoch über die Sitzungen des Fensters (erfasst eine Marktkorrektur, die vor dem Basisstart begann); je Fenster nur bewertet, wenn der Markt mindestens 10 % fiel | B12 PDF 280 vergleicht mit der Marktkorrektur, ohne Fenster und ohne Untergrenze; ohne Untergrenze wäre jede Basis bei 1 % Markt-Dip „vielfach“ |
+| `MA-MIN7-RELDEPTH` | Rückgang der Aktie geteilt durch Rückgang des SPY, Schlüsse auf beiden Seiten, Basisstart (52-Wochen-Hoch wie G-BASE-DEPTH) bis Setup-Tag. Aktienseite in beiden Fenstern: größter Rückgang Hoch-zu-Tief ab dem Basisstart (ein älteres, höheres Hoch zählt nie). Marktseite in **zwei Fenstern nebeneinander**, keines gewählt: `sameWindow` = größter Rückgang Hoch-zu-Tief innerhalb des Fensters; `trailingHigh` = größter Abstand unter dem gleitenden 252-Sitzungen-Schlusshoch über die Sitzungen des Fensters (erfasst eine Marktkorrektur, die vor dem Basisstart begann); > 2× ist eine Berichtsstufe, keine Meidungsgrenze (B12 PDF 295 nennt 2,3× noch akzeptabel); je Fenster nur bewertet, wenn der Markt mindestens 10 % fiel | B12 PDF 280 vergleicht mit der Marktkorrektur, ohne Fenster und ohne Untergrenze; ohne Untergrenze wäre jede Basis bei 1 % Markt-Dip „vielfach“ |
 | `MA-MIN7-ENTRY-DISTANCE` | Fill / Pivot − 1 und Eröffnung / Pivot − 1 (jeder Fill, dessen Balken am oder über dem Pivot eröffnete, auch Limit-Fills danach; gelesen aus der Eröffnung des Fill-Balkens, nicht aus der Fill-Basis der Engine); nicht ausgeführte Orders über dem Limit nur als Anzahl (`ordersNotExecutedAboveLimit`); Berichtsstufen 0, (0, 1 %], (1, 2 %], (2, 3 %], (3, 5 %], > 5 %; Puffer: (Hoch des Fill-Balkens − Pivot) × `splitAdj` in Roh-Dollar unter 0,05 / 0,10 / 0,20 | B07 PDF 67 / 87, B12 PDF 297 (keine Zahl), B07 PDF 40 (keine magische Zahl). Die Stufen berichten nur; keine Schranke, kein k gewählt |
 
 ## 4. Was weiter offen bleibt
@@ -159,6 +160,19 @@ Ein zweites Review der Fassung 1.0.0 (nach Lauf 40226429160) fand, dass vier Bef
 | L4 Tabelle | behoben | unverändert |
 | L5 Schutztest | behoben | unverändert |
 
+### Zweites unabhängiges Review (Fassung 1.1.0, vor dem Lauf)
+
+Ergebnis: 0 HIGH, 2 MEDIUM, 4 LOW; kein Lookahead, keine Wirkung auf REF, Varianten, Ledger oder Gates; Paraphrasen wörtlich, Inventur byte-gleich mit dem Erzeuger. Alle Befunde vor dem Lauf behoben, Register und Code-Hash danach neu gepinnt.
+
+| Befund | Behebung |
+|---|---|
+| MEDIUM: `trailingHigh` griff auf der Aktienseite vor den Basisstart zurück (älteres Hoch blähte den Basisrückgang auf) | Aktienseite in beiden Fenstern ab Basisstart; nur der Markt blickt 252 Sitzungen zurück; Gegenprobe mit Hoch 150 vor der Basis |
+| MEDIUM: Platzhalter im Vorher/Nachher-Abschnitt | Abschnitt erst nach dem Lauf gefüllt |
+| LOW: `earlyBase` ohne die Buchbedingung „nach einer Marktkorrektur“ | zusätzlich `earlyBaseAfterMarketCorrection`; Lesart dokumentiert |
+| LOW: > 2× schließt die als akzeptabel genannten 2,3× ein | als Berichtsstufe dokumentiert (Code-Lesart und Abschnitt 3) |
+| LOW: Tests prüften `overcountPossible`, `above3x`, `windowTruncated` nicht; Fixture-Basis „Pivot-Berührung“ bei Eröffnung = Pivot | Prüfungen ergänzt, Fixture auf die Engine-Basis korrigiert |
+| LOW: Lücke im Schlusskurs nach dem Neustart (MA200 200 Sitzungen undefiniert) nicht als mögliche Überzählung markiert | `MA200_NOT_COMPUTABLE_AFTER_RESET` für jede Sitzung ohne MA200 nach dem Neustart; Test mit Lücke |
+
 ### Vorher/Nachher
 
-RUNRESULT
+Lauf ausstehend.
