@@ -163,6 +163,39 @@ Die vollständigen Ausstiegs- und Verkaufsgründe je Variante stehen im öffentl
   - Seit Runner 1.3.0 steht im öffentlichen Teil je Variante `signalSessionsFromEntry`: die Sitzungen vom Einstieg bis zum Signal, in Buckets. Damit ist die Aussage „kurz nach dem Einstieg“ belegt und nicht nur vermutet. Die Werte stehen in Abschnitt 5.
   - Eine am Anstieg verankerte Lesart wäre eine neue, eigene Vorregistrierung (Abschnitt 7).
 
+## 5a. Owner-Prüfung `EXIT-CLIMAX-UPCLOSES` (25.10.2026)
+
+Prüflauf: [40202504143](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40202504143) auf `01688ce`, Runner `sf7-minervini-runner-1.4.0`, `sf7CodeSha256` `84caa463…` (vor dem Lauf gepinnt). Unverändert sind die Regel, das Register `df0379ae…`, REF (ledger-identisch) und alle Zählungen der Varianten.
+
+**Frage:** Werden die 349 Signale am Einstiegstag als Risikoevidenz vor dem Einstieg, als Ausschlusskriterium oder fälschlich als nachträglicher Ausstieg behandelt?
+
+**Kein Lookahead und kein rückwirkender Ausstieg.** Belegt durch drei Punkte:
+- **Regel:** Sie wertet erst ab dem Schluss des Einstiegsbalkens aus. Der Kauf liegt davor, entweder zur Eröffnung oder intraday per Buy-Stop. Ausgeführt wird zur nächsten Eröffnung.
+- **Laufgate:** Es zählt in jeder Variante Signale vor dem Einstieg und Ausführungen, die nicht nach dem Signal liegen. Gibt es eines davon, bricht der Lauf ab (`EXIT_SIGNAL_TIMING_VIOLATION`). Beide Zähler stehen auf 0.
+- **Test `SF7-EXIT-UPCLOSES-NO-LOOKAHEAD`:** Die Bedingung an j liest nur die Schlüsse j−15 bis j; spätere Balken ändern sie nie. Eine Bedingung, die nur vor dem Einstieg galt, löst keinen Ausstieg aus.
+
+**Signal-Zeitpunkt bei Power Play** (`upClosesSignalTiming`):
+
+| Fall | Anzahl | Einordnung |
+|---|---|---|
+| Signal am Einstiegsschluss, Bedingung **schon am Setup-Schluss** erfüllt | 284 | **Risikoevidenz vor dem Einstieg.** Die Aktie war beim Kauf schon im Sinne der Variante gestreckt. Die Variante kauft und verkauft dann zur nächsten Eröffnung. Wirtschaftlich wirkt sie hier wie ein **um eine Sitzung verspätetes Ausschlusskriterium**, nicht wie ein Klimax nach dem Anstieg. |
+| Signal am Einstiegsschluss, erst durch den Einstiegstag erfüllt | 65 | regulärer Ausstieg auf Basis des Einstiegstags, ohne Lookahead |
+| späteres Signal, schon am Setup erfüllt | 6 | Ausstieg nach dem Einstieg; das Setup war schon gestreckt |
+| späteres Signal, nicht am Setup | 201 | regulärer Ausstieg nach dem Anstieg |
+| Signal vor dem Einstieg / Ausführung nicht nach dem Signal | 0 / 0 | – |
+
+Bei SEPA sind es 2 / 0 / 0 / 62.
+
+**Risikoevidenz auf den REF-Trades** (`upClosesExtendedAtSetup`, nur Evidenz, nie Filter): Schon am Setup-Schluss gestreckt waren bei Power Play 222 von 1.007 REF-Trades und bei SEPA 0 von 954.
+
+**Bewertung:**
+- Es gibt **keinen technischen Fehler**. Die Variante bleibt als unverändertes Forschungsartefakt erhalten.
+- Ihre Aussagegrenze ist eindeutig: Bei Power Play messen 284 der 556 Regelausstiege den Zustand **beim Kauf**, nicht eine Klimax-Phase danach.
+- Wer daraus eine Regel ableiten wollte, bräuchte eine von zwei **neuen Vorregistrierungen**:
+  - ein Ausschlusskriterium am Setup, als Einstiegsvariante;
+  - eine am Anstieg nach dem Einstieg verankerte Klimax-Lesart.
+- Beides ist hier nicht umgesetzt. Keine Lesart wird nach diesem Ergebnis gewählt.
+
 ## 6. Was das Ergebnis nicht bedeutet
 
 - **Keine Regeländerung:** Kein Vertrag (`contracts/minervini.mjs`) und keine Referenzregel ändert sich. Keine Minervini-Regel ist `SOURCE_EXACT`, keine wird angehoben.
