@@ -63,6 +63,25 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
   Das `preload` des vollen Datensatzes entfällt.
 - **D – Mobile:** Die Browser-QA prüft zusätzlich 360 px (48 Prüfungen). Kein horizontaler Überlauf in allen sechs Ansichten. Die Beispiel-Links der Suche haben jetzt 44 px Zielhöhe.
 - **D – Datenqualität:** Neue Zeilenspalte `suspectJumpAt`: jüngster Schlusssprung der letzten 60 Bars mit Split-Signatur oder einem Faktor außerhalb 0,2 bis 5; am Stichtag 23.10.2026 betrifft das 56 Titel. Der Screener zeigt „Kurssprung prüfen“, das Chart Studio nennt die Tage unter „Datenqualität und Herkunft“, `meta.json` zählt `counts.suspectJump60`. Ursache sind nicht nachgezogene Splits und Abspaltungen in der Quelle (vgl. DQ-PX-3); Technical korrigiert nichts selbst (ADR-002).
+- **E3a – Historische Evidenz der Formationen** (`scripts/technical/world/formation-evidence.mjs` → `technical/data/formation-evidence.json`, Teil des Erzeugerlaufs, +100 s):
+  - Jede Formation zählt einmal, am ersten Tag, an dem sie mit den damaligen Daten sichtbar war (`analyzeAt` an jedem Bar).
+  - Gemessen wird 20 Handelstage danach: bestätigt, invalidiert, entfallen (nicht mehr geführt ohne festgehaltenen Ausgang) oder offen. Dazu die richtungsbereinigte Rendite gegenüber dem Mittel aller Titel am selben Tag.
+  - Ausgewiesen ab n ≥ 100; „belastbar“ nur nach Bonferroni über alle Typen.
+  - Stand 23.10.2026: 91.891 Erkennungen, 5.649 Titel, Erkennungen 25.02. bis 25.09.2026.
+  - Belastbar sind nur drei Typen:
+
+    | Typ | Rendite ggü. Querschnitt nach 20 Tagen | n |
+    |---|---|---|
+    | Bullische Flagge | +2,3 % ± 1,0 | 1.198 |
+    | Fallender Keil | −2,9 % ± 1,3 (gegen die Lehrbuchrichtung) | 1.940 |
+    | Lücke nach oben | −0,5 % ± 0,3 | 9.804 |
+
+  - Alle anderen sind nicht belastbar. Das betrifft ein einziges Marktjahr und ist keine Prognose.
+  - Anzeige: Methodik (Tabelle) und Befundkarten („Historisch“).
+- **E3 – Befunde für die Formationsmodelle** (Fachmodell, eigener PR zur Entscheidung):
+  - Bestandsformationen werden nie invalidiert, sondern verschwinden (entfallen 45 bis 95 %).
+  - Kanäle und Keile sind beim ersten Sichtbarwerden meist schon bestätigt (58 bis 93 %), die Erkennung kommt also spät.
+  - Flaggen werden praktisch nie bestätigt.
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
@@ -109,6 +128,9 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 25.10.2026 | PR #923 (V2) gemergt (`74a49d0`), nachdem alle Pflichtprüfungen grün waren. Vercel (Tageslimit) ist kein Pflicht-Check. |
 | 25.10.2026 | PR #925 gemergt (`6a1396a`): eigene Menügruppe „Technical“ nach Fundamental. Geschützter Hash nur für `site-navigation.js` nachgezogen. Shell-Tests, Discover-Navigationstest und Shell-Browser-QA wurden angepasst. Alle Pflichtprüfungen grün; `frontend` nach einer Wiederholung des bekannten WebKit-Ausreißers. |
 | 25.10.2026 | PR #929 (V3) gemergt (`9787b1a`), nachdem alle Pflichtprüfungen grün waren; Vercel (Tageslimit) ist kein Pflicht-Check. Wirkung: neue Indikatoren, Kurslücken, Suche in Worten und Chart-Studio-Schichten sind auf `main`; bestehende Datensatzspalten bitgleich. |
+| 25.10.2026 | PR #932 (D) gemergt (`51aa903`): Index für Start und Chart Studio, 360-px-QA, Kurssprung-Verdacht. |
+| 25.10.2026 | PR #928 gemergt (`bc7f6e5`, Owner-Freigabe): Supertrader-ATR standardmäßig Wilder. Vor dem Merge gegen den aktuellen `main` geprüft: `build.mjs --out` bytegleich (1.537 Dateien), Supertrader-Tests 790/791 (1 übersprungen), Gate A OK. |
+| 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
 

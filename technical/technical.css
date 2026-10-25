@@ -381,6 +381,11 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-layer-groups{display:grid;gap:0}
 .tc-layers-h{flex:none;align-self:center;font-size:12px;color:var(--vu-muted);min-width:78px}
 .tc-focus{margin:0 0 10px;padding:10px 14px;border-radius:14px;background:var(--tc-soft);font-size:14px}
+.tc-table-wrap{overflow-x:auto;margin:0 -2px}
+.tc-table{width:100%;border-collapse:collapse;font-size:13px}
+.tc-table th,.tc-table td{padding:8px 6px;border-bottom:1px solid var(--vu-line);text-align:left;white-space:nowrap}
+.tc-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tc-table thead th{color:var(--vu-muted);font-weight:600}
 /* Filter-Baukasten */
 .tc-builder-body{display:grid;gap:10px}
 .tc-brow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
