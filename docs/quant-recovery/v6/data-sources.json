@@ -1,0 +1,561 @@
+{
+  "schemaVersion": "backtest-v6-data-sources-1.0.0",
+  "checkedAt": "2026-10-25T11:46:14.799227+00:00",
+  "baseMain": "675eeb97f2fbe924a991d32fa72387502ded67c5",
+  "scope": "HISTORICAL_PRIMARY_US_COMMON_EQUITY_NYSE_NASDAQ_NYSE_AMERICAN_INCLUDING_DELISTED",
+  "purchaseAuthorized": false,
+  "ordersPlaced": 0,
+  "paidProviderRequests": 0,
+  "productionSchedulerChanges": false,
+  "publicActivation": false,
+  "currentRuntimeProviderSecretsConfigured": false,
+  "runtimeObservationSource": "cloud_environment.environment_status at task start; not a statement about GitHub Actions account secrets",
+  "localInventory": {
+    "longSeries": {
+      "glob": "quant/data/market/discover-series-long/ref_*.json",
+      "fileCount": 6190,
+      "firstPath": "quant/data/market/discover-series-long/ref_A.json",
+      "lastPath": "quant/data/market/discover-series-long/ref_ZZK.json",
+      "pathListSha256": "2c0d36859d0d201fb0f60a5ac07600a022c3efbaf2cabc9b64ceb08c5f82cd18",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    },
+    "indexMembership": {
+      "glob": "quant/data/market/index-membership/history/*/*.json",
+      "fileCount": 18,
+      "firstPath": "quant/data/market/index-membership/history/DJIA/2026-09-15.json",
+      "lastPath": "quant/data/market/index-membership/history/SP500/2026-10-24.json",
+      "pathListSha256": "96fcf9bf6ca1bf37a6492ab02b1e4813cc3ec1c4a0e25aea95478144584b7c95",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    },
+    "setupObservations": {
+      "glob": "quant/data/product/setup-observation-history/setup-mapping-1.0.0/*.json.gz",
+      "fileCount": 20,
+      "firstPath": "quant/data/product/setup-observation-history/setup-mapping-1.0.0/2026-09-10.json.gz",
+      "lastPath": "quant/data/product/setup-observation-history/setup-mapping-1.0.0/2026-10-23.json.gz",
+      "pathListSha256": "4ca2471b0ae14c719f04e007a4e7ee1b1711e08285cc7d6bf1131ad5f3bb35da",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    },
+    "factorV2Observations": {
+      "glob": "quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/*.json.gz",
+      "fileCount": 20,
+      "firstPath": "quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/2026-09-23.json.gz",
+      "lastPath": "quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/2026-10-23.json.gz",
+      "pathListSha256": "787901f5b3aac8919f340d43c4df26a6cf6185c3cd7096f00c8fb04f3eec914a",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    },
+    "factorV1Observations": {
+      "glob": "quant/data/product/factor-evidence-history/vu-factor-evidence-1.0.0/*.json.gz",
+      "fileCount": 2,
+      "firstPath": "quant/data/product/factor-evidence-history/vu-factor-evidence-1.0.0/2026-09-18.json.gz",
+      "lastPath": "quant/data/product/factor-evidence-history/vu-factor-evidence-1.0.0/2026-09-21.json.gz",
+      "pathListSha256": "d5d3b2973be900e6e4d9de8e1792e9f9a06ef33798a9514958c27772e0c019a2",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    },
+    "regimeObservations": {
+      "glob": "quant/data/product/market-regime-history/*.json",
+      "fileCount": 20,
+      "firstPath": "quant/data/product/market-regime-history/2026-09-10.json",
+      "lastPath": "quant/data/product/market-regime-history/2026-10-23.json",
+      "pathListSha256": "9531943f5473d60697f6b3af70ea43f28ba0162a7b5284b50dcd4aa2cf0c20a5",
+      "measurement": "LOCAL_PATH_INVENTORY_NOT_DATA_QUALITY_REVALIDATION"
+    }
+  },
+  "repositorySourceSha256": {
+    "docs/quant-recovery/BACKTEST_V6_HANDOFF.md": "bd1e4deaf16f4f8d1b34360447a68de63fc0801f6bec3231dcd924a8d1061beb",
+    "quant/data/product/total-return-quality-v1.json": "375d6566d237143d560c588c5ba84c4d0310d404448d802f72e1405bf88ef4b5",
+    "quant/data/product/survivorship-control-v1.json": "edc1f312dc01f1ce927c02724774bed46849e81e53d74cb22f8132f9ae0a4826",
+    "quant/config/development-preview.json": "6a90e43e70e76a3cfba775eefcfd4d4ddec29df6c42ef3aa2121b559ef5fc09b",
+    "core/rights/marketstack-display.json": "ceefe94039c6589b30516fd318afacf33d6426fafe9353b9c5fa26883c963334",
+    "quant/config/fx-license.json": "d64402cd223be156c8b8c2c652e2678c6d89ad4aac30db40fbdd8c17fa16d622",
+    "docs/SEC_PIT_METHODOLOGY.md": "9d2d3d6d17267ca9543e4c446b1c53a57e9aca9345295b4d7fcfd97baf23a000",
+    "providers/marketstack/README.md": "84c3124b10f021c3efc74a9907773fd69c33217bdd290543bf3bdf87ebf1ff37",
+    "quant/data/sec/consumer/CIK0000001750.json": "8a18cbb8bf2a3ebfe326e5d99ba40a5d2f0f4d55d5143a174bc874e99d2df696"
+  },
+  "officialPageChecks": [
+    {
+      "url": "https://www.tiingo.com/about/pricing",
+      "checkedAt": "2026-10-25T10:02:42.559864+00:00",
+      "httpStatus": 403,
+      "error": "HTTP_ERROR_NO_CAPABILITY_OR_PRICE_VERIFIED"
+    },
+    {
+      "url": "https://www.tiingo.com/documentation/end-of-day",
+      "checkedAt": "2026-10-25T10:02:42.843341+00:00",
+      "httpStatus": 403,
+      "error": "HTTP_ERROR_NO_CAPABILITY_OR_PRICE_VERIFIED"
+    },
+    {
+      "url": "https://marketstack.com/product",
+      "checkedAt": "2026-10-25T10:02:43.001469+00:00",
+      "httpStatus": 403,
+      "error": "HTTP_ERROR_NO_CAPABILITY_OR_PRICE_VERIFIED"
+    },
+    {
+      "url": "https://marketstack.com/documentation",
+      "checkedAt": "2026-10-25T10:02:43.235895+00:00",
+      "httpStatus": 403,
+      "error": "HTTP_ERROR_NO_CAPABILITY_OR_PRICE_VERIFIED"
+    },
+    {
+      "url": "https://www.crsp.org/research/crsp-us-stock-databases/",
+      "checkedAt": "2026-10-25T10:02:43.469987+00:00",
+      "httpStatus": 200,
+      "sha256": "a40db61d5d7b210aee699459c1d6456ccacadf0e570d5ecfaad8159ef92fdd9f",
+      "bytes": 955963
+    },
+    {
+      "url": "https://norgatedata.com/stockmarketpackages.php",
+      "checkedAt": "2026-10-25T10:02:44.086273+00:00",
+      "httpStatus": 200,
+      "sha256": "5172e3166f8d5de0c1de895717b1ee3cb0cc3edaf97c23a9567ad7128d7c70b8",
+      "bytes": 24745
+    },
+    {
+      "url": "https://norgatedata.com/data-content-tables.php",
+      "checkedAt": "2026-10-25T10:02:44.271799+00:00",
+      "httpStatus": 200,
+      "sha256": "a3aaad45c65ee2ab8d6cd9524a0727e1fd16e3d15aa49fd068dc90832964e64b",
+      "bytes": 183932
+    },
+    {
+      "url": "https://norgatedata.com/faq.php",
+      "checkedAt": "2026-10-25T10:02:44.370438+00:00",
+      "httpStatus": 200,
+      "sha256": "1061df40494fac6f83a8c060dbaff73fbfdcacdefb94264ec0607b72d081c0c8",
+      "bytes": 31982
+    },
+    {
+      "url": "https://norgatedata.com/subscribe/eula.php",
+      "checkedAt": "2026-10-25T10:02:44.478397+00:00",
+      "httpStatus": 200,
+      "sha256": "95b16336702dce351ca27926b6e99168fc28e84290bd3f736ec238a059d2f82c",
+      "bytes": 21239
+    },
+    {
+      "url": "https://norgatedata.com/ndu-installation.php",
+      "checkedAt": "2026-10-25T10:02:44.561521+00:00",
+      "httpStatus": 200,
+      "sha256": "17184923b9ef3a3d5b231b81b32814561af027cf034a969fbeb9a6f52bc6336c",
+      "bytes": 19478
+    },
+    {
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "checkedAt": "2026-10-25T10:02:44.668095+00:00",
+      "httpStatus": 200,
+      "sha256": "653b3d5b2d13b957cc66298739379978c2b5bf06ac35e1b460cf945bbd5c70ab",
+      "bytes": 69020
+    }
+  ],
+  "dataGaps": [
+    {
+      "id": "D01",
+      "dataset": "LISTING_LIFECYCLE_IDENTITY",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "MARKET_REGIME",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D02",
+      "dataset": "DELISTING_TERMINAL_CONSIDERATION",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D03",
+      "dataset": "OHLCV_VINTAGES",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "MONTE_CARLO",
+        "WALK_FORWARD",
+        "MARKET_REGIME",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D04",
+      "dataset": "CORPORATE_ACTIONS_TOTAL_RETURN",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D05",
+      "dataset": "HISTORICAL_UNIVERSE_INDEX_MEMBERSHIP",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "MARKET_REGIME",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D06",
+      "dataset": "PIT_FUNDAMENTALS",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D07",
+      "dataset": "PIT_FACTOR_CROSS_SECTIONS",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D08",
+      "dataset": "PUBLICATION_TIMED_EVENTS",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "EVENT_DRIVEN"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D09",
+      "dataset": "REGIME_HISTORY",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "MARKET_REGIME"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D10",
+      "dataset": "BENCHMARK_CURRENCY",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D11",
+      "dataset": "HISTORICAL_EXECUTION_COSTS",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "MONTE_CARLO",
+        "PARAMETER_SENSITIVITY",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D12",
+      "dataset": "UNSEEN_HOLDOUT",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "WALK_FORWARD",
+        "OUT_OF_SAMPLE",
+        "PARAMETER_SENSITIVITY",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    },
+    {
+      "id": "D13",
+      "dataset": "SCOPED_RIGHTS_RETENTION",
+      "status": "EVIDENCE_GAP",
+      "affects": [
+        "SAME_STOCK_REPLAY",
+        "PATTERN_EVIDENCE",
+        "SIGNAL_BACKTEST",
+        "SETUP_BACKTEST",
+        "STRATEGY_BACKTEST",
+        "FACTOR_RANKING_BACKTEST",
+        "MONTE_CARLO",
+        "WALK_FORWARD",
+        "OUT_OF_SAMPLE",
+        "MARKET_REGIME",
+        "PARAMETER_SENSITIVITY",
+        "EVENT_DRIVEN",
+        "PORTFOLIO_REBALANCING"
+      ],
+      "requiredPeriod": "MAX_METHODICALLY_ELIGIBLE_STUDY_WINDOW_WITH_WARMUP_AND_OUTCOME_LAG",
+      "details": "../BACKTEST_V6_DATA_GAPS.md section 3"
+    }
+  ],
+  "functionDependencies": {
+    "SAME_STOCK_REPLAY": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "PATTERN_EVIDENCE": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D09",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "SIGNAL_BACKTEST": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D09",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "SETUP_BACKTEST": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "STRATEGY_BACKTEST": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "FACTOR_RANKING_BACKTEST": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "MONTE_CARLO": [
+      "D03",
+      "D11",
+      "D13"
+    ],
+    "WALK_FORWARD": [
+      "D03",
+      "D12",
+      "D13"
+    ],
+    "OUT_OF_SAMPLE": [
+      "D12",
+      "D13"
+    ],
+    "MARKET_REGIME": [
+      "D01",
+      "D03",
+      "D05",
+      "D09",
+      "D13"
+    ],
+    "PARAMETER_SENSITIVITY": [
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "EVENT_DRIVEN": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D08",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ],
+    "PORTFOLIO_REBALANCING": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D10",
+      "D11",
+      "D12",
+      "D13"
+    ]
+  },
+  "sourceDecisions": [
+    {
+      "provider": "TIINGO",
+      "status": "EXISTING_SCOPED_OWNER_GRANTS_PRESERVED",
+      "newPriceVerified": false,
+      "expandedV6RightsVerified": false,
+      "officialPagesStatus": 403
+    },
+    {
+      "provider": "MARKETSTACK",
+      "status": "EXISTING_EUROPE_DISPLAY_GRANT_PRESERVED_US_BACKTEST_SCOPE_UNVERIFIED",
+      "newPriceVerified": false,
+      "expandedV6RightsVerified": false,
+      "officialPagesStatus": 403
+    },
+    {
+      "provider": "CRSP",
+      "status": "OFFICIAL_PRODUCT_DOCUMENTATION_REVIEWED_SAMPLE_AND_QUOTE_REQUIRED",
+      "activeAndInactiveSecuritiesClaim": true,
+      "permanentIdentifiersClaim": [
+        "PERMNO",
+        "PERMCO"
+      ],
+      "historyClaim": "OVER_100_YEARS",
+      "price": null,
+      "commercialLicenseApproved": false
+    },
+    {
+      "provider": "SEC_EDGAR",
+      "status": "PUBLIC_DOCUMENTATION_AND_EXISTING_INGEST",
+      "apiKeyRequired": false,
+      "subscriptionPrice": null,
+      "priceNote": "No API key/public API; infrastructure cost not measured",
+      "securityMaster": false,
+      "delistingFeed": false,
+      "currentConsumerExportIsFullVintageArchive": false
+    },
+    {
+      "provider": "NORGATE",
+      "status": "NO_GO_LICENSE_SCOPE",
+      "listedPersonalPlans": [
+        {
+          "plan": "US_PLATINUM",
+          "historyFromYearClaim": 1990,
+          "annualUsd": 630,
+          "sixMonthsUsd": 346.5
+        },
+        {
+          "plan": "US_DIAMOND",
+          "historyFromYearClaim": 1950,
+          "annualUsd": 787.5,
+          "sixMonthsUsd": 433.13
+        }
+      ],
+      "commercialUsePermittedByStandardEula": false,
+      "institutionalQuote": null,
+      "pitFundamentalHistoryVerified": false,
+      "delistedCompletenessClaim": false,
+      "eulaVersion": "20261002",
+      "rawContentRetentionAfterSubscription": false,
+      "note": "Personal-use listed prices do not authorize institutional VU use. Original data samples not acquired."
+    }
+  ],
+  "limitations": [
+    "Inventory counts are not historical coverage percentages.",
+    "Public provider claims are not sample validation.",
+    "Synthetic simulation inputs cannot repair historical data gaps.",
+    "Dependencies for Monte Carlo/WF/OOS/sensitivity inherit every gap of the source study.",
+    "Existing owner grants remain effective within their recorded scope.",
+    "No new certification or commercial license approval is inferred."
+  ]
+}
