@@ -26,17 +26,6 @@
 
   /* Discovers Signalfarben fuer die Faktor-Chips im Kopf. */
   var SIG = { good: "strength", neutral: "quality", bad: "breakout", unknown: "muted" };
-  /* Bildwelt der Anlagestile: dieselben Fotografien wie Discovers
-     Perspektiven, je nach Sinn zugeordnet. */
-  var STRATEGY_ART = {
-    "quality-compounder": "langfristige-compounder", "momentum-leader": "momentum-leader", "quality-momentum": "stabile-aufwaertstrends",
-    "garp": "qualitaet-zum-preis", "future-leader": "umsatz-waechst-stark", "defensive-quality": "starke-bilanz-wachstum",
-    "value-momentum": "comeback", "earnings-revision-leader": "gewinne-beschleunigen"
-  };
-  function strategyArt(id) {
-    var key = STRATEGY_ART[id] || STRATEGY_ART[String(id || "").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")];
-    return key ? "/assets/discover-perspektiven/" + key + ".jpeg" : null;
-  }
 
   function foot(text) { return el("p", { class: "dx-kapitel-fuss", text: text }); }
   /* Ein Abschnitt als Karte (qv2-card) bzw. als Teil einer Karte (qv2-sub). */
@@ -1181,5 +1170,5 @@
     return function () { disposers.forEach(function (d) { try { d(); } catch (e) { /* bereits beendet */ } }); };
   }
 
-  global.QXStock = { render: render, factorCard: factorCard, strategyArt: strategyArt };
+  global.QXStock = { render: render, factorCard: factorCard };
 })(window);

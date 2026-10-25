@@ -27,8 +27,10 @@ export const META_NAME='vu-release';
 /* Nur-Stempel-Baeume: alle HTML-Seiten darunter (rekursiv) bekommen ?v=<Hash> an ihren JS-/CSS-Verweisen, aber weder
    Meta-Tag noch Eintrag in /release-id.json (kein Waechter, kein Nachladen). Supertrader: ~1.200 statische Seiten laden
    st-chart.js/supertrader.js/supertrader.css; nach einem Release, das einen Datenpfad entfernt, holte eine Navigation
-   im offenen Tab nur das neue HTML, den alten Code aber aus dem 10-Minuten-Cache (Chart "nicht verfuegbar"). */
-export const STAMP_ONLY=['supertrader'];
+   im offenen Tab nur das neue HTML, den alten Code aber aus dem 10-Minuten-Cache (Chart "nicht verfuegbar").
+   Technical (/technical/): index.html laedt app.js, engine/model.js, ui/chart.js und die Abfrage-Engine; dieselbe Lage.
+   Die Chart-Engines laedt app.js erst bei Bedarf nach (ENGINE_SCRIPTS) - sie bleiben ungestempelt wie bisher. */
+export const STAMP_ONLY=['supertrader','technical'];
 /* page: HTML-Seite des Produkts; dirs: Verzeichnisse mit Code, den die Seite erst bei Bedarf nachlaedt (loadScript,
    lazy.js); top: JS/CSS-Dateien direkt in einem Verzeichnis (Discover: app.js, home.js ...). */
 export const PRODUCTS={

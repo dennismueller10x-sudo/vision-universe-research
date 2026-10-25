@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:,">
+<title>Technical · Vision Universe®</title>
+<meta name="description" content="Technical von Vision Universe®: automatische Chartanalyse, technische Indikatoren, Formationserkennung und ein regelbasierter Screener für US-Aktien.">
+<link rel="canonical" href="/technical/">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die ganze Plattform (Standard hell). -->
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="light"||v==="dark")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/stock-navigator.css">
+<link rel="stylesheet" href="/technical/technical.css">
+<!-- Startseite und Screener brauchen den Screener-Datensatz; ein Chart-Deep-Link braucht ihn nur fuer den Namen. -->
+<link rel="preload" as="fetch" crossorigin="anonymous" href="/technical/data/screener-v1.json">
+</head>
+<body class="tc-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<a class="tc-skip" href="#tc-main">Zum Inhalt</a>
+<main id="tc-main" class="tc" tabindex="-1" aria-busy="true"><div class="tc-boot"><div class="tc-skel" style="height:104px;width:104px;border-radius:23px"></div><div class="tc-skel" style="height:36px;width:48%;margin-top:16px"></div><div class="tc-skel" style="height:52px;margin-top:16px;border-radius:999px"></div></div></main>
+<noscript><p style="padding:24px">Technical benötigt JavaScript.</p></noscript>
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/assets/stock-navigator.js"></script>
+<script src="/quant/engines/technical/technical-query.js"></script>
+<script src="/technical/engine/model.js"></script>
+<script src="/technical/ui/chart.js"></script>
+<script src="/technical/app.js"></script>
+</body>
+</html>

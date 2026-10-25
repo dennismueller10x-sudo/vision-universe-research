@@ -277,6 +277,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='strategien'){
    const karten=await page.locator('#qx-main a.qx-strat').count();
    if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   /* Bildwelt der Anlagestile: steht seit den Paketen je Ansicht (QUANT_PACKS) in pages.js, nicht mehr auf der Aktienseite. */
+   const bilder=await page.locator('#qx-main a.qx-strat img.v2-collection-image').count();
+   if(bilder!==karten)befund(view,width,'Strategie-Karten ohne Bild: '+bilder+' von '+karten);
    const katalog=await page.locator('#qx-main').innerText();
    if(!/Aktien erfüllen heute alle Bedingungen/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
    /* KEINE TREFFERQUOTE. */

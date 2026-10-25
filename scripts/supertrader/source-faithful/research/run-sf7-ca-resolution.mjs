@@ -91,10 +91,10 @@ function exposureIndex(base, keys, dataEnd) {
  * (datasetFromPit), sharesByListing maps a listing id to { cik, how, taxonomy, shares } of sec-pit-r13,
  * listingPeriods a listing id to { startDate, listEnd }. fetchFilings(cik) returns an EDGAR submissions index or null.
  */
-export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map(), listingPeriods = new Map(), fetchFilings = null, secFetchMax = 0, keys = INTEGRITY_KEYS, from = L.WINDOW.from, to = L.WINDOW.to, dataEnd = L.WINDOW.to, snapshotId = null, evidenceInputs = {}, log = () => {} } = {}) {
+export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map(), listingPeriods = new Map(), fetchFilings = null, secFetchMax = 0, keys = INTEGRITY_KEYS, from = L.WINDOW.from, to = L.WINDOW.to, dataEnd = L.WINDOW.to, snapshotId = null, evidenceInputs = {}, refine = null, classifierVersion = CA_RESOLUTION_VERSION, rulesetSha256Value = null, log = () => {} } = {}) {
   if (segs.length !== baseDs.securities.length || segs.some((s, j) => s.id !== baseDs.securities[j].id)) throw new Error('SEGMENT_ORDER_MISMATCH');
   const lcs = INTEGRITY_LIFECYCLES.filter((l) => keys.includes(l.key));
-  const pub = { version: CA_RESOLUTION_VERSION, overlayVersion: CA_OVERLAY_VERSION, runner: SF7_CA_RUNNER_VERSION, certification: 'DIAGNOSTIC_NOT_CERTIFIED', tolerances: TOLERANCES, standardRatios: STANDARD_RATIOS, rulesetSha256: rulesetSha256(), exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, lifecycles: {} };
+  const pub = { version: classifierVersion, overlayVersion: CA_OVERLAY_VERSION, runner: SF7_CA_RUNNER_VERSION, certification: 'DIAGNOSTIC_NOT_CERTIFIED', tolerances: TOLERANCES, standardRatios: STANDARD_RATIOS, rulesetSha256: rulesetSha256Value ?? rulesetSha256(), exposureLookbackDays: EXPOSURE_LOOKBACK_DAYS, window: { from, to }, lifecycles: {} };
   const sealed = { label: 'DIAGNOSTIC_METRICS_NOT_A_STRATEGY_RETURN', classified: [], lifecycles: {} };
 
   // 1. BASE
@@ -152,6 +152,11 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   // review HIGH-1 before/after: the 1.0.0 split rule on the same inputs (only its dei rows), against the 1.1.0 class
   for (const c of cands) { const { sec, identity } = identityOf(c); const o = classifyFlagV100({ raw: segs[c.j].raw, bars: baseDs.securities[c.j].bars, i: c.i, sec: sec ? { ...sec, shares: (sec.shares || []).filter((r) => r[3] !== 'bs') } : null, identity, otherFlagDates: c.otherFlagDates.filter((x) => baseDs.securities[c.j].bars.some((b) => b.date === x)) }); c.v100 = o.cls === CLASSES_V100.SPLIT ? o.label : null; }
 
+  // optional refinement after the unchanged classification (run-sf7-ca-edgar.mjs, rule set 1.4.0): it may replace
+  // c.result of candidates; census, overlay, quarantine and the reference runs below then use the refined results.
+  // Without it (the sf7-ca-resolution mode) nothing changes.
+  if (refine) { const x = await refine({ cands, identityOf, segs, baseDs, sharesByListing, snapshotId, evidenceInputs, log }); pub.refine = x.pub; sealed.refine = x.sealed; }
+
   // public census (counts only)
   const census = {};
   for (const level of ['K5', 'K3']) {
@@ -169,7 +174,7 @@ export async function caResolutionPart(baseDs, segs, { sharesByListing = new Map
   sealed.classified = cands.map((c) => ({ segmentId: c.segmentId, date: c.date, ratio: c.ratio, level: c.level, direction: c.direction, kind: c.kind, universe: c.universe, exposedRefs: c.exposedRefs, heldRefs: c.heldRefs, cik: sharesByListing.get(c.listing)?.cik ?? null, cls: c.result.cls, reason: c.result.reason, factor: c.result.factor ?? null, label: c.result.label ?? null, evidence: c.result.evidence }));
 
   // 4. overlay manifest (generated) and corrected dataset
-  const manifest = buildOverlayManifest(cands.map((c) => ({ ...c.result, segmentId: c.segmentId, date: c.date })), { snapshotId, classifierVersion: CA_RESOLUTION_VERSION, evidenceInputs });
+  const manifest = buildOverlayManifest(cands.map((c) => ({ ...c.result, segmentId: c.segmentId, date: c.date })), { snapshotId, classifierVersion, evidenceInputs });
   const ca = correctedDataset(baseDs, segs, manifest);
   for (const e of manifest.entries) {
     const s = ca.ds.securities.find((x) => x.id === e.segmentId), fl = new Set(flagDiscontinuities(s.bars, K3));
