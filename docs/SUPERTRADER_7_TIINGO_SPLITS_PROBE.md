@@ -98,3 +98,15 @@ Der Eigentümer hat den Endpunkt bis zu einer Antwort von Tiingo gesperrt: keine
 3. Ein kleiner PR: `PROBE_GATE.state` auf `'UNLOCKED'`, `unlockedBy` mit Datum und Freigabe, Workflow-Sperrschritt entfernen; Test SF7-TIINGO-GATE entsprechend anpassen.
 4. Lauf `sf7-tiingo-splits-probe` auf dem Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`. Stufe A bestätigt den Zugang (3 Anfragen); nur dann folgt Stufe B.
 5. Auswertung gegen die EDGAR-Labels. Eine Aufnahme ins Overlay ist **nicht** Teil der Probe; sie bräuchte einen eigenen Regelsatz und eine eigene Freigabe.
+
+**Planlauf** [40224919834](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40224919834) (Commit `0c8eb6e`, Snapshot `sts1-134d4d62…`): **0 Tiingo-Anfragen, 0 EDGAR-Anfragen**, Sperrschritt durchlaufen, Abrufschritt übersprungen.
+
+| Größe | Wert |
+|---|---:|
+| Sitzungen im Umfang | 83 (= erwartet) |
+| eindeutige Ticker = geplante Anfragen | 72 (Obergrenze 90 eingehalten) |
+| Sitzungen ohne Ticker | 0 |
+| Sitzungen ohne CIK | 11 |
+| frühestes Startjahr der Abfragen | 2015 |
+
+Reason-Gruppen: Dokumentweg 21, erklärter Split in der Nähe 19, echte Bewegung 16, Widerspruch Aktienzahl/Kurs 14, keine CIK 11, ADR 2 – identisch mit dem Stand nach Regelsatz 1.4.3. Ein späterer Abruf bräuchte also höchstens 3 + 72 = 75 Anfragen.
