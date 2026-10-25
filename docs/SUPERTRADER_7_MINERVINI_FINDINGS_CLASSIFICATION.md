@@ -40,7 +40,31 @@ Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `pos
 - `baseDepthAbove50` / `baseDepthAbove60`
 - `rsLineHighBeforePrice`
 
-Keine dieser Diagnosen ändert einen Einstieg, einen Ausstieg, eine Positionsgröße oder einen Fill. Die Referenzvarianten sind ledger-identisch mit 4.0 (Lauf siehe PR #899).
+Keine dieser Diagnosen ändert einen Einstieg, einen Ausstieg, eine Positionsgröße oder einen Fill.
+
+Maßgeblicher Lauf ist [40170379663](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40170379663) auf `63a4c42`, Datensatz `EXACT`, Code-Hash `06c41d88…` (gepinnt). Ergebnisse:
+- SEPA-REF hat 954 Trades, Power-Play-REF 1.007 Trades, beide **ledger-identisch** mit 4.0.
+- Die Varianten haben unverändert 824 / 982 / 890 Trades.
+
+Diagnosezählungen (nur Zählungen, die Kennzahlen bleiben versiegelt):
+
+| Diagnose | SEPA (954) ja / nein / n. a. | Power Play (1.007) ja / nein / n. a. |
+|---|---|---|
+| `healthy3of4` | 393 / 447 / 114 | 306 / 320 / 381 |
+| `healthy6of8` | 181 / 503 / 270 | 120 / 307 / 580 |
+| `lowerLowsOnVolume` | 29 / 925 / 0 | 29 / 978 / 0 |
+| `closeBelowMa20InWindow` | 459 / 495 / 0 | 110 / 897 / 0 |
+| `weeklyDeclineSignalBeforeExit` | 545 / 409 / 0 | 345 / 662 / 0 |
+| `baseDepthAbove50` | 0 / 954 / 0 | 232 / 712 / 63 |
+| `baseDepthAbove60` | 0 / 954 / 0 | 129 / 815 / 63 |
+| `rsLineHighBeforePrice` | 63 / 891 / 0 | 203 / 741 / 63 |
+
+„n. a.“ hat je Feld eine eigene Ursache:
+- **`healthy3of4` / `healthy6of8`:** Der Trade endete vor der 4. bzw. 8. Sitzung.
+- **Basistiefe:** Am Setup-Tag war keine Kontraktion messbar.
+- **RS-Linie:** Vor dem Setup lagen weniger als 252 Sitzungen, oder die Benchmark fehlte.
+
+Dass keine SEPA-Basis tiefer als 50 % ist, wurde nicht gesondert untersucht. Die Diagnose ist kein Gate und wurde nicht zur Variantenwahl verwendet.
 
 Zurückgestellt sind alle Punkte, die Trades verändern würden. Dazu gehören Chase-Grenze, Buy-Stop-Aufschlag, Stop-Fallback, Sizing-Progression und relativer Basis-Tiefenfilter. Sie brauchen eine Modellannahme, also einen vor dem Test festgelegten Parameter, und dürfen nicht nach Ergebnissen gewählt werden.
 
