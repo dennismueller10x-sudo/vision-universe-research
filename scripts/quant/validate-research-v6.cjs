@@ -8,6 +8,10 @@ const Benchmark=require('../../quant/engines/weekly-benchmark.cjs');
 const Source=require('../../quant/engines/research-weekly-source.cjs');
 const MC=require('../../quant/engines/research-monte-carlo.cjs');
 const ROOT=path.resolve(__dirname,'../..');
+function interpretIsolationLog(log,logHash) {
+  const childFailed=/Suite selbst ist nicht gruen/.test(log);
+  return {id:'isolation-child-suite',state:childFailed?'FAIL':'PASS',reason:childFailed?'CHILD_SUITE_FAILED_OR_TIMED_OUT_SEE_ISOLATION_LOG':'CHILD_SUITE_COMPLETED_WITHOUT_REPORTED_FAILURE',logHash};
+}
 function main(args=process.argv.slice(2)) {
   const opts={};for(let i=0;i<args.length;i+=2){if(!['--out','--suites'].includes(args[i])||!args[i+1]||opts[args[i]])throw Error('INVALID_VALIDATION_ARGUMENTS');opts[args[i]]=args[i+1];}
   if(!opts['--out'])throw Error('PRIVATE_OUTPUT_REQUIRED');
@@ -27,7 +31,13 @@ function main(args=process.argv.slice(2)) {
   if(suites.includes('sec'))run('sec-python','python3',['-m','unittest','discover','-s','scripts/quant/tests','-p','test_*.py']);
   if(suites.includes('pit'))run('sec-pit-python','python3',['-m','unittest','discover','-s','scripts/vu2','-p','test*.py']);
   if(suites.includes('consumers'))run('consumers',process.execPath,['--test','worker/tests/*.test.mjs','discover/tests/live-stream.test.mjs','discover/tests/live-hub.test.mjs']);
-  if(suites.includes('isolation'))run('test-isolation',process.execPath,['scripts/quality/check-test-isolation.mjs']);
+  if(suites.includes('isolation')) {
+    run('test-isolation',process.execPath,['scripts/quality/check-test-isolation.mjs']);
+    const log=fs.readFileSync(path.join(out,'test-isolation.log'),'utf8');
+    // The existing isolation CLI intentionally exits zero when only its child
+    // test suite failed/timed out. Preserve that independent result explicitly.
+    checks.push(interpretIsolationLog(log,C.shaFile(path.join(out,'test-isolation.log'))));
+  }
   if(suites.includes('real')) {
     const data=Adapter.load(ROOT,'ref_NVDA');let benchmark;try{benchmark=Benchmark.load(ROOT);}catch(e){benchmark={error:e.message};}
     for(const period of ['1Y','3Y','5Y','10Y','MAX']){
@@ -52,4 +62,4 @@ function main(args=process.argv.slice(2)) {
   console.log('VALIDATION '+body.state+' '+path.join(out,'validation.json'));if(body.state!=='PASS')process.exitCode=1;
 }
 if(require.main===module){try{main();}catch(e){console.error(e.stack);process.exitCode=1;}}
-module.exports={main};
+module.exports={main,interpretIsolationLog};
