@@ -31,7 +31,7 @@ export const SF7_VALIDATION_VARIANTS = Object.freeze([weinVariant('WEINSTEIN_INV
 /** Pre-registered parameters of the snapshot diagnostics (fixed before the run; test SF7-VAL-REGISTRY pins them). */
 export const SF7_VALIDATION_PROTOCOL = Object.freeze({
   invariants: 'every sf5 variant and every SF7 execution / validation variant of the run',
-  pitCorruption: Object.freeze({ cutQuantile: 0.5, keepSessions: 20, seed: 709, scope: 'REF of every lifecycle; bars after the cut replaced (same dates), decisions through the cut must be identical' }),
+  pitCorruption: Object.freeze({ cutQuantile: 0.5, keepSessions: 20, seed: 709, scope: 'REF of every lifecycle; bars after the cut replaced (same dates), decisions and signals through the cut must be identical; dataset-wide derived inputs (spyTR, group proxies) are not corrupted (no REF reads them)' }),
   stability: Object.freeze({ leaveOut: 3, choice: 'most trades, then sha256 order of the security id', startShift: 1, scope: 'REF of every lifecycle; counts only' }),
 });
 

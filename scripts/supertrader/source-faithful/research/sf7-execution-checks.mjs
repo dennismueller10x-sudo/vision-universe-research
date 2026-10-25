@@ -110,7 +110,7 @@ export function checkLedgerAgainstBars(dataset, { ledger, curve }, { slippageBps
     let mv = 0;
     // mark = last close in the run window, else the entry fill (both engines: lastClose ?? fill)
     for (const [id, sh] of held) { const m = markAt(idx.get(id), c.date, from); mv += sh * (m ?? entryFill.get(id)); }
-    const tol = 1e-7 * (initialCapital + flows);
+    const tol = AC.reconciliationTolerance(flows, initialCapital); // the engine's own reconciliation bound
     if (cash < -tol) t.add('NEGATIVE_CASH', { date: c.date });
     if (Math.abs(cash + mv - c.equity) > tol) t.add('EQUITY_NOT_CASH_PLUS_POSITIONS', { date: c.date });
   }
@@ -189,10 +189,10 @@ export function checkLifecycleRun(dataset, run, { config, adapter, policy, from 
       if (exitDate !== null && b.date > exitDate) break;
       if (exitDate === null && b.date > calendar.at(-1)) break;
       if (b.date === exitDate) break;
-      if (sells.some((e) => e.date === b.date)) continue; // partial sale at the open: the stop is checked with the full exit
       checks.heldSessions++;
       const st = stopOn(b.date);
-      if (fin(st) && AC.isExecutableBar(b, 'open') && fin(b.low) && b.low <= st) t.add('STOP_REACHED_NOT_EXECUTED', { id: tr.id, date: b.date });
+      // a partial sale at the open leaves the rest under the stop: a reached stop needs a STOP_ sale the same day
+      if (fin(st) && AC.isExecutableBar(b, 'open') && fin(b.low) && b.low <= st && !sells.some((e) => e.date === b.date && e.reason.startsWith('STOP_'))) t.add('STOP_REACHED_NOT_EXECUTED', { id: tr.id, date: b.date });
     }
     for (const e of sells) {
       const b = x.bars[x.at.get(e.date)], px = e.price / (1 - slip), r = e.reason, se = { id: tr.id, date: e.date };
@@ -232,8 +232,9 @@ export function checkLifecycleRun(dataset, run, { config, adapter, policy, from 
 }
 
 /**
- * Dataset whose bars AFTER calendar index cut are replaced by unrelated values (same dates, same presence of a bar,
- * same flags): only the prices, volumes and dividends change. Optionally only the next `keep` sessions after the cut
+ * Dataset whose bars AFTER calendar index cut are replaced by unrelated values (same dates, same presence of a bar and
+ * of each field, same flags): only the prices, volumes and dividends change. Dataset-wide derived inputs (spyTR,
+ * groupProxies, ...) are copied unchanged: a caller using them rebuilds them on the result. Optionally only the next `keep` sessions after the cut
  * are kept (memory bound on the snapshot); the decisions up to the cut must be identical either way.
  */
 export function corruptAfter(dataset, cut, { seed = 1, keep = Infinity } = {}) {
@@ -246,7 +247,7 @@ export function corruptAfter(dataset, cut, { seed = 1, keep = Infinity } = {}) {
     for (let j = k; j < sec.bars.length && sec.bars[j].date <= lastKept; j++) {
       const b = sec.bars[j], base = fin(b.close) ? b.close : fin(b.open) ? b.open : 10, o = base * (0.4 + 1.2 * rnd()), c = o * (0.7 + 0.6 * rnd());
       const h = Math.max(o, c) * (1 + 0.1 * rnd()), l = Math.min(o, c) * (1 - 0.1 * rnd()), v = (fin(b.volume) ? b.volume : 1e6) * (0.1 + 5 * rnd());
-      bars.push({ ...b, open: fin(b.open) ? o : b.open, high: fin(b.high) ? h : b.high, low: fin(b.low) ? l : b.low, close: fin(b.close) ? c : b.close, volume: v, rawVolume: v, ...(fin(b.rawClose) ? { rawClose: c * (b.rawClose / (b.close || 1)) } : {}), ...(b.dividend ? { dividend: b.dividend * 3 } : {}) });
+      bars.push({ ...b, open: fin(b.open) ? o : b.open, high: fin(b.high) ? h : b.high, low: fin(b.low) ? l : b.low, close: fin(b.close) ? c : b.close, volume: fin(b.volume) ? v : b.volume, rawVolume: fin(b.rawVolume) ? v : b.rawVolume, ...(fin(b.rawClose) ? { rawClose: c * (b.rawClose / (b.close || 1)) } : {}), ...(b.dividend ? { dividend: b.dividend * 3 } : {}) });
     }
     return { ...sec, bars };
   });

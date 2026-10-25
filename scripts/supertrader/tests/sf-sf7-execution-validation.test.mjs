@@ -12,7 +12,7 @@ import { WEIN_GROUP_PROXY_ID, WEIN_GROUP_PROXY, WEINSTEIN_INVESTOR_ADAPTER, WEIN
 import * as V from '../source-faithful/research/sf7-execution-validation.mjs';
 
 // pinned before any snapshot result of the Supertrader 7.0 validation run exists
-const PINNED_SF7_VALIDATION = '6e7413f94315ad3f66aa270c0ce52f5fe2cba35cc8ccae4e82ca4ef7853461cf';
+const PINNED_SF7_VALIDATION = 'd112eab5d33ce0b521b08421cc878bc2f513889ff6872a9fcb65cf8c7f61806a';
 const PINNED_SF5_VARIANT_REGISTRY = '0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da';
 const PINNED_SF7_VARIANTS = '310cb075a0021cce0feea0a47412de1112e307a2e50156de7c8127140f88033a';
 
