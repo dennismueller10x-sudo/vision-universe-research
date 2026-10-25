@@ -9,6 +9,7 @@
 //  6 Entfernen aller weiteren Kennzahlen stellt die Ansicht wieder her: Balken, Diagrammart, Branchenvergleich
 //    (auch eine vorher gewaehlte Vergleichsgruppe), Tabelle, Adresse
 //  7 ueberall: keine Seitenfehler, keine horizontale Ueberbreite
+//  8 Max zeigt alle verfuegbaren Jahre mit ihrem ersten Jahr ("seit GJ ..."), auch im Vergleich; 10J bleibt 10 Jahre
 //
 // Aufruf:  node scripts/quality/fundamental-compare-qa.mjs --url=http://127.0.0.1:8765 [--out=/tmp/fu-compare-qa]
 //            [--engine=webkit|chromium] [--viewports=390x844,430x932] [--playwright=<pfad>]
@@ -177,6 +178,16 @@ for (const [w, h] of viewports) {
       expect(at, (await overflow(page)) <= 0 && !errors.length, 'keine Ueberbreite, keine Seitenfehler', errors.slice(0, 2).join(' | '));
       await page.close();
 
+      /* ---- Max (eine Kennzahl): alle Jahre, mit erstem Jahr; 10J bleibt 10 */
+      const m = await open(ctx, '/fundamental/#/TSLA?ansicht=kennzahl&k=revenue', '.fu-bars .fu-bc.is-last');
+      const ten = await m.page.$$eval('.fu-bars .fu-bc', (x) => x.length);
+      await tapEl(m.page, '.fu-seg[aria-label=Zeitraum] .fu-seg-b:nth-child(4)');
+      const maxInfo = await m.page.evaluate(() => ({ bars: document.querySelectorAll('.fu-bars .fu-bc').length, since: (document.querySelector('.fu-since') || {}).textContent || '' }));
+      const sinceN = Number((/\((\d+) Jahre\)/.exec(maxInfo.since) || [])[1]);
+      expect(at, ten <= 10 && maxInfo.bars >= ten && /^Max: alle verfügbaren Geschäftsjahre – seit GJ \d{4}/.test(maxInfo.since) && sinceN <= maxInfo.bars,
+        'Max: alle Jahre mit erstem Jahr, 10J hoechstens 10', ten + ' → ' + maxInfo.bars + ' · ' + maxInfo.since);
+      await m.page.close();
+
       /* ---- B: zwei Einheiten (KGV links, Free Cashflow rechts): Achsen, Legende, Ablesen */
       const b = await open(ctx, '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=free_cash_flow', '.fu-mc .fu-l-m.m1');
       await b.page.$eval('.fu-mc', (n) => n.scrollIntoView({ block: 'center' }));
@@ -185,6 +196,12 @@ for (const [w, h] of viewports) {
       await legibility(b.page, at + ' KGV+FCF');
       const r1 = await tapPlot(b.page, '.fu-mc', 0), r2 = await tapPlot(b.page, '.fu-mc', 1);
       expect(at, /KGV/.test(r2.rows[0]) && /Free Cashflow/.test(r2.rows[1]) && /keine Angabe/.test(r1.rows[1]), 'Ablesen: Luecke vor dem ersten Free Cashflow bleibt „keine Angabe“', r1.rows.join(' / '));
+      // Max im Vergleich: Achse beginnt mit der laengeren Reihe (KGV), Free Cashflow davor Luecke; erstes Jahr je Kennzahl genannt
+      await tapEl(b.page, '.fu-seg[aria-label=Zeitraum] .fu-seg-b:nth-child(4)');
+      const mx = await b.page.evaluate(() => ({ notes: document.querySelector('.fu-mc-notes').textContent, first: document.querySelector('.fu-lines-x span') && document.querySelector('.fu-lines-x span').textContent }));
+      const rm = await tapPlot(b.page, '.fu-mc', 0);
+      expect(at, /Max: alle verfügbaren Geschäftsjahre – KGV seit GJ \d{4} \(\d+ Jahre\) · Free Cashflow seit GJ \d{4}/.test(mx.notes) && /keine Angabe/.test(rm.rows[1]) && !/keine Angabe/.test(rm.rows[0]),
+        'Max im Vergleich: nicht auf die kuerzere Reihe verkuerzt, Startjahr je Kennzahl', rm.head + ' · ' + (mx.notes.match(/Max:[^.]*\./) || [''])[0]);
       await shot(b.page, `nvda-pe-fcf-${w}-${theme}`);
       // Drei Einheiten: Index, dann getrennt
       await b.page.goto(base + '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=revenue.operating_margin');

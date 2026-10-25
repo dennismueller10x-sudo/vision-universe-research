@@ -112,6 +112,8 @@ In jeder Kennzahl-Detailansicht mit Verlauf (alle außer PEG) blendet „+ Kennz
   - Mehr Einheiten: „Index 100“ oder „Getrennt“ (ein Diagramm je Kennzahl, gemeinsame Zeitachse und gemeinsames Ablesen).
 - **Index 100:** Jeder Wert ÷ Wert im ersten Zeitraum, in dem alle indexierten Kennzahlen positiv sind, × 100. Wachstumsraten werden nicht indexiert.
 
+„Max“ zeigt alle verfügbaren Zeiträume und nennt das erste Jahr je Kennzahl („Max: alle verfügbaren Geschäftsjahre – KGV seit GJ 2009 (17 Jahre) · Umsatz seit GJ 2007 …“); die Achse folgt der längsten Reihe, kürzere haben davor Lücken. „10J“ bleibt fest zehn Jahre.
+
 Farben je Platz der Auswahl (`--fu-m0` … `--fu-m3`, hell und dunkel getrennt gestuft und auf Farbsehschwächen geprüft); eine entfernte Kennzahl färbt die übrigen nicht um. „Alle Werte im Vergleich“ zeigt die Tabelle mit Grund je Lücke; „Vergrößern“ öffnet das Diagramm im Dialog.
 
 ## Vergleich ohne Wertung

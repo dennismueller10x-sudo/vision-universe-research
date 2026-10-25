@@ -161,3 +161,40 @@ test('Auswahl aus der Adresse: gueltig, ohne Hauptkennzahl und Doppelte, hoechst
   assert.equal(M.parseRoute('#/NVDA?ansicht=kennzahl&k=pe&plus=<x>&d=bunt').plus, undefined);
   assert.equal(M.parseRoute('#/NVDA?ansicht=kennzahl&k=pe&d=bunt').dmode, undefined);
 });
+
+/* ---- Max = alle verfuegbaren Jahre; Kennzahlen mit verschiedenem Startjahr (synthetisch, ohne Abhaengigkeit vom Datenstand) */
+const longBook = () => {
+  const r = (fy, v) => [fy, 'FY', fy + '-12-31', v, (fy + 1) + '-02-20', '0000000001-' + String(fy + 1).slice(2) + '-000001', 0];
+  const years = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  const src = { schema: 'vu-consumer-fundamentals-1.0.0', dataSource: { provider: 'sec_edgar', isMock: false }, policy: 'as_of_latest', cik: '0000000001', name: 'Lang', asOf: '2026-10-01',
+    columns: ['fy', 'fp', 'end', 'v', 'filed', 'accn', 'derived'], units: { revenue: 'USD', free_cash_flow: 'USD', operating_income: 'USD' },
+    annual: { revenue: years(2001, 2025).map((y) => r(y, 100 * (y - 2000))), free_cash_flow: years(2012, 2025).map((y) => r(y, 10 * (y - 2010))), operating_income: years(2001, 2025).filter((y) => y !== 2008).map((y) => r(y, 20 * (y - 2000))) },
+    quarterly: {}, ttm: {} };
+  return C.fromHistory(projectHistory(src, 'LANG'), null);
+};
+
+test('Max: alle 25 Geschaeftsjahre, nicht auf 10 Jahre oder ein festes Startjahr begrenzt; 10J bleibt 10 Jahre', () => {
+  const b = longBook();
+  const rev = C.seriesOf(b, C.BY_ID.revenue, 'annual');
+  assert.equal(rev.length, 25);
+  assert.equal(rev[0].key, 2001);
+  const max = K.align(b, defs('revenue'), 'annual', 0), ten = K.align(b, defs('revenue'), 'annual', 10);
+  assert.deepEqual([max.points.length, max.points[0].key, max.points.at(-1).key], [25, 2001, 2025]);
+  assert.deepEqual([ten.points.length, ten.points[0].key], [10, 2016]);
+  // Jede Kennzahl mit eigenem Startjahr: Free Cashflow erst ab 2012
+  assert.equal(C.seriesOf(b, C.BY_ID.free_cash_flow, 'annual')[0].key, 2012);
+});
+
+test('Vergleich: Historie nicht auf die kuerzeste Kennzahl verkuerzt, fehlende Werte als Luecke', () => {
+  const b = longBook(), m = K.align(b, defs('revenue', 'free_cash_flow', 'operating_margin'), 'annual', 0);
+  assert.equal(m.points[0].key, 2001, 'Achse beginnt mit der laengsten Reihe');
+  const [rev, fcf, om] = m.series;
+  assert.ok(m.points.filter((p) => p.key < 2012).every((p) => has(rev, p.key) && !has(fcf, p.key)), 'Umsatz vor 2012 sichtbar, Free Cashflow dort Luecke');
+  assert.ok(!has(om, 2008) && has(om, 2007) && has(om, 2009), 'Luecke 2008 bleibt, Nachbarjahre stehen');
+  sameAsCatalog(b, m);
+  // Index: Basis = erstes gemeinsames positives Jahr (2012); aeltere Umsatzwerte bleiben indexiert sichtbar
+  const ix = K.indexed(K.align(b, defs('revenue', 'free_cash_flow'), 'annual', 0));
+  assert.equal(ix.base, 2012);
+  assert.ok(Math.abs(ix.vals[0][2001] - 100 / 1200 * 100) < 1e-9);
+  assert.equal(ix.vals[1][2001], undefined);
+});

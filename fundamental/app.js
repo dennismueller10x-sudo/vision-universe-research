@@ -1066,8 +1066,17 @@
       if (mode === 'split') out.push('Jede Kennzahl mit eigener Achse; Zeitachse und Ablesen sind gemeinsam.');
       if (ok.some(function (s) { return s.def.snap; })) out.push('Bewertung nach jedem Jahresbericht: Kurs = erster Wochenschluss nach Veröffentlichung des 10-K, mit den Zahlen dieses Geschäftsjahres – zu diesem Zeitpunkt waren sie veröffentlicht. Spätere Korrekturen der Jahreszahlen: siehe „Wie wird gerechnet?“.');
       out.push(model.period === 'quarterly' ? 'Eigenständige Quartale; Q4 = Jahreswert minus neun Monate („berechnet“). Quelle je Wert: jüngste SEC-Meldung mit diesem Wert. LTM wird nicht mit Quartalen gemischt.' : 'Abgeschlossene Geschäftsjahre, je Wert der Berichtszeitraum und das Datum des Jahresberichts. LTM steht nur oben bei der Hauptkennzahl.');
+      if (!Number(range)) out.push(sinceText(ok.map(function (s) { return { label: short(s.def.label), rows: Object.keys(s.rows).map(function (k) { return s.rows[k]; }) }; }), model.period));
       out.push('Fehlende Werte bleiben Lücken; nichts wird geschätzt oder verbunden.');
       return el('ul', { class: 'fu-mc-notes' }, out.map(function (x) { return el('li', { text: x }); }));
+    }
+    /* „Max“ = alle verfügbaren Zeiträume; das tatsächliche erste Jahr je Kennzahl steht dabei (kein pauschales Fenster). */
+    function sinceText(list, per) {
+      var parts = list.map(function (x) {
+        var have = x.rows.filter(function (r) { return isNum(r.v); }).sort(function (a, b) { return a.key - b.key; });
+        return have.length ? (x.label ? x.label + ' ' : '') + 'seit ' + (per === 'quarterly' ? have[0].label : 'GJ ' + have[0].key) + ' (' + have.length + (per === 'quarterly' ? ' Quartale' : ' Jahre') + ')' : null;
+      }).filter(Boolean);
+      return parts.length ? 'Max: alle verfügbaren ' + (per === 'quarterly' ? 'Quartale' : 'Geschäftsjahre') + ' – ' + parts.join(' · ') + '.' : null;
     }
     function fullView(model, mode, tones) {
       var box = el('div', { class: 'fu-full-body' });
@@ -1105,6 +1114,7 @@
         });
         put(chartBox, lines(shown.map(function (x) { return { key: x.key, label: x.label, short: x.short, extra: isNum(x.v) ? null : C.reason(x.reason) }; }), series, { def: def, currency: cu, height: 200 }));
       }
+      if (!multi && !n) { var since = sinceText([{ label: null, rows: rows }], period); if (since) chartBox.append(el('p', { class: 'fu-note fu-since', text: since })); }
       var g = cmpData.group;
       put(cmpNote, cmp === 'median' && g ? 'Median der Vergleichsgruppe ' + groupLabel(g) + ' (' + g.rule.split(', gezeigt')[0] + '), je Geschäftsjahr aus allen Unternehmen mit Wert (mindestens 5). Geschäftsjahre enden unterschiedlich.' + (med && !Object.keys(med).length ? ' Für diese Kennzahl liegt kein Median vor.' : '')
         : cmp === 'peers' && g ? 'Wettbewerber aus ' + groupLabel(g) + ': ' + g.rule + '. ' + (def.kind === 'money' ? 'Beträge nur von Unternehmen in ' + cu + '. ' : '') + 'Antippen zeigt die Werte je Jahr.' : cmpData.note || '');
