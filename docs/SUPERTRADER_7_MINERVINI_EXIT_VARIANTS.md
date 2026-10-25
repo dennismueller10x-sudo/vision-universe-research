@@ -139,7 +139,12 @@ Die vollständigen Ausstiegs- und Verkaufsgründe je Variante stehen im öffentl
 
 - **Viele „veränderte“ Trades:** Die Regel trifft oft nur wenige Trades direkt. Das Portfolio ist aber pfadabhängig: Die Stückzahl folgt dem Eigenkapital des Vortags, es gibt höchstens 20 offene Positionen, und Barmittel werden früher frei. Deshalb ändern sich auch Stückzahlen und Einstiege von Trades, die die Regel nie auslöst. „Verändert“ heißt hier nicht „von der Regel ausgestiegen“. Wie viele Trades die Regel direkt beendet, zeigt die Spalte „Regelausstiege“.
 - **Power Play ohne Stage 2:** In rund 600 Power-Play-Trades besteht am Setup kein Trend Template. Wie in der 1.3.0-Diagnose sind die Stage-2-Regeln dort nicht bewertbar, und die REF-Ausstiege gelten.
-- **`EXIT-CLIMAX-UPCLOSES` bei Power Play:** 556 Regelausstiege. Ein Power Play folgt auf einen Anstieg von +100 % in höchstens 8 Wochen. Die Gewinnschwelle für „gestreckt“ (`MA-MIN7-CLIMAX-EXTENDED`) ist deshalb kurz nach dem Einstieg oft schon erfüllt, und die Regel greift dann allein über die Auftage. Das folgt aus der vorregistrierten Lesart. Sie wird nicht nachträglich geändert (siehe Abschnitt 7).
+- **`EXIT-CLIMAX-UPCLOSES` bei Power Play:** 556 Regelausstiege.
+  - Das Review fand dazu einen HIGH-Befund. Die Variante ist **nicht am Aufwärtslauf verankert**, anders als `EXIT-CLIMAX`. Sowohl die Gewinnschwelle (Schluss j gegen Schluss j−15) als auch das Fenster der Auftage (j−14 bis j) reichen über den Einstieg zurück. Gemessen wird damit die Streckung **einschließlich des Anstiegs vor dem Einstieg**. Ein Power Play folgt auf +100 % in höchstens 8 Wochen, die Bedingung ist deshalb oft schon kurz nach dem Einstieg erfüllt.
+  - Die Fundstelle F7-B03-216-086 spricht von der Lage „nach dem Anstieg“. Diese Variante liest das also weiter als die Quelle.
+  - Das ist kein Code-Fehler: Die Regel ist genau so umgesetzt, wie sie vorregistriert war. Sie bleibt unverändert, weil eine Korrektur nach dem Ergebnis eine Optimierung wäre.
+  - Seit Runner 1.3.0 steht im öffentlichen Teil je Variante `signalSessionsFromEntry`: die Sitzungen vom Einstieg bis zum Signal, in Buckets. Damit ist die Aussage „kurz nach dem Einstieg“ belegt und nicht nur vermutet. Die Werte stehen in Abschnitt 5.
+  - Eine am Anstieg verankerte Lesart wäre eine neue, eigene Vorregistrierung (Abschnitt 7).
 
 ## 6. Was das Ergebnis nicht bedeutet
 
@@ -154,4 +159,13 @@ Die vollständigen Ausstiegs- und Verkaufsgründe je Variante stehen im öffentl
 - Alle Schwellen stammen aus Übersetzungen. Die Klimax- und MA20-Schwellen kommen aus B03 (OCR). Die Klassifikation hielt fest, dass aus B03 bisher nur Diagnosen umgesetzt wurden. Hier werden B03-Zahlen erstmals handelsrelevant, aber nur in Forschungsvarianten.
 - Die Wochenlesart nutzt 5-Sitzungs-Schritte statt Freitagsschlüssen (`MA-MIN7-WEEKLY-STEP`).
 - **Owner-Frage zu `EXIT-CLIMAX-UPCLOSES`:** Bei Power Play greift die Lesart von „gestreckt“ oft schon kurz nach dem Einstieg (556 Ausstiege). Eine engere Lesart, etwa gestreckt erst ab dem Einstieg gemessen, wäre eine neue, eigene Vorregistrierung. Sie darf nicht als Korrektur dieser Variante nach Ergebnis entstehen.
-- Die Kopie der 4.0-Ausführung ist eine bewusste Doppelung. Ändert sich die 4.0-Engine künftig, schlägt `SF7-EXIT-ENGINE-IDENTITY` oder das Laufgate an.
+- Die Kopie der 4.0-Ausführung ist eine bewusste Doppelung. Ändert sich die 4.0-Engine künftig, schlägt `SF7-EXIT-ENGINE-IDENTITY` oder das Laufgate an. Seit Runner 1.3.0 prüft das Laufgate auf dem Snapshot Ledger, Trades, Kurve und Zähler, wie der Test.
+- **Umklassifizierung von F7-B03-216-086:** Die E7-2-Klassifikation führt diese Fundstelle als Diagnose (`[G-CLIMAX] diagnostic`, `wouldChangeReference: false`). Mit der Eigentümerentscheidung E7-7 wird sie als Forschungsvariante umgesetzt; `E72_DISPOSITION` sagt das. Die Referenz ändert sich dadurch weiterhin nicht.
+- **Nachholen eines Signals:** Fällt ein Signal auf einen Schluss, auf den keine ausführbare Eröffnung folgt, wird es erst am Schluss des nächsten ausführbaren Balkens i gelesen. Ausgeführt wird dann an der Eröffnung von i+1, und der Stop an i läuft vorher. Das ist eine Sitzung Verzögerung, konservativ und so in `MA-MIN7-EXIT-CATCH-UP` angelegt.
+- **Zwei Vorrangfälle**, bisher nur im Code dokumentiert:
+  - Ein Teilverkaufssignal neben einem offenen REF-Teilverkauf geht an REF.
+  - Ein unterdrücktes Signal verbraucht die einmalige Regel.
+
+  Unter REF kommen beide nicht vor, weil `STOP_BE3R_MA50` keinen Free-Roll-Teilverkauf hat. Sie kommen mit der nächsten Version in den Annahmetext von `MA-MIN7-EXIT-PRECEDENCE`.
+- **`EXIT-MA20-HALF`** greift beim ersten Schluss unter MA20 im Fenster von 10 Sitzungen. Die Quelle nennt „den ersten Schluss nach dem Fill“, und das Fenster ist die wiederverwendete Annahme `MA-MIN7-POST-BREAKOUT-WINDOW`. Die Lesart ist deklariert, aber weiter als die Quelle.
+- **Basislinie des größten Rückgangs:** Sie beginnt einen Balken vor dem Stage-2-Start, mit der Rendite von st−1 nach st. Das stimmt mit der 1.3.0-Diagnose überein.

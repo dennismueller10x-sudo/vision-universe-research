@@ -32,7 +32,7 @@ import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlat
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.2.0'; // 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.3.0'; // 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
 const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs'];
 export function sf7CodeSha256() {
@@ -83,6 +83,22 @@ export function diffTradeSells(ref, alt) {
 const sellReasons = (r) => tally(r.ledger.filter((x) => x.side === 'SELL'), (x) => x.reason);
 
 /** REF + 7.0 variants + diagnostics + E7-7 exit variants for one dataset. */
+/** Review #917: sessions from the entry to each scheduled exit-variant signal (public tally, counts only; 0 = signal on the entry close). */
+export const SIGNAL_SESSION_BUCKETS = Object.freeze([[0, 0], [1, 2], [3, 5], [6, 10], [11, 20], [21, Infinity]]);
+export function signalSessionsFromEntry(trades, byId) {
+  const out = Object.fromEntries(SIGNAL_SESSION_BUCKETS.map(([a, b]) => [Number.isFinite(b) ? `${a}-${b}` : `${a}+`, 0]));
+  let unknown = 0;
+  for (const t of trades) for (const e of t.events ?? []) {
+    if (e.type !== 'EXIT_SCHEDULED_NEXT_OPEN' || e.rule !== 'SF7_EXIT_VARIANT') continue;
+    const bars = byId.get(t.id)?.bars; const i0 = bars?.findIndex((x) => x.date === t.entryDate), i1 = bars?.findIndex((x) => x.date === e.signalDate);
+    if (!bars || i0 < 0 || i1 < 0) { unknown++; continue; }
+    const n = i1 - i0, k = SIGNAL_SESSION_BUCKETS.findIndex(([a, b]) => n >= a && n <= b);
+    if (k < 0) { unknown++; continue; }
+    const [a, b] = SIGNAL_SESSION_BUCKETS[k]; out[Number.isFinite(b) ? `${a}-${b}` : `${a}+`]++;
+  }
+  return { ...out, unknown };
+}
+
 export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log = () => {}, requireAuthoritativeRef = false, exitVariants = SF7_EXIT_VARIANTS } = {}) {
   const pub = { version: SF7_MINERVINI_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
@@ -117,15 +133,15 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     if (!ev.length) continue;
     const copy = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, exitRule: null, from, to });
     const copyLedger = sha(copy.ledger), copyTrades = publicOf(copy).tradesSha256;
-    ps.exitEngineIdentity = { ledgerEqualsRef: copyLedger === ps.ref.ledgerSha256, tradesEqualRef: copyTrades === ps.ref.tradesSha256 };
+    ps.exitEngineIdentity = { ledgerEqualsRef: copyLedger === ps.ref.ledgerSha256, tradesEqualRef: copyTrades === ps.ref.tradesSha256, curveEqualsRef: sha(copy.curve) === sha(ref.curve), countsEqualRef: sha(copy.counts) === sha(ref.counts) };
     log(`${strategy} exit engine copy without rule: ledger ${ps.exitEngineIdentity.ledgerEqualsRef ? 'EQUAL' : 'DIFFERENT'}`);
-    if (!ps.exitEngineIdentity.ledgerEqualsRef || !ps.exitEngineIdentity.tradesEqualRef) throw new Error(`EXIT_ENGINE_COPY_NOT_REF:${strategy}`);
+    if (Object.values(ps.exitEngineIdentity).some((x) => !x)) throw new Error(`EXIT_ENGINE_COPY_NOT_REF:${strategy}`);
     ps.exitVariants = {}; ss.exitVariants = {};
     const stage2 = new Map(); // Stage 2 start per (security, setup close), shared by the variants (pure function of the bars)
     for (const v of ev) {
       const r = runMinerviniLifecycleWithExitRule(dataset, { strategy, setupIndex: refIndex, config: v.config, exitRule: v.exitRule, stage2, from, to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:${strategy}:${v.id}`);
-      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades) };
+      ps.exitVariants[v.id] = { status: v.status, originalRule: false, reference: false, compareTo: v.compareTo, source: v.source, findings: v.findings, translationDoubt: v.translationDoubt, ...publicOf(r), sellReasons: sellReasons(r), partialSaleTrades: r.trades.filter((t) => (t.events ?? []).some((e) => e.type === 'SELL' && e.reason === v.exitRule.reason) && t.exitReason !== v.exitRule.reason).length, ruleCounts: r.sf7ExitCounts, vsRef: diffTrades(ref.trades, r.trades), vsRefSells: diffTradeSells(ref.trades, r.trades), signalSessionsFromEntry: signalSessionsFromEntry(r.trades, byId) };
       ss.exitVariants[v.id] = { metrics: runMetrics(r, { spyTR: dataset.spyTR }) };
       log(`${strategy} ${v.id}: trades ${r.trades.length} ${JSON.stringify(ps.exitVariants[v.id].vsRefSells)}`);
     }

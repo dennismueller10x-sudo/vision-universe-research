@@ -246,7 +246,7 @@ test('SF7-EXIT-RUNNER: REF unchanged, engine copy identical, exit variants per s
     const p = withExits.pub.strategies[st];
     assert.equal(p.ref.ledgerSha256, without.pub.strategies[st].ref.ledgerSha256);
     assert.deepEqual(p.variants, without.pub.strategies[st].variants, 'ALT-SEPA-* unchanged');
-    assert.deepEqual(p.exitEngineIdentity, { ledgerEqualsRef: true, tradesEqualRef: true });
+    assert.deepEqual(p.exitEngineIdentity, { ledgerEqualsRef: true, tradesEqualRef: true, curveEqualsRef: true, countsEqualRef: true });
     assert.deepEqual(Object.keys(p.exitVariants), SF7_EXIT_VARIANTS.map((v) => v.id));
     for (const [id, x] of Object.entries(p.exitVariants)) {
       assert.equal(x.status, 'SOURCE_DERIVED_RESEARCH_VARIANT'); assert.equal(x.reference, false); assert.equal(x.originalRule, false);
@@ -263,4 +263,18 @@ test('SF7-EXIT-RUNNER: REF unchanged, engine copy identical, exit variants per s
   const u = { ...t, events: [{ type: 'SELL', date: 'w', shares: 1, reason: 'MA20_HALF_POST_BREAKOUT' }, { type: 'SELL', date: 'y', shares: 1, reason: 'S' }] };
   assert.deepEqual(diffTradeSells([t], [u]), { unchanged: 0, changed: 1, removedVsRef: 0, addedVsRef: 0 });
   assert.deepEqual(diffTradeSells([t], [t, { id: 'B', entryDate: 'z' }]), { unchanged: 1, changed: 0, removedVsRef: 0, addedVsRef: 1 });
+});
+
+test('SF7-EXIT-SIGNAL-TALLY: Sitzungen vom Einstieg bis zum Signal je Bucket, nur Zaehlungen (Review #917)', async () => {
+  const { signalSessionsFromEntry } = await import('../source-faithful/research/run-sf7-minervini.mjs');
+  const bars = Array.from({ length: 40 }, (_, k) => ({ date: new Date(Date.UTC(2020, 0, 1) + k * 864e5).toISOString().slice(0, 10) }));
+  const ev = (k) => ({ type: 'EXIT_SCHEDULED_NEXT_OPEN', rule: 'SF7_EXIT_VARIANT', signalDate: bars[k].date });
+  const trades = [
+    { id: 'A', entryDate: bars[5].date, events: [ev(5)] },
+    { id: 'A', entryDate: bars[5].date, events: [ev(7), { type: 'EXIT_SCHEDULED_NEXT_OPEN', rule: 'MA50', signalDate: bars[9].date }] },
+    { id: 'A', entryDate: bars[2].date, events: [ev(30)] },
+    { id: 'B', entryDate: bars[2].date, events: [ev(3)] },
+  ];
+  const t = signalSessionsFromEntry(trades, new Map([['A', { bars }]]));
+  assert.deepEqual(t, { '0-0': 1, '1-2': 1, '3-5': 0, '6-10': 0, '11-20': 0, '21+': 1, unknown: 1 });
 });
