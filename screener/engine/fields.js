@@ -197,7 +197,40 @@
       desc: 'Relative-Stärke-Index über 14 Tage. Über 70 gilt als überkauft, unter 30 als überverkauft.', keywords: ['rsi', 'überkauft', 'überverkauft', 'oszillator'], presets: [['< 70', 'lt', 70], ['< 30 (überverkauft)', 'lt', 30], ['40–70', 'between', 40, 70]] }),
     n('macd', { col: 'macdHist', group: 'technical', unit: 'pct', label: 'MACD-Histogramm', short: 'MACD', en: 'MACD', source: 'technical', domain: [-0.05, 0.05, 0.001], pro: true, formula: 'macdHist',
       desc: 'MACD (12/26) minus Signallinie (9), in Prozent des Kurses. Positiv = aufwärts gerichtetes Momentum.', keywords: ['macd', 'signal'], presets: [['MACD über Signal', 'gt', 0]] }),
-    n('atr', { group: 'technical', unit: 'pct', label: 'ATR', en: 'ATR', source: 'technical', available: false, reason: 'Für die ATR werden Tageshoch und -tief benötigt; ausgeliefert werden nur Schlusskurse.', keywords: ['atr', 'average true range'] }),
+    // Technical-Produktwelt (technical/data/screener-v1.json): dieselben Werte wie im Technical Screener, gerechnet auf
+    // Tages-OHLCV mit den Technical-Engines; hier nur uebernommen. Fehlt ein Titel dort oder ist er aelter als 7 Tage: leer.
+    n('atr', { col: 'twAtr', group: 'technical', unit: 'pct', label: 'ATR (14) in % des Kurses', short: 'ATR %', en: 'ATR', source: 'technicalWorld', domain: [0, 0.25, 0.005], better: -1,
+      desc: 'Durchschnittliche Tagesspanne (Average True Range nach Wilder, 14 Tage) im Verhältnis zum Kurs – ein Maß für die übliche Schwankung.', keywords: ['atr', 'average true range', 'volatilität', 'spanne'], presets: [['< 3 %', 'lt', 0.03], ['> 6 %', 'gt', 0.06]] }),
+    n('adx', { col: 'twAdx', group: 'technical', unit: 'num', label: 'ADX (14) – Trendstärke', short: 'ADX', en: 'ADX', source: 'technicalWorld', domain: [0, 80, 1],
+      desc: 'Average Directional Index nach Wilder: Stärke eines Trends unabhängig von der Richtung. Über 25 gilt als ausgeprägter Trend.', keywords: ['adx', 'trendstärke', 'trend'], presets: [['> 25 (starker Trend)', 'gt', 25], ['< 20 (trendlos)', 'lt', 20]] }),
+    n('supertrendUp', { col: 'twSt', group: 'technical', kind: 'bool', label: 'Supertrend (10, 3) aufwärts', short: 'Supertrend ↑', en: 'Supertrend Up', source: 'technicalWorld',
+      desc: 'Der Schluss liegt über der Supertrend-Linie (Mitte der Tagesspanne ± 3 ATR mit Nachziehregel).', keywords: ['supertrend', 'trendfolge'] }),
+    n('psarUp', { col: 'twPsar', group: 'technical', kind: 'bool', label: 'Parabolic SAR aufwärts', short: 'SAR ↑', en: 'Parabolic SAR Up', source: 'technicalWorld', pro: true,
+      desc: 'Der Parabolic SAR (Wilder, 0,02/0,2) liegt unter dem Kurs.', keywords: ['parabolic sar', 'sar', 'stop and reverse'] }),
+    n('aboveCloud', { col: 'twCloud', group: 'technical', kind: 'bool', label: 'Kurs über der Ichimoku-Wolke', short: 'Über Wolke', en: 'Above Ichimoku Cloud', source: 'technicalWorld',
+      desc: 'Schluss über beiden Wolkenlinien (Senkou A/B, 9/26/52, um 26 Tage verschoben; ohne die nicht kausale Chikou-Linie).', keywords: ['ichimoku', 'wolke', 'kumo', 'cloud'] }),
+    n('stochK', { col: 'twStoch', group: 'technical', unit: 'num', label: 'Stochastik %K (14, 3)', short: 'Stochastik', en: 'Stochastic %K', source: 'technicalWorld', domain: [0, 100, 1],
+      desc: 'Lage des Schlusskurses in der Spanne der letzten 14 Tage, geglättet. Über 80 überkauft, unter 20 überverkauft.', keywords: ['stochastik', 'stochastic', '%k'], presets: [['< 20', 'lt', 20], ['> 80', 'gt', 80]] }),
+    n('cci20', { col: 'twCci', group: 'technical', unit: 'num', label: 'CCI (20)', en: 'CCI', source: 'technicalWorld', domain: [-300, 300, 5], pro: true,
+      desc: 'Commodity Channel Index: Abstand des typischen Kurses zu seinem Mittel in Vielfachen der mittleren Abweichung.', keywords: ['cci', 'commodity channel index'], presets: [['< −100', 'lt', -100], ['> 100', 'gt', 100]] }),
+    n('williamsR', { col: 'twWr', group: 'technical', unit: 'num', label: 'Williams %R (14)', short: 'Williams %R', en: 'Williams %R', source: 'technicalWorld', domain: [-100, 0, 1], pro: true,
+      desc: 'Abstand des Schlusses zum 14-Tage-Hoch in Prozent der Spanne (−100 bis 0). Unter −80 überverkauft.', keywords: ['williams', '%r'], presets: [['< −80', 'lt', -80], ['> −20', 'gt', -20]] }),
+    n('aroonOsc', { col: 'twAroon', group: 'technical', unit: 'num', label: 'Aroon-Oszillator (25)', short: 'Aroon', en: 'Aroon Oscillator', source: 'technicalWorld', domain: [-100, 100, 5], pro: true,
+      desc: 'Aroon Up minus Aroon Down: wie frisch das letzte Hoch gegenüber dem letzten Tief ist.', keywords: ['aroon'], presets: [['> 50', 'gt', 50], ['< −50', 'lt', -50]] }),
+    n('mfi14', { col: 'twMfi', group: 'technical', unit: 'num', label: 'Money Flow Index (14)', short: 'MFI', en: 'Money Flow Index', source: 'technicalWorld', domain: [0, 100, 1], pro: true,
+      desc: 'Volumengewichteter RSI aus typischem Kurs × Volumen.', keywords: ['mfi', 'money flow'], presets: [['< 20', 'lt', 20], ['> 80', 'gt', 80]] }),
+    n('cmf20', { col: 'twCmf', group: 'technical', unit: 'num', label: 'Chaikin Money Flow (20)', short: 'CMF', en: 'Chaikin Money Flow', source: 'technicalWorld', domain: [-1, 1, 0.01], pro: true,
+      desc: 'Kaufdruck (> 0) oder Verkaufsdruck (< 0) aus Schlusslage in der Tagesspanne × Volumen, über 20 Tage.', keywords: ['cmf', 'chaikin', 'akkumulation', 'geldfluss'], presets: [['> 0', 'gt', 0], ['< 0', 'lt', 0]] }),
+    n('bbSqueeze', { col: 'twSqz', group: 'technical', kind: 'bool', label: 'Bollinger-Enge', en: 'Bollinger Squeeze', source: 'technicalWorld',
+      desc: 'Breite der Bollinger-Bänder im unteren 20-%-Perzentil der eigenen Historie – Ruhephase vor möglicher Bewegung.', keywords: ['squeeze', 'bollinger', 'enge'] }),
+    n('volSpike', { col: 'twSpike', group: 'technical', kind: 'bool', label: 'Volumenspitze (≥ 2× Median)', short: 'Volumenspitze', en: 'Volume Spike', source: 'technicalWorld',
+      desc: 'Tagesvolumen mindestens doppelt so hoch wie der Median der vorherigen 20 Tage.', keywords: ['volumen', 'spike', 'volumenspitze'] }),
+    n('obvRising', { col: 'twObv', group: 'technical', kind: 'bool', label: 'OBV steigt (20 Tage)', short: 'OBV ↑', en: 'OBV Rising', source: 'technicalWorld', pro: true,
+      desc: 'On-Balance-Volume höher als vor 20 Handelstagen.', keywords: ['obv', 'on balance volume'] }),
+    n('chartPattern', { col: 'twForm', group: 'technical', kind: 'enum', multi: true, label: 'Chartformation (erkannt oder bestätigt)', short: 'Formation', en: 'Chart Pattern', source: 'technicalWorld',
+      desc: 'Formationen aus dem Technical Screener: Dreiecke, Flaggen, Wimpel, Keile, Doppelböden/-tops, Schulter-Kopf-Schulter, Kanäle, Trendlinien, Ausbrüche, Kurslücken. Erkannt nur aus bestätigten Swing-Punkten, ohne Blick in die Zukunft.', keywords: ['formation', 'chartmuster', 'dreieck', 'flagge', 'keil', 'doppelboden', 'breakout', 'ausbruch', 'pattern'] }),
+    n('chartPatternConfirmed', { col: 'twFormC', group: 'technical', kind: 'enum', multi: true, label: 'Chartformation bestätigt', short: 'Formation bestätigt', en: 'Confirmed Chart Pattern', source: 'technicalWorld', pro: true,
+      desc: 'Nur Formationen, deren Bestätigungsregel (z. B. Schluss über der Ausbruchslinie) erfüllt ist.', keywords: ['formation bestätigt', 'ausbruch bestätigt', 'confirmed'] }),
     n('bollinger', { col: 'bollB', group: 'technical', unit: 'num', label: 'Bollinger %B', en: 'Bollinger Bands', source: 'technical', domain: [-0.5, 1.5, 0.01], pro: true, formula: 'bollB',
       desc: 'Lage des Kurses in den Bollinger-Bändern (20/2): 0 = unteres, 1 = oberes Band.', keywords: ['bollinger', 'bands', 'bänder'], presets: [['Über oberem Band', 'gt', 1], ['Unter unterem Band', 'lt', 0]] }),
     n('volatility', { col: 'vol252', group: 'technical', unit: 'pct', label: 'Volatilität (1 Jahr)', short: 'Volatilität', en: 'Volatility', source: 'technical', domain: [0, 1.5, 0.01], better: -1,
@@ -378,6 +411,7 @@
     if (map && map[v]) return map[v];
     var D = dict || (global.VUScreenerFields && global.VUScreenerFields._dict) || null;
     if (D) {
+      if ((id === 'chartPattern' || id === 'chartPatternConfirmed') && D.formations && D.formations[v]) return D.formations[v];
       if (id === 'sector' && D.sectors && D.sectors[v]) return D.sectors[v];
       if (id === 'industry' && D.majorGroups && D.majorGroups[v]) return D.majorGroups[v];
     }
