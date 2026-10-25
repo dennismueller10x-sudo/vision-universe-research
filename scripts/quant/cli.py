@@ -1510,6 +1510,7 @@ def cmd_consumer(args):
     the raw facts come from companyfacts.zip in one request. Output: one
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
+    from quant.sec import fsds
     from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
                                     load_issuer_industries, load_product_universe_ciks, load_successor_issuers, summarize_bundle,
                                     with_successors)
@@ -1528,6 +1529,14 @@ def cmd_consumer(args):
     # Nachfolge-Emittenten (Holding-Umgruendung): die Vorgaenger-CIK wird mitgelesen
     # und ihre Fakten mit denen der Nachfolgerin zusammengefuehrt.
     successors = {c: p for c, p in load_successor_issuers(args.successors).items() if c in wanted}
+    # Meldungen, von denen companyfacts nichts enthaelt, aus der zweiten
+    # SEC-Veroeffentlichung derselben XBRL-Zahlen (Financial Statement Data Sets).
+    fsds_paths = [p for p in (args.fsds or "").split(",") if p]
+    accepted = {(rule.taxonomy, rule.concept)
+                for metric in (*registry.metrics.values(), *registry.industry_metrics.values())
+                for rule in metric.concepts}
+    supplement = fsds.load_supplement(fsds_paths, wanted, concepts=accepted) if fsds_paths else {}
+    supplemented = {}
     to_read = wanted | {p for preds in successors.values() for p in preds}
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1548,6 +1557,7 @@ def cmd_consumer(args):
     written = set()
     for cik, payload in with_successors(source, successors):
         entry = by_cik[cik]
+        payload, added = fsds.supplement_company_facts(payload, supplement.get(cik))
         try:
             bundle = build_consumer_bundle(cik, payload, registry, as_of=as_of, tickers=entry["tickers"],
                                            security_ids=entry["securityIds"], name=entry["name"],
@@ -1562,6 +1572,9 @@ def cmd_consumer(args):
         if bundle is None:
             failures.append({"cik": cik, "tickers": entry["tickers"], "error": "NO_PERIODIC_FACTS"})
             continue
+        if added:
+            bundle["dataSource"]["supplement"] = {"source": fsds.SOURCE_LABEL, "accessions": added}
+            supplemented[cik] = added
         path = out_dir / f"CIK{cik}.json"
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
         written.add(path.name)
@@ -1588,6 +1601,9 @@ def cmd_consumer(args):
     coverage = aggregate_coverage(index_rows, product_count, sum(len(e["tickers"]) for e in by_cik.values()),
                                   without_cik, unmatched)
     coverage["failures"] = failures
+    coverage["fsdsSupplement"] = {"source": fsds.SOURCE_LABEL, "archives": [Path(p).name for p in fsds_paths],
+                                  "issuers": len(supplemented),
+                                  "filings": sum(len(v) for v in supplemented.values())}
     coverage["withoutCikTickers"] = without_cik
     coverage["notInCompanyFactsCiks"] = unmatched
     coverage["asOf"] = as_of
@@ -1869,6 +1885,9 @@ def build_parser():
                           help="successor issuers whose predecessor CIK facts are merged in")
     consumer.add_argument("--issuers", default=str(DATA_DIR.parent / "fundamentals" / "issuers"),
                           help="SEC pipeline issuer shards with the registered fiscal year end per CIK")
+    consumer.add_argument("--fsds", default="",
+                          help="comma-separated local SEC Financial Statement Data Set zips; their filings "
+                               "complete companyfacts where it has none of a filing (quant/sec/fsds.py)")
     consumer.set_defaults(func=cmd_consumer)
 
     census = subparsers.add_parser("concept-census",
