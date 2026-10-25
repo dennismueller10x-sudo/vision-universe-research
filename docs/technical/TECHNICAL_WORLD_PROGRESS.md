@@ -1,6 +1,6 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
-**Stand:** 25.10.2026 · V1 gemergt (PR #919, `f2012b0`) · Folgearbeit auf `claude/technical-world-v2` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
+**Stand:** 25.10.2026 · V1 (PR #919, `f2012b0`) und V2 (PR #923, `74a49d0`) gemergt · Menügruppe PR #925 · V3 auf `claude/technical-v3` · Auftrag: „Vision Universe Technical – Autonomer Master-Entwicklungsauftrag V1“.
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz
@@ -47,6 +47,11 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
 - **Phase 3 – Formationen:** einheitliches Zustandsmodell Erkannt/Bestätigt/Invalidiert. Erkennungszeitpunkt = erster Tag, an dem die Formation mit dem damaligen Wissen sichtbar war. Tests mit vergifteter Zukunft und abgeschnittener Reihe.
 - **Phase 4 – Screener:** `scripts/technical/world/build-screener.mjs` → `technical/data/screener-v1.json` (5.649 Titel, ~0,8 MB gz, 30 s). Filter für Chartmuster, Trend, Hochs (52 W, 200 W), Momentum, Volumen, Volatilität und relative Stärke ggü. SPY. UND/ODER, Zeitrahmen, Trichter mit Fehlwerten, gespeicherte Strategien (localStorage), Chartvorschau, Datenqualitätsflaggen. Sortiert wird nach einem offengelegten Feld oder nach erfüllten Bedingungen; es gibt **keinen Setup-Score**.
 - **Phase 5 – KI-Vorbereitung:** `technical-query.js#jsonSchema()` (Structured-Output-Schema aus dem Katalog), `validate()` mit stabilen Fehlercodes, `describe()`. Kein Modellaufruf.
+- **V3 – Indikatoren 1.1:** sechs neue Katalogeinträge (Parabolic SAR, Ichimoku-Wolke ohne die nicht kausale Chikou-Linie, VWMA, Williams %R, Aroon, Chaikin Money Flow), je mit naiver Referenz auf AAPL-Daten und, für SAR und Aroon, einem von Hand gerechneten Beispiel (`quant/tests/technical-indicators-ext.test.mjs`). Neue Screener-Felder: `psarUp`, `aboveCloud`, `aroonOsc`, `williamsR`, `cmf20`.
+- **V3 – Formationen 1.1:** Kurslücke nach oben/unten (Lücke ≥ 0,5 ATR, mit Volumen zusätzlich ≥ 1,5-faches relatives Volumen; bestätigt nach drei Schlüssen jenseits der Lückenkante, invalidiert beim Schluss in die Lücke). Test an der realen AAPL-Lücke vom 03.05.2024 und an einer konstruierten Reihe.
+- **V3 – Suche in Worten** (`quant/engines/technical/query-text.js`): deterministischer Parser deutscher Fachbegriffe, Kennzahl-Vergleiche, „und/oder“-Gruppen, Formationslisten, Zeitrahmen und eine kanonische Schreibweise. Er gibt dieselbe validierte Abfrage aus wie die Klickfilter, meldet Nicht-Erkanntes, statt zu raten, und `contract()` beschreibt den späteren Modellaufruf (Status „vorbereitet, nicht aktiv“). Rundreise-Test über alle Felder und Zeitrahmen. Im Screener: Eingabe mit Live-Vorschau, Adresse `#/screener?q=…`, speicherbar.
+- **V3 – Chart Studio:** Schichten im Kurs (zusätzlich Keltner, Donchian, Ichimoku, Supertrend, Parabolic SAR, VWMA) und ein Unterfenster aus elf Indikatoren (RSI, MACD, Stochastik, ADX, ATR, CCI, Williams %R, Aroon, MFI, OBV, CMF). Formationsfokus `#/chart/<T>?f=<id>`: nur diese Formation, Fenster ab ihrem ersten Punkt, teilbare Adresse.
+- **V3 – Vorher/Nachher Datensatz:** Neubau mit dem Erzeuger. Die 55 bestehenden Spalten sind bitgleich; die Formationslisten unterscheiden sich ausschließlich um die neuen Lücken; alle bisherigen Formationszählungen in `meta.json` sind unverändert.
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
@@ -68,10 +73,10 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 ## 6. Offene Aufgaben (priorisiert)
 
 1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
-2. **Eigene Menügruppe „Technical“** (Folge-PR, nur `assets/site-navigation.js` + `discover/tests/navigation-theme.test.mjs`, damit das Discover-Gate sauber bleibt).
-3. **Supertrader-Angleichung** (eigener PR unter Gate A): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
-4. **EMA 200 exakt:** 270 Tagesbars reichen nicht. Vorschlag: `ema200` (und `ema20/50`) in `chartSeries` der Materialisierung aufnehmen (eigener PR mit Vorher/Nachher). Bis dahin zeigt Technical die SMA 200 und sagt das in der Methodik.
-5. **KI-Suche freischalten:** `technical-query.js#jsonSchema()` an `workers/vu-ask` anbinden (Deploy = Produktionsänderung, Kosten → Freigabe nötig).
+2. ~~Eigene Menügruppe „Technical“~~ PR #925 (Owner-Freigabe 25.10.2026, Hash von `site-navigation.js` nachgezogen).
+3. **Supertrader-Angleichung** (in Arbeit auf `claude/supertrader-atr-wilder`, eigener PR unter Gate A, kein automatischer Merge): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
+4. **EMA 200 exakt** (in Arbeit auf `claude/technical-ema200`, kein automatischer Merge): 270 Tagesbars reichen nicht. Vorschlag: `ema200` (und `ema20/50`) in `chartSeries` der Materialisierung aufnehmen (eigener PR mit Vorher/Nachher). Bis dahin zeigt Technical die SMA 200 und sagt das in der Methodik.
+5. **KI-Suche freischalten:** technisch vorbereitet (V3: Parser, Schema, Validierung, Oberfläche, `query-text.js#contract()`). Offen ist nur der Modellaufruf über `workers/vu-ask`; das ist ein Deploy mit Kosten und braucht eine eigene Freigabe.
 6. **Zusammenführung mit `/screener/`:** Feldregister-Injektion in `screener/engine/engine.js`, danach eine Engine für beide.
 7. **Evidenz:** Trefferquoten der Formationen über die bestehende Outcome-Schicht (`ti/outcomes.js`) messen. Erst dann wäre eine Rangfolge nach Evidenz begründbar.
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
@@ -90,6 +95,9 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 |---|---|
 | 25.10.2026 | PR #919 (V1) gemergt, nachdem alle Checks grün waren. Vercel ist kein Pflicht-Check (Tageslimit des Free-Tarifs). Der WebKit-Ausreißer in der Discover-QA bestand beim einen Wiederholungslauf. |
 | 25.10.2026 | V2 begonnen: Release-Stempel, Browser-QA in CI. |
+| 25.10.2026 | PR #923 (V2) gemergt (`74a49d0`), nachdem alle Pflichtprüfungen grün waren. Vercel (Tageslimit) ist kein Pflicht-Check. |
+| 25.10.2026 | PR #925: eigene Menügruppe „Technical“ nach Fundamental. Geschützter Hash nur für `site-navigation.js` nachgezogen. Shell-Tests, Discover-Navigationstest und Shell-Browser-QA wurden angepasst. |
+| 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
 
 ## 8. Fortsetzen
 
