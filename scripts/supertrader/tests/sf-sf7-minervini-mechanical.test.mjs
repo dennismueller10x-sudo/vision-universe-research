@@ -23,7 +23,7 @@ const ctxOf = (rows) => { const bench = benchIndex(rows); return { bench, anchor
 const corruptAfter = (bars, cut) => bars.map((b, k) => (k <= cut ? b : { ...b, open: b.open * 3.1, high: b.high * 3.3, low: b.low * 0.2, close: b.close * (k % 2 ? 0.25 : 2.9), volume: b.volume * 50 }));
 
 // below the 200-day mean around session 270-289 (stock reset), then four bases of >= 20 sessions, each completed by a
-// close above the prior closing high; the setup close 530 lies in the fourth base
+// close above the prior base high (intraday, MA-MIN7-BASECOUNT-BASE revision 2); the setup close 530 lies in the fourth base
 const FOUR = path([[0, 100], [250, 100], [270, 85], [320, 120], [335, 108], [350, 119], [355, 124], [380, 140], [395, 128], [410, 139], [415, 145], [440, 160], [455, 148], [470, 159], [475, 165], [500, 180], [515, 168], [530, 178], [560, 200]]);
 const flatBench = (bars) => bars.map((b) => ({ date: b.date, close: 100 }));
 // a 15 % market correction with its low at session 430 (between the 2nd and 3rd breakout)
@@ -132,6 +132,21 @@ test('ADV-SF7-MECH-BASECOUNT-INTRADAY-PIVOT: a recovery close above the base-sta
   assert.equal(baseCountAt(g, 380, null).baseNumber, 2); assert.equal(baseCountAt(g, 380, null).baseCountUncertain, false);
   // both PIT: later bars corrupted, same reading
   for (const x of [b, g]) assert.deepEqual(baseCountAt(corruptAfter(x, 380), 380, null), baseCountAt(x, 380, null));
+});
+
+test('ADV-SF7-MECH-BASECOUNT-YOUNG-AND-BOUNDARIES: a young base follows a higher intraday high; strict breakout; maturity at exactly 20 sessions (review #940, 1.2.0 delta, LOW-1/LOW-2)', () => {
+  const poke = (b, k, h) => b.map((x, j) => (j === k ? { ...x, high: h } : x));
+  // young base (start 320, high 125): session 330 trades to 127 -> base start 330, high 127; a close of 126 at 350 is no breakout
+  assert.equal(baseCountAt(poke(RECOVERY(126), 330, 127), 380, null).baseNumber, 1, 'young-base rule moves the pivot');
+  // a close of 128 at 350, exactly 20 sessions after the moved start 330: the breakout counts (>= 20)
+  // (highs of 331-349 capped at 126, so the rising path makes no later intraday high of its own inside the young base)
+  const m20 = poke(RECOVERY(128), 330, 127).map((x, j) => (j > 330 && j < 350 ? { ...x, high: Math.min(x.high, 126) } : x));
+  assert.equal(baseCountAt(m20, 380, null).baseNumber, 2, 'maturity at exactly 20 sessions');
+  // a poke exactly 20 sessions after the start (session 340) is in a mature base: ignored; the close 126 > 125 at 350 counts
+  assert.equal(baseCountAt(poke(RECOVERY(126), 340, 127), 380, null).baseNumber, 2, 'mature base at 20 sessions ignores the poke');
+  // a close equal to the base high is no breakout (strict >)
+  const eq = RECOVERY(125); assert.equal(eq[350].close, 125); assert.equal(eq[320].high, 125);
+  assert.equal(baseCountAt(eq, 380, null).baseNumber, 1, 'close = base high is no breakout');
 });
 
 test('ADV-SF7-MECH-MA200-EXACT: the stock reset uses the smaAt decision exactly, also where the rolling sum drifts (review #940, third round, LOW-3)', () => {
