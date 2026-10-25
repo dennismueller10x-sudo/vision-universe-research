@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "quant-backtest-order1-validation-1.0.0",
+  "testedImplementation": "107276a14e9561058bada469004e5f3f22c49f4e",
+  "main": "05cd43b34bce9cee25564a48db29ff19ba3b1c7b",
+  "observedAt": "2026-10-25T06:50:42.862009+00:00",
+  "tests": {
+    "quant": {
+      "state": "PASS",
+      "command": "node --test --test-concurrency=4 'quant/tests/*.test.mjs'",
+      "logSHA256": "128b6b87ac3be7515d9e3bf67a5ec636a93d1e824a66d6def864f5a8cb52f088",
+      "tests": 2874,
+      "pass": 2874,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "duration_ms": 467008.705073
+    },
+    "core": {
+      "state": "PASS",
+      "command": "node --test 'core/tests/*.test.mjs' quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs",
+      "logSHA256": "0751d995edc27f8c7b75c4e37ce5f5a55e3db0be17c0dbe69bdf449d726038b8",
+      "tests": 260,
+      "pass": 260,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "duration_ms": 209324.556647
+    },
+    "shell": {
+      "state": "PASS",
+      "command": "node --test core/tests/shell-navigation.test.mjs quant/tests/site-navigation.test.mjs discover/tests/navigation-theme.test.mjs scripts/vu2/resource-budget.test.mjs",
+      "logSHA256": "9b53e24f35fb31d11a779a157c08b6245b7c25fb8fc5dbc775ab2cc6b5eeb762",
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "duration_ms": 304.332624
+    },
+    "archiveBoundary": {
+      "state": "PASS",
+      "command": "node --test quant/tests/backtest-handoff-archive.test.mjs quant/tests/backtest-consolidation-boundary.test.mjs",
+      "logSHA256": "0420ac3fc49fae5ec965027eda7318a71fee0dd313c72cf63c16a836d35b3e78",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "duration_ms": 404.657018
+    }
+  },
+  "python": {
+    "consumer": 31,
+    "secExporterPIT": 32,
+    "independentNVDA": [
+      {
+        "period": "1Y",
+        "state": "PASS",
+        "independentlyCheckedTrades": 0,
+        "equityObservations": 53,
+        "benchmark": "AVAILABLE",
+        "costModel": "PER_SIDE_NOTIONAL",
+        "resultHash": "ba5afe22b8114d9192cb8a609137c2d2c9fd7de47ff5f622ce4c078987878032"
+      },
+      {
+        "period": "3Y",
+        "state": "PASS",
+        "independentlyCheckedTrades": 2,
+        "equityObservations": 157,
+        "benchmark": "AVAILABLE",
+        "costModel": "PER_SIDE_NOTIONAL",
+        "resultHash": "d58c5b15943f50550c3c1f128d893e3ed921d2930e43d73d4c07cb2cee19e0b9"
+      },
+      {
+        "period": "5Y",
+        "state": "PASS",
+        "independentlyCheckedTrades": 3,
+        "equityObservations": 262,
+        "benchmark": "AVAILABLE",
+        "costModel": "PER_SIDE_NOTIONAL",
+        "resultHash": "0b634fe5945219e1b90e63fbe1d313abf87442bd4249df31fee0b51463caf451"
+      },
+      {
+        "period": "10Y",
+        "state": "PASS",
+        "independentlyCheckedTrades": 7,
+        "equityObservations": 522,
+        "benchmark": "AVAILABLE",
+        "costModel": "PER_SIDE_NOTIONAL",
+        "resultHash": "672a705e5969df46ce6321b1377f8af32d05720d2be2afb62810de02d5fbd1d5"
+      },
+      {
+        "period": "MAX",
+        "state": "PASS",
+        "independentlyCheckedTrades": 21,
+        "equityObservations": 1396,
+        "benchmark": "AVAILABLE",
+        "costModel": "PER_SIDE_NOTIONAL",
+        "resultHash": "7fb5a0274abddde577bdbce0b5b04196dafd7dece7e1eb4b5f2bdcaf1c06f68a"
+      }
+    ]
+  },
+  "data": {
+    "generation": "23a3a9b70450c0cc8cedaafb33577e720ad1979d44935deb80ca26241e27bfff",
+    "candidates": 6190,
+    "counts": {
+      "A": 0,
+      "B": 4451,
+      "C": 1739
+    },
+    "reader": {
+      "checked": 6190,
+      "states": {
+        "AVAILABLE_LIMITED": 4451,
+        "BLOCKED": 1739
+      },
+      "reasons": {
+        "HISTORICAL_LISTING_NOT_UNIQUELY_MAPPED_TO_PRODUCT": 6
+      },
+      "servedResults": 4451,
+      "financialDataOnBlockedResponses": 0
+    },
+    "payloadStats": {
+      "summaries": 6190,
+      "summaryBytes": 110862837,
+      "maxSummaryBytes": 25681,
+      "periodResults": 22255,
+      "detailBytes": 886979595,
+      "gzipDetailBytes": 199251655,
+      "maxDetailBytes": 210825,
+      "maxGzipDetailBytes": 48550,
+      "overLimitDetails": 0
+    }
+  },
+  "browser": {
+    "checks": 96,
+    "findings": 0,
+    "budgetsPassed": 8,
+    "automatedA11yPages": 84,
+    "automatedA11yViolations": 0,
+    "directLocalChecks": {
+      "chromium": {
+        "passed": 12,
+        "seed": 35916
+      },
+      "webkit": {
+        "passed": 7,
+        "seed": 31266,
+        "engine": "Genuine Playwright WebKit; local shared-library loader outside repository"
+      }
+    }
+  },
+  "certification": "NOT_CERTIFIED",
+  "publicActivation": false,
+  "gateWeakening": false,
+  "hygiene": {
+    "fullPRWhitespace": "PASS after removing four Markdown line-break spaces in new handoff only",
+    "secrets": "PASS",
+    "publicData": "PASS",
+    "localFX": "PASS",
+    "semanticsParity": "PASS"
+  },
+  "mergeStatus": "MERGED_AND_VERIFIED",
+  "mergeCommit": "9cacd5ea6f64dae2dea47e3cf85a2cf149c6fc49",
+  "predecessorsClosed": 7,
+  "mainVerification": "main-verification.json"
+}
