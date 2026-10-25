@@ -21,12 +21,15 @@ class RegistryError(ValueError):
 
 
 class ConceptRule:
-    __slots__ = ("taxonomy", "concept", "priority")
+    __slots__ = ("taxonomy", "concept", "priority", "excluded_industries")
 
-    def __init__(self, taxonomy, concept, priority):
+    def __init__(self, taxonomy, concept, priority, excluded_industries=()):
         self.taxonomy = taxonomy
         self.concept = concept
         self.priority = int(priority)
+        # Industries for which the concept does not mean the metric (IFRS 15
+        # revenue of a bank is its fee income, not its revenue).
+        self.excluded_industries = frozenset(excluded_industries or ())
 
     @property
     def qualified(self):
@@ -38,7 +41,7 @@ class ConceptRule:
 
 class MetricDefinition:
     __slots__ = ("name", "label", "kind", "statement", "units", "concepts", "optional", "sign",
-                 "industries")
+                 "industries", "total_concepts")
 
     def __init__(self, name, payload):
         self.name = name
@@ -55,7 +58,8 @@ class MetricDefinition:
             raise RegistryError(f"metric {name}: at least one allowed unit is required")
         self.optional = bool(payload.get("optional", False))
         self.sign = payload.get("sign")
-        rules = [ConceptRule(rule["taxonomy"], rule["concept"], rule["priority"])
+        rules = [ConceptRule(rule["taxonomy"], rule["concept"], rule["priority"],
+                             rule.get("excluded_industries"))
                  for rule in payload.get("concepts") or []]
         if not rules:
             raise RegistryError(f"metric {name}: no accepted concepts")
@@ -65,6 +69,14 @@ class MetricDefinition:
             # exactly the AMBIGUOUS_MAPPING case we refuse to guess at.
             raise RegistryError(f"metric {name}: duplicate concept priorities {priorities}")
         self.concepts = tuple(sorted(rules, key=lambda rule: rule.priority))
+        # Concepts that are, by taxonomy, the TOTAL of the metric while a
+        # higher-priority concept may be only a component of it (us-gaap:Revenues
+        # vs. RevenueFromContractWithCustomer*). See normalize.py.
+        self.total_concepts = frozenset(payload.get("total_concepts") or ())
+        accepted = {rule.qualified for rule in rules}
+        if not self.total_concepts <= accepted:
+            raise RegistryError(f"metric {name}: total_concepts {sorted(self.total_concepts - accepted)} "
+                                "are not accepted concepts")
 
     # EINE BILANZ IN EURO IST EINE BILANZ.
     #
@@ -204,8 +216,11 @@ class MetricRegistry:
 
         # concept index: (taxonomy, concept) -> [(metric_name, priority), ...]
         self._by_concept = {}
+        self._excluded = {}
         for metric in (*self.metrics.values(), *self.industry_metrics.values()):
             for rule in metric.concepts:
+                if rule.excluded_industries:
+                    self._excluded[(metric.name, rule.taxonomy, rule.concept)] = rule.excluded_industries
                 self._by_concept.setdefault((rule.taxonomy, rule.concept), []).append(
                     (metric.name, rule.priority)
                 )
@@ -222,6 +237,10 @@ class MetricRegistry:
     def metrics_for_concept(self, taxonomy, concept):
         """All (metric_name, priority) pairs a raw concept can feed."""
         return list(self._by_concept.get((taxonomy, concept), ()))
+
+    def excluded_for(self, metric_name, taxonomy, concept, industry_id):
+        """True when the concept does not mean the metric for this industry."""
+        return bool(industry_id) and industry_id in self._excluded.get((metric_name, taxonomy, concept), ())
 
     def get(self, name):
         definition = self.metrics.get(name)

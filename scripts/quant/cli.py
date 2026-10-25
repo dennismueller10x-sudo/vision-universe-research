@@ -1511,13 +1511,14 @@ def cmd_consumer(args):
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
     from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
-                                    load_product_universe_ciks, load_successor_issuers, summarize_bundle,
+                                    load_issuer_industries, load_product_universe_ciks, load_successor_issuers, summarize_bundle,
                                     with_successors)
     registry = MetricRegistry.load()
     provider = SECProvider()
     names_file = Path(args.names)
     by_cik, without_cik = load_product_universe_ciks(names_file)
     year_end_hints = load_fiscal_year_end_hints(args.issuers)
+    industries = load_issuer_industries(args.issuers)
     product_count = sum(len(e["tickers"]) for e in by_cik.values()) + len(without_cik)
     wanted = set(by_cik)
     if args.ciks:
@@ -1552,7 +1553,7 @@ def cmd_consumer(args):
                                            security_ids=entry["securityIds"], name=entry["name"],
                                            fiscal_year_end_hint=year_end_hints.get(cik),
                                            annual_years=args.annual_years, quarters=args.quarters,
-                                           provider=provider)
+                                           provider=provider, industry=industries.get(cik))
         except Exception as exc:  # noqa: BLE001 - one bad company must not stop 6,000
             failures.append({"cik": cik, "tickers": entry["tickers"], "error": f"{type(exc).__name__}: {exc}"})
             LOGGER.warning("cik=%s failed: %s", cik, exc)

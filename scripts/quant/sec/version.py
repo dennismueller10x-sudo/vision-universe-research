@@ -122,7 +122,15 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          allen FY-Dauern zerlegten das Jahr in Halbjahre, Q2 hiess Q1 und
 #          FY2025 trug den Juni-Wert. Gemessen im Bulk-Archiv: ~250 von 5 066
 #          Emittenten mit mindestens einem solchen Jahr.
-NORMALIZATION_LOGIC_VERSION = "1.10.0"
+#
+# 1.11.0 — a metric's TOTAL concept (registry `total_concepts`, revenue:
+#          us-gaap:Revenues) replaces a higher-priority COMPONENT concept
+#          (RevenueFromContractWithCustomer*) when the same filing reports both
+#          for the same cell and the total is larger. United Rentals Q3 2026
+#          carried 1.068 bn (ASC 606 only) instead of 4.893 bn total revenue.
+#          A concept rule can exclude registry industries (`excluded_industries`):
+#          IFRS 15 revenue is the fallback revenue, but not for banks/insurers.
+NORMALIZATION_LOGIC_VERSION = "1.11.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -153,7 +161,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "a708371225a27350f1ebc58e06cc358f6a8a550a8c44a6bcf1f90fd2d62d1c6a"
+    "51dc5f84445781e80c6dc660f0813f84240c096212d8c58c871f1953beba3d84"
 )
 
 
