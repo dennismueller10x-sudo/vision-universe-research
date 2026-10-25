@@ -19,7 +19,7 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
 | Duplikate | SMA ~14×, EMA 5×, ATR 5× (Supertrader: SMA der TR statt Wilder), ADX 2×, relatives Volumen 3 Definitionen, 52W-Hoch 4 Definitionen (siehe Architektur §5). Supertrader importiert `quant/engines/technical` nicht. | Technical rechnet ausschließlich über `feature-store.js` und `indicators.js`. Die Supertrader-Angleichung ist ein eigener PR (Gate A). |
 | Screener | `/screener/` hat eine Filter-Engine (UND/ODER-Gruppen, URL-Zustand, localStorage-Strategien) und eine KI-Übersetzung (`workers/vu-ask`, Claude Haiku, Schema aus `screener/engine/fields.js`). Die Engine hängt am globalen `VUScreenerFields`. | Eigene kleine Engine **im selben Modell** (`technical-query.js`). Zusammenführung als Folgeaufgabe. |
 | Navigation | `assets/site-navigation.js`: Menügruppen (Liste in `discover/tests/navigation-theme.test.mjs` festgeschrieben) und opt-in Dock (`VUNavigation.dock`). | Eigener Dock. Menüeintrag unter „Weitere Produkte“, weil eine eigene Gruppe den Discover-Test und damit das Discover-Gate berührt (Folge-PR). |
-| UI-Schutz | `docs/quant-recovery/v51/ui-protection.json` sichert 237 Dateien bytegenau (Test `backtest-consolidation-boundary`). | Fünf Einträge nachgezogen (Navigation, Navigator JS/CSS, Icon-Sprite). Präzedenz: Commit `951657a48b`. **Zustimmung im PR nötig.** |
+| UI-Schutz | `docs/quant-recovery/v51/ui-protection.json` sichert 237 Dateien bytegenau (Test `backtest-consolidation-boundary`). | Vier Einträge nachgezogen (`site-navigation.js`, `stock-navigator.js`, `stock-navigator.css`, `product-icons.svg`). Präzedenz: Commit `951657a48b`. Vom Owner am 25.10.2026 freigegeben, nach Prüfung: Die Diffs enthalten nur die Technical-Änderungen, alle 237 Hashes stimmen. |
 | Auslieferung | `build-release.mjs#permitted` liefert `technical/` automatisch aus (ohne `tests/`). Die Passwortsperre gilt für jede HTML-Datei. | Keine Änderung am Release oder an der Sperre. |
 
 ## 3. Wiederverwendungsmatrix
@@ -67,7 +67,7 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 
 ## 6. Offene Aufgaben (priorisiert)
 
-1. **PR-Freigabe der UI-Schutzliste** (5 Hashes) durch den Owner. Ohne Freigabe kein Merge.
+1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
 2. **Eigene Menügruppe „Technical“** (Folge-PR, nur `assets/site-navigation.js` + `discover/tests/navigation-theme.test.mjs`, damit das Discover-Gate sauber bleibt).
 3. **Supertrader-Angleichung** (eigener PR unter Gate A): Supertrader-ATR ist der einfache Mittelwert der TR, Technical nutzt Wilder. Ziel: Supertrader importiert `feature-store.js`/`indicators.js`. Ein Vorher/Nachher-Vergleich ist Pflicht, weil das ein Fachmodell ändert. Danach Technical-Befunde auf den Supertrader-Aktienseiten verlinken.
 4. **EMA 200 exakt:** 270 Tagesbars reichen nicht. Vorschlag: `ema200` (und `ema20/50`) in `chartSeries` der Materialisierung aufnehmen (eigener PR mit Vorher/Nachher). Bis dahin zeigt Technical die SMA 200 und sagt das in der Methodik.
@@ -91,3 +91,12 @@ node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-form
 node scripts/technical/world/build-screener.mjs            # Datensatz neu bauen (30 s)
 python3 -m http.server 8765  # dann http://127.0.0.1:8765/technical/
 ```
+
+## 9. Ressourcenbudget der Quant-Startseite (25.10.2026)
+
+Vor PR #918 (Quant-Code in Pakete je Ansicht) riss PR #919 die Grenze der Quant-Startseite um 2.038 Bytes
+(1.822.038 bei 1.820.000). Gemessener Zuwachs je Pfad: `site-navigation.js` +1.437, `product-icons.svg` +623,
+`stock-navigator.js` +182. Der Owner gab eine gezielte Anhebung für `home` auf 1.823.000 frei.
+Nach dem Merge von #918 misst die VU2-Browser-QA mit allen Technical-Änderungen **1.606.572 Bytes bei 23 Anfragen**
+(lokal, gebautes Release, 390 und 1440 px, 8/8 Budgets, 96 Prüfungen ohne Befund). Die Anhebung wurde deshalb
+**nicht** umgesetzt; die Grenze bleibt 1.820.000.
