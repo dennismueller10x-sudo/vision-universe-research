@@ -3,11 +3,15 @@
 // reads a bar after its cut-off (setup close, exit session - 1, fill bar).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { baseCountAt, marketCorrectionAnchors, baseCountTally, topVolumeDecline, relativeBaseDepth, entryDistanceTally, signalsByBaseNumber, sf7MechanicalRegistrySha256, SF7_MECHANICAL_MODEL_ASSUMPTIONS, SF7_MECHANICAL_SOURCE_BOUNDS, SF7_MECHANICAL_VERSION } from '../source-faithful/research/minervini-sf7-mechanical.mjs';
+import { baseCountAt, marketCorrectionAnchors, baseCountTally, fieldTally, topVolumeDecline, relativeBaseDepth, entryDistanceTally, signalsByBaseNumber, sf7MechanicalRegistrySha256, SF7_MECHANICAL_MODEL_ASSUMPTIONS, SF7_MECHANICAL_SOURCE_BOUNDS, SF7_MECHANICAL_VERSION } from '../source-faithful/research/minervini-sf7-mechanical.mjs';
 import { benchIndex, sf7VariantRegistrySha256, SF7_MINERVINI_VERSION } from '../source-faithful/research/minervini-sf7.mjs';
+import { buildSetupIndex, runMinerviniLifecycle } from '../source-faithful/research/minervini-execution.mjs';
+import { REFERENCE_CONFIG } from '../source-faithful/research/minervini-lifecycle.mjs';
+import { trendTemplate } from '../source-faithful/methods/minervini.mjs';
 
-// pinned before the first snapshot run of package 1.4.0
-const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = '0cc8cb2a1895ba2695777f837cd87c58cd420ceeb35b73fa8439ff710efd164b';
+// mechanical 1.0.0: eb1ead15… (first pin), 0cc8cb2a… (review fixes, snapshot run 40226429160); re-pinned for mechanical
+// 1.1.0 (review #940: both G-TOPVOL windows, both G-RELDEPTH windows, uncertainty with direction) before its first snapshot run
+const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = '70c4847583a040e21d2a6828c71b2ca84851266c45eeccb97877fe134927b655';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c));
@@ -25,7 +29,7 @@ const corrBench = (bars) => bars.map((b, k) => ({ date: b.date, close: k < 420 ?
 
 test('SF7-MECH-BASECOUNT: four bases after the stock reset, base number 4 (late stage, B12 PDF 116; late, B03 PDF 207)', () => {
   const b = mk(FOUR), r = baseCountAt(b, 530, ctxOf(flatBench(b)));
-  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.baseNumber, 4); assert.equal(r.reset, 'BELOW_MA200'); assert.equal(r.baseCountUncertain, false);
+  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.baseNumber, 4); assert.equal(r.reset, 'BELOW_MA200'); assert.equal(r.baseCountUncertain, false); assert.deepEqual(r.uncertaintyReasons, []);
   assert.equal(r.earlyBase, false); assert.equal(r.lateBase, true); assert.equal(r.lateStage, true); assert.equal(r.likelyFailure, false);
   // without a benchmark the stock reset alone gives the same count
   assert.equal(baseCountAt(b, 530, null).baseNumber, 4);
@@ -68,53 +72,111 @@ test('ADV-SF7-MECH-BASECOUNT-PIT: base count reads bars 0..setup and benchmark c
   }
 });
 
-test('SF7-MECH-BASECOUNT-UNCERTAIN: no reset in the measurable history -> flagged uncertain; tally counts buckets', () => {
+test('SF7-MECH-BASECOUNT-UNCERTAIN: without a reset in the data the flags state the direction of the possible error (review #940 L2); tally counts buckets', () => {
   const up = mk(path([[0, 50], [300, 150], [325, 140], [340, 149]]));
   const r = baseCountAt(up, 340, null);
-  assert.equal(r.reset, 'NONE'); assert.equal(r.baseCountUncertain, true); assert.equal(r.baseNumber, 1); // a straight advance has no completed base
-  const t = baseCountTally([r, baseCountAt(mk(FOUR), 530, null), { status: 'NOT_EVALUABLE' }]);
-  assert.deepEqual(t.baseNumber, { 1: 1, 2: 0, 3: 0, 4: 1, '5+': 0, unknown: 1 }); assert.equal(t.uncertain, 1); assert.equal(t.lateStage, 1);
+  // a straight advance has no completed base: earlier bases may be unseen (undercount), nothing counted can be spurious
+  assert.equal(r.reset, 'NONE'); assert.equal(r.baseNumber, 1); assert.equal(r.baseCountUncertain, true);
+  assert.equal(r.undercountPossible, true); assert.equal(r.overcountPossible, false); assert.deepEqual(r.uncertaintyReasons, ['NO_RESET_IN_DATA']);
+  // a flat start and a base before the first computable 200-day mean: the counted bases may be spurious (overcount)
+  const early = mk(path([[0, 50], [60, 60], [90, 55], [110, 62], [300, 150], [325, 140], [340, 149]]));
+  const e = baseCountAt(early, 340, null);
+  assert.equal(e.baseNumber, 2); assert.equal(e.overcountPossible, true); assert.equal(e.undercountPossible, true);
+  assert.deepEqual(e.uncertaintyReasons, ['NO_RESET_IN_DATA', 'RUNNING_HIGH_BEFORE_DATA_UNKNOWN', 'MA200_NOT_COMPUTABLE_AFTER_RESET']);
+  // a market-correction low inside the data: no undercount, but a reset before the first 200-day mean could be missed
+  const corr = up.map((x, k) => ({ date: x.date, close: k < 50 ? 100 : k <= 70 ? 100 - (k - 50) : 80 }));
+  const m = baseCountAt(early, 340, ctxOf(corr));
+  assert.equal(m.reset, 'MARKET_CORRECTION'); assert.equal(m.undercountPossible, false); assert.deepEqual(m.uncertaintyReasons, ['RUNNING_HIGH_BEFORE_DATA_UNKNOWN', 'MA200_NOT_COMPUTABLE_AFTER_RESET']);
+  const t = baseCountTally([r, e, baseCountAt(mk(FOUR), 530, null), { status: 'NOT_EVALUABLE' }]);
+  assert.deepEqual(t.baseNumber, { 1: 1, 2: 1, 3: 0, 4: 1, '5+': 0, unknown: 1 }); assert.equal(t.uncertain, 2); assert.equal(t.undercountPossible, 2); assert.equal(t.overcountPossible, 1); assert.equal(t.lateStage, 1);
 });
 
-test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the Stage 2 start (B03 PDF 217), before the exit session', () => {
+test('ADV-SF7-MECH-BASECOUNT-SETUP-SESSION: a setup close above an older closing high (below the intraday pivot) is no completed base (review #940 M1)', () => {
+  // base 1 completes at ~283 (close above the closing high 100 of session 250); closing high 105 at 300, intraday high
+  // 106.05; the setup close 105.2 on session 330 lies above 105 but below the pivot level: still the 2nd base
+  const c = path([[0, 50], [250, 100], [280, 95], [300, 105], [315, 100], [330, 105.2], [340, 104]]);
+  const b = c.map((x, k) => bar(k, x, x * 1.01, x * 0.99, x));
+  assert.ok(b[330].close > 105 && b[330].close < b[300].high);
+  for (const s0 of [325, 329, 330]) assert.equal(baseCountAt(b, s0, null).baseNumber, 2, `s0 ${s0}`);
+  // the next session, with the setup session now in the past, completes the 2nd base: a setup there is the 3rd
+  assert.equal(baseCountAt(b, 331, null).baseNumber, 3);
+});
+
+test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the trend start (B03 PDF 217), before the exit session, both windows', () => {
   const up = path([[0, 30], [320, 100]]);
   const bars = [...up.map((x, k) => bar(k, x, x * 1.002, x * 0.998, x, 1e6 + (k === 315 ? 4e6 : 0))), ...[101, 102, 103, 99, 100, 98, 97].map((x, j) => bar(321 + j, x, x * 1.002, x * 0.998, x, j === 3 ? 9e6 : j === 5 ? 3e6 : 1e6))];
   const t = { setupDate: bars[320].date, entryDate: bars[321].date, exitDate: null };
   const r = topVolumeDecline(bars, t);
-  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.topVolumeDeclineBeforeExit, true); assert.equal(r.sessionsFromEntry, 3);
+  for (const w of ['trendTemplateRun', 'aboveMa200Run']) { assert.equal(r[w].status, 'EVIDENCE', w); assert.equal(r[w].topVolumeDeclineBeforeExit, true, w); assert.equal(r[w].sessionsFromEntry, 3, w); }
+  assert.equal(r.aboveMa200Run.windowTruncated, true); // a straight advance: no close below the 200-day mean in the data
   // the down day is the exit session: a closed trade never reads it
-  assert.equal(topVolumeDecline(bars, { ...t, exitDate: bars[324].date }).topVolumeDeclineBeforeExit, false);
   // exit on the entry session: no session seen, not evaluable (not "false")
-  assert.equal(topVolumeDecline(bars, { ...t, exitDate: bars[321].date }).status, 'NO_SESSION_BEFORE_EXIT');
-  // a down day whose volume is below the earlier peak (session 315, inside Stage 2) is no signal
+  const same = topVolumeDecline(bars, { ...t, exitDate: bars[321].date });
+  assert.equal(same.trendTemplateRun.status, 'NO_SESSION_BEFORE_EXIT'); assert.equal(same.aboveMa200Run.status, 'NO_SESSION_BEFORE_EXIT');
+  const atExit = topVolumeDecline(bars, { ...t, exitDate: bars[324].date });
+  assert.equal(atExit.trendTemplateRun.topVolumeDeclineBeforeExit, false); assert.equal(atExit.aboveMa200Run.topVolumeDeclineBeforeExit, false);
+  // a down day whose volume is below the earlier peak (session 315, inside both windows) is no signal
   const quiet = bars.map((b, k) => (k === 324 ? { ...b, volume: 4.5e6 } : b));
-  assert.equal(topVolumeDecline(quiet, t).topVolumeDeclineBeforeExit, false);
+  assert.equal(topVolumeDecline(quiet, t).trendTemplateRun.topVolumeDeclineBeforeExit, false); assert.equal(topVolumeDecline(quiet, t).aboveMa200Run.topVolumeDeclineBeforeExit, false);
   // PIT: bars from the exit session on corrupted -> unchanged
   const closed = { ...t, exitDate: bars[326].date }, ref = topVolumeDecline(bars, closed);
-  assert.equal(ref.topVolumeDeclineBeforeExit, true);
+  assert.equal(ref.trendTemplateRun.topVolumeDeclineBeforeExit, true);
   assert.deepEqual(topVolumeDecline(corruptAfter(bars, 325), closed), ref);
-  // setup close below its 200-day mean -> not evaluable
+  // a volume peak early in the advance (session 250) lies inside the MA200 window: no signal there; the Trend Template
+  // run (needs 252 sessions of history) starts later and does not see it (review M2: the two windows are reported apart)
+  const early = bars.map((b, k) => (k === 250 ? { ...b, volume: 9.5e6 } : b)), ev = topVolumeDecline(early, t);
+  assert.equal(ev.aboveMa200Run.topVolumeDeclineBeforeExit, false); assert.equal(ev.trendTemplateRun.topVolumeDeclineBeforeExit, true); assert.ok(ev.trendTemplateRun.windowStartDate > day(250));
+  // no Stage 2 at the setup -> not evaluable in both windows
   const down = mk(path([[0, 100], [330, 40]]));
-  assert.equal(topVolumeDecline(down, { setupDate: down[320].date, entryDate: down[321].date, exitDate: null }).status, 'SETUP_BELOW_MA200');
-  // the window reaches back to the session after the last close below MA200, not only to the last MA50 break (review M2):
-  // a volume peak early in the advance (session 250) still counts
-  const early = bars.map((b, k) => (k === 250 ? { ...b, volume: 9.5e6 } : b));
-  assert.equal(topVolumeDecline(early, t).topVolumeDeclineBeforeExit, false);
+  const dn = topVolumeDecline(down, { setupDate: down[320].date, entryDate: down[321].date, exitDate: null });
+  assert.equal(dn.trendTemplateRun.status, 'NOT_IN_STAGE2_AT_SETUP'); assert.equal(dn.aboveMa200Run.status, 'NOT_IN_STAGE2_AT_SETUP');
 });
 
-test('SF7-MECH-RELDEPTH: base depth vs the market decline over the base window (B12 PDF 280), floor 10 %, PIT', () => {
-  // base: 52-week high 100 at 300, low 70 (30 % deep), setup 340
+test('ADV-SF7-MECH-TOPVOL-WINDOWS: the Trend Template run starts after the MA50 break inside the base; the MA200 window reaches the earlier Stage 2 volume (review #940 M2)', () => {
+  // below the 200-day mean around 235-241, Stage 2 advance with a 9M-share session at 350, base with a dip below the
+  // 50-day mean (400-425), setup 428, entry 429, down day on 5M shares at 432
+  const c = path([[0, 30], [220, 30], [235, 27], [400, 100], [410, 90], [425, 101], [431, 103], [432, 101], [440, 104]]);
+  const bars = c.map((x, k) => bar(k, x, x * 1.002, x * 0.998, x, k === 350 ? 9e6 : k === 432 ? 5e6 : 1e6));
+  let ttStart = 428; while (ttStart > 0 && trendTemplate(bars, ttStart - 1).pass) ttStart--;
+  assert.ok(ttStart > 350 && ttStart < 428, String(ttStart));
+  const r = topVolumeDecline(bars, { setupDate: day(428), entryDate: day(429), exitDate: null });
+  assert.equal(r.trendTemplateRun.windowStartDate, day(ttStart)); assert.equal(r.trendTemplateRun.topVolumeDeclineBeforeExit, true);
+  assert.equal(r.aboveMa200Run.windowTruncated, false); assert.ok(r.aboveMa200Run.windowStartDate < day(350)); assert.equal(r.aboveMa200Run.topVolumeDeclineBeforeExit, false);
+  // the windows start at or before the setup: corrupting everything after the scan end changes nothing
+  const closed = { setupDate: day(428), entryDate: day(429), exitDate: day(434) };
+  assert.deepEqual(topVolumeDecline(corruptAfter(bars, 433), closed), topVolumeDecline(bars, closed));
+});
+
+test('SF7-MECH-RELDEPTH: stock vs market decline from closes, SAME_WINDOW and TRAILING_HIGH (B12 PDF 280), floor 10 %, PIT', () => {
+  // base: 52-week high at 300 (close 100), close low 70 at 320 (30 % deep), setup 340
   const b = mk(path([[0, 40], [300, 100], [320, 70], [340, 90], [360, 120]]));
   const m12 = b.map((x, k) => ({ date: x.date, close: k < 300 ? 100 : k <= 315 ? 100 - 0.8 * (k - 300) : 88 + 0.3 * (k - 315) }));
   const r = relativeBaseDepth(b, 340, benchIndex(m12));
-  assert.equal(r.status, 'EVIDENCE'); assert.ok(Math.abs(r.baseDepth - 0.3) < 1e-9); // closes on both sides (review L3)
-  assert.ok(r.relativeDepth > 2 && r.relativeDepth < 3, String(r.relativeDepth)); assert.equal(r.aboveStrict, true); assert.equal(r.aboveLoose, false);
-  // a 5 % market dip is below the floor: not evaluated
+  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.baseStartDate, day(300));
+  for (const w of ['sameWindow', 'trailingHigh']) {
+    // closes on both sides (review #940 L3): 30 % / 12 % = 2.5
+    assert.ok(Math.abs(r[w].stockDecline - 0.30) < 1e-9, w); assert.ok(Math.abs(r[w].marketDecline - 0.12) < 1e-9, w);
+    assert.ok(Math.abs(r[w].relativeDepth - 2.5) < 1e-9, w); assert.equal(r[w].aboveStrict, true); assert.equal(r[w].aboveLoose, false);
+  }
+  // a 5 % market dip is below the floor in both windows
   const m5 = b.map((x, k) => ({ date: x.date, close: k < 300 ? 100 : k <= 310 ? 100 - 0.5 * (k - 300) : 95 }));
-  assert.equal(relativeBaseDepth(b, 340, benchIndex(m5)).status, 'MARKET_DECLINE_BELOW_FLOOR');
+  const r5 = relativeBaseDepth(b, 340, benchIndex(m5));
+  assert.equal(r5.sameWindow.status, 'MARKET_DECLINE_BELOW_FLOOR'); assert.equal(r5.trailingHigh.status, 'MARKET_DECLINE_BELOW_FLOOR');
   // PIT: a later benchmark crash and corrupted later bars do not change the reading
   const crash = m12.map((x, k) => (k <= 340 ? x : { date: x.date, close: 5 }));
   assert.deepEqual(relativeBaseDepth(corruptAfter(b, 340), 340, benchIndex(crash)), r);
+});
+
+test('ADV-SF7-MECH-RELDEPTH-RUNNING-CORRECTION: a market correction already running at the base start is cut by SAME_WINDOW, measured by TRAILING_HIGH (review #940 L3)', () => {
+  const b = mk(path([[0, 40], [300, 100], [320, 70], [340, 90], [360, 120]]));
+  // market high 100 at 280, 90 at the base start 300, low 86 at 315: 4.4 % inside the window, 14 % below the trailing high
+  const m = b.map((x, k) => ({ date: x.date, close: k <= 280 ? 100 : k <= 300 ? 100 - 0.5 * (k - 280) : k <= 315 ? 90 - (4 / 15) * (k - 300) : 86 }));
+  const r = relativeBaseDepth(b, 340, benchIndex(m));
+  assert.equal(r.sameWindow.status, 'MARKET_DECLINE_BELOW_FLOOR'); assert.ok(Math.abs(r.sameWindow.marketDecline - (1 - 86 / 90)) < 1e-9);
+  assert.equal(r.trailingHigh.status, 'EVIDENCE'); assert.ok(Math.abs(r.trailingHigh.marketDecline - 0.14) < 1e-9);
+  assert.ok(Math.abs(r.trailingHigh.relativeDepth - 0.30 / 0.14) < 1e-9); assert.equal(r.trailingHigh.aboveStrict, true); assert.equal(r.trailingHigh.aboveLoose, false);
+  // benchmark history after the setup date is never read
+  assert.deepEqual(relativeBaseDepth(b, 340, benchIndex(m.slice(0, 341))), r);
 });
 
 test('SF7-MECH-ENTRY-DISTANCE: fill and gap distance over the pivot, buy-stop buffer 5/10/20 cents in raw dollars (B07 PDF 40/67/87, B12 PDF 297)', () => {
@@ -122,16 +184,32 @@ test('SF7-MECH-ENTRY-DISTANCE: fill and gap distance over the pivot, buy-stop bu
   const s2 = { id: 'B', bars: [{ ...bar(0, 5, 5.04, 4.9, 5), splitAdj: 2 }] }; // raw price 2x the adjusted price
   const byId = new Map([[s.id, s], [s2.id, s2]]);
   const trades = [
-    { id: 'A', entryDate: day(0), entryFill: 10, pivot: 10, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // high 0.08 over: no trigger at 10c and 20c
+    { id: 'A', entryDate: day(0), entryFill: 10, pivot: 10, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // open at the pivot, high 0.08 over: no trigger at 10c and 20c
     { id: 'A', entryDate: day(1), entryFill: 10.5, pivot: 10.2, entryBasis: 'OPEN_GAP_AT_OR_ABOVE_PIVOT' }, // gap 2.94 %, high 0.40 over
-    { id: 'A', entryDate: day(2), entryFill: 10, pivot: 10, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // high 0.15 over: no trigger at 20c
-    { id: 'B', entryDate: day(0), entryFill: 5, pivot: 5, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // 0.04 adjusted = 0.08 raw
+    { id: 'A', entryDate: day(2), entryFill: 10, pivot: 10, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // open below: no gap; high 0.15 over: no trigger at 20c
+    { id: 'B', entryDate: day(0), entryFill: 5, pivot: 5, entryBasis: 'INTRADAY_PIVOT_TOUCH' }, // open at the pivot; 0.04 adjusted = 0.08 raw
   ];
   const r = entryDistanceTally(trades, byId);
   assert.equal(r.fillAbovePivot['0'], 3); assert.equal(r.fillAbovePivot['2-3pct'], 1);
-  assert.equal(r.gapOpenAbovePivot['2-3pct'], 1);
+  // the gap reading uses the fill-bar open: an open exactly at the pivot is a 0 % gap
+  assert.equal(r.gapOpenAbovePivot['2-3pct'], 1); assert.equal(r.gapOpenAbovePivot['0'], 2); assert.equal(r.gapOpenAbovePivot.unknown, 0);
   assert.deepEqual(r.buyStopBuffer, { evaluated: 4, unknown: 0, noTriggerAt5c: 0, noTriggerAt10c: 2, noTriggerAt20c: 3 });
+  assert.equal(r.ordersNotExecutedAboveLimit, null);
   assert.deepEqual(SF7_MECHANICAL_SOURCE_BOUNDS.pivotBufferUsd.value, [0.05, 0.10, 0.20]);
+});
+
+test('ADV-SF7-MECH-GAP-LIMIT-FILL: a large opening gap filled at the limit counts as a gap; non-executed orders are a count, not trades (review #940 M4)', () => {
+  // pivot 100, open 108 above the limit 104, filled at the limit after the open
+  const s = { id: 'L', bars: [bar(0, 108, 109, 103, 106)] }, byId = new Map([[s.id, s]]);
+  const t = { id: 'L', entryDate: day(0), entryFill: 104, pivot: 100, entryBasis: 'LIMIT_FILL_AFTER_OPEN' };
+  const r = entryDistanceTally([t], byId, { notExecutedAboveLimit: 2 });
+  assert.equal(r.gapOpenAbovePivot.above5pct, 1); assert.deepEqual(r.gapOpenAbovePivot.byEntryBasis, { LIMIT_FILL_AFTER_OPEN: 1 });
+  assert.equal(r.fillAbovePivot['3-5pct'], 1); assert.equal(r.ordersNotExecutedAboveLimit, 2); assert.equal(r.trades, 1);
+  // no bar or no pivot: unknown, never a silent "no gap"
+  const u = entryDistanceTally([{ ...t, pivot: undefined, entryBasis: 'OPEN' }, { ...t, id: 'X' }], byId);
+  assert.equal(u.gapOpenAbovePivot.unknown, 2); assert.equal(u.buyStopBuffer.unknown, 2);
+  // the diagnostic reads, never writes: the trade and the bars are unchanged
+  const before = JSON.stringify([t, s]); entryDistanceTally([t], byId, { notExecutedAboveLimit: 2 }); assert.equal(JSON.stringify([t, s]), before);
 });
 
 test('SF7-MECH-CLIMAX-BY-BASE: exit-variant signals counted by base number (F7-B03-225-092), no signal suppressed', () => {
@@ -145,34 +223,77 @@ test('SF7-MECH-CLIMAX-BY-BASE: exit-variant signals counted by base number (F7-B
 });
 
 test('SF7-MECH-REGISTRY: package pre-registered and pinned; the 7.0 setup registry content is unchanged (only its version string)', () => {
-  assert.equal(SF7_MECHANICAL_VERSION, 'sf7-minervini-mechanical-1.0.0'); assert.equal(SF7_MINERVINI_VERSION, 'sf7-minervini-1.4.0');
+  assert.equal(SF7_MECHANICAL_VERSION, 'sf7-minervini-mechanical-1.1.0'); assert.equal(SF7_MINERVINI_VERSION, 'sf7-minervini-1.4.0');
   assert.equal(sf7MechanicalRegistrySha256(), PINNED_SF7_MECHANICAL_REGISTRY_SHA256);
   assert.equal(sf7VariantRegistrySha256('sf7-minervini-1.3.0'), 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e', 'bounds, assumptions and ALT-SEPA-* variants of minervini-sf7.mjs unchanged');
   assert.ok(SF7_MECHANICAL_MODEL_ASSUMPTIONS.every((m) => m.id.startsWith('MA-MIN7-') && m.why && m.reference));
   for (const b of Object.values(SF7_MECHANICAL_SOURCE_BOUNDS)) { assert.equal(b.translationUnverified, true); assert.match(b.source, /^(B12|B07|B03) PDF/); }
 });
 
-test('SF7-MECH-RUNNER: the runner reports the mechanical diagnostics per strategy, counts only; REF is unchanged by them', async () => {
-  const { sf7Part } = await import('../source-faithful/research/run-sf7-minervini.mjs');
-  const { SF7_EXIT_VARIANTS } = await import('../source-faithful/research/minervini-sf7-exits.mjs');
-  // the fixtures of SF7-MIN-RUNNER (flat base and textbook VCP): REF has trades, so the wiring is exercised (review M3)
-  const VC = path([[0, 40], [260, 100], [272, 80], [284, 98], [292, 88.2], [300, 96], [305, 91.2], [320, 95], [330, 97], [340, 120], [400, 130]]);
-  const VOL = VC.map((_, k) => (k <= 260 ? 2e6 : k <= 284 ? 1.5e6 : k <= 300 ? 1e6 : k <= 330 ? 5e5 : 3e6));
-  const v = VC.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, VOL[k]));
-  const fb = mk(path([[0, 40], [280, 100], [285, 95], [290, 99], [295, 94.5], [300, 98.5], [305, 95], [310, 99], [311, 104], [350, 115]]));
-  const d = { calendar: [...new Set([...v, ...fb].map((b) => b.date))].sort(), securities: [{ id: 'V', bars: v }, { id: 'FB', bars: fb }], benchmark: flatBench(v), spyTR: null };
-  const full = sf7Part(d, { from: null, to: null }), noExit = sf7Part(d, { from: null, to: null, exitVariants: [] });
-  for (const st of ['SEPA', 'POWER_PLAY']) {
-    const m = full.pub.strategies[st].diagnostics.mechanical;
-    assert.equal(m.version, SF7_MECHANICAL_VERSION);
-    for (const k of ['baseCount', 'topVolumeDecline', 'relativeBaseDepth', 'entryDistance']) assert.ok(m[k], k);
-    assert.equal(full.pub.strategies[st].ref.ledgerSha256, noExit.pub.strategies[st].ref.ledgerSha256);
-    assert.equal(m.entryDistance.trades, full.pub.strategies[st].ref.trades);
-    assert.equal(Object.values(m.baseCount.baseNumber).reduce((a, x) => a + x, 0), full.pub.strategies[st].ref.trades);
+// synthetic universe with SEPA and Power Play REF trades: VCPs (run, failure), three breakouts with an opening gap of
+// ~2 % (OPEN_GAP_AT_OR_ABOVE_PIVOT), ~8 % (above the limit, LIMIT_FILL_AFTER_OPEN) and ~13 % (above the limit, never
+// reaching it: NOT_EXECUTED_ABOVE_LIMIT), and two Power Plays (+125 % in 30 sessions, tight flag)
+const VOLF = (k) => (k <= 260 ? 2e6 : k <= 284 ? 1.5e6 : k <= 300 ? 1e6 : k <= 330 ? 5e5 : 3e6);
+const vcp = (id, tail, noise = 0) => {
+  let seed = 7 + id.length; const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  const c = path([[0, 40], [260, 100], [272, 80], [284, 98], [292, 88.2], [300, 96], [305, 91.2], [320, 95], [330, 97], ...tail]);
+  return { id, bars: c.map((x, k) => { const z = x * (1 + (rnd() - 0.5) * noise); return bar(k, z, Math.max(x, z) * 1.004, Math.min(x, z) * 0.996, x, VOLF(k)); }) };
+};
+const pp = (id, tail) => ({ id, bars: mk(path([[0, 20], [80, 20], [110, 45], [125, 44.2], [126, 46], ...tail])) });
+const RUN = [[340, 120], [400, 130]];
+const universe = () => {
+  const secs = [vcp('V-RUN', RUN, 0.004), vcp('V-FAIL', [[335, 104], [345, 96], [360, 99], [400, 92]], 0.004), pp('P-RUN', [[150, 52]]), pp('P-FAST', [[140, 75], [150, 66]])];
+  for (const [id, open, low] of [['V-GAP', 98.5, 95], ['V-LIMIT', 104, 95], ['V-NOFILL', 109, 107]]) {
+    const s = vcp(id, RUN, 0), b = s.bars[325]; // 325 = entry session of the plain VCP
+    s.bars[325] = { ...b, open, high: Math.max(open, b.high) * 1.01, low: id === 'V-NOFILL' ? low : Math.min(b.low, low) };
+    secs.push(s);
   }
-  assert.ok(full.pub.strategies.SEPA.ref.trades > 0);
-  assert.ok(full.pub.strategies.SEPA.diagnostics.mechanical.baseCount.baseNumber.unknown < full.pub.strategies.SEPA.ref.trades, 'base count evaluated on REF trades');
-  for (const id of ['EXIT-CLIMAX', 'EXIT-CLIMAX-UPCLOSES']) for (const st of SF7_EXIT_VARIANTS.find((x) => x.id === id).strategies) assert.ok(full.pub.strategies[st].exitVariants[id].signalsByBaseNumber, `${st} ${id}`);
+  const calendar = [...new Set(secs.flatMap((s) => s.bars.map((b) => b.date)))].sort();
+  // a 15 % market correction with its low at session 285 (inside the VCP bases)
+  return { calendar, securities: secs, benchmark: calendar.map((date, k) => ({ date, close: k < 255 ? 100 : k <= 285 ? 100 - 0.5 * (k - 255) : Math.min(100, 85 + 0.3 * (k - 285)) })), spyTR: null };
+};
+
+test('SF7-MECH-RUNNER: the runner reports the mechanical diagnostics of real SEPA and Power Play REF trades, joined to the right trades; REF is unchanged (review #940 M3)', async () => {
+  const { sf7Part } = await import('../source-faithful/research/run-sf7-minervini.mjs');
+  const { lifecyclePart } = await import('../source-faithful/research/run-sf4-lifecycle.mjs');
+  const { RUN_VARIANTS } = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const { SF7_EXIT_VARIANTS } = await import('../source-faithful/research/minervini-sf7-exits.mjs');
+  const d = universe(), bench = benchIndex(d.benchmark), ctx = { bench, anchors: marketCorrectionAnchors(bench) };
+  const full = sf7Part(d, { from: null, to: null });
+  // REF without any 7.0 code: the 4.0 lifecycle runner on the same dataset
+  const r4 = lifecyclePart(d, { variants: RUN_VARIANTS.filter((x) => x.id === 'REF'), sf7Variants: [], from: null, to: null });
+  const byId = new Map(d.securities.map((s) => [s.id, s]));
+  const seen = {}, scheduled = {};
+  for (const st of ['SEPA', 'POWER_PLAY']) {
+    const p = full.pub.strategies[st], m = p.diagnostics.mechanical;
+    assert.equal(p.ref.ledgerSha256, r4.pub.strategies[st].variants.REF.ledgerSha256, `${st} REF ledger = 4.0 REF`);
+    // independent recomputation per trade from a plain REF run
+    const ref = runMinerviniLifecycle(d, { strategy: st, setupIndex: buildSetupIndex(d, st), config: REFERENCE_CONFIG });
+    const tradesBefore = JSON.stringify(ref.trades);
+    assert.equal(p.ref.trades, ref.trades.length); seen[st] = ref.trades.length;
+    const s0 = (t) => byId.get(t.id).bars.findIndex((x) => x.date === t.setupDate);
+    const bc = ref.trades.map((t) => baseCountAt(byId.get(t.id).bars, s0(t), ctx));
+    assert.ok(bc.every((r) => r.status === 'EVIDENCE'), `${st} every trade joined to its setup`);
+    assert.deepEqual({ ...m.baseCount, rule: undefined }, { ...baseCountTally(bc), rule: undefined });
+    assert.equal(Object.values(m.baseCount.baseNumber).reduce((a, b) => a + b, 0), ref.trades.length);
+    const tv = ref.trades.map((t) => topVolumeDecline(byId.get(t.id).bars, t));
+    assert.deepEqual(m.topVolumeDecline.trendTemplateRun, fieldTally(tv.map((r) => r.trendTemplateRun), 'topVolumeDeclineBeforeExit'));
+    assert.deepEqual({ ...m.topVolumeDecline.aboveMa200Run, windowTruncated: undefined }, { ...fieldTally(tv.map((r) => r.aboveMa200Run), 'topVolumeDeclineBeforeExit'), windowTruncated: undefined });
+    const rd = ref.trades.map((t) => relativeBaseDepth(byId.get(t.id).bars, s0(t), bench));
+    for (const w of ['sameWindow', 'trailingHigh']) assert.deepEqual(m.relativeBaseDepth[w].above2x, fieldTally(rd.map((r) => r[w]), 'aboveStrict'), `${st} ${w}`);
+    assert.deepEqual(m.entryDistance, entryDistanceTally(ref.trades, byId, ref.counts));
+    assert.equal(JSON.stringify(ref.trades), tradesBefore, 'the diagnostics do not mutate trades');
+    for (const id of ['EXIT-CLIMAX', 'EXIT-CLIMAX-UPCLOSES']) if (SF7_EXIT_VARIANTS.find((x) => x.id === id).strategies.includes(st)) {
+      const sb = p.exitVariants[id].signalsByBaseNumber, n = Object.values(sb).reduce((a, b) => a + b, 0);
+      assert.equal(sb.unknown, 0, `${st} ${id} every signal joined to a base number`); assert.equal(n, p.exitVariants[id].ruleCounts.scheduled, `${st} ${id} every scheduled signal counted once`); scheduled[`${st} ${id}`] = n;
+    }
+  }
+  assert.ok(seen.SEPA >= 4 && seen.POWER_PLAY >= 2, JSON.stringify(seen)); assert.ok(Object.values(scheduled).some((n) => n > 0), JSON.stringify(scheduled));
+  // the fixture exercises every gap path of M4: open gap, limit fill after a large gap, order not executed above the limit
+  const ed = full.pub.strategies.SEPA.diagnostics.mechanical.entryDistance;
+  assert.deepEqual(ed.gapOpenAbovePivot.byEntryBasis, { LIMIT_FILL_AFTER_OPEN: 1, OPEN_GAP_AT_OR_ABOVE_PIVOT: 1 });
+  assert.equal(ed.gapOpenAbovePivot.above5pct, 1); assert.equal(ed.gapOpenAbovePivot['2-3pct'], 1); assert.equal(ed.ordersNotExecutedAboveLimit, 1);
+  assert.equal(full.pub.strategies.SEPA.diagnostics.mechanical.baseCount.reset.MARKET_CORRECTION, seen.SEPA);
   const txt = JSON.stringify(full.pub);
-  for (const k of ['"pnl"', '"returnPct"', '"equity"', '"cagr"', '"sharpe"', '"metrics"', '"decline"', '"relativeDepth"']) assert.ok(!txt.includes(k), k);
+  for (const k of ['"pnl"', '"returnPct"', '"equity"', '"cagr"', '"sharpe"', '"metrics"', '"decline"', '"relativeDepth"', '"stockDecline"', '"marketDecline"']) assert.ok(!txt.includes(k), k);
 });

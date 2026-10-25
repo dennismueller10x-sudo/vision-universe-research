@@ -36,7 +36,7 @@ import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlat
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.5.0'; // 1.5.0: mechanical diagnostics of package sf7-minervini-1.4.0 (base count, top-volume decline, relative depth, entry distance, climax signals by base number; counts only); 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
+export const SF7_RUNNER_VERSION = 'sf7-minervini-runner-1.6.0'; // 1.6.0: review #940 of the mechanical diagnostics (package sf7-minervini-mechanical-1.1.0: two G-TOPVOL windows, two G-RELDEPTH variants, gap reading incl. limit fills and non-executed orders, base-count uncertainty with direction; counts only); 1.5.0: mechanical diagnostics of package sf7-minervini-1.4.0 (base count, top-volume decline, relative depth, entry distance, climax signals by base number; counts only); 1.4.0: owner check of EXIT-CLIMAX-UPCLOSES (signal timing vs. setup state, REF trades extended at the setup); 1.3.0: review #917 (identity gate also on curve and counts, public tally of sessions from entry to exit signal); 1.2.0: E7-7 research exit variants (exitVariants), engine-copy identity gate
 /** every 7.0 file the results depend on (the 4.0 files are covered by run-sf4-lifecycle#researchCodeSha256) */
 const SF7_FILES = ['minervini-sf7.mjs', 'run-sf7-minervini.mjs', 'minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs', 'minervini-sf7-mechanical.mjs'];
 export function sf7CodeSha256() {
@@ -164,12 +164,16 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     };
     // package 1.4.0: mechanical diagnostics on the REF trades (counts only, never a gate, never a variant choice)
     const relDepth = ref.trades.map((t) => relativeBaseDepth(byId.get(t.id).bars, byId.get(t.id).bars.findIndex((x) => x.date === t.setupDate), bench));
+    const topVol = ref.trades.map((t) => topVolumeDecline(byId.get(t.id).bars, t));
+    const depthOf = (w) => ({ above2x: fieldTally(relDepth.map((r) => r[w]), 'aboveStrict'), above3x: fieldTally(relDepth.map((r) => r[w]), 'aboveLoose') });
     ps.diagnostics.mechanical = {
       version: SF7_MECHANICAL_VERSION,
       baseCount: { ...baseCountTally(ref.trades.map(baseOf)), rule: 'B03 PDF 207, B12 PDF 115-116 (MA-MIN7-BASECOUNT-*)' },
-      topVolumeDecline: { ...fieldTally(ref.trades.map((t) => topVolumeDecline(byId.get(t.id).bars, t)), 'topVolumeDeclineBeforeExit'), rule: 'B03 PDF 217 / 219 (MA-MIN7-TOPVOL, MA-MIN7-STAGE2-START)' },
-      relativeBaseDepth: { above2x: fieldTally(relDepth, 'aboveStrict'), above3x: fieldTally(relDepth, 'aboveLoose'), rule: 'B12 PDF 280 / 295, B03 PDF 160 (MA-MIN7-RELDEPTH)' },
-      entryDistance: entryDistanceTally(ref.trades, byId),
+      // two trend-start windows side by side (MA-MIN7-TOPVOL), none chosen
+      topVolumeDecline: { trendTemplateRun: fieldTally(topVol.map((r) => r.trendTemplateRun), 'topVolumeDeclineBeforeExit'), aboveMa200Run: { ...fieldTally(topVol.map((r) => r.aboveMa200Run), 'topVolumeDeclineBeforeExit'), windowTruncated: topVol.filter((r) => r.aboveMa200Run.windowTruncated === true).length }, rule: 'B03 PDF 217 / 219 (MA-MIN7-TOPVOL, MA-MIN7-STAGE2-START, MA-MIN7-BASECOUNT-STOCK-RESET)' },
+      // two windows side by side (MA-MIN7-RELDEPTH), closes on both sides, none chosen
+      relativeBaseDepth: { sameWindow: depthOf('sameWindow'), trailingHigh: depthOf('trailingHigh'), rule: 'B12 PDF 280 / 295, B03 PDF 160 (MA-MIN7-RELDEPTH)' },
+      entryDistance: entryDistanceTally(ref.trades, byId, ref.counts),
     };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
       const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : v.index === 'withTrendTemplateLow25' ? withTrendTemplateLow25(dataset, { from }) : withRsLineRising(dataset, refIndex);
