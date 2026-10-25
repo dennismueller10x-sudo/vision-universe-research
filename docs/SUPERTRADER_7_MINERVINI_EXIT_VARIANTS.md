@@ -96,6 +96,23 @@ Der Beleg (`receipt`) trägt diese Hashes:
 
 Alle fünf entsprechen den gepinnten Werten.
 
+**Bestätigungslauf nach dem Review:** [40187455235](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40187455235) auf `c5b1e56`, Runner `sf7-minervini-runner-1.3.0`, `sf7CodeSha256` `3bfe1375…` (vor dem Lauf gepinnt). Das Ausstiegsregister `df0379ae…` und alle Varianten sind unverändert.
+- REF SEPA (954) und REF Power Play (1.007) sind ledger-identisch.
+- Die Engine-Kopie ohne Regel ist in Ledger, Trades, Kurve und Zählern gleich der Referenz. Diese Prüfung ist neu.
+- Alle Trade- und Vergleichszahlen sind identisch mit Lauf 40185143571.
+
+Neu ist die Zählung `signalSessionsFromEntry`: Sitzungen vom Einstieg bis zum Signal, nur Zählwerte. 0 heißt Signal auf dem Schluss des Einstiegstags.
+
+| Variante | SEPA 0 / 1–2 / 3–5 / 6–10 / 11–20 / 21+ | Power Play 0 / 1–2 / 3–5 / 6–10 / 11–20 / 21+ |
+|---|---|---|
+| `EXIT-LARGEST-DECLINE-DAILY` | 78 / 432 / 216 / 155 / 125 / 142 | 10 / 56 / 54 / 36 / 29 / 21 |
+| `EXIT-LARGEST-DECLINE-WEEKLY` | 0 / 0 / 21 / 26 / 42 / 62 | 0 / 0 / 12 / 11 / 10 / 8 |
+| `EXIT-MA20-HALF` | 35 / 108 / 103 / 137 / 0 / 0 | 2 / 2 / 8 / 18 / 0 / 0 |
+| `EXIT-CLIMAX` | 2 / 1 / 4 / 13 / 25 / 31 | 51 / 27 / 18 / 8 / 5 / 8 |
+| `EXIT-CLIMAX-UPCLOSES` | 2 / 1 / 3 / 19 / 18 / 21 | **349** / 94 / 41 / 48 / 10 / 14 |
+
+Für `EXIT-CLIMAX-UPCLOSES` bei Power Play belegt das den Review-Befund: 349 von 556 Signalen fallen auf den Schluss des Einstiegstags. Dort ist die Aktie allein durch den Anstieg vor dem Einstieg „gestreckt“. Die Variante misst also weit überwiegend die Lage vor dem Kauf, nicht einen Klimax nach dem Anstieg. Ihre Zählwerte sind entsprechend vorsichtig zu lesen. Die verankerte Variante `EXIT-CLIMAX` zeigt bei Power Play dasselbe Muster schwächer: 51 Signale auf dem Einstiegstag.
+
 ### Referenz und Identität
 
 | Strategie | REF-Trades | REF-Ledger | gegen 4.0 | Engine-Kopie ohne Regel |
