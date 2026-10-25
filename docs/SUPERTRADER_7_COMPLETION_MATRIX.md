@@ -193,7 +193,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | SF7-D2: versiegelte EP-Trade-Kennzahlen waren leer (Feld pnl) – behoben; SF7-D5: sicherer Stop in der Füll-Minute unter der optimistischen Minutenregel – Variante; Cache-Lauf mit 0 Abrufen, EP-Referenz identisch |
+| Was hat sich in 7.0 geändert? | SF7-D2: versiegelte EP-Trade-Kennzahlen waren leer (Feld pnl) – behoben; SF7-D5: sicherer Stop in der Füll-Minute unter der optimistischen Minutenregel – Variante; Cache-Lauf mit 0 Abrufen, EP-Referenz identisch; E7-6: vorregistrierte Erweiterung CLEAN_EXT_E7_6 (15 % je Schicht, 481 Anfragen) neben der unveränderten Referenz |
 | Technisch vollständig | chartbasierte Intraday-Modellstudie auf einer Stichprobe |
 | Nachgewiesene Originalregeln | Kullamägi-EP-Artikel (englisch); Katalysator nicht prüfbar |
 | Modellannahmen | Gap-Screen, ORH-Einstieg, IEX-Volumentempo |
@@ -203,15 +203,15 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Gesperrte Daten | Katalysator-/News-Historie, konsolidiertes Intraday-Volumen |
 | Ausführungsrealismus | nur IEX-Minuten; Stop am selben Tag nur gegen IEX-Tiefs geprüft (offenes Risiko) |
 | Manuelle Prüfung | 2 essenzielle Entscheidungen |
-| Nächster konkreter Schritt | Budgetentscheidung für eine größere Stichprobe (E5); Katalysatorkalender aus SEC-8-K-Zeitstempeln |
+| Nächster konkreter Schritt | Katalysatorkalender aus SEC-8-K-Zeitstempeln |
 | Zertifizierung erfüllt / fehlt | – / CC-1-SOURCE, CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); docs/SUPERTRADER_7_EPPS_SAMPLE_E7_6.md: E7-6-Stichprobenerweiterung CLEAN_EXT_E7_6 (Läufe 40184926658 Plan, 40185337539 Abruf 481 Anfragen, 40185748527 kk-intraday-cache) |
 
 ## C10 `SF_KK_PARABOLIC_SHORT`
 
 | Frage | Antwort |
 |---|---|
-| Was hat sich in 7.0 geändert? | Stichprobencode neu geprüft, kein Fehler |
+| Was hat sich in 7.0 geändert? | Stichprobencode neu geprüft, kein Fehler; E7-6: vorregistrierte Erweiterung CLEAN_EXT_E7_6 (3,5 % je Schicht) neben der unveränderten Referenz |
 | Technisch vollständig | hypothetische Einzeltrade-Studie |
 | Nachgewiesene Originalregeln | Kullamägi-Webprimärquellen |
 | Modellannahmen | Kontexturteil (4 manuelle Entscheidungen) |
@@ -223,7 +223,7 @@ CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen
 | Manuelle Prüfung | 4 essenzielle Entscheidungen |
 | Nächster konkreter Schritt | Quelle für Borrow-Historie (Lizenz-/Kostenentscheidung) |
 | Zertifizierung erfüllt / fehlt | CC-1-SOURCE / CC-2-LIFECYCLE, CC-3-NO-MANUAL, CC-4-DATA, CC-5-CORPORATE-ACTIONS, CC-6-REPRODUCIBLE, CC-7-EXECUTION, CC-8-OOS |
-| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache) |
+| Belege | Draft-PR #898 Ausführung und Strategien (Läufe 40099831813 sf5, 40107434014 kk-intraday-cache); docs/SUPERTRADER_7_EPPS_SAMPLE_E7_6.md: E7-6-Stichprobenerweiterung CLEAN_EXT_E7_6 (Läufe 40184926658 Plan, 40185337539 Abruf 481 Anfragen, 40185748527 kk-intraday-cache) |
 
 ## C11 `SF_MOKA_POCKET_PIVOT`
 

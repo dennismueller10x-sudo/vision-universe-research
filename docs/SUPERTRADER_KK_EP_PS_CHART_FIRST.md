@@ -229,3 +229,12 @@ Priorisierte Aufstockung. Die Auswahl erfolgt je Schicht in der bestehenden Hash
 - **Umfang:** Die Schritte 1 und 2 passen mit ≈ 550 Anfragen in einen einzigen Lauf. Alle vier Schritte zusammen brauchen ≈ 2.760 Anfragen, weniger als die Hälfte des bestehenden Laufbudgets.
 - **Regime:** Die Schichtung nach SPY-Regime bleibt eine Zusatzauswertung.
 - **Was bleibt:** Auch nach allen vier Schritten ist die Stichprobe deterministisch und nur IEX-basiert. Sie ist weiterhin keine repräsentative Gesamtaussage, und die Grenzen der Grundgesamtheit (2017–2019, ≥ 100 Mio. $) bleiben.
+
+### Eigentümerentscheidung E7-6 (25.10.2026): Schritte 1 und 2 ausgeführt
+
+Die Schritte 1 und 2 wurden als vorregistrierte Zusatzstichprobe `CLEAN_EXT_E7_6` einmal abgerufen.
+- **Anfragen:** 481 von höchstens 550 (Lauf 40185337539).
+- **Auswertung:** nur aus dem Cache, 0 Anfragen (Lauf 40185748527).
+- **Referenzen:** `CLEAN`, `BEFORE_FIX` und `STRAT_*` sind unverändert.
+
+Einzelheiten: `SUPERTRADER_7_EPPS_SAMPLE_E7_6.md`.
