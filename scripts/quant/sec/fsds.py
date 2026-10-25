@@ -47,10 +47,14 @@ SOURCE_LABEL = "SEC Financial Statement Data Sets"
 # die Accession als version und werden nicht uebernommen.
 TAXONOMY_BY_VERSION = {"us-gaap": "us-gaap", "ifrs": "ifrs-full", "dei": "dei", "srt": "srt"}
 
-# Ein Emittent gilt als Monatsende-Kalender, wenn hoechstens dieser Anteil
-# seiner gemeldeten Periodenenden nicht auf ein Monatsende faellt (einzelne
-# Stichtage wie ein Uebernahmedatum kommen auch bei Monatsende-Filern vor).
-WEEK_CALENDAR_SHARE = 0.2
+# Ob ein Emittent heute am Monatsende abschliesst, entscheiden seine
+# Hauptberichtsperioden der letzten drei Jahre: Periodenenden mit mindestens
+# so vielen Fakten. Aeltere Jahre zaehlen nicht (Johnson Controls, Pentair,
+# Cadence meldeten bis 2015/2022 in 52/53-Wochen-Perioden und schliessen
+# seither am Monatsende ab), einzelne Stichtage auch nicht (ein
+# Uebernahmedatum mit einem Fakt ist kein Kalender).
+RECENT_YEARS = 3
+MAIN_PERIOD_FACTS = 10
 
 
 def recent_quarters(as_of, count=4):
@@ -186,22 +190,28 @@ def _is_month_end(iso):
 
 
 def month_end_calendar(company_facts):
-    """True when the issuer's own reported period ends fall on month ends.
+    """True when the issuer's recent main reporting periods end on month ends.
 
-    Measured on its duration facts in companyfacts; an issuer without any is
-    not judged (False) - the supplement then stays away.
+    Measured on its duration facts in companyfacts: the period ends of the
+    last RECENT_YEARS years that carry at least MAIN_PERIOD_FACTS facts (all of
+    them if none does). An issuer without any is not judged (False) - the
+    supplement then stays away.
     """
-    ends = set()
+    from collections import Counter
+    ends = Counter()
     for concepts in (company_facts.get("facts") or {}).values():
         for body in (concepts or {}).values():
             for entries in ((body or {}).get("units") or {}).values():
                 for entry in entries or []:
                     if entry.get("start") and entry.get("end") and (entry.get("form") or "") in PERIODIC_FORMS:
-                        ends.add(entry["end"])
+                        ends[entry["end"]] += 1
     if not ends:
         return False
-    odd = sum(1 for end in ends if not _is_month_end(end))
-    return odd <= WEEK_CALENDAR_SHARE * len(ends)
+    latest = max(ends)
+    since = f"{int(latest[:4]) - RECENT_YEARS}{latest[4:]}"
+    recent = {end: n for end, n in ends.items() if end > since}
+    main = [end for end, n in recent.items() if n >= MAIN_PERIOD_FACTS] or list(recent)
+    return all(_is_month_end(end) for end in main)
 
 
 def supplement_company_facts(company_facts, filings):
