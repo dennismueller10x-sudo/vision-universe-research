@@ -14,7 +14,7 @@ const run = (secs, opts = {}) => runTurtle(dataOf(secs), { system: 'S2', from: s
 const buys = (r, id) => r.ledger.filter((x) => x.side === 'BUY' && (!id || x.id === id));
 
 test('SF2-TUR-VERSION: the completed engine carries its own version and the printed limits 6 / 10', () => {
-  assert.equal(TURTLE_VERSION, 'sf-turtle-1.2.0');
+  assert.equal(TURTLE_VERSION, 'sf-turtle-1.3.0'); // 1.3.0: SF7-D3 reading OPTIMISTIC_CERTAIN_RULE added (E7-3), reference unchanged
   assert.equal(PARAMS.maxUnitsClosely, 6);
   assert.equal(PARAMS.maxUnitsLoosely, 10);
 });

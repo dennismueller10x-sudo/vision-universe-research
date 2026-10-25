@@ -3,6 +3,8 @@
 //  SF7-D1  OPTIMISTIC ignorierte einen am Einstiegsbalken SICHEREN Stop (Fill per Beruehrung, Schluss <= Stop);
 //          Behebung nur als deklarierte, versionierte Variante (EX7-SAME-BAR-CLOSE-CONFIRMS-STOP), Referenzen unveraendert;
 //  SF7-D2  EP-Handelskennzahlen (versiegelt) lasen realizedPnl, das geschlossene Engine-Trades nicht tragen.
+//  SF7-D3 / SF7-D4 (Turtle / Minervini OPTIMISTIC) sind nach E7-3 als versionierte Lesart bzw. Varianten behoben
+//          (docs/SUPERTRADER_7_OPTIMISTIC_FIXES.md, Tests sf-sf7-optimistic-fixes).
 // Dazu Regressionstests fuer bisher duenne Abdeckung (Kostensymmetrie, Reihenfolgeunabhaengigkeit, Stueckbilanz je Trade,
 // Dividende am Einstiegstag, Positionsgrenze mit gleichzeitigen Signalen, Drawdown). Simuliert nur Research-Trades.
 import test from 'node:test';
@@ -191,7 +193,7 @@ test('SF7-EX-MAXDD: Drawdown ueber die Kurve inklusive Startkapital, Spitze vor 
   assert.equal(maxDrawdown([{ date: day(0), equity: 100 }]), 0);
 });
 
-test('SF7-D3-TURTLE-OPTIMISTIC-CHARACTERIZED: Turtle-Alternative OPTIMISTIC uebergeht auch nach einem Eroeffnungs-Fill den Stop desselben Balkens (offen, Engine gepinnt); Referenz PESSIMISTIC stoppt', async () => {
+test('SF7-D3-TURTLE-OPTIMISTIC-FIXED: die korrigierte Lesart OPTIMISTIC_CERTAIN_RULE stoppt nach einem Eroeffnungs-Fill am selben Balken; die ersetzte Lesart OPTIMISTIC behaelt den Defekt (Vorher/Nachher); Referenz PESSIMISTIC stoppt (E7-3, sf-sf7-optimistic-fixes)', async () => {
   const { runTurtle } = await import('../source-faithful/methods/turtle.mjs');
   const bars = flat(70);
   bars.push(bar(70, 11, 11.1, 9.0, 9.5)); // gap above the 55-day high: entry at the open, then the low runs through every stop
@@ -200,8 +202,10 @@ test('SF7-D3-TURTLE-OPTIMISTIC-CHARACTERIZED: Turtle-Alternative OPTIMISTIC uebe
   const ref = runTurtle(d, { system: 'S2', universe: OPEN_UNIVERSE, slippageBps: 0, commissionBps: 0 });
   const opt = runTurtle(d, { system: 'S2', universe: OPEN_UNIVERSE, slippageBps: 0, commissionBps: 0, entryBarOrder: 'OPTIMISTIC' });
   assert.equal(ref.positionTrades[0].entryDate, day(70)); assert.equal(ref.positionTrades[0].exitDate, day(70));
-  // known and listed (docs SUPERTRADER_7 SF7-D3): the open fill came first, the stop is certain, OPTIMISTIC still holds it
+  // superseded reading (SUPERSEDED_SF7_D3): the open fill came first, the stop is certain, OPTIMISTIC still holds it
   assert.equal(opt.positionTrades[0].exitDate > day(70), true);
+  const fixed = runTurtle(d, { system: 'S2', universe: OPEN_UNIVERSE, slippageBps: 0, commissionBps: 0, entryBarOrder: 'OPTIMISTIC_CERTAIN_RULE' });
+  assert.equal(fixed.positionTrades[0].exitDate, day(70)); assert.equal(fixed.counts.sameBarCertainByOpenFill, 1);
 });
 
 test('SF7-RUNNER-BLOCK: der sf5-Runner misst jede SF7-Variante neben ihrer unveraenderten Vergleichsvariante; oeffentlich nur Zaehlungen', async () => {
@@ -251,12 +255,14 @@ test('SF7-RUN-TRANSCRIPTION: eingetragene SF7-Registerhashes der Laeufe = aktuel
   assert.deepEqual(Object.keys(kk.sf7EpExecution.variants), SF7_EP_VARIANTS.map((v) => v.id));
 });
 
-test('SF7-D4-MINERVINI-CHARACTERIZED: Minervini-Pivot-Beruehrung mit Schluss unter dem Stop gilt als mehrdeutig (offen, Code gepinnt b1d81fb8)', async () => {
+test('SF7-D4-MINERVINI-FIXED: Minervini-Pivot-Beruehrung mit Schluss unter dem Stop ist mit EX7-SAME-BAR-CLOSE-CONFIRMS-STOP sicher; ohne Option (Referenz, registrierte Varianten) unveraendert mehrdeutig (E7-3)', async () => {
   const { fillBuyOrder } = await import('../source-faithful/research/minervini-lifecycle.mjs');
   const f = fillBuyOrder({ date: '2020-02-03', open: 10.2, high: 10.8, low: 9.9, close: 9.95, volume: 1 }, { type: 'BUY_STOP', level: 10.5, stop: 10.0 });
   assert.equal(f.status, 'FILLED'); assert.equal(f.basis, 'INTRADAY_PIVOT_TOUCH');
-  // known and listed (SF7-D4): the close below the stop proves the stop traded after the fill; OPTIMISTIC ignores it
+  // without the option (reference path and every registered variant): unchanged
   assert.equal(f.sameBarStop, 'AMBIGUOUS');
+  const fixed = fillBuyOrder({ date: '2020-02-03', open: 10.2, high: 10.8, low: 9.9, close: 9.95, volume: 1 }, { type: 'BUY_STOP', level: 10.5, stop: 10.0 }, { closeConfirmsStop: true });
+  assert.equal(fixed.sameBarStop, 'CERTAIN'); assert.equal(fixed.sameBarStopEvidence, 'CERTAIN_BY_CLOSE');
 });
 
 /** EP day: official open 23, 1-minute opening range high 23.2 (level 23.21), stop = low before the fill minute (22.95) */
