@@ -38,6 +38,7 @@
   var Strategy = isNode ? require("./strategy.js") : global.VUStrategy;
   var Methodology = isNode ? require("./methodology.js") : global.VUMethodology;
   var Hash = isNode ? require("./hash.js") : global.VUHash;
+  var BacktestHistory = isNode ? require("./backtest-history.js") : global.VUBacktestHistory;
 
   var INITIAL_CAPITAL = 100000;
 
@@ -464,13 +465,33 @@
     var pricePanel = pricePanelRes.data;
     var tradingDays = pricePanel.tradingDays;
 
-    var startDate = options.startDate || btCfg.limits.maxHistoryStart;
-    var endDate = options.endDate || tradingDays[tradingDays.length - 1];
-    if (startDate < btCfg.limits.maxHistoryStart) {
-      throw new Error("Startdatum " + startDate + " liegt vor dem Beginn des Datenbestands (" +
-        btCfg.limits.maxHistoryStart + "). " + btCfg.limits.note);
+    var historyDependencies = typeof provider.getBacktestHistoryDependencies === "function"
+      ? provider.getBacktestHistoryDependencies({ definition: definition }) : null;
+    var historyReported = Array.isArray(historyDependencies) && historyDependencies.length > 0;
+    if (!historyReported) {
+      historyDependencies = [{ id: "pricePanel", dates: tradingDays, warmupBars: 252, trailingBars: 0,
+        status: "AVAILABLE", coverageStatus: "LIMITED", source: "provider-price-panel-only" }];
     }
-    if (endDate > tradingDays[tradingDays.length - 1]) endDate = tradingDays[tradingDays.length - 1];
+    var historyEligibility = BacktestHistory.resolve(historyDependencies, { asOf: options.asOf || tradingDays[tradingDays.length - 1] });
+    if (historyEligibility.state !== "AVAILABLE") {
+      throw new Error("BACKTEST_HISTORY_NOT_ELIGIBLE: " + historyEligibility.exclusionReasons.join("; "));
+    }
+    if (!historyReported) {
+      historyEligibility.coverageStatus = "LIMITED";
+      historyEligibility.limitingDataDependencies.push("unreported-provider-dependencies");
+    }
+    var requestedWindow = BacktestHistory.windowFor(options.period || "MAX", historyEligibility, options.endDate);
+    if (requestedWindow.state !== "AVAILABLE") throw new Error("BACKTEST_HISTORY_PERIOD_UNAVAILABLE: " + requestedWindow.reason);
+    var startDate = options.startDate || requestedWindow.startDate;
+    var endDate = options.endDate || requestedWindow.endDate;
+    if (startDate < historyEligibility.earliestEligibleBacktestDate) {
+      throw new Error("Startdatum " + startDate + " liegt vor dem frühesten fachlich zulässigen Datum des Datenbestands (" +
+        historyEligibility.earliestEligibleBacktestDate + "). Warm-up und Datenabhängigkeiten sind einzuhalten.");
+    }
+    if (startDate > historyEligibility.latestEligibleBacktestDate) {
+      throw new Error("Startdatum liegt nach dem letzten fachlich zulässigen Datum (" + historyEligibility.latestEligibleBacktestDate + ").");
+    }
+    if (endDate > historyEligibility.latestEligibleBacktestDate) endDate = historyEligibility.latestEligibleBacktestDate;
 
     var startIdx = tradingDays.findIndex(function (d) { return d >= startDate; });
     var endIdx = tradingDays.length - 1;
@@ -603,6 +624,14 @@
     /* Warnungen gehoeren ins Ergebnis, nicht in die Konsole. Die
        Ergebnisseite und der Trust Score muessen sie auswerten koennen. */
     var warnings = [];
+    if (historyEligibility.coverageStatus !== "PASS") {
+      warnings.push({
+        code: "historical_coverage_limited",
+        severity: "critical",
+        dependencies: historyEligibility.limitingDataDependencies,
+        message: "Der Zeitraum folgt den verfügbaren Daten, aber mindestens eine historische Datenabhängigkeit ist nicht vollständig belegt. Der Lauf ist keine Zertifizierung."
+      });
+    }
     var missingProviderEvidence = PROVIDER_EVIDENCE_KEYS.filter(function (key) { return !providerEvidence[key]; });
     if (missingProviderEvidence.length) {
       warnings.push({
@@ -677,6 +706,8 @@
       quantMethodologyVersion: Methodology.quant().methodologyVersion,
       executionAssumptions: executionAssumptions,
       providerBacktestEvidence: providerEvidence,
+      historyEligibilityVersion: BacktestHistory.VERSION,
+      historyWindow: historyEligibility,
       period: { startDate: equityDates[0], endDate: equityDates[equityDates.length - 1] },
       rebalance: definition.rebalance
     };
@@ -702,6 +733,7 @@
       reproductionInput: reproductionInput,
       executionAssumptions: executionAssumptions,
       providerBacktestEvidence: providerEvidence,
+      historyWindow: Object.assign({}, historyEligibility, { requestedPeriod: options.period || "MAX", selectedStartDate: equityDates[0], selectedEndDate: equityDates[equityDates.length - 1] }),
       createdAt: new Date().toISOString(),
       /* Die Kapabilitaeten sind die Beweisgrundlage des Trust Score — sie
          werden aus dem tatsaechlichen Lauf abgeleitet, nicht behauptet. */
@@ -721,6 +753,7 @@
         averageHoldings: metrics.averageHoldings,
         annualTurnoverPct: metrics.turnover,
         subperiodAnalysis: true,
+        historicalCoverageStatus: historyEligibility.coverageStatus,
         /* Beweisgrundlage fuer den Trust Score: war der Lauf ueberhaupt ein Test? */
         everInvested: investedDays > 0,
         timeInvestedPct: metrics.timeInvestedPct,

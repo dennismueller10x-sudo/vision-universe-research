@@ -1,0 +1,47 @@
+{
+  "beforeFix": {
+    "period": "10Y",
+    "node24ResultHash": "a47eb9dfaac498586be86652ee9f0220b9bcf808c25e788a79ddde4c4ec5b531",
+    "node22ResultHash": "2300a42ac30a050b404ebd14d47991b201c6c3a1a9880123388842c76e010154",
+    "inputHashesEqual": true,
+    "differences": [
+      {
+        "field": ".marketBenchmark.cagr",
+        "node24": 0.13610348030850594,
+        "node22": 0.13610348030850616
+      },
+      {
+        "field": ".marketBenchmark.excessCagr",
+        "node24": 0.17409935035126756,
+        "node22": 0.17409935035126733
+      },
+      {
+        "field": ".resultHash",
+        "node24": "a47eb9dfaac498586be86652ee9f0220b9bcf808c25e788a79ddde4c4ec5b531",
+        "node22": "2300a42ac30a050b404ebd14d47991b201c6c3a1a9880123388842c76e010154"
+      }
+    ]
+  },
+  "afterFix": {
+    "state": "RUNTIME_IS_EXPLICIT_INPUT",
+    "node24": {
+      "nodeVersion": "24.19.0",
+      "v8Version": "13.6.233.17-node.51",
+      "platform": "linux",
+      "arch": "x64",
+      "glibcVersion": "2.41",
+      "nodeExecutableHash": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12"
+    },
+    "node22": {
+      "nodeVersion": "22.23.4",
+      "v8Version": "12.4.254.21-node.57",
+      "platform": "linux",
+      "arch": "x64",
+      "glibcVersion": "2.41",
+      "nodeExecutableHash": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+    },
+    "inputHashesDiffer": true,
+    "exactHashComparisonStillRequiredWithinSameRuntime": true,
+    "numbersRoundedToForceMatch": false
+  }
+}

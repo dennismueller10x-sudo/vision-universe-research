@@ -204,7 +204,8 @@ def _horizons(annual_revenue_rows):
 
 def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), security_ids=(),
                           name=None, fiscal_year_end_hint=None, annual_years=DEFAULT_ANNUAL_YEARS,
-                          quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None):
+                          quarters=DEFAULT_QUARTERS, policy=POLICY_AS_OF_LATEST, provider=None,
+                          industry=None):
     """The compact consumer bundle for one company from a companyfacts payload."""
     cik = normalize_cik(cik)
     provider = provider or SECProvider.__new__(SECProvider)   # iter_raw_facts needs no client
@@ -215,7 +216,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         return None
     calendar = FiscalCalendar.from_raw_facts(cik, raw_facts, fiscal_year_end_hint=fiscal_year_end_hint)
     result = normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
-                               calendar=calendar)
+                               calendar=calendar, industry=industry)
     factbook = result.factbook
     resolver = PeriodResolver(factbook, registry)
 
@@ -418,6 +419,29 @@ def load_fiscal_year_end_hints(issuers_dir):
             if row.get("cik") and len(value) == 4 and value.isdigit():
                 hints[normalize_cik(row["cik"])] = value
     return hints
+
+
+def load_issuer_industries(issuers_dir):
+    """Registry industry (BANK, INSURER, REIT) per CIK from the same issuer shards.
+
+    The SEC pipeline classifies every issuer by its SIC code (registry
+    `industries`); the consumer reads the classification instead of deriving it
+    a second time. Issuers outside an industry are absent.
+    """
+    from pathlib import Path
+    industries = {}
+    directory = Path(issuers_dir)
+    if not directory.is_dir():
+        return industries
+    for path in sorted(directory.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for row in payload.get("issuers") or []:
+            if row.get("cik") and row.get("industry"):
+                industries[normalize_cik(row["cik"])] = row["industry"]
+    return industries
 
 
 def summarize_bundle(bundle):

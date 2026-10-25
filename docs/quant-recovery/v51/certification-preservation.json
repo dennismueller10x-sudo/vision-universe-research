@@ -1,0 +1,537 @@
+{
+  "state": "PASS",
+  "main": "6d55ddab641403588f9ba220b468de0a34a23174",
+  "allKindAndRuleGateStatesUnchanged": true,
+  "kinds": [
+    {
+      "id": "SAME_STOCK_REPLAY",
+      "status": "LIMITED",
+      "gates": [
+        {
+          "id": "pit",
+          "state": "PASS"
+        },
+        {
+          "id": "survivorship",
+          "state": "FAIL"
+        },
+        {
+          "id": "ruleTest",
+          "state": "FAIL"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "PATTERN_EVIDENCE",
+      "status": "LIMITED",
+      "gates": [
+        {
+          "id": "pit",
+          "state": "PASS"
+        },
+        {
+          "id": "oos",
+          "state": "PASS"
+        },
+        {
+          "id": "survivorship",
+          "state": "FAIL"
+        },
+        {
+          "id": "returnBasis",
+          "state": "FAIL"
+        },
+        {
+          "id": "certifiedAsBacktest",
+          "state": "FAIL"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "SIGNAL_BACKTEST",
+      "status": "LIMITED",
+      "gates": [
+        {
+          "id": "pit",
+          "state": "PASS"
+        },
+        {
+          "id": "lookahead",
+          "state": "PASS"
+        },
+        {
+          "id": "survivorship",
+          "state": "FAIL"
+        },
+        {
+          "id": "returnBasis",
+          "state": "PASS"
+        },
+        {
+          "id": "ruleCertified",
+          "state": "FAIL"
+        }
+      ],
+      "rules": [
+        {
+          "id": "MOMENTUM_IMPROVED",
+          "status": "LIMITED",
+          "gates": [
+            {
+              "id": "pit",
+              "state": "PASS"
+            },
+            {
+              "id": "lookahead",
+              "state": "PASS"
+            },
+            {
+              "id": "sample",
+              "state": "PASS"
+            },
+            {
+              "id": "oos",
+              "state": "PASS"
+            },
+            {
+              "id": "walkForward",
+              "state": "PASS"
+            },
+            {
+              "id": "survivorship",
+              "state": "FAIL"
+            },
+            {
+              "id": "returnBasis",
+              "state": "PASS"
+            },
+            {
+              "id": "costs",
+              "state": "PASS"
+            },
+            {
+              "id": "slippage",
+              "state": "PASS"
+            },
+            {
+              "id": "benchmark",
+              "state": "PASS"
+            },
+            {
+              "id": "regimeDiversity",
+              "state": "FAIL"
+            },
+            {
+              "id": "independence",
+              "state": "PASS"
+            },
+            {
+              "id": "parameterStability",
+              "state": "PASS"
+            },
+            {
+              "id": "completeness",
+              "state": "PASS"
+            },
+            {
+              "id": "edgeOutOfSample",
+              "state": "PASS"
+            }
+          ]
+        },
+        {
+          "id": "MOMENTUM_DETERIORATED",
+          "status": "LIMITED",
+          "gates": [
+            {
+              "id": "pit",
+              "state": "PASS"
+            },
+            {
+              "id": "lookahead",
+              "state": "PASS"
+            },
+            {
+              "id": "sample",
+              "state": "PASS"
+            },
+            {
+              "id": "oos",
+              "state": "FAIL"
+            },
+            {
+              "id": "walkForward",
+              "state": "PASS"
+            },
+            {
+              "id": "survivorship",
+              "state": "FAIL"
+            },
+            {
+              "id": "returnBasis",
+              "state": "PASS"
+            },
+            {
+              "id": "costs",
+              "state": "PASS"
+            },
+            {
+              "id": "slippage",
+              "state": "PASS"
+            },
+            {
+              "id": "benchmark",
+              "state": "PASS"
+            },
+            {
+              "id": "regimeDiversity",
+              "state": "FAIL"
+            },
+            {
+              "id": "independence",
+              "state": "PASS"
+            },
+            {
+              "id": "parameterStability",
+              "state": "FAIL"
+            },
+            {
+              "id": "completeness",
+              "state": "PASS"
+            },
+            {
+              "id": "edgeOutOfSample",
+              "state": "FAIL"
+            }
+          ]
+        },
+        {
+          "id": "TREND_UP",
+          "status": "LIMITED",
+          "gates": [
+            {
+              "id": "pit",
+              "state": "PASS"
+            },
+            {
+              "id": "lookahead",
+              "state": "PASS"
+            },
+            {
+              "id": "sample",
+              "state": "PASS"
+            },
+            {
+              "id": "oos",
+              "state": "PASS"
+            },
+            {
+              "id": "walkForward",
+              "state": "PASS"
+            },
+            {
+              "id": "survivorship",
+              "state": "FAIL"
+            },
+            {
+              "id": "returnBasis",
+              "state": "PASS"
+            },
+            {
+              "id": "costs",
+              "state": "PASS"
+            },
+            {
+              "id": "slippage",
+              "state": "PASS"
+            },
+            {
+              "id": "benchmark",
+              "state": "PASS"
+            },
+            {
+              "id": "regimeDiversity",
+              "state": "FAIL"
+            },
+            {
+              "id": "independence",
+              "state": "PASS"
+            },
+            {
+              "id": "parameterStability",
+              "state": "PASS"
+            },
+            {
+              "id": "completeness",
+              "state": "PASS"
+            },
+            {
+              "id": "edgeOutOfSample",
+              "state": "FAIL"
+            }
+          ]
+        },
+        {
+          "id": "TREND_DOWN",
+          "status": "LIMITED",
+          "gates": [
+            {
+              "id": "pit",
+              "state": "PASS"
+            },
+            {
+              "id": "lookahead",
+              "state": "PASS"
+            },
+            {
+              "id": "sample",
+              "state": "PASS"
+            },
+            {
+              "id": "oos",
+              "state": "FAIL"
+            },
+            {
+              "id": "walkForward",
+              "state": "FAIL"
+            },
+            {
+              "id": "survivorship",
+              "state": "FAIL"
+            },
+            {
+              "id": "returnBasis",
+              "state": "PASS"
+            },
+            {
+              "id": "costs",
+              "state": "PASS"
+            },
+            {
+              "id": "slippage",
+              "state": "PASS"
+            },
+            {
+              "id": "benchmark",
+              "state": "PASS"
+            },
+            {
+              "id": "regimeDiversity",
+              "state": "FAIL"
+            },
+            {
+              "id": "independence",
+              "state": "PASS"
+            },
+            {
+              "id": "parameterStability",
+              "state": "FAIL"
+            },
+            {
+              "id": "completeness",
+              "state": "PASS"
+            },
+            {
+              "id": "edgeOutOfSample",
+              "state": "FAIL"
+            }
+          ]
+        },
+        {
+          "id": "NEW_52W_HIGH",
+          "status": "LIMITED",
+          "gates": [
+            {
+              "id": "pit",
+              "state": "PASS"
+            },
+            {
+              "id": "lookahead",
+              "state": "PASS"
+            },
+            {
+              "id": "sample",
+              "state": "PASS"
+            },
+            {
+              "id": "oos",
+              "state": "FAIL"
+            },
+            {
+              "id": "walkForward",
+              "state": "FAIL"
+            },
+            {
+              "id": "survivorship",
+              "state": "FAIL"
+            },
+            {
+              "id": "returnBasis",
+              "state": "PASS"
+            },
+            {
+              "id": "costs",
+              "state": "PASS"
+            },
+            {
+              "id": "slippage",
+              "state": "PASS"
+            },
+            {
+              "id": "benchmark",
+              "state": "PASS"
+            },
+            {
+              "id": "regimeDiversity",
+              "state": "FAIL"
+            },
+            {
+              "id": "independence",
+              "state": "PASS"
+            },
+            {
+              "id": "parameterStability",
+              "state": "PASS"
+            },
+            {
+              "id": "completeness",
+              "state": "PASS"
+            },
+            {
+              "id": "edgeOutOfSample",
+              "state": "FAIL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SETUP_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        {
+          "id": "publishedOnly",
+          "state": "PASS"
+        },
+        {
+          "id": "pit",
+          "state": "PASS"
+        },
+        {
+          "id": "lookahead",
+          "state": "PASS"
+        },
+        {
+          "id": "historyDates",
+          "state": "FAIL"
+        },
+        {
+          "id": "historySpan",
+          "state": "FAIL"
+        },
+        {
+          "id": "completedOutcomes",
+          "state": "FAIL"
+        },
+        {
+          "id": "titles",
+          "state": "FAIL"
+        },
+        {
+          "id": "independence",
+          "state": "FAIL"
+        },
+        {
+          "id": "returnBasis",
+          "state": "FAIL"
+        },
+        {
+          "id": "survivorship",
+          "state": "PASS"
+        },
+        {
+          "id": "entryVariant",
+          "state": "FAIL"
+        },
+        {
+          "id": "oos",
+          "state": "FAIL"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "STRATEGY_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        {
+          "id": "contract",
+          "state": "PASS"
+        },
+        {
+          "id": "pitGuards",
+          "state": "PASS"
+        },
+        {
+          "id": "membershipHistory",
+          "state": "FAIL"
+        },
+        {
+          "id": "factorHistory",
+          "state": "FAIL"
+        },
+        {
+          "id": "continuity",
+          "state": "PASS"
+        },
+        {
+          "id": "returnBasis",
+          "state": "PASS"
+        },
+        {
+          "id": "survivorship",
+          "state": "PASS"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "FACTOR_RANKING_BACKTEST",
+      "status": "COLLECTING_HISTORY",
+      "gates": [
+        {
+          "id": "contract",
+          "state": "PASS"
+        },
+        {
+          "id": "pitGuards",
+          "state": "PASS"
+        },
+        {
+          "id": "factorHistory",
+          "state": "FAIL"
+        },
+        {
+          "id": "completedForward",
+          "state": "FAIL"
+        },
+        {
+          "id": "membershipHistory",
+          "state": "FAIL"
+        },
+        {
+          "id": "noRetroactive",
+          "state": "PASS"
+        }
+      ],
+      "rules": []
+    }
+  ],
+  "unchangedStudyAndQualityFiles": {
+    "quant/data/product/signal-backtest-v1.json": "43d4e564198119ae8d9376c60103e814fcbe45f27c8725659877e3fa1ab4a10b",
+    "quant/data/product/total-return-quality-v1.json": "375d6566d237143d560c588c5ba84c4d0310d404448d802f72e1405bf88ef4b5"
+  },
+  "certifiedKinds": 0
+}
