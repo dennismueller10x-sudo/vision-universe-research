@@ -97,7 +97,7 @@ test("Adressen · Roundtrip href -> parse fuer US, EU, Klassen-Aktie, ETF-Kuerze
 test("Adressen · genau die Formen, die die Produkt-Router lesen", () => {
   const c = SC.fromUs("NVDA");
   assert.deepEqual(SC.PRODUCTS.map((p) => SC.href(c, p)), [
-    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", "/fundamental/#/NVDA", "/hedgefonds/#/aktie/NVDA"
+    "/discover/#/s/US_REAL/NVDA", "/quant/#/aktie/NVDA", "/technical/#/chart/NVDA", "/elliott/#/NVDA", "/elliott/#/NVDA?ansicht=profi", "/supertrader/stock/NVDA/", "/fundamental/#/NVDA", "/hedgefonds/#/aktie/NVDA"
   ]);
   assert.equal(SC.parse("/hedgefonds/#/aktie/NVDA").product, "hedgefonds");
   assert.equal(SC.parse("/hedgefonds/#/aktie/67066G104"), null, "CUSIP traegt kein Kuerzel");
@@ -112,6 +112,10 @@ test("Adressen · genau die Formen, die die Produkt-Router lesen", () => {
   assert.equal(SC.parse("/supertrader/stock/NVDA/index.html").product, "supertrader");
   assert.equal(SC.parse("/discover/index.html#/s/US_REAL/NVDA").product, "discover");
   assert.equal(SC.parse("/elliott/#/NVDA/").product, "technik");
+  /* Technical: Chart Studio und seine Signalansicht (technical/engine/model.js#parseRoute). */
+  assert.equal(SC.parse("/technical/#/chart/NVDA").product, "technical");
+  assert.equal(SC.parse("/technical/#/chart/brk-b/signale").ctx.ticker, "BRK-B");
+  for (const bad of ["/technical/#/", "/technical/#/screener", "/technical/#/chart", "/technical/#/chart/NVDA/x"]) assert.equal(SC.parse(bad), null, bad);
   for (const bad of ["/discover/#/s/US_REAL/", "/discover/#/s/ASIA/X", "/discover/#/s/EUROPE/SAP.DE", "/quant/#/aktien", "/quant/#/aktie/%E0", "/elliott/#/?welle=3", "/elliott/#//NVDA", "/elliott/#/%4EVDA", "/supertrader/stock/", "/screener/", "", null]) {
     assert.equal(SC.parse(bad), null, String(bad));
   }
@@ -123,7 +127,9 @@ test("Adressen · jedes US-Kuerzel aus Quant, Technik und Supertrader ist adress
   const technik = gz("quant/data/technical-intelligence/v3/index.json.gz").rows.map((r) => r.t);
   const sup = json("supertrader/data/build.json").slices.stock;
   assert.ok(quant.length > 1000 && technik.length > 1000 && sup.length > 100);
-  for (const [p, list] of [["quant", quant], ["technik", technik], ["elliott", technik], ["supertrader", sup]]) {
+  const technical = json("technical/data/screener-v1.json").cols.s;
+  assert.ok(technical.length > 1000);
+  for (const [p, list] of [["quant", quant], ["technical", technical], ["technik", technik], ["elliott", technik], ["supertrader", sup]]) {
     for (const s of list) assert.equal(SC.parse(SC.href(SC.fromUs(s), p)).ctx.ticker, s, p + " " + s);
   }
 });
@@ -131,7 +137,7 @@ test("Adressen · jedes US-Kuerzel aus Quant, Technik und Supertrader ist adress
 test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unknown' (auch Fundamental)", () => {
   const nvda = SC.fromUs("NVDA"), sapDe = SC.fromSearchEntry(entry("EUROPE", "SAP.DE"));
   const none = SC.availability(nvda);
-  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown"]);
+  assert.deepEqual(none.map((m) => m.state), ["unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown"]);
   const manifest = { schema: SC.SCHEMA, modules: {
     discover: { US: ["NVDA"], EUROPE: ["ref_SAP_DE_XETR"] }, quant: { US: ["NVDA"] }, supertrader: { US: new Set(["AAPL"]) }, fundamental: { US: ["NVDA"] }
   } };
@@ -141,6 +147,8 @@ test("Verfuegbarkeit · nur mit Nachweis 'available'; ohne Manifest neutral 'unk
   assert.equal(a.supertrader.state, "unavailable");
   assert.equal(a.supertrader.href, null, "kein toter Link");
   assert.equal(a.technik.state, "unknown");
+  assert.equal(a.technical.state, "unknown");
+  assert.equal(a.technical.href, "/technical/#/chart/NVDA");
   assert.equal(a.fundamental.state, "available");
   assert.equal(a.fundamental.href, "/fundamental/#/NVDA");
   const e = Object.fromEntries(SC.availability(sapDe, manifest).map((m) => [m.product, m]));

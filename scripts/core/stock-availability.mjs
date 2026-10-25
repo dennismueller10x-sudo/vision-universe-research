@@ -9,6 +9,7 @@
      discover EUROPE  europe/catalog.json       UND  europe/manifest.json#series  (Detail = Katalog + Kursreihe)
      quant            product/universe-list-v1.json.gz entries[].s               (Aktienliste der Quant-Seite)
      technik/elliott  technical-intelligence/v3/index.json.gz rows[].t           (Chartbild /elliott/#/<T>)
+     technical        technical/data/screener-v1.json cols.s                      (Chart Studio /technical/#/chart/<T>)
      supertrader      data/build.json slices.stock  UND  stock/<SYM>/index.html   (Seite und Daten)
      fundamental      fundamental/index.html  UND  discover stocks/US_REAL/<SYM>.json fundamentals.available
                       (fundamental/engine/model.js liest genau diesen Block; ohne ihn zeigt die Seite nur den Leerzustand)
@@ -54,6 +55,10 @@ export function collectEvidence(root){
   const idx=readJson(root,'quant/data/technical-intelligence/v3/index.json.gz');if(!idx||!Array.isArray(idx.rows))throw Error('TECHNICAL_INDEX_MISSING');
   const keys=idx.rows.map(r=>r.t).filter(s=>valid(()=>SC.fromUs(s)));
   put('technik','US',keys);put('elliott','US',keys);
+ });
+ tryModule('technical.US',()=>{
+  const ds=readJson(root,'technical/data/screener-v1.json');if(!ds||!ds.cols||!Array.isArray(ds.cols.s))throw Error('TECHNICAL_SCREENER_MISSING');
+  put('technical','US',ds.cols.s.filter(s=>valid(()=>SC.fromUs(s))));
  });
  tryModule('supertrader.US',()=>{
   const build=readJson(root,'supertrader/data/build.json');if(!build||!build.slices||!Array.isArray(build.slices.stock))throw Error('SUPERTRADER_BUILD_MISSING');
