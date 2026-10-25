@@ -6,7 +6,8 @@ const source = (await readFile(new URL('assets/product-hero.css', root), 'utf8')
 const start = '/* BEGIN GENERATED HERO FIDELITY — edit assets/product-hero.css */';
 const end = '/* END GENERATED HERO FIDELITY */';
 const paths = ['discover/home.css', 'quant/app/app.css', 'screener/screener.css',
-  'vorsorge/app.css', 'supertrader/assets/supertrader.css', 'hedgefonds/app.css', 'fundamental/app.css'];
+  'vorsorge/app.css', 'supertrader/assets/supertrader.css', 'hedgefonds/app.css', 'fundamental/app.css',
+  'technical/technical.css'];
 let stale = false;
 for (const path of paths) {
   const url = new URL(path, root), current = await readFile(url, 'utf8');
@@ -24,4 +25,4 @@ for (const path of paths) {
   }
 }
 if (process.argv.includes('--check') && stale) throw Error('Run node scripts/design/sync-product-hero.mjs');
-console.log('Hero fidelity CSS ' + (process.argv.includes('--check') ? 'verified' : 'synchronized') + ' in seven product styles.');
+console.log('Hero fidelity CSS ' + (process.argv.includes('--check') ? 'verified' : 'synchronized') + ' in ' + paths.length + ' product styles.');

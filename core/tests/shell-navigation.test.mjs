@@ -25,6 +25,7 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['elliott', ['Elliott','Welle 3','Neu','Suche']],
     ['quant', ['Quant','Screener','Strategien','Aktien']],
     ['fundamental', ['Fundamental','Entdecken','Suche','Methodik']],
+    ['technical', ['Technical','Screener','Chart Studio','Methodik']],
     ['vorsorge', ['Vorsorge','Plan','ETFs','Portfolio']],
     ['screener', ['Screener','Treffer','Gespeichert','Watchlist']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
@@ -44,7 +45,7 @@ test('every product dock starts with the product name, never Home or Start, and 
 test('dock targets are existing routes of their products', () => {
   const files = { '/elliott/': 'elliott/index.html', '/discover/': 'discover/index.html', '/quant/': 'quant/index.html', '/vorsorge/': 'vorsorge/index.html', '/screener/': 'screener/index.html',
     '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/signals/': 'supertrader/signals/index.html',
-    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html' };
+    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html' };
   for (const p of PRODUCTS) for (const [, , href] of p.items) {
     const path = new URL(href, 'https://x').pathname;
     assert.ok(files[path], `${href}: unbekannte Seite`);
@@ -65,6 +66,13 @@ test('dock targets are existing routes of their products', () => {
   assert.deepEqual(fundamentalModel.parseRoute('#/suche'), { view: 'home', focus: 'suche' });
   assert.deepEqual(fundamentalModel.parseRoute('#/methodik'), { view: 'method' });
   assert.match(readFileSync(join(root, 'fundamental/app.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/, 'Fundamental fordert die Leiste an');
+  // Technical-Dock-Ziele sind Routen, die technical/engine/model.js (parseRoute) wirklich kennt
+  const technicalModel = require(join(root, 'technical/engine/model.js'));
+  assert.equal(technicalModel.parseRoute('#/').view, 'home');
+  assert.equal(technicalModel.parseRoute('#/screener').view, 'screener');
+  assert.deepEqual(technicalModel.parseRoute('#/chart'), { view: 'chart', ticker: null, params: {} });
+  assert.equal(technicalModel.parseRoute('#/methodik').view, 'method');
+  assert.match(readFileSync(join(root, 'technical/app.js'), 'utf8'), /VUNavigation\.dock\(/, 'Technical fordert die Leiste an');
   const screener = readFileSync(join(root, 'screener/app.js'), 'utf8');
   for (const v of ['results', 'saved', 'watchlist']) assert.ok(screener.includes(`${v}: view`));
 });
@@ -183,7 +191,7 @@ test('accordion and original product symbols retain accessible shell behavior', 
   assert.match(source,/links\.hidden=true/);
   assert.match(source,/section\.querySelector\('\.links'\)\.hidden = !open/);
   assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
-  assert.match(source,/dockProductIcon\(groups\.find\(g=>g\.id===product\.id\)\.icon\)/);
+  assert.match(source,/dockProductIcon\(\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.id\}\)\.icon\)/);
   assert.match(styles(THEMES.light),/\.mode\{width:44px;height:44px\}/);
   assert.match(styles(THEMES.light),/\.links a\{[^}]*min-height:44px/);
   assert.match(styles(THEMES.light),/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
@@ -266,4 +274,25 @@ test('Fundamental is a first-class product with its own menu group, dock and sta
   assert.equal(state('/fundamental/#/NVDA').group, 'fundamental');
   assert.equal(state('/fundamental/#/NVDA').expanded, 'fundamental');
   assert.equal(DOCK_PRODUCT_ICONS.fundamental.length > 0, true);
+});
+
+/* Technical ist ein eigenes Produkt: eigene Leiste, Menueeintrag unter "Weitere Produkte" (eine eigene Menuegruppe
+   aendert die in discover/tests festgeschriebene Gruppenliste und folgt deshalb getrennt), Dock-Symbol = Sprite. */
+test('Technical has its own dock, a menu entry and the exact sprite geometry', () => {
+  const dock = PRODUCTS.find(p => p.id === 'technical');
+  assert.equal(dock.active(loc('/technical/')), 'technical');
+  assert.equal(dock.active(loc('/technical/#/screener?muster=dreieck')), 'screener');
+  assert.equal(dock.active(loc('/technical/#/chart/NVDA')), 'chart');
+  assert.equal(dock.active(loc('/technical/#/chart/NVDA/signale')), 'chart');
+  assert.equal(dock.active(loc('/technical/#/methodik')), 'methodik');
+  for (const url of ['/technical/', '/technical/#/chart/NVDA']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
+  const more = groups.find(g => g.id === 'more');
+  assert.deepEqual(Array.from(more.entries[0]).slice(0, 2), ['Technical', '/technical/']);
+  const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
+  assert.equal(DOCK_PRODUCT_ICONS.technical, sprite.match(/<symbol id="technical"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
+});
+
+test('a dock product without its own menu group still gets its sprite icon', () => {
+  assert.match(source, /\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.id\}\)\.icon/);
+  for (const p of PRODUCTS) assert.ok(DOCK_PRODUCT_ICONS[(groups.find(g => g.id === p.id) || { icon: p.id }).icon], p.id + ': Dock-Symbol vorhanden');
 });

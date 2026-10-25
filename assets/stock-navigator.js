@@ -30,11 +30,12 @@
 
   var VERSION = "stock-navigator-2.0.0";
   var SPRITE = "/assets/product-icons.svg#";
-  /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite (Technik heisst dort "technical"). */
+  /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
     discover: { label: "Discover", icon: "discover", why: "Anlass, Kurs und Unternehmen im Überblick" },
     quant: { label: "Quant", icon: "quant", why: "Eigenschaften, Setup und Belege" },
-    technik: { label: "Technik", icon: "technical", why: "Kursstruktur, Marken und Chartbild" },
+    technical: { label: "Tech­nical", plain: "Technical", icon: "technical", why: "Chartanalyse, Indikatoren und Formationen" },
+    technik: { label: "Chartbild", icon: "chartbild", why: "Kursstruktur, Marken und Szenario" },
     elliott: { label: "Elliott", icon: "elliott", why: "Wellenzählung mit Gegenszenario" },
     supertrader: { label: "Super­trader", plain: "Supertrader", icon: "supertrader", why: "Regelcheck je Strategie" },
     fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" },
