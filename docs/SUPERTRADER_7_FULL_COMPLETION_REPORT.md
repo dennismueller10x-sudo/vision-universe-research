@@ -310,7 +310,21 @@ Gate A ist auf jedem Zweig ok, die Testisolation ist sauber. Fremde Fehler auf `
 
 ## 15. Neue Draft-PRs
 
-#902, #898, #911, #899 und dieser Abschluss-PR (#905). Keiner ist gemergt.
+#902, #898, #911, #899 und dieser Abschluss-PR (#905).
+
+**Integriert am 25.10.2026** nach Freigabe des Eigentümers, regulär per Merge-Commit und in der Reihenfolge von Abschnitt 16:
+
+| PR | Merge-Commit | geprüfter Head |
+|---|---|---|
+| #902 | `65c8d9e` | `9a2c8bb` |
+| #898 | `665a51e` | `0dd29bd` |
+| #911 | `0f4ac0e` | `eeece81` |
+| #899 | `675eeb9` | `2dca934` |
+| #905 | dieser Merge | – |
+
+Vor jedem Merge wurde `main` per Merge-Commit nachgezogen, die Artefakte wurden mit ihren Erzeugern neu gebaut, und die Supertrader-Suite, Core, Gate A und die Modusliste wurden geprüft. Den Konflikt in der Modusliste (#899) habe ich gelöst, ohne einen Modus zu verlieren und ohne Duplikate: 63 Modi, 46 Commit-Marker.
+
+Alle GitHub-Actions-Checks waren auf jedem geprüften Head grün. Vercel ist kein Pflicht-Check, weil `main` keine Branch Protection hat. Seine Meldung „failure“ kam vom Tageskontingent des Free-Plans (`api-deployments-free-per-day`) und ist kein Qualitätstest. Zwischen den Schritten kamen auf `main` nur Datenläufe und fremde PRs dazu (#912, #914, #915). Sie berühren Supertrader-Pfade nicht und mergen konfliktfrei.
 
 ## 16. Empfohlene Merge-Reihenfolge
 
