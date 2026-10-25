@@ -1,0 +1,46 @@
+name: Konten und Abos — Tests
+# Supabase-Migrationen (echtes PostgreSQL: RLS, Rechte, billing_*), Worker
+# vu-account (Einheit + Ende-zu-Ende mit simuliertem Supabase/Stripe und
+# signierten Webhooks), Kontoseiten /konto/. Kein Netz zu Supabase oder
+# Stripe, keine Konten, keine Zahlungen.
+on:
+  pull_request:
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', '.github/workflows/account-ci.yml', '.github/workflows/account-deploy.yml']
+  push:
+    branches: [main]
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', '.github/workflows/account-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: account-ci-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf, nur auf localhost: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SQL-Migrationen und RLS (PostgreSQL 17)
+        run: node scripts/account/sql-tests.mjs
+      - name: Worker, Ende-zu-Ende und Kontoseiten
+        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs"
+      - name: Keine Schluessel im Repository
+        run: node scripts/account/assert-no-billing-secrets.mjs
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-account
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-account-bundle
