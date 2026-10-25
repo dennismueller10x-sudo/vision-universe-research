@@ -51,7 +51,7 @@ export const MODEL_ASSUMPTIONS = Object.freeze([
   { id: 'MA-MIN-STOP-PLACEMENT', phase: 'INITIAL_STOP', reference: 'STRUCTURE: SEPA lowest low of the last contraction, Power Play lowest low of the consolidation', alternatives: ['MAX_PLANNED_LOSS_10'], why: 'MIN-RISK-01 requires a stop before the entry and MIN-MM-STOP-02 bounds it at 10 %; the placement inside the bound is the reviewer\'s' },
   { id: 'MA-MIN-ORDER-TYPE', phase: 'ENTRY_EXECUTION', reference: 'BUY_STOP_LIMIT: buy stop at the pivot, limit at stop / 0.9 (the price at which the planned loss reaches 10 %)', alternatives: ['BUY_STOP_MARKET'], why: 'the sources give no order type; the limit is the consequence of MIN-MM-STOP-02 for a gap; the market variant keeps gap fills and flags the exceeded planned loss' },
   { id: 'MA-MIN-ENTRY-TIMING', phase: 'ENTRY_EXECUTION', reference: 'INTRADAY_PRICE_FIRST: the buy stop fills on the breakout bar (MIN-MM-VOL-EX)', alternatives: ['NEXT_OPEN_AFTER_VOLUME_CONFIRMED_CLOSE'], why: 'MIN-VCP-07 "with increasing volume" is a strong preference; daily bars cannot know the volume of the breakout bar at the fill, so the volume-confirmed reading enters at the next open (volume above the 50-day mean, one of the two sf3 readings)' },
-  { id: 'MA-MIN-INTRABAR-ORDER', phase: 'ENTRY_EXECUTION', reference: 'PESSIMISTIC: on an intraday pivot fill with a low at or below the stop on the same bar the stop is assumed hit after the fill', alternatives: ['OPTIMISTIC'], why: 'a daily bar does not show whether the low came before or after the pivot touch; gap and limit fills are unambiguous and not affected' },
+  { id: 'MA-MIN-INTRABAR-ORDER', phase: 'ENTRY_EXECUTION', reference: 'PESSIMISTIC: on an intraday pivot fill with a low at or below the stop on the same bar the stop is assumed hit after the fill', alternatives: ['OPTIMISTIC'], why: 'a daily bar does not show whether the low came before or after the pivot touch; gap and limit fills are unambiguous and not affected', revision: 'Supertrader 7.0 (SF7-D4, owner decision E7-3): ALT-INTRABAR-OPTIMISTIC is SUPERSEDED by SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE (research/sf7-minervini-variants.mjs): a pivot touch with the close at or below the stop is a certain same-bar stop; the registered variant stays unchanged for the before / after comparison' },
   { id: 'MA-MIN-SETUP-VALIDITY', phase: 'ENTRY_ELIGIBILITY', reference: 'RE_EVALUATED_EACH_CLOSE: an order is valid for the next session only and is re-armed while the setup holds at the close', alternatives: [], why: 'no setup lifetime in #709; re-evaluation adds no number and invalidates a setup as soon as its own definition fails (Trend Template, correction, pivot exceeded)' },
   { id: 'MA-MIN-SIGNAL-ORDER', phase: 'POSITION_SIZING', reference: 'DATE_SEEDED_HASH: simultaneous fills are booked in the order of FNV-1a(date|security id) (minervini-execution#fillRank), neutral and deterministic; a plain security-id order would favour alphabetically early names in a capital-bound book', alternatives: [], why: 'relative priority is manual (MIN-PROCESS-04); the neutral order is deterministic, capital-constrained rejections are counted so its influence stays visible' },
   { id: 'MA-MIN-EXIT-POLICY', phase: 'POSITION_MANAGEMENT', reference: 'STOP_BE3R_MA50: initial stop, stop to break-even at 3R on a close (MIN-RISK-05), after break-even a close below MA50 exits at the next open (MIN-TTC-TRAIL / MIN-MM-SELL-02)', alternatives: ['STOP_BE3R', 'FREEROLL_2R', 'FREEROLL_3R'], why: 'sell rules are manual (MIN-SF-SELL); the reference uses only the mechanical parts of the printed sell guides; the free-roll is the OPTIONAL MIN-TTC-FREEROLL example at both printed ends of 2-3R' },
@@ -293,7 +293,7 @@ export function entryEligibility({ strategy, setup, bars, k, cfg = REFERENCE_CON
     strategy, asOf: bars[k - 1]?.date ?? null, state: ok ? 'ENTRY_POSSIBLE_PENDING_MANUAL_REVIEW' : 'ENTRY_BLOCKED', blockers, openManualDecisions: manual,
     plannedLossAtPivot, buyDeclarationAllowed: false, ...TRANSL, ...NOT_A_STRATEGY,
     // limit never below the pivot when the planned loss at the pivot is within the bound (review SF4-C-L3: rounding)
-    order: ok ? { type: cfg.orderType, level: pivot, stop, limit: cfg.orderType === 'BUY_STOP_LIMIT' ? Math.max(stop / (1 - MAX_PLANNED_LOSS), pivot) : null, validFor: 'NEXT_SESSION_ONLY', simulatedOnly: true } : null,
+    order: ok ? { type: cfg.orderType, level: pivot, stop, limit: cfg.orderType === 'BUY_STOP_LIMIT' ? Math.max(stop / (1 - MAX_PLANNED_LOSS), pivot) : null, validFor: 'NEXT_SESSION_ONLY', simulatedOnly: true, ...(cfg.sameBarCloseConfirmsStop === true ? { closeConfirmsStop: true } : {}) } : null,
   };
 }
 
@@ -309,8 +309,14 @@ export function entryEligibility({ strategy, setup, bars, k, cfg = REFERENCE_CON
  *  OPEN                        next-open variant: fill at the open.
  * sameBarStop: CERTAIN when the fill happened at or after the open on the way down (gap, limit, open fills) and the low
  * reaches the stop; AMBIGUOUS for an intraday pivot touch (MA-MIN-INTRABAR-ORDER decides).
+ * closeConfirmsStop (Supertrader 7.0 revision EX7-SAME-BAR-CLOSE-CONFIRMS-STOP, defect SF7-D4): set by the option or
+ * by order.closeConfirmsStop, which entryEligibility puts on the order only for a configuration with
+ * sameBarCloseConfirmsStop = true (the SF7 variants of research/sf7-minervini-variants.mjs). An intraday pivot touch
+ * with low <= stop AND close <= stop is then CERTAIN (sameBarStopEvidence CERTAIN_BY_CLOSE): the fill was above the
+ * stop and the bar ended at or below it, so the stop traded after the fill. Without it the result is unchanged (no
+ * reference and no registered variant sets it; minervini-execution.mjs is untouched and books it as a certain stop).
  */
-export function fillBuyOrder(bar, order) {
+export function fillBuyOrder(bar, order, { closeConfirmsStop = order.closeConfirmsStop === true } = {}) {
   if (!isExecutableBar(bar, 'open') || !fin(bar.high) || !fin(bar.low)) return { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
   let fill, basis;
   if (order.type === 'ON_OPEN') { fill = bar.open; basis = 'OPEN'; }
@@ -324,6 +330,7 @@ export function fillBuyOrder(bar, order) {
   if (!(fill > order.stop)) return { status: 'NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP', fill };
   const plannedLoss = 1 - order.stop / fill;
   const sameBarStop = bar.low <= order.stop ? (basis === 'INTRADAY_PIVOT_TOUCH' ? 'AMBIGUOUS' : 'CERTAIN') : null;
+  if (closeConfirmsStop && sameBarStop === 'AMBIGUOUS' && fin(bar.close) && bar.close <= order.stop) return { status: 'FILLED', fill, basis, plannedLoss, plannedLossExceedsMax: plannedLoss > MAX_PLANNED_LOSS + 1e-12, sameBarStop: 'CERTAIN', sameBarStopEvidence: 'CERTAIN_BY_CLOSE' };
   return { status: 'FILLED', fill, basis, plannedLoss, plannedLossExceedsMax: plannedLoss > MAX_PLANNED_LOSS + 1e-12, sameBarStop };
 }
 

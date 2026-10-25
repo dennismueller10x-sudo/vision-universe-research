@@ -31,7 +31,7 @@ import { RESEARCH_UNIVERSE, eligibleAtPriorSession } from '../common/series.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const RUNNER_VERSION = 'sf-runner-1.1.0';
+export const RUNNER_VERSION = 'sf-runner-1.2.0';
 export const SCENARIO_SET = Object.freeze([
   { id: 'BASE_S0', scenario: 'S0_LAST_PRICE' },
   { id: 'DELIST_S1_MINUS_30', scenario: 'S1_MINUS_30' },
@@ -41,7 +41,10 @@ export const SCENARIO_SET = Object.freeze([
   // second reading of the SOURCE_AMBIGUOUS failsafe exit (TUR-SF-FAILSAFE-EXIT): 20-day exit; affects System 1 only
   { id: 'FAILSAFE_EXIT_20D', scenario: 'S0_LAST_PRICE', failsafeExit: '20D' },
   // model assumptions (methods/turtle.mjs MODEL_ASSUMPTIONS): the alternative reading of each, never chosen by result
-  { id: 'ENTRY_BAR_OPTIMISTIC', scenario: 'S0_LAST_PRICE', entryBarOrder: 'OPTIMISTIC' },
+  // ENTRY_BAR_OPTIMISTIC is SUPERSEDED (SF7-D3: skipped certain same-bar stops); kept unchanged for the before / after
+  // comparison. ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE is the corrected optimistic bound (EX7-TUR-SAME-BAR-CERTAIN, E7-3)
+  { id: 'ENTRY_BAR_OPTIMISTIC', scenario: 'S0_LAST_PRICE', entryBarOrder: 'OPTIMISTIC', status: 'SUPERSEDED_SF7_D3', supersededBy: 'ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE' },
+  { id: 'ENTRY_BAR_OPTIMISTIC_CERTAIN_RULE', scenario: 'S0_LAST_PRICE', entryBarOrder: 'OPTIMISTIC_CERTAIN_RULE' },
   { id: 'S1_OPEN_BREAKOUT_TAKEN', scenario: 'S0_LAST_PRICE', openBreakout: 'TAKE' },
 ]);
 const SPLIT_PERIODS = [['2016-01-04', '2020-12-31'], ['2021-01-01', L.WINDOW.to]];
@@ -159,7 +162,7 @@ export function runMethod(methodId, dataset, { snapshotId, datasetSha256, accoun
 }
 
 /** Execution counters (no prices) that the public view may carry for the regression comparison. */
-const PUBLIC_COUNTS = ['entries', 'adds', 'failsafeEntries', 'skippedByFilter', 'rejectNoCash', 'rejectZeroUnit', 'rejectUnitLimit12', 'rejectCorrelationLimit6', 'rejectCorrelationLimit10', 'unitStopExits', 'channelExits', 'sameBarEntryStops', 'sameBarAddStops', 'sameBarEntryChannelExits', 'noAddAfterStopSameBar', 'terminalSettlements', 'unavailableSettlements', 'filterResolvedIntrabar', 'reentrySameBarAsExit', 'correlationGroupMissing'];
+const PUBLIC_COUNTS = ['entries', 'adds', 'failsafeEntries', 'skippedByFilter', 'rejectNoCash', 'rejectZeroUnit', 'rejectUnitLimit12', 'rejectCorrelationLimit6', 'rejectCorrelationLimit10', 'unitStopExits', 'channelExits', 'sameBarEntryStops', 'sameBarAddStops', 'sameBarEntryChannelExits', 'noAddAfterStopSameBar', 'terminalSettlements', 'unavailableSettlements', 'filterResolvedIntrabar', 'reentrySameBarAsExit', 'correlationGroupMissing', 'sameBarCertainByOpenFill', 'sameBarCertainByClose'];
 export const executionCountsOf = (c = {}) => Object.fromEntries(PUBLIC_COUNTS.filter((k) => c[k] !== undefined).map((k) => [k, c[k]]));
 
 /** Public, hash-only view of a result (safe for the public repository and logs). */
