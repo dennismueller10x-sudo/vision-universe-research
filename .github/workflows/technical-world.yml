@@ -1,0 +1,63 @@
+name: Technical - Screener-Datensatz
+
+# WOZU: Die Produktwelt Technical (/technical/) filtert ueber technical/data/screener-v1.json.
+# Erzeuger: scripts/technical/world/build-screener.mjs. Er liest nur committete, kanonische Artefakte
+#   * quant/data/product/technical-signals-v1 (Produkt-Materialisierung: Tagesbars + Vollhistorien-Features),
+#   * quant/data/market/discover-series-long (Wochenschluesse), discover-series/ref_SPY.json (Vergleich),
+#   * quant/data/product/universe-list-v1.json.gz (Namen)
+# und schreibt technical/data/{screener-v1.json,meta.json}. Kein Anbieterabruf, keine Historienablage,
+# keine Schluessel. Commit-Protokoll ADR-005: Spitze auschecken, push-with-retry.sh, Erzeugerhoheit.
+
+on:
+  workflow_run:
+    workflows:
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technical-world-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Spitze des Branches: ein Lauf nach der Materialisierung sieht deren Commit (workflow_run laeuft auf main).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine-Tests (rot = kein neuer Datensatz)
+        run: node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-formations.test.mjs quant/tests/technical-query.test.mjs
+
+      - name: Screener-Datensatz bauen
+        run: node --max-old-space-size=4096 scripts/technical/world/build-screener.mjs
+
+      - name: Datensatzvertrag
+        run: node --test technical/tests/*.test.mjs
+
+      - name: Oeffentliche Datenhygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit (nur technical/data)
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add technical/data
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Technical-Screener: $(node -e 'const m=require("./technical/data/meta.json");console.log(m.asOf+" · "+m.counts.rows+" Titel")') (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

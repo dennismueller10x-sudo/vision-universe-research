@@ -40,6 +40,7 @@ Bei Widersprüchen gilt: **Code und Tests vor Prosa**. Der aktuelle Datenstand s
 ```
 
 Elliott ist ein eigenes Produkt (`/elliott/`, Aktienbild unter `#/elliott/<T>`): [ELLIOTT_PRODUCT_ARCHITECTURE.md](ELLIOTT_PRODUCT_ARCHITECTURE.md).
+Technical ist ein eigenes Produkt (`/technical/`: Screener, Chart Studio unter `#/chart/<T>`): [technical/TECHNICAL_WORLD_PROGRESS.md](technical/TECHNICAL_WORLD_PROGRESS.md).
 
 Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/`):
 

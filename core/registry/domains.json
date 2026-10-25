@@ -212,6 +212,23 @@
       "consumers": ["Quant (Technik)", "Discover (Technical Layer)"]
     },
     {
+      "id": "technicalWorld",
+      "label": "Technical (Produktwelt)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/technical/data/meta.json",
+      "asOf": ["asOf"],
+      "timestamp": ["generatedFrom"],
+      "records": "counts.rows",
+      "role": "Screener-Datensatz der Produktwelt Technical: Indikatorzustaende, Formationen (Erkannt/Bestaetigt/Invalidiert), Woche/Monat, relative Staerke.",
+      "producer": "scripts/technical/world/build-screener.mjs",
+      "workflow": "technical-world.yml",
+      "schedule": "nach der Produkt-Materialisierung und den langen Reihen",
+      "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 120 },
+      "consumers": ["Technical (/technical/)", "Aktien-Navigator (Verfuegbarkeit)"]
+    },
+    {
       "id": "quant",
       "label": "Quant",
       "layer": "INTELLIGENCE",

@@ -1,0 +1,120 @@
+/* Produktwelt Technical: Oberflaechenmodell, Seitenverdrahtung, Datensatzvertrag.
+   Laeuft in technical-ci.yml; tests/ wird nicht ausgeliefert (build-release.mjs#permitted). */
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const M = require(join(root, "technical/engine/model.js"));
+const Q = require(join(root, "quant/engines/technical/technical-query.js"));
+
+test("Routen: Start, Screener, Gespeichert, Chart Studio, Signale, Methodik, unbekannt", () => {
+  assert.equal(M.parseRoute("").view, "home");
+  assert.equal(M.parseRoute("#/").view, "home");
+  assert.deepEqual(M.parseRoute("#/screener?muster=dreieck&tf=1W"), { view: "screener", tab: "build", params: { muster: "dreieck", tf: "1W" } });
+  assert.equal(M.parseRoute("#/screener/gespeichert").tab, "saved");
+  assert.deepEqual(M.parseRoute("#/chart/brk-b"), { view: "chart", ticker: "BRK-B", tab: "chart", params: {} });
+  assert.equal(M.parseRoute("#/chart/NVDA/signale").tab, "signals");
+  assert.equal(M.parseRoute("#/chart/<script>").ticker, null, "ungueltiges Kuerzel wird nicht verwendet");
+  assert.equal(M.parseRoute("#/methodik").view, "method");
+  assert.equal(M.parseRoute("#/irgendwas").view, "notfound");
+  assert.equal(M.chartHref("BRK-B"), "#/chart/BRK-B");
+  assert.deepEqual(M.technicalPaths("BRK-B"), ["/quant/data/product/technical-signals-v1/by-ticker/BRK-B.json.gz", "/quant/data/product/technical-signals-v1/BR.json.gz"]);
+  assert.equal(M.technicalShard("A"), "A_", "Scherbe wie quant/api/product-services.js#technicalShard");
+});
+
+test("Screener-Zustand: Adresse <-> Zustand <-> gueltige Abfrage", () => {
+  const st = M.stateFromParams({ muster: "dreieck,breakout,unbekannt", trend: "sma200,hoch52", vol: "1", rsi: "60", logik: "oder", sort: "relVol", bestaetigt: "1" });
+  assert.deepEqual(st.patterns, ["dreieck", "breakout"], "unbekannte Werte fallen weg");
+  assert.equal(M.paramsFromState(st), "muster=dreieck,breakout&bestaetigt=1&trend=sma200,hoch52&vol=1&rsi=60&logik=oder&sort=relVol");
+  const { query, dropped } = M.queryFromState(st);
+  assert.ok(Q.validate(query).ok, JSON.stringify(Q.validate(query).errors));
+  assert.equal(query.logic, "OR");
+  assert.deepEqual(query.groups[0].filters[0], { field: "formationConfirmed", op: "in", value: ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE", "RESISTANCE_BREAKOUT", "RANGE_BREAKOUT"] });
+  assert.deepEqual(dropped, []);
+  /* Woche: Tagesfelder entfallen sichtbar statt still. */
+  const w = M.queryFromState(M.stateFromParams({ tf: "1W", muster: "dreieck", trend: "sma200,rs", vol: "1" }));
+  assert.ok(Q.validate(w.query).ok);
+  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200"]);
+  assert.equal(w.dropped.length, 3);
+  assert.equal(M.stateFromParams({ rsi: "150" }).rsiMax, null, "RSI-Grenze ausserhalb 0..100 wird ignoriert");
+});
+
+test("Filter-Pills verweisen nur auf Katalogwerte", () => {
+  for (const p of M.PATTERN_PILLS) for (const t of p.types) assert.ok(Q.FORMATION_TYPES[t], p.id + ": " + t);
+  for (const p of M.TREND_PILLS) assert.ok(Q.field(p.field) && Q.field(p.field).kind === "bool", p.id);
+});
+
+test("Gespeicherte Suchstrategien: lokal, begrenzt, robust gegen kaputten Speicher", () => {
+  const mem = {}, storage = { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
+  assert.deepEqual(M.loadScreens(storage), []);
+  assert.ok(M.saveScreen(storage, "Dreiecke", "muster=dreieck", Date.UTC(2026, 9, 25)).ok);
+  const list = M.loadScreens(storage);
+  assert.equal(list.length, 1);
+  assert.equal(list[0].params, "muster=dreieck");
+  assert.ok(M.deleteScreen(storage, list[0].id));
+  assert.deepEqual(M.loadScreens(storage), []);
+  mem[M.STORE_KEY] = "{kaputt";
+  assert.deepEqual(M.loadScreens(storage), []);
+  assert.deepEqual(M.loadScreens(null), []);
+  const locked = { getItem: () => null, setItem: () => { throw new Error("QuotaExceeded"); } };
+  assert.equal(M.saveScreen(locked, "x", "", 1).ok, false);
+});
+
+test("Befunde: Formationen mit Zustand, Indikatoren nur aus vorhandenen Werten", () => {
+  const analysis = { formations: [{ id: "A", name: "Symmetrisches Dreieck", family: "TRIANGLE", direction: "BULLISH", state: "CONFIRMED", detectedAt: "2026-10-01", confirmedAt: "2026-10-20", levels: { breakout: 210.5, invalidation: 190 } }] };
+  const f = M.findings(analysis, { sma200: 200, sma50: 220, rsi14: 72.3 }, 212.2);
+  assert.equal(f[0].badge, "Bestätigt");
+  assert.match(f[0].text, /Bestätigt am 20\.10\.2026\. Ausbruchsniveau 210,50 \$\. Ungültig unter 190,00 \$\./);
+  assert.deepEqual(f.map((x) => x.id), ["A", "sma200", "cross", "rsi"], "ohne Volumenwert keine Volumenkarte");
+  assert.equal(f.find((x) => x.id === "rsi").badge, "Überkauft");
+  assert.equal(M.findings(null, {}, null).length, 0);
+  assert.equal(M.hitSentence({ formations: [["RANGE_BREAKOUT", "CONFIRMED", "2026-10-22"], ["SYMMETRICAL_TRIANGLE", "DETECTED", "2026-10-12"]] }, ["SYMMETRICAL_TRIANGLE"]),
+    "Symmetrisches Dreieck: in Bildung, erkannt am 12.10.2026.", "die gesuchte Formation zuerst");
+});
+
+test("Seite: Skripte existieren, Engines in Abhaengigkeitsreihenfolge, keine eigene Identitaetsbildung, keine Demo-Daten", () => {
+  const html = readFileSync(join(root, "technical/index.html"), "utf8"), app = readFileSync(join(root, "technical/app.js"), "utf8");
+  for (const [, src] of html.matchAll(/<script src="([^"]+)"/g)) assert.ok(existsSync(join(root, src)), src);
+  assert.ok(html.indexOf("/core/identity.js") < html.indexOf("/core/stock-context.js"));
+  assert.match(html, /<vu-navigation[^>]*theme-switch/);
+  const engines = [...app.matchAll(/"(\/quant\/engines\/[^"]+\.js)"/g)].map((m) => m[1]);
+  assert.ok(engines.length >= 10);
+  for (const e of engines) assert.ok(existsSync(join(root, e)), e);
+  const order = (name) => engines.findIndex((e) => e.endsWith(name));
+  assert.ok(order("/hash.js") < order("feature-store.js") && order("elliott/patterns.js") < order("elliott-v2.js") && order("ti/context.js") < order("formations.js"));
+  for (const file of ["technical/app.js", "technical/engine/model.js", "technical/ui/chart.js"]) {
+    const src = readFileSync(join(root, file), "utf8");
+    assert.doesNotMatch(src, /"ref_"\s*\+/, file + ": securityId nur ueber core/identity.js (ADR-001)");
+    assert.doesNotMatch(src, /Math\.random\(\)\s*\*|mock|demo/i, file + ": keine Zufalls- oder Demo-Werte");
+  }
+  /* Kein Score-Feld; "Setup-Score" erscheint nur in der Methodik als ausdrueckliche Verneinung. */
+  assert.doesNotMatch(app, /setupScore|opportunityScore|\.score\b/, "kein undokumentierter Score");
+  assert.equal(app.split("Setup-Score").length - 1, 1);
+  assert.match(app, /Es gibt keinen Setup-Score/);
+});
+
+test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar", () => {
+  const art = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8"));
+  const meta = JSON.parse(readFileSync(join(root, "technical/data/meta.json"), "utf8"));
+  assert.equal(art.schemaVersion, "vu-technical-screener-1.0.0");
+  assert.equal(art.count, meta.counts.rows);
+  assert.equal(art.asOf, meta.asOf);
+  for (const [k, col] of Object.entries(art.cols)) assert.equal(col.length, art.count, k);
+  const ds = Q.createDataset(art);
+  for (const f of Q.FIELDS) for (const tf of f.tfs) assert.ok(ds.column(Q.columnKey(f.id, tf)), "Spalte fehlt: " + Q.columnKey(f.id, tf));
+  for (const p of Q.PRESETS) { const r = Q.evaluate(ds, p.query); assert.ok(!r.error && r.count >= 0, p.id); }
+  /* Keine erfundenen Werte: jeder Treffer hat einen echten Schlusskurs und ein Datum. */
+  art.cols.close.forEach((c, i) => assert.ok(c > 0 && /^\d{4}-\d{2}-\d{2}$/.test(art.cols.asOf[i]), art.cols.s[i]));
+  assert.ok(art.cols.s.includes("BRK-B") && art.cols.sid[art.cols.s.indexOf("BRK-B")] === "ref_BRK_B", "Identitaet ueber core/identity.js");
+});
+
+test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
+  const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
+  assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["meta.json", "screener-v1.json"]);
+});

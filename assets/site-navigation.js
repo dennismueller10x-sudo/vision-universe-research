@@ -12,7 +12,7 @@
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁']]},
-    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
+    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', entries:[['Technical','/technical/','⌁'],['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
   ];
   /* Produkt-Dock: die schwebende Leiste am unteren Rand jedes Produkts.
      Regel fuer alle Produkte: [PRODUKT] [Funktion] [Funktion] [Funktion] [☰].
@@ -61,6 +61,11 @@
     {id: 'fundamental', label: 'Fundamental', match: p => p.startsWith('/fundamental/'),
       items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['entdecken','Entdecken','/fundamental/#/entdecken','explore'],['suche','Suche','/fundamental/#/suche','search'],['methodik','Methodik','/fundamental/#/methodik','table']],
       active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', entdecken: 'entdecken', suche: 'suche', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+    /* Technical: eigenes Produkt. #/chart/<TICKER> ist das Chart Studio einer Aktie; ohne Kuerzel die Auswahl.
+       Der Chart-Eintrag zeigt per dock({hrefs:{chart}}) auf die zuletzt geoeffnete Aktie (technical/app.js). */
+    {id: 'technical', label: 'Technical', match: p => p.startsWith('/technical/'),
+      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart Studio','/technical/#/chart','signals'],['methodik','Methodik','/technical/#/methodik','table']],
+      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
     {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
       items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Plan','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {
@@ -93,6 +98,7 @@
   "supertrader": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path class=\"dim\" opacity=\".45\" d=\"M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5\"/><rect x=\"10.3\" y=\"9\" width=\"3.4\" height=\"6\" rx=\".6\"/><path d=\"M12 6.8V9M12 15v2.2\"/></g>",
   "elliott": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path class=\"dim\" opacity=\".45\" d=\"M2 21h20\" stroke-dasharray=\"1.5 2\"/><path d=\"M2 19 6 12l2.5 3L14 5l2.5 4L21 3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"6\" cy=\"12\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"8.5\" cy=\"15\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"16.5\" cy=\"9\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"21\" cy=\"3\" r=\"1.5\"/></g>",
   "fundamental": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 21h20\"/><path d=\"M4.5 21v-6M8.5 21V10M12.5 21v-5\"/><circle cx=\"16\" cy=\"9\" r=\"4.5\"/><path d=\"m19.3 12.3 2.7 2.7\"/><path class=\"dim\" opacity=\".45\" d=\"M14.2 9.6 15.5 8l1.2 1.2 1.6-2\"/></g>",
+  "technical": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 4.5 20.5 12.5M2.5 20.5l18-8\"/><path class=\"dim\" opacity=\".45\" d=\"M7 8v9M11.5 10v5.5M15.5 11.3v3\"/><rect x=\"6\" y=\"10\" width=\"2\" height=\"5\" rx=\".4\"/><rect x=\"10.5\" y=\"11\" width=\"2\" height=\"3.5\" rx=\".4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20.5\" cy=\"12.5\" r=\"1.7\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"4.5\" r=\"1.1\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"20.5\" r=\"1.1\"/></g>",
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>"
 };
   const dockProductIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>`;
@@ -424,7 +430,7 @@
       const nav=root.querySelector('nav');
       const links=product.items.map(([id,label,href,icon,name],i)=>{
         const a=document.createElement('a');a.href=href;a.dataset.id=id;if(!i)a.className='product';if(name)a.setAttribute('aria-label',name);
-        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon(groups.find(g=>g.id===product.id).icon)}<span class="label">${label}</span>`;
+        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.id}).icon)}<span class="label">${label}</span>`;
         a.addEventListener('click',event=>{
           if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
           const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:product.id,id,href:a.getAttribute('href')}});
