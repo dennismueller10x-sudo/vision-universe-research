@@ -23,7 +23,7 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { researchCodeSha256 } from './run-sf4-lifecycle.mjs';
 import { REFERENCE_CONFIG, variantRegistrySha256 } from './minervini-lifecycle.mjs';
 import { buildSetupIndex, runMinerviniLifecycle, runMetrics } from './minervini-execution.mjs';
-import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck } from './minervini-sf7.mjs';
+import { SF7_MINERVINI_VERSION, SF7_VARIANTS, sf7VariantRegistrySha256, withFlatBaseSetups, withTrendTemplateLow25, withRsLineRising, largestDeclineSignal, halfAverageGainStopCheck, postBreakoutEvidence, postBreakoutTally, benchIndex } from './minervini-sf7.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -66,6 +66,7 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
   const pub = { version: SF7_MINERVINI_VERSION, label: 'MODEL_LIFECYCLE_STUDY_NOT_A_STRATEGY_BACKTEST', certification: FOUNDATION.certification, window: { from, to }, strategies: {} };
   const sealed = { label: 'MODEL_LIFECYCLE_STUDY_METRICS_NOT_A_STRATEGY_RETURN', strategies: {} };
   const byId = new Map(dataset.securities.map((s) => [s.id, s]));
+  const bench = benchIndex(dataset.benchmark);
   for (const strategy of ['SEPA', 'POWER_PLAY']) {
     const refIndex = buildSetupIndex(dataset, strategy, { from });
     const ref = runMinerviniLifecycle(dataset, { strategy, setupIndex: refIndex, config: REFERENCE_CONFIG, from, to });
@@ -80,6 +81,7 @@ export function sf7Part(dataset, { from = L.WINDOW.from, to = L.WINDOW.to, log =
     ps.diagnostics = {
       largestDeclineSignal: { ...tally(decl, (x) => x.status), signalStrictlyBeforeExit: decl.filter((x) => x.status === 'SIGNAL' && x.sessionsBeforeExit > 0).length, openTrades: decl.filter((x) => /OPEN_TRADE$/.test(x.status)).length, rule: 'B12 PDF 130 (MA-MIN7-STAGE2-START)' },
       halfAverageGainStop: { ...halfAverageGainStopCheck(ref.trades), rule: 'B12 PDF 398-399 (MA-MIN7-AVG-GAIN)' },
+      postBreakout: { ...postBreakoutTally(ref.trades.map((t) => postBreakoutEvidence(byId.get(t.id).bars, t, { bench }))), rule: 'E7-2 findings B03 PDF 41/47/48/160/168/217, B12 PDF 250/280/311 (MA-MIN7-POST-BREAKOUT-WINDOW)' },
     };
     for (const v of SF7_VARIANTS.filter((x) => x.strategy === strategy)) {
       const idx = v.index === 'withFlatBaseSetups' ? withFlatBaseSetups(dataset, refIndex, { from }) : v.index === 'withTrendTemplateLow25' ? withTrendTemplateLow25(dataset, { from }) : withRsLineRising(dataset, refIndex);

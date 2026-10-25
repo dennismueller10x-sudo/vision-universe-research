@@ -16,6 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadExtract } from '../evidence/psr709-extract.mjs';
 import { loadFindings } from '../evidence/minervini-sf7-findings.mjs';
+import fsx from 'node:fs';
 import { MINERVINI_SEPA, MINERVINI_POWER_PLAY } from '../contracts/minervini.mjs';
 import { MODEL_ASSUMPTIONS } from '../research/minervini-lifecycle.mjs';
 import { SF7_MODEL_ASSUMPTIONS, SF7_VARIANTS } from '../research/minervini-sf7.mjs';
@@ -95,6 +96,7 @@ export const CLASSIFICATION = Object.freeze({
   'MA-MIN7-FLAT-BASE-MERGE': [C('ABSENT_FROM_MATERIAL', 'research design (one-at-a-time)', [])],
   'MA-MIN7-RS-LINE': [C('OPERATIONALIZATION_OPEN', 'RS line rising >= 6 weeks without a slope measure', ['B03 PDF 143'])],
   'MA-MIN7-STAGE2-START': [C('OPERATIONALIZATION_OPEN', 'start of the Stage 2 advance not dated mechanically', ['B12 PDF 130'])],
+  'MA-MIN7-POST-BREAKOUT-WINDOW': [C('OPERATIONALIZATION_OPEN', 'right after the breakout has no number; 10 sessions from the printed 2-5 days to 1-2 weeks', ['B03 PDF 40', 'B03 PDF 47'])],
   'MA-MIN7-AVG-GAIN': [C('OPERATIONALIZATION_OPEN', 'average gain of the trader\'s own history', ['B12 PDF 398'])],
 });
 
@@ -115,6 +117,41 @@ export const PROJECT_AVAILABILITY = Object.freeze([
   { id: 'A-STOCK-MARKET-WIZARDS', item: 'Schwager, Stock Market Wizards (2001), Minervini chapter', status: 'NOT_IN_PROJECT', note: 'the supplied Schwager volumes are Market Wizards (1989), The New Market Wizards (1992, pt), Unknown Market Wizards (2020, fr): none contains a Minervini interview' },
   { id: 'A-W-MIN18-PAGE', item: 'W-MIN18 interview page (stockopedia.com, 2018-04-17)', status: 'RECORDED_NOT_REFETCHABLE_HERE', note: 'read with original wording checked in #709 on 2026-10-13 (9 rows in the extract); on 2026-10-24 the page answers HTTP 403 to this container and the archive copy (web.archive.org 2022-12-06) is not reachable from here; the rows are not re-verified, they are not changed' },
 ]);
+
+/** E7-2: disposition of every NEW_IMPLEMENTABLE / REFINES finding of the 154 (implemented / deferred with reason / owner). */
+export const E72_DISPOSITION = Object.freeze({
+ "F7-B03-040-009": "DEFERRED: the pullback and its end need two model assumptions (pullback start, reclaim); low value as a diagnostic beside G-UPDAYS",
+ "F7-B03-041-011": "IMPLEMENTED: postBreakoutEvidence healthy3of4 / healthy6of8 (G-UPDAYS, diagnostic)",
+ "F7-B03-047-015": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume (G-LOWERLOWS, diagnostic)",
+ "F7-B03-047-016": "IMPLEMENTED as diagnostic only: closeBelowMa20InWindow; the half-sale is an exit rule and needs the owner (no binding Minervini exit without consent)",
+ "F7-B03-048-017": "IMPLEMENTED: postBreakoutEvidence lowerLowsOnVolume, volume above the 50-day mean (diagnostic)",
+ "F7-B03-160-064": "IMPLEMENTED: baseDepthAbove60 (evidence)",
+ "F7-B03-168-067": "IMPLEMENTED: rsLineHighBeforePrice (G-RSLINE-HIGH, evidence)",
+ "F7-B03-207-082": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+ "F7-B03-211-084": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+ "F7-B03-212-085": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+ "F7-B03-216-086": "OWNER: a climax sale is an exit rule (decision E7-7, no binding Minervini exit without consent)",
+ "F7-B03-217-087": "DEFERRED: diagnostic possible; overlaps with the largest-decline diagnostic, kept for the next package",
+ "F7-B03-217-088": "IMPLEMENTED: weeklyDeclineSignalBeforeExit (weekly reading of the largest-decline diagnostic)",
+ "F7-B03-225-092": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+ "F7-B07-032-109": "DEFERRED: sizing progression variant (beginners); changes positions as a variant, owner may pre-register",
+ "F7-B07-040-117": "DEFERRED: order-level variant (cents over the pivot, no magic number in the source); changes fills as a variant",
+ "F7-B07-067-140": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+ "F7-B07-070-142": "DEFERRED: stop-fallback variant (percent stop instead of rejection); changes trades as a variant, owner may pre-register",
+ "F7-B07-087-150": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+ "F7-B12-092-180": "DEFERRED: needs a PIT trailing-twelve-month EPS series; the derived Q4 values are not split-correctable in 405 cases (data quality); evidence only when that is solved",
+ "F7-B12-116-203": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+ "F7-B12-116-205": "DEFERRED: base identification and the reset after a market correction are not defined in the books; needs pre-registered model assumptions (next step, no owner decision required)",
+ "F7-B12-185-240": "DEFERRED: evidence on rolling 2-quarter EPS / sales acceleration; depends on the same EPS data-quality fix as G-PE-EXPANSION",
+ "F7-B12-250-264": "IMPLEMENTED: baseDepthAbove50 (evidence)",
+ "F7-B12-280-275": "DEFERRED: setup-filter variant (would change trades as a variant); needs a pre-registered market-drawdown window",
+ "F7-B12-297-283": "DEFERRED: the chase limit is unquantified (a few percent); any k is a model assumption and changes fills; owner may pre-register k values",
+ "F7-B12-311-297": "IMPLEMENTED: closeBelowMa20InWindow (G-MA20, diagnostic)",
+ "F7-B12-327-302": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+ "F7-B12-330-304": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+ "F7-B12-331-306": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)",
+ "F7-B12-353-317": "NOT_IN_SCOPE: cup/cheat or IPO family, excluded variants of the contract (EXCLUDE.optionalVariant / IPO scope)"
+});
 
 export function buildInventory() {
   const x = loadExtract(), f = loadFindings();
@@ -143,6 +180,11 @@ export function buildInventory() {
       }
     }
   }
+  const cls154 = JSON.parse(fsx.readFileSync(path.join(HERE, '..', 'evidence', 'MINERVINI-SF7-FINDINGS-CLASSIFICATION.json'), 'utf8')).rows;
+  const fids = new Set(f.findings.map((r) => r.id));
+  for (const r of cls154) { if (!fids.has(r.id)) errors.push(`CLASSIFIED_UNKNOWN_FINDING:${r.id}`); if (!['CONFIRMS', 'REFINES', 'NEW_IMPLEMENTABLE', 'QUALITATIVE', 'NOT_RELEVANT'].includes(r.class)) errors.push(`CLASS:${r.id}`); }
+  if (cls154.length !== f.findings.filter((r) => r.coveredBy === 'NONE').length) errors.push('CLASSIFICATION_INCOMPLETE');
+  for (const r of cls154.filter((x) => x.class === 'NEW_IMPLEMENTABLE' || x.class === 'REFINES')) if (!E72_DISPOSITION[r.id]) errors.push(`NO_DISPOSITION:${r.id}`);
   const bySource = (sid) => rows.filter((r) => r.source_id === sid).length;
   const tally = (arr, k) => arr.reduce((o, v) => { const key = k(v); o[key] = (o[key] || 0) + 1; return o; }, {});
   return {
@@ -163,6 +205,7 @@ export function buildInventory() {
     classCounts: tally(Object.values(CLASSIFICATION).flat(), (c) => c.cls),
     dataOnlyProblems: DATA_ONLY_PROBLEMS,
     projectAvailability: PROJECT_AVAILABILITY,
+    findings154: { counts: tally(cls154, (r) => r.class), translationDoubt: cls154.filter((r) => r.translationDoubt).length, wouldChangeReference: cls154.filter((r) => r.wouldChangeReference).length, disposition: E72_DISPOSITION, dispositionCounts: tally(Object.values(E72_DISPOSITION), (d) => d.split(':')[0]) },
     variants7: SF7_VARIANTS.map((v) => ({ id: v.id, strategy: v.strategy, source: v.source })),
     statusChange: 'no reference rule changes status; no Minervini rule is SOURCE_EXACT; English corroboration (W-MIN18) on stop, size, sell, price confirmation and the new staggered-stop check; every book rule stays translation-only (CC-1 unchanged)',
     validation: { ok: errors.length === 0, errors },

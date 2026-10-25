@@ -7,8 +7,8 @@ import { buildSetupIndex, runMinerviniLifecycle } from '../source-faithful/resea
 import { REFERENCE_CONFIG, variantRegistrySha256, fillBuyOrder, sepaSetupAt } from '../source-faithful/research/minervini-lifecycle.mjs';
 
 // pinned before the first 7.0 snapshot result was read
-const PINNED_SF7_CODE_SHA256 = 'e2604be2af4486bb152713fc64ec2d4758e443eb1b12fc67a6c40ddaefca936a';
-const PINNED_SF7_REGISTRY_SHA256 = '4404f759b6adc96f9a8871fc107f20419a69d2c9a6ef363bcd7bbac08d40d372';
+const PINNED_SF7_CODE_SHA256 = '06c41d88b56df9a59ffac052ebd808bb46d4f335d13b5e344b0e43912fb49c94';
+const PINNED_SF7_REGISTRY_SHA256 = 'a76c53160d11309039834bf1c12237c0341389e3368610d62cc1d7b7cd514fb9';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c));
@@ -147,6 +147,9 @@ test('SF7-MIN-SOURCE-INVENTORY: artifact = fresh build, every contract rule and 
   const findings = JSON.parse(fs.readFileSync(new URL('../source-faithful/evidence/MINERVINI-SF7-FINDINGS.json', import.meta.url), 'utf8'));
   assert.equal(findings.contentExportedToRepo, false);
   for (const r of findings.findings) { assert.match(r.quoteSha256, /^[0-9a-f]{64}$/); assert.equal(r.quote_original, undefined); }
+  // E7-2: all 154 findings without #709 coverage classified; every NEW_IMPLEMENTABLE / REFINES has a disposition
+  assert.equal(Object.values(fresh.findings154.counts).reduce((a, b) => a + b, 0), 154);
+  assert.equal(Object.keys(fresh.findings154.disposition).length, fresh.findings154.counts.NEW_IMPLEMENTABLE + fresh.findings154.counts.REFINES);
 });
 
 test('SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on the same dataset; public part has counts and hashes only; code pinned', async () => {
@@ -163,4 +166,23 @@ test('SF7-MIN-RUNNER: REF of the 7.0 runner equals the 4.0 lifecyclePart REF on 
   for (const k of ['"pnl"', '"returnPct"', '"equity"', '"cagr"', '"sharpe"', '"metrics"']) assert.ok(!txt.includes(k), k);
   assert.deepEqual(diffTrades([{ id: 'A', entryDate: 'x', exitDate: 'y', shares: 1, exitReason: 'S' }], [{ id: 'A', entryDate: 'x', exitDate: 'z', shares: 1, exitReason: 'S' }, { id: 'B', entryDate: 'x' }]), { unchanged: 0, changed: 1, removedVsRef: 0, addedVsRef: 1 });
   assert.equal(sf7CodeSha256(), PINNED_SF7_CODE_SHA256);
+});
+
+test('SF7-MIN-POST-BREAKOUT: up-day counts, lower lows on volume, close below MA20, base depth and RS-line high (E7-2 findings), evidence only', async () => {
+  const { postBreakoutEvidence, postBreakoutTally, benchIndex: bi } = await import('../source-faithful/research/minervini-sf7.mjs');
+  const base = path([[0, 40], [300, 100]]);
+  // healthy: 8 rising closes after the entry
+  const good = mk([...base, ...Array.from({ length: 12 }, (_, k) => 101 + k)]);
+  const g = postBreakoutEvidence(good, { setupDate: good[300].date, entryDate: good[301].date, exitDate: good.at(-1).date, entryFill: 101 });
+  assert.equal(g.status, 'EVIDENCE'); assert.equal(g.healthy3of4, true); assert.equal(g.healthy6of8, true); assert.equal(g.lowerLowsOnVolume, false); assert.equal(g.closeBelowMa20InWindow, false);
+  // weak: three lower lows on rising volume and a close below MA20 right after the entry
+  const weak = [...base.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, 1e6)), ...[100.5, 97, 94, 91, 90, 92].map((c, j) => bar(301 + j, c, c * 1.002, c * 0.99, c, 3e6))];
+  const w = postBreakoutEvidence(weak, { setupDate: weak[300].date, entryDate: weak[301].date, exitDate: weak.at(-1).date, entryFill: 100.5 });
+  assert.equal(w.healthy3of4, false); assert.equal(w.lowerLowsOnVolume, true); assert.equal(w.closeBelowMa20InWindow, true);
+  // base depth and RS-line high on the VCP case; flat benchmark: the RS line follows the price
+  const v = VCP.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, VOL[k]));
+  const e = postBreakoutEvidence(v, { setupDate: v[324].date, entryDate: v[325].date, exitDate: v.at(-1).date, entryFill: 96.192 }, { bench: bi(v.map((b) => ({ date: b.date, close: 100 }))) });
+  assert.equal(e.baseDepthAbove50, false); assert.equal(typeof e.rsLineHighBeforePrice, 'boolean');
+  const t = postBreakoutTally([g, w, { status: 'NOT_EVALUABLE' }]);
+  assert.equal(t.evaluated, 2); assert.equal(t.notEvaluable, 1); assert.equal(t.healthy3of4.true, 1); assert.equal(t.lowerLowsOnVolume.true, 1);
 });

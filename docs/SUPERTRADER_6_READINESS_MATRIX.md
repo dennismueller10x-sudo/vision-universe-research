@@ -126,7 +126,7 @@ Legende: PASS = belegt; PASS* = belegt mit deklarierten Grenzen; MA = nur unter 
 
 ### C06 SF_MINERVINI_SEPA_VCP – RESEARCH_COMPLETE_WITH_EXCEPTIONS
 
-- **SOURCE_FIDELITY**: TEIL – contract 1.3.0: 0 exact, 11 derived (0 from a secondary source), 7 manual, 1 data-blocked, 0 ambiguous; wording only via translation
+- **SOURCE_FIDELITY**: TEIL – contract 1.4.0: 0 exact, 11 derived (0 from a secondary source), 7 manual, 1 data-blocked, 0 ambiguous; wording only via translation
 - **SETUP_COMPLETENESS**: TEIL – SETUP_QUALIFICATION+ENTRY_ELIGIBILITY: 19 rows, 4 mechanical, 6 under model assumption, 4 manual, 2 blocked
 - **ENTRY_COMPLETENESS**: MA – ENTRY_EXECUTION: 5 rows, 0 mechanical, 5 under model assumption, 0 manual, 0 blocked
 - **STOP_COMPLETENESS**: MA – INITIAL_STOP: 3 rows, 1 mechanical, 2 under model assumption, 0 manual, 0 blocked
