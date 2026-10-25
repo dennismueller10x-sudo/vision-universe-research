@@ -27,6 +27,8 @@
   var I = isNode ? require("./indicators.js") : global.VUTechnical.Indicators;
   var Fm = isNode ? require("./formations.js") : global.VUTechnical.Formations;
   var Ctx = isNode ? require("./ti/context.js") : global.VUTechnical.TIContext;
+  /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
+  var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
   var ROW_VERSION = "technical-screen-row-1.0.0";
 
@@ -75,7 +77,7 @@
   function computeRow(input) {
     var b = input.bars, n = b.close.length, t = n - 1, f = input.features || {};
     var c = b.close[t], prev = b.close[t - 1];
-    var row = { s: input.ticker, n: input.name || null, sid: input.securityId || null, asOf: b.timestamps[t], close: r(c, 4), chg1d: r(pct(c, prev)) };
+    var row = { s: input.ticker, n: input.name || null, sid: input.securityId || null, asOf: b.timestamps[t], close: Close.roundClose(c), chg1d: r(pct(c, prev)) };
 
     /* ---- Tag: Trend ---- */
     row.aboveSma200 = isNum(f.sma200) ? c > f.sma200 : null;

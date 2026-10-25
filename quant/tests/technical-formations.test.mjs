@@ -141,3 +141,18 @@ test("Historie: jede Erkennung traegt den damaligen Zustand und wann sie bekannt
   }
   assert.deepEqual(Fm.history(prepFull, 100), h, "deterministisch");
 });
+
+test("Formationskanten beginnen am ersten Hoch (Oberkante) bzw. ersten Tief (Unterkante)", () => {
+  let checked = 0;
+  for (let t = 60; t < rows.length; t += 3) {
+    for (const f of Fm.analyzeAt(prepFull, t).formations) {
+      for (const l of f.lines.filter((x) => x.role === "upper" || x.role === "lower")) {
+        const side = l.role === "upper" ? "HIGH" : "LOW";
+        const pts = (f.points || []).filter((p) => p.side === side);
+        if (!pts.length) continue;
+        if (f.source === "ti-chart-patterns-1.0.0") { assert.equal(l.from.time, pts[0].time, f.id + " " + l.role); checked++; }
+      }
+    }
+  }
+  assert.ok(checked > 0, "mindestens eine Bestandsformation mit Kanten geprueft");
+});

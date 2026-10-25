@@ -364,8 +364,11 @@
       var firstKnown = lastConfirmed >= 0 ? lastConfirmed : detIdx;
       var lines = [];
       if (p.neckline) lines.push({ role: "neckline", from: p.neckline.from, to: { time: s.timestamps[ctx.t], price: p.neckline.atNow } });
-      if (isNum(p.upperNow) && p.points.length) lines.push({ role: "upper", from: p.points[0], to: { time: s.timestamps[ctx.t], price: p.upperNow } });
-      if (isNum(p.lowerNow) && p.points.length) lines.push({ role: "lower", from: p.points[0], to: { time: s.timestamps[ctx.t], price: p.lowerNow } });
+      /* Ober-/Unterkante beginnen am ersten Hoch bzw. Tief der Formation (nicht am ersten Punkt schlechthin). */
+      var firstHigh = p.points.filter(function (q) { return q.side === "HIGH"; })[0], firstLow = p.points.filter(function (q) { return q.side === "LOW"; })[0];
+      var endT = s.timestamps[ctx.t];
+      if (isNum(p.upperNow) && firstHigh) lines.push({ role: "upper", from: { time: firstHigh.time, price: firstHigh.price }, to: { time: endT, price: p.upperNow } });
+      if (isNum(p.lowerNow) && firstLow) lines.push({ role: "lower", from: { time: firstLow.time, price: firstLow.price }, to: { time: endT, price: p.lowerNow } });
       return {
         id: p.type + "@" + s.timestamps[firstKnown], type: p.type, name: p.name, family: L.family, direction: p.direction,
         state: state, stateLabel: STATES[state], timeframe: s.timeframe || "1D", asOf: ctx.time,
