@@ -1,6 +1,6 @@
 # Vision Universe Research – Arbeitsregeln
 
-Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md).
+Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md).
 
 Statische Seite (GitHub Pages, `research.visionuniverse.de`), Node 22 ohne Abhängigkeiten, UMD-Engines (`globalThis` + `module.exports`), Python für SEC.
 Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
@@ -31,6 +31,7 @@ Gates werden nicht abgeschwächt. Eine Querschnittsänderung wird in produkteige
 node --test "core/tests/*.test.mjs"           # ~5 s
 node --test "quant/tests/*.test.mjs"
 node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"
+node --test "technical/tests/*.test.mjs"
 python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'
 node scripts/quality/check-test-isolation.mjs  # ein Test darf keine Produktionsdaten schreiben
 ```

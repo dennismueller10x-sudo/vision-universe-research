@@ -4,21 +4,54 @@ Stand: 24.10.2026. Verbraucherdaten `quant/data/sec/consumer` vom 19.10.2026, Me
 
 Die Analyse ändert keine Daten. Nichts wird pauschal übernommen oder korrigiert; die Verbraucherdaten erzeugt weiterhin allein `sec-consumer-fundamentals.yml` (Quant).
 
-## Stand nach den Korrekturen (24.10.2026, abends)
+## Stand nach den Korrekturen (25.10.2026)
 
-| Klasse | Meldungen | Stand |
-|---|---:|---|
-| Verarbeitungsgrenze: kein 10-K, kein Geschäftsjahr (167) | 167 | **behoben** mit #900. Der Consumer nutzt jetzt das bei der SEC registrierte Geschäftsjahresende. Alle 167 Verbraucherdateien haben Quartale (Lauf 40113600754). |
-| XOM, Nachfolge-CIK (1) | 1 | **behoben** mit #901. Die Historie der Vorgänger-CIK 0000034088 wird zusammengeführt. Live: GJ 2014–2025 und Q2 2026 (Lauf 40116913517). |
-| Fehlende Daten (SEC companyfacts) | 230 | offen. Diese Fälle kommen automatisch, sobald die SEC nachliefert; der tägliche Wächter übernimmt sie. |
-| Nicht unterstützt / sonstige | 26 | nicht relevant (siehe unten) |
+Von den **424** Meldungen der Liste vom 24.10. sind **376 übernommen**. Nachgewiesen ist das mit `scripts/fundamental/sec-freshness.mjs` auf `main` 67a9af4: Verbraucherdaten vom 25.10.2026, `notAdopted` 54 = 48 aus der Liste + 6 neue.
 
-Die Fundamental-Historie im Release ist dadurch von 4.882 auf 5.051 Unternehmen gestiegen. Als ungültig verworfen werden nur noch 11 statt 180.
+| Klasse | vorher | übernommen | offen | durch |
+|---|---:|---:|---:|---|
+| Verarbeitungsgrenze: kein 10-K, kein Geschäftsjahr | 167 | 167 | 0 | #900: registriertes Geschäftsjahresende |
+| Fehlende Daten (SEC companyfacts) | 230 | 206 | 24 | #913, #914: SEC Financial Statement Data Sets |
+| Sonstige (u. a. Nachfolge-CIK XOM) | 16 | 2 | 14 | #901, #910: Nachfolge-Emittenten |
+| Nicht unterstützt | 11 | 1 | 10 | – |
+| **Summe** | **424** | **376** | **48** | |
 
-**Weiterer Befund außerhalb der Lückenliste (Quant-Zuordnung, nicht behoben):** Bei Vermietern erfasst die Umsatzzeile teils nur den Umsatz aus Kundenverträgen (`RevenueFromContractWithCustomerExcludingAssessedTax`) statt des Gesamtumsatzes (`Revenues`).
+**Ergänzung aus den SEC Financial Statement Data Sets (#913, #914).**
+- Die SEC veröffentlicht dieselben XBRL-Zahlen vierteljährlich ein zweites Mal (DERA, `sub.txt`/`num.txt`).
+- Die Quelle ist geprüft: Bei 400 zufälligen Meldungen in beiden Quellen sind alle 7.039 verglichenen Werte identisch.
+- Übernommen werden nur Meldungen, von denen companyfacts nichts enthält. Kein companyfacts-Wert wird ersetzt.
+- Das Bundle nennt Quelle und Accessions in `dataSource.supplement`.
 
-- Beispiel United Rentals (URI), Q3 2026: 1,068 Mrd. statt 4,893 Mrd. $; die Mieterlöse fehlen.
-- Die Korrektur betrifft die Konzeptpriorität in der Quant-Registry. Sie gehört in einen eigenen Quant-PR mit Vorher/Nachher-Vergleich.
+**Weitere Korrekturen (25.10.2026, alle live seit Release 67a9af4):**
+
+| PR | Korrektur | Wirkung |
+|---|---|---|
+| #908 | Umsatz ist der Gesamtumsatz (`us-gaap:Revenues`), nicht sein ASC-606-Teil | United Rentals Q3 2026: 4,893 Mrd. statt 1,068 Mrd. $. Betrifft 298 Emittenten, v. a. REITs, Versicherer, Vermieter. |
+| #908 | IFRS-15-Umsatz als Rückfall, nicht für Banken und Versicherer | 37 IFRS-Emittenten haben erstmals Umsatz, u. a. NTR, AU, BNTX. |
+| #910 | Nachfolge-Emittenten | DMRC, CIB und AU mit voller Historie |
+| #915 | Geschäftsjahresgrenzen nur aus Perioden bis zum Meldedatum | NTR, NUE, QXO, DEO u. a. mit richtigen Geschäftsjahren; Phantomjahre bis 2031 entfallen. |
+
+### Offen (48), nach Ursache
+
+1. **52/53-Wochen-Kalender, nur in companyfacts lückenhaft (16).**
+   - Die Data Sets runden das Periodenende auf das Monatsende und nennen keinen Periodenbeginn. Ein Monatsende würde hier ein falsches Datum erzeugen, deshalb wird nicht ergänzt.
+   - Die Zahlen kommen, sobald companyfacts die Meldung aufnimmt.
+   - Betroffen: CHEF (10-Q 29.07.), FTV (10-Q 29.07.), GD (10-Q 29.07.), GOOS (20-F 15.05.), GRMN (10-Q 29.07.), HAYW (10-Q 29.07.), KO (10-Q 29.07.), LFUS (10-Q 29.07.), LSTR (10-Q 29.07.), MNRO (10-Q 29.07.), NXPI (10-Q 28.07.), QRVO (10-Q 28.07.), SITE (10-Q 29.07.), SMTC (10-Q 26.08.), SON (10-Q 28.07.), VFC (10-Q 29.07.)
+2. **Weder in companyfacts noch in den Data Sets (8).**
+   - Keine kostenlose maschinenlesbare SEC-Quelle enthält diese Zahlen.
+   - Ein eigener Inline-XBRL-Parser für die Originaldokumente wäre eine neue Pipeline; das ist für 8 Meldungen unverhältnismäßig.
+   - LNKS (10/2026) erscheint mit dem Data Set 2026q4 im Januar.
+   - Betroffen: AXICY (20-F 24.04.), EQS (10-Q 14.08.), LNKS (20-F 08.10.), PAGS (20-F/A 04.06.), PAX (20-F 30.04.), PICS (20-F 30.04.), TLK (20-F 15.05.), VIST (20-F 28.04.)
+3. **Nur Deckblatt, kein Abschluss in XBRL (10).** Nicht verwertbar: AGMB (20-F 23.04.), ALPS (20-F 06.08.), AUGO (20-F/A 29.04.), CNI (40-F 04.02.), HBNB (20-F 30.04.), KWM (20-F 15.05.), PAYP (20-F 30.06.), TMCR (20-F 27.04.), VACI (20-F 07.10.), VMET (20-F 30.04.)
+4. **Änderungsmeldungen, deren Zeitraum bereits vorliegt (14).** Nicht relevant: AEG (20-F/A 01.04.), EXK (40-F/A 13.04.), IMTE (20-F/A 04.03.), INTJ (20-F/A 21.04.), KRKR (20-F/A 19.05.), LGO (40-F/A 02.04.), NBIS (20-F/A 22.05.), NGEN (40-F/A 16.10.), NNNN (20-F/A 09.04.), TBBB (20-F/A 22.05.), VMAR (20-F/A 19.12.), WBUY (20-F/A 13.05.), WOK (20-F/A 20.03.), ZBAO (20-F/A 12.01.)
+
+**Neu seit dem 24.10. (6):** Meldungen vom 21.–23.10., die companyfacts zum Lauf noch nicht enthielt (CIKs 0000753308, 0000006201, 0000054187, 0000921825, 0001004980, 0001025996). Der tägliche Lauf übernimmt sie, sobald die SEC sie aufnimmt.
+
+**Anzeige:** Wo ein neuerer Bericht bei der SEC vorliegt, aber nicht verarbeitet ist, zeigt die Aktienseite diesen Hinweis. Fehlende Werte werden nicht geschätzt.
+
+**Bekannte Einschränkung außerhalb der Liste:** NTR hat keine Quartale, weil der 40-F-Filer keine 10-Q einreicht. Für IFRS-Banken und -Versicherer (z. B. Barclays, Banco de Chile, Grupo Cibest) zeigt Fundamental bewusst keinen Umsatz.
+
+Die Abschnitte unten beschreiben die Ausgangslage vom 24.10.2026.
 
 ## Vorgehen je Meldung
 
@@ -50,8 +83,8 @@ Die Fundamental-Historie im Release ist dadurch von 4.882 auf 5.051 Unternehmen 
 - **Befund:** Laut submissions wurden diese Meldungen als Inline-XBRL eingereicht. companyfacts enthält aber keinen Fakt mit ihrer Accession.
   - Abbott (ABT): Der 10-Q vom 28.07.2026 (0001628280-26-050134) fehlt. companyfacts endet beim 10-Q vom 29.04.2026; kein Fakt hat ein Periodenende nach Juni 2026.
   - Clorox (CLX): Der 10-K vom 07.08.2026 fehlt, der spätere 10-Q vom 07.10.2026 ist dagegen enthalten.
-- **Keine zweite Quelle:** Auch die tägliche SEC-Pipeline (`quant/data/fundamentals/issuers`) liest companyfacts. Sie endet bei diesen Unternehmen beim selben Zeitraum.
-- **Behebung:** Weder Fundamental noch der Erzeuger kann das beheben. Der nächste Verbraucherlauf übernimmt die Zahlen, sobald die SEC sie in companyfacts aufnimmt. Bei einem 10-Q geschieht das spätestens mit der Folgemeldung, die die Vorperiode als Vergleichsspalte enthält.
+- **Zweite Quelle (seit 25.10.2026, #913):** die SEC Financial Statement Data Sets; damit sind 206 dieser 230 übernommen (siehe oben).
+- **Behebung (Stand 24.10., überholt):** Weder Fundamental noch der Erzeuger kann das beheben. Der nächste Verbraucherlauf übernimmt die Zahlen, sobald die SEC sie in companyfacts aufnimmt. Bei einem 10-Q geschieht das spätestens mit der Folgemeldung, die die Vorperiode als Vergleichsspalte enthält.
 - **Anzeige bis dahin:** Die Aktienseite zeigt den Hinweis, dass bei der SEC ein neuerer Bericht vorliegt, der noch nicht verarbeitet ist.
 - **Sonderfall:** Bei fünf 20-F enthält companyfacts aus der Meldung nur Nebenangaben (`srt`, z. B. Rückkaufprogramme), keine Abschlusszahlen.
 
