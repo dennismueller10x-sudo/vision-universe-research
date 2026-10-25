@@ -9,7 +9,8 @@
      ti/levels.js          Unterstuetzungs-/Widerstandszonen
    Neu hier (bisher nicht im Bestand):
      Trendlinien, Trendkanaele, Keile, Wimpel, Range-Ausbruch,
-     Widerstands-Ausbruch, Volatilitaetskontraktion.
+     Widerstands-Ausbruch, Volatilitaetskontraktion; seit 1.1.0
+     Kursluecken nach oben/unten (Gap Up / Gap Down).
 
    EIN ZUSTANDSMODELL fuer alle Formationen (Produktsprache):
      DETECTED     Formation erkannt (in Bildung, noch ohne Ausloeser)
@@ -31,7 +32,7 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.0.0";
+  var ENGINE_VERSION = "technical-formations-1.1.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
@@ -83,7 +84,15 @@
     VOLATILITY_CONTRACTION: { name: "Volatilitätskontraktion", direction: "BULLISH", family: "CONTRACTION",
       detect: "Mindestens drei aufeinanderfolgende Rücksetzer (Pivot-Skala 1) mit je mindestens 20 % geringerer Tiefe, letzter Rücksetzer ≤ 12 %, Kurs über der SMA 50.",
       confirm: "Schluss über dem letzten Kontraktionshoch (Pivot).",
-      invalidate: "Schlusskurs unter dem Tief der letzten Kontraktion." }
+      invalidate: "Schlusskurs unter dem Tief der letzten Kontraktion." },
+    GAP_UP: { name: "Kurslücke nach oben", direction: "BULLISH", family: "GAP",
+      detect: "Tagestief über dem Vortageshoch, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars.",
+      confirm: "Die Lücke hält: drei Schlusskurse in Folge über dem Vortageshoch (Unterkante der Lücke).",
+      invalidate: "Schlusskurs unter dem Vortageshoch – die Lücke ist per Schluss geschlossen." },
+    GAP_DOWN: { name: "Kurslücke nach unten", direction: "BEARISH", family: "GAP",
+      detect: "Tageshoch unter dem Vortagestief, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars.",
+      confirm: "Die Lücke hält: drei Schlusskurse in Folge unter dem Vortagestief (Oberkante der Lücke).",
+      invalidate: "Schlusskurs über dem Vortagestief – die Lücke ist per Schluss geschlossen." }
   };
 
   /* Bestandsformationen aus ti/chart-patterns.js: Zustandsabbildung + Regeltexte. */
@@ -319,6 +328,35 @@
     return out;
   }
 
+  /* ------------------------------------------------- Kursluecken */
+  /* Je Richtung die juengste Luecke der letzten 20 Bars; Volumenbedingung nur, wenn die Reihe Volumen hat. */
+  function gaps(ctx) {
+    var s = ctx.series, out = [], atrCol = ctx.prep.features.columns.atr, rv = ctx.prep.features.columns.relativeVolume;
+    [1, -1].forEach(function (dir) {
+      for (var k = ctx.t; k >= Math.max(1, ctx.t - 19); k--) {
+        var a = atrCol[k - 1], edge = dir > 0 ? s.high[k - 1] : s.low[k - 1];
+        var size = dir > 0 ? s.low[k] - s.high[k - 1] : s.low[k - 1] - s.high[k];
+        if (!isNum(a) || !isNum(size) || size < 0.5 * a) continue;
+        if (ctx.hasVolume && !(isNum(rv[k]) && rv[k] >= 1.5)) continue;
+        var inv = -1, conf = -1, held = 0;
+        for (var m = k; m <= ctx.t; m++) {
+          if (dir > 0 ? s.close[m] < edge : s.close[m] > edge) { inv = m; break; }
+          if (m > k && ++held === 3 && conf < 0) conf = m;
+        }
+        var state = inv >= 0 ? "INVALIDATED" : conf >= 0 ? "CONFIRMED" : "DETECTED";
+        var far = dir > 0 ? s.low[k] : s.high[k];
+        out.push(base(ctx, dir > 0 ? "GAP_UP" : "GAP_DOWN", state, k, {
+          points: [], lines: [],
+          zone: { from: s.timestamps[k - 1], to: s.timestamps[ctx.t], low: r4(Math.min(edge, far)), high: r4(Math.max(edge, far)) },
+          levels: { gapLow: r4(Math.min(edge, far)), gapHigh: r4(Math.max(edge, far)), gapAtr: r4(size / a), relativeVolume: ctx.hasVolume ? r4(rv[k]) : null, invalidation: r4(edge) },
+          confirmedAt: conf >= 0 ? s.timestamps[conf] : null, invalidatedAt: inv >= 0 ? s.timestamps[inv] : null
+        }));
+        break;
+      }
+    });
+    return out;
+  }
+
   /* -------------------------------------- Volatilitaetskontraktion */
   function contraction(ctx) {
     var v = ctx.view("scale-1"), out = [], s = ctx.series;
@@ -392,7 +430,7 @@
     var ctx = Ctx.at(prep, t);
     var memo = {};
     function atFn(k) { if (!memo[k]) memo[k] = Ctx.at(prep, k); return memo[k]; }
-    var all = [].concat(legacy(ctx), trendlines(ctx), channelsAndWedges(ctx), pennants(ctx), rangeBreakout(ctx), resistanceBreakout(ctx, atFn), contraction(ctx));
+    var all = [].concat(legacy(ctx), trendlines(ctx), channelsAndWedges(ctx), pennants(ctx), rangeBreakout(ctx), resistanceBreakout(ctx, atFn), contraction(ctx), gaps(ctx));
     all.forEach(function (f) { if (f.detectedIndex > ctx.t) throw new Error("LOOKAHEAD:" + f.id); });
     var order = { CONFIRMED: 0, DETECTED: 1, INVALIDATED: 2 };
     all.sort(function (a, b) { return order[a.state] - order[b.state] || b.detectedIndex - a.detectedIndex || (a.type < b.type ? -1 : 1); });

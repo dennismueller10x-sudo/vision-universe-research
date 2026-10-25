@@ -54,12 +54,13 @@
     { id: "kanal", label: "Trendkanal", types: ["ASCENDING_CHANNEL", "DESCENDING_CHANNEL"] },
     { id: "kontraktion", label: "Volatilitätskontraktion", types: ["VOLATILITY_CONTRACTION"] },
     { id: "range", label: "Range", types: ["RECTANGLE"] },
-    { id: "tasse", label: "Tasse mit Henkel", types: ["CUP_WITH_HANDLE"] }
+    { id: "tasse", label: "Tasse mit Henkel", types: ["CUP_WITH_HANDLE"] },
+    { id: "luecke", label: "Kurslücke", types: ["GAP_UP", "GAP_DOWN"] }
   ];
   var TREND_PILLS = [
     { id: "sma200", field: "aboveSma200" }, { id: "hoch52", field: "newHigh52w" }, { id: "sma50", field: "aboveSma50" },
     { id: "kreuz", field: "sma50AboveSma200" }, { id: "hoch200w", field: "newHigh200w" }, { id: "rs", field: "rsPositive", daily: true },
-    { id: "supertrend", field: "supertrendUp", daily: true }
+    { id: "supertrend", field: "supertrendUp", daily: true }, { id: "wolke", field: "aboveCloud", daily: true }, { id: "psar", field: "psarUp", daily: true }
   ];
   function trendLabel(p, tf) { var f = Q.field(p.field); return Q.labelOf(f, tf); }
 
@@ -232,7 +233,7 @@
 
   var api = {
     SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
-    PATTERN_PILLS: PATTERN_PILLS, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
+    PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, deleteScreen: deleteScreen,

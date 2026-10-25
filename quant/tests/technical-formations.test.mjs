@@ -156,3 +156,36 @@ test("Formationskanten beginnen am ersten Hoch (Oberkante) bzw. ersten Tief (Unt
   }
   assert.ok(checked > 0, "mindestens eine Bestandsformation mit Kanten geprueft");
 });
+
+test("Kursluecke: reale AAPL-Luecke vom 03.05.2024 (Quartalszahlen) mit Volumen, Zustaende kausal", () => {
+  const t = rows.findIndex((r) => r.date === "2024-05-03");
+  const f = Fm.analyzeAt(prepFull, t).formations.find((x) => x.type === "GAP_UP");
+  assert.ok(f, "Luecke am Ausloesetag erkannt");
+  assert.equal(f.detectedAt, "2024-05-03");
+  assert.equal(f.state, "DETECTED", "am Ausloesetag noch nicht bestaetigt");
+  assert.ok(rows[t].low > rows[t - 1].high && f.levels.gapAtr >= 0.5 && f.levels.relativeVolume >= 1.5);
+  const later = Fm.analyzeAt(prepFull, t + 3).formations.find((x) => x.id === f.id);
+  assert.equal(later.state, "CONFIRMED", "drei Schluesse ueber der Lueckenunterkante");
+  assert.equal(later.confirmedAt, rows[t + 3].date);
+});
+
+test("Kursluecke: konstruiert; ohne Volumenspitze keine Luecke, geschlossen per Schluss = invalidiert", () => {
+  const base = seriesFromCloses(Array.from({ length: 80 }, (_, i) => 100 + 0.05 * Math.sin(i)), { seed: "gap", rangePct: 0.004 });
+  const k = 70;
+  function build(spike, lastClose) {
+    const rows = base.timestamps.map((d, i) => {
+      const up = i >= k ? 6 : 0;
+      return { date: d, open: base.open[i] + up, high: base.high[i] + up, low: base.low[i] + up, close: base.close[i] + up, volume: i === k ? spike : 1e6 };
+    });
+    if (lastClose !== undefined) { const r = rows[rows.length - 1]; r.close = lastClose; r.low = Math.min(r.low, lastClose); r.open = Math.max(r.open, lastClose); }
+    return Canonical.fromRows(rows, { instrumentId: "SYN", exchange: "SYN", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "fixture", sourceRevision: "gap" });
+  }
+  const gapOf = (s) => Fm.analyzeAt(Ctx.prepare(s), s.length - 1).formations.find((x) => x.type === "GAP_UP");
+  const f = gapOf(build(3e6));
+  assert.ok(f && f.detectedIndex === k, "Luecke an Bar " + k);
+  assert.equal(f.state, "CONFIRMED");
+  assert.equal(gapOf(build(1e6)), undefined, "Volumen vorhanden, aber keine Spitze: keine Luecke");
+  const closed = gapOf(build(3e6, base.high[k - 1] - 0.5));
+  assert.equal(closed.state, "INVALIDATED");
+  assert.equal(closed.invalidatedAt, base.timestamps[base.length - 1]);
+});

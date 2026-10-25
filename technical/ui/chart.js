@@ -190,6 +190,8 @@
           P.series.forEach(function (s2) { for (var k = from; k < n; k++) { var v = s2.values[k]; if (isNum(v)) { pl = Math.min(pl, v); ph = Math.max(ph, v); } } });
           if (!isFinite(pl)) { pl = 0; ph = 1; }
           var pp = (ph - pl) * 0.1 || 1; pl -= pp; ph += pp;
+          /* Balken wachsen von der Nulllinie: sie muss im Bereich liegen */
+          if (P.series.some(function (s2) { return s2.bars; })) { pl = Math.min(pl, 0); ph = Math.max(ph, 0); }
         }
         var PY = function (v) { return yp0 + paneH - (v - pl) / (ph - pl) * paneH; };
         var pg = node("g", { class: "tc-pane" }, svg);

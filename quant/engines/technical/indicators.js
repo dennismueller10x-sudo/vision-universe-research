@@ -8,7 +8,8 @@
    Wilder/RMA, True Range, RSI, ADX, rollierende Extreme und Streuung,
    Median-Volumenbasis) und wird hier NICHT neu geschrieben. Neu sind nur
    Indikatoren, die es im Bestand nicht gab (WMA, Supertrend, Donchian-Kanal,
-   Stochastik, CCI, Bollinger-/Keltner-Baender, OBV, MFI, Volumenspitzen).
+   Stochastik, CCI, Bollinger-/Keltner-Baender, OBV, MFI, Volumenspitzen;
+   seit 1.1.0 Williams %R, Aroon, Parabolic SAR, Ichimoku, CMF, VWMA).
 
    Grundsaetze (wie feature-store.js):
      • kausal: Wert an i nutzt nur Bars <= i
@@ -27,7 +28,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.0.0";
+  var INDICATORS_VERSION = "technical-indicators-1.1.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -79,6 +80,68 @@
     return { line: line, direction: dir, upper: fu, lower: fl };
   }
 
+  /**
+   * Parabolic SAR (Wilder 1978). Start: Richtung aus C_1 gegen C_0, SAR = Extrem der Gegenseite der ersten Bar,
+   * Extrempunkt (EP) = Extrem der Richtungsseite. Je Bar: SAR += AF·(EP − SAR), begrenzt durch die Tiefs (lang)
+   * bzw. Hochs (kurz) der zwei Vorbars; AF startet bei `step`, steigt bei jedem neuen EP um `step` bis `max`.
+   * Durchbricht das Tief (lang) bzw. Hoch (kurz) den SAR, kehrt die Richtung: SAR = alter EP, AF = step.
+   * Eine Luecke in H/L/C setzt die Berechnung zurueck (neuer Start nach zwei gueltigen Bars).
+   */
+  function psar(high, low, close, step, max) {
+    var h = col(high), l = col(low), c = col(close), n = c.length, out = arr(n), dir = arr(n);
+    var up = 0, sar = NaN, ep = NaN, af = step, start = -1;
+    for (var i = 0; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(c[i])) { start = -1; continue; }
+      if (start < 0) { start = i; continue; }
+      if (i === start + 1) {
+        up = c[i] >= c[start] ? 1 : -1;
+        sar = up > 0 ? Math.min(l[start], l[i]) : Math.max(h[start], h[i]);
+        ep = up > 0 ? Math.max(h[start], h[i]) : Math.min(l[start], l[i]);
+        af = step; out[i] = sar; dir[i] = up; continue;
+      }
+      var next = sar + af * (ep - sar);
+      if (up > 0) {
+        next = Math.min(next, l[i - 1], l[i - 2]);
+        if (l[i] < next) { up = -1; next = ep; ep = l[i]; af = step; }
+        else if (h[i] > ep) { ep = h[i]; af = Math.min(max, af + step); }
+      } else {
+        next = Math.max(next, h[i - 1], h[i - 2]);
+        if (h[i] > next) { up = 1; next = ep; ep = h[i]; af = step; }
+        else if (l[i] < ep) { ep = l[i]; af = Math.min(max, af + step); }
+      }
+      sar = next; out[i] = sar; dir[i] = up;
+    }
+    return { sar: out, direction: dir };
+  }
+
+  /**
+   * Ichimoku (Hosoda): Tenkan = Mitte von HH/LL der letzten t Bars, Kijun = dasselbe ueber k Bars,
+   * Senkou A = (Tenkan + Kijun)/2, Senkou B = Mitte von HH/LL der letzten b Bars.
+   * Kausal: spanA/spanB sind an der Bar ihrer Berechnung abgelegt. Die Wolke, die an Bar i gilt,
+   * ist cloudA/cloudB = spanA/spanB von Bar i − displacement (klassisch nach vorn verschoben gezeichnet).
+   * Die Chikou-Linie (Schluss um displacement Bars zurueck verschoben) entfaellt: Sie zeigt an Bar i
+   * einen Wert, der erst bei i + displacement bekannt ist.
+   */
+  function ichimoku(high, low, tenkanPeriod, kijunPeriod, spanBPeriod, displacement) {
+    function mid(p) { var d = donchian(high, low, p); return d.middle; }
+    var tenkan = mid(tenkanPeriod), kijun = mid(kijunPeriod), spanB = mid(spanBPeriod), n = tenkan.length;
+    var spanA = tenkan.map(function (t, i) { return isNum(t) && isNum(kijun[i]) ? (t + kijun[i]) / 2 : NaN; });
+    var cloudA = arr(n), cloudB = arr(n);
+    for (var i = displacement; i < n; i++) { cloudA[i] = spanA[i - displacement]; cloudB[i] = spanB[i - displacement]; }
+    return { tenkan: tenkan, kijun: kijun, spanA: spanA, spanB: spanB, cloudA: cloudA, cloudB: cloudB };
+  }
+
+  /** VWMA_n = Σ C·V / Σ V ueber die letzten n Bars. Fehlt ein Wert oder ist ΣV = 0: NaN. */
+  function vwma(close, volume, period) {
+    var c = col(close), v = col(volume), n = c.length, out = arr(n);
+    for (var i = period - 1; i < n; i++) {
+      var pv = 0, sv = 0, ok = true;
+      for (var j = i - period + 1; j <= i; j++) { if (!isNum(c[j]) || !isNum(v[j])) { ok = false; break; } pv += c[j] * v[j]; sv += v[j]; }
+      if (ok && sv > 0) out[i] = pv / sv;
+    }
+    return out;
+  }
+
   /* ----------------------------------------------------------- Momentum */
 
   /** MACD = EMA_fast − EMA_slow; Signal = EMA_signal(MACD); Histogramm = MACD − Signal. */
@@ -125,6 +188,37 @@
       out[k] = dev > 0 ? (tp[k] - m[k]) / (0.015 * dev) : 0;
     }
     return out;
+  }
+
+  /** Williams %R_n = −100·(HH_n − C)/(HH_n − LL_n), Bereich −100..0. Keine Spanne: −50. */
+  function williamsR(high, low, close, period) {
+    var hh = F.rollingMax(col(high), period), ll = F.rollingMin(col(low), period), c = col(close);
+    return c.map(function (v, i) {
+      if (!isNum(v) || !isNum(hh[i]) || !isNum(ll[i])) return NaN;
+      var span = hh[i] - ll[i];
+      return span > 0 ? -100 * (hh[i] - v) / span : -50;
+    });
+  }
+
+  /**
+   * Aroon_n (Chande): Fenster = die letzten n+1 Bars (i−n..i). Up = 100·(n − Bars seit dem hoechsten Hoch)/n,
+   * Down entsprechend mit dem tiefsten Tief; bei Gleichstand zaehlt das juengste Extrem. Oszillator = Up − Down.
+   */
+  function aroon(high, low, period) {
+    var h = col(high), l = col(low), n = h.length, upA = arr(n), downA = arr(n), osc = arr(n);
+    for (var i = period; i < n; i++) {
+      var hi = -Infinity, hiAt = -1, lo = Infinity, loAt = -1, ok = true;
+      for (var j = i - period; j <= i; j++) {
+        if (!isNum(h[j]) || !isNum(l[j])) { ok = false; break; }
+        if (h[j] >= hi) { hi = h[j]; hiAt = j; }
+        if (l[j] <= lo) { lo = l[j]; loAt = j; }
+      }
+      if (!ok) continue;
+      upA[i] = 100 * (period - (i - hiAt)) / period;
+      downA[i] = 100 * (period - (i - loAt)) / period;
+      osc[i] = upA[i] - downA[i];
+    }
+    return { up: upA, down: downA, oscillator: osc };
   }
 
   /* -------------------------------------------------------- Volatilitaet */
@@ -183,6 +277,25 @@
     return out;
   }
 
+  /**
+   * Chaikin Money Flow_n = Σ MFV / Σ V, MFV = V·((C − L) − (H − C))/(H − L). H = L ergibt Multiplikator 0.
+   * Bereich −1..+1. Fehlt ein Wert im Fenster oder ist ΣV = 0: NaN.
+   */
+  function cmf(high, low, close, volume, period) {
+    var h = col(high), l = col(low), c = col(close), v = col(volume), n = c.length, mfv = arr(n), out = arr(n);
+    for (var i = 0; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(c[i]) || !isNum(v[i])) continue;
+      var span = h[i] - l[i];
+      mfv[i] = span > 0 ? v[i] * ((c[i] - l[i]) - (h[i] - c[i])) / span : 0;
+    }
+    for (var k = period - 1; k < n; k++) {
+      var sm = 0, sv = 0, ok = true;
+      for (var j = k - period + 1; j <= k; j++) { if (!isNum(mfv[j])) { ok = false; break; } sm += mfv[j]; sv += v[j]; }
+      if (ok && sv > 0) out[k] = sm / sv;
+    }
+    return out;
+  }
+
   /** Relative Volumenstaerke = Volumen_i / Median der VORHERIGEN n Volumina (feature-store.js, robuste Basis). */
   function relativeVolume(volume, period) {
     var v = col(volume), base = F.rollingMedianPrior(v, period);
@@ -220,6 +333,13 @@
       definition: "Bandlinie (H+L)/2 ± m·ATR mit Nachziehregel; Richtung wechselt beim Schluss jenseits des Gegenbands", warmup: function (p) { return p.period - 1; } },
     { id: "donchian", family: "TREND", name: "Donchian-Kanal", params: { period: 20 }, inputs: ["high", "low"], overlay: true,
       definition: "oberes Band = hoechstes Hoch, unteres Band = tiefstes Tief der letzten n Bars", warmup: function (p) { return p.period - 1; } },
+    { id: "psar", family: "TREND", name: "Parabolic SAR", params: { step: 0.02, max: 0.2 }, inputs: ["high", "low", "close"], overlay: true,
+      definition: "Wilder: SAR += AF·(Extrempunkt − SAR), AF steigt je neuem Extrem um step bis max; Umkehr beim Durchbruch", warmup: function () { return 1; } },
+    { id: "ichimoku", family: "TREND", name: "Ichimoku-Wolke", params: { tenkanPeriod: 9, kijunPeriod: 26, spanBPeriod: 52, displacement: 26 }, inputs: ["high", "low"], overlay: true,
+      definition: "Tenkan/Kijun = Mitte von Hoch und Tief ueber 9/26 Bars; Wolke = Senkou A (Mittel beider) und Senkou B (52 Bars), um 26 Bars verschoben; ohne Chikou (nicht kausal)",
+      warmup: function (p) { return p.spanBPeriod - 1 + p.displacement; } },
+    { id: "vwma", family: "TREND", name: "Volumengewichteter Durchschnitt (VWMA)", params: { period: 20 }, inputs: ["close", "volume"], overlay: true,
+      definition: "Σ Schluss·Volumen / Σ Volumen der letzten n Bars", warmup: function (p) { return p.period - 1; } },
     { id: "rsi", family: "MOMENTUM", name: "Relative Strength Index (RSI)", params: { period: 14 }, inputs: ["close"], overlay: false,
       definition: "Wilder: RSI = 100 − 100/(1 + RMA(Gewinne)/RMA(Verluste))", warmup: function (p) { return p.period; } },
     { id: "macd", family: "MOMENTUM", name: "MACD", params: { fast: 12, slow: 26, signal: 9 }, inputs: ["close"], overlay: false,
@@ -230,6 +350,10 @@
       definition: "ROC = 100·(C_i/C_{i−n} − 1) in Prozent", warmup: function (p) { return p.period; } },
     { id: "cci", family: "MOMENTUM", name: "Commodity Channel Index (CCI)", params: { period: 20 }, inputs: ["high", "low", "close"], overlay: false,
       definition: "(TP − SMA(TP)) / (0,015·mittlere absolute Abweichung), TP = (H+L+C)/3", warmup: function (p) { return p.period - 1; } },
+    { id: "williamsR", family: "MOMENTUM", name: "Williams %R", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false,
+      definition: "−100·(HH − C)/(HH − LL) ueber n Bars, Bereich −100 bis 0", warmup: function (p) { return p.period - 1; } },
+    { id: "aroon", family: "MOMENTUM", name: "Aroon", params: { period: 25 }, inputs: ["high", "low"], overlay: false,
+      definition: "Up/Down = 100·(n − Bars seit Hoch/Tief)/n im Fenster der letzten n+1 Bars; Oszillator = Up − Down", warmup: function (p) { return p.period; } },
     { id: "atr", family: "VOLATILITY", name: "Average True Range (ATR)", params: { period: 14 }, inputs: ["high", "low", "close"], overlay: false,
       definition: "Wilder-Glaettung der True Range max(H−L, |H−C_{−1}|, |L−C_{−1}|)", warmup: function (p) { return p.period - 1; } },
     { id: "bollinger", family: "VOLATILITY", name: "Bollinger-Baender", params: { period: 20, k: 2 }, inputs: ["close"], overlay: true,
@@ -240,12 +364,15 @@
       definition: "kumuliertes Volumen mit Vorzeichen der Schlusskursaenderung, Start 0", warmup: function () { return 0; } },
     { id: "mfi", family: "VOLUME", name: "Money Flow Index (MFI)", params: { period: 14 }, inputs: ["high", "low", "close", "volume"], overlay: false,
       definition: "100 − 100/(1 + positiver/negativer Geldfluss), Geldfluss = TP·Volumen", warmup: function (p) { return p.period; } },
+    { id: "cmf", family: "VOLUME", name: "Chaikin Money Flow (CMF)", params: { period: 20 }, inputs: ["high", "low", "close", "volume"], overlay: false,
+      definition: "Σ Volumen·((C−L)−(H−C))/(H−L) / Σ Volumen ueber n Bars, Bereich −1 bis +1", warmup: function (p) { return p.period - 1; } },
     { id: "relativeVolume", family: "VOLUME", name: "Relative Volumenstaerke", params: { period: 20 }, inputs: ["volume"], overlay: false,
       definition: "Volumen / Median der vorherigen n Volumina", warmup: function (p) { return p.period; } },
     { id: "volumeSpikes", family: "VOLUME", name: "Volumenspitzen", params: { period: 20, threshold: 2 }, inputs: ["volume"], overlay: false,
       definition: "relative Volumenstaerke >= Schwelle", warmup: function (p) { return p.period; } }
   ];
 
+  var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max"];
   function catalogEntry(id) { for (var i = 0; i < CATALOG.length; i++) if (CATALOG[i].id === id) return CATALOG[i]; return null; }
 
   /**
@@ -256,7 +383,7 @@
     var entry = catalogEntry(id);
     if (!entry) return { id: id, error: "UNKNOWN_INDICATOR" };
     var p = Object.assign({}, entry.params, params || {});
-    for (var k in p) if (!isNum(p[k]) || p[k] < 0 || (k !== "multiplier" && k !== "k" && k !== "threshold" && (p[k] < 1 || p[k] !== Math.floor(p[k])))) return { id: id, error: "INVALID_PARAM:" + k };
+    for (var k in p) if (!isNum(p[k]) || p[k] < 0 || (FRACTIONAL.indexOf(k) < 0 && (p[k] < 1 || p[k] !== Math.floor(p[k])))) return { id: id, error: "INVALID_PARAM:" + k };
     var missing = entry.inputs.filter(function (c) { return !series[c] || !series[c].some(isNum); });
     if (missing.length) return { id: id, error: "MISSING_INPUT:" + missing.join(",") };
     var s = series, v;
@@ -279,6 +406,12 @@
       case "mfi": v = mfi(s.high, s.low, s.close, s.volume, p.period); break;
       case "relativeVolume": v = relativeVolume(s.volume, p.period); break;
       case "volumeSpikes": v = volumeSpikes(s.volume, p.period, p.threshold); break;
+      case "psar": v = psar(s.high, s.low, s.close, p.step, p.max); break;
+      case "ichimoku": v = ichimoku(s.high, s.low, p.tenkanPeriod, p.kijunPeriod, p.spanBPeriod, p.displacement); break;
+      case "vwma": v = vwma(s.close, s.volume, p.period); break;
+      case "williamsR": v = williamsR(s.high, s.low, s.close, p.period); break;
+      case "aroon": v = aroon(s.high, s.low, p.period); break;
+      case "cmf": v = cmf(s.high, s.low, s.close, s.volume, p.period); break;
     }
     return { id: id, version: INDICATORS_VERSION, params: p, warmup: entry.warmup(p), values: v };
   }
@@ -290,7 +423,8 @@
     /* neu */
     wma: wma, donchian: donchian, supertrend: supertrend, macd: macd, roc: roc, stochastic: stochastic, cci: cci,
     atr: atr, bollinger: bollinger, keltner: keltner, obv: obv, mfi: mfi, relativeVolume: relativeVolume, volumeSpikes: volumeSpikes,
-    rollingHigh: rollingHigh, rollingLow: rollingLow
+    rollingHigh: rollingHigh, rollingLow: rollingLow,
+    psar: psar, ichimoku: ichimoku, vwma: vwma, williamsR: williamsR, aroon: aroon, cmf: cmf
   };
 
   if (isNode) module.exports = api;
