@@ -82,6 +82,7 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
   - Bestandsformationen werden nie invalidiert, sondern verschwinden (entfallen 45 bis 95 %).
   - Kanäle und Keile sind beim ersten Sichtbarwerden meist schon bestätigt (58 bis 93 %), die Erkennung kommt also spät.
   - Flaggen werden praktisch nie bestätigt.
+  - Ursachen und Korrektur (`technical-formations-1.2.0`, Zweig `claude/technical-formations-lifecycle`, nicht gemergt): [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
