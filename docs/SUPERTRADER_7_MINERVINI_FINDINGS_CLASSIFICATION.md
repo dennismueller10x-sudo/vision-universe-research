@@ -30,6 +30,8 @@ Keine Fundstelle mit Zweifel hat eine Vertragsregel verändert.
 | IMPLEMENTED (nur Diagnose) | 1 | F7-B03-047-016: Close unter MA20 wird gezählt; der Halbverkauf selbst ist eine Ausstiegsregel |
 | DEFERRED | 16 | Basiszählung (4), PIT-KGV und EPS-Beschleunigung (3, EPS-Datenqualität), Chase-Grenze (4, k unquantifiziert), Order- und Stop-Varianten (3), Pullback (1), Top-Volumen (1) |
 | OWNER | 2 | F7-B03-212-085, -216-086: Klimax-Verkauf, Entscheidung E7-7 |
+
+Nachtrag E7-7 (25.10.2026): F7-B03-047-016, -212-085 und -216-086 sind jetzt als vorregistrierte Forschungsvarianten umgesetzt (`EXIT-MA20-HALF`, `EXIT-CLIMAX`, `EXIT-CLIMAX-UPCLOSES`), nie als Referenz oder Originalregel. Siehe [SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md](SUPERTRADER_7_MINERVINI_EXIT_VARIANTS.md). Die Tabelle oben zeigt den Stand vor E7-7.
 | NOT_IN_SCOPE | 4 | Cup/Cheat- und IPO-Familie (ausgeschlossene Vertragsvarianten) |
 
 Implementiert sind ausschließlich **Diagnosen und Belege**. Sie stecken in `postBreakoutEvidence` (`research/minervini-sf7.mjs`, Version `sf7-minervini-1.3.0`) mit der neuen Modellannahme `MA-MIN7-POST-BREAKOUT-WINDOW` (10 Sitzungen). Umgesetzt sind:
