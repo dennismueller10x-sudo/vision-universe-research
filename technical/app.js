@@ -504,7 +504,7 @@
 
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
-  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50"], ["bb", "Bollinger"],
+  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
     ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["volumen", "Volumen"]];
   var PANE_LIST = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
     ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"]];
@@ -645,8 +645,10 @@
       if (X.cs.sma200) { overlays.push({ id: "sma200", label: "SMA 200", values: X.cs.sma200, color: "var(--tc-c2)" }); legend.push(["SMA 200", "var(--tc-c2)"]); }
     }
     if (L.ema) {
-      overlays.push({ id: "ema20", label: "EMA 20", values: X.ind.ema20, color: "var(--tc-c3)", dash: "4 3" }); legend.push(["EMA 20", "var(--tc-c3)"]);
-      overlays.push({ id: "ema50", label: "EMA 50", values: X.ind.ema50, color: "var(--tc-c4)", dash: "4 3" }); legend.push(["EMA 50", "var(--tc-c4)"]);
+      /* Aus der Vollhistorie, wenn das Bundle sie traegt (ema-settled-1.0.0); sonst im Anzeigefenster gerechnet. */
+      overlays.push({ id: "ema20", label: "EMA 20", values: X.cs.ema20 || X.ind.ema20, color: "var(--tc-c3)", dash: "4 3" }); legend.push(["EMA 20", "var(--tc-c3)"]);
+      overlays.push({ id: "ema50", label: "EMA 50", values: X.cs.ema50 || X.ind.ema50, color: "var(--tc-c4)", dash: "4 3" }); legend.push(["EMA 50", "var(--tc-c4)"]);
+      if (X.cs.ema200 && X.cs.ema200.some(isNum)) { overlays.push({ id: "ema200", label: "EMA 200", values: X.cs.ema200, color: "var(--tc-c2)", dash: "4 3" }); legend.push(["EMA 200", "var(--tc-c2)"]); }
     }
     var ex = X.ind;
     if (L.keltner) {
@@ -762,7 +764,15 @@
     var b = inst.bars, bundle = inst.bundle || {};
     return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
       el("dt", { text: "Kursreihe" }), el("dd", { text: "Tiingo EOD, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
-      el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); EMA, Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
+      el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); " + (bundle.chartSeries && bundle.chartSeries.ema200 ? "EMA 20/50/200 ebenfalls auf der Vollhistorie, erst nach ihrer Aufwärmphase; " : "EMA, ") + "Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
+      (function () {
+        var es = bundle.emaSettlement, p = es && es.periods && es.periods.filter(function (x) { return x.period === 200; })[0];
+        if (!p) return null;
+        var pct = function (v) { return isNum(v) ? (v * 100).toLocaleString("de-DE", { maximumSignificantDigits: 2 }) + " %" : "–"; };
+        return [el("dt", { text: "EMA 200" }), el("dd", { class: p.status === "SETTLED" ? null : "is-warn", text: p.status === "SETTLED"
+          ? "veröffentlicht seit " + M.dateDe(p.firstSettledDate) + "; Fehlerschranke heute " + pct(p.errorBoundAtCutoff) + " des Kurses (Grenze 0,1 %)"
+          : "nicht veröffentlicht: " + (p.barsAfterSeed !== null && p.barsAfterSeed < p.warmupBars ? "Historie zu kurz (frühestens ab " + p.minimumBars + " Tagesbars)" : "Fehlerschranke " + pct(p.errorBoundAtCutoff) + " über 0,1 % (Startfenster weit vom heutigen Kurs)") })];
+      })(),
       (function () {
         var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
         if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
@@ -801,7 +811,7 @@
         el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
           "Tageskurse: Tiingo EOD, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
           "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant).",
-          "EMA 200 wird bewusst nicht gezeigt: 270 Tagesbars reichen nicht für eine von ihrem Startwert unabhängige EMA 200. Der 200-Tage-Trend wird über die SMA 200 abgebildet.",
+          "EMA 20/50/200 werden auf der Vollhistorie gerechnet und an einem Tag nur gezeigt, wenn ihr möglicher Fehler gegenüber jeder anderen Startkonvention höchstens 0,1 % des Kurses beträgt (Schranke: Restgewicht des Startwerts × Spanne des Startfensters ÷ Schlusskurs) und der Startwert höchstens noch mit 5 % wirkt. Frühestens ab 500 Tagesbars (EMA 200), 125 (EMA 50) und 50 (EMA 20). Bei stark gefallenen Titeln kann die EMA 200 trotz langer Historie fehlen; der 200-Tage-Trend steht dann über die SMA 200.",
           "Woche und Monat: Wochenschlüsse aus der langen Reihe (nur Schlusskurse, nur abgeschlossene Wochen); Monatswerte aus dem letzten Wochenschluss je Monat.",
           "Relative Stärke: Kursänderung über 63 bzw. 126 Handelstage minus der des S&P-500-ETF SPY am selben Stichtag.",
           "Es gibt keinen Setup-Score: Sortiert wird nach einem gewählten, offengelegten Feld oder nach der Zahl erfüllter Bedingungen.",
