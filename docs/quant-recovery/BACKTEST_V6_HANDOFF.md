@@ -1,16 +1,18 @@
 # Quant Backtest – Übergabe von Auftrag 1 an Auftrag 2
 
-**Dokumentvertrag:** `backtest-v6-handoff-1.0.0`
-**Status:** LOCAL_VALIDATION_PASSED – Remote-Abschluss und Merge noch ausstehend.
+**Dokumentvertrag:** `backtest-v6-handoff-1.1.0`
+**Status:** V5.1_SECURED_AND_MERGED – technische Sicherung abgeschlossen, keine Produktfreigabe.
 **PR:** [#906](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/906)
 **Integrationsbasis:** `05cd43b34bce9cee25564a48db29ff19ba3b1c7b` (25.10.2026).
-**Verifizierter Main nach Übernahme / Merge-Commit #906:** noch offen; wird nach tatsächlichem Merge ergänzt.
+**Finaler Main-Snapshot der technischen Abnahme / Merge-Commit #906:** `9cacd5ea6f64dae2dea47e3cf85a2cf149c6fc49` (25.10.2026, 2026-10-25T07:10:43Z).
+
+Der nachgelagerte Dokumentationscommit ergänzt dieses bereits verifizierte Protokoll und ändert keine Laufzeitdatei. Seine genaue versionierte Main-Revision lässt sich mit `git log -1 --first-parent --format=%H -- docs/quant-recovery/BACKTEST_V6_HANDOFF.md` ermitteln; der Snapshot oben bezeichnet den geprüften Backtest-Unterbau.
 
 ## A. Repository und Sicherung
 
 Auftrag 1 sichert den bestehenden technischen Unterbau. Er enthält keine neue Backtest-Art, keine Monte-Carlo-Implementierung, keine Frontend-Arbeit und keine Produktfreigabe. Alle realen Einzelaktienrechnungen bleiben **PRICE_RETURN / NOT_CERTIFIED**, `productionApproved=false`.
 
-Die Vorgänger #862, #872, #882, #894, #895, #896 und #897 waren bei Beginn dieses Auftrags offen. Ihre vollständigen Köpfe werden nicht nacheinander gemergt: Sie enthalten kumulative/doppelte technische Patches sowie alte UI- und Preview-Anteile. #906 übernimmt die benötigten Backendteile selektiv. Eine Schließung erfolgt erst nach verifizierter Übernahme und mit nachvollziehbarem Verweis. Originalbranches werden dabei nicht gelöscht. Der endgültige Status steht nach Abnahme unter `v6-securement/` und im Abschlussabschnitt dieses Dokuments.
+Die Vorgänger #862, #872, #882, #894, #895, #896 und #897 waren bei Beginn dieses Auftrags offen. Ihre vollständigen Köpfe werden nicht nacheinander gemergt: Sie enthalten kumulative/doppelte technische Patches sowie alte UI- und Preview-Anteile. #906 übernimmt die benötigten Backendteile selektiv. Eine Schließung erfolgt erst nach verifizierter Übernahme und mit nachvollziehbarem Verweis. Originalbranches werden dabei nicht gelöscht. Endgültig sind alle sieben Vorgänger **CLOSED**, technisch ersetzt durch den verifizierten Main-Stand von #906. Sie wurden mit nachvollziehbarem Abschlusskommentar und Referenz geschlossen; ihre Branches wurden nicht gelöscht. [Status-/Zeit-/SHA-Nachweis](v6-securement/closed-predecessors.json).
 
 ### Methodikgrundlage für Auftrag 2
 
@@ -28,7 +30,7 @@ Auftrag 2 muss insbesondere 99,5 % Outcome-Abdeckung, Regimegrenzen, 0,50 Prozen
 | Ausführung | Bestehende Regel NEW_52W_HIGH unverändert: aktuelle abgeschlossene Woche gegen die vorigen 52, vorhandener 53-Bar-Warm-up und 13-Wochen-Event-Cooldown. Signal erst nach Schluss bekannt; Entry zum beobachteten Folgewochenschluss, Exit nach 26 weiteren Wochen. Ein finanzierter Bestand, überschneidende Signale überspringen, verfügbare Mittel wiederanlegen. |
 | Modellgrenze | `VALIDATED_EXECUTION_MODEL` gilt ausschließlich für Mechanik. Folgewochenschluss ist ein nachträglich beobachteter Modellpreis, kein garantierter Live-Fill. Offene Positionen werden bewertet, ohne erfundenen Exit oder abgeschlossenen M6-Ausgang. |
 | Kostenmodell V2 | `weekly-execution-model-v2.json`, `PER_SIDE_NOTIONAL`: 10 bp Gebühren und 5 bp Slippage je Seite; Kaufnotional = Cash / 1,0015, Verkaufskosten auf tatsächlichem Verkaufsnotional. Keine Zwischenrundung, keine Cash-Verzinsung. Historische Brokerkosten werden nicht behauptet. |
-| Rendite | PRICE_RETURN, Dividenden ausgeschlossen. `metrics.totalReturn` ist ein historischer Feldname für kumulative Preisrendite. Wöchentlicher Drawdown, keine intraday Verlustmessung. |
+| Rendite | PRICE_RETURN, Dividenden ausgeschlossen. `metrics.totalReturn` ist ein historischer Feldname für kumulative Preisrendite. Rendite-/CAGR-/Drawdownwerte sind Dezimalquoten (0,156284 ≙ 15,6284 %); Gebühren/Slippage sind Geldbeträge in der ausgewiesenen Währung. Wöchentlicher Drawdown, keine intraday Verlustmessung. |
 | Benchmarks | Eigene Aktie und SPY Buy-and-Hold, gleicher tatsächlicher Bewertungszeitraum, USD/gleiche Renditebasis; passive Benchmarks ohne Transaktionskosten ausdrücklich gekennzeichnet. Fehlende vollständige SPY-Historie ergibt BENCHMARK_UNAVAILABLE, keine Interpolation und keine stille MAX-Verkürzung. |
 | Qualität | A technisch uneingeschränkt, B eingeschränkt nutzbar, C blockiert. Reale vorhandene Simulationen sind derzeit B oder C. Identitäts-, CA-, Lücken-, Warm-up-, Instrumentklassen- und Terminalwert-Holds bleiben erhalten. |
 | Speicherung | `materialize-real-backtest-read.cjs`, privates Verzeichnis außerhalb des Repositorys; versionierte Snapshot-/Summary-/Equity-/Trade-/Qualitätsdateien, Hashes und geshardeter Index. Vollständiger Batch ist wiederaufnehmbar; keine Detail-Vollbeladung beim einzelnen Abruf. |
@@ -69,6 +71,8 @@ Alle bestehenden Funktionen bleiben erhalten. Die NEW_52W_HIGH-Einzelaktienrechn
 | Strategy Backtest | Bestehende `profile-backtest.js`-PIT-Ausführung, streng vergangenheitsbezogene Mitgliedschaft/Faktoren. Legacy `backtest.js` besitzt Portfolio-/Rebalancingmechanik; Mock-Provider bleibt Testwerkzeug. | Historische Universumsmitgliedschaften und ausreichend lange PIT-Faktorreihen; kein Survivor-by-construction-Portfolio aus heutigen Mitgliedern. Die Legacy-Mechanik ist kein Nachweis realer universumsweiter Portfolioausführung. | Profil-/PIT-/Backtest-/Provider-Tests; COLLECTING_HISTORY / NOT_CERTIFIED. |
 | Factor Ranking Backtest | `profile-backtest.js`, `build-factor-evidence.mjs`: vorhandene Faktorbeobachtungen und Forward-Outcomes. | Längere PIT-Faktorhistorie, zeitlich richtige Vergleichspopulation/Membership, vollständig beobachtete Forward-Ausgänge und belastbare Rebalance-/Kostenstudie. Keine heutigen Rankings rückdatieren. | Faktor-/Profil-/Forward-/Zertifizierungstests; COLLECTING_HISTORY / NOT_CERTIFIED. |
 
+Alle 38 erfassten technischen Dateien sind bytegleich zum vor Auftrag 1 berichteten Commit `98d4a5ace`; [Inhaltserhalt](v6-securement/original-implementation-preservation.json) und [Main-Dateiverifikation](v6-securement/main-verification.json) belegen den gesicherten Unterbau.
+
 Technisch korrigierte Datenlücken werden nicht mit methodischer Zertifizierung gleichgesetzt. Unbekannte Delisting-Auszahlungen sind weder null noch automatisch Totalverlust. Fehlende historische Daten und notwendige künftige prospektive Beobachtungen sind getrennte Aufgaben. Für vorhandene geeignete Preisgeschichte gibt es keine pauschale Wartepflicht von fünf Jahren.
 
 ## D. Verbindlicher Planungsumfang für Auftrag 3 – keine Implementierung in Auftrag 1
@@ -98,6 +102,23 @@ Auftrag 2 klärt gemeinsame fachliche Regeln, Abnahmen und die Lizenz-/Datenlüc
 
 ## F. Prüf- und Merge-Nachweis
 
-Die erneuten lokalen Prüfungen sind abgeschlossen: Quant **2.874/2.874**, Core **260/260**, gemeinsame Navigation/Theme/Budget **23/23**, Consumer **31**, SEC-/PIT-Python **32**; Browser **96**, Budgets **8/8**, automatisierte Accessibility **84 Seiten / 0 Verstöße**, direkte Zugangs-/Routen-/Cache-/Parallelprüfungen Chromium **12/12** und echtes WebKit **7/7**. Datenqualitäts-, Look-ahead-, As-of-, Runtime-, Rechte-/Identitäts-, Writer-/Rollback- und Generationstests sind Bestandteil der ausgeführten Suite. Die Runtime, Daten-/Qualitätsgeneration und reproduzierbaren Nachweise stehen unter `v6-securement/`. Remote-Checks und tatsächlicher Merge werden gesondert nachgewiesen. Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](BACKTEST_V51.md), [Servicevertrag](BACKTEST_V51_HANDOFF.md), [Gate-Matrix](v51/six-kind-matrix.json).
+Die erneuten lokalen Prüfungen sind abgeschlossen: Quant **2.874/2.874**, Core **260/260**, gemeinsame Navigation/Theme/Budget **23/23**, Consumer **31**, SEC-/PIT-Python **32**; Browser **96**, Budgets **8/8**, automatisierte Accessibility **84 Seiten / 0 Verstöße**, direkte Zugangs-/Routen-/Cache-/Parallelprüfungen Chromium **12/12** und echtes WebKit **7/7**. Datenqualitäts-, Look-ahead-, As-of-, Runtime-, Rechte-/Identitäts-, Writer-/Rollback- und Generationstests sind Bestandteil der ausgeführten Suite. Die Runtime, Daten-/Qualitätsgeneration und reproduzierbaren Nachweise stehen unter `v6-securement/`. Alle Prüfjobs des tatsächlich gemergten Heads `fe6088c547df6cd530fdba9ee6d8731df5be5f75` waren erfolgreich. Bedingte Produktions-/Secret-Workflows waren regulär SKIPPED und wurden nicht ausgelöst. Es gab keine vorgeschriebenen oder angeforderten Reviews; Branch-Metadaten meldeten Schutz deaktiviert und keine Branch-Regeln. Der reguläre Merge hat den erwarteten Head geprüft; keine Admin-/Auto-Merge-Umgehung. [Check-/Regel-/Merge-Nachweis](v6-securement/merge-acceptance.json). Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](BACKTEST_V51.md), [Servicevertrag](BACKTEST_V51_HANDOFF.md), [Gate-Matrix](v51/six-kind-matrix.json).
 
-**Abschlussstatus:** noch ausstehend. Keine vorweggenommene Merge- oder Freigabebehauptung.
+### Tatsächliche Abschlusswerte
+
+- #906: **MERGED**, Commit `9cacd5ea6f64dae2dea47e3cf85a2cf149c6fc49`.
+- #862, #872, #882, #894, #895, #896, #897: **CLOSED** als ersetzt, keine Originalbranch-Löschung.
+- 38 technische Dateien, 237 UI-Dateien und zwei Methodik-Archivdateien auf dem tatsächlichen Main verifiziert; keine Frontend-Änderung.
+- Nach Merge erneut NVDA MAX von Main ausgeführt, 21 abgeschlossene Trades / 1.396 Bewertungen unabhängig mit Python bestanden; alle acht Reader-Fälle erneut bestanden. Der Standardzugriff liefert UNAVAILABLE / `productionApproved=false` ohne Performance.
+- Preis-Simulationsgeneration: `23a3a9b70450c0cc8cedaafb33577e720ad1979d44935deb80ca26241e27bfff`, Quellstand 23.10.2026. 4.451 eingeschränkt nutzbar, 1.739 blockiert, 22.255 Perioden; 0/6 zertifiziert.
+- Keine offenen technischen Merge-Blocker für diesen Sicherungsauftrag. Daten-/Methodikgrenzen und spätere autorisierte Auslieferung bleiben ausdrücklich offen. Die Dokumentationsfinalisierung verwendet ebenfalls den normalen PR-/Check-Prozess.
+
+### Konkrete offenen Punkte für Auftrag 2
+
+1. Archivierten Methodikentwurf fachlich prüfen und explizit verabschieden oder versioniert ändern: Outcome-Nenner/99,5 %, Regime-/Clustergrenzen, wirtschaftliche Mindestwirkung, OOS-Bedeutung und prospektive Dauer/M6-Nachlauf.
+2. Für jede der sechs Arten das zulässige historische Universum, PIT-/Veröffentlichungszeit, Identität/Delisting-Endwerte, Renditebasis und Benchmarkdaten festlegen. Fehlende Daten und erforderliche zukünftige Beobachtung getrennt begründen.
+3. Unabhängige Validierung nach der bereits explorativ betrachteten Historie definieren; bestehende OOS-/Robustheitsresultate nicht als neuen unabhängigen Vorteilsnachweis umdeuten. Negative valide Ergebnisse von positivem Effekt trennen.
+4. Daten-/Lizenzlücken priorisieren und Abnahmekriterien für spätere Beschaffung festlegen. Keine automatische Bestellung, Historienerzeugung oder Gate-Abschwächung.
+5. Aus diesen Entscheidungen konkrete Abnahmekriterien für den verbindlichen Planungsumfang aus Abschnitt D ableiten. Die sieben Erweiterungen werden erst in Auftrag 3 implementiert.
+
+**Entscheidung:** V5.1_SECURED_AND_MERGED. Technische Integration bleibt READY_WITH_LIMITATIONS; methodische Zertifizierung und Produktfreigabe sind nicht erteilt.
