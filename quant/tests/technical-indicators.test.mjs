@@ -170,7 +170,7 @@ test("Aufwaermperiode im Katalog stimmt mit dem ersten Wert ueberein", () => {
   for (const entry of I.CATALOG) {
     const r = I.compute(S, entry.id);
     assert.ok(!r.error, entry.id + ": " + r.error);
-    const v = r.values, main = Array.isArray(v) ? v : v.line || v.adx || v.macd || v.k || v.upper || v.middle;
+    const v = r.values, main = Array.isArray(v) ? v : v.line || v.adx || v.macd || v.k || v.upper || v.middle || v.sar || v.cloudB || v.up;
     const expected = entry.id === "macd" ? r.params.slow - 1 : entry.id === "stochastic" ? r.params.kPeriod + r.params.smooth - 2 : r.warmup;
     assert.equal(firstFinite(main), expected, entry.id + " Aufwaermphase");
     assert.ok(entry.definition && entry.name && entry.family, entry.id + " dokumentiert");
