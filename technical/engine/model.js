@@ -152,6 +152,80 @@
       (e.significant ? "nach Mehrfachtest-Korrektur belastbar, aber nur ein Marktjahr." : "statistisch nicht belastbar.");
   }
 
+  /** Umbenennen bzw. Filter einer gespeicherten Suchstrategie ersetzen (gleiche ID, Zeitstempel "updatedAt"). */
+  function updateScreen(storage, id, patch, now) {
+    var list = loadScreens(storage), hit = false;
+    list = list.map(function (x) {
+      if (x.id !== id) return x;
+      hit = true;
+      var y = Object.assign({}, x, { updatedAt: new Date(now || Date.now()).toISOString() });
+      if (patch && typeof patch.name === "string" && patch.name.trim()) y.name = patch.name.trim().slice(0, 60);
+      if (patch && typeof patch.params === "string") y.params = patch.params;
+      return y;
+    });
+    if (!hit) return false;
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  /** Export als JSON (Format vu-technical-screens-1); nur Name und Filteradresse, keine Treffer. */
+  function exportScreens(storage) {
+    return JSON.stringify({ format: "vu-technical-screens-1", screens: loadScreens(storage).map(function (x) { return { name: x.name, params: x.params, createdAt: x.createdAt }; }) }, null, 1);
+  }
+  /**
+   * Import: nur bekannte Adressparameter (preset, q, muster, trend, ...), gleiche Filteradresse wird nicht doppelt
+   * angelegt, hoechstens 50 Eintraege. Liefert { ok, added, skipped, error? }.
+   */
+  var PARAM_KEYS = ["preset", "q", "muster", "bestaetigt", "trend", "vol", "rsi", "logik", "sort", "tf"];
+  function importScreens(storage, text, now) {
+    var doc;
+    try { doc = JSON.parse(text); } catch (e) { return { ok: false, added: 0, skipped: 0, error: "KEIN_JSON" }; }
+    var items = doc && doc.format === "vu-technical-screens-1" && Array.isArray(doc.screens) ? doc.screens : null;
+    if (!items) return { ok: false, added: 0, skipped: 0, error: "FORMAT" };
+    var list = loadScreens(storage), have = {}, added = 0, skipped = 0, t = now || Date.now();
+    list.forEach(function (x) { have[x.params] = 1; });
+    items.forEach(function (x, i) {
+      var params = x && typeof x.params === "string" ? x.params : null;
+      var okKeys = params !== null && params.split("&").every(function (kv) { return !kv || PARAM_KEYS.indexOf(kv.split("=")[0]) >= 0; });
+      if (!okKeys || !x.name || have[params] || list.length >= 50) { skipped++; return; }
+      have[params] = 1; added++;
+      list.push({ id: "s" + (t + i).toString(36) + "i", name: String(x.name).slice(0, 60), params: params, createdAt: new Date(t).toISOString() });
+    });
+    try { storage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 50))); } catch (e) { return { ok: false, added: 0, skipped: items.length, error: "SPEICHER" }; }
+    return { ok: true, added: added, skipped: skipped };
+  }
+
+  /* ------------------------------------------------- Filter-Baukasten */
+  /* Zeilen { field, op, value, value2 } je Gruppe; Gruppen sind ODER-verknuepft, Zeilen einer Gruppe UND. Prozentfelder
+     werden in der Oberflaeche in Prozent eingegeben und als Anteil gespeichert. */
+  function builderFromQuery(query) {
+    var v = Q.validate(query || { groups: [] }), q = v.query;
+    var groups = q.groups.filter(function (g) { return g.filters.length; });
+    if (q.logic === "AND" && groups.length > 1) groups = [{ filters: [].concat.apply([], groups.map(function (g) { return g.filters; })) }];
+    return { tf: q.timeframe, groups: groups.length ? groups.map(function (g) { return g.filters.map(function (f) { var o = { field: f.field, op: f.op, value: f.value }; if (f.op === "between") o.value2 = f.value2; return o; }); }) : [[]] };
+  }
+  function queryFromBuilder(b) {
+    var groups = (b.groups || []).map(function (rows) { return { op: "AND", filters: rows.filter(function (r) { return r && r.field; }) }; }).filter(function (g) { return g.filters.length; });
+    return { v: 1, timeframe: b.tf || "1D", logic: groups.length > 1 ? "OR" : "AND", groups: groups, sort: null, limit: 200 };
+  }
+  /** Eingabetext -> Wert (Komma oder Punkt; Prozentfelder in Prozent). NaN bei ungueltiger Eingabe. */
+  function parseFieldInput(fieldId, text) {
+    var f = Q.field(fieldId), v = Number(String(text).trim().replace(",", "."));
+    if (!f || String(text).trim() === "" || !isFinite(v)) return NaN;
+    return f.kind === "pct" ? Math.round(v * 1e6) / 1e8 : v;
+  }
+  function formatFieldInput(fieldId, v) {
+    var f = Q.field(fieldId);
+    if (!f || typeof v !== "number" || !isFinite(v)) return "";
+    return String(f.kind === "pct" ? Math.round(v * 1e6) / 1e4 : v).replace(".", ",");
+  }
+  /** Standardzeile fuer ein Feld (sinnvoller Startwert je Art). */
+  function defaultRow(fieldId) {
+    var f = Q.field(fieldId);
+    if (!f) return null;
+    if (f.kind === "bool") return { field: f.id, op: "is", value: true };
+    if (f.kind === "enum") return { field: f.id, op: "in", value: [Object.keys(f.values)[0]] };
+    return { field: f.id, op: "gt", value: f.kind === "pct" ? 0 : 50 };
+  }
+
   function deleteScreen(storage, id) {
     var list = loadScreens(storage).filter(function (x) { return x.id !== id; });
     try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
@@ -274,7 +348,8 @@
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
-    loadScreens: loadScreens, saveScreen: saveScreen, deleteScreen: deleteScreen,
+    loadScreens: loadScreens, saveScreen: saveScreen, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
+    builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
     findings: findings, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
