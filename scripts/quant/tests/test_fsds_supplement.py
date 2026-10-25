@@ -112,6 +112,26 @@ class FsdsSupplementTest(unittest.TestCase):
         self.assertEqual(added, [])
         self.assertFalse(fsds.month_end_calendar({"facts": {}}))
 
+    def test_the_calendar_is_judged_on_recent_main_periods(self):
+        def facts(ends):
+            builder = FactsBuilder(CIK)
+            for i, (start, end, count) in enumerate(ends):
+                for k in range(count):
+                    builder.add("us-gaap", f"Concept{k}", "USD", 1.0, end, start, f"0000000077-2{i}-000001", "10-Q", end)
+            return builder.company_facts()
+        # Bis 2022 Wochenperioden, seither Monatsende (wie Cadence): gilt als Monatsende.
+        switched = facts([("2022-04-03", "2022-07-02", 12), ("2022-07-03", "2022-10-01", 12),
+                          ("2025-01-01", "2025-03-31", 12), ("2025-04-01", "2025-06-30", 12),
+                          ("2026-01-01", "2026-03-31", 12)])
+        self.assertTrue(fsds.month_end_calendar(switched))
+        # Ein einzelner Stichtag mit einem Fakt (wie ein Uebernahmedatum) zaehlt nicht.
+        stray = facts([("2025-01-01", "2025-03-31", 12), ("2025-10-01", "2025-11-03", 1),
+                       ("2026-01-01", "2026-03-31", 12)])
+        self.assertTrue(fsds.month_end_calendar(stray))
+        # Aktuelle Wochenperioden (wie Coca-Cola): kein Monatsende.
+        weekly = facts([("2025-12-31", "2026-04-03", 12), ("2025-03-29", "2025-06-27", 12)])
+        self.assertFalse(fsds.month_end_calendar(weekly))
+
     def test_other_issuers_and_forms_are_ignored(self):
         other = dict(NEW_SUB, adsh="0000000078-26-000001", cik=2000000078)
         eight_k = dict(NEW_SUB, adsh="0000000077-26-000100", form="8-K")
