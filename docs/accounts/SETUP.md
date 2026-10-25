@@ -19,7 +19,7 @@ supabase db push                           # spielt supabase/migrations/* ein
 psql "<Verbindungs-URL aus Settings → Database>" -f supabase/seed.sql   # Testpreise (Platzhalter, siehe T3)
 ```
 
-oder im Dashboard → SQL Editor die vier Dateien aus `supabase/migrations/` in Reihenfolge ausführen, danach `supabase/seed.sql`.
+oder im Dashboard → SQL Editor die fünf Dateien aus `supabase/migrations/` in Reihenfolge ausführen, danach `supabase/seed.sql`.
 `supabase/local/platform-stub.sql` **nicht** ausführen (nur für Tests).
 
 **S3 – Auth einstellen** (Authentication → …):
@@ -36,7 +36,7 @@ oder im Dashboard → SQL Editor die vier Dateien aus `supabase/migrations/` in 
 | Sessions | Refresh-Token-Rotation an (Standard), Reuse interval 10 s |
 | JWT Keys | asymmetrischer Signaturschlüssel (ES256) aktiv – Standard bei neuen Projekten; der Worker prüft über JWKS |
 
-**S4 – E-Mail-Versand.** Authentication → Emails → SMTP Settings → eigenes SMTP (Brevo: `smtp-relay.brevo.com`, Port 587, SMTP-Schlüssel aus
+**S4 – E-Mail-Versand (nach Brevo B1–B3).** Authentication → Emails → SMTP Settings → eigenes SMTP (Brevo: `smtp-relay.brevo.com`, Port 587, SMTP-Schlüssel aus
 Brevo), Absender `konto@visionuniverse.de`. Ohne eigenes SMTP sendet Supabase nur **2 E-Mails pro Stunde**. Vorlagen „Confirm signup“ und „Reset
 password“ auf Deutsch; der Link bleibt `{{ .ConfirmationURL }}`.
 
@@ -86,7 +86,8 @@ Customer portal Write, Subscriptions Write, Invoices Read, Prices Read. Ergebnis
 **T8 – Webhook** (nach W2): Developers → Webhooks → Endpoint `https://<worker-adresse>/v1/billing/webhook/stripe`, API-Version wie
 `STRIPE_API_VERSION` (`2025-03-31.basil` oder neuer, der Adapter liest beide Formen), Ereignisse:
 `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created|updated|deleted|paused|resumed|trial_will_end`,
-`invoice.finalized|paid|payment_succeeded|payment_failed|payment_action_required|voided|marked_uncollectible`. Signing secret `whsec_…` notieren.
+`invoice.finalized|paid|payment_succeeded|payment_failed|payment_action_required|voided|marked_uncollectible`,
+`charge.dispute.created`, `charge.refunded` (nur Alarm im Log). Signing secret `whsec_…` notieren.
 
 ## Cloudflare und DNS
 
@@ -98,6 +99,29 @@ in `workers/vu-account/wrangler.toml` die Zeile `routes = [{ pattern = "account-
 
 **C3 – Ratenbegrenzung über alle Isolates (optional).** Block `[[ratelimits]]` in `wrangler.toml` einkommentieren, wenn das Konto Rate
 Limiting Bindings anbietet. Ohne ihn greift die Begrenzung je Isolate plus die Auth-Grenzen von Supabase.
+
+## Brevo (E-Mail, kostenloser Tarif)
+
+Brevo ist bereits im Haus (Newsletter, `docs/brevo/`). Für Konten kommen **Transaktions-E-Mails** dazu: Bestätigungs- und Passwort-Links
+(über Supabase-SMTP) und die **Kündigungsbestätigung nach § 312k BGB** (direkt vom Worker über die Brevo-API). Der kostenlose Tarif erlaubt
+300 E-Mails pro Tag; kein Upgrade nötig.
+
+**B1 – Domain authentifizieren.** Brevo → Senders, Domains & Dedicated IPs → Domains → `visionuniverse.de`: die angezeigten DNS-Einträge
+(Brevo-Code, DKIM, DMARC) in der DNS-Zone eintragen und „Authenticate“ (laut `docs/brevo/README.md` ist die Domain registriert, aber noch
+nicht authentifiziert). Ohne Authentifizierung landen E-Mails im Spam oder werden abgelehnt.
+
+**B2 – Absender.** Senders → Add sender `konto@visionuniverse.de`, Name „Vision Universe“. Postfach muss Antworten empfangen können
+(Kündigungsrückfragen landen dort).
+
+**B3 – SMTP für Supabase Auth.** SMTP & API → SMTP: Login und SMTP-Schlüssel → in Supabase S4 eintragen (`smtp-relay.brevo.com`, Port 587,
+Absender aus B2).
+
+**B4 – API-Schlüssel für den Worker.** SMTP & API → API Keys → neuen Schlüssel „vu-account-transactional“ anlegen (eigener Schlüssel, nicht der
+Newsletter-Schlüssel, damit er getrennt widerrufen werden kann) → GitHub-Secret `VU_ACCOUNT_BREVO_API_KEY`. Ohne diesen Schlüssel speichert
+der Worker Kündigungen trotzdem, markiert sie aber als „Bestätigung nicht versendet“ (`confirmation_status = 'not_configured'`).
+
+**B5 – Prüfen.** Nach W2: `GET <adresse>/v1/health` meldet `"mail": true`. Auf `/konto/kuendigen/` ohne Anmeldung eine Testkündigung mit einer
+eigenen Adresse absenden → E-Mail „Eingangsbestätigung deiner Kündigung“ mit Bestätigungsnummer, Eingangszeitpunkt und Hinweis zum Vertragsende.
 
 ## GitHub (Umgebung `account-dev`)
 
@@ -114,6 +138,8 @@ Limiting Bindings anbietet. Ohne ihn greift die Begrenzung je Isolate plus die A
 | Variable | `VU_ACCOUNT_API_ORIGIN` | nach W2: Worker-Adresse bzw. `https://account-dev.visionuniverse.de` |
 | Variable | `VU_ACCOUNT_REGISTRATION_ALLOWLIST` | Test-Adressen, kommagetrennt |
 | Variable | `VU_ACCOUNT_ALLOWED_ORIGINS` | optional, zusätzliche Test-Herkünfte (W3) |
+| Secret | `VU_ACCOUNT_BREVO_API_KEY` | Brevo-API-Schlüssel (B4) |
+| Variable | `VU_ACCOUNT_MAIL_SENDER` | `konto@visionuniverse.de` (B2) |
 
 **W2 – Ausrollen.** Actions → „Konten — vu-account ausrollen (Entwicklung)“ → Run workflow. Der Lauf lehnt Live-Schlüssel ab. Adresse aus dem
 Protokoll als `VU_ACCOUNT_API_ORIGIN` eintragen, Redirect-URL in Supabase (S3) und Webhook in Stripe (T8) setzen, `whsec_…` hinterlegen, Workflow

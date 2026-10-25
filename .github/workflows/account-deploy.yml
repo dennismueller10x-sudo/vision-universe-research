@@ -59,6 +59,7 @@ jobs:
           API_ORIGIN: ${{ vars.VU_ACCOUNT_API_ORIGIN }}
           ALLOWLIST: ${{ vars.VU_ACCOUNT_REGISTRATION_ALLOWLIST }}
           ORIGINS: ${{ vars.VU_ACCOUNT_ALLOWED_ORIGINS }}
+          MAIL_SENDER: ${{ vars.VU_ACCOUNT_MAIL_SENDER }}
         run: |
           set -euo pipefail
           extra=(--var "SUPABASE_URL:$SUPABASE_URL" --var "SUPABASE_PUBLISHABLE_KEY:$SUPABASE_PUBLISHABLE_KEY")
@@ -74,6 +75,10 @@ jobs:
             [[ "$ORIGINS" =~ ^https?://[a-z0-9.:-]+(,https?://[a-z0-9.:-]+)*$ ]] || { echo "::error::VU_ACCOUNT_ALLOWED_ORIGINS: Herkuenfte, kommagetrennt"; exit 1; }
             extra+=(--var "VU_ALLOWED_ORIGINS:$ORIGINS")
           fi
+          if [ -n "$MAIL_SENDER" ]; then
+            [[ "$MAIL_SENDER" =~ ^[a-z0-9._%+-]+@visionuniverse\.de$ ]] || { echo "::error::VU_ACCOUNT_MAIL_SENDER muss eine Adresse @visionuniverse.de sein"; exit 1; }
+            extra+=(--var "VU_MAIL_SENDER:$MAIL_SENDER")
+          fi
           npx --yes wrangler@4.147.0 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
           url=$(grep -oE 'https://vu-account\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
           echo "Worker-Adresse: ${url:-unbekannt} (als VU_ACCOUNT_API_ORIGIN eintragen, falls noch leer)"
@@ -85,8 +90,10 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.VU_ACCOUNT_STRIPE_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.VU_ACCOUNT_STRIPE_WEBHOOK_SECRET }}
           SUPABASE_SECRET_KEY: ${{ secrets.VU_ACCOUNT_SUPABASE_SECRET_KEY }}
+          BREVO_API_KEY: ${{ secrets.VU_ACCOUNT_BREVO_API_KEY }}
         run: |
           set -euo pipefail
           put() { printf '%s' "$2" | npx --yes wrangler@4.147.0 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           put SUPABASE_SECRET_KEY "$SUPABASE_SECRET_KEY"
           if [ -n "$STRIPE_SECRET_KEY" ]; then put STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"; put STRIPE_WEBHOOK_SECRET "$STRIPE_WEBHOOK_SECRET"; fi
+          if [ -n "$BREVO_API_KEY" ]; then put BREVO_API_KEY "$BREVO_API_KEY"; else echo "::warning::VU_ACCOUNT_BREVO_API_KEY fehlt - Kuendigungsbestaetigungen werden nicht per E-Mail versendet."; fi

@@ -28,11 +28,13 @@
 <div class="ka-field"><label for="cancel-email">E-Mail-Adresse deines Kontos</label><input class="ka-input" id="cancel-email" name="cancel-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
 <div class="ka-field"><label for="cancel-reference">Rechnungs- oder Vertragsnummer <span class="ka-muted">(optional)</span></label><input class="ka-input" id="cancel-reference" name="cancel-reference" type="text" maxlength="120"></div>
 <div class="ka-field"><label for="cancel-kind">Art der Kündigung</label><select class="ka-select" id="cancel-kind" name="cancel-kind"><option value="ordinary">Ordentlich zum Laufzeitende</option><option value="extraordinary">Außerordentlich (fristlos)</option></select></div>
+<div class="ka-field" id="cancel-reason-field" hidden><label for="cancel-reason">Grund der außerordentlichen Kündigung</label><textarea class="ka-input ka-textarea" id="cancel-reason" name="cancel-reason" maxlength="500" rows="3"></textarea></div>
+<p class="ka-hint">Kündigung zum nächstmöglichen Zeitpunkt. Du erhältst sofort eine Eingangsbestätigung auf dieser Seite und per E-Mail mit Eingangszeitpunkt und Vertragsende.</p>
 <button class="ka-btn ka-btn--block" type="submit">Jetzt kündigen</button>
 </form>
 <section class="ka-card" id="ka-cancel-done" hidden>
 <h2>Kündigung eingegangen</h2><p data-text></p>
-<dl class="ka-kv"><dt>Eingang</dt><dd data-received></dd><dt>Bestätigungsnummer</dt><dd data-id></dd></dl>
+<dl class="ka-kv"><dt>Eingang</dt><dd data-received></dd><dt>Bestätigungsnummer</dt><dd data-id></dd><dt>Bestätigung per E-Mail</dt><dd data-mail></dd></dl>
 <div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-cancel-print">Bestätigung speichern oder drucken</button></div>
 </section>
 <nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>

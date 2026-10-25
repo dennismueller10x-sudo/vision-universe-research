@@ -192,6 +192,44 @@ test('Eingaben: Passwortregeln, E-Mail, Einstellungen nur aus der Positivliste',
   assert.throws(() => v.priceKey('plus_month; drop table'), /PRICE_INVALID/);
 });
 
+test('Kuendigungsbestaetigung: Pflichtangaben nach § 312k Abs. 4, keine fremden Links, HTML maskiert', async () => {
+  const {cancellationConfirmation, neutralize, createMailer} = await import('../src/mail.mjs');
+  const m = cancellationConfirmation({confirmationId: '0b5c7e1a-0000-4000-8000-000000000001', receivedAt: '2026-10-25T14:03:00Z',
+    email: 'k@example.test', fullName: '<b>Kim</b>', reference: 'siehe https://evil.example', kind: 'extraordinary',
+    reason: 'Umzug', planName: 'Vision Universe Pro', endsAt: '2026-11-24T00:00:00Z', status: 'completed'});
+  for (const part of ['Bestätigungsnummer: 0b5c7e1a', 'Eingang: 25. Oktober 2026 um 15:03 Uhr', 'außerordentliche',
+    'Grund: Umzug', 'Dein Vertrag endet am 24. November 2026', 'Vision Universe Pro', '[Link entfernt]']) assert.ok(m.text.includes(part), part);
+  assert.ok(!m.html.includes('<b>Kim</b>') && m.html.includes('&lt;b&gt;Kim&lt;/b&gt;'));
+  assert.equal(neutralize('a www.x.de b http://y'), 'a [Link entfernt] b [Link entfernt]');
+  assert.match(cancellationConfirmation({confirmationId: 'x'.repeat(36), receivedAt: '2026-10-25T14:03:00Z', email: 'a@b.de',
+    kind: 'ordinary'}).text, /teilen dir den Zeitpunkt der Beendigung/);
+  assert.equal(await createMailer({apiKey: '', sender: 'a@b.de', fetchImpl: () => { throw new Error('kein Versand'); }}).send({}), 'not_configured');
+  let sent;
+  const ok = createMailer({apiKey: 'k', sender: 'konto@visionuniverse.de', fetchImpl: async (url, init) => { sent = {url, init}; return new Response('{}', {status: 201}); }});
+  assert.equal(await ok.send({to: 'a@b.de', subject: 's', text: 't', html: 'h'}), 'sent');
+  assert.equal(sent.url, 'https://api.brevo.com/v3/smtp/email');
+  assert.equal(sent.init.headers['api-key'], 'k');
+  const down = createMailer({apiKey: 'k', sender: 'x@y.de', fetchImpl: async () => new Response('', {status: 500})});
+  assert.equal(await down.send({to: 'a@b.de'}), 'failed');
+});
+
+test('Ratenbegrenzung: je Schluessel und Zeitfenster', async () => {
+  const {createLimiter} = await import('../src/limits.mjs');
+  let t = 0;
+  const limit = createLimiter({now: () => t});
+  for (let i = 0; i < 30; i++) await limit('loginAccount', 'a@b.de');
+  await assert.rejects(limit('loginAccount', 'a@b.de'), /RATE_LIMITED/);
+  await limit('loginAccount', 'c@d.de');
+  t += 3600_000;
+  await limit('loginAccount', 'a@b.de');
+  let denied = false;
+  const binding = {limit: async () => ({success: !denied})};
+  const withBinding = createLimiter({binding});
+  await withBinding('login', '1.2.3.4');
+  denied = true;
+  await assert.rejects(withBinding('login', '1.2.3.4'), /RATE_LIMITED/);
+});
+
 test('Geheimnis-Scanner schlaegt an, Simulationswerte nicht', async () => {
   const {findSecrets} = await import('../../../scripts/account/assert-no-billing-secrets.mjs');
   assert.deepEqual(findSecrets('STRIPE_SECRET_KEY=sk_live_' + 'a1B2c3D4e5F6g7H8i9J0k1L2'), ['Stripe-Geheimschluessel']);

@@ -273,6 +273,12 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal(res.status, 200, JSON.stringify(res.data));
     assert.equal(res.data.state, 'CANCELED_AT_PERIOD_END');
     assert.ok(res.data.confirmationId && res.data.endsAt);
+    assert.equal(res.data.emailSent, true);
+    const mail = env.lastMailTo('ida@example.test');
+    assert.match(mail.subject, /Eingangsbestätigung deiner Kündigung/);
+    for (const part of ['Eingang:', 'Bestätigungsnummer: ' + res.data.confirmationId, 'ordentliche Kündigung', 'Vision Universe Plus', 'Dein Vertrag endet am']) {
+      assert.ok(mail.text.includes(part), part);
+    }
     let billing = await b.get('/v1/me/billing');
     assert.deepEqual([billing.data.subscriptions[0].cancelAtPeriodEnd, billing.data.entitlements.plan_id], [true, 'plus']);
     await env.deliverWebhooks(); // Stripe meldet die Aenderung zusaetzlich - wirkungsgleich
@@ -284,12 +290,97 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     // Nach Ablauf wieder buchbar.
     assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month'})).status, 200);
 
+    const signedInRow = await env.pg.json(`select to_json(r) from (select source, status, confirmation_status, ends_at is not null as has_end
+      from billing.cancellation_requests where id = :'id') r`, {id: res.data.confirmationId});
+    assert.deepEqual(signedInRow, {source: 'signed_in', status: 'completed', confirmation_status: 'sent', has_end: true});
+  });
+
+  await t.test('Kuendigung ohne Anmeldung: Eingang, Zuordnung, Bestaetigung per E-Mail, keine Kontoauskunft', async () => {
+    const row = id => env.pg.json(`select to_json(r) from (select email, kind, status, confirmation_status, provider, ends_at is not null as has_end,
+      reason from billing.cancellation_requests where id = :'id') r`, {id});
     const anon = env.browser();
-    const req = await anon.post('/v1/billing/cancellation-request', {email: 'Kunde@Example.test', fullName: 'K. Unde', reference: 'VU-0042'});
-    assert.equal(req.status, 202);
-    assert.equal(req.data.state, 'CANCELLATION_RECEIVED');
-    const stored = await env.pg.json(`select to_json(r) from (select email, kind, status from billing.cancellation_requests where id = :'id') r`, {id: req.data.confirmationId});
-    assert.deepEqual(stored, {email: 'kunde@example.test', kind: 'ordinary', status: 'received'});
+    assert.equal((await anon.post('/v1/billing/cancellation-request', {email: 'kunde@example.test'})).data.state, 'NAME_REQUIRED');
+
+    // Unbekannte Adresse: gleiche Antwort, Bestaetigung an die Adresse, Status "kein Vertrag".
+    const unknown = await anon.post('/v1/billing/cancellation-request', {email: 'Kunde@Example.test', fullName: 'K. Unde', reference: 'VU-0042'});
+    assert.deepEqual([unknown.status, unknown.data.state, unknown.data.emailSent], [202, 'CANCELLATION_RECEIVED', true]);
+    assert.deepEqual(Object.keys(unknown.data).sort(), ['confirmationId', 'emailSent', 'receivedAt', 'state']);
+    assert.deepEqual(await row(unknown.data.confirmationId), {email: 'kunde@example.test', kind: 'ordinary', status: 'no_contract',
+      confirmation_status: 'sent', provider: null, has_end: false, reason: null});
+    assert.match(env.lastMailTo('kunde@example.test').text, /kein laufendes Abonnement gefunden/);
+
+    // Bekannte Adresse mit Abo: sofort zum Laufzeitende vorgemerkt, Ende steht in der E-Mail.
+    const b = await signedIn(env, 'lena@example.test');
+    const sub = await subscribe(env, b, 'pro_month');
+    const known = await env.browser().post('/v1/billing/cancellation-request', {email: 'lena@example.test', fullName: 'Lena L.'});
+    assert.deepEqual(Object.keys(known.data).sort(), Object.keys(unknown.data).sort(), 'Antwort verraet nichts');
+    assert.deepEqual(await row(known.data.confirmationId), {email: 'lena@example.test', kind: 'ordinary', status: 'completed',
+      confirmation_status: 'sent', provider: 'stripe', has_end: true, reason: null});
+    assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, true);
+    assert.match(env.lastMailTo('lena@example.test').text, /Dein Vertrag endet am .*\n?.*Vision Universe Pro|Vision Universe Pro[\s\S]*Dein Vertrag endet am/);
+    assert.equal((await b.get('/v1/me/billing')).data.entitlements.plan_id, 'pro', 'Zugang bis zum Laufzeitende');
+
+    // Ausserordentlich mit Grund: Pruefung von Hand; Links aus Fremdeingaben werden nicht weitergegeben.
+    const extra = await env.browser().post('/v1/billing/cancellation-request', {email: 'lena@example.test', fullName: 'Lena L.',
+      kind: 'extraordinary', reason: 'Bitte hier klicken: https://evil.example/login und www.evil.example'});
+    const extraRow = await row(extra.data.confirmationId);
+    assert.deepEqual([extraRow.status, extraRow.kind], ['manual_review', 'extraordinary']);
+    const extraMail = env.lastMailTo('lena@example.test');
+    assert.ok(extraMail.text.includes('außerordentliche') && extraMail.text.includes('Grund: Bitte hier klicken: [Link entfernt]'));
+    assert.ok(!/evil\.example/.test(extraMail.text + extraMail.html));
+
+    // Hoechstens drei Bestaetigungen je Adresse und Tag (Schutz gegen Mail-Bombing).
+    assert.equal((await env.browser().post('/v1/billing/cancellation-request', {email: 'lena@example.test', fullName: 'Lena L.'})).status, 202);
+    assert.equal((await env.browser().post('/v1/billing/cancellation-request', {email: 'lena@example.test', fullName: 'Lena L.'})).status, 429);
+  });
+
+  await t.test('Angemeldete Kuendigung bei Stripe-Ausfall: Eingang bestaetigt, Pruefung von Hand', async () => {
+    const b = await signedIn(env, 'nils@example.test');
+    const sub = await subscribe(env, b, 'plus_month');
+    const original = env.stripe.handle;
+    env.stripe.handle = async req => (req.method === 'POST' && req.url.includes('/v1/subscriptions/'))
+      ? new Response('{"error":{"type":"api_error","message":"down"}}', {status: 500}) : original(req);
+    try {
+      const res = await b.post('/v1/billing/cancel');
+      assert.deepEqual([res.status, res.data.state, res.data.emailSent], [202, 'CANCELLATION_RECEIVED', true]);
+      const row = await env.pg.json(`select to_json(r) from (select status, confirmation_status, note from billing.cancellation_requests where id = :'id') r`,
+        {id: res.data.confirmationId});
+      assert.deepEqual(row, {status: 'manual_review', confirmation_status: 'sent', note: 'PROCESS_FAILED'});
+      assert.match(env.lastMailTo('nils@example.test').text, /teilen dir den Zeitpunkt der Beendigung/);
+      assert.equal(env.stripe.sim.subscriptions.get(sub.id).cancel_at_period_end, false);
+    } finally { env.stripe.handle = original; }
+  });
+
+  await t.test('Ohne E-Mail-Versand: Eingang trotzdem gespeichert und als nicht bestaetigt markiert', async () => {
+    const noMail = await createEnvironment({envOverrides: {BREVO_API_KEY: ''}});
+    try {
+      const res = await noMail.browser().post('/v1/billing/cancellation-request', {email: 'm@example.test', fullName: 'M.'});
+      assert.deepEqual([res.status, res.data.emailSent], [202, false]);
+      assert.equal(await noMail.pg.json(`select to_json(confirmation_status) from billing.cancellation_requests where id = :'id'`,
+        {id: res.data.confirmationId}), 'not_configured');
+      assert.ok(noMail.logs.some(l => l.message === 'CANCELLATION_CONFIRMATION_NOT_SENT'));
+      assert.equal((await noMail.browser().get('/v1/health')).data.mail, false);
+    } finally { await noMail.close(); }
+  });
+
+  await t.test('Preisabgleich mit Stripe und Alarm bei Rueckbuchung', async () => {
+    const b = await signedIn(env, 'mara@example.test');
+    env.stripe.sim.overridePrice('price_test_plus_month', {unit_amount: 1490}); // im Dashboard geaendert, Datenbank nicht
+    const sessionsBefore = env.stripe.sim.sessions.size;
+    const res = await b.post('/v1/billing/checkout', {price: 'plus_month'});
+    assert.deepEqual([res.status, res.data.state], [409, 'PRICE_NOT_AVAILABLE']);
+    assert.equal(env.stripe.sim.sessions.size, sessionsBefore, 'keine Checkout-Sitzung zu falschem Preis');
+    assert.ok(env.logs.some(l => l.message === 'PRICE_MISMATCH'));
+    env.stripe.sim.overridePrice('price_test_plus_month', {active: false});
+    assert.equal((await b.post('/v1/billing/checkout', {price: 'plus_month'})).status, 409);
+    env.stripe.sim.overridePrice('price_test_plus_month', {});
+
+    const {signStripePayload} = await import('../src/stripe.mjs');
+    const dispute = JSON.stringify({id: 'evt_dispute_1', object: 'event', type: 'charge.dispute.created', livemode: false,
+      data: {object: {id: 'dp_1', customer: 'cus_x'}}});
+    const r = await env.webhook(dispute, await signStripePayload(dispute, env.stripe.webhookSecret, Math.floor(env.now() / 1000)));
+    assert.equal(r.status, 200);
+    assert.ok(env.logs.some(l => l.message === 'PAYMENT_DISPUTED'));
   });
 
   await t.test('Datenexport und Kontoloeschung (DSGVO)', async () => {

@@ -73,6 +73,7 @@ export async function login(ctx) {
   const body = await readJson(ctx.request);
   const email = v.email(body.email);
   await ctx.limit('login', ctx.ip || email);
+  await ctx.limit('loginAccount', email);
   const password = String(body.password || '');
   if (!password || password.length > 200) throw new HttpError(400, 'PASSWORD_REQUIRED');
   let result;

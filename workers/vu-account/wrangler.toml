@@ -13,6 +13,7 @@
 #   SUPABASE_SECRET_KEY      sb_secret_…  (Supabase -> Settings -> API Keys)
 #   STRIPE_SECRET_KEY        sk_test_… bzw. rk_test_… (Restricted Key empfohlen)
 #   STRIPE_WEBHOOK_SECRET    whsec_…
+#   BREVO_API_KEY            Brevo-API-Schluessel fuer Transaktions-E-Mails (Kuendigungsbestaetigung)
 # =============================================================================
 
 name = "vu-account"
@@ -50,5 +51,12 @@ STRIPE_CHECKOUT_REQUIRE_TERMS = "false"
 # Oeffentliche Registrierung: AUS bis zur ausdruecklichen Freigabe.
 VU_REGISTRATION_ENABLED = "false"
 VU_REGISTRATION_ALLOWLIST = ""
+# Absender der Transaktions-E-Mails (in Brevo verifiziert, Domain authentifiziert).
+# Leer = keine E-Mails; Kuendigungen werden dann als "nicht bestaetigt" markiert.
+VU_MAIL_SENDER = ""
+VU_MAIL_SENDER_NAME = "Vision Universe"
+# Ordentliche Kuendigung ohne Anmeldung automatisch zuordnen und bei Stripe zum
+# Laufzeitende vormerken (§ 312k BGB). "false" = nur Eingang + Bestaetigung.
+VU_CANCELLATION_AUTO_PROCESS = "true"
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"

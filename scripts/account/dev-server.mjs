@@ -77,7 +77,9 @@ async function devRoute(req, res, url) {
   if (parts[1] === 'mail') {
     const rows = [...env.supabase.outbox].reverse().map(m => `<div class="box"><p><strong>${esc(m.type === 'signup' ? 'E-Mail bestätigen' : 'Passwort zurücksetzen')}</strong> an ${esc(m.to)} · ${esc(m.sentAt)}</p>
 <a class="btn" href="/__dev/verify?link=${encodeURIComponent(m.link)}">Link öffnen</a></div>`).join('');
-    return html(res, page('Postfach', rows || '<p class="box">Noch keine E-Mails.</p>'));
+    const worker = [...env.mails].reverse().map(m => `<div class="box"><p><strong>${esc(m.subject)}</strong> an ${esc(m.to)} · ${esc(m.at)} · von ${esc(m.sender)} (Brevo, simuliert)</p>
+<pre style="white-space:pre-wrap">${esc(m.text)}</pre></div>`).join('');
+    return html(res, page('Postfach', (rows + worker) || '<p class="box">Noch keine E-Mails.</p>'));
   }
   if (parts[1] === 'verify') {
     const link = url.searchParams.get('link') || '';

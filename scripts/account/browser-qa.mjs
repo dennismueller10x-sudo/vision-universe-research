@@ -139,6 +139,27 @@ await page.goto(`${base}/konto/abo/`);
 await page.waitForSelector('#ka-sub .ka-kv');
 check((await page.textContent('#ka-sub')).includes('Endet am'), 'Abo zeigt Laufzeitende');
 
+// Kuendigung ohne Anmeldung (eigener Kontext, ohne Sitzung), ausserordentlich mit Grund
+{
+  const anonContext = await browser.newContext({viewport: {width: 1280, height: 900}});
+  const anon = await anonContext.newPage();
+  await anon.goto(`${base}/konto/kuendigen/`);
+  check(await anon.isHidden('#cancel-reason-field'), 'Grund-Feld erst bei ausserordentlicher Kuendigung');
+  await anon.fill('#cancel-email', email);
+  await anon.click('#ka-cancel-form button[type=submit]');
+  check((await anon.textContent('#ka-status')).includes('Namen'), 'Name ist Pflicht');
+  await anon.fill('#cancel-name', 'QA Person');
+  await anon.selectOption('#cancel-kind', 'extraordinary');
+  check(await anon.isVisible('#cancel-reason-field'), 'Grund-Feld sichtbar');
+  await anon.fill('#cancel-reason', 'Test der Kuendigung');
+  await audit(anon, 'Kuendigen ohne Anmeldung');
+  await anon.click('#ka-cancel-form button[type=submit]');
+  await anon.waitForSelector('#ka-cancel-done:not([hidden])');
+  check((await anon.textContent('#ka-cancel-done [data-mail]')).includes('versendet'), 'Bestaetigung per E-Mail versendet');
+  await anon.screenshot({path: `${out}/${engine}-07-kuendigen-ohne-anmeldung.png`, fullPage: true});
+  await anonContext.close();
+}
+
 // Abmelden
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');

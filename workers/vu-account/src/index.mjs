@@ -14,13 +14,15 @@ import {createJwksCache} from './jwt.mjs';
 import {createSupabase, createBillingStore, SupabaseError} from './supabase.mjs';
 import {createStripeClient, StripeError} from './stripe.mjs';
 import {createLimiter} from './limits.mjs';
+import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
-  ['GET', '/v1/health', ctx => json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg)}), {db: false}],
+  ['GET', '/v1/health', ctx => json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
+    mail: ctx.mailer.configured}), {db: false}],
   ['GET', '/v1/session', auth.session],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
@@ -58,6 +60,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   const stripe = createStripeClient({secretKey: cfg.stripe.secretKey, apiBase: cfg.stripe.apiBase,
     apiVersion: cfg.stripe.apiVersion, fetchImpl});
   const limit = createLimiter({binding: env.VU_ACCOUNT_LIMITER, now});
+  const mailer = createMailer({...cfg.mail, fetchImpl});
 
   async function handle(request) {
     const url = new URL(request.url);
@@ -68,7 +71,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
       return json(request, cfg, known ? 405 : 404, {state: known ? 'METHOD_NOT_ALLOWED' : 'NOT_FOUND'});
     }
     const [, , handler, opts = {}] = route;
-    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, ip: clientIp(request),
+    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, ip: clientIp(request),
       cookies: parseCookies(request), outCookies: []};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');

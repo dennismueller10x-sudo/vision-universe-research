@@ -9,9 +9,11 @@ import {HttpError} from './http.mjs';
 
 export const LIMITS = Object.freeze({
   login: {limit: 10, windowSec: 300},
+  loginAccount: {limit: 30, windowSec: 3600}, // je Adresse, gegen verteiltes Raten (hoch genug gegen Aussperren)
   signup: {limit: 5, windowSec: 3600},
   recover: {limit: 5, windowSec: 3600},
   cancellation: {limit: 5, windowSec: 3600},
+  cancellationEmail: {limit: 3, windowSec: 86400}, // Bestaetigungen an dieselbe Adresse
   sensitive: {limit: 10, windowSec: 3600}, // Passwort, Loeschung, Checkout
 });
 

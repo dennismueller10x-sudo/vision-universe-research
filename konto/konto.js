@@ -449,19 +449,25 @@
       A.post('/v1/billing/cancel').then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
-        confirmation('Dein Abonnement ist gekündigt und endet am ' + A.date(r.data.endsAt) + '. Bis dahin bleibt dein Zugang erhalten.', r.data);
+        confirmation((r.data.state === 'CANCELED_AT_PERIOD_END'
+          ? 'Dein Abonnement ist gekündigt und endet am ' + A.date(r.data.endsAt) + '. Bis dahin bleibt dein Zugang erhalten.'
+          : 'Deine Kündigung ist eingegangen. Den Zeitpunkt der Vertragsbeendigung teilen wir dir unverzüglich mit.')
+          + (r.data.emailSent ? ' Die Bestätigung ist per E-Mail unterwegs.' : ''), r.data);
       });
     });
     $('ka-cancel-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]'), email = $('cancel-email').value.trim();
       if (!A.emailValid(email)) return notice(A.message('EMAIL_INVALID'), 'error');
+      if (!$('cancel-name').value.trim()) return notice(A.message('NAME_REQUIRED'), 'error');
       busy(btn, true);
       A.post('/v1/billing/cancellation-request', {email: email, fullName: $('cancel-name').value.trim(), reference: $('cancel-reference').value.trim(),
-        kind: $('cancel-kind').value}).then(function (r) {
+        kind: $('cancel-kind').value, reason: $('cancel-kind').value === 'extraordinary' ? $('cancel-reason').value.trim() : null}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
-        confirmation('Deine Kündigung ist eingegangen. Wir ordnen sie deinem Vertrag zu und bestätigen sie per E-Mail an ' + email + '.', r.data);
+        confirmation('Deine Kündigung ist eingegangen. ' + (r.data.emailSent
+          ? 'Die Eingangsbestätigung mit dem Zeitpunkt der Vertragsbeendigung haben wir an ' + email + ' geschickt.'
+          : 'Die Bestätigung per E-Mail an ' + email + ' reichen wir nach. Bitte speichere diese Seite als Nachweis.'), r.data);
       });
     });
     function confirmation(text, data) {
@@ -472,8 +478,10 @@
       box.querySelector('[data-text]').textContent = text;
       box.querySelector('[data-received]').textContent = new Date(data.receivedAt).toLocaleString('de-DE');
       box.querySelector('[data-id]').textContent = data.confirmationId;
+      box.querySelector('[data-mail]').textContent = data.emailSent ? 'versendet' : 'folgt (wird nachgereicht)';
       notice('');
     }
+    $('cancel-kind').addEventListener('change', function () { $('cancel-reason-field').hidden = this.value !== 'extraordinary'; });
     $('ka-cancel-print').addEventListener('click', function () { window.print(); });
   };
 

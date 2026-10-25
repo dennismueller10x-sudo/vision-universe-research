@@ -63,7 +63,7 @@ werden von Safari/Firefox blockiert. `account.visionuniverse.de` ist dieselbe Si
 | Checkout | `POST /v1/billing/checkout {price:"plus_month"}` → Preis aus `plan_prices` (nie vom Client) → bestehendes gültiges Abo? → 409 → Stripe-Kunde (idempotent, mit Nutzer verknüpft **bevor** bezahlt wird) → Checkout-Sitzung (Idempotenzschlüssel je Nutzer/Preis/10 min) → Weiterleitung nur zu `https://checkout.stripe.com`. |
 | Zahlungsbestätigung | Webhook → Signatur (HMAC-SHA256, 300 s Toleranz, konstante Zeit) → Idempotenz (`billing_claim_event`) → **aktueller Zustand wird bei Stripe abgerufen** (Nutzlast nur Hinweis) → `billing_apply_subscription` (Kunde→Nutzer aus eigener Tabelle, Preis→Tarif, Modus, Reihenfolge). |
 | Tarifwechsel, Zahlungsmethode, Adresse | Stripe Customer Portal (`POST /v1/billing/portal`) → Änderungen kommen als Webhook zurück. |
-| Kündigung | Kündigungsbutton `/konto/kuendigen/`: angemeldet → `cancel_at_period_end` sofort bei Stripe + Eingangsbestätigung; ohne Anmeldung → Eingang in `billing.cancellation_requests` mit Bestätigungsnummer (§ 312k BGB). |
+| Kündigung | Kündigungsbutton `/konto/kuendigen/` (§ 312k BGB, §8): Eingang wird **zuerst** gespeichert, dann zugeordnet (angemeldet oder ordentlich ohne Anmeldung → `cancel_at_period_end` bei Stripe), dann **Bestätigung per E-Mail** (Brevo) mit Inhalt, Eingangszeitpunkt und Vertragsende. |
 | Fehlgeschlagene Zahlung | Stripe `past_due` → Zugang bleibt bis Periodenende + 7 Tage (Stripe versucht erneut), `unpaid` → kein Zugang; Seite zeigt Hinweis „Zahlungsmethode aktualisieren“. |
 | Rechnungen | `invoice.*`-Webhooks → `public.invoices` (nur https-Links von Stripe), Anzeige unter `/konto/abo/`. |
 | Datenexport | `GET /v1/me/export` (Art. 15/20 DSGVO), JSON-Download. |
@@ -150,6 +150,10 @@ Eine reine Ausblendung im Browser ist nur Darstellung, nie Schutz.
 | Doppelte Webhooks, Reihenfolge | `billing_claim_event` (process/duplicate/in_progress), `provider_state_at` | `03_billing.sql`, `flows: Webhook: doppelt …` |
 | Datensparsamkeit, DSGVO | keine E-Mail außerhalb `auth.users`, keine Ereignis-Nutzlast, Benachrichtigungen/Marketing standardmäßig aus, Export, Löschung mit Pseudonymisierung der Buchhaltungsdaten | `flows: Datenexport und Kontolöschung` |
 | Trennung Entwicklung/Produktion | zwei Supabase-Projekte, Stripe Test/Live, GitHub-Umgebung `account-dev`; Live-Schlüssel ohne `STRIPE_LIVE_MODE_APPROVED` → 503; Deploy-Workflow lehnt Live-Schlüssel ab | `unit: Konfiguration`, `flows: Live-Schlüssel ohne Freigabe` |
+| Angezeigter = berechneter Preis | vor jedem Checkout wird der Stripe-Preis (Betrag, Währung, Laufzeit, aktiv, Modus) mit `plan_prices` verglichen; Abweichung → 409, keine Sitzung | `flows: Preisabgleich mit Stripe …` |
+| Rückbuchungen/Erstattungen | `charge.dispute.created`/`charge.refunded` → Alarm im Log (`PAYMENT_DISPUTED`/`PAYMENT_REFUNDED`), kein automatischer Entzug | `flows: … Alarm bei Rueckbuchung` |
+| Passwortraten | Begrenzung je IP **und** je Adresse (30/h, hoch genug gegen Aussperren), dazu die Auth-Grenzen von Supabase | `unit: Ratenbegrenzung` |
+| Missbrauch des Kündigungsformulars | höchstens 5 Anfragen je IP/Stunde und 3 Bestätigungen je Adresse/Tag; Antwort verrät nie, ob es ein Konto gibt; Links aus Fremdeingaben werden in der E-Mail entfernt | `flows: Kuendigung ohne Anmeldung …` |
 | Kein öffentlicher Registrierungsprozess | `VU_REGISTRATION_ENABLED=false` (Standard), Positivliste für Tests; Seiten ohne Endpunkt deaktiviert | `flows: Registrierung geschlossen …`, `konto: Konten sind im Repository AUS` |
 
 Offene, bewusst nicht gelöste Punkte: siehe §9.
@@ -179,7 +183,23 @@ Aktiviert werden Methoden **im Stripe-Dashboard** (dynamische Zahlungsmethoden),
 
 ## 8. Rechtliche Pflichtpunkte vor dem Start (Prüfung durch Rechtsberatung)
 
-- **Kündigungsbutton § 312k BGB:** umgesetzt als `/konto/kuendigen/` (beschriftet „Verträge hier kündigen“ / „Jetzt kündigen“, auch ohne Anmeldung, sofortige Bestätigung mit Zeitpunkt und Nummer). **Offen:** (a) die Schaltfläche muss *ständig verfügbar* sein – das verlangt einen Link in Fußzeile/Menü aller Seiten, also eine Änderung der globalen Shell (Owner-Freigabe nötig); (b) die Bestätigung muss zusätzlich per **E-Mail** (dauerhafter Datenträger) erfolgen – braucht den E-Mail-Versand (Brevo, §9); (c) bei außerordentlicher Kündigung ein Feld für den Grund.
+- **Kündigungsbutton § 312k BGB – umgesetzt:**
+
+  | Anforderung | Umsetzung |
+  |---|---|
+  | Schaltfläche „Verträge hier kündigen“, unmittelbar und leicht zugänglich | `/konto/kuendigen/`, verlinkt von jeder Kontoseite und aus „Abonnement“ |
+  | ohne Anmeldung nutzbar | Formular: Name (Pflicht), E-Mail, Vertrags-/Rechnungsnummer (optional), Art ordentlich/außerordentlich, **Grund** bei außerordentlicher Kündigung |
+  | Bestätigungsseite mit „Jetzt kündigen“ | Schaltfläche „Jetzt kündigen“ (angemeldet und ohne Anmeldung) |
+  | Speichern/Ausdrucken der Erklärung | Bestätigungsseite mit Eingangszeitpunkt, Bestätigungsnummer, „speichern oder drucken“ |
+  | sofortige Bestätigung in Textform mit Inhalt, Datum/Uhrzeit des Eingangs und Beendigungszeitpunkt | E-Mail über Brevo (`src/mail.mjs#cancellationConfirmation`) mit allen Angaben; Eingangszeitpunkt aus der Datenbankuhr. Steht das Ende fest (zugeordnetes Stripe-Abo), nennt die E-Mail das Datum; sonst kündigt sie die Mitteilung an |
+  | Nachweis | `billing.cancellation_requests`: Inhalt, Quelle, Status (`completed`, `manual_review`, `no_contract`), Ende, Bestätigungsstatus (`sent`, `failed`, `not_configured`) |
+
+  Zuordnung ohne Anmeldung: ordentliche Kündigungen mit der Kontoadresse werden **sofort** bei Stripe zum Laufzeitende vorgemerkt
+  (`VU_CANCELLATION_AUTO_PROCESS`, umkehrbar im Kundenportal; die Bestätigung geht an genau diese Adresse). Außerordentliche Kündigungen,
+  App-Store-/Play-Abos und unbekannte Adressen gehen in die Prüfung von Hand. **Noch offen (Owner):** ein dauerhaft sichtbarer Link
+  „Verträge hier kündigen“ auf *allen* Seiten verlangt eine Änderung der globalen Shell/Fußzeile – bewusst nicht gemacht (Menüstruktur bleibt
+  unverändert), vor dem Start zu entscheiden (O4). Ohne Brevo-Schlüssel und verifizierten Absender wird keine E-Mail versendet; der Eingang
+  wird dann als `not_configured` markiert und im Log gemeldet (O2).
 - **Button-Lösung § 312j BGB:** Der Bestell-Button liegt bei Stripe Checkout (Abo-Modus, deutsch „Abonnieren“). Rechtlich prüfen lassen; alternativ eingebetteter Checkout mit eigenem Button „zahlungspflichtig abonnieren“.
 - **Widerrufsrecht** bei digitalen Inhalten/Dienstleistungen: Belehrung, Muster-Widerrufsformular, ggf. Zustimmung zum vorzeitigen Beginn (`consent_collection` – Schalter `STRIPE_CHECKOUT_REQUIRE_TERMS`).
 - **AGB/Nutzungsbedingungen** existieren noch nicht (Registrierung verweist auf „Nutzungsbedingungen“ als Entwurf, `termsVersion: entwurf-2026-10`).
@@ -191,8 +211,8 @@ Aktiviert werden Methoden **im Stripe-Dashboard** (dynamische Zahlungsmethoden),
 | # | Punkt | Wer |
 |---|---|---|
 | O1 | Konten/Projekte anlegen, Schlüssel, DNS – [SETUP.md](SETUP.md) | Owner |
-| O2 | E-Mail-Versand für Supabase Auth: eigenes SMTP (Brevo, im Haus) – der eingebaute Versand erlaubt nur **2 E-Mails/Stunde** | Owner (S4) |
-| O3 | Kündigungsbestätigung per E-Mail und Abarbeitung der Kündigungseingänge ohne Anmeldung (Zuordnung zum Vertrag) | eigener PR, nach O2 |
+| O2 | Brevo: Domain `visionuniverse.de` authentifizieren, Absender verifizieren, SMTP für Supabase Auth (eingebauter Versand: nur **2 E-Mails/Stunde**) und API-Schlüssel für den Worker | Owner (B1–B4) |
+| O3 | ~~Kündigungsbestätigung per E-Mail~~ umgesetzt; offen bleibt nur die Abarbeitung von `manual_review` (heute SQL, später Admin-Oberfläche) | Betrieb |
 | O4 | Link „Verträge hier kündigen“ und „Anmelden“ in der globalen Shell | Owner-Entscheidung, eigener Shell-PR (Shell-QA) |
 | O5 | Rechtstexte: AGB, Widerruf, Datenschutzerklärung | Owner/Rechtsberatung |
 | O6 | Apple/Google: Signaturprüfung und Endpunkte anschließen | eigener PR, wenn die App kommt |
@@ -222,9 +242,9 @@ Fixkosten: **0 €** in Entwicklung, **≈ 23–25 €/Monat** ab Produktion (Su
 |---|---|---|
 | SQL (echtes PostgreSQL) | `PG_TEST_URL=… node scripts/account/sql-tests.mjs` | 4 Dateien: RLS, Spaltenrechte, Katalog, Abrechnungslogik, Idempotenz, Löschung, Watchlist-Grenzen |
 | Worker, Einheit | `node --test workers/vu-account/tests/unit.test.mjs` | Signatur, JWT, Adapter, Konfiguration, Cookies, Eingaben, Scanner |
-| Ende-zu-Ende | `PG_TEST_URL=… node --test workers/vu-account/tests/flows.test.mjs` | 17 Abläufe: Browser → Worker → simuliertes Supabase/Stripe → echtes PostgreSQL |
+| Ende-zu-Ende | `PG_TEST_URL=… node --test workers/vu-account/tests/flows.test.mjs` | 20 Abläufe: Browser → Worker → simuliertes Supabase/Stripe/Brevo → echtes PostgreSQL |
 | Kontoseiten | `node --test konto/tests/*.test.mjs` | Client, Weiterleitungen, Seitenstruktur |
-| Browser | `node scripts/account/dev-server.mjs` + `node scripts/account/browser-qa.mjs` | ganzer Weg in Chromium, Mobil hell/dunkel, Überlauf, 16-px-Eingaben, 44-px-Ziele |
+| Browser | `node scripts/account/dev-server.mjs` + `node scripts/account/browser-qa.mjs` | ganzer Weg inkl. Kündigung ohne Anmeldung; in CI Chromium **und WebKit (iPhone-Profil)** gegen PostgreSQL 17; Mobil hell/dunkel, Überlauf, 16-px-Eingaben, 44-px-Ziele |
 
 Lokale Umgebung zum Durchklicken: `PG_TEST_URL=… node scripts/account/dev-server.mjs` → `http://localhost:8790/__dev/` (simuliertes Postfach,
 Checkout mit „erfolgreich/abgelehnt“, Kundenportal mit Tarifwechsel, Zahlungsausfall, Kündigung; alle Ereignisse werden signiert zugestellt).

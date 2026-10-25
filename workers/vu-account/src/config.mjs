@@ -52,6 +52,18 @@ export function loadConfig(env = {}) {
       enabled: flag(env.VU_REGISTRATION_ENABLED),
       allowlist: new Set(list(env.VU_REGISTRATION_ALLOWLIST).map(e => e.toLowerCase())),
     },
+    mail: {
+      apiKey: String(env.BREVO_API_KEY || ''),
+      apiBase: origin(env.BREVO_API_BASE) || 'https://api.brevo.com',
+      sender: String(env.VU_MAIL_SENDER || ''),
+      senderName: String(env.VU_MAIL_SENDER_NAME || 'Vision Universe'),
+    },
+    cancellation: {
+      // Ordentliche Kuendigung ohne Anmeldung sofort zuordnen und bei Stripe zum
+      // Laufzeitende vormerken (umkehrbar im Kundenportal). "false" = nur Eingang
+      // speichern und bestaetigen, Zuordnung von Hand.
+      autoProcess: String(env.VU_CANCELLATION_AUTO_PROCESS || 'true').toLowerCase() !== 'false',
+    },
     cookies: {
       secure: cookieSecure,
       prefix: cookieSecure ? '__Host-' : '',

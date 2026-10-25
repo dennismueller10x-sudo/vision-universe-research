@@ -7,7 +7,7 @@ Nichts hiervon ist erledigt. Jeder Schritt braucht die **ausdrückliche Freigabe
 
 - [ ] AGB/Nutzungsbedingungen, Widerrufsbelehrung inkl. Muster-Widerrufsformular, Datenschutzerklärung (Supabase, Cloudflare, Stripe, Brevo) veröffentlicht; `termsVersion` in `konto/konto.js` auf die veröffentlichte Version setzen.
 - [ ] AV-Verträge/DPAs: Supabase, Cloudflare, Brevo; Stripe-Bedingungen akzeptiert.
-- [ ] Kündigungsbutton dauerhaft erreichbar (Link in der globalen Shell, eigener Shell-PR mit Shell-QA) und Bestätigung per E-Mail (ACCOUNTS_AND_SUBSCRIPTIONS.md §8, O3/O4).
+- [ ] Kündigungsbutton dauerhaft erreichbar (Link in der globalen Shell/Fußzeile, eigener Shell-PR mit Shell-QA – O4). Die E-Mail-Bestätigung ist gebaut; sie braucht Brevo B1–B5 in Produktion; `billing.cancellation_requests` mit `confirmation_status <> 'sent'` muss leer sein.
 - [ ] Checkout-Button-Beschriftung (§ 312j BGB) und Zustimmung zum vorzeitigen Leistungsbeginn geprüft; ggf. `STRIPE_CHECKOUT_REQUIRE_TERMS=true` mit hinterlegter AGB-URL im Stripe-Dashboard.
 - [ ] Umsatzsteuer: nur DE oder Stripe Tax (OSS) entschieden; Preise brutto.
 
@@ -29,7 +29,7 @@ Nichts hiervon ist erledigt. Jeder Schritt braucht die **ausdrückliche Freigabe
 
 ## D. Betrieb
 
-- Täglich: `billing.payment_events` mit `status = 'failed'`, `billing.entitlement_conflicts`, `billing.cancellation_requests` mit `status = 'received'`.
+- Täglich: `billing.payment_events` mit `status = 'failed'`, `billing.entitlement_conflicts`, `billing.cancellation_requests` mit `status = 'manual_review'` oder `confirmation_status <> 'sent'` (unverzüglich bearbeiten bzw. Bestätigung nachsenden), Log-Alarme `PAYMENT_DISPUTED`, `PRICE_MISMATCH`, `CANCELLATION_CONFIRMATION_NOT_SENT`.
 - Geplanter Abgleich (`reconcile-stripe.mjs`) täglich als Workflow (O9).
 - Vor jeder Migration: `supabase db dump`, Migration zuerst im Entwicklungsprojekt.
 - Schlüsselrotation: Stripe Restricted Key und `whsec_` (zwei `v1`-Signaturen werden während der Rotation akzeptiert), Supabase Secret Key – jeweils neues Secret setzen, Workflow starten, alten Schlüssel widerrufen.

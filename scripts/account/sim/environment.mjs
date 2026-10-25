@@ -12,7 +12,7 @@ import {resetCatalogCache} from '../../../workers/vu-account/src/billing.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 export const SIM = Object.freeze({
-  supabase: 'http://supabase.sim', stripe: 'http://stripe.sim', api: 'https://account.sim', site: 'https://research.sim',
+  supabase: 'http://supabase.sim', stripe: 'http://stripe.sim', brevo: 'http://brevo.sim', api: 'https://account.sim', site: 'https://research.sim',
 });
 
 export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, envOverrides = {}, site = SIM.site, api = SIM.api,
@@ -24,16 +24,24 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
   const now = clock || (() => Date.now() + offset);
   const supabase = await createFakeSupabase({baseUrl: SIM.supabase, pg, now});
   const stripe = createFakeStripe({now, checkoutBase, portalBase});
+  const mails = []; // simuliertes Brevo (Transaktions-E-Mails des Workers)
   const fetchImpl = async (input, init) => {
     const req = input instanceof Request ? input : new Request(input, init);
     if (req.url.startsWith(SIM.supabase)) return supabase.handle(req);
     if (req.url.startsWith(SIM.stripe)) return stripe.handle(req);
+    if (req.url.startsWith(SIM.brevo)) {
+      if (req.headers.get('api-key') !== 'brevo-sim-key') return new Response('{"code":"unauthorized"}', {status: 401});
+      const mail = await req.json();
+      mails.push({to: mail.to[0].email, subject: mail.subject, text: mail.textContent, html: mail.htmlContent, sender: mail.sender.email, at: new Date(now()).toISOString()});
+      return new Response(JSON.stringify({messageId: `<sim-${mails.length}@brevo.sim>`}), {status: 201});
+    }
     throw new Error('NETZWERK_IN_SIMULATION_VERBOTEN ' + req.url);
   };
   const env = {
     VU_ENVIRONMENT: 'development', VU_SITE_ORIGIN: site, VU_ACCOUNT_API_ORIGIN: api,
     SUPABASE_URL: SIM.supabase, SUPABASE_PUBLISHABLE_KEY: LOCAL_KEYS.publishable, SUPABASE_SECRET_KEY: LOCAL_KEYS.secret,
     STRIPE_SECRET_KEY: stripe.secretKey, STRIPE_WEBHOOK_SECRET: stripe.webhookSecret, STRIPE_API_BASE: SIM.stripe,
+    BREVO_API_KEY: 'brevo-sim-key', BREVO_API_BASE: SIM.brevo, VU_MAIL_SENDER: 'konto@visionuniverse.de',
     VU_REGISTRATION_ENABLED: 'true', ...envOverrides,
   };
   const logs = [];
@@ -44,7 +52,8 @@ export async function createEnvironment({adminUrl = process.env.PG_TEST_URL, env
     headers: {'Content-Type': 'application/json', 'Stripe-Signature': signature}, body: raw}));
 
   return {
-    app, pg, db, supabase, stripe, env, logs, now, api, site,
+    app, pg, db, supabase, stripe, env, logs, now, api, site, mails,
+    lastMailTo: to => [...mails].reverse().find(m => m.to === to) || null,
     advance(ms) { offset += ms; },
     deliverWebhooks: opts => stripe.sim.deliver(webhook, opts),
     webhook,

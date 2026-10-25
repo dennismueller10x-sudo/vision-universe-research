@@ -39,6 +39,7 @@
     BILLING_NOT_CONFIGURED: 'Abonnements sind noch nicht freigeschaltet.',
     BILLING_LIVE_MODE_NOT_APPROVED: 'Abonnements sind noch nicht freigeschaltet.',
     BILLING_WEBHOOK_NOT_CONFIGURED: 'Abonnements sind noch nicht freigeschaltet.',
+    NAME_REQUIRED: 'Bitte gib deinen Namen an, damit wir die Kündigung zuordnen können.',
     CONFIRMATION_REQUIRED: 'Bitte bestätige die Löschung.',
     ORIGIN_NOT_ALLOWED: 'Diese Seite darf die Konto-Funktion nicht nutzen.',
     UPSTREAM_UNAVAILABLE: 'Der Dienst ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal.',

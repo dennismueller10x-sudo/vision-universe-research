@@ -97,7 +97,8 @@ export function createBillingStore(service) {
     blockingSubscription: userId => service.rpc('billing_blocking_subscription', {p_user_id: userId}),
     entitlements: userId => service.rpc('effective_entitlements', {p_user_id: userId}),
     recordDeletion: (userId, canceled) => service.rpc('billing_record_deletion', {p_user_id: userId, p_canceled: canceled}),
-    cancellationRequest: ({userId, email, fullName, reference, kind}) => service.rpc('billing_cancellation_request',
-      {p_user_id: userId, p_email: email, p_full_name: fullName, p_reference: reference, p_kind: kind}),
+    recordCancellation: entry => service.rpc('billing_record_cancellation', {p: entry}),
+    updateCancellation: (id, patch) => service.rpc('billing_update_cancellation', {p_id: id, p: patch}),
+    userByEmail: email => service.rpc('billing_user_by_email', {p_email: email}),
   };
 }
