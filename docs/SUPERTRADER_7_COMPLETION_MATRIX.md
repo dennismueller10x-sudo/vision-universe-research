@@ -20,6 +20,31 @@ V4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-
 | C12 | `SF_MOKA_BUYABLE_GAP_UP` | RESEARCH_COMPLETE_WITH_EXCEPTIONS | SCREEN_STATISTICS | 9 | CC-2, CC-4, CC-6, CC-7 | CC-1, CC-3, CC-5, CC-8 | 14 / 0 / 14 | LIVE_NOT_APPROVED |
 | C13 | `SF_RASCHKE_HOLY_GRAIL` | SOURCE_BLOCKED | NOT_MEASURABLE | 8 | CC-4, CC-6, CC-7 | CC-1, CC-2, CC-3, CC-5, CC-8 | 29 / 0 / 29 | LIVE_NOT_APPROVED |
 
+## CC-5-Teilkriterien (Entscheidung E7-1)
+
+CC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0):
+
+- `CC5-a-K5-RESOLVED`: every DQ-K5 session behind a reference trade verified (CONFIRMED_*)
+- `CC5-b-K3-RESOLVED`: every DQ-K3 session behind a reference trade verified (criteria 1.1.0: DQ-K3 reported as well)
+- `CC5-c-DATA-PR`: confirmed undeclared splits corrected in a versioned data PR (not required when none is confirmed)
+- `CC5-d-RECOMPUTED`: reference recomputed on the corrected data (CA run trade- and ledger-identical to BASE with the empty overlay)
+- `CC5-e-DETECTION-COMPLETE`: the detector can see every undeclared corporate action - NOT met by construction: undeclared splits with a jump below 3x (e.g. 2:1) are flagged by neither DQ-K5 nor DQ-K3
+- `CC5-f-HOLDOUT`: the same check on the second test window (HOLDOUT sts1-8595...) - not computed in 7.0
+
+| | Strategie | K5 exponiert / ungeklärt | K3 exponiert / echt / ungeklärt | a | b | c | d | e | f |
+|---|---|---|---|---|---|---|---|---|---|
+| C01 | `SF_TURTLE_S1` | 16 / 16 | 41 / 1 / 40 | nein | nein | entfällt | ja | nein | nein |
+| C02 | `SF_TURTLE_S2` | 14 / 14 | 38 / 0 / 38 | nein | nein | entfällt | ja | nein | nein |
+| C03 | `SF_DARVAS_BOX` | 15 / 15 | 30 / 0 / 30 | nein | nein | entfällt | ja | nein | nein |
+| C04 | `SF_WEINSTEIN_INVESTOR` | 0 / 0 | 5 / 1 / 4 | ja | nein | entfällt | ja | nein | nein |
+| C05 | `SF_WEINSTEIN_TRADER` | 4 / 4 | 9 / 0 / 9 | nein | nein | entfällt | ja | nein | nein |
+| C06 | `SF_MINERVINI_SEPA_VCP` | 0 / 0 | 0 / 0 / 0 | ja | ja | entfällt | ja | nein | nein |
+| C07 | `SF_MINERVINI_POWER_PLAY` | 12 / 12 | 39 / 0 / 39 | nein | nein | entfällt | ja | nein | nein |
+| C08 | `SF_KK_BREAKOUT` | 27 / 27 | 95 / 1 / 94 | nein | nein | entfällt | ja | nein | nein |
+| C11 | `SF_MOKA_POCKET_PIVOT` | 9 / 9 | 25 / 0 / 25 | nein | nein | entfällt | ja | nein | nein |
+| C12 | `SF_MOKA_BUYABLE_GAP_UP` | 14 / 14 | 69 / 1 / 68 | nein | nein | entfällt | ja | nein | nein |
+| C13 | `SF_RASCHKE_HOLY_GRAIL` | 29 / 29 | 99 / 0 / 99 | nein | nein | entfällt | ja | nein | nein |
+
 ## C01 `SF_TURTLE_S1`
 
 | Frage | Antwort |

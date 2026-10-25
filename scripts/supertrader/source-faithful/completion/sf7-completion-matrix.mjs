@@ -29,9 +29,28 @@ export const SF7_EVIDENCE = Object.freeze({
 
 /** V4-D1 exposure after the 7.0 classification, rule set 1.3.0 (DQ-K5: exposed / confirmed genuine / unresolved), from PR902 run 40122736287. */
 export const CA7 = Object.freeze({
-  TURTLE_S1: [16, 0, 16], TURTLE_S2: [14, 0, 14], MINERVINI_SEPA: [0, 0, 0], MINERVINI_POWER_PLAY: [12, 0, 12], DARVAS: [15, 0, 15], KK_BREAKOUT: [27, 0, 27],
-  POCKET_PIVOT: [9, 0, 9], BUYABLE_GAP_UP: [14, 0, 14], WEINSTEIN_INVESTOR: [0, 0, 0], WEINSTEIN_TRADER: [4, 0, 4], HOLY_GRAIL_W_RAS97: [29, 0, 29],
+  TURTLE_S1: [16, 0, 16, 41, 1, 40], TURTLE_S2: [14, 0, 14, 38, 0, 38], MINERVINI_SEPA: [0, 0, 0, 0, 0, 0], MINERVINI_POWER_PLAY: [12, 0, 12, 39, 0, 39], DARVAS: [15, 0, 15, 30, 0, 30], KK_BREAKOUT: [27, 0, 27, 95, 1, 94],
+  POCKET_PIVOT: [9, 0, 9, 25, 0, 25], BUYABLE_GAP_UP: [14, 0, 14, 69, 1, 68], WEINSTEIN_INVESTOR: [0, 0, 0, 5, 1, 4], WEINSTEIN_TRADER: [4, 0, 4, 9, 0, 9], HOLY_GRAIL_W_RAS97: [29, 0, 29, 99, 0, 99],
 });
+
+/**
+ * CC-5 sub-criteria (owner decision E7-1, 2026-10-25: check which parts are met for zero-exposure strategies; no
+ * automatic upgrade). The test of CC-5 (criteria 1.2.0) is decomposed into its parts; CC-5 itself stays as the
+ * readiness artifact derives it (false for every reference). Run 40122736287 (rule set 1.3.0, overlay empty).
+ */
+export const CC5_SUBCRITERIA = Object.freeze([
+  Object.freeze({ id: 'CC5-a-K5-RESOLVED', test: 'every DQ-K5 session behind a reference trade verified (CONFIRMED_*)' }),
+  Object.freeze({ id: 'CC5-b-K3-RESOLVED', test: 'every DQ-K3 session behind a reference trade verified (criteria 1.1.0: DQ-K3 reported as well)' }),
+  Object.freeze({ id: 'CC5-c-DATA-PR', test: 'confirmed undeclared splits corrected in a versioned data PR (not required when none is confirmed)' }),
+  Object.freeze({ id: 'CC5-d-RECOMPUTED', test: 'reference recomputed on the corrected data (CA run trade- and ledger-identical to BASE with the empty overlay)' }),
+  Object.freeze({ id: 'CC5-e-DETECTION-COMPLETE', test: 'the detector can see every undeclared corporate action - NOT met by construction: undeclared splits with a jump below 3x (e.g. 2:1) are flagged by neither DQ-K5 nor DQ-K3' }),
+  Object.freeze({ id: 'CC5-f-HOLDOUT', test: 'the same check on the second test window (HOLDOUT sts1-8595...) - not computed in 7.0' }),
+]);
+export function cc5Subcriteria(ca) {
+  if (!ca) return null;
+  const [, , k5u, , , k3u] = ca;
+  return { 'CC5-a-K5-RESOLVED': k5u === 0, 'CC5-b-K3-RESOLVED': k3u === 0, 'CC5-c-DATA-PR': 'NOT_REQUIRED', 'CC5-d-RECOMPUTED': true, 'CC5-e-DETECTION-COMPLETE': false, 'CC5-f-HOLDOUT': false };
+}
 
 const S = (o) => Object.freeze(o);
 /** The twelve answers per strategy (mandate 11). Short, evidence-backed; no performance statement. */
@@ -56,7 +75,7 @@ export function buildSf7Completion() {
   const rows = r6.candidates.map((c) => {
     const a = ANSWERS[c.candidateId];
     const met = Object.entries(c.certificationCriteria).filter(([, v]) => v).map(([k]) => k), missing = Object.entries(c.certificationCriteria).filter(([, v]) => !v).map(([k]) => k);
-    return { candidateId: c.candidateId, strategyId: c.strategyId, primaryState: c.primaryState, measurementClass: c.measurementClass, executablePhases: c.executablePhases, liveReadiness: c.liveReadiness, certification: c.certification, certificationMet: met, certificationMissing: missing, corporateActions7: c.lifecycleKey && CA7[c.lifecycleKey] ? { dqK5Exposed: CA7[c.lifecycleKey][0], confirmedGenuine: CA7[c.lifecycleKey][1], unresolved: CA7[c.lifecycleKey][2] } : null, ...a };
+    return { candidateId: c.candidateId, strategyId: c.strategyId, primaryState: c.primaryState, measurementClass: c.measurementClass, executablePhases: c.executablePhases, liveReadiness: c.liveReadiness, certification: c.certification, certificationMet: met, certificationMissing: missing, corporateActions7: c.lifecycleKey && CA7[c.lifecycleKey] ? { dqK5Exposed: CA7[c.lifecycleKey][0], confirmedGenuine: CA7[c.lifecycleKey][1], unresolved: CA7[c.lifecycleKey][2], dqK3Exposed: CA7[c.lifecycleKey][3], dqK3ConfirmedGenuine: CA7[c.lifecycleKey][4], dqK3Unresolved: CA7[c.lifecycleKey][5] } : null, cc5Subcriteria: cc5Subcriteria(c.lifecycleKey ? CA7[c.lifecycleKey] : null), ...a };
   });
   return { schema: 'supertrader-sf7-completion-1.0.0', version: SF7_COMPLETION_VERSION, basis: { readinessCriteria: r6.criteriaVersion, readinessSha256: r6.criteriaSha256 }, evidence: SF7_EVIDENCE, statusChange: 'Kein Zustand, keine Messklasse und kein Zertifizierungskriterium ändert sich in 7.0; alle 13 Strategien bleiben LIVE_NOT_APPROVED und DIAGNOSTIC_NOT_CERTIFIED', candidates: rows };
 }
@@ -65,6 +84,9 @@ export function sf7CompletionMarkdown(a) {
   let md = `# Supertrader 7.0 – Abschlussmatrix der 13 Strategien\n\nGeneriert von \`scripts/supertrader/source-faithful/completion/sf7-completion-matrix.mjs\` (${a.version}). Maschinelle Felder aus \`STRATEGY-SF6-READINESS.json\` (Kriterien ${a.basis.readinessCriteria}); keine Note ist von Hand gesetzt. ${a.statusChange}.\n\nV4-D1-Spalte: direkt exponierte DQ-K5-Sitzungen der Referenztrades nach der 7.0-Klassifikation, Regelsatz 1.3.0 (Draft-PR #902).\n\n`;
   md += '| | Strategie | Zustand | Messklasse | Phasen | erfüllt | fehlt | V4-D1 (exponiert / echt / ungeklärt) | Live |\n|---|---|---|---|---|---|---|---|---|\n';
   for (const c of a.candidates) md += `| ${c.candidateId} | \`${c.strategyId}\` | ${c.primaryState} | ${c.measurementClass} | ${c.executablePhases ?? '–'} | ${c.certificationMet.map((x) => x.split('-').slice(0, 2).join('-')).join(', ') || '–'} | ${c.certificationMissing.map((x) => x.split('-').slice(0, 2).join('-')).join(', ')} | ${c.corporateActions7 ? `${c.corporateActions7.dqK5Exposed} / ${c.corporateActions7.confirmedGenuine} / ${c.corporateActions7.unresolved}` : '–'} | ${c.liveReadiness} |\n`;
+  md += '\n## CC-5-Teilkriterien (Entscheidung E7-1)\n\nCC-5 selbst bleibt, wie das Readiness-Artefakt es ableitet, für alle Referenzen offen. Die Teilkriterien zeigen, was erfüllt ist (Lauf 40122736287, Regelsatz 1.3.0):\n\n' + CC5_SUBCRITERIA.map((x) => `- \`${x.id}\`: ${x.test}`).join('\n') + '\n\n| | Strategie | K5 exponiert / ungeklärt | K3 exponiert / echt / ungeklärt | a | b | c | d | e | f |\n|---|---|---|---|---|---|---|---|---|---|\n';
+  const yn = (v) => (v === true ? 'ja' : v === false ? 'nein' : 'entfällt');
+  for (const c of a.candidates) if (c.cc5Subcriteria) { const k = c.cc5Subcriteria, ca = c.corporateActions7; md += `| ${c.candidateId} | \`${c.strategyId}\` | ${ca.dqK5Exposed} / ${ca.unresolved} | ${ca.dqK3Exposed} / ${ca.dqK3ConfirmedGenuine} / ${ca.dqK3Unresolved} | ${yn(k['CC5-a-K5-RESOLVED'])} | ${yn(k['CC5-b-K3-RESOLVED'])} | ${yn(k['CC5-c-DATA-PR'] === 'NOT_REQUIRED' ? null : k['CC5-c-DATA-PR'])} | ${yn(k['CC5-d-RECOMPUTED'])} | ${yn(k['CC5-e-DETECTION-COMPLETE'])} | ${yn(k['CC5-f-HOLDOUT'])} |\n`; }
   const Q = [['changed7', 'Was hat sich in 7.0 geändert?'], ['technical', 'Technisch vollständig'], ['original', 'Nachgewiesene Originalregeln'], ['assumptions', 'Modellannahmen'], ['simulation', 'Vollständige Research-Simulation'], ['backtest', 'Vollständiger diagnostischer Backtest'], ['reliable', 'Belastbare Daten'], ['blocked', 'Gesperrte Daten'], ['execution', 'Ausführungsrealismus'], ['manual', 'Manuelle Prüfung'], ['next', 'Nächster konkreter Schritt']];
   for (const c of a.candidates) {
     md += `\n## ${c.candidateId} \`${c.strategyId}\`\n\n| Frage | Antwort |\n|---|---|\n`;

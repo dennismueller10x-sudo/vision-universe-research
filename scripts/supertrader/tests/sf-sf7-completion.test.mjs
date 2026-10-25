@@ -23,4 +23,9 @@ test('SF7-COMPLETION-MATRIX: artifact and document = fresh build; 13 strategies,
     for (const e of c.evidence) assert.ok(SF7_EVIDENCE[e], `${c.candidateId}:${e}`);
   }
   assert.ok(r6.summary.certificationCandidates.length === 0);
+  // E7-1: sub-criteria are reported, CC-5 itself is never upgraded by them
+  for (const c of a.candidates) if (c.cc5Subcriteria) { assert.equal(c.certificationMissing.includes('CC-5-CORPORATE-ACTIONS'), true, c.candidateId); assert.equal(c.cc5Subcriteria['CC5-e-DETECTION-COMPLETE'], false); }
+  const sepa = a.candidates.find((c) => c.candidateId === 'C06').cc5Subcriteria, wi = a.candidates.find((c) => c.candidateId === 'C04').cc5Subcriteria;
+  assert.equal(sepa['CC5-a-K5-RESOLVED'], true); assert.equal(sepa['CC5-b-K3-RESOLVED'], true);
+  assert.equal(wi['CC5-a-K5-RESOLVED'], true); assert.equal(wi['CC5-b-K3-RESOLVED'], false);
 });
