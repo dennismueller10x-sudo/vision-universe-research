@@ -86,11 +86,11 @@
       confirm: "Schluss über dem letzten Kontraktionshoch (Pivot).",
       invalidate: "Schlusskurs unter dem Tief der letzten Kontraktion." },
     GAP_UP: { name: "Kurslücke nach oben", direction: "BULLISH", family: "GAP",
-      detect: "Tagestief über dem Vortageshoch, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars.",
+      detect: "Tagestief über dem Vortageshoch, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars. Kein Datenverdacht: Schlussfaktor nicht nahe 2, 3, … bzw. 1/2, 1/3, … (±2 %) und zwischen 0,2 und 5.",
       confirm: "Die Lücke hält: drei Schlusskurse in Folge über dem Vortageshoch (Unterkante der Lücke).",
       invalidate: "Schlusskurs unter dem Vortageshoch – die Lücke ist per Schluss geschlossen." },
     GAP_DOWN: { name: "Kurslücke nach unten", direction: "BEARISH", family: "GAP",
-      detect: "Tageshoch unter dem Vortagestief, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars.",
+      detect: "Tageshoch unter dem Vortagestief, Lücke mindestens 0,5 ATR; mit Volumendaten zusätzlich mindestens 1,5-faches relatives Volumen. Jüngste Lücke der letzten 20 Bars. Kein Datenverdacht: Schlussfaktor nicht nahe 2, 3, … bzw. 1/2, 1/3, … (±2 %) und zwischen 0,2 und 5.",
       confirm: "Die Lücke hält: drei Schlusskurse in Folge unter dem Vortagestief (Oberkante der Lücke).",
       invalidate: "Schlusskurs über dem Vortagestief – die Lücke ist per Schluss geschlossen." }
   };
@@ -329,6 +329,14 @@
   }
 
   /* ------------------------------------------------- Kursluecken */
+  /* Datenverdacht statt Luecke: Schlussfaktor mit Split-Signatur (n oder 1/n, n = 2..50, ±2 %) oder
+     ausserhalb 0,2..5. So sehen nicht nachgezogene Splits, Abspaltungen und Datenfehler aus (DQ-PX-3). */
+  function suspectJump(ratio) {
+    if (!isNum(ratio) || ratio <= 0) return true;
+    if (ratio < 0.2 || ratio > 5) return true;
+    var r = ratio >= 1 ? ratio : 1 / ratio, n = Math.round(r);
+    return n >= 2 && Math.abs(r / n - 1) <= 0.02;
+  }
   /* Je Richtung die juengste Luecke der letzten 20 Bars; Volumenbedingung nur, wenn die Reihe Volumen hat. */
   function gaps(ctx) {
     var s = ctx.series, out = [], atrCol = ctx.prep.features.columns.atr, rv = ctx.prep.features.columns.relativeVolume;
@@ -338,6 +346,7 @@
         var size = dir > 0 ? s.low[k] - s.high[k - 1] : s.low[k - 1] - s.high[k];
         if (!isNum(a) || !isNum(size) || size < 0.5 * a) continue;
         if (ctx.hasVolume && !(isNum(rv[k]) && rv[k] >= 1.5)) continue;
+        if (suspectJump(s.close[k] / s.close[k - 1])) continue;
         var inv = -1, conf = -1, held = 0;
         for (var m = k; m <= ctx.t; m++) {
           if (dir > 0 ? s.close[m] < edge : s.close[m] > edge) { inv = m; break; }
@@ -468,7 +477,7 @@
   }
 
   var api = { ENGINE_VERSION: ENGINE_VERSION, STATES: STATES, RULES: RULES, LEGACY: LEGACY, LEGACY_STATE: LEGACY_STATE,
-              analyze: analyze, analyzeAt: analyzeAt, history: history };
+              analyze: analyze, analyzeAt: analyzeAt, history: history, suspectJump: suspectJump };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Formations = api; }
 })(typeof window !== "undefined" ? window : globalThis);

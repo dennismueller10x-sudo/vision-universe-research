@@ -189,3 +189,8 @@ test("Kursluecke: konstruiert; ohne Volumenspitze keine Luecke, geschlossen per 
   assert.equal(closed.state, "INVALIDATED");
   assert.equal(closed.invalidatedAt, base.timestamps[base.length - 1]);
 });
+
+test("Kursluecke: Sprung mit Split-Signatur oder extremem Faktor ist Datenverdacht, keine Luecke", () => {
+  for (const r of [2, 3.03, 10, 0.5, 1 / 3, 0.01, 0.162, 6]) assert.equal(Fm.suspectJump(r), true, "Verdacht " + r);
+  for (const r of [1.05, 1.3, 1.566, 0.7, 0.45, 2.5, 0.3]) assert.equal(Fm.suspectJump(r), false, "echt moeglich " + r);
+});
