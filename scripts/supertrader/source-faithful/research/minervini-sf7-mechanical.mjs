@@ -17,8 +17,8 @@
  *    F7-B12-116-203 (B12 PDF 116): "Ab Basis 4 oder 5 ist der Trend spät; plötzliche Basisfehlschläge häufiger."
  *    F7-B12-116-205 (B12 PDF 116): "Basis 1 und 2 entstehen meist aus Marktkorrekturen und sind der beste
  *      Einstiegszeitpunkt; Basis 3 meist noch handelbar."
- *    Model reading: base detection, the reset and the count are MA-MIN7-BASECOUNT-*; the books define neither a base
- *    nor the reset.
+ *    Model reading: base detection (revision 2: a close above the intraday base high), the reset and the count are
+ *    MA-MIN7-BASECOUNT-*; the books define neither a base nor the reset.
  *  - G-BASECOUNT x climax
  *    F7-B03-225-092 (B03 PDF 225): "Ausnahme erste Basis: dieselbe 'Erschöpfungs'-Aktion (≥70% Auftage, Serie starker
  *      Tage) aus der ersten Basis ist bullish, nur nach der letzten Basis ein Verkaufssignal; deshalb muss die Basiszahl
@@ -50,11 +50,11 @@
  *    the buffer are unquantified: the buckets are reporting steps, not thresholds, and no k is chosen.
  */
 import crypto from 'node:crypto';
-import { fin } from '../common/series.mjs';
+import { fin, smaAt } from '../common/series.mjs';
 import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
 import { vcpContractions } from './minervini-components.mjs';
 
-export const SF7_MECHANICAL_VERSION = 'sf7-minervini-mechanical-1.1.0'; // 1.1.0: review #940 (setup session is no completed base, two trend-start windows for G-TOPVOL, close-based relative depth in two windows, gap reading from the fill-bar open incl. limit fills, uncertainty flags with direction); 1.0.0: first package
+export const SF7_MECHANICAL_VERSION = 'sf7-minervini-mechanical-1.2.0'; // 1.2.0: review #940, third round (MA-MIN7-BASECOUNT-BASE revision 2: breakout close above the intraday base high instead of the running closing high; G-TOPVOL scan of an open trade ends at its markDate; the 200-day mean decision uses smaAt exactly); 1.1.0: review #940 (setup session is no completed base, two trend-start windows for G-TOPVOL, close-based relative depth in two windows, gap reading from the fill-bar open incl. limit fills, uncertainty flags with direction); 1.0.0: first package
 
 /** Printed values used here (source, page, translation status). */
 export const SF7_MECHANICAL_SOURCE_BOUNDS = Object.freeze({
@@ -70,11 +70,11 @@ export const SF7_MECHANICAL_SOURCE_BOUNDS = Object.freeze({
 
 /** Model assumptions of this package; none is a Minervini rule. */
 export const SF7_MECHANICAL_MODEL_ASSUMPTIONS = Object.freeze([
-  Object.freeze({ id: 'MA-MIN7-BASECOUNT-BASE', phase: 'SETUP_QUALIFICATION', reference: 'a base is completed by the first close above the running closing high (highest close since the scan start, updated only by a strictly higher close) at least 20 sessions after that closing high was set, on a session BEFORE the setup session; a shorter pause is no base; no depth bound (flat bases count). A close on the setup session above the running closing high is not a completed base: the setup still closes below its pivot, so that close belongs to the setup\'s own base', why: 'the books name bases and their number, not their detection; 20 sessions is the printed lower end of a Stage 2 base (B12 PDF 115, SF7_MECHANICAL_SOURCE_BOUNDS.baseMinSessions); closes on both sides, because an intraday high above the base high on the breakout attempt would otherwise restart the base one session before its breakout close; the pivot is an intraday level, so a setup close can lie above an older closing high without any breakout' }),
+  Object.freeze({ id: 'MA-MIN7-BASECOUNT-BASE', revision: 2, phase: 'SETUP_QUALIFICATION', reference: 'a base starts at the bar of the running intraday high (highest high since the scan start, the close counting where the high is missing) and is completed by the first CLOSE above that intraday base high at least 20 sessions after the base start, on a session BEFORE the setup session; a shorter pause is no base; no depth bound (flat bases count). A new intraday high without a close above the base high moves the base start and its high only while the base is younger than 20 sessions (still an advance); in a base of at least 20 sessions it is a breakout attempt without a close above the pivot and changes neither the base start nor the base high. Every close above the base high starts the next base at that bar. A close on the setup session is never a completed base: the setup still closes below its pivot, so that close belongs to the setup\'s own base', why: 'the books name bases and their number, not their detection; Minervini\'s breakout is the move above the base high / pivot, both intraday levels (B12 PDF 297), so a close above an older close but below the intraday high of the base start is no breakout (review #940, third round, MEDIUM-1; revision 1, used in 1.0.0 and 1.1.0, compared closes with the running closing high and counted such a recovery as a completed base); 20 sessions is the printed lower end of a Stage 2 base (B12 PDF 115, SF7_MECHANICAL_SOURCE_BOUNDS.baseMinSessions); an attempt keeps the base start and the base high, because an intraday high above the base high on the breakout attempt (or the rising highs of the right side) would otherwise restart the base or lift the pivot ahead of the closes, one session before the breakout close. Model assumption, not a Minervini rule' }),
   Object.freeze({ id: 'MA-MIN7-BASECOUNT-MARKET-RESET', phase: 'SETUP_QUALIFICATION', reference: 'market correction = the benchmark (snapshot SPY, split-adjusted closes) closes at least 10 % below its highest prior close; the count restarts at the lowest benchmark close of the latest such correction known on the setup date (point in time: benchmark closes up to the setup date only); the base whose breakout follows that low is base 1', why: 'B03 PDF 207 / B12 PDF 116 count bases after a market correction without sizing the correction: 10 % is a convention, not a book number (ABSENT_FROM_MATERIAL); the low is the session the correction is deepest, so a base formed during the correction is base 1 (model reading of B12 PDF 116: bases 1 and 2 mostly come out of market corrections)' }),
   Object.freeze({ id: 'MA-MIN7-BASECOUNT-STOCK-RESET', phase: 'SETUP_QUALIFICATION', reference: 'the count also restarts after the last close of the security below its 200-day mean (Trend Template criterion 1 fails: no Stage 2). Without such a close since the first computable 200-day mean the count is flagged uncertain: undercountPossible when no reset at all lies in the data (bases before the data start are unseen), overcountPossible when at least one base was counted and either the running closing high before the data start is unknown (no reset in the data) or a session after the reset has no computable 200-day mean (the first 199 sessions, or a missing close inside the window), where a close below the mean would have restarted the count', why: 'bases are counted inside one Stage 2 advance (B12 PDF 115-116); the books do not date its start; the 200-day line is the source\'s own Stage 2 boundary (MIN-SF-TT-1). The Trend Template run (MA-MIN7-STAGE2-START) is not used here because criterion 5 (close above MA50) fails inside most bases. The two flags state the direction of the possible error instead of one "lower bound"' }),
   Object.freeze({ id: 'MA-MIN7-BASECOUNT-CURRENT', phase: 'SETUP_QUALIFICATION', reference: 'base number of a setup = completed bases (MA-MIN7-BASECOUNT-BASE, breakout close after the reset and before the setup session) + 1 (the setup\'s own base)', why: 'a setup is a buy point out of a base (B12 PDF 297); counting it makes base 1 the first base after the reset, as in B03 PDF 207' }),
-  Object.freeze({ id: 'MA-MIN7-TOPVOL', phase: 'EXIT_CONDITIONS', reference: 'top-volume decline = a down close (close below the prior close) whose volume is above the volume of every session since the trend start, scanned from the entry session to the session before the exit session of a closed trade (to the data end for an open trade). The trend start is reported in two windows side by side, none chosen and none selected by a result: TREND_TEMPLATE_RUN = first session of the uninterrupted Trend Template 1-7 run containing the setup close (MA-MIN7-STAGE2-START; usually starts after the last close below the 50-day mean inside the setup base, so it reaches back only weeks), ABOVE_MA200_RUN = the session after the last close below the 200-day mean (the Stage 2 boundary of MA-MIN7-BASECOUNT-STOCK-RESET; windowTruncated when no such close lies in the data). A window is not evaluable without Stage 2 at the setup (Trend Template fails, resp. setup close below or no computable 200-day mean); both are not evaluable when the trade exits on its entry session (no session before the exit)', why: 'B03 PDF 217 names the decline on the largest volume since the start of the trend without dating that start; B03 PDF 219 calls even a 4-5 % decline on it a warning together with other violations: no size bound is applied. The exit-session bound is the one of MA-MIN7-POST-BREAKOUT-WINDOW (every exit fills before that close)' }),
+  Object.freeze({ id: 'MA-MIN7-TOPVOL', phase: 'EXIT_CONDITIONS', reference: 'top-volume decline = a down close (close below the prior close) whose volume is above the volume of every session since the trend start, scanned from the entry session to the session before the exit session of a closed trade (to the run\'s markDate for an open trade, the data end only without a markDate). The trend start is reported in two windows side by side, none chosen and none selected by a result: TREND_TEMPLATE_RUN = first session of the uninterrupted Trend Template 1-7 run containing the setup close (MA-MIN7-STAGE2-START; usually starts after the last close below the 50-day mean inside the setup base, so it reaches back only weeks), ABOVE_MA200_RUN = the session after the last close below the 200-day mean (the Stage 2 boundary of MA-MIN7-BASECOUNT-STOCK-RESET; windowTruncated when no such close lies in the data). A window is not evaluable without Stage 2 at the setup (Trend Template fails, resp. setup close below or no computable 200-day mean); both are not evaluable when the trade exits on its entry session (no session before the exit)', why: 'B03 PDF 217 names the decline on the largest volume since the start of the trend without dating that start; B03 PDF 219 calls even a 4-5 % decline on it a warning together with other violations: no size bound is applied. The exit-session bound is the one of MA-MIN7-POST-BREAKOUT-WINDOW (every exit fills before that close)' }),
   Object.freeze({ id: 'MA-MIN7-RELDEPTH', phase: 'SETUP_QUALIFICATION', reference: 'relative depth = stock decline / benchmark decline, both from closes (split-adjusted), over the base window from the 52-week-high base start (G-BASE-DEPTH) to the setup date, in two variants reported side by side, none chosen. Stock side in both: largest peak-to-trough decline of the closes from the base start (the base starts at the 52-week high, so an older, higher high never enters the base decline). Market side: SAME_WINDOW = largest peak-to-trough decline inside the window; TRAILING_HIGH = largest decline below the trailing 252-session closing high, taken over the sessions of the window (captures a market correction already running at the base start). Each variant is measured only when its market decline is at least 10 % (the MA-MIN7-BASECOUNT-MARKET-RESET convention), otherwise not evaluable', why: 'B12 PDF 280 compares the stock\'s correction with the market correction, without a window, a price basis or a floor; closes on both sides keep the price basis equal (the intraday G-BASE-DEPTH would inflate the ratio against a close-based market decline); without a floor a 1 % market dip would make every base "many times the market"' }),
   Object.freeze({ id: 'MA-MIN7-ENTRY-DISTANCE', phase: 'ENTRY_EXECUTION', reference: 'fill distance = reference fill / pivot - 1; gap distance = fill-bar open / pivot - 1 for every REF fill whose fill-bar open is at or above the pivot (OPEN_GAP_AT_OR_ABOVE_PIVOT and LIMIT_FILL_AFTER_OPEN), both split-invariant; buy orders the engine did not execute because the open lay above the limit (counts.notExecutedAboveLimit) are reported as a count only, they are no trades; buffer check = (fill-bar high - pivot) x splitAdj in raw dollars below 0.05 / 0.10 / 0.20 means a buy stop that far over the pivot would not have triggered on the fill bar; reporting buckets 0, (0, 1 %], (1, 2 %], (2, 3 %], (3, 5 %], above 5 %', why: 'B07 PDF 67 / 87 and B12 PDF 297: no chase "more than a few percent" over the pivot, unquantified; B07 PDF 40: 5, 10 or 20 cents, no magic number. The buckets only report; no bound is applied and no k is chosen. The gap reading uses the fill bar\'s open, not the engine\'s fill basis, so the largest gaps (filled at the limit) are not dropped; the engine itself is not touched' }),
 ]);
@@ -117,17 +117,25 @@ export function marketCorrectionAnchors(bench) {
 
 const lastBelowCache = new WeakMap();
 /**
- * lastBelow[j] = last index k <= j whose close is below its 200-day mean (-1 if none), with exact smaAt semantics;
- * computable[j] = the 200-day mean of bar j is defined; notComputable[j] = bars before j without a defined mean (prefix count).
+ * lastBelow[j] = last index k <= j whose close is below its 200-day mean (-1 if none); computable[j] = the 200-day mean
+ * of bar j is defined (smaAt(bars, j, 200) !== null); notComputable[j] = bars before j without a defined mean (prefix
+ * count). The rolling sum only pre-selects: where the close lies within the float-drift bound of the running sum
+ * (relative 1e-9 plus (j + 1) x 1e-15 x the largest close so far), the decision is taken with smaAt itself, so it
+ * equals the smaAt decision exactly.
  */
 function ma200State(bars) {
   let a = lastBelowCache.get(bars); if (a) return a;
   const lastBelow = new Int32Array(bars.length), computable = new Uint8Array(bars.length), notComputable = new Int32Array(bars.length + 1);
-  let sum = 0, bad = 0, last = -1;
+  let sum = 0, bad = 0, last = -1, maxAbs = 0;
   for (let j = 0; j < bars.length; j++) {
-    const v = bars[j].close; if (fin(v)) sum += v; else bad++;
+    const v = bars[j].close; if (fin(v)) { sum += v; maxAbs = Math.max(maxAbs, Math.abs(v)); } else bad++;
     if (j >= MA_RESET) { const o = bars[j - MA_RESET].close; if (fin(o)) sum -= o; else bad--; }
-    if (j >= MA_RESET - 1 && bad === 0) { computable[j] = 1; if (fin(v) && v < sum / MA_RESET) last = j; }
+    if (j >= MA_RESET - 1 && bad === 0) {
+      computable[j] = 1;
+      const m = sum / MA_RESET;
+      const drift = 1e-9 * Math.max(Math.abs(v), Math.abs(m)) + (j + 1) * 1e-15 * maxAbs;
+      if (Math.abs(v - m) <= drift) { if (v < smaAt(bars, j, MA_RESET)) last = j; } else if (v < m) last = j;
+    }
     lastBelow[j] = last;
     notComputable[j + 1] = notComputable[j] + (computable[j] ? 0 : 1);
   }
@@ -152,12 +160,19 @@ export function baseCountAt(bars, s0, ctx = null) {
   const resetIdx = Math.max(stockReset, marketIdx);
   const reset = resetIdx < 0 ? 'NONE' : marketIdx >= stockReset ? 'MARKET_CORRECTION' : 'BELOW_MA200';
   const start = stockReset >= 0 ? stockReset + 1 : 0;
-  let peak = -Infinity, peakIdx = -1, completed = 0;
-  // completed bases break out strictly before the setup session (MA-MIN7-BASECOUNT-BASE): bar s0 is the setup's own base
+  // MA-MIN7-BASECOUNT-BASE revision 2: baseHigh = intraday high of the base (from its start baseIdx on); a close above
+  // it is a breakout; completed bases break out strictly before the setup session: bar s0 is the setup's own base
+  let baseHigh = -Infinity, baseIdx = -1, completed = 0;
   for (let k = start; k < s0; k++) {
     const b = bars[k];
-    if (peakIdx >= 0 && fin(b.close) && b.close > peak && k - peakIdx >= BASE_MIN && k > resetIdx) completed++;
-    if (fin(b.close) && b.close > peak) { peak = b.close; peakIdx = k; }
+    if (!fin(b.close)) continue;
+    const hi = fin(b.high) ? Math.max(b.high, b.close) : b.close;
+    if (b.close > baseHigh) {
+      if (baseIdx >= 0 && k - baseIdx >= BASE_MIN && k > resetIdx) completed++;
+      baseHigh = hi; baseIdx = k; // the breakout bar (or the first bar) starts the next base
+    } else if (hi > baseHigh && k - baseIdx < BASE_MIN) {
+      baseHigh = hi; baseIdx = k; // still advancing: the base starts later; in a mature base an intraday high is no breakout
+    }
   }
   const n = completed + 1, B = SF7_MECHANICAL_SOURCE_BOUNDS;
   const reasons = [];
@@ -196,13 +211,15 @@ function topVolumeScan(bars, start, e, last) {
 /**
  * G-TOPVOL (MA-MIN7-TOPVOL) for one trade, in both trend-start windows: first down close from the entry session on
  * whose volume is above every session's volume since the window start. A closed trade's scan ends the session before
- * the exit session. Reads bars up to that session only; the windows start at or before the setup close.
+ * the exit session, an open trade's at its markDate (the data end only without one). Reads bars up to that session
+ * only; the windows start at or before the setup close.
  */
 export function topVolumeDecline(bars, trade, { P = MIN_PARAMS } = {}) {
   const dates = bars.map((b) => b.date), exact = (d) => { const k = atOrBefore(dates, d); return k >= 0 && dates[k] === d ? k : -1; };
   const e = exact(trade.entryDate), s0 = exact(trade.setupDate ?? trade.signalDate ?? trade.entryDate);
   if (e < 1 || s0 < 0 || s0 > e) return { status: 'NOT_EVALUABLE', trendTemplateRun: { status: 'NOT_EVALUABLE' }, aboveMa200Run: { status: 'NOT_EVALUABLE' } };
-  const last = trade.exitDate ? atOrBefore(dates, trade.exitDate) - 1 : bars.length - 1;
+  // closed trade: up to the session before the exit session; open trade: up to the run's markDate (point in time)
+  const last = trade.exitDate ? atOrBefore(dates, trade.exitDate) - 1 : trade.markDate ? atOrBefore(dates, trade.markDate) : bars.length - 1;
   if (last < e) { const x = { status: 'NO_SESSION_BEFORE_EXIT', topVolumeDeclineBeforeExit: null }; return { status: 'EVIDENCE', trendTemplateRun: x, aboveMa200Run: x }; } // exit on the entry session
   const tt = trendTemplateRunStart(bars, s0, P);
   const trendTemplateRun = tt === null ? { status: 'NOT_IN_STAGE2_AT_SETUP', topVolumeDeclineBeforeExit: null } : topVolumeScan(bars, tt, e, last);

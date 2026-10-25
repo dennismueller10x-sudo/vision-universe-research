@@ -8,10 +8,10 @@ Dieses Paket arbeitet die DEFERRED-Fundstellen aus der E7-2-Klassifikation ([SUP
 
 | Teil | Datei | Version / Fingerabdruck |
 |---|---|---|
-| Diagnosen | `scripts/supertrader/source-faithful/research/minervini-sf7-mechanical.mjs` | `sf7-minervini-mechanical-1.1.0`, Register `sf7MechanicalRegistrySha256` `131746dc…` (vor dem Lauf gepinnt); 1.0.0 = `0cc8cb2a…` (Lauf 40226429160) |
+| Diagnosen | `scripts/supertrader/source-faithful/research/minervini-sf7-mechanical.mjs` | `sf7-minervini-mechanical-1.2.0`, Register `sf7MechanicalRegistrySha256` `a122022a…` (vor dem Lauf gepinnt); 1.1.0 = `131746dc…` (Lauf 40228813041), 1.0.0 = `0cc8cb2a…` (Lauf 40226429160) |
 | Paket | `research/minervini-sf7.mjs` | `sf7-minervini-1.4.0`; nur Versionszeichenkette und Kopfkommentar geändert |
-| Runner | `research/run-sf7-minervini.mjs` | `sf7-minervini-runner-1.6.0` (1.5.0 im Lauf 40226429160), `SF7_FILES` um die neue Datei erweitert |
-| Code-Hash | `sf7CodeSha256` | `2862748e…`, vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`); `832223b9…` war Runner 1.5.0 |
+| Runner | `research/run-sf7-minervini.mjs` | `sf7-minervini-runner-1.6.0` (unverändert seit 1.1.0; 1.5.0 im Lauf 40226429160), `SF7_FILES` um die neue Datei erweitert |
+| Code-Hash | `sf7CodeSha256` | `dd3568fb…`, vor dem Lauf gepinnt (Test `SF7-MIN-RUNNER`); `2862748e…` war Diagnosen 1.1.0, `832223b9…` Runner 1.5.0 |
 
 Unverändert bleiben:
 - die 4.0-Engine (`minervini-lifecycle.mjs`, `minervini-execution.mjs`, Fingerabdruck `c834b227…`) und alle Dateien in `run-sf4-lifecycle#FILES` / SF6-PAPER-2027;
@@ -45,16 +45,16 @@ Ermessensentscheidungen (QUALITATIVE: Churning, Umkehr auf hohem Volumen, „St�
 
 ## 3. Modellannahmen (vorab im Code fixiert)
 
-Keine davon ist eine Minervini-Regel, keine ist SOURCE_EXACT. Gedruckte Werte stehen in `SF7_MECHANICAL_SOURCE_BOUNDS` (alle `translationUnverified`). Im Kopf von `minervini-sf7-mechanical.mjs` steht je Fundstelle die Paraphrase wörtlich aus `MINERVINI-SF7-FINDINGS.json`, getrennt davon die Modell-Lesart. Stand 1.1.0:
+Keine davon ist eine Minervini-Regel, keine ist SOURCE_EXACT. Gedruckte Werte stehen in `SF7_MECHANICAL_SOURCE_BOUNDS` (alle `translationUnverified`). Im Kopf von `minervini-sf7-mechanical.mjs` steht je Fundstelle die Paraphrase wörtlich aus `MINERVINI-SF7-FINDINGS.json`, getrennt davon die Modell-Lesart. Stand 1.2.0:
 
 | Annahme | Festlegung | Begründung |
 |---|---|---|
-| `MA-MIN7-BASECOUNT-BASE` | Eine Basis endet mit dem ersten Schluss über dem laufenden Schlusshoch, das mindestens **20 Sitzungen** vorher gesetzt wurde; kürzere Pausen zählen nicht; keine Tiefenschranke (Flat Bases zählen) | B12 PDF 115: Basen in Stage 2 dauern 4–5 Wochen bis über ein Jahr, untere Grenze 4 Wochen. Schlüsse auf beiden Seiten, weil ein Intraday-Hoch am Ausbruchsversuch die Basis sonst einen Tag vor dem Ausbruch neu starten würde |
+| `MA-MIN7-BASECOUNT-BASE` (Revision 2, ab 1.2.0) | Eine Basis beginnt am Balken des laufenden **Intraday-Hochs** und endet mit dem ersten **Schluss über diesem Intraday-Basishoch**, mindestens **20 Sitzungen** nach dem Basisbeginn; kürzere Pausen zählen nicht; keine Tiefenschranke (Flat Bases zählen). Ein neues Intraday-Hoch ohne Schluss darüber verschiebt Basisbeginn und Basishoch nur, solange die Basis jünger als 20 Sitzungen ist (noch Anstieg); in einer reifen Basis ist es ein Ausbruchsversuch und ändert weder Beginn noch Pivot. Revision 1 (1.0.0, 1.1.0) verglich Schlüsse mit dem laufenden **Schlusshoch** | Minervinis Ausbruch ist der Schritt über Basishoch / Pivot, beides Intraday-Niveaus (B12 PDF 297). Ein Erholungsschluss über dem Schluss des Basisbeginns, aber unter dessen Intraday-Hoch ist kein Ausbruch (Review #940, dritte Runde, MEDIUM-1). B12 PDF 115: Basen in Stage 2 dauern 4–5 Wochen bis über ein Jahr, untere Grenze 4 Wochen. Modellannahme, keine Minervini-Regel |
 | `MA-MIN7-BASECOUNT-MARKET-RESET` | Marktkorrektur = SPY schließt mindestens **10 %** unter dem höchsten bisherigen Schluss; die Zählung beginnt am tiefsten SPY-Schluss der letzten solchen Korrektur, der am Setup-Tag bekannt ist | Die Bücher beziffern die Marktkorrektur nicht (ABSENT_FROM_MATERIAL); 10 % ist eine Konvention. Am Tief beginnt die Zählung, damit die in der Korrektur gebildete Basis Basis 1 ist (B12 PDF 116) |
 | `MA-MIN7-BASECOUNT-STOCK-RESET` | Neustart auch nach dem letzten Schluss der Aktie unter ihrem 200-Tage-Mittel; ohne einen solchen Schluss ist die Zahl **unsicher**, mit Richtung: `undercountPossible`, wenn gar kein Neustart in den Daten liegt (Basen vor dem ersten Balken fehlen); `overcountPossible`, sobald eine Basis gezählt wurde (das Schlusshoch vor dem ersten Balken ist unbekannt, ein unsichtbarer Schluss unter MA200 in den ersten 199 Balken hätte neu gestartet); `baseCountUncertain` = eins von beiden, Gründe in `uncertaintyReasons`. „Ohne berechenbares MA200“ umfasst die ersten 199 Balken und jede Lücke im Schlusskurs nach dem Neustart | Basen werden in einem Stage-2-Anstieg gezählt (B12 PDF 115–116); die 200-Tage-Linie ist die Stage-2-Grenze des Trend Templates (TT-1). Der Trend-Template-Lauf (`MA-MIN7-STAGE2-START`) taugt hier nicht, weil TT-5 (Schluss über MA50) in fast jeder Basis scheitert |
 | Lesart „früh“ | `earlyBase` = jede Basis ≤ 2; `earlyBaseAfterMarketCorrection` = nur Basen ≤ 2 nach einem Marktkorrektur-Neustart. Nur die zweite Zahl entspricht der Buchbedingung „nach einer Marktkorrektur“ (F7-B03-207-082); der Neustart unter MA200 ist Modellannahme | B03 PDF 207 |
 | `MA-MIN7-BASECOUNT-CURRENT` | Basiszahl = abgeschlossene Basen nach dem Neustart und vor dem Setup-Schluss + 1 (die eigene Basis des Setups); der Setup-Schluss schließt nie eine Basis ab, auch wenn er über einem alten Schlusshoch und unter dem Intraday-Pivot liegt | So ist die erste Basis nach dem Neustart Basis 1 (B03 PDF 207) |
-| `MA-MIN7-TOPVOL` | Erster Abwärtsschluss ab dem Einstieg, dessen Volumen über dem jeder Sitzung seit Trendbeginn liegt; Fenster endet bei geschlossenen Trades eine Sitzung vor der Ausstiegssitzung; Ausstieg am Einstiegstag = nicht bewertbar. Der Trendbeginn ist in **zwei Fenstern nebeneinander** berichtet, keines gewählt: `trendTemplateRun` = Beginn des ununterbrochenen Trend-Template-Laufs (`MA-MIN7-STAGE2-START`; beginnt meist erst nach dem letzten MA50-Bruch in der Setup-Basis, reicht also oft nur Wochen zurück); `aboveMa200Run` = Sitzung nach dem letzten Schluss unter MA200 (Fenster der Basiszählung; `windowTruncated`, wenn kein solcher Schluss in den Daten liegt) | B03 PDF 217 / 219 datieren den Trendbeginn nicht; keine Größenschranke für den Rückgang. Beide Lesarten sind vertretbar; die Wahl nach einem Ergebnis ist ausgeschlossen |
+| `MA-MIN7-TOPVOL` | Erster Abwärtsschluss ab dem Einstieg, dessen Volumen über dem jeder Sitzung seit Trendbeginn liegt; Fenster endet bei geschlossenen Trades eine Sitzung vor der Ausstiegssitzung, bei offenen Trades am `markDate` des Laufs (ab 1.2.0; vorher am Datenende); Ausstieg am Einstiegstag = nicht bewertbar. Der Trendbeginn ist in **zwei Fenstern nebeneinander** berichtet, keines gewählt: `trendTemplateRun` = Beginn des ununterbrochenen Trend-Template-Laufs (`MA-MIN7-STAGE2-START`; beginnt meist erst nach dem letzten MA50-Bruch in der Setup-Basis, reicht also oft nur Wochen zurück); `aboveMa200Run` = Sitzung nach dem letzten Schluss unter MA200 (Fenster der Basiszählung; `windowTruncated`, wenn kein solcher Schluss in den Daten liegt) | B03 PDF 217 / 219 datieren den Trendbeginn nicht; keine Größenschranke für den Rückgang. Beide Lesarten sind vertretbar; die Wahl nach einem Ergebnis ist ausgeschlossen |
 | `MA-MIN7-RELDEPTH` | Rückgang der Aktie geteilt durch Rückgang des SPY, Schlüsse auf beiden Seiten, Basisstart (52-Wochen-Hoch wie G-BASE-DEPTH) bis Setup-Tag. Aktienseite in beiden Fenstern: größter Rückgang Hoch-zu-Tief ab dem Basisstart (ein älteres, höheres Hoch zählt nie). Marktseite in **zwei Fenstern nebeneinander**, keines gewählt: `sameWindow` = größter Rückgang Hoch-zu-Tief innerhalb des Fensters; `trailingHigh` = größter Abstand unter dem gleitenden 252-Sitzungen-Schlusshoch über die Sitzungen des Fensters (erfasst eine Marktkorrektur, die vor dem Basisstart begann); > 2× ist eine Berichtsstufe, keine Meidungsgrenze (B12 PDF 295 nennt 2,3× noch akzeptabel); je Fenster nur bewertet, wenn der Markt mindestens 10 % fiel | B12 PDF 280 vergleicht mit der Marktkorrektur, ohne Fenster und ohne Untergrenze; ohne Untergrenze wäre jede Basis bei 1 % Markt-Dip „vielfach“ |
 | `MA-MIN7-ENTRY-DISTANCE` | Fill / Pivot − 1 und Eröffnung / Pivot − 1 (jeder Fill, dessen Balken am oder über dem Pivot eröffnete, auch Limit-Fills danach; gelesen aus der Eröffnung des Fill-Balkens, nicht aus der Fill-Basis der Engine); nicht ausgeführte Orders über dem Limit nur als Anzahl (`ordersNotExecutedAboveLimit`); Berichtsstufen 0, (0, 1 %], (1, 2 %], (2, 3 %], (3, 5 %], > 5 %; Puffer: (Hoch des Fill-Balkens − Pivot) × `splitAdj` in Roh-Dollar unter 0,05 / 0,10 / 0,20 | B07 PDF 67 / 87, B12 PDF 297 (keine Zahl), B07 PDF 40 (keine magische Zahl). Die Stufen berichten nur; keine Schranke, kein k gewählt |
 
@@ -66,7 +66,7 @@ Keine davon ist eine Minervini-Regel, keine ist SOURCE_EXACT. Gedruckte Werte st
 
 ## 5. Lauf (Diagnosen 1.0.0, Runner 1.5.0)
 
-Dieser Lauf gilt für `sf7-minervini-mechanical-1.0.0`. Die Revision 1.1.0 und ihr Vorher/Nachher-Vergleich stehen in Abschnitt 8.
+Dieser Lauf gilt für `sf7-minervini-mechanical-1.0.0`. Die Revisionen 1.1.0 und 1.2.0 und der Vorher/Nachher-Vergleich stehen in Abschnitt 8.
 
 Maßgeblicher Lauf: [40226429160](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40226429160), Workflow `supertrader-validation.yml`, Modus `sf7-minervini`, auf `3807283`. Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, Datensatz `EXACT`, Abrechnung `research-v1`, Runner `sf7-minervini-runner-1.5.0`.
 
@@ -113,7 +113,7 @@ Lesehinweise:
 ## 6. Tests
 
 `scripts/supertrader/tests/sf-sf7-minervini-mechanical.test.mjs` (Goldfälle und Gegenproben):
-- Basiszählung: vier Basen nach dem Aktien-Neustart (Basis 4, spät); Marktkorrektur 15 % setzt auf Basis 2 zurück, 9 % nicht; Pause unter 20 Sitzungen zählt nicht; Untergrenze ohne Neustart;
+- Basiszählung: vier Basen nach dem Aktien-Neustart (Basis 4, spät); Marktkorrektur 15 % setzt auf Basis 2 zurück, 9 % nicht; Pause unter 20 Sitzungen zählt nicht; ohne Neustart in den Daten unsicher mit Richtung (`undercountPossible` / `overcountPossible`, siehe `SF7-MECH-BASECOUNT-UNCERTAIN`);
 - **Lookahead ausgeschlossen:** Balken nach dem Setup verfälscht und SPY nach dem Setup-Tag abgestürzt, das Ergebnis bleibt gleich; ebenso nach Abschneiden der Reihe; der Markt-Anker ist zeitpunktgenau;
 - Top-Volumen: Signal am dritten Tag; liegt der Tag auf der Ausstiegssitzung, wird er nicht gelesen; Balken ab der Ausstiegssitzung verfälscht, Ergebnis gleich;
 - relative Tiefe: 30 % Basis gegen 12 % Markt (> 2×, nicht > 3×), 5 % Markt unter der Untergrenze, spätere Daten verfälscht ohne Wirkung;
@@ -127,6 +127,13 @@ Ergänzt in 1.1.0 (Review #940, zweite Runde):
 - `ADV-SF7-MECH-RELDEPTH-RUNNING-CORRECTION`: eine vor dem Basisstart begonnene Marktkorrektur fällt in `sameWindow` unter die Untergrenze, `trailingHigh` misst sie (30 % / 14 %);
 - `ADV-SF7-MECH-GAP-LIMIT-FILL`: Eröffnung 8 % über dem Pivot mit Limit-Fill zählt als Gap > 5 %; nicht ausgeführte Orders nur als Anzahl; fehlender Balken = unbekannt, nie „kein Gap“; die Diagnose verändert weder Trade noch Balken;
 - `SF7-MECH-RUNNER` mit echtem Universum: SEPA 4 und Power Play 2 REF-Trades, darunter Gap, Limit-Fill nach großer Eröffnungslücke und eine nicht ausgeführte Order; REF-Ledger gleich dem 4.0-`lifecyclePart` ohne 7.0-Code; jede Zählung unabhängig je Trade nachgerechnet; jedes Klimax-Signal genau einer Basiszahl zugeordnet (Summe = `ruleCounts.scheduled`); die Trades bleiben unverändert.
+
+Ergänzt in 1.2.0 (Review #940, dritte Runde):
+- `ADV-SF7-MECH-BASECOUNT-INTRADAY-PIVOT` (Goldfall des Reviews): Neustart unter MA200 um Sitzung 270, Basisbeginn 320 (Hoch 125, Schluss 118), Kontraktion auf 108, Erholung bis 350 auf Schluss 119,5, Rücksetzer auf 112, Setup 380 mit Schluss 117: **Basis 1**, sicher (Revision 1 lieferte 2). Gegenprobe: echter Ausbruchsschluss 126 über 125 an Sitzung 350 schließt Basis 1 ab, das Setup ist Basis 2; beide zeitpunktgenau;
+- `ADV-SF7-MECH-BASECOUNT-ATTEMPT`: Intraday-Vorstoß auf 127 mit Schluss 124 in der reifen Basis ändert weder Beginn noch Pivot; der Folgeschluss 125,5 über 125 ist der Ausbruch (Basis 2); ohne ihn bleibt es Basis 1;
+- `ADV-SF7-MECH-BASECOUNT-SETUP-SESSION` angepasst: der Setup-Schluss 105,2 liegt unter dem Intraday-Basishoch 106,05 und schließt auch nach dem Setup-Tag nichts ab (Revision 1: Basis 3); erst ein Schluss 107 über 106,05 macht das nächste Setup zur Basis 3;
+- `ADV-SF7-MECH-MA200-EXACT`: der Neustart unter MA200 entspricht der `smaAt`-Entscheidung exakt, auch auf flachen Strecken, auf denen die gleitende Summe in den letzten Bits abweicht (Revision 1 wich dort in 202 Sitzungen je Reihe ab);
+- `SF7-MECH-TOPVOL` ergänzt: bei offenem Trade endet der Scan am `markDate`; Balken danach verfälscht, Ergebnis gleich.
 
 ## 7. Unabhängiges Review (frischer Kontext, nur Diff, vor dem Lauf)
 
@@ -144,7 +151,7 @@ Ergebnis: 0 HIGH, 4 MEDIUM, 5 LOW. Kein Lookahead gefunden; keine Wirkung auf RE
 | L4: Nachträge zerrissen die Tabelle in der Klassifikations-Doku | hinter die Tabelle verschoben |
 | L5: kein Test, dass die neue Datei nicht in `run-sf4-lifecycle#FILES` gerät | Prüfliste erweitert |
 
-## 8. Revision 1.1.0 (Review #940, zweite Runde)
+## 8. Revisionen 1.1.0 und 1.2.0 (Review #940, zweite und dritte Runde)
 
 Ein zweites Review der Fassung 1.0.0 (nach Lauf 40226429160) fand, dass vier Befunde nur teilweise behoben waren. 1.1.0 behebt sie. Die REF, die Setup- und Ausstiegsvarianten, die Engine und alle Identitäts-Gates sind unverändert; geändert sind nur Diagnosen.
 
@@ -172,6 +179,25 @@ Ergebnis: 0 HIGH, 2 MEDIUM, 4 LOW; kein Lookahead, keine Wirkung auf REF, Varian
 | LOW: > 2× schließt die als akzeptabel genannten 2,3× ein | als Berichtsstufe dokumentiert (Code-Lesart und Abschnitt 3) |
 | LOW: Tests prüften `overcountPossible`, `above3x`, `windowTruncated` nicht; Fixture-Basis „Pivot-Berührung“ bei Eröffnung = Pivot | Prüfungen ergänzt, Fixture auf die Engine-Basis korrigiert |
 | LOW: Lücke im Schlusskurs nach dem Neustart (MA200 200 Sitzungen undefiniert) nicht als mögliche Überzählung markiert | `MA200_NOT_COMPUTABLE_AFTER_RESET` für jede Sitzung ohne MA200 nach dem Neustart; Test mit Lücke |
+
+### Prozessabweichung (ehrliche Kennzeichnung)
+
+Das oben als „Zweites unabhängiges Review“ bezeichnete Review und die Commits `b7d3a62` / `0cca717` stammen aus einer Session, die nach Auftrag **nur lesen** sollte. Sie hat stattdessen selbst Code und Doku geändert und committet. Dieses Review war deshalb nicht unabhängig von den Änderungen, die es prüfte; das ist eine Prozessabweichung.
+
+### Drittes Review (tatsächlich unabhängig, nur lesend, Gesamtstand 1.1.0)
+
+Ein drittes Review in einem frischen Kontext hat den Gesamtstand des PR nur lesend geprüft. Ergebnis: **0 HIGH, 2 MEDIUM, 7 LOW**, Empfehlung: Paket behalten. Die Korrekturen hat danach der Bearbeiter dieses PR vorgenommen (Diagnosen 1.2.0):
+
+| Befund | Behebung in 1.2.0 |
+|---|---|
+| MEDIUM-1: Basisbeginn und Pivot sind Intraday-Hochs, die Basis galt aber schon beim ersten Schluss über dem laufenden **Schlusshoch** als abgeschlossen; eine Erholung über den Schluss, unter dem Hoch des Basisbeginns zählte als Basis (Szenario: Basis 2 statt 1) | `MA-MIN7-BASECOUNT-BASE` Revision 2: Ausbruch = Schluss über dem Intraday-Basishoch (quellennäher: Ausbruch über Basishoch / Pivot), als Modellannahme gekennzeichnet; Goldfall des Szenarios (erwartet 1) und Gegenprobe (echter Ausbruch über 125 zählt) |
+| LOW-1: offene Trades scannten in G-TOPVOL bis zum Datenende | Scan-Grenze `markDate` des Laufs (zeitpunktgenau); Test |
+| LOW-3: Kommentar „exact smaAt semantics“ in `ma200State` stimmte wegen Rundungsdrift der gleitenden Summe nicht | Entscheidung nahe dem Mittel mit `smaAt` selbst, damit exakt; Kommentar angepasst; Test |
+| LOW-7: Abschnitt 6 nannte noch die 1.0.0-Formulierung „Untergrenze ohne Neustart“ | korrigiert (Unsicherheit mit Richtung) |
+
+Die LOW-Befunde 2, 4, 5 und 6 bleiben als **bekannte Grenzen** bestehen und sind nicht geändert. Für 1.2.0 selbst lag kein weiteres unabhängiges Review vor; geprüft wurde sie mit den Tests oben und einer Durchsicht durch den Bearbeiter.
+
+REF, die Setup- und Ausstiegsvarianten, die 4.0-Engine (`minervini-lifecycle.mjs`, `run-sf4-lifecycle#FILES`) und alle Identitäts-Gates bleiben unverändert; geändert sind nur Diagnosen.
 
 ### Vorher/Nachher
 

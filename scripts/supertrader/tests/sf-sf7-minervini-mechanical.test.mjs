@@ -8,10 +8,12 @@ import { benchIndex, sf7VariantRegistrySha256, SF7_MINERVINI_VERSION } from '../
 import { buildSetupIndex, runMinerviniLifecycle } from '../source-faithful/research/minervini-execution.mjs';
 import { REFERENCE_CONFIG } from '../source-faithful/research/minervini-lifecycle.mjs';
 import { trendTemplate } from '../source-faithful/methods/minervini.mjs';
+import { smaAt } from '../source-faithful/common/series.mjs';
 
 // mechanical 1.0.0: eb1ead15… (first pin), 0cc8cb2a… (review fixes, snapshot run 40226429160); re-pinned for mechanical
-// 1.1.0 (review #940: both G-TOPVOL windows, both G-RELDEPTH windows, uncertainty with direction) before its first snapshot run
-const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = '131746dcec97424ed80994fe102ad9ed76bc45ce385a681cd081444c137a3714';
+// 1.1.0 (review #940: both G-TOPVOL windows, both G-RELDEPTH windows, uncertainty with direction): 131746dc…; re-pinned for
+// mechanical 1.2.0 (review #940, third round: MA-MIN7-BASECOUNT-BASE revision 2, intraday base high) before its snapshot run
+const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = 'a122022acf1d436c1fa6eeaab47c4ae947aaa0805836ef854abf316f1ac766e9';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c));
@@ -106,8 +108,51 @@ test('ADV-SF7-MECH-BASECOUNT-SETUP-SESSION: a setup close above an older closing
   const b = c.map((x, k) => bar(k, x, x * 1.01, x * 0.99, x));
   assert.ok(b[330].close > 105 && b[330].close < b[300].high);
   for (const s0 of [325, 329, 330]) assert.equal(baseCountAt(b, s0, null).baseNumber, 2, `s0 ${s0}`);
-  // the next session, with the setup session now in the past, completes the 2nd base: a setup there is the 3rd
-  assert.equal(baseCountAt(b, 331, null).baseNumber, 3);
+  // MA-MIN7-BASECOUNT-BASE revision 2: once the setup session is in the past its close 105.2 is still below the intraday
+  // base high 106.05 and completes nothing (revision 1 counted it against the closing high 105: base 3)
+  assert.equal(baseCountAt(b, 331, null).baseNumber, 2);
+  // a close above the intraday base high on session 331 completes the 2nd base: a setup on 332 is the 3rd
+  const out = b.map((x, k) => (k === 331 ? bar(k, 105.5, 107.5, 105, 107) : x));
+  assert.equal(baseCountAt(out, 331, null).baseNumber, 2); assert.equal(baseCountAt(out, 332, null).baseNumber, 3);
+});
+
+// review #940, third round (MEDIUM-1): restart below the 200-day mean around 270, base start 320 with intraday high 125
+// and close 118, contraction to 108, recovery to the close 119.5 at 350 (above the close 118, below the high 125),
+// pullback to 112, setup close 117 at 380
+const RECOVERY = (top) => { const c = path([[0, 100], [250, 100], [270, 85], [320, 118], [335, 108], [350, top], [365, 112], [380, 117], [390, 116]]); return c.map((x, k) => bar(k, x, k === 320 ? 125 : x * 1.004, x * 0.996, x)); };
+
+test('ADV-SF7-MECH-BASECOUNT-INTRADAY-PIVOT: a recovery close above the base-start close but below its intraday high is no breakout (MA-MIN7-BASECOUNT-BASE revision 2, review #940 MEDIUM-1)', () => {
+  const b = RECOVERY(119.5);
+  assert.ok(b[350].close > b[320].close && b[350].close < b[320].high);
+  const r = baseCountAt(b, 380, null);
+  assert.equal(r.baseNumber, 1); assert.equal(r.reset, 'BELOW_MA200'); assert.equal(r.baseCountUncertain, false); assert.deepEqual(r.uncertaintyReasons, []);
+  // counter-check: a real breakout close above 125 (30 sessions after the base start) completes base 1, the setup is base 2
+  const g = RECOVERY(126);
+  assert.ok(g[350].close > g[320].high);
+  assert.equal(baseCountAt(g, 380, null).baseNumber, 2); assert.equal(baseCountAt(g, 380, null).baseCountUncertain, false);
+  // both PIT: later bars corrupted, same reading
+  for (const x of [b, g]) assert.deepEqual(baseCountAt(corruptAfter(x, 380), 380, null), baseCountAt(x, 380, null));
+});
+
+test('ADV-SF7-MECH-MA200-EXACT: the stock reset uses the smaAt decision exactly, also where the rolling sum drifts (review #940, third round, LOW-3)', () => {
+  // flat stretches after higher prices: the rolling sum and smaAt's summation differ in the last bits around the mean
+  for (const [hiP, loP] of [[0.3, 0.1], [0.7, 0.1], [1.3, 0.3], [100.3, 100.1]]) {
+    const b = mk([...Array(300).fill(hiP), ...Array(400).fill(loP), ...path([[0, loP], [60, loP * 1.3]])], 0);
+    for (const s0 of [520, 650, 699, 720, b.length - 1]) {
+      let want = -1; for (let k = 0; k <= s0; k++) { const m = smaAt(b, k, 200); if (m !== null && b[k].close < m) want = k; }
+      assert.equal(baseCountAt(b, s0, null).resetDate, want >= 0 ? b[want].date : null, `${hiP}/${loP} s0 ${s0}`);
+    }
+  }
+});
+
+test('ADV-SF7-MECH-BASECOUNT-ATTEMPT: an intraday poke above a mature base high without a close above it moves neither the base start nor the pivot', () => {
+  // mature base (start 320, high 125); session 349 trades up to 127 and closes 124; session 350 closes 125.5 (above the
+  // base high 125, below the attempt high 127): the breakout of base 1, 30 sessions after its start
+  const b = RECOVERY(119.5).map((x, k) => (k === 349 ? bar(k, 120, 127, 119, 124) : k === 350 ? bar(k, 124, 126, 123, 125.5) : x));
+  assert.equal(baseCountAt(b, 380, null).baseNumber, 2);
+  // without the close above 125 the attempt alone completes nothing
+  const a = RECOVERY(119.5).map((x, k) => (k === 349 ? bar(k, 120, 127, 119, 124) : x));
+  assert.equal(baseCountAt(a, 380, null).baseNumber, 1);
 });
 
 test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the trend start (B03 PDF 217), before the exit session, both windows', () => {
@@ -134,6 +179,12 @@ test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the
   // run (needs 252 sessions of history) starts later and does not see it (review M2: the two windows are reported apart)
   const early = bars.map((b, k) => (k === 250 ? { ...b, volume: 9.5e6 } : b)), ev = topVolumeDecline(early, t);
   assert.equal(ev.aboveMa200Run.topVolumeDeclineBeforeExit, false); assert.equal(ev.trendTemplateRun.topVolumeDeclineBeforeExit, true); assert.ok(ev.trendTemplateRun.windowStartDate > day(250));
+  // open trade (review #940, third round, LOW-1): the scan ends at the run's markDate; bars after it are never read
+  const marked = { ...t, markDate: bars[323].date };
+  const mr = topVolumeDecline(bars, marked);
+  assert.equal(mr.trendTemplateRun.topVolumeDeclineBeforeExit, false); assert.equal(mr.aboveMa200Run.topVolumeDeclineBeforeExit, false);
+  assert.deepEqual(topVolumeDecline(corruptAfter(bars, 323), marked), mr);
+  assert.equal(topVolumeDecline(bars, { ...t, markDate: bars[324].date }).trendTemplateRun.topVolumeDeclineBeforeExit, true);
   // no Stage 2 at the setup -> not evaluable in both windows
   const down = mk(path([[0, 100], [330, 40]]));
   const dn = topVolumeDecline(down, { setupDate: down[320].date, entryDate: down[321].date, exitDate: null });
@@ -237,7 +288,8 @@ test('SF7-MECH-CLIMAX-BY-BASE: exit-variant signals counted by base number (F7-B
 });
 
 test('SF7-MECH-REGISTRY: package pre-registered and pinned; the 7.0 setup registry content is unchanged (only its version string)', () => {
-  assert.equal(SF7_MECHANICAL_VERSION, 'sf7-minervini-mechanical-1.1.0'); assert.equal(SF7_MINERVINI_VERSION, 'sf7-minervini-1.4.0');
+  assert.equal(SF7_MECHANICAL_VERSION, 'sf7-minervini-mechanical-1.2.0');
+  assert.equal(SF7_MECHANICAL_MODEL_ASSUMPTIONS.find((m) => m.id === 'MA-MIN7-BASECOUNT-BASE').revision, 2); assert.equal(SF7_MINERVINI_VERSION, 'sf7-minervini-1.4.0');
   assert.equal(sf7MechanicalRegistrySha256(), PINNED_SF7_MECHANICAL_REGISTRY_SHA256);
   assert.equal(sf7VariantRegistrySha256('sf7-minervini-1.3.0'), 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e', 'bounds, assumptions and ALT-SEPA-* variants of minervini-sf7.mjs unchanged');
   assert.ok(SF7_MECHANICAL_MODEL_ASSUMPTIONS.every((m) => m.id.startsWith('MA-MIN7-') && m.why && m.reference));
