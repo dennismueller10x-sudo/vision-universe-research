@@ -6,7 +6,10 @@ import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../source-faithful/c
 
 // 1.0.0 469ea7d1… -> 1.1.0 (source review, before results) -> 1.2.0 (owner decisions E1-E6, only stricter)
 const PINNED_CRITERIA = '4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342';
-const PINNED_PAPER_PROTOCOL = 'c90c30bcf0186549aeb672ffc124b3b24d7b321288f0e78798a3a0cfc3bd5e8f';
+// SF6-PAPER-2027 1.0.0 c90c30bc… (2026-10-24, never activated) -> 1.1.0 (2026-10-25, E7-3: new code fingerprints after
+// the SF7-D3 / SF7-D4 fixes, references hash-identical)
+const PINNED_PAPER_PROTOCOL_1_0_0 = 'c90c30bcf0186549aeb672ffc124b3b24d7b321288f0e78798a3a0cfc3bd5e8f';
+const PINNED_PAPER_PROTOCOL = 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66';
 
 test('SF6-READINESS-CRITERIA-PINNED: 15 Dimensionen, Zustaende und harte Kriterien vor den Ergebnissen festgeschrieben', () => {
   assert.equal(sf6ReadinessCriteriaSha256(), PINNED_CRITERIA);
@@ -22,6 +25,17 @@ test('SF6-PAPER-PROTOCOL-2027: prospektiv, festgeschrieben vor dem Fenster, nich
   assert.equal(SF6_PAPER_PROTOCOL.window.start, '2027-01-01');
   assert.ok(SF6_PAPER_PROTOCOL.fixedOn < SF6_PAPER_PROTOCOL.window.start);
   assert.equal(SF6_PAPER_PROTOCOL.status, 'PREPARED_NOT_ACTIVE');
+  assert.equal(SF6_PAPER_PROTOCOL.version, '1.1.0'); assert.equal(SF6_PAPER_PROTOCOL.activation.status, 'NOT_ACTIVATED');
+  assert.equal(SF6_PAPER_PROTOCOL.supersedes.version, '1.0.0'); assert.equal(SF6_PAPER_PROTOCOL.supersedes.sha256, PINNED_PAPER_PROTOCOL_1_0_0);
+  assert.equal(SF6_PAPER_PROTOCOL.supersedes.status, 'SUPERSEDED_BY_1_1_0_NEVER_ACTIVATED');
+  // the pins are the current code (E7-3): Turtle engine, Minervini research code, both variant registries
+  const { codeSha256 } = await import('../source-faithful/runner/run-research.mjs');
+  const { researchCodeSha256 } = await import('../source-faithful/research/run-sf4-lifecycle.mjs');
+  const { variantRegistrySha256 } = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const { sf5VariantRegistrySha256 } = await import('../source-faithful/research/sf5-lifecycles.mjs');
+  const P = SF6_PAPER_PROTOCOL.references.pinned;
+  assert.equal(P.turtleEngineCodeSha256, codeSha256()); assert.equal(P.minerviniResearchCodeSha256, researchCodeSha256());
+  assert.equal(P.minerviniVariantRegistrySha256, variantRegistrySha256()); assert.equal(P.sf5VariantRegistrySha256, sf5VariantRegistrySha256());
   for (const k of ['scheduler', 'orders', 'broker', 'productSurface']) assert.equal(SF6_PAPER_PROTOCOL.activation[k], 'NONE', k);
   // no workflow references the protocol (no scheduler, no recording job in Supertrader 6.0)
   const fs = await import('node:fs');

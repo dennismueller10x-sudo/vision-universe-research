@@ -1,6 +1,6 @@
 # Supertrader 6.0 – prospektives Paper-Validierungsprotokoll SF6-PAPER-2027
 
-Stand: 24. Oktober 2026, Eigentümerentscheidung E2. Protokoll `SF6-PAPER-2027` 1.0.0 in `scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs`. Der Fingerabdruck `c90c30bcf018…` ist in `scripts/supertrader/tests/sf-sf6-readiness.test.mjs` gepinnt.
+Stand: 25. Oktober 2026, Eigentümerentscheidungen E2 und E7-3. Protokoll `SF6-PAPER-2027` **1.1.0** in `scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs`. Der Fingerabdruck `e623b336cd24…` ist in `scripts/supertrader/tests/sf-sf6-readiness.test.mjs` gepinnt. Version 1.0.0 (`c90c30bcf018…`, 24.10.2026) ist als ersetzt eingetragen und war nie aktiviert (Abschnitt „Versionen“).
 
 **Status: `PREPARED_NOT_ACTIVE`.** Das Protokoll ist vorbereitet, aber nicht aktiviert.
 - Supertrader 6.0 legt keinen Scheduler, keinen Workflow und keinen Aufzeichnungsjob an. Ein Test prüft, dass kein Workflow das Protokoll referenziert.
@@ -23,8 +23,9 @@ Keiner dieser Zeiträume wird rückwirkend als unberührter Holdout bezeichnet. 
 | Mindestdauer | 250 Sitzungen; frühestens danach ausgewertet (etwa 31.12.2027) |
 | Zwischenstände | nur Zählungen; keine Kennzahl wird geöffnet und keine Entscheidung getroffen |
 | Referenzen | die 11 Snapshot-Referenzen von 6.0, unverändert: Turtle S1/S2 (BASE_S0), Minervini SEPA und Power Play, Darvas, Kullamägi Breakout, Pocket Pivot, BGU, Weinstein Investor/Trader, Holy Grail W-RAS97 |
-| Fingerabdrücke | Turtle-Engine `ae2a51ed86ae…`, Minervini-Code `b1d81fb8…`, Minervini-Varianten `f13ea350…`, sf5-Varianten `0a1260e9…`; Abrechnung `research-v1` |
-| nicht enthalten | SF6-Modellvarianten (E3), Episodic Pivot / Parabolic Short (bräuchten neue Intraday-Abrufe, E5), SIC-Korrelationsgruppen (E4) |
+| Fingerabdrücke (1.1.0) | Turtle-Engine `89fbcf864a57…`, Minervini-Code `c834b227045b…`, Minervini-Varianten `f13ea350…` (unverändert), sf5-Varianten `0a1260e9…` (unverändert); Abrechnung `research-v1` |
+| Referenzgleichheit (1.1.0) | Turtle: Lauf 40170829944 gegen 39397517900, alle Szenarien von S1/S2 mit identischem öffentlichem Block (BASE_S0 `884d88cb…` / `67169e86…`). Minervini: Lauf 40170832007 gegen 39746264325, REF und alle registrierten Varianten mit identischem öffentlichem Block (REF SEPA `1ca52391…`, Power Play `877ceb33…`). |
+| nicht enthalten | SF6-Modellvarianten (E3), die SF7-Ausführungsvarianten (E7-3), Episodic Pivot / Parabolic Short (bräuchten neue Intraday-Abrufe, E5), SIC-Korrelationsgruppen (E4) |
 | Daten | die bestehende tägliche Kurspipeline; kein neuer Anbieter, keine neuen Kosten |
 | Einfrieren | über den bestehenden Capture-/Restore-Pfad als Research-Snapshot-Generationen. Vor der Aktivierung braucht es eine Entscheidung zur Aufbewahrung, weil von 3 Generationen 2 belegt sind. |
 | PIT | Entscheidungen der Sitzung t nutzen nur Daten bis zum Schluss von t. Kapitalmaßnahmen gehen nur so ein, wie sie zu t bekannt waren. |
@@ -39,3 +40,12 @@ Jede Änderung an einer Referenz, an ihrem Code oder an diesem Protokoll nach de
 ## Verhältnis zur Readiness-Matrix
 
 Die Kriterien 1.2.0 werten CC-8 nur aus Belegen dieses Protokolls aus. Dabei muss der Fingerabdruck des Protokolls übereinstimmen; Belege unter einer anderen Version zählen nicht. Bis zur Auswertung ist CC-8 für alle 13 Strategien nicht erfüllt.
+
+## Versionen
+
+| Version | Festgelegt | Fingerabdruck | Status | Änderung |
+|---|---|---|---|---|
+| 1.0.0 | 24.10.2026 (E2) | `c90c30bcf0186549…` | `SUPERSEDED_BY_1_1_0_NEVER_ACTIVATED` | erste Fassung; Turtle-Engine `ae2a51ed…`, Minervini-Code `b1d81fb8…` |
+| 1.1.0 | 25.10.2026 (E7-3) | `e623b336cd24a49e…` | `PREPARED_NOT_ACTIVE` | neue Code-Fingerabdrücke nach den Behebungen SF7-D3/SF7-D4 der OPTIMISTIC-Lesarten ([SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md)). Die Referenzen selbst sind unverändert und hashgleich belegt. |
+
+Die neue Version ändert keine Referenz, keine Kennzahl und keinen Ablauf. Sie wurde vor dem 01.01.2027 festgelegt, das Fenster ist also nicht berührt. Auch 1.1.0 ist nicht aktiviert: kein Scheduler, kein Workflow, keine Aufzeichnung.
