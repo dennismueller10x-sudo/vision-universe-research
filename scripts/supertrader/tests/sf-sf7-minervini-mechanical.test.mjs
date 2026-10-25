@@ -7,7 +7,7 @@ import { baseCountAt, marketCorrectionAnchors, baseCountTally, topVolumeDecline,
 import { benchIndex, sf7VariantRegistrySha256, SF7_MINERVINI_VERSION } from '../source-faithful/research/minervini-sf7.mjs';
 
 // pinned before the first snapshot run of package 1.4.0
-const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = 'eb1ead1547f54fdb76c2484c7d4df639fca581e5c874c9857abdc75f60c3bc37';
+const PINNED_SF7_MECHANICAL_REGISTRY_SHA256 = '0cc8cb2a1895ba2695777f837cd87c58cd420ceeb35b73fa8439ff710efd164b';
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
 const mk = (closes, range = 0.002) => closes.map((c, k) => bar(k, c, c * (1 + range), c * (1 - range), c));
@@ -25,12 +25,16 @@ const corrBench = (bars) => bars.map((b, k) => ({ date: b.date, close: k < 420 ?
 
 test('SF7-MECH-BASECOUNT: four bases after the stock reset, base number 4 (late stage, B12 PDF 116; late, B03 PDF 207)', () => {
   const b = mk(FOUR), r = baseCountAt(b, 530, ctxOf(flatBench(b)));
-  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.baseNumber, 4); assert.equal(r.reset, 'BELOW_MA200'); assert.equal(r.baseCountLowerBound, false);
+  assert.equal(r.status, 'EVIDENCE'); assert.equal(r.baseNumber, 4); assert.equal(r.reset, 'BELOW_MA200'); assert.equal(r.baseCountUncertain, false);
   assert.equal(r.earlyBase, false); assert.equal(r.lateBase, true); assert.equal(r.lateStage, true); assert.equal(r.likelyFailure, false);
   // without a benchmark the stock reset alone gives the same count
   assert.equal(baseCountAt(b, 530, null).baseNumber, 4);
   // inside the first base the setup is base 1
   assert.equal(baseCountAt(b, 340, null).baseNumber, 1);
+  // review M1: a setup close above an old closing high (but below the intraday pivot) does not complete its own base
+  const above = b.map((x, k) => (k === 530 ? { ...x, close: 180.2, high: 181, low: 179 } : x));
+  assert.ok(above[530].close > b[500].close && above[530].close < b[500].high);
+  assert.equal(baseCountAt(above, 530, null).baseNumber, 4);
 });
 
 test('SF7-MECH-BASECOUNT-MARKET-RESET: a market correction of >= 10 % restarts the count at its low (MA-MIN7-BASECOUNT-MARKET-RESET)', () => {
@@ -64,12 +68,12 @@ test('ADV-SF7-MECH-BASECOUNT-PIT: base count reads bars 0..setup and benchmark c
   }
 });
 
-test('SF7-MECH-BASECOUNT-LOWER-BOUND: no reset in the measurable history -> flagged lower bound; tally counts buckets', () => {
+test('SF7-MECH-BASECOUNT-UNCERTAIN: no reset in the measurable history -> flagged uncertain; tally counts buckets', () => {
   const up = mk(path([[0, 50], [300, 150], [325, 140], [340, 149]]));
   const r = baseCountAt(up, 340, null);
-  assert.equal(r.reset, 'NONE'); assert.equal(r.baseCountLowerBound, true); assert.equal(r.baseNumber, 1); // a straight advance has no completed base
+  assert.equal(r.reset, 'NONE'); assert.equal(r.baseCountUncertain, true); assert.equal(r.baseNumber, 1); // a straight advance has no completed base
   const t = baseCountTally([r, baseCountAt(mk(FOUR), 530, null), { status: 'NOT_EVALUABLE' }]);
-  assert.deepEqual(t.baseNumber, { 1: 1, 2: 0, 3: 0, 4: 1, '5+': 0, unknown: 1 }); assert.equal(t.lowerBound, 1); assert.equal(t.lateStage, 1);
+  assert.deepEqual(t.baseNumber, { 1: 1, 2: 0, 3: 0, 4: 1, '5+': 0, unknown: 1 }); assert.equal(t.uncertain, 1); assert.equal(t.lateStage, 1);
 });
 
 test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the Stage 2 start (B03 PDF 217), before the exit session', () => {
@@ -80,6 +84,8 @@ test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the
   assert.equal(r.status, 'EVIDENCE'); assert.equal(r.topVolumeDeclineBeforeExit, true); assert.equal(r.sessionsFromEntry, 3);
   // the down day is the exit session: a closed trade never reads it
   assert.equal(topVolumeDecline(bars, { ...t, exitDate: bars[324].date }).topVolumeDeclineBeforeExit, false);
+  // exit on the entry session: no session seen, not evaluable (not "false")
+  assert.equal(topVolumeDecline(bars, { ...t, exitDate: bars[321].date }).status, 'NO_SESSION_BEFORE_EXIT');
   // a down day whose volume is below the earlier peak (session 315, inside Stage 2) is no signal
   const quiet = bars.map((b, k) => (k === 324 ? { ...b, volume: 4.5e6 } : b));
   assert.equal(topVolumeDecline(quiet, t).topVolumeDeclineBeforeExit, false);
@@ -87,9 +93,13 @@ test('SF7-MECH-TOPVOL: first post-entry down day on the highest volume since the
   const closed = { ...t, exitDate: bars[326].date }, ref = topVolumeDecline(bars, closed);
   assert.equal(ref.topVolumeDeclineBeforeExit, true);
   assert.deepEqual(topVolumeDecline(corruptAfter(bars, 325), closed), ref);
-  // no Stage 2 at the setup -> not evaluable
+  // setup close below its 200-day mean -> not evaluable
   const down = mk(path([[0, 100], [330, 40]]));
-  assert.equal(topVolumeDecline(down, { setupDate: down[320].date, entryDate: down[321].date, exitDate: null }).status, 'NOT_IN_STAGE2_AT_SETUP');
+  assert.equal(topVolumeDecline(down, { setupDate: down[320].date, entryDate: down[321].date, exitDate: null }).status, 'SETUP_BELOW_MA200');
+  // the window reaches back to the session after the last close below MA200, not only to the last MA50 break (review M2):
+  // a volume peak early in the advance (session 250) still counts
+  const early = bars.map((b, k) => (k === 250 ? { ...b, volume: 9.5e6 } : b));
+  assert.equal(topVolumeDecline(early, t).topVolumeDeclineBeforeExit, false);
 });
 
 test('SF7-MECH-RELDEPTH: base depth vs the market decline over the base window (B12 PDF 280), floor 10 %, PIT', () => {
@@ -97,7 +107,7 @@ test('SF7-MECH-RELDEPTH: base depth vs the market decline over the base window (
   const b = mk(path([[0, 40], [300, 100], [320, 70], [340, 90], [360, 120]]));
   const m12 = b.map((x, k) => ({ date: x.date, close: k < 300 ? 100 : k <= 315 ? 100 - 0.8 * (k - 300) : 88 + 0.3 * (k - 315) }));
   const r = relativeBaseDepth(b, 340, benchIndex(m12));
-  assert.equal(r.status, 'EVIDENCE'); assert.ok(Math.abs(r.baseDepth - (1 - 70 * 0.998 / (100 * 1.002))) < 1e-9);
+  assert.equal(r.status, 'EVIDENCE'); assert.ok(Math.abs(r.baseDepth - 0.3) < 1e-9); // closes on both sides (review L3)
   assert.ok(r.relativeDepth > 2 && r.relativeDepth < 3, String(r.relativeDepth)); assert.equal(r.aboveStrict, true); assert.equal(r.aboveLoose, false);
   // a 5 % market dip is below the floor: not evaluated
   const m5 = b.map((x, k) => ({ date: x.date, close: k < 300 ? 100 : k <= 310 ? 100 - 0.5 * (k - 300) : 95 }));
@@ -145,15 +155,23 @@ test('SF7-MECH-REGISTRY: package pre-registered and pinned; the 7.0 setup regist
 test('SF7-MECH-RUNNER: the runner reports the mechanical diagnostics per strategy, counts only; REF is unchanged by them', async () => {
   const { sf7Part } = await import('../source-faithful/research/run-sf7-minervini.mjs');
   const { SF7_EXIT_VARIANTS } = await import('../source-faithful/research/minervini-sf7-exits.mjs');
-  const v = mk(path([[0, 40], [260, 100], [272, 80], [284, 98], [292, 88.2], [300, 96], [305, 91.2], [320, 95], [330, 97], [340, 120], [400, 130]]));
-  const d = { calendar: v.map((b) => b.date), securities: [{ id: 'V', bars: v }], benchmark: flatBench(v), spyTR: null };
+  // the fixtures of SF7-MIN-RUNNER (flat base and textbook VCP): REF has trades, so the wiring is exercised (review M3)
+  const VC = path([[0, 40], [260, 100], [272, 80], [284, 98], [292, 88.2], [300, 96], [305, 91.2], [320, 95], [330, 97], [340, 120], [400, 130]]);
+  const VOL = VC.map((_, k) => (k <= 260 ? 2e6 : k <= 284 ? 1.5e6 : k <= 300 ? 1e6 : k <= 330 ? 5e5 : 3e6));
+  const v = VC.map((c, k) => bar(k, c, c * 1.002, c * 0.998, c, VOL[k]));
+  const fb = mk(path([[0, 40], [280, 100], [285, 95], [290, 99], [295, 94.5], [300, 98.5], [305, 95], [310, 99], [311, 104], [350, 115]]));
+  const d = { calendar: [...new Set([...v, ...fb].map((b) => b.date))].sort(), securities: [{ id: 'V', bars: v }, { id: 'FB', bars: fb }], benchmark: flatBench(v), spyTR: null };
   const full = sf7Part(d, { from: null, to: null }), noExit = sf7Part(d, { from: null, to: null, exitVariants: [] });
   for (const st of ['SEPA', 'POWER_PLAY']) {
     const m = full.pub.strategies[st].diagnostics.mechanical;
     assert.equal(m.version, SF7_MECHANICAL_VERSION);
     for (const k of ['baseCount', 'topVolumeDecline', 'relativeBaseDepth', 'entryDistance']) assert.ok(m[k], k);
     assert.equal(full.pub.strategies[st].ref.ledgerSha256, noExit.pub.strategies[st].ref.ledgerSha256);
+    assert.equal(m.entryDistance.trades, full.pub.strategies[st].ref.trades);
+    assert.equal(Object.values(m.baseCount.baseNumber).reduce((a, x) => a + x, 0), full.pub.strategies[st].ref.trades);
   }
+  assert.ok(full.pub.strategies.SEPA.ref.trades > 0);
+  assert.ok(full.pub.strategies.SEPA.diagnostics.mechanical.baseCount.baseNumber.unknown < full.pub.strategies.SEPA.ref.trades, 'base count evaluated on REF trades');
   for (const id of ['EXIT-CLIMAX', 'EXIT-CLIMAX-UPCLOSES']) for (const st of SF7_EXIT_VARIANTS.find((x) => x.id === id).strategies) assert.ok(full.pub.strategies[st].exitVariants[id].signalsByBaseNumber, `${st} ${id}`);
   const txt = JSON.stringify(full.pub);
   for (const k of ['"pnl"', '"returnPct"', '"equity"', '"cagr"', '"sharpe"', '"metrics"', '"decline"', '"relativeDepth"']) assert.ok(!txt.includes(k), k);

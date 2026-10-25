@@ -232,7 +232,7 @@ test('SF7-EXIT-FINGERPRINTS: the 4.0 research code, its registry, the Turtle eng
   assert.equal(SF6_PAPER_PROTOCOL.version, '1.1.0'); assert.equal(SF6_PAPER_PROTOCOL.references.pinned.sf5VariantRegistrySha256, sf5VariantRegistrySha256());
   assert.equal(sf7VariantRegistrySha256('sf7-minervini-1.3.0'), 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e', 'the 7.0 setup variants ALT-SEPA-* are unchanged (content of the 1.3.0 registry; 1.4.0 changes only the version string)');
   const sf4 = fs.readFileSync(new URL('../source-faithful/research/run-sf4-lifecycle.mjs', import.meta.url), 'utf8');
-  for (const f of ['minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs']) {
+  for (const f of ['minervini-sf7-exits.mjs', 'minervini-sf7-exit-execution.mjs', 'minervini-sf7-mechanical.mjs']) {
     assert.ok(!sf4.includes(f), `run-sf4-lifecycle#FILES must not include ${f}`);
     assert.ok(!SF5_RESEARCH_FILES.some((x) => x.endsWith(f)) && !KK_RESEARCH_FILES.some((x) => x.endsWith(f)), f);
   }

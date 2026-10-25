@@ -9,7 +9,7 @@ import { REFERENCE_CONFIG, variantRegistrySha256, fillBuyOrder, sepaSetupAt } fr
 // pinned before the first 7.0 snapshot result was read; re-pinned for 1.3.0 (E7-2 review: diagnostics only, the REF
 // and the three variants are unchanged), before the 1.3.0 run; re-pinned for runner 1.2.0 with the E7-7 exit files
 // (minervini-sf7-exits.mjs, minervini-sf7-exit-execution.mjs; minervini-sf7.mjs unchanged), before the E7-7 run
-const PINNED_SF7_CODE_SHA256 = 'd5e4049fab8cdedccf848eea9610aa59c1872984b8d4fd4e31aa47cba8e2e2ea'; // re-pinned for package 1.4.0 / runner 1.5.0 (mechanical diagnostics, minervini-sf7-mechanical.mjs) before its run; 84caa463… was runner 1.4.0
+const PINNED_SF7_CODE_SHA256 = '832223b926b7a2c89a3741f9884453477dfd7a1640e5cb955937215305f7342e'; // re-pinned for package 1.4.0 / runner 1.5.0 (mechanical diagnostics, minervini-sf7-mechanical.mjs) before its run; 84caa463… was runner 1.4.0
 const PINNED_SF7_REGISTRY_SHA256 = '9b9a8a00406baa7a029f6179716e0f870869f77bedf62e394caf67552c3fe27c'; // 1.4.0: only the version string changed; sf7VariantRegistrySha256('sf7-minervini-1.3.0') = ce98c24f… (test SF7-MECH-REGISTRY)
 const day = (k) => new Date(Date.UTC(2019, 0, 1) + k * 864e5).toISOString().slice(0, 10);
 const bar = (k, o, h, l, c, v = 1e6) => ({ date: day(k), open: o, high: h, low: l, close: c, volume: v, rawClose: c, rawVolume: v, splitAdj: 1 });
