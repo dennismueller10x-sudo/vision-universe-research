@@ -2,6 +2,8 @@
 
 Stand: 25. Oktober 2026. Ergebnis `DIAGNOSTIC_NOT_CERTIFIED`. Maßgeblich ist der **Regelsatz 1.4.1**, Lauf **40190526062**. Der Vorgänger 1.4.0 (Lauf 40185801366) ist eingefroren und dient nur dem Vorher/Nachher, siehe [Regelsatz 1.4.1](#regelsatz-141-review-von-921).
 
+**Fortsetzung:** Regelsatz 1.4.2 mit EDGAR-Exhibits (Lauf 40206319111, 0 von 83 bestätigt) steht in [SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md](SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md).
+
 **Kernergebnis:** Keine der 83 referenzexponierten, ungeklärten DQ-K5-Sitzungen ist durch ein EDGAR-Dokument als Split belegt, weder unter 1.4.0 noch unter 1.4.1.
 - Bestätigt: 0 Splits und 0 echte Bewegungen. Das Overlay bleibt leer.
 - Alle 83 Sitzungen bleiben `UNRESOLVED` und in Quarantäne.
