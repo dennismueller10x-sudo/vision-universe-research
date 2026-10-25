@@ -65,6 +65,10 @@ jobs:
           --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       PG_TEST_URL: postgresql://postgres@postgres:5432/postgres
+    defaults:
+      run:
+        # Im Container ist die Standard-Shell sh (ohne pipefail).
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - name: PostgreSQL-Client
