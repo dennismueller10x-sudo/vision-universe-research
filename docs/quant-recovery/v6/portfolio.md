@@ -133,8 +133,8 @@ Vier unabhängige Python-Decimal-Referenzfälle bestanden mit relativer Toleranz
 und belegter Null-Endwert. Derselbe JS-Lauf wird exakt wiederholt.
 
 Ein zusätzlicher ausdrücklich synthetischer Ressourcenlauf mit 2.000 Sessions,
-20 Listings und 40.000 Listing×Session-Zellen benötigte hier rund 1,19 Sekunden
-und 239.112 KiB Peak-RSS unter Node 22.23.4. Das ist eine einzelne Messung der
+20 Listings und 40.000 Listing×Session-Zellen benötigte beim abschließenden Lauf
+rund 3,10 Sekunden und 236.476 KiB Peak-RSS unter Node 22.23.4. Das ist eine einzelne Messung der
 Mechanik einschließlich Code-/Runtimebindung, kein historisches Marktresultat
 und keine Hardware-unabhängige Laufzeitgarantie.
 
