@@ -77,7 +77,7 @@
       confirm: "Zweiter Schluss in Folge über der Range-Oberkante.",
       invalidate: "Schlusskurs zurück unter der Range-Mitte." },
     RESISTANCE_BREAKOUT: { name: "Ausbruch über Widerstand", direction: "BULLISH", family: "BREAKOUT",
-      detect: "Schluss über der Oberkante der nächsten Widerstandszone (Zone so, wie sie am Vortag bekannt war).",
+      detect: "Schluss über der Oberkante der nächsten Widerstandszone mit mindestens zwei Swing-Kontakten (Zone so, wie sie am Vortag bekannt war).",
       confirm: "Zweiter Schluss in Folge über der Zonenoberkante.",
       invalidate: "Schlusskurs zurück unter der Zonenunterkante." },
     VOLATILITY_CONTRACTION: { name: "Volatilitätskontraktion", direction: "BULLISH", family: "CONTRACTION",
@@ -301,7 +301,9 @@
   function resistanceBreakout(ctx, atFn) {
     var s = ctx.series, out = [];
     for (var k = ctx.t; k >= Math.max(1, ctx.t - 9); k--) {
-      var prev = atFn(k - 1), lv = Lv.supportResistance(prev), z = lv.nearestResistance;
+      var prev = atFn(k - 1), lv = Lv.supportResistance(prev);
+      /* Widerstand = naechste Zone ueber dem Vortagesschluss mit mindestens zwei Swing-Kontakten. */
+      var z = (lv.resistances || []).filter(function (x) { return x.touches >= 2; })[0];
       if (!z || !(s.close[k] > z.zoneHigh && s.close[k - 1] <= z.zoneHigh)) continue;
       var inv = -1, conf = -1;
       for (var m = k + 1; m <= ctx.t; m++) { if (s.close[m] < z.zoneLow) { inv = m; break; } if (conf < 0 && s.close[m] > z.zoneHigh) conf = m; }
