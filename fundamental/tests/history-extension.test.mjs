@@ -92,9 +92,41 @@ test('Historie aus gzip-Scherben, Einzeldateien nur solange keine Scherbe da ist
   let got = await consumerHistories(dir);
   assert.deepEqual([...got.keys()], ['0000000002']);
   await writeFile(join(dir, '01.json.gz'), gzipSync(JSON.stringify({ schema: CONSUMER_HISTORY_SHARD_SCHEMA, shard: '01', issuers: { '0000000001': history() } })));
-  await writeFile(join(dir, '02.json.gz'), gzipSync(JSON.stringify({ schema: 'fremd', issuers: { '0000000003': {} } })));
   got = await consumerHistories(dir);
   assert.deepEqual([...got.keys()], ['0000000001']);
   assert.ok(withConsumerHistory(source(), got.get('0000000001')));
   assert.equal((await consumerHistories(join(dir, 'fehlt'))).size, 0);
+});
+
+/* Eine beschaedigte Scherbe wird nie still uebersprungen: sonst fehlte einem Vierundsechzigstel der Titel die Historie,
+ * ohne dass der Release-Bau es merkt. Der Lauf bricht mit dem Namen der Scherbe ab. */
+test('Beschaedigte Historie-Scherbe bricht den Bau kontrolliert ab', async () => {
+  const { mkdtemp, writeFile, readFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { gzipSync } = await import('node:zlib');
+  const { consumerHistories, buildHistory, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../../scripts/fundamental/build-history.mjs');
+  const shard = (key, issuers, schema = CONSUMER_HISTORY_SHARD_SCHEMA) => gzipSync(JSON.stringify({ schema, shard: key, issuers }));
+  const cases = {
+    'abgeschnittenes gzip': (b) => b.subarray(0, 12),
+    'kein gzip': () => Buffer.from('kein gzip'),
+    'gzip mit kaputtem JSON': () => gzipSync('{"schema": '),
+    'fremdes Schema': () => shard('01', {}, 'fremd'),
+    'Scherbe passt nicht zum Namen': () => shard('02', {}),
+    'CIK einer anderen Scherbe': () => shard('01', { '0000000002': history() }),
+    'issuers fehlt': () => gzipSync(JSON.stringify({ schema: CONSUMER_HISTORY_SHARD_SCHEMA, shard: '01' })),
+  };
+  for (const [label, damage] of Object.entries(cases)) {
+    const dir = await mkdtemp(join(tmpdir(), 'fu-hist-bad-'));
+    await writeFile(join(dir, '00.json.gz'), shard('00', { '0000000064': history({ cik: '0000000064' }) }));
+    const good = shard('01', { '0000000001': history() });
+    await writeFile(join(dir, '01.json.gz'), damage(good));
+    await assert.rejects(consumerHistories(dir), (e) => /CONSUMER_HISTORY_SHARD_INVALID/.test(e.message) && e.message.includes('01.json.gz'), label);
+  }
+  // der Release-Bau selbst (buildHistory) bricht ab, bevor er etwas veroeffentlicht
+  const root = await mkdtemp(join(tmpdir(), 'fu-root-'));
+  const { mkdir } = await import('node:fs/promises');
+  for (const d of ['discover/data/stocks/US_REAL', 'quant/data/sec/consumer', 'quant/data/sec/consumer-history']) await mkdir(join(root, d), { recursive: true });
+  await writeFile(join(root, 'quant/data/sec/consumer-history/07.json.gz'), Buffer.from('kaputt'));
+  await assert.rejects(buildHistory({ root }), /CONSUMER_HISTORY_SHARD_INVALID: .*07\.json\.gz: kein gueltiges gzip/);
 });

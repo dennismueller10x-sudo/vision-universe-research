@@ -115,6 +115,34 @@ class HistoryShardTest(unittest.TestCase):
             self.assertIn("00.json.gz", names)
             self.assertLessEqual(len(names), consumer.HISTORY_SHARDS)
 
+    def test_a_damaged_shard_stops_the_run_with_its_name(self):
+        """A damaged shard must never be skipped silently (its issuers would lose their history)."""
+        import gzip
+        import json as _json
+        import tempfile
+        from pathlib import Path
+        def shard(key, issuers, schema=None):
+            return gzip.compress(_json.dumps({"schema": schema or consumer.HISTORY_SHARD_SCHEMA, "shard": key, "issuers": issuers}).encode(), mtime=0)
+        good = self._histories()
+        damaged = {
+            "truncated gzip": lambda p: p.write_bytes(p.read_bytes()[:20]),
+            "not gzip": lambda p: p.write_bytes(b"not a gzip stream"),
+            "gzip of broken JSON": lambda p: p.write_bytes(gzip.compress(b'{"schema": ', mtime=0)),
+            "foreign schema": lambda p: p.write_bytes(shard(p.name[:2], {}, schema="other")),
+            "shard key differs from file name": lambda p: p.write_bytes(shard("01", {})),
+            "CIK of another shard": lambda p: p.write_bytes(shard(p.name[:2], {"0000000001": {}})),
+            "issuers missing": lambda p: p.write_bytes(gzip.compress(_json.dumps({"schema": consumer.HISTORY_SHARD_SCHEMA, "shard": p.name[:2]}).encode(), mtime=0)),
+        }
+        for label, damage in damaged.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as tmp:
+                consumer.write_history_shards(tmp, good)
+                target = Path(tmp) / "00.json.gz"
+                damage(target)
+                with self.assertRaises(consumer.HistoryShardError) as caught:
+                    consumer.read_history_shards(tmp)
+                self.assertIn("CONSUMER_HISTORY_SHARD_INVALID", str(caught.exception))
+                self.assertIn("00.json.gz", str(caught.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
