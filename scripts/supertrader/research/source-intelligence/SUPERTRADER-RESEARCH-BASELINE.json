@@ -1,0 +1,903 @@
+{
+  "schema_version": "source-intelligence-1.0.0",
+  "as_of": "2026-10-11",
+  "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+  "research_only": true,
+  "implementation_authorized": false,
+  "backtests_performed": false,
+  "baseline": {
+    "repository": "dennismueller10x-sudo/vision-universe-research",
+    "base_main_commit": "1fedacfe05e28eb3d128af5ba0c273a41b96ab27",
+    "research_branch": "research/supertrader-source-intelligence-20261011",
+    "prior_triage": {
+      "branch": "claude/supertrader-portfolio-triage",
+      "commit": "6fff1524b8059c6a302bb2569a773db5d9c4b666",
+      "source": "docs/SUPERTRADER_PORTFOLIO_TRIAGE.md",
+      "scope": "12 Registry-Strategien, eine Hausstrategie, drei Referenzzeilen; 6 im gemeinsamen Rahmen gemessen; keine externe 30–50-Kandidatenrecherche",
+      "tiers": {
+        "A": 0,
+        "B": 1,
+        "C": 11,
+        "D": 4
+      },
+      "tier_B": [
+        "MOMENTUM_BREAKOUT"
+      ]
+    },
+    "pull_requests": [
+      {
+        "number": 510,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/510",
+        "title": "M-B6: Umsatzbelege als Stufe vor dem Consumer-Bundle, harte Kompatibilitätsprüfung (gestapelt auf #505/#481)",
+        "head": "claude/fundamentals-mb6-evidence-dag",
+        "head_sha": "c2f42ca305a1fb66e9ecbcf4dff1c8decfb4fed3",
+        "state": "open",
+        "draft": true,
+        "role": "SEPARATE_FUNDAMENTAL_TRACK_NOT_MIGRATED"
+      },
+      {
+        "number": 505,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/505",
+        "title": "M-B5: Historische Consumer lesen AS_REPORTED_AT_TIME, nie LATEST_RESTATED (gestapelt auf #481)",
+        "head": "claude/fundamentals-mb5-pit-view",
+        "head_sha": "12e261a65563ff4d38b343d4d4dd2dac2cd63319",
+        "state": "open",
+        "draft": true,
+        "role": "SEPARATE_FUNDAMENTAL_TRACK_NOT_MIGRATED"
+      },
+      {
+        "number": 504,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/504",
+        "title": "M-B1: TTM heißt TTM – Screener und Discover zeigen kein Geschäftsjahr unter TTM-Label",
+        "head": "claude/fundamentals-mb1-ttm-labels",
+        "head_sha": "dc2466806ed98a2c5a2c1dfc9cc0cb8a0ab52af9",
+        "state": "open",
+        "draft": true,
+        "role": "SEPARATE_FUNDAMENTAL_TRACK_NOT_MIGRATED"
+      },
+      {
+        "number": 481,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/481",
+        "title": "Fundamentals: SEC-Kern 1.19.0 / Registry 1.9.0 – TTM-Integrität, Umsatzbelege, Freeze v4 (BLOCKED – nicht mergen)",
+        "head": "claude/fundamental-data-integrity-audit",
+        "head_sha": "b2731ed30189900e53ea5206331198c9e99dcaef",
+        "state": "open",
+        "draft": true,
+        "role": "SEPARATE_FUNDAMENTAL_TRACK_NOT_MIGRATED"
+      },
+      {
+        "number": 475,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/475",
+        "title": "Supertrader Minervini: Ground-Truth-Validierung (Diagnose, keine Regeländerung)",
+        "head": "claude/minervini-ground-truth",
+        "head_sha": "393e275e057bf42684a8a0ea3f1b7f830782e566",
+        "state": "open",
+        "draft": false,
+        "role": "INHERITED_RESEARCH_NOT_MAIN"
+      },
+      {
+        "number": 471,
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/pull/471",
+        "title": "Supertrader Minervini Phase 2A + 2B: Fidelity-Rekonstruktion, Research-Freezes 1.0.0 und 1.1.0 (nicht live)",
+        "head": "claude/minervini-replication-phase2a",
+        "head_sha": "3602fd84f68e1864af36a1f52daafa12cacc02d8",
+        "state": "open",
+        "draft": false,
+        "role": "INHERITED_RESEARCH_NOT_MAIN"
+      }
+    ],
+    "scope": {
+      "strategy_implementation": false,
+      "backtests": false,
+      "new_CAGR_calculations": false,
+      "live_changes": false,
+      "core_changes": false,
+      "paid_provider_integrations": false
+    },
+    "note": "Main technical truth; unmerged research read as evidence only. No branch imported or merged."
+  },
+  "prior_tiering": {
+    "schema": "supertrader-triage-tiering-1.0.0",
+    "generatedBy": "build-triage.mjs",
+    "prereg": "supertrader-triage-prereg-1.0.0",
+    "standardRun": {
+      "run": 38126161777,
+      "commit": "2af6651e9ee7",
+      "dataFingerprint": "fp_d5a33d623961d638",
+      "window": "DEV",
+      "seenData": true
+    },
+    "note": "Research/Triage. Kein Live-Eingriff. Alle Perioden gesehen (SEEN DATA). Teilkomponenten bleiben sichtbar; der interne Score ist ein Ranginstrument.",
+    "tierCounts": {
+      "A": 0,
+      "B": 1,
+      "C": 11,
+      "D": 4
+    },
+    "tiers": {
+      "A": [],
+      "B": [
+        "MOMENTUM_BREAKOUT"
+      ],
+      "C": [
+        "VU_TREND_52W",
+        "PIOTROSKI_F",
+        "WEINSTEIN_STAGE",
+        "DARVAS_BOX",
+        "DONCHIAN_TURTLE",
+        "MINERVINI_VCP",
+        "CANSLIM",
+        "GREENBLATT_VALUE",
+        "KK_EPISODIC_PIVOT",
+        "KK_PARABOLIC_SHORT",
+        "VU_HOUSE_HS4_V03"
+      ],
+      "D": [
+        "MARKET_WIZARDS_NEXT",
+        "TURTLE_ORIGINAL_FUTURES",
+        "DARVAS_ORIGINAL",
+        "NEO_DARVAS"
+      ]
+    },
+    "rules": {
+      "A": "Alle Qualitaetsgates + datenbasierter Grund (Signaledge ODER Risikoprofil ODER Regime ODER Korrelation) + Confidence >= MEDIUM. Forward-Testbarkeit allein genuegt nicht (Amendment A2).",
+      "B": "Quelle mindestens MEDIUM, Implementierungs-Fidelity mindestens MEDIUM, kein belegter Schaden, kein bekannter CRITICAL-Fehler ausser benannten Vorbehalten, Datenbasis fuer die Messung vorhanden; produktseitig sinnvoll, keine Forschungspriorität",
+      "C": "Niedrige Fidelity ODER schwache Reproduzierbarkeit ODER durchgehend negative Evidenz; darf bleiben, nicht als starke Strategie vermarkten",
+      "D": "Nur Empfehlung: Referenz ohne VU-Implementierung, Sammelkarte oder irreführend; kein Loeschauftrag"
+    },
+    "methods": [
+      {
+        "id": "MOMENTUM_BREAKOUT",
+        "tier": "B",
+        "confidence": "MEDIUM",
+        "validationClass": "HISTORICAL_PLUS_LIGHT_GT",
+        "productRecommendation": "Standard (nur mit dem Hinweis auf den Exit-Vorbehalt und ohne Vorteilsaussage)",
+        "reasons": [
+          "Naechste Quelltreue der Live-Methoden (Exit/Sizing quellnah)",
+          "Signal NEUTRAL, Portfolio BELOW, Regime-Konsistenz nur 3/6",
+          "Bekannter Implementierungsvorbehalt: Exit nutzt Tagestief des ganzen Tages statt Tief bis zum Kauf"
+        ],
+        "dossierPreliminaryTier": "B"
+      },
+      {
+        "id": "VU_TREND_52W",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "FORWARD_READY",
+        "productRecommendation": "Experimental (Forward-Beobachtungsmodell, klar gekennzeichnet)",
+        "reasons": [
+          "Messprofil wie Darvas (C): Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH; R12/R14 ohne Vorteil",
+          "Provenienz ist keine Evidenz: Regeln fast vollstaendig von TraderFox, Rang von Clenow, Universum VU-Ersatz",
+          "Forward-Prioritaet HIGH bleibt: Forward-Ledger ist der einzige ungesehene Raum und kostet wenig; das ist eine Beobachtungs-, keine Empfehlungsaussage"
+        ],
+        "dossierPreliminaryTier": "B"
+      },
+      {
+        "id": "PIOTROSKI_F",
+        "tier": "C",
+        "confidence": "LOW",
+        "validationClass": "HISTORICAL_ONLY",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Primaerquelle klar, aber Buch-/Marktwert-Berechnung mit moeglichem Auswahlfehler (build.mjs ~660/669, aus Code abgeleitet, nicht gemessen) und Ticker-zu-CIK-Zuordnung per erstem Treffer (ADR-001-Verstoss)",
+          "Datenbasis LOW, keine Messung moeglich, Fundamental-Core nicht migriert",
+          "Voll pruefbar nur 732 von 2564 Titeln; Kandidaten brauchen alle 8 Signale"
+        ],
+        "dossierPreliminaryTier": "B"
+      },
+      {
+        "id": "WEINSTEIN_STAGE",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "HISTORICAL_PLUS_LIGHT_GT",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Fremdes Kullamaegi-Sizing still geerbt; Portfolio-Evidenz stark kontaminiert",
+          "Signal gegen SPY NEGATIVE in allen Segmenten (gegen das Universum laut R14 neutral): Aussage gilt nur gegen SPY",
+          "Dekontaminationsmessung bleibt offene Frage, keine Prioritaet"
+        ],
+        "dossierPreliminaryTier": "B"
+      },
+      {
+        "id": "DARVAS_BOX",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "HISTORICAL_ONLY",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Quelle LOW, Boxdefinition VU, fremde Marktampel und 0,5-%-Risiko",
+          "Signal NEUTRAL, Portfolio BELOW, Drawdown DEEPER, Exposure HIGH"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "DONCHIAN_TURTLE",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "HISTORICAL_ONLY",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Bewertet als VU Equity Adaptation, keine Originalreplikation",
+          "Alphabetische Auswahl statt Staerke-Rang, kein Gewichtsdeckel",
+          "Signal gegen SPY NEGATIVE in 6/6 Segmenten (R14: gegen das Universum kein Vorteil), Portfolio BELOW, Drawdown DEEPER"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "MINERVINI_VCP",
+        "tier": "C",
+        "confidence": "HIGH",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Bestehendes Urteil uebernommen: Fidelity LOW, Recall 3/15, NOT_FEASIBLE_FROM_PUBLIC_RULES",
+          "Standardmessung: Signal NEUTRAL, Portfolio BELOW (niedrige Fallzahl, 263 Trades)"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "CANSLIM",
+        "tier": "C",
+        "confidence": "LOW",
+        "validationClass": "HISTORICAL_ONLY",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Teilpruefung: 5 von 7 Kriterien, I fehlt, Nettogewinn statt EPS",
+          "Keine Messung, Fundamentaldaten restated"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "GREENBLATT_VALUE",
+        "tier": "C",
+        "confidence": "LOW",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Engine rechnet kein Ranking (nur Feldabdeckungspruefung)",
+          "Bilanzfelder 0 von 6293 Titeln vorhanden"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "KK_EPISODIC_PIVOT",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Namenskarte ohne Regeln; Daten (News-Zeitstempel, Konsens) fehlen"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "KK_PARABOLIC_SHORT",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Namenskarte ohne Regeln; Borrow/Locate und Intraday fehlen"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "VU_HOUSE_HS4_V03",
+        "tier": "C",
+        "confidence": "MEDIUM",
+        "validationClass": "FORWARD_READY",
+        "productRecommendation": "Experimental",
+        "reasons": [
+          "Hausstrategie, keine Trader-Methode; nicht im Standardmessrahmen"
+        ],
+        "dossierPreliminaryTier": "C"
+      },
+      {
+        "id": "MARKET_WIZARDS_NEXT",
+        "tier": "D",
+        "confidence": "HIGH",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Sammelkarte, keine Methode; Quelle nicht gelesen",
+          "Empfehlung ohne Loeschauftrag"
+        ],
+        "dossierPreliminaryTier": "D"
+      },
+      {
+        "id": "TURTLE_ORIGINAL_FUTURES",
+        "tier": "D",
+        "confidence": "HIGH",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Referenzzeile: Futures-Original, nicht repliziert, nicht replizierbar mit vorhandenen Daten"
+        ],
+        "dossierPreliminaryTier": "D"
+      },
+      {
+        "id": "DARVAS_ORIGINAL",
+        "tier": "D",
+        "confidence": "HIGH",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Referenzzeile: Buch und Boxformel nicht verifiziert, keine Engine"
+        ],
+        "dossierPreliminaryTier": "D"
+      },
+      {
+        "id": "NEO_DARVAS",
+        "tier": "D",
+        "confidence": "HIGH",
+        "validationClass": "NOT_REPRODUCIBLE",
+        "productRecommendation": "Educational / Legacy",
+        "reasons": [
+          "Referenzzeile: Rang 'Trendstabilitaet' nicht oeffentlich, keine Engine"
+        ],
+        "dossierPreliminaryTier": "D"
+      }
+    ],
+    "redTeam": {
+      "reviewer": "Opus (adversarial)",
+      "report": "nicht im Repo; Befunde sinngemaess in docs/SUPERTRADER_PORTFOLIO_TRIAGE.md §10",
+      "blocker": 0,
+      "major": 6,
+      "minor": 13,
+      "tierAEmpty": "bestaetigt"
+    },
+    "amendmentA2": {
+      "date": "2026-10-11",
+      "afterResult": true,
+      "disclosure": "Die Definitionen von Tier B, C und D, der Zusatz 'datenbasierter Grund' fuer Tier A und der Robustheits-Teilscore wurden NACH dem Messergebnis festgelegt bzw. praezisiert (Prereg enthielt nur die A-Gates und die Gewichte). 'Forward-Testbarkeit' ist als alleiniger Grund fuer Tier A gestrichen. Tier-Entscheidungen sind damit Setzungen nach Ergebnis und als solche zu lesen.",
+      "redTeamChanges": [
+        "PIOTROSKI_F: B -> C",
+        "VU_TREND_52W: B -> C (Forward-Prioritaet HIGH bleibt)",
+        "Uebereinstimmung/Redundanz: 'keine Redundanz' -> 'nicht bestimmbar' (Jaccard durch Mengengroessen begrenzt)",
+        "Robustheits-Teilscore: NEUTRAL = 0,3 pauschal (Vorzeichen unbekannt), NEGATIVE = 0, POSITIVE = Konsistenzanteil"
+      ]
+    }
+  },
+  "prior_inventory": {
+    "generated": "2026-10-11",
+    "source": "origin/main (Sparse-Checkout triwt + git grep)",
+    "summary": {
+      "registry_entries": 12,
+      "house_entries": 1,
+      "counted_methods": 13,
+      "live": 7,
+      "research_partial": 3,
+      "card_only": 3,
+      "real_trader_methods_live": 5,
+      "vu_native_live": 2,
+      "not_30": true
+    },
+    "inventory": [
+      {
+        "id": "MOMENTUM_BREAKOUT",
+        "name": "VU Adaptation – Kullamägi Breakout (Common Breakout, Daily)",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0(legacy, nur registry legacyVersions)",
+          "1.1.0",
+          "2.0.0",
+          "3.0.0",
+          "3.0.0-A(Ablation, nie live)",
+          "3.1.0",
+          "3.2.0"
+        ],
+        "live_version": "3.2.0",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/kk-breakout.mjs",
+          "scripts/supertrader/engine/strategies/kk-breakout-v2.mjs",
+          "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs",
+          "scripts/supertrader/engine/strategies/kk-breakout-v31.mjs",
+          "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs",
+          "scripts/supertrader/engine/strategies/kk-breakout-ablation-r8.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:18",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:87",
+          "docs/SUPERTRADER_ENTRY_EXIT_RULES.md:4"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/build.mjs:86 (LIVE_ENGINES enthält kkBreakout32)",
+          "scripts/supertrader/registry.mjs:149",
+          "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs:23 (version 3.2.0)",
+          "scripts/supertrader/validation/DECISION-R11.json decisions.MOMENTUM_BREAKOUT@3.2.0=LIVE",
+          "supertrader/data/ledger/MOMENTUM_BREAKOUT.json (origin/main ls-tree)"
+        ],
+        "notes": "Eine Methode, 6 Engine-Dateien = Versionen derselben Methode. Registry-Varianten ORH/SKIP/20D nicht aktiv (DATA_COVERAGE_PENDING/BACKTEST_PENDING). Kein belegter Vorteil (R11).",
+        "counted_as_method": true,
+        "group": "A"
+      },
+      {
+        "id": "WEINSTEIN_STAGE",
+        "name": "VU Adaptation – Weinstein Stage Analysis",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0(legacy)",
+          "1.1.0",
+          "2.0.0",
+          "3.0.0",
+          "4.0.0"
+        ],
+        "live_version": "4.0.0",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/weinstein.mjs",
+          "scripts/supertrader/engine/strategies/weinstein-v2.mjs",
+          "scripts/supertrader/engine/strategies/weinstein-v3.mjs",
+          "scripts/supertrader/engine/strategies/weinstein-v4.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:19",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:104"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/build.mjs:86",
+          "scripts/supertrader/registry.mjs:235",
+          "scripts/supertrader/engine/strategies/weinstein-v4.mjs:58",
+          "scripts/supertrader/validation/DECISION-R13.json decisions.WEINSTEIN_STAGE@4.0.0=LIVE",
+          "supertrader/data/ledger/WEINSTEIN_STAGE.json"
+        ],
+        "notes": "Variante STAGE4_SHORT nur ADVANCED_RESEARCH (registry variants), keine Engine. Hinweis: R11 stufte 4.0.0 als RESEARCH, R13 als LIVE (Doku-Drift prüfen).",
+        "counted_as_method": true,
+        "group": "D"
+      },
+      {
+        "id": "DARVAS_BOX",
+        "name": "VU Adaptation – Darvas",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0(legacy)",
+          "1.1.0(legacy)",
+          "1.2.0",
+          "2.0.0",
+          "3.0.0",
+          "3.0.1",
+          "3.0.2"
+        ],
+        "live_version": "3.0.2",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/darvas.mjs",
+          "scripts/supertrader/engine/strategies/darvas-v2.mjs",
+          "scripts/supertrader/engine/strategies/darvas-v3.mjs",
+          "scripts/supertrader/engine/strategies/darvas-v301.mjs",
+          "scripts/supertrader/engine/strategies/darvas-v302.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:20",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:123",
+          "docs/SUPERTRADER_AUDIT_R13.md:72"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/build.mjs:86",
+          "scripts/supertrader/registry.mjs:311",
+          "scripts/supertrader/engine/strategies/darvas-v302.mjs:13",
+          "scripts/supertrader/validation/DECISION-R13.json DARVAS_BOX@3.0.2=UNCHANGED_LIVE",
+          "supertrader/data/ledger/DARVAS_BOX.json"
+        ],
+        "notes": "Versionsänderungen 3.0.1/3.0.2 betreffen nur Portfolio (Rang RS, Marktampel). Varianten N4/N5 BACKTEST_PENDING. Nicht zu verwechseln mit TraderFox NEO-DARVAS / VU_TREND_52W.",
+        "counted_as_method": true,
+        "group": "B"
+      },
+      {
+        "id": "MINERVINI_VCP",
+        "name": "VU Adaptation – Minervini (Trend Template + VCP)",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0(legacy)",
+          "1.1.0",
+          "2.0.0(live)",
+          "3.0.0(RESEARCH, EPS-Filter)"
+        ],
+        "live_version": "2.0.0",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/minervini.mjs",
+          "scripts/supertrader/engine/strategies/minervini-v2.mjs",
+          "scripts/supertrader/engine/strategies/minervini-v3.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:21",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:140"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/build.mjs:86 (minervini2)",
+          "scripts/supertrader/registry.mjs:400",
+          "scripts/supertrader/engine/strategies/minervini-v3.mjs:28 (3.0.0 nicht in LIVE_ENGINES)",
+          "scripts/supertrader/validation/DECISION-R11.json MINERVINI_VCP@3.0.0=RESEARCH",
+          "supertrader/data/ledger/MINERVINI_VCP.json"
+        ],
+        "notes": "v3 (EPS/Umsatz, SEC) ist Forschungsversion, nicht live. Variante B (30 % über Tief) BACKTEST_PENDING.",
+        "counted_as_method": true,
+        "group": "D"
+      },
+      {
+        "id": "DONCHIAN_TURTLE",
+        "name": "VU Equity Adaptation – Turtle Trading (System 1)",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0(legacy)",
+          "1.1.0",
+          "2.0.0",
+          "2.0.1(WITHDRAWN R13)",
+          "2.0.2(live)",
+          "2.1.0(RESEARCH)",
+          "Pilot Wochen-Variante 1.1.0"
+        ],
+        "live_version": "2.0.2",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/donchian.mjs",
+          "scripts/supertrader/engine/strategies/donchian-v2.mjs",
+          "scripts/supertrader/engine/strategies/donchian-v201.mjs",
+          "scripts/supertrader/engine/strategies/donchian-v202.mjs",
+          "scripts/supertrader/engine/strategies/donchian-v21.mjs",
+          "scripts/supertrader/pilot/donchian-weekly.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:22",
+          "docs/SUPERTRADER_PILOT_AUDIT.md",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:155"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/build.mjs:86 (donchian202)",
+          "scripts/supertrader/registry-r4.mjs:14",
+          "scripts/supertrader/engine/strategies/donchian-v202.mjs:7",
+          "scripts/supertrader/validation/DECISION-R13.json DONCHIAN_TURTLE@2.0.1=WITHDRAWN→2.0.2",
+          "supertrader/data/ledger/DONCHIAN_TURTLE.json"
+        ],
+        "notes": "System 2 (55/20) BACKTEST_PENDING, ohne Engine. Wochen-Pilot ist explorativ, kein eigenes Produkt.",
+        "counted_as_method": true,
+        "group": "B"
+      },
+      {
+        "id": "VU_TREND_52W",
+        "name": "VU Native – Trendfolge 52W (TraderFox-NEO-DARVAS-Variante + Clenow-Rang)",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "1.0.0"
+        ],
+        "live_version": "1.0.0",
+        "engine_files": [
+          "scripts/supertrader/engine/rotation-52w.mjs",
+          "scripts/supertrader/trend52-live.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_AUDIT_R13.md:72",
+          "docs/SUPERTRADER_ENTRY_EXIT_RULES.md:73",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:172"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/engine/rotation-52w.mjs:1-3,210",
+          "scripts/supertrader/registry-r12.mjs:14",
+          "scripts/supertrader/validation/DECISION-R12.json VU_TREND_52W@1.0.0=LIVE_MODEL_OBSERVATION",
+          "supertrader/data/ledger/VU_TREND_52W.json",
+          "NICHT in build.mjs LIVE_ENGINES (eigener Pfad trend52-live.mjs)"
+        ],
+        "notes": "Eigene VU-Methode, Modelldepot (monatlich, max. 10). Kein Trader-Original; Regeln aus TraderFox-Beiträgen. Varianten PP/BASE, Rang CLENOW/RS/RANDOM nur als Optionen im Simulator.",
+        "counted_as_method": true,
+        "group": "B"
+      },
+      {
+        "id": "VU_HOUSE_HS4_V03",
+        "name": "VU Hausstrategie HS4-V03 „Volumen-Momentum 20“ (Beobachtungsdepot)",
+        "category": "LIVE",
+        "versions_in_repo": [
+          "HS1",
+          "HS2",
+          "HS3(+D1-D3)",
+          "HS4(V03 eingefroren 2026-10-06)"
+        ],
+        "live_version": "HS4-V03",
+        "engine_files": [
+          "scripts/supertrader/house/engine.mjs",
+          "scripts/supertrader/house/live.mjs",
+          "scripts/supertrader/house/analyze.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_HOUSE_STRATEGY.md:97-108"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/house/LIVE-HS4-V03.json (frozenAt 2026-10-06)",
+          "scripts/supertrader/house/DECISION-HS4.json (EXPLORATORY_NO_EDGE)",
+          "scripts/supertrader/house/DECISION-HS4-OOS2008.json (OOS_NOT_CONFIRMED)",
+          "supertrader/data/ledger/VU_HOUSE_HS4_V03.json",
+          ".github/workflows/supertrader-house-live.yml:3"
+        ],
+        "notes": "Kein Trader-System, Faktormodell (UDV, ACC, SUE, REVG, MOM). Nicht in supertrader/data/registry.json. Historisch kein belegter Vorteil, einziger Nachweis = Vorwärtslauf.",
+        "counted_as_method": true,
+        "group": "E"
+      },
+      {
+        "id": "CANSLIM",
+        "name": "CAN SLIM (Teilprüfung 5/7 Kriterien)",
+        "category": "RESEARCH",
+        "versions_in_repo": [
+          "0.9.0"
+        ],
+        "live_version": "0.9.0 (nur Teilprüfung, kein Signal)",
+        "engine_files": [
+          "scripts/supertrader/engine/partial/canslim.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:23",
+          "docs/SUPERTRADER_ARCHITECTURE.md:146-151"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry-r4.mjs:74 (mode PARTIAL_CHECK)",
+          "scripts/supertrader/engine/partial/canslim.mjs:1-12",
+          "Registry: product_status SOURCE_PARTIAL/DATA_COVERAGE_PENDING"
+        ],
+        "notes": "Kriterium I nicht prüfbar, kein Ein-/Ausstieg, kein Backtest. Liefert „Teiltreffer“.",
+        "counted_as_method": true,
+        "group": "C"
+      },
+      {
+        "id": "PIOTROSKI_F",
+        "name": "Piotroski F-Score (Teilprüfung 8/9 Signale)",
+        "category": "RESEARCH",
+        "versions_in_repo": [
+          "0.9.0"
+        ],
+        "live_version": "0.9.0 (Teil-Score 0-8)",
+        "engine_files": [
+          "scripts/supertrader/engine/partial/piotroski.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:24"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry-r4.mjs:121 (PARTIAL_CHECK)",
+          "scripts/supertrader/engine/partial/piotroski.mjs:1-10"
+        ],
+        "notes": "Liquiditätssignal fehlt; Ausweisung nur als Teil-Score. Kein Handelssystem (Screening).",
+        "counted_as_method": true,
+        "group": "C"
+      },
+      {
+        "id": "GREENBLATT_VALUE",
+        "name": "Greenblatt Value Engine (Magic Formula)",
+        "category": "RESEARCH",
+        "versions_in_repo": [
+          "1.0.0"
+        ],
+        "live_version": "keine (rechnet kein Ranking)",
+        "engine_files": [
+          "scripts/supertrader/engine/strategies/greenblatt.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:25",
+          "docs/SUPERTRADER_ARCHITECTURE.md:56,146"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry.mjs:71",
+          "scripts/supertrader/engine/strategies/greenblatt.mjs:1-22,52",
+          "Registry mode DATA_PENDING"
+        ],
+        "notes": "Engine-Datei ist Datenvertrag/Hülle; Pflichtfelder (AssetsCurrent, LiabilitiesCurrent, PPE) fehlen. Varianten STAGGERED BACKTEST_PENDING, GLOBAL_VU ADVANCED_RESEARCH.",
+        "counted_as_method": true,
+        "group": "C"
+      },
+      {
+        "id": "KK_EPISODIC_PIVOT",
+        "name": "Kullamägi Episodic Pivot",
+        "category": "CARD_ONLY",
+        "versions_in_repo": [
+          "0.1.0"
+        ],
+        "live_version": null,
+        "engine_files": [],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:26",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:34,96"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry.mjs:496",
+          "supertrader/strategies/kullamaegi-episodic-pivot/index.html",
+          "scripts/supertrader/tests/registry.test.mjs:74 (Advanced: rules.length==0)"
+        ],
+        "notes": "Namenskarte ohne Regeln/Engine. Quelle (qullamaggie EP-Artikel) liegt aber im source-ledger (Zeile ~887) mit Regel-Beschreibung (Gap>=10 %, ORH, Tagestief-Stop) – spezifizierbar, nur Daten fehlen (News/Konsens).",
+        "counted_as_method": true,
+        "group": "A"
+      },
+      {
+        "id": "KK_PARABOLIC_SHORT",
+        "name": "Kullamägi Parabolic Short",
+        "category": "CARD_ONLY",
+        "versions_in_repo": [
+          "0.1.0"
+        ],
+        "live_version": null,
+        "engine_files": [],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:27"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry.mjs:497",
+          "supertrader/strategies/kullamaegi-parabolic-short/index.html"
+        ],
+        "notes": "Namenskarte; Short-Simulation, Borrow/Locate fehlen.",
+        "counted_as_method": true,
+        "group": "A"
+      },
+      {
+        "id": "MARKET_WIZARDS_NEXT",
+        "name": "Weitere Market-Wizards-Modelle (Schwager/Coyle, The Next Generation)",
+        "category": "CARD_ONLY",
+        "versions_in_repo": [
+          "0.1.0"
+        ],
+        "live_version": null,
+        "engine_files": [],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_MATRIX.md:28",
+          "docs/SUPERTRADER_PRODUCT_READINESS.md:41",
+          "docs/SUPERTRADER_ARCHITECTURE.md:151"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry.mjs:498",
+          "scripts/supertrader/source-ledger.json:655-672 (SRC-MW-NEXTGEN, content_retrieved_by_vu=false)",
+          "supertrader/strategies/market-wizards/index.html"
+        ],
+        "notes": "KEINE Methode, Sammelkarte eines Buchs ohne gelesene Kapitel. Kein Tradername, keine Regel. Zählt nicht als Methode im engeren Sinn.",
+        "counted_as_method": true,
+        "group": "E"
+      },
+      {
+        "id": "NEO_DARVAS_TRADERFOX",
+        "name": "TraderFox NEO-DARVAS (inkl. Pivotal-Points)",
+        "category": "REFERENCE",
+        "versions_in_repo": [],
+        "live_version": null,
+        "engine_files": [],
+        "doc_refs": [
+          "docs/SUPERTRADER_AUDIT_R13.md:72-80",
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:172-179"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry-r12.mjs:2",
+          "scripts/supertrader/fidelity/R15-CANONICAL-RULES.json (systems)"
+        ],
+        "notes": "Fremdquelle von VU_TREND_52W, kein eigenes System im Repo (Regeln dort getrennt von Darvas-Original geführt).",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "CLENOW_TREND_RANK",
+        "name": "Clenow-Trendmaß (Steigung x R², 90 Tage)",
+        "category": "REFERENCE",
+        "versions_in_repo": [],
+        "live_version": null,
+        "engine_files": [
+          "scripts/supertrader/engine/rotation-52w.mjs"
+        ],
+        "doc_refs": [
+          "docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md:179"
+        ],
+        "evidence_lines": [
+          "scripts/supertrader/registry-r12.mjs:30"
+        ],
+        "notes": "Nur Rangbaustein von Trend52, keine eigene Methode.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "QUANT_STRATEGY_LIBRARY",
+        "name": "Quant Strategy Library (5 VU-Stil-Strategien: Quality Compounders, Momentum Leaders, Quality Momentum, GARP, Future Leaders)",
+        "category": "REFERENCE",
+        "versions_in_repo": [
+          "strategies-v1.0.0"
+        ],
+        "live_version": null,
+        "engine_files": [
+          "quant/engines/strategy.js"
+        ],
+        "doc_refs": [
+          "docs/VU_STRATEGY_SCHEMA.md"
+        ],
+        "evidence_lines": [
+          "quant/methodology/strategies-v1.json:4-86 (origin/main)"
+        ],
+        "notes": "Faktor-Stilprofile des Quant-Produkts, keine Tradermethoden, gehören nicht zu Supertrader.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "QUANT_STRATEGY_MATCH_PROFILES",
+        "name": "Strategy Match Profile (Quality Compounder, Momentum Leader, Quality Momentum, GARP)",
+        "category": "REFERENCE",
+        "versions_in_repo": [
+          "strategy-profiles-1.1.0"
+        ],
+        "live_version": null,
+        "engine_files": [
+          "quant/engines/strategy-match.js"
+        ],
+        "doc_refs": [],
+        "evidence_lines": [
+          "quant/methodology/strategy-profiles-v1.json:54-180 (origin/main)"
+        ],
+        "notes": "Bedingungsprüfung, kein Backtest.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "TECH_STRATEGY_PACKS_PLANNED",
+        "name": "Rule-Pack-Tokens vu-trend-leadership, vu-vcp-research, vu-darvas-box, vu-donchian-breakout, vu-stage-analysis",
+        "category": "DOCUMENTED_ONLY",
+        "versions_in_repo": [],
+        "live_version": null,
+        "engine_files": [
+          "quant/engines/technical/strategy-packs.js"
+        ],
+        "doc_refs": [
+          "docs/VU_QUANT_2_LOST_WORK_REGISTER.md:64",
+          "docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md:95"
+        ],
+        "evidence_lines": [
+          "quant/engines/technical/strategy-packs.js:61 (PLANNED), :5-8 (nur Interface)"
+        ],
+        "notes": "Nur Interface-Tokens, keine Regel. Spiegeln Supertrader-Methoden (Doppelnennung), nur vu-trend-leadership ohne Gegenstück.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "TECH_WEINSTEIN_STAGE_HEURISTIC",
+        "name": "Weinstein-Stufe in Technical Intelligence (dow-trend.js)",
+        "category": "REFERENCE",
+        "versions_in_repo": [],
+        "live_version": null,
+        "engine_files": [
+          "quant/engines/technical/ti/dow-trend.js"
+        ],
+        "doc_refs": [
+          "docs/technical-intelligence/METHOD_RESEARCH.md:87"
+        ],
+        "evidence_lines": [
+          "quant/engines/technical/ti/dow-trend.js:72-81 (origin/main)"
+        ],
+        "notes": "Indikator, kein Trading-System; getrennt von Supertrader WEINSTEIN_STAGE.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "ELLIOTT_ENGINE",
+        "name": "VU Elliott Engine (Beta)",
+        "category": "REFERENCE",
+        "versions_in_repo": [
+          "elliott-1.0.0-beta"
+        ],
+        "live_version": null,
+        "engine_files": [
+          "quant/engines/technical/elliott/elliott-engine.js"
+        ],
+        "doc_refs": [
+          "docs/VU_ELLIOTT_ENGINE.md:1-7"
+        ],
+        "evidence_lines": [
+          "docs/VU_ELLIOTT_ENGINE.md:3"
+        ],
+        "notes": "Analyse-/Hypothesenmaschine, keine Handelsmethode.",
+        "counted_as_method": false,
+        "group": null
+      },
+      {
+        "id": "PLANNED_VARIANTS",
+        "name": "Geplante/inaktive Varianten (KK ORH/SKIP/20D, Weinstein VOL2X/STAGE4_SHORT, Darvas N4/N5, Turtle S2, Minervini B, Greenblatt STAGGERED/GLOBAL_VU, CANSLIM_FULL, PIOTROSKI_F_FULL, VU_TREND_52W_BASE)",
+        "category": "DOCUMENTED_ONLY",
+        "versions_in_repo": [],
+        "live_version": null,
+        "engine_files": [],
+        "doc_refs": [
+          "docs/SUPERTRADER_PRODUCT_READINESS.md:40-41"
+        ],
+        "evidence_lines": [
+          "supertrader/data/registry.json variants[] (active=false)"
+        ],
+        "notes": "Varianten bestehender Methoden, keine eigenen Methoden.",
+        "counted_as_method": false,
+        "group": null
+      }
+    ]
+  }
+}
