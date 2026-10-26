@@ -13,7 +13,7 @@ function calculationProvenance() {
   const files = ['research-studies.cjs', 'research-contract.cjs', 'signal-backtest.js', 'pattern-research.js', 'setup-engine.js', 'profile-backtest.js'];
   return { runtime: CALCULATION_RUNTIME, sourceHashes: Object.fromEntries(files.map(f => [f, crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, f))).digest('hex')])) };
 }
-const VERSION = 'research-studies-1.0.0';
+const VERSION = 'research-studies-1.1.0';
 const DAY = 86400000;
 const BUDGETS = Object.freeze({ maxSourceBars: 2000000, maxEstimatedWork: 50000000, maxOutputRows: 250000 });
 const SOURCE_MODES = ['SYNTHETIC_TEST', 'HISTORICAL_SIMULATION', 'AS_PUBLISHED_PIT'];
@@ -52,18 +52,23 @@ function barsOf(bars, asOf) {
   });
 }
 function identityErrors(l, signalDate, decisionAt) {
+  // Explicit retrospective cohort only: current classification is not historical membership.
+  const conditional = l.conditionalCohort === true;
   const e = [];
   if (!l.identity) return ['IDENTITY_EVIDENCE_MISSING'];
   const i = l.identity;
   if (!['XNYS', 'XNAS', 'XASE'].includes(i.mic) || i.instrumentClass !== 'COMMON_STOCK' || i.primary !== true) e.push('OUTSIDE_PRIMARY_US_COMMON_UNIVERSE');
   if (!i.validFrom || signalDate < i.validFrom || (i.validTo && signalDate > i.validTo)) e.push('IDENTITY_OUTSIDE_VALID_INTERVAL');
-  if (!i.availableAt || time(i.availableAt) > time(decisionAt) || !i.sourceHash) e.push('IDENTITY_NOT_AVAILABLE_AT_DECISION');
+  if (!i.availableAt || (!conditional && time(i.availableAt) > time(decisionAt)) || !i.sourceHash) e.push('IDENTITY_NOT_AVAILABLE_AT_DECISION');
   const m = (l.membership || []).find(x => x.validFrom <= signalDate && (!x.validTo || x.validTo >= signalDate) && x.availableAt && time(x.availableAt) <= time(decisionAt) && x.sourceHash);
-  if (!m) e.push('HISTORICAL_MEMBERSHIP_MISSING');
+  if (!m && !conditional) e.push('HISTORICAL_MEMBERSHIP_MISSING');
   return e;
 }
 function context(o) {
-  date(o.asOf); if (!SOURCE_MODES.includes(o.sourceMode)) fail('SOURCE_MODE_REQUIRED');
+  date(o.asOf);
+  if (o.cohortMode !== undefined && (o.cohortMode !== 'CONDITIONAL_CURRENT_CLASSIFICATION' || o.sourceMode !== 'HISTORICAL_SIMULATION' || o.registration?.analysisMode !== 'EXPLORATORY')) fail('CONDITIONAL_COHORT_REQUIRES_EXPLORATORY_HISTORICAL_SIMULATION');
+  if (o.executionClock !== undefined && (o.executionClock !== 'OBSERVED_WEEKLY_DATES' || o.sourceMode !== 'HISTORICAL_SIMULATION')) fail('WEEKLY_CLOCK_REQUIRES_HISTORICAL_SIMULATION');
+  if (!SOURCE_MODES.includes(o.sourceMode)) fail('SOURCE_MODE_REQUIRED');
   if (!['PRICE_RETURN', 'TOTAL_RETURN'].includes(o.returnBasis)) fail('RETURN_BASIS_REQUIRED');
   text(o.currency, 'CURRENCY');
   if (!o.registration || !o.registration.id || !o.registration.version || !o.registration.frozenAt) fail('REGISTRATION_REQUIRED');
@@ -80,7 +85,9 @@ function context(o) {
     const bars = barsOf(l.bars, o.asOf);
     if (calendarIndex && bars.some(b => !calendarIndex.has(b.date))) fail('BAR_OUTSIDE_OBSERVED_CALENDAR');
     const calendarGaps = calendarIndex ? bars.slice(1).filter((b, k) => calendarIndex.get(b.date) !== calendarIndex.get(bars[k].date) + 1).map(b => b.date) : [];
-    return { ...l, bars, calendarGaps, dateIndex: new Map(bars.map((b,k)=>[b.date,k])), allCloseTimes: bars.every(b=>!!b.closeAt) };
+    if (l.conditionalCohort !== undefined) fail('CONDITIONAL_COHORT_IS_CONTEXT_DERIVED');
+    if (o.executionClock && bars.some((b,k) => b.closeAt || k && weekOf(b.date) === weekOf(bars[k-1].date))) fail('WEEKLY_CLOCK_REQUIRES_DISTINCT_WEEKLY_DATE_BARS');
+    return { ...l, conditionalCohort: o.cohortMode === 'CONDITIONAL_CURRENT_CLASSIFICATION', bars, calendarGaps, dateIndex: new Map(bars.map((b,k)=>[b.date,k])), allCloseTimes: bars.every(b=>!!b.closeAt) };
   });
   if (listings.reduce((n, l) => n + l.bars.length, 0) > BUDGETS.maxSourceBars) fail('OBSERVATION_BUDGET_EXCEEDED');
   const entryDelayBars = o.entryDelayBars === undefined ? 1 : integer(o.entryDelayBars, 'ENTRY_DELAY_BARS');
@@ -95,6 +102,7 @@ function context(o) {
   }
   return { listings, side, benchmark, calendarIndex, entryDelayBars, o };
 }
+function weekOf(d) { const t = new Date(time(d)); return time(d) / DAY - (t.getUTCDay()+6)%7; }
 function decisionAt(b) { return b.availableAt || b.date + 'T23:59:59.999Z'; }
 function eligible(c, l, b, featureStartDate = null) {
   const issues = identityErrors(l, b.date, decisionAt(b));
@@ -120,7 +128,7 @@ function eventOutcome(c, l, signalIndex, horizon, overrides = {}) {
   if (issues.length) return { ...base, state: 'INELIGIBLE', reasons: issues };
   if (!entry) return { ...base, state: expectedEntryDate && expectedEntryDate <= c.o.asOf || l.identity?.validTo && l.identity.validTo <= c.o.asOf ? 'CENSORED' : 'IMMATURE', reasons: ['ENTRY_NOT_OBSERVED'] };
   if (c.calendarIndex && !overrides.eventTiming && c.calendarIndex.get(entry.date) !== c.calendarIndex.get(signal.date) + (overrides.entryDelay || c.entryDelayBars)) return { ...base, state: 'CENSORED', reasons: ['IMMEDIATE_NEXT_SESSION_MISSING'] };
-  if (!entry.closeAt || entryIndex <= signalIndex || time(entry.closeAt) <= time(decisionAt(signal))) return { ...base, state: 'INELIGIBLE', reasons: ['ENTRY_NOT_AFTER_AVAILABILITY'] };
+  if (entryIndex <= signalIndex || (c.o.executionClock === 'OBSERVED_WEEKLY_DATES' ? entry.date <= decisionAt(signal).slice(0,10) : !entry.closeAt || time(entry.closeAt) <= time(decisionAt(signal)))) return { ...base, state: 'INELIGIBLE', reasons: ['ENTRY_NOT_AFTER_AVAILABILITY'] };
   if (!exit) return { ...base, state: expectedExitDate && expectedExitDate <= c.o.asOf || l.identity?.validTo && l.identity.validTo <= c.o.asOf ? 'CENSORED' : 'IMMATURE', reasons: ['OUTCOME_NOT_OBSERVED'] };
   const path = b.slice(entryIndex, exitIndex + 1);
   if (path.some(x => x.availableAt && time(x.availableAt) > time(c.o.asOf + 'T23:59:59.999Z'))) return { ...base, state: 'IMMATURE', reasons: ['OUTCOME_NOT_AVAILABLE_AS_OF'] };
@@ -135,7 +143,7 @@ function eventOutcome(c, l, signalIndex, horizon, overrides = {}) {
   const benchmarkReturn = ba && bz && level(c, ba) > 0 && level(c, bz) > 0 ? level(c, bz) / level(c, ba) - 1 : null;
   return { ...base, completed: true, state: 'OBSERVED', grossReturn: z / a - 1, netReturn: net(c, a, z),
     maxDrawdown: dd, benchmarkReturn, benchmarkExcess: benchmarkReturn === null ? null : net(c, a, z) - benchmarkReturn,
-    benchmarkCostBasis: 'PASSIVE_WITHOUT_TRANSACTION_COSTS', model: 'NEXT_OBSERVED_CLOSE_EVENT_STUDY_NOT_FUNDED_PORTFOLIO' };
+    benchmarkCostBasis: 'PASSIVE_WITHOUT_TRANSACTION_COSTS', model: c.o.executionClock === 'OBSERVED_WEEKLY_DATES' ? 'NEXT_OBSERVED_WEEK_CLOSE_MODEL_NO_INTRADAY_FILL_PROOF' : 'NEXT_OBSERVED_CLOSE_EVENT_STUDY_NOT_FUNDED_PORTFOLIO' };
 }
 function clusterVariance(rows, key, mean) {
   const g = new Map(); for (const r of rows) { const k = key(r); const x = g.get(k) || { sum: 0, n: 0 }; x.sum += r.value; x.n++; g.set(k, x); }
@@ -162,6 +170,7 @@ function finish(c, kind, payload) {
     returnBasis: c.o.returnBasis, currency: c.o.currency, asOf: c.o.asOf, registrationHash: hash(c.o.registration),
     certification: 'NOT_CERTIFIED', productionApproved: false, independentEvidence: 'NOT_ESTABLISHED_BY_CALCULATOR',
     universeClaim: 'SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS',
+    cohortMode: c.o.cohortMode || 'HISTORICAL_MEMBERSHIP_REQUIRED', executionClock: c.o.executionClock || 'EXPLICIT_SESSION_CLOSE', limitations: c.o.cohortMode ? ['CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE','SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE','EX_POST_PRICE_REVISIONS','NO_INDEPENDENT_CONFIRMATION'] : [],
     costs: c.o.costs, dataIssues: c.listings.filter(l => l.calendarGaps.length).map(l => ({ listingId: l.listingId, reason: 'OBSERVED_CALENDAR_GAPS', dates: l.calendarGaps })), coverage: { ...counts, maturedDenominator: eligibleDenominator, observedShareMatured: eligibleDenominator ? counts.observed / eligibleDenominator : null },
     ...payload, statistics: inference(events), inputHash: hash(c.o), calculationProvenance: calculationProvenance(), engineHash: crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex') };
   return { ...result, resultHash: hash(result) };
@@ -402,9 +411,9 @@ function runEventStudy(o) {
     if (time(e.availableAt) > time(o.asOf + 'T23:59:59.999Z')) continue;
     if (e.revisionOf) fail('REVISED_EVENT_REQUIRES_SEPARATE_PREREGISTERED_RULE');
     const l = c.listings.find(l => l.listingId === e.listingId); if (!l) fail('EVENT_LISTING_NOT_IN_COHORT');
-    if (!l.allCloseTimes) fail('EXPLICIT_SESSION_CLOSE_TIMES_REQUIRED');
+    if (!l.allCloseTimes && c.o.executionClock !== 'OBSERVED_WEEKLY_DATES') fail('EXPLICIT_SESSION_CLOSE_TIMES_REQUIRED');
     let lo=0,hi=l.bars.length;
-    while(lo<hi){const mid=(lo+hi)>>1;if(time(l.bars[mid].closeAt)>time(e.availableAt))hi=mid;else lo=mid+1;}
+    while(lo<hi){const mid=(lo+hi)>>1;if(c.o.executionClock === 'OBSERVED_WEEKLY_DATES' ? l.bars[mid].date > e.availableAt.slice(0,10) : time(l.bars[mid].closeAt)>time(e.availableAt))hi=mid;else lo=mid+1;}
     const entryIndex = lo < l.bars.length ? lo : -1;
     if (entryIndex < 0) { events.push({ eventId: e.eventId, listingId: e.listingId, issuerId: l.issuerId, signalDate: e.availableAt.slice(0, 10), timeCluster: e.availableAt.slice(0, 10), state: c.o.expectedCalendar?.some(d => d > e.availableAt.slice(0, 10) && d <= c.o.asOf) ? 'CENSORED' : 'IMMATURE', completed: false, reasons: ['NEXT_SESSION_NOT_OBSERVED'] }); continue; }
     // Virtual signal preceding first eligible close permits pre-open events on the first supplied session.
@@ -414,7 +423,7 @@ function runEventStudy(o) {
     events.push({ eventId: e.eventId, eventType: e.eventType, ...outcome, signalDate: e.availableAt.slice(0, 10),
       ...(actualErrors.length ? { state: 'INELIGIBLE', completed: false, reasons: actualErrors } : {}) });
   }
-  return finish(c, 'EVENT_DRIVEN', { events, entryModel: 'FIRST_EXPLICIT_SESSION_CLOSE_STRICTLY_AFTER_AVAILABILITY',
+  return finish(c, 'EVENT_DRIVEN', { events, entryModel: c.o.executionClock === 'OBSERVED_WEEKLY_DATES' ? 'FIRST_OBSERVED_WEEK_CLOSE_ON_LATER_DATE' : 'FIRST_EXPLICIT_SESSION_CLOSE_STRICTLY_AFTER_AVAILABILITY',
     scope: 'EVENT_STUDY_NO_GUARANTEED_LIVE_FILL', revisionPolicy: 'ORIGINAL_IMMUTABLE_EVENTS_ONLY' });
 }
 function classifyRegimes(o) {
