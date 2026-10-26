@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "quant-v7-securement-1.0.0",
+  "status": "V7_SECURED_AND_MERGED",
+  "scientificStatus": "V7_PARTIALLY_VALIDATED",
+  "pullRequest": 961,
+  "branch": "research/quant-v7-evidence",
+  "originalV7Head": "be42b4d4767e87ee2a9106dbc7fd987e5f8c565a",
+  "fullySourceTestedHead": "517f7408f1888ffecf9bab00ed4efda7c6eda8d8",
+  "lastHead": "a00ce06c1627e60313e783dd65e3706eb5d555ba",
+  "mergeCommit": "da1a82dcd17a1d4454e9fca75237c85cca9e16ee",
+  "mergeMethod": "REGULAR_MERGE_WITH_MATCH_HEAD_COMMIT",
+  "adminOrAutoMerge": false,
+  "implementedAreas": 13,
+  "methodAcceptedAreas": 2,
+  "certifiedBacktestTypes": 0,
+  "productApproved": false,
+  "frontendUnchangedFromMergeFirstParent": true,
+  "activeContractFilesPreserved": 53,
+  "testAccounting": "test-accounting.json",
+  "fullIsolationFiles": 278,
+  "postMerge": "post-merge.json",
+  "remoteCi": "remote-final.json",
+  "requiredContextProof": "remote-required.json",
+  "nonrequiredExternalFailure": {
+    "context": "Vercel",
+    "isRequired": false,
+    "reason": "Deployment rate limited \u2014 retry in 24 hours.",
+    "retriesOrUpgrade": false
+  },
+  "legacyValidationBaseMainField": "Historical V6 constant; use gitHead, actual source hashes and integration manifests for V7.",
+  "protectedReports": "Original V5.1/V6/V7 reports unchanged; new closure evidence separate."
+}
