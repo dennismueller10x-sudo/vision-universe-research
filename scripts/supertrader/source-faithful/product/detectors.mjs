@@ -25,7 +25,7 @@ import { pocketPivotAt, gapUpAt, sellGuideEvidence } from '../methods/morales-ka
 import { adr20, momentumRanks, breakoutEvidence, epGapEvidence, parabolicEvidence } from '../methods/kullamagi.mjs';
 import { investorScreen, traderScreen } from '../methods/weinstein.mjs';
 import { DARVAS_ADAPTER, DARVAS_REFERENCE_CONFIG, DARVAS_MODEL_ASSUMPTIONS } from '../research/darvas-lifecycle.mjs';
-import { KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, KK_MODEL_ASSUMPTIONS } from '../research/kk-breakout-lifecycle.mjs';
+import { KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG } from '../research/kk-breakout-lifecycle.mjs';
 import { POCKET_PIVOT_ADAPTER, BUYABLE_GAP_UP_ADAPTER, PP_REFERENCE_CONFIG, BGU_REFERENCE_CONFIG, MOKA_MODEL_ASSUMPTIONS } from '../research/moka-lifecycle.mjs';
 import { HOLY_GRAIL_RESEARCH_ADAPTER, HG_REFERENCE_CONFIG } from '../research/holy-grail-lifecycle.mjs';
 import { sepaSetupAt, powerPlaySetupAt, entryEligibility, REFERENCE_CONFIG as MIN_REFERENCE_CONFIG, MODEL_ASSUMPTIONS as MIN_MODEL_ASSUMPTIONS } from '../research/minervini-lifecycle.mjs';
@@ -33,8 +33,12 @@ import { epChartCandidate, EP_REFERENCE_CONFIG } from '../research/kk-ep-lifecyc
 import { psChartCandidate, PS_REFERENCE_CONFIG } from '../research/kk-ps-study.mjs';
 
 export const DETECTORS_VERSION = 'sf8-detectors-1.0.0';
-/** KK-SF-BO-MOMENTUM "top 1-2 %": gelesen als bestes 1/3/6-Monats-Perzentil >= 98 (äußere Grenze der Quelle, 2 %). */
-export const KK_MOMENTUM_TOP_PERCENTILE = 98;
+/**
+ * KK-SF-BO-MOMENTUM ist im Vertrag eine RANGFOLGE (gate: false, GC-KK-MOMENTUM-RANK-NOT-GATE), kein Ausschluss. Eine
+ * Schwelle für "Top 1-2 %" ist nicht freigegeben (Owner-Entscheidung O-6). Bis dahin gilt die Regel für die Stufe als
+ * nicht erfüllt (fail closed): Kullamägi Breakout bleibt Chart-Kandidat; das Perzentil sortiert nur.
+ */
+export const KK_MOMENTUM_READING = Object.freeze({ status: 'PENDING_OWNER_DECISION_O6', proposal: 'bestes 1/3/6-Monats-Perzentil >= 98', gate: false });
 
 const r4 = (x) => (fin(x) ? Math.round(x * 1e4) / 1e4 : null);
 const pct = (a, b) => (fin(a) && fin(b) && b !== 0 ? a / b - 1 : null);
@@ -88,7 +92,8 @@ function detectTurtle(system) {
     const S = TUR_PARAMS[system], n = N[i - 1], trigger = e.trigger;
     const liquid = ctx.dq.checks.find((c) => c.id === 'LIQUIDITY_RESEARCH_UNIVERSE')?.status === 'PASS';
     const setupRules = system === 'S1'
-      ? [{ ruleId: 'TUR-SF-ENTRY', met: true }, { ruleId: 'TUR-SF-S1-FILTER', met: true }, { ruleId: 'TUR-SF-FAILSAFE', met: true }, { ruleId: 'TUR-SF-CONSISTENT', met: true }, { ruleId: 'TUR-SF-MARKETS', met: liquid }]
+      // TUR-SF-FAILSAFE ist auf dem S1-Pfad gegenstandslos (kein übersprungener Ausbruch): erfüllt, aber nicht angezeigt
+      ? [{ ruleId: 'TUR-SF-ENTRY', met: true }, { ruleId: 'TUR-SF-S1-FILTER', met: true }, { ruleId: 'TUR-SF-FAILSAFE', met: true, ...(e.path === 'FAILSAFE_55' ? {} : { vacuous: true }) }, { ruleId: 'TUR-SF-CONSISTENT', met: true }, { ruleId: 'TUR-SF-MARKETS', met: liquid }]
       : [{ ruleId: 'TUR-SF-ENTRY', met: true }, { ruleId: 'TUR-SF-S2-NOSKIP', met: true }, { ruleId: 'TUR-SF-CONSISTENT', met: true }, { ruleId: 'TUR-SF-MARKETS', met: liquid }];
     return {
       strategyId, detected: true,
@@ -117,9 +122,12 @@ function detectDarvas(sec, ctx) {
   const weeklyMax = Array.isArray(ctx.weekly) && ctx.weekly.length ? Math.max(...ctx.weekly.filter((p) => p.date < bars[0].date && fin(p.close)).map((p) => p.close), -Infinity) : null;
   const athDaily = !el.blockers.some((b) => b.code === 'NOT_ALL_TIME_HIGH_IN_HISTORY');
   const athLong = weeklyMax === null ? null : level > weeklyMax;
-  // DAR-SF-ATH ist ein Quellfilter: ohne Allzeithoch im Tagesfenster ist es kein Darvas-Kandidat (nur eine Box)
-  if (!athDaily) return NONE(strategyId, 'BOX_NOT_AT_ALL_TIME_HIGH_IN_WINDOW');
-  const ath = athLong === true;
+  // DAR-SF-ATH ist ein Quellfilter: ohne Hoch im Tagesfenster ist es kein Darvas-Kandidat (nur eine Box). Als ERFÜLLT gilt
+  // das Allzeithoch nur, wenn die Tageshochs die ganze Listing-Historie abdecken (Listing-Beginn im Fenster). Ältere Titel:
+  // Hochs vor dem Fenster fehlen im Repository, Wochenschlüsse sind nur Gegenbeleg -> nicht erfüllt (fail closed, Review M4).
+  if (!athDaily) return NONE(strategyId, 'BOX_NOT_AT_HIGH_OF_WINDOW');
+  const listingCovered = !!ctx.listingStart && ctx.listingStart >= bars[0].date;
+  const ath = listingCovered && athLong !== false;
   const plan = ath && el.order ? {
     lifecycleKey: 'DARVAS', variantId: 'REF',
     entry: { type: 'BUY_STOP_NEXT_SESSION', trigger: el.order.level }, stop: el.order.stop,
@@ -129,16 +137,16 @@ function detectDarvas(sec, ctx) {
     declaredDataExceptions: [],
   } : null;
   return {
-    strategyId, detected: true, patternId: 'DARVAS_COMPLETE_BOX_AT_HIGH', patternRuleIds: ['DAR-SF-TOP', 'DAR-SF-BOTTOM', 'DAR-SF-ATH'],
+    strategyId, detected: true, patternId: 'DARVAS_COMPLETE_BOX_AT_WINDOW_HIGH', patternRuleIds: ['DAR-SF-TOP', 'DAR-SF-BOTTOM'],
     setupRules: [
       { ruleId: 'DAR-SF-TOP', met: true }, { ruleId: 'DAR-SF-BOTTOM', met: true }, { ruleId: 'DAR-SF-TOP-EXCEEDED', met: true }, { ruleId: 'DAR-SF-BOX-FAIL', met: true },
       { ruleId: 'DAR-SF-NO-WAIT', met: true }, { ruleId: 'DAR-SF-ENTRY', met: el.order !== null }, { ruleId: 'DAR-SF-ATH', met: ath },
     ],
     ambiguousReadings: [{ ruleId: 'DAR-SF-BOTTOM-START', reading: `MA-DAR-BOTTOM-START reference ${DARVAS_REFERENCE_CONFIG.bottomSearchStart}` }],
     levels: { top: r4(setup.top), bottom: r4(setup.bottom), trigger: r4(level), stopReference: r4(setup.top - frac), box: { from: setup.topDate, to: bars[i].date, top: r4(setup.top), bottom: r4(setup.bottom) } },
-    features: { boxDepth: r4(1 - setup.bottom / setup.top), boxTopDate: setup.topDate, boxBottomDate: setup.bottomDate, boxCompleteDate: setup.completeDate, closeVsTop: r4(pct(bars[i].close, setup.top)), allTimeHighDailyWindow: athDaily, allTimeHighWeeklyLong: athLong, allTimeHighStatus: athLong === null ? 'NOT_CHECKABLE_NO_LONG_SERIES' : 'ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED' },
+    features: { boxDepth: r4(1 - setup.bottom / setup.top), boxTopDate: setup.topDate, boxBottomDate: setup.bottomDate, boxCompleteDate: setup.completeDate, closeVsTop: r4(pct(bars[i].close, setup.top)), allTimeHighDailyWindow: athDaily, allTimeHighWeeklyCloses: athLong, listingCoveredByDailyHighs: listingCovered, allTimeHighStatus: ath ? 'ALL_TIME_HIGH_FULL_LISTING_HISTORY' : athLong === false ? 'NOT_ALL_TIME_HIGH_WEEKLY_CLOSES' : 'NOT_VERIFIABLE_WITHOUT_LONG_DAILY_HIGHS' },
     pivot: { level: r4(level), kind: 'BOX_TOP_PLUS_FRACTION', distance: r4(pct(bars[i].close, level)) },
-    plan, planBlockers: plan ? [] : [...el.blockers.map((b) => b.code), ...(athLong === null ? ['ATH_NOT_CHECKABLE_NO_LONG_SERIES'] : athLong === false ? ['NOT_ALL_TIME_HIGH_LONG_HISTORY'] : [])].filter((x, k, a) => a.indexOf(x) === k),
+    plan, planBlockers: plan ? [] : [...el.blockers.map((b) => b.code), ...(ath ? [] : athLong === false ? ['NOT_ALL_TIME_HIGH_LONG_HISTORY'] : ['ATH_NOT_VERIFIABLE_WITHOUT_LONG_DAILY_HIGHS'])].filter((x, k, a) => a.indexOf(x) === k),
   };
 }
 
@@ -220,29 +228,19 @@ function detectPowerPlay(sec) {
 // ------------------------------------------------------------------ C08 Kullamägi Breakout (täglich)
 function detectKkBreakout(sec, ctx) {
   const strategyId = 'SF_KK_BREAKOUT', bars = sec.bars, i = bars.length - 1;
-  const m = ctx.momentum?.get(sec.id) ?? null;
-  const momentumMet = fin(m?.bestPercentile) && m.bestPercentile >= KK_MOMENTUM_TOP_PERCENTILE;
-  if (!momentumMet) return NONE(strategyId, 'NOT_IN_MOMENTUM_TOP_2PCT', { bestPercentile: m?.bestPercentile ?? null });
+  // Muster: täglicher Ausbruch nach der deklarierten Setup-Konvention der Research-Läufe (MA-KK-SETUP-PROXY, Referenz
+  // CONSOLIDATION_10) am Stichtag; das Momentum (KK-005) sortiert nur (siehe KK_MOMENTUM_READING)
   const prep = KK_BREAKOUT_ADAPTER.prepare(sec, KK_REFERENCE_CONFIG), setup = prep ? KK_BREAKOUT_ADAPTER.signalAt(prep, i) : null;
-  const el = setup ? KK_BREAKOUT_ADAPTER.eligibility({ setup, bars, i, cfg: KK_REFERENCE_CONFIG }) : null;
-  const MA = (id) => maOf(KK_MODEL_ASSUMPTIONS, id);
-  const plan = el?.order ? {
-    lifecycleKey: 'KK_BREAKOUT', variantId: 'REF',
-    entry: { type: 'ON_OPEN_NEXT_SESSION (reference = as-of close)', trigger: bars[i].close }, stop: el.order.stop,
-    sizing: { method: 'RISK_0.005 (MA-KK-RISK-FRACTION)', riskFraction: KK_REFERENCE_CONFIG.sizing.riskFraction },
-    exitRuleIds: ['KK-SF-BO-STOP', 'KK-SF-STOPMARKET', 'KK-SF-BO-PARTIAL', 'KK-SF-BO-TRAIL'],
-    modelAssumptions: [assumption('KK-SF-SIZE', MA('MA-KK-RISK-FRACTION')), assumption('KK-SF-BO-SETUP', MA('MA-KK-SETUP-PROXY')), assumption('KK-SF-BO-ENTRY', MA('MA-KK-ENTRY-TIMING')), assumption('KK-SF-BO-PARTIAL', MA('MA-KK-EXIT-POLICY')), assumption('KK-SF-BO-TRAIL', MA('MA-KK-EXIT-POLICY'))],
-    declaredDataExceptions: [], maxPlannedLoss: el.order.maxPlannedLoss ?? null,
-  } : null;
-  const ev = breakoutEvidence(bars, i);
+  if (!setup) return NONE(strategyId, 'NO_SETUP_PROXY_BREAKOUT_AT_ASOF');
+  const m = ctx.momentum?.get(sec.id) ?? null, ev = breakoutEvidence(bars, i);
   return {
-    strategyId, detected: true, patternId: 'KK_MOMENTUM_LEADER_TOP_2PCT', patternRuleIds: ['KK-SF-BO-MOMENTUM'],
-    setupRules: [{ ruleId: 'KK-SF-BO-MOMENTUM', met: true }],
+    strategyId, detected: true, patternId: 'KK_DAILY_BREAKOUT_SETUP_PROXY_CONSOLIDATION_10', patternRuleIds: ['KK-SF-ADR'],
+    setupRules: [{ ruleId: 'KK-SF-BO-MOMENTUM', met: false, pending: KK_MOMENTUM_READING.status }],
     ambiguousReadings: [],
-    levels: { breakoutLevel: r4(setup?.level ?? priorHigh(bars, bars.length, 10)), stopReference: r4(setup ? bars[i].low : null) },
-    features: { momentum: { p1m: r4(m.p1m), p3m: r4(m.p3m), p6m: r4(m.p6m), best: r4(m.bestPercentile), r1m: r4(m.r1m), r3m: r4(m.r3m), r6m: r4(m.r6m) }, breakoutToday: !!setup, setupProxy: KK_REFERENCE_CONFIG.setupProxy, priorMove63: r4(ev.priorMove.r63), higherLows: ev.higherLows, ma10Rising: ev.risingMA.ma10, ma20Rising: ev.risingMA.ma20, adr20: r4(ev.adr20) },
-    pivot: { level: r4(setup?.level ?? priorHigh(bars, bars.length, 10)), kind: setup ? 'CONSOLIDATION_10_LEVEL (MA-KK-SETUP-PROXY), broken at as-of close' : '10-SESSION HIGH (evidence, MA-KK-SETUP-PROXY window)', distance: r4(pct(bars[i].close, setup?.level ?? priorHigh(bars, bars.length, 10))) },
-    plan, planBlockers: plan ? [] : setup ? el.blockers.map((b) => b.code) : ['NO_SETUP_PROXY_BREAKOUT_AT_ASOF'],
+    levels: { breakoutLevel: r4(setup.level) },
+    features: { momentum: m ? { p1m: r4(m.p1m), p3m: r4(m.p3m), p6m: r4(m.p6m), best: r4(m.bestPercentile), r1m: r4(m.r1m), r3m: r4(m.r3m), r6m: r4(m.r6m) } : null, momentumReading: KK_MOMENTUM_READING.status, setupProxy: KK_REFERENCE_CONFIG.setupProxy, priorMove: r4(setup.priorMove), higherLows: ev.higherLows, ma10Rising: setup.ma10Rising, ma20Rising: setup.ma20Rising, adr20: r4(setup.adr20) },
+    pivot: { level: r4(setup.level), kind: 'CONSOLIDATION_10_LEVEL (MA-KK-SETUP-PROXY)', distance: r4(pct(bars[i].close, setup.level)) },
+    plan: null, planBlockers: ['KK_MOMENTUM_READING_PENDING_OWNER_DECISION_O6'],
   };
 }
 
@@ -253,7 +251,7 @@ function detectEp(sec) {
   if (!c) return NONE(strategyId, 'NO_GAP_10PCT_AT_ASOF');
   const ev = epGapEvidence(bars, i);
   return {
-    strategyId, detected: true, patternId: 'KK_EP_CHART_GAP_10PCT', patternRuleIds: ['KK-SF-EP-GAP', 'KK-SF-ADR'],
+    strategyId, detected: true, patternId: 'KK_EP_CHART_GAP_10PCT', patternRuleIds: ['KK-SF-EP-GAP'],
     setupRules: [{ ruleId: 'KK-SF-EP-GAP', met: true }], ambiguousReadings: [{ ruleId: 'KK-SF-EP-EXIT', reading: 'not modelled (chart candidate only)' }],
     levels: { gapDayLow: r4(bars[i].low), priorClose: r4(bars[i - 1].close) },
     features: { gap: r4(c.gap), priorRun63: r4(c.priorRun63), priorRange63: r4(c.priorRange63), adr20: r4(c.adr20), dailyVolumeVs50d: r4(ev.dailyVolumeVs50d), catalyst: 'DATA_BLOCKED (nicht verifiziert, nicht erfunden)', intradayVolume: 'DATA_BLOCKED', entryOpeningRange: 'DATA_BLOCKED', model: 'CHART_MODEL_NOT_ORIGINAL_EP' },
@@ -352,6 +350,7 @@ export const DETECTORS = Object.freeze({
 });
 
 /** KK-005-Querschnitt am Stichtag über alle bewertbaren Titel (Rangfolge, kein Ausschluss). */
+/** Querschnitt nur über das Forschungsuniversum (#705-Konvention, wie die Research-Läufe; Review H2). */
 export function momentumIndex(securities, asOf) {
   return new Map(momentumRanks(securities, asOf).map((r) => [r.id, r]));
 }

@@ -60,7 +60,7 @@ export function runPipeline({ securities: input, rejectedInputs = [], asOf, cale
   }
   const evaluable = securities.filter((s) => dqById.get(s.id).status !== 'FAIL');
   // KK-005-Querschnitt nur über bewertbare Titel mit Balken am Stichtag (fail closed: veraltete Titel zählen nicht mit)
-  const momentum = momentumIndex(evaluable, asOf);
+  const momentum = momentumIndex(evaluable.filter((s) => dqById.get(s.id).checks.some((c) => c.id === 'LIQUIDITY_RESEARCH_UNIVERSE' && c.status === 'PASS')), asOf);
   const views = new Map(STRATEGY_CATALOG.map((c) => [c.strategyId, []])), records = new Map(STRATEGY_CATALOG.map((c) => [c.strategyId, []]));
   const rejected = [], historyShort = {}, detectedCount = {}, readingsOf = new Map();
   for (const s of evaluable) {
@@ -68,7 +68,7 @@ export function runPipeline({ securities: input, rejectedInputs = [], asOf, cale
     for (const c of STRATEGY_CATALOG) {
       const h = assessStrategyHistory(c.strategyId, s.bars);
       if (h.status !== 'PASS') { historyShort[c.strategyId] = (historyShort[c.strategyId] || 0) + 1; continue; }
-      const det = DETECTORS[c.strategyId](s, { dq, weekly, momentum, nextSession, benchWeekly: bench, asOf });
+      const det = DETECTORS[c.strategyId](s, { dq, weekly, momentum, nextSession, benchWeekly: bench, asOf, listingStart: s.meta?.listingStart ?? null });
       if (!det.detected) continue;
       detectedCount[c.strategyId] = (detectedCount[c.strategyId] || 0) + 1;
       const r = buildCandidate({ det, sec: s, dq, asOf, nextSession, inputsSha256: ish, readiness, ceilings, common, meta: s.meta });
@@ -151,8 +151,10 @@ async function main() {
   const argv = process.argv.slice(2), arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const out = arg('--out'); if (!out) { console.error('--out required'); process.exit(2); }
   const resolvedOut = path.resolve(out);
-  // nie in committete Datenbereiche schreiben (supertrader/data, quant/data, …)
-  for (const p of ['supertrader', 'quant/data', 'discover/data', 'social/data', 'scripts']) if (resolvedOut === path.join(ROOT, p) || resolvedOut.startsWith(path.join(ROOT, p) + path.sep)) { console.error(`REFUSED_OUT_INSIDE_COMMITTED_TREE:${p}`); process.exit(2); }
+  // nie in das Repository schreiben (Allowlist: nur Pfade außerhalb; Review L3)
+  const inside = (p) => p === ROOT || p.startsWith(ROOT + path.sep);
+  if (inside(resolvedOut)) { console.error('REFUSED_OUT_INSIDE_COMMITTED_TREE'); process.exit(2); }
+  if (arg('--stats') && inside(path.resolve(arg('--stats')))) { console.error('REFUSED_STATS_INSIDE_COMMITTED_TREE'); process.exit(2); }
   const t0 = Date.now(), lap = {};
   const universe = loadUniverse();
   const tickers = arg('--tickers') ? arg('--tickers').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean) : null;

@@ -127,7 +127,7 @@ function stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }) {
   const out = [];
   if (rank(ceiling) < rank(reach)) out.push({ code: 'STRATEGY_CEILING', stage: ceiling });
   if (dqCap !== null && rank(dqCap) < rank(reach)) for (const c of dq.checks.filter((x) => x.status === 'CAP' && rank(x.caps) < rank(reach))) out.push({ code: `DATA_${c.id}`, stage: c.caps });
-  for (const r of det.setupRules || []) if (!r.met) out.push({ code: 'SETUP_RULE_NOT_MET', ruleId: r.ruleId });
+  for (const r of det.setupRules || []) if (!r.met) out.push(r.pending ? { code: 'RULE_READING_PENDING_OWNER_DECISION', ruleId: r.ruleId } : { code: 'SETUP_RULE_NOT_MET', ruleId: r.ruleId });
   if (reach === STAGE.CONFIRMED_RESEARCH_SETUP && rank(ceiling) >= rank(STAGE.MODELED_TRADE_PLAN)) for (const b of det.planBlockers || []) out.push({ code: 'PLAN_NOT_MODELLED', detail: b });
   if (!rc.mechanicalSetupRules.length) out.push({ code: 'NO_MECHANICAL_SETUP_RULE_IN_CONTRACT' });
   out.push({ code: 'STAGE', stage });
@@ -157,8 +157,9 @@ export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, 
     strategyId: det.strategyId, candidateId: record.candidateId, ticker: sec.ticker, securityId: sec.id,
     companyName: meta?.companyName ?? null, exchange: meta?.exchange ?? null, shard: meta?.shard ?? null,
     stage, reach, ceiling, asOf, close: record.price.close, recordId: record.recordId,
-    pattern: det.patternId, met: (det.setupRules || []).filter((r) => r.met).map((r) => r.ruleId).concat(det.patternRuleIds.filter((id) => !(det.setupRules || []).some((r) => r.ruleId === id))),
-    notMet: (det.setupRules || []).filter((r) => !r.met).map((r) => r.ruleId),
+    pattern: det.patternId, met: (det.setupRules || []).filter((r) => r.met && !r.vacuous).map((r) => r.ruleId).concat(det.patternRuleIds.filter((id) => !(det.setupRules || []).some((r) => r.ruleId === id))),
+    pending: (det.setupRules || []).filter((r) => r.pending).map((r) => ({ ruleId: r.ruleId, status: r.pending })),
+    notMet: (det.setupRules || []).filter((r) => !r.met && !r.pending).map((r) => r.ruleId),
     pivot: det.pivot ?? null, levels: det.levels ?? {}, features: det.features ?? {}, trend: common,
     plan, planBlockers: stage === STAGE.MODELED_TRADE_PLAN ? [] : det.planBlockers ?? [],
     why: stageReasons({ reach, ceiling, dqCap, stage, det, rc, dq }),

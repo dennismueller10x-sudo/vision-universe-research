@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
-import { DETECTORS, withNextSession, KK_MOMENTUM_TOP_PERCENTILE } from '../source-faithful/product/detectors.mjs';
+import { DETECTORS, withNextSession, KK_MOMENTUM_READING } from '../source-faithful/product/detectors.mjs';
 import { detectionReach } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG } from '../source-faithful/product/catalog.mjs';
@@ -36,22 +36,22 @@ const find = (t, c) => views().find((v) => v.ticker === t && v.candidateId === c
 // Golden Cases: erkannte Strategien und Stufe je Titel am Stichtag der Fixture (2026-10-23). Eine Änderung hier ist eine
 // fachliche Änderung der Erkennung und braucht einen eigenen PR mit Vorher/Nachher-Vergleich.
 const GOLDEN = {
-  BOLT: ['C01:CONFIRMED_RESEARCH_SETUP', 'C02:CONFIRMED_RESEARCH_SETUP', 'C09:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP', 'C12:MODELED_TRADE_PLAN'],
-  NATH: ['C01:CONFIRMED_RESEARCH_SETUP', 'C02:CONFIRMED_RESEARCH_SETUP', 'C04:CHART_CANDIDATE', 'C05:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP'],
-  JAKK: ['C01:CONFIRMED_RESEARCH_SETUP', 'C02:CONFIRMED_RESEARCH_SETUP', 'C06:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP', 'C12:MODELED_TRADE_PLAN'],
-  AAPL: ['C01:CONFIRMED_RESEARCH_SETUP', 'C02:CONFIRMED_RESEARCH_SETUP', 'C06:CHART_CANDIDATE'],
-  AVBC: ['C01:CONFIRMED_RESEARCH_SETUP', 'C02:CONFIRMED_RESEARCH_SETUP', 'C03:MODELED_TRADE_PLAN', 'C05:CHART_CANDIDATE', 'C06:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP'],
-  UWMC: ['C01:CHART_CANDIDATE', 'C10:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP'],
-  SLAB: ['C03:MODELED_TRADE_PLAN', 'C06:CHART_CANDIDATE'],
-  NX: ['C03:CHART_CANDIDATE', 'C04:CHART_CANDIDATE'],
-  WENN: ['C03:CHART_CANDIDATE', 'C12:CHART_CANDIDATE'],
-  HLN: ['C04:CHART_CANDIDATE', 'C05:CHART_CANDIDATE'],
-  SLN: ['C04:CHART_CANDIDATE', 'C05:CHART_CANDIDATE', 'C06:CHART_CANDIDATE', 'C07:MODELED_TRADE_PLAN', 'C08:CONFIRMED_RESEARCH_SETUP'],
-  BRZE: ['C04:CHART_CANDIDATE', 'C05:CHART_CANDIDATE', 'C07:MODELED_TRADE_PLAN', 'C08:CONFIRMED_RESEARCH_SETUP', 'C11:CONFIRMED_RESEARCH_SETUP'],
+  BOLT: ['C01:CONFIRMED_RESEARCH_SETUP',  'C02:CONFIRMED_RESEARCH_SETUP',  'C08:CHART_CANDIDATE',  'C09:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP',  'C12:MODELED_TRADE_PLAN'],
+  NATH: ['C01:CONFIRMED_RESEARCH_SETUP',  'C02:CONFIRMED_RESEARCH_SETUP',  'C04:CHART_CANDIDATE',  'C05:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP'],
+  JAKK: ['C01:CONFIRMED_RESEARCH_SETUP',  'C02:CONFIRMED_RESEARCH_SETUP',  'C06:CHART_CANDIDATE',  'C08:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP',  'C12:MODELED_TRADE_PLAN'],
+  AAPL: ['C01:CONFIRMED_RESEARCH_SETUP',  'C02:CONFIRMED_RESEARCH_SETUP',  'C06:CHART_CANDIDATE'],
+  AVBC: ['C01:CONFIRMED_RESEARCH_SETUP',  'C02:CONFIRMED_RESEARCH_SETUP',  'C03:CHART_CANDIDATE',  'C05:CHART_CANDIDATE',  'C06:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP'],
+  UWMC: ['C01:CHART_CANDIDATE',  'C10:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP'],
+  SLAB: ['C03:CHART_CANDIDATE',  'C06:CHART_CANDIDATE'],
+  NX: ['C03:CHART_CANDIDATE',  'C04:CHART_CANDIDATE'],
+  WENN: ['C03:CHART_CANDIDATE',  'C12:CHART_CANDIDATE'],
+  HLN: ['C04:CHART_CANDIDATE',  'C05:CHART_CANDIDATE'],
+  SLN: ['C04:CHART_CANDIDATE',  'C05:CHART_CANDIDATE',  'C06:CHART_CANDIDATE',  'C07:MODELED_TRADE_PLAN'],
+  BRZE: ['C04:CHART_CANDIDATE',  'C05:CHART_CANDIDATE',  'C07:MODELED_TRADE_PLAN',  'C11:CONFIRMED_RESEARCH_SETUP'],
   ACVA: ['C06:CHART_CANDIDATE'],
-  MSFT: ['C06:CHART_CANDIDATE', 'C13:CONFIRMED_RESEARCH_SETUP'],
-  'BIO-B': ['C06:CHART_CANDIDATE', 'C13:CONFIRMED_RESEARCH_SETUP'],
-  MYND: ['C09:CHART_CANDIDATE', 'C11:CONFIRMED_RESEARCH_SETUP', 'C12:CONFIRMED_RESEARCH_SETUP'],
+  MSFT: ['C06:CHART_CANDIDATE',  'C13:CONFIRMED_RESEARCH_SETUP'],
+  "BIO-B": ['C06:CHART_CANDIDATE',  'C13:CONFIRMED_RESEARCH_SETUP'],
+  MYND: ['C09:CHART_CANDIDATE',  'C11:CONFIRMED_RESEARCH_SETUP',  'C12:CONFIRMED_RESEARCH_SETUP'],
   CCZ: ['C13:CONFIRMED_RESEARCH_SETUP'],
 };
 
@@ -63,13 +63,25 @@ test('SF8-GOLDEN: erkannte Strategien und Stufen je Titel (eingefrorene echte Re
 });
 
 test('SF8-GOLDEN-LEVELS: modellierte Pläne mit den Marken der Research-Lifecycles (Folgesitzung, Stop unter Einstieg)', () => {
-  const slab = find('SLAB', 'C03'), sln = find('SLN', 'C07'), bolt = find('BOLT', 'C12');
-  assert.equal(slab.plan.entryType, 'BUY_STOP_NEXT_SESSION'); assert.equal(slab.plan.earliestSession, '2026-10-26');
-  assert.ok(slab.plan.stop < slab.plan.trigger); assert.equal(slab.pivot.kind, 'BOX_TOP_PLUS_FRACTION');
-  assert.equal(slab.features.allTimeHighStatus, 'ALL_TIME_HIGH_IN_AVAILABLE_HISTORY_UNVERIFIED');
+  const sln = find('SLN', 'C07'), bolt = find('BOLT', 'C12'), slab = find('SLAB', 'C03');
   assert.equal(sln.plan.entryType, 'BUY_STOP_LIMIT_NEXT_SESSION'); assert.ok(sln.plan.limit >= sln.plan.trigger); assert.equal(sln.plan.riskFraction, 0.0125);
+  assert.equal(sln.plan.earliestSession, '2026-10-26');
   assert.equal(bolt.plan.stop, F.securities.find((s) => s.ticker === 'BOLT').cols.l.at(-1), 'BGU-Stop = Gap-Tag-Tief (MA-MOKA-BGU-STOP)');
   for (const v of views().filter((x) => x.plan)) { assert.ok(v.plan.stop < v.plan.trigger, v.ticker); assert.ok(v.plan.earliestSession > v.asOf); assert.equal(v.plan.hypothetical, true); }
+  // Darvas: Allzeithoch nur mit Tageshochs über die ganze Listing-Historie belegbar (Review M4) -> sonst CHART
+  assert.equal(slab.stage, 'CHART_CANDIDATE'); assert.equal(slab.features.allTimeHighStatus, 'NOT_VERIFIABLE_WITHOUT_LONG_DAILY_HIGHS');
+  assert.ok(slab.notMet.includes('DAR-SF-ATH'));
+});
+
+test('SF8-DARVAS-ATH: deckt das Tagesfenster die ganze Listing-Historie ab, trägt die Engine das Allzeithoch bis zum Plan', () => {
+  const s = securities().find((x) => x.ticker === 'SLAB');
+  const dq = { checks: [{ id: 'LIQUIDITY_RESEARCH_UNIVERSE', status: 'PASS' }] };
+  const young = DETECTORS.SF_DARVAS_BOX(s, { dq, weekly: [], listingStart: s.bars[0].date });
+  assert.equal(young.setupRules.find((r) => r.ruleId === 'DAR-SF-ATH').met, true); assert.ok(young.plan);
+  const old = DETECTORS.SF_DARVAS_BOX(s, { dq, weekly: [], listingStart: '1999-01-04' });
+  assert.equal(old.setupRules.find((r) => r.ruleId === 'DAR-SF-ATH').met, false); assert.equal(old.plan, null);
+  const higherBefore = DETECTORS.SF_DARVAS_BOX(s, { dq, weekly: [{ date: '2020-01-03', close: 1e6 }], listingStart: s.bars[0].date });
+  assert.equal(higherBefore.setupRules.find((r) => r.ruleId === 'DAR-SF-ATH').met, false, 'Wochenschluss darüber widerlegt das Allzeithoch');
 });
 
 test('SF8-NEGATIVE: DQ-FAIL-Titel (veraltet, Kurslücken) liefern keinen Kandidaten; Quarantäne-Titel höchstens CHART', () => {
@@ -91,7 +103,7 @@ test('SF8-STAGES: jeder Datensatz besteht den Produktvertrag; keine Stufe über 
   assert.equal(RES.index.counts.validatedTradeSignal, 0);
   // heute nur Strategien mit eigenem Lifecycle-Plan für die Folgesitzung; Turtle ausdrücklich nicht (Owner-Entscheidung O-1)
   const modeled = new Set(records().filter((r) => r.stage === 'MODELED_TRADE_PLAN').map((r) => r.candidateId));
-  for (const c of modeled) assert.ok(['C03', 'C07', 'C08', 'C12'].includes(c), c);
+  for (const c of modeled) assert.ok(['C03', 'C07', 'C12'].includes(c), c);
   for (const v of views()) assert.ok(STAGE_ORDER.indexOf(v.stage) <= STAGE_ORDER.indexOf(v.ceiling));
 });
 
@@ -100,7 +112,7 @@ test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle, EP, PS, Pocket Pivo
     if (v.stage !== 'MODELED_TRADE_PLAN') assert.equal(v.plan, null, `${v.candidateId} ${v.ticker}`);
     else assert.ok(v.plan.modelAssumptions.length > 0);
   }
-  for (const v of views().filter((x) => ['C01', 'C02', 'C04', 'C05', 'C06', 'C09', 'C10', 'C11', 'C13'].includes(x.candidateId))) assert.equal(v.plan, null);
+  for (const v of views().filter((x) => ['C01', 'C02', 'C04', 'C05', 'C06', 'C08', 'C09', 'C10', 'C11', 'C13'].includes(x.candidateId))) assert.equal(v.plan, null);
   const ps = views().filter((v) => v.candidateId === 'C10');
   assert.ok(ps.length && ps.every((v) => v.features.direction === 'SHORT_RESEARCH_MODEL' && /DATA_BLOCKED/.test(v.features.borrow)));
   assert.ok(views().filter((v) => v.candidateId === 'C09').every((v) => /DATA_BLOCKED/.test(v.features.catalyst)));
@@ -163,7 +175,9 @@ test('SF8-PIT-ASOF: --as-of schneidet; spätere Balken ändern einen früheren S
   const D = F.securities[0].cols.d.at(-6);
   const base = runPipeline({ securities: truncateTo(securities(), D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null });
   const tampered = securities().map((s) => ({ ...s, bars: s.bars.map((b) => (b.date > D ? { ...b, high: b.high * 3, close: b.close * 3 } : b)) }));
-  const again = runPipeline({ securities: truncateTo(tampered, D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: (id) => WEEKLY.get(id) ?? null });
+  // auch ein künftiger Wochenschluss (nach D) darf nichts ändern (Review L4)
+  const weeklyFuture = (id) => [...(WEEKLY.get(id) ?? []), { date: '2026-10-30', close: 1e6 }];
+  const again = runPipeline({ securities: truncateTo(tampered, D), asOf: D, calendar: CAL, continuity: { bySecurityId: new Map() }, weeklyOf: weeklyFuture });
   assert.equal(JSON.stringify(base), JSON.stringify(again));
   for (const r of base.strategies.flatMap((s) => s.detail.records)) { assert.equal(r.asOf, D); assert.equal(r.pit.lastBarDate, D); assert.equal(r.pit.usesFutureBars, false); }
 });
@@ -182,19 +196,25 @@ test('SF8-WORDING: keine Handelssignal-, Kauf- oder Validierungssprache in Katal
   assert.deepEqual(STRATEGY_CATALOG.map((c) => c.strategyId), CONTRACTS.map((c) => c.strategyId));
 });
 
-test('SF8-KK-MOMENTUM: KK-SF-BO-MOMENTUM als bestes Perzentil >= 98 (Lesart "Top 1-2 %"), sonst kein Kandidat', () => {
-  assert.equal(KK_MOMENTUM_TOP_PERCENTILE, 98);
+test('SF8-KK-MOMENTUM: Momentum sortiert nur (gate: false); ohne freigegebene Lesart (O-6) bleibt C08 Chart-Kandidat', () => {
+  assert.equal(KK_MOMENTUM_READING.gate, false); assert.equal(KK_MOMENTUM_READING.status, 'PENDING_OWNER_DECISION_O6');
+  const kk = views().filter((v) => v.candidateId === 'C08');
+  assert.ok(kk.length > 0);
+  for (const v of kk) { assert.equal(v.stage, 'CHART_CANDIDATE'); assert.deepEqual(v.pending, [{ ruleId: 'KK-SF-BO-MOMENTUM', status: 'PENDING_OWNER_DECISION_O6' }]); assert.ok(!v.notMet.includes('KK-SF-BO-MOMENTUM')); }
+  // ein Titel ohne Ausbruch ist kein Kandidat, ganz gleich wie hoch sein Momentum ist
   const s = securities().find((x) => x.ticker === 'AAPL');
-  const d = DETECTORS.SF_KK_BREAKOUT(s, { momentum: new Map([[s.id, { bestPercentile: 97.9 }]]), dq: { checks: [] } });
-  assert.equal(d.detected, false);
+  assert.equal(DETECTORS.SF_KK_BREAKOUT(s, { momentum: new Map([[s.id, { bestPercentile: 100 }]]), dq: { checks: [] } }).detected, false);
 });
 
 test('SF8-PRODUCER-OUT: Producer verlangt --out und verweigert committete Datenbereiche', () => {
   const cli = path.join(ROOT, 'scripts/supertrader/source-faithful/product/build-candidates.mjs');
   assert.equal(spawnSync(process.execPath, [cli], { encoding: 'utf8' }).status, 2);
-  const r = spawnSync(process.execPath, [cli, '--out', path.join(ROOT, 'supertrader/data/sf8-test')], { encoding: 'utf8' });
-  assert.equal(r.status, 2); assert.match(r.stderr, /REFUSED_OUT_INSIDE_COMMITTED_TREE/);
+  for (const out of [path.join(ROOT, 'supertrader/data/sf8-test'), ROOT, path.join(ROOT, 'core')]) {
+    const r = spawnSync(process.execPath, [cli, '--out', out], { encoding: 'utf8' });
+    assert.equal(r.status, 2, out); assert.match(r.stderr, /REFUSED_OUT_INSIDE_COMMITTED_TREE/);
+  }
   assert.equal(fs.existsSync(path.join(ROOT, 'supertrader/data/sf8-test')), false);
+  assert.equal(fs.existsSync(path.join(ROOT, 'index.json')), false);
 });
 
 test('SF8-REFERENCE-PROTECTION: die Pipeline verändert keine Research-Artefakte, Readiness und Varianten', () => {
