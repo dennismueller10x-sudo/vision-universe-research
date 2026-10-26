@@ -1,0 +1,643 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_e8d29c2421ec7b96",
+  "content_id": "vu-post-20260930-ff50f15081",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "created_at": "2026-09-30T21:04:46.124Z",
+  "trigger": "AUTO",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "carousel",
+  "role": "Du bist Social Editor, Creative Director und Visual Designer von Vision Universe.",
+  "objective": "Recherchiere die aktuell relevantesten Boersen-, Aktien-, Unternehmens-, Makro-, Technologie- und Finanznachrichten und finde daraus selbststaendig die beste Story fuer einen Vision-Universe-Post. Das Recherchepaket unten ist Startmaterial: pruefe die Storys an der Originalquelle, suche ergaenzend selbst und nimm eine bessere Story, wenn du eine findest. Kannst du in diesem Lauf keine Webseiten oeffnen, arbeite ausschliesslich mit dem Paket (Originalartikel-Auszuege sind enthalten) und melde das ehrlich in research.web_access. Verstehe zuerst, was fuer Anleger daran wirklich interessant ist. Entwickle daraus eine starke deutsche Social Story. Erwaege mehrere unterschiedliche Hook-Richtungen und waehle die staerkste. Schreibe eine hochwertige deutsche Caption und bis zu 5 Hashtags. Plane ein zusammenhaengendes Carousel (Standard: 3 Slides) in der Designsprache der Referenzbilder. Erzeuge in diesem Auftrag das Cover (Slide 1) als vollendetes, finales 4:5-Creative und beschreibe Slide 2 und 3 so vollstaendig, dass sie ohne neue Redaktion umgesetzt werden koennen. Ziel: ein Vision-Universe-Post, den ein deutscher Anleger im Feed anhaelt und den der Owner freiwillig posten wuerde.",
+  "audience": "Deutschsprachige Anleger, die aktuelle Markt-, Unternehmens- und Technologieentwicklungen verfolgen",
+  "research": {
+    "mode": "WORK_WEB_RESEARCH",
+    "instruction": "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche Unternehmensentwicklungen.",
+    "honesty": "Gib in `research.web_access` ehrlich an, ob du in diesem Lauf wirklich Webseiten geoeffnet hast, und je Quelle `opened_by_agent`. Keine Behauptung von Recherche, die nicht stattgefunden hat.",
+    "no_material_rule": null,
+    "do_not_repeat": "Die URLs in `package.already_covered_urls` wurden bereits behandelt - keine davon erneut als Hauptstory.",
+    "owner_topic": null,
+    "package": {
+      "generated_at": "2026-09-30T21:04:46.124Z",
+      "note": "Startmaterial, keine Vorauswahl. Die Reihenfolge sortiert nur nach Frische und Belegdichte - welche Story erzaehlt wird, entscheidet der Creative Agent.",
+      "feeds_checked": [
+        {
+          "source": "MarketWatch Top Stories",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "CNBC Top News",
+          "ok": true,
+          "items": 30
+        },
+        {
+          "source": "Yahoo Finance",
+          "ok": true,
+          "items": 49
+        },
+        {
+          "source": "Investing.com News",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "Seeking Alpha Market Currents",
+          "ok": true,
+          "items": 7
+        },
+        {
+          "source": "Nasdaq Markets",
+          "ok": false,
+          "items": 0
+        },
+        {
+          "source": "tagesschau Wirtschaft",
+          "ok": true,
+          "items": 42
+        },
+        {
+          "source": "Handelsblatt Finanzen",
+          "ok": true,
+          "items": 20
+        }
+      ],
+      "stories": [
+        {
+          "id": "s1",
+          "title": "Aktien: Zahlen sich die KI‑Investitionen aus? Rechnungen von Analysten weisen eine Billionen-Differenz auf",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/anlagestrategie/trends/aktien-billionen-luecke-basiert-die-ki-rally-auf-unstimmigen-schaetzungen/100258542.html",
+          "published_at": "2026-09-30T13:38:03.000Z",
+          "age_hours": 7.4,
+          "description": "Der Aktienmarkt befindet sich auf Rekordniveau, weil die Gewinnschätzungen steigen. Doch die Prognosen sind inkonsistent, zeigt die Berechnung eines Ökonomen.",
+          "extracted_numbers": [],
+          "article_excerpt": "Düsseldorf. Basiert die aktuelle Börsenrally auf inkonsistenten Rechnungen von Analysten? Auf diese Möglichkeit weist Torsten Slok hin, Ökonom des Vermögensverwalters Apollo Global Management.\n\nHintergrund sind die Gewinnschätzungen von US-Konzernen aus dem Technologiesektor. Analysten gehen davon aus, dass die Gewinne künftig kräftig steigen werden . Das besänftigt kritische Stimmen, die die hohen Investitionen in Künstliche Intelligenz (KI) kritisieren und auf die Gefahr hinweisen, dass sich die Ausgaben nicht rentieren könnten.\n\nIn einem aktuellen Beitrag erklärt Slok nun, dass die Prognosen der Analysten nicht konsistent sind. Auch die Experten der Unternehmensberatung Bain & Company warnen vor überzogenen Erwartungen.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Der Aktienmarkt befindet sich auf Rekordniveau, weil die Gewinnschätzungen steigen. Doch die Prognosen sind inkonsistent, zeigt die Berechnung eines Ökonomen.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 808,
+            "note": null
+          }
+        },
+        {
+          "id": "s2",
+          "title": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt uneinheitlich, trotz starker Tech-Werte",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-schliesst-uneinheitlich-trotz-starker-tech-werte/100258689.html",
+          "published_at": "2026-09-30T20:00:26.000Z",
+          "age_hours": 1.1,
+          "description": "Wichtige Konjunkturdaten verhelfen der US-Börse in Teilen zu einer Trendwende. Die Zinserwartungen bleiben dennoch konstant: Anleger rechnen mit einem weiteren Zinsschritt der Fed.",
+          "extracted_numbers": [
+            {
+              "value": "500",
+              "unit": null,
+              "sentence": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt uneinheitlich, trotz starker Tech-Werte."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Nachdem die großen Indizes an den US-Börsen diese Woche bisher nur Verluste wegstecken mussten, reagierten sie am Mittwoch zumindest gemischt auf einen wichtigen Konjunkturindikator.\n\nDie Termindichte war am Mittwoch hoch: Das US-Handelsministerium veröffentlichte den Preisindex für die persönlichen Konsumausgaben PCE. Der Bericht über offene Stellen in der Privatwirtschaft im September wurde ebenso veröffentlicht.\n\nDazu äußern sich im Laufe der Restwoche sechs Fed-Redner. Am Freitag folgen die Arbeitsmarktzahlen der US-Regierung, die auch die Stellenentwicklung im Staatssektor umfassen.\n\nDer PCE verharrte im August bei 3,4 Prozent, auf dem gleichen Stand wie auch schon in den beiden Vormonaten. Analysten waren noch davon ausgegangen, dass der Index, der das bevorzugte Inflationsmaß der US-Notenbank Federal Reserve darstellt, steigen würde.\n\nDer PCE misst, wie viel private Haushalte in den USA tatsächlich für Waren und Dienstleistungen ausgeben – und wie sich diese Preise verändern. Anders als der Verbraucherpreisindex (CPI), der als offizielle US-Inflationsrate gilt, berücksichtigt der PCE auch Ausgaben, die nicht direkt von den Haushalten bezahlt werden, etwa Krankenversicherungsleistungen des Arbeitgebers.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Wichtige Konjunkturdaten verhelfen der US-Börse in Teilen zu einer Trendwende. Die Zinserwartungen bleiben dennoch konstant: Anleger rechnen mit einem weiteren Zinsschritt der Fed.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1316,
+            "note": null
+          }
+        },
+        {
+          "id": "s3",
+          "title": "I’m 71 and still working. I earn $108,000 a year. Am I doing the right thing?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/im-71-and-still-working-i-earn-108-000-a-year-am-i-doing-the-right-thing-aaedcaa4?mod=mw_rss_topstories",
+          "published_at": "2026-09-30T20:45:00.000Z",
+          "age_hours": 0.3,
+          "description": "“I have $152,000 in my IRA and Roth accounts.”",
+          "extracted_numbers": [
+            {
+              "value": "71",
+              "unit": null,
+              "sentence": "I’m 71 and still working."
+            },
+            {
+              "value": "108,000",
+              "unit": null,
+              "sentence": "I earn $108,000 a year."
+            },
+            {
+              "value": "152,000",
+              "unit": null,
+              "sentence": "“I have $152,000 in my IRA and Roth accounts.”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s4",
+          "title": "My friend’s pet-sitting business grosses $300,000 a year, but she pays herself $50,000. Should I start one too?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/my-friend-grosses-300-000-a-year-with-her-pet-sitting-business-she-pays-herself-50-000-should-i-do-the-same-8ab5cba3?mod=mw_rss_topstories",
+          "published_at": "2026-09-30T19:00:00.000Z",
+          "age_hours": 2.1,
+          "description": "“She currently has about 15 sitters, all independent contractors.”",
+          "extracted_numbers": [
+            {
+              "value": "300,000",
+              "unit": null,
+              "sentence": "My friend’s pet-sitting business grosses $300,000 a year, but she pays herself $50,000."
+            },
+            {
+              "value": "50,000",
+              "unit": null,
+              "sentence": "My friend’s pet-sitting business grosses $300,000 a year, but she pays herself $50,000."
+            },
+            {
+              "value": "15",
+              "unit": null,
+              "sentence": "“She currently has about 15 sitters, all independent contractors.”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s5",
+          "title": "Micron beats on earnings and issues strong guidance as data center revenue jumps 11-fold",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/09/30/micron-mu-q4-earnings-report-2026.html",
+          "published_at": "2026-09-30T20:59:05.000Z",
+          "age_hours": 0.1,
+          "description": "Micron is up over 500% in the past year as the company benefits from soaring AI demand.",
+          "extracted_numbers": [
+            {
+              "value": "11",
+              "unit": null,
+              "sentence": "Micron beats on earnings and issues strong guidance as data center revenue jumps 11-fold."
+            },
+            {
+              "value": "500",
+              "unit": "%",
+              "sentence": "Micron is up over 500% in the past year as the company benefits from soaring AI demand."
+            }
+          ],
+          "article_excerpt": "Micron reported better-than-expected quarterly results on Wednesday as the memory maker continues to benefit from soaring demand for AI infrastructure. The stock rose slightly in extended trading.\n\nHere's how the company did relative to LSEG consensus:\n\nRevenue almost quadrupled in the fiscal fourth quarter from $11.32 billion a year earlier, according to a statement .\n\nFor the fiscal first quarter, Micron said it expects revenue of about $61.5 billion and adjusted earnings per share of $38.15. Analysts polled by LSEG had expected $35.40 in adjusted earnings per share on $57 billion in revenue.\n\nMicron's stock has soared more than 500% in the past year, benefiting from a worldwide supply crunch caused by historic levels of demand for memory chips needed for artificial intelligence models and workloads. The shortage has led to a spike in memory costs and resulted in increased prices for consumer electronics like Apple 's iPads and MacBooks.\n\nHendi Susanto, portfolio at Gabelli Funds, said in an email after the release that it was \"another strong beat and raise for Micron.\"\n\n\"At this point, I have not heard any negative data points pointing to the memory cycle reversing toward a decline anytime soon for the foreseeable future,\" Susanto wrote.\n\nMicron is the only U.S.-based maker of high-bandwidth memory, HBM, made up of stacks of general-purpose dynamic random-access memory, or DRAM. Fourth-quarter DRAM revenue increased 343% from a year ago to $39.8 billion, representing 73% of total sales.\n\nCEO Sanjay Mehrotra said on the earnings call that the company has a \"strong roadmap for future HBM products\" and is working with Nvidia on the industry's \"first custom HBM implementation.\"\n\nNet income in the latest quarter climbed to $37.7 billion, or $32.87 per share, from $3.2 billion, or $2.83 per share a year ago.\n\nAdvanced graphics and central processors from chip giants like Nvidia and AMD need increasing amounts of HBM to handle AI workloads, and the world's leading providers can't make enough.\n\nThat's why Micron is investing $250 billion to build two new campuses for making HBM. The largest broke ground in Clay, New York, in January, while its first new fab in Boise, Idaho, is scheduled to come online next year.\n\nHBM leaders SK Hynix and Samsung are also in the midst of massive new HBM factory buildouts in their home country of South Korea. Micron holds the smallest HBM market share of the three, but its market cap has still topped $1.2 trillion.\n\nMehrotra participated in a summit on AI regulation hosted by President Donald Trump on Tuesday, days after attending a White House dinner with Chinese President Xi Jinping on his first visit to the U.S. in more than a decade.\n\nOn the call, Mehrotra said Micron increased compensation for every employee in fiscal 2026. Hundreds of Micron staffers threatened to strike at its factories in Taiwan over labor negotiations and pay. Similar strikes at rivals SK Hynix and Samsung have result in bonuses upwards of $500,000 .\n\nWATCH: Micron's $50 billion buildout in its hometown of Boise is minting millionaires",
+          "article_meta_description": "Micron is up over 500% in the past year as the company benefits from soaring AI demand.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3093,
+            "note": null
+          }
+        },
+        {
+          "id": "s6",
+          "title": "Inflationsrate steigt im September auf 3,3 Prozent",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/inflation-september-energiepreise-100.html",
+          "published_at": "2026-09-30T12:52:15.000Z",
+          "age_hours": 8.2,
+          "description": "Die Inflation in Deutschland ist im September erstmals seit fast drei Jahren auf über drei Prozent angestiegen. Schuld daran sind vor allem massiv gestiegene Energiepreise. Lebensmittel verteuerten sich kaum.",
+          "extracted_numbers": [
+            {
+              "value": "3,3",
+              "unit": "Prozent",
+              "sentence": "Inflationsrate steigt im September auf 3,3 Prozent."
+            }
+          ],
+          "article_excerpt": "Die Inflation in Deutschland ist im September erstmals seit fast drei Jahren auf über drei Prozent angestiegen. Schuld daran sind vor allem massiv gestiegene Energiepreise. Lebensmittel verteuerten sich kaum.\n\nRekordhohe Spritpreise haben die Inflation in Deutschland im September auf den höchsten Stand seit Ende 2023 getrieben. Waren und Dienstleistungen verteuerten sich um 3,3 Prozent im Vergleich zum Vorjahresmonat, nach 2,9 Prozent im August, wie das Statistische Bundesamt zu seiner ersten Schätzung mitteilte.\n\nDie Ölpreise sind durch den Nahost-Krieg zeitweise über die Marke von 100 Dollar je Barrel gestiegen. Deshalb mussten dem ADAC zufolge im September mehrfach Rekordpreise für Diesel und Benzin bezahlt werden.\n\nDiesmal gilt die Preissenkung sogar drei Monate lang. Es gibt aber auch Kritik an der Maßnahme. mehr\n\n\"Kraftstoffe sind mit Abstand der größte Preistreiber\", sagte der Chefvolkswirt des Vermögensverwalters Bantleon, Daniel Hartmann. Im bevölkerungsreichsten Bundesland Nordrhein-Westfalen etwa mussten die Verbraucher für Diesel im September 48,7 Prozent mehr bezahlen als ein Jahr zuvor. Für Benzin lag der Aufschlag bei 33,8 Prozent. Heizöl verteuerte sich sogar um 49,9 Prozent.\n\nDie Bundesregierung will nun Autofahrer abermals entlasten. Vom 1. Oktober an bis zum Jahresende gilt erneut ein Tankrabatt, mit dem die Steuern auf Sprit um rund 17 Cent je Liter sinken. Das dürfte die Inflation bis Jahresende dämpfen, so wie beim vorherigen Tankrabatt, der im Mai und Juni galt. Allerdings stiegen die Spritpreise wieder, nachdem der erste Tankrabatt ausgelaufen war.\n\nNahrungsmittel verteuerten sich hingegen wesentlich weniger stark. Sie kosteten durchschnittlich 0,4 Prozent mehr (August: +0,1 Prozent). Für Dienstleistungen wie Versicherungen oder Reisen wurden 2,7 Prozent mehr verlangt (August: +2,8 Prozent).\n\nDie Preise ohne Nahrungsmittel und Energie, auch als Kerninflation bezeichnet, legten erneut um 2,4 Prozent zu. Von August auf September zogen die Verbraucherpreise insgesamt um 0,6 Prozent an.\n\nSchiffe können vielerorts nur noch mit stark reduzierter Frachtmenge verkehren. mehr\n\nJe länger die Energiepreise hoch sind, umso größer das Risiko, dass auch andere Preise steigen, weil zum Beispiel Transport und Kühlung von Lebensmitteln teurer werden. Und die Importpreise, die zeitverzögert die Verbraucherpreise beeinflussen, stiegen im August mit gut acht Prozent so stark wie seit Ende 2022 nicht mehr. Auch die Folgen von Hitze und Trockenheit, die die Ernte schmälern oder wie das Niedrigwasser im Rhein Lieferungen verteuern, treiben die Preise.\n\nDas ifo-Institut erwartet, dass Unternehmen die höheren Energiepreise zunehmend an Kunden weitergeben. \"Sprit und Heizöl haben sich bereits spürbar verteuert, im Winter dürften die Energieversorger die Preise für Strom und Gas anheben\", sagt ifo-Konjunkturchef Timo Wollmershäuser.\n\nDieses Thema im Programm: Das Erste | tagesschau | 30.09.2026 | 20:00 Uhr",
+          "article_meta_description": "Die Inflation in Deutschland ist im September erstmals seit fast drei Jahren auf über drei Prozent angestiegen. Schuld daran sind vor allem massiv gestiegene Energiepreise. Lebensmittel verteuerten sich kaum.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 2956,
+            "note": null
+          }
+        },
+        {
+          "id": "s7",
+          "title": "Anleihen: Rendite von 30-jährigen US-Bonds so hoch wie zuletzt 2002: „Spielraum für weitere Zinsanstiege“",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/anleihen/anleihen-rendite-von-30-jaehrigen-us-bonds-jetzt-so-hoch-wie-zuletzt-2002/100258428.html",
+          "published_at": "2026-09-30T07:15:13.000Z",
+          "age_hours": 13.8,
+          "description": "Das Renditeniveau verschiebt sich bei US-Staatsanleihen immer weiter nach oben. Auf dem aktuellen Stand muss aber noch nicht Schluss sein, sagen die Analysten einer US-Großbank.",
+          "extracted_numbers": [
+            {
+              "value": "30",
+              "unit": null,
+              "sentence": "Anleihen: Rendite von 30-jährigen US-Bonds so hoch wie zuletzt 2002: „Spielraum für weitere Zinsanstiege“."
+            },
+            {
+              "value": "2002",
+              "unit": null,
+              "sentence": "Anleihen: Rendite von 30-jährigen US-Bonds so hoch wie zuletzt 2002: „Spielraum für weitere Zinsanstiege“."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Das Renditeniveau am US-Anleihemarkt erreicht Dimensionen, die es seit fast einem Vierteljahrhundert nicht mehr gab. Bei amerikanischen Staatspapieren mit 30-jähriger Laufzeit lag die Rendite am Dienstag in der Spitze bei 5,62 Prozent. Das ist der höchste Stand seit 2002.\n\nDie Rendite von zehnjährigen US-Treasuries bewegt sich aktuell noch auf dem Niveau von 2007, nähert sich aber ebenfalls dem Stand von 2002. Sie ist der Referenzwert für Hypothekenkredite, Autokredite und teilweise auch Kreditkartenzinsen. Je höher die Renditen sind, desto teurer wird die Finanzierung für die US-Verbraucher .\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Das Renditeniveau verschiebt sich bei US-Staatsanleihen immer weiter nach oben. Auf dem aktuellen Stand muss aber noch nicht Schluss sein, sagen die Analysten einer US-Großbank.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 688,
+            "note": null
+          }
+        },
+        {
+          "id": "s8",
+          "title": "Geldanlage: Nvidia nutzt seine niedrige Bewertung für Rückkäufe – das sind die Folgen für Aktionäre",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/anlagestrategie/trends/aktien-nvidia-mit-rekord-rueckkauf-das-sind-die-folgen-fuer-aktionaere/100258206.html",
+          "published_at": "2026-09-30T10:37:21.000Z",
+          "age_hours": 10.5,
+          "description": "An Rückkaufprogrammen kommt immer wieder Kritik auf. Zu Recht? Der Vergleich mit Dividendenaktien und dem breiten Aktienmarkt kommt zu einem klaren Ergebnis.",
+          "extracted_numbers": [],
+          "article_excerpt": "Düsseldorf. Nvidia ist ein Konzern der Superlative. Das wertvollste börsennotierte Unternehmen der Welt hat auch das größte Aktienrückkaufprogramm der US-Wirtschaft gestartet .\n\nZusammen mit bereits laufenden Programmen darf Nvidia bis Januar 2028 insgesamt 235 Milliarden Dollar für den Rückkauf eigener Aktien ausgeben. Damit sind die Rückkäufe fast so hoch wie der Börsenwert von SAP, dem wertvollsten Konzern im deutschen Leitindex Dax.\n\nAber profitieren auch Nvidia-Aktionäre von den Plänen? Die Historie liefert im Vergleich der Kursentwicklung von Aktienrückkäufern zu Dividendenaktien und dem breiten Markt eine deutliche Antwort.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "An Rückkaufprogrammen kommt immer wieder Kritik auf. Zu Recht? Der Vergleich mit Dividendenaktien und dem breiten Aktienmarkt kommt zu einem klaren Ergebnis.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 714,
+            "note": null
+          }
+        },
+        {
+          "id": "s9",
+          "title": "Marktbericht: Zinsängste schrecken DAX-Anleger ab",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/finanzen/marktberichte/marktbericht-dax-dow-jones-ki-100.html",
+          "published_at": "2026-09-30T16:22:36.000Z",
+          "age_hours": 4.7,
+          "description": "Am deutschen Aktienmarkt überwog heute die Sorge vor steigenden Zinsen. Zuvor zeigten Inflationsdaten aus der Eurozone eine Teuerung deutlich über dem Ziel der EZB. Aber auch Einzelwerte standen im Fokus.",
+          "extracted_numbers": [],
+          "article_excerpt": "Am deutschen Aktienmarkt überwog heute die Sorge vor steigenden Zinsen. Zuvor zeigten Inflationsdaten aus der Eurozone eine Teuerung deutlich über dem Ziel der EZB. Aber auch Einzelwerte standen im Fokus.\n\nDie hohe Inflation in Deutschland und anderen wichtigen Euro-Ländern belastete heute die Kurse am deutschen Aktienmarkt. Nach einem volatilen Handelsverlauf schloss der deutsche Leitindex 0,8 Prozent tiefer mit 25.199 Punkten.\n\nDamit rutschte er klar unter die für den mittel- bis langfristigen Trend wichtige 100-Tage-Linie, die ihm die vergangenen Tage noch Halt gegeben hatte. Im als traditionell schwach geltenden Börsenmonat September verbuchte der DAX ein Minus von vier Prozent. Für das abgelaufene Quartal ergibt sich hingegen ein Kurszuwachs von 0,8 Prozent.\n\nUnter den Einzelwerten rückte heute Volkswagen in den Blick der Anleger: Am Nachmittag wurde bekannt, dass der Konzern zum Jahresende zahlreiche Tarifverträge kündigt. VW begründet das damit, dass sich das wirtschaftliche Umfeld für die Branche wie für VW in den vergangenen 18 Monaten gravierend verschärft habe, sagte Personalvorstand Arne Meiswinkel. \"Unser Ziel ist es, Volkswagen zukunftssicher aufzustellen.\"\n\nDer Gewerkschaft IG Metall zufolge soll sogar der Manteltarifvertrag betroffen sein. mehr\n\nAnleger sind allerdings skeptisch, ob das der richtige Weg ist - immerhin könnte das zu einem heftigen Streit mit der IG Metall führen. VW-Gesamtbetriebsratsvorsitzende Daniela Cavallo kritisierte denn auch bereits den Schritt und sagte, sie rechne \"mit einer heftigen Auseinandersetzung zum Jahreswechsel\".\n\nDie Commerzbank-Aktie war derweil mit einem Minus von zeitweise fast vier Prozent schwächster Wert im DAX. Händlern zufolge macht dem Geldhaus die Herabstufung der Aktie durch die Deutsche Bank zu schaffen.\n\nZudem geht der Übernahmekampf durch die italienische Großbank UniCredit in die nächste Runde. Offenbar will UniCredit-Chef Andrea Orcel Schlüsselpositionen im Aufsichtsrat neu besetzen - die Bundesregierung könnte als zweitgrößter Anteilseigner zwei Plätze verlieren.\n\nDie Commerzbank-Aktie steht heute unter Druck, sie gehört zu den schwächsten Werten im DAX. mehr\n\nUnd auch CTS Eventim rutschte heute in die roten Zahlen: Der vermeldete Abschied des Finanzchefs William Willms mit sofortiger Wirkung nach nur neun Monaten im Amt ließ die Titel des Eventvermarkters im Handelsverlauf zeitweise auf ein Tief seit Anfang Juli absacken.\n\nBis Handelsschluss konnten die Aktien ihren Verlust aber begrenzen. Als hilfreich erwies sich auch eine Pflichtmeldung an der Börse, wonach Unternehmenschef Klaus-Peter Schulenberg für rund zehn Millionen Euro CTS-Aktien zu einem Stückpreis von 51,93 Euro erworben hat.\n\nIm Fokus der Anleger standen heute zudem wichtige Konjunkturdaten: Auf die Teuerungsdaten aus Spanien am Vortag waren Daten aus Frankreich, Italien und Deutschland gefolgt. Allesamt liegen weit über dem Ziel der Europäischen Zentralbank (EZB), die auf mittlere Sicht eine Rate von zwei Prozent für den gesamten Währungsraum anstrebt. In Deutschland ist die Inflation mit plus 3,3 Prozent im September sogar auf den höchsten Wert seit Ende 2023 gestiegen.",
+          "article_meta_description": "Am deutschen Aktienmarkt überwog heute die Sorge vor steigenden Zinsen. Zuvor zeigten Inflationsdaten aus der Eurozone eine Teuerung deutlich über dem Ziel der EZB. Aber auch Einzelwerte standen im Fokus.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3160,
+            "note": null
+          }
+        },
+        {
+          "id": "s10",
+          "title": "Geldanlage: Bis zu 14 Prozent Jahresrendite: Welche Robo-Advisor am besten performen",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/anlagestrategie/fonds-etf/etfs-diese-robo-advisor-brachten-anlegern-2025-die-hoechsten-renditen/100224417.html",
+          "published_at": "2026-09-30T07:33:00.000Z",
+          "age_hours": 13.5,
+          "description": "Digitale Vermögensverwalter erzielten 2025 teils zweistellige Renditen, wie eine neue Auswertung zeigt. Die Lösungen eignen sich besonders für zwei Anlegertypen.",
+          "extracted_numbers": [
+            {
+              "value": "14",
+              "unit": "Prozent",
+              "sentence": "Geldanlage: Bis zu 14 Prozent Jahresrendite: Welche Robo-Advisor am besten performen."
+            },
+            {
+              "value": "2025",
+              "unit": null,
+              "sentence": "Digitale Vermögensverwalter erzielten 2025 teils zweistellige Renditen, wie eine neue Auswertung zeigt."
+            }
+          ],
+          "article_excerpt": "Frankfurt. Digitale Vermögensverwalter haben im vergangenen Jahr mit ihren Produkten den breiten Aktienmarkt teils deutlich geschlagen. So kamen sogenannte Robo-Advisor mit offensiven Strategien, die vollständig in Aktien investieren dürfen und keinen Nachhaltigkeitsschwerpunkt setzen, 2025 vor Gebühren auf eine durchschnittliche Rendite von 10,2 Prozent.\n\nDas zeigt eine jährliche Auswertung des Beraterhauses Fondsconsult. Zum Vergleich: Der globale Aktienindex MSCI All Country World (ACWI) erzielte 2025 – ebenfalls in Euro gerechnet – eine Rendite von 7,9 Prozent.\n\nIn einem insgesamt guten Aktienjahr haben viele Robo-Advisor 2025 unter anderem vom Goldanteil in ihren Portfolios profitiert. Das Handelsblatt zeigt, welche Angebote sich laut Fondsconsult in den vergangenen Jahren besonders gut entwickelt haben – und von welchem Markttrend Anlegerinnen und Anleger profitieren.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Robo-Advisor erzielten 2025 teils zweistellige Renditen, wie eine neue Auswertung zeigt. Die Lösungen eignen sich besonders für zwei Anlegertypen.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 962,
+            "note": null
+          }
+        }
+      ],
+      "already_covered_urls": [
+        "https://seekingalpha.com/news/4646208-us10y-tops-5_1-percent-marking-its-highest-level-since-2007?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+        "https://www.marketwatch.com/story/my-husband-and-i-are-in-our-50s-and-have-no-kids-we-have-2-million-do-we-need-a-will-62fb422f?mod=mw_rss_topstories",
+        "https://www.marketwatch.com/story/from-6-eggs-to-50-000-cars-these-charts-show-how-inflation-has-defined-the-past-5-years-3c7b9ab9?mod=mw_rss_topstories",
+        "https://www.cnbc.com/2026/09/25/treasury-yield-buy-bonds.html"
+      ]
+    }
+  },
+  "social_learnings": {
+    "status": "AVAILABLE",
+    "items": [
+      {
+        "id": "format:VIDEO",
+        "n": 10,
+        "statement": "Reels/Videos (n=10 gemessene Posts): Median-Reichweite 25.5, Likes 5, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:CAROUSEL_ALBUM",
+        "n": 12,
+        "statement": "Carousels (n=12 gemessene Posts): Median-Reichweite 9, Likes 4, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:IMAGE",
+        "n": 3,
+        "statement": "Einzelbilder (n=3 gemessene Posts): Median-Reichweite 10, Likes 3, Saves 0, Shares 0."
+      },
+      {
+        "id": "saves-shares",
+        "n": 25,
+        "statement": "Ueber alle 25 gemessenen Posts zusammen: 0 Saves und 0 Shares - weniger als eine solche Interaktion pro Post; Inhalte, die man speichern oder weiterschicken will, sind bisher die groesste Luecke."
+      },
+      {
+        "id": "not-yet-measured",
+        "n": 0,
+        "statement": "Thema, Hook-Art und Carousel-Struktur der frueheren Posts sind noch nicht erfasst - dazu gibt es noch keine belastbaren Learnings."
+      }
+    ],
+    "note": "Feedback aus der Performance frueherer Vision-Universe-Posts, keine Vorgabe. Weiche ab, wenn die aktuelle Story eine bessere redaktionelle Loesung verlangt."
+  },
+  "editorial_process": [
+    "1. Story recherchieren und verstehen: Was ist tatsaechlich passiert? Was ist neu?",
+    "2. Relevanz bestimmen: Warum interessiert das einen Anleger? Was ist ueberraschend?",
+    "3. Social Angle entwickeln: Welche Konsequenz oder Spannung traegt den Post?",
+    "4. Mehrere Hook-Ideen intern erwaegen.",
+    "5. Die staerkste deutsche Hook auswaehlen.",
+    "6. Caption schreiben.",
+    "7. Carousel-Dramaturgie entwickeln.",
+    "8. Erst danach Bilder erzeugen."
+  ],
+  "hook_strategy": {
+    "strategy_id": "vu-carousel-editorial-v1",
+    "hook_type": "carousel_cover_hook_de",
+    "instruction": "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+    "negative_fixtures": [
+      "BÖRSENGANG MIT EXISTENZWARNUNG",
+      "50.000 DOLLAR FÜR EIN AUTO?",
+      "493,78 USD SCHLUSSKURS – MSFT",
+      "420 VON 5954 GEPRÜFTEN TITELN",
+      "10-year U.S. Treasury yield tops ..."
+    ],
+    "negative_fixture_note": "Diese Hooks gelten ausdruecklich NICHT als gelungene Social Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+  },
+  "editorial_gate": {
+    "rule": "Bevor du ein Bild erzeugst: waere Hook + Caption auch OHNE Bild bereits ein guter Vision-Universe-Post? Wenn nein, KEIN Bild erzeugen - Story, Angle, Hook und Caption zuerst verbessern. Ein schoenes Bild kaschiert keine schwache Redaktion.",
+    "required": [
+      "story_quality",
+      "hook_standalone_quality",
+      "caption_standalone_quality",
+      "fact_grounding"
+    ]
+  },
+  "caption_guidance": "Eine deutsche Caption fuer den ganzen Beitrag: verstaendlich, informativ, social-tauglich, kompakt, redaktionell hochwertig. Erklaert, was passiert ist, warum es interessant ist, welche belegten Fakten zaehlen und was das fuer Anleger bedeutet. Sie muss auch allein zum Cover funktionieren - keine Wisch-Aufforderung. Keine internen Scores, keine Quant-, Screener- oder Systemsprache, keine erfundenen Fakten, keine Anlageberatung vortaeuschen. Endet mit dem Hinweis, dass es keine Anlageberatung ist.",
+  "hashtag_guidance": "Bis zu 5 relevante Hashtags, dynamisch aus der Story, ohne #-Zeichen im Array. Keine Standardliste, keine internen Systembegriffe.",
+  "art_direction": {
+    "principle": "Kein starres Template. Nicht: jeder Vision-Universe-Post sieht gleich aus. Sondern: jeder Post sieht aus, als kaeme er von derselben hochwertigen Marke. Du entwickelst je Story eigene Layouts, Perspektiven, Bildideen und Kompositionen - auf der Qualitaetsstufe und in der Designsprache der Referenzbilder.",
+    "design_language": "PREMIUM FINANCE EDITORIAL x HIGH-END TECHNOLOGY x MODERN CAMPAIGN DESIGN",
+    "characteristics": [
+      "tiefschwarze bzw. sehr dunkle, hochwertige Grundflaeche",
+      "starke Kontraste",
+      "grosse, selbstbewusste Typografie",
+      "klare Informationshierarchie",
+      "wenige dominante Elemente, kontrollierter Negativraum",
+      "hochwertige Produkt-, Technologie- oder Finanzvisualisierung",
+      "Weiss als primaere Schriftfarbe",
+      "wenige gezielte Akzentfarben - bevorzugt Vision-Universe-Blau; Rot nur, wenn es inhaltlich traegt (z. B. Risiko)",
+      "hochwertige Licht- und Materialwirkung",
+      "klare mobile Lesbarkeit, keine visuelle Ueberladung"
+    ],
+    "not_wanted": [
+      "billige Flat-Vector-Grafiken",
+      "Comic-Poster",
+      "Canva-Look",
+      "klassische Infografik",
+      "Finfluencer-Thumbnail",
+      "ueberladene Collagen",
+      "zehn kleine Zahlen gleichzeitig",
+      "zahlreiche Pfeile, Kaesten und Icons",
+      "generische Stockbilder",
+      "zufaellige KI-Landschaften",
+      "surrealistische Metaphern nur um kreativ zu wirken",
+      "aufgerissene Buecher, Abgruende und aehnliche KI-Klischees, wenn die Story sie nicht traegt",
+      "generische Serverraeume fuer jedes KI-Thema",
+      "Text einfach auf ein beliebiges Bild gelegt"
+    ],
+    "one_idea_per_slide": "ONE SLIDE = ONE IDEA = ONE VISUAL HIERARCHY. Jede Slide hat genau eine dominante Aussage (etwa eine grosse Zahl oder ein kurzer Satz) - nicht sechs Zahlen, drei Headlines, vier Icons, Diagramm und Karte auf derselben Seite.",
+    "typography": "Typografie ist Gestaltungselement. Die Hook darf gross und selbstbewusst sein. Keine Bandwurmsaetze, keine winzige Textwueste, keine schlechte Worttrennung, keine Woerter ueber Bildkanten oder Falze zerlegt, keine drei konkurrierenden Headlines. Auf dem Smartphone muss innerhalb einer Sekunde klar sein: WAS IST DIE AUSSAGE?",
+    "brand_system": "Vision-Universe-Logo auf ALLEN Slides, bevorzugt oben links, innerhalb eines Carousels in identischer Position, Groesse und Sicherheitsabstand. Atlas NUR auf Slide 1 - als Host und Markenfigur hochwertig in die Komposition integriert, nicht wie ein Sticker auf ein fertiges Bild gesetzt.",
+    "carousel_coherence": "Die Slides duerfen unterschiedliche Layouts haben (z. B. Slide 1 Atlas + grosses Motiv + Hook, Slide 2 dominante Zahl + Produkt-/Technologievisual, Slide 3 Split Chance/Risiko) - erwuenscht. Gemeinsam teilen sie Logo-System, Typografie-Familie, Farbwelt, Material- und Lichtqualitaet, Designniveau und visuelle Sprache. Pruefe: lege ich die Slides nebeneinander, erkenne ich sofort EINEN Vision-Universe-Post?",
+    "story_decides_motif": "Die Referenzen definieren die Designsprache, nicht das Motiv. Das Motiv entsteht aus der Story (Halbleiter: Wafer, Lithografie, Chip-Strukturen; Rohstoffe: Material, industrielle Anwendung; Unternehmen: Produkt, Technologie, Infrastruktur, Geschaeftsmodell; Makro: hochwertige, nachvollziehbare finanzielle Visualisierung). Keine mechanische Zuordnung: erst die Story verstehen, dann das Visual Concept entwickeln.",
+    "creative_director": "Das ist ein Rahmen, keine Schablone. Du bleibst Creative Director und entscheidest Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie, den Einsatz von Zahlen und die Layouts von Slide 2 und 3 - innerhalb der Qualitaetswelt der Referenzen.",
+    "success": "Nicht: drei Bilder wurden technisch erzeugt. Sondern: das sieht aus wie ein professionelles Vision-Universe-Carousel, das der Owner freiwillig posten wuerde."
+  },
+  "style_references": {
+    "files": [
+      {
+        "path": "social/brand/style-references/vu-style-ref-01.png",
+        "sha256": "899023720e2ec0446e2cf401dee72ae8aa9c91ae36a94626efe08ce80e9b4890",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover: Atlas als Host, dominante Hook, Motiv aus der Story"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-02.png",
+        "sha256": "71210b60cc575e9c8e53f45704c6bda7d08fd5d1060f2712a83b756d792653ad",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover-Variante ohne Atlas: eine grosse Aussage ueber einem Story-Motiv"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-03.png",
+        "sha256": "500ffc334a1cfd5baf3fd5d60b59fa6eb49f7bf48d011dd113ecbe74fa1c7679",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Key Insight: eine dominante Zahl, ruhiges Technologie-Motiv, knappe Einordnung"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-04.png",
+        "sha256": "b7b8235ce3b847ec005a1d74713b435c901a48036281f1c62fb79cb78bdc1d53",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Einordnung: Chance/Risiko als Split-Layout, klare Leitfrage"
+      }
+    ],
+    "instruction": "Oeffne und betrachte diese Bilddateien selbst, BEVOR du gestaltest - sie liegen unveraendert im selben Checkout wie dieser Brief. Sie sind die visuelle Qualitaetsreferenz (Art Direction, Typografie, Hierarchie, Komposition, Markenwirkung, Informationsdichte, Atlas- und Logo-Integration). Nicht pixelgenau kopieren - diese Qualitaetswelt treffen.",
+    "not_facts": "Inhalte, Unternehmen, Aktien, Zahlen und Aussagen dieser Bilder sind KEINE Faktenquelle und KEIN Themenvorschlag. Die Story kommt ausschliesslich aus der Recherche.",
+    "check_required": "Gib in `style_references_check` je Referenzdatei { path, dominant_text } an: alle gut lesbaren Textzeilen des Bildes wortwoertlich (Headline und Zeilen darunter). Kannst du eine Datei nicht oeffnen, schreibe dominant_text: null - nichts erfinden.",
+    "delivered_in_checkout": true,
+    "delivery_measurement": "4 Referenzbilder liegen unveraendert im Checkout des Briefs."
+  },
+  "carousel": {
+    "slide_count": "Standard: 3 Slides. Einen vierten nur, wenn die Story ihn wirklich braucht - keine Fuellfolie.",
+    "plan_first": "Plane ZUERST das ganze Carousel als eine Geschichte (`carousel_plan`), dann erst das Bild. Die Slides sind eine Serie, keine unabhaengigen Einzelbilder.",
+    "slides": [
+      {
+        "slide_index": 1,
+        "role": "HOOK / COVER",
+        "task": "Scroll Stop.",
+        "contains": "staerkste deutsche Hook, starkes Hauptmotiv aus der Story, Vision-Universe-Logo, Atlas - moeglichst wenig weiterer Text."
+      },
+      {
+        "slide_index": 2,
+        "role": "KEY INSIGHT",
+        "task": "Die staerkste Information der Story vermitteln: dominante Zahl, Vergleich, ueberraschender Fakt, Entwicklung oder zentrale Erkenntnis.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      },
+      {
+        "slide_index": 3,
+        "role": "EINORDNUNG",
+        "task": "Warum ist das fuer Anleger relevant? Chance/Risiko, Konsequenz, was jetzt wichtig wird, Vergleich, Ausblick oder die entscheidende Frage.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      }
+    ],
+    "atlas_contract": "Atlas erscheint AUSSCHLIESSLICH auf Slide 1 - als Host und Markenfigur, natuerlich integriert, nicht aufgeklebt. Nutze die echte Datei brand_assets.atlas; keine neu erfundene Roboterfigur, Gesicht und Mimik wie im Referenzbild.",
+    "logo_contract": "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, bevorzugt oben links, in identischer Position, Groesse und Safe Area. Kein approximiertes Logo, kein neu generierter Schriftzug.",
+    "text_on_image": "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche (Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
+  },
+  "delivery": {
+    "mode": "COVER_FIRST",
+    "deliver_now": "Slide 1 (Cover) als EIN finales Bild. Slide 2 und 3 NICHT zeichnen - keine Mini-Slides auf einer Leinwand, kein Bogen.",
+    "plan_all": "carousel_plan beschreibt ALLE Slides vollstaendig (headline_de, key_content, visual_concept), damit sie spaeter ohne neue Redaktion entstehen koennen.",
+    "why": "Der aktive Work-Vertrag erlaubt ein Asset je Auftrag (PR #300); ein Mehr-Paneel-Bogen haelt die exakten Masse nicht (PR #303). Qualitaet vor Carousel-Mechanik: zuerst EIN perfektes Cover."
+  },
+  "visual_strategy": {
+    "strategy_id": "VU_EDITORIAL_PREMIUM",
+    "instruction": "Premium Finance Editorial x High-End Technology x Modern Campaign Design, in der Qualitaetswelt der Referenzbilder (style_references, art_direction). Eine dominante Aussage je Slide, Motiv aus der Story.",
+    "creative_freedom": "Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie und Layout entscheidest du aus der Story heraus.",
+    "restrictions": [
+      "Kein Template, keine pixelgenaue Kopie der Referenzen",
+      "Atlas nur auf Slide 1, Logo auf allen Slides an derselben Stelle",
+      "Keine Worttrennung ueber Kanten, Falze oder Motive",
+      "Keine erfundenen Zahlen im Bild",
+      "Nichts aus der Liste art_direction.not_wanted"
+    ]
+  },
+  "quality_references": {
+    "positive": [],
+    "positive_note": "Die Owner-Referenzbilder stehen unter style_references - sie sind der Massstab. Nicht kopieren, nicht als Template.",
+    "negative": [
+      {
+        "content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+        "hook": "50.000 DOLLAR FÜR EIN AUTO?",
+        "why": [
+          "isolierte Zahl statt Story",
+          "generisches Auto auf Preisschild",
+          "billige Flat-/Vektor-Anmutung",
+          "Atlas wirkt aufgeklebt",
+          "Logo fast unsichtbar"
+        ]
+      },
+      {
+        "content_id": "vu-web-15e2974b16c8dc4c-20260929",
+        "hook": "BÖRSENGANG MIT EXISTENZWARNUNG",
+        "why": [
+          "Hook ist eine Verdichtung der englischen Headline, keine redaktionelle Aussage",
+          "Worttrennung ueber den Buchfalz (BÖRSE|NGANG, EXISTENZ|WARNUNG)",
+          "Risiko-Story -> Abgrund ist eine naheliegende, keine eigene Metapher"
+        ]
+      }
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als echte Bildreferenz verwenden und nur skaliert, zugeschnitten oder neu positioniert einsetzen - keine Neuzeichnung, keine Farb- oder Stiltransformation. Atlas' Gesicht, Mimik und Proportionen exakt wie im Referenzbild; Pose und Blickwinkel sind frei."
+  },
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-post-20260930-ff50f15081/assets/visual-01.png",
+    "format_note": "Hochformat 4:5 (Ziel 1080x1350). Das Bildwerkzeug liefert eigene Pixelmasse - waehle das Hochformat, skaliere oder beschneide nicht nachtraeglich, und halte Hook, Logo und Atlas mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt nichts Wichtiges verliert. Melde die tatsaechlichen Masse ehrlich.",
+    "announced_fields_required": [
+      "slide_index",
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256",
+      "brand_elements"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen. brand_elements: { includes_logo, includes_atlas, includes_hook_text_de } als Booleans."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "internal_hook_exploration": true,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "sources_required": true,
+    "editorial_gate_required": true,
+    "style_references_check_required": true,
+    "publishing_allowed": false
+  },
+  "output_contract": {
+    "path": "authoring/requests/vu-post-20260930-ff50f15081/authoring-result.json",
+    "fields": {
+      "schema_version": "1.0",
+      "brief_id": "wie in diesem Brief",
+      "content_id": "wie in diesem Brief",
+      "request_type": "FULL_CREATIVE",
+      "creative_format": "CAROUSEL",
+      "delivery_mode": "COVER_FIRST",
+      "research": "{ web_access: bool, mode_used, stories_considered: [{ title, url, decision, reason }] }",
+      "story": "{ title_de, what_happened, why_interesting }",
+      "sources": "[{ source, url, published_at, facts_used: [..], opened_by_agent: bool }] - mindestens eine",
+      "hook_exploration": "[{ direction, text, rejected_because }] - die intern verworfenen Richtungen",
+      "hook_variants": "[GENAU EINE: { hook_variant_id, hook_type: 'carousel_cover_hook_de', text, language: 'de', brief_revision, evidence_refs }]",
+      "recommended_hook": "{ recommended_hook_variant_id, recommendation_reason, is_canonical_selection: false }",
+      "caption": "deutsche Caption fuer den ganzen Beitrag",
+      "hashtags": "[bis zu 5 Strings ohne #]",
+      "carousel_plan": "[je Slide: { slide_index, role, headline_de, key_content, visual_concept, atlas: bool }] - alle Slides, auch die noch nicht gezeichneten",
+      "slide_count": "Zahl der geplanten Slides (Standard 3)",
+      "editorial_gate": "{ story_quality, hook_standalone_quality, caption_standalone_quality, fact_grounding } - je 'PASS'",
+      "visual_variants": "[GENAU EINE: { visual_variant_id, visual_strategy, slide_index: 1, slide_role: 'cover', brief_revision, asset_path, mime_type, width, height, asset_byte_size, asset_sha256, brand_elements }]",
+      "carousel_checks": "{ atlas_only_on_slide_1, logo_on_all_slides, logo_position_consistent } - je true (bei COVER_FIRST: so geplant)",
+      "style_references_check": "[je Referenzdatei: { path, dominant_text }]",
+      "processing": "{ status: 'completed', ... }",
+      "publishing_allowed": false
+    }
+  },
+  "constraints": [
+    "Keine erfundenen Zahlen, Fakten oder Quellen. Jede Zahl im Text stammt aus einer genannten Quelle.",
+    "Keine Fakten aus den Referenzbildern.",
+    "Keine Prognose, keine Kauf- oder Verkaufsempfehlung.",
+    "Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen.",
+    "Kein `selected_hook` - nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Die Bilder sind FINALE Social Creatives, keine Rohbilder.",
+    "Keine Veroeffentlichung."
+  ],
+  "must_not_claim": [
+    {
+      "id": "forecast",
+      "text": "Keine Prognose ueber Kurse oder Geschaeftsentwicklung."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    }
+  ],
+  "publishing_allowed": false
+}
