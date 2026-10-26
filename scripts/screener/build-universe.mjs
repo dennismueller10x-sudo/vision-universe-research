@@ -10,6 +10,8 @@
 //   quant/data/product/factor-evidence-v1      Quant-V2-Faktorevidenz je Faktor (0-100)
 //   discover/config/company-recognition.json   redaktionelle Einzeiler (Was macht das Unternehmen)
 //   quant/data/technical-intelligence/v3       Chartbild-Index (Ausblick, Kursstruktur, Elliott-Klarheit)
+//   technical/data/screener-v1.json            Technical-Kennzahlen (ATR, ADX, Supertrend, Formationen ...), Erzeuger
+//                                              scripts/technical/world/build-screener.mjs - hier nur uebernommen, nie neu gerechnet
 //
 // Es werden KEINE Werte erfunden. Fehlt eine Eingabe, steht in der Spalte null.
 // Abgeleitete Kennzahlen (ROIC, EV/EBITDA, RSI ...) folgen den Formeln in
@@ -21,6 +23,9 @@ import { resolve, join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { MAJOR_GROUPS, DIVISIONS, SECTORS, SIC_SECTOR_VERSION, sectorFromSic } from './sic.mjs';
+import { createRequire } from 'node:module';
+/* Formationsnamen aus dem Technical-Katalog (eine Quelle), ins Artefakt-Woerterbuch uebernommen. */
+const FORMATION_LABELS = createRequire(import.meta.url)('../../quant/engines/technical/technical-query.js').FORMATION_TYPES;
 
 export const SCHEMA = 'vu-screener-universe-1.0.0';
 const UNIVERSE = 'US_REAL';
@@ -121,9 +126,10 @@ export const COLUMNS = [
   'distSma20', 'distSma50', 'distSma100', 'distSma200', 'sma50vs200', 'distEma21', 'dist52wH', 'dist52wL', 'newHigh',
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
-  'tiOut', 'tiStr', 'tiEw'
+  'tiOut', 'tiStr', 'tiEw',
+  'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC'
 ];
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC']);
 
 // CHARTBILD (Technical Intelligence)
 // Nur Zustaende aus dem veroeffentlichten Index, keine eigene Berechnung. Ein
@@ -152,6 +158,31 @@ export function technicalIntelligenceColumns(index, opts = {}) {
   }
   return { byTicker, meta: rows.length ? { schemaVersion: index.schemaVersion || null, generatedAt: index.generatedAt || null, asOf: latest || null, maxAgeDays: TI_MAX_AGE_DAYS, stale } : null };
 }
+
+/* Technical-Welt (technical/data/screener-v1.json): eine Definition je Kennzahl, gerechnet von den Technical-Engines
+   (indicators.js, formations.js). Der Screener uebernimmt die Werte je Kuerzel; Titel, deren Technical-Stand aelter als
+   TW_MAX_AGE_DAYS ist, bleiben leer (Missing != Zero). */
+export const TW_MAX_AGE_DAYS = 7;
+const TW_MAP = { twAtr: 'atrPct', twAdx: 'adx', twSt: 'supertrendUp', twPsar: 'psarUp', twCloud: 'aboveCloud', twAroon: 'aroonOsc', twWr: 'williamsR',
+  twCmf: 'cmf20', twStoch: 'stochK', twCci: 'cci20', twMfi: 'mfi14', twSqz: 'bbSqueeze', twSpike: 'volSpike', twObv: 'obvRising', twForm: 'formationActive', twFormC: 'formationConfirmed' };
+export function technicalWorldColumns(art, opts = {}) {
+  const byTicker = new Map();
+  const cols = art && art.cols, n = cols && Array.isArray(cols.s) ? cols.s.length : 0;
+  const ref = opts.now || (art && art.asOf) || '';
+  const cutoff = ref ? new Date(Date.parse(ref) - TW_MAX_AGE_DAYS * 864e5).toISOString().slice(0, 10) : '';
+  let stale = 0;
+  for (let i = 0; i < n; i++) {
+    if (!cols.asOf[i] || cols.asOf[i] < cutoff) { stale++; continue; }
+    const row = {};
+    for (const [k, src] of Object.entries(TW_MAP)) {
+      const v = cols[src] ? cols[src][i] : null;
+      row[k] = typeof v === 'boolean' ? (v ? 1 : 0) : Array.isArray(v) ? (v.length ? v.slice() : []) : (typeof v === 'number' && Number.isFinite(v) ? v : null);
+    }
+    byTicker.set(cols.s[i], row);
+  }
+  return { byTicker, meta: n ? { schemaVersion: art.schemaVersion || null, asOf: art.asOf || null, versions: art.versions || null, maxAgeDays: TW_MAX_AGE_DAYS, stale } : null };
+}
+const TW_EMPTY = Object.fromEntries(Object.keys(TW_MAP).map((k) => [k, null]));
 
 // VALUATION_POLICY
 // Marktkapitalisierung und alle Kennzahlen, die den Kurs mit einer SEC-Aktienzahl
@@ -209,6 +240,10 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
   let ti = { byTicker: new Map(), meta: null };
   try { ti = technicalIntelligenceColumns(JSON.parse(gunzipSync(await readFile(join(root, 'quant/data/technical-intelligence/v3/index.json.gz'))).toString('utf8')), { now: new Date().toISOString().slice(0, 10) }); }
   catch (err) { log('Chartbild-Index fehlt: ' + err.message); }
+  // Technical-Welt
+  let tw = { byTicker: new Map(), meta: null };
+  try { tw = technicalWorldColumns(await loadJson(join(root, 'technical/data/screener-v1.json')), { now: new Date().toISOString().slice(0, 10) }); }
+  catch (err) { log('Technical-Datensatz fehlt: ' + err.message); }
   // Redaktionelle Einzeiler
   let recognition = { companies: {}, businessDescriptions: {} };
   try { recognition = await loadJson(join(root, 'discover/config/company-recognition.json')); } catch { /* optional */ }
@@ -310,6 +345,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     if (!currencyOk) for (const c of CURRENCY_COLUMNS) row[c] = null;
     row.vq = vq;
     Object.assign(row, ti.byTicker.get(d.symbol) || { tiOut: null, tiStr: null, tiEw: null });
+    Object.assign(row, tw.byTicker.get(d.symbol) || TW_EMPTY);
     for (const c of COLUMNS) {
       const v = row[c];
       cols[c].push(TEXT.has(c) || c === 'idx' ? (v ?? null) : (typeof v === 'number' ? round(v) : null));
@@ -327,13 +363,15 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       fundamentals: 'SEC EDGAR companyfacts (fundamentals-1.2.0)',
       classification: 'SEC SIC-Code (sic-peer-taxonomy-1.0.0) + ' + SIC_SECTOR_VERSION,
       factors: factorMeta ? factorMeta.methodologyVersion : null,
-      technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (meist Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null
+      technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (meist Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null,
+      technicalWorld: tw.meta ? tw.meta.schemaVersion + ' (Technical-Produktwelt, Tageschart; Stand ' + tw.meta.asOf + ')' : null
     },
     technicalIntelligence: ti.meta,
+    technicalWorld: tw.meta,
     factorPublication: factorMeta ? { ...factorMeta.publication, asOf: factorMeta.asOf } : { compositeAllowed: false, rankingAllowed: false, reason: 'SOURCE_MISSING' },
     valuationPolicy: { minTurnover: MIN_TURNOVER, maxTurnover: MAX_TURNOVER, foreignMinTurnover: FOREIGN_MIN_TURNOVER, maxMarketCap: MAX_MARKET_CAP, withheld: SHARE_BASIS_COLUMNS },
     formulas: FORMULAS,
-    dict: { sectors: SECTORS, majorGroups: MAJOR_GROUPS, divisions: DIVISIONS },
+    dict: { sectors: SECTORS, majorGroups: MAJOR_GROUPS, divisions: DIVISIONS, formations: FORMATION_LABELS },
     coverage, columns: COLUMNS, cols
   };
 }

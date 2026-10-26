@@ -93,6 +93,15 @@
     indexP.catch(function () { indexP = null; });
     return indexP;
   }
+  var evidenceP = null, evidence = null;
+  /** Evidenz je Formationstyp; fehlt die Datei, bleibt die Anzeige still (keine erfundenen Werte). */
+  function loadEvidence() {
+    if (!evidenceP) evidenceP = fetchJSON(M.EVIDENCE_PATH).then(function (e) {
+      var by = {}; (e.types || []).forEach(function (t) { by[t.type] = t; });
+      evidence = { doc: e, byType: by }; return evidence;
+    }).catch(function () { evidenceP = null; return null; });
+    return evidenceP;
+  }
   function loadInstrument(ticker) {
     var paths = M.technicalPaths(ticker);
     return fetchGz(paths[0]).catch(function () { return fetchGz(paths[1]); }).then(function (doc2) {
@@ -251,6 +260,75 @@
       el("p", { class: "tc-note", text: "Übersetzt Fachbegriffe, Kennzahlen mit Vergleich (z. B. „RSI unter 40“) und Formationen in die validierte Abfrage. Nicht Erkanntes wird angezeigt, nicht geraten. Eine Übersetzung durch ein Sprachmodell ist vorbereitet, aber nicht aktiv." })
     ]);
   }
+  /* Filter-Baukasten: jede Kombination aus dem Feldkatalog, Gruppen ODER, Zeilen UND; Ausfuehren ueber #/screener?q=<kanonisch>. */
+  var OP_LABEL = { gt: "über", gte: "mindestens", lt: "unter", lte: "höchstens", between: "zwischen", is: "ist", in: "eines von" };
+  function builderCard(initial, open) {
+    var b = JSON.parse(JSON.stringify(initial)), host = el("div", { class: "tc-builder-body" }), msg = el("p", { class: "tc-note", role: "status" });
+    function fieldsFor(tf) { return Q.FIELDS.filter(function (f) { return f.tfs.indexOf(tf) >= 0; }); }
+    function fieldSelect(row, onchange) {
+      var groups = {}, order = [];
+      fieldsFor(b.tf).forEach(function (f) { if (!groups[f.group]) { groups[f.group] = []; order.push(f.group); } groups[f.group].push(f); });
+      return el("select", { class: "tc-select", "aria-label": "Feld", onchange: onchange }, order.map(function (g) {
+        return el("optgroup", { label: g }, groups[g].map(function (f) { return el("option", { value: f.id, text: Q.labelOf(f, b.tf), selected: f.id === row.field }); }));
+      }));
+    }
+    function valueInput(row, key, label) {
+      return el("input", { class: "tc-input tc-input-s tc-num-in", inputmode: "decimal", value: M.formatFieldInput(row.field, row[key]), "aria-label": label,
+        onchange: function (ev) { row[key] = M.parseFieldInput(row.field, ev.target.value); } });
+    }
+    function rowView(row, gi, ri) {
+      var f = Q.field(row.field), kids = [fieldSelect(row, function (ev) { b.groups[gi][ri] = M.defaultRow(ev.target.value); paint(); })];
+      if (f.kind === "bool") kids.push(el("select", { class: "tc-select", "aria-label": "Wert", onchange: function (ev) { row.value = ev.target.value === "1"; } },
+        [el("option", { value: "1", text: "ja", selected: row.value === true }), el("option", { value: "0", text: "nein", selected: row.value === false })]));
+      else if (f.kind === "enum") {
+        var sum = el("span", {});
+        var paintSum = function () { sum.textContent = row.value.length ? row.value.map(function (k) { return f.values[k]; }).join(", ") : "nichts gewählt"; };
+        paintSum();
+        kids.push(el("details", { class: "tc-enum-pick" }, [el("summary", {}, [el("b", { text: row.value.length + " von " + Object.keys(f.values).length + ": " }), sum]),
+          el("div", { class: "tc-enum", role: "group", "aria-label": Q.labelOf(f, b.tf) }, Object.keys(f.values).map(function (k) {
+            return el("label", { class: "tc-check" }, [el("input", { type: "checkbox", checked: row.value.indexOf(k) >= 0, onchange: function (ev) {
+              var i = row.value.indexOf(k); if (ev.target.checked && i < 0) row.value.push(k); if (!ev.target.checked && i >= 0) row.value.splice(i, 1);
+              ev.target.closest("details").querySelector("summary b").textContent = row.value.length + " von " + Object.keys(f.values).length + ": "; paintSum(); } }), f.values[k]]);
+          }))]));
+      }
+      else {
+        kids.push(el("select", { class: "tc-select", "aria-label": "Vergleich", onchange: function (ev) { row.op = ev.target.value; if (row.op === "between" && !isNum(row.value2)) row.value2 = row.value; paint(); } },
+          Q.opsFor(f.kind).map(function (o) { return el("option", { value: o, text: OP_LABEL[o], selected: row.op === o }); })));
+        kids.push(valueInput(row, "value", "Wert"));
+        if (row.op === "between") kids.push(el("span", { text: "und" }), valueInput(row, "value2", "Obergrenze"));
+        if (f.kind === "pct") kids.push(el("span", { class: "tc-unit", text: "%" }));
+      }
+      kids.push(el("button", { type: "button", class: "tc-icon-btn", "aria-label": "Bedingung entfernen", onclick: function () { b.groups[gi].splice(ri, 1); if (!b.groups[gi].length && b.groups.length > 1) b.groups.splice(gi, 1); paint(); } }, "×"));
+      return el("div", { class: "tc-brow" }, kids);
+    }
+    function paint() {
+      var tfSel = el("div", { class: "tc-seg", role: "radiogroup", "aria-label": "Zeitrahmen des Baukastens" }, Object.keys(Q.TIMEFRAMES).map(function (k) {
+        return el("button", { type: "button", role: "radio", "aria-checked": String(b.tf === k), class: "tc-seg-b" + (b.tf === k ? " is-on" : ""), text: Q.TIMEFRAMES[k], onclick: function () {
+          b.tf = k; var ok = fieldsFor(k).map(function (f) { return f.id; }), dropped = 0;
+          b.groups = b.groups.map(function (g) { return g.filter(function (r) { var keep = ok.indexOf(r.field) >= 0; if (!keep) dropped++; return keep; }); });
+          msg.textContent = dropped ? dropped + " Bedingung(en) gibt es nur im Tageschart und wurden entfernt." : ""; paint(); } });
+      }));
+      put(host, [el("div", { class: "tc-brow tc-brow-tf" }, [el("span", { text: "Zeitrahmen" }), tfSel])].concat(b.groups.map(function (g, gi) {
+        return el("fieldset", { class: "tc-bgroup" }, [el("legend", { text: gi ? "oder: alle Bedingungen dieser Gruppe" : "Alle Bedingungen dieser Gruppe" })]
+          .concat(g.map(function (r, ri) { return rowView(r, gi, ri); }))
+          .concat([el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "+ Bedingung", onclick: function () { g.push(M.defaultRow(fieldsFor(b.tf)[0].id)); paint(); } })]));
+      }), [el("div", { class: "tc-brow" }, [
+        el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "+ Oder-Gruppe", onclick: function () { b.groups.push([M.defaultRow(fieldsFor(b.tf)[0].id)]); paint(); } }),
+        el("button", { type: "button", class: "tc-btn", text: "Anwenden", onclick: apply })]), msg]));
+    }
+    function apply() {
+      var q = M.queryFromBuilder(b), v = Q.validate(q);
+      if (!q.groups.length) { msg.textContent = "Bitte mindestens eine Bedingung wählen."; return; }
+      if (!v.ok) { msg.textContent = "Nicht auswertbar: " + v.errors.map(function (e) { return ERROR_TEXT[e.code] ? ERROR_TEXT[e.code](e.path) : e.code; }).join(", ") + " – bitte Werte prüfen."; return; }
+      location.hash = "#/screener?q=" + encodeURIComponent(QT.toText(v.query));
+    }
+    paint();
+    return el("details", { class: "tc-filter tc-builder", open: open ? true : null }, [
+      el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: "Filter-Baukasten: beliebige Indikatoren kombinieren" }), glyph("chevron", "tc-chev tc-rot")]),
+      el("div", { class: "tc-filter-body" }, [el("p", { class: "tc-note", text: "Jede Kennzahl aus dem Katalog mit Vergleich oder Ja/Nein. Bedingungen einer Gruppe gelten gemeinsam, Gruppen alternativ. Wochen- und Monatswerte nur für Felder, die es dort gibt." }), host])
+    ]);
+  }
+
   var ERROR_TEXT = {
     FIELD_NOT_AVAILABLE_FOR_TIMEFRAME: function (t) { return "„" + t + "“ gibt es nur im Tageschart und wurde weggelassen."; },
     CONFIRMED_WITHOUT_FORMATION: function () { return "„bestätigt“ bezieht sich auf eine Formation – bitte eine nennen."; },
@@ -292,7 +370,7 @@
       var res = Q.evaluate(ds, built.query);
       if (res.error) { put(body, stateBox("Ungültige Abfrage", res.errors.map(function (e) { return e.code; }).join(", "))); return; }
       var tf = built.query.timeframe;
-      var controls = [textSearch(textQ, parsed)];
+      var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed) : null];
       if (parsed) {
         controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Erkannt als" }), el("p", { text: Q.describe(built.query) || "Keine auswertbare Bedingung" }),
           el("a", { class: "tc-link", href: "#/screener", text: "Filter per Klick setzen" })]));
@@ -390,19 +468,52 @@
     return f.kind === "pct" ? M.pct(v, 1) : M.num(v, field === "relVol" ? 2 : 1);
   }
 
+  /** Abfrage einer gespeicherten Filteradresse (Vorlage, Suche in Worten oder Schnellfilter) - dieselben Wege wie der Screener. */
+  function queryOfParams(params) {
+    var r = M.parseRoute("#/screener?" + params), p = r.params || {};
+    var preset = p.preset && Q.PRESETS.filter(function (x) { return x.id === p.preset; })[0];
+    if (preset) return preset.query;
+    if (p.q && QT) return QT.parse(p.q).query;
+    return M.queryFromState(M.stateFromParams(p)).query;
+  }
   function viewSaved(main, head, tabBar) {
-    var list = M.loadScreens(store());
-    var body = list.length ? el("div", { class: "tc-list" }, list.map(function (s) {
-      return el("div", { class: "tc-row" }, [el("span", { class: "tc-row-icon" }, glyph("save")),
-        el("a", { class: "tc-row-text", href: "#/screener?" + s.params }, [el("b", { text: s.name }), el("span", { text: "Gespeichert am " + M.dateDe(s.createdAt.slice(0, 10)) })]),
-        el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Löschen", onclick: function () { M.deleteScreen(store(), s.id); render(); } })]);
-    })) : stateBox("Noch keine Suchstrategie gespeichert", "Im Screener Filter wählen und „Suchstrategie speichern“ nutzen. Gespeichert wird nur in diesem Browser.");
-    put(main, [head, tabBar, body]);
+    var list = M.loadScreens(store()), status = el("p", { class: "tc-note", role: "status" });
+    var fileIn = el("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: function (ev) {
+      var f = ev.target.files && ev.target.files[0]; if (!f) return;
+      f.text().then(function (txt) { var r = M.importScreens(store(), txt); status.textContent = r.ok ? r.added + " übernommen, " + r.skipped + " übersprungen (doppelt, ungültig oder Liste voll)." : "Import nicht möglich (" + r.error + ")."; if (r.ok && r.added) render(); });
+    } });
+    var tools = el("div", { class: "tc-brow" }, [
+      el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Exportieren (JSON)", disabled: list.length ? null : true, onclick: function () {
+        var a = el("a", { href: URL.createObjectURL(new Blob([M.exportScreens(store())], { type: "application/json" })), download: "technical-suchstrategien.json" }); doc.body.append(a); a.click(); a.remove();
+      } }),
+      el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Importieren", onclick: function () { fileIn.click(); } }), fileIn]);
+    var rows = list.map(function (sv) {
+      var q = queryOfParams(sv.params), desc = Q.describe(q) || "–", count = el("b", { class: "num", text: "…" });
+      var nameIn = el("input", { class: "tc-input tc-input-s", value: sv.name, maxlength: "60", "aria-label": "Name ändern" });
+      var edit = el("form", { class: "tc-brow", hidden: true, onsubmit: function (ev) { ev.preventDefault(); M.updateScreen(store(), sv.id, { name: nameIn.value }); render(); } },
+        [nameIn, el("button", { class: "tc-btn", type: "submit", text: "Übernehmen" })]);
+      loadScreener().then(function (D) { var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); count.textContent = r.error ? "–" : r.count.toLocaleString("de-DE"); }).catch(function () { count.textContent = "–"; });
+      return el("div", { class: "tc-saved" }, [
+        el("div", { class: "tc-row" }, [el("span", { class: "tc-row-icon" }, glyph("save")),
+          el("a", { class: "tc-row-text", href: "#/screener?" + sv.params }, [el("b", { text: sv.name }), el("span", { text: desc })]),
+          el("span", { class: "tc-hit-score" }, [el("span", { text: "Treffer heute" }), count])]),
+        el("div", { class: "tc-brow tc-saved-actions" }, [
+          el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) }),
+          el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Umbenennen", onclick: function () { edit.hidden = !edit.hidden; if (!edit.hidden) nameIn.focus(); } }),
+          el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Link kopieren", onclick: function () {
+            var url = location.origin + location.pathname + "#/screener?" + sv.params;
+            (global.navigator && navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { status.textContent = "Link kopiert."; }, function () { status.textContent = url; });
+          } }),
+          el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); render(); } })]),
+        edit]);
+    });
+    var body = list.length ? el("div", { class: "tc-list" }, rows) : stateBox("Noch keine Suchstrategie gespeichert", "Im Screener Filter wählen und „Suchstrategie speichern“ nutzen. Gespeichert wird nur in diesem Browser; über „Importieren“ lassen sich exportierte Strategien übernehmen.");
+    put(main, [head, tabBar, tools, status, body]);
   }
 
   /* ------------------------------------------------------- Chart Studio */
   /* Schichten im Kurs (beliebig kombinierbar) und Unterfenster (eines zur Zeit). */
-  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50"], ["bb", "Bollinger"],
+  var LAYERS = [["trend", "Trendlinien"], ["muster", "Muster"], ["niveaus", "Niveaus"], ["sma", "SMA 50/200"], ["ema", "EMA 20/50/200"], ["bb", "Bollinger"],
     ["keltner", "Keltner"], ["donchian", "Donchian"], ["ichimoku", "Ichimoku"], ["supertrend", "Supertrend"], ["psar", "Parabolic SAR"], ["vwma", "VWMA 20"], ["volumen", "Volumen"]];
   var PANE_LIST = [["rsi", "RSI"], ["macd", "MACD"], ["stoch", "Stochastik"], ["adx", "ADX"], ["atr", "ATR"], ["cci", "CCI"], ["williams", "Williams %R"], ["aroon", "Aroon"],
     ["mfi", "MFI"], ["obv", "OBV"], ["cmf", "CMF"]];
@@ -444,7 +555,7 @@
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
     put(main, [head, links, tabBar, body]);
 
-    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; })]).then(function (r) {
+    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence()]).then(function (r) {
       var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
       titleName.textContent = name ? shortName(name) : T;
       head.querySelector(".tc-eyebrow").textContent = T + (name ? " · " + shortName(name).toUpperCase() : "");
@@ -543,8 +654,10 @@
       if (X.cs.sma200) { overlays.push({ id: "sma200", label: "SMA 200", values: X.cs.sma200, color: "var(--tc-c2)" }); legend.push(["SMA 200", "var(--tc-c2)"]); }
     }
     if (L.ema) {
-      overlays.push({ id: "ema20", label: "EMA 20", values: X.ind.ema20, color: "var(--tc-c3)", dash: "4 3" }); legend.push(["EMA 20", "var(--tc-c3)"]);
-      overlays.push({ id: "ema50", label: "EMA 50", values: X.ind.ema50, color: "var(--tc-c4)", dash: "4 3" }); legend.push(["EMA 50", "var(--tc-c4)"]);
+      /* Aus der Vollhistorie, wenn das Bundle sie traegt (ema-settled-1.0.0); sonst im Anzeigefenster gerechnet. */
+      overlays.push({ id: "ema20", label: "EMA 20", values: X.cs.ema20 || X.ind.ema20, color: "var(--tc-c3)", dash: "4 3" }); legend.push(["EMA 20", "var(--tc-c3)"]);
+      overlays.push({ id: "ema50", label: "EMA 50", values: X.cs.ema50 || X.ind.ema50, color: "var(--tc-c4)", dash: "4 3" }); legend.push(["EMA 50", "var(--tc-c4)"]);
+      if (X.cs.ema200 && X.cs.ema200.some(isNum)) { overlays.push({ id: "ema200", label: "EMA 200", values: X.cs.ema200, color: "var(--tc-c2)", dash: "4 3" }); legend.push(["EMA 200", "var(--tc-c2)"]); }
     }
     var ex = X.ind;
     if (L.keltner) {
@@ -579,12 +692,21 @@
       var isTrend = f.family === "TRENDLINE" || f.family === "CHANNEL";
       if (!focusF && (isTrend ? !L.trend : !L.muster)) return;
       var tone = f.state === "INVALIDATED" ? "muted" : f.direction === "BEARISH" ? "negative" : "positive";
-      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null }); });
+      /* Nur gueltige Linien werden bis heute fortgeschrieben; eine invalidierte endet an ihrem letzten Punkt. */
+      (f.lines || []).forEach(function (l) { lines.push({ from: l.from, to: l.to, tone: tone, dash: f.state === "DETECTED" ? "6 4" : null, extend: f.state !== "INVALIDATED" }); });
       if (f.zone && (L.muster || focusF)) zones.push({ low: f.zone.low, high: f.zone.high, from: f.zone.from, to: f.zone.to, tone: "accent" });
       if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
       if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
         var ci = S.dates.indexOf(f.confirmedAt);
         if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+      }
+      if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
+        var ii = S.dates.indexOf(f.invalidatedAt);
+        if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
+      }
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate) {
+        var di = S.dates.indexOf(f.detectedAt);
+        if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
       }
     });
     if (L.niveaus) {
@@ -626,6 +748,7 @@
           el("dt", { text: "Invalidierung" }), el("dd", { text: x.rules.invalidate }),
           el("dt", { text: "Erkannt" }), el("dd", { text: M.dateDe(x.detectedAt) + " (mit dem Wissen dieses Tages)" }),
           el("dt", { text: "Im Chart" }), el("dd", {}, el("a", { class: "tc-link", href: location.hash.replace(/\?.*$/, "").replace(/\/signale$/, "") + "?f=" + encodeURIComponent(x.id), text: "Nur diese Formation zeigen" })),
+          evidence ? el("dt", { text: "Historisch" }) : null, evidence ? el("dd", { text: M.evidenceText(evidence.byType[x.type], evidence.doc.window) }) : null,
           el("dt", { text: "Zeitrahmen" }), el("dd", { text: x.timeframe === "1D" ? "Tag" : x.timeframe }),
           el("dt", { text: "Datenbasis" }), el("dd", { text: (dq.bars || "–") + " Tagesbars" + (dq.hasVolume ? ", mit Volumen" : ", ohne Volumen") + ", ATR " + M.price(dq.atr) })
         ])
@@ -660,7 +783,15 @@
     var b = inst.bars, bundle = inst.bundle || {};
     return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
       el("dt", { text: "Kursreihe" }), el("dd", { text: "Tiingo EOD, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
-      el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); EMA, Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
+      el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); " + (bundle.chartSeries && bundle.chartSeries.ema200 ? "EMA 20/50/200 ebenfalls auf der Vollhistorie, erst nach ihrer Aufwärmphase; " : "EMA, ") + "Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
+      (function () {
+        var es = bundle.emaSettlement, p = es && es.periods && es.periods.filter(function (x) { return x.period === 200; })[0];
+        if (!p) return null;
+        var pct = function (v) { return isNum(v) ? (v * 100).toLocaleString("de-DE", { maximumSignificantDigits: 2 }) + " %" : "–"; };
+        return [el("dt", { text: "EMA 200" }), el("dd", { class: p.status === "SETTLED" ? null : "is-warn", text: p.status === "SETTLED"
+          ? "veröffentlicht seit " + M.dateDe(p.firstSettledDate) + "; Fehlerschranke heute " + pct(p.errorBoundAtCutoff) + " des Kurses (Grenze 0,1 %)"
+          : "nicht veröffentlicht: " + (p.barsAfterSeed !== null && p.barsAfterSeed < p.warmupBars ? "Historie zu kurz (frühestens ab " + p.minimumBars + " Tagesbars)" : "Fehlerschranke " + pct(p.errorBoundAtCutoff) + " über 0,1 % (Startfenster weit vom heutigen Kurs)") })];
+      })(),
       (function () {
         var Fm = global.VUTechnical && global.VUTechnical.Formations, at = [];
         if (Fm && Fm.suspectJump) for (var q = 1; q < b.close.length; q++) if (Fm.suspectJump(b.close[q] / b.close[q - 1])) at.push(M.dateDe(b.timestamps[q]));
@@ -699,7 +830,7 @@
         el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
           "Tageskurse: Tiingo EOD, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
           "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant).",
-          "EMA 200 wird bewusst nicht gezeigt: 270 Tagesbars reichen nicht für eine von ihrem Startwert unabhängige EMA 200. Der 200-Tage-Trend wird über die SMA 200 abgebildet.",
+          "EMA 20/50/200 werden auf der Vollhistorie gerechnet und an einem Tag nur gezeigt, wenn ihr möglicher Fehler gegenüber jeder anderen Startkonvention höchstens 0,1 % des Kurses beträgt (Schranke: Restgewicht des Startwerts × Spanne des Startfensters ÷ Schlusskurs) und der Startwert höchstens noch mit 5 % wirkt. Frühestens ab 500 Tagesbars (EMA 200), 125 (EMA 50) und 50 (EMA 20). Bei stark gefallenen Titeln kann die EMA 200 trotz langer Historie fehlen; der 200-Tage-Trend steht dann über die SMA 200.",
           "Woche und Monat: Wochenschlüsse aus der langen Reihe (nur Schlusskurse, nur abgeschlossene Wochen); Monatswerte aus dem letzten Wochenschluss je Monat.",
           "Relative Stärke: Kursänderung über 63 bzw. 126 Handelstage minus der des S&P-500-ETF SPY am selben Stichtag.",
           "Es gibt keinen Setup-Score: Sortiert wird nach einem gewählten, offengelegten Feld oder nach der Zahl erfüllter Bedingungen.",
@@ -713,7 +844,24 @@
           "Nicht Erkanntes wird angezeigt und nicht geraten. Die kanonische Schreibweise (z. B. „aboveSma200 und rsi14 < 40“) wird unter der Eingabe gezeigt und ist ebenfalls eingebbar.",
           "Eine Übersetzung durch ein Sprachmodell ist vorbereitet (gleiches Abfrageschema, Prüfung durch dieselbe Validierung), aber nicht aktiv."
         ].map(function (t) { return el("li", { text: t }); }))])]);
-      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, el("h2", { text: "Screener" }), search, data]));
+      var evSec = el("div", {});
+      loadEvidence().then(function (E) {
+        if (!E) return;
+        var d = E.doc, w = d.window, fmt = function (v) { return isNum(v) ? (v * 100).toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " %" : "–"; };
+        put(evSec, el("details", { class: "tc-filter" }, [el("summary", {}, [el("b", { text: "Historische Evidenz der Formationen" }), glyph("chevron", "tc-chev tc-rot")]),
+          el("div", { class: "tc-filter-body" }, [
+            el("p", { text: "Jede Formation zählt einmal, am ersten Tag, an dem sie mit den damaligen Daten sichtbar war. Gemessen wird 20 Handelstage danach: Zustand laut Regel und die richtungsbereinigte Rendite im Vergleich zum Durchschnitt aller Titel am selben Tag. Erkennungen " + M.dateDe(w.from) + " bis " + M.dateDe(w.to) + ", " + d.titles.toLocaleString("de-DE") + " Titel – rund ein Marktjahr, kein voller Zyklus. Keine Handelssimulation, keine Kosten, keine Prognose." }),
+            el("p", { class: "tc-note", text: "„Entfallen“: Die Formation wurde vor Ablauf nicht mehr geführt, ohne dass Bestätigung oder Invalidierung festgehalten wurde – bei den Bestandsformationen (Dreiecke, Doppelböden, SKS, Rechteck, Flaggen) häufig, weil sie beim Bruch verschwinden. Belastbar heißt: Das Ergebnis besteht die Bonferroni-Korrektur über alle " + d.types.length + " Typen. Ab " + d.method.minN + " Fällen wird ein Typ ausgewiesen." }),
+            el("div", { class: "tc-table-wrap" }, el("table", { class: "tc-table" }, [
+              el("thead", {}, el("tr", {}, ["Formation", "n", "bestätigt", "invalidiert", "entfallen", "Rendite ggü. Querschnitt", "Aussage"].map(function (h) { return el("th", { scope: "col", text: h }); }))),
+              el("tbody", {}, d.types.slice().sort(function (a, b) { return b.n - a.n; }).map(function (t) {
+                return el("tr", {}, [el("th", { scope: "row", text: Q.FORMATION_TYPES[t.type] || t.type }), el("td", { class: "num", text: t.n.toLocaleString("de-DE") }),
+                  el("td", { class: "num", text: t.published ? fmt(t.confirmedBy20) : "–" }), el("td", { class: "num", text: t.published ? fmt(t.invalidatedBy20) : "–" }), el("td", { class: "num", text: t.published ? fmt(t.droppedBy20) : "–" }),
+                  el("td", { class: "num", text: t.published ? (t.excess20Mean > 0 ? "+" : "") + (t.excess20Mean * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " % ± " + (t.excess20Ci95 * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–" }),
+                  el("td", { text: !t.published ? "zu wenige Fälle" : t.significant ? "belastbar" : "nicht belastbar" })]);
+              }))]))])]));
+      });
+      put(slot, [el("h2", { text: "Indikatoren" })].concat(ind, [el("h2", { text: "Formationen" }), forms, evSec, el("h2", { text: "Screener" }), search, data]));
     }).catch(function () { put(slot, stateBox("Methodik nicht geladen", "Die Engine-Dateien konnten nicht geladen werden.")); });
   }
 
