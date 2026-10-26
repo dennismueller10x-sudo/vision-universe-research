@@ -1,7 +1,7 @@
 /**
  * Supertrader 7.0 – Minervini source completion (C06 SEPA / VCP, C07 Power Play). Builds on the unchanged 4.0 lifecycle
- * (minervini-lifecycle.mjs, minervini-execution.mjs; research code fingerprint b1d81fb8… stays untouched: this file is
- * not part of run-sf4-lifecycle#FILES) and adds only what the 7.0 source inventory (docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md,
+ * (minervini-lifecycle.mjs, minervini-execution.mjs; research code fingerprint c834b227… since #911, b1d81fb8… before,
+ * stays untouched: this file is not part of run-sf4-lifecycle#FILES) and adds only what the 7.0 source inventory (docs/SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md,
  * artifacts/STRATEGY-MINERVINI-SOURCE-INVENTORY.json) found in the owner-supplied books but not in the #709 rows:
  *
  * The English editions are not in the project: every book content below is a German / English PARAPHRASE of the
@@ -32,6 +32,11 @@
  * Every number the books do not give is a declared model assumption (SF7_MODEL_ASSUMPTIONS); the variants are
  * pre-registered before any 7.0 result was read (sf7VariantRegistrySha256, sf7CodeSha256 in the runner receipt).
  * Nothing here is SOURCE_EXACT. DIAGNOSTIC_NOT_CERTIFIED, MODEL_LIFECYCLE_STUDY.
+ *
+ * Package 1.4.0 adds the mechanical diagnostics of research/minervini-sf7-mechanical.mjs (base count, top-volume
+ * decline, relative base depth, entry distance; own pre-registration sf7MechanicalRegistrySha256). Bounds, model
+ * assumptions and variants of this file are unchanged: sf7VariantRegistrySha256('sf7-minervini-1.3.0') reproduces the
+ * 1.3.0 registry ce98c24f… (test SF7-MECH-REGISTRY).
  */
 import crypto from 'node:crypto';
 import { fin, smaAt } from '../common/series.mjs';
@@ -39,7 +44,7 @@ import { trendTemplate, MIN_PARAMS } from '../methods/minervini.mjs';
 import { COMPONENT_CONVENTIONS, vcpContractions } from './minervini-components.mjs';
 import { REFERENCE_CONFIG, sepaSetupSeries } from './minervini-lifecycle.mjs';
 
-export const SF7_MINERVINI_VERSION = 'sf7-minervini-1.3.0'; // 1.3.0: E7-2 review (post-entry windows end before the exit session, base depth from the 52-week-high base start, RS line against the price's own high, weekly reading needs prior weeks, Stage 2 required at the setup); 1.2.0: E7-2 post-breakout / setup evidence (diagnostics only); 1.1.0: independent review (calendar RS lookback, exit-bounded diagnostic, flat-base bound count)
+export const SF7_MINERVINI_VERSION = 'sf7-minervini-1.4.0'; // 1.4.0: mechanical diagnostics in minervini-sf7-mechanical.mjs, this file's registry content unchanged; 1.3.0: E7-2 review (post-entry windows end before the exit session, base depth from the 52-week-high base start, RS line against the price's own high, weekly reading needs prior weeks, Stage 2 required at the setup); 1.2.0: E7-2 post-breakout / setup evidence (diagnostics only); 1.1.0: independent review (calendar RS lookback, exit-bounded diagnostic, flat-base bound count)
 
 /** Printed bounds used by the 7.0 additions (source, page, translation status). */
 export const SF7_SOURCE_BOUNDS = Object.freeze({
@@ -203,8 +208,8 @@ export const SF7_VARIANTS = Object.freeze([
 ]);
 
 /** Fingerprint of the 7.0 additions' pre-registration (bounds, assumptions, variants). */
-export function sf7VariantRegistrySha256() {
-  return crypto.createHash('sha256').update(JSON.stringify({ version: SF7_MINERVINI_VERSION, bounds: SF7_SOURCE_BOUNDS, assumptions: SF7_MODEL_ASSUMPTIONS, variants: SF7_VARIANTS, flatMinSessions: FLAT_MIN_SESSIONS, rsLineSessions: RS_LINE_SESSIONS })).digest('hex');
+export function sf7VariantRegistrySha256(version = SF7_MINERVINI_VERSION) {
+  return crypto.createHash('sha256').update(JSON.stringify({ version, bounds: SF7_SOURCE_BOUNDS, assumptions: SF7_MODEL_ASSUMPTIONS, variants: SF7_VARIANTS, flatMinSessions: FLAT_MIN_SESSIONS, rsLineSessions: RS_LINE_SESSIONS })).digest('hex');
 }
 
 /**
