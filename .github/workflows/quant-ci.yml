@@ -168,15 +168,18 @@ jobs:
         with:
           node-version: '22'
       # Exact existing main cache keys. Restore only: no mutation or cache save.
-      - uses: actions/cache/restore@v4
+      - id: discover-cache
+        uses: actions/cache/restore@v4
         with:
           path: .market-cache
           key: discover-market-cache-40047253956
-      - uses: actions/cache/restore@v4
+      - id: tiingo-cache
+        uses: actions/cache/restore@v4
         with:
           path: .market-cache/tiingo2-cache.enc
           key: tiingo2-encrypted-v1-main-39962041711
-      - uses: actions/cache/restore@v4
+      - id: sec-cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             .sec-cache
@@ -188,6 +191,10 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context main
       - name: Assess existing archives offline with bounded memory
+        env:
+          V8_DISCOVER_CACHE_HIT: ${{ steps.discover-cache.outputs.cache-hit }}
+          V8_TIINGO_CACHE_HIT: ${{ steps.tiingo-cache.outputs.cache-hit }}
+          V8_SEC_CACHE_HIT: ${{ steps.sec-cache.outputs.cache-hit }}
         run: node --max-old-space-size=2048 scripts/quant/audit-v8-archives.mjs .verification/v8-archives
       - name: Assert canonical data remained unchanged
         run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
