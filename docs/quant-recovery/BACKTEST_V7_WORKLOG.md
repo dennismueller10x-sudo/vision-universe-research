@@ -11,3 +11,5 @@ Baseline: Main `a68ce000ffe08fa40f4fe48ad7186fe00a5306bf`; bestätigter Übergab
 - G: Kleine abgeleitete Nachweise/Dokumentation versionieren, Draft-PR; kein Merge und keine Aktivierung.
 
 Vollständige Inputs/Outcomes werden mit dem bestehenden `research-artifacts.cjs` als hashgebundene immutable Generationen privat gespeichert. Keine Rohkurse oder neuen Filings in Git. Kontrollierte Offline-Studien plus gezielter SEC-Original-PoC (acht Accessions); keine Tiingo-/Marketstack-Anfrage, kein Kauf. Während der Entwicklung entdeckte Fehler (ISO-Wochen, globale Setup-Sortierung, doppelte Membershiphashes, Snapshot-Arbeitsbudget) wurden vor der abschließenden Generation korrigiert. Abgebrochene Entwicklungsläufe sind kein Abnahmenachweis.
+
+Abgeschlossen: alle dokumentierten Suiten und Isolation bestanden; 40 unabhängige Realprüfgruppen, 47 exakte Wiederholungs-/Scopechecks, acht SEC-Originale mit 23/23 Faktenmatches. Draft-PR [#961](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/961). Kein Merge, keine Aktivierung.

@@ -14,7 +14,7 @@
 10. Offen: belegte historische Listingintervalle/-klassen, Delistingwerte, Raw-CA/TR, ursprüngliche Fundamentaldatenvintages, vollständige historische Populationen und unberührte Bestätigung. Vorhandene private Cache-/R2-Bestände sind in dieser Sitzung nicht als Raw-Inputs zugänglich. [D01–D13](BACKTEST_V7_DATA_RECOVERY.md).
 11. Weiter unerfüllt: aktive PIT-/Population-/TR-/OOS-/Regime- und artspezifische Reifegates, insbesondere Setup und Strategie/Ranking. Keine Umgehung durch neue Berichtsmatrix.
 12. Erforderliche Nutzerentscheidung nur bei normativen Änderungen: Setup-Wochen-/Monatsdiskrepanz und gegebenenfalls Entwurfsschwellen. Keine Fortsetzungsfreigabe nötig. Vorhandene private Rohdaten/Schlüssel müssten über den vorgesehenen Umgebungszugang bereitgestellt werden, falls die nächste Stufe dort anschließen soll; keine neuen Anbieter erforderlich oder gebucht.
-13. Engineering-Commits: `578fd9069`, `2c7575d9d`, `7f27c5efd`; weitere Nachweissicherung im Git-Verlauf dieses Branches. Draft-PR-Link wird nach Erstellung ergänzt. Kein Merge.
+13. Engineering-/Nachweiscommits: `578fd9069`, `2c7575d9d`, `7f27c5efd`, `ac5e8093f`, `118a1e62d`; abschließende Dokumentationssicherung im Branchverlauf. [Draft-PR #961](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/961). Kein Merge.
 14. Tests: sämtliche im [Validierungsbericht](BACKTEST_V7_VALIDATION.md) als PASS ausgewiesenen abgeschlossenen Suiten; vollständige Isolation, Python-Referenzen und exakte Realreproduktion. Hashdateien binden die Ergebnisse an Inputs/Code/Runtime.
 15. Frontend, Quant-UI-Refresh, andere Produktwelten, produktive Scheduler, Daten und Aktivierung: **unverändert**.
 
