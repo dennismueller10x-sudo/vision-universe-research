@@ -201,6 +201,10 @@
     // Tages-OHLCV mit den Technical-Engines; hier nur uebernommen. Fehlt ein Titel dort oder ist er aelter als 7 Tage: leer.
     n('atr', { col: 'twAtr', group: 'technical', unit: 'pct', label: 'ATR (14) in % des Kurses', short: 'ATR %', en: 'ATR', source: 'technicalWorld', domain: [0, 0.25, 0.005], better: -1,
       desc: 'Durchschnittliche Tagesspanne (Average True Range nach Wilder, 14 Tage) im Verhältnis zum Kurs – ein Maß für die übliche Schwankung.', keywords: ['atr', 'average true range', 'volatilität', 'spanne'], presets: [['< 3 %', 'lt', 0.03], ['> 6 %', 'gt', 0.06]] }),
+    n('aboveEma200', { col: 'twEma200', group: 'technical', kind: 'bool', label: 'Kurs über EMA 200', short: 'Über EMA 200', en: 'Above EMA 200', source: 'technicalWorld',
+      desc: 'Schluss über dem exponentiellen 200-Tage-Durchschnitt aus der Vollhistorie. Nur wenn der Startwert eingeschwungen ist (Fehlerschranke ≤ 0,1 % des Kurses); sonst leer.', keywords: ['ema 200', 'ema200', 'exponentieller durchschnitt', '200-tage-ema'] }),
+    n('distEma200', { col: 'twDistEma200', group: 'technical', unit: 'pct', label: 'Abstand zur EMA 200', short: 'Abst. EMA 200', en: 'Distance to EMA 200', source: 'technicalWorld', domain: [-0.6, 1, 0.01],
+      desc: 'Schluss im Verhältnis zur EMA 200 (Vollhistorie, eingeschwungen).', keywords: ['ema 200', 'abstand ema'], presets: [['über 0 %', 'gt', 0], ['0 bis 10 %', 'between', 0, 0.1]] }),
     n('adx', { col: 'twAdx', group: 'technical', unit: 'num', label: 'ADX (14) – Trendstärke', short: 'ADX', en: 'ADX', source: 'technicalWorld', domain: [0, 80, 1],
       desc: 'Average Directional Index nach Wilder: Stärke eines Trends unabhängig von der Richtung. Über 25 gilt als ausgeprägter Trend.', keywords: ['adx', 'trendstärke', 'trend'], presets: [['> 25 (starker Trend)', 'gt', 25], ['< 20 (trendlos)', 'lt', 20]] }),
     n('supertrendUp', { col: 'twSt', group: 'technical', kind: 'bool', label: 'Supertrend (10, 3) aufwärts', short: 'Supertrend ↑', en: 'Supertrend Up', source: 'technicalWorld',

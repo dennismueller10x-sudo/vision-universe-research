@@ -10,7 +10,7 @@
    discover-series/ref_SPY.
 
    Herkunft je Wert (wichtig fuer Vergleichbarkeit mit Quant):
-     featuresAtCutoff   SMA 50/200, EMA 20/50, RSI 14, ADX, MACD, 52W-Hoch,
+     featuresAtCutoff   SMA 50/200, EMA 20/50/200, RSI 14, ADX, MACD, 52W-Hoch,
                         relatives Volumen, ATR %, Bollinger-Breitenperzentil
                         -> auf der VOLLHISTORIE gerechnet (feature-store.js)
      indicators.js      Stochastik, CCI, MFI, Supertrend, Bollinger %B, OBV,
@@ -31,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.2.0";
+  var ROW_VERSION = "technical-screen-row-1.3.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -86,6 +86,9 @@
     row.sma50AboveSma200 = isNum(f.sma50) && isNum(f.sma200) ? f.sma50 > f.sma200 : null;
     row.aboveEma20 = isNum(f.ema20) ? c > f.ema20 : null;
     row.aboveEma50 = isNum(f.ema50) ? c > f.ema50 : null;
+    /* EMA 200 nur, wenn die Materialisierung sie als eingeschwungen veroeffentlicht (ema-settled); sonst leer, nie geschaetzt. */
+    row.aboveEma200 = isNum(f.ema200) ? c > f.ema200 : null;
+    row.distEma200 = r(pct(c, f.ema200));
     row.distSma200 = r(pct(c, f.sma200));
     row.distSma50 = r(pct(c, f.sma50));
     row.adx = r(f.adx, 2);
