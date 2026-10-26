@@ -9,7 +9,14 @@
    Median-Volumenbasis) und wird hier NICHT neu geschrieben. Neu sind nur
    Indikatoren, die es im Bestand nicht gab (WMA, Supertrend, Donchian-Kanal,
    Stochastik, CCI, Bollinger-/Keltner-Baender, OBV, MFI, Volumenspitzen;
-   seit 1.1.0 Williams %R, Aroon, Parabolic SAR, Ichimoku, CMF, VWMA).
+   seit 1.1.0 Williams %R, Aroon, Parabolic SAR, Ichimoku, CMF, VWMA;
+   seit 1.2.0 Pivot-Punkte, ROC 63/126/252, TRIX, Ultimate Oscillator, CMO,
+   KAMA, Hull MA, Chandelier Exit, Regressionskanal, Inside Bar, NR7,
+   Heikin-Ashi). Die 1.2.0-Eintraege tragen `catalogOnly: true`: Sie stehen
+   im Katalog und in compute(), aber noch in keiner Produktflaeche
+   (Methodik-Seite, Screener-Felder, Abfragekatalog). Sie dort freizugeben,
+   ist eine Fachmodellaenderung mit eigenem PR. Uebersicht:
+   docs/technical/INDICATORS_CATALOG.md.
 
    Grundsaetze (wie feature-store.js):
      • kausal: Wert an i nutzt nur Bars <= i
@@ -28,7 +35,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var F = isNode ? require("./feature-store.js") : global.VUTechnical.Features;
 
-  var INDICATORS_VERSION = "technical-indicators-1.1.0";
+  var INDICATORS_VERSION = "technical-indicators-1.2.0";
 
   function arr(n) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = NaN; return a; }
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -307,6 +314,184 @@
     return relativeVolume(volume, period).map(function (r) { return isNum(r) ? (r >= threshold ? 1 : 0) : NaN; });
   }
 
+  /* ------------------------------------------- Katalogerweiterung 1.2.0 (B6) */
+
+  /**
+   * Klassische Floor-Pivots aus der VORBAR (i−1): P = (H+L+C)/3, R1 = 2P − L, S1 = 2P − H,
+   * R2 = P + (H − L), S2 = P − (H − L). Kausal: Der Wert an i ist schon zur Eroeffnung von i bekannt.
+   * Fehlt H, L oder C der Vorbar: NaN.
+   */
+  function pivots(high, low, close) {
+    var h = col(high), l = col(low), c = col(close), n = c.length;
+    var p = arr(n), r1 = arr(n), r2 = arr(n), s1 = arr(n), s2 = arr(n);
+    for (var i = 1; i < n; i++) {
+      var H = h[i - 1], L = l[i - 1], C = c[i - 1];
+      if (!isNum(H) || !isNum(L) || !isNum(C)) continue;
+      var P = (H + L + C) / 3, R = H - L;
+      p[i] = P; r1[i] = 2 * P - L; s1[i] = 2 * P - H; r2[i] = P + R; s2[i] = P - R;
+    }
+    return { pivot: p, r1: r1, r2: r2, s1: s1, s2: s2 };
+  }
+
+  /**
+   * TRIX (Hutson): E3 = EMA_n(EMA_n(EMA_n(C))), TRIX = 100·(E3_i / E3_{i−1} − 1) in Prozent,
+   * Signal = EMA_s(TRIX). EMA wie feature-store.js (Start SMA_n, dann rekursiv).
+   */
+  function trix(close, period, signal) {
+    var e3 = F.ema(F.ema(F.ema(col(close), period), period), period), n = e3.length, t = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(e3[i]) && isNum(e3[i - 1]) && e3[i - 1] !== 0) t[i] = 100 * (e3[i] / e3[i - 1] - 1);
+    return { trix: t, signal: F.ema(t, signal) };
+  }
+
+  /**
+   * Ultimate Oscillator (Williams 1985): BP = C − min(L, C_{−1}), TR = max(H, C_{−1}) − min(L, C_{−1});
+   * A_n = Σ_n BP / Σ_n TR; UO = 100·(4·A_kurz + 2·A_mittel + A_lang)/7. Erste Bar ohne Vorschluss liefert
+   * kein BP/TR. Ist eine Fenstersumme der TR 0 (keine Spanne): 50 (Mitte). Fehlt ein Wert im Fenster: NaN.
+   */
+  function ultimateOscillator(high, low, close, shortP, mediumP, longP) {
+    var h = col(high), l = col(low), c = col(close), n = c.length, bp = arr(n), tr = arr(n), out = arr(n);
+    for (var i = 1; i < n; i++) {
+      if (!isNum(h[i]) || !isNum(l[i]) || !isNum(c[i]) || !isNum(c[i - 1])) continue;
+      var lo = Math.min(l[i], c[i - 1]);
+      bp[i] = c[i] - lo; tr[i] = Math.max(h[i], c[i - 1]) - lo;
+    }
+    function avg(i, p) {
+      var sb = 0, st = 0;
+      for (var j = i - p + 1; j <= i; j++) { if (j < 1 || !isNum(bp[j])) return NaN; sb += bp[j]; st += tr[j]; }
+      return st > 0 ? sb / st : 0.5;
+    }
+    for (var k = Math.max(shortP, mediumP, longP); k < n; k++) {
+      var a = avg(k, shortP), b = avg(k, mediumP), d = avg(k, longP);
+      if (isNum(a) && isNum(b) && isNum(d)) out[k] = 100 * (4 * a + 2 * b + d) / 7;
+    }
+    return out;
+  }
+
+  /**
+   * Chande Momentum Oscillator (Chande/Kroll 1994, ungeglaettet): ueber die letzten n Schlusskursaenderungen
+   * Su = Σ Anstiege, Sd = Σ |Rueckgaenge|; CMO = 100·(Su − Sd)/(Su + Sd), Bereich −100..+100. Su + Sd = 0: 0.
+   * (TA-Lib glaettet nach Wilder; hier die Originaldefinition mit einfachen Summen.)
+   */
+  function cmo(close, period) {
+    var c = col(close), n = c.length, out = arr(n);
+    for (var i = period; i < n; i++) {
+      var up = 0, dn = 0, ok = true;
+      for (var j = i - period + 1; j <= i; j++) {
+        if (!isNum(c[j]) || !isNum(c[j - 1])) { ok = false; break; }
+        var d = c[j] - c[j - 1];
+        if (d > 0) up += d; else dn -= d;
+      }
+      if (ok) out[i] = up + dn > 0 ? 100 * (up - dn) / (up + dn) : 0;
+    }
+    return out;
+  }
+
+  /**
+   * KAMA (Kaufman): ER = |C_i − C_{i−n}| / Σ_{j=i−n+1..i} |C_j − C_{j−1}| (0, wenn der Nenner 0 ist),
+   * SC = (ER·(2/(f+1) − 2/(s+1)) + 2/(s+1))², KAMA_i = KAMA_{i−1} + SC·(C_i − KAMA_{i−1}).
+   * Start: KAMA_{n−1} = C_{n−1} (Startwert, nicht ausgegeben), erster Wert an Bar n.
+   * Fehlt ein Wert im ER-Fenster: NaN an dieser Bar, der letzte Zustand wird weitergetragen.
+   */
+  function kama(close, period, fast, slow) {
+    var c = col(close), n = c.length, out = arr(n), fsc = 2 / (fast + 1), ssc = 2 / (slow + 1), prev = NaN;
+    for (var i = period; i < n; i++) {
+      var vol = 0, ok = isNum(c[i]) && isNum(c[i - period]);
+      for (var j = i - period + 1; ok && j <= i; j++) { if (!isNum(c[j - 1]) || !isNum(c[j])) ok = false; else vol += Math.abs(c[j] - c[j - 1]); }
+      if (!ok) continue;
+      if (!isNum(prev)) prev = c[i - 1];
+      var er = vol > 0 ? Math.abs(c[i] - c[i - period]) / vol : 0, sc = Math.pow(er * (fsc - ssc) + ssc, 2);
+      prev = prev + sc * (c[i] - prev);
+      out[i] = prev;
+    }
+    return out;
+  }
+
+  /**
+   * Hull Moving Average (Hull 2005): HMA_n = WMA_{⌊√n⌋}(2·WMA_{⌊n/2⌋}(C) − WMA_n(C)).
+   * Erster Wert an Bar (n − 1) + (⌊√n⌋ − 1). n < 2: keine Werte.
+   */
+  function hma(close, period) {
+    var c = col(close), n = c.length, half = Math.floor(period / 2), root = Math.floor(Math.sqrt(period));
+    if (half < 1 || root < 1) return arr(n);
+    var wh = wma(c, half), wf = wma(c, period);
+    return wma(wh.map(function (v, i) { return isNum(v) && isNum(wf[i]) ? 2 * v - wf[i] : NaN; }), root);
+  }
+
+  /**
+   * Chandelier Exit (LeBeau): lang = hoechstes Hoch_n − m·ATR_n, kurz = tiefstes Tief_n + m·ATR_n
+   * (ATR nach Wilder wie atr(); Extreme ueber die letzten n Bars inkl. i).
+   */
+  function chandelier(high, low, close, period, multiplier) {
+    var hh = F.rollingMax(col(high), period), ll = F.rollingMin(col(low), period), a = atr(high, low, close, period);
+    return {
+      long: hh.map(function (v, i) { return isNum(v) && isNum(a[i]) ? v - multiplier * a[i] : NaN; }),
+      short: ll.map(function (v, i) { return isNum(v) && isNum(a[i]) ? v + multiplier * a[i] : NaN; })
+    };
+  }
+
+  /**
+   * Linearer Regressionskanal ueber die letzten n Schlusskurse (x = 0..n−1, KQ-Gerade):
+   * value = Gerade am juengsten Punkt (x = n−1), slope = Steigung je Bar,
+   * upper/lower = value ± k·σ der Residuen (Populationsstreuung, wie Bollinger). Fehlt ein Wert: NaN.
+   */
+  function linreg(close, period, k) {
+    var c = col(close), n = c.length, val = arr(n), slope = arr(n), up = arr(n), lo = arr(n);
+    var mx = (period - 1) / 2, sxx = 0;
+    for (var x = 0; x < period; x++) sxx += (x - mx) * (x - mx);
+    for (var i = period - 1; i < n; i++) {
+      var my = 0, ok = true;
+      for (var j = 0; j < period; j++) { var y = c[i - period + 1 + j]; if (!isNum(y)) { ok = false; break; } my += y; }
+      if (!ok) continue;
+      my /= period;
+      var sxy = 0;
+      for (var q = 0; q < period; q++) sxy += (q - mx) * (c[i - period + 1 + q] - my);
+      var b = sxx > 0 ? sxy / sxx : 0, a0 = my - b * mx, ss = 0;
+      for (var r = 0; r < period; r++) { var e = c[i - period + 1 + r] - (a0 + b * r); ss += e * e; }
+      var sd = Math.sqrt(ss / period);
+      val[i] = a0 + b * (period - 1); slope[i] = b; up[i] = val[i] + k * sd; lo[i] = val[i] - k * sd;
+    }
+    return { value: val, slope: slope, upper: up, lower: lo };
+  }
+
+  /** Inside Bar: H_i < H_{i−1} und L_i > L_{i−1} (strikt). 1/0, NaN ohne Vorbar oder bei fehlendem Wert. */
+  function insideBar(high, low) {
+    var h = col(high), l = col(low), n = h.length, out = arr(n);
+    for (var i = 1; i < n; i++) if (isNum(h[i]) && isNum(l[i]) && isNum(h[i - 1]) && isNum(l[i - 1])) out[i] = h[i] < h[i - 1] && l[i] > l[i - 1] ? 1 : 0;
+    return out;
+  }
+
+  /**
+   * NR_n (Crabel, Standard n = 7): Spanne H_i − L_i ist die kleinste der letzten n Spannen (inkl. i);
+   * Gleichstand mit einer Vorbar zaehlt als schmalste. 1/0, NaN waehrend der Aufwaermphase oder bei Luecken.
+   */
+  function narrowRange(high, low, period) {
+    var h = col(high), l = col(low), n = h.length, out = arr(n);
+    for (var i = period - 1; i < n; i++) {
+      var ok = isNum(h[i]) && isNum(l[i]), r = h[i] - l[i], narrow = true;
+      for (var j = i - period + 1; ok && j < i; j++) { if (!isNum(h[j]) || !isNum(l[j])) ok = false; else if (h[j] - l[j] < r) narrow = false; }
+      if (ok) out[i] = narrow ? 1 : 0;
+    }
+    return out;
+  }
+
+  /**
+   * Heikin-Ashi: HC = (O+H+L+C)/4; HO_0 = (O_0 + C_0)/2, danach HO_i = (HO_{i−1} + HC_{i−1})/2;
+   * HH = max(H, HO, HC), HL = min(L, HO, HC). Lueckenbar: NaN, die Rekursion setzt an der letzten
+   * gueltigen Heikin-Ashi-Bar fort.
+   */
+  function heikinAshi(open, high, low, close) {
+    var o = col(open), h = col(high), l = col(low), c = col(close), n = c.length;
+    var ho = arr(n), hh = arr(n), hl = arr(n), hc = arr(n), po = NaN, pc = NaN;
+    for (var i = 0; i < n; i++) {
+      if (!isNum(o[i]) || !isNum(h[i]) || !isNum(l[i]) || !isNum(c[i])) continue;
+      hc[i] = (o[i] + h[i] + l[i] + c[i]) / 4;
+      ho[i] = isNum(po) ? (po + pc) / 2 : (o[i] + c[i]) / 2;
+      hh[i] = Math.max(h[i], ho[i], hc[i]); hl[i] = Math.min(l[i], ho[i], hc[i]);
+      po = ho[i]; pc = hc[i];
+    }
+    return { open: ho, high: hh, low: hl, close: hc };
+  }
+
   /* ------------------------------------------------------- Hilfsfunktionen */
 
   /** Hoechster Schluss bzw. Hoch der letzten n Bars inkl. i (52 Wochen = 252 Tagesbars bzw. 52 Wochenbars). */
@@ -318,7 +503,9 @@
   /**
    * Der Katalog ist die dokumentierte Definition. `warmup` = erste Bar-Position (0-basiert), an der
    * der Indikator bei lueckenloser Eingabe einen Wert hat. `inputs` = benoetigte Spalten.
-   * `family` steuert Gruppierung im Chart Studio.
+   * `family` steuert Gruppierung im Chart Studio. `base` = Formel eines anderen Eintrags mit eigenen
+   * Standardparametern (Voreinstellung, z. B. roc63). `catalogOnly` = definiert und berechenbar, aber in
+   * keiner Produktflaeche gelistet (Methodik-Seite filtert sie aus, Screener/Abfrage kennen sie nicht).
    */
   var CATALOG = [
     { id: "sma", family: "TREND", name: "Einfacher gleitender Durchschnitt (SMA)", params: { period: 50 }, inputs: ["close"], overlay: true,
@@ -369,7 +556,37 @@
     { id: "relativeVolume", family: "VOLUME", name: "Relative Volumenstaerke", params: { period: 20 }, inputs: ["volume"], overlay: false,
       definition: "Volumen / Median der vorherigen n Volumina", warmup: function (p) { return p.period; } },
     { id: "volumeSpikes", family: "VOLUME", name: "Volumenspitzen", params: { period: 20, threshold: 2 }, inputs: ["volume"], overlay: false,
-      definition: "relative Volumenstaerke >= Schwelle", warmup: function (p) { return p.period; } }
+      definition: "relative Volumenstaerke >= Schwelle", warmup: function (p) { return p.period; } },
+
+    /* 1.2.0 (B6): nur Katalog und compute(); keine Produktflaeche (catalogOnly). */
+    { id: "pivots", family: "TREND", name: "Pivot-Punkte (Floor, Vortag)", params: {}, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "aus Hoch, Tief und Schluss der Vorbar: P = (H+L+C)/3, R1 = 2P − L, S1 = 2P − H, R2 = P + (H−L), S2 = P − (H−L)", warmup: function () { return 1; } },
+    { id: "kama", family: "TREND", name: "Kaufman Adaptive Moving Average (KAMA)", params: { period: 10, fast: 2, slow: 30 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "Effizienz ER = |C − C_{−n}| / Σ|ΔC|; SC = (ER·(2/(f+1) − 2/(s+1)) + 2/(s+1))²; KAMA += SC·(C − KAMA), Start C_{n−1}", warmup: function (p) { return p.period; } },
+    { id: "hma", family: "TREND", name: "Hull Moving Average (HMA)", params: { period: 20 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "WMA_{⌊√n⌋}(2·WMA_{⌊n/2⌋} − WMA_n)", warmup: function (p) { return p.period + Math.floor(Math.sqrt(p.period)) - 2; } },
+    { id: "linreg", family: "TREND", name: "Linearer Regressionskanal", params: { period: 50, k: 2 }, inputs: ["close"], overlay: true, catalogOnly: true,
+      definition: "KQ-Gerade durch die letzten n Schlusskurse: Endwert, Steigung je Bar, Kanal ± k·Standardabweichung (Population) der Residuen", warmup: function (p) { return p.period - 1; } },
+    { id: "heikinAshi", family: "TREND", name: "Heikin-Ashi", params: {}, inputs: ["open", "high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "HC = (O+H+L+C)/4, HO = (HO_{−1} + HC_{−1})/2 (Start (O+C)/2), HH = max(H, HO, HC), HL = min(L, HO, HC)", warmup: function () { return 0; } },
+    { id: "roc63", family: "MOMENTUM", name: "Rate of Change 63 (3 Monate)", base: "roc", params: { period: 63 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "ROC = 100·(C_i/C_{i−63} − 1) in Prozent", warmup: function (p) { return p.period; } },
+    { id: "roc126", family: "MOMENTUM", name: "Rate of Change 126 (6 Monate)", base: "roc", params: { period: 126 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "ROC = 100·(C_i/C_{i−126} − 1) in Prozent", warmup: function (p) { return p.period; } },
+    { id: "roc252", family: "MOMENTUM", name: "Rate of Change 252 (12 Monate)", base: "roc", params: { period: 252 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "ROC = 100·(C_i/C_{i−252} − 1) in Prozent", warmup: function (p) { return p.period; } },
+    { id: "trix", family: "MOMENTUM", name: "TRIX", params: { period: 15, signal: 9 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "100·(E3_i/E3_{i−1} − 1), E3 = dreifach geglaettete EMA_n; Signal = EMA_s(TRIX)", warmup: function (p) { return 3 * (p.period - 1) + 1; } },
+    { id: "ultimateOscillator", family: "MOMENTUM", name: "Ultimate Oscillator", params: { short: 7, medium: 14, long: 28 }, inputs: ["high", "low", "close"], overlay: false, catalogOnly: true,
+      definition: "100·(4·A_7 + 2·A_14 + A_28)/7, A_n = Σ Kaufdruck / Σ True Range, Kaufdruck = C − min(L, C_{−1})", warmup: function (p) { return Math.max(p.short, p.medium, p.long); } },
+    { id: "cmo", family: "MOMENTUM", name: "Chande Momentum Oscillator (CMO)", params: { period: 14 }, inputs: ["close"], overlay: false, catalogOnly: true,
+      definition: "100·(Σ Anstiege − Σ Rueckgaenge)/(Σ Anstiege + Σ Rueckgaenge) der letzten n Schlusskursaenderungen, ungeglaettet", warmup: function (p) { return p.period; } },
+    { id: "chandelier", family: "VOLATILITY", name: "Chandelier Exit (ATR-Baender)", params: { period: 22, multiplier: 3 }, inputs: ["high", "low", "close"], overlay: true, catalogOnly: true,
+      definition: "lang = hoechstes Hoch_n − m·ATR_n, kurz = tiefstes Tief_n + m·ATR_n (ATR nach Wilder)", warmup: function (p) { return p.period - 1; } },
+    { id: "insideBar", family: "VOLATILITY", name: "Inside Bar", params: {}, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "1, wenn H < H_{−1} und L > L_{−1}, sonst 0", warmup: function () { return 1; } },
+    { id: "nr7", family: "VOLATILITY", name: "Narrow Range (NR7)", params: { period: 7 }, inputs: ["high", "low"], overlay: false, catalogOnly: true,
+      definition: "1, wenn die Spanne H − L die kleinste der letzten n Bars ist (Gleichstand zaehlt), sonst 0", warmup: function (p) { return p.period - 1; } }
   ];
 
   var FRACTIONAL = ["multiplier", "k", "threshold", "step", "max"];
@@ -387,7 +604,7 @@
     var missing = entry.inputs.filter(function (c) { return !series[c] || !series[c].some(isNum); });
     if (missing.length) return { id: id, error: "MISSING_INPUT:" + missing.join(",") };
     var s = series, v;
-    switch (id) {
+    switch (entry.base || id) {
       case "sma": v = F.sma(col(s.close), p.period); break;
       case "ema": v = F.ema(col(s.close), p.period); break;
       case "wma": v = wma(s.close, p.period); break;
@@ -412,6 +629,17 @@
       case "williamsR": v = williamsR(s.high, s.low, s.close, p.period); break;
       case "aroon": v = aroon(s.high, s.low, p.period); break;
       case "cmf": v = cmf(s.high, s.low, s.close, s.volume, p.period); break;
+      case "pivots": v = pivots(s.high, s.low, s.close); break;
+      case "kama": v = kama(s.close, p.period, p.fast, p.slow); break;
+      case "hma": v = hma(s.close, p.period); break;
+      case "linreg": v = linreg(s.close, p.period, p.k); break;
+      case "heikinAshi": v = heikinAshi(s.open, s.high, s.low, s.close); break;
+      case "trix": v = trix(s.close, p.period, p.signal); break;
+      case "ultimateOscillator": v = ultimateOscillator(s.high, s.low, s.close, p.short, p.medium, p.long); break;
+      case "cmo": v = cmo(s.close, p.period); break;
+      case "chandelier": v = chandelier(s.high, s.low, s.close, p.period, p.multiplier); break;
+      case "insideBar": v = insideBar(s.high, s.low); break;
+      case "nr7": v = narrowRange(s.high, s.low, p.period); break;
     }
     return { id: id, version: INDICATORS_VERSION, params: p, warmup: entry.warmup(p), values: v };
   }
@@ -424,7 +652,10 @@
     wma: wma, donchian: donchian, supertrend: supertrend, macd: macd, roc: roc, stochastic: stochastic, cci: cci,
     atr: atr, bollinger: bollinger, keltner: keltner, obv: obv, mfi: mfi, relativeVolume: relativeVolume, volumeSpikes: volumeSpikes,
     rollingHigh: rollingHigh, rollingLow: rollingLow,
-    psar: psar, ichimoku: ichimoku, vwma: vwma, williamsR: williamsR, aroon: aroon, cmf: cmf
+    psar: psar, ichimoku: ichimoku, vwma: vwma, williamsR: williamsR, aroon: aroon, cmf: cmf,
+    /* 1.2.0 (B6) */
+    pivots: pivots, trix: trix, ultimateOscillator: ultimateOscillator, cmo: cmo, kama: kama, hma: hma,
+    chandelier: chandelier, linreg: linreg, insideBar: insideBar, narrowRange: narrowRange, heikinAshi: heikinAshi
   };
 
   if (isNode) module.exports = api;

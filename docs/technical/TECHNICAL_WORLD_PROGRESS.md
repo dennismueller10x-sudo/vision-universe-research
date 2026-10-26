@@ -138,6 +138,14 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 25.10.2026 | PR #938 eröffnet (Entwurf, Fachmodell): Formations-Lebenszyklus. Kein automatischer Merge. |
 | 26.10.2026 | PR #943 gemergt (`7e19699`): Filter „Kurs über EMA 200“ und „Abstand zur EMA 200“ (Technical, Wortsuche, `/screener/`). Werte erscheinen mit dem ersten Materialisierungslauf nach #927. |
 | 26.10.2026 | PR #938: Owner-Freigabe mit Vorgaben (Keile „bei Erkennung ausgebrochen“, Dreieck-Ausbruch mit Richtung und Tag, vorläufige Vier-Punkt-Kanäle, Filter „offen“). Umsetzung und Auswirkungen: FORMATIONS_LIFECYCLE.md Abschnitt 9. |
+| 26.10.2026 | PR #947 gemergt (`f77c7e7`): Bestandsaudit (BACKEND_AUDIT.md, Backlog B1–B25) und Zeitplan für technical-world (05:10 UTC, Di–Sa). |
+| 26.10.2026 | PR #950 gemergt (`f51fba1`): DQ-Regeln DQ-TW-1..4 für Technical (Frische, leere Felder, Schlusskurs-Gleichheit, Abdeckung). |
+| 26.10.2026 | SEC-Budget (consumer-history) auf `main` von anderer Seite behoben (`fcf4f25`). Danach #952, #954 und #955 auf aktuellem `main` neu geprüft. |
+| 26.10.2026 | PR #952 gemergt (`cb40391`): Goldsatz der Suche in Worten (`technical-query-text` 1.3.0). Alle Pflichtprüfungen grün; Vercel (Tageslimit) ist kein Pflicht-Check. |
+| 26.10.2026 | PR #955 gemergt (`28aaa27`): 14 Katalogindikatoren (`indicators` 1.2.0, nur Katalog, bestehende Ausgaben bitgleich). Die PR-Workflows liefen erst nach einem Nachziehen von `main` an; danach alle grün. |
+| 26.10.2026 | PR #962 gemergt (`ec19c88`): externe Referenz TA-Lib 0.8.2 als eingefrorene Fixture (Audit B7). 17 Indikatoren gleich, 4 mit dokumentierter Startwert-Konvention. Befund Parabolic SAR an Umkehrbars, siehe INDICATORS_EXTERNAL_REFERENCE.md. |
+| 26.10.2026 | PR #954 gemergt (`9670eb6`): Zeitrahmen je Filter und verneinte Formationen (`technical-query` 1.4.0, `query-text` 1.4.0), Goldsatz 80/80. Ein seit 51 Minuten ohne Runner wartender Job (Currency & FX „marker“) wurde einmal neu gestartet und war grün. |
+| 26.10.2026 | PR #964 eröffnet (Fachmodell, kein automatischer Merge): Parabolic SAR an Umkehrbars nach Wilder (`indicators` 1.2.1). Vorher/Nachher: 3.837 SAR-Werte an Umkehrbars, 0 Richtungswechsel, `psarUp` 0/5.655 geändert. Entscheidung beim Owner. |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |

@@ -375,15 +375,49 @@ def write_history_shards(directory, histories):
     return sorted(written)
 
 
+class HistoryShardError(ValueError):
+    """A consumer-history shard is unreadable or damaged; the run stops instead of dropping its issuers."""
+
+
 def read_history_shards(directory):
-    """{cik: history} from the shards written by write_history_shards."""
+    """{cik: history} from the shards written by write_history_shards.
+
+    Raises HistoryShardError for a shard that is not valid gzip / JSON, carries another
+    schema or shard key, or holds a CIK of another shard - never skips it silently.
+    """
     import gzip
+    import zlib
     from pathlib import Path
     out = {}
     for path in sorted(Path(directory).glob("*.json.gz")):
-        doc = json.loads(gzip.decompress(path.read_bytes()))
-        if doc.get("schema") == HISTORY_SHARD_SCHEMA:
-            out.update(doc.get("issuers") or {})
+        def bad(why):
+            return HistoryShardError(f"CONSUMER_HISTORY_SHARD_INVALID: {path}: {why}")
+        try:
+            raw = gzip.decompress(path.read_bytes())
+        except (OSError, EOFError, zlib.error) as exc:
+            raise bad(f"not valid gzip ({exc})") from exc
+        try:
+            doc = json.loads(raw)
+        except ValueError as exc:
+            raise bad(f"not valid JSON ({exc})") from exc
+        if not isinstance(doc, dict) or doc.get("schema") != HISTORY_SHARD_SCHEMA:
+            raise bad(f"schema {doc.get('schema') if isinstance(doc, dict) else None!r}, expected {HISTORY_SHARD_SCHEMA}")
+        key = path.name[: -len(".json.gz")]
+        if doc.get("shard") != key:
+            raise bad(f"shard {doc.get('shard')!r} does not match the file name")
+        issuers = doc.get("issuers")
+        if not isinstance(issuers, dict):
+            raise bad("issuers missing")
+        for cik, history in issuers.items():
+            try:
+                belongs = normalize_cik(cik) == cik and history_shard_key(cik) == key
+            except ValueError:
+                belongs = False
+            if not belongs:
+                raise bad(f"CIK {cik} does not belong to this shard")
+            if cik in out:
+                raise bad(f"CIK {cik} appears in more than one shard")
+            out[cik] = history
     return out
 
 

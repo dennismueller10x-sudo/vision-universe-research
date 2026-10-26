@@ -817,7 +817,7 @@
       var VT = global.VUTechnical, fam = { TREND: "Trend", MOMENTUM: "Momentum", VOLATILITY: "Volatilität", VOLUME: "Volumen" };
       var ind = Object.keys(fam).map(function (k) {
         return el("details", { class: "tc-filter", open: k === "TREND" ? true : null }, [el("summary", {}, [el("b", { text: fam[k] }), glyph("chevron", "tc-chev tc-rot")]),
-          el("div", { class: "tc-filter-body" }, el("dl", { class: "tc-defs" }, VT.Indicators.CATALOG.filter(function (c) { return c.family === k; }).reduce(function (a, c) {
+          el("div", { class: "tc-filter-body" }, el("dl", { class: "tc-defs" }, VT.Indicators.CATALOG.filter(function (c) { return c.family === k && !c.catalogOnly; }).reduce(function (a, c) {
             var params = Object.keys(c.params).map(function (p) { return p + " " + c.params[p]; }).join(", ");
             return a.concat([el("dt", { text: c.name }), el("dd", { text: c.definition + (params ? " · Standard: " + params : "") + " · Aufwärmphase: " + c.warmup(c.params) + " Bars" })]);
           }, [])))]);

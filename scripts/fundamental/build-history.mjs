@@ -68,14 +68,25 @@ export const CONSUMER_HISTORY_SCHEMA = 'vu-consumer-history-1.0.0';
 /* Aeltere Jahre aus derselben Normalisierung vor die Jahresreihen legen. Nur, wenn die Historie zu genau dieser
  * Verbraucherdatei gehoert (Schema, CIK, Politik, Spalten, Quelle) und an ihrem ersten Jahr endet - sonst null. */
 export const CONSUMER_HISTORY_SHARD_SCHEMA = 'vu-consumer-history-shard-1.0.0';
-/** Map cik -> Historie aus den Scherben (scripts/quant/sec/consumer.py#write_history_shards). */
+/** Map cik -> Historie aus den Scherben (scripts/quant/sec/consumer.py#write_history_shards).
+ * Eine unlesbare oder beschaedigte Scherbe bricht ab (CONSUMER_HISTORY_SHARD_INVALID), statt still ein
+ * Vierundsechzigstel der Historien wegzulassen: ein Release mit stumm verkuerzter Historie waere falsch. */
 export async function consumerHistories(dir) {
   const out = new Map();
   if (!existsSync(dir)) return out;
+  const bad = (n, why) => Error(`CONSUMER_HISTORY_SHARD_INVALID: ${join(dir, n)}: ${why}`);
   for (const n of (await readdir(dir)).filter((x) => /^\d{2}\.json\.gz$/.test(x)).sort()) {
-    let doc; try { doc = JSON.parse(gunzipSync(await readFile(join(dir, n)))); } catch { continue; }
-    if (doc?.schema !== CONSUMER_HISTORY_SHARD_SCHEMA) continue;
-    for (const [cik, h] of Object.entries(doc.issuers || {})) out.set(cik, h);
+    let raw, doc;
+    try { raw = gunzipSync(await readFile(join(dir, n))); } catch (e) { throw bad(n, `kein gueltiges gzip (${e.code || e.message})`); }
+    try { doc = JSON.parse(raw); } catch (e) { throw bad(n, `kein gueltiges JSON (${e.message})`); }
+    if (doc?.schema !== CONSUMER_HISTORY_SHARD_SCHEMA) throw bad(n, `Schema ${JSON.stringify(doc?.schema)} statt ${CONSUMER_HISTORY_SHARD_SCHEMA}`);
+    if (doc.shard !== n.slice(0, 2)) throw bad(n, `Scherbe ${JSON.stringify(doc.shard)} passt nicht zum Dateinamen`);
+    if (!doc.issuers || typeof doc.issuers !== 'object' || Array.isArray(doc.issuers)) throw bad(n, 'issuers fehlt');
+    for (const [cik, h] of Object.entries(doc.issuers)) {
+      if (!/^\d{10}$/.test(cik) || String(Number(cik) % 64).padStart(2, '0') !== doc.shard) throw bad(n, `CIK ${cik} gehoert nicht in diese Scherbe`);
+      if (out.has(cik)) throw bad(n, `CIK ${cik} steht in mehreren Scherben`);
+      out.set(cik, h);
+    }
   }
   // Uebergang: bis der erste Erzeugerlauf die Scherben schreibt, liegen noch Einzeldateien je CIK im Repository.
   if (!out.size) {
