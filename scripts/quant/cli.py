@@ -1511,7 +1511,7 @@ def cmd_consumer(args):
     compact bundle per CIK plus an index by ticker and the measured coverage.
     """
     from quant.sec import fsds
-    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, load_fiscal_year_end_hints,
+    from quant.sec.consumer import (aggregate_coverage, build_consumer_bundle, read_history_shards, write_history_shards, load_fiscal_year_end_hints,
                                     load_issuer_industries, load_product_universe_ciks, load_successor_issuers, summarize_bundle,
                                     with_successors)
     registry = MetricRegistry.load()
@@ -1540,7 +1540,7 @@ def cmd_consumer(args):
     to_read = wanted | {p for preds in successors.values() for p in preds}
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    # Aeltere Geschaeftsjahre als das Fenster der Bundles, je CIK eine eigene Datei (nur Fundamental liest sie).
+    # Aeltere Geschaeftsjahre als das Fenster der Bundles, als gzip-Scherben (nur Fundamental liest sie).
     history_dir = Path(args.history_out)
     history_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
@@ -1557,7 +1557,7 @@ def cmd_consumer(args):
     else:
         source = ((cik, provider.get_company_facts(cik)) for cik in sorted(to_read))
 
-    written, history_written, history_years = set(), set(), []
+    written, histories, history_years = set(), {}, []
     for cik, payload in with_successors(source, successors):
         entry = by_cik[cik]
         payload, added = fsds.supplement_company_facts(payload, supplement.get(cik))
@@ -1582,8 +1582,7 @@ def cmd_consumer(args):
         path.write_text(json.dumps(bundle, separators=(",", ":")) + "\n", encoding="utf-8")
         written.add(path.name)
         if history is not None:
-            (history_dir / path.name).write_text(json.dumps(history, separators=(",", ":")) + "\n", encoding="utf-8")
-            history_written.add(path.name)
+            histories[cik] = history
             history_years.append(len(history["coverage"]["annualYears"]))
         summary = summarize_bundle(bundle)
         cov = bundle["coverage"]
@@ -1597,7 +1596,11 @@ def cmd_consumer(args):
     unmatched = sorted(wanted - seen)
     if not args.keep_stale:
         _prune(out_dir, written)
-        _prune(history_dir, history_written)
+    # Gzip-Scherben statt einer Datei je CIK. Mit --keep-stale bleiben die Historien der
+    # Emittenten, die dieser Lauf nicht gelesen hat, erhalten (wie ihre Bundles).
+    if args.keep_stale:
+        histories = {**read_history_shards(history_dir), **histories}
+    history_shards = write_history_shards(history_dir, histories)
     by_ticker = {}
     for row in index_rows:
         for ticker in row["tickers"]:
@@ -1612,7 +1615,7 @@ def cmd_consumer(args):
     coverage["fsdsSupplement"] = {"source": fsds.SOURCE_LABEL, "archives": [Path(p).name for p in fsds_paths],
                                   "issuers": len(supplemented),
                                   "filings": sum(len(v) for v in supplemented.values())}
-    coverage["historyExtension"] = {"dir": "consumer-history", "issuers": len(history_written),
+    coverage["historyExtension"] = {"dir": "consumer-history", "shards": len(history_shards), "issuers": len(histories),
                                     "years": sum(history_years), "maxYears": max(history_years, default=0)}
     coverage["withoutCikTickers"] = without_cik
     coverage["notInCompanyFactsCiks"] = unmatched

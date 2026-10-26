@@ -78,3 +78,23 @@ test('Datum des Jahresberichts nur aus dem Bericht DIESES Geschaeftsjahres (nie 
   src.annual.revenue.push(row(2011, '2007-09-29', 0.5, '2010-10-27', '0000000001-10-000001'));
   assert.equal(publicationDates(projectHistory(src, 'TEST'), ['2008-11-05', '2009-10-27'])[2009], '2009-10-27');
 });
+
+/* Speicherform: 64 gzip-Scherben (scripts/quant/sec/consumer.py#write_history_shards); bis zum ersten Erzeugerlauf
+ * werden noch Einzeldateien je CIK gelesen. */
+test('Historie aus gzip-Scherben, Einzeldateien nur solange keine Scherbe da ist', async () => {
+  const { mkdtemp, writeFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { gzipSync } = await import('node:zlib');
+  const { consumerHistories, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../../scripts/fundamental/build-history.mjs');
+  const dir = await mkdtemp(join(tmpdir(), 'fu-hist-'));
+  await writeFile(join(dir, 'CIK0000000002.json'), JSON.stringify({ cik: '0000000002', legacy: true }));
+  let got = await consumerHistories(dir);
+  assert.deepEqual([...got.keys()], ['0000000002']);
+  await writeFile(join(dir, '01.json.gz'), gzipSync(JSON.stringify({ schema: CONSUMER_HISTORY_SHARD_SCHEMA, shard: '01', issuers: { '0000000001': history() } })));
+  await writeFile(join(dir, '02.json.gz'), gzipSync(JSON.stringify({ schema: 'fremd', issuers: { '0000000003': {} } })));
+  got = await consumerHistories(dir);
+  assert.deepEqual([...got.keys()], ['0000000001']);
+  assert.ok(withConsumerHistory(source(), got.get('0000000001')));
+  assert.equal((await consumerHistories(join(dir, 'fehlt'))).size, 0);
+});

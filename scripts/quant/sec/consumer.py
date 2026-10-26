@@ -35,10 +35,16 @@ LOGGER = logging.getLogger("vu.sec.consumer")
 
 SCHEMA = "vu-consumer-fundamentals-1.0.0"
 # Older fiscal years than the bundle's window, from the SAME normalization and in the
-# same row layout (consumer-history/CIK*.json). Kept in a file of its own: every
-# reader of the bundle (Discover, Quant, Supertrader ...) keeps exactly its window;
-# only Fundamental reads the longer history.
+# same row layout. Kept apart from the bundle: every reader of the bundle (Discover,
+# Quant, Supertrader ...) keeps exactly its window; only Fundamental reads the longer
+# history, and only while building its release (it is not delivered as such).
 HISTORY_SCHEMA = "vu-consumer-history-1.0.0"
+# Stored as HISTORY_SHARDS gzip shards (consumer-history/NN.json.gz, NN = CIK mod
+# HISTORY_SHARDS), not one file per CIK: 2,444 files of minified JSON were 19.3 MB, the
+# same content in 64 shards is 1.7 MB. Each shard is written byte-reproducibly
+# (sorted issuers, gzip without timestamp), so a run that changes nothing rewrites nothing.
+HISTORY_SHARD_SCHEMA = "vu-consumer-history-shard-1.0.0"
+HISTORY_SHARDS = 64
 
 # Registry metrics the consumer layer publishes (what a company reports).
 REPORTED_METRICS = (
@@ -335,6 +341,50 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
             "annual": history_annual,
         }
     return bundle, history
+
+
+def history_shard_key(cik):
+    return f"{int(normalize_cik(cik)) % HISTORY_SHARDS:02d}"
+
+
+def write_history_shards(directory, histories):
+    """Write {cik: history} as gzip shards; remove every other file in `directory`.
+
+    Returns the shard file names written. Identical input gives identical bytes.
+    """
+    import gzip
+    from pathlib import Path
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    shards = {}
+    for cik in sorted(histories, key=normalize_cik):
+        shards.setdefault(history_shard_key(cik), {})[normalize_cik(cik)] = histories[cik]
+    written = set()
+    for key in sorted(shards):
+        doc = {"schema": HISTORY_SHARD_SCHEMA, "shard": key, "issuers": shards[key]}
+        raw = (json.dumps(doc, separators=(",", ":")) + "\n").encode("utf-8")
+        name = f"{key}.json.gz"
+        path = directory / name
+        payload = gzip.compress(raw, compresslevel=9, mtime=0)
+        if not path.exists() or path.read_bytes() != payload:
+            path.write_bytes(payload)
+        written.add(name)
+    for path in sorted(directory.iterdir()):
+        if path.is_file() and path.name not in written:
+            path.unlink()
+    return sorted(written)
+
+
+def read_history_shards(directory):
+    """{cik: history} from the shards written by write_history_shards."""
+    import gzip
+    from pathlib import Path
+    out = {}
+    for path in sorted(Path(directory).glob("*.json.gz")):
+        doc = json.loads(gzip.decompress(path.read_bytes()))
+        if doc.get("schema") == HISTORY_SHARD_SCHEMA:
+            out.update(doc.get("issuers") or {})
+    return out
 
 
 # ---------------------------------------------------------------- universe run
