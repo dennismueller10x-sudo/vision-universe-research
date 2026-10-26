@@ -6,7 +6,8 @@ Rezepte und Bauskript für die Videos in den Highlights von `/willkommen/`. Konz
 
 | Ort | Inhalt |
 |---|---|
-| `studio/stories/<id>/story.json` | Rezept: Quelle (Dropbox-Pfad), Version, Texteinblendungen mit Zeiten |
+| `studio/stories/<id>/story.json` | Rezept: Quelle (Dropbox-Pfad), Version, Stimme, Texteinblendungen mit Zeiten |
+| `studio/stories/<id>/voice-v<n>.m4a` | Sprecheraufnahme (Helmut), damit ein Neubau ohne neue Kosten geht |
 | `studio/stories/build-story.mjs` | baut die App-Fassung aus Quelle und Rezept |
 | `assets/stories/<id>-v<version>.mp4` und `.jpg` | ausgelieferte App-Fassung und Poster (im Repo) |
 | `willkommen/config/stories.json` | welches Highlight welche Datei zeigt |
@@ -17,9 +18,11 @@ Die Quelldateien in voller Größe (Masters) bleiben in der Dropbox des Owners u
 
 `<id>-v<version>`: `id` ist das Highlight (`start`, später zum Beispiel `discover`, `quant`), `version` zählt jede neue Fassung hoch. Ein neuer Dateiname sorgt dafür, dass kein Browser eine alte Kopie aus dem Cache zeigt. Der Test der Willkommensseite prüft, dass Dateiname und Rezept zusammenpassen.
 
+Jedes Erklärvideo hat einen Sprecher (Regel des Owners). Die Stimme liegt als `voice-v<n>.m4a` neben dem Rezept; `build-story.mjs` legt sie ab `voice.offset` über den Quellton und senkt diesen darunter ab.
+
 ## Neue Fassung, zum Beispiel wenn ein Modul dazukommt
 
-1. Text in `studio/stories/<id>/story.json` ändern (`*Wort*` färbt Lime, `\n` bricht um), `version` um eins erhöhen.
+1. Text in `studio/stories/<id>/story.json` ändern (`*Wort*` färbt Lime, `\n` bricht um), `version` um eins erhöhen. Ändert sich der gesprochene Text: neue Aufnahme mit Helmut (Kosten vorher nennen), `tighten.py`, als `voice-v<version>.m4a` ablegen, Einblendungen auf die neuen Wortzeiten legen.
 2. Quelle aus der Dropbox laden und bauen:
    ```bash
    node studio/stories/build-story.mjs studio/stories/start/story.json --source "<Pfad zu THE ARRIVAL – Original.mp4>" --apply
