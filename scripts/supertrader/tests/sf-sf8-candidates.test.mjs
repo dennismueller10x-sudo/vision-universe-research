@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runPipeline, writeOutputs, truncateTo, diffAgainst, OUTPUT_SCHEMA } from '../source-faithful/product/build-candidates.mjs';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
-import { DETECTORS, withNextSession, KK_MOMENTUM_READING } from '../source-faithful/product/detectors.mjs';
+import { DETECTORS, withNextSession, KK_MOMENTUM_INTERPRETATION } from '../source-faithful/product/detectors.mjs';
 import { detectionReach } from '../source-faithful/product/records.mjs';
 import { rankStrategy } from '../source-faithful/product/ranking.mjs';
 import { STRATEGY_CATALOG } from '../source-faithful/product/catalog.mjs';
@@ -88,7 +88,9 @@ test('SF8-NEGATIVE: DQ-FAIL-Titel (veraltet, Kurslücken) liefern keinen Kandida
   assert.equal(RES.index.dataQuality.FAIL, 2);
   for (const t of ['AL', 'ACA']) assert.ok(!RES.index.candidates.some((c) => c.t === t), t);
   for (const v of views().filter((x) => x.dataQuality.quarantinedSessions.length)) assert.equal(v.stage, 'CHART_CANDIDATE');
-  assert.ok(views().filter((v) => v.ticker === 'WENN').every((v) => v.stage === 'CHART_CANDIDATE' && v.dataQuality.notPass.some((n) => n.id === 'IDENTITY_SPAC_NAME_HINT')));
+  // O-5: der Name allein sperrt nicht; SEC-SIC 6770 schon
+  const wenn = F.securities.find((s) => s.ticker === 'WENN').meta;
+  for (const v of views().filter((x) => x.ticker === 'WENN')) assert.ok(wenn.secBlankCheck ? v.dataQuality.notPass.some((n) => n.id === 'IDENTITY_SEC_BLANK_CHECK') && v.stage === 'CHART_CANDIDATE' : v.dataQuality.notPass.some((n) => n.id === 'IDENTITY_SPAC_NAME_HINT' && n.status === 'INFO'));
 });
 
 test('SF8-STAGES: jeder Datensatz besteht den Produktvertrag; keine Stufe über Readiness- oder DQ-Grenze; VALIDATED nie', () => {
@@ -103,16 +105,16 @@ test('SF8-STAGES: jeder Datensatz besteht den Produktvertrag; keine Stufe über 
   assert.equal(RES.index.counts.validatedTradeSignal, 0);
   // heute nur Strategien mit eigenem Lifecycle-Plan für die Folgesitzung; Turtle ausdrücklich nicht (Owner-Entscheidung O-1)
   const modeled = new Set(records().filter((r) => r.stage === 'MODELED_TRADE_PLAN').map((r) => r.candidateId));
-  for (const c of modeled) assert.ok(['C03', 'C07', 'C12'].includes(c), c);
+  for (const c of modeled) assert.ok(['C03', 'C07', 'C08', 'C12'].includes(c), c);
   for (const v of views()) assert.ok(STAGE_ORDER.indexOf(v.stage) <= STAGE_ORDER.indexOf(v.ceiling));
 });
 
-test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle, EP, PS, Pocket Pivot, Holy Grail, Weinstein, SEPA nie mit Plan', () => {
+test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle (O-1), EP, PS, Pocket Pivot, Holy Grail, Weinstein, SEPA nie mit Plan', () => {
   for (const v of views()) {
     if (v.stage !== 'MODELED_TRADE_PLAN') assert.equal(v.plan, null, `${v.candidateId} ${v.ticker}`);
     else assert.ok(v.plan.modelAssumptions.length > 0);
   }
-  for (const v of views().filter((x) => ['C01', 'C02', 'C04', 'C05', 'C06', 'C08', 'C09', 'C10', 'C11', 'C13'].includes(x.candidateId))) assert.equal(v.plan, null);
+  for (const v of views().filter((x) => ['C01', 'C02', 'C04', 'C05', 'C06', 'C09', 'C10', 'C11', 'C13'].includes(x.candidateId))) assert.equal(v.plan, null);
   const ps = views().filter((v) => v.candidateId === 'C10');
   assert.ok(ps.length && ps.every((v) => v.features.direction === 'SHORT_RESEARCH_MODEL' && /DATA_BLOCKED/.test(v.features.borrow)));
   assert.ok(views().filter((v) => v.candidateId === 'C09').every((v) => /DATA_BLOCKED/.test(v.features.catalyst)));
@@ -196,14 +198,17 @@ test('SF8-WORDING: keine Handelssignal-, Kauf- oder Validierungssprache in Katal
   assert.deepEqual(STRATEGY_CATALOG.map((c) => c.strategyId), CONTRACTS.map((c) => c.strategyId));
 });
 
-test('SF8-KK-MOMENTUM: Momentum sortiert nur (gate: false); ohne freigegebene Lesart (O-6) bleibt C08 Chart-Kandidat', () => {
-  assert.equal(KK_MOMENTUM_READING.gate, false); assert.equal(KK_MOMENTUM_READING.status, 'PENDING_OWNER_DECISION_O6');
-  const kk = views().filter((v) => v.candidateId === 'C08');
-  assert.ok(kk.length > 0);
-  for (const v of kk) { assert.equal(v.stage, 'CHART_CANDIDATE'); assert.deepEqual(v.pending, [{ ruleId: 'KK-SF-BO-MOMENTUM', status: 'PENDING_OWNER_DECISION_O6' }]); assert.ok(!v.notMet.includes('KK-SF-BO-MOMENTUM')); }
-  // ein Titel ohne Ausbruch ist kein Kandidat, ganz gleich wie hoch sein Momentum ist
-  const s = securities().find((x) => x.ticker === 'AAPL');
-  assert.equal(DETECTORS.SF_KK_BREAKOUT(s, { momentum: new Map([[s.id, { bestPercentile: 100 }]]), dq: { checks: [] } }).detected, false);
+test('SF8-KK-MOMENTUM: O-6 – Perzentil >= 98 als gekennzeichnete Modell-Interpretation, nie Ausschluss, keine Originalregel', () => {
+  assert.equal(KK_MOMENTUM_INTERPRETATION.gate, false); assert.equal(KK_MOMENTUM_INTERPRETATION.sourceRule, false); assert.equal(KK_MOMENTUM_INTERPRETATION.threshold, 98);
+  const s = securities().find((x) => x.ticker === 'BOLT'), dq = { checks: [{ id: 'LIQUIDITY_RESEARCH_UNIVERSE', status: 'PASS' }] };
+  const hi = DETECTORS.SF_KK_BREAKOUT(s, { momentum: new Map([[s.id, { bestPercentile: 99.1 }]]), dq });
+  assert.equal(hi.setupRules[0].met, true); assert.equal(hi.setupRules[0].interpretation, 'MI-SF8-KK-MOMENTUM-P98'); assert.ok(hi.plan, 'Plan des KK-Lifecycles');
+  const lo = DETECTORS.SF_KK_BREAKOUT(s, { momentum: new Map([[s.id, { bestPercentile: 97.9 }]]), dq });
+  assert.equal(lo.detected, true, 'unter 98 bleibt der Titel Kandidat (kein Ausschluss)'); assert.equal(lo.setupRules[0].met, false); assert.equal(lo.plan, null);
+  for (const v of views().filter((x) => x.candidateId === 'C08')) assert.deepEqual(v.interpretations.map((i) => i.id), ['MI-SF8-KK-MOMENTUM-P98']);
+  // ohne Ausbruch kein Kandidat, ganz gleich wie hoch das Momentum ist
+  const a = securities().find((x) => x.ticker === 'AAPL');
+  assert.equal(DETECTORS.SF_KK_BREAKOUT(a, { momentum: new Map([[a.id, { bestPercentile: 100 }]]), dq }).detected, false);
 });
 
 test('SF8-PRODUCER-OUT: Producer verlangt --out und verweigert committete Datenbereiche', () => {
