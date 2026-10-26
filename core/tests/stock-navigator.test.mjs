@@ -16,21 +16,22 @@ test("Kacheln · Reihenfolge, aktuelle Welt; Fundamental wie jede Welt nach Nach
   const ctx = SC.fromUs("NVDA");
   const h = NAV.html(ctx, SC.availability(ctx), "quant");
   const c = chips(h);
-  assert.equal(c.length, 7);
+  assert.equal(c.length, 8);
   assert.deepEqual(c.map((a) => /data-module="(\w+)"/.exec(a)[1]), SC.PRODUCTS);
   assert.match(c[1], /aria-current="page"/);
   /* Ohne Manifest: Fundamental neutral mit Link wie die anderen Welten, nicht mehr "In Planung". */
-  assert.match(c[5], /href="\/fundamental\/#\/NVDA" /);
-  assert.match(c[5], /data-state="unknown"/);
+  assert.match(c[6], /href="\/fundamental\/#\/NVDA" /);
+  assert.match(c[6], /data-state="unknown"/);
+  assert.match(c[2], /href="\/technical\/#\/chart\/NVDA" /);
   assert.doesNotMatch(h, /In Planung/);
   /* Mit Nachweis verfuegbar, ohne SEC-Zahlen (NO_DATA) kein Link. */
   const yes = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: ["NVDA"] } } }), "quant"));
-  assert.match(yes[5], /data-state="available"/);
+  assert.match(yes[6], /data-state="available"/);
   const no = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: [] } } }), "quant"));
-  assert.match(no[5], /aria-disabled="true"/); assert.doesNotMatch(no[5], /href=/);
+  assert.match(no[6], /aria-disabled="true"/); assert.doesNotMatch(no[6], /href=/);
   /* Ohne Beleg: neutral, Link bleibt, kein Haken. */
-  assert.match(c[4], /href="\/supertrader\/stock\/NVDA\/" /);
-  assert.match(c[4], /data-state="unknown"/);
+  assert.match(c[5], /href="\/supertrader\/stock\/NVDA\/" /);
+  assert.match(c[5], /data-state="unknown"/);
 });
 
 test("Kacheln · Europa: nur Discover verlinkt, die anderen erklaeren die Region", () => {
@@ -46,7 +47,7 @@ test("Kacheln · Europa: nur Discover verlinkt, die anderen erklaeren die Region
 test("Kacheln · nachweislich fehlende Abdeckung ist kein Link", () => {
   const ctx = SC.fromUs("AAL");
   const h = NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { supertrader: { US: [] } } }), "quant");
-  const st = chips(h)[4];
+  const st = chips(h)[5];
   assert.doesNotMatch(st, /href=/);
   assert.match(h, /Supertrader: Für AAL liegt hier keine Abdeckung vor\./);
 });

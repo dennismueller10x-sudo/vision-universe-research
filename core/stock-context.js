@@ -41,10 +41,10 @@
 
   if (!Identity || typeof Identity.securityIdForTicker !== "function") throw new Error("VUCore.Identity fehlt (core/identity.js vor stock-context.js laden)");
 
-  var VERSION = "core-stock-context-1.1.0";
+  var VERSION = "core-stock-context-1.2.0";
   var REGIONS = Object.freeze(["US", "EUROPE"]);
   /* Reihenfolge der Kacheln im Navigator. */
-  var PRODUCTS = Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]);
+  var PRODUCTS = Object.freeze(["discover", "quant", "technical", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]);
   var STATES = Object.freeze(["available", "unavailable", "unknown", "planned"]);
 
   /* US-Kuerzel so, wie Quant, Elliott, Supertrader und Discover sie fuehren (BRK-B, BF-A).
@@ -58,7 +58,7 @@
   /* Welche Produkte eine Region adressieren koennen. Europa hat heute nur Discover
      (Quant-Universum, Technik-Index und Supertrader-Seiten fuehren keine .DE/.PA-Listings). */
   var ROUTABLE = Object.freeze({
-    US: Object.freeze(["discover", "quant", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]),
+    US: Object.freeze(["discover", "quant", "technical", "technik", "elliott", "supertrader", "fundamental", "hedgefonds"]),
     EUROPE: Object.freeze(["discover"])
   });
 
@@ -152,6 +152,8 @@
     switch (product) {
       case "discover": return "/discover/#/s/US_REAL/" + t;
       case "quant": return "/quant/#/aktie/" + t;
+      /* Technical: Chart Studio (technical/engine/model.js#parseRoute: #/chart/<T>). */
+      case "technical": return "/technical/#/chart/" + t;
       /* Technik ist das Chartbild unter /elliott/#/<T> (quant/app/app.js#canonicalElliott),
          Elliott die Profi-Ansicht desselben Bildes. */
       case "technik": return "/elliott/#/" + t;
@@ -192,6 +194,8 @@
     if (path === "/quant/" && parts[0] === "elliott" && parts[1] && parts.length === 2) return us(pro ? "elliott" : "technik", parts[1]);
     /* elliott/engine/home-model.js#parseHash: genau ein fuehrender Schraegstrich, keine Dekodierung. */
     if (path === "/elliott/" && /^\/?[A-Za-z0-9.-]{1,12}\/*$/.test(hpath) && rawParts.length === 1) return us(pro ? "elliott" : "technik", rawParts[0]);
+    /* technical/engine/model.js#parseRoute: #/chart/<T> und #/chart/<T>/signale. */
+    if (path === "/technical/" && parts[0] === "chart" && parts[1] && (parts.length === 2 || (parts.length === 3 && parts[2] === "signale"))) return us("technical", parts[1].toUpperCase());
     /* fundamental/engine/model.js#parseRoute: #/<T> (dekodiert, Grossschreibung); #/methodik ist keine Aktie. */
     if (path === "/fundamental/" && parts.length === 1 && parts[0].toLowerCase() !== "methodik") return us("fundamental", parts[0].toUpperCase());
     /* Hedgefonds: nur die Kuerzel-Adresse; eine CUSIP (#/aktie/69608A108) traegt kein Kuerzel, dort zeichnet die Seite selbst. */

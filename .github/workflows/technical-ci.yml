@@ -1,0 +1,67 @@
+name: Technical CI
+
+# Prueft die Produktwelt Technical: Indikatoren (Referenztests auf realen Daten), Formationen
+# (kein Look-ahead), Abfrage-Engine, Oberflaechenmodell und Datensatzvertrag. Nur lesen.
+
+on:
+  pull_request:
+    paths:
+      - 'technical/**'
+      - 'quant/engines/technical/**'
+      - 'quant/tests/technical-*'
+      - 'quant/tests/fixtures/technical-reference-*'
+      - 'scripts/technical/world/**'
+      - 'assets/site-navigation.*'
+      - 'assets/stock-navigator.*'
+      - 'core/stock-context.js'
+      - 'scripts/vu2/release-id.mjs'
+      - '.github/workflows/technical-*.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'technical/**'
+      - 'quant/engines/technical/**'
+      - 'scripts/technical/world/**'
+      - '.github/workflows/technical-*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: technical-ci-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine-Tests
+        run: node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-formations.test.mjs quant/tests/technical-query.test.mjs
+      - name: Bestehende Technical-Engines unveraendert gruen
+        run: node --test quant/tests/technical-*.test.mjs quant/tests/ti-*.test.mjs
+      - name: Produktwelt und Datensatzvertrag
+        run: node --test technical/tests/*.test.mjs
+      - name: Hero-Block synchron
+        run: node scripts/design/sync-product-hero.mjs --check
+      - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        run: |
+          npm install --prefix /tmp/tc-qa playwright@1.58.2
+          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Pruefbericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-browser-qa
+          path: ${{ runner.temp }}/technical-qa
+          if-no-files-found: ignore
+          retention-days: 14
