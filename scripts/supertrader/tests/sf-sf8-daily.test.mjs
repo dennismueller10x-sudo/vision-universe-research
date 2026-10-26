@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createCalendar } from '../source-faithful/product/eod-adapter.mjs';
-import { checkInputs, lastCompletedSession, missingSources, GATE_STATUS } from '../source-faithful/product/input-gate.mjs';
+import { checkInputs, lastCompletedSession, missingSources, staleAuxiliary, AUX_MAX_AGE_DAYS, GATE_STATUS } from '../source-faithful/product/input-gate.mjs';
 
 const calendar = createCalendar();
 
@@ -38,4 +38,13 @@ test('SF8-GATE-MISSING: fehlende Pflichtquellen blockieren vor jeder Datumsprüf
 test('SF8-GATE-CALENDAR: außerhalb der Kalenderabdeckung keine Aussage über Sitzungen', () => {
   const narrow = { ...calendar, inCoverage: () => false };
   assert.equal(checkInputs({ today: '2026-10-26', asOf: '2026-10-23', calendar: narrow }).status, GATE_STATUS.CALENDAR);
+});
+
+test('SF8-GATE-AUX: veraltete oder undatierte Nebenquellen (Wochenreihen, Kontinuität, SIC, Namen, Stammdaten) blockieren', () => {
+  assert.deepEqual(staleAuxiliary(undefined, '2026-10-26'), [], 'Stand im Repository: alle Nebenquellen frisch');
+  const late = staleAuxiliary(undefined, '2027-01-15').map((x) => x.source).sort();
+  assert.deepEqual(late, Object.keys(AUX_MAX_AGE_DAYS).sort());
+  const r = checkInputs({ today: '2026-11-20', asOf: '2026-11-19', calendar });
+  assert.equal(r.status, GATE_STATUS.STALE, 'Tagesbalken aktuell, Nebenquellen zu alt');
+  assert.ok(r.staleSources.some((x) => x.source === 'sic'));
 });

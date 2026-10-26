@@ -273,6 +273,7 @@ test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, 
   assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
   assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
   assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
+  assert.match(code, /domains\.json[^\n]*supertrader\/data\/sf-candidates[^\n]*\n\s*echo "::error::/, 'Commit nur mit registriertem Erzeuger (V2)');
   for (const block of code.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, 'Eingaben nur über env:');
   assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
   assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');

@@ -87,6 +87,11 @@ jobs:
         run: |
           set -euo pipefail
           ziel=supertrader/data/sf-candidates
+          # Voraussetzung V2: ohne registrierten Erzeuger in core/registry/domains.json waeren die Dateien fremde Artefakte
+          if ! node -e 'process.exit(JSON.stringify(require("./core/registry/domains.json")).includes("supertrader/data/sf-candidates") ? 0 : 1)'; then
+            echo "::error::supertrader/data/sf-candidates ist nicht in core/registry/domains.json registriert (Voraussetzung V2) - kein Commit."
+            exit 1
+          fi
           rm -rf "$ziel"
           mkdir -p "$ziel"
           cp "$OUT/summary.json" "$OUT/index.json" "$ziel/"

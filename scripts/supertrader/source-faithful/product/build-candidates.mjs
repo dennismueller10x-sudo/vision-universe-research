@@ -171,7 +171,7 @@ async function main() {
   let gate = null;
   if (arg('--require-current')) {
     gate = checkInputs({ today: arg('--require-current'), asOf, calendar });
-    console.log(`[sf8-candidates] Eingangsprüfung ${gate.status}: Stand ${gate.asOf}, erwartet ${gate.expectedSession}${gate.missing.length ? ', fehlt ' + gate.missing.join(',') : ''}`);
+    console.log(`[sf8-candidates] Eingangsprüfung ${gate.status}: Stand ${gate.asOf}, erwartet ${gate.expectedSession}${gate.missing.length ? ', fehlt ' + gate.missing.join(',') : ''}${gate.staleSources?.length ? ', veraltet ' + gate.staleSources.map((x) => `${x.source} (${x.generatedAt ?? 'ohne Datum'}, max. ${x.maxDays} Tage)`).join(', ') : ''}`);
     if (gate.status !== GATE_STATUS.CURRENT) process.exit(3);
   }
   const res = runPipeline({ securities, rejectedInputs: loaded.rejected, asOf, calendar, continuity, weeklyOf: (id) => loadWeeklyCloses(id), bench: loadBenchmark(ROOT, asOf), sourceFiles: loaded.sourceFiles, universeInfo: { id: universe.universeId, symbols: universe.symbols.size, excludedNonStock: universe.excluded.length, withDailySeries: loaded.securities.length } });
