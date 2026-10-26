@@ -357,6 +357,9 @@
       else if (k === 'k' && /^[a-z0-9_]{2,40}$/.test(v)) out.metric = v;
       else if (k === 't' && /^[a-z]{3,12}$/.test(v)) out.tab = v;
       else if (k === 'p' && (v === 'q' || v === 'j')) out.period = v === 'q' ? 'quarterly' : 'annual';
+      // Kennzahl-Detail: weitere Kennzahlen im selben Verlauf (&plus=a.b.c) und Darstellung (&d=achsen|index|getrennt)
+      else if (k === 'plus' && /^[a-z0-9_]{2,40}(\.[a-z0-9_]{2,40}){0,5}$/.test(v)) out.plus = v.split('.');
+      else if (k === 'd' && /^(achsen|index|getrennt)$/.test(v)) out.dmode = v;
     });
     return out;
   }
