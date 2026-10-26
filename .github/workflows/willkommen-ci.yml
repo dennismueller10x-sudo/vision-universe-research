@@ -4,9 +4,9 @@ name: Willkommen CI
 on:
   push:
     branches: [main]
-    paths: ['willkommen/**', '.github/workflows/willkommen-ci.yml']
+    paths: ['willkommen/**', 'assets/stories/**', 'studio/stories/**', '.github/workflows/willkommen-ci.yml']
   pull_request:
-    paths: ['willkommen/**', '.github/workflows/willkommen-ci.yml']
+    paths: ['willkommen/**', 'assets/stories/**', 'studio/stories/**', '.github/workflows/willkommen-ci.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,6 +23,8 @@ jobs:
         with:
           node-version: '22'
       - name: Syntax
-        run: node --check willkommen/app.js
+        run: |
+          node --check willkommen/app.js
+          node --check studio/stories/build-story.mjs
       - name: Inhalt und Seite
         run: node --test "willkommen/tests/*.test.mjs"

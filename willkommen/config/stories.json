@@ -3,18 +3,18 @@
   "_comment": "Erklaerserie der Willkommensseite (Highlights). Von Hand gepflegt. Jede Story 15 bis 45 s, im Schnitt 30 s. Folien: type video (src, poster, duration in s) oder card (eyebrow, title, text, optional cta, duration). Neue Fassung: rev erhoehen, dann leuchtet der Kreis wieder als neu. Reihenfolge = Reihenfolge der Kreise. Pruefung: willkommen/tests/willkommen.test.mjs.",
   "stories": [
     {
-      "id": "willkommen",
+      "id": "start",
       "title": "Start",
       "product": "Vision Universe",
       "icon": "layers",
-      "rev": 1,
+      "rev": 2,
       "slides": [
         {
           "type": "video",
-          "src": "/assets/home/clip/vu-imageclip-9x16.mp4",
-          "poster": "/assets/home/clip/vu-imageclip-9x16.jpg",
-          "duration": 22.5,
-          "label": "Vision Universe in 22 Sekunden"
+          "src": "/assets/stories/start-v1.mp4",
+          "poster": "/assets/stories/start-v1.jpg",
+          "duration": 20.1,
+          "label": "Willkommen bei Vision Universe"
         },
         {
           "type": "card",
@@ -98,7 +98,7 @@
       "title": "Zahlen",
       "product": "Fundamental",
       "icon": "fundamental",
-      "rev": 1,
+      "rev": 2,
       "slides": [
         {
           "type": "card",
@@ -111,7 +111,7 @@
           "type": "card",
           "eyebrow": "Fundamental",
           "title": "Direkt aus den SEC-Meldungen.",
-          "text": "Die Zahlen stammen aus den Pflichtmeldungen der US-Unternehmen, mit Quelle zu jedem Wert.",
+          "text": "Die Zahlen stammen direkt aus den Pflichtmeldungen der Unternehmen, mit Quelle zu jedem Wert.",
           "duration": 7
         },
         {

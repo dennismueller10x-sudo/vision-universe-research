@@ -21,25 +21,30 @@ Aufbau von oben nach unten:
 
 Bedienung der Highlights: rechts tippen weiter, links zurück, gedrückt halten pausiert, nach unten wischen oder `Esc` schließt, Pfeiltasten am Desktop. Nach der letzten Folie läuft das nächste Highlight. Ein gesehenes Cover wird grau (im Browser gemerkt je `id` und `rev`). Bei `rev + 1` leuchtet es wieder.
 
-Folien: `video` (`src`, `poster`, `duration`) oder `card` (Überschrift, Text, optional Knopf zu einer Produktseite). Bis die gesprochenen Videos fertig sind, erklären Karten-Folien jedes Modul. „Start" spielt bereits den vorhandenen Imagefilm (`assets/home/clip/vu-imageclip-9x16.mp4`, 22,5 s, ohne Ton). Dauer je Highlight: 15 bis 45 s, Ziel 30 s; der Test lässt außerhalb nichts durch.
+Folien: `video` (`src`, `poster`, `duration`) oder `card` (Überschrift, Text, optional Knopf zu einer Produktseite). Bis die gesprochenen Videos fertig sind, erklären Karten-Folien jedes Modul. „Start" spielt seit 26.10.2026 den Film „THE ARRIVAL" (siehe unten). Dauer je Highlight: 15 bis 45 s, Ziel 30 s; der Test lässt außerhalb nichts durch.
 
 ## Neuigkeit eintragen
 
 Eintrag oben in `willkommen/config/news.json`: `id` (eindeutig), `date` (`JJJJ-MM-TT`), `tag` (Produkt oder Thema), `title`, `text` (ein bis drei Sätze), optional `link` mit interner Adresse, optional `pinned: true`. Danach `node --test "willkommen/tests/*.test.mjs"`. Keine Kursziele, keine Anlageberatung.
 
-## Neues Video einsetzen
+## Neues Video einsetzen oder ändern
 
-1. Video mit der Reel-Pipeline bauen (`studio/reels/`), 1080 × 1920, H.264, −14,2 LUFS. Für die App eine kleinere Fassung erzeugen (720 × 1280, etwa 2 bis 5 MB, `+faststart`), Posterbild aus dem ersten Bild.
-2. Ablegen unter `assets/stories/<id>.mp4` und `assets/stories/<id>.jpg`.
-3. In `stories.json` die Karten-Folien durch eine `video`-Folie ersetzen (eine Karte mit Knopf zum Modul darf dahinter bleiben), `rev` erhöhen.
-4. `node --test "willkommen/tests/*.test.mjs"`.
-
-Neues Highlight: Eintrag in `stories.json` (Titel höchstens 12 Zeichen, Icon aus `assets/product-icons.svg`).
+Ablauf, Benennung (`<id>-v<version>`) und Speicher: [studio/stories/README.md](../../studio/stories/README.md). Kurz: Quelle bleibt in der Dropbox, Rezept mit den Einblendungen liegt unter `studio/stories/<id>/story.json`, `build-story.mjs --apply` baut die App-Fassung nach `assets/stories/` und trägt sie im Highlight ein. Kommt ein Modul dazu, Text im Rezept ändern, `version` erhöhen, neu bauen.
 
 ## Offen
 
 - Weiterleitung nach der Anmeldung: Heute führt die Zugangsmaske (`scripts/access-gate/`) auf die angefragte Seite oder `/`. Sobald es Konten gibt, zeigt der Login auf `/willkommen/` (eigene Änderung im Bereich Zugang, nicht in diesem PR).
 - Eintrag „Start" im globalen Menü (`assets/site-navigation.js`), eigene Änderung.
+
+## Highlight „Start": THE ARRIVAL
+
+Quelle: Dropbox des Owners, `/THE ARRIVAL – Original.mp4` (1080 × 1920, 20 s, Musik ohne Sprache, eigenes Material des Owners). Für die App:
+
+- Vier Texteinblendungen in Marke und Schrift (lokal gerendert, keine Kosten): „Willkommen bei Vision Universe." (0,3 s), „Echte Daten. Statt Bauchgefühl." (4,8 s), „Aktien. Zahlen. Charts. Strategien. Alles an einem Ort, alles verbunden." (9,4 s), Logo mit „Investieren mit Weitblick." und „Tippe auf den nächsten Kreis und lerne jedes Modul kennen." (14,6 s bis Ende).
+- 720 × 1280, H.264 CRF 24, `+faststart`, Ton −16 LUFS (App, leiser als Reels mit −14,2), AAC 128 kb/s, etwa 3 MB: `assets/stories/start-v1.mp4`, Poster `start-v1.jpg` (Bild bei 1,2 s). Rezept: `studio/stories/start/story.json`, gebaut mit `studio/stories/build-story.mjs`.
+- Danach folgt die Karte „Ein Kreis, ein Modul." (7 s), zusammen 27 s.
+
+Sprache in allen Texten: keine Einschränkung auf US-Aktien (Entscheidung des Owners 26.10.2026), damit später europäische oder deutsche Aktien ohne neue Videos dazukommen können. Konkrete Mengen nur, wenn sie für alle Märkte stimmen.
 
 ## Unterschiede zu Instagram-Reels
 
@@ -60,7 +65,7 @@ Geprüfte Zahlen (Stand 24.10.2026): 6.125 US-Aktien im Discover-Universum (`dis
 ### 1 Willkommen (etwa 30 s, 72 Wörter)
 
 > Willkommen bei Vision Universe. Hier verstehst du Aktien mit echten Daten statt Bauchgefühl.
-> Über sechstausend US-Aktien, Zahlen direkt aus den Pflichtmeldungen der Unternehmen, Chartbild, Faktoren und Strategien. Alles an einem Ort, alles miteinander verbunden.
+> Über sechstausend Aktien, Zahlen direkt aus den Pflichtmeldungen der Unternehmen, Chartbild, Faktoren und Strategien. Alles an einem Ort, alles miteinander verbunden.
 > Ein Tipp auf eine Aktie, und du siehst jede Perspektive. Und deine Altersvorsorge planst du gleich mit.
 > Wir zeigen Modelle, keine Anlageberatung.
 > Tippe auf den nächsten Kreis und lerne jedes Modul in dreißig Sekunden kennen.
@@ -89,7 +94,7 @@ Bilder: Logo bei t = 0 mit Großsatz „Echte Daten statt Bauchgefühl", Zähler
 
 > Verdient dieses Unternehmen wirklich Geld? Fundamental zeigt es dir in Zahlen.
 > Über sechzig Kennzahlen: Umsatz, Gewinn, Margen, Cashflow, Schulden und Bewertung, jährlich und quartalsweise.
-> Die Werte kommen direkt aus den Pflichtmeldungen bei der US-Börsenaufsicht, mit Quelle zu jedem Wert.
+> Die Werte kommen direkt aus den Pflichtmeldungen der Unternehmen, mit Quelle zu jedem Wert.
 > Und weil eine Zahl allein wenig sagt, steht jede im Vergleich zur eigenen Branche.
 
 Beweis im Bild: NVIDIA-Umsatz 2015 bis 2026 als Balken (gleiche Daten wie Startseite, aus SEC-Meldungen).
