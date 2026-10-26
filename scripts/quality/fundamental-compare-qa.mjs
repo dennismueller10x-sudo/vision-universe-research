@@ -196,11 +196,17 @@ for (const [w, h] of viewports) {
       await legibility(b.page, at + ' KGV+FCF');
       const r1 = await tapPlot(b.page, '.fu-mc', 0), r2 = await tapPlot(b.page, '.fu-mc', 1);
       expect(at, /KGV/.test(r2.rows[0]) && /Free Cashflow/.test(r2.rows[1]) && /keine Angabe/.test(r1.rows[1]), 'Ablesen: Luecke vor dem ersten Free Cashflow bleibt „keine Angabe“', r1.rows.join(' / '));
-      // Max im Vergleich: Achse beginnt mit der laengeren Reihe (KGV), Free Cashflow davor Luecke; erstes Jahr je Kennzahl genannt
+      // Max im Vergleich: Achse beginnt mit der frueher beginnenden Reihe, die spaeter beginnende hat dort eine Luecke;
+      // erstes Jahr je Kennzahl genannt. Welche Reihe frueher beginnt, sagen die Daten (Startjahre aus dem Hinweis).
       await tapEl(b.page, '.fu-seg[aria-label=Zeitraum] .fu-seg-b:nth-child(4)');
-      const mx = await b.page.evaluate(() => ({ notes: document.querySelector('.fu-mc-notes').textContent, first: document.querySelector('.fu-lines-x span') && document.querySelector('.fu-lines-x span').textContent }));
+      const mx = await b.page.evaluate(() => ({ notes: document.querySelector('.fu-mc-notes').textContent }));
       const rm = await tapPlot(b.page, '.fu-mc', 0);
-      expect(at, /Max: alle verfügbaren Geschäftsjahre – KGV seit GJ \d{4} \(\d+ Jahre\) · Free Cashflow seit GJ \d{4}/.test(mx.notes) && /keine Angabe/.test(rm.rows[1]) && !/keine Angabe/.test(rm.rows[0]),
+      const sinceOf = (label) => Number((new RegExp(label + ' seit GJ (\\d{4})').exec(mx.notes) || [])[1]);
+      const yPe = sinceOf('KGV'), yFcf = sinceOf('Free Cashflow'), firstMax = Math.min(yPe, yFcf);
+      const gapOk = yPe === yFcf ? !/keine Angabe/.test(rm.rows[0]) && !/keine Angabe/.test(rm.rows[1])
+        : /keine Angabe/.test(rm.rows[yPe > yFcf ? 0 : 1]) && !/keine Angabe/.test(rm.rows[yPe > yFcf ? 1 : 0]);
+      expect(at, /Max: alle verfügbaren Geschäftsjahre – KGV seit GJ \d{4} \(\d+ Jahre\) · Free Cashflow seit GJ \d{4}/.test(mx.notes)
+        && new RegExp('Geschäftsjahr ' + firstMax + '\\b').test(rm.head) && gapOk,
         'Max im Vergleich: nicht auf die kuerzere Reihe verkuerzt, Startjahr je Kennzahl', rm.head + ' · ' + (mx.notes.match(/Max:[^.]*\./) || [''])[0]);
       await shot(b.page, `nvda-pe-fcf-${w}-${theme}`);
       // Drei Einheiten: Index, dann getrennt
