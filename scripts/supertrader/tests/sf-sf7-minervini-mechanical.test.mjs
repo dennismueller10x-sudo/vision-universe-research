@@ -216,6 +216,9 @@ test('ADV-SF7-MECH-TOPVOL-WINDOWS: the Trend Template run starts after the MA50 
   const r = topVolumeDecline(bars, { setupDate: day(428), entryDate: day(429), exitDate: null });
   assert.equal(r.trendTemplateRun.windowStartDate, day(ttStart)); assert.equal(r.trendTemplateRun.topVolumeDeclineBeforeExit, true);
   assert.equal(r.aboveMa200Run.windowTruncated, false); assert.ok(r.aboveMa200Run.windowStartDate < day(350)); assert.equal(r.aboveMa200Run.topVolumeDeclineBeforeExit, false);
+  // exact window start: the session after the last close below smaAt(200) up to the setup (pre-merge verification of #940, N1)
+  let lb = -1; for (let k = 0; k <= 428; k++) { const m = smaAt(bars, k, 200); if (m !== null && bars[k].close < m) lb = k; }
+  assert.ok(lb > 0); assert.equal(r.aboveMa200Run.windowStartDate, day(lb + 1));
   // the windows start at or before the setup: corrupting everything after the scan end changes nothing
   const closed = { setupDate: day(428), entryDate: day(429), exitDate: day(434) };
   assert.deepEqual(topVolumeDecline(corruptAfter(bars, 433), closed), topVolumeDecline(bars, closed));
@@ -232,6 +235,9 @@ test('SF7-MECH-RELDEPTH: stock vs market decline from closes, SAME_WINDOW and TR
     assert.ok(Math.abs(r[w].stockDecline - 0.30) < 1e-9, w); assert.ok(Math.abs(r[w].marketDecline - 0.12) < 1e-9, w);
     assert.ok(Math.abs(r[w].relativeDepth - 2.5) < 1e-9, w); assert.equal(r[w].aboveStrict, true); assert.equal(r[w].aboveLoose, false);
   }
+  // closes, not lows: a deep intraday low inside the base leaves the reading unchanged (pre-merge verification of #940, N2)
+  const deepLow = b.map((x, k) => (k === 320 ? { ...x, low: 40 } : x));
+  assert.deepEqual(relativeBaseDepth(deepLow, 340, benchIndex(m12)), r);
   // a 5 % market dip is below the floor in both windows
   const m5 = b.map((x, k) => ({ date: x.date, close: k < 300 ? 100 : k <= 310 ? 100 - 0.5 * (k - 300) : 95 }));
   const r5 = relativeBaseDepth(b, 340, benchIndex(m5));

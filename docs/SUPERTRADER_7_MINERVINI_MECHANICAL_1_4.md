@@ -251,3 +251,47 @@ Lesehinweise:
 - Revision 2 der Basiszählung zählt Erholungen über einen alten Schluss, aber unter dem Intraday-Basishoch nicht mehr als Ausbruch. Dadurch wandern Setups aus hohen Basiszahlen nach unten (SEPA ≥ 4: 127 → 98; Power Play 5+: 13 → 8). Weil der Basisbeginn jetzt am Intraday-Hoch liegt und reife Basen ihren Beginn behalten, verschieben sich auch einzelne Fälle nach oben (SEPA Basis 3: 120 → 141). Das ist eine Zählung, keine Bewertung und keine Grundlage für eine Variantenwahl.
 - 1.0.0 und 1.1.0 zählen Basen gleich; 1.1.0 änderte nur die Unsicherheitsflags. Der `markDate` der offenen REF-Trades (SEPA 17, Power Play 9) ist der letzte Kalendertag des Laufs; deshalb ändert die `markDate`-Grenze (LOW-1) in diesem Lauf nichts, sie schützt nur gegen Reihen, die länger sind als der Lauf.
 - Die `smaAt`-genaue MA200-Entscheidung (LOW-3) ändert in diesem Lauf keine Neustart-Zählung.
+
+## 10. Nachweis vor dem Merge (Bedingungen des Eigentümers vom 26.10.2026)
+
+Unabhängige Prüfung, nur lesend, auf Head `f394756`. Grundlage: 27 Einzelmutationen gegen die Tests, die Läufe 40226429160 / 40228813041 / 40232389268 und die Inventur, die bitgleich aus dem Erzeuger entsteht. Zeilenangaben beziehen sich auf `minervini-sf7-mechanical.mjs`.
+
+| Befund (erstes Review: 4 MEDIUM, 5 LOW) | Status | Beleg | Test, Mutation gefangen |
+|---|---|---|---|
+| M1 Setup-Schluss schließt die eigene Basis ab | behoben | `k < s0` (Basiszählung) | `ADV-…-SETUP-SESSION`, `SF7-MECH-BASECOUNT`; Mutation `k <= s0` gefangen |
+| M2 TOPVOL-Fenster über den TT-Lauf statt MA200 | behoben, ab 1.1.0 beide Fenster nebeneinander | `topVolumeDecline` | `SF7-MECH-TOPVOL`, `ADV-…-TOPVOL-WINDOWS`; jetzt auch exakter Fensterbeginn (Mutation `+2` gefangen) |
+| M3 Runner-Test über null Trades | behoben | Runner-Block `diagnostics.mechanical` | `SF7-MECH-RUNNER` (SEPA ≥ 4, PP ≥ 2 echte REF-Trades); 3 Mutationen gefangen |
+| M4 Limit-Fills fehlten beim Gap-Abstand | behoben | Gap-Lesung über die Eröffnung; Limit `max(stop/0,9, pivot)` setzt eine Eröffnung über dem Pivot voraus; Roh-Dollar über `splitAdj` | `ADV-…-GAP-LIMIT-FILL`, Runner; Mutationen (nur `OPEN_GAP`, Fill statt Eröffnung, ohne bzw. geteilt durch `splitAdj`) gefangen |
+| L1 Paraphrasen wörtlich | behoben | Dateikopf, per Skript gegen `MINERVINI-SF7-FINDINGS.json#paraphraseDe` geprüft (10/10) | Skriptprüfung |
+| L2 Flag `baseCountUncertain` | behoben, mit Richtung | Unsicherheitsgründe | `SF7-MECH-BASECOUNT-UNCERTAIN`; Über- und Unterzählung gefangen |
+| L3 Schlüsse auf beiden Seiten (relative Tiefe) | behoben | `relativeBaseDepth` | `SF7-MECH-RELDEPTH`; jetzt auch „Tiefs statt Schlüsse“ (Mutation gefangen) |
+| L4 Tabelle der Klassifikations-Doku | behoben | NOT_IN_SCOPE-Zeile steht wieder in der Tabelle | Doku |
+| L5 Schutztest `run-sf4-lifecycle#FILES` | behoben | Prüfliste um `minervini-sf7-mechanical.mjs` erweitert | `SF7-EXIT-FINGERPRINTS`; Mutation gefangen |
+
+**Spätere Reviews:**
+- drittes Review: MEDIUM-1, MEDIUM-2, LOW-1, LOW-3 und LOW-7 behoben;
+- viertes Review: LOW-1/2 behoben (§8, §9).
+
+**Bekannte Grenzen ohne fachlichen Fehler:** LOW-2, -4, -5 und -6 des dritten Reviews (§8) sowie der Annahmetext von `MA-MIN7-BASECOUNT-STOCK-RESET`. Keine dieser Grenzen verändert eine Zählung; jede ist dort begründet.
+
+**Die vier geforderten Bereiche** (Basiszählung, Top-Volumen, Gap-Abstand, Runner-Test) wurden erneut einzeln auf Lookahead und Logik geprüft. Ergebnis: kein bekannter fachlicher Fehler.
+
+**Commits der nur lesend beauftragten Session** (`b7d3a62`, `0cca717`), vollständig nachvollzogen:
+- **b7d3a62** (Diagnosen 1.1.0):
+  - wörtliche Paraphrasen;
+  - Unsicherheitsflags mit Richtung;
+  - zwei TOPVOL-Fenster;
+  - Gap-Lesung für Limit-Fills;
+  - Universum mit SEPA- und Power-Play-Trades im Runner-Test;
+  - Texte in der Inventur.
+
+  Ein Fehler darin: Die relative Tiefe griff mit `trailingHigh` auf der Aktienseite vor den Basisstart zurück.
+- **0cca717**:
+  - behebt diesen Fehler sieben Minuten später, vor jedem Lauf;
+  - verallgemeinert `MA200_NOT_COMPUTABLE_AFTER_RESET`;
+  - zieht Tests und Pins nach.
+
+  Kein veröffentlichtes Ergebnis enthält den Fehler.
+- **Lauf 40228813041** (Modus `sf7-minervini`, 7 s nach `0cca717`) wurde sehr wahrscheinlich von dieser Session gestartet.
+- **Sonst hinterlassen:** keine weiteren Branches, PRs, Reviews oder Läufe. Die Session ist archiviert; Erinnerungen oder geplante Aufgaben von ihr bestehen nicht.
+- **Abdeckung:** Beide Commits sind vom dritten (Gesamtstand) und vierten Review (Delta) sowie durch die Mutationsprüfung abgedeckt.
