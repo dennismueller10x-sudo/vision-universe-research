@@ -285,7 +285,7 @@ test("(d) Aufwaermphase: Zahl der NaN je Ausgabe = dokumentierte Periode (luecke
 
 /* ---------- Vertrag ---------- */
 test("Katalog 1.2.0: neue Eintraege dokumentiert, nur Katalog (catalogOnly), bestehende Eintraege unveraendert gelistet", () => {
-  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.2.0");
+  assert.equal(I.INDICATORS_VERSION, "technical-indicators-1.2.1");
   for (const id of NEW_IDS) {
     const e = I.catalogEntry(id);
     assert.ok(e && e.name && e.definition && e.family && e.catalogOnly === true, id);

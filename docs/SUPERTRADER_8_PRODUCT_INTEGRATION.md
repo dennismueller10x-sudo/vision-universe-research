@@ -242,6 +242,52 @@ Der Vorschlag des Reviews, den Isolationstest `SF-PRODUCT-NO-RUN-INTEGRATION` au
 | LOW: `--as-of` schneidet keine Stammdaten | dokumentiert (`SUPERTRADER_8_DAILY_RUN.md`, "Bekannte Grenze"); betrifft den Tageslauf nicht | – |
 | LOW: C10 nennt nur "ADR 20" als erfüllte Regel | Bleibt so. Die Beschleunigung (`KK-SF-PS-ACCEL`) ist im Vertrag keine mechanische Regel; sie als erfüllt auszuweisen, würde den Datensatz ungültig machen (Gegenprobe: C10 fiel heraus). Das Muster heißt in der Karte "beschleunigte Aufwärtsserie". | Golden-Test |
 
+### C08 Kullamägi Breakout: Nachweis der 17 modellierten Abläufe (Stand 23.10.2026)
+
+**Warum vorher 44 / 0 / 0 und jetzt 27 / 0 / 17.** Im Produktvertrag ist `KK-SF-BO-MOMENTUM` die einzige mechanische Setup-Regel von C08 (`ruleClasses`). Alle übrigen Regeln (Größe, Setup, Einstieg, Teilausstieg, Trailing) sind Ermessensregeln, die im Plan durch die Modellannahmen der Referenz ersetzt werden.
+
+Solange O-6 offen war, galt die Momentum-Regel nie als erfüllt, deshalb war C08 höchstens Chart-Kandidat. Mit O-6 gilt sie als erfüllt, wenn das beste 1/3/6-Monats-Perzentil im Forschungsuniversum mindestens 98 ist. Das ist eine gekennzeichnete Research-Lesart (`MI-SF8-KK-MOMENTUM-P98`), keine Originalregel. Darunter bleibt der Titel Chart-Kandidat und wird nicht ausgeschlossen. Keine Strategieregel und keine Referenz wurde dafür geändert.
+
+**Prüfung gegen die Vorgaben:**
+
+| Prüfpunkt | Befund |
+|---|---|
+| 7.0-Readiness | Die Obergrenze von C08 ist `MODELED_TRADE_PLAN`. Die Sperren gelten nur für `VALIDATED_TRADE_SIGNAL`. |
+| Zulässige mechanische Regeln | Nur `KK-SF-BO-MOMENTUM` ist mechanisch. Die Setup-Erkennung ist die deklarierte Modellannahme `MA-KK-SETUP-PROXY` (CONSOLIDATION_10) der Referenz: Schluss über dem Hoch der 10 Vortage, Vorlauf mindestens 30 % aus dem Tief der 63 Sitzungen davor, 10- und 20-Tage-Linie steigend. |
+| Plan | Er stammt unverändert aus `KK_BREAKOUT_ADAPTER.eligibility` mit der 7.0-Referenz `REF`: Einstieg zur nächsten Eröffnung (Owner-Entscheidung 23.10.2026, `STRATEGY-SF5-LIFECYCLE.json`), Stop am Tief des Ausbruchstags, höchster geplanter Verlust ADR20. |
+| O-6 | Momentum ≥ 98 entscheidet nur über die Stufe. In der Research-Simulation der Referenz wurde Momentum nie zur Auswahl benutzt (`sf5-lifecycle-matrix`: Rangfolge). Die Produktstufe verlangt die Regel, weil der Vertrag sie als einzige mechanische Setup-Regel führt. |
+| Drei Stufengrenzen | Reichweite der Erkennung: MODELED (Regel erfüllt, Plan vorhanden). Readiness: MODELED. DQ: alle 17 PASS, alle im Forschungsuniversum #705, keine Quarantäne-Sitzung. |
+| Universum | Es gilt dieselbe Konvention wie im Lifecycle für Einstiege zur Eröffnung: Mitgliedschaft am Schluss des Signaltags (`eligibleAtPriorSession(bars, i + 1)`). |
+| Unabhängige Nachrechnung aus den Tagesbalken | Alle 17 mit eigenen Formeln nachgerechnet: Ausbruch, Vorlauf, steigende Durchschnitte, Momentum-Perzentil (höchstens 0,003 Punkte Abweichung), Stop = Tief, höchster Verlust = ADR20. Von den 27 Chart-Kandidaten haben alle das Setup, keiner erreicht 98, und 4 liegen außerhalb des Universums. |
+
+**Korrigiert (Darstellung, nicht Stufe):** Die Referenzregel führt die Eröffnung nur aus, wenn sie über dem Stop und höchstens bei Stop × (1 + ADR20) liegt (`NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX`). Für 5 der 17 (ZS, ESTC, TENB, REPX, NABL) liegt der Schlusskurs schon über dieser Grenze; zu diesem Kurs wäre der Ablauf nicht ausführbar. Die Karte zeigte das bisher nicht.
+
+Jetzt nennen Plan und Karte das Ausführungsfenster (`fillWindow`, `referenceInFillWindow`), und die Karte sagt ausdrücklich „Zum Schlusskurs nicht ausführbar“. Die Stufe bleibt, weil die Referenz die Order zum Signalschluss genau so bildet und erst an der Eröffnung entscheidet. Diese Prüfung auf den Schlusskurs vorzuziehen wäre eine neue Regel. Tests: `SF8-C08-FILL-WINDOW`, `SF8-C08-STAGE`.
+
+**Auffälliger Fall BOLT:** Gap von 4,19 auf 6,98 $ bei dem 454-fachen Volumen. Erst der Signaltag hebt den Titel über die 5-$-Grenze und die Umsatzgrenze des Universums. Das folgt mechanisch aus der Referenzkonvention und ist keine Sonderbehandlung. Fachlich ähnelt es eher einem Episodic Pivot, wird hier aber nicht umgedeutet.
+
+**Grenzfall PCOR:** Das beste Perzentil ist genau 98,00 (1-Monats-Rang). Die Schwelle gilt inklusive.
+
+| Titel | Schluss | Konsolidierungshoch (10 T.) | Vorlauf | bestes Momentum-Perzentil | Stop = Tief Ausbruchstag | Risiko ab Schluss | ADR20 = höchster geplanter Verlust | Schluss im Ausführungsfenster | Volumen ggü. 50 T. |
+|---|---|---|---|---|---|---|---|---|---|
+| BOLT | 6,27 | 4,68 | 32,6 % | 99,80 | 5,99 | 4,47 % | 9,73 % | ja | 454,5× |
+| NTWK | 7,86 | 7,83 | 48,2 % | 99,73 | 7,57 | 3,69 % | 7,48 % | ja | 2,1× |
+| APPN | 52,35 | 51,38 | 82,8 % | 99,60 | 50,66 | 3,23 % | 6,30 % | ja | 1,7× |
+| AMPL | 17,42 | 17,11 | 108,5 % | 99,50 | 16,76 | 3,79 % | 4,66 % | ja | 1,2× |
+| TTAN | 87,06 | 86,79 | 37,0 % | 99,37 | 84,23 | 3,25 % | 5,19 % | ja | 0,6× |
+| RPD | 14,91 | 14,77 | 58,4 % | 99,27 | 14,52 | 2,62 % | 6,70 % | ja | 1,8× |
+| PAYC | 274,59 | 273,37 | 69,8 % | 99,13 | 269,10 | 2,00 % | 2,97 % | ja | 0,8× |
+| RSKD | 9,15 | 9,09 | 72,8 % | 98,97 | 8,77 | 4,21 % | 5,11 % | ja | 0,5× |
+| ZS | 255,15 | 241,19 | 69,3 % | 98,93 | 234,19 | 8,21 % | 5,06 % | **nein** (bis 246,04) | 1,3× |
+| HURN | 195,69 | 194,25 | 55,3 % | 98,73 | 193,89 | 0,92 % | 3,66 % | ja | 3,2× |
+| ASAN | 12,02 | 11,64 | 56,1 % | 98,70 | 11,51 | 4,20 % | 6,08 % | ja | 0,7× |
+| ESTC | 102,43 | 101,39 | 75,2 % | 98,63 | 97,00 | 5,30 % | 4,33 % | **nein** (bis 101,20) | 0,9× |
+| INTA | 47,99 | 47,45 | 55,0 % | 98,53 | 46,49 | 3,14 % | 3,85 % | ja | 1,6× |
+| TENB | 44,59 | 42,69 | 51,2 % | 98,53 | 41,67 | 6,56 % | 5,69 % | **nein** (bis 44,04) | 1,2× |
+| REPX | 54,18 | 51,58 | 39,5 % | 98,50 | 51,14 | 5,62 % | 3,43 % | **nein** (bis 52,89) | 2,0× |
+| NABL | 5,12 | 4,96 | 55,4 % | 98,07 | 4,83 | 5,66 % | 4,43 % | **nein** (bis 5,04) | 0,4× |
+| PCOR | 63,00 | 62,89 | 37,0 % | 98,00 | 61,73 | 2,02 % | 3,93 % | ja | 1,2× |
+
 ## 8. Owner-Entscheidungen (26.10.2026)
 
 | | Entscheidung | Umsetzung |
