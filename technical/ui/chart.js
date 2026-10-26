@@ -143,6 +143,11 @@
         var ia = idxOfDate(l.from.time), ib = idxOfDate(l.to.time);
         if (ib < from) return;
         node("line", { x1: X(ia), y1: Y(l.from.price), x2: X(ib), y2: Y(l.to.price), class: "tc-line tc-" + (l.tone || "neutral"), "stroke-dasharray": l.dash || null }, main);
+        /* Fortschreibung bis zum letzten Bar: dieselbe Gerade, nur bis heute (kein Blick in die Zukunft). */
+        if (l.extend && ib > ia && ib < n - 1) {
+          var slope = (l.to.price - l.from.price) / (ib - ia), pe = l.to.price + slope * (n - 1 - ib);
+          if (isNum(pe) && pe > 0) node("line", { x1: X(ib), y1: Y(l.to.price), x2: X(n - 1), y2: Y(pe), class: "tc-line tc-proj tc-" + (l.tone || "neutral"), "stroke-dasharray": "3 4" }, main);
+        }
       });
 
       /* Niveaus */
@@ -156,13 +161,20 @@
       });
 
       /* Marker (Formationspunkte, Erkennung/Bestaetigung) */
+      var placed = [];
       (c.markers || []).forEach(function (mk2) {
         var mi = idxOfDate(mk2.time);
         if (mi < from || !isNum(mk2.price)) return;
-        node("circle", { cx: X(mi), cy: Y(mk2.price), r: mk2.size || 4, class: "tc-marker tc-" + (mk2.tone || "neutral") }, main);
+        if (mk2.shape === "cross") {
+          var cr = mk2.size || 5, cx0 = X(mi), cy0 = Y(mk2.price);
+          node("path", { d: "M" + (cx0 - cr) + " " + (cy0 - cr) + "L" + (cx0 + cr) + " " + (cy0 + cr) + "M" + (cx0 + cr) + " " + (cy0 - cr) + "L" + (cx0 - cr) + " " + (cy0 + cr), class: "tc-xmark tc-" + (mk2.tone || "neutral") }, main);
+        } else node("circle", { cx: X(mi), cy: Y(mk2.price), r: mk2.size || 4, class: "tc-marker tc-" + (mk2.tone || "neutral") }, main);
         if (mk2.label) {
           var w = mk2.label.length * 6.6 + 14, bx = Math.min(Math.max(4, X(mi) - w / 2), 4 + plotW - w), by = Math.max(y0 + 2, Y(mk2.price) - 30);
-          node("rect", { x: bx, y: by, width: w, height: 20, rx: 6, class: "tc-badge" }, svg);
+          /* Beschriftungen duerfen sich nicht ueberdecken: nach oben ausweichen, sonst unter den Punkt. */
+          for (var tries = 0; tries < 4 && placed.some(function (r) { return bx < r.x + r.w && r.x < bx + w && by < r.y + 22 && r.y < by + 22; }); tries++) by = by - 24 >= y0 + 2 ? by - 24 : Y(mk2.price) + 10 + tries * 24;
+          placed.push({ x: bx, y: by, w: w });
+          node("rect", { x: bx, y: by, width: w, height: 20, rx: 6, class: "tc-badge" + (mk2.badge ? " tc-badge-" + mk2.badge : "") }, svg);
           var bt = node("text", { x: bx + w / 2, y: by + 14, "text-anchor": "middle", class: "tc-badge-text" }, svg); bt.textContent = mk2.label;
         }
       });
