@@ -42,7 +42,8 @@ test("Beispielsaetze werden vollstaendig und deterministisch uebersetzt", () => 
   /* "oder" zwischen Bedingungen: zwei Gruppen, "und" bindet staerker */
   const o = P.parse("Golden Cross und ADX über 25 oder 52-Wochen-Hoch");
   assert.equal(o.query.logic, "OR");
-  assert.deepEqual(filters(o), [[{ field: "sma50AboveSma200", op: "is", value: true }, { field: "adx", op: "gt", value: 25 }], [{ field: "newHigh52w", op: "is", value: true }]]);
+  /* "Golden Cross" ist seit query-text 1.5.0 das Ereignis (B12), ohne Zeitangabe in den letzten 5 Handelstagen. */
+  assert.deepEqual(filters(o), [[{ field: "goldenCrossDays", op: "lte", value: 5 }, { field: "adx", op: "gt", value: 25 }], [{ field: "newHigh52w", op: "is", value: true }]]);
 
   const w = P.parse("Wochenchart: über der 40-Wochen-Linie und RSI über 50");
   assert.equal(w.query.timeframe, "1W");

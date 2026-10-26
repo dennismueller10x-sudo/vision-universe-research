@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.4.0";
+  var QUERY_VERSION = "technical-query-1.5.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -84,6 +84,16 @@
     { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
     { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
+    /* Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis, 0 = am Stichtag; leer = im 270-Tage-Fenster
+       nicht vorgekommen. Linien aus der Vollhistorie (chartSeries). Typische Abfrage: "<= 5". */
+    { id: "goldenCrossDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Golden Cross (SMA 50 kreuzt SMA 200 aufwärts)" },
+    { id: "deathCrossDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Death Cross (SMA 50 kreuzt SMA 200 abwärts)" },
+    { id: "crossAboveSma200Days", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss über SMA 200 gekreuzt" },
+    { id: "crossBelowSma200Days", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit Schluss unter SMA 200 gekreuzt" },
+    { id: "rsiExitOversoldDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von unten über 30" },
+    { id: "rsiExitOverboughtDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit RSI 14 von oben unter 70" },
+    { id: "newHigh52wDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit neuem 52-Wochen-Hoch (prüfbar 18 Tage)" },
+    { id: "formationNewDays", group: "Ereignisse", kind: "num", tfs: D, label: "Tage seit der jüngsten Formations-Erkennung" },
     { id: "close", group: "Kurs", kind: "num", tfs: D, label: "Schlusskurs (USD)" },
     { id: "chg1d", group: "Kurs", kind: "pct", tfs: D, label: "Tagesänderung" },
     { id: "hasVolume", group: "Datenqualität", kind: "bool", tfs: D, label: "Volumendaten vorhanden" },

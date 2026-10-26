@@ -31,7 +31,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.4.0";
+  var ROW_VERSION = "technical-screen-row-1.5.0";
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r(v, d) { if (!isNum(v)) return null; var f = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * f) / f; }
@@ -53,6 +53,38 @@
     };
   }
 
+  /**
+   * Ereignisse als "Handelstage seit": 0 = am Stichtag, null = im pruefbaren Fenster nicht vorgekommen
+   * (oder nicht pruefbar). Linien aus chartSeries (Vollhistorie, je Bar exakt), nie aus den 270 Bars neu
+   * gerechnet. Kreuzung an i: am Vortag nicht darueber (<=), an i darueber (>), bzw. umgekehrt.
+   */
+  function eventBlock(b, cs, formations) {
+    var n = b.close.length, t = n - 1, out = {};
+    function since(test, from) { for (var i = t; i >= Math.max(1, from || 1); i--) if (test(i)) return t - i; return null; }
+    function crossUp(a, z) { return function (i) { return isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]) && a[i - 1] <= z[i - 1] && a[i] > z[i]; }; }
+    function crossDown(a, z) { return function (i) { return isNum(a[i]) && isNum(z[i]) && isNum(a[i - 1]) && isNum(z[i - 1]) && a[i - 1] >= z[i - 1] && a[i] < z[i]; }; }
+    function level(v) { var a = new Array(n); for (var i = 0; i < n; i++) a[i] = v; return a; }
+    var ok = cs && Array.isArray(cs.sma50) && cs.sma50.length === n && Array.isArray(cs.sma200) && cs.sma200.length === n;
+    out.goldenCrossDays = ok ? since(crossUp(cs.sma50, cs.sma200)) : null;
+    out.deathCrossDays = ok ? since(crossDown(cs.sma50, cs.sma200)) : null;
+    out.crossAboveSma200Days = ok ? since(crossUp(b.close, cs.sma200)) : null;
+    out.crossBelowSma200Days = ok ? since(crossDown(b.close, cs.sma200)) : null;
+    var rsiOk = cs && Array.isArray(cs.rsi14) && cs.rsi14.length === n;
+    out.rsiExitOversoldDays = rsiOk ? since(crossUp(cs.rsi14, level(30))) : null;
+    out.rsiExitOverboughtDays = rsiOk ? since(crossDown(cs.rsi14, level(70))) : null;
+    /* Neues 52-Wochen-Hoch (Tageshoch >= Hoch der 251 Vorbars): pruefbar nur an Bars mit voller Vorschau im Fenster. */
+    out.newHigh52wDays = n >= 252 ? since(function (i) {
+      var hi = -Infinity; for (var j = i - 251; j < i; j++) if (isNum(b.high[j]) && b.high[j] > hi) hi = b.high[j];
+      return isNum(b.high[i]) && b.high[i] >= hi;
+    }, 251) : null;
+    /* Juengste Formations-Erkennung (aktiv, nicht ungueltig). */
+    var idx = {}; for (var k = 0; k < n; k++) idx[b.timestamps[k]] = k;
+    var newest = null;
+    (formations || []).forEach(function (f) { var i = idx[f[2]]; if (i !== undefined && (newest === null || t - i < newest)) newest = t - i; });
+    out.formationNewDays = newest;
+    return out;
+  }
+
   /** Wochenschluesse -> Monatsschluesse (letzter Wochenschluss je Kalendermonat; laufender Monat zaehlt nicht). */
   function monthlyFromWeekly(points, asOf) {
     var out = [], cur = null, curKey = null, openKey = asOf ? asOf.slice(0, 7) : null;
@@ -71,6 +103,7 @@
    *   bars: {timestamps, open, high, low, close, volume}   (technical-signals-v1, SPLIT_ADJUSTED)
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
+   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
    * }
@@ -157,6 +190,9 @@
           (x.confirmedAtDetection ? "B" : "") + (x.provisional ? "V" : "") + (x.directionOpen ? "O" : "")]);
       });
     } catch (e) { row.formationActive = null; row.formationConfirmed = null; row.formationOpen = null; row.formations = null; row.formationError = String(e && e.message || e).slice(0, 80); }
+
+    /* ---- Ereignisse (Audit B12): Handelstage seit dem letzten Ereignis im 270-Bar-Fenster ---- */
+    Object.assign(row, eventBlock(b, input.chartSeries || null, row.formations));
 
     /* ---- Woche und Monat (Schlusskurse aus discover-series-long) ---- */
     var weekly = (input.weekly || []).filter(function (p) { return p && isNum(p[1]); });
