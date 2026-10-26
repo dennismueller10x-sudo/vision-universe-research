@@ -131,9 +131,9 @@ Zustände abgebildet; nichts sonst aus der Datenbank erreicht den Browser.
   - Ohne Freigabe: kein Lesezeichen, keine Anfrage an die Konto-API. Geladen werden nur die Komponente und `/konto/config.js` (wenige KB, im Cache).
   - **Eingebunden in Fundamental und Hedgefonds:** dort steht eine Zeile in `index.html`. Hedgefonds zeigt es nur auf Seiten mit Kürzel, nicht auf CUSIP-Seiten.
   - **Vorbereitet als eigene Draft-PRs** (je eine Zeile, auf diesem Branch aufbauend, einzeln freizugeben):
-    - Discover: `discover/index.html` (Discover-Gate: nur Discover-Pfade).
-    - Supertrader: `stockKit()` in `supertrader/assets/supertrader.js` lädt die Komponente nach (Gate A: nur Supertrader-Pfade; keine Seite wird neu erzeugt).
-    - Quant/Chartbild: `quant/index.html` ist byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`); der PR ändert die Sperrdatei und braucht deshalb deine ausdrückliche Freigabe.
+    - Discover (#948): `discover/index.html` (Discover-Gate: nur Discover-Pfade).
+    - Supertrader (#949): `stockKit()` in `supertrader/assets/supertrader.js` lädt die Komponente nach (Gate A: nur Supertrader-Pfade; keine Seite wird neu erzeugt).
+    - Quant/Chartbild (#951): `quant/index.html` ist byte-gesperrt (`docs/quant-recovery/v51/ui-protection.json`). Der PR lässt die Sperrdatei unverändert, deshalb schlägt der Sperrtest dort bewusst an. Erst nach deiner Freigabe kommt die eine Hash-Zeile dazu.
     - Technical zeichnet den einheitlichen Kopf nicht und bekommt deshalb kein Lesezeichen.
 - Hauptmenü, Dock und Chart-Designs sind unverändert. In der Konto-Unternavigation kam der Eintrag „Watchlist“ hinzu.
 
