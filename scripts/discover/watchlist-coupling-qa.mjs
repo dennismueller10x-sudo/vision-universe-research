@@ -31,6 +31,10 @@ const local = () => page.evaluate(k => JSON.parse(localStorage.getItem(k) || '[]
 const central = () => page.evaluate(async () => { const r = await fetch('/v1/watchlist', {credentials: 'include', headers: {'X-VU-Client': 'web'}}); return r.ok ? (await r.json()).items.map(i => i.ticker) : null; });
 async function stock(t) {
   await page.goto(`${base}/discover/#/s/US_REAL/${t}`);
+  return shown();
+}
+/* wartet auf die gezeichnete Seite; ein zweites goto auf dieselbe Adresse wuerde sie neu laden und laufende Abrufe abbrechen */
+async function shown() {
   await page.waitForSelector('.v2-watch-button');
   await page.waitForTimeout(800);   /* Kontostand geladen, Knopf neu gezeichnet */
   await settle();                    /* WebKit meldet Abrufe, die eine spaetere Navigation abbricht, als Seitenfehler */
@@ -69,7 +73,7 @@ await page.evaluate(() => sessionStorage.removeItem('vu-watchlist-ids-v1'));
 await page.evaluate(async () => { await fetch('/v1/watchlist/items', {method: 'POST', credentials: 'include', headers: {'Content-Type': 'application/json', 'X-VU-Client': 'web'}, body: JSON.stringify({instrumentId: (await (await fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).instrumentId, ticker: 'MSFT'})}); });
 // Ein anderes Geraet zeigt sich nach dem Neuladen (oder nach 5 Minuten Zwischenspeicher) - nicht mitten in derselben Seite.
 await stock('MSFT'); await page.reload();
-btn = await stock('MSFT');
+btn = await shown();
 check(await btn.getAttribute('aria-pressed') === 'true', 'angemeldet: Titel nur im Konto wird als beobachtet gezeigt');
 await btn.click();
 await page.waitForTimeout(800);
