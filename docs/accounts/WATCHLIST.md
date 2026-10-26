@@ -340,8 +340,8 @@ dem Umstellen der Basis des nächsten PRs auf `main`:
 | 3a | #948 | `claude/watchlist-bookmark-discover` | #945 | Lesezeichen in Discover |
 | 3b | #949 | `claude/watchlist-bookmark-supertrader` | #945 | Lesezeichen in Supertrader |
 | 3c | #951 | `claude/watchlist-bookmark-quant` | #945 | Lesezeichen in Quant und freigegebener Sperr-Hash für `quant/index.html` |
-| 4a | Discover-Kopplung | `claude/watchlist-sync-discover` | #948 | lokaler Discover-Knopf ↔ Konto |
-| 4b | Quant-Kopplung | `claude/watchlist-sync-quant` | #951 | Quant-Merkliste ↔ Konto |
+| 4a | #959 | `claude/watchlist-sync-discover` | #948 | lokaler Discover-Knopf ↔ Konto |
+| 4b | #960 | `claude/watchlist-sync-quant` | #951 | Quant-Merkliste ↔ Konto |
 
 - 3a, 3b und 3c hängen nur von #945 ab und sind untereinander unabhängig; 4a braucht 3a, 4b braucht 3c.
 - Supertrader-Gate A und das Discover-Gate verlangen produkteigene PRs; deshalb bleiben 3a/3b/4a getrennt.
