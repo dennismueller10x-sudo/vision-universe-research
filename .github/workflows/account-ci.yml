@@ -6,7 +6,8 @@ name: Konten und Abos — Tests
 on:
   pull_request:
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
-      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml']
+      'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml',
+      'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs']
   push:
     branches: [main]
     paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'scripts/watchlist/**', 'core/watchlist-view.js',
@@ -104,6 +105,9 @@ jobs:
           # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
           node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
           node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          # Discover-Knopf gekoppelt: abgemeldet rein lokal, angemeldet lokal und Konto, nichts wird von selbst uebernommen.
+          node scripts/discover/watchlist-coupling-qa.mjs --url=http://localhost:8790 || chromium_status=$?
+          node scripts/discover/watchlist-coupling-qa.mjs --engine=webkit --url=http://localhost:8790 || webkit_status=$?
           test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       - name: Screenshots sichern
         if: always()
