@@ -16,12 +16,12 @@ function main(out){
  }
  // Broaden coverage systematically without examining returns. Quality-conditioned survivors remain biased.
  const pool=[...accepted.keys()].filter(id=>!IDS.includes(id));
- const requested=[...IDS,...Array.from({length:39},(_,k)=>pool[Math.floor(k*pool.length/39)])];
+ const requested=[...IDS,...Array.from({length:29},(_,k)=>pool[Math.floor(k*pool.length/29)])];
  const exclusions=requested.filter(id=>!accepted.has(id)).map(id=>({id,reason:inventory.find(x=>x.id===id)?.reason||'ABSENT'}));
  const listings=requested.filter(id=>accepted.has(id)).map(id=>{const d=loader(id);accepted.set(id,d);track(d.sourcePath);return {listingId:d.listingId,issuerId:id,securityId:id,identity:{mic:d.listingId.includes(':NASDAQ:')?'XNAS':d.listingId.includes(':NYSE:')?'XNYS':'XASE',instrumentClass:'COMMON_STOCK',primary:true,validFrom:d.listingStart,availableAt:d.masterGeneratedAt,sourceHash:d.identityHash},bars:d.points.map(([date,close])=>({date,close}))};});
  track('quant/data/market/security-master/us-security-master.json');
  const calendar=[...new Set(listings.flatMap(l=>l.bars.map(b=>b.date)))].sort(),asOf=calendar.at(-1),benchmark=B.load(ROOT);track(B.SOURCE);
- const registration={id:'V7-CONDITIONAL-COHORT',version:'1.0.0',frozenAt:'2026-10-26T00:00:00Z',analysisMode:'EXPLORATORY',selection:'Eleven named reference listings plus 39 evenly spaced sorted adapter-qualified listing IDs; no outcome optimization; quality-conditioned current survivors, not representative',requestedIds:requested};
+ const registration={id:'V7-CONDITIONAL-COHORT',version:'1.0.0',frozenAt:'2026-10-26T00:00:00Z',analysisMode:'EXPLORATORY',selection:'Eleven named reference listings plus 29 evenly spaced sorted adapter-qualified listing IDs; no outcome optimization; quality-conditioned current survivors, not representative',requestedIds:requested};
  const base={asOf,sourceMode:'HISTORICAL_SIMULATION',cohortMode:'CONDITIONAL_CURRENT_CLASSIFICATION',executionClock:'OBSERVED_WEEKLY_DATES',returnBasis:'PRICE_RETURN',currency:'USD',registration,horizonBars:13,entryDelayBars:1,costs:{basis:'PER_SIDE_NOTIONAL',feeBps:10,slippageBps:5},expectedCalendar:calendar,listings,benchmark:{currency:'USD',returnBasis:'PRICE_RETURN',bars:[...benchmark.byDate].map(([date,close])=>({date,close}))}};
  const pattern={id:'ABOVE_40W_SMA',version:'1',terms:[{feature:'aboveSma40w',operator:'eq',value:true}]};
  const studies=[];function study(id,input,fn,summarize){write(id+'-input',input);const r=fn(input);write(id+'-result',r);studies.push({id,inputHash:C.hash(input),resultHash:C.hash(r),asOf,population:listings.map(l=>l.listingId),period:[calendar[0],asOf],returnBasis:'PRICE_RETURN',costs:base.costs,benchmark:'SPY PRICE_RETURN, exact dates only, no extension before inception',evidence:'RETROSPECTIVE_CONDITIONAL_NOT_INDEPENDENT',...summarize(r)});return r;}
