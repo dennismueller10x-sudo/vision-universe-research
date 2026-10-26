@@ -98,7 +98,7 @@ export function build(options = {}) {
           bars: inst.bars, series: seriesOf(ticker, inst.bars),
           features: bundle && bundle.featuresAtCutoff || null,
           structure: bundle && bundle.structure && bundle.structure.state || null,
-          weekly, benchmark, universeAsOf: options.universeAsOf || null
+          weekly, multiTimeframe: bundle && bundle.multiTimeframe || null, benchmark, universeAsOf: options.universeAsOf || null
         });
         if (!bundle) row.noBundle = true;
         rows.push(row);
@@ -115,6 +115,10 @@ export function build(options = {}) {
   rows.forEach((r) => { r.fresh = r.asOf === asOf; });
   rows.sort((a, b) => (a.s < b.s ? -1 : a.s > b.s ? 1 : 0));
 
+  /* Quelle der Wochen-/Monatswerte nur als Zaehlung in meta, nicht als Spalte. */
+  const mtfFromHistory = rows.filter((r) => r.mtfSource === "DAILY_HISTORY").length;
+  rows.forEach((r) => { delete r.mtfSource; });
+
   const versions = { row: Row.ROW_VERSION, query: Query.QUERY_VERSION, indicators: Indicators.INDICATORS_VERSION, formations: Formations.ENGINE_VERSION };
   const artifact = { schemaVersion: SCHEMA_VERSION, asOf, generatedFrom, versions, benchmark: benchmark ? { ticker: "SPY", asOf: benchmark.asOf } : null,
     count: rows.length, cols: toColumns(rows) };
@@ -125,11 +129,12 @@ export function build(options = {}) {
     counts: { rows: rows.length, fresh: rows.filter((r) => r.fresh).length, stale: rows.filter((r) => !r.fresh).length,
       withVolume: rows.filter((r) => r.hasVolume).length, withWeekly: rows.filter((r) => r.weeks >= 40).length,
       with200Weeks: rows.filter((r) => r.newHigh200w !== null).length, noBundle: rows.filter((r) => r.noBundle).length,
-      suspectJump60: rows.filter((r) => r.suspectJumpAt).length },
+      suspectJump60: rows.filter((r) => r.suspectJumpAt).length,
+      weeklyMonthlyFromDailyHistory: mtfFromHistory },
     skipped, formations: formationCounts,
     sources: {
       daily: "quant/data/product/technical-signals-v1 (Materialisierung, SPLIT_ADJUSTED, 270 Tagesbars + Vollhistorien-Features)",
-      weekly: "quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
+      weekly: "quant/data/product/technical-signals-v1 bundle.multiTimeframe (Wochen/Monat aus der vollen Tageshistorie, OHLCV); Ersatz: quant/data/market/discover-series-long (Wochenschluesse, SPLIT_ADJUSTED)",
       benchmark: "quant/data/market/discover-series/ref_SPY.json",
       names: "quant/data/product/universe-list-v1.json.gz"
     },
