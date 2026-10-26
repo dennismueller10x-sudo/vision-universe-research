@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "_comment": "Erklaerserie der Willkommensseite (Highlights). Von Hand gepflegt. Jede Story 15 bis 45 s, im Schnitt 30 s. Folien: type video (src, poster, duration in s) oder card (eyebrow, title, text, optional cta, duration). Neue Fassung: rev erhoehen, dann leuchtet der Kreis wieder als neu. Reihenfolge = Reihenfolge der Kreise. Pruefung: willkommen/tests/willkommen.test.mjs.",
+  "stories": [
+    {
+      "id": "willkommen",
+      "title": "Start",
+      "product": "Vision Universe",
+      "icon": "layers",
+      "rev": 1,
+      "slides": [
+        {
+          "type": "video",
+          "src": "/assets/home/clip/vu-imageclip-9x16.mp4",
+          "poster": "/assets/home/clip/vu-imageclip-9x16.jpg",
+          "duration": 22.5,
+          "label": "Vision Universe in 22 Sekunden"
+        },
+        {
+          "type": "card",
+          "eyebrow": "So geht es weiter",
+          "title": "Ein Kreis, ein Modul.",
+          "text": "Tippe oben auf einen Kreis und lerne jedes Modul in etwa 30 Sekunden kennen. Rechts tippen für weiter, links für zurück.",
+          "duration": 7
+        }
+      ]
+    },
+    {
+      "id": "discover",
+      "title": "Entdecken",
+      "product": "Discover",
+      "icon": "discover",
+      "rev": 1,
+      "slides": [
+        {
+          "type": "card",
+          "eyebrow": "Discover",
+          "title": "Sieh den Markt mit anderen Augen.",
+          "text": "Discover ist dein Einstieg: Aktien entdecken, Themenwelten durchstöbern und die Märkte im Blick behalten.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Discover",
+          "title": "Swipen statt suchen.",
+          "text": "Rankings, Themenwelten wie Künstliche Intelligenz, Halbleiter oder Robotik und ein Aktien-Feed zum Durchwischen.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Discover",
+          "title": "Ein Tipp, jede Perspektive.",
+          "text": "Von jeder Aktie kommst du zu Zahlen, Chartbild, Faktoren und Setups.",
+          "duration": 7,
+          "cta": {
+            "label": "Aktien entdecken",
+            "href": "/discover/#/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quant",
+      "title": "Quant",
+      "product": "Quant",
+      "icon": "quant",
+      "rev": 1,
+      "slides": [
+        {
+          "type": "card",
+          "eyebrow": "Quant",
+          "title": "Feste Daten. Feste Regeln.",
+          "text": "Quant ordnet jede Aktie nach festen Daten und Regeln ein, nachvollziehbar bis zu den Rohdaten.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Quant",
+          "title": "Dafür. Dagegen. Neu.",
+          "text": "Du siehst, was für eine Aktie spricht, was dagegen und was sich zuletzt verändert hat.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Quant",
+          "title": "Was geschah früher?",
+          "text": "Historische Vergleichsfälle zeigen, wie ähnliche Situationen ausgingen. Ein Modell, keine Prognose.",
+          "duration": 7,
+          "cta": {
+            "label": "Quant öffnen",
+            "href": "/quant/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fundamental",
+      "title": "Zahlen",
+      "product": "Fundamental",
+      "icon": "fundamental",
+      "rev": 1,
+      "slides": [
+        {
+          "type": "card",
+          "eyebrow": "Fundamental",
+          "title": "Über 60 Kennzahlen.",
+          "text": "Umsatz, Gewinn, Margen, Cashflow, Bilanz und Bewertung, jährlich und quartalsweise.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Fundamental",
+          "title": "Direkt aus den SEC-Meldungen.",
+          "text": "Die Zahlen stammen aus den Pflichtmeldungen der US-Unternehmen, mit Quelle zu jedem Wert.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Fundamental",
+          "title": "Erst der Vergleich zeigt es.",
+          "text": "Ist eine Marge hoch? Der Branchenvergleich ordnet jede Kennzahl ein.",
+          "duration": 7,
+          "cta": {
+            "label": "Fundamental öffnen",
+            "href": "/fundamental/#/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "supertrader",
+      "title": "Strategien",
+      "product": "Supertrader",
+      "icon": "supertrader",
+      "rev": 1,
+      "slides": [
+        {
+          "type": "card",
+          "eyebrow": "Supertrader",
+          "title": "Bewährte Methoden. Feste Regeln.",
+          "text": "Strategien bekannter Trader wie Minervini, Darvas oder Weinstein, als klare Regeln umgesetzt.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Supertrader",
+          "title": "Ehrliche Backtests.",
+          "text": "Jede Methode zeigt, wie sie in der Vergangenheit abgeschnitten hätte, mit Gewinnern und Verlierern.",
+          "duration": 7
+        },
+        {
+          "type": "card",
+          "eyebrow": "Supertrader",
+          "title": "Wer erfüllt heute die Regeln?",
+          "text": "Laufende Modell-Signale zeigen die Setups von heute. Keine Anlageberatung.",
+          "duration": 7,
+          "cta": {
+            "label": "Supertrader öffnen",
+            "href": "/supertrader/"
+          }
+        }
+      ]
+    }
+  ]
+}
