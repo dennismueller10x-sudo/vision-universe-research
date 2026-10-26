@@ -1,0 +1,100 @@
+name: Supertrader 8 Research-Kandidaten (deaktiviert)
+
+# Tageslauf der quellentreuen Research-Kandidaten (Supertrader 8.0, 13 Strategien C01-C13).
+#
+# STANDARDMAESSIG AUS (Owner-Entscheidung O-2, 2026-10-26):
+#   * kein Zeitplan; nur workflow_dispatch;
+#   * der Job laeuft nur, wenn die Repository-Variable SF8_CANDIDATES_ENABLED genau 'true' ist;
+#   * ein Commit nach supertrader/data/sf-candidates nur zusaetzlich mit der Eingabe commit=true.
+# Aktivierung erst nach ausdruecklicher Freigabe UND wenn der Consumer-Blocker aus Quant/Quality (SEC-Consumer-
+# Pipeline) nachweislich stabil ist. Voraussetzungen: docs/SUPERTRADER_8_PRODUCT_INTEGRATION.md, Abschnitt
+# "Tageslauf".
+#
+# Liest nur bereits committete Artefakte (Tagesbalken technical-signals-v1, Wochenreihen, Stammdaten, SEC-SIC,
+# Kalender). Kein Anbieterabruf, keine Secrets, keine Kosten. Alle 13 Strategien bleiben LIVE_NOT_APPROVED;
+# VALIDATED_TRADE_SIGNAL bleibt gesperrt. Fehlen Eingaben oder sind sie veraltet, bricht die Eingangspruefung ab
+# (Exit 3) und es entsteht kein neuer Stand.
+#
+# Commit-Protokoll ADR-005: Spitze des Branches auschecken, push-with-retry.sh, Concurrency je Branch.
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Ergebnis nach supertrader/data/sf-candidates committen (sonst nur CI-Artefakt)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: supertrader-sf8-candidates-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  candidates:
+    if: vars.SF8_CANDIDATES_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Produkt- und Vertragstests (rot = kein neuer Stand)
+        run: node --test "scripts/supertrader/tests/sf-*.test.mjs"
+
+      - name: Eingangspruefung und Kandidatenlauf (Abbruch bei fehlenden oder veralteten Eingaben)
+        env:
+          OUT: ${{ runner.temp }}/sf8-candidates
+          STATS: ${{ runner.temp }}/sf8-stats.json
+        run: |
+          set -euo pipefail
+          heute="$(date -u +%F)"
+          prev=()
+          if [ -f supertrader/data/sf-candidates/index.json ]; then prev=(--previous supertrader/data/sf-candidates); fi
+          node --max-old-space-size=4096 scripts/supertrader/source-faithful/product/build-candidates.mjs \
+            --out "$OUT" --stats "$STATS" --require-current "$heute" "${prev[@]}"
+
+      - name: Datenbudget (oeffentliche Teile ohne records/ hoechstens 16 MB, je Datei hoechstens 2 MB)
+        env:
+          OUT: ${{ runner.temp }}/sf8-candidates
+        run: |
+          set -euo pipefail
+          bytes=$(find "$OUT/summary.json" "$OUT/index.json" "$OUT/strategy" "$OUT/ticker" -type f -printf '%s\n' | awk '{s+=$1} END {print s+0}')
+          echo "oeffentliche Teile: ${bytes} Bytes"
+          if [ "$bytes" -gt 16777216 ]; then echo "::error::sf-candidates ${bytes} Bytes ueber dem Budget"; exit 1; fi
+          gross=$(find "$OUT/summary.json" "$OUT/index.json" "$OUT/strategy" "$OUT/ticker" -type f -size +2048k)
+          if [ -n "$gross" ]; then echo "::error::Datei ueber 2 MB: $gross"; exit 1; fi
+
+      - name: Vollstaendiges Ergebnis als CI-Artefakt (inklusive Vertragsdatensaetze)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sf8-candidates-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/sf8-candidates
+            ${{ runner.temp }}/sf8-stats.json
+          retention-days: 14
+
+      - name: Commit (nur supertrader/data/sf-candidates, ohne records/)
+        if: inputs.commit == true
+        env:
+          OUT: ${{ runner.temp }}/sf8-candidates
+          PUSH_OWNED_PATHS: supertrader/data/sf-candidates/
+        run: |
+          set -euo pipefail
+          ziel=supertrader/data/sf-candidates
+          rm -rf "$ziel"
+          mkdir -p "$ziel"
+          cp "$OUT/summary.json" "$OUT/index.json" "$ziel/"
+          cp -r "$OUT/strategy" "$OUT/ticker" "$ziel/"
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A "$ziel"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          stand=$(node -e 'const s=require("./supertrader/data/sf-candidates/summary.json");console.log(s.asOf)')
+          git commit -q -m "Supertrader 8: Research-Kandidaten (Stand ${stand}, nicht freigeschaltet)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

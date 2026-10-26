@@ -30,6 +30,8 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 // changing a stage, a block reason, a status, a disclaimer or the price truth is a contract change (own PR)
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
 
+const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
+
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
   assert.equal(candidateContractSha256(), PINNED_CONTRACT_SHA256);
@@ -249,8 +251,29 @@ test('SF-PRODUCT-NO-RUN-INTEGRATION: kein Workflow, kein Frontend, keine Domain-
   const src = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/product/candidate-contract.mjs'), 'utf8');
   assert.doesNotMatch(src, /writeFileSync|appendFileSync|mkdirSync|createWriteStream|fetch\(|https?:\/\/|child_process/);
   const wf = path.join(ROOT, '.github/workflows');
-  for (const f of fs.readdirSync(wf)) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
+  // Einzige Ausnahme: der vorbereitete, standardmäßig deaktivierte Tageslauf (O-2). Seine Abschaltung prüft
+  // SF8-DAILY-DISABLED unten; jeder andere Workflow bleibt ohne Bezug zum Produktpfad.
+  for (const f of fs.readdirSync(wf)) if (f !== SF8_DAILY_WORKFLOW) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === 'data' ? [] : walk(path.join(d, e.name))) : /\.(m?js|html)$/.test(e.name) ? [path.join(d, e.name)] : []);
   for (const f of walk(path.join(ROOT, 'supertrader'))) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /candidate-contract|source-faithful\/product/, f);
   assert.doesNotMatch(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8'), /candidate-contract|supertraderCandidates|source-faithful\/product/);
+});
+
+
+test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, Eingangsprüfung und ADR-005', () => {
+  const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
+  if (!fs.existsSync(p)) return;
+  const y = fs.readFileSync(p, 'utf8');
+  const code = y.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+  assert.doesNotMatch(code, /^\s*(schedule|cron|push|pull_request|workflow_run)\s*:/m, 'kein automatischer Auslöser');
+  assert.match(code, /^on:\n\s+workflow_dispatch:/m);
+  assert.match(code, /^\s+if: vars\.SF8_CANDIDATES_ENABLED == 'true'$/m, 'Job nur mit freigeschalteter Variable');
+  assert.match(code, /--require-current "\$heute"/, 'Eingangsprüfung gegen veraltete Eingaben');
+  assert.match(code, /ref: \$\{\{ github\.ref \}\}/);
+  assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
+  assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
+  assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
+  for (const block of code.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, 'Eingaben nur über env:');
+  assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
+  assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');
 });

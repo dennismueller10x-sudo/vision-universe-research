@@ -4,7 +4,10 @@
  *   Aktienuniversum -> Datenqualität -> strategiebezogene Merkmale -> Erkennung -> Evidenz -> zulässige Stufe -> Datensatz
  *
  *   node scripts/supertrader/source-faithful/product/build-candidates.mjs --out <dir> [--as-of YYYY-MM-DD] [--tickers A,B]
- *        [--previous <dir>] [--stats <file>]
+ *        [--previous <dir>] [--stats <file>] [--require-current YYYY-MM-DD]
+ *
+ * --require-current <heute>: Eingangsprüfung (input-gate.mjs) vor dem Schreiben. Fehlende oder veraltete Eingaben
+ * brechen mit Exit 3 ab, ohne Ausgabe (O-2: kein alter Stand wird als aktuell ausgeliefert).
  *
  * --out ist Pflicht: der Producer schreibt nie in ein committetes Artefakt (CLAUDE.md "Tests"). Eine Laufintegration
  * (Workflow, domains.json, supertrader/data) ist ausdrücklich NICHT Teil dieses Moduls; Test
@@ -28,6 +31,7 @@ import { rankStrategy, RANKING_VERSION, SORT_KEYS } from './ranking.mjs';
 import { STRATEGY_CATALOG, CATALOG_VERSION, RULE_LABELS, STAGE_LABELS } from './catalog.mjs';
 import { loadSf6Readiness, stageCeilings, candidateContractSha256, ruleClasses, CANDIDATE_SCHEMA, STAGE_ORDER } from './candidate-contract.mjs';
 import { createRequire } from 'node:module';
+import { checkInputs, GATE_STATUS } from './input-gate.mjs';
 const Identity = createRequire(import.meta.url)('../../../../core/identity.js');
 import { benchmarkWeekly } from '../methods/weinstein.mjs';
 
@@ -164,6 +168,12 @@ async function main() {
   const asOf = arg('--as-of') || marketAsOf(securities);
   if (arg('--as-of')) securities = truncateTo(securities, asOf);
   const calendar = createCalendar(), continuity = loadContinuity();
+  let gate = null;
+  if (arg('--require-current')) {
+    gate = checkInputs({ today: arg('--require-current'), asOf, calendar });
+    console.log(`[sf8-candidates] Eingangsprüfung ${gate.status}: Stand ${gate.asOf}, erwartet ${gate.expectedSession}${gate.missing.length ? ', fehlt ' + gate.missing.join(',') : ''}`);
+    if (gate.status !== GATE_STATUS.CURRENT) process.exit(3);
+  }
   const res = runPipeline({ securities, rejectedInputs: loaded.rejected, asOf, calendar, continuity, weeklyOf: (id) => loadWeeklyCloses(id), bench: loadBenchmark(ROOT, asOf), sourceFiles: loaded.sourceFiles, universeInfo: { id: universe.universeId, symbols: universe.symbols.size, excludedNonStock: universe.excluded.length, withDailySeries: loaded.securities.length } });
   lap.pipeline = Date.now() - t0 - lap.load;
   const prev = arg('--previous') && fs.existsSync(path.join(arg('--previous'), 'index.json')) ? JSON.parse(fs.readFileSync(path.join(arg('--previous'), 'index.json'), 'utf8')) : null;
@@ -172,7 +182,7 @@ async function main() {
   lap.total = Date.now() - t0;
   const dirBytes = (d) => fs.readdirSync(path.join(resolvedOut, d)).reduce((a, f) => a + fs.statSync(path.join(resolvedOut, d, f)).size, 0);
   const bytes = { summary: fs.statSync(path.join(resolvedOut, 'summary.json')).size, index: fs.statSync(path.join(resolvedOut, 'index.json')).size, strategy: dirBytes('strategy'), ticker: dirBytes('ticker'), records: dirBytes('records') };
-  const stats = { asOf, ms: lap, securities: securities.length, candidates: res.index.counts, bytes, networkRequests: 0, node: process.version };
+  const stats = { asOf, gate, ms: lap, securities: securities.length, candidates: res.index.counts, bytes, networkRequests: 0, node: process.version };
   if (arg('--stats')) fs.writeFileSync(arg('--stats'), JSON.stringify(stats, null, 1) + '\n');
   console.log(`[sf8-candidates] asOf ${asOf}: ${res.index.counts.candidates} Kandidaten ${JSON.stringify(res.index.counts.byStage)}, ${securities.length} Titel, ${lap.total} ms, ${JSON.stringify(bytes)} Bytes`);
 }
