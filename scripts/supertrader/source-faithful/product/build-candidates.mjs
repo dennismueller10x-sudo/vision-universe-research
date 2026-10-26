@@ -25,7 +25,7 @@ import { assessSecurity, assessStrategyHistory, DQ_CONTRACT_VERSION, STRATEGY_DA
 import { DETECTORS, DETECTORS_VERSION, commonFeatures, momentumIndex } from './detectors.mjs';
 import { buildCandidate, RECORDS_VERSION, ENGINES } from './records.mjs';
 import { rankStrategy, RANKING_VERSION, SORT_KEYS } from './ranking.mjs';
-import { STRATEGY_CATALOG, CATALOG_VERSION, RULE_LABELS } from './catalog.mjs';
+import { STRATEGY_CATALOG, CATALOG_VERSION, RULE_LABELS, STAGE_LABELS } from './catalog.mjs';
 import { loadSf6Readiness, stageCeilings, candidateContractSha256, ruleClasses, CANDIDATE_SCHEMA, STAGE_ORDER } from './candidate-contract.mjs';
 import { createRequire } from 'node:module';
 const Identity = createRequire(import.meta.url)('../../../../core/identity.js');
@@ -101,7 +101,7 @@ export function runPipeline({ securities: input, rejectedInputs = [], asOf, cale
     status: { liveReadiness: 'LIVE_NOT_APPROVED', certification: 'DIAGNOSTIC_NOT_CERTIFIED', validatedTradeSignal: 'LOCKED_FOR_ALL_13', orders: 'NONE' },
     inputs: { sources: SOURCES, sourceFiles, inputsSha256: inputSha, universe: universeInfo },
     dataQuality: { securities: securities.length, rejectedInputs: rejectedInputs.length, ...dqCounts, failReasons: Object.fromEntries(Object.entries(failReasons).sort()) },
-    ruleLabels: RULE_LABELS,
+    ruleLabels: RULE_LABELS, stageLabels: STAGE_LABELS,
     sortKeys: Object.fromEntries(Object.entries(SORT_KEYS).map(([k, s]) => [k, { label: s.label, dir: s.dir }])),
     counts: { candidates: rows.length, byStage: Object.fromEntries(STAGE_ORDER.slice(0, 3).map((st) => [st, rows.filter((r) => r.s === st).length])), validatedTradeSignal: 0, rejectedRecords: rejected.length },
     strategies: strategies.map(({ detail, ...rest }) => rest),

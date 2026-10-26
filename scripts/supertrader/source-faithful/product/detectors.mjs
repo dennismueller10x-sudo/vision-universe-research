@@ -25,7 +25,7 @@ import { pocketPivotAt, gapUpAt, sellGuideEvidence } from '../methods/morales-ka
 import { adr20, momentumRanks, breakoutEvidence, epGapEvidence, parabolicEvidence } from '../methods/kullamagi.mjs';
 import { investorScreen, traderScreen } from '../methods/weinstein.mjs';
 import { DARVAS_ADAPTER, DARVAS_REFERENCE_CONFIG, DARVAS_MODEL_ASSUMPTIONS } from '../research/darvas-lifecycle.mjs';
-import { KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG } from '../research/kk-breakout-lifecycle.mjs';
+import { KK_BREAKOUT_ADAPTER, KK_REFERENCE_CONFIG, KK_MODEL_ASSUMPTIONS } from '../research/kk-breakout-lifecycle.mjs';
 import { POCKET_PIVOT_ADAPTER, BUYABLE_GAP_UP_ADAPTER, PP_REFERENCE_CONFIG, BGU_REFERENCE_CONFIG, MOKA_MODEL_ASSUMPTIONS } from '../research/moka-lifecycle.mjs';
 import { HOLY_GRAIL_RESEARCH_ADAPTER, HG_REFERENCE_CONFIG } from '../research/holy-grail-lifecycle.mjs';
 import { sepaSetupAt, powerPlaySetupAt, entryEligibility, REFERENCE_CONFIG as MIN_REFERENCE_CONFIG, MODEL_ASSUMPTIONS as MIN_MODEL_ASSUMPTIONS } from '../research/minervini-lifecycle.mjs';
@@ -34,11 +34,12 @@ import { psChartCandidate, PS_REFERENCE_CONFIG } from '../research/kk-ps-study.m
 
 export const DETECTORS_VERSION = 'sf8-detectors-1.0.0';
 /**
- * KK-SF-BO-MOMENTUM ist im Vertrag eine RANGFOLGE (gate: false, GC-KK-MOMENTUM-RANK-NOT-GATE), kein Ausschluss. Eine
- * Schwelle für "Top 1-2 %" ist nicht freigegeben (Owner-Entscheidung O-6). Bis dahin gilt die Regel für die Stufe als
- * nicht erfüllt (fail closed): Kullamägi Breakout bleibt Chart-Kandidat; das Perzentil sortiert nur.
+ * KK-SF-BO-MOMENTUM ist im Vertrag eine RANGFOLGE (gate: false, GC-KK-MOMENTUM-RANK-NOT-GATE). Owner-Entscheidung O-6
+ * (26.10.2026): ein bestes 1/3/6-Monats-Perzentil >= 98 im Forschungsuniversum darf als GETRENNTE, ausdrücklich
+ * modellierte Research-Interpretation gelten, nie als Originalregel und nie als Ausschluss. Wirkung: nur für die
+ * Stufenfrage "Regel erfüllt"; Titel darunter bleiben Chart-Kandidaten. Referenzen der Research-Läufe unverändert.
  */
-export const KK_MOMENTUM_READING = Object.freeze({ status: 'PENDING_OWNER_DECISION_O6', proposal: 'bestes 1/3/6-Monats-Perzentil >= 98', gate: false });
+export const KK_MOMENTUM_INTERPRETATION = Object.freeze({ id: 'MI-SF8-KK-MOMENTUM-P98', ruleId: 'KK-SF-BO-MOMENTUM', threshold: 98, universe: 'VU_TOURNAMENT_UNIVERSE_705', gate: false, sourceRule: false, ownerDecision: 'O-6 (2026-10-26)', text: 'Modell-Interpretation: bestes 1/3/6-Monats-Perzentil mindestens 98 im Forschungsuniversum gilt als "Top 1–2 %"; keine Originalregel, kein Ausschluss' });
 
 const r4 = (x) => (fin(x) ? Math.round(x * 1e4) / 1e4 : null);
 const pct = (a, b) => (fin(a) && fin(b) && b !== 0 ? a / b - 1 : null);
@@ -229,18 +230,30 @@ function detectPowerPlay(sec) {
 function detectKkBreakout(sec, ctx) {
   const strategyId = 'SF_KK_BREAKOUT', bars = sec.bars, i = bars.length - 1;
   // Muster: täglicher Ausbruch nach der deklarierten Setup-Konvention der Research-Läufe (MA-KK-SETUP-PROXY, Referenz
-  // CONSOLIDATION_10) am Stichtag; das Momentum (KK-005) sortiert nur (siehe KK_MOMENTUM_READING)
+  // CONSOLIDATION_10) am Stichtag. Das Momentum (KK-005) sortiert; als Regel "erfüllt" nur über KK_MOMENTUM_INTERPRETATION.
   const prep = KK_BREAKOUT_ADAPTER.prepare(sec, KK_REFERENCE_CONFIG), setup = prep ? KK_BREAKOUT_ADAPTER.signalAt(prep, i) : null;
   if (!setup) return NONE(strategyId, 'NO_SETUP_PROXY_BREAKOUT_AT_ASOF');
   const m = ctx.momentum?.get(sec.id) ?? null, ev = breakoutEvidence(bars, i);
+  const momentumMet = fin(m?.bestPercentile) && m.bestPercentile >= KK_MOMENTUM_INTERPRETATION.threshold;
+  const el = momentumMet ? KK_BREAKOUT_ADAPTER.eligibility({ setup, bars, i, cfg: KK_REFERENCE_CONFIG }) : null;
+  const MA = (id) => maOf(KK_MODEL_ASSUMPTIONS, id);
+  const plan = el?.order ? {
+    lifecycleKey: 'KK_BREAKOUT', variantId: 'REF',
+    entry: { type: 'ON_OPEN_NEXT_SESSION (reference = as-of close)', trigger: bars[i].close }, stop: el.order.stop,
+    sizing: { method: 'RISK_0.005 (MA-KK-RISK-FRACTION)', riskFraction: KK_REFERENCE_CONFIG.sizing.riskFraction },
+    exitRuleIds: ['KK-SF-BO-STOP', 'KK-SF-STOPMARKET', 'KK-SF-BO-PARTIAL', 'KK-SF-BO-TRAIL'],
+    modelAssumptions: [assumption('KK-SF-SIZE', MA('MA-KK-RISK-FRACTION')), assumption('KK-SF-BO-SETUP', MA('MA-KK-SETUP-PROXY')), assumption('KK-SF-BO-ENTRY', MA('MA-KK-ENTRY-TIMING')), assumption('KK-SF-BO-PARTIAL', MA('MA-KK-EXIT-POLICY')), assumption('KK-SF-BO-TRAIL', MA('MA-KK-EXIT-POLICY'))],
+    declaredDataExceptions: [], maxPlannedLoss: el.order.maxPlannedLoss ?? null,
+  } : null;
   return {
     strategyId, detected: true, patternId: 'KK_DAILY_BREAKOUT_SETUP_PROXY_CONSOLIDATION_10', patternRuleIds: ['KK-SF-ADR'],
-    setupRules: [{ ruleId: 'KK-SF-BO-MOMENTUM', met: false, pending: KK_MOMENTUM_READING.status }],
+    setupRules: [{ ruleId: 'KK-SF-BO-MOMENTUM', met: momentumMet, interpretation: KK_MOMENTUM_INTERPRETATION.id }],
+    interpretations: [{ ruleId: KK_MOMENTUM_INTERPRETATION.ruleId, id: KK_MOMENTUM_INTERPRETATION.id, ownerDecision: KK_MOMENTUM_INTERPRETATION.ownerDecision }],
     ambiguousReadings: [],
     levels: { breakoutLevel: r4(setup.level) },
-    features: { momentum: m ? { p1m: r4(m.p1m), p3m: r4(m.p3m), p6m: r4(m.p6m), best: r4(m.bestPercentile), r1m: r4(m.r1m), r3m: r4(m.r3m), r6m: r4(m.r6m) } : null, momentumReading: KK_MOMENTUM_READING.status, setupProxy: KK_REFERENCE_CONFIG.setupProxy, priorMove: r4(setup.priorMove), higherLows: ev.higherLows, ma10Rising: setup.ma10Rising, ma20Rising: setup.ma20Rising, adr20: r4(setup.adr20) },
+    features: { momentum: m ? { p1m: r4(m.p1m), p3m: r4(m.p3m), p6m: r4(m.p6m), best: r4(m.bestPercentile), r1m: r4(m.r1m), r3m: r4(m.r3m), r6m: r4(m.r6m) } : null, momentumInterpretation: KK_MOMENTUM_INTERPRETATION.id, setupProxy: KK_REFERENCE_CONFIG.setupProxy, priorMove: r4(setup.priorMove), higherLows: ev.higherLows, ma10Rising: setup.ma10Rising, ma20Rising: setup.ma20Rising, adr20: r4(setup.adr20) },
     pivot: { level: r4(setup.level), kind: 'CONSOLIDATION_10_LEVEL (MA-KK-SETUP-PROXY)', distance: r4(pct(bars[i].close, setup.level)) },
-    plan: null, planBlockers: ['KK_MOMENTUM_READING_PENDING_OWNER_DECISION_O6'],
+    plan, planBlockers: plan ? [] : momentumMet ? (el?.blockers ?? []).map((b) => b.code) : ['KK_MOMENTUM_BELOW_P98_INTERPRETATION'],
   };
 }
 
