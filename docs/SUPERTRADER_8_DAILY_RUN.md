@@ -32,8 +32,8 @@ Die bisherige Schutzregel `SF-PRODUCT-NO-RUN-INTEGRATION` wurde nur für genau d
 | # | Voraussetzung | Stand |
 |---|---|---|
 | V1 | SEC-/Quant-Consumer-Pipeline nachweislich stabil (mehrere aufeinanderfolgende erfolgreiche Läufe, Footprint-Test grün) | Ein erfolgreicher Lauf (40307188633, 26.10.2026, nach #963). Der Footprint-Test auf `main` ist grün (39/0). Ein einzelner Lauf ist kein Stabilitätsnachweis. |
-| V2 | Registrierung von `supertrader/data/sf-candidates` als eigene Datenart in `core/registry/domains.json` mit diesem Workflow als Erzeuger | Gehört in einen Core-PR (außerhalb von Gate A). Der Commit-Schritt bricht ohne Registrierung ab. |
-| V3 | DQ-Regeln für die neue Datenart in `scripts/core/data-quality.mjs` (Frische, Schema, Stufenobergrenzen) | Gehört ebenfalls in den Core-PR. |
+| V2 | Registrierung von `supertrader/data/sf-candidates` als eigene Datenart in `core/registry/domains.json` mit diesem Workflow als Erzeuger | Offen, eigener Integrationsblocker: [SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md](SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md). Braucht zuerst einen Supertrader-PR, der zwei Schutztests eng öffnet, dann einen Core-PR. Der Commit-Schritt bricht ohne Registrierung ab. |
+| V3 | DQ-Regeln für die neue Datenart in `core/data-quality.js` und `scripts/core/data-quality.mjs`: Frische, Schema, Stufensperre, keine Ordermarken unter MODELED, keine `records/`, Budget | Offen, im selben Blocker-Dokument mit sieben konkreten Regeln. |
 | V4 | Abgleich `price.close` mit `quant/engines/published-close.js` (ADR-002) | Offen. Die Kandidaten zeigen bisher den Tagesschluss der technischen Materialisierung. |
 | V5 | Freigabe der befüllten Vorschau (Inhalt und Darstellung) durch den Owner | Offen. Die Vorschau ist nur lokal und isoliert geprüft. |
 | V6 | Ausdrückliche Freigabe: Variable `SF8_CANDIDATES_ENABLED=true` setzen, danach erst einen Zeitplan in einem eigenen PR ergänzen | Offen. |
