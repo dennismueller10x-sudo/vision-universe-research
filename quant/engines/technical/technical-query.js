@@ -25,7 +25,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.3.0";
+  var QUERY_VERSION = "technical-query-1.4.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -96,7 +96,8 @@
   function labelOf(f, tf) { return typeof f.label === "string" ? f.label : (f.label[tf] || f.label["1D"]); }
   /** Spaltenname im Datensatz: Tag ohne Suffix, Woche/Monat mit "@1W"/"@1M". */
   function columnKey(id, tf) { var f = field(id); return !f || f.tfIndependent || tf === "1D" ? id : id + "@" + tf; }
-  function opsFor(kind) { return kind === "bool" ? ["is"] : kind === "enum" ? ["in"] : ["gt", "gte", "lt", "lte", "between"]; }
+  /* "nin" = keiner der Werte (z. B. "ohne Kurslücke"); fehlende Werte bleiben unbekannt, nicht "erfüllt". */
+  function opsFor(kind) { return kind === "bool" ? ["is"] : kind === "enum" ? ["in", "nin"] : ["gt", "gte", "lt", "lte", "between"]; }
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
 
@@ -128,9 +129,13 @@
         count++;
         var f = x && field(x.field);
         if (!f) return err("UNKNOWN_FIELD", p + ".field");
-        if (TIMEFRAMES[tf] && f.tfs.indexOf(tf) < 0) return err("FIELD_NOT_AVAILABLE_FOR_TIMEFRAME", p + ".field");
+        /* Zeitrahmen je Filter (Mehrzeitrahmen): ohne Angabe gilt der Zeitrahmen der Abfrage. */
+        var ftf = x.tf === undefined || x.tf === null ? tf : x.tf;
+        if (!TIMEFRAMES[ftf]) return err("INVALID_TIMEFRAME", p + ".tf");
+        if (TIMEFRAMES[tf] && f.tfs.indexOf(ftf) < 0) return err("FIELD_NOT_AVAILABLE_FOR_TIMEFRAME", p + ".field");
         if (opsFor(f.kind).indexOf(x.op) < 0) return err("INVALID_OPERATOR", p + ".op");
         var o = { id: "f" + gi + "_" + fi, field: f.id, op: x.op };
+        if (ftf !== tf) o.tf = ftf;
         if (f.kind === "bool") { if (typeof x.value !== "boolean") return err("INVALID_VALUE", p + ".value"); o.value = x.value; }
         else if (f.kind === "enum") {
           var vals = Array.isArray(x.value) ? x.value : [];
@@ -175,15 +180,17 @@
 
   /** Praedikat: true | false | null (null = kein Wert). */
   function compile(ds, filter, tf) {
-    var f = field(filter.field), c = ds.column(columnKey(filter.field, tf));
+    var f = field(filter.field), c = ds.column(columnKey(filter.field, filter.tf || tf));
     if (!f || !c) return function () { return null; };
     if (f.kind === "bool") return function (i) { var v = c[i]; return v === null || v === undefined ? null : !!v === filter.value; };
     if (f.kind === "enum") {
       var want = {}; filter.value.forEach(function (v) { want[v] = true; });
       return function (i) {
         var v = c[i]; if (v === null || v === undefined) return null;
-        if (Array.isArray(v)) { for (var k = 0; k < v.length; k++) if (want[v[k]]) return true; return false; }
-        return !!want[v];
+        var hit = false;
+        if (Array.isArray(v)) { for (var k = 0; k < v.length && !hit; k++) if (want[v[k]]) hit = true; }
+        else hit = !!want[v];
+        return filter.op === "nin" ? !hit : hit;
       };
     }
     var a = filter.value, b = filter.value2;
@@ -261,9 +268,11 @@
   function fmtValue(f, v) { return f.kind === "pct" ? (Math.round(v * 1000) / 10).toLocaleString("de-DE") + " %" : String(v).replace(".", ","); }
   function describeFilter(x, tf) {
     var f = field(x.field); if (!f) return x.field;
-    var l = labelOf(f, tf || "1D");
+    /* Eigener Zeitrahmen: Beschriftung dieses Zeitrahmens; Zusatz nur, wenn die Beschriftung ihn nicht schon nennt. */
+    var own = x.tf && x.tf !== (tf || "1D"), l = labelOf(f, x.tf || tf || "1D");
+    if (own && l === labelOf(f, tf || "1D")) l += " (" + TIMEFRAMES[x.tf] + ")";
     if (f.kind === "bool") return x.value ? l : "nicht: " + l;
-    if (f.kind === "enum") return l + ": " + x.value.map(function (v) { return f.values[v] || v; }).join(" oder ");
+    if (f.kind === "enum") return l + (x.op === "nin" ? ": keine von " : ": ") + x.value.map(function (v) { return f.values[v] || v; }).join(x.op === "nin" ? ", " : " oder ");
     if (x.op === "between") return l + " zwischen " + fmtValue(f, x.value) + " und " + fmtValue(f, x.value2);
     return l + " " + OPS_DE[x.op] + " " + fmtValue(f, x.value);
   }
@@ -283,7 +292,7 @@
    */
   function jsonSchema() {
     var filterVariants = FIELDS.map(function (f) {
-      var props = { field: { const: f.id }, op: { enum: opsFor(f.kind) } };
+      var props = { field: { const: f.id }, op: { enum: opsFor(f.kind) }, tf: { enum: f.tfs, description: "Optional: eigener Zeitrahmen dieses Filters (sonst der der Abfrage)" } };
       if (f.kind === "bool") props.value = { type: "boolean" };
       else if (f.kind === "enum") props.value = { type: "array", minItems: 1, items: { enum: Object.keys(f.values) } };
       else { props.value = { type: "number" }; props.value2 = { type: "number" }; }

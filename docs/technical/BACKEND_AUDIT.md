@@ -498,3 +498,18 @@ Sortierung: zuerst hoher Nutzen bei geringem Risiko.
 - Ob die 6 ausgelassenen Vorzugsaktien Absicht sind.
 - Ob die fehlende Benchmark (SPY außerhalb des Universums) bekannt und gewollt ist. Der Methodik-Kommentar zu SPY vom 02.10. deutet auf einen anderen Pfad hin (Quant-Signale?). Das habe ich nicht weiter verfolgt.
 - Wie stark die Git-Historie tatsächlich durch die Shards wächst. Belegt sind nur 49 Commits auf `AA.json.gz` und ~16,5 GB Repository-Größe, nicht der Anteil der Shards daran.
+
+## Umsetzungsstand des Backlogs (fortgeschrieben)
+
+Der Audit-Text oben ist eine Momentaufnahme vom 26.10.2026 und bleibt unverändert. Dieser Abschnitt hält fest, was daraus umgesetzt ist.
+
+| Punkt | Stand | PR |
+|---|---|---|
+| B1 | erledigt: eigener Zeitplan 05:10 UTC Di–Sa, Testlauf grün | #947 |
+| B3 | erledigt: DQ-TW-1..4 (Frische, leere Felder, Schlusskurs-Gleichheit als ERROR, Abdeckung) | #950 |
+| B4 | erledigt: Shard-Regex angeglichen, 6 Vorzugsaktien aufgenommen | #950 |
+| B6 | erledigt: 14 Katalogindikatoren, nur Katalog (`indicators` 1.2.0) | #955 |
+| B7 | erledigt: TA-Lib 0.8.2 als eingefrorene Referenz. Befund Parabolic SAR an Umkehrbars; Korrektur als Fachmodell-PR vorgelegt (#964, Entscheidung beim Owner) | #962 |
+| B13 | erledigt: Zeitrahmen je Filter, `nin`, verneinte Formationen (`technical-query` 1.4.0) | #954 |
+| B18 | erledigt: Goldsatz 80 + 14 Fälle, Offline-Evaluation, 80/80 exakt, 0/14 stille Fehlgriffe | #952, #954 |
+| B2 | offen: Prüfung nach dem Materialisierungslauf vom 26./27.10.2026 | – |

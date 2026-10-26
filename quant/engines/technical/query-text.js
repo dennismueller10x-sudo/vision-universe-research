@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.2.0";
+  var TEXT_VERSION = "technical-query-text-1.4.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -116,8 +116,8 @@
     ["(fallende )?widerstandslinie|abwaertstrendlinie", { formations: ["RESISTANCE_TRENDLINE"] }],
     ["trendlinien?", { formations: ["SUPPORT_TRENDLINE", "RESISTANCE_TRENDLINE"] }],
     ["volatilitaetskontraktion|\\bvcp\\b", { formations: ["VOLATILITY_CONTRACTION"] }],
-    ["(kurs)?luecken? nach oben|gap-?ups?|aufwaertsluecken?", { formations: ["GAP_UP"] }],
-    ["(kurs)?luecken? nach unten|gap-?downs?|abwaertsluecken?", { formations: ["GAP_DOWN"] }],
+    ["(kurs)?luecken? nach oben|gap[- ]?ups?|aufwaertsluecken?", { formations: ["GAP_UP"] }],
+    ["(kurs)?luecken? nach unten|gap[- ]?downs?|abwaertsluecken?", { formations: ["GAP_DOWN"] }],
     ["(kurs)?luecken?|gaps?", { formations: ["GAP_UP", "GAP_DOWN"] }],
     ["bestaetigt\\w*|confirmed", { confirmed: true }]
   ];
@@ -132,7 +132,7 @@
     ["roc( ?21)?|21-?tage-?(aenderung|performance)|monatsperformance", "roc21"], ["tagesaenderung|tagesperformance", "chg1d"],
     ["schlusskurs|aktienkurs|kurs|preis", "close"]
   ];
-  var CMP = [["groesser als|mehr als|oberhalb|ueber|>", "gt"], ["mindestens|ab|>=", "gte"], ["kleiner als|weniger als|unterhalb|unter|<", "lt"], ["hoechstens|bis|<=", "lte"]];
+  var CMP = [["groesser als|groesser|mehr als|oberhalb|ueber|>", "gt"], ["mindestens|ab|>=", "gte"], ["kleiner als|kleiner|weniger als|unterhalb|unter|<", "lt"], ["hoechstens|bis|<=", "lte"]];
   var STOP = ("aktien aktie titel werte wert alle zeige zeig finde such suche mir mit der die das den dem des ein eine einer einem eines im in auf am an bei von nach " +
     "sowie setup setups formation formationen muster signal signale aktuell gerade derzeit noch bildung tageschart chart charts liegt liegen ist sind " +
     "einem einen im tag taeglich tagesbasis 1d kurs kurse").split(" ");
@@ -143,8 +143,12 @@
   var METRIC_RE = "(" + METRICS.map(function (m) { return nc(m[0]); }).concat(NUMERIC.map(function (f) { return esc(f.id.toLowerCase()); })).join("|") + ")";
   var NUM_RE = "(-?\\d+(?:[.,]\\d+)?)\\s*(%)?(?![\\w-])";
   var CMP_RE = "(>=|<=|>|<|" + CMP.map(function (c) { return c[0].split("|").filter(function (w) { return !/^[<>]=?$/.test(w); }).join("|"); }).join("|") + ")";
-  var BETWEEN = new RegExp("\\b" + METRIC_RE + "\\s+zwischen\\s+" + NUM_RE + "\\s+und\\s+" + NUM_RE, "g");
-  var COMPARE = new RegExp("(?:^|\\s)" + METRIC_RE + "\\s*" + CMP_RE + "\\s*" + NUM_RE, "g");
+  /* Zeitrahmen-Praefix je Kennzahl: "Wochen-RSI", "Tages-RSI", "Monats-RSI" (Mehrzeitrahmen). */
+  var TF_PRE = "(?:(tages|wochen|monats)-?)?";
+  var TF_OF = { tages: "1D", wochen: "1W", monats: "1M" };
+  var BETWEEN = new RegExp("(?:^|\\s)" + TF_PRE + METRIC_RE + "\\s+zwischen\\s+" + NUM_RE + "\\s+und\\s+" + NUM_RE, "g");
+  var COMPARE = new RegExp("(?:^|\\s)" + TF_PRE + METRIC_RE + "\\s*" + CMP_RE + "\\s*" + NUM_RE, "g");
+  function withTf(f, pre) { if (pre) f.tf = TF_OF[pre]; return f; }
 
   function metricField(alias) {
     for (var i = 0; i < METRICS.length; i++) if (new RegExp("^(?:" + METRICS[i][0] + ")$").test(alias)) return METRICS[i][1];
@@ -163,11 +167,18 @@
     var text = " " + fold(input) + " ", slots = [], errors = [], recognized = [];
     function slot(item) { slots.push(item); return " §" + (slots.length - 1) + "§ "; }
     var tf = "1D", sort = null;
+    /* Einheiten in Worten: "5 Prozent" = "5 %", "100 Dollar" = 100 (Kurse sind USD) */
+    text = text.replace(/(\d)\s*(prozent|pct)(?![\w-])/g, "$1 %").replace(/(\d)\s*(dollar|usd|\$)(?![\w-])/g, "$1");
 
     /* 1. Kanonische Praefixe und Zeitrahmen-/Sortierangaben */
     text = text.replace(/\btf:(1d|1w|1m)\b/g, function (m, x) { tf = x.toUpperCase(); return " "; });
     text = text.replace(/\bsort:([a-z0-9]+):(asc|desc)\b/g, function (m, id, dir) { var f = metricField(id); if (f) sort = { field: f, dir: dir }; else errors.push({ code: "UNKNOWN_SORT", text: id }); return " "; });
     text = text.replace(new RegExp("sortiert nach " + METRIC_RE + "( (auf|ab)steigend)?", "g"), function (m, a, d) { sort = { field: metricField(a), dir: d && /auf/.test(d) ? "asc" : "desc" }; return " "; });
+    text = text.replace(/\bnicht-formation:([a-z_,]+)/g, function (m, list) {
+      var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
+      if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
+      return slot({ notFormations: types, text: m });
+    });
     text = text.replace(/\b(formation|bestaetigt):([a-z_,]+)/g, function (m, kind, list) {
       var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
@@ -185,19 +196,22 @@
     });
 
     /* 2. Vergleiche (vor der Zerlegung, weil "zwischen 30 und 50" ein "und" enthaelt) */
-    text = text.replace(BETWEEN, function (m, a, x, px, y) { var f = metricField(a); return slot({ filters: [{ field: f, op: "between", value: toNumber(x, f), value2: toNumber(y, f) }], text: m.trim() }); });
-    text = text.replace(COMPARE, function (m, a, c, x) { var f = metricField(a), op = cmpOp(c); return f && op ? slot({ filters: [{ field: f, op: op, value: toNumber(x, f) }], text: m.trim() }) : m; });
+    text = text.replace(BETWEEN, function (m, pre, a, x, px, y) { var f = metricField(a); return " " + slot({ filters: [withTf({ field: f, op: "between", value: toNumber(x, f), value2: toNumber(y, f) }, pre)], text: m.trim() }); });
+    text = text.replace(COMPARE, function (m, pre, a, c, x) { var f = metricField(a), op = cmpOp(c); return f && op ? " " + slot({ filters: [withTf({ field: f, op: op, value: toNumber(x, f) }, pre)], text: m.trim() }) : m; });
 
     /* 3. Begriffe, laengste Treffer zuerst (Reihenfolge der Liste ist die Prioritaet) */
     TERMS.forEach(function (t) {
-      text = text.replace(new RegExp("(^|[\\s,;(])(" + t[0] + ")(?=$|[\\s,;)])", "g"), function (m, pre, hit) {
-        var d = t[1], item = Array.isArray(d) ? { filters: d, text: hit } : d.formations ? { formations: d.formations, text: hit } : { confirmed: true, text: hit };
-        return pre + slot(item);
+      /* "ohne Kurslücke", "kein Doppeltop": verneinte Formation (formationActive nin); nur vor Formationsbegriffen. */
+      text = text.replace(new RegExp("(^|[\\s,;(])(?:(ohne|kein|keine|keinen|keiner)\\s+)?(" + t[0] + ")(?=$|[\\s,;)])", "g"), function (m, pre, neg, hit) {
+        var d = t[1];
+        if (neg && d.formations) return pre + slot({ notFormations: d.formations, text: neg + " " + hit });
+        var item = Array.isArray(d) ? { filters: d, text: hit } : d.formations ? { formations: d.formations, text: hit } : { confirmed: true, text: hit };
+        return pre + (neg ? neg + " " : "") + slot(item);
       });
     });
-    /* Kanonische Wahrheitsfelder: "aboveSma200", "nicht aboveSma200" */
+    /* Kanonische Wahrheitsfelder: "aboveSma200", "nicht aboveSma200", mit Zeitrahmen "wochen-aboveSma200" */
     Q.FIELDS.filter(function (f) { return f.kind === "bool"; }).forEach(function (f) {
-      text = text.replace(new RegExp("(^|\\s)(nicht\\s+|!)?" + esc(f.id.toLowerCase()) + "(?=\\s|$)", "g"), function (m, pre, neg) { return pre + slot({ filters: [b(f.id, !neg)], text: m.trim() }); });
+      text = text.replace(new RegExp("(^|\\s)(nicht\\s+|!)?" + TF_PRE + esc(f.id.toLowerCase()) + "(?=\\s|$)", "g"), function (m, pre, neg, tfp) { return pre + slot({ filters: [withTf(b(f.id, !neg), tfp)], text: m.trim() }); });
     });
     /* Zeitrahmen-Woerter erst jetzt ("52-Wochen-Hoch" ist bereits verbraucht) */
     text = text.replace(/\b(woche|wochen|woechentlich|wochenchart|wochenbasis|1w)\b/g, function () { tf = "1W"; return " "; });
@@ -223,9 +237,10 @@
     }
 
     var qGroups = groups.map(function (items) {
-      var filters = [], forms = [], confirmed = false;
+      var filters = [], forms = [], notForms = [], confirmed = false;
       items.forEach(function (x) {
         if (x.confirmed) confirmed = true;
+        if (x.notFormations) { x.notFormations.forEach(function (t) { if (notForms.indexOf(t) < 0) notForms.push(t); }); recognized.push("keine " + x.notFormations.map(function (t) { return T[t]; }).join(" / ")); return; }
         if (x.formations) x.formations.forEach(function (t) { if (forms.indexOf(t) < 0) forms.push(t); });
         (x.filters || []).forEach(function (f) { filters.push(Object.assign({}, f, f.value && Array.isArray(f.value) ? { value: f.value.slice() } : {})); });
         recognized.push(x.formations ? x.formations.map(function (t) { return T[t]; }).join(" / ") + (x.confirmed ? " (bestätigt)" : "")
@@ -233,6 +248,7 @@
       });
       if (forms.length) filters.unshift({ field: confirmed ? "formationConfirmed" : "formationActive", op: "in", value: forms });
       else if (confirmed) errors.push({ code: "CONFIRMED_WITHOUT_FORMATION", text: "bestätigt" });
+      if (notForms.length) filters.push({ field: "formationActive", op: "nin", value: notForms });
       return { op: "AND", filters: filters };
     }).filter(function (g) { return g.filters.length; });
 
@@ -270,14 +286,14 @@
     }
     var groups = gs.map(function (g) {
       return g.filters.map(function (x) {
-        var f = Q.field(x.field);
-        if (f.kind === "bool") return (x.value ? "" : "nicht ") + x.field;
-        if (x.field === "formationActive") return "formation:" + x.value.join(",");
+        var f = Q.field(x.field), pre = x.tf ? { "1D": "tages-", "1W": "wochen-", "1M": "monats-" }[x.tf] : "";
+        if (f.kind === "bool") return (x.value ? "" : "nicht ") + pre + x.field;
+        if (x.field === "formationActive") return (x.op === "nin" ? "nicht-formation:" : "formation:") + x.value.join(",");
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
         if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
-        if (x.op === "between") return x.field + " zwischen " + fmtNum(x.field, x.value) + " und " + fmtNum(x.field, x.value2);
-        return x.field + " " + SYM[x.op] + " " + fmtNum(x.field, x.value);
+        if (x.op === "between") return pre + x.field + " zwischen " + fmtNum(x.field, x.value) + " und " + fmtNum(x.field, x.value2);
+        return pre + x.field + " " + SYM[x.op] + " " + fmtNum(x.field, x.value);
       }).join(" und ");
     });
     var out = groups.join(" oder ");
