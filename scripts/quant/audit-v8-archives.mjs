@@ -12,10 +12,39 @@ const require=createRequire(import.meta.url), CA=require('../../quant/engines/co
 const root=process.cwd(),out=resolve(process.argv[2]||'.verification/v8-archives');
 if(!out.startsWith(resolve(root,'.verification')+'/'))throw Error('DERIVED_OUTPUT_REQUIRED');
 const sha=b=>createHash('sha256').update(b).digest('hex'), loader=Adapter.createLoader(root), master=JSON.parse(readFileSync(join(root,'quant/data/market/security-master/us-security-master.json'))), ids=new Map(master.rows.map(r=>[r.baseline_security_id,r]));
-const report={schemaVersion:'v8-private-archives-1',gitHead:process.env.GITHUB_SHA||null,runId:process.env.GITHUB_RUN_ID||null,codeHash:sha(readFileSync(new URL(import.meta.url))),rawPublication:false,providerRequests:0,productionApproved:false,cacheRestores:{discover:{key:'discover-market-cache-40047253956',hit:process.env.V8_DISCOVER_CACHE_HIT==='true'},tiingo:{key:'tiingo2-encrypted-v1-main-39962041711',hit:process.env.V8_TIINGO_CACHE_HIT==='true'},sec:{key:'sec-fundamentals-40087710308',hit:process.env.V8_SEC_CACHE_HIT==='true'}},archives:[],series:[],weeklyRequalification:[],secFacts:{files:0,factObservations:0,accessions:new Set(),earliestFiled:null,latestFiled:null},budgets:{maxFiles:250000,maxFileBytes:64*1024*1024,maxProcessedBytes:20*1024**3}};
+const report={schemaVersion:'v8-private-archives-1.1.0',gitHead:process.env.GITHUB_SHA||null,runId:process.env.GITHUB_RUN_ID||null,codeHash:sha(readFileSync(new URL(import.meta.url))),rawPublication:false,providerRequests:0,productionApproved:false,runtime:Adapter.calculationRuntime(),cacheRestores:{discover:{key:'discover-market-cache-40047253956',hit:process.env.V8_DISCOVER_CACHE_HIT==='true'},tiingo:{key:'tiingo2-encrypted-v1-main-39962041711',hit:process.env.V8_TIINGO_CACHE_HIT==='true'},sec:{key:'sec-fundamentals-40087710308',hit:process.env.V8_SEC_CACHE_HIT==='true'}},archives:[],series:[],weeklyRequalification:[],secFacts:{files:0,factObservations:0,accessions:new Set(),earliestFiled:null,latestFiled:null},budgets:{maxFiles:250000,maxFileBytes:64*1024*1024,maxProcessedBytes:20*1024**3}};
+const originalHeaderPath=join(root,'docs/quant-recovery/v8/sec-acceptance-validation.json'), originalHeaders=existsSync(originalHeaderPath)?JSON.parse(readFileSync(originalHeaderPath)).results:[];
+const originalByKey=new Map(originalHeaders.filter(x=>x.state==='MATCH').map(x=>[String(x.cik).replace(/^0+/, '')+':'+x.accession,x]));
+const originalAudit=new Map();
+report.normalizedFactbooks={files:0,sourceCompanyfactsHashBound:0,timelines:0,observations:0,restatedTimelines:0,missingAvailability:0,dateOnlyAvailability:0,exactAvailability:0,availabilityBeforePeriodEnd:0,provenanceAccessionPresent:0,filingIndexEntries:0,filingIndexAcceptancePresent:0,qualityCounts:{},earliestAvailability:null,latestAvailability:null,earliestFiscalYear:null,latestFiscalYear:null,scope:'Stored normalized accession-specific timelines; missing first filings and original XBRL vintage completeness not established'};
 let count=0,total=0,processedBytes=0,metadataTruncated=false;const fingerprints=[],metadataFingerprints=[],budgetEvents=[],requalified=new Map();
 function processJson(p,bytes){
  let doc;try{doc=JSON.parse(bytes);}catch{return false;}
+ if(Array.isArray(doc?.factbook?.timelines)){
+  const n=report.normalizedFactbooks;n.files++;
+  if(/^[a-f0-9]{64}$/.test(doc.raw_companyfacts_sha256||''))n.sourceCompanyfactsHashBound++;
+  for(const filing of doc.filing_index||[]){n.filingIndexEntries++;if(filing.acceptance_datetime)n.filingIndexAcceptancePresent++;}
+  for(const t of doc.factbook.timelines){
+   n.timelines++;if(t.restated)n.restatedTimelines++;
+   if(Number.isInteger(t.fiscal_year)){n.earliestFiscalYear=n.earliestFiscalYear===null?t.fiscal_year:Math.min(n.earliestFiscalYear,t.fiscal_year);n.latestFiscalYear=n.latestFiscalYear===null?t.fiscal_year:Math.max(n.latestFiscalYear,t.fiscal_year);}
+   for(const observation of t.observations||[]){
+    n.observations++;const available=observation.available_from;
+    if(!available)n.missingAvailability++;else{
+     if(String(available).includes('T'))n.exactAvailability++;else n.dateOnlyAvailability++;
+     if(observation.period_end&&String(available).slice(0,10)<observation.period_end)n.availabilityBeforePeriodEnd++;
+     n.earliestAvailability=!n.earliestAvailability||available<n.earliestAvailability?available:n.earliestAvailability;n.latestAvailability=!n.latestAvailability||available>n.latestAvailability?available:n.latestAvailability;
+    }
+    const quality=observation.quality||'UNSPECIFIED';n.qualityCounts[quality]=(n.qualityCounts[quality]||0)+1;
+    const accession=observation.provenance?.accession;if(accession)n.provenanceAccessionPresent++;
+    const key=String(doc.cik).replace(/^0+/, '')+':'+accession,header=originalByKey.get(key);
+    if(header){
+     if(!originalAudit.has(key))originalAudit.set(key,{cik:String(doc.cik),accession,originalHeaderHash:header.sourceHash,expectedAcceptanceUtc:header.acceptanceUtc,observations:0,availabilityMatches:0,availabilityConflicts:0,missingAvailability:0,metrics:new Set()});
+     const audit=originalAudit.get(key);audit.observations++;audit.metrics.add(t.metric);
+     if(!available)audit.missingAvailability++;else if(available===header.acceptanceUtc)audit.availabilityMatches++;else audit.availabilityConflicts++;
+    }
+   }
+  }
+ }
  if(doc?.facts){report.secFacts.files++;for(const tax of Object.values(doc.facts))for(const concept of Object.values(tax||{}))for(const values of Object.values(concept.units||{}))for(const f of values||[]){report.secFacts.factObservations++;if(f.accn)report.secFacts.accessions.add(f.accn);if(f.filed){report.secFacts.earliestFiled=!report.secFacts.earliestFiled||f.filed<report.secFacts.earliestFiled?f.filed:report.secFacts.earliestFiled;report.secFacts.latestFiled=!report.secFacts.latestFiled||f.filed>report.secFacts.latestFiled?f.filed:report.secFacts.latestFiled;}}}
  const rows=Array.isArray(doc?.bars)?doc.bars:Array.isArray(doc?.rows)&&doc.rows.some(r=>r?.adjClose)?doc.rows:null;
  if(!rows?.length)return;
@@ -69,6 +98,7 @@ if(report.archives.some(x=>x.budgetSkippedFiles))budgetEvents.push({reason:'PROC
 report.coverage={metadataDiscoveryComplete:!metadataTruncated,discoveredFiles:count,discoveredBytes:total,processedBytes,opaqueFiles:report.archives.reduce((n,x)=>n+x.opaqueFiles,0),opaqueBytes:report.archives.reduce((n,x)=>n+x.opaqueBytes,0),candidateFiles:report.archives.reduce((n,x)=>n+x.candidateFiles,0),parsedFiles:report.archives.reduce((n,x)=>n+x.parsedFiles,0),oversizeSkipped:report.archives.reduce((n,x)=>n+x.oversizeSkipped,0),compressedSkipped:report.archives.reduce((n,x)=>n+x.compressedSkipped,0),jsonParseFailures:report.archives.reduce((n,x)=>n+x.jsonParseFailures,0),budgetEvents};
 report.coverage.state=metadataTruncated||budgetEvents.length||report.coverage.oversizeSkipped||report.coverage.compressedSkipped||report.coverage.jsonParseFailures?'PARTIAL':'COMPLETE_FOR_JSON_AND_GZIP_FORMATS';
 report.discoveredMetadataHash=sha(metadataFingerprints.sort().join('\n'));
+report.originalAccessionAvailabilityAudit=[...originalAudit.values()].map(x=>({...x,metrics:[...x.metrics].sort()})).sort((a,b)=>(a.cik+':'+a.accession).localeCompare(b.cik+':'+b.accession));
 report.secFacts.uniqueAccessions=report.secFacts.accessions.size;delete report.secFacts.accessions;
 report.manifestHash=sha(fingerprints.sort().join('\n'));report.summary={files:count,bytes:total,dailySeries:report.series.length,actionCoherentSeries:report.series.filter(r=>r.corporateActionGatePassed).length,additionalQualifiedWeeklySeries:requalified.size};
 // Recompute only genuinely newly qualified listings; no original points are edited.
