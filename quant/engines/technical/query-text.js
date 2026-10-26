@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.1.0";
+  var TEXT_VERSION = "technical-query-text-1.2.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -173,6 +173,12 @@
       if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
       return slot({ formations: types, confirmed: kind === "bestaetigt", text: m });
     });
+    /* "offen:TYP,TYP" = Formation erkannt, noch ohne Ausbruch (formationOpen) */
+    text = text.replace(/\boffen:([a-z_,]+)/g, function (m, list) {
+      var types = list.toUpperCase().split(",").filter(Boolean), bad = types.filter(function (t) { return !T[t]; });
+      if (bad.length) { errors.push({ code: "UNKNOWN_FORMATION", text: bad.join(",") }); return " "; }
+      return slot({ filters: [{ field: "formationOpen", op: "in", value: types }], text: m });
+    });
     text = text.replace(/\bstruktur:([a-z,]+)/g, function (m, list) {
       var v = list.toUpperCase().split(",").filter(function (x) { return Q.STRUCTURES[x]; });
       return v.length ? slot({ filters: [{ field: "structure", op: "in", value: v }], text: m }) : " ";
@@ -268,6 +274,7 @@
         if (f.kind === "bool") return (x.value ? "" : "nicht ") + x.field;
         if (x.field === "formationActive") return "formation:" + x.value.join(",");
         if (x.field === "formationConfirmed") return "bestaetigt:" + x.value.join(",");
+        if (x.field === "formationOpen") return "offen:" + x.value.join(",");
         if (x.field === "structure") return "struktur:" + x.value.join(",");
         if (x.op === "between") return x.field + " zwischen " + fmtNum(x.field, x.value) + " und " + fmtNum(x.field, x.value2);
         return x.field + " " + SYM[x.op] + " " + fmtNum(x.field, x.value);

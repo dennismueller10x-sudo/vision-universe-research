@@ -698,13 +698,14 @@
       if (!isTrend || focusF) (f.points || []).forEach(function (p) { markers.push({ time: p.time, price: p.price, tone: tone, size: 3 }); });
       if (f.state === "CONFIRMED" && f.confirmedAt && !isTrend) {
         var ci = S.dates.indexOf(f.confirmedAt);
-        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
+        if (ci >= 0) markers.push({ time: f.confirmedAt, price: S.close[ci], tone: "accent", size: 6, label: f.confirmedAtDetection ? "Erkannt nach Ausbruch" : f.family === "BREAKOUT" ? "Ausbruch" : "Bestätigt" });
       }
       if (f.state === "INVALIDATED" && f.invalidatedAt && f.invalidatedAt >= firstDate && (!isTrend || focusF)) {
         var ii = S.dates.indexOf(f.invalidatedAt);
         if (ii >= 0) markers.push({ time: f.invalidatedAt, price: S.close[ii], tone: "negative", shape: "cross", size: 5, label: focusF ? "Invalidiert" : null, badge: "muted" });
       }
-      if (focusF && f.detectedAt && f.detectedAt >= firstDate) {
+      /* Bei Erkennung bereits ausgebrochen: keine eigene Erkennungsmarke vor dem Ausbruch (Erkennung = Ausbruchstag). */
+      if (focusF && f.detectedAt && f.detectedAt >= firstDate && !f.confirmedAtDetection) {
         var di = S.dates.indexOf(f.detectedAt);
         if (di >= 0) markers.push({ time: f.detectedAt, price: S.close[di], tone: "muted", size: 4, label: "Erkannt", badge: "muted" });
       }
@@ -746,7 +747,9 @@
           el("dt", { text: "Erkennung" }), el("dd", { text: x.rules.detect }),
           el("dt", { text: "Bestätigung" }), el("dd", { text: x.rules.confirm }),
           el("dt", { text: "Invalidierung" }), el("dd", { text: x.rules.invalidate }),
-          el("dt", { text: "Erkannt" }), el("dd", { text: M.dateDe(x.detectedAt) + " (mit dem Wissen dieses Tages)" }),
+          el("dt", { text: "Erkannt" }), el("dd", { text: M.dateDe(x.detectedAt) + " (frühester Tag, an dem die Formation mit dem damaligen Wissen erkennbar war)" }),
+          x.breakout ? el("dt", { text: "Ausbruch" }) : null, x.breakout ? el("dd", { text: (x.breakout.direction === "UP" ? "Nach oben" : "Nach unten") + " am " + M.dateDe(x.breakout.at) + (x.confirmedAtDetection ? " – bei Erkennung bereits ausgebrochen" : "") }) : null,
+          x.provisional ? el("dt", { text: "Status" }) : null, x.provisional ? el("dd", { text: "Vorläufig: vier bestätigte Swing-Punkte; bestätigt erst mit einem fünften Punkt im Kanal." }) : null,
           el("dt", { text: "Im Chart" }), el("dd", {}, el("a", { class: "tc-link", href: location.hash.replace(/\?.*$/, "").replace(/\/signale$/, "") + "?f=" + encodeURIComponent(x.id), text: "Nur diese Formation zeigen" })),
           evidence ? el("dt", { text: "Historisch" }) : null, evidence ? el("dd", { text: M.evidenceText(evidence.byType[x.type], evidence.doc.window) }) : null,
           el("dt", { text: "Zeitrahmen" }), el("dd", { text: x.timeframe === "1D" ? "Tag" : x.timeframe }),

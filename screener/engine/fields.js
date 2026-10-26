@@ -233,6 +233,8 @@
       desc: 'On-Balance-Volume höher als vor 20 Handelstagen.', keywords: ['obv', 'on balance volume'] }),
     n('chartPattern', { col: 'twForm', group: 'technical', kind: 'enum', multi: true, label: 'Chartformation (erkannt oder bestätigt)', short: 'Formation', en: 'Chart Pattern', source: 'technicalWorld',
       desc: 'Formationen aus dem Technical Screener: Dreiecke, Flaggen, Wimpel, Keile, Doppelböden/-tops, Schulter-Kopf-Schulter, Kanäle, Trendlinien, Ausbrüche, Kurslücken. Erkannt nur aus bestätigten Swing-Punkten, ohne Blick in die Zukunft.', keywords: ['formation', 'chartmuster', 'dreieck', 'flagge', 'keil', 'doppelboden', 'breakout', 'ausbruch', 'pattern'] }),
+    n('chartPatternOpen', { col: 'twFormO', group: 'technical', kind: 'enum', multi: true, label: 'Chartformation offen (noch ohne Ausbruch)', short: 'Formation offen', en: 'Open Chart Pattern', source: 'technicalWorld', pro: true,
+      desc: 'Erkannte Formationen, deren Ausbruch noch aussteht – etwa ein symmetrisches Dreieck mit offener Richtung oder ein vorläufiger Kanal aus vier Swing-Punkten.', keywords: ['formation offen', 'vor dem ausbruch', 'in bildung'] }),
     n('chartPatternConfirmed', { col: 'twFormC', group: 'technical', kind: 'enum', multi: true, label: 'Chartformation bestätigt', short: 'Formation bestätigt', en: 'Confirmed Chart Pattern', source: 'technicalWorld', pro: true,
       desc: 'Nur Formationen, deren Bestätigungsregel (z. B. Schluss über der Ausbruchslinie) erfüllt ist.', keywords: ['formation bestätigt', 'ausbruch bestätigt', 'confirmed'] }),
     n('bollinger', { col: 'bollB', group: 'technical', unit: 'num', label: 'Bollinger %B', en: 'Bollinger Bands', source: 'technical', domain: [-0.5, 1.5, 0.01], pro: true, formula: 'bollB',
@@ -415,7 +417,7 @@
     if (map && map[v]) return map[v];
     var D = dict || (global.VUScreenerFields && global.VUScreenerFields._dict) || null;
     if (D) {
-      if ((id === 'chartPattern' || id === 'chartPatternConfirmed') && D.formations && D.formations[v]) return D.formations[v];
+      if ((id === 'chartPattern' || id === 'chartPatternConfirmed' || id === 'chartPatternOpen') && D.formations && D.formations[v]) return D.formations[v];
       if (id === 'sector' && D.sectors && D.sectors[v]) return D.sectors[v];
       if (id === 'industry' && D.majorGroups && D.majorGroups[v]) return D.majorGroups[v];
     }

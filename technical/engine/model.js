@@ -241,15 +241,26 @@
   function pct(v, d) { return isNum(v) ? (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }) + " %" : "–"; }
   function num(v, d) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }) : "–"; }
 
+  var BREAK_DIR = { UP: "nach oben", DOWN: "nach unten" };
+  /** Zustandsetikett mit den ehrlichen Sonderfaellen (vorlaeufiger Kanal, bei Erkennung bereits ausgebrochen). */
+  function stateBadge(f) {
+    if (f.state === "CONFIRMED" && f.confirmedAtDetection) return "Bei Erkennung ausgebrochen";
+    if (f.state === "DETECTED" && f.provisional) return "Vorläufig";
+    return STATE_BADGE[f.state];
+  }
   function formationText(f) {
-    var lv = f.levels || {}, parts = [];
-    if (f.state === "CONFIRMED" && f.confirmedAt) parts.push("Bestätigt am " + dateDe(f.confirmedAt) + ".");
-    else if (f.state === "INVALIDATED" && f.invalidatedAt) parts.push("Invalidiert am " + dateDe(f.invalidatedAt) + ".");
+    var lv = f.levels || {}, parts = [], br = f.breakout;
+    if (f.state === "CONFIRMED" && f.confirmedAtDetection && br) parts.push("Bei der ersten zuverlässigen Erkennung am " + dateDe(f.detectedAt) + " bereits ausgebrochen (" + BREAK_DIR[br.direction] + ", " + dateDe(br.at) + "); vorher war die Formation nicht erkennbar.");
+    else if (f.state === "CONFIRMED" && br) parts.push("Ausbruch " + BREAK_DIR[br.direction] + " am " + dateDe(br.at) + ", erkannt seit " + dateDe(f.detectedAt) + ".");
+    else if (f.state === "CONFIRMED" && f.confirmedAt) parts.push("Bestätigt am " + dateDe(f.confirmedAt) + ".");
+    else if (f.state === "INVALIDATED" && f.invalidatedAt) parts.push("Invalidiert am " + dateDe(f.invalidatedAt) + (br ? " nach Ausbruch " + BREAK_DIR[br.direction] + " am " + dateDe(br.at) : "") + ".");
+    else if (f.provisional) parts.push("Vorläufig erkannt am " + dateDe(f.detectedAt) + " aus vier bestätigten Swing-Punkten; bestätigt erst, wenn ein fünfter Punkt im Kanal liegt.");
+    else if (f.directionOpen) parts.push("Erkannt am " + dateDe(f.detectedAt) + ", noch ohne Ausbruch – Richtung offen.");
     else parts.push("Erkannt am " + dateDe(f.detectedAt) + ".");
     var key = isNum(lv.breakout) ? ["Ausbruchsniveau", lv.breakout] : isNum(lv.zoneHigh) ? ["Zone bis", lv.zoneHigh] : isNum(lv.rangeHigh) ? ["Range-Oberkante", lv.rangeHigh]
       : isNum(lv.pivot) ? ["Pivot", lv.pivot] : isNum(lv.lineNow) ? ["Linie heute", lv.lineNow] : isNum(lv.upperNow) ? ["Oberkante heute", lv.upperNow] : null;
     if (key) parts.push(key[0] + " " + price(key[1]) + ".");
-    if (isNum(lv.invalidation) && f.state !== "INVALIDATED") parts.push("Ungültig " + (f.direction === "BEARISH" ? "über " : "unter ") + price(lv.invalidation) + ".");
+    if (isNum(lv.invalidation) && f.state !== "INVALIDATED" && !f.directionOpen) parts.push("Ungültig " + (f.direction === "BEARISH" ? "über " : "unter ") + price(lv.invalidation) + ".");
     return parts.join(" ");
   }
 
@@ -257,7 +268,7 @@
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
-      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: STATE_BADGE[f.state], tone: STATE_TONE[f.state],
+      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
                  icon: FAMILY_ICON[f.family] || "trend", direction: f.direction, formation: f });
     });
     var F = features || {};
@@ -289,15 +300,18 @@
     if (wanted && wanted.length) f = list.filter(function (x) { return wanted.indexOf(x[0]) >= 0; })[0] || null;
     f = f || list[0];
     if (f) {
-      var name = Q.FORMATION_TYPES[f[0]] || f[0];
-      return name + ": " + (f[1] === "CONFIRMED" ? "bestätigt" : "in Bildung") + ", erkannt am " + dateDe(f[2]) + ".";
+      var name = Q.FORMATION_TYPES[f[0]] || f[0], flags = f[5] || "", dir = BREAK_DIR[f[4]];
+      if (f[1] === "CONFIRMED" && flags.indexOf("B") >= 0) return name + ": bei Erkennung am " + dateDe(f[2]) + " bereits ausgebrochen" + (dir ? " (" + dir + ")" : "") + ".";
+      if (f[1] === "CONFIRMED") return name + ": Ausbruch" + (dir ? " " + dir : "") + (f[3] ? " am " + dateDe(f[3]) : "") + ", erkannt am " + dateDe(f[2]) + ".";
+      if (flags.indexOf("V") >= 0) return name + ": vorläufig (vier Swing-Punkte), erkannt am " + dateDe(f[2]) + ".";
+      return name + ": in Bildung" + (flags.indexOf("O") >= 0 ? ", Richtung offen" : "") + ", erkannt am " + dateDe(f[2]) + ".";
     }
     return row.structure ? "Marktstruktur: " + (Q.STRUCTURES[row.structure] || row.structure) + "." : "Keine aktive Formation.";
   }
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 

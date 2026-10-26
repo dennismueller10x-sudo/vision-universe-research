@@ -19,7 +19,7 @@ Die Grenze „2014“ ist also das 13-Jahres-Fenster der Verbraucherdateien, kei
 
 ## Umsetzung (dieser PR)
 
-- **Ältere Jahre in eigener Datei:** Der Erzeuger schreibt je CIK die Geschäftsjahre vor dem Fenster nach `quant/data/sec/consumer-history/CIK*.json` (`consumer.py#build_consumer_bundle(with_history=True)`, Schema `vu-consumer-history-1.0.0`).
+- **Ältere Jahre in eigener Datei:** Der Erzeuger schreibt die Geschäftsjahre vor dem Fenster nach `quant/data/sec/consumer-history/NN.json.gz` (`consumer.py#build_consumer_bundle(with_history=True)`, Schema `vu-consumer-history-1.0.0` je Emittent; 64 gzip-Scherben nach CIK mod 64, Schema `vu-consumer-history-shard-1.0.0`, byte-reproduzierbar).
   - Gleiche Normalisierung, gleiche Politik (`as_of_latest`), gleiches Zeilenformat mit Meldung je Wert.
   - Die Verbraucherdateien bleiben byte-gleich (getestet). Discover, Quant, Supertrader und Company Intelligence lesen weiter genau ihr Fenster.
   - Die Datei hat kein Laufdatum und keinen Zeitstempel. Sie ändert sich nur, wenn sich ein altes Jahr ändert, das Repository behält also eine Kopie.
@@ -64,9 +64,9 @@ ExxonMobil-Bewertung: Die verwässerte Aktienzahl steht in companyfacts nur für
 
 ## Performance
 
-- **Auslieferung:** +25 % je Unternehmen (gzip, gemessen an den fünf Unternehmen: 3,6 → 4,4 KB). Eine Scherbe wächst von durchschnittlich 15 auf etwa 19 KB, die gesamte Fundamental-Historie von 9,6 auf etwa 12 MB (Budget 40 MB). Eine Aktienseite lädt weiterhin genau eine Scherbe.
+- **Auslieferung:** +25 % je Unternehmen (gzip, gemessen an den fünf Unternehmen: 3,6 → 4,4 KB). Gemessen am ganzen Universum (26.10.2026): `fundamental/data/history` 10,1 → 11,8 MB (+1,7 MB, Budget 40 MB). Eine Aktienseite lädt weiterhin genau eine Scherbe. `consumer-history` selbst wird nicht ausgeliefert.
 - **Diagramme:** höchstens rund 20 Jahrespunkte je Reihe; keine messbare Wirkung.
-- **Repository:** etwa 11 KB je Unternehmen, einmalig rund 55 MB unkomprimiert (Git-Pack deutlich kleiner). Danach ändern sich die Dateien nur, wenn sich ein altes Jahr ändert oder einmal jährlich ein Jahr aus dem Fenster in die Historie wandert.
+- **Repository:** Der erste Lauf nach #935 schrieb 2.444 Einzeldateien je CIK, 19,3 MB. Damit fiel `consumer-history` ins 8-MB-Basisbudget von `quant/data/sec` (`test_the_committed_footprint_is_within_budget` rot). Seit der Umstellung auf 64 gzip-Scherben sind es 1,7 MB bei gleichem Inhalt und byte-gleicher Auslieferung, mit eigenem Budget von 3 MB (`test_the_consumer_history_stays_within_its_own_budget`). Eine Scherbe ändert sich nur, wenn sich ein altes Jahr eines ihrer Emittenten ändert, einmal jährlich ein Jahr aus dem Fenster in die Historie wandert oder sich die Normalisierungsversion ändert.
 - **SEC-Lauf:** keine zweite Normalisierung, nur die Abfrage der älteren Jahre aus dem schon gebauten Faktenbuch.
 
 ## Nicht in diesem PR (Vorschläge, jeweils eigener PR)

@@ -13,9 +13,11 @@ import { flagDiscontinuities } from '../source-faithful/integrity/discontinuity.
 import { CLASSES, classifyFlag, filingEvidence, rulesetSha256 as rulesetSha256V130 } from '../source-faithful/integrity/ca-resolution.mjs';
 import { ratioMentions, documentText, parseNumber, extractStatements, documentFactor, selectDocuments, classifyWithDocument, groundTruthLabel, documentPath, rulesetSha256, baseRulesetUnchanged, RULESET, EDGAR_BUDGET, DOC_TOLERANCES, CA_EDGAR_VERSION } from '../source-faithful/integrity/ca-edgar.mjs';
 import { createEdgarClient, emptyCache } from '../source-faithful/research/sf7-edgar-client.mjs';
+import * as V141 from '../source-faithful/integrity/ca-edgar-1.4.1.mjs';
+import * as V142 from '../source-faithful/integrity/ca-edgar-1.4.2.mjs';
 import * as V140 from '../source-faithful/integrity/ca-edgar-1.4.0.mjs';
-import { sentenceBounds } from '../source-faithful/integrity/ca-edgar.mjs';
-import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130, EXTRACTORS } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
+import { sentenceBounds, parseFilingIndex, EXHIBIT_TYPES, EXHIBIT_BUDGET } from '../source-faithful/integrity/ca-edgar.mjs';
+import { edgarRefine, EXPECTED_SCOPE_SESSIONS, MANIFEST_SHA256_V130, EXTRACTORS, PlanOnly, PlanExceedsBudget, emptyLedger, ledgerUsed, ledgerRemaining, reserveLedger, settleLedger, ledgerGate, ledgerEquals, EXPECTED_LEDGER_USED_AFTER_142 } from '../source-faithful/research/run-sf7-ca-edgar.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
 import { integrityPart, INTEGRITY_KEYS } from '../source-faithful/research/run-sf6-integrity.mjs';
 
@@ -212,79 +214,152 @@ test('SF7-EDGAR-BUDGET: hartes Gesamtbudget (fail closed), hoechstens 2 Anfragen
 const ids = (s) => `tiingo:NYSE:S${String(s).padStart(3, '0')}:2010-01-01`;
 const EVENTS = { 2: [{ at: 400, price: 10, volume: 0.1 }], 5: [{ at: 300, price: 10, volume: 0.1 }], 9: [{ at: 500, price: 12, volume: 0.08 }], 11: [{ at: 450, price: 20, volume: 0.05 }] };
 const SECRET = 'UNIQUE-SYNTHETIC-PASSAGE-4410';
+/** Filing index page (synthetic): rows Seq | Description | Document | Type | Size. */
+const INDEX_HTML = (cik, acc, rows) => `<html><body><table class="tableFile"><tr><th>Seq</th><th>Description</th><th>Document</th><th>Type</th><th>Size</th></tr>${rows.map(([type, name, dir]) => `<tr><td>1</td><td>doc</td><td><a href="${dir ?? `/Archives/edgar/data/${Number(cik)}/${acc.replace(/-/g, '')}/`}${name}">${name}</a></td><td>${type}</td><td>1234</td></tr>`).join('')}</table></body></html>`;
+const CHARTER = (k) => `<p>CERTIFICATE OF AMENDMENT. ${SECRET} Effective at 5:00 p.m., Eastern Time, on ${spoken(day(k))} (the Effective Time), each ten (10) shares of common stock issued and outstanding shall be combined into one (1) share of common stock (the reverse stock split).</p>`;
+const PRESS = (n, k) => `<p>XYZ Corp. announced a 1-for-${n} reverse stock split of its common stock, and the common stock will begin trading on a split-adjusted basis on ${spoken(day(k))}.</p>`;
+/** S002 path A (primary 8-K without ratio, EX-3.1 charter 1:10), S005 path B (EX-99.1 with two ratios), S009 path B (EX-99.1 press 1:12), S011 no CIK. */
 function runFixture() {
   const segs = Array.from({ length: 16 }, (_, s) => seg(ids(s), series(700, s + 21, EVENTS[s] || [])));
-  // S002 1:10 with a share bracket (path A), S005 1:10 and S009 1:12 without a usable bracket (path B), S011 unmapped
   const shares = new Map([[ids(2), SEC([[330, 50e6], [460, 5e6]], '0000000002')], [ids(5), SEC([[230, 50e6]], '0000000005')], [ids(9), SEC([[430, 50e6]], '0000000009')]]);
-  const subs = { '0000000002': INDEX([['8-K', 401, '5.03,9.01', '0000000002-17-000001']]), '0000000005': INDEX([['DEF 14A', 270, '', '0000000005-16-000002']]), '0000000009': INDEX([['8-K', 501, '5.03', '0000000009-17-000003'], ...Array.from({ length: 8 }, (_, k) => ['10-Q', 510 + k * 5, '', `0000000009-17-1000${k}`])]) };
+  const A2 = '0000000002-17-000001', A5 = '0000000005-16-000002', A9 = '0000000009-17-000003';
+  const subs = { '0000000002': INDEX([['8-K', 401, '5.03,9.01', A2]]), '0000000005': INDEX([['8-K', 301, '8.01,9.01', A5]]), '0000000009': INDEX([['8-K', 501, '5.03,9.01', A9]]) };
+  const pages = {
+    [A2]: INDEX_HTML('2', A2, [['8-K', 'd0.htm'], ['EX-3.1', 'ex3-1.htm'], ['EX-10.1', 'ex10.htm']]),
+    [A5]: INDEX_HTML('5', A5, [['8-K', 'd0.htm'], ['EX-99.1', 'ex99.htm'], ['EX-3.1', 'x.htm', '/Archives/edgar/data/77/000000007717000001/']]),
+    [A9]: INDEX_HTML('9', A9, [['8-K', 'd0.htm'], ['EX-99.1', 'ex99.htm']]),
+  };
   const calls = [];
   const impl = async (url, opts) => {
     calls.push(url); assert.equal(opts.headers['User-Agent'], 'test');
     const m = url.match(/submissions\/CIK(\d{10})\.json$/);
     if (m) return { ok: true, json: async () => ({ filings: { recent: subs[m[1]], files: [] } }) };
-    const body = url.includes('/data/2/') ? `<p>${SECRET}</p>${SPLIT_8K(10, 400)}` : url.includes('/data/5/') ? '<p>Proposal 3: approve a reverse stock split at a ratio between 1-for-5 and 1-for-30.</p>'
-      : url.endsWith('/d0.htm') ? SPLIT_8K(12, 500) : '<p>Quarterly report. All share data reflect the 1-for-12 reverse stock split.</p>';
+    const ix = url.match(/\/([\d-]+)-index\.htm$/);
+    if (ix) return { ok: true, text: async () => pages[ix[1]] };
+    const body = url.includes('/data/2/') ? (url.endsWith('ex3-1.htm') ? CHARTER(400) : '<p>Item 5.03. The Company amended its certificate of incorporation; see Exhibit 3.1.</p>')
+      : url.includes('/data/5/') ? (url.endsWith('ex99.htm') ? `${PRESS(10, 300)} <p>The board earlier considered a 1-for-15 reverse stock split.</p>` : '<p>Item 8.01 Other Events; see Exhibit 99.1.</p>')
+      : url.endsWith('ex99.htm') ? PRESS(12, 500) : '<p>Item 5.03; see Exhibit 99.1.</p>';
     return { ok: true, text: async () => body };
   };
   return { segs, shares, calls, impl };
 }
+const W = { from: day(0), to: day(699), dataEnd: day(699) };
+const clients = (impl, budget = EDGAR_BUDGET) => { const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, budget, extractors: EXTRACTORS }); const planClient = createEdgarClient({ userAgent: 'test', fetchImpl: async () => { throw new Error('NEVER'); }, budget: { ...budget, totalRequests: 0 }, cache: client.exportCache(), extractors: EXTRACTORS }); return { client, planClient }; };
 
-test('SF7-EDGAR-RUN: 1.3.0 unveraendert zuerst, BASE unveraendert, nur Umfang geprueft, Dokumenttext nie oeffentlich, Overlay erzeugt', async () => {
-  const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs), W = { from: day(0), to: day(699), dataEnd: day(699) };
-  const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, extractors: EXTRACTORS });
-  const r = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => client.submissions13(cik), secFetchMax: 150, classifierVersion: CA_EDGAR_VERSION, rulesetSha256Value: rulesetSha256(), refine: edgarRefine({ client }), ...W });
+test('SF7-EDGAR-RUN: 1.4.3 mit Exhibits; 1.3.0 unveraendert zuerst, BASE unveraendert, 1.4.2 aus dem Cache als Vorher, kein Dokumenttext oeffentlich', async () => {
+  const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs);
+  const { client, planClient } = clients(impl);
+  const r = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => client.submissions13(cik), secFetchMax: 150, classifierVersion: CA_EDGAR_VERSION, rulesetSha256Value: rulesetSha256(), refine: edgarRefine({ client, planClient }), ...W });
   const plain = await caResolutionPart(ds, segs, { sharesByListing: shares, ...W });
   const ref = integrityPart(ds, { ...W, policies: [] });
   for (const k of INTEGRITY_KEYS) { assert.equal(r.pub.lifecycles[k].BASE.ledgerSha256, ref.pub.lifecycles[k].BASE.ledgerSha256, k); assert.equal(r.pub.lifecycles[k].BASE.tradesSha256, plain.pub.lifecycles[k].BASE.tradesSha256, k); }
-  assert.equal(plain.pub.version, 'sf7-ca-resolution-1.3.0', 'ohne Verfeinerung bleibt der 1.3.0-Lauf unveraendert');
   const e = r.pub.refine;
-  assert.equal(e.sessionsInScope, 4); assert.equal(e.sessionsWithCik, 3); assert.equal(e.sessionsChecked, 3);
-  assert.deepEqual(e.byDocumentPath, { A: 1, B: 2, NONE: 1 });
-  // 1.4.1 (R5): S009 has 9 candidate documents (> 6): incomplete -> UNRESOLVED; the frozen 1.4.0 confirmed it
-  assert.equal(e.byClass14[CLASSES.SPLIT], 1); assert.deepEqual(e.splitFactors14, { '1:10': 1 }); assert.equal(e.byReason14.DOCUMENT_CAP_EXCEEDED, 1);
-  assert.equal(e.previous.byClass[CLASSES.SPLIT], 2); assert.equal(e.previous.pinned, true); assert.equal(e.incomplete.capExceeded, 1);
-  assert.equal(e.transitions140to141['DOCUMENT_FACTOR -> DOCUMENT_CAP_EXCEEDED'], 1);
-  assert.equal(e.byReason14.DOCUMENT_RANGE_ONLY, 1, 'S005: nur eine genehmigte Spanne');
-  assert.equal(e.labels.AMBIGUOUS, 1); assert.equal(e.labels.REVERSE_SPLIT_DOCUMENTED, 2); assert.equal(e.labels.NOT_CHECKED, 1); assert.deepEqual(e.previous.labels, e.labels);
-  assert.equal(e.byCheck.NO_CIK, 1);
-  assert.equal(calls.filter((u) => u.includes('/data/9/')).length, EDGAR_BUDGET.docRequestsPerSession, 'hoechstens 6 Dokumente je Sitzung');
-  assert.equal(e.requests.requests, calls.length); assert.equal(e.requests.byKind.submissions, 3);
-  assert.equal(e.before.exposedK5Unresolved, 4); assert.equal(e.after.exposedK5Unresolved, 3); assert.equal(e.changedOutsideScope, 0);
-  assert.equal(e.before.overlayEntries, 0); assert.equal(r.manifest.entries.length, 1); assert.equal(r.pub.overlay.entries, 1);
-  assert.equal(r.pub.version, CA_EDGAR_VERSION); assert.equal(r.manifest.classifierVersion, CA_EDGAR_VERSION);
-  assert.equal(r.pub.census['DQ-K5'].byClass[CLASSES.SPLIT], 1);
-  for (const p of Object.values(e.perReference)) { assert.equal(p.unresolved14, p.dqK5Exposed - p.confirmedSplit14 - p.confirmedGenuine14); assert.ok(p.confirmedSplit140 >= p.confirmedSplit14); }
-  assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 3, 'nur die ungeklaerten Sitzungen werden geschnitten');
-  // public: counts only - no document text, no accession, no CIK, no security id
-  const pubText = JSON.stringify(r.pub);
-  assert.doesNotMatch(pubText, new RegExp(SECRET, 'i')); assert.doesNotMatch(pubText, /certificate of amendment/i); assert.doesNotMatch(pubText, /0000000002|0000000009-17/); assert.doesNotMatch(pubText, /tiingo:/);
+  assert.equal(e.sessionsInScope, 4); assert.equal(e.sessionsChecked, 3); assert.deepEqual(e.byDocumentPath, { A: 1, B: 2, NONE: 1 });
+  // 1.4.2 (from an empty cache): nothing; 1.4.3: the EX-3.1 charter (1:10) and the EX-99.1 press release (1:12) confirm
+  assert.equal(e.previous.byClass[CLASSES.SPLIT] ?? 0, 0); assert.equal(e.previous.pinned, true);
+  assert.equal(e.byClass143[CLASSES.SPLIT], 2); assert.deepEqual(e.splitFactors143, { '1:10': 1, '1:12': 1 });
+  assert.equal(e.byReason143.DOCUMENT_CONFLICTING_RATIOS, 1, 'S005: zwei Verhaeltnisse im Exhibit -> UNRESOLVED');
+  assert.deepEqual(e.exhibits.byType, { 'EX-3.1': 1, 'EX-99.1': 2 }, 'EX-10.1 zaehlt nicht; fremdes Verzeichnis ausgeschlossen');
+  assert.equal(e.exhibits.filingIndexesRead, 3); assert.equal(e.exhibits.exhibitsRead, 3);
+  assert.equal(e.requests.byKind.filingIndex, 3); assert.equal(e.requests.byKind.exhibit, 3); assert.equal(e.requests.requests, calls.length);
+  assert.equal(e.plan.planRequests, 0); assert.equal(e.plan.exhibitSessions, 3); assert.equal(e.plan.sessionsWithoutCachedIndex, 3, 'L4: ohne Index im Cache zaehlt der schlimmste Fall');
+  assert.equal(e.plan.totalUpperBound, 3 * (EDGAR_BUDGET.indexPagesPerCik + EDGAR_BUDGET.docRequestsPerSession * (2 + EXHIBIT_BUDGET.maxExhibitsPerFiling)));
+  assert.equal(e.labels.REVERSE_SPLIT_DOCUMENTED, 2); assert.equal(e.previous.labels.REVERSE_SPLIT_DOCUMENTED ?? 0, 0);
+  assert.equal(e.genuineCandidatesChanged, 0); assert.equal(e.changedOutsideScope, 0);
+  for (const p of Object.values(e.perReference)) assert.equal(p.unresolved143, p.dqK5Exposed - p.confirmedSplit143 - p.confirmedGenuine143);
+  assert.equal(r.manifest.entries.length, 2); assert.equal(r.pub.overlay.entries, 2); assert.equal(r.pub.datasets['CA-Q-K5'].quarantine.cuts, 2);
+  for (const k of INTEGRITY_KEYS) for (const t of ['CA', 'CA-Q-K5', 'CA-Q-K3']) assert.ok(r.pub.lifecycles[k][t].reconciliation, `${k} ${t}`);
+  const pubText = JSON.stringify(r.pub), sealedText = JSON.stringify(r.sealed);
+  for (const txt of [pubText, sealedText]) { assert.doesNotMatch(txt, new RegExp(SECRET, 'i')); assert.doesNotMatch(txt, /certificate of amendment|split-adjusted basis on/i); }
+  assert.doesNotMatch(pubText, /0000000002|0000000009-17|ex3-1|tiingo:/);
   assert.doesNotMatch(pubText, /"(cagr|sharpe|sortino|winRate|profitFactor|expectancy|pnl|equity|returnPct|maxDrawdown|ratio)"/);
-  // sealed: extracted values only, never the passage
-  const sealedText = JSON.stringify(r.sealed);
-  assert.doesNotMatch(sealedText, new RegExp(SECRET, 'i')); assert.doesNotMatch(sealedText, /certificate of amendment/i);
-  assert.ok(r.sealed.refine.sessions.some((x) => x.document?.passageSha256 && x.document?.accessionNumber === '0000000002-17-000001'));
+  assert.ok(r.sealed.refine.sessions.some((x) => x.documents?.some((d) => d.exhibitType === 'EX-3.1')));
+  // second run on the same cache: indexes and exhibits from the cache, no request
+  const n = calls.length, again = clients(impl); again.client.exportCache().submissions = client.exportCache().submissions;
+  const c2 = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, cache: client.exportCache(), extractors: EXTRACTORS }), p2 = createEdgarClient({ userAgent: 'test', fetchImpl: impl, budget: { ...EDGAR_BUDGET, totalRequests: 0 }, cache: c2.exportCache(), extractors: EXTRACTORS });
+  const r2 = await caResolutionPart(ds, segs, { sharesByListing: shares, fetchFilings: (cik) => c2.submissions13(cik), refine: edgarRefine({ client: c2, planClient: p2 }), ...W });
+  assert.equal(calls.length, n, 'Cache zuerst: keine Anfrage'); assert.equal(r2.pub.refine.plan.totalUpperBound, 0); assert.equal(r2.pub.refine.byClass143[CLASSES.SPLIT], 2);
+  assert.equal(r2.pub.refine.previous.byClass[CLASSES.SPLIT] ?? 0, 0, '1.4.2 liest nur ihre eigenen Index-Parses (1.0.0) aus dem Cache; hier gibt es keine');
 });
 
-test('SF7-EDGAR-SCOPE: erwartete Anzahl (83) wird vor jeder Dokumentanfrage geprueft (fail closed)', async () => {
+test('SF7-EDGAR-PLAN: Plan nur aus dem Cache (0 Anfragen); Ueberschreitung des Budgets stoppt vor jedem Abruf; Umfang 83 vor jeder Anfrage', async () => {
   assert.equal(EXPECTED_SCOPE_SESSIONS, 83); assert.equal(MANIFEST_SHA256_V130, 'e0a31fea1f723faec9046e944c9500984809a62b3cc44262ad3e648f252522c1');
-  const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs), W = { from: day(0), to: day(699), dataEnd: day(699) };
-  const client = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {} });
-  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, expectedCount: 83 }), ...W }), /EDGAR_SCOPE_COUNT_MISMATCH: 4 != 83/);
-  assert.equal(calls.length, 0, 'keine Anfrage vor der Pruefung');
-  // budget exhausted mid-way: the rest stays UNRESOLVED and is reported, no request beyond the budget
-  const tight = createEdgarClient({ userAgent: 'test', fetchImpl: impl, sleep: async () => {}, budget: { ...EDGAR_BUDGET, totalRequests: 2 }, extractors: EXTRACTORS });
-  const r = await caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client: tight, budget: tight.stats().budget }), ...W });
-  assert.equal(calls.length, 2); assert.equal(r.pub.refine.requests.requests, 2);
-  assert.ok((r.pub.refine.byReason14.EDGAR_BUDGET_EXHAUSTED ?? 0) >= 1);
-  assert.equal(r.pub.refine.byClass14[CLASSES.SPLIT] ?? 0, 1, 'nur die vollstaendig gepruefte Sitzung');
+  const { segs, shares, calls, impl } = runFixture(), ds = dsOf(segs);
+  let { client, planClient } = clients(impl);
+  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, planOnly: true }), ...W }), (e) => e instanceof PlanOnly && e.plan.planRequests === 0 && e.plan.submissionsNeeded === 3 * EDGAR_BUDGET.indexPagesPerCik && e.plan.primaryDocumentsNeeded === 3 * EDGAR_BUDGET.docRequestsPerSession);
+  assert.equal(calls.length, 0, 'der Plan sendet nichts');
+  ({ client, planClient } = clients(impl, { ...EDGAR_BUDGET, totalRequests: 5 }));
+  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, budget: { ...EDGAR_BUDGET, totalRequests: 5 } }), ...W }), (e) => e instanceof PlanExceedsBudget && e.plan.totalUpperBound > 5);
+  assert.equal(calls.length, 0, 'Stopp vor dem ersten Abruf');
+  ({ client, planClient } = clients(impl));
+  await assert.rejects(caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient, expectedCount: 83 }), ...W }), /EDGAR_SCOPE_COUNT_MISMATCH: 4 != 83/);
+  assert.equal(calls.length, 0);
 });
 
-test('SF7-EDGAR-RULESET: Regelsatz 1.4.1 vorregistriert und festgeschrieben; 1.4.0 eingefroren; 1.3.0 unveraendert', () => {
-  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.1'); assert.equal(V140.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
+test('SF7-EDGAR-LEDGER: Obergrenze 600 fuer alle 1.4.x-Exhibit-Laeufe zusammen, kumulativ und fail closed', () => {
+  assert.equal(EXHIBIT_BUDGET.cumulativeRequestsAllRuns, 600);
+  // review L5: anchor of the 1.4.2 runs (0 + 42 + 80); a missing ledger or one below the anchor stops the run
+  assert.equal(EXPECTED_LEDGER_USED_AFTER_142, 122);
+  assert.equal(ledgerGate(null), 'EDGAR_LEDGER_MISSING'); assert.equal(ledgerGate(emptyLedger()), 'EDGAR_LEDGER_BELOW_ANCHOR');
+  const after142 = { ...emptyLedger(), runs: [{ runId: '40204439421', mode: 'plan', reserved: 0, used: 0 }, { runId: '40205818659', mode: 'smoke', reserved: 60, used: 42 }, { runId: '40206319111', mode: 'full', reserved: 558, used: 80 }] };
+  assert.equal(ledgerGate(after142), null); assert.equal(ledgerRemaining(after142), 478);
+  // review M2: the re-read after the reservation must equal the written ledger
+  const mine = reserveLedger(after142, { runId: 'x', mode: 'full', want: 600 });
+  assert.equal(mine.reserved, 478); assert.equal(ledgerEquals(mine.ledger, JSON.parse(JSON.stringify(mine.ledger))), true);
+  assert.equal(ledgerEquals(mine.ledger, reserveLedger(after142, { runId: 'y', mode: 'full', want: 600 }).ledger), false, 'ein gleichzeitiger Lauf faellt auf');
+  let l = emptyLedger(); assert.equal(ledgerRemaining(l), 600);
+  let x = reserveLedger(l, { runId: 'p', mode: 'plan', want: 0 }); l = settleLedger(x.ledger, 'p', 0);
+  x = reserveLedger(l, { runId: 's', mode: 'smoke', want: 60 }); assert.equal(x.reserved, 60); l = x.ledger;
+  assert.equal(ledgerRemaining(l), 540, 'eine offene Reservierung zaehlt voll (Abbruch mitten im Lauf)');
+  l = settleLedger(l, 's', 41); assert.equal(ledgerUsed(l), 41);
+  x = reserveLedger(l, { runId: 'f', mode: 'full', want: 600 }); assert.equal(x.reserved, 559, 'der Hauptlauf bekommt nur den Rest'); l = settleLedger(x.ledger, 'f', 559);
+  assert.equal(ledgerRemaining(l), 0); assert.equal(reserveLedger(l, { runId: 'g', mode: 'full', want: 600 }).reserved, 0, 'danach keine Anfrage mehr');
+  assert.throws(() => settleLedger(reserveLedger(emptyLedger(), { runId: 'h', mode: 'full', want: 10 }).ledger, 'h', 11), /SETTLE_INVALID/);
+  assert.throws(() => reserveLedger(l, { runId: 'f', mode: 'full', want: 1 }), /RUN_EXISTS/);
+});
+
+test('SF7-EDGAR-EXHIBITS: Exhibits aus dem Index (nur vorregistrierte Typen, nur dasselbe Verzeichnis); Satzung und Pressemitteilung', () => {
+  const acc = '0000000002-17-000001', html = INDEX_HTML('2', acc, [['8-K', 'd0.htm'], ['EX-3.1', 'ex3-1.htm'], ['EX-3(i)', 'ex3i.htm'], ['EX-99.1', 'ex99.htm'], ['EX-10.1', 'ex10.htm'], ['EX-101.INS', 'x.xml'], ['EX-99.1', 'f.htm', '/Archives/edgar/data/3/000000000317000009/']]).replace('href="/Archives/edgar/data/2/000000000217000001/ex99.htm"', 'href="/ix?doc=/Archives/edgar/data/2/000000000217000001/ex99.htm"');
+  const fi = parseFilingIndex(html, { cik: '0000000002', accessionNumber: acc });
+  assert.deepEqual(fi.allowed, [{ type: 'EX-3.1', name: 'ex3-1.htm' }, { type: 'EX-3(I)', name: 'ex3i.htm' }, { type: 'EX-99.1', name: 'ex99.htm' }]);
+  assert.equal(fi.other, 2); assert.equal(fi.foreign, 1, 'fremde CIK ausgeschlossen');
+  assert.deepEqual([...EXHIBIT_TYPES], ['EX-3.1', 'EX-3.2', 'EX-3(I)', 'EX-3.I', 'EX-3.01', 'EX-3.02', 'EX-99.1', 'EX-99.01']);
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]);
+  const ch = documentFactor({ docs: [doc('8-K', 401, CHARTER(400))], raw, i: 400 });
+  assert.equal(ch.ok, true, ch.reason); assert.equal(ch.label, '1:10');
+  const pr = documentFactor({ docs: [doc('8-K', 401, PRESS(10, 400))], raw, i: 400 });
+  assert.equal(pr.ok, true, pr.reason); assert.equal(pr.label, '1:10');
+  // an exhibit with a range or with two ratios
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>The amendment authorizes a reverse stock split at a ratio between 1-for-5 and 1-for-30, effective ${spoken(day(400))}.</p>`)], raw, i: 400 }).reason, 'DOCUMENT_RANGE_ONLY');
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, PRESS(10, 400)), doc('8-K', 401, PRESS(15, 400))], raw, i: 400 }).reason, 'DOCUMENT_CONFLICTING_RATIOS');
+  // more allowed exhibits than the cap make the session incomplete
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, CHARTER(400))], raw, i: 400, incompleteReason: 'EXHIBIT_CAP_EXCEEDED' }).reason, 'EXHIBIT_CAP_EXCEEDED');
+});
+
+test('SF7-EDGAR-GENUINE-142: eine echte Bewegung wird nie nachtraeglich ein Split; ein Exhibit-Verhaeltnis ohne Kurssprung bestaetigt nie', () => {
+  // 1.3.0 genuine-move candidate (shares unchanged): no document path, the exhibit ratio changes nothing
+  const raw = series(700, 5, [{ at: 400, price: 0.15, volume: 1.2 }]), sec = SEC([[330, 20e6], [460, 20.6e6]]);
+  const ix = INDEX([['8-K', 401, '5.03,9.01']]), { r, bars } = r13Of(raw, 400, sec, filingEvidence(ix, day(400)));
+  assert.equal(r.cls, CLASSES.UNRESOLVED); assert.equal(documentPath(r), null, `genuine-Grund ${r.reason}: kein Dokumentpfad`);
+  const exhibit = documentFactor({ docs: [doc('8-K', 401, PRESS(7, 400))], raw, i: 400 });
+  assert.equal(exhibit.ok, true);
+  assert.equal(classifyWithDocument({ r13: r, raw, bars, i: 400, sec, filings: filingEvidence(ix, day(400)), index: ix, df: exhibit }), r, 'Klasse aus 1.3.0 bleibt');
+  // a document-path session whose price jump does not support the exhibit ratio stays UNRESOLVED
+  const jump = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]), { r: rb, bars: bb } = r13Of(jump, 400, SEC([[330, 50e6]]), filingEvidence(ix, day(400)));
+  assert.equal(documentPath(rb), 'B');
+  const r25 = classifyWithDocument({ r13: rb, raw: jump, bars: bb, i: 400, sec: SEC([[330, 50e6]]), filings: filingEvidence(ix, day(400)), index: ix, df: documentFactor({ docs: [doc('8-K', 401, PRESS(25, 400))], raw: jump, i: 400 }) });
+  assert.equal(r25.cls, CLASSES.UNRESOLVED); assert.equal(r25.reason, 'PRICE_RATIO_OFF_DOCUMENT_FACTOR');
+});
+
+test('SF7-EDGAR-RULESET: Regelsatz 1.4.3 vorregistriert und festgeschrieben; 1.4.2, 1.4.1 und 1.4.0 eingefroren; 1.3.0 unveraendert', () => {
+  assert.equal(CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.3'); assert.equal(V142.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.2');
+  assert.equal(V142.rulesetSha256(), '2130be8e8131c22100e00160cb5606e1db95e628e554088ccf04dcb861191636', '1.4.2 (Lauf 40206319111) eingefroren');
+  assert.equal(RULESET.previous.sha256, V142.rulesetSha256()); assert.equal(RULESET.ruleset141.sha256, V141.rulesetSha256()); assert.equal(V141.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.1'); assert.equal(V140.CA_EDGAR_VERSION, 'sf7-ca-resolution-1.4.0');
+  assert.equal(V141.rulesetSha256(), '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c', '1.4.1 (Lauf 40190526062) eingefroren');
   assert.equal(V140.rulesetSha256(), '8f9f5e69c90a49ec14654ab269b3de18a076cb336f2d1fe7583093bb144120dd', '1.4.0 (Lauf 40185801366) eingefroren');
-  assert.equal(RULESET.previous.sha256, V140.rulesetSha256());
-  assert.ok(Object.isFrozen(RULESET)); assert.ok(Object.isFrozen(RULESET.tolerances)); assert.ok(Object.isFrozen(RULESET.budget));
-  assert.equal(rulesetSha256(), '21f78d694ecbd78f0530c2c66a9faf76a9271b9f455ab6c86607e3266c16116c', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz (1.4.1 mit Vorher/Nachher)');
+  assert.equal(RULESET.ruleset140.sha256, V140.rulesetSha256());
+  assert.ok(Object.isFrozen(RULESET)); assert.ok(Object.isFrozen(RULESET.exhibitBudget));
+  assert.equal(rulesetSha256(), '5fba098cb0a9f8916d868105cf0dd5b9de58c3a33d4c61f1331544b1c8ef359a', 'jede Regelaenderung ist ein neuer, versionierter Regelsatz');
   assert.equal(rulesetSha256V130(), '08d8a6ec8e0565f0c674fa295d50745607b1c37cfc8411e609952f8224267af7'); assert.equal(baseRulesetUnchanged(), true);
 });
 
@@ -371,4 +446,52 @@ test('SF7-REVIEW141-R6: Optionsschein-, Wandlungs-, Ausuebungs- und Umtauschverh
 test('SF7-REVIEW141-R7: gemeinsam eingereichte Dokumente (mehrere CIKs) sind als Grenze dokumentiert', () => {
   assert.ok(RULESET.review141.includes('R7-JOINT-FILER-LIMIT-DOCUMENTED'));
   assert.match(fs.readFileSync(path.join(ROOT, 'docs/SUPERTRADER_7_EDGAR_CA_CHECK.md'), 'utf8'), /gemeinsam eingereicht/i);
+});
+
+// ---------------------------------------------------------------------------------------------------- 1.4.3: review of #931
+
+test('SF7-REVIEW143-F1: Satzungswortlaut (combined / reclassified / converted into one share) wird erkannt; Fusions- und Wandlungskontext bleibt gesperrt', () => {
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]), d = spoken(day(400));
+  const forms = [
+    `<p>Effective at 5:00 p.m., Eastern Time, on ${d} (the Effective Time), each ten (10) shares of Common Stock, par value $0.001 per share, of the Corporation issued and outstanding immediately prior to the Effective Time shall be combined into one (1) share of Common Stock (the reverse stock split).</p>`,
+    `<p>Effective on ${d}, every ten shares of the Corporation's common stock issued and outstanding shall be automatically reclassified and combined into one share of common stock, a reverse stock split.</p>`,
+    `<p>Effective ${d}, each 10 shares of common stock outstanding were converted into one (1) share of common stock pursuant to the reverse stock split.</p>`,
+  ];
+  for (const h of forms) {
+    const df = documentFactor({ docs: [doc('8-K', 401, h)], raw, i: 400 });
+    assert.equal(df.ok, true, `${df.reason}: ${h.slice(0, 60)}`); assert.equal(df.label, '1:10');
+  }
+  // the review finding: 1.4.2 missed the par-value form ('$0.001' broke the pattern) and 'converted into' (read as instrument wording)
+  for (const h of [forms[0], forms[2]]) assert.notEqual(V142.documentFactor({ docs: [{ ...doc('8-K', 401, h), extraction: V142.extractStatements(h) }], raw, i: 400 }).ok, true, '1.4.2 uebersah den Wortlaut (Befund)');
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>In connection with the merger, each 10 shares were converted into one (1) share in the reverse stock split, effective ${d}.</p>`)], raw, i: 400 }).reason, 'DOCUMENT_MERGER_CONTEXT');
+  assert.equal(extractStatements(`<p>Each 10 shares of Series A convertible preferred stock were converted into one (1) share after the reverse stock split effective ${d}.</p>`).statements.length, 0, 'Wandlungskontext');
+});
+
+test('SF7-REVIEW143-F2: Ermessens-, Bedingungs- und Ermaechtigungswortlaut bestaetigt nie; vollzogene Massnahme schon', () => {
+  const raw = series(700, 3, [{ at: 400, price: 10, volume: 0.1 }]), d = spoken(day(400));
+  for (const h of [`The Board is authorized, in its sole discretion, to effect a 1-for-10 reverse stock split effective ${d}.`, `The Company may effect a 1-for-10 reverse stock split effective ${d}.`, `If effected, the 1-for-10 reverse stock split will become effective on ${d}.`, `The proposal to approve a 1-for-10 reverse stock split effective ${d} was presented.`]) {
+    const df = documentFactor({ docs: [doc('8-K', 401, `<p>${h}</p>`)], raw, i: 400 });
+    assert.equal(df.ok, false, h); assert.equal(df.reason, 'DOCUMENT_DISCRETIONARY_ONLY', h); assert.equal(groundTruthLabel(df), 'AMBIGUOUS');
+  }
+  for (const h of [`The Company effected a 1-for-10 reverse stock split, which became effective on ${d}.`, `On ${spoken(day(398))} the Company filed a certificate of amendment to effect a 1-for-10 reverse stock split, effective ${d}.`]) assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>${h}</p>`)], raw, i: 400 }).ok, true, h);
+  assert.equal(documentFactor({ docs: [doc('8-K', 401, `<p>The reverse stock split at 1-for-10 became effective on May 5, 2017.</p>`)], raw: series(700, 3), i: 400 }).reason !== 'DOCUMENT_DISCRETIONARY_ONLY', true, 'der Monat May ist kein Modalwort');
+});
+
+test('SF7-REVIEW143-F3: Exhibit-Typ aus der Type-Spalte der Kopfzeile, nicht aus der ersten EX-Zelle', () => {
+  const acc = '0000000002-17-000001', dir = '/Archives/edgar/data/2/000000000217000001/';
+  const html = `<table><tr><th>Seq</th><th>Description</th><th>Document</th><th>Type</th><th>Size</th></tr><tr><td>1</td><td>EX-99.1</td><td><a href="${dir}a.htm">a</a></td><td>EX-10.1</td><td>1</td></tr><tr><td>2</td><td>charter</td><td><a href="${dir}b.htm">b</a></td><td>EX-3.1</td><td>1</td></tr></table>`;
+  const fi = parseFilingIndex(html, { cik: '2', accessionNumber: acc });
+  assert.deepEqual(fi.allowed, [{ type: 'EX-3.1', name: 'b.htm' }]); assert.equal(fi.other, 1); assert.equal(fi.typeColumnFound, true);
+  assert.deepEqual(V142.parseFilingIndex(html, { cik: '2', accessionNumber: acc }).allowed.map((x) => x.name), ['a.htm', 'b.htm'], '1.4.2 las die Beschreibung (Befund)');
+  assert.equal(parseFilingIndex(html.replace(/<tr><th>[\s\S]*?<\/tr>/, ''), { cik: '2', accessionNumber: acc }).typeColumnFound, false, 'ohne Kopfzeile kein Exhibit (unvollstaendig)');
+});
+
+test('SF7-REVIEW143-M1: Exhibits und Dokumente nur fuer K5-Sitzungen, in jedem Modus', async () => {
+  const { segs, shares, calls, impl } = runFixture();
+  // a reference-exposed DQ-K3 (not K5) jump of a listing without usable shares: outside the scope, never fetched
+  segs[13] = seg(ids(13), series(700, 34, [{ at: 420, price: 4, volume: 0.25 }])); shares.set(ids(13), SEC([[300, 50e6]], '0000000013'));
+  const ds = dsOf(segs), { client, planClient } = clients(impl);
+  const r = await caResolutionPart(ds, segs, { sharesByListing: shares, refine: edgarRefine({ client, planClient }), ...W });
+  assert.equal(r.pub.refine.scope, 'K5'); assert.equal(r.pub.refine.sessionsInScope, 4);
+  assert.equal(calls.filter((u) => u.includes('CIK0000000013') || u.includes('/data/13/')).length, 0, 'keine Anfrage ausserhalb der K5-Sitzungen');
 });

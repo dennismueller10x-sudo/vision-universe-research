@@ -23,6 +23,18 @@
    nie der Zeitpunkt des ersten Formationspunkts. Der Test
    technical-formations.test.mjs vergiftet die Zukunft und verlangt
    identische Ergebnisse.
+
+   LEBENSZYKLUS (seit 1.2.0, docs/technical/FORMATIONS_LIFECYCLE.md):
+     • Bestandsformationen werden nicht nur Stand t, sondern auch Stand der
+       Bars unmittelbar vor den juengsten Pivot-Bestaetigungen (Anker)
+       abgeleitet und bis t verfolgt. Eine Formation, deren Fenster ein
+       neuer Pivot abgeloest hat, endet so als bestaetigt oder invalidiert,
+       statt still zu verschwinden. Aufgeloeste bleiben LEGACY_KEEP Bars
+       gelistet, unaufgeloeste hoechstens einen Monat nach dem Anker.
+     • Kanaele und Keile werden aus vier Swing-Punkten erkannt und mit
+       ihrem Erkennungsbar verankert; der fuenfte Swing-Punkt bestaetigt
+       den Kanal (bzw. bricht ihn). Vorher fielen Erkennung und
+       Bestaetigung zusammen, weil die Erkennung schon fuenf Punkte nahm.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -32,7 +44,13 @@
   var Pat = isNode ? require("./ti/chart-patterns.js") : global.VUTechnical.TIChartPatterns;
   var Lv = isNode ? require("./ti/levels.js") : global.VUTechnical.TILevels;
 
-  var ENGINE_VERSION = "technical-formations-1.1.0";
+  var ENGINE_VERSION = "technical-formations-1.2.0";
+
+  /* Lebenszyklus der Bestandsformationen (Bars): aufgeloeste Formationen bleiben LEGACY_KEEP Bars gelistet
+     (wie Ausbrueche der neuen Regeln), unaufgeloeste abgeloeste hoechstens einen Monat (barsPerYear / 12) nach dem Anker. */
+  var LEGACY_KEEP = 10;
+  /* Kanaele/Keile: so viele Swing-Punkte nach den vier erkennenden Punkten wird eine Struktur weitergefuehrt. */
+  var CW_EXTRA = 6;
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function r4(v) { return isNum(v) ? Math.round(v * 1e4) / 1e4 : null; }
@@ -50,21 +68,21 @@
       confirm: "Dritter Kontakt: ein späteres Hoch berührt die Linie (±0,5 ATR) und der Schluss bleibt darunter.",
       invalidate: "Schlusskurs mehr als 0,5 ATR über der Linie (Ausbruch nach oben)." },
     ASCENDING_CHANNEL: { name: "Aufwärtskanal", direction: "BULLISH", family: "CHANNEL",
-      detect: "Swing-Hochs und -Tiefs steigen mit annähernd gleicher Steigung (Abweichung ≤ 35 %), Breite ≥ 2 ATR.",
-      confirm: "Mindestens fünf Swing-Punkte im Kanal (±0,5 ATR).",
-      invalidate: "Schlusskurs mehr als 0,5 ATR unter der unteren Kanallinie." },
+      detect: "Vier aufeinanderfolgende Swing-Punkte (2 Hochs, 2 Tiefs, Pivot-Skala 2) steigen mit annähernd gleicher Steigung (Abweichung ≤ 35 %), Breite ≥ 2 ATR. Erkannt mit der Bestätigung des vierten Punkts.",
+      confirm: "Der fünfte Swing-Punkt liegt im Kanal (±0,5 ATR); bestätigt mit seiner Pivot-Bestätigung.",
+      invalidate: "Schlusskurs mehr als 0,5 ATR unter der unteren Kanallinie oder ein späterer Swing-Punkt außerhalb des Kanals (±0,5 ATR)." },
     DESCENDING_CHANNEL: { name: "Abwärtskanal", direction: "BEARISH", family: "CHANNEL",
-      detect: "Swing-Hochs und -Tiefs fallen mit annähernd gleicher Steigung (Abweichung ≤ 35 %), Breite ≥ 2 ATR.",
-      confirm: "Mindestens fünf Swing-Punkte im Kanal (±0,5 ATR).",
-      invalidate: "Schlusskurs mehr als 0,5 ATR über der oberen Kanallinie." },
+      detect: "Vier aufeinanderfolgende Swing-Punkte (2 Hochs, 2 Tiefs, Pivot-Skala 2) fallen mit annähernd gleicher Steigung (Abweichung ≤ 35 %), Breite ≥ 2 ATR. Erkannt mit der Bestätigung des vierten Punkts.",
+      confirm: "Der fünfte Swing-Punkt liegt im Kanal (±0,5 ATR); bestätigt mit seiner Pivot-Bestätigung.",
+      invalidate: "Schlusskurs mehr als 0,5 ATR über der oberen Kanallinie oder ein späterer Swing-Punkt außerhalb des Kanals (±0,5 ATR)." },
     RISING_WEDGE: { name: "Steigender Keil", direction: "BEARISH", family: "WEDGE",
-      detect: "Hochs und Tiefs steigen, die untere Linie steiler als die obere: die Spanne verengt sich um mindestens 25 %.",
+      detect: "Vier aufeinanderfolgende Swing-Punkte (2 Hochs, 2 Tiefs, Pivot-Skala 2) steigen, die untere Linie steiler als die obere: die Spanne verengt sich um mindestens 25 %. Erkannt mit der Bestätigung des vierten Punkts.",
       confirm: "Schlusskurs unter der unteren Keillinie nach dem letzten Formationspunkt.",
-      invalidate: "Schlusskurs über dem höchsten Formationshoch." },
+      invalidate: "Schlusskurs oder ein späteres Swing-Hoch mehr als 0,5 ATR über der oberen Keillinie." },
     FALLING_WEDGE: { name: "Fallender Keil", direction: "BULLISH", family: "WEDGE",
-      detect: "Hochs und Tiefs fallen, die obere Linie steiler als die untere: die Spanne verengt sich um mindestens 25 %.",
+      detect: "Vier aufeinanderfolgende Swing-Punkte (2 Hochs, 2 Tiefs, Pivot-Skala 2) fallen, die obere Linie steiler als die untere: die Spanne verengt sich um mindestens 25 %. Erkannt mit der Bestätigung des vierten Punkts.",
       confirm: "Schlusskurs über der oberen Keillinie nach dem letzten Formationspunkt.",
-      invalidate: "Schlusskurs unter dem tiefsten Formationstief." },
+      invalidate: "Schlusskurs oder ein späteres Swing-Tief mehr als 0,5 ATR unter der unteren Keillinie." },
     BULL_PENNANT: { name: "Bullischer Wimpel", direction: "BULLISH", family: "PENNANT",
       detect: "Steiler Anstieg (≥ 5 ATR), danach mindestens 5 Bars Konsolidierung mit fallenden Hochs und steigenden Tiefs, Rücklauf ≤ 50 % des Masts.",
       confirm: "Schlusskurs über der oberen Wimpellinie und über dem jüngsten Konsolidierungshoch.",
@@ -105,10 +123,12 @@
     DESCENDING_TRIANGLE: { family: "TRIANGLE", confirm: "Schluss unter der flachen Unterkante.", invalidate: "Schluss über der fallenden Oberkante." },
     SYMMETRICAL_TRIANGLE: { family: "TRIANGLE", confirm: "Schluss jenseits einer der beiden Dreieckslinien (Richtung = Ausbruchsseite).", invalidate: "Schluss jenseits der Gegenlinie nach dem Ausbruch." },
     RECTANGLE: { family: "RANGE", confirm: "Schluss jenseits der Rechteckkante.", invalidate: "Schluss jenseits der Gegenkante." },
-    BULL_FLAG: { family: "FLAG", confirm: "Schluss über dem Mast-Hoch.", invalidate: "Rücklauf über 50 % des Masts." },
-    BEAR_FLAG: { family: "FLAG", confirm: "Schluss unter dem Mast-Tief.", invalidate: "Rücklauf über 50 % des Masts." },
-    CUP_WITH_HANDLE: { family: "CONTINUATION", confirm: "Schluss über dem rechten Tassenrand.", invalidate: "Schluss unter dem Henkeltief." }
+    BULL_FLAG: { family: "FLAG", confirm: "Schluss über dem Mast-Hoch.", invalidate: "Schluss mehr als 50 % des Masts unter dem Mast-Hoch, oder kein Ausbruch bis 1,5 × Mastdauer (mind. 6 Bars) nach dem Mast-Hoch." },
+    BEAR_FLAG: { family: "FLAG", confirm: "Schluss unter dem Mast-Tief.", invalidate: "Schluss mehr als 50 % des Masts über dem Mast-Tief, oder kein Ausbruch bis 1,5 × Mastdauer (mind. 6 Bars) nach dem Mast-Tief." },
+    CUP_WITH_HANDLE: { family: "CONTINUATION", confirm: "Schluss über dem rechten Tassenrand.", invalidate: "Schluss unter der zulässigen Henkeltiefe: rechter Tassenrand minus min(15 %, halbe Tassentiefe)." }
   };
+  /* resolve() in ti/chart-patterns.js: nach einem Ausbruch invalidiert auch der Rueckfall hinter die Ausbruchslinie. */
+  Object.keys(LEGACY).forEach(function (k) { LEGACY[k].invalidate += " Nach dem Ausbruch: Schluss mehr als 0,5 ATR zurück hinter die Ausbruchslinie (Fehlausbruch)."; });
   var LEGACY_STATE = { FORMING: "DETECTED", BREAKOUT: "CONFIRMED", BREAKOUT_RETEST: "CONFIRMED", FAILED: "INVALIDATED", FAILED_BREAKOUT: "INVALIDATED" };
 
   /* -------------------------------------------------------------- Helfer */
@@ -133,9 +153,11 @@
     }, extra || {});
   }
 
-  /* Verfolgt eine Linie ab Bar `from` bis t: Kontakte, Bruch. dir = +1 Stuetzlinie (unten), −1 Widerstand (oben). */
-  function followLine(ctx, line, from, dir) {
-    var s = ctx.series, tol = 0.5 * ctx.atr, touches = [], broken = -1;
+  /* Verfolgt eine Linie ab Bar `from` bis t: Kontakte, Bruch. dir = +1 Stuetzlinie (unten), −1 Widerstand (oben).
+     tol: Toleranz (Standard 0,5 ATR Stand t; verankerte Strukturen geben die Toleranz ihres Erkennungsbars mit). */
+  function followLine(ctx, line, from, dir, tol) {
+    var s = ctx.series, touches = [], broken = -1;
+    tol = isNum(tol) ? tol : 0.5 * ctx.atr;
     for (var k = from + 1; k <= ctx.t; k++) {
       var lv = line.at(k);
       if (dir > 0 ? s.close[k] < lv - tol : s.close[k] > lv + tol) { broken = k; break; }
@@ -177,52 +199,99 @@
   }
 
   /* ------------------------------------------- Kanaele und Keile (Swings) */
+  /* Struktur aus vier aufeinanderfolgenden Swing-Punkten c[i..i+3] (Pivot-Skala 2), erkannt mit der Bestaetigung
+     des vierten Punkts und an diesem Bar verankert: spaetere Swing-Punkte bestaetigen den Kanal (im Kanal) oder
+     brechen die Struktur (ausserhalb). Toleranzen mit der ATR des Erkennungsbars, damit der Zustand einer
+     verankerten Struktur nicht von der heutigen Volatilitaet abhaengt. Liefert null, wenn c[i..i+3] keine Struktur
+     ist; sonst { f: Formation, endIdx: Bar der Aufloesung (Invalidierung, beim Keil auch Ausbruch) oder -1 }. */
+  function structureFrom(ctx, c, i) {
+    var win = c.slice(i, i + 4).map(function (p) { return Object.assign(pt(p), { side: p.side }); });
+    var hs = win.filter(function (p) { return p.side === "HIGH"; }), ls = win.filter(function (p) { return p.side === "LOW"; });
+    if (hs.length !== 2 || ls.length !== 2) return null;
+    var s = ctx.series, last = win[3], detectIdx = last.confirmedIndex;
+    var atrD = ctx.prep.features.columns.atr[detectIdx], atr = isNum(atrD) && atrD > 0 ? atrD : ctx.atr, tol = 0.5 * atr;
+    var up = lineThrough(hs[0], hs[1]), lo = lineThrough(ls[0], ls[1]);
+    var start = win[0].index;
+    var w0 = up.at(start) - lo.at(start), w1 = up.at(last.index) - lo.at(last.index);
+    if (!(w0 > 0 && w1 > 0)) return null;
+    var flat = 0.05 * atr;          // Steigung je Bar, unter der eine Linie als flach gilt (Dreieck/Rechteck: chart-patterns.js)
+    var bothUp = up.slope > flat && lo.slope > flat, bothDown = up.slope < -flat && lo.slope < -flat;
+    if (!bothUp && !bothDown) return null;
+    var rel = Math.abs(up.slope - lo.slope) / Math.max(Math.abs(up.slope), Math.abs(lo.slope));
+    var later = c.slice(i + 4).map(function (p) { return Object.assign(pt(p), { side: p.side }); });
+    function inside(p) { return p.price >= lo.at(p.index) - tol && p.price <= up.at(p.index) + tol; }
+    function result(type, state, extraPts, endIdx, extra) {
+      var pts = win.concat(extraPts).map(function (p) { return { time: p.time, price: r4(p.price), side: p.side }; });
+      var lines = [Object.assign({ role: "upper" }, seg(s, up, start, endIdx)), Object.assign({ role: "lower" }, seg(s, lo, start, endIdx))];
+      return base(ctx, type, state, detectIdx, Object.assign({ points: pts, lines: lines }, extra));
+    }
+    if (rel <= 0.35 && w1 >= 2 * atr) {
+      var dirC = bothUp ? 1 : -1, guard = dirC > 0 ? lo : up;
+      var f = followLine(ctx, guard, detectIdx, dirC, tol), conf = -1, exit = -1, used = [];
+      /* Spaetere Swing-Punkte in der Reihenfolge ihrer Bestaetigung, solange der Kanal per Schluss nicht gebrochen ist. */
+      for (var j = 0; j < later.length; j++) {
+        var q = later[j];
+        if (f.broken >= 0 && q.confirmedIndex >= f.broken) break;
+        if (!inside(q)) { exit = q.confirmedIndex; break; }
+        used.push(q);
+        if (conf < 0) conf = q.confirmedIndex;
+      }
+      var inv = f.broken >= 0 && (exit < 0 || f.broken < exit) ? f.broken : exit;
+      var stateC = inv >= 0 ? "INVALIDATED" : conf >= 0 ? "CONFIRMED" : "DETECTED";
+      return { endIdx: inv, f: result(bothUp ? "ASCENDING_CHANNEL" : "DESCENDING_CHANNEL", stateC, used, inv >= 0 ? inv : ctx.t, {
+        levels: { upperNow: r4(up.at(ctx.t)), lowerNow: r4(lo.at(ctx.t)), widthAtr: r4(w1 / atr) },
+        confirmedAt: conf >= 0 ? s.timestamps[conf] : null,
+        invalidatedAt: inv >= 0 ? s.timestamps[inv] : null
+      }) };
+    }
+    /* Keil: gleiche Richtung, Spanne verengt sich um >= 25 %, die "fuehrende" Linie steiler. */
+    if (!(w1 <= 0.75 * w0)) return null;
+    var rising = bothUp && lo.slope > up.slope, falling = bothDown && up.slope < lo.slope;
+    if (!rising && !falling) return null;
+    /* Invalidierung an der Trendseite: Schluss mehr als 0,5 ATR jenseits der oberen (steigender Keil) bzw. unteren
+       Keillinie. Das hoechste Formationshoch taugt bei vier Punkten nicht: im steigenden Keil uebertrifft das naechste
+       Hoch das letzte planmaessig. */
+    var dirW = rising ? -1 : 1, breakLine = rising ? lo : up, trendLine = rising ? up : lo;
+    function invalidAt(k) { return trendLine.at(k) - dirW * tol; }
+    var bIdx = -1, iIdx = -1;
+    for (var k = last.index + 1; k <= ctx.t; k++) {
+      if (dirW > 0 ? s.close[k] > breakLine.at(k) + 0.1 * atr : s.close[k] < breakLine.at(k) - 0.1 * atr) { bIdx = k; break; }
+      if (dirW > 0 ? s.close[k] < invalidAt(k) : s.close[k] > invalidAt(k)) { iIdx = k; break; }
+    }
+    /* Spaeterer Swing-Punkt jenseits der Trendseite (steigender Keil: Hoch ueber der oberen Linie) bricht den Keil. */
+    var firstEv = iIdx >= 0 ? iIdx : bIdx >= 0 ? bIdx : Infinity, usedW = [];
+    for (var j2 = 0; j2 < later.length; j2++) {
+      var r = later[j2];
+      if (r.confirmedIndex >= firstEv) break;
+      var outTrend = rising ? r.side === "HIGH" && r.price > up.at(r.index) + tol : r.side === "LOW" && r.price < lo.at(r.index) - tol;
+      if (outTrend) { iIdx = r.confirmedIndex; bIdx = -1; break; }
+      usedW.push(r);
+    }
+    var state = iIdx >= 0 ? "INVALIDATED" : bIdx >= 0 ? "CONFIRMED" : "DETECTED";
+    /* Erkennung frueher als die Bestaetigung des letzten Punkts ist unmoeglich. */
+    var cIdx = bIdx >= 0 ? Math.max(bIdx, detectIdx) : -1;
+    return { endIdx: state === "INVALIDATED" ? iIdx : cIdx, f: result(rising ? "RISING_WEDGE" : "FALLING_WEDGE", state, usedW, ctx.t, {
+      levels: { breakoutLineNow: r4(breakLine.at(ctx.t)), invalidation: r4(invalidAt(ctx.t)), narrowing: r4(1 - w1 / w0) },
+      confirmedAt: state === "CONFIRMED" ? s.timestamps[cIdx] : null, invalidatedAt: state === "INVALIDATED" ? s.timestamps[iIdx] : null
+    }) };
+  }
+
+  /* Kanal-/Keilstrukturen der letzten Swing-Punkte. Eine Struktur ab c[i] gilt nur als eigene Erkennung, wenn die
+     gleichartige Struktur ab c[i-1] bei ihrer Erkennung schon aufgeloest war (sonst ist sie deren Fortsetzung mit
+     einem Punkt mehr, keine neue Formation). Aufgeloeste (invalidiert, Keil auch bestaetigt) bleiben LEGACY_KEEP
+     Bars gelistet; meist ist es eine Struktur, nach einem Bruch kurz auch die alte neben der neuen. */
   function channelsAndWedges(ctx) {
     var v = ctx.view("scale-2"), out = [];
     if (!v || v.confirmed.length < 4) return out;
-    var win = v.confirmed.slice(-5).map(function (p) { return Object.assign(pt(p), { side: p.side }); });
-    var hs = win.filter(function (p) { return p.side === "HIGH"; }), ls = win.filter(function (p) { return p.side === "LOW"; });
-    if (hs.length < 2 || ls.length < 2) return out;
-    var s = ctx.series, atr = ctx.atr, tol = 0.5 * atr;
-    var up = lineThrough(hs[0], hs[hs.length - 1]), lo = lineThrough(ls[0], ls[ls.length - 1]);
-    var start = Math.min(hs[0].index, ls[0].index), last = win[win.length - 1], detectIdx = last.confirmedIndex;
-    var w0 = up.at(start) - lo.at(start), w1 = up.at(last.index) - lo.at(last.index);
-    if (!(w0 > 0 && w1 > 0)) return out;
-    var flat = 0.05 * atr;          // Steigung je Bar, unter der eine Linie als flach gilt (Dreieck/Rechteck: chart-patterns.js)
-    var bothUp = up.slope > flat && lo.slope > flat, bothDown = up.slope < -flat && lo.slope < -flat;
-    if (!bothUp && !bothDown) return out;
-    var rel = Math.abs(up.slope - lo.slope) / Math.max(Math.abs(up.slope), Math.abs(lo.slope));
-    var lines = [Object.assign({ role: "upper" }, seg(s, up, start, ctx.t)), Object.assign({ role: "lower" }, seg(s, lo, start, ctx.t))];
-    var pts = win.map(function (p) { return { time: p.time, price: r4(p.price), side: p.side }; });
-    if (rel <= 0.35 && w1 >= 2 * atr) {
-      var dirC = bothUp ? 1 : -1, guard = dirC > 0 ? lo : up;
-      var f = followLine(ctx, guard, detectIdx, dirC);
-      var inside = win.length + f.touches.length;
-      out.push(base(ctx, bothUp ? "ASCENDING_CHANNEL" : "DESCENDING_CHANNEL", f.broken >= 0 ? "INVALIDATED" : inside >= 5 ? "CONFIRMED" : "DETECTED", detectIdx, {
-        points: pts, lines: lines, levels: { upperNow: r4(up.at(ctx.t)), lowerNow: r4(lo.at(ctx.t)), widthAtr: r4(w1 / atr) },
-        confirmedAt: inside >= 5 && f.broken < 0 ? s.timestamps[win.length >= 5 ? detectIdx : f.touches[4 - win.length]] : null,
-        invalidatedAt: f.broken >= 0 ? s.timestamps[f.broken] : null
-      }));
-      return out;
-    }
-    /* Keil: gleiche Richtung, Spanne verengt sich um >= 25 %, die "fuehrende" Linie steiler. */
-    if (w1 <= 0.75 * w0) {
-      var rising = bothUp && lo.slope > up.slope, falling = bothDown && up.slope < lo.slope;
-      if (!rising && !falling) return out;
-      var dirW = rising ? -1 : 1, breakLine = rising ? lo : up;
-      var invalid = rising ? Math.max.apply(null, hs.map(function (p) { return p.price; })) : Math.min.apply(null, ls.map(function (p) { return p.price; }));
-      var bIdx = -1, iIdx = -1;
-      for (var k = last.index + 1; k <= ctx.t; k++) {
-        if (iIdx < 0 && (dirW > 0 ? s.close[k] < invalid : s.close[k] > invalid)) iIdx = k;
-        if (bIdx < 0 && (dirW > 0 ? s.close[k] > breakLine.at(k) + 0.1 * atr : s.close[k] < breakLine.at(k) - 0.1 * atr)) bIdx = k;
-      }
-      var state = iIdx >= 0 && (bIdx < 0 || iIdx < bIdx) ? "INVALIDATED" : bIdx >= 0 ? "CONFIRMED" : "DETECTED";
-      /* Erkennung frueher als die Bestaetigung des letzten Punkts ist unmoeglich. */
-      var cIdx = bIdx >= 0 ? Math.max(bIdx, detectIdx) : -1;
-      out.push(base(ctx, rising ? "RISING_WEDGE" : "FALLING_WEDGE", state, detectIdx, {
-        points: pts, lines: lines, levels: { breakoutLineNow: r4(breakLine.at(ctx.t)), invalidation: r4(invalid), narrowing: r4(1 - w1 / w0) },
-        confirmedAt: state === "CONFIRMED" ? s.timestamps[cIdx] : null, invalidatedAt: state === "INVALIDATED" ? s.timestamps[iIdx] : null
-      }));
+    var c = v.confirmed, n = c.length, from = Math.max(0, n - 4 - CW_EXTRA), cache = {};
+    function at(i) { if (!(i in cache)) cache[i] = i >= 0 ? structureFrom(ctx, c, i) : null; return cache[i]; }
+    for (var i = from; i <= n - 4; i++) {
+      var S = at(i);
+      if (!S) continue;
+      var prev = at(i - 1);
+      if (prev && prev.f.type === S.f.type && !(prev.endIdx >= 0 && prev.endIdx <= S.f.detectedIndex)) continue;
+      if (S.endIdx >= 0 && ctx.t - S.endIdx > LEGACY_KEEP) continue;
+      out.push(S.f);
     }
     return out;
   }
@@ -400,34 +469,87 @@
   }
 
   /* -------------------------------- Bestandsformationen uebersetzen */
+  function legacyFormation(ctx, p) {
+    var s = ctx.series, L = LEGACY[p.type] || { family: "OTHER", confirm: "", invalidate: "" };
+    var state = LEGACY_STATE[p.status] || "DETECTED";
+    var detIdx = isNum(p.detectionIndex) ? p.detectionIndex : ctx.t;
+    /* Erkannt wird eine Formation, sobald ihr letzter Punkt bestaetigt war — nicht erst beim Ausbruch.
+       Flaggen werden erst erkennbar, wenn auch Ruecklauf und Mindestdauer erfuellt sind (knownIndex). */
+    var lastConfirmed = p.points.length ? s.timestamps.indexOf(p.points[p.points.length - 1].confirmedAt) : -1;
+    var firstKnown = Math.max(lastConfirmed >= 0 ? lastConfirmed : detIdx, isNum(p.knownIndex) ? p.knownIndex : -1);
+    var lines = [];
+    if (p.neckline) lines.push({ role: "neckline", from: p.neckline.from, to: { time: s.timestamps[ctx.t], price: p.neckline.atNow } });
+    /* Ober-/Unterkante beginnen am ersten Hoch bzw. Tief der Formation (nicht am ersten Punkt schlechthin). */
+    var firstHigh = p.points.filter(function (q) { return q.side === "HIGH"; })[0], firstLow = p.points.filter(function (q) { return q.side === "LOW"; })[0];
+    var endT = s.timestamps[ctx.t];
+    if (isNum(p.upperNow) && firstHigh) lines.push({ role: "upper", from: { time: firstHigh.time, price: firstHigh.price }, to: { time: endT, price: p.upperNow } });
+    if (isNum(p.lowerNow) && firstLow) lines.push({ role: "lower", from: { time: firstLow.time, price: firstLow.price }, to: { time: endT, price: p.lowerNow } });
+    /* Ein Fehlausbruch war erst bestaetigt, dann invalidiert: beide Zeitpunkte bleiben sichtbar. */
+    var confirmedAt = (state === "CONFIRMED" || p.status === "FAILED_BREAKOUT") && p.detectionTime ? p.detectionTime : null;
+    return {
+      id: p.type + "@" + s.timestamps[firstKnown], type: p.type, name: p.name, family: L.family, direction: p.direction,
+      /* Symmetrisches Dreieck/Rechteck ohne Ausbruch: Richtung noch offen (direction ist dann nur ein Platzhalter). */
+      directionOpen: p.bias === "OPEN" && state === "DETECTED",
+      state: state, stateLabel: STATES[state], timeframe: s.timeframe || "1D", asOf: ctx.time,
+      detectedAt: s.timestamps[firstKnown], detectedIndex: firstKnown,
+      confirmedAt: confirmedAt,
+      invalidatedAt: state === "INVALIDATED" && isNum(p.failedIndex) ? s.timestamps[p.failedIndex] : null,
+      points: p.points.map(function (q) { return { time: q.time, price: q.price, side: q.side }; }), lines: lines,
+      levels: { breakout: p.breakoutLevel, invalidation: p.invalidation && p.invalidation.price, targetLow: p.target && p.target.zoneLow, targetHigh: p.target && p.target.zoneHigh, height: p.height },
+      rules: { detect: "Regelwerk " + Pat.ENGINE_VERSION + " (bestätigte Pivots, Skala 2; Lebenszyklus über Anker).", confirm: L.confirm, invalidate: L.invalidate },
+      dataQuality: quality(ctx), source: Pat.ENGINE_VERSION
+    };
+  }
+  /* Bar der Aufloesung einer Bestandsformation (Bestaetigung bzw. Invalidierung), sonst -1. */
+  function legacyResolvedIdx(p) {
+    var st = LEGACY_STATE[p.status];
+    if (st === "INVALIDATED") return isNum(p.failedIndex) ? p.failedIndex : -1;
+    if (st === "CONFIRMED") return isNum(p.detectionIndex) ? p.detectionIndex : -1;
+    return -1;
+  }
+
+  /**
+   * Bestandsformationen mit Lebenszyklus. Anker = t und die Bars unmittelbar vor jeder Pivot-Bestaetigung
+   * (Skala 2 und 3) in den letzten `open` + LEGACY_KEEP Bars: am Anker a war das vorherige Pivot-Fenster der
+   * letzte Stand, an dem diese Formationen sichtbar waren. Ihre Geometrie bleibt Stand a, Ausbruch und
+   * Invalidierung werden mit Schlusskursen bis t verfolgt (Pat.analyze mit lifecycle/until). Kausal: Pivots mit
+   * confirmedIndex <= a <= t, Kurse <= t. Gleiche ID an mehreren Ankern: der juengste Anker gewinnt.
+   */
   function legacy(ctx) {
-    var r = Pat.analyze(ctx), s = ctx.series;
-    return (r.patterns || []).map(function (p) {
-      var L = LEGACY[p.type] || { family: "OTHER", confirm: "", invalidate: "" };
-      var state = LEGACY_STATE[p.status] || "DETECTED";
-      var detIdx = isNum(p.detectionIndex) ? p.detectionIndex : ctx.t;
-      /* Erkannt wird eine Formation, sobald ihr letzter Punkt bestaetigt war — nicht erst beim Ausbruch. */
-      var lastConfirmed = p.points.length ? s.timestamps.indexOf(p.points[p.points.length - 1].confirmedAt) : -1;
-      var firstKnown = lastConfirmed >= 0 ? lastConfirmed : detIdx;
-      var lines = [];
-      if (p.neckline) lines.push({ role: "neckline", from: p.neckline.from, to: { time: s.timestamps[ctx.t], price: p.neckline.atNow } });
-      /* Ober-/Unterkante beginnen am ersten Hoch bzw. Tief der Formation (nicht am ersten Punkt schlechthin). */
-      var firstHigh = p.points.filter(function (q) { return q.side === "HIGH"; })[0], firstLow = p.points.filter(function (q) { return q.side === "LOW"; })[0];
-      var endT = s.timestamps[ctx.t];
-      if (isNum(p.upperNow) && firstHigh) lines.push({ role: "upper", from: { time: firstHigh.time, price: firstHigh.price }, to: { time: endT, price: p.upperNow } });
-      if (isNum(p.lowerNow) && firstLow) lines.push({ role: "lower", from: { time: firstLow.time, price: firstLow.price }, to: { time: endT, price: p.lowerNow } });
-      return {
-        id: p.type + "@" + s.timestamps[firstKnown], type: p.type, name: p.name, family: L.family, direction: p.direction,
-        state: state, stateLabel: STATES[state], timeframe: s.timeframe || "1D", asOf: ctx.time,
-        detectedAt: s.timestamps[firstKnown], detectedIndex: firstKnown,
-        confirmedAt: state === "CONFIRMED" ? p.detectionTime : null,
-        invalidatedAt: state === "INVALIDATED" && isNum(p.failedIndex) ? s.timestamps[p.failedIndex] : null,
-        points: p.points.map(function (q) { return { time: q.time, price: q.price, side: q.side }; }), lines: lines,
-        levels: { breakout: p.breakoutLevel, invalidation: p.invalidation && p.invalidation.price, targetLow: p.target && p.target.zoneLow, targetHigh: p.target && p.target.zoneHigh, height: p.height },
-        rules: { detect: "Regelwerk ti-chart-patterns-1.0.0 (bestätigte Pivots, Skala 2).", confirm: L.confirm, invalidate: L.invalidate },
-        dataQuality: quality(ctx), source: Pat.ENGINE_VERSION
-      };
+    var prep = ctx.prep, t = ctx.t, open = Math.max(4, Math.round(ctx.profile.barsPerYear / 12));
+    var anchors = [t];
+    ["scale-2", "scale-3"].forEach(function (sid) {
+      var sc = prep.pivots.scales[sid];
+      if (!sc) return;
+      for (var q = sc.pivots.length - 1; q >= 0; q--) {
+        var ci = sc.pivots[q].confirmedIndex;
+        if (ci > t) continue;
+        if (ci <= t - open - LEGACY_KEEP) break;
+        if (ci >= 1 && anchors.indexOf(ci - 1) < 0) anchors.push(ci - 1);
+      }
     });
+    anchors.sort(function (a, b) { return b - a; });
+    var out = [], seen = {};
+    anchors.forEach(function (a) {
+      var actx = a === t ? ctx : Ctx.at(prep, a);
+      var r = Pat.analyze(actx, { lifecycle: true, until: t });
+      (r.patterns || []).forEach(function (p) {
+        var f = legacyFormation(ctx, p), e = legacyResolvedIdx(p);
+        if (seen[f.id]) return;
+        /* Vor der eigenen Erkennung invalidiert: war nie eine gueltige Formation. */
+        if (f.state === "INVALIDATED" && e >= 0 && e < f.detectedIndex) return;
+        /* Invalidierte bleiben LEGACY_KEEP Bars gelistet (wie bei den neuen Regeln). */
+        if (f.state === "INVALIDATED" && t - e > LEGACY_KEEP) return;
+        if (a < t) {
+          /* Abgeloest: unaufgeloest hoechstens `open` Bars nach dem Anker; aufgeloest LEGACY_KEEP Bars, sofern die
+             Aufloesung hoechstens `open` Bars nach dem Anker lag (sonst war die Formation vorher schon verfallen). */
+          if (f.state === "DETECTED" ? t - a > open : !(t - e <= LEGACY_KEEP && e - a <= open)) return;
+        }
+        seen[f.id] = true;
+        out.push(f);
+      });
+    });
+    return out;
   }
 
   /**
@@ -441,9 +563,24 @@
     function atFn(k) { if (!memo[k]) memo[k] = Ctx.at(prep, k); return memo[k]; }
     var all = [].concat(legacy(ctx), trendlines(ctx), channelsAndWedges(ctx), pennants(ctx), rangeBreakout(ctx), resistanceBreakout(ctx, atFn), contraction(ctx), gaps(ctx));
     all.forEach(function (f) { if (f.detectedIndex > ctx.t) throw new Error("LOOKAHEAD:" + f.id); });
+    all.forEach(annotate);
     var order = { CONFIRMED: 0, DETECTED: 1, INVALIDATED: 2 };
     all.sort(function (a, b) { return order[a.state] - order[b.state] || b.detectedIndex - a.detectedIndex || (a.type < b.type ? -1 : 1); });
     return { engineVersion: ENGINE_VERSION, asOf: ctx.time, asOfIndex: ctx.t, timeframe: prep.series.timeframe || "1D", formations: all, dataQuality: quality(ctx) };
+  }
+
+  /**
+   * Ehrliche Statusangaben (Owner-Entscheidung zu #938):
+   *  confirmedAtDetection  Ausbruch spaetestens am Tag der ersten zuverlaessigen Erkennung - die Formation war
+   *                        vorher NICHT erkannt (z. B. Keile, deren 4. Punkt erst mit dem Ausbruch bestaetigt ist).
+   *  breakout              Zeitpunkt und Richtung des Ausbruchs, sobald einer festgehalten ist (auch bei Fehlausbruch).
+   *  provisional           Kanal aus vier bestaetigten Swing-Punkten, noch ohne fuenften Punkt im Kanal.
+   */
+  function annotate(f) {
+    f.confirmedAtDetection = !!(f.confirmedAt && f.detectedAt && f.confirmedAt <= f.detectedAt);
+    f.breakout = f.confirmedAt ? { at: f.confirmedAt, direction: f.direction === "BEARISH" ? "DOWN" : "UP" } : null;
+    f.provisional = f.family === "CHANNEL" && f.state === "DETECTED";
+    if (f.directionOpen === undefined) f.directionOpen = false;
   }
 
   function analyze(series, opts) {
@@ -476,7 +613,7 @@
     return list;
   }
 
-  var api = { ENGINE_VERSION: ENGINE_VERSION, STATES: STATES, RULES: RULES, LEGACY: LEGACY, LEGACY_STATE: LEGACY_STATE,
+  var api = { ENGINE_VERSION: ENGINE_VERSION, LEGACY_KEEP: LEGACY_KEEP, STATES: STATES, RULES: RULES, LEGACY: LEGACY, LEGACY_STATE: LEGACY_STATE,
               analyze: analyze, analyzeAt: analyzeAt, history: history, suspectJump: suspectJump };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Formations = api; }

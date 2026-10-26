@@ -15,6 +15,12 @@ on:
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types:
       - completed
+  # Der Marktlauf ruft die Materialisierung per workflow_call auf; dabei entsteht kein eigener Lauf, auf den
+  # workflow_run reagieren koennte (Audit 26.10.2026: alle 73 Ausloesungen uebersprungen, technical/data nie
+  # automatisch gebaut). Deshalb ein eigener Zeitplan nach dem Nachtlauf (Markt Mo-Fr 22:30 UTC, Materialisierung
+  # bis ca. 03:00 UTC). Unveraenderte Daten erzeugen keinen Commit; workflow_run bleibt als zusaetzlicher Ausloeser.
+  schedule:
+    - cron: '10 5 * * 2-6'
   workflow_dispatch:
 
 permissions:

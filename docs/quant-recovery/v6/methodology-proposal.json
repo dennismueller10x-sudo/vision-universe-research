@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "quant-v6-methodology-proposal-1.0.0",
+  "status": "PRESERVED_PROPOSAL_NOT_APPROVED",
+  "activePolicyChanged": false,
+  "sourceArchive": "docs/quant-recovery/methodology-v1/QUANT_BACKTEST_CERTIFICATION_METHODOLOGY_V1.md",
+  "sourceArchiveHash": "24070c00a6f4011fba28f51162596d507a74fd9223df6f01002f223c9bd9602a",
+  "activePolicy": "quant/methodology/backtest-certification-v1.json",
+  "activePolicyHash": "392f5657702e23598c4ee5ebcf36e120687f3975d31d9deb57e2e661882ad6ce",
+  "decisions": {
+    "universe": "Historical primary US common stocks on NYSE/Nasdaq/NYSE American including later delistings; index strategies additionally require contemporaneous index membership.",
+    "dataProcurement": "Inspect existing data and scoped grants first; commercial options allowed for planning, purchases require explicit user authorization.",
+    "sameStockReplay": "Preserve descriptive view; independently version fixed rule validation.",
+    "fiveYearWaitingPeriod": "NOT_ADOPTED. History eligibility uses actual dependencies; prospective observation required only for unavailable inputs or independent confirmatory evidence.",
+    "productionApproval": false
+  },
+  "proposals": [
+    {
+      "id": "outcomeCoverage",
+      "candidateThreshold": 0.995,
+      "state": "UNAPPROVED",
+      "mechanism": "research-methodology.outcomeCoverage",
+      "rationale": "Use all expected mature outcomes including excluded/censored/missing; separately enumerate immature labels. A high aggregate ratio cannot prove missing population completeness or eliminate concentrated delisting bias. Calibrate by time, listing and missingness before ratification."
+    },
+    {
+      "id": "economicMinimumM6",
+      "candidateThreshold": 0.005,
+      "unit": "decimal net M6 event excess",
+      "state": "UNAPPROVED",
+      "rationale": "Candidate economic policy only; require preregistered endpoint, costs, capacity and uncertainty. Do not transfer to different holding periods, portfolio CAGR or hit-rate effects."
+    },
+    {
+      "id": "regimeAndClusterMinimums",
+      "state": "UNAPPROVED",
+      "rationale": "Do not adopt fixed five years/20 episodes/20 quarters automatically. Determine information content, horizon overlap and precision by claimed regime; no substitutes for active regime gates."
+    },
+    {
+      "id": "power",
+      "candidateThreshold": 0.8,
+      "state": "UNAPPROVED",
+      "rationale": "Study-design target for a preregistered effect claim, not an implementation-completeness gate. Requires endpoint/MDE/cluster model and multiplicity plan before unsealing."
+    },
+    {
+      "id": "purgeEmbargo",
+      "state": "MECHANICS_IMPLEMENTED_NO_POLICY_ACTIVATION",
+      "rationale": "Interval overlap mechanically purged; embargo configurable. Any existing stricter horizon/cooldown policy remains active. A partition alone does not establish independent evidence."
+    }
+  ],
+  "contractDiscrepancies": [
+    {
+      "id": "setupWeeksVsMonths",
+      "activeRequirement": "independentWeeks = 20",
+      "producer": "scripts/quant/build-backtest-certification.mjs",
+      "actualComputation": "new Set(outcomes.events.map(e => e[2].slice(0, 7))).size",
+      "actualUnit": "calendar months",
+      "resolution": "Existing producer and status artifact unchanged to avoid weakening the stricter observed gate. Formal policy decision/migration and independently justified dependence unit remain required."
+    }
+  ],
+  "axes": [
+    "IMPLEMENTATION_COMPLETE",
+    "DATA_ELIGIBLE",
+    "METHOD_VALIDATED",
+    "INDEPENDENT_EVIDENCE",
+    "ECONOMIC_ADVANTAGE",
+    "PRODUCTION_APPROVED"
+  ],
+  "noAutomaticCertification": true
+}
