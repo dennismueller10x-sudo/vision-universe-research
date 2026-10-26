@@ -69,5 +69,13 @@ if (out/'original-events-result.json').exists():
   date=e['entryDate'];close=datetime.datetime.fromisoformat(date+'T16:00:00').replace(tzinfo=ZoneInfo('America/New_York')).astimezone(datetime.timezone.utc).isoformat().replace('+00:00','.000Z');assert bars[index]['closeAt']==close
  assert count==4
  checks.append(dict(id='ORIGINAL_SEC_DAILY_EVENT_TIMING_AND_NET_OUTCOMES',events=count,state='PASS'))
+if (out/'original-weekly-events-result.json').exists():
+ x=load('original-weekly-events-input'); r=load('original-weekly-events-result'); headers=load('sec-header-input'); known={z['ticker']+':'+z['accession']:z for z in headers['results']}; count=0
+ assert len(x['events'])==len(headers['results'])==12
+ for e in r['events']:
+  h=known[e['eventId']];assert h['state']=='MATCH' and h['accessionIdentity'];src=next(z for z in x['events'] if z['eventId']==e['eventId']);assert src['availableAt']==h['acceptanceUtc']
+  bars=next(z for z in x['listings'] if z['listingId']==e['listingId'])['bars'];index=next(i for i,b in enumerate(bars) if b['date']>h['acceptanceUtc'][:10]);assert e['entryDate']==bars[index]['date'];assert e['exitDate']==bars[index+x['horizonBars']]['date']
+  side=(x['costs']['feeBps']+x['costs']['slippageBps'])/10000;near(e['netReturn'],bars[index+x['horizonBars']]['close']/bars[index]['close']*(1-side)/(1+side)-1);count+=1
+ assert count==12;checks.append(dict(id='ORIGINAL_SEC_WEEKLY_EVENT_DATE_AND_NET_OUTCOMES',events=count,state='PASS'))
 report=dict(schemaVersion='v8-independent-real-parity-1.1.0',checks=checks,referenceSha256=hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest(),artifactHashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.glob('*.json')) if p.name!='independent-validation.json'},source='Independent Python; no engine import',scope='Arithmetic and method execution parity only; no untouched predictive confirmation',productionApproved=False)
 (out/'independent-validation.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))

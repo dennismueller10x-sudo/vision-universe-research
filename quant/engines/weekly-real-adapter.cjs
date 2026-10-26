@@ -3,6 +3,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const CorporateActions = require('./corporate-action-evidence.js');
+const ClassificationEvidence = require('../config/research-classification-evidence.json');
+if (ClassificationEvidence.schemaVersion !== 'research-classification-evidence-1.0.0' || !Array.isArray(ClassificationEvidence.records)) throw Error('INVALID_RESEARCH_CLASSIFICATION_EVIDENCE');
+function classificationConflict(doc, identity) {
+  return ClassificationEvidence.records.find(e => e.decision === 'HOLD_COMMON_STOCK_RESEARCH' && e.securityId === doc.securityId && e.canonicalId === identity?.canonical_id && e.ticker === doc.ticker);
+}
 const hash = x => crypto.createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
 // Exact replay requires the numerical runtime as well as prices/code/model.
 // Cache once per process; expose only public runtime metadata, never the report/environment.
@@ -20,6 +25,7 @@ function validate(doc, identity) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(doc.asOf) || !Number.isFinite(Date.parse(doc.asOf)) || new Date(doc.asOf).toISOString().slice(0,10)!==doc.asOf || doc.asOf>new Date().toISOString().slice(0,10) || doc.instrumentId !== doc.ticker) throw Error('INVALID_SOURCE_METADATA');
   if (doc.dataMode !== 'real' || doc.priceSeriesType !== 'SPLIT_ADJUSTED' || doc.grain !== 'weekly') throw Error('REAL_WEEKLY_PRICE_REQUIRED');
   if (!identity || !identity.canonical_id || identity.baseline_security_id !== doc.securityId || identity.ticker !== doc.ticker || identity.currency !== doc.currency || identity.provider !== doc.provider || doc.from < identity.start_date) throw Error('LISTING_IDENTITY_MISMATCH');
+  if (classificationConflict(doc, identity)) throw Error('ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT');
   if (identity.active_status !== 'ACTIVE') throw Error('INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED');
   if (identity.eligible_us_equity!==true || identity.instrument_type!=='EQUITY_COMMON') throw Error('INELIGIBLE_EQUITY_LISTING');
   if (!Array.isArray(doc.points) || doc.points.length < 55) throw Error('INSUFFICIENT_HISTORY');
@@ -58,4 +64,4 @@ function createLoader(root) {
   return loader;
 }
 function load(root,securityId) { return createLoader(root)(securityId); }
-module.exports={load,createLoader,validate,hash,calculationRuntime};
+module.exports={load,createLoader,validate,hash,calculationRuntime,classificationConflict};
