@@ -200,7 +200,7 @@
     var v = Q.validate(query || { groups: [] }), q = v.query;
     var groups = q.groups.filter(function (g) { return g.filters.length; });
     if (q.logic === "AND" && groups.length > 1) groups = [{ filters: [].concat.apply([], groups.map(function (g) { return g.filters; })) }];
-    return { tf: q.timeframe, groups: groups.length ? groups.map(function (g) { return g.filters.map(function (f) { var o = { field: f.field, op: f.op, value: f.value }; if (f.op === "between") o.value2 = f.value2; return o; }); }) : [[]] };
+    return { tf: q.timeframe, groups: groups.length ? groups.map(function (g) { return g.filters.map(function (f) { var o = { field: f.field, op: f.op, value: f.value }; if (f.op === "between") o.value2 = f.value2; if (f.tf) o.tf = f.tf; return o; }); }) : [[]] };
   }
   function queryFromBuilder(b) {
     var groups = (b.groups || []).map(function (rows) { return { op: "AND", filters: rows.filter(function (r) { return r && r.field; }) }; }).filter(function (g) { return g.filters.length; });
