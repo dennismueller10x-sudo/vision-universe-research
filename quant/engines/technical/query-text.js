@@ -33,7 +33,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("./technical-query.js") : global.VUTechnical.Query;
-  var TEXT_VERSION = "technical-query-text-1.2.0";
+  var TEXT_VERSION = "technical-query-text-1.3.0";
 
   /* Umlaute und Eszett falten, Kleinschreibung, typografische Zeichen vereinheitlichen. */
   function fold(s) {
@@ -116,8 +116,8 @@
     ["(fallende )?widerstandslinie|abwaertstrendlinie", { formations: ["RESISTANCE_TRENDLINE"] }],
     ["trendlinien?", { formations: ["SUPPORT_TRENDLINE", "RESISTANCE_TRENDLINE"] }],
     ["volatilitaetskontraktion|\\bvcp\\b", { formations: ["VOLATILITY_CONTRACTION"] }],
-    ["(kurs)?luecken? nach oben|gap-?ups?|aufwaertsluecken?", { formations: ["GAP_UP"] }],
-    ["(kurs)?luecken? nach unten|gap-?downs?|abwaertsluecken?", { formations: ["GAP_DOWN"] }],
+    ["(kurs)?luecken? nach oben|gap[- ]?ups?|aufwaertsluecken?", { formations: ["GAP_UP"] }],
+    ["(kurs)?luecken? nach unten|gap[- ]?downs?|abwaertsluecken?", { formations: ["GAP_DOWN"] }],
     ["(kurs)?luecken?|gaps?", { formations: ["GAP_UP", "GAP_DOWN"] }],
     ["bestaetigt\\w*|confirmed", { confirmed: true }]
   ];
@@ -132,7 +132,7 @@
     ["roc( ?21)?|21-?tage-?(aenderung|performance)|monatsperformance", "roc21"], ["tagesaenderung|tagesperformance", "chg1d"],
     ["schlusskurs|aktienkurs|kurs|preis", "close"]
   ];
-  var CMP = [["groesser als|mehr als|oberhalb|ueber|>", "gt"], ["mindestens|ab|>=", "gte"], ["kleiner als|weniger als|unterhalb|unter|<", "lt"], ["hoechstens|bis|<=", "lte"]];
+  var CMP = [["groesser als|groesser|mehr als|oberhalb|ueber|>", "gt"], ["mindestens|ab|>=", "gte"], ["kleiner als|kleiner|weniger als|unterhalb|unter|<", "lt"], ["hoechstens|bis|<=", "lte"]];
   var STOP = ("aktien aktie titel werte wert alle zeige zeig finde such suche mir mit der die das den dem des ein eine einer einem eines im in auf am an bei von nach " +
     "sowie setup setups formation formationen muster signal signale aktuell gerade derzeit noch bildung tageschart chart charts liegt liegen ist sind " +
     "einem einen im tag taeglich tagesbasis 1d kurs kurse").split(" ");
@@ -163,6 +163,8 @@
     var text = " " + fold(input) + " ", slots = [], errors = [], recognized = [];
     function slot(item) { slots.push(item); return " §" + (slots.length - 1) + "§ "; }
     var tf = "1D", sort = null;
+    /* Einheiten in Worten: "5 Prozent" = "5 %", "100 Dollar" = 100 (Kurse sind USD) */
+    text = text.replace(/(\d)\s*(prozent|pct)(?![\w-])/g, "$1 %").replace(/(\d)\s*(dollar|usd|\$)(?![\w-])/g, "$1");
 
     /* 1. Kanonische Praefixe und Zeitrahmen-/Sortierangaben */
     text = text.replace(/\btf:(1d|1w|1m)\b/g, function (m, x) { tf = x.toUpperCase(); return " "; });
